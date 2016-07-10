@@ -1,0 +1,21 @@
+(Liquinth a42)
+od71
+rv23
+fc38
+fq29
+ft36
+fa11
+fs74
+fd15
+fm18
+ps26
+wf0
+aa7
+ar24
+dt0
+vs67
+vd19
+pw0
+pm0
+so0
+tm103

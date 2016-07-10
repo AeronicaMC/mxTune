@@ -1,0 +1,48 @@
+{
+"__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
+"textures": {
+    "particle": "mxtune:blocks/piano_body",
+    "0": "mxtune:blocks/piano_body"
+},
+"elements": [ 
+{
+    "__comment": "Rack Body",
+    "from": [ 7, 0, 0 ],
+    "to": [ 8, 7, 16 ],
+    "faces": {
+        "down":  { "uv": [ 7, 0, 8, 16 ], "texture": "#0" },
+        "up":    { "uv": [ 7, 0, 8, 16 ], "texture": "#0" },
+        "north": { "uv": [ 7, 9, 8, 16 ], "texture": "#0" },
+        "south": { "uv": [ 7, 9, 8, 16 ], "texture": "#0" },
+        "west":  { "uv": [ 0, 9, 16, 16 ], "texture": "#0" },
+        "east":  { "uv": [ 0, 9, 16, 16 ], "texture": "#0" }
+    }
+},
+{
+    "__comment": "Rack Upper",
+    "from": [ 7, 7, 1 ],
+    "to": [ 8, 8, 15 ],
+    "faces": {
+        "down":  { "uv": [ 7, 1, 8, 15 ], "texture": "#-1", "cullface": "down" },
+        "up":    { "uv": [ 7, 1, 8, 15 ], "texture": "#0" },
+        "north": { "uv": [ 7, 8, 8, 9 ], "texture": "#0" },
+        "south": { "uv": [ 7, 8, 8, 9 ], "texture": "#0" },
+        "west":  { "uv": [ 1, 8, 15, 9 ], "texture": "#0" },
+        "east":  { "uv": [ 1, 8, 15, 9 ], "texture": "#0" }
+    }
+},
+{
+    "__comment": "Rack Lip",
+    "from": [ 8, 0, 1 ],
+    "to": [ 9, 1, 15 ],
+    "faces": {
+        "down":  { "uv": [ 8, 1, 9, 15 ], "texture": "#0" },
+        "up":    { "uv": [ 8, 1, 9, 15 ], "texture": "#0" },
+        "north": { "uv": [ 8, 15, 9, 16 ], "texture": "#0" },
+        "south": { "uv": [ 8, 15, 9, 16 ], "texture": "#0" },
+        "west":  { "uv": [ 1, 15, 15, 16 ], "texture": "#-1", "cullface": "west" },
+        "east":  { "uv": [ 1, 15, 15, 16 ], "texture": "#0" }
+    }
+}
+]
+}

@@ -1,0 +1,16 @@
+< en_US.lang - English localization file >
+mxtune:creativeTabs.musicTab.title=mxTune
+item.mxtune:item_basic.name=Magic Music Item
+item.mxtune:block_piano.name=Spinet Piano
+item.mxtune:item_musicpaper.name=Music Paper
+item.mxtune:item_sheetmusic.name="Sheet Music" - Should never be seen unless the Name is removed.
+item.mxtune:item_inst_tuba.name=Tuba
+item.mxtune:item_inst_flute.name=Flute
+item.mxtune:item_inst_mando.name=Mandolin
+item.mxtune:item_inst_bongo.name=Bongos
+item.mxtune:item_inst_balalaika.name=Balalaika
+item.mxtune:item_inst_clarinet.name=Clarinet
+item.mxtune:item_converter.name=Sheet Music Converter
+groupjoin.yes.no=Join this Group?
+key.openParty=Open Party
+key.playInstrument=Play Instrument
