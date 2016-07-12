@@ -23,7 +23,7 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "1.9.4-0.3.0"
+version = "1.9.4-0.3.0-dev"
 group = "net.aeronica.mods.mxtune" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "mxtune"
 
@@ -41,6 +41,10 @@ configurations {
 minecraft {
     version = "1.9.4-12.17.0.1976"
     runDir = "run"
+
+    if (project.version.endsWith('-dev')) {
+        project.version = project.version + "." + new Date().format('yyyy.MM.dd.HH.mm.ss')
+    }
     
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
@@ -105,6 +109,15 @@ jar.enabled = false
 
 processResources
 {
+    // Exclude the GIMP image files
+    exclude '**/*.xcf'
+
+    // Exclude the Cubik model files
+    exclude '**/*.bdc3D'
+
+    // Exclude the Paint.NET image files
+    exclude '**/*.pdn'
+    
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
