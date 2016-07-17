@@ -27,9 +27,9 @@ public enum GROUPS
     public static final int MAX_MEMBERS = 8;
 
     /** Client side */
-    public static Map<String, String> clientGroups;
-    public static Map<String, String> clientMembers;
-    public static Map<String, String> clientPlayStatuses;
+    private static Map<String, String> clientGroups;
+    private static Map<String, String> clientMembers;
+    private static Map<String, String> clientPlayStatuses;
 
     public static String getLeaderOfGroup(String groupID)
     {
@@ -48,6 +48,30 @@ public enum GROUPS
         return memberName.equalsIgnoreCase(getLeaderOfGroup(getMembersGroupID(memberName)));
     }
 
+    public static void setClientPlayStatuses(String status)
+    {
+        GROUPS.clientPlayStatuses = splitToHashMap(status);
+    }
+    
+    public static Map<String, String> getClientMembers()
+    {
+        return GROUPS.clientMembers;
+    }
+    
+    public static void setClientMembers(String members)
+    {
+        GROUPS.clientMembers = splitToHashMap(members);
+    }
+    
+    public static Map<String, String> getClientGroups()
+    {
+        return GROUPS.clientGroups;
+    }
+    
+    public static void setClientGroups(String groups)
+    {
+        GROUPS.clientGroups = splitToHashMap(groups);
+    }
     /**
      * getIndex(String playerName)
      * 

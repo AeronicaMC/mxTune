@@ -63,8 +63,8 @@ public class SyncGroupMessage extends AbstractClientMessage<SyncGroupMessage>
             ModLogger.debug("  +++ Groups:  " + groups);
             ModLogger.debug("  +++ members: " + members);
 
-            GROUPS.clientGroups = GROUPS.splitToHashMap(groups);
-            GROUPS.clientMembers = GROUPS.splitToHashMap(members);
+            GROUPS.setClientGroups(groups);
+            GROUPS.setClientMembers(members);
         }
     }
 }

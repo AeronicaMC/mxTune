@@ -190,7 +190,7 @@ public class GuiGroup extends GuiScreen
         clearMembersButtons();
 
         /** TODO: use/add sensible methods to make readable - partially done... */
-        if (GROUPS.clientGroups != null || GROUPS.clientMembers != null)
+        if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
         {
             groupID = GROUPS.getMembersGroupID(player.getDisplayName().getUnformattedText());
             if (groupID != null)
@@ -199,7 +199,7 @@ public class GuiGroup extends GuiScreen
                 fontRenderer.drawStringWithShadow(GROUPS.getLeaderOfGroup(groupID), posX, posY, 16777215);
                 posY += 10;
                 /** Display the remaining members taking care to not print the leader a 2nd time. */
-                Set<String> set = GROUPS.clientMembers.keySet();
+                Set<String> set = GROUPS.getClientMembers().keySet();
                 for (Iterator<String> im = set.iterator(); im.hasNext();)
                 {
                     member = im.next();

@@ -49,6 +49,6 @@ public class SyncStatusMessage extends AbstractClientMessage<SyncStatusMessage>
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        GROUPS.clientPlayStatuses = GROUPS.splitToHashMap(status);
+        GROUPS.setClientPlayStatuses(status);
     }
 }

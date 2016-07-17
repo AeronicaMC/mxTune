@@ -125,7 +125,7 @@ public class GuiGroupJoin extends GuiScreen
         int posY = guiTop + 12;
         String member;
 
-        if (GROUPS.clientGroups != null || GROUPS.clientMembers != null)
+        if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
         {
             if (groupID != null)
             {
@@ -133,7 +133,7 @@ public class GuiGroupJoin extends GuiScreen
                 fontRenderer.drawStringWithShadow(GROUPS.getLeaderOfGroup(groupID), posX, posY, 16777215);
                 posY += 10;
                 /** display the remaining members taking care to not print the leader a 2nd time. */
-                Set<String> set = GROUPS.clientMembers.keySet();
+                Set<String> set = GROUPS.getClientMembers().keySet();
                 for (Iterator<String> im = set.iterator(); im.hasNext();)
                 {
                     member = im.next();

@@ -91,10 +91,6 @@ public class GuiJamOverlay extends Gui
         // GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         // GL11.glDisable(GL11.GL_LIGHTING);
         // GL11.glPushMatrix();
-        // /*
-        // * TODO: Remove debug strings
-        // * TODO: Add Song title of music book in instrument inventory
-        // */
         // fontRenderer.drawStringWithShadow(s1, 2, 22, 16777215);
         // fontRenderer.drawStringWithShadow(s2, 2, 32, 16777215);
         // GL11.glPopMatrix();
@@ -152,7 +148,7 @@ public class GuiJamOverlay extends Gui
         String groupID;
         String member;
 
-        if (GROUPS.clientGroups != null || GROUPS.clientMembers != null)
+        if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
         {
             groupID = GROUPS.getMembersGroupID(player.getDisplayName().getUnformattedText());
             /** Only draw if player is a member of a group */
@@ -162,7 +158,7 @@ public class GuiJamOverlay extends Gui
                 fontRenderer.drawStringWithShadow(TextFormatting.YELLOW + GROUPS.getLeaderOfGroup(groupID), posX, posY, 16777215);
                 posY += 10;
                 /** display the remaining members taking care to not print the leader a 2nd time. */
-                Set<String> set = GROUPS.clientMembers.keySet();
+                Set<String> set = GROUPS.getClientMembers().keySet();
                 for (Iterator<String> im = set.iterator(); im.hasNext();)
                 {
                     member = im.next();
