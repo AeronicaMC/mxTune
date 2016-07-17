@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.blocks.BlockPiano;
+import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.groups.PlayManager;
@@ -29,7 +30,6 @@ import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.PlayJamMessage;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.aeronica.mods.mxtune.util.Refs;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -105,7 +105,10 @@ public class QueueJamMessage extends AbstractMessage<QueueJamMessage>
         /** Client side - Open GuiPlaying for JAM Members */
         EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
 
-        /** Open the Play GUI on for the JAMMER who either queued his part or the leader who kicks off the JAM */
+        /**
+         * Open the Play GUI on for the JAMMER who either queued his part or the
+         * leader who kicks off the JAM
+         */
         if (GROUPS.getMembersGroupID(player.getDisplayName().getUnformattedText()) != null)
         {
 
@@ -143,7 +146,7 @@ public class QueueJamMessage extends AbstractMessage<QueueJamMessage>
             {
                 mml = PlayManager.getInstance().getMML(groupID);
                 /** TODO: figure out a sane distance to use. Configuration option perhaps. */
-                PacketDispatcher.sendToAllAround(new PlayJamMessage(mml, groupID), player.dimension, player.posX, player.posY, player.posZ, Refs.RANGE_ALL_AROUND);
+                PacketDispatcher.sendToAllAround(new PlayJamMessage(mml, groupID), player.dimension, player.posX, player.posY, player.posZ, ModConfig.getListenerRange());
                 PlayManager.getInstance().syncStatus();
             }
         }

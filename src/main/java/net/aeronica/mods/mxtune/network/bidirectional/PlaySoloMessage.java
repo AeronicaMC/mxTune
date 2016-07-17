@@ -20,13 +20,13 @@ import java.io.IOException;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.blocks.BlockPiano;
+import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiPlaying;
 import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
-import net.aeronica.mods.mxtune.util.Refs;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -93,7 +93,9 @@ public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        /** Since this packet is handled differently, we need to check side */
+        /**
+         * Since this packet is handled differently, we need to check side
+         */
         if (side.isClient())
         {
             handleClientSide(player);
@@ -110,8 +112,8 @@ public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
          * appends with a space between each player=MML sequence
          * "<playername1>=MML@...abcd; <playername2>=MML@...efga; <playername3>=MML@...bead;"
          */
-        String mml = new String(playerName + "=" + musicText);
 
+        String mml = new String(playerName + "=" + musicText);
         MMLManager.getInstance().mmlPlay(mml, playerName, true);
 
         /** Only open the playing gui for the player who is playing */
@@ -139,7 +141,7 @@ public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
             PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playerName, title, mml);
 
             /** TODO: figure out a sane distance to use. Configuration option perhaps. */
-            PacketDispatcher.sendToAllAround(packetPlaySolo, player.dimension, player.posX, player.posY, player.posZ, Refs.RANGE_ALL_AROUND);
+            PacketDispatcher.sendToAllAround(packetPlaySolo, player.dimension, player.posX, player.posY, player.posZ, ModConfig.getListenerRange());
 
             PlayManager.getInstance().setPlaying(playerName);
             PlayManager.getInstance().syncStatus();

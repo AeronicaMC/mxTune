@@ -68,9 +68,7 @@ public class GuiGroup extends GuiScreen
 
     private EntityPlayer player;
 
-    /**
-     * Initializes the GUI elements.
-     */
+    /** Initializes the GUI elements. */
     @Override
     public void initGui()
     {
@@ -129,8 +127,7 @@ public class GuiGroup extends GuiScreen
 
         drawMembers();
         /** Create and Leave buttons should always reflect group membership */
-        btn_create.enabled = GROUPS.getMembersGroupID(player.getDisplayName().getFormattedText()) == null;
-        btn_leave.enabled = GROUPS.getMembersGroupID(player.getDisplayName().getUnformattedText()) != null;
+        btn_create.enabled = !(btn_leave.enabled = GROUPS.getMembersGroupID(player.getDisplayName().getUnformattedText()) != null);
 
         /** draw the things in the controlList (buttons) */
         super.drawScreen(i, j, f);

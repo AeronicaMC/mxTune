@@ -85,7 +85,6 @@ public class JamPlayerCapabilityProvider
             IJamPlayer live = evt.getEntityPlayer().getCapability(MXTuneMain.JAM_PLAYER, null);
             live.setJam(dead.getJam());
         }
-
     }
 
     private static class Factory implements Callable<IJamPlayer>
@@ -93,7 +92,7 @@ public class JamPlayerCapabilityProvider
         @Override
         public IJamPlayer call() throws Exception
         {
-            ModLogger.logInfo("+++ +++ +++ Factory#call: return new JamDefaultImpl(null); ! ! !");
+            ModLogger.logInfo("JamPlayerCapabilityProvider.Factory#call: return new JamDefaultImpl(null);");
             return new JamDefaultImpl(null);
         }
     }

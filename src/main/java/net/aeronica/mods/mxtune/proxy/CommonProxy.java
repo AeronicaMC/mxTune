@@ -17,6 +17,7 @@
 package net.aeronica.mods.mxtune.proxy;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.handler.SREventHandler;
 import net.aeronica.mods.mxtune.init.StartupBlocks;
 import net.aeronica.mods.mxtune.init.StartupItems;
@@ -27,6 +28,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
@@ -36,10 +38,8 @@ public abstract class CommonProxy implements IProxy
     @Override
     public void initConfiguration(FMLPreInitializationEvent event)
     {
-        // StaticConfig.setConfigFile(new
-        // Configuration(event.getSuggestedConfigurationFile()));
-        // StaticConfig.syncConfig();
-        // ConfigurationHandler.getInstance().init(event);
+        ModConfig.setConfigFile(new Configuration(event.getSuggestedConfigurationFile()));
+        ModConfig.syncConfig();
     }
 
     @Override

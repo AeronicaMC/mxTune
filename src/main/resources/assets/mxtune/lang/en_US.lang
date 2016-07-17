@@ -11,6 +11,19 @@ item.mxtune:item_inst_bongo.name=Bongos
 item.mxtune:item_inst_balalaika.name=Balalaika
 item.mxtune:item_inst_clarinet.name=Clarinet
 item.mxtune:item_converter.name=Sheet Music Converter
+
+mxtune.configgui.ctgy.general.tooltip=mxTune General Settings
+mxtune.configgui.ctgy.general=mxTune General Settings
+
+mxtune.configgui.listenerRange=Listener Range
+mxtune.configgui.listenerRange.tooltip=The radius around a music source in blocks in which a player can hear music.
+
+mxtune.configgui.ctgy.client.tooltip=mxTune Client Settings
+mxtune.configgui.ctgy.client=mxTune Client Settings
+
+mxtune.configgui.muteMxTune=Mute mxTune
+mxtune.configgui.muteMxTune.tooltip=Prevents the player on this client from hearing any music. This will not stop a currently playing tune.
+
 groupjoin.yes.no=Join this Group?
 key.openParty=Open Party
 key.playInstrument=Play Instrument

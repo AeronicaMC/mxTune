@@ -16,6 +16,8 @@
  */
 package net.aeronica.mods.mxtune.handler;
 
+import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.SyncPlayerPropsMessage;
@@ -23,6 +25,7 @@ import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class SREventHandler
@@ -51,5 +54,11 @@ public class SREventHandler
             PacketDispatcher.sendTo(new SyncPlayerPropsMessage((EntityPlayer) event.getEntity()), (EntityPlayerMP) event.getEntity());
             GroupManager.sync();
         }
+    }
+    
+    @SubscribeEvent
+    public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs)
+    {
+        if (eventArgs.getModID().equals(MXTuneMain.MODID)) ModConfig.syncConfig();
     }
 }

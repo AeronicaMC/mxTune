@@ -97,7 +97,7 @@ public class JamDefaultImpl implements IJamPlayer
 
     @Override
     public String getSParam3() {return sParam3;}
-
+    
     /**
      * The values returned are an index to icons stored in the
      * instrument_inventory.png texture.

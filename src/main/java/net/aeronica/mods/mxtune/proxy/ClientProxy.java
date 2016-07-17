@@ -65,7 +65,6 @@ public class ClientProxy extends CommonProxy
     public void initConfiguration(FMLPreInitializationEvent event)
     {
         super.initConfiguration(event);
-        // ConfigurationHandler.getInstance().initClientConfigs(event);
     }
 
     @Override
