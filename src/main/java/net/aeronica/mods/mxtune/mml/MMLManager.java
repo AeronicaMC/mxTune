@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.mml;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -86,6 +87,37 @@ public class MMLManager
         }
     }
 
+    public void abortAll()
+    {
+        resetMute();
+        if (mmlThreads != null)
+        {
+            Set<String> set = mmlThreads.keySet();
+            for (String resultID : set)
+            {
+                try
+                {
+                    MMLPlayer pInstance = mmlThreads.get(resultID);
+                    if (pInstance != null)
+                    {
+                        Runnable worker = new ThreadedmmlAbort(pInstance);
+                        executor.execute(worker);
+                    }
+                } catch (IllegalArgumentException e)
+                {
+                    ModLogger.logInfo(e.getLocalizedMessage());
+                    e.printStackTrace();
+                } catch (Exception e)
+                {
+                    ModLogger.logInfo(e.getLocalizedMessage());
+                    e.printStackTrace();
+                }
+                ModLogger.logInfo("MMLManager.mmlAbort(): " + resultID);
+            }
+        }
+        ModLogger.logInfo("MMLManager playerLogOff!");
+    }
+    
     public static void muteSounds()
     {
         if (muted++ > 0)
@@ -324,6 +356,22 @@ public class MMLManager
         public void run()
         {
             pinstance.mmlKill(ID, closeGUI);
+        }
+    }
+    
+    private class ThreadedmmlAbort implements Runnable
+    {
+        private final MMLPlayer pinstance;
+        
+        public ThreadedmmlAbort(MMLPlayer pInstance)
+        {
+            this.pinstance = pInstance;
+        }
+        
+        @Override
+        public void run()
+        {
+            pinstance.mmlAbort();
         }
     }
 }

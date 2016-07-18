@@ -17,11 +17,14 @@
 package net.aeronica.mods.mxtune.handler;
 
 import net.aeronica.mods.mxtune.groups.GROUPS;
+import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.aeronica.mods.mxtune.render.PlacardRenderer;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class CLEventHandler
@@ -48,5 +51,12 @@ public class CLEventHandler
                 placardRenderer.doRender(event);
             }
         }
+    } 
+    
+    @SubscribeEvent
+    public void onWorldEventUnload(WorldEvent.Unload event)
+    {
+        ModLogger.logInfo("CLEventHandler#onWorldEventUnload");
+        MMLManager.getInstance().abortAll();
     }
 }

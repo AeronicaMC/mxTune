@@ -19,10 +19,9 @@ package net.aeronica.mods.mxtune.handler;
 import net.aeronica.mods.mxtune.sound.CodecLiquinth;
 import net.aeronica.mods.mxtune.sound.SoundPlayer;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.sound.SoundSetupEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import paulscode.sound.SoundSystemConfig;
 import paulscode.sound.SoundSystemException;
 import paulscode.sound.codecs.CodecIBXM;
@@ -55,9 +54,8 @@ public class SoundEventHandler
     }
 
     @SubscribeEvent
-    public void onPlayerLoggedOutEvent(PlayerLoggedOutEvent event)
+    public void onWorldEvent(WorldEvent.Unload event)
     {
         SoundPlayer.getInstance().stopSounds();
-        ModLogger.debug("Disconnected " + ((EntityPlayer) event.player).getCommandSenderEntity().getName());
     }
 }

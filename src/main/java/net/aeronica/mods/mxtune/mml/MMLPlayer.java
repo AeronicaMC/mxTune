@@ -257,6 +257,23 @@ public class MMLPlayer implements MetaEventListener
         }
     }
 
+    public void mmlAbort(){
+        if (sequencer != null && sequencer.isOpen())
+        {
+            sequencer.stop();
+            sequencer.setMicrosecondPosition(0L);
+            sequencer.removeMetaEventListener(this);
+        }
+        try
+        {
+            Thread.sleep(250);
+        } catch (InterruptedException e)
+        {
+        }
+        if (sequencer != null && sequencer.isOpen()) sequencer.close();
+        if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
+    }
+    
     @Override
     public void meta(MetaMessage event)
     {
