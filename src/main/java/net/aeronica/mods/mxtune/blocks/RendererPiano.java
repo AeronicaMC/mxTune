@@ -55,6 +55,13 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano>
     private IModel benchModel;
     private IBakedModel bakedBenchModel;
 
+    // invoke this from the TextureStitchEvent
+    public void reBakeModels()
+    {
+        bakedRackModel = null;
+        bakedBenchModel = null;   
+    }
+    
     private IBakedModel getRackBakedModel()
     {
         /** Since we cannot bake in preInit() we do lazy baking of the model as soon as we need it for rendering */

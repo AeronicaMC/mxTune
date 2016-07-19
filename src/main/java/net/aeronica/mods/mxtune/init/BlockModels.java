@@ -23,11 +23,16 @@ import net.aeronica.mods.mxtune.blocks.TilePiano;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMap;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class BlockModels
 {
+    private static class BlockModelsHolder {private static BlockModels instance = new BlockModels();}
+    public static BlockModels getInstance() {return BlockModelsHolder.instance;}
+
     private static final String modid = MXTuneMain.MODID.toLowerCase();
     private static final int DEFAULT_ITEM_SUBTYPE = 0;
 
@@ -66,6 +71,21 @@ public class BlockModels
 
         ModelLoader.setCustomModelResourceLocation(StartupBlocks.item_piano, DEFAULT_ITEM_SUBTYPE, new ModelResourceLocation(modid + ":" + "block_piano", "inventory"));
 
-        ClientRegistry.bindTileEntitySpecialRenderer(TilePiano.class, new RendererPiano());
+        rendererPiano = new RendererPiano();  
+        ClientRegistry.bindTileEntitySpecialRenderer(TilePiano.class, rendererPiano);
+    }
+    
+    private static RendererPiano rendererPiano;
+    
+    /** 
+     ** Because the RendererPiano TESR uses lazy model loading we need force a
+     ** reload if the texture sprite map changes. This can occur if a player adds
+     ** a resource pack while in game.
+     **/
+
+    @SubscribeEvent
+    public void onTextureStitchEvent(TextureStitchEvent event)
+    {
+        rendererPiano.reBakeModels();
     }
 }

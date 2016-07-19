@@ -108,6 +108,7 @@ public class ClientProxy extends CommonProxy
         MinecraftForge.EVENT_BUS.register(SoundEventHandler.getInstance());
         MinecraftForge.EVENT_BUS.register(TickHandler.getInstance());
         MinecraftForge.EVENT_BUS.register(CLEventHandler.getInstance());
+        MinecraftForge.EVENT_BUS.register(BlockModels.getInstance());
     }
 
     @Override
