@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.gui.GuiGroup;
+import net.aeronica.mods.mxtune.gui.GuiMusicOptions;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.minecraft.entity.player.EntityPlayer;
@@ -63,9 +64,13 @@ public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
 
     public void handleClientSide(EntityPlayer playerSP)
     {
-        if (keyBindingDesc.equalsIgnoreCase("key.openParty"))
+        if (keyBindingDesc.equalsIgnoreCase("mxtune.key.openParty"))
         {
-            playerSP.openGui(MXTuneMain.instance, GuiGroup.GUI_ID, playerSP.worldObj, (int) playerSP.posX, (int) playerSP.posY, (int) playerSP.posZ);
+            playerSP.openGui(MXTuneMain.instance, GuiGroup.GUI_ID, playerSP.worldObj, 0, 0, 0);
+        }
+        if (keyBindingDesc.equalsIgnoreCase("mxtune.key.openMusicOptions"))
+        {
+            playerSP.openGui(MXTuneMain.instance, GuiMusicOptions.GUI_ID, playerSP.worldObj, 0, 0, 0);
         }
     }
 

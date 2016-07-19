@@ -1,5 +1,6 @@
 < en_US.lang - English localization file >
-mxtune:creativeTabs.musicTab.title=mxTune
+mxtune.creativeTabs.musicTab.title=mxTune
+
 item.mxtune:item_basic.name=Magic Music Item
 item.mxtune:block_piano.name=Spinet Piano
 item.mxtune:item_musicpaper.name=Music Paper
@@ -24,6 +25,7 @@ mxtune.configgui.ctgy.client=mxTune Client Settings
 mxtune.configgui.muteMxTune=Mute mxTune
 mxtune.configgui.muteMxTune.tooltip=Prevents the player on this client from hearing any music. This will not stop a currently playing tune.
 
-groupjoin.yes.no=Join this Group?
-key.openParty=Open Party
-key.playInstrument=Play Instrument
+mxtune.groupjoin.yes.no=Join this Group?
+mxtune.key.openParty=Open Party
+mxtune.key.openMusicOptions=Music Options
+mxtune.gui.GuiMusicOptions.title=Music Options

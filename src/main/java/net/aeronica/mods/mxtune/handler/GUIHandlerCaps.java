@@ -20,6 +20,7 @@ import net.aeronica.mods.mxtune.gui.GuiGroup;
 import net.aeronica.mods.mxtune.gui.GuiGroupJoin;
 import net.aeronica.mods.mxtune.gui.GuiInstrumentInventory;
 import net.aeronica.mods.mxtune.gui.GuiInstrumentInventoryCaps;
+import net.aeronica.mods.mxtune.gui.GuiMusicOptions;
 import net.aeronica.mods.mxtune.gui.GuiMusicPaperParse;
 import net.aeronica.mods.mxtune.gui.GuiPlaying;
 import net.aeronica.mods.mxtune.gui.GuiPlayingChat;
@@ -79,6 +80,9 @@ public class GUIHandlerCaps implements IGuiHandler
         case GuiGroupJoin.GUI_ID:
             return new GuiGroupJoin();
 
+        case GuiMusicOptions.GUI_ID:
+            return new GuiMusicOptions();
+            
         default:
             return null;
         }

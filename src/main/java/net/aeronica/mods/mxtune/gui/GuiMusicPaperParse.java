@@ -101,9 +101,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     private String cachedMMLText;
     private int cachedSelectedInst;
 
-    public GuiMusicPaperParse()
-    {
-    }
+    public GuiMusicPaperParse() {}
 
     @Override
     public void updateScreen()

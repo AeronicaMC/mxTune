@@ -55,20 +55,26 @@ public class KeyHandler
     private static class KeyHandlerHolder {private static final KeyHandler INSTANCE = new KeyHandler();}
     public static KeyHandler getInstance() {return KeyHandlerHolder.INSTANCE;}
     
-    private KeyBinding key_openGUI = new KeyBinding("key.openParty", Keyboard.KEY_J, MXTuneMain.MODID);
+    private KeyBinding key_openPartyGUI = new KeyBinding("mxtune.key.openParty", Keyboard.KEY_J, MXTuneMain.MODID);
+    private KeyBinding key_openMusicOptionsGUI = new KeyBinding("mxtune.key.openMusicOptions", Keyboard.KEY_P, MXTuneMain.MODID);
 
     private KeyHandler()
     {
-        ClientRegistry.registerKeyBinding(key_openGUI);
+        ClientRegistry.registerKeyBinding(key_openPartyGUI);
+        ClientRegistry.registerKeyBinding(key_openMusicOptionsGUI);
         Minecraft.getMinecraft().gameSettings.loadOptions();
     }
 
     @SubscribeEvent
     public void tick(KeyInputEvent event)
     {
-        if (key_openGUI.isPressed())
+        if (key_openPartyGUI.isPressed())
         {
-            PacketDispatcher.sendToServer(new SendKeyMessage(key_openGUI.getKeyDescription()));
+            PacketDispatcher.sendToServer(new SendKeyMessage(key_openPartyGUI.getKeyDescription()));
+        }
+        if (key_openMusicOptionsGUI.isPressed())
+        {
+            PacketDispatcher.sendToServer(new SendKeyMessage(key_openMusicOptionsGUI.getKeyDescription()));
         }
     }
 }

@@ -16,7 +16,6 @@
  */
 package net.aeronica.mods.mxtune.util;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.init.StartupItems;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
@@ -33,7 +32,7 @@ public class MusicTab extends CreativeTabs
     @SideOnly(Side.CLIENT)
     public String getTranslatedTabLabel()
     {
-        return I18n.format(MXTuneMain.prependModID("creativeTabs.musicTab.title"), new Object[0]);
+        return I18n.format("mxtune.creativeTabs.musicTab.title", new Object[0]);
     }
 
     @Override
