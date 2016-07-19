@@ -21,13 +21,9 @@ import java.util.Random;
 
 import com.google.common.collect.Lists;
 
-import net.aeronica.mods.mxtune.groups.GROUPS;
-import net.aeronica.mods.mxtune.handler.IKeyListener;
+import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.init.StartupBlocks;
 import net.aeronica.mods.mxtune.inventory.IMusic;
-import net.aeronica.mods.mxtune.network.PacketDispatcher;
-import net.aeronica.mods.mxtune.network.bidirectional.PlaySoloMessage;
-import net.aeronica.mods.mxtune.network.bidirectional.QueueJamMessage;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SittableUtil;
 import net.minecraft.block.Block;
@@ -64,7 +60,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * NOTES: Future reference
  * registerItem(389, "item_frame", (new ItemHangingEntity(EntityItemFrame.class)).setUnlocalizedName("frame"));
  */
-public class BlockPiano extends BlockHorizontal implements IKeyListener
+public class BlockPiano extends BlockHorizontal
 {
     public static final PropertyEnum<BlockPiano.EnumPartType> PART = PropertyEnum.<BlockPiano.EnumPartType> create("part", BlockPiano.EnumPartType.class);
     public static final PropertyBool OCCUPIED = PropertyBool.create("occupied");
@@ -125,12 +121,12 @@ public class BlockPiano extends BlockHorizontal implements IKeyListener
             if (playerIn.isSneaking())
             {
                 /** Remove music from the piano */
-                ItemStack stack = tile.getInventory().getStackInSlot(0);
+                ItemStack itemStack = tile.getInventory().getStackInSlot(0);
                 tile.getInventory().setStackInSlot(0, null);
-                if (!playerIn.inventory.addItemStackToInventory(stack))
+                if (!playerIn.inventory.addItemStackToInventory(itemStack))
                 {
                     /** Not possible. Throw item in the world */
-                    if (stack != null) spawnEntityItem(worldIn, stack, pos);
+                    if (itemStack != null) spawnEntityItem(worldIn, itemStack, pos);
                 } else
                 {
                     tile.syncToClient();
@@ -158,55 +154,16 @@ public class BlockPiano extends BlockHorizontal implements IKeyListener
                     tile.syncToClient();
                     playerIn.openContainer.detectAndSendChanges();
                 }
-            } else if (canPlay)
+            } else if (canPlay && !playerIn.isSneaking())
             {
-                ModLogger.logInfo("BlockPiano#onBlockActivated - canPlay");
+                PlayManager.getInstance().playMusic(playerIn, null, pos, true);
             }
+
         } else
         {
-            /** CLIENT SIDE */
-            if (state.getValue(PART) == BlockPiano.EnumPartType.RIGHT)
-            {
-                pos = pos.offset((EnumFacing) state.getValue(FACING).getOpposite());
-                state = worldIn.getBlockState(pos);
-                if (state.getBlock() != this) { return true; }
-            }
-            TilePiano tile = getTE(worldIn, pos);
-            if (tile.isInvalid()) return true;
-            boolean invHasItem = tile.getInventory().getStackInSlot(0) != null;
-            boolean invIsMusic = invHasItem && (tile.getInventory().getStackInSlot(0).getItem() instanceof IMusic) &&
-                    tile.getInventory().getStackInSlot(0).hasDisplayName();
-            boolean canPlay = playerIn.isRiding() && invIsMusic;
-            if (canPlay && !playerIn.isSneaking())
-            {
-                playMusic(playerIn, pos);
-            }
+            /** CLIENT SIDE - nothing to do */
         }
         return true;
-    }
-
-    @Override
-    public void onKeyPressed(String key, EntityPlayer player, ItemStack is)
-    {
-        // Client Side - play the instrument
-        if (key.equalsIgnoreCase("key.playInstrument"))
-        {
-            // playMusic(player, is);
-        }
-    }
-
-    private void playMusic(Entity playerIn, BlockPos pos)
-    {
-        if (GROUPS.getMembersGroupID(playerIn.getDisplayName().getUnformattedText()) == null)
-        {
-            /** Solo */
-            PacketDispatcher.sendToServer(new PlaySoloMessage(playerIn.getDisplayName().getUnformattedText(), pos));
-        } else
-        {
-            /** Jam */
-            PacketDispatcher.sendToServer(new QueueJamMessage(pos));
-        }
-        System.out.println("+++ queue play request +++");
     }
 
     public int getPatch() {return 0;}

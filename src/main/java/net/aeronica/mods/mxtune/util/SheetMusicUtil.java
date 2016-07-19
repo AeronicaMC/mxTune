@@ -51,10 +51,10 @@ public class SheetMusicUtil
         return new String();
     }
 
-    /** A version that deals with Block Piano TE */
-    public static ItemStack getSheetMusic(BlockPos pos, EntityPlayer playerIn)
+    /** A version that deals with Block Piano TE, but need to be made generic at some point */
+    public static ItemStack getSheetMusic(BlockPos pos, EntityPlayer playerIn, boolean isPlaced)
     {
-        if (!pos.equals(new BlockPos(0, 0, 0)))
+        if (isPlaced)
         {
             if (playerIn.worldObj.getBlockState(pos).getBlock() instanceof BlockPiano)
             {

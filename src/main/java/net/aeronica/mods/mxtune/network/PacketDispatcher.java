@@ -5,13 +5,13 @@
 package net.aeronica.mods.mxtune.network;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.network.bidirectional.PlaySoloMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.PlaySoundPacket;
-import net.aeronica.mods.mxtune.network.bidirectional.QueueJamMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.SendKeyMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.StopPlayMessage;
 import net.aeronica.mods.mxtune.network.client.JoinGroupMessage;
 import net.aeronica.mods.mxtune.network.client.PlayJamMessage;
+import net.aeronica.mods.mxtune.network.client.PlaySoloMessage;
+import net.aeronica.mods.mxtune.network.client.QueueJamMessage;
 import net.aeronica.mods.mxtune.network.client.SyncGroupMessage;
 import net.aeronica.mods.mxtune.network.client.SyncPlayerPropsMessage;
 import net.aeronica.mods.mxtune.network.client.SyncStatusMessage;
@@ -73,6 +73,8 @@ public class PacketDispatcher
         registerMessage(SyncPlayerPropsMessage.class);
         registerMessage(SyncStatusMessage.class);
         registerMessage(PlayJamMessage.class);
+        registerMessage(PlaySoloMessage.class);
+        registerMessage(QueueJamMessage.class);
 
         /** Packets handled on SERVER */
         registerMessage(ManageGroupMessage.class);
@@ -88,12 +90,9 @@ public class PacketDispatcher
         // OpenGuiMessage.class, packetId++, Side.SERVER);
 
         /** Bidirectional packets: */
-        registerMessage(PlaySoloMessage.class);
         registerMessage(PlaySoundPacket.class);
         registerMessage(StopPlayMessage.class);
         registerMessage(SendKeyMessage.class);
-        registerMessage(QueueJamMessage.class);
-
     }
 
     /**

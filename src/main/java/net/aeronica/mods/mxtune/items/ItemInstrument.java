@@ -20,12 +20,11 @@ import java.util.List;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.GROUPS;
+import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiInstrumentInventory;
 import net.aeronica.mods.mxtune.handler.IKeyListener;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
-import net.aeronica.mods.mxtune.network.PacketDispatcher;
-import net.aeronica.mods.mxtune.network.bidirectional.PlaySoloMessage;
-import net.aeronica.mods.mxtune.network.bidirectional.QueueJamMessage;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
@@ -77,17 +76,22 @@ public class ItemInstrument extends ItemBase implements IInstrument, IKeyListene
     @Override
     public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
     {
+        BlockPos pos = new BlockPos((int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ);
         if (!worldIn.isRemote)
         {
             /** Server Side - Open the instrument inventory GuiInstInvAdjustRotations */
             if (playerIn.isSneaking() && hand.equals(EnumHand.MAIN_HAND))
             {
-                playerIn.openGui(MXTuneMain.instance, GuiInstrumentInventory.GUI_ID, worldIn, (int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ);
+                playerIn.openGui(MXTuneMain.instance, GuiInstrumentInventory.GUI_ID, worldIn, 0,0,0);
+            }
+            if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && hand.equals(EnumHand.MAIN_HAND))
+            {
+                PlayManager.getInstance().playMusic(playerIn, itemStackIn, pos, false);
             }
         } else
         {
             // Client Side - play the instrument
-            if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && hand.equals(EnumHand.MAIN_HAND)) playMusic(playerIn, itemStackIn);
+            // if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && hand.equals(EnumHand.MAIN_HAND)) playMusic(playerIn, itemStackIn);
         }
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);
     }
@@ -110,7 +114,8 @@ public class ItemInstrument extends ItemBase implements IInstrument, IKeyListene
     public void onKeyPressed(String key, EntityPlayer playerIn, ItemStack stackIn)
     {
         /** Client Side - play the instrument */
-        if (key.equalsIgnoreCase("key.playInstrument")) playMusic(playerIn, stackIn);
+//        if (key.equalsIgnoreCase("key.playInstrument"))
+//            playMusic(playerIn, stackIn, new BlockPos((int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ));
     }
 
     /**
@@ -141,32 +146,6 @@ public class ItemInstrument extends ItemBase implements IInstrument, IKeyListene
         if (!musicTitle.isEmpty())
         {
             tooltip.add(TextFormatting.GREEN + "Title: " + musicTitle);
-        }
-    }
-
-    private void playMusic(EntityPlayer playerIn, ItemStack stackIn)
-    {
-        ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(stackIn);
-        if (sheetMusic != null)
-        {
-            NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
-            if (contents != null)
-            {
-                /**
-                 * The packet itself notifies the server to grab the NBT item
-                 * from the ItemStack and distribute it to all clients.
-                 */
-                if (GROUPS.getMembersGroupID(playerIn.getDisplayName().getUnformattedText()) == null)
-                {
-                    /** Solo Play */
-                    PacketDispatcher.sendToServer(new PlaySoloMessage(playerIn.getDisplayName().getUnformattedText()));
-                } else
-                {
-                    /** Jam Play */
-                    PacketDispatcher.sendToServer(new QueueJamMessage());
-                }
-                System.out.println("+++ queue play request +++");
-            }
         }
     }
 

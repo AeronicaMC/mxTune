@@ -41,21 +41,11 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 
-/**
- * This is a Singleton Class!
- * <p>
- * GroupManager is loaded on the first execution of GroupManager.getInstance()
- * or the first access to GroupManagerHolder.INSTANCE, not before.
- * <p>
- * http://en.wikipedia.org/wiki/Singleton_pattern
- */
+
 public class GroupManager
 {
-    /** Don't allow any other class to instantiate the GroupManager */
     private GroupManager() {}
-
     private static class GroupManagerHolder {public static final GroupManager INSTANCE = new GroupManager();}
-
     public static GroupManager getInstance() {return GroupManagerHolder.INSTANCE;}
 
     /**
@@ -385,6 +375,10 @@ public class GroupManager
                 }
             }
         }
+        /** sync server */
+        GROUPS.setClientGroups(buildgroups.trim());
+        GROUPS.setClientMembers(buildmembers.trim());
+        /** sync to clients */
         PacketDispatcher.sendToAll(new SyncGroupMessage(buildgroups.trim(), buildmembers.trim()));
     }
 
