@@ -420,7 +420,8 @@ public class GroupManager
                      * "'s group")); playerTarget.addChatMessage(new
                      * ChatComponentText( playerInitiator.getDisplayName() +
                      * " joined the group")); }
-                     */}
+                     */
+                 }
             }
         }
     }

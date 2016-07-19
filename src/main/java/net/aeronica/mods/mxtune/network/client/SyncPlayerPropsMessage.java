@@ -92,12 +92,15 @@ public class SyncPlayerPropsMessage extends AbstractClientMessage<SyncPlayerProp
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        /** Now we can just load the NBTTagCompound data directly; one and done folks */
-        ModLogger.logInfo("Synchronizing extended properties data on CLIENT");
-        if (player.hasCapability(MXTuneMain.JAM_PLAYER, null))
+        if (side.isClient())
         {
-            IJamPlayer inst = player.getCapability(MXTuneMain.JAM_PLAYER, null);
-            MXTuneMain.JAM_PLAYER.readNBT(inst, null, data);
+            /** Now we can just load the NBTTagCompound data directly; one and done folks */
+            ModLogger.logInfo("Synchronizing player extended properties data on CLIENT");
+            if (player.hasCapability(MXTuneMain.JAM_PLAYER, null))
+            {
+                IJamPlayer inst = player.getCapability(MXTuneMain.JAM_PLAYER, null);
+                MXTuneMain.JAM_PLAYER.readNBT(inst, null, data);
+            }
         }
     }
 }

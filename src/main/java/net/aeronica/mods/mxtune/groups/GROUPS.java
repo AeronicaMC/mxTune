@@ -26,7 +26,7 @@ public enum GROUPS
 
     public static final int MAX_MEMBERS = 8;
 
-    /** Client side */
+    /** Server side, Client side is sync'd with packets */
     private static Map<String, String> clientGroups;
     private static Map<String, String> clientMembers;
     private static Map<String, String> clientPlayStatuses;

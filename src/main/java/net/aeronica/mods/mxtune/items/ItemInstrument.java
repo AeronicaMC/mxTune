@@ -19,19 +19,15 @@ package net.aeronica.mods.mxtune.items;
 import java.util.List;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiInstrumentInventory;
-import net.aeronica.mods.mxtune.handler.IKeyListener;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
@@ -41,7 +37,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
-public class ItemInstrument extends ItemBase implements IInstrument, IKeyListener
+public class ItemInstrument extends ItemBase implements IInstrument
 {
     public ItemInstrument(String itemName)
     {
@@ -90,8 +86,7 @@ public class ItemInstrument extends ItemBase implements IInstrument, IKeyListene
             }
         } else
         {
-            // Client Side - play the instrument
-            // if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && hand.equals(EnumHand.MAIN_HAND)) playMusic(playerIn, itemStackIn);
+            // Client Side - nothing to do
         }
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);
     }
@@ -108,14 +103,6 @@ public class ItemInstrument extends ItemBase implements IInstrument, IKeyListene
         // return EnumActionResult.PASS to activate on AIR, or let Vanilla
         // process
         return EnumActionResult.FAIL;
-    }
-
-    @Override
-    public void onKeyPressed(String key, EntityPlayer playerIn, ItemStack stackIn)
-    {
-        /** Client Side - play the instrument */
-//        if (key.equalsIgnoreCase("key.playInstrument"))
-//            playMusic(playerIn, stackIn, new BlockPos((int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ));
     }
 
     /**

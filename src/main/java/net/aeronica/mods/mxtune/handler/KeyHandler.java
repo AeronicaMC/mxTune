@@ -52,18 +52,14 @@ import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 
 public class KeyHandler
 {
-
-    private KeyBinding key_openGUI = new KeyBinding("key.openParty", Keyboard.KEY_J, MXTuneMain.MODID);
-    private KeyBinding key_playGUI = new KeyBinding("key.playInstrument", Keyboard.KEY_P, MXTuneMain.MODID);
-
     private static class KeyHandlerHolder {private static final KeyHandler INSTANCE = new KeyHandler();}
-
     public static KeyHandler getInstance() {return KeyHandlerHolder.INSTANCE;}
+    
+    private KeyBinding key_openGUI = new KeyBinding("key.openParty", Keyboard.KEY_J, MXTuneMain.MODID);
 
     private KeyHandler()
     {
         ClientRegistry.registerKeyBinding(key_openGUI);
-        ClientRegistry.registerKeyBinding(key_playGUI);
         Minecraft.getMinecraft().gameSettings.loadOptions();
     }
 
@@ -73,10 +69,6 @@ public class KeyHandler
         if (key_openGUI.isPressed())
         {
             PacketDispatcher.sendToServer(new SendKeyMessage(key_openGUI.getKeyDescription()));
-        }
-        if (key_playGUI.isPressed())
-        {
-            PacketDispatcher.sendToServer(new SendKeyMessage(key_playGUI.getKeyDescription()));
         }
     }
 }

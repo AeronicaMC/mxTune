@@ -20,14 +20,10 @@ import java.io.IOException;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.gui.GuiGroup;
-import net.aeronica.mods.mxtune.inventory.IInstrument;
-import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
@@ -67,20 +63,9 @@ public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
 
     public void handleClientSide(EntityPlayer playerSP)
     {
-        ModLogger.logInfo("PacketGroupGUI.handlePacket keyBindingDesc: " + keyBindingDesc);
         if (keyBindingDesc.equalsIgnoreCase("key.openParty"))
         {
-            System.out.println("+++ Open the JAM Group GUI +++");
             playerSP.openGui(MXTuneMain.instance, GuiGroup.GUI_ID, playerSP.worldObj, (int) playerSP.posX, (int) playerSP.posY, (int) playerSP.posZ);
-        }
-        if (keyBindingDesc.equalsIgnoreCase("key.playInstrument"))
-        {
-            ItemStack is = playerSP.getHeldItemMainhand();
-            if (is != null && is.getItem() instanceof IInstrument)
-            {
-                ItemInstrument im = (ItemInstrument) is.getItem();
-                im.onKeyPressed(keyBindingDesc, playerSP, is);
-            }
         }
     }
 
