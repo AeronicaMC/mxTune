@@ -23,7 +23,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.capabilities.IJamPlayer;
+import net.aeronica.mods.mxtune.capabilities.IPlayerMusicOptions;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.ManageGroupMessage;
@@ -92,7 +92,7 @@ public class GuiGroupJoin extends GuiScreen
 //        buttonList.add(gTest);
 
         /** This is a back door way to pass parameters to the GUI. */
-        IJamPlayer props = player.getCapability(MXTuneMain.JAM_PLAYER, null);
+        IPlayerMusicOptions props = player.getCapability(MXTuneMain.MUSIC_OPTIONS, null);
         this.groupID = props.getSParam1();
     }
 

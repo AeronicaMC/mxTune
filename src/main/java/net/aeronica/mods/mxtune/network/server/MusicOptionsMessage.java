@@ -19,7 +19,7 @@ package net.aeronica.mods.mxtune.network.server;
 import java.io.IOException;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.capabilities.IJamPlayer;
+import net.aeronica.mods.mxtune.capabilities.IPlayerMusicOptions;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
@@ -55,8 +55,8 @@ public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessa
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        IJamPlayer props = player.getCapability(MXTuneMain.JAM_PLAYER, null);
-        props.setMidiVolume(this.midiVolume);
-        props.setMuteOption(this.muteOption);
+        IPlayerMusicOptions props = player.getCapability(MXTuneMain.MUSIC_OPTIONS, null);
+        props.setMidiVolume(player, this.midiVolume);
+        props.setMuteOption(player, this.muteOption);
     }
 }

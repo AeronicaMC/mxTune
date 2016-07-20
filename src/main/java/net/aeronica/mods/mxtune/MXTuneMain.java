@@ -16,8 +16,8 @@
  */
 package net.aeronica.mods.mxtune;
 
-import net.aeronica.mods.mxtune.capabilities.IJamPlayer;
-import net.aeronica.mods.mxtune.capabilities.JamPlayerCapabilityProvider;
+import net.aeronica.mods.mxtune.capabilities.IPlayerMusicOptions;
+import net.aeronica.mods.mxtune.capabilities.PlayerMusicOptionsCapability;
 import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
 import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.groups.PlayManager;
@@ -56,14 +56,14 @@ public class MXTuneMain
     public static final GroupManager GM = GroupManager.getInstance();
     public static final PlayManager PM = PlayManager.getInstance();
 
-    @CapabilityInject(IJamPlayer.class)
-    public static final Capability<IJamPlayer> JAM_PLAYER = null;
+    @CapabilityInject(IPlayerMusicOptions.class)
+    public static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = null;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
         ModLogger.initializeLogging();
-        JamPlayerCapabilityProvider.register();
+        PlayerMusicOptionsCapability.register();
         PacketDispatcher.registerPackets();
         proxy.registerEventHandlers();
         proxy.initConfiguration(event);

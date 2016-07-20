@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.capabilities.IJamPlayer;
+import net.aeronica.mods.mxtune.capabilities.IPlayerMusicOptions;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.JoinGroupMessage;
 import net.aeronica.mods.mxtune.network.client.SyncGroupMessage;
@@ -408,7 +408,7 @@ public class GroupManager
                         .getUnformattedText()) /* && initatorGroup == null */)
                 {
 
-                    IJamPlayer props = playerInitiator.getCapability(MXTuneMain.JAM_PLAYER, null);
+                    IPlayerMusicOptions props = playerInitiator.getCapability(MXTuneMain.MUSIC_OPTIONS, null);
                     props.setSParams(targetGroup.groupID, "", "");
 
                     PacketDispatcher.sendTo(new JoinGroupMessage(targetGroup.groupID), (EntityPlayerMP) playerInitiator);

@@ -1,0 +1,150 @@
+/**
+ * Aeronica's mxTune MOD
+ * Copyright {2016} Paul Boese a.k.a. Aeronica
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package net.aeronica.mods.mxtune.capabilities;
+
+import java.util.concurrent.Callable;
+
+import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.groups.GroupManager;
+import net.aeronica.mods.mxtune.util.ModLogger;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+
+public class PlayerMusicOptionsCapability
+{
+    public static void register()
+    {
+        CapabilityManager.INSTANCE.register(IPlayerMusicOptions.class, new Storage(), new Factory());
+        MinecraftForge.EVENT_BUS.register(new EventHandler());
+    }
+
+    public static class EventHandler
+    {
+        @SubscribeEvent
+        public void onEntityConstruct(final AttachCapabilitiesEvent.Entity event)
+        {
+            if (event.getEntity() instanceof EntityPlayer)
+            {
+                event.addCapability(new ResourceLocation(MXTuneMain.MODID, "IPlayerMusicOptions"), new ICapabilitySerializable<NBTTagCompound>()
+                {
+                    final IPlayerMusicOptions optionsInst = MXTuneMain.MUSIC_OPTIONS.getDefaultInstance();
+
+                    @Override
+                    public boolean hasCapability(Capability<?> capability, EnumFacing facing)
+                    {
+                        return capability == MXTuneMain.MUSIC_OPTIONS;
+                    }
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public <T> T getCapability(Capability<T> capability, EnumFacing facing)
+                    {
+                        return capability == MXTuneMain.MUSIC_OPTIONS ? (T) optionsInst : null;
+                    }
+
+                    public NBTTagCompound serializeNBT()
+                    {
+                        return (NBTTagCompound) MXTuneMain.MUSIC_OPTIONS.getStorage().writeNBT(MXTuneMain.MUSIC_OPTIONS, optionsInst, null);
+                    }
+
+                    public void deserializeNBT(NBTTagCompound nbt)
+                    {
+                        MXTuneMain.MUSIC_OPTIONS.getStorage().readNBT(MXTuneMain.MUSIC_OPTIONS, optionsInst, null, nbt);
+                    }
+                });
+            }
+        }
+
+        @SubscribeEvent
+        public void OnPlayerClone(PlayerEvent.Clone event)
+        {
+            IPlayerMusicOptions dead = event.getOriginal().getCapability(MXTuneMain.MUSIC_OPTIONS, null);
+            IPlayerMusicOptions live = event.getEntityPlayer().getCapability(MXTuneMain.MUSIC_OPTIONS, null);
+            live.setSParams(dead.getSParam1(), dead.getSParam2(), dead.getSParam3());
+            live.setMidiVolume(dead.getMidiVolume());
+            live.setMuteOption(dead.getMuteOption());
+        }
+        
+        public void onEntityJoinWorld(EntityJoinWorldEvent event)
+        {
+            if (event.getEntity() instanceof EntityPlayerMP)
+            {
+                IPlayerMusicOptions inst = ((EntityPlayerMP) event.getEntity()).getCapability(MXTuneMain.MUSIC_OPTIONS, null);
+                inst.syncAll((EntityPlayer) event.getEntity());
+            }
+        }
+        
+        @SubscribeEvent
+        public void onPlayerLoggedInEvent(PlayerLoggedInEvent event)
+        {
+            IPlayerMusicOptions inst = event.player.getCapability(MXTuneMain.MUSIC_OPTIONS, null);
+            inst.syncAll(event.player);
+
+        }
+
+    }
+
+    private static class Factory implements Callable<IPlayerMusicOptions>
+    {
+        @Override
+        public IPlayerMusicOptions call() throws Exception
+        {
+            ModLogger.logInfo("PlayerMusicOptionsCapability.Factory#call: return new PlayerMusicDefImpl(null);");
+            return new PlayerMusicDefImpl(null);
+        }
+    }
+
+    public static class Storage implements Capability.IStorage<IPlayerMusicOptions>
+    {
+        @Override
+        public NBTBase writeNBT(Capability<IPlayerMusicOptions> capability, IPlayerMusicOptions instance, EnumFacing side)
+        {
+            NBTTagCompound properties = new NBTTagCompound();
+            properties.setFloat("midiVolume", instance.getMidiVolume());
+            properties.setInteger("muteOption", instance.getMuteOption());
+            properties.setString("sParam1", instance.getSParam1());
+            properties.setString("sParam2", instance.getSParam2());
+            properties.setString("sParam3", instance.getSParam3());
+            return properties; // compound;
+            // return instance.serializeNBT();
+        }
+
+        @Override
+        public void readNBT(Capability<IPlayerMusicOptions> capability, IPlayerMusicOptions instance, EnumFacing side, NBTBase nbt)
+        {
+            NBTTagCompound properties = (NBTTagCompound) nbt;
+            instance.setMidiVolume(properties.getFloat("midiVolume"));
+            instance.setMuteOption(properties.getInteger("muteOption"));
+            instance.setSParams(properties.getString("sParam1"), properties.getString("sParam2"), properties.getString("sParam3"));
+            //instance.deserializeNBT((NBTTagCompound) nbt);
+        }
+    }
+}

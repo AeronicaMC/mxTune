@@ -16,40 +16,54 @@
  */
 package net.aeronica.mods.mxtune.capabilities;
 
+import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
-import net.aeronica.mods.mxtune.network.client.SyncPlayerPropsMessage;
+import net.aeronica.mods.mxtune.network.client.SyncPlayerMusicOptionsMessage;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IStringSerializable;
 
-public class JamDefaultImpl implements IJamPlayer
+public class PlayerMusicDefImpl implements IPlayerMusicOptions
 {
 
-    private final EntityLivingBase player;
     /** Music Options*/
     private int muteOption;
     private float midiVolume;
     /** Generic string for passing params from server to client */
     private String sParam1, sParam2, sParam3;
 
-    public JamDefaultImpl(EntityLivingBase entity)
+    public PlayerMusicDefImpl()
     {
-        this.player = entity;
+        this.midiVolume = 0.70F;
+        this.muteOption = 0;
+        this.sParam1 = this.sParam2 = this.sParam3 = new String("");
+    }
+    
+    public PlayerMusicDefImpl(EntityLivingBase entity)
+    {
         this.midiVolume = 0.70F;
         this.muteOption = 0;
         this.sParam1 = this.sParam2 = this.sParam3 = new String("");
     }
 
     @Override
-    public void clearAll()
+    public void clearAll(EntityPlayer playerIn)
     {
         this.midiVolume = 0.70F;
         this.muteOption = 0;
         this.sParam1 = this.sParam2 = this.sParam3 = new String("");
-        this.syncAll();
+        this.syncAll(playerIn);
+    }
+
+    @Override
+    public void setSParams(EntityPlayer playerIn, String sParam1, String sParam2, String sParam3)
+    {
+        this.sParam1 = sParam1;
+        this.sParam2 = sParam2;
+        this.sParam3 = sParam3;
+        this.sync(playerIn, SYNC_SPARAMS);
     }
 
     @Override
@@ -58,9 +72,8 @@ public class JamDefaultImpl implements IJamPlayer
         this.sParam1 = sParam1;
         this.sParam2 = sParam2;
         this.sParam3 = sParam3;
-        this.sync(SYNC_SPARAMS);
     }
-
+    
     @Override
     public String getSParam1() {return sParam1;}
 
@@ -71,13 +84,19 @@ public class JamDefaultImpl implements IJamPlayer
     public String getSParam3() {return sParam3;}
 
     @Override
-    public void setMidiVolume(float volumeIn) {this.midiVolume = Math.min(1.0F, Math.max(0.0F, volumeIn)); sync(SYNC_MIDI_VOLUME);}
+    public void setMidiVolume(EntityPlayer playerIn, float volumeIn) {this.midiVolume = Math.min(1.0F, Math.max(0.0F, volumeIn)); sync(playerIn, SYNC_MIDI_VOLUME);}
+
+    @Override
+    public void setMidiVolume(float volumeIn) {this.midiVolume = Math.min(1.0F, Math.max(0.0F, volumeIn));}
 
     @Override
     public float getMidiVolume() {return this.midiVolume;}
 
     @Override
-    public void setMuteOption(int muteOptionIn) {this.muteOption = muteOptionIn; sync(SYNC_MUTE_OPTION);}
+    public void setMuteOption(EntityPlayer playerIn, int muteOptionIn) {this.muteOption = muteOptionIn; sync(playerIn, SYNC_MUTE_OPTION);}
+
+    @Override
+    public void setMuteOption(int muteOptionIn) {this.muteOption = muteOptionIn;}
 
     @Override
     public int getMuteOption() {return muteOption;}
@@ -87,37 +106,37 @@ public class JamDefaultImpl implements IJamPlayer
     public static final byte SYNC_MUTE_OPTION = 2;
     public static final byte SYNC_SPARAMS = 3;
     
-    public final void syncAll() {sync(SYNC_ALL);}
+    public void syncAll(EntityPlayer playerIn) {sync(playerIn, SYNC_ALL);}
     
-    public final void sync(byte propertyID)
+    public void sync(EntityPlayer playerIn, byte propertyID)
     {
-        if (player != null && !player.worldObj.isRemote)
+        if (!playerIn.getEntityWorld().isRemote)
         {
-            PacketDispatcher.sendTo(new SyncPlayerPropsMessage((EntityPlayer) player, propertyID), (EntityPlayerMP) player);
+            PacketDispatcher.sendTo(new SyncPlayerMusicOptionsMessage(playerIn.getCapability(MXTuneMain.MUSIC_OPTIONS, null), propertyID), (EntityPlayerMP) playerIn);
         }
     }
 
-    @Override
-    public NBTTagCompound serializeNBT()
-    {
-        NBTTagCompound properties = new NBTTagCompound();
-        properties.setFloat("midiVolume", this.midiVolume);
-        properties.setInteger("muteOption", this.muteOption);
-        properties.setString("sParam1", this.sParam1);
-        properties.setString("sParam2", this.sParam2);
-        properties.setString("sParam3", this.sParam3);
-        return properties; // compound;
-    }
-
-    @Override
-    public void deserializeNBT(NBTTagCompound nbt)
-    {
-        this.midiVolume = nbt.getFloat("midiVolume");
-        this.muteOption = nbt.getInteger("muteOption");
-        this.sParam1 = nbt.getString("sParam1");
-        this.sParam2 = nbt.getString("sParam2");
-        this.sParam3 = nbt.getString("sParam3");
-    }
+//    @Override
+//    public NBTTagCompound serializeNBT()
+//    {
+//        NBTTagCompound properties = new NBTTagCompound();
+//        properties.setFloat("midiVolume", this.midiVolume);
+//        properties.setInteger("muteOption", this.muteOption);
+//        properties.setString("sParam1", this.sParam1);
+//        properties.setString("sParam2", this.sParam2);
+//        properties.setString("sParam3", this.sParam3);
+//        return properties; // compound;
+//    }
+//
+//    @Override
+//    public void deserializeNBT(NBTTagCompound nbt)
+//    {
+//        this.midiVolume = nbt.getFloat("midiVolume");
+//        this.muteOption = nbt.getInteger("muteOption");
+//        this.sParam1 = nbt.getString("sParam1");
+//        this.sParam2 = nbt.getString("sParam2");
+//        this.sParam3 = nbt.getString("sParam3");
+//    }
     
     public static enum EnumMuteOptions implements IStringSerializable
     {

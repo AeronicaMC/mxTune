@@ -21,8 +21,8 @@ import java.io.IOException;
 import org.lwjgl.input.Mouse;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.capabilities.IJamPlayer;
-import net.aeronica.mods.mxtune.capabilities.JamDefaultImpl;
+import net.aeronica.mods.mxtune.capabilities.IPlayerMusicOptions;
+import net.aeronica.mods.mxtune.capabilities.PlayerMusicDefImpl;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.MusicOptionsMessage;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -45,7 +45,7 @@ public class GuiMusicOptions extends GuiScreen
     private GuiButtonExt btn_cancel, btn_done;
     
     private EntityPlayer player;
-    private IJamPlayer jamPlayerProps;
+    private IPlayerMusicOptions jamPlayerProps;
     
     private float midiVolume;
     private int muteOption;
@@ -67,7 +67,7 @@ public class GuiMusicOptions extends GuiScreen
         this.mc = Minecraft.getMinecraft();
         player = this.mc.thePlayer;
         TITLE = I18n.format("mxtune.gui.GuiMusicOptions.title", new Object[0]);
-        jamPlayerProps = player.getCapability(MXTuneMain.JAM_PLAYER, null);
+        jamPlayerProps = player.getCapability(MXTuneMain.MUSIC_OPTIONS, null);
         midiVolume = jamPlayerProps.getMidiVolume();
         muteOption = jamPlayerProps.getMuteOption();
         
@@ -75,7 +75,7 @@ public class GuiMusicOptions extends GuiScreen
 
         int y = 30;
         int x = (width - 200) / 2;
-        btn_muteOption = new GuiButtonExt(0, x, y, 200, 20, (JamDefaultImpl.EnumMuteOptions.byMetadata(muteOption).toString()));
+        btn_muteOption = new GuiButtonExt(0, x, y, 200, 20, (PlayerMusicDefImpl.EnumMuteOptions.byMetadata(muteOption).toString()));
         btn_midiVolume = new GuiSliderMX(1, x, y+=25, 200, 20, I18n.format("mxtune.gui.slider.midiVolume"), midiVolume*100F, 0F, 100F, 5F);
         
         btn_cancel = new GuiButtonExt(2, x, y+=25, 200, 20, I18n.format("gui.cancel"));
@@ -111,10 +111,10 @@ public class GuiMusicOptions extends GuiScreen
         {
         case 0:
             /** Increment Mute Option */
-            this.muteOption = ((++this.muteOption) % JamDefaultImpl.EnumMuteOptions.values().length);
-            ModLogger.logInfo("muteOption meta: " + muteOption + ", text: " + JamDefaultImpl.EnumMuteOptions.byMetadata(muteOption).toString() +
-                    ", enum: " + JamDefaultImpl.EnumMuteOptions.byMetadata(muteOption).name());
-            btn_muteOption.displayString = I18n.format(JamDefaultImpl.EnumMuteOptions.byMetadata(muteOption).toString(), new Object[0]);
+            this.muteOption = ((++this.muteOption) % PlayerMusicDefImpl.EnumMuteOptions.values().length);
+            ModLogger.logInfo("muteOption meta: " + muteOption + ", text: " + PlayerMusicDefImpl.EnumMuteOptions.byMetadata(muteOption).toString() +
+                    ", enum: " + PlayerMusicDefImpl.EnumMuteOptions.byMetadata(muteOption).name());
+            btn_muteOption.displayString = I18n.format(PlayerMusicDefImpl.EnumMuteOptions.byMetadata(muteOption).toString(), new Object[0]);
             break;
 
         case 1:
@@ -139,13 +139,13 @@ public class GuiMusicOptions extends GuiScreen
         if (this.midiVolume == 0F)
         {
             this.lastMuteOption = this.muteOption;
-            btn_muteOption.displayString = JamDefaultImpl.EnumMuteOptions.byMetadata(JamDefaultImpl.EnumMuteOptions.ALL.getMetadata()).toString();
+            btn_muteOption.displayString = PlayerMusicDefImpl.EnumMuteOptions.byMetadata(PlayerMusicDefImpl.EnumMuteOptions.ALL.getMetadata()).toString();
             btn_muteOption.enabled = false;
         } else if (this.lastMuteOption != -1)
         {
             btn_muteOption.enabled = true;
             this.muteOption = this.lastMuteOption;
-            btn_muteOption.displayString = JamDefaultImpl.EnumMuteOptions.byMetadata(this.lastMuteOption).toString();
+            btn_muteOption.displayString = PlayerMusicDefImpl.EnumMuteOptions.byMetadata(this.lastMuteOption).toString();
             this.lastMuteOption = -1;
         }
    

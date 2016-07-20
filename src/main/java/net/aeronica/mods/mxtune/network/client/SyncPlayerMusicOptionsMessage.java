@@ -47,7 +47,7 @@ import net.minecraftforge.fml.relauncher.Side;
  * those times when you need to send everything.
  *
  */
-public class SyncPlayerPropsMessage extends AbstractClientMessage<SyncPlayerPropsMessage>
+public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPlayerMusicOptionsMessage>
 {
     // Previously, we've been writing each field in our properties one at a
     // time,
@@ -60,6 +60,7 @@ public class SyncPlayerPropsMessage extends AbstractClientMessage<SyncPlayerProp
 
     // this will store our ExtendedPlayer data, allowing us to easily read and
     // write
+    private IPlayerMusicOptions inst;
     private byte propertyID;
     private NBTTagCompound data;
     private float midiVolume;
@@ -68,13 +69,13 @@ public class SyncPlayerPropsMessage extends AbstractClientMessage<SyncPlayerProp
 
     // The basic, no-argument constructor MUST be included to use the new
     // automated handling
-    public SyncPlayerPropsMessage() {}
+    public SyncPlayerMusicOptionsMessage() {}
 
     // We need to initialize our data, so provide a suitable constructor:
-    public SyncPlayerPropsMessage(EntityPlayer player, byte propertyID)
+    public SyncPlayerMusicOptionsMessage(IPlayerMusicOptions inst, byte propertyID)
     {
         this.propertyID = propertyID;
-        IPlayerMusicOptions inst = player.getCapability(MXTuneMain.MUSIC_OPTIONS, null);
+        this.inst = inst;
 
         switch (propertyID)
         {
@@ -157,7 +158,7 @@ public class SyncPlayerPropsMessage extends AbstractClientMessage<SyncPlayerProp
         if (side.isClient())
         {
             ModLogger.logInfo("Synchronizing player extended properties data on CLIENT");
-            IPlayerMusicOptions inst = player.getCapability(MXTuneMain.MUSIC_OPTIONS, null);
+            final IPlayerMusicOptions inst = player.getCapability(MXTuneMain.MUSIC_OPTIONS, null);
             switch (this.propertyID)
             {
             case PlayerMusicDefImpl.SYNC_ALL:

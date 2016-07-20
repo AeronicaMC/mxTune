@@ -16,13 +16,15 @@
  */
 package net.aeronica.mods.mxtune.capabilities;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.player.EntityPlayer;
 
-public interface IJamPlayer
+public interface IPlayerMusicOptions
 {   
-    public void clearAll();
+    public void clearAll(EntityPlayer playerIn);
 
     /** range 0.0 - 1.0 */
+    public void setMidiVolume(EntityPlayer playerIn, float volumeIn);
+
     public void setMidiVolume(float volumeIn);
 
     /** range 0.0 - 1.0 */
@@ -30,7 +32,11 @@ public interface IJamPlayer
     
     public int getMuteOption();
     
+    public void setMuteOption(EntityPlayer playerIn, int muteOptionIn);
+
     public void setMuteOption(int muteOptionIn);
+
+    public void setSParams(EntityPlayer playerIn, String sParam1, String sParam2, String sParam3);
     
     public void setSParams(String sParam1, String sParam2, String sParam3);
 
@@ -39,8 +45,12 @@ public interface IJamPlayer
     public String getSParam2();
 
     public String getSParam3();
+    
+    public void syncAll(EntityPlayer playerIn);
+    
+    public void sync(EntityPlayer playerIn, byte propertyID);
 
-    public NBTTagCompound serializeNBT();
+   // public NBTTagCompound serializeNBT();
 
-    public void deserializeNBT(NBTTagCompound nbt);
+    //public void deserializeNBT(NBTTagCompound nbt);
 }
