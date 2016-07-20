@@ -45,7 +45,7 @@ public class GuiMusicOptions extends GuiScreen
     private GuiButtonExt btn_cancel, btn_done;
     
     private EntityPlayer player;
-    private IPlayerMusicOptions jamPlayerProps;
+    private IPlayerMusicOptions musicOptionsInstance;
     
     private float midiVolume;
     private int muteOption;
@@ -67,9 +67,9 @@ public class GuiMusicOptions extends GuiScreen
         this.mc = Minecraft.getMinecraft();
         player = this.mc.thePlayer;
         TITLE = I18n.format("mxtune.gui.GuiMusicOptions.title", new Object[0]);
-        jamPlayerProps = player.getCapability(MXTuneMain.MUSIC_OPTIONS, null);
-        midiVolume = jamPlayerProps.getMidiVolume();
-        muteOption = jamPlayerProps.getMuteOption();
+        musicOptionsInstance = player.getCapability(MXTuneMain.MUSIC_OPTIONS, null);
+        midiVolume = musicOptionsInstance.getMidiVolume();
+        muteOption = musicOptionsInstance.getMuteOption();
         
         this.buttonList.clear();
 
@@ -158,6 +158,7 @@ public class GuiMusicOptions extends GuiScreen
         super.keyTyped(typedChar, keyCode);
     }
 
+    @SuppressWarnings("unused")
     @Override
     public void handleMouseInput() throws IOException
     {

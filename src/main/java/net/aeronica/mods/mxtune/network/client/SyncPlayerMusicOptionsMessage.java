@@ -49,18 +49,6 @@ import net.minecraftforge.fml.relauncher.Side;
  */
 public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPlayerMusicOptionsMessage>
 {
-    // Previously, we've been writing each field in our properties one at a
-    // time,
-    // but that is really annoying, and we've already done it in the save and
-    // load
-    // NBT methods anyway, so here's a slick way to efficiently send all of your
-    // extended data, and no matter how much you add or remove, you'll never
-    // have
-    // to change the packet / synchronization of your data.
-
-    // this will store our ExtendedPlayer data, allowing us to easily read and
-    // write
-    private IPlayerMusicOptions inst;
     private byte propertyID;
     private NBTTagCompound data;
     private float midiVolume;
@@ -75,8 +63,6 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     public SyncPlayerMusicOptionsMessage(IPlayerMusicOptions inst, byte propertyID)
     {
         this.propertyID = propertyID;
-        this.inst = inst;
-
         switch (propertyID)
         {
         case PlayerMusicDefImpl.SYNC_ALL:
@@ -157,7 +143,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     {
         if (side.isClient())
         {
-            ModLogger.logInfo("Synchronizing player extended properties data on CLIENT");
+            ModLogger.logInfo("Synchronizing Music Options player extended properties data on CLIENT");
             final IPlayerMusicOptions inst = player.getCapability(MXTuneMain.MUSIC_OPTIONS, null);
             switch (this.propertyID)
             {

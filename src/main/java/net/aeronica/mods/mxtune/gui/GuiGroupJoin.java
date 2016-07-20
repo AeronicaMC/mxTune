@@ -79,11 +79,11 @@ public class GuiGroupJoin extends GuiScreen
 
         int posX = guiLeft + 169;
         int posY = guiTop + 92;
-        btn_yes = new GuiButton(0, posX, posY, 60, 20, "Yes");
+        btn_yes = new GuiButton(0, posX, posY, 60, 20, I18n.format("mxtune.gui.button.yes"));
 
         posX = guiLeft + 169;
         posY = guiTop + 112;
-        btn_no = new GuiButton(1, posX, posY, 60, 20, "No");
+        btn_no = new GuiButton(1, posX, posY, 60, 20, I18n.format("mxtune.gui.button.no"));
 
 //        gTest = new GuiSlider(2, posX, posY - 50, 60, 20, "Test", 10f, 1f, 20f, 1f);
         
@@ -109,7 +109,7 @@ public class GuiGroupJoin extends GuiScreen
         drawGuiBackground();
 
         /** draw "TITLE" at the top right */
-        String title = I18n.format("mxtune.groupjoin.yes.no", new Object[0]);
+        String title = I18n.format("mxtune.gui.GuiGroupJoin.title", new Object[0]);
         int posX = guiLeft + xSize - fontRenderer.getStringWidth(title) - 12;
         int posY = guiTop + 12;
         fontRenderer.getStringWidth(title);

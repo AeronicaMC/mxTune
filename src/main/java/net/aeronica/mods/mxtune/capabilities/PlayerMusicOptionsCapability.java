@@ -19,7 +19,6 @@ package net.aeronica.mods.mxtune.capabilities;
 import java.util.concurrent.Callable;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -27,7 +26,6 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -107,7 +105,6 @@ public class PlayerMusicOptionsCapability
         {
             IPlayerMusicOptions inst = event.player.getCapability(MXTuneMain.MUSIC_OPTIONS, null);
             inst.syncAll(event.player);
-
         }
 
     }

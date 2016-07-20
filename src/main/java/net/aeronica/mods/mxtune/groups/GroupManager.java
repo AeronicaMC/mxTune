@@ -409,7 +409,7 @@ public class GroupManager
                 {
 
                     IPlayerMusicOptions props = playerInitiator.getCapability(MXTuneMain.MUSIC_OPTIONS, null);
-                    props.setSParams(targetGroup.groupID, "", "");
+                    props.setSParams(playerInitiator, targetGroup.groupID, "", "");
 
                     PacketDispatcher.sendTo(new JoinGroupMessage(targetGroup.groupID), (EntityPlayerMP) playerInitiator);
 

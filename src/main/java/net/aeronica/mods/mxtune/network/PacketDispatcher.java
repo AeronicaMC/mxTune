@@ -14,7 +14,6 @@ import net.aeronica.mods.mxtune.network.client.PlaySoloMessage;
 import net.aeronica.mods.mxtune.network.client.QueueJamMessage;
 import net.aeronica.mods.mxtune.network.client.SyncGroupMessage;
 import net.aeronica.mods.mxtune.network.client.SyncPlayerMusicOptionsMessage;
-import net.aeronica.mods.mxtune.network.client.SyncPlayerPropsMessage;
 import net.aeronica.mods.mxtune.network.client.SyncStatusMessage;
 import net.aeronica.mods.mxtune.network.server.ManageGroupMessage;
 import net.aeronica.mods.mxtune.network.server.MusicOptionsMessage;
@@ -76,7 +75,6 @@ public class PacketDispatcher
         registerMessage(QueueJamMessage.class);
         registerMessage(SyncGroupMessage.class);
         registerMessage(SyncPlayerMusicOptionsMessage.class);
-        registerMessage(SyncPlayerPropsMessage.class);
         registerMessage(SyncStatusMessage.class);
 
         /** Packets handled on SERVER */

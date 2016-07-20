@@ -25,14 +25,18 @@ mxtune.configgui.ctgy.client=mxTune Client Settings
 mxtune.configgui.muteMxTune=Mute mxTune
 mxtune.configgui.muteMxTune.tooltip=Prevents the player on this client from hearing any music. This will not stop a currently playing tune.
 
-mxtune.groupjoin.yes.no=Join this Group?
 mxtune.key.openParty=Open Party
 mxtune.key.openMusicOptions=Music Options
-mxtune.gui.GuiMusicOptions.title=Music Options
-mxtune.gui.slider.midiVolume=mxTune Volume
+
 mxtune.gui.button.play=Play
 mxtune.gui.button.stop=Stop
+mxtune.gui.button.yes=Yes
+mxtune.gui.button.no=No
 
+mxtune.gui.GuiGroupJoin.title=Join this Group?
+
+mxtune.gui.GuiMusicOptions.title=Music Options
+mxtune.gui.slider.midiVolume=mxTune Volume
 mxtune.gui.musicOptions.muteOption.off=Mute Off
 mxtune.gui.musicOptions.muteOption.others=Mute Others
 mxtune.gui.musicOptions.muteOption.blacklist=Mute Blacklist
