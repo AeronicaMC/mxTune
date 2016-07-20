@@ -16,27 +16,22 @@
  */
 package net.aeronica.mods.mxtune.capabilities;
 
-import java.util.Collection;
-
 import net.minecraft.nbt.NBTTagCompound;
 
 public interface IJamPlayer
-{
-
+{   
     public void clearAll();
 
-    public void setJam(boolean value);
+    /** range 0.0 - 1.0 */
+    public void setMidiVolume(float volumeIn);
 
-    public boolean getJam();
-
-    public void setLeader(boolean value);
-
-    public boolean getLeader();
-
-    public void setPlaying(boolean value);
-
-    public boolean getPlaying();
-
+    /** range 0.0 - 1.0 */
+    public float getMidiVolume();
+    
+    public int getMuteOption();
+    
+    public void setMuteOption(int muteOptionIn);
+    
     public void setSParams(String sParam1, String sParam2, String sParam3);
 
     public String getSParam1();
@@ -44,15 +39,6 @@ public interface IJamPlayer
     public String getSParam2();
 
     public String getSParam3();
-
-    /**
-     * The values returned are an index to icons stored in the
-     * instrument_inventory.png texture.
-     * 
-     * @return A collection of the active properties. that is those that are
-     *         "true".
-     */
-    public Collection<Integer> getActiveProps();
 
     public NBTTagCompound serializeNBT();
 

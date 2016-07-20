@@ -16,69 +16,41 @@
  */
 package net.aeronica.mods.mxtune.capabilities;
 
-import java.util.Collection;
-import java.util.HashMap;
-
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.SyncPlayerPropsMessage;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.IStringSerializable;
 
 public class JamDefaultImpl implements IJamPlayer
 {
 
     private final EntityLivingBase player;
-    /** The players extended properties for playing music and jamming. */
-    private boolean isLeader, inJam, isPlaying;
+    /** Music Options*/
+    private int muteOption;
+    private float midiVolume;
     /** Generic string for passing params from server to client */
     private String sParam1, sParam2, sParam3;
 
     public JamDefaultImpl(EntityLivingBase entity)
     {
         this.player = entity;
-        this.isLeader = this.inJam = this.isPlaying = false;
+        this.midiVolume = 0.70F;
+        this.muteOption = 0;
         this.sParam1 = this.sParam2 = this.sParam3 = new String("");
     }
 
     @Override
     public void clearAll()
     {
-        this.isLeader = this.inJam = this.isPlaying = false;
+        this.midiVolume = 0.70F;
+        this.muteOption = 0;
         this.sParam1 = this.sParam2 = this.sParam3 = new String("");
         this.sync();
     }
-
-    @Override
-    public void setJam(boolean value)
-    {
-        this.inJam = value;
-        this.sync();
-    }
-
-    @Override
-    public boolean getJam() {return this.inJam;}
-
-    @Override
-    public void setLeader(boolean value)
-    {
-        this.isLeader = value;
-        this.sync();
-    }
-
-    @Override
-    public boolean getLeader() {return this.isLeader;}
-
-    @Override
-    public void setPlaying(boolean value)
-    {
-        this.isPlaying = value;
-        this.sync();
-    }
-
-    @Override
-    public boolean getPlaying() {return this.isPlaying;}
 
     @Override
     public void setSParams(String sParam1, String sParam2, String sParam3)
@@ -97,24 +69,21 @@ public class JamDefaultImpl implements IJamPlayer
 
     @Override
     public String getSParam3() {return sParam3;}
-    
-    /**
-     * The values returned are an index to icons stored in the
-     * instrument_inventory.png texture.
-     * 
-     * @return A collection of the active properties. that is those that are
-     *         "true".
-     */
+
     @Override
-    public Collection<Integer> getActiveProps()
+    public void setMidiVolume(float volumeIn) {this.midiVolume = Math.min(1.0F, Math.max(0.0F, midiVolume)); sync();}
+
+    @Override
+    public float getMidiVolume() {return this.midiVolume;}
+
+    @Override
+    public int getMuteOption()
     {
-        HashMap<String, Integer> activeProps = new HashMap<String, Integer>();
-        if (this.inJam) activeProps.put("inJam", 2);
-        if (this.isLeader) activeProps.put("isLeader", 3);
-        if (this.isPlaying) activeProps.put("isPlaying", 1);
-        if (activeProps.isEmpty()) activeProps.put("inactive", 0);
-        return activeProps.values();
+        return muteOption;
     }
+
+    @Override
+    public void setMuteOption(int muteOptionIn) {this.muteOption = muteOptionIn; sync();}
 
     public final void sync()
     {
@@ -128,9 +97,8 @@ public class JamDefaultImpl implements IJamPlayer
     public NBTTagCompound serializeNBT()
     {
         NBTTagCompound properties = new NBTTagCompound();
-        properties.setBoolean("inJam", this.inJam);
-        properties.setBoolean("isLeader", this.isLeader);
-        properties.setBoolean("isPlaying", this.isPlaying);
+        properties.setFloat("midiVolume", this.midiVolume);
+        properties.setInteger("muteOption", this.muteOption);
         properties.setString("sParam1", this.sParam1);
         properties.setString("sParam2", this.sParam2);
         properties.setString("sParam3", this.sParam3);
@@ -140,11 +108,54 @@ public class JamDefaultImpl implements IJamPlayer
     @Override
     public void deserializeNBT(NBTTagCompound nbt)
     {
-        this.inJam = nbt.getBoolean("inJam");
-        this.isLeader = nbt.getBoolean("isLeader");
-        this.isPlaying = nbt.getBoolean("isPlaying");
+        this.midiVolume = nbt.getFloat("midiVolume");
+        this.muteOption = nbt.getInteger("muteOption");
         this.sParam1 = nbt.getString("sParam1");
         this.sParam2 = nbt.getString("sParam2");
         this.sParam3 = nbt.getString("sParam3");
+    }
+    
+    public static enum EnumMuteOptions implements IStringSerializable
+    {
+        OFF(0, "mxtune.gui.musicOptions.muteOption.off"),
+        OTHERS(1, "mxtune.gui.musicOptions.muteOption.others"),
+        BLACKLIST(2, "mxtune.gui.musicOptions.muteOption.blacklist"),
+        WHITELIST(3, "mxtune.gui.musicOptions.muteOption.whitelist"),
+        ALL(4, "mxtune.gui.musicOptions.muteOption.all");
+
+        private final int meta;
+        private final String translateKey;
+        private static final EnumMuteOptions[] META_LOOKUP = new EnumMuteOptions[values().length];
+
+        private EnumMuteOptions(int meta, String translateKey)
+        {
+            this.meta = meta;
+            this.translateKey = translateKey;
+        }
+        
+        public int getMetadata() {return this.meta;}
+        
+        static
+        {
+            for (EnumMuteOptions value : values())
+            {
+                META_LOOKUP[value.getMetadata()] = value;
+            }
+        }
+
+        public static EnumMuteOptions byMetadata(int meta)
+        {
+            if (meta < 0 || meta >= META_LOOKUP.length)
+            {
+                meta = 0;
+            }
+            return META_LOOKUP[meta];
+        }
+        
+        @Override
+        public String toString(){return I18n.format(this.translateKey);}  
+
+        @Override
+        public String getName() {return translateKey;}        
     }
 }

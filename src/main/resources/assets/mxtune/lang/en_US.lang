@@ -29,3 +29,9 @@ mxtune.groupjoin.yes.no=Join this Group?
 mxtune.key.openParty=Open Party
 mxtune.key.openMusicOptions=Music Options
 mxtune.gui.GuiMusicOptions.title=Music Options
+
+mxtune.gui.musicOptions.muteOption.off=Mute Off
+mxtune.gui.musicOptions.muteOption.others=Mute Others
+mxtune.gui.musicOptions.muteOption.blacklist=Mute Blacklist
+mxtune.gui.musicOptions.muteOption.whitelist=Mute Whitelist
+mxtune.gui.musicOptions.muteOption.all=Mute All

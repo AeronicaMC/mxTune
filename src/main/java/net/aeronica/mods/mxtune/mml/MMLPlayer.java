@@ -151,6 +151,7 @@ public class MMLPlayer implements MetaEventListener
             synthesizer.open();
             defaultSB = synthesizer.getDefaultSoundbank();
             instruments = synthesizer.getLoadedInstruments();
+            
             /*
              * This is where we setup an alternate Soundbank e.g.
              */
@@ -207,7 +208,7 @@ public class MMLPlayer implements MetaEventListener
             MMLManager.getInstance().deregisterThread(playID);
             if (sequencer != null && sequencer.isOpen()) sequencer.close();
             if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
-            ModLogger.logInfo("mlPlay failed midi TRY " + ex);
+            ModLogger.logInfo("MMLPlayer#mmlPlay failed midi TRY " + ex);
             return false;
         }
     }
@@ -224,7 +225,7 @@ public class MMLPlayer implements MetaEventListener
              * member, but did not queue MML then your request to close will be
              * ignored. Solo players force close themselves.
              */
-            ModLogger.logInfo("MusicLibCP.mmlKil: " + ID);
+            ModLogger.logInfo("MMLPlayer#mmlKill: " + ID);
             if (sequencer != null && sequencer.isOpen())
             {
                 sequencer.stop();
@@ -267,9 +268,7 @@ public class MMLPlayer implements MetaEventListener
         try
         {
             Thread.sleep(250);
-        } catch (InterruptedException e)
-        {
-        }
+        } catch (InterruptedException e) {}
         if (sequencer != null && sequencer.isOpen()) sequencer.close();
         if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
     }
@@ -286,9 +285,7 @@ public class MMLPlayer implements MetaEventListener
             try
             {
                 Thread.sleep(250);
-            } catch (InterruptedException e)
-            {
-            }
+            } catch (InterruptedException e) {}
             if (sequencer != null && sequencer.isOpen()) sequencer.close();
             if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
 
