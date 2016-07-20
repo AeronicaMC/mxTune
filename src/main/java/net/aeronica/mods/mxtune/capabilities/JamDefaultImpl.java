@@ -49,7 +49,7 @@ public class JamDefaultImpl implements IJamPlayer
         this.midiVolume = 0.70F;
         this.muteOption = 0;
         this.sParam1 = this.sParam2 = this.sParam3 = new String("");
-        this.sync();
+        this.syncAll();
     }
 
     @Override
@@ -58,7 +58,7 @@ public class JamDefaultImpl implements IJamPlayer
         this.sParam1 = sParam1;
         this.sParam2 = sParam2;
         this.sParam3 = sParam3;
-        this.sync();
+        this.sync(SYNC_SPARAMS);
     }
 
     @Override
@@ -71,25 +71,29 @@ public class JamDefaultImpl implements IJamPlayer
     public String getSParam3() {return sParam3;}
 
     @Override
-    public void setMidiVolume(float volumeIn) {this.midiVolume = Math.min(1.0F, Math.max(0.0F, midiVolume)); sync();}
+    public void setMidiVolume(float volumeIn) {this.midiVolume = Math.min(1.0F, Math.max(0.0F, volumeIn)); sync(SYNC_MIDI_VOLUME);}
 
     @Override
     public float getMidiVolume() {return this.midiVolume;}
 
     @Override
-    public int getMuteOption()
-    {
-        return muteOption;
-    }
+    public void setMuteOption(int muteOptionIn) {this.muteOption = muteOptionIn; sync(SYNC_MUTE_OPTION);}
 
     @Override
-    public void setMuteOption(int muteOptionIn) {this.muteOption = muteOptionIn; sync();}
-
-    public final void sync()
+    public int getMuteOption() {return muteOption;}
+    
+    public static final byte SYNC_ALL = 0;
+    public static final byte SYNC_MIDI_VOLUME = 1;
+    public static final byte SYNC_MUTE_OPTION = 2;
+    public static final byte SYNC_SPARAMS = 3;
+    
+    public final void syncAll() {sync(SYNC_ALL);}
+    
+    public final void sync(byte propertyID)
     {
         if (player != null && !player.worldObj.isRemote)
         {
-            PacketDispatcher.sendTo(new SyncPlayerPropsMessage((EntityPlayer) player), (EntityPlayerMP) player);
+            PacketDispatcher.sendTo(new SyncPlayerPropsMessage((EntityPlayer) player, propertyID), (EntityPlayerMP) player);
         }
     }
 
@@ -156,6 +160,6 @@ public class JamDefaultImpl implements IJamPlayer
         public String toString(){return I18n.format(this.translateKey);}  
 
         @Override
-        public String getName() {return translateKey;}        
+        public String getName() {return this.translateKey;}        
     }
 }

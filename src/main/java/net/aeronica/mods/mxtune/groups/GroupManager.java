@@ -30,6 +30,7 @@ import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteractSpecific;
@@ -457,6 +458,15 @@ public class GroupManager
         event.player.addChatMessage(new TextComponentString("[" + MXTuneMain.MODNAME + "] Welcome!"));
     }
 
+    @SubscribeEvent
+    public void onJoinWorld(EntityJoinWorldEvent event)
+    {
+        if (event.getEntity() instanceof EntityPlayerMP)
+        {
+            GroupManager.sync();
+        }
+    }
+    
     @SubscribeEvent
     public void onPlayerLoggedOutEvent(PlayerLoggedOutEvent event)
     {

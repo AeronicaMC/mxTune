@@ -18,9 +18,13 @@ package net.aeronica.mods.mxtune.gui;
 
 import java.io.IOException;
 
+import org.lwjgl.input.Mouse;
+
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.capabilities.IJamPlayer;
 import net.aeronica.mods.mxtune.capabilities.JamDefaultImpl;
+import net.aeronica.mods.mxtune.network.PacketDispatcher;
+import net.aeronica.mods.mxtune.network.server.MusicOptionsMessage;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -38,12 +42,14 @@ public class GuiMusicOptions extends GuiScreen
 
     private GuiButtonExt btn_muteOption;
     private GuiSliderMX btn_midiVolume;
+    private GuiButtonExt btn_cancel, btn_done;
     
     private EntityPlayer player;
     private IJamPlayer jamPlayerProps;
     
     private float midiVolume;
     private int muteOption;
+    private int lastMuteOption = -1;
     
     public GuiMusicOptions() {}
     
@@ -51,6 +57,7 @@ public class GuiMusicOptions extends GuiScreen
     public void updateScreen()
     {
         // TODO Auto-generated method stub
+        update();
         super.updateScreen();
     }
 
@@ -68,11 +75,16 @@ public class GuiMusicOptions extends GuiScreen
 
         int y = 30;
         int x = (width - 200) / 2;
-        btn_muteOption = new GuiButtonExt(0, x, y, 200, 20, I18n.format((JamDefaultImpl.EnumMuteOptions.byMetadata(muteOption).toString()), new Object[0]));
-        btn_midiVolume = new GuiSliderMX(1, x, y+25, 200, 20, "MIDI Volume", midiVolume*100F, 0F, 100F, 5F);
+        btn_muteOption = new GuiButtonExt(0, x, y, 200, 20, (JamDefaultImpl.EnumMuteOptions.byMetadata(muteOption).toString()));
+        btn_midiVolume = new GuiSliderMX(1, x, y+=25, 200, 20, I18n.format("mxtune.gui.slider.midiVolume"), midiVolume*100F, 0F, 100F, 5F);
+        
+        btn_cancel = new GuiButtonExt(2, x, y+=25, 200, 20, I18n.format("gui.cancel"));
+        btn_done = new GuiButtonExt(3, x, y+=25, 200, 20, I18n.format("gui.done"));
         
         this.buttonList.add(btn_muteOption);
         this.buttonList.add(btn_midiVolume);
+        this.buttonList.add(btn_cancel);
+        this.buttonList.add(btn_done);
     }
 
     @Override
@@ -100,20 +112,45 @@ public class GuiMusicOptions extends GuiScreen
         case 0:
             /** Increment Mute Option */
             this.muteOption = ((++this.muteOption) % JamDefaultImpl.EnumMuteOptions.values().length);
-            ModLogger.logInfo("muteOption meta: " + muteOption + ", text: " + 
-            I18n.format((JamDefaultImpl.EnumMuteOptions.byMetadata(muteOption).toString()), new Object[0]) + ", enum: " +
-            (JamDefaultImpl.EnumMuteOptions.byMetadata(muteOption).name())  );
+            ModLogger.logInfo("muteOption meta: " + muteOption + ", text: " + JamDefaultImpl.EnumMuteOptions.byMetadata(muteOption).toString() +
+                    ", enum: " + JamDefaultImpl.EnumMuteOptions.byMetadata(muteOption).name());
             btn_muteOption.displayString = I18n.format(JamDefaultImpl.EnumMuteOptions.byMetadata(muteOption).toString(), new Object[0]);
             break;
 
         case 1:
             /** Volume */
+            update();
             break;
-            
+        case 3:
+            /** done */
+            this.midiVolume = btn_midiVolume.getValue() / 100;
+            sendOptionsToServer(this.midiVolume, this.muteOption);
+        case 2:
+            /** cancel */
+            mc.displayGuiScreen(null);
+            mc.setIngameFocus();
         default:
         }
     }
 
+    private void update()
+    {
+        this.midiVolume = btn_midiVolume.getValue() / 100;
+        if (this.midiVolume == 0F)
+        {
+            this.lastMuteOption = this.muteOption;
+            btn_muteOption.displayString = JamDefaultImpl.EnumMuteOptions.byMetadata(JamDefaultImpl.EnumMuteOptions.ALL.getMetadata()).toString();
+            btn_muteOption.enabled = false;
+        } else if (this.lastMuteOption != -1)
+        {
+            btn_muteOption.enabled = true;
+            this.muteOption = this.lastMuteOption;
+            btn_muteOption.displayString = JamDefaultImpl.EnumMuteOptions.byMetadata(this.lastMuteOption).toString();
+            this.lastMuteOption = -1;
+        }
+   
+    }
+    
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException
     {
@@ -124,18 +161,27 @@ public class GuiMusicOptions extends GuiScreen
     @Override
     public void handleMouseInput() throws IOException
     {
-        // TODO Auto-generated method stub
+        int mouseX = Mouse.getEventX() * this.width / this.mc.displayWidth;
+        int mouseY = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
+        
+        if (btn_midiVolume.isMouseOver()) {
+            update();
+        }
         super.handleMouseInput();
     }
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
-        // TODO Auto-generated method stub
         super.mouseClicked(mouseX, mouseY, mouseButton);
     }
     
     public Minecraft getMinecraftInstance() {return mc;}
 
     public FontRenderer getFontRenderer() {return mc.fontRendererObj;}
+    
+    protected void sendOptionsToServer(float midiVolume, int muteOption)
+    {
+        PacketDispatcher.sendToServer(new MusicOptionsMessage(midiVolume, muteOption));
+    }
 }

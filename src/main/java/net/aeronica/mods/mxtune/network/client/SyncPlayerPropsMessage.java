@@ -20,11 +20,13 @@ import java.io.IOException;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.capabilities.IJamPlayer;
+import net.aeronica.mods.mxtune.capabilities.JamDefaultImpl;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 
 /**
@@ -58,35 +60,95 @@ public class SyncPlayerPropsMessage extends AbstractClientMessage<SyncPlayerProp
 
     // this will store our ExtendedPlayer data, allowing us to easily read and
     // write
+    private byte propertyID;
     private NBTTagCompound data;
+    private float midiVolume;
+    private int muteOption;
+    private String sParam1, sParam2, sParam3;
 
     // The basic, no-argument constructor MUST be included to use the new
     // automated handling
     public SyncPlayerPropsMessage() {}
 
     // We need to initialize our data, so provide a suitable constructor:
-    public SyncPlayerPropsMessage(EntityPlayer player)
+    public SyncPlayerPropsMessage(EntityPlayer player, byte propertyID)
     {
-        /** create a new tag compound */
-        data = new NBTTagCompound();
-        /** and save our player's data into it */
-        if (player.hasCapability(MXTuneMain.JAM_PLAYER, null))
+        this.propertyID = propertyID;
+        IJamPlayer inst = player.getCapability(MXTuneMain.JAM_PLAYER, null);
+
+        switch (propertyID)
         {
-            IJamPlayer inst = player.getCapability(MXTuneMain.JAM_PLAYER, null);
-            data = (NBTTagCompound) MXTuneMain.JAM_PLAYER.writeNBT(inst, null);
+        case JamDefaultImpl.SYNC_ALL:
+            /** create a new tag compound */
+            this.data = new NBTTagCompound();
+            /** and save our player's data into it */
+            this.data = (NBTTagCompound) MXTuneMain.JAM_PLAYER.writeNBT(inst, null);
+            break;
+
+        case JamDefaultImpl.SYNC_MIDI_VOLUME:
+            this.midiVolume = inst.getMidiVolume();
+            break;
+            
+        case JamDefaultImpl.SYNC_MUTE_OPTION:
+            this.muteOption = inst.getMuteOption();
+            break;
+            
+        case JamDefaultImpl.SYNC_SPARAMS:
+            this.sParam1 = inst.getSParam1();
+            this.sParam2 = inst.getSParam2();
+            this.sParam3 = inst.getSParam3();
+            break;
+            
+        default:
         }
     }
 
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
-        data = buffer.readNBTTagCompoundFromBuffer();
+        propertyID = buffer.readByte();
+        switch (propertyID)
+        {
+        case JamDefaultImpl.SYNC_ALL:
+            this.data = buffer.readNBTTagCompoundFromBuffer();
+            break;
+        case JamDefaultImpl.SYNC_MIDI_VOLUME:
+            this.midiVolume = buffer.readFloat();
+            break;
+        case JamDefaultImpl.SYNC_MUTE_OPTION:
+           this. muteOption = buffer.readInt();
+            break;
+        case JamDefaultImpl.SYNC_SPARAMS:
+            this.sParam1 = ByteBufUtils.readUTF8String(buffer);
+            this.sParam2 = ByteBufUtils.readUTF8String(buffer);
+            this.sParam3 = ByteBufUtils.readUTF8String(buffer);
+            break;
+        default:        
+        }
     }
 
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
-        buffer.writeNBTTagCompoundToBuffer(data);
+        buffer.writeByte(this.propertyID);
+        switch (this.propertyID)
+        {
+        case JamDefaultImpl.SYNC_ALL:
+            buffer.writeNBTTagCompoundToBuffer(this.data);
+            break;
+        case JamDefaultImpl.SYNC_MIDI_VOLUME:
+            buffer.writeFloat(this.midiVolume);
+            break;
+        case JamDefaultImpl.SYNC_MUTE_OPTION:
+            buffer.writeInt(this.muteOption);
+            break;
+        case JamDefaultImpl.SYNC_SPARAMS:
+            ByteBufUtils.writeUTF8String(buffer, this.sParam1);
+            ByteBufUtils.writeUTF8String(buffer, this.sParam2);
+            ByteBufUtils.writeUTF8String(buffer, this.sParam3);
+            break;
+        default:
+        }
     }
 
     @Override
@@ -94,12 +156,23 @@ public class SyncPlayerPropsMessage extends AbstractClientMessage<SyncPlayerProp
     {
         if (side.isClient())
         {
-            /** Now we can just load the NBTTagCompound data directly; one and done folks */
             ModLogger.logInfo("Synchronizing player extended properties data on CLIENT");
-            if (player.hasCapability(MXTuneMain.JAM_PLAYER, null))
+            IJamPlayer inst = player.getCapability(MXTuneMain.JAM_PLAYER, null);
+            switch (this.propertyID)
             {
-                IJamPlayer inst = player.getCapability(MXTuneMain.JAM_PLAYER, null);
-                MXTuneMain.JAM_PLAYER.readNBT(inst, null, data);
+            case JamDefaultImpl.SYNC_ALL:
+                MXTuneMain.JAM_PLAYER.readNBT(inst, null, this.data);
+                break;
+            case JamDefaultImpl.SYNC_MIDI_VOLUME:
+                inst.setMidiVolume(this.midiVolume);
+                break;
+            case JamDefaultImpl.SYNC_MUTE_OPTION:
+                inst.setMuteOption(this.muteOption);
+                break;
+            case JamDefaultImpl.SYNC_SPARAMS:
+                inst.setSParams(this.sParam1, this.sParam2, this.sParam3);
+                break;
+            default:
             }
         }
     }

@@ -16,6 +16,7 @@ import net.aeronica.mods.mxtune.network.client.SyncGroupMessage;
 import net.aeronica.mods.mxtune.network.client.SyncPlayerPropsMessage;
 import net.aeronica.mods.mxtune.network.client.SyncStatusMessage;
 import net.aeronica.mods.mxtune.network.server.ManageGroupMessage;
+import net.aeronica.mods.mxtune.network.server.MusicOptionsMessage;
 import net.aeronica.mods.mxtune.network.server.MusicTextMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -69,15 +70,16 @@ public class PacketDispatcher
     {
         /** Packets handled on CLIENT */
         registerMessage(JoinGroupMessage.class);
-        registerMessage(SyncGroupMessage.class);
-        registerMessage(SyncPlayerPropsMessage.class);
-        registerMessage(SyncStatusMessage.class);
         registerMessage(PlayJamMessage.class);
         registerMessage(PlaySoloMessage.class);
         registerMessage(QueueJamMessage.class);
+        registerMessage(SyncGroupMessage.class);
+        registerMessage(SyncPlayerPropsMessage.class);
+        registerMessage(SyncStatusMessage.class);
 
         /** Packets handled on SERVER */
         registerMessage(ManageGroupMessage.class);
+        registerMessage(MusicOptionsMessage.class);
         registerMessage(MusicTextMessage.class);
 
         /**

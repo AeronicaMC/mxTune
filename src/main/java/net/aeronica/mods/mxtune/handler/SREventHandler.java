@@ -30,31 +30,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class SREventHandler
 {
-
     private SREventHandler() {}
-
     private static class SREventHandlerHolder {private static final SREventHandler INSTANCE = new SREventHandler();}
-
     public static SREventHandler getInstance() {return SREventHandlerHolder.INSTANCE;}
-
-    @SubscribeEvent
-    public void onJoinWorld(EntityJoinWorldEvent event)
-    {
-        /*
-         * Only need to synchronize when the world is remote (i.e. we're on the
-         * server side) and only for player entities, as that's what we need for
-         * the GuiJamOverlay If you have any non-DataWatcher fields in your
-         * extended properties that need to be synced to the client, you must
-         * send a packet each time the player joins the world; this takes care
-         * of dying, changing dimensions, etc.
-         */
-        if (event.getEntity() instanceof EntityPlayerMP)
-        {
-            ModLogger.logInfo("Player joined world, sending extended properties to client");
-            PacketDispatcher.sendTo(new SyncPlayerPropsMessage((EntityPlayer) event.getEntity()), (EntityPlayerMP) event.getEntity());
-            GroupManager.sync();
-        }
-    }
     
     @SubscribeEvent
     public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs)

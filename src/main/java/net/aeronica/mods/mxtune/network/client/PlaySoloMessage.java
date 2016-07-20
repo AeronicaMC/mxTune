@@ -21,14 +21,14 @@ import java.io.IOException;
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.gui.GuiPlaying;
 import net.aeronica.mods.mxtune.mml.MMLManager;
-import net.aeronica.mods.mxtune.network.AbstractMessage;
+import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 
-public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
+public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
 {
 
     String musicTitle;

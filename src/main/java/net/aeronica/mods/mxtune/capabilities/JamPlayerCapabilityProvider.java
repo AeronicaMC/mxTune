@@ -84,6 +84,8 @@ public class JamPlayerCapabilityProvider
             IJamPlayer dead = evt.getOriginal().getCapability(MXTuneMain.JAM_PLAYER, null);
             IJamPlayer live = evt.getEntityPlayer().getCapability(MXTuneMain.JAM_PLAYER, null);
             live.setSParams(dead.getSParam1(), dead.getSParam2(), dead.getSParam3());
+            live.setMidiVolume(dead.getMidiVolume());
+            live.setMuteOption(dead.getMuteOption());
         }
     }
 
