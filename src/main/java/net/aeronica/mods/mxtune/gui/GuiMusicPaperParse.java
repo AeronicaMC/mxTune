@@ -682,7 +682,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         is = new java.io.ByteArrayInputStream(mmlBuf);
 
         /** ANTLR4 MML Parser BEGIN */
-        MMLToMIDI mmlTrans = new MMLToMIDI();
+        MMLToMIDI mmlTrans = new MMLToMIDI(0.8F);
         ANTLRInputStream input = null;
 
         try

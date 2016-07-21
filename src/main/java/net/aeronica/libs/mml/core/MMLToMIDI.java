@@ -16,8 +16,9 @@ public class MMLToMIDI extends MMLTransformBase
     final double PPQ = 480.0;
     private final int TICKS_OFFSET = 75;
     private Sequence sequence;
+    private float fakeVolume = 1F;
 
-    public MMLToMIDI() {super();}
+    public MMLToMIDI(float fakeVolume) { super(fakeVolume); this.fakeVolume = fakeVolume; }
 
     @Override
     public long durationTicks(int mmlNoteLength, boolean dottedLEN)
@@ -84,7 +85,7 @@ public class MMLToMIDI extends MMLTransformBase
                 case NOTE:
                 {
                     MONote mmo = (MONote) getMObject(i);
-                    tracks[tk].add(createNoteOnEvent(ch, mmo.getMidiNote(), (int) (mmo.getNoteVolume() * 127f / 15f), mmo.getStartingTicks() + ticksOffset));
+                    tracks[tk].add(createNoteOnEvent(ch, mmo.getMidiNote(), (int) (scaleVolume(mmo.getNoteVolume()) * 127f / 15f), mmo.getStartingTicks() + ticksOffset));
                     tracks[tk].add(createNoteOffEvent(ch, mmo.getMidiNote(), (int) (mmo.getNoteVolume() * 127f / 15f), mmo.getStartingTicks() + mmo.getLengthTicks() + ticksOffset - 1));
                     if (mmo.getText() != null)
                     {
@@ -130,6 +131,11 @@ public class MMLToMIDI extends MMLTransformBase
         }
     }
 
+    private int scaleVolume(int volumeIn)
+    {
+        return (int) Math.round((float)volumeIn * (Math.exp(this.fakeVolume)-1)/(Math.E-1));
+    }
+    
     protected MidiEvent createMsg(int mComd, int mChan, int mDat1, int mDat2, long mTime)
     {
         /**

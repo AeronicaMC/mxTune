@@ -79,11 +79,11 @@ public class GuiGroupJoin extends GuiScreen
 
         int posX = guiLeft + 169;
         int posY = guiTop + 92;
-        btn_yes = new GuiButton(0, posX, posY, 60, 20, I18n.format("mxtune.gui.button.yes"));
+        btn_yes = new GuiButton(0, posX, posY, 60, 20, I18n.format("gui.yes"));
 
         posX = guiLeft + 169;
         posY = guiTop + 112;
-        btn_no = new GuiButton(1, posX, posY, 60, 20, I18n.format("mxtune.gui.button.no"));
+        btn_no = new GuiButton(1, posX, posY, 60, 20, I18n.format("gui.no"));
 
 //        gTest = new GuiSlider(2, posX, posY - 50, 60, 20, "Test", 10f, 1f, 20f, 1f);
         

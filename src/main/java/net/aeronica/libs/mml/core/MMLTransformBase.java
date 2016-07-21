@@ -49,7 +49,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
 
     void saveMObject(IMObjects mObject) {mObjects.add(mObject);}
 
-    public MMLTransformBase()
+    public MMLTransformBase(float fakeVolume)
     {
         partState = new StatePart();
         instState = new StateInst();

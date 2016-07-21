@@ -18,6 +18,12 @@ package net.aeronica.mods.mxtune.gui;
 
 import java.io.IOException;
 
+import javax.sound.midi.MidiChannel;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Synthesizer;
+
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
@@ -51,13 +57,14 @@ public class GuiMusicOptions extends GuiScreen
     private int muteOption;
     private int lastMuteOption = -1;
     
-    public GuiMusicOptions() {}
+    public GuiMusicOptions() {midiInit();}
     
     @Override
     public void updateScreen()
     {
         // TODO Auto-generated method stub
-        update();
+        updateGuiElments();
+        midiUpdate();
         super.updateScreen();
     }
 
@@ -76,7 +83,7 @@ public class GuiMusicOptions extends GuiScreen
         int y = 30;
         int x = (width - 200) / 2;
         btn_muteOption = new GuiButtonExt(0, x, y, 200, 20, (PlayerMusicDefImpl.EnumMuteOptions.byMetadata(muteOption).toString()));
-        btn_midiVolume = new GuiSliderMX(1, x, y+=25, 200, 20, I18n.format("mxtune.gui.slider.midiVolume"), midiVolume*100F, 0F, 100F, 5F);
+        btn_midiVolume = new GuiSliderMX(1, x, y+=25, 200, 20, I18n.format("mxtune.gui.slider.midiVolume"), midiVolume*100F, 0F, 100F, 1F);
         
         btn_cancel = new GuiButtonExt(2, x, y+=25, 200, 20, I18n.format("gui.cancel"));
         btn_done = new GuiButtonExt(3, x, y+=25, 200, 20, I18n.format("gui.done"));
@@ -119,7 +126,7 @@ public class GuiMusicOptions extends GuiScreen
 
         case 1:
             /** Volume */
-            update();
+            updateGuiElments();
             break;
         case 3:
             /** done */
@@ -127,13 +134,14 @@ public class GuiMusicOptions extends GuiScreen
             sendOptionsToServer(this.midiVolume, this.muteOption);
         case 2:
             /** cancel */
+            midiClose();
             mc.displayGuiScreen(null);
             mc.setIngameFocus();
         default:
         }
     }
 
-    private void update()
+    private void updateGuiElments()
     {
         this.midiVolume = btn_midiVolume.getValue() / 100;
         if (this.midiVolume == 0F)
@@ -147,14 +155,17 @@ public class GuiMusicOptions extends GuiScreen
             this.muteOption = this.lastMuteOption;
             btn_muteOption.displayString = PlayerMusicDefImpl.EnumMuteOptions.byMetadata(this.lastMuteOption).toString();
             this.lastMuteOption = -1;
-        }
-   
+        }   
     }
     
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException
     {
-        // TODO Auto-generated method stub
+        /** capture the ESC key do we close cleanly */
+        if (keyCode == Keyboard.KEY_ESCAPE)
+        {
+            actionPerformed((GuiButton) buttonList.get(btn_cancel.id));
+        }
         super.keyTyped(typedChar, keyCode);
     }
 
@@ -166,7 +177,7 @@ public class GuiMusicOptions extends GuiScreen
         int mouseY = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
         
         if (btn_midiVolume.isMouseOver()) {
-            update();
+            updateGuiElments();
         }
         super.handleMouseInput();
     }
@@ -185,4 +196,131 @@ public class GuiMusicOptions extends GuiScreen
     {
         PacketDispatcher.sendToServer(new MusicOptionsMessage(midiVolume, muteOption));
     }
+    
+    /** MIDI generator for testing volume */
+    private Synthesizer synth = null;
+    MidiChannel[]   channels;
+    MidiChannel channel;
+    
+    private void midiInit()
+    {
+        try
+        {
+            synth = MidiSystem.getSynthesizer();
+        }
+        catch (MidiUnavailableException e)
+        {
+            e.printStackTrace();
+        }
+
+        try
+        {
+            synth.open();
+        }
+        catch (MidiUnavailableException e)
+        {
+            e.printStackTrace();
+        }
+        channels = synth.getChannels();
+        channel = channels[0];
+        channel.programChange(10);
+        setWait(10);
+    }
+    
+    private void midiUpdate()
+    {
+        flipFlop(btn_midiVolume.isMouseOver());
+        nextNote();
+    }
+    
+    private void midiClose()
+    {
+        synth.close();
+    }
+
+    private int tickLen = 1; // Set in the initialize method
+    private int noteMidi;
+    private long tick;
+    private long tock; // 1 ms
+    private boolean waiting;
+    private int noteActive = 0;
+    private boolean noteOff = true;
+    private double cyc = 0D;
+    
+    public void nextTick()
+    {
+        if (waiting)
+        {
+            //ModLogger.logInfo("tick:" + tick);
+            if ((++tick % tickLen) == 0)
+            {
+                if (tock-- <= 0)
+                {
+                    waiting = false;
+                    //ModLogger.logInfo("Tock");
+                }
+            }
+        }
+    }
+
+    public void setWait(int ms)
+    {
+        if (ms <= 0) return;
+        //ModLogger.logInfo("setWait = " + ms + ", tickLen = " + tickLen + ", tick: " + tick + ",  tock: "+ tock);
+        tock = ms;
+        tick = 0;
+        waiting = true;
+    }
+
+    public void flipFlop(boolean hasHoover)
+    {
+        if (hasHoover)
+        {
+            noteActive = 1;
+        } else 
+        {
+            noteActive = 0;
+        }
+    }
+    
+    public void nextNote()
+    {
+        nextCmd();
+        cyc =  cyc + 0.16D;
+    }
+
+
+    public void nextCmd()
+    {
+        nextTick();
+        // Test if WAIT(x)ING: dec ticks, tocks at this point.
+        // NOT_WAITING:
+        // Parse commands and execute commands
+        // if WAIT command
+        // set/trigger WAIT(x)ING
+        // else
+        // WAIT(x)ING: X milliseconds: return immediately
+        if (waiting) return;   
+        
+        if (noteOff) {
+            noteMidi = (int) Math.round(((((Math.sin(cyc)+1.D)/2D) *40.0D)+40.0D));
+            channel.noteOn(noteMidi, scaleVolume(127*noteActive));
+
+            setWait(2);
+            noteOff=false;
+        }
+        if (!noteOff) {
+            channel.noteOff(noteMidi);
+            setWait(1);
+            noteOff = true;
+        }
+    }
+    
+    private int scaleVolume(int volumeIn)
+    {
+        int temp = (int) Math.round((float)volumeIn * (Math.exp(this.midiVolume)-1)/(Math.E-1));
+        //ModLogger.logInfo("volumeIn: " + volumeIn + ", midiVolume: " + midiVolume + ", scaled: " + temp);
+        return temp;
+    }
+
 }

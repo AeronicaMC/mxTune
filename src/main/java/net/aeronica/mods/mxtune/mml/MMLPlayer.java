@@ -120,7 +120,7 @@ public class MMLPlayer implements MetaEventListener
         is = new java.io.ByteArrayInputStream(mmlBuf);
 
         /** ANTLR4 MML Parser BEGIN */
-        MMLToMIDI mmlTrans = new MMLToMIDI();
+        MMLToMIDI mmlTrans = new MMLToMIDI(1.0F);
         ANTLRInputStream input = null;
 
         try
