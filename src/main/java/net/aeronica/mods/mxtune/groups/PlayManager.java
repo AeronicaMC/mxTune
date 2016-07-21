@@ -117,7 +117,7 @@ public class PlayManager
     {
         String playerName = playerIn.getDisplayName().getUnformattedText();
         ModLogger.logInfo("PacketQueueJAM: " + playerName);
-        ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(pos, playerIn, false);
+        ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(pos, playerIn, isPlaced);
         if (sheetMusic == null) return;
         NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
         if (contents != null)

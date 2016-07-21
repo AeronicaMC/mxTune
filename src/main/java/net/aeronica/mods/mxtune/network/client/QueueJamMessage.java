@@ -84,7 +84,8 @@ public class QueueJamMessage extends AbstractClientMessage<QueueJamMessage>
         if (side.isClient())
         {
             /** Client side - Open GuiPlaying for JAM Members */
-            EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
+            //EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
+            EntityPlayer thePlayer = MXTuneMain.proxy.getClientPlayer();
 
             /**
              * Open the Play GUI on for the JAMMER who either queued his part or

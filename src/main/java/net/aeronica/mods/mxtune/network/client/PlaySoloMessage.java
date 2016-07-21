@@ -100,7 +100,7 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
             /** Only open the playing gui for the player who is playing */
             if (player.getDisplayName().getUnformattedText().equalsIgnoreCase(playerName))
             {
-                player.openGui(MXTuneMain.instance, GuiPlaying.GUI_ID, player.worldObj, (int) player.posX, (int) player.posY, (int) player.posZ);
+                player.openGui(MXTuneMain.instance, GuiPlaying.GUI_ID, player.worldObj, 0,0,0);
             }
         }
     }
