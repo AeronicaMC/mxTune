@@ -94,7 +94,8 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
              */
 
             String mml = new String(playerName + "=" + musicText);
-            MMLManager.getInstance().mmlPlay(mml, playerName, true);
+            float volume = player.getCapability(MXTuneMain.MUSIC_OPTIONS, null).getMidiVolume();
+            MMLManager.getInstance().mmlPlay(mml, playerName, true, volume);
 
             /** Only open the playing gui for the player who is playing */
             if (player.getDisplayName().getUnformattedText().equalsIgnoreCase(playerName))

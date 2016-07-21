@@ -35,6 +35,7 @@ import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiLabel;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
@@ -49,6 +50,7 @@ public class GuiMusicOptions extends GuiScreen
     private GuiButtonExt btn_muteOption;
     private GuiSliderMX btn_midiVolume;
     private GuiButtonExt btn_cancel, btn_done;
+    private GuiLabel lbl_desc;
     
     private EntityPlayer player;
     private IPlayerMusicOptions musicOptionsInstance;
@@ -88,6 +90,14 @@ public class GuiMusicOptions extends GuiScreen
         btn_cancel = new GuiButtonExt(2, x, y+=25, 200, 20, I18n.format("gui.cancel"));
         btn_done = new GuiButtonExt(3, x, y+=25, 200, 20, I18n.format("gui.done"));
         
+        x = (width - 250) / 2;
+        lbl_desc = new GuiLabel(this.getFontRenderer(), 4, x, y, 250, 100, 0xD3D3D3);
+        lbl_desc.addLine(I18n.format("mxtune.gui.musicOptions.label.description01"));
+        lbl_desc.addLine(I18n.format("mxtune.gui.musicOptions.label.description02"));
+        lbl_desc.addLine(I18n.format("mxtune.gui.musicOptions.label.description03"));
+        lbl_desc.addLine(I18n.format("mxtune.gui.musicOptions.label.description04"));
+        lbl_desc.addLine(I18n.format("mxtune.gui.musicOptions.label.description05"));
+        
         this.buttonList.add(btn_muteOption);
         this.buttonList.add(btn_midiVolume);
         this.buttonList.add(btn_cancel);
@@ -103,6 +113,7 @@ public class GuiMusicOptions extends GuiScreen
         int posX = (this.width - getFontRenderer().getStringWidth(TITLE)) / 2 ;
         int posY = 10;
         getFontRenderer().drawStringWithShadow(TITLE, posX, posY, 0xD3D3D3);
+        lbl_desc.drawLabel(mc, mouseX, mouseY);
         
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
@@ -197,7 +208,7 @@ public class GuiMusicOptions extends GuiScreen
         PacketDispatcher.sendToServer(new MusicOptionsMessage(midiVolume, muteOption));
     }
     
-    /** MIDI generator for testing volume */
+    /** MIDI generator for testing volume - the John Cage Machine */
     private Synthesizer synth = null;
     MidiChannel[]   channels;
     MidiChannel channel;
@@ -223,7 +234,7 @@ public class GuiMusicOptions extends GuiScreen
         }
         channels = synth.getChannels();
         channel = channels[0];
-        channel.programChange(0);
+        channel.programChange(2);
         setWait(2);
     }
     
@@ -236,7 +247,7 @@ public class GuiMusicOptions extends GuiScreen
     private void midiClose() {synth.close();}
 
     private int tickLen = 1;
-    private int noteMidi1, noteMidi2, noteMidi3, noteMidi4, noteMidi5;
+    private int noteMidi1, noteMidi2, noteMidi3, noteMidi4, noteMidi5, run1, run2;
     private long tick;
     private long tock; // 1 ms
     private boolean waiting;
@@ -277,18 +288,25 @@ public class GuiMusicOptions extends GuiScreen
         if (waiting) return;   
         
         if (noteOff) {
-            noteMidi1 = (int) Math.round(((((Math.sin(cyc)+1.D)/2D) *40.0D)+40.0D));
-            noteMidi2 = noteMidi1 + ((int) (Math.random()*1.5D) ) + 5;
-            noteMidi3 = noteMidi1 + 10;
+            noteMidi1 = (int) Math.round(((((Math.sin(cyc)+1.D)/2D) *30.0D)+50.0D));
+            noteMidi2 = noteMidi1 + ((int) Math.round((Math.random()*1.D)) ) + 4;
+            //ModLogger.logInfo("diff: " + (noteMidi2 - noteMidi1));
+            noteMidi3 = noteMidi1 + 9;
+            noteMidi4 = ((run1+=3) %24) + 60;
+            noteMidi5 = ((run2-=4) %10) + 40;
             channel.noteOn(noteMidi1, scaleVolume(127*noteActive));
             channel.noteOn(noteMidi2, scaleVolume(127*noteActive));
             channel.noteOn(noteMidi3, scaleVolume(127*noteActive));
+            channel.noteOn(noteMidi4, scaleVolume(127*noteActive));
+            channel.noteOn(noteMidi5, scaleVolume(127*noteActive));
             setWait(2);
             noteOff=false;
         } else {
             channel.noteOff(noteMidi1);
             channel.noteOff(noteMidi2);
             channel.noteOff(noteMidi3);
+            channel.noteOff(noteMidi4);
+            channel.noteOff(noteMidi5);
             setWait(1);
             noteOff = true;
         }

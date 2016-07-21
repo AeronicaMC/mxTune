@@ -62,6 +62,7 @@ public class MMLPlayer implements MetaEventListener
     private Map<String, String> playerChannel = new HashMap<String, String>();
     private static final int masterTempo = 120;
     private boolean closeGUI = true;
+    private float fakeVolume;
 
     // private Soundbank sbJammer;
     // private static final ResourceLocation soundFont = new ResourceLocation(
@@ -78,13 +79,14 @@ public class MMLPlayer implements MetaEventListener
      * @return
      */
     @SuppressWarnings("static-access")
-    public boolean mmlPlay(String mmml, String playID, boolean closeGUI)
+    public boolean mmlPlay(String mmml, String playID, boolean closeGUI, float volumeIn)
     {
         /** Only one playing instance per playID at a time. */
         if (!MMLManager.getInstance().registerThread(this, playID)) return false;
         this.playID = playID;
         this.playerMML = GROUPS.splitToHashMap(mmml);
         this.closeGUI = closeGUI;
+        this.fakeVolume = volumeIn;
         String mml = new String();
 
         if (playerMML == null)
@@ -120,7 +122,7 @@ public class MMLPlayer implements MetaEventListener
         is = new java.io.ByteArrayInputStream(mmlBuf);
 
         /** ANTLR4 MML Parser BEGIN */
-        MMLToMIDI mmlTrans = new MMLToMIDI(1.0F);
+        MMLToMIDI mmlTrans = new MMLToMIDI(this.fakeVolume);
         ANTLRInputStream input = null;
 
         try

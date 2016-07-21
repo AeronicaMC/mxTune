@@ -68,14 +68,14 @@ public class MMLManager
 
     public static MMLManager getInstance() {return MMLManagerHolder.INSTANCE;}
 
-    public void mmlPlay(String mml, String groupID, boolean closeGUI)
+    public void mmlPlay(String mml, String groupID, boolean closeGUI, float volumeIn)
     {
-        Runnable worker = new ThreadedmmlPlay(mml, groupID, closeGUI);
+        Runnable worker = new ThreadedmmlPlay(mml, groupID, closeGUI, volumeIn);
         executor.execute(worker);
     }
 
     /** TODO: Make a real initialization */
-    public void mmlInit() {this.mmlPlay("-Init-=MML@t240v0l64crrr,,;", "-Init-", false);}
+    public void mmlInit() {this.mmlPlay("-Init-=MML@t240v0l64crrrbeadgcf,,;", "-Init-", false, 0F);}
 
     public static void resetMute()
     {
@@ -321,12 +321,14 @@ public class MMLManager
         private final String mml;
         private final String groupID;
         private boolean closeGUI;
+        private float volumeIn;
 
-        public ThreadedmmlPlay(String mml, String groupID, boolean closeGUI)
+        public ThreadedmmlPlay(String mml, String groupID, boolean closeGUI, float volumeIn)
         {
             this.mml = mml;
             this.groupID = groupID;
             this.closeGUI = closeGUI;
+            this.volumeIn = volumeIn;
         }
 
         @Override
@@ -335,7 +337,7 @@ public class MMLManager
             MMLPlayer mp = new MMLPlayer();
             System.out.println("ThreadedmmlPlay mml: " + mml.substring(0, mml.length() > 25 ? 25 : mml.length()));
             System.out.println("ThreadedmmlPlay groupID: " + groupID);
-            mp.mmlPlay(mml, groupID, closeGUI);
+            mp.mmlPlay(mml, groupID, closeGUI, volumeIn);
         }
     }
 
