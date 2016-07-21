@@ -223,23 +223,20 @@ public class GuiMusicOptions extends GuiScreen
         }
         channels = synth.getChannels();
         channel = channels[0];
-        channel.programChange(10);
-        setWait(10);
+        channel.programChange(0);
+        setWait(2);
     }
     
     private void midiUpdate()
     {
-        flipFlop(btn_midiVolume.isMouseOver());
+        overControl(btn_midiVolume.isMouseOver());
         nextNote();
     }
     
-    private void midiClose()
-    {
-        synth.close();
-    }
+    private void midiClose() {synth.close();}
 
-    private int tickLen = 1; // Set in the initialize method
-    private int noteMidi;
+    private int tickLen = 1;
+    private int noteMidi1, noteMidi2, noteMidi3, noteMidi4, noteMidi5;
     private long tick;
     private long tock; // 1 ms
     private boolean waiting;
@@ -251,13 +248,11 @@ public class GuiMusicOptions extends GuiScreen
     {
         if (waiting)
         {
-            //ModLogger.logInfo("tick:" + tick);
             if ((++tick % tickLen) == 0)
             {
                 if (tock-- <= 0)
                 {
                     waiting = false;
-                    //ModLogger.logInfo("Tock");
                 }
             }
         }
@@ -266,51 +261,34 @@ public class GuiMusicOptions extends GuiScreen
     public void setWait(int ms)
     {
         if (ms <= 0) return;
-        //ModLogger.logInfo("setWait = " + ms + ", tickLen = " + tickLen + ", tick: " + tick + ",  tock: "+ tock);
         tock = ms;
         tick = 0;
         waiting = true;
     }
 
-    public void flipFlop(boolean hasHoover)
-    {
-        if (hasHoover)
-        {
-            noteActive = 1;
-        } else 
-        {
-            noteActive = 0;
-        }
-    }
+    public void overControl(boolean hasHoover) {if (hasHoover) noteActive = 1; else noteActive = 0;}
     
-    public void nextNote()
-    {
-        nextCmd();
-        cyc =  cyc + 0.16D;
-    }
-
+    public void nextNote() {nextCmd(); cyc =  cyc + 0.16D;}
 
     public void nextCmd()
     {
         nextTick();
-        // Test if WAIT(x)ING: dec ticks, tocks at this point.
-        // NOT_WAITING:
-        // Parse commands and execute commands
-        // if WAIT command
-        // set/trigger WAIT(x)ING
-        // else
-        // WAIT(x)ING: X milliseconds: return immediately
+
         if (waiting) return;   
         
         if (noteOff) {
-            noteMidi = (int) Math.round(((((Math.sin(cyc)+1.D)/2D) *40.0D)+40.0D));
-            channel.noteOn(noteMidi, scaleVolume(127*noteActive));
-
+            noteMidi1 = (int) Math.round(((((Math.sin(cyc)+1.D)/2D) *40.0D)+40.0D));
+            noteMidi2 = noteMidi1 + ((int) (Math.random()*1.5D) ) + 5;
+            noteMidi3 = noteMidi1 + 10;
+            channel.noteOn(noteMidi1, scaleVolume(127*noteActive));
+            channel.noteOn(noteMidi2, scaleVolume(127*noteActive));
+            channel.noteOn(noteMidi3, scaleVolume(127*noteActive));
             setWait(2);
             noteOff=false;
-        }
-        if (!noteOff) {
-            channel.noteOff(noteMidi);
+        } else {
+            channel.noteOff(noteMidi1);
+            channel.noteOff(noteMidi2);
+            channel.noteOff(noteMidi3);
             setWait(1);
             noteOff = true;
         }
