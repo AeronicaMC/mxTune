@@ -48,20 +48,20 @@ public class PlayManager
     private static Map<String, String> groupsMembers = new HashMap<String, String>();
     private static Map<String, String> playStatus = new HashMap<String, String>();
 
-    public void setPlaying(String playerName) {playStatus.put(playerName, GROUPS.PLAYING.name());}
+    private void setPlaying(String playerName) {playStatus.put(playerName, GROUPS.PLAYING.name());}
 
-    public void setQueued(String playerName) {playStatus.put(playerName, GROUPS.QUEUED.name());}
+    private void setQueued(String playerName) {playStatus.put(playerName, GROUPS.QUEUED.name());}
 
-    public void setDone(String playerName) {if (playStatus.containsKey(playStatus)) playStatus.remove(playerName);}
+    @SuppressWarnings("unused")
+    private void setDone(String playerName) {if (playStatus.containsKey(playStatus)) playStatus.remove(playerName);}
 
     /**
      * 
      * @param playerIn
-     * @param stackIn   can be null for block instruments
      * @param pos       position of block instrument
      * @param isPlaced  true is this is a block instrument
      */
-    public void playMusic(EntityPlayer playerIn, ItemStack stackIn, BlockPos pos, boolean isPlaced)
+    public void playMusic(EntityPlayer playerIn, BlockPos pos, boolean isPlaced)
     {
         ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(pos, playerIn, isPlaced);
         if (sheetMusic != null)
@@ -69,80 +69,50 @@ public class PlayManager
             NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
             if (contents != null)
             {
-                /**
-                 * The packet itself notifies the server to grab the NBT item
-                 * from the ItemStack and distribute it to all clients.
-                 */
+                String playerName = playerIn.getDisplayName().getUnformattedText();
+                String title = sheetMusic.getDisplayName();
+                String mml = contents.getString("MML");
+
+                mml = mml.replace("MML@", "MML@I" + getPatch(pos, playerIn, isPlaced));
+                ModLogger.logInfo("MML Title: " + title);
+                ModLogger.logInfo("MML Sub25: " + mml.substring(0, (mml.length() >= 25 ? 25 : mml.length())));
+
                 if (GROUPS.getMembersGroupID(playerIn.getDisplayName().getUnformattedText()) == null)
                 {
                     /** Solo Play */
-                    PlayManager.getInstance().playSolo(playerIn, pos, isPlaced);
-                    ModLogger.logInfo("ItemInstrument#playMusic playSolo");
+                    PlayManager.getInstance().playSolo(playerIn, title, mml, playerName);
+                    ModLogger.logInfo("playMusic playSolo");
                 } else
                 {
                     /** Jam Play */
-                    PlayManager.getInstance().queueJam(playerIn, pos, isPlaced);
-                    ModLogger.logInfo("ItemInstrument#playMusic queueJam");
+                    PlayManager.getInstance().queueJam(playerIn, title, mml, playerName);
+                    ModLogger.logInfo("playMusic queueJam");
                 }                
             }
         }
     }
 
-    private void playSolo(EntityPlayer playerIn, BlockPos pos, boolean isPlaced)
+    private void playSolo(EntityPlayer playerIn, String title, String mml, String playerName)
     {
-        String playerName = playerIn.getDisplayName().getUnformattedText();
-        ModLogger.logInfo("PlayManager#playSolo: " + playerName);
-        ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(pos, playerIn, isPlaced);
-        if (sheetMusic == null) return;
-        NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
-        if (contents != null)
-        {
-            String title = sheetMusic.getDisplayName();
-            String mml = contents.getString("MML");
-
-            mml = mml.replace("MML@", "MML@I" + getPatch(pos, playerIn, isPlaced));
-            ModLogger.logInfo("playSolo MML Title: " + title);
-            ModLogger.logInfo("playSolo MML = " + mml.substring(0, (mml.length() >= 25 ? 25 : mml.length())));
-
-            PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playerName, title, mml);
-
-            PacketDispatcher.sendToAllAround(packetPlaySolo, playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, ModConfig.getListenerRange());
-
-            setPlaying(playerName);
-            syncStatus();
-        }        
+        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playerName, title, mml);
+        PacketDispatcher.sendToAllAround(packetPlaySolo, playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, ModConfig.getListenerRange());
+        setPlaying(playerName);
+        syncStatus();
     }
     
-    private void queueJam(EntityPlayer playerIn, BlockPos pos, boolean isPlaced)
+    private void queueJam(EntityPlayer playerIn, String title, String mml, String playerName)
     {
-        String playerName = playerIn.getDisplayName().getUnformattedText();
-        ModLogger.logInfo("PacketQueueJAM: " + playerName);
-        ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(pos, playerIn, isPlaced);
-        if (sheetMusic == null) return;
-        NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
-        if (contents != null)
+        String groupID = GroupManager.getInstance().getMembersGroupID(playerName);
+        /** Queue members parts */
+        this.queue(groupID, playerName, mml);
+        PacketDispatcher.sendTo(new QueueJamMessage("queue", "only"), (EntityPlayerMP) playerIn);
+        /** Only send the groups MML when the leader starts the JAM */
+        if (GroupManager.getInstance().isLeader(playerIn.getDisplayName().getUnformattedText()))
         {
-            String title = sheetMusic.getDisplayName();
-            String mml = contents.getString("MML");
-
-            mml = mml.replace("MML@", "MML@I" + getPatch(pos, playerIn, isPlaced));
-            ModLogger.logInfo("JAM Title: " + title);
-            ModLogger.logInfo("JAM MML = " + mml.substring(0, (mml.length() >= 25 ? 25 : mml.length())));
-
-            String groupID = GroupManager.getInstance().getMembersGroupID(playerName);
-
-            /** Queue members parts */
-            PlayManager.getInstance().queue(groupID, playerName, mml);
-            PacketDispatcher.sendTo(new QueueJamMessage("queue", "only"), (EntityPlayerMP) playerIn);
-
-            /** Only send the groups MML when the leader starts the JAM */
-            if (GroupManager.getInstance().isLeader(playerIn.getDisplayName().getUnformattedText()))
-            {
-                mml = PlayManager.getInstance().getMML(groupID);
-                PacketDispatcher.sendToAllAround(new PlayJamMessage(mml, groupID), playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, ModConfig.getListenerRange());
-                syncStatus();
-            }
-        }        
+            mml = this.getMML(groupID);
+            PacketDispatcher.sendToAllAround(new PlayJamMessage(mml, groupID), playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, ModConfig.getListenerRange());
+            syncStatus();
+        }
     }
 
     private int getPatch(BlockPos pos, EntityPlayer playerIn, boolean isPlaced)
@@ -162,7 +132,7 @@ public class PlayManager
         return 0;
     }
     
-    public void syncStatus()
+    private void syncStatus()
     {
         String buildStatus = " ";
         try
@@ -174,7 +144,6 @@ public class PlayManager
                 String playerName = (String) it.next();
                 buildStatus = buildStatus + playerName + "=" + playStatus.get(playerName) + " ";
             }
-
         } catch (Exception e)
         {
             ModLogger.logError(e.getLocalizedMessage());
@@ -183,7 +152,7 @@ public class PlayManager
         PacketDispatcher.sendToAll(new SyncStatusMessage(buildStatus.trim()));
     }
 
-    public void queue(String groupID, String memberName, String mml)
+    private void queue(String groupID, String memberName, String mml)
     {
         try
         {
@@ -205,7 +174,7 @@ public class PlayManager
      * @param groupID
      * @return
      */
-    public String getMML(String groupID)
+    private String getMML(String groupID)
     {
         String buildMML = " ";
         try

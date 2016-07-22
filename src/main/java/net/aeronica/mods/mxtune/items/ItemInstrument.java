@@ -82,7 +82,7 @@ public class ItemInstrument extends ItemBase implements IInstrument
             }
             if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && hand.equals(EnumHand.MAIN_HAND))
             {
-                PlayManager.getInstance().playMusic(playerIn, itemStackIn, pos, false);
+                PlayManager.getInstance().playMusic(playerIn, pos, false);
             }
         } else
         {

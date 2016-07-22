@@ -133,7 +133,7 @@ public class GuiMusicOptions extends GuiScreen
             ModLogger.logInfo("muteOption meta: " + muteOption + ", text: " + PlayerMusicDefImpl.EnumMuteOptions.byMetadata(muteOption).toString() +
                     ", enum: " + PlayerMusicDefImpl.EnumMuteOptions.byMetadata(muteOption).name());
             btn_muteOption.displayString = I18n.format(PlayerMusicDefImpl.EnumMuteOptions.byMetadata(muteOption).toString(), new Object[0]);
-            break;
+          break;
 
         case 1:
             /** Volume */
