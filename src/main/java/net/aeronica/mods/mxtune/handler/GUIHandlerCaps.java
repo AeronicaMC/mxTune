@@ -81,7 +81,7 @@ public class GUIHandlerCaps implements IGuiHandler
             return new GuiGroupJoin();
 
         case GuiMusicOptions.GUI_ID:
-            return new GuiMusicOptions();
+            return new GuiMusicOptions(playerIn);
             
         default:
             return null;

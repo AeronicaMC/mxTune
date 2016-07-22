@@ -20,6 +20,7 @@ import java.util.concurrent.Callable;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.util.MusicOptionsUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
@@ -53,29 +54,29 @@ public class PlayerMusicOptionsCapability
             {
                 event.addCapability(new ResourceLocation(MXTuneMain.MODID, "IPlayerMusicOptions"), new ICapabilitySerializable<NBTTagCompound>()
                 {
-                    final IPlayerMusicOptions optionsInst = MXTuneMain.MUSIC_OPTIONS.getDefaultInstance();
+                    final IPlayerMusicOptions optionsInst = MusicOptionsUtil.MUSIC_OPTIONS.getDefaultInstance();
 
                     @Override
                     public boolean hasCapability(Capability<?> capability, EnumFacing facing)
                     {
-                        return capability == MXTuneMain.MUSIC_OPTIONS;
+                        return capability == MusicOptionsUtil.MUSIC_OPTIONS;
                     }
 
                     @SuppressWarnings("unchecked")
                     @Override
                     public <T> T getCapability(Capability<T> capability, EnumFacing facing)
                     {
-                        return capability == MXTuneMain.MUSIC_OPTIONS ? (T) optionsInst : null;
+                        return capability == MusicOptionsUtil.MUSIC_OPTIONS ? (T) optionsInst : null;
                     }
 
                     public NBTTagCompound serializeNBT()
                     {
-                        return (NBTTagCompound) MXTuneMain.MUSIC_OPTIONS.getStorage().writeNBT(MXTuneMain.MUSIC_OPTIONS, optionsInst, null);
+                        return (NBTTagCompound) MusicOptionsUtil.MUSIC_OPTIONS.getStorage().writeNBT(MusicOptionsUtil.MUSIC_OPTIONS, optionsInst, null);
                     }
 
                     public void deserializeNBT(NBTTagCompound nbt)
                     {
-                        MXTuneMain.MUSIC_OPTIONS.getStorage().readNBT(MXTuneMain.MUSIC_OPTIONS, optionsInst, null, nbt);
+                        MusicOptionsUtil.MUSIC_OPTIONS.getStorage().readNBT(MusicOptionsUtil.MUSIC_OPTIONS, optionsInst, null, nbt);
                     }
                 });
             }
@@ -84,8 +85,8 @@ public class PlayerMusicOptionsCapability
         @SubscribeEvent
         public void OnPlayerClone(PlayerEvent.Clone event)
         {
-            IPlayerMusicOptions dead = event.getOriginal().getCapability(MXTuneMain.MUSIC_OPTIONS, null);
-            IPlayerMusicOptions live = event.getEntityPlayer().getCapability(MXTuneMain.MUSIC_OPTIONS, null);
+            IPlayerMusicOptions dead = event.getOriginal().getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
+            IPlayerMusicOptions live = event.getEntityPlayer().getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
             live.setSParams(dead.getSParam1(), dead.getSParam2(), dead.getSParam3());
             live.setMidiVolume(dead.getMidiVolume());
             live.setMuteOption(dead.getMuteOption());
@@ -95,7 +96,7 @@ public class PlayerMusicOptionsCapability
         {
             if (event.getEntity() instanceof EntityPlayerMP)
             {
-                IPlayerMusicOptions inst = ((EntityPlayerMP) event.getEntity()).getCapability(MXTuneMain.MUSIC_OPTIONS, null);
+                IPlayerMusicOptions inst = ((EntityPlayerMP) event.getEntity()).getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
                 inst.syncAll((EntityPlayer) event.getEntity());
             }
         }
@@ -103,7 +104,7 @@ public class PlayerMusicOptionsCapability
         @SubscribeEvent
         public void onPlayerLoggedInEvent(PlayerLoggedInEvent event)
         {
-            IPlayerMusicOptions inst = event.player.getCapability(MXTuneMain.MUSIC_OPTIONS, null);
+            IPlayerMusicOptions inst = event.player.getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
             inst.syncAll(event.player);
         }
 

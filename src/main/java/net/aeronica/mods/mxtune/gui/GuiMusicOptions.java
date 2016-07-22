@@ -26,12 +26,10 @@ import javax.sound.midi.Synthesizer;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.capabilities.IPlayerMusicOptions;
-import net.aeronica.mods.mxtune.capabilities.PlayerMusicDefImpl;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.MusicOptionsMessage;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.util.MusicOptionsUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -53,18 +51,15 @@ public class GuiMusicOptions extends GuiScreen
     private GuiLabel lbl_desc;
     
     private EntityPlayer player;
-    private IPlayerMusicOptions musicOptionsInstance;
-    
     private float midiVolume;
     private int muteOption;
     private int lastMuteOption = -1;
     
-    public GuiMusicOptions() {midiInit();}
+    public GuiMusicOptions(EntityPlayer playerIn) {this.player = playerIn; midiInit();}
     
     @Override
     public void updateScreen()
     {
-        // TODO Auto-generated method stub
         updateGuiElments();
         midiUpdate();
         super.updateScreen();
@@ -74,17 +69,15 @@ public class GuiMusicOptions extends GuiScreen
     public void initGui()
     {
         this.mc = Minecraft.getMinecraft();
-        player = this.mc.thePlayer;
-        TITLE = I18n.format("mxtune.gui.GuiMusicOptions.title", new Object[0]);
-        musicOptionsInstance = player.getCapability(MXTuneMain.MUSIC_OPTIONS, null);
-        midiVolume = musicOptionsInstance.getMidiVolume();
-        muteOption = musicOptionsInstance.getMuteOption();
+        TITLE = I18n.format("mxtune.gui.GuiMusicOptions.title");
+        midiVolume = MusicOptionsUtil.getMidiVolume(player);
+        muteOption = MusicOptionsUtil.getMuteOption(player);
         
         this.buttonList.clear();
 
         int y = 30;
         int x = (width - 200) / 2;
-        btn_muteOption = new GuiButtonExt(0, x, y, 200, 20, (PlayerMusicDefImpl.EnumMuteOptions.byMetadata(muteOption).toString()));
+        btn_muteOption = new GuiButtonExt(0, x, y, 200, 20, (MusicOptionsUtil.EnumMuteOptions.byMetadata(muteOption).toString()));
         btn_midiVolume = new GuiSliderMX(1, x, y+=25, 200, 20, I18n.format("mxtune.gui.slider.midiVolume"), midiVolume*100F, 0F, 100F, 1F);
         
         btn_cancel = new GuiButtonExt(2, x, y+=25, 200, 20, I18n.format("gui.cancel"));
@@ -129,10 +122,10 @@ public class GuiMusicOptions extends GuiScreen
         {
         case 0:
             /** Increment Mute Option */
-            this.muteOption = ((++this.muteOption) % PlayerMusicDefImpl.EnumMuteOptions.values().length);
-            ModLogger.logInfo("muteOption meta: " + muteOption + ", text: " + PlayerMusicDefImpl.EnumMuteOptions.byMetadata(muteOption).toString() +
-                    ", enum: " + PlayerMusicDefImpl.EnumMuteOptions.byMetadata(muteOption).name());
-            btn_muteOption.displayString = I18n.format(PlayerMusicDefImpl.EnumMuteOptions.byMetadata(muteOption).toString(), new Object[0]);
+            this.muteOption = ((++this.muteOption) % MusicOptionsUtil.EnumMuteOptions.values().length);
+            ModLogger.logInfo("muteOption meta: " + muteOption + ", text: " + MusicOptionsUtil.EnumMuteOptions.byMetadata(muteOption).toString() +
+                    ", enum: " + MusicOptionsUtil.EnumMuteOptions.byMetadata(muteOption).name());
+            btn_muteOption.displayString = MusicOptionsUtil.EnumMuteOptions.byMetadata(muteOption).toString();
           break;
 
         case 1:
@@ -155,16 +148,18 @@ public class GuiMusicOptions extends GuiScreen
     private void updateGuiElments()
     {
         this.midiVolume = btn_midiVolume.getValue() / 100;
-        if (this.midiVolume == 0F)
+        if ((this.midiVolume == 0F) && this.lastMuteOption == -1)
         {
             this.lastMuteOption = this.muteOption;
-            btn_muteOption.displayString = PlayerMusicDefImpl.EnumMuteOptions.byMetadata(PlayerMusicDefImpl.EnumMuteOptions.ALL.getMetadata()).toString();
+            this.muteOption = MusicOptionsUtil.EnumMuteOptions.ALL.getMetadata();
+            btn_muteOption.displayString = MusicOptionsUtil.EnumMuteOptions.byMetadata(this.muteOption).toString();
             btn_muteOption.enabled = false;
-        } else if (this.lastMuteOption != -1)
+        }
+        if ((this.midiVolume != 0F) && this.lastMuteOption != -1)
         {
             btn_muteOption.enabled = true;
             this.muteOption = this.lastMuteOption;
-            btn_muteOption.displayString = PlayerMusicDefImpl.EnumMuteOptions.byMetadata(this.lastMuteOption).toString();
+            btn_muteOption.displayString = MusicOptionsUtil.EnumMuteOptions.byMetadata(this.muteOption).toString();
             this.lastMuteOption = -1;
         }   
     }

@@ -16,18 +16,15 @@
  */
 package net.aeronica.mods.mxtune.capabilities;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.SyncPlayerMusicOptionsMessage;
-import net.minecraft.client.resources.I18n;
+import net.aeronica.mods.mxtune.util.MusicOptionsUtil;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.IStringSerializable;
 
 public class PlayerMusicDefImpl implements IPlayerMusicOptions
 {
-
     /** Music Options*/
     private int muteOption;
     private float midiVolume;
@@ -110,75 +107,9 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     
     public void sync(EntityPlayer playerIn, byte propertyID)
     {
-        if (!playerIn.getEntityWorld().isRemote)
+        if (playerIn != null && !playerIn.getEntityWorld().isRemote)
         {
-            PacketDispatcher.sendTo(new SyncPlayerMusicOptionsMessage(playerIn.getCapability(MXTuneMain.MUSIC_OPTIONS, null), propertyID), (EntityPlayerMP) playerIn);
+            PacketDispatcher.sendTo(new SyncPlayerMusicOptionsMessage(playerIn.getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null), propertyID), (EntityPlayerMP) playerIn);
         }
-    }
-
-//    @Override
-//    public NBTTagCompound serializeNBT()
-//    {
-//        NBTTagCompound properties = new NBTTagCompound();
-//        properties.setFloat("midiVolume", this.midiVolume);
-//        properties.setInteger("muteOption", this.muteOption);
-//        properties.setString("sParam1", this.sParam1);
-//        properties.setString("sParam2", this.sParam2);
-//        properties.setString("sParam3", this.sParam3);
-//        return properties; // compound;
-//    }
-//
-//    @Override
-//    public void deserializeNBT(NBTTagCompound nbt)
-//    {
-//        this.midiVolume = nbt.getFloat("midiVolume");
-//        this.muteOption = nbt.getInteger("muteOption");
-//        this.sParam1 = nbt.getString("sParam1");
-//        this.sParam2 = nbt.getString("sParam2");
-//        this.sParam3 = nbt.getString("sParam3");
-//    }
-    
-    public static enum EnumMuteOptions implements IStringSerializable
-    {
-        OFF(0, "mxtune.gui.musicOptions.muteOption.off"),
-        OTHERS(1, "mxtune.gui.musicOptions.muteOption.others"),
-        BLACKLIST(2, "mxtune.gui.musicOptions.muteOption.blacklist"),
-        WHITELIST(3, "mxtune.gui.musicOptions.muteOption.whitelist"),
-        ALL(4, "mxtune.gui.musicOptions.muteOption.all");
-
-        private final int meta;
-        private final String translateKey;
-        private static final EnumMuteOptions[] META_LOOKUP = new EnumMuteOptions[values().length];
-
-        private EnumMuteOptions(int meta, String translateKey)
-        {
-            this.meta = meta;
-            this.translateKey = translateKey;
-        }
-        
-        public int getMetadata() {return this.meta;}
-        
-        static
-        {
-            for (EnumMuteOptions value : values())
-            {
-                META_LOOKUP[value.getMetadata()] = value;
-            }
-        }
-
-        public static EnumMuteOptions byMetadata(int meta)
-        {
-            if (meta < 0 || meta >= META_LOOKUP.length)
-            {
-                meta = 0;
-            }
-            return META_LOOKUP[meta];
-        }
-        
-        @Override
-        public String toString(){return I18n.format(this.translateKey);}  
-
-        @Override
-        public String getName() {return this.translateKey;}        
     }
 }

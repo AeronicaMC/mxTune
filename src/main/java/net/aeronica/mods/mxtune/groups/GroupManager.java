@@ -20,11 +20,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.capabilities.IPlayerMusicOptions;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.JoinGroupMessage;
 import net.aeronica.mods.mxtune.network.client.SyncGroupMessage;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.util.MusicOptionsUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -407,10 +407,7 @@ public class GroupManager
                 if (targetGroup != null && targetGroup.leaderName.equalsIgnoreCase(playerTarget.getDisplayName()
                         .getUnformattedText()) /* && initatorGroup == null */)
                 {
-
-                    IPlayerMusicOptions props = playerInitiator.getCapability(MXTuneMain.MUSIC_OPTIONS, null);
-                    props.setSParams(playerInitiator, targetGroup.groupID, "", "");
-
+                    MusicOptionsUtil.setSParams(playerInitiator, targetGroup.groupID, "", "");
                     PacketDispatcher.sendTo(new JoinGroupMessage(targetGroup.groupID), (EntityPlayerMP) playerInitiator);
 
                     /*

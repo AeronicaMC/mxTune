@@ -36,6 +36,14 @@ public interface IPlayerMusicOptions
 
     public void setMuteOption(int muteOptionIn);
 
+    /**
+     * setSParams - Strings will be set and sync'd to the specified players client
+     * 
+     * playerIn
+     * sParam1
+     * sParam2
+     * sParam3
+     */
     public void setSParams(EntityPlayer playerIn, String sParam1, String sParam2, String sParam3);
     
     public void setSParams(String sParam1, String sParam2, String sParam3);

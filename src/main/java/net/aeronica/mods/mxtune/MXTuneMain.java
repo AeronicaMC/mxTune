@@ -16,7 +16,6 @@
  */
 package net.aeronica.mods.mxtune;
 
-import net.aeronica.mods.mxtune.capabilities.IPlayerMusicOptions;
 import net.aeronica.mods.mxtune.capabilities.PlayerMusicOptionsCapability;
 import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
 import net.aeronica.mods.mxtune.groups.GroupManager;
@@ -27,8 +26,6 @@ import net.aeronica.mods.mxtune.proxy.IProxy;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.MusicTab;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -43,7 +40,7 @@ public class MXTuneMain
 {
     public static final String MODID = "mxtune";
     public static final String MODNAME = "mxTune";
-    public static final String VERSION = "0.0.3.0-dev";
+    public static final String VERSION = "${version}";
     public static final String GUIFACTORY = "net.aeronica.mods.mxtune.config.ModGuiFactory"; 
 
     @Mod.Instance(MODID)
@@ -55,9 +52,6 @@ public class MXTuneMain
     public static final CreativeTabs TAB_MUSIC = new MusicTab(CreativeTabs.getNextID(), MODNAME);
     public static final GroupManager GM = GroupManager.getInstance();
     public static final PlayManager PM = PlayManager.getInstance();
-
-    @CapabilityInject(IPlayerMusicOptions.class)
-    public static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = null;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)

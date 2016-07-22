@@ -22,6 +22,7 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.gui.GuiPlaying;
 import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
+import net.aeronica.mods.mxtune.util.MusicOptionsUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
@@ -94,8 +95,7 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
              */
 
             String mml = new String(playerName + "=" + musicText);
-            float volume = player.getCapability(MXTuneMain.MUSIC_OPTIONS, null).getMidiVolume();
-            MMLManager.getInstance().mmlPlay(mml, playerName, true, volume);
+            MMLManager.getInstance().mmlPlay(mml, playerName, true, MusicOptionsUtil.getMidiVolume(player));
 
             /** Only open the playing gui for the player who is playing */
             if (player.getDisplayName().getUnformattedText().equalsIgnoreCase(playerName))

@@ -18,9 +18,9 @@ package net.aeronica.mods.mxtune.network.client;
 
 import java.io.IOException;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
+import net.aeronica.mods.mxtune.util.MusicOptionsUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
@@ -58,8 +58,7 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
     {
         if (side.isClient())
         {
-            float volume = player.getCapability(MXTuneMain.MUSIC_OPTIONS, null).getMidiVolume();
-            MMLManager.getInstance().mmlPlay(jamMML, groupID, true, volume);
+            MMLManager.getInstance().mmlPlay(jamMML, groupID, true, MusicOptionsUtil.getMidiVolume(player));
         }
     }
 }

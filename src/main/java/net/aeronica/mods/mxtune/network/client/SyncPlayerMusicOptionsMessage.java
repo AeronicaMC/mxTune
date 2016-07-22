@@ -18,11 +18,11 @@ package net.aeronica.mods.mxtune.network.client;
 
 import java.io.IOException;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.capabilities.IPlayerMusicOptions;
 import net.aeronica.mods.mxtune.capabilities.PlayerMusicDefImpl;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.util.MusicOptionsUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
@@ -69,7 +69,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             /** create a new tag compound */
             this.data = new NBTTagCompound();
             /** and save our player's data into it */
-            this.data = (NBTTagCompound) MXTuneMain.MUSIC_OPTIONS.writeNBT(inst, null);
+            this.data = (NBTTagCompound) MusicOptionsUtil.MUSIC_OPTIONS.writeNBT(inst, null);
             break;
 
         case PlayerMusicDefImpl.SYNC_MIDI_VOLUME:
@@ -144,11 +144,11 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         if (side.isClient())
         {
             ModLogger.logInfo("Synchronizing Music Options player extended properties data on CLIENT");
-            final IPlayerMusicOptions inst = player.getCapability(MXTuneMain.MUSIC_OPTIONS, null);
+            final IPlayerMusicOptions inst = player.getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
             switch (this.propertyID)
             {
             case PlayerMusicDefImpl.SYNC_ALL:
-                MXTuneMain.MUSIC_OPTIONS.readNBT(inst, null, this.data);
+                MusicOptionsUtil.MUSIC_OPTIONS.readNBT(inst, null, this.data);
                 break;
             case PlayerMusicDefImpl.SYNC_MIDI_VOLUME:
                 inst.setMidiVolume(this.midiVolume);

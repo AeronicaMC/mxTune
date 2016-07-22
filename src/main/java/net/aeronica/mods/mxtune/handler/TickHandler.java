@@ -51,9 +51,7 @@ public class TickHandler
     private boolean paused = false;
 
     private TickHandler() {}
-
     private static class TickHandlerHolder {private static final TickHandler INSTANCE = new TickHandler();}
-
     public static TickHandler getInstance() {return TickHandlerHolder.INSTANCE;}
 
     @SubscribeEvent
