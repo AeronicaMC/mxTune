@@ -40,7 +40,7 @@ public class MXTuneMain
 {
     public static final String MODID = "mxtune";
     public static final String MODNAME = "mxTune";
-    public static final String VERSION = "${version}";
+    public static final String VERSION = "{@version:mod}";
     public static final String GUIFACTORY = "net.aeronica.mods.mxtune.config.ModGuiFactory"; 
 
     @Mod.Instance(MODID)

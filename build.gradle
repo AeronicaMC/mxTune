@@ -46,6 +46,8 @@ minecraft {
         project.version = project.version + "." + new Date().format('yyyy.MM.dd.HH.mm.ss')
     }
     
+    replace "{@version:mod}":project.version
+    
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
     // stable_#            stables are built at the discretion of the MCP team.
@@ -125,7 +127,6 @@ processResources
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-        include 'MXTuneMain.java'
                 
         // replace version and mcversion
         expand 'version':project.version, 'mcversion':project.minecraft.version
