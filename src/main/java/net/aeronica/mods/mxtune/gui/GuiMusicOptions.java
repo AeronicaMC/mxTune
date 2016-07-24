@@ -280,11 +280,12 @@ public class GuiMusicOptions extends GuiScreen
             noteMidi3 = noteMidi1 + 9;
             noteMidi4 = ((run1+=3) %24) + 60;
             noteMidi5 = ((run2-=4) %10) + 40;
-            channel.noteOn(noteMidi1, scaleVolume(127*noteActive));
-            channel.noteOn(noteMidi2, scaleVolume(127*noteActive));
-            channel.noteOn(noteMidi3, scaleVolume(127*noteActive));
-            channel.noteOn(noteMidi4, scaleVolume(127*noteActive));
-            channel.noteOn(noteMidi5, scaleVolume(127*noteActive));
+            int scaledVolume =  scaleVolume(127*noteActive);
+            channel.noteOn(noteMidi1, scaledVolume);
+            channel.noteOn(noteMidi2, scaledVolume);
+            channel.noteOn(noteMidi3, scaledVolume);
+            channel.noteOn(noteMidi4, scaledVolume);
+            channel.noteOn(noteMidi5, scaledVolume);
             setWait(2);
             noteOff=false;
         } else {
