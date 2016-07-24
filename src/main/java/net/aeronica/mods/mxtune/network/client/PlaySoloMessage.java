@@ -19,6 +19,7 @@ package net.aeronica.mods.mxtune.network.client;
 import java.io.IOException;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.gui.GuiPlaying;
 import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
@@ -36,6 +37,7 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
     String musicText;
     String playerName;
     BlockPos pos;
+    boolean isPlaced;
 
     public PlaySoloMessage() {}
 
@@ -45,22 +47,25 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
         this.musicTitle = "";
         this.musicText = "";
         this.pos = new BlockPos(0, 0, 0);
+        this.isPlaced = false;
     }
 
-    public PlaySoloMessage(String playerName, String musicTitle, String musicText)
+    public PlaySoloMessage(String playerName, String musicTitle, String musicText, boolean isPlaced)
     {
         this.playerName = playerName;
         this.musicTitle = musicTitle;
         this.musicText = musicText;
         this.pos = new BlockPos(0, 0, 0);
+        this.isPlaced = isPlaced;
     }
 
-    public PlaySoloMessage(String playerName, BlockPos pos)
+    public PlaySoloMessage(String playerName, BlockPos pos, boolean isPlaced)
     {
         this.playerName = playerName;
         this.musicTitle = "";
         this.musicText = "";
         this.pos = pos;
+        this.isPlaced = isPlaced;
     }
 
     @Override
@@ -70,6 +75,7 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
         musicTitle = ByteBufUtils.readUTF8String(buffer);
         musicText = ByteBufUtils.readUTF8String(buffer);
         pos = new BlockPos(ByteBufUtils.readVarInt(buffer, 5), ByteBufUtils.readVarInt(buffer, 5), ByteBufUtils.readVarInt(buffer, 5));
+        isPlaced = (ByteBufUtils.readVarShort(buffer)==1);
     }
 
     @Override
@@ -81,6 +87,7 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
         ByteBufUtils.writeVarInt(buffer, pos.getX(), 5);
         ByteBufUtils.writeVarInt(buffer, pos.getY(), 5);
         ByteBufUtils.writeVarInt(buffer, pos.getZ(), 5);
+        ByteBufUtils.writeVarShort(buffer, isPlaced?1:0);
     }
 
     @Override
@@ -100,7 +107,7 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
             /** Only open the playing gui for the player who is playing */
             if (player.getDisplayName().getUnformattedText().equalsIgnoreCase(playerName))
             {
-                player.openGui(MXTuneMain.instance, GuiPlaying.GUI_ID, player.worldObj, 0,0,0);
+                if (isPlaced | ModConfig.getSoloPlayWhileWalking()==false) player.openGui(MXTuneMain.instance, GuiPlaying.GUI_ID, player.worldObj, 0,0,0);
             }
         }
     }

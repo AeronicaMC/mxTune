@@ -28,7 +28,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     /** Music Options*/
     private int muteOption;
     private float midiVolume;
-    /** Generic string for passing params from server to client */
+    /** Strings for passing parameters from server to client: for a GUI for example */
     private String sParam1, sParam2, sParam3;
 
     public PlayerMusicDefImpl()

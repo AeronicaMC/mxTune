@@ -18,6 +18,8 @@ mxtune.configgui.ctgy.general=mxTune General Settings
 
 mxtune.configgui.listenerRange=Listener Range
 mxtune.configgui.listenerRange.tooltip=The radius around a music source in blocks in which a player can hear music.
+mxtune.configgui.soloPlayWhileWalking=Can Play Music While Walking
+mxtune.configgui.soloPlayWhileWalking.tooltip=If False the normal Playing GUI will be used. If True players using hand held instruments will be able to walk around while playing. If the player switches items while playing, the music will stop.
 
 mxtune.configgui.ctgy.client.tooltip=mxTune Client Settings
 mxtune.configgui.ctgy.client=mxTune Client Settings

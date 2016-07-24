@@ -23,7 +23,6 @@ import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.gui.GuiPlaying;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
@@ -35,6 +34,7 @@ public class QueueJamMessage extends AbstractClientMessage<QueueJamMessage>
     String musicTitle;
     String musicText;
     BlockPos pos;
+    boolean isPlaced;
     GroupManager GM = GroupManager.getInstance();
 
     public QueueJamMessage()
@@ -42,20 +42,15 @@ public class QueueJamMessage extends AbstractClientMessage<QueueJamMessage>
         this.musicTitle = "";
         this.musicText = "";
         this.pos = new BlockPos(0, 0, 0);
+        this.isPlaced = false;
     }
 
-    public QueueJamMessage(BlockPos pos)
-    {
-        this.musicTitle = "";
-        this.musicText = "";
-        this.pos = pos;
-    }
-
-    public QueueJamMessage(String musicTitle, String musicText)
+    public QueueJamMessage(String musicTitle, String musicText, boolean isPlaced)
     {
         this.musicTitle = musicTitle;
         this.musicText = musicText;
         this.pos = new BlockPos(0, 0, 0);
+        this.isPlaced = isPlaced;
     }
 
     @Override
@@ -64,6 +59,7 @@ public class QueueJamMessage extends AbstractClientMessage<QueueJamMessage>
         musicTitle = ByteBufUtils.readUTF8String(buffer);
         musicText = ByteBufUtils.readUTF8String(buffer);
         pos = new BlockPos(ByteBufUtils.readVarInt(buffer, 5), ByteBufUtils.readVarInt(buffer, 5), ByteBufUtils.readVarInt(buffer, 5));
+        isPlaced = (ByteBufUtils.readVarShort(buffer)==1);
     }
 
     @Override
@@ -74,6 +70,7 @@ public class QueueJamMessage extends AbstractClientMessage<QueueJamMessage>
         ByteBufUtils.writeVarInt(buffer, pos.getX(), 5);
         ByteBufUtils.writeVarInt(buffer, pos.getY(), 5);
         ByteBufUtils.writeVarInt(buffer, pos.getZ(), 5);
+        ByteBufUtils.writeVarShort(buffer, isPlaced?1:0);
     }
 
     @Override
@@ -94,8 +91,7 @@ public class QueueJamMessage extends AbstractClientMessage<QueueJamMessage>
 
                 if (thePlayer.getDisplayName().getUnformattedText().toLowerCase().contentEquals(player.getDisplayName().getUnformattedText().toLowerCase()))
                 {
-                    ModLogger.logInfo("PacketQueueJAM Client Side Packet - Open GuiPLaying!");
-                    thePlayer.openGui(MXTuneMain.instance, GuiPlaying.GUI_ID, thePlayer.worldObj, (int) thePlayer.posX, (int) thePlayer.posY, (int) thePlayer.posZ);
+                    thePlayer.openGui(MXTuneMain.instance, GuiPlaying.GUI_ID, thePlayer.worldObj, 0,0,0);
                 }
             }
         }

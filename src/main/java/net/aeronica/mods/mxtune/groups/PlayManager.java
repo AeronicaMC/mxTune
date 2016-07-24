@@ -25,6 +25,7 @@ import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
+import net.aeronica.mods.mxtune.network.bidirectional.StopPlayMessage;
 import net.aeronica.mods.mxtune.network.client.PlayJamMessage;
 import net.aeronica.mods.mxtune.network.client.PlaySoloMessage;
 import net.aeronica.mods.mxtune.network.client.QueueJamMessage;
@@ -52,6 +53,7 @@ public class PlayManager
 
     private void setQueued(String playerName) {playStatus.put(playerName, GROUPS.QUEUED.name());}
 
+    
     @SuppressWarnings("unused")
     private void setDone(String playerName) {if (playStatus.containsKey(playStatus)) playStatus.remove(playerName);}
 
@@ -80,32 +82,32 @@ public class PlayManager
                 if (GROUPS.getMembersGroupID(playerIn.getDisplayName().getUnformattedText()) == null)
                 {
                     /** Solo Play */
-                    PlayManager.getInstance().playSolo(playerIn, title, mml, playerName);
+                    PlayManager.getInstance().playSolo(playerIn, title, mml, playerName, isPlaced);
                     ModLogger.logInfo("playMusic playSolo");
                 } else
                 {
                     /** Jam Play */
-                    PlayManager.getInstance().queueJam(playerIn, title, mml, playerName);
+                    PlayManager.getInstance().queueJam(playerIn, title, mml, playerName, isPlaced);
                     ModLogger.logInfo("playMusic queueJam");
                 }                
             }
         }
     }
 
-    private void playSolo(EntityPlayer playerIn, String title, String mml, String playerName)
+    private void playSolo(EntityPlayer playerIn, String title, String mml, String playerName, boolean isPlaced)
     {
-        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playerName, title, mml);
+        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playerName, title, mml, isPlaced);
         PacketDispatcher.sendToAllAround(packetPlaySolo, playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, ModConfig.getListenerRange());
         setPlaying(playerName);
         syncStatus();
     }
     
-    private void queueJam(EntityPlayer playerIn, String title, String mml, String playerName)
+    private void queueJam(EntityPlayer playerIn, String title, String mml, String playerName, boolean isPlaced)
     {
         String groupID = GroupManager.getInstance().getMembersGroupID(playerName);
         /** Queue members parts */
         this.queue(groupID, playerName, mml);
-        PacketDispatcher.sendTo(new QueueJamMessage("queue", "only"), (EntityPlayerMP) playerIn);
+        PacketDispatcher.sendTo(new QueueJamMessage("queue", "only", isPlaced), (EntityPlayerMP) playerIn);
         /** Only send the groups MML when the leader starts the JAM */
         if (GroupManager.getInstance().isLeader(playerIn.getDisplayName().getUnformattedText()))
         {
@@ -115,6 +117,21 @@ public class PlayManager
         }
     }
 
+    public boolean isPlayerPlaying(String playID) {return (GROUPS.getIndex(playID) & 2) == 2; }
+    /**
+     * Stop the playing MML for the specified playID (player name).
+     * 
+     * @param playID - The players name - e.g. (EntityPlayer) player.getDisplayName().getUnformattedText()
+     */
+    public void stopMusic(String playID)
+    {
+        if (isPlayerPlaying(playID))
+        {
+            this.dequeueMember(playID);
+            PacketDispatcher.sendToAll(new StopPlayMessage(playID));
+        }
+    }
+    
     private int getPatch(BlockPos pos, EntityPlayer playerIn, boolean isPlaced)
     {
         if (isPlaced)
@@ -149,6 +166,7 @@ public class PlayManager
             ModLogger.logError(e.getLocalizedMessage());
             e.printStackTrace();
         }
+        GROUPS.setClientPlayStatuses(buildStatus.trim());
         PacketDispatcher.sendToAll(new SyncStatusMessage(buildStatus.trim()));
     }
 

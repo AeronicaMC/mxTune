@@ -37,15 +37,25 @@ public interface IPlayerMusicOptions
     public void setMuteOption(int muteOptionIn);
 
     /**
-     * setSParams - Strings will be set and sync'd to the specified players client
+     * Strings will be set and sync'd to the specified players client
+     * It should be called on the server side only. Used to
+     * store and send ad hoc parameters to the client. 
      * 
-     * playerIn
-     * sParam1
-     * sParam2
-     * sParam3
+     * @param playerIn
+     * @param sParam1
+     * @param sParam2
+     * @param sParam3
      */
     public void setSParams(EntityPlayer playerIn, String sParam1, String sParam2, String sParam3);
     
+    /**
+     * Strings will be set on the side it's called on. Used to
+     * store and send ad hoc parameters to the client. 
+     * 
+     * @param sParam1
+     * @param sParam2
+     * @param sParam3
+     */
     public void setSParams(String sParam1, String sParam2, String sParam3);
 
     public String getSParam1();
@@ -54,11 +64,19 @@ public interface IPlayerMusicOptions
 
     public String getSParam3();
     
+    /**
+     * Sync all properties for the specified player to the client.
+     * 
+     * @param playerIn
+     */
     public void syncAll(EntityPlayer playerIn);
     
+    /**
+     * Sync the specified property ID for the specified player
+     * to the client.
+     * 
+     * @param playerIn
+     * @param propertyID
+     */
     public void sync(EntityPlayer playerIn, byte propertyID);
-
-   // public NBTTagCompound serializeNBT();
-
-    //public void deserializeNBT(NBTTagCompound nbt);
 }

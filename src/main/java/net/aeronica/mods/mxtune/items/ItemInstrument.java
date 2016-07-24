@@ -24,6 +24,7 @@ import net.aeronica.mods.mxtune.gui.GuiInstrumentInventory;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -37,6 +38,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
+/**
+ * @author Paul
+ *
+ */
 public class ItemInstrument extends ItemBase implements IInstrument
 {
     public ItemInstrument(String itemName)
@@ -82,7 +87,12 @@ public class ItemInstrument extends ItemBase implements IInstrument
             }
             if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && hand.equals(EnumHand.MAIN_HAND))
             {
-                PlayManager.getInstance().playMusic(playerIn, pos, false);
+                if (!PlayManager.getInstance().isPlayerPlaying(playerIn.getDisplayName().getUnformattedText()))
+                {
+                    /**TODO Make sure it is OKAY steal and to use this property like this */
+                    itemStackIn.setRepairCost(playerIn.inventory.currentItem+100);
+                    PlayManager.getInstance().playMusic(playerIn, pos, false);
+                }
             }
         } else
         {
@@ -104,6 +114,22 @@ public class ItemInstrument extends ItemBase implements IInstrument
         // process
         return EnumActionResult.FAIL;
     }
+
+    /* 
+     * Called each tick as long the item is on a player inventory. Uses by maps to check if is on a player hand and
+     * update it's contents.
+     */
+    @Override
+    public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected)
+    {
+        if (!worldIn.isRemote)
+        {
+            if (stack.getRepairCost() == (itemSlot+100) && !isSelected) {
+            stack.setRepairCost(0);
+            PlayManager.getInstance().stopMusic(entityIn.getDisplayName().getUnformattedText());
+            }
+        }
+    } 
 
     /**
      * This is where we decide how our item interacts with other entities
