@@ -166,7 +166,9 @@ public class PlayManager
             ModLogger.logError(e.getLocalizedMessage());
             e.printStackTrace();
         }
+        /** server side */
         GROUPS.setClientPlayStatuses(buildStatus.trim());
+        /** client side */
         PacketDispatcher.sendToAll(new SyncStatusMessage(buildStatus.trim()));
     }
 

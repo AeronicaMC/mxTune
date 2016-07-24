@@ -17,6 +17,8 @@
 package net.aeronica.mods.mxtune.gui;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.sound.midi.MidiChannel;
 import javax.sound.midi.MidiSystem;
@@ -35,8 +37,10 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiLabel;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fml.client.GuiScrollingList;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 public class GuiMusicOptions extends GuiScreen
@@ -203,30 +207,17 @@ public class GuiMusicOptions extends GuiScreen
         PacketDispatcher.sendToServer(new MusicOptionsMessage(midiVolume, muteOption));
     }
     
-    /** MIDI generator for testing volume - the John Cage Machine */
+    /** MIDI generator for testing volume level - the John Cage Machine */
     private Synthesizer synth = null;
     MidiChannel[]   channels;
     MidiChannel channel;
     
     private void midiInit()
     {
-        try
-        {
-            synth = MidiSystem.getSynthesizer();
-        }
-        catch (MidiUnavailableException e)
-        {
-            e.printStackTrace();
-        }
-
-        try
-        {
-            synth.open();
-        }
-        catch (MidiUnavailableException e)
-        {
-            e.printStackTrace();
-        }
+        try {synth = MidiSystem.getSynthesizer();}
+        catch (MidiUnavailableException e) {e.printStackTrace();}
+        try {synth.open();}
+        catch (MidiUnavailableException e) {e.printStackTrace();}
         channels = synth.getChannels();
         channel = channels[0];
         channel.programChange(2);
@@ -244,7 +235,7 @@ public class GuiMusicOptions extends GuiScreen
     private int tickLen = 1;
     private int noteMidi1, noteMidi2, noteMidi3, noteMidi4, noteMidi5, run1, run2;
     private long tick;
-    private long tock; // 1 ms
+    private long tock;
     private boolean waiting;
     private int noteActive = 0;
     private boolean noteOff = true;
@@ -314,4 +305,54 @@ public class GuiMusicOptions extends GuiScreen
         return temp;
     }
 
+    /** Lists - Players, Whitelist, Blacklist */
+    
+    private List<String> serverPlayerList; 
+    public static class GuiPlayerList extends GuiScrollingList
+    {
+        GuiMusicOptions parent;
+        private final List<String> serverPlayerList;
+        
+        public GuiPlayerList(GuiMusicOptions parent, ArrayList<String> serverPlayerList, int left, int top, int listWidth, int listHeight, int slotHeight)
+        {
+            super(parent.getMinecraftInstance(), listWidth, listHeight, top, top + listHeight, left, slotHeight, parent.width, parent.height);
+            this.parent = parent;
+            this.serverPlayerList = serverPlayerList;
+        }
+
+        @Override
+        protected int getSize()
+        {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        @Override
+        protected void elementClicked(int index, boolean doubleClick)
+        {
+            // TODO Auto-generated method stub
+            
+        }
+
+        @Override
+        protected boolean isSelected(int index)
+        {
+            // TODO Auto-generated method stub
+            return false;
+        }
+
+        @Override
+        protected void drawBackground()
+        {
+            // TODO Auto-generated method stub
+            
+        }
+
+        @Override
+        protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
+        {
+            // TODO Auto-generated method stub
+            
+        }
+    }
 }

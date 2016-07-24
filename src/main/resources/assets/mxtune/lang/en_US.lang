@@ -24,9 +24,6 @@ mxtune.configgui.soloPlayWhileWalking.tooltip=If False the normal Playing GUI wi
 mxtune.configgui.ctgy.client.tooltip=mxTune Client Settings
 mxtune.configgui.ctgy.client=mxTune Client Settings
 
-mxtune.configgui.muteMxTune=Mute mxTune
-mxtune.configgui.muteMxTune.tooltip=Prevents the player on this client from hearing any music. This will not stop a currently playing tune.
-
 mxtune.key.openParty=Open Party
 mxtune.key.openMusicOptions=Music Options
 

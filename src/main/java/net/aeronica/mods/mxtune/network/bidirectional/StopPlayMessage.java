@@ -65,8 +65,9 @@ public class StopPlayMessage extends AbstractMessage<StopPlayMessage>
     public void handleClientSide(EntityPlayer playerSP)
     {
         MMLManager.getInstance().mmlKill(playID, true);
-        if (Minecraft.getMinecraft().thePlayer.getDisplayName().getUnformattedText().equalsIgnoreCase(playID))
+        if (playerSP.getDisplayName().getUnformattedText().equalsIgnoreCase(playID))
         {
+            /** TODO: Need to consider tracking isPlaced for each group member for dealing with GUI or Riding player rooting */
             ModLogger.logInfo("PacketPlayStop: try to close Gui for " + playID);
             Minecraft mc = Minecraft.getMinecraft();
             /** close the playing GUI */

@@ -140,8 +140,8 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         lst_inst = new GuiInstruments(this, instrumentCache, instListWidth, this.getFontRenderer().FONT_HEIGHT + 2);
         btn_okay = new GuiButton(0, (this.lst_inst.getRight() + this.width / 2) - 75 + 30, this.height - 32, 75, 20, I18n.format("gui.done"));
         btn_canc = new GuiButton(1, (this.lst_inst.getRight() + this.width / 2) - 150 + 25, this.height - 32, 75, 20, I18n.format("gui.cancel"));
-        btn_play = new GuiButton(2, 10, this.height - 49, this.instListWidth, 20, "Play");
-        btn_stop = new GuiButton(3, 10, this.height - 27, this.instListWidth, 20, "Stop");
+        btn_play = new GuiButton(2, 10, this.height - 49, this.instListWidth, 20, I18n.format("mxtune.gui.button.play"));
+        btn_stop = new GuiButton(3, 10, this.height - 27, this.instListWidth, 20, I18n.format("mxtune.gui.button.stop"));
         this.buttonList.add(btn_okay);
         this.buttonList.add(btn_canc);
         this.buttonList.add(btn_play);
