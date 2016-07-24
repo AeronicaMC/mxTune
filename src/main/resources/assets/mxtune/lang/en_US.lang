@@ -44,3 +44,5 @@ mxtune.gui.musicOptions.label.description02=Only the VOLUME control is functiona
 mxtune.gui.musicOptions.label.description03=When you mouse over the slider a music sequence
 mxtune.gui.musicOptions.label.description04=is played. Adjust to your liking and click Done.
 mxtune.gui.musicOptions.label.description05=****************Under Construction****************
+
+mxtune.gui.musicPaperParse
