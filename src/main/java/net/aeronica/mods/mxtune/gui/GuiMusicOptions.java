@@ -307,6 +307,8 @@ public class GuiMusicOptions extends GuiScreen
     }
 
     /** Lists - Players, Whitelist, Blacklist */
+ // Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
+ // UUID does not work on the client.
     
     private List<String> serverPlayerList; 
     public static class GuiPlayerList extends GuiScrollingList

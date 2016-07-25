@@ -42,7 +42,8 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 
-
+// Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
+// UUID does not work on the client.
 public class GroupManager
 {
     private GroupManager() {}

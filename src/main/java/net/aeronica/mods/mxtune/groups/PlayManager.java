@@ -38,6 +38,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 
+// Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
+// UUID does not work on the client.
 public class PlayManager
 {
     /** Don't allow any other class to instantiate the PlayManager */

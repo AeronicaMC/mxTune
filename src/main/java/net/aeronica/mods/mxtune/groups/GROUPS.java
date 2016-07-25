@@ -20,6 +20,8 @@ import java.util.Map;
 
 import com.google.common.base.Splitter;
 
+// Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
+// UUID does not work on the client.
 public enum GROUPS
 {
     GROUP_ADD, MEMBER_ADD, MEMBER_REMOVE, MEMBER_PROMOTE, QUEUED, PLAYING;
