@@ -67,7 +67,7 @@ public class SheetMusicUtil
             ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(playerIn.getHeldItemMainhand());
             if (sheetMusic != null && sheetMusic.hasDisplayName() && (sheetMusic.getItem() instanceof IMusic) && sheetMusic.getTagCompound().hasKey("MusicBook", Constants.NBT.TAG_COMPOUND))
             {
-                ModLogger.debug("stackIn: " + sheetMusic.getItem().getUnlocalizedName() + ", Title: " + sheetMusic.getDisplayName());
+                //ModLogger.debug("stackIn: " + sheetMusic.getItem().getUnlocalizedName() + ", Title: " + sheetMusic.getDisplayName());
                 return sheetMusic;
             }
         }
@@ -81,7 +81,7 @@ public class SheetMusicUtil
         
         /** CapabilityItemHandler stuff */
         boolean hasCap = stackIn.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-        ModLogger.debug("SheetMusicUtils#getSheetMusic stackIn has ITEM_HANDLER_CAPABILITY " + hasCap);
+        //ModLogger.debug("SheetMusicUtils#getSheetMusic stackIn has ITEM_HANDLER_CAPABILITY " + hasCap);
         if (hasCap)
         {
             IItemHandler itemInv = stackIn.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
