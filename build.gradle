@@ -17,6 +17,9 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'java' // or 'groovy'. Must be explicitly applied
 apply plugin: 'com.github.johnrengelman.shadow'
 
+sourceCompatibility = JavaVersion.VERSION_1_6
+targetCompatibility = JavaVersion.VERSION_1_6
+
 /*
 // for people who want stable - not yet functional for MC 1.8.8 - we require the forgegradle 2.1 snapshot
 plugins {

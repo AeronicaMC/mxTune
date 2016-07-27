@@ -36,7 +36,7 @@ import net.minecraft.util.SoundCategory;
  */
 public class MMLManager
 {
-    private static final int NTHREDS = 2;
+    private static final int NTHREDS = 20;
     private static ExecutorService executor;
     private static volatile Map<String, MMLPlayer> mmlThreads = new HashMap<String, MMLPlayer>();
 
@@ -115,7 +115,7 @@ public class MMLManager
                 ModLogger.logInfo("MMLManager.mmlAbort(): " + resultID);
             }
         }
-        ModLogger.logInfo("MMLManager playerLogOff!");
+        ModLogger.logInfo("MMLManager playerLogOff or forced abort!");
     }
     
     public static void muteSounds()

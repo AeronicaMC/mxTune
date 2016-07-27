@@ -28,6 +28,7 @@ import javax.sound.midi.Synthesizer;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
+import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.MusicOptionsMessage;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -51,7 +52,7 @@ public class GuiMusicOptions extends GuiScreen
 
     private GuiButtonExt btn_muteOption;
     private GuiSliderMX btn_midiVolume;
-    private GuiButtonExt btn_cancel, btn_done;
+    private GuiButtonExt btn_cancel, btn_done, btn_reset;
     private GuiLabel lbl_desc;
     
     private EntityPlayer player;
@@ -73,7 +74,7 @@ public class GuiMusicOptions extends GuiScreen
     public void initGui()
     {
         this.mc = Minecraft.getMinecraft();
-        TITLE = I18n.format("mxtune.gui.GuiMusicOptions.title");
+        TITLE = I18n.format("mxtune.gui.musicOptions.title");
         midiVolume = MusicOptionsUtil.getMidiVolume(player);
         muteOption = MusicOptionsUtil.getMuteOption(player);
         
@@ -87,6 +88,8 @@ public class GuiMusicOptions extends GuiScreen
         btn_cancel = new GuiButtonExt(2, x, y+=25, 200, 20, I18n.format("gui.cancel"));
         btn_done = new GuiButtonExt(3, x, y+=25, 200, 20, I18n.format("gui.done"));
         
+        btn_reset = new GuiButtonExt(4, x, y+=25, 200, 20, I18n.format("mxtune.gui.musicOptions.reset"));
+        
         x = (width - 250) / 2;
         lbl_desc = new GuiLabel(this.getFontRenderer(), 4, x, y, 250, 100, 0xD3D3D3);
         lbl_desc.addLine(I18n.format("mxtune.gui.musicOptions.label.description01"));
@@ -99,6 +102,7 @@ public class GuiMusicOptions extends GuiScreen
         this.buttonList.add(btn_midiVolume);
         this.buttonList.add(btn_cancel);
         this.buttonList.add(btn_done);
+        this.buttonList.add(btn_reset);
     }
 
     @Override
@@ -145,6 +149,10 @@ public class GuiMusicOptions extends GuiScreen
             midiClose();
             mc.displayGuiScreen(null);
             mc.setIngameFocus();
+        case 4:
+            /** reset */
+            MMLManager.getInstance().abortAll();
+            break;
         default:
         }
     }

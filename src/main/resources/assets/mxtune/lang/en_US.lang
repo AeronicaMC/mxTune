@@ -32,13 +32,14 @@ mxtune.gui.button.stop=Stop
 
 mxtune.gui.GuiGroupJoin.title=Join this Group?
 
-mxtune.gui.GuiMusicOptions.title=>>> mxTune Music Options is Under Construction <<< 
+mxtune.gui.musicOptions.title=>>> mxTune Music Options is Under Construction <<< 
 mxtune.gui.slider.midiVolume=mxTune Volume
 mxtune.gui.musicOptions.muteOption.off=[Mute Off]
 mxtune.gui.musicOptions.muteOption.others=[Mute Others]
 mxtune.gui.musicOptions.muteOption.blacklist=[Mute Blacklist]
 mxtune.gui.musicOptions.muteOption.whitelist=[Mute Whitelist]
 mxtune.gui.musicOptions.muteOption.all=[Mute All]
+mxtune.gui.musicOptions.reset=Abort/Reset Playing/Stuck Music
 mxtune.gui.musicOptions.label.description01=****************Under Construction****************
 mxtune.gui.musicOptions.label.description02=Only the VOLUME control is functional at this time.
 mxtune.gui.musicOptions.label.description03=When you mouse over the slider a music sequence
