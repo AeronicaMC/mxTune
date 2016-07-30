@@ -16,20 +16,31 @@
  */
 package net.aeronica.mods.mxtune.proxy;
 
+import java.util.UUID;
+
+import com.mojang.authlib.GameProfile;
+
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.config.ModConfig;
+import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.handler.SREventHandler;
 import net.aeronica.mods.mxtune.init.StartupBlocks;
 import net.aeronica.mods.mxtune.init.StartupItems;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.util.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.Recipes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /** NEW */
@@ -73,8 +84,7 @@ public abstract class CommonProxy implements IProxy
     @Override
     public void registerEventHandlers()
     {
-        MinecraftForge.EVENT_BUS.register(MXTuneMain.GM); // GroupManager
-                                                          // instance
+        MinecraftForge.EVENT_BUS.register(GroupManager.getInstance());
         MinecraftForge.EVENT_BUS.register(SREventHandler.getInstance());
     }
 
@@ -86,6 +96,21 @@ public abstract class CommonProxy implements IProxy
 
     @Override
     public void registerHUD() {}
+
+    private static MinecraftServer minecraftServer = null;
+    
+    public MinecraftServer getMinecraftServer() {return minecraftServer;}
+    
+    @Override
+    public void serverStarted(FMLServerStartedEvent event)
+    {
+        WorldServer worldServer = DimensionManager.getWorld(0); // default world
+        GameProfile gameProfile = new GameProfile(UUID.randomUUID(), "FakePlayer");
+        FakePlayer fakePlayer = new FakePlayer(worldServer, gameProfile);
+        minecraftServer = fakePlayer.mcServer;
+        ModLogger.debug("serverStarted: " + (minecraftServer.isDedicatedServer() ? " Dedicated Server" : " Integrated Server") + " - " + event.getModState());
+        MusicOptionsUtil.dumpAllPlayers(minecraftServer);
+    }
 
     abstract public boolean playerIsInCreativeMode(EntityPlayer player);
 

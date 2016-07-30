@@ -16,9 +16,14 @@
  */
 package net.aeronica.mods.mxtune.util;
 
+import java.util.UUID;
+
+import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.capabilities.IPlayerMusicOptions;
+import net.aeronica.mods.mxtune.proxy.ServerProxy;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.IStringSerializable;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -58,6 +63,20 @@ public class MusicOptionsUtil
 
     public static String getSParam3(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getSParam3();}
 
+    public static void dumpAllPlayers(MinecraftServer svr)
+    {
+        MinecraftServer minecraftServer = MXTuneMain.proxy.getMinecraftServer();
+        if (minecraftServer != null)
+        {
+            String[] pdat = minecraftServer.getPlayerList().getAvailablePlayerDat();
+            for (String n : pdat)
+            {
+                ModLogger.logInfo("serverStarted#Player.dat:  " + n);
+                ModLogger.logInfo("serverStarted#GameProfile: " + minecraftServer.getPlayerProfileCache().getProfileByUUID(UUID.fromString(n)));
+            }
+        }
+    }
+    
     public static enum EnumMuteOptions implements IStringSerializable
     {
         OFF(0, "mxtune.gui.musicOptions.muteOption.off"),

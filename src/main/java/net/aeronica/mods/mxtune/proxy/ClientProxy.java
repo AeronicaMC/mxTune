@@ -30,6 +30,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.b3d.B3DLoader;
@@ -154,6 +155,9 @@ public class ClientProxy extends CommonProxy
         // ModelPlayerCustomized.replaceOldModel();
     }
 
+    @Override
+    public MinecraftServer getMinecraftServer() {return super.getMinecraftServer();}
+    
     @Override
     public boolean playerIsInCreativeMode(EntityPlayer player)
     {
