@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.aeronica.mods.mxtune.capabilities;
+package net.aeronica.mods.mxtune.options;
 
 import net.minecraft.entity.player.EntityPlayer;
 

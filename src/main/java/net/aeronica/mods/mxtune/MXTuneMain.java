@@ -16,12 +16,10 @@
  */
 package net.aeronica.mods.mxtune;
 
-import net.aeronica.mods.mxtune.capabilities.PlayerMusicOptionsCapability;
 import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
-import net.aeronica.mods.mxtune.groups.GroupManager;
-import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.handler.GUIHandler;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
+import net.aeronica.mods.mxtune.options.PlayerMusicOptionsCapability;
 import net.aeronica.mods.mxtune.proxy.IProxy;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.MusicTab;

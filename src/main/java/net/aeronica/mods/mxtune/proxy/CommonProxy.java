@@ -20,14 +20,13 @@ import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.handler.SREventHandler;
 import net.aeronica.mods.mxtune.init.StartupBlocks;
 import net.aeronica.mods.mxtune.init.StartupItems;
+import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.aeronica.mods.mxtune.util.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.Recipes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;

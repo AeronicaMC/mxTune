@@ -14,13 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.aeronica.mods.mxtune.util;
+package net.aeronica.mods.mxtune.options;
 
 import java.util.UUID;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.capabilities.IPlayerMusicOptions;
-import net.aeronica.mods.mxtune.proxy.ServerProxy;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
