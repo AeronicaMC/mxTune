@@ -44,12 +44,13 @@ import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 
-@Mod(modid = MXTuneMain.MODID, name = MXTuneMain.MODNAME, version = MXTuneMain.VERSION, guiFactory = MXTuneMain.GUIFACTORY)
+@Mod(modid = MXTuneMain.MODID, name = MXTuneMain.MODNAME, version = MXTuneMain.VERSION, dependencies = MXTuneMain.DEPS, guiFactory = MXTuneMain.GUIFACTORY)
 public class MXTuneMain
 {
     public static final String MODID = "mxtune";
     public static final String MODNAME = "mxTune";
     public static final String VERSION = "{@version:mod}";
+    public static final String DEPS = "required-after:Forge@[1.10.2-12.18.1.2041,)";
     public static final String GUIFACTORY = "net.aeronica.mods.mxtune.config.ModGuiFactory"; 
 
     @Mod.Instance(MODID)
