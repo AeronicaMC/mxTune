@@ -318,10 +318,12 @@ public class GuiMusicOptions extends GuiScreen
  // Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
  // UUID does not work on the client.
     
+    @SuppressWarnings("unused")
     private List<String> serverPlayerList; 
     public static class GuiPlayerList extends GuiScrollingList
     {
         GuiMusicOptions parent;
+        @SuppressWarnings("unused")
         private final List<String> serverPlayerList;
         
         public GuiPlayerList(GuiMusicOptions parent, ArrayList<String> serverPlayerList, int left, int top, int listWidth, int listHeight, int slotHeight)

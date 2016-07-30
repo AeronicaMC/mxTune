@@ -16,6 +16,10 @@
  */
 package net.aeronica.mods.mxtune;
 
+import java.util.UUID;
+
+import com.mojang.authlib.GameProfile;
+
 import net.aeronica.mods.mxtune.capabilities.PlayerMusicOptionsCapability;
 import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
 import net.aeronica.mods.mxtune.groups.GroupManager;
@@ -26,12 +30,17 @@ import net.aeronica.mods.mxtune.proxy.IProxy;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.MusicTab;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 
@@ -86,6 +95,25 @@ public class MXTuneMain
         proxy.registerHUD();
     }
 
+    // @EventHandler
+    public void serverStarted(FMLServerStartedEvent event)
+    {
+        if (event.getSide().isServer())
+        {
+            ModLogger.logInfo("serverStartedEvent:  " + event.getModState());
+            /** Only executes on the dedicated server */
+            WorldServer worldServer = DimensionManager.getWorld(0); // default world
+            GameProfile gameProfile = new GameProfile(UUID.randomUUID(), "FakePlayer");
+            FakePlayer fakePlayer = new FakePlayer(worldServer, gameProfile);
+            MinecraftServer minecraftServer = fakePlayer.mcServer;
+            String[] pdat =  minecraftServer.getPlayerList().getAvailablePlayerDat();
+            for (String n : pdat) 
+            {
+                ModLogger.logInfo("serverStarted#Player.dat:  " + n);
+                ModLogger.logInfo("serverStarted#GameProfile: " + minecraftServer.getPlayerProfileCache().getProfileByUUID(UUID.fromString(n)));
+            }
+        }
+    }
     /**
      * Prepend the name with the mod ID, suitable for ResourceLocations such as
      * textures.
