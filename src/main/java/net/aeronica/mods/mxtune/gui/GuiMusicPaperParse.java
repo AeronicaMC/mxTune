@@ -210,7 +210,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     }
 
     @Override
-    public void drawScreen(int mouseX, int mounseY, float partialTicks)
+    public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
         drawDefaultBackground();
 
@@ -229,8 +229,8 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         posY = 20;
         getFontRenderer().drawStringWithShadow("Instruments", posX, posY, 0xD3D3D3);
 
-        lst_inst.drawScreen(mouseX, mounseY, partialTicks);
-        lst_mmlError.drawScreen(mouseX, mounseY, partialTicks);
+        lst_inst.drawScreen(mouseX, mouseY, partialTicks);
+        lst_mmlError.drawScreen(mouseX, mouseY, partialTicks);
 
         /** draw the GuiTextField */
         txt_mmlTitle.drawTextBox();
@@ -254,7 +254,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
                     HelperTextColor());
         }
 
-        super.drawScreen(mouseX, mounseY, partialTicks);
+        super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
     private void updateHelperTextCounter()
@@ -640,13 +640,14 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
 
             String s = font.trimStringToWidth(ins, listWidth - 10);
             /** light Blue */
-            font.drawStringWithShadow(s, this.left + 3, slotTop, 0xADD8E6);        }
+            font.drawStringWithShadow(s, this.left + 3, slotTop, 0xADD8E6);
+        }
     }
 
     /** element was clicked */
     public void selectInstIndex(int index)
     {
-        if (index == this.selectedError) return;
+        if (index == this.selectedInst) return;
         this.selectedInst = index;
         this.selectedInstName = (index >= 0 && index <= instrumentCache.size()) ? instrumentCache.get(selectedInst) : null;
         updateState();

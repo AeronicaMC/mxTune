@@ -35,6 +35,7 @@ import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiLabel;
 import net.minecraft.client.gui.GuiScreen;
@@ -54,12 +55,23 @@ public class GuiMusicOptions extends GuiScreen
     private GuiSliderMX btn_midiVolume;
     private GuiButtonExt btn_cancel, btn_done, btn_reset;
     private GuiLabel lbl_desc;
+    private GuiPlayerList lst_players;
     
     private EntityPlayer player;
     private float midiVolume;
     private int muteOption;
     private int lastMuteOption = -1;
+
+    /** PlayerList */
+    private ArrayList<String> serverPlayerList; 
+    private int selectedPlayer = -1;
+    private String selectedPlayerName = "";
+    private int playerListWidth;
     
+    /** Cached State for when the GUI is resized */
+    private boolean isStateCached = false;
+    private int cachedSelectedPlayer;
+
     public GuiMusicOptions(EntityPlayer playerIn) {this.player = playerIn; midiInit();}
     
     @Override
@@ -67,6 +79,7 @@ public class GuiMusicOptions extends GuiScreen
     {
         updateGuiElments();
         midiUpdate();
+        selectedPlayer = this.lst_players.selectedIndex(serverPlayerList.indexOf(selectedPlayerName));
         super.updateScreen();
     }
 
@@ -75,11 +88,27 @@ public class GuiMusicOptions extends GuiScreen
     {
         this.mc = Minecraft.getMinecraft();
         TITLE = I18n.format("mxtune.gui.musicOptions.title");
+        serverPlayerList = new ArrayList<String>();
+        serverPlayerList.add("Player021");
+        serverPlayerList.add("Player124");
+        serverPlayerList.add("Player050");
+        serverPlayerList.add("Player222");
+        serverPlayerList.add("Player759");
+        
         midiVolume = MusicOptionsUtil.getMidiVolume(player);
         muteOption = MusicOptionsUtil.getMuteOption(player);
         
         this.buttonList.clear();
 
+        for (String in : serverPlayerList)
+        {
+            playerListWidth = Math.max(playerListWidth, getFontRenderer().getStringWidth(in) + 10);
+            playerListWidth = Math.max(playerListWidth, getFontRenderer().getStringWidth(in) + 5 + this.getFontRenderer().FONT_HEIGHT + 2);
+        }
+        playerListWidth = Math.min(playerListWidth, 150);
+        
+        lst_players = new GuiPlayerList(this, serverPlayerList, playerListWidth, this.getFontRenderer().FONT_HEIGHT + 2);
+        
         int y = 30;
         int x = (width - 200) / 2;
         btn_muteOption = new GuiButtonExt(0, x, y, 200, 20, (MusicOptionsUtil.EnumMuteOptions.byMetadata(muteOption).toString()));
@@ -103,8 +132,31 @@ public class GuiMusicOptions extends GuiScreen
         this.buttonList.add(btn_cancel);
         this.buttonList.add(btn_done);
         this.buttonList.add(btn_reset);
+        
+        reloadState();
     }
 
+    private void reloadState()
+    {
+        if (!isStateCached) return;
+        
+        this.lst_players.elementClicked(this.cachedSelectedPlayer, false);
+        updateButtonState();
+    }
+    
+    private void updateState()
+    {
+      
+        this.cachedSelectedPlayer = this.selectedPlayer;
+        updateButtonState();
+        this.isStateCached = true;
+    }
+    
+    private void updateButtonState()
+    {
+        
+    }
+    
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
@@ -115,7 +167,7 @@ public class GuiMusicOptions extends GuiScreen
         int posY = 10;
         getFontRenderer().drawStringWithShadow(TITLE, posX, posY, 0xD3D3D3);
         lbl_desc.drawLabel(mc, mouseX, mouseY);
-        
+        lst_players.drawScreen(mouseX, mouseY, partialTicks);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
@@ -155,6 +207,7 @@ public class GuiMusicOptions extends GuiScreen
             break;
         default:
         }
+        updateState();
     }
 
     private void updateGuiElments()
@@ -184,6 +237,7 @@ public class GuiMusicOptions extends GuiScreen
         {
             actionPerformed((GuiButton) buttonList.get(btn_cancel.id));
         }
+        updateState();
         super.keyTyped(typedChar, keyCode);
     }
 
@@ -318,54 +372,61 @@ public class GuiMusicOptions extends GuiScreen
  // Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
  // UUID does not work on the client.
     
-    @SuppressWarnings("unused")
-    private List<String> serverPlayerList; 
     public static class GuiPlayerList extends GuiScrollingList
     {
         GuiMusicOptions parent;
-        @SuppressWarnings("unused")
         private final List<String> serverPlayerList;
         
-        public GuiPlayerList(GuiMusicOptions parent, ArrayList<String> serverPlayerList, int left, int top, int listWidth, int listHeight, int slotHeight)
+        public GuiPlayerList(GuiMusicOptions parent, ArrayList<String> serverPlayerList,  int listWidth, int slotHeight)
         {
-            super(parent.getMinecraftInstance(), listWidth, listHeight, top, top + listHeight, left, slotHeight, parent.width, parent.height);
+            super(parent.getMinecraftInstance(), listWidth, parent.height - 32 - 60 + 4, 32, parent.height - 60 + 4, 10, slotHeight, parent.width, parent.height);
             this.parent = parent;
             this.serverPlayerList = serverPlayerList;
         }
+        
+        int selectedIndex(int s) {return selectedIndex = s;}
+
+        public int getRight() {return right;}
+        
+        @Override
+        protected int getSize() {return this.serverPlayerList.size();}
 
         @Override
-        protected int getSize()
-        {
-            // TODO Auto-generated method stub
-            return 0;
-        }
+        protected void elementClicked(int index, boolean doubleClick) {this.parent.selectPlayerIndex(index);}
 
         @Override
-        protected void elementClicked(int index, boolean doubleClick)
-        {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        protected boolean isSelected(int index)
-        {
-            // TODO Auto-generated method stub
-            return false;
-        }
+        protected boolean isSelected(int index) {return this.parent.playerIndexSelected(index);}
 
         @Override
         protected void drawBackground()
         {
-            // TODO Auto-generated method stub
-            
+            Gui.drawRect(this.left - 1, this.top - 1, this.left + this.listWidth + 1, this.top + this.listHeight + 1, -6250336);
+            Gui.drawRect(this.left, this.top, this.left + this.listWidth, this.top + this.listHeight, -16777216);
         }
+
+        @Override
+        protected int getContentHeight() {return (this.getSize()) * slotHeight;}
 
         @Override
         protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
         {
-            // TODO Auto-generated method stub
-            
+            FontRenderer font = this.parent.getFontRenderer();
+            String ins = this.serverPlayerList.get(slotIdx);
+
+            String s = font.trimStringToWidth(ins, listWidth - 10);
+            /** light Blue */
+            font.drawStringWithShadow(s, this.left + 3, slotTop, 0xADD8E6);
         }
     }
+    
+    /** element was clicked */
+    public void selectPlayerIndex(int index)
+    {
+        if (index == this.selectedPlayer) return;
+        this.selectedPlayer = index;
+        this.selectedPlayerName = (index >= 0 && index <= serverPlayerList.size()) ? serverPlayerList.get(selectedPlayer) : null;
+        updateState();
+    }
+
+    public boolean playerIndexSelected(int index) {return index == selectedPlayer;}
 }
