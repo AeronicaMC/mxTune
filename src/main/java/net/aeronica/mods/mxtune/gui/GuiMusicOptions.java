@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.gui;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.sound.midi.MidiChannel;
@@ -27,6 +28,9 @@ import javax.sound.midi.Synthesizer;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Ordering;
 
 import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
@@ -38,12 +42,20 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiLabel;
+import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.scoreboard.IScoreCriteria;
+import net.minecraft.scoreboard.ScorePlayerTeam;
+import net.minecraft.world.GameType;
 import net.minecraftforge.fml.client.GuiScrollingList;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class GuiMusicOptions extends GuiScreen
 {
@@ -88,12 +100,7 @@ public class GuiMusicOptions extends GuiScreen
     {
         this.mc = Minecraft.getMinecraft();
         TITLE = I18n.format("mxtune.gui.musicOptions.title");
-        serverPlayerList = new ArrayList<String>();
-        serverPlayerList.add("Player021");
-        serverPlayerList.add("Player124");
-        serverPlayerList.add("Player050");
-        serverPlayerList.add("Player222");
-        serverPlayerList.add("Player759");
+        initPlayerList();
         
         midiVolume = MusicOptionsUtil.getMidiVolume(player);
         muteOption = MusicOptionsUtil.getMuteOption(player);
@@ -429,4 +436,38 @@ public class GuiMusicOptions extends GuiScreen
     }
 
     public boolean playerIndexSelected(int index) {return index == selectedPlayer;}
+    
+    static class PlayerComparator implements Comparator<NetworkPlayerInfo>
+        {
+            private PlayerComparator()
+            {
+            }
+
+            public int compare(NetworkPlayerInfo p_compare_1_, NetworkPlayerInfo p_compare_2_)
+            {
+                ScorePlayerTeam scoreplayerteam = p_compare_1_.getPlayerTeam();
+                ScorePlayerTeam scoreplayerteam1 = p_compare_2_.getPlayerTeam();
+                return ComparisonChain.start().compareTrueFirst(p_compare_1_.getGameType() != GameType.SPECTATOR, p_compare_2_.getGameType() != GameType.SPECTATOR).compare(scoreplayerteam != null ? scoreplayerteam.getRegisteredName() : "", scoreplayerteam1 != null ? scoreplayerteam1.getRegisteredName() : "").compare(p_compare_1_.getGameProfile().getName(), p_compare_2_.getGameProfile().getName()).result();
+            }
+        }
+
+    private static final Ordering<NetworkPlayerInfo> ENTRY_ORDERING = Ordering.from(new GuiMusicOptions.PlayerComparator());
+    
+    private void initPlayerList()
+    {
+        serverPlayerList = new ArrayList<String>();
+        if (this.getMinecraftInstance().isIntegratedServerRunning()) return;
+        NetHandlerPlayClient nethandlerplayclient = this.getMinecraftInstance().thePlayer.connection;
+        List<NetworkPlayerInfo> list = ENTRY_ORDERING.<NetworkPlayerInfo>sortedCopy(nethandlerplayclient.getPlayerInfoMap());
+        for (NetworkPlayerInfo networkplayerinfo : list)
+        {
+            serverPlayerList.add(this.getPlayerName(networkplayerinfo));
+        }
+    }
+
+    public String getPlayerName(NetworkPlayerInfo networkPlayerInfoIn)
+    {
+        return networkPlayerInfoIn.getDisplayName() != null ? networkPlayerInfoIn.getDisplayName().getFormattedText() : ScorePlayerTeam.formatPlayerName(networkPlayerInfoIn.getPlayerTeam(), networkPlayerInfoIn.getGameProfile().getName());
+    }
+
 }
