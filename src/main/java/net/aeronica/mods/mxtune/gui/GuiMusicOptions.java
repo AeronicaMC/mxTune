@@ -436,9 +436,7 @@ public class GuiMusicOptions extends GuiScreen
     
     static class PlayerComparator implements Comparator<NetworkPlayerInfo>
         {
-            private PlayerComparator()
-            {
-            }
+            private PlayerComparator() {}
 
             public int compare(NetworkPlayerInfo p_compare_1_, NetworkPlayerInfo p_compare_2_)
             {
