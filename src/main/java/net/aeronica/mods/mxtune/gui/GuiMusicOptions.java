@@ -36,26 +36,22 @@ import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.MusicOptionsMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
+import net.aeronica.mods.mxtune.options.PlayerLists;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiLabel;
-import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.scoreboard.IScoreCriteria;
 import net.minecraft.scoreboard.ScorePlayerTeam;
-import net.minecraft.world.GameType;
 import net.minecraftforge.fml.client.GuiScrollingList;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class GuiMusicOptions extends GuiScreen
 {
@@ -75,14 +71,14 @@ public class GuiMusicOptions extends GuiScreen
     private int lastMuteOption = -1;
 
     /** PlayerList */
-    private ArrayList<String> serverPlayerList; 
+    private ArrayList<PlayerLists> playerLists; 
     private int selectedPlayer = -1;
-    private String selectedPlayerName = "";
+    private PlayerLists selectedPlayerList = new PlayerLists();
     private int playerListWidth;
     
     /** Cached State for when the GUI is resized */
     private boolean isStateCached = false;
-    private int cachedSelectedPlayer;
+    private int cachedSelectedPlayer = -1;
 
     public GuiMusicOptions(EntityPlayer playerIn) {this.player = playerIn; midiInit();}
     
@@ -91,7 +87,7 @@ public class GuiMusicOptions extends GuiScreen
     {
         updateGuiElments();
         midiUpdate();
-        selectedPlayer = this.lst_players.selectedIndex(serverPlayerList.indexOf(selectedPlayerName));
+        selectedPlayer = this.lst_players.selectedIndex(playerLists.indexOf(selectedPlayerList));
         super.updateScreen();
     }
 
@@ -107,14 +103,15 @@ public class GuiMusicOptions extends GuiScreen
         
         this.buttonList.clear();
 
-        for (String in : serverPlayerList)
+        for (PlayerLists in : playerLists)
         {
-            playerListWidth = Math.max(playerListWidth, getFontRenderer().getStringWidth(in) + 10);
-            playerListWidth = Math.max(playerListWidth, getFontRenderer().getStringWidth(in) + 5 + this.getFontRenderer().FONT_HEIGHT + 2);
+            String playerName = in.getPlayerName();
+            playerListWidth = Math.max(playerListWidth, getFontRenderer().getStringWidth(playerName) + 10);
+            playerListWidth = Math.max(playerListWidth, getFontRenderer().getStringWidth(playerName) + 5 + this.getFontRenderer().FONT_HEIGHT + 2);
         }
         playerListWidth = Math.min(playerListWidth, 150);
         
-        lst_players = new GuiPlayerList(this, serverPlayerList, playerListWidth, this.getFontRenderer().FONT_HEIGHT + 2);
+        lst_players = new GuiPlayerList(this, playerLists, playerListWidth, this.getFontRenderer().FONT_HEIGHT + 2);
         
         int y = 30;
         int x = (width - 200) / 2;
@@ -382,13 +379,13 @@ public class GuiMusicOptions extends GuiScreen
     public static class GuiPlayerList extends GuiScrollingList
     {
         GuiMusicOptions parent;
-        private final List<String> serverPlayerList;
+        private final List<PlayerLists> playerLists;
         
-        public GuiPlayerList(GuiMusicOptions parent, ArrayList<String> serverPlayerList,  int listWidth, int slotHeight)
+        public GuiPlayerList(GuiMusicOptions parent, ArrayList<PlayerLists> playerLists,  int listWidth, int slotHeight)
         {
             super(parent.getMinecraftInstance(), listWidth, parent.height - 32 - 60 + 4, 32, parent.height - 60 + 4, 10, slotHeight, parent.width, parent.height);
             this.parent = parent;
-            this.serverPlayerList = serverPlayerList;
+            this.playerLists = playerLists;
         }
         
         int selectedIndex(int s) {return selectedIndex = s;}
@@ -396,7 +393,7 @@ public class GuiMusicOptions extends GuiScreen
         public int getRight() {return right;}
         
         @Override
-        protected int getSize() {return this.serverPlayerList.size();}
+        protected int getSize() {return this.playerLists.size();}
 
         @Override
         protected void elementClicked(int index, boolean doubleClick) {this.parent.selectPlayerIndex(index);}
@@ -418,7 +415,7 @@ public class GuiMusicOptions extends GuiScreen
         protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
         {
             FontRenderer font = this.parent.getFontRenderer();
-            String ins = this.serverPlayerList.get(slotIdx);
+            String ins = this.playerLists.get(slotIdx).getPlayerName();
 
             String s = font.trimStringToWidth(ins, listWidth - 10);
             /** light Blue */
@@ -431,7 +428,7 @@ public class GuiMusicOptions extends GuiScreen
     {
         if (index == this.selectedPlayer) return;
         this.selectedPlayer = index;
-        this.selectedPlayerName = (index >= 0 && index <= serverPlayerList.size()) ? serverPlayerList.get(selectedPlayer) : null;
+        this.selectedPlayerList = (index >= 0 && index <= playerLists.size()) ? playerLists.get(selectedPlayer) : null;
         updateState();
     }
 
@@ -445,9 +442,7 @@ public class GuiMusicOptions extends GuiScreen
 
             public int compare(NetworkPlayerInfo p_compare_1_, NetworkPlayerInfo p_compare_2_)
             {
-                ScorePlayerTeam scoreplayerteam = p_compare_1_.getPlayerTeam();
-                ScorePlayerTeam scoreplayerteam1 = p_compare_2_.getPlayerTeam();
-                return ComparisonChain.start().compareTrueFirst(p_compare_1_.getGameType() != GameType.SPECTATOR, p_compare_2_.getGameType() != GameType.SPECTATOR).compare(scoreplayerteam != null ? scoreplayerteam.getRegisteredName() : "", scoreplayerteam1 != null ? scoreplayerteam1.getRegisteredName() : "").compare(p_compare_1_.getGameProfile().getName(), p_compare_2_.getGameProfile().getName()).result();
+                return ComparisonChain.start().compare(p_compare_1_.getGameProfile().getName(), p_compare_2_.getGameProfile().getName()).result();
             }
         }
 
@@ -455,13 +450,26 @@ public class GuiMusicOptions extends GuiScreen
     
     private void initPlayerList()
     {
-        serverPlayerList = new ArrayList<String>();
-        if (this.getMinecraftInstance().isIntegratedServerRunning()) return;
+        playerLists = new ArrayList<PlayerLists>();
+        PlayerLists pList;
+        if (this.mc.isIntegratedServerRunning() && this.mc.thePlayer.connection.getPlayerInfoMap().size() <= 1)
+            {
+                pList = new PlayerLists();
+                pList.setPlayerName(this.getMinecraftInstance().thePlayer.getDisplayName().getUnformattedText());
+                pList.setOnline(true);
+                pList.setType(PlayerLists.Type.THE_PLAYER);
+                playerLists.add(pList);
+                return;
+            }
         NetHandlerPlayClient nethandlerplayclient = this.getMinecraftInstance().thePlayer.connection;
         List<NetworkPlayerInfo> list = ENTRY_ORDERING.<NetworkPlayerInfo>sortedCopy(nethandlerplayclient.getPlayerInfoMap());
         for (NetworkPlayerInfo networkplayerinfo : list)
         {
-            serverPlayerList.add(this.getPlayerName(networkplayerinfo));
+            pList = new PlayerLists();
+            pList.setPlayerName(getPlayerName(networkplayerinfo));
+            pList.setOnline(true);
+            pList.setType(getPlayerName(networkplayerinfo).equalsIgnoreCase(this.getMinecraftInstance().thePlayer.getDisplayName().getUnformattedText()) ? PlayerLists.Type.THE_PLAYER : PlayerLists.Type.PLAYER_LIST);
+            playerLists.add(pList);
         }
     }
 
