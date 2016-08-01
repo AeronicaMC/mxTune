@@ -46,6 +46,7 @@ import net.minecraft.client.gui.GuiLabel;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
@@ -80,7 +81,15 @@ public class GuiMusicOptions extends GuiScreen
     private boolean isStateCached = false;
     private int cachedSelectedPlayer = -1;
 
-    public GuiMusicOptions(EntityPlayer playerIn) {this.player = playerIn; midiInit();}
+    public GuiMusicOptions(EntityPlayer playerIn)
+    {
+        this.player = playerIn;
+        this.mc = Minecraft.getMinecraft();
+        midiVolume = MusicOptionsUtil.getMidiVolume(player);
+        muteOption = MusicOptionsUtil.getMuteOption(player);
+        midiInit();
+        initPlayerList();
+    }
     
     @Override
     public void updateScreen()
@@ -94,19 +103,14 @@ public class GuiMusicOptions extends GuiScreen
     @Override
     public void initGui()
     {
-        this.mc = Minecraft.getMinecraft();
         TITLE = I18n.format("mxtune.gui.musicOptions.title");
-        initPlayerList();
-        
-        midiVolume = MusicOptionsUtil.getMidiVolume(player);
-        muteOption = MusicOptionsUtil.getMuteOption(player);
         
         this.buttonList.clear();
 
         for (PlayerLists in : playerLists)
         {
             String playerName = in.getPlayerName();
-            playerListWidth = Math.max(playerListWidth, getFontRenderer().getStringWidth(playerName) + 10);
+            playerListWidth = Math.max(playerListWidth, getFontRenderer().getStringWidth(playerName) + 10 + 12);
             playerListWidth = Math.max(playerListWidth, getFontRenderer().getStringWidth(playerName) + 5 + this.getFontRenderer().FONT_HEIGHT + 2);
         }
         playerListWidth = Math.min(playerListWidth, 150);
@@ -420,6 +424,7 @@ public class GuiMusicOptions extends GuiScreen
             String s = font.trimStringToWidth(ins, listWidth - 10);
             /** light Blue */
             font.drawStringWithShadow(s, this.left + 3, slotTop, 0xADD8E6);
+            drawPing(this.parent ,this.left + 3, listWidth - 10, slotTop, this.playerLists.get(slotIdx));
         }
     }
     
@@ -433,6 +438,26 @@ public class GuiMusicOptions extends GuiScreen
     }
 
     public boolean playerIndexSelected(int index) {return index == selectedPlayer;}
+    
+    private static void drawPing(GuiMusicOptions parent, int x, int sWidth, int y, PlayerLists playerInfo)
+    {
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        parent.getMinecraftInstance().getTextureManager().bindTexture(ICONS);
+        int j;
+
+        if (playerInfo.isOnline())
+        {
+            j = 0;
+        }
+        else
+        {
+            j = 5;
+        }
+
+        parent.zLevel += 100.0F;
+        parent.drawTexturedModalRect(sWidth + x - 11, y, 0, 176 + j * 8, 10, 8);
+        parent.zLevel -= 100.0F;
+    }
     
     static class PlayerComparator implements Comparator<NetworkPlayerInfo>
         {
@@ -466,9 +491,27 @@ public class GuiMusicOptions extends GuiScreen
             pList = new PlayerLists();
             pList.setPlayerName(getPlayerName(networkplayerinfo));
             pList.setOnline(true);
-            pList.setType(getPlayerName(networkplayerinfo).equalsIgnoreCase(this.getMinecraftInstance().thePlayer.getDisplayName().getUnformattedText()) ? PlayerLists.Type.THE_PLAYER : PlayerLists.Type.PLAYER_LIST);
+            pList.setType(getPlayerName(networkplayerinfo).equalsIgnoreCase(player.getDisplayName().getUnformattedText()) ? PlayerLists.Type.THE_PLAYER : PlayerLists.Type.PLAYER_LIST);
             playerLists.add(pList);
         }
+        pList = new PlayerLists();
+        pList.setPlayerName("Melodian");
+        pList.setOnline(false);
+        pList.setType(PlayerLists.Type.PLAYER_LIST);
+        playerLists.add(pList);
+
+        pList = new PlayerLists();
+        pList.setPlayerName("0123456789ABCDEF");
+        pList.setOnline(false);
+        pList.setType(PlayerLists.Type.PLAYER_LIST);
+        playerLists.add(pList);
+
+        pList = new PlayerLists();
+        pList.setPlayerName("ABC");
+        pList.setOnline(false);
+        pList.setType(PlayerLists.Type.PLAYER_LIST);
+        playerLists.add(pList);
+
     }
 
     public String getPlayerName(NetworkPlayerInfo networkPlayerInfoIn)
