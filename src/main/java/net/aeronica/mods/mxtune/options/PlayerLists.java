@@ -16,48 +16,16 @@
  */
 package net.aeronica.mods.mxtune.options;
 
-import java.util.UUID;
-
 public class PlayerLists
 {
     String playerName;
-    UUID uuid;
-    Type type;
     boolean isOnline;
-    
 
     public String getPlayerName() {return playerName;}
 
     public void setPlayerName(String playerName) {this.playerName = playerName;}
 
-    public UUID getUuid() {return uuid;}
-
-    public void setUuid(UUID uuid) {this.uuid = uuid;}
-
-    public Type getType() {return type;}
-
-    public void setType(Type type) {this.type = type;}
-
     public boolean isOnline() {return isOnline;}
 
     public void setOnline(boolean isOnline) {this.isOnline = isOnline;}
-
-    public static enum Type {
-        THE_PLAYER,
-        PLAYER_LIST,
-        WHITE_LIST,
-        BLACK_LIST;
-        
-        private static final Type[] TYPE_LOOKUP = new Type[values().length];
-        static
-        {
-            for (Type value : values())
-            {
-                TYPE_LOOKUP[value.ordinal()] = value;
-            }
-        }
-
-        @Override
-        public String toString(){return this.name();}  
-    }
 }

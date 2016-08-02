@@ -65,6 +65,8 @@ public class GuiMusicOptions extends GuiScreen
     private GuiButtonExt btn_cancel, btn_done, btn_reset;
     private GuiLabel lbl_desc;
     private GuiPlayerList lst_players;
+    private GuiWhiteList lst_white;
+    private GuiBlackList lst_black;
     
     private EntityPlayer player;
     private float midiVolume;
@@ -72,14 +74,28 @@ public class GuiMusicOptions extends GuiScreen
     private int lastMuteOption = -1;
 
     /** PlayerList */
-    private ArrayList<PlayerLists> playerLists; 
-    private int selectedPlayer = -1;
+    private ArrayList<PlayerLists> playerList; 
+    private int selectedPlayerIndex = -1;
     private PlayerLists selectedPlayerList = new PlayerLists();
     private int playerListWidth;
+
+    /** WhiteList */
+    private ArrayList<PlayerLists> whiteList; 
+    private int selectedWhiteIndex = -1;
+    private PlayerLists selectedWhiteList = new PlayerLists();
+    private int whiteListWidth;
     
+    /** WhiteList */
+    private ArrayList<PlayerLists> blackList; 
+    private int selectedBlackIndex = -1;
+    private PlayerLists selectedBlackList = new PlayerLists();
+    private int blackListWidth;
+
     /** Cached State for when the GUI is resized */
     private boolean isStateCached = false;
-    private int cachedSelectedPlayer = -1;
+    private int cachedSelectedPlayerIndex = -1;
+    private int cachedSelectedWhiteIndex = -1;
+    private int cachedSelectedBlackIndex = -1;
 
     public GuiMusicOptions(EntityPlayer playerIn)
     {
@@ -96,7 +112,9 @@ public class GuiMusicOptions extends GuiScreen
     {
         updateGuiElments();
         midiUpdate();
-        selectedPlayer = this.lst_players.selectedIndex(playerLists.indexOf(selectedPlayerList));
+        selectedPlayerIndex = this.lst_players.selectedIndex(playerList.indexOf(selectedPlayerList));
+        selectedWhiteIndex = this.lst_white.selectedIndex(whiteList.indexOf(selectedWhiteList));
+        selectedBlackIndex = this.lst_black.selectedIndex(blackList.indexOf(selectedBlackList));
         super.updateScreen();
     }
 
@@ -107,33 +125,36 @@ public class GuiMusicOptions extends GuiScreen
         
         this.buttonList.clear();
 
-        for (PlayerLists in : playerLists)
+        for (PlayerLists in : playerList)
         {
             String playerName = in.getPlayerName();
             playerListWidth = Math.max(playerListWidth, getFontRenderer().getStringWidth(playerName) + 10 + 12);
             playerListWidth = Math.max(playerListWidth, getFontRenderer().getStringWidth(playerName) + 5 + this.getFontRenderer().FONT_HEIGHT + 2);
         }
-        playerListWidth = Math.min(playerListWidth, 150);
-        
-        lst_players = new GuiPlayerList(this, playerLists, playerListWidth, this.getFontRenderer().FONT_HEIGHT + 2);
+        playerListWidth = whiteListWidth = blackListWidth = Math.min(playerListWidth, 150);
+
+        lst_white = new GuiWhiteList(this, whiteList, whiteListWidth, this.getFontRenderer().FONT_HEIGHT + 2);
+        lst_players = new GuiPlayerList(this, playerList, playerListWidth, this.getFontRenderer().FONT_HEIGHT + 2);
+        lst_black = new GuiBlackList(this, blackList, blackListWidth, this.getFontRenderer().FONT_HEIGHT + 2);
         
         int y = 30;
-        int x = (width - 200) / 2;
-        btn_muteOption = new GuiButtonExt(0, x, y, 200, 20, (MusicOptionsUtil.EnumMuteOptions.byMetadata(muteOption).toString()));
-        btn_midiVolume = new GuiSliderMX(1, x, y+=25, 200, 20, I18n.format("mxtune.gui.slider.midiVolume"), midiVolume*100F, 0F, 100F, 1F);
+        int x = lst_black.getRight() + 10; //(width - 200) / 2;
+        int buttonWidth = (width - x - 10);
+        btn_muteOption = new GuiButtonExt(0, x, y, buttonWidth, 20, (MusicOptionsUtil.EnumMuteOptions.byMetadata(muteOption).toString()));
+        btn_midiVolume = new GuiSliderMX(1, x, y+=25, buttonWidth, 20, I18n.format("mxtune.gui.slider.midiVolume"), midiVolume*100F, 0F, 100F, 1F);
         
-        btn_cancel = new GuiButtonExt(2, x, y+=25, 200, 20, I18n.format("gui.cancel"));
-        btn_done = new GuiButtonExt(3, x, y+=25, 200, 20, I18n.format("gui.done"));
+        btn_cancel = new GuiButtonExt(2, x, y+=25, buttonWidth, 20, I18n.format("gui.cancel"));
+        btn_done = new GuiButtonExt(3, x, y+=25, buttonWidth, 20, I18n.format("gui.done"));
         
-        btn_reset = new GuiButtonExt(4, x, y+=25, 200, 20, I18n.format("mxtune.gui.musicOptions.reset"));
+        btn_reset = new GuiButtonExt(4, x, y+=25, buttonWidth, 20, I18n.format("mxtune.gui.musicOptions.reset"));
         
-        x = (width - 250) / 2;
-        lbl_desc = new GuiLabel(this.getFontRenderer(), 4, x, y, 250, 100, 0xD3D3D3);
-        lbl_desc.addLine(I18n.format("mxtune.gui.musicOptions.label.description01"));
-        lbl_desc.addLine(I18n.format("mxtune.gui.musicOptions.label.description02"));
-        lbl_desc.addLine(I18n.format("mxtune.gui.musicOptions.label.description03"));
-        lbl_desc.addLine(I18n.format("mxtune.gui.musicOptions.label.description04"));
-        lbl_desc.addLine(I18n.format("mxtune.gui.musicOptions.label.description05"));
+//        x = (width - 250) / 2;
+//        lbl_desc = new GuiLabel(this.getFontRenderer(), 4, x, y, 250, 100, 0xD3D3D3);
+//        lbl_desc.addLine(I18n.format("mxtune.gui.musicOptions.label.description01"));
+//        lbl_desc.addLine(I18n.format("mxtune.gui.musicOptions.label.description02"));
+//        lbl_desc.addLine(I18n.format("mxtune.gui.musicOptions.label.description03"));
+//        lbl_desc.addLine(I18n.format("mxtune.gui.musicOptions.label.description04"));
+//        lbl_desc.addLine(I18n.format("mxtune.gui.musicOptions.label.description05"));
         
         this.buttonList.add(btn_muteOption);
         this.buttonList.add(btn_midiVolume);
@@ -148,14 +169,18 @@ public class GuiMusicOptions extends GuiScreen
     {
         if (!isStateCached) return;
         
-        this.lst_players.elementClicked(this.cachedSelectedPlayer, false);
+        this.lst_players.elementClicked(this.cachedSelectedPlayerIndex, false);
+        this.lst_white.elementClicked(this.cachedSelectedWhiteIndex, false);
+        this.lst_black.elementClicked(this.cachedSelectedBlackIndex, false);
         updateButtonState();
     }
     
     private void updateState()
     {
       
-        this.cachedSelectedPlayer = this.selectedPlayer;
+        this.cachedSelectedPlayerIndex = this.selectedPlayerIndex;
+        this.cachedSelectedWhiteIndex = this.selectedWhiteIndex;
+        this.cachedSelectedBlackIndex = this.selectedBlackIndex;
         updateButtonState();
         this.isStateCached = true;
     }
@@ -174,8 +199,10 @@ public class GuiMusicOptions extends GuiScreen
         int posX = (this.width - getFontRenderer().getStringWidth(TITLE)) / 2 ;
         int posY = 10;
         getFontRenderer().drawStringWithShadow(TITLE, posX, posY, 0xD3D3D3);
-        lbl_desc.drawLabel(mc, mouseX, mouseY);
+        //lbl_desc.drawLabel(mc, mouseX, mouseY);
+        lst_white.drawScreen(mouseX, mouseY, partialTicks);
         lst_players.drawScreen(mouseX, mouseY, partialTicks);
+        lst_black.drawScreen(mouseX, mouseY, partialTicks);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
@@ -383,11 +410,11 @@ public class GuiMusicOptions extends GuiScreen
     public static class GuiPlayerList extends GuiScrollingList
     {
         GuiMusicOptions parent;
-        private final List<PlayerLists> playerLists;
+        private final ArrayList<PlayerLists> playerLists;
         
         public GuiPlayerList(GuiMusicOptions parent, ArrayList<PlayerLists> playerLists,  int listWidth, int slotHeight)
         {
-            super(parent.getMinecraftInstance(), listWidth, parent.height - 32 - 60 + 4, 32, parent.height - 60 + 4, 10, slotHeight, parent.width, parent.height);
+            super(parent.getMinecraftInstance(), listWidth, parent.height - 32 - 60 + 4, 32, parent.height - 60 + 4, parent.lst_white.getRight()+ 10, slotHeight, parent.width, parent.height);
             this.parent = parent;
             this.playerLists = playerLists;
         }
@@ -431,13 +458,134 @@ public class GuiMusicOptions extends GuiScreen
     /** element was clicked */
     public void selectPlayerIndex(int index)
     {
-        if (index == this.selectedPlayer) return;
-        this.selectedPlayer = index;
-        this.selectedPlayerList = (index >= 0 && index <= playerLists.size()) ? playerLists.get(selectedPlayer) : null;
+        if (index == this.selectedPlayerIndex) return;
+        this.selectedPlayerIndex = index;
+        this.selectedPlayerList = (index >= 0 && index <= playerList.size()) ? playerList.get(selectedPlayerIndex) : null;
         updateState();
     }
 
-    public boolean playerIndexSelected(int index) {return index == selectedPlayer;}
+    public boolean playerIndexSelected(int index) {return index == selectedPlayerIndex;}
+
+    /** The White List */
+    public static class GuiWhiteList extends GuiScrollingList
+    {
+        GuiMusicOptions parent;
+        private final ArrayList<PlayerLists> whiteLists;
+        
+        public GuiWhiteList(GuiMusicOptions parent, ArrayList<PlayerLists> whiteLists,  int listWidth, int slotHeight)
+        {
+            super(parent.getMinecraftInstance(), listWidth, parent.height - 32 - 60 + 4, 32, parent.height - 60 + 4, 10, slotHeight, parent.width, parent.height);
+            this.parent = parent;
+            this.whiteLists = whiteLists;
+        }
+        
+        int selectedIndex(int s) {return selectedIndex = s;}
+
+        public int getRight() {return right;}
+        
+        @Override
+        protected int getSize() {return this.whiteLists.size();}
+
+        @Override
+        protected void elementClicked(int index, boolean doubleClick) {this.parent.selectWhiteIndex(index);}
+
+        @Override
+        protected boolean isSelected(int index) {return this.parent.whiteIndexSelected(index);}
+
+        @Override
+        protected void drawBackground()
+        {
+            Gui.drawRect(this.left - 1, this.top - 1, this.left + this.listWidth + 1, this.top + this.listHeight + 1, -6250336);
+            Gui.drawRect(this.left, this.top, this.left + this.listWidth, this.top + this.listHeight, -16777216);
+        }
+
+        @Override
+        protected int getContentHeight() {return (this.getSize()) * slotHeight;}
+
+        @Override
+        protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
+        {
+            FontRenderer font = this.parent.getFontRenderer();
+            String ins = this.whiteLists.get(slotIdx).getPlayerName();
+
+            String s = font.trimStringToWidth(ins, listWidth - 10);
+            /** light Blue */
+            font.drawStringWithShadow(s, this.left + 3, slotTop, 0xADD8E6);
+            drawPing(this.parent ,this.left + 3, listWidth - 10, slotTop, this.whiteLists.get(slotIdx));
+        }
+    }
+    
+    /** element was clicked */
+    public void selectWhiteIndex(int index)
+    {
+        if (index == this.selectedWhiteIndex) return;
+        this.selectedWhiteIndex = index;
+        this.selectedWhiteList = (index >= 0 && index <= whiteList.size()) ? whiteList.get(selectedWhiteIndex) : null;
+        updateState();
+    }
+
+    public boolean whiteIndexSelected(int index) {return index == selectedWhiteIndex;}
+
+    /** The Black List */
+    public static class GuiBlackList extends GuiScrollingList
+    {
+        GuiMusicOptions parent;
+        private final ArrayList<PlayerLists> blackLists;
+        
+        public GuiBlackList(GuiMusicOptions parent, ArrayList<PlayerLists> blackLists,  int listWidth, int slotHeight)
+        {
+            super(parent.getMinecraftInstance(), listWidth, parent.height - 32 - 60 + 4, 32, parent.height - 60 + 4, parent.lst_players.getRight() + 10, slotHeight, parent.width, parent.height);
+            this.parent = parent;
+            this.blackLists = blackLists;
+        }
+        
+        int selectedIndex(int s) {return selectedIndex = s;}
+
+        public int getRight() {return right;}
+        
+        @Override
+        protected int getSize() {return this.blackLists.size();}
+
+        @Override
+        protected void elementClicked(int index, boolean doubleClick) {this.parent.selectBlackIndex(index);}
+
+        @Override
+        protected boolean isSelected(int index) {return this.parent.blackIndexSelected(index);}
+
+        @Override
+        protected void drawBackground()
+        {
+            Gui.drawRect(this.left - 1, this.top - 1, this.left + this.listWidth + 1, this.top + this.listHeight + 1, -6250336);
+            Gui.drawRect(this.left, this.top, this.left + this.listWidth, this.top + this.listHeight, -16777216);
+        }
+
+        @Override
+        protected int getContentHeight() {return (this.getSize()) * slotHeight;}
+
+        @Override
+        protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
+        {
+            FontRenderer font = this.parent.getFontRenderer();
+            String ins = this.blackLists.get(slotIdx).getPlayerName();
+
+            String s = font.trimStringToWidth(ins, listWidth - 10);
+            /** light Blue */
+            font.drawStringWithShadow(s, this.left + 3, slotTop, 0xADD8E6);
+            drawPing(this.parent ,this.left + 3, listWidth - 10, slotTop, this.blackLists.get(slotIdx));
+        }
+    }
+    
+    /** element was clicked */
+    public void selectBlackIndex(int index)
+    {
+        if (index == this.selectedBlackIndex) return;
+        this.selectedBlackIndex = index;
+        this.selectedBlackList = (index >= 0 && index <= blackList.size()) ? blackList.get(selectedBlackIndex) : null;
+        updateState();
+    }
+
+    public boolean blackIndexSelected(int index) {return index == selectedBlackIndex;}
+
     
     private static void drawPing(GuiMusicOptions parent, int x, int sWidth, int y, PlayerLists playerInfo)
     {
@@ -473,15 +621,19 @@ public class GuiMusicOptions extends GuiScreen
     
     private void initPlayerList()
     {
-        playerLists = new ArrayList<PlayerLists>();
+        playerList = new ArrayList<PlayerLists>();
+        whiteList = new ArrayList<PlayerLists>();
+        blackList = new ArrayList<PlayerLists>();
+        
         PlayerLists pList;
         if (this.mc.isIntegratedServerRunning() && this.mc.thePlayer.connection.getPlayerInfoMap().size() <= 1)
             {
                 pList = new PlayerLists();
                 pList.setPlayerName(this.getMinecraftInstance().thePlayer.getDisplayName().getUnformattedText());
                 pList.setOnline(true);
-                pList.setType(PlayerLists.Type.THE_PLAYER);
-                playerLists.add(pList);
+                playerList.add(pList);
+                whiteList.add(pList);
+                blackList.add(pList);
                 return;
             }
         NetHandlerPlayClient nethandlerplayclient = this.getMinecraftInstance().thePlayer.connection;
@@ -491,26 +643,27 @@ public class GuiMusicOptions extends GuiScreen
             pList = new PlayerLists();
             pList.setPlayerName(getPlayerName(networkplayerinfo));
             pList.setOnline(true);
-            pList.setType(getPlayerName(networkplayerinfo).equalsIgnoreCase(player.getDisplayName().getUnformattedText()) ? PlayerLists.Type.THE_PLAYER : PlayerLists.Type.PLAYER_LIST);
-            playerLists.add(pList);
+            playerList.add(pList);
         }
+        for (int i = 0; i< 30; i++) 
+        {
         pList = new PlayerLists();
         pList.setPlayerName("Melodian");
         pList.setOnline(false);
-        pList.setType(PlayerLists.Type.PLAYER_LIST);
-        playerLists.add(pList);
+        playerList.add(pList);
+        whiteList.add(pList);
 
         pList = new PlayerLists();
         pList.setPlayerName("0123456789ABCDEF");
         pList.setOnline(false);
-        pList.setType(PlayerLists.Type.PLAYER_LIST);
-        playerLists.add(pList);
+        playerList.add(pList);
+        blackList.add(pList);
 
         pList = new PlayerLists();
         pList.setPlayerName("ABC");
         pList.setOnline(false);
-        pList.setType(PlayerLists.Type.PLAYER_LIST);
-        playerLists.add(pList);
+        playerList.add(pList);
+        }
 
     }
 
