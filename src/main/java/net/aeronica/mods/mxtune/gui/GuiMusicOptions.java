@@ -56,10 +56,10 @@ public class GuiMusicOptions extends GuiScreen
 {
     public static final int GUI_ID = 8;
     private Minecraft mc;
-    private String TITLE;
-    private String WHITELIST_LABEL;
-    private String PLAYERS_LABEL;
-    private String BLACKLIST_LABEL;
+    private static final String TITLE = I18n.format("mxtune.gui.musicOptions.title");
+    private static final String LABEL_WHITELIST = I18n.format("mxtune.gui.musicOptions.label.whitelist");
+    private static final String LABEL_PLAYERS  = I18n.format("mxtune.gui.musicOptions.label.players");
+    private static final String LABEL_BLACKLIST  = I18n.format("mxtune.gui.musicOptions.label.blacklist");
 
     private GuiButtonExt btn_muteOption;
     private GuiSliderMX btn_midiVolume;
@@ -122,11 +122,6 @@ public class GuiMusicOptions extends GuiScreen
     @Override
     public void initGui()
     {
-        TITLE = I18n.format("mxtune.gui.musicOptions.title");
-        WHITELIST_LABEL = I18n.format("mxtune.gui.musicOptions.label.whitelist");
-        PLAYERS_LABEL = I18n.format("mxtune.gui.musicOptions.label.players");
-        BLACKLIST_LABEL = I18n.format("mxtune.gui.musicOptions.label.blacklist");
-
         this.buttonList.clear();
         playerListWidth = whiteListWidth = blackListWidth = getFontRenderer().getStringWidth("MWMWMWMWMWMWMWMW") + 10 + 12;
 
@@ -202,19 +197,19 @@ public class GuiMusicOptions extends GuiScreen
         getFontRenderer().drawStringWithShadow(TITLE, posX, posY, 0xD3D3D3);
         
         /** draw list names - Whitelist */
-        posX = (this.lst_white.getRight() - whiteListWidth / 2) - (getFontRenderer().getStringWidth(WHITELIST_LABEL) / 2);
+        posX = (this.lst_white.getRight() - whiteListWidth / 2) - (getFontRenderer().getStringWidth(LABEL_WHITELIST) / 2);
         posY = 20;
-        getFontRenderer().drawStringWithShadow(WHITELIST_LABEL, posX, posY, 0xD3D3D3);
+        getFontRenderer().drawStringWithShadow(LABEL_WHITELIST, posX, posY, 0xD3D3D3);
 
         /** Players list */
-        posX = this.lst_players.getRight() - playerListWidth / 2 - (getFontRenderer().getStringWidth(PLAYERS_LABEL) / 2);
+        posX = this.lst_players.getRight() - playerListWidth / 2 - (getFontRenderer().getStringWidth(LABEL_PLAYERS) / 2);
         posY = 20;
-        getFontRenderer().drawStringWithShadow(PLAYERS_LABEL, posX, posY, 0xD3D3D3);
+        getFontRenderer().drawStringWithShadow(LABEL_PLAYERS, posX, posY, 0xD3D3D3);
 
         /** Blacklist */
-        posX = this.lst_black.getRight() - blackListWidth / 2 - (getFontRenderer().getStringWidth(BLACKLIST_LABEL) / 2);
+        posX = this.lst_black.getRight() - blackListWidth / 2 - (getFontRenderer().getStringWidth(LABEL_BLACKLIST) / 2);
         posY = 20;
-        getFontRenderer().drawStringWithShadow(BLACKLIST_LABEL, posX, posY, 0xD3D3D3);
+        getFontRenderer().drawStringWithShadow(LABEL_BLACKLIST, posX, posY, 0xD3D3D3);
 
         
         lst_white.drawScreen(mouseX, mouseY, partialTicks);
