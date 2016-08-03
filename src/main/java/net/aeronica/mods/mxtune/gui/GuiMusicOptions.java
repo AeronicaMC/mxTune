@@ -221,6 +221,7 @@ public class GuiMusicOptions extends GuiScreen
     @Override
     protected void actionPerformed(GuiButton guibutton) throws IOException
     {
+        PlayerLists t;
         /** if button is disabled ignore click */
         if (!guibutton.enabled) return;
 
@@ -252,6 +253,35 @@ public class GuiMusicOptions extends GuiScreen
             /** reset */
             MMLManager.getInstance().abortAll();
             break;
+        case 11:
+            if (this.selectedPlayerIndex == -1 | this.selectedPlayerIndex > this.playerList.size()) break;
+            t = this.playerList.get(this.selectedPlayerIndex);
+            this.playerList.remove(this.selectedPlayerIndex);
+            this.selectedPlayerIndex = -1;
+            this.whiteList.add(t);
+            break;
+        case 12:
+            if (this.selectedWhiteIndex == -1 | this.selectedWhiteIndex > this.whiteList.size()) break;
+            t = this.whiteList.get(this.selectedWhiteIndex);
+            this.whiteList.remove(this.selectedWhiteIndex);
+            this.selectedWhiteIndex = -1;
+            this.playerList.add(t);
+            break;            
+        case 13:
+            if (this.selectedPlayerIndex == -1 | this.selectedPlayerIndex > this.playerList.size()) break;
+            t = this.playerList.get(this.selectedPlayerIndex);
+            this.playerList.remove(this.selectedPlayerIndex);
+            this.selectedPlayerIndex = -1;
+            this.blackList.add(t);
+            break;
+        case 14:
+            if (this.selectedBlackIndex == -1 | this.selectedBlackIndex > this.blackList.size()) break;
+            t = this.blackList.get(this.selectedBlackIndex);
+            this.blackList.remove(this.selectedBlackIndex);
+            this.selectedBlackIndex = -1;
+            this.playerList.add(t);
+            break;            
+
         default:
         }
         updateState();
@@ -644,13 +674,14 @@ public class GuiMusicOptions extends GuiScreen
                 pList.setPlayerName(this.getMinecraftInstance().thePlayer.getDisplayName().getUnformattedText());
                 pList.setOnline(true);
                 playerList.add(pList);
-                whiteList.add(pList);
-                blackList.add(pList);
                 pList = new PlayerLists();
-                pList.setPlayerName("0123456789ABCDEF");
+                pList.setPlayerName("Player001");
                 pList.setOnline(false);
                 playerList.add(pList);
-
+                pList = new PlayerLists();
+                pList.setPlayerName("Player002");
+                pList.setOnline(false);
+                playerList.add(pList);
                 return;
             }
         NetHandlerPlayClient nethandlerplayclient = this.getMinecraftInstance().thePlayer.connection;
@@ -662,26 +693,14 @@ public class GuiMusicOptions extends GuiScreen
             pList.setOnline(true);
             playerList.add(pList);
         }
-        for (int i = 0; i< 30; i++) 
-        {
         pList = new PlayerLists();
-        pList.setPlayerName("Melodian" + i);
+        pList.setPlayerName("Player001");
         pList.setOnline(false);
         playerList.add(pList);
-        whiteList.add(pList);
-
         pList = new PlayerLists();
-        pList.setPlayerName("0123456789ABCDEF");
+        pList.setPlayerName("Player002");
         pList.setOnline(false);
         playerList.add(pList);
-        blackList.add(pList);
-
-        pList = new PlayerLists();
-        pList.setPlayerName("ABC" + i);
-        pList.setOnline(false);
-        playerList.add(pList);
-        }
-
     }
 
     public String getPlayerName(NetworkPlayerInfo networkPlayerInfoIn)
