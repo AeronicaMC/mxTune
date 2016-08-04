@@ -24,6 +24,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -130,6 +131,16 @@ public class PlayerMusicOptionsCapability
             properties.setString("sParam1", instance.getSParam1());
             properties.setString("sParam2", instance.getSParam2());
             properties.setString("sParam3", instance.getSParam3());
+//            NBTTagList listBlack = new NBTTagList();
+//            properties.setTag("listBlack", listBlack);
+//            for (int i=0; i<5; i++)
+//            {
+//                NBTTagCompound entry = new NBTTagCompound();
+//                entry.setLong("UUIDLeast", (long)-5773540987360819122L);
+//                entry.setLong("UUIDMost", (long)1930407997733879080L);
+//                entry.setByte("valid", (byte) 1);
+//                listBlack.appendTag(entry);
+//            }   
             return properties; // compound;
             // return instance.serializeNBT();
         }

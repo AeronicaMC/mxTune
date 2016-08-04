@@ -16,14 +16,21 @@
  */
 package net.aeronica.mods.mxtune.options;
 
+import java.util.UUID;
+
 public class PlayerLists
 {
     String playerName;
+    UUID uuid;
     boolean isOnline;
 
     public String getPlayerName() {return playerName;}
 
     public void setPlayerName(String playerName) {this.playerName = playerName;}
+
+    public UUID getUuid() {return uuid;}
+
+    public void setUuid(UUID uuid) {this.uuid = uuid;}
 
     public boolean isOnline() {return isOnline;}
 
