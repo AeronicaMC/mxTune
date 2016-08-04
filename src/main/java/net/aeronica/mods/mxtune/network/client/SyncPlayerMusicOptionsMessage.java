@@ -21,6 +21,7 @@ import java.io.IOException;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.options.IPlayerMusicOptions;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
+import net.aeronica.mods.mxtune.options.PlayerLists;
 import net.aeronica.mods.mxtune.options.PlayerMusicDefImpl;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
@@ -54,6 +55,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     private float midiVolume;
     private int muteOption;
     private String sParam1, sParam2, sParam3;
+    private PlayerLists blackList, whiteList;
 
     // The basic, no-argument constructor MUST be included to use the new
     // automated handling
@@ -85,7 +87,13 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             this.sParam2 = inst.getSParam2();
             this.sParam3 = inst.getSParam3();
             break;
+
+        case PlayerMusicDefImpl.SYNC_WHITE_LIST:
+            break;
             
+        case PlayerMusicDefImpl.SYNC_BLACK_LIST:
+            break;
+
         default:
         }
     }
@@ -109,6 +117,10 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             this.sParam1 = ByteBufUtils.readUTF8String(buffer);
             this.sParam2 = ByteBufUtils.readUTF8String(buffer);
             this.sParam3 = ByteBufUtils.readUTF8String(buffer);
+            break;
+        case PlayerMusicDefImpl.SYNC_WHITE_LIST:
+            break;            
+        case PlayerMusicDefImpl.SYNC_BLACK_LIST:
             break;
         default:        
         }
@@ -134,6 +146,10 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             ByteBufUtils.writeUTF8String(buffer, this.sParam2);
             ByteBufUtils.writeUTF8String(buffer, this.sParam3);
             break;
+        case PlayerMusicDefImpl.SYNC_WHITE_LIST:
+            break;            
+        case PlayerMusicDefImpl.SYNC_BLACK_LIST:
+            break;
         default:
         }
     }
@@ -158,6 +174,10 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                 break;
             case PlayerMusicDefImpl.SYNC_SPARAMS:
                 inst.setSParams(this.sParam1, this.sParam2, this.sParam3);
+                break;
+            case PlayerMusicDefImpl.SYNC_WHITE_LIST:
+                break;                
+            case PlayerMusicDefImpl.SYNC_BLACK_LIST:
                 break;
             default:
             }

@@ -16,6 +16,8 @@
  */
 package net.aeronica.mods.mxtune.options;
 
+import java.util.ArrayList;
+
 import net.minecraft.entity.player.EntityPlayer;
 
 public interface IPlayerMusicOptions
@@ -64,6 +66,18 @@ public interface IPlayerMusicOptions
 
     public String getSParam3();
     
+    public void setWhiteList(EntityPlayer playerIn, ArrayList<PlayerLists> list);
+
+    public void setWhiteList(ArrayList<PlayerLists> list);
+    
+    public ArrayList<PlayerLists> getWhiteList();
+
+    public void setBlackList(EntityPlayer playerIn, ArrayList<PlayerLists> list);
+
+    public void setBlackList(ArrayList<PlayerLists> list);
+    
+    public ArrayList<PlayerLists> getBlackList();
+
     /**
      * Sync all properties for the specified player to the client.
      * 

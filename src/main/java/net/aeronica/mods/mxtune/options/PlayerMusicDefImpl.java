@@ -16,6 +16,8 @@
  */
 package net.aeronica.mods.mxtune.options;
 
+import java.util.ArrayList;
+
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.SyncPlayerMusicOptionsMessage;
 import net.minecraft.entity.EntityLivingBase;
@@ -29,12 +31,15 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     private float midiVolume;
     /** Strings for passing parameters from server to client: for a GUI for example */
     private String sParam1, sParam2, sParam3;
+    private ArrayList<PlayerLists> whiteList, blackList;
 
     public PlayerMusicDefImpl()
     {
         this.midiVolume = 0.70F;
         this.muteOption = 0;
         this.sParam1 = this.sParam2 = this.sParam3 = new String("");
+        this.whiteList = new ArrayList<PlayerLists>();
+        this.blackList = new ArrayList<PlayerLists>();
     }
     
     public PlayerMusicDefImpl(EntityLivingBase entity)
@@ -42,6 +47,8 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
         this.midiVolume = 0.70F;
         this.muteOption = 0;
         this.sParam1 = this.sParam2 = this.sParam3 = new String("");
+        this.whiteList = new ArrayList<PlayerLists>();
+        this.blackList = new ArrayList<PlayerLists>();
     }
 
     @Override
@@ -97,10 +104,30 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     @Override
     public int getMuteOption() {return muteOption;}
     
+    @Override
+    public void setWhiteList(ArrayList<PlayerLists> list) {this.whiteList = list;}
+
+    @Override
+    public void setWhiteList(EntityPlayer playerIn, ArrayList<PlayerLists> list) {this.whiteList = list; sync(playerIn, SYNC_WHITE_LIST);}
+
+    @Override
+    public ArrayList<PlayerLists> getWhiteList() {return this.whiteList;}
+
+    @Override
+    public void setBlackList(EntityPlayer playerIn, ArrayList<PlayerLists> list) {this.blackList = list; sync(playerIn, SYNC_BLACK_LIST);}
+
+    @Override
+    public void setBlackList(ArrayList<PlayerLists> list) {this.blackList = list;}
+
+    @Override
+    public ArrayList<PlayerLists> getBlackList() {return this.blackList;}
+
     public static final byte SYNC_ALL = 0;
     public static final byte SYNC_MIDI_VOLUME = 1;
     public static final byte SYNC_MUTE_OPTION = 2;
     public static final byte SYNC_SPARAMS = 3;
+    public static final byte SYNC_WHITE_LIST = 4;
+    public static final byte SYNC_BLACK_LIST = 5;    
     
     public void syncAll(EntityPlayer playerIn) {sync(playerIn, SYNC_ALL);}
     
