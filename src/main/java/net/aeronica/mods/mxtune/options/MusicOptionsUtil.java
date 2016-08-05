@@ -65,8 +65,12 @@ public class MusicOptionsUtil
     
     public static void setBlackList(EntityPlayer playerIn, ArrayList<PlayerLists> blackList) {playerIn.getCapability(MUSIC_OPTIONS, null).setBlackList(playerIn, blackList);}
 
+    public static ArrayList<PlayerLists> getBlackList(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getBlackList();}
+    
     public static void setWhiteList(EntityPlayer playerIn, ArrayList<PlayerLists> whiteList) {playerIn.getCapability(MUSIC_OPTIONS, null).setWhiteList(playerIn, whiteList);}
 
+    public static ArrayList<PlayerLists> getWhiteList(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getWhiteList();}
+    
     public static void dumpAllPlayers(MinecraftServer svr)
     {
         MinecraftServer minecraftServer = MXTuneMain.proxy.getMinecraftServer();

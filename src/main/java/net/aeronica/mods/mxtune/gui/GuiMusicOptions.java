@@ -665,49 +665,49 @@ public class GuiMusicOptions extends GuiScreen
     private void initPlayerList()
     {
         playerList = new ArrayList<PlayerLists>();
-        whiteList = new ArrayList<PlayerLists>();
-        blackList = new ArrayList<PlayerLists>();
+        whiteList = MusicOptionsUtil.getWhiteList(player);
+        blackList = MusicOptionsUtil.getBlackList(player);
         
         PlayerLists pList;
-        if (this.mc.isIntegratedServerRunning() && this.mc.thePlayer.connection.getPlayerInfoMap().size() <= 1)
+        if (!(this.mc.isIntegratedServerRunning() && this.mc.thePlayer.connection.getPlayerInfoMap().size() <= 1))
+        {
+            NetHandlerPlayClient nethandlerplayclient = this.getMinecraftInstance().thePlayer.connection;
+            List<NetworkPlayerInfo> list = ENTRY_ORDERING.<NetworkPlayerInfo> sortedCopy(nethandlerplayclient.getPlayerInfoMap());
+            for (NetworkPlayerInfo networkplayerinfo : list)
             {
                 pList = new PlayerLists();
-                pList.setPlayerName(this.getMinecraftInstance().thePlayer.getDisplayName().getUnformattedText());
+                pList.setPlayerName(getPlayerName(networkplayerinfo));
                 pList.setOnline(true);
-                pList.setUuid(player.getUniqueID());
-                playerList.add(pList);
-                pList = new PlayerLists();
-                pList.setPlayerName("Player001");
-                pList.setOnline(false);
-                pList.setUuid(new UUID(-1L, 1L));
-                playerList.add(pList);
-                pList = new PlayerLists();
-                pList.setPlayerName("Player002");
-                pList.setOnline(false);
-                pList.setUuid(new UUID(-2L, 2L));
-                playerList.add(pList);
-                return;
+                pList.setUuid(networkplayerinfo.getGameProfile().getId());
+                if (!pList.getUuid().equals(player.getUniqueID())) playerList.add(pList);
             }
-        NetHandlerPlayClient nethandlerplayclient = this.getMinecraftInstance().thePlayer.connection;
-        List<NetworkPlayerInfo> list = ENTRY_ORDERING.<NetworkPlayerInfo>sortedCopy(nethandlerplayclient.getPlayerInfoMap());
-        for (NetworkPlayerInfo networkplayerinfo : list)
-        {
-            pList = new PlayerLists();
-            pList.setPlayerName(getPlayerName(networkplayerinfo));
-            pList.setOnline(true);
-            pList.setUuid(networkplayerinfo.getGameProfile().getId());
-            playerList.add(pList);
         }
-        pList = new PlayerLists();
-        pList.setPlayerName("Player001");
-        pList.setOnline(false);
-        pList.setUuid(new UUID(-1L, 1L));
-        playerList.add(pList);
-        pList = new PlayerLists();
-        pList.setPlayerName("Player002");
-        pList.setOnline(false);
-        pList.setUuid(new UUID(-2L, 2L));
-        playerList.add(pList);
+        for (PlayerLists bList : blackList)
+        {
+            for (int i=0; i < playerList.size(); i++)
+            {
+                PlayerLists p = playerList.get(i);
+                if (p.getUuid().equals(bList.getUuid()))
+                {
+                    bList.setOnline(true);
+                    bList.setPlayerName(p.getPlayerName());
+                    playerList.remove(i);                    
+                }
+            }
+        }
+        for (PlayerLists wList: whiteList)
+        {
+            for (int i=0; i < playerList.size(); i++)
+            {
+                PlayerLists p = playerList.get(i);
+                if (p.getUuid().equals(wList.getUuid()))
+                {
+                    wList.setOnline(true);
+                    wList.setPlayerName(p.getPlayerName());
+                    playerList.remove(i);                    
+                }
+            }
+        }
     }
 
     public String getPlayerName(NetworkPlayerInfo networkPlayerInfoIn)
