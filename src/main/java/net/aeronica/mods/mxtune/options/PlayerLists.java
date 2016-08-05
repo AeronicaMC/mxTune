@@ -16,10 +16,15 @@
  */
 package net.aeronica.mods.mxtune.options;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class PlayerLists
+public class PlayerLists implements Serializable
 {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -86044260522231311L;
     String playerName;
     UUID uuid;
     boolean isOnline;

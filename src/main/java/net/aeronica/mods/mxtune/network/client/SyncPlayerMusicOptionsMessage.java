@@ -16,7 +16,12 @@
  */
 package net.aeronica.mods.mxtune.network.client;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.options.IPlayerMusicOptions;
@@ -55,8 +60,10 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     private float midiVolume;
     private int muteOption;
     private String sParam1, sParam2, sParam3;
-    private PlayerLists blackList, whiteList;
+    private ArrayList<PlayerLists> blackList, whiteList;
 
+    private byte[] byteBuffer = null;
+    
     // The basic, no-argument constructor MUST be included to use the new
     // automated handling
     public SyncPlayerMusicOptionsMessage() {}
@@ -89,15 +96,18 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             break;
 
         case PlayerMusicDefImpl.SYNC_WHITE_LIST:
+            this.whiteList = inst.getWhiteList();
             break;
             
         case PlayerMusicDefImpl.SYNC_BLACK_LIST:
+            this.blackList = inst.getBlackList();
             break;
 
         default:
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
@@ -119,8 +129,34 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             this.sParam3 = ByteBufUtils.readUTF8String(buffer);
             break;
         case PlayerMusicDefImpl.SYNC_WHITE_LIST:
+            try{
+                // Deserialize data object from a byte array
+                byteBuffer = buffer.readByteArray();
+                ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
+                ObjectInputStream in = new ObjectInputStream(bis) ;
+                whiteList =  (ArrayList<PlayerLists>) in.readObject();
+                in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e)
+            {
+                e.printStackTrace();
+            }
             break;            
         case PlayerMusicDefImpl.SYNC_BLACK_LIST:
+            try{
+                // Deserialize data object from a byte array
+                byteBuffer = buffer.readByteArray();
+                ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
+                ObjectInputStream in = new ObjectInputStream(bis) ;
+                blackList =  (ArrayList<PlayerLists>) in.readObject();
+                in.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e)
+            {
+                e.printStackTrace();
+            }
             break;
         default:        
         }
@@ -147,8 +183,34 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             ByteBufUtils.writeUTF8String(buffer, this.sParam3);
             break;
         case PlayerMusicDefImpl.SYNC_WHITE_LIST:
+            try{
+                // Serialize data object to a byte array
+                ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
+                ObjectOutputStream out = new ObjectOutputStream(bos) ;
+                out.writeObject(whiteList);
+                out.close();
+
+                // Get the bytes of the serialized object
+                byteBuffer = bos.toByteArray();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            buffer.writeByteArray(byteBuffer);
             break;            
         case PlayerMusicDefImpl.SYNC_BLACK_LIST:
+            try{
+                // Serialize data object to a byte array
+                ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
+                ObjectOutputStream out = new ObjectOutputStream(bos) ;
+                out.writeObject(blackList);
+                out.close();
+
+                // Get the bytes of the serialized object
+                byteBuffer = bos.toByteArray();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            buffer.writeByteArray(byteBuffer);
             break;
         default:
         }
@@ -176,8 +238,10 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                 inst.setSParams(this.sParam1, this.sParam2, this.sParam3);
                 break;
             case PlayerMusicDefImpl.SYNC_WHITE_LIST:
+                inst.setWhiteList(this.whiteList);
                 break;                
             case PlayerMusicDefImpl.SYNC_BLACK_LIST:
+                inst.setBlackList(this.blackList);
                 break;
             default:
             }

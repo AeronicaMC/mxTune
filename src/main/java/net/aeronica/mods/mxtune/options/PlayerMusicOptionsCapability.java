@@ -16,6 +16,8 @@
  */
 package net.aeronica.mods.mxtune.options;
 
+import java.util.ArrayList;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
@@ -31,6 +33,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -131,16 +134,26 @@ public class PlayerMusicOptionsCapability
             properties.setString("sParam1", instance.getSParam1());
             properties.setString("sParam2", instance.getSParam2());
             properties.setString("sParam3", instance.getSParam3());
-//            NBTTagList listBlack = new NBTTagList();
-//            properties.setTag("listBlack", listBlack);
-//            for (int i=0; i<5; i++)
-//            {
-//                NBTTagCompound entry = new NBTTagCompound();
-//                entry.setLong("UUIDLeast", (long)-5773540987360819122L);
-//                entry.setLong("UUIDMost", (long)1930407997733879080L);
-//                entry.setByte("valid", (byte) 1);
-//                listBlack.appendTag(entry);
-//            }   
+            NBTTagList listBlack = new NBTTagList();
+            properties.setTag("listBlack", listBlack);
+            for (int i=0; i<instance.getBlackList().size(); i++)
+            {
+                NBTTagCompound entry = new NBTTagCompound();
+                entry.setLong("UUIDLeast", instance.getBlackList().get(i).getUuid().getLeastSignificantBits());
+                entry.setLong("UUIDMost", instance.getBlackList().get(i).getUuid().getMostSignificantBits());
+                entry.setString("playerName", instance.getBlackList().get(i).getPlayerName());
+                listBlack.appendTag(entry);
+            }
+            NBTTagList listWhite = new NBTTagList();
+            properties.setTag("listWhite", listWhite);
+            for (int i=0; i<instance.getWhiteList().size(); i++)
+            {
+                NBTTagCompound entry = new NBTTagCompound();
+                entry.setLong("UUIDLeast", instance.getWhiteList().get(i).getUuid().getLeastSignificantBits());
+                entry.setLong("UUIDMost", instance.getWhiteList().get(i).getUuid().getMostSignificantBits());
+                entry.setString("playerName", instance.getWhiteList().get(i).getPlayerName());
+                listWhite.appendTag(entry);
+            }   
             return properties; // compound;
             // return instance.serializeNBT();
         }
@@ -152,6 +165,38 @@ public class PlayerMusicOptionsCapability
             instance.setMidiVolume(properties.getFloat("midiVolume"));
             instance.setMuteOption(properties.getInteger("muteOption"));
             instance.setSParams(properties.getString("sParam1"), properties.getString("sParam2"), properties.getString("sParam3"));
+            if (properties.hasKey("listBlack", Constants.NBT.TAG_LIST))
+            {
+                NBTTagList listBlack = properties.getTagList("listBlack", Constants.NBT.TAG_LIST);
+                int count = listBlack.tagCount();
+                ArrayList<PlayerLists> blackList = new ArrayList<PlayerLists>();
+                for (int i = 0; i < count; i++)
+                {
+                    NBTTagCompound entry = listBlack.getCompoundTagAt(i);
+                    PlayerLists plist = new PlayerLists();
+                    plist.setPlayerName(entry.getString("playerName"));
+                    plist.setUuid(new UUID(entry.getLong("UUIDMost"), entry.getLong("UUIDLeast")));
+                    plist.setOnline(false);
+                    blackList.add(plist);
+                }
+                instance.setBlackList(blackList);
+            }
+            if (properties.hasKey("listWhite", Constants.NBT.TAG_LIST))
+            {
+                NBTTagList listWhite = properties.getTagList("listWhite", Constants.NBT.TAG_LIST);
+                int count = listWhite.tagCount();
+                ArrayList<PlayerLists> blackList = new ArrayList<PlayerLists>();
+                for (int i = 0; i < count; i++)
+                {
+                    NBTTagCompound entry = listWhite.getCompoundTagAt(i);
+                    PlayerLists plist = new PlayerLists();
+                    plist.setPlayerName(entry.getString("playerName"));
+                    plist.setUuid(new UUID(entry.getLong("UUIDMost"), entry.getLong("UUIDLeast")));
+                    plist.setOnline(false);
+                    blackList.add(plist);
+                }
+                instance.setWhiteList(blackList);
+            }
             //instance.deserializeNBT((NBTTagCompound) nbt);
         }
     }
