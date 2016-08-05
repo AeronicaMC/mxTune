@@ -16,6 +16,7 @@
  */
 package net.aeronica.mods.mxtune.options;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
@@ -61,6 +62,10 @@ public class MusicOptionsUtil
     public static String getSParam2(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getSParam2();}
 
     public static String getSParam3(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getSParam3();}
+    
+    public static void setBlackList(EntityPlayer playerIn, ArrayList<PlayerLists> blackList) {playerIn.getCapability(MUSIC_OPTIONS, null).setBlackList(blackList);}
+
+    public static void setWhiteList(EntityPlayer playerIn, ArrayList<PlayerLists> whiteList) {playerIn.getCapability(MUSIC_OPTIONS, null).setWhiteList(whiteList);}
 
     public static void dumpAllPlayers(MinecraftServer svr)
     {

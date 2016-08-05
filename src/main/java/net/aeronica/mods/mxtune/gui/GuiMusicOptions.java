@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 import javax.sound.midi.MidiChannel;
 import javax.sound.midi.MidiSystem;
@@ -343,7 +344,7 @@ public class GuiMusicOptions extends GuiScreen
     
     protected void sendOptionsToServer(float midiVolume, int muteOption)
     {
-        PacketDispatcher.sendToServer(new MusicOptionsMessage(midiVolume, muteOption));
+        PacketDispatcher.sendToServer(new MusicOptionsMessage(midiVolume, muteOption, blackList, whiteList));
     }
     
     /** MIDI generator for testing volume level - the John Cage Machine */
@@ -673,14 +674,17 @@ public class GuiMusicOptions extends GuiScreen
                 pList = new PlayerLists();
                 pList.setPlayerName(this.getMinecraftInstance().thePlayer.getDisplayName().getUnformattedText());
                 pList.setOnline(true);
+                pList.setUuid(player.getUniqueID());
                 playerList.add(pList);
                 pList = new PlayerLists();
                 pList.setPlayerName("Player001");
                 pList.setOnline(false);
+                pList.setUuid(new UUID(-1L, 1L));
                 playerList.add(pList);
                 pList = new PlayerLists();
                 pList.setPlayerName("Player002");
                 pList.setOnline(false);
+                pList.setUuid(new UUID(-2L, 2L));
                 playerList.add(pList);
                 return;
             }
@@ -691,15 +695,18 @@ public class GuiMusicOptions extends GuiScreen
             pList = new PlayerLists();
             pList.setPlayerName(getPlayerName(networkplayerinfo));
             pList.setOnline(true);
+            pList.setUuid(networkplayerinfo.getGameProfile().getId());
             playerList.add(pList);
         }
         pList = new PlayerLists();
         pList.setPlayerName("Player001");
         pList.setOnline(false);
+        pList.setUuid(new UUID(-1L, 1L));
         playerList.add(pList);
         pList = new PlayerLists();
         pList.setPlayerName("Player002");
         pList.setOnline(false);
+        pList.setUuid(new UUID(-2L, 2L));
         playerList.add(pList);
     }
 
