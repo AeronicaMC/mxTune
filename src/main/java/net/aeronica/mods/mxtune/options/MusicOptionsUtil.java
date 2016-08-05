@@ -63,9 +63,9 @@ public class MusicOptionsUtil
 
     public static String getSParam3(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getSParam3();}
     
-    public static void setBlackList(EntityPlayer playerIn, ArrayList<PlayerLists> blackList) {playerIn.getCapability(MUSIC_OPTIONS, null).setBlackList(blackList);}
+    public static void setBlackList(EntityPlayer playerIn, ArrayList<PlayerLists> blackList) {playerIn.getCapability(MUSIC_OPTIONS, null).setBlackList(playerIn, blackList);}
 
-    public static void setWhiteList(EntityPlayer playerIn, ArrayList<PlayerLists> whiteList) {playerIn.getCapability(MUSIC_OPTIONS, null).setWhiteList(whiteList);}
+    public static void setWhiteList(EntityPlayer playerIn, ArrayList<PlayerLists> whiteList) {playerIn.getCapability(MUSIC_OPTIONS, null).setWhiteList(playerIn, whiteList);}
 
     public static void dumpAllPlayers(MinecraftServer svr)
     {

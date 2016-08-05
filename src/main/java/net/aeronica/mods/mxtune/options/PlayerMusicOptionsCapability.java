@@ -167,7 +167,7 @@ public class PlayerMusicOptionsCapability
             instance.setSParams(properties.getString("sParam1"), properties.getString("sParam2"), properties.getString("sParam3"));
             if (properties.hasKey("listBlack", Constants.NBT.TAG_LIST))
             {
-                NBTTagList listBlack = properties.getTagList("listBlack", Constants.NBT.TAG_LIST);
+                NBTTagList listBlack = properties.getTagList("listBlack", Constants.NBT.TAG_COMPOUND);
                 int count = listBlack.tagCount();
                 ArrayList<PlayerLists> blackList = new ArrayList<PlayerLists>();
                 for (int i = 0; i < count; i++)
@@ -179,11 +179,11 @@ public class PlayerMusicOptionsCapability
                     plist.setOnline(false);
                     blackList.add(plist);
                 }
-                instance.setBlackList(blackList);
+                instance.setBlackList((ArrayList<PlayerLists>) blackList);
             }
             if (properties.hasKey("listWhite", Constants.NBT.TAG_LIST))
             {
-                NBTTagList listWhite = properties.getTagList("listWhite", Constants.NBT.TAG_LIST);
+                NBTTagList listWhite = properties.getTagList("listWhite", Constants.NBT.TAG_COMPOUND);
                 int count = listWhite.tagCount();
                 ArrayList<PlayerLists> blackList = new ArrayList<PlayerLists>();
                 for (int i = 0; i < count; i++)
@@ -195,7 +195,7 @@ public class PlayerMusicOptionsCapability
                     plist.setOnline(false);
                     blackList.add(plist);
                 }
-                instance.setWhiteList(blackList);
+                instance.setWhiteList((ArrayList<PlayerLists>) blackList);
             }
             //instance.deserializeNBT((NBTTagCompound) nbt);
         }
