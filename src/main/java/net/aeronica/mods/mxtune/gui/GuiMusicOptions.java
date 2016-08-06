@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 
 import javax.sound.midi.MidiChannel;
 import javax.sound.midi.MidiSystem;
@@ -258,28 +257,28 @@ public class GuiMusicOptions extends GuiScreen
             if (this.selectedPlayerIndex == -1 | this.selectedPlayerIndex > this.playerList.size()) break;
             t = this.playerList.get(this.selectedPlayerIndex);
             this.playerList.remove(this.selectedPlayerIndex);
-            this.selectedPlayerIndex = -1;
+            //this.selectedPlayerIndex = -1;
             this.whiteList.add(t);
             break;
         case 12:
             if (this.selectedWhiteIndex == -1 | this.selectedWhiteIndex > this.whiteList.size()) break;
             t = this.whiteList.get(this.selectedWhiteIndex);
             this.whiteList.remove(this.selectedWhiteIndex);
-            this.selectedWhiteIndex = -1;
+            //this.selectedWhiteIndex = -1;
             this.playerList.add(t);
             break;            
         case 13:
             if (this.selectedPlayerIndex == -1 | this.selectedPlayerIndex > this.playerList.size()) break;
             t = this.playerList.get(this.selectedPlayerIndex);
             this.playerList.remove(this.selectedPlayerIndex);
-            this.selectedPlayerIndex = -1;
+            //this.selectedPlayerIndex = -1;
             this.blackList.add(t);
             break;
         case 14:
             if (this.selectedBlackIndex == -1 | this.selectedBlackIndex > this.blackList.size()) break;
             t = this.blackList.get(this.selectedBlackIndex);
             this.blackList.remove(this.selectedBlackIndex);
-            this.selectedBlackIndex = -1;
+            //this.selectedBlackIndex = -1;
             this.playerList.add(t);
             break;            
 
@@ -653,7 +652,7 @@ public class GuiMusicOptions extends GuiScreen
     static class PlayerComparator implements Comparator<NetworkPlayerInfo>
         {
             private PlayerComparator() {}
-
+            @Override
             public int compare(NetworkPlayerInfo p_compare_1_, NetworkPlayerInfo p_compare_2_)
             {
                 return ComparisonChain.start().compare(p_compare_1_.getGameProfile().getName(), p_compare_2_.getGameProfile().getName()).result();
@@ -661,6 +660,18 @@ public class GuiMusicOptions extends GuiScreen
         }
 
     private static final Ordering<NetworkPlayerInfo> ENTRY_ORDERING = Ordering.from(new GuiMusicOptions.PlayerComparator());
+    
+    static class PlayerListsComparator implements Comparator<PlayerLists>
+    {
+        private PlayerListsComparator() {}        
+        @Override
+        public int compare(PlayerLists o1, PlayerLists o2)
+        {
+            return ComparisonChain.start().compareTrueFirst(o1.isOnline(), o2.isOnline()).compare(o1.getPlayerName(), o2.getPlayerName()).result();
+        }   
+    }
+    
+    private static final Ordering<PlayerLists> LIST_ORDERING = Ordering.from(new GuiMusicOptions.PlayerListsComparator());
     
     private void initPlayerList()
     {
@@ -708,6 +719,9 @@ public class GuiMusicOptions extends GuiScreen
                 }
             }
         }
+        blackList = (ArrayList<PlayerLists>) LIST_ORDERING.<PlayerLists> sortedCopy(blackList);
+        whiteList = (ArrayList<PlayerLists>) LIST_ORDERING.<PlayerLists> sortedCopy(whiteList);
+        playerList = (ArrayList<PlayerLists>) LIST_ORDERING.<PlayerLists> sortedCopy(playerList);
     }
 
     public String getPlayerName(NetworkPlayerInfo networkPlayerInfoIn)
