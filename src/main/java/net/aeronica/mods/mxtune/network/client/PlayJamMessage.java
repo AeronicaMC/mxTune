@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.network.client;
 
 import java.io.IOException;
 
+import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
@@ -56,7 +57,7 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        if (MusicOptionsUtil.getMuteResult(player, player.worldObj.getPlayerEntityByName(groupID)) == false)
+        if (MusicOptionsUtil.getMuteResult(player, player.worldObj.getPlayerEntityByName(GROUPS.getLeaderOfGroup(groupID))) == false)
         {
             MMLManager.getInstance().mmlPlay(jamMML, groupID, true, MusicOptionsUtil.getMidiVolume(player));
         }
