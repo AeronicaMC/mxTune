@@ -93,7 +93,7 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        if (side.isClient())
+        if (MusicOptionsUtil.getMuteResult(player, player.worldObj.getPlayerEntityByName(playerName)) == false)
         {
             /**
              * Solo play format "<playerName|groupID>=MML@...;" Jam play format

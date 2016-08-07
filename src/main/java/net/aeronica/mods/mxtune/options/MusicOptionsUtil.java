@@ -71,6 +71,69 @@ public class MusicOptionsUtil
 
     public static List<PlayerLists> getWhiteList(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getWhiteList();}
     
+    /**
+     * Mute per the muteOptions setting taking care to not mute THEPLAYER (playerIn) except for case ALL
+     * 
+     * @param playerIn
+     * @param otherPlayer
+     * @return true if muted
+     */
+    public static boolean getMuteResult(EntityPlayer playerIn, EntityPlayer otherPlayer)
+    {
+        boolean result = false;
+        switch (getMuteOptionEnum(playerIn))
+        {
+        case OFF:
+            result = false; break;
+        case ALL:
+            result = true; break;
+        case OTHERS:
+            result = !playerIn.equals(otherPlayer); break;
+        case WHITELIST:
+        {
+            if (!playerIn.equals(otherPlayer))
+            {
+                boolean flag = true;
+                for (PlayerLists w : getWhiteList(playerIn))
+                {
+                    if (w.getUuid().equals(otherPlayer.getUniqueID()))
+                    {
+                        flag = false;
+                        break;
+                    }
+                }
+                result = flag;
+            } else
+            {
+                result = false;
+            }
+            break;
+        }
+        case BLACKLIST:
+        {
+            if (!playerIn.equals(otherPlayer))
+            {
+                boolean flag = false;
+                for (PlayerLists w : getBlackList(playerIn))
+                {
+                    if (w.getUuid().equals(otherPlayer.getUniqueID()))
+                    {
+                        flag = true;
+                        break;
+                    }
+                }
+                result = flag;
+            } else
+            {
+                result = false;
+            }
+            break;
+        }
+        default:
+        }
+        return result;
+    }
+    
     public static void dumpAllPlayers(MinecraftServer svr)
     {
         MinecraftServer minecraftServer = MXTuneMain.proxy.getMinecraftServer();

@@ -30,6 +30,7 @@ import net.aeronica.mods.mxtune.network.client.PlayJamMessage;
 import net.aeronica.mods.mxtune.network.client.PlaySoloMessage;
 import net.aeronica.mods.mxtune.network.client.QueueJamMessage;
 import net.aeronica.mods.mxtune.network.client.SyncStatusMessage;
+import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.entity.player.EntityPlayer;
@@ -67,6 +68,7 @@ public class PlayManager
      */
     public void playMusic(EntityPlayer playerIn, BlockPos pos, boolean isPlaced)
     {
+        if (MusicOptionsUtil.isMuteAll(playerIn)) return;
         ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(pos, playerIn, isPlaced);
         if (sheetMusic != null)
         {

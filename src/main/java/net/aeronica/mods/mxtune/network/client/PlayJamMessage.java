@@ -56,7 +56,7 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        if (side.isClient())
+        if (MusicOptionsUtil.getMuteResult(player, player.worldObj.getPlayerEntityByName(groupID)) == false)
         {
             MMLManager.getInstance().mmlPlay(jamMML, groupID, true, MusicOptionsUtil.getMidiVolume(player));
         }
