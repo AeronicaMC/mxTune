@@ -172,7 +172,7 @@ public class MMLManager
     {
         for (SoundCategory soundcategory: SoundCategory.values())
         {
-            restoreLevel(soundcategory, 0.5F);
+            restoreLevel(soundcategory, 0.75F);
             mc.gameSettings.saveOptions();
         }
     }
