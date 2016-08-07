@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.options;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
@@ -63,13 +63,13 @@ public class MusicOptionsUtil
 
     public static String getSParam3(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getSParam3();}
     
-    public static void setBlackList(EntityPlayer playerIn, ArrayList<PlayerLists> blackList) {playerIn.getCapability(MUSIC_OPTIONS, null).setBlackList(playerIn, blackList);}
+    public static void setBlackList(EntityPlayer playerIn, List<PlayerLists> blackList) {playerIn.getCapability(MUSIC_OPTIONS, null).setBlackList(playerIn, blackList);}
 
-    public static ArrayList<PlayerLists> getBlackList(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getBlackList();}
+    public static List<PlayerLists> getBlackList(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getBlackList();}
     
-    public static void setWhiteList(EntityPlayer playerIn, ArrayList<PlayerLists> whiteList) {playerIn.getCapability(MUSIC_OPTIONS, null).setWhiteList(playerIn, whiteList);}
+    public static void setWhiteList(EntityPlayer playerIn, List<PlayerLists> whiteList) {playerIn.getCapability(MUSIC_OPTIONS, null).setWhiteList(playerIn, whiteList);}
 
-    public static ArrayList<PlayerLists> getWhiteList(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getWhiteList();}
+    public static List<PlayerLists> getWhiteList(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getWhiteList();}
     
     public static void dumpAllPlayers(MinecraftServer svr)
     {

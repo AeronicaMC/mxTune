@@ -17,6 +17,7 @@
 package net.aeronica.mods.mxtune.options;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
@@ -169,7 +170,7 @@ public class PlayerMusicOptionsCapability
             {
                 NBTTagList listBlack = properties.getTagList("listBlack", Constants.NBT.TAG_COMPOUND);
                 int count = listBlack.tagCount();
-                ArrayList<PlayerLists> blackList = new ArrayList<PlayerLists>();
+                List<PlayerLists> blackList = new ArrayList<PlayerLists>();
                 for (int i = 0; i < count; i++)
                 {
                     NBTTagCompound entry = listBlack.getCompoundTagAt(i);
@@ -179,13 +180,13 @@ public class PlayerMusicOptionsCapability
                     plist.setOnline(false);
                     blackList.add(plist);
                 }
-                instance.setBlackList((ArrayList<PlayerLists>) blackList);
+                instance.setBlackList((List<PlayerLists>) blackList);
             }
             if (properties.hasKey("listWhite", Constants.NBT.TAG_LIST))
             {
                 NBTTagList listWhite = properties.getTagList("listWhite", Constants.NBT.TAG_COMPOUND);
                 int count = listWhite.tagCount();
-                ArrayList<PlayerLists> blackList = new ArrayList<PlayerLists>();
+                List<PlayerLists> blackList = new ArrayList<PlayerLists>();
                 for (int i = 0; i < count; i++)
                 {
                     NBTTagCompound entry = listWhite.getCompoundTagAt(i);
@@ -195,7 +196,7 @@ public class PlayerMusicOptionsCapability
                     plist.setOnline(false);
                     blackList.add(plist);
                 }
-                instance.setWhiteList((ArrayList<PlayerLists>) blackList);
+                instance.setWhiteList((List<PlayerLists>) blackList);
             }
             //instance.deserializeNBT((NBTTagCompound) nbt);
         }

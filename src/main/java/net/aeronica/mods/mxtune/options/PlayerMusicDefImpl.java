@@ -17,6 +17,7 @@
 package net.aeronica.mods.mxtune.options;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.SyncPlayerMusicOptionsMessage;
@@ -31,7 +32,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     private float midiVolume;
     /** Strings for passing parameters from server to client: for a GUI for example */
     private String sParam1, sParam2, sParam3;
-    private ArrayList<PlayerLists> whiteList, blackList;
+    private List<PlayerLists> whiteList, blackList;
 
     public PlayerMusicDefImpl()
     {
@@ -105,22 +106,22 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     public int getMuteOption() {return muteOption;}
     
     @Override
-    public void setWhiteList(ArrayList<PlayerLists> list) {this.whiteList = list;}
+    public void setWhiteList(List<PlayerLists> list) {this.whiteList = list;}
 
     @Override
-    public void setWhiteList(EntityPlayer playerIn, ArrayList<PlayerLists> list) {this.whiteList = list; sync(playerIn, SYNC_WHITE_LIST);}
+    public void setWhiteList(EntityPlayer playerIn, List<PlayerLists> list) {this.whiteList = list; sync(playerIn, SYNC_WHITE_LIST);}
 
     @Override
-    public ArrayList<PlayerLists> getWhiteList() {return this.whiteList;}
+    public List<PlayerLists> getWhiteList() {return this.whiteList;}
 
     @Override
-    public void setBlackList(EntityPlayer playerIn, ArrayList<PlayerLists> list) {this.blackList = list; sync(playerIn, SYNC_BLACK_LIST);}
+    public void setBlackList(EntityPlayer playerIn, List<PlayerLists> list) {this.blackList = list; sync(playerIn, SYNC_BLACK_LIST);}
 
     @Override
-    public void setBlackList(ArrayList<PlayerLists> list) {this.blackList = list;}
+    public void setBlackList(List<PlayerLists> list) {this.blackList = list;}
 
     @Override
-    public ArrayList<PlayerLists> getBlackList() {return this.blackList;}
+    public List<PlayerLists> getBlackList() {return this.blackList;}
 
     public static final byte SYNC_ALL = 0;
     public static final byte SYNC_MIDI_VOLUME = 1;

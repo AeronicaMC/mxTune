@@ -21,7 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
+import java.util.List;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.options.IPlayerMusicOptions;
@@ -60,7 +60,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     private float midiVolume;
     private int muteOption;
     private String sParam1, sParam2, sParam3;
-    private ArrayList<PlayerLists> blackList, whiteList;
+    private List<PlayerLists> blackList, whiteList;
 
     private byte[] byteBuffer = null;
     
@@ -134,7 +134,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                 byteBuffer = buffer.readByteArray();
                 ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
                 ObjectInputStream in = new ObjectInputStream(bis) ;
-                whiteList =  (ArrayList<PlayerLists>) in.readObject();
+                whiteList =  (List<PlayerLists>) in.readObject();
                 in.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -149,7 +149,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                 byteBuffer = buffer.readByteArray();
                 ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
                 ObjectInputStream in = new ObjectInputStream(bis) ;
-                blackList =  (ArrayList<PlayerLists>) in.readObject();
+                blackList =  (List<PlayerLists>) in.readObject();
                 in.close();
             } catch (IOException e) {
                 e.printStackTrace();

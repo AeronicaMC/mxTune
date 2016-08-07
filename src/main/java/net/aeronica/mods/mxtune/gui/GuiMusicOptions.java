@@ -75,19 +75,19 @@ public class GuiMusicOptions extends GuiScreen
     private int lastMuteOption = -1;
 
     /** PlayerList */
-    private ArrayList<PlayerLists> playerList; 
+    private List<PlayerLists> playerList; 
     private int selectedPlayerIndex = -1;
     private PlayerLists selectedPlayerList = new PlayerLists();
     private int playerListWidth;
 
     /** WhiteList */
-    private ArrayList<PlayerLists> whiteList; 
+    private List<PlayerLists> whiteList; 
     private int selectedWhiteIndex = -1;
     private PlayerLists selectedWhiteList = new PlayerLists();
     private int whiteListWidth;
     
     /** WhiteList */
-    private ArrayList<PlayerLists> blackList; 
+    private List<PlayerLists> blackList; 
     private int selectedBlackIndex = -1;
     private PlayerLists selectedBlackList = new PlayerLists();
     private int blackListWidth;
@@ -128,8 +128,8 @@ public class GuiMusicOptions extends GuiScreen
         int y = (height - 100) / 2;
         int x = (width - (playerListWidth + whiteListWidth + blackListWidth + 24 + 24)) / 2;
         lst_white = new GuiWhiteList(this, whiteList, x, whiteListWidth, this.getFontRenderer().FONT_HEIGHT + 2);
-        btn_players_to_white = new GuiButtonExt(11, lst_white.getRight()+2, y, 20, 20, "<");
-        btn_white_to_players = new GuiButtonExt(12, lst_white.getRight()+2, y + 25, 20, 20, ">");
+        btn_white_to_players = new GuiButtonExt(11, lst_white.getRight()+2, y, 20, 20, ">");
+        btn_players_to_white = new GuiButtonExt(12, lst_white.getRight()+2, y + 25, 20, 20, "<");
         lst_players = new GuiPlayerList(this, playerList, playerListWidth, this.getFontRenderer().FONT_HEIGHT + 2);
         btn_players_to_black = new GuiButtonExt(13, lst_players.getRight()+2, y, 20, 20, ">");
         btn_black_to_players = new GuiButtonExt(14, lst_players.getRight()+2, y + 25, 20, 20, "<");
@@ -254,19 +254,19 @@ public class GuiMusicOptions extends GuiScreen
             MMLManager.getInstance().abortAll();
             break;
         case 11:
-            if (this.selectedPlayerIndex == -1 | this.selectedPlayerIndex > this.playerList.size()) break;
-            t = this.playerList.get(this.selectedPlayerIndex);
-            this.playerList.remove(this.selectedPlayerIndex);
-            //this.selectedPlayerIndex = -1;
-            this.whiteList.add(t);
-            break;
-        case 12:
             if (this.selectedWhiteIndex == -1 | this.selectedWhiteIndex > this.whiteList.size()) break;
             t = this.whiteList.get(this.selectedWhiteIndex);
             this.whiteList.remove(this.selectedWhiteIndex);
             //this.selectedWhiteIndex = -1;
             this.playerList.add(t);
             break;            
+        case 12:
+            if (this.selectedPlayerIndex == -1 | this.selectedPlayerIndex > this.playerList.size()) break;
+            t = this.playerList.get(this.selectedPlayerIndex);
+            this.playerList.remove(this.selectedPlayerIndex);
+            //this.selectedPlayerIndex = -1;
+            this.whiteList.add(t);
+            break;
         case 13:
             if (this.selectedPlayerIndex == -1 | this.selectedPlayerIndex > this.playerList.size()) break;
             t = this.playerList.get(this.selectedPlayerIndex);
@@ -284,6 +284,7 @@ public class GuiMusicOptions extends GuiScreen
 
         default:
         }
+        sortLists();
         updateState();
     }
 
@@ -452,9 +453,9 @@ public class GuiMusicOptions extends GuiScreen
     public static class GuiPlayerList extends GuiScrollingList
     {
         GuiMusicOptions parent;
-        private final ArrayList<PlayerLists> playerLists;
+        private final List<PlayerLists> playerLists;
         
-        public GuiPlayerList(GuiMusicOptions parent, ArrayList<PlayerLists> playerLists,  int listWidth, int slotHeight)
+        public GuiPlayerList(GuiMusicOptions parent, List<PlayerLists> playerLists,  int listWidth, int slotHeight)
         {
             super(parent.getMinecraftInstance(), listWidth, parent.height - 32 - 100 + 4, 32, parent.height - 100 + 4, parent.lst_white.getRight()+ 24, slotHeight, parent.width, parent.height);
             this.parent = parent;
@@ -503,7 +504,6 @@ public class GuiMusicOptions extends GuiScreen
         if (index == this.selectedPlayerIndex) return;
         this.selectedPlayerIndex = index;
         this.selectedPlayerList = (index >= 0 && index <= playerList.size()) ? playerList.get(selectedPlayerIndex) : null;
-        updateState();
     }
 
     public boolean playerIndexSelected(int index) {return index == selectedPlayerIndex;}
@@ -512,9 +512,9 @@ public class GuiMusicOptions extends GuiScreen
     public static class GuiWhiteList extends GuiScrollingList
     {
         GuiMusicOptions parent;
-        private final ArrayList<PlayerLists> whiteLists;
+        private final List<PlayerLists> whiteLists;
         
-        public GuiWhiteList(GuiMusicOptions parent, ArrayList<PlayerLists> whiteLists, int left, int listWidth, int slotHeight)
+        public GuiWhiteList(GuiMusicOptions parent, List<PlayerLists> whiteLists, int left, int listWidth, int slotHeight)
         {
             super(parent.getMinecraftInstance(), listWidth, parent.height - 32 - 100 + 4, 32, parent.height - 100 + 4, left, slotHeight, parent.width, parent.height);
             this.parent = parent;
@@ -563,7 +563,6 @@ public class GuiMusicOptions extends GuiScreen
         if (index == this.selectedWhiteIndex) return;
         this.selectedWhiteIndex = index;
         this.selectedWhiteList = (index >= 0 && index <= whiteList.size()) ? whiteList.get(selectedWhiteIndex) : null;
-        updateState();
     }
 
     public boolean whiteIndexSelected(int index) {return index == selectedWhiteIndex;}
@@ -572,9 +571,9 @@ public class GuiMusicOptions extends GuiScreen
     public static class GuiBlackList extends GuiScrollingList
     {
         GuiMusicOptions parent;
-        private final ArrayList<PlayerLists> blackLists;
+        private final List<PlayerLists> blackLists;
         
-        public GuiBlackList(GuiMusicOptions parent, ArrayList<PlayerLists> blackLists,  int listWidth, int slotHeight)
+        public GuiBlackList(GuiMusicOptions parent, List<PlayerLists> blackLists,  int listWidth, int slotHeight)
         {
             super(parent.getMinecraftInstance(), listWidth, parent.height - 32 - 100 + 4, 32, parent.height - 100 + 4, parent.lst_players.getRight() + 24, slotHeight, parent.width, parent.height);
             this.parent = parent;
@@ -623,7 +622,6 @@ public class GuiMusicOptions extends GuiScreen
         if (index == this.selectedBlackIndex) return;
         this.selectedBlackIndex = index;
         this.selectedBlackList = (index >= 0 && index <= blackList.size()) ? blackList.get(selectedBlackIndex) : null;
-        updateState();
     }
 
     public boolean blackIndexSelected(int index) {return index == selectedBlackIndex;}
@@ -719,14 +717,28 @@ public class GuiMusicOptions extends GuiScreen
                 }
             }
         }
-        blackList = (ArrayList<PlayerLists>) LIST_ORDERING.<PlayerLists> sortedCopy(blackList);
-        whiteList = (ArrayList<PlayerLists>) LIST_ORDERING.<PlayerLists> sortedCopy(whiteList);
-        playerList = (ArrayList<PlayerLists>) LIST_ORDERING.<PlayerLists> sortedCopy(playerList);
+        /** Reorder the lists */
+        sortLists();
     }
 
+    /** A brute force way to keep the lists sorted and not worry about thread safety */
+    private void sortLists()
+    {
+        List<PlayerLists> tempWhiteList = (List<PlayerLists>) LIST_ORDERING.<PlayerLists> sortedCopy(whiteList);
+        whiteList.clear();
+        for (PlayerLists w: tempWhiteList) {whiteList.add(w);}
+        
+        List<PlayerLists> tempBlackList = (List<PlayerLists>) LIST_ORDERING.<PlayerLists> sortedCopy(blackList);
+        blackList.clear();
+        for (PlayerLists w: tempBlackList) {blackList.add(w);}
+
+        List<PlayerLists> tempPlayerList = (List<PlayerLists>) LIST_ORDERING.<PlayerLists> sortedCopy(playerList);
+        playerList.clear();
+        for (PlayerLists w: tempPlayerList) {playerList.add(w);}
+    }
+    
     public String getPlayerName(NetworkPlayerInfo networkPlayerInfoIn)
     {
         return networkPlayerInfoIn.getDisplayName() != null ? networkPlayerInfoIn.getDisplayName().getFormattedText() : ScorePlayerTeam.formatPlayerName(networkPlayerInfoIn.getPlayerTeam(), networkPlayerInfoIn.getGameProfile().getName());
     }
-
 }

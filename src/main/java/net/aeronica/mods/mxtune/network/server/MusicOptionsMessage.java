@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
@@ -34,12 +35,12 @@ public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessa
 {
     private float midiVolume;
     private int muteOption;
-    private ArrayList<PlayerLists> blackList, whiteList;
+    private List<PlayerLists> blackList, whiteList;
     private byte[] byteBuffer = null;
     
     public MusicOptionsMessage() {}
     
-    public MusicOptionsMessage(float midiVolume, int muteOption, ArrayList<PlayerLists> blackList, ArrayList<PlayerLists> whiteList)
+    public MusicOptionsMessage(float midiVolume, int muteOption, List<PlayerLists> blackList, List<PlayerLists> whiteList)
     {
         this.midiVolume = midiVolume;
         this.muteOption = muteOption;
