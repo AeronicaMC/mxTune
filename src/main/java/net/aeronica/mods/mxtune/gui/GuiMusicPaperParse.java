@@ -67,7 +67,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
 {
     public static final int GUI_ID = 7;
     private Minecraft mc;
-    private String TITLE = "MML Simple Editor";
+    private static final String TITLE = I18n.format("mxtune.gui.musicPaperParse.title");
     private GuiTextField txt_mmlTitle;
     private GuiMMLBox txt_mmlPaste;
     private GuiTextField lbl_status;

@@ -44,4 +44,9 @@ mxtune.gui.musicOptions.muteOption.whitelist=Allow Whitelist
 mxtune.gui.musicOptions.muteOption.all=Mute All
 mxtune.gui.musicOptions.reset=Abort/Reset Music
 
-mxtune.gui.musicPaperParse
+mxtune.gui.musicPaperParse.title=MML Simple Editor
+
+< Chat messages >
+mxtune.chat.gm.noJoinGroupWhenMuteAll=You can't join a group because [Mute All] is enabled.
+mxtune.chat.gm.noJoinGroupWhenPlayerIsMuted=You can't join %s's group because they are muted.
+mxtune.chat.gm.noSleepInJam=You can't sleep while in a JAM.

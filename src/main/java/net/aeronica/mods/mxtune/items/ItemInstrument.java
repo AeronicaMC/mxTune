@@ -112,7 +112,7 @@ public class ItemInstrument extends ItemBase implements IInstrument
         // vanilla processing
         // return EnumActionResult.PASS to activate on AIR, or let Vanilla
         // process
-        return EnumActionResult.FAIL;
+        return EnumActionResult.PASS;
     }
 
     /* 
@@ -137,7 +137,7 @@ public class ItemInstrument extends ItemBase implements IInstrument
     @Override
     public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer playerIn, EntityLivingBase target, EnumHand hand)
     {
-        return super.itemInteractionForEntity(stack, playerIn, target, hand);
+        return true;// super.itemInteractionForEntity(stack, playerIn, target, hand);
     }
 
     /**

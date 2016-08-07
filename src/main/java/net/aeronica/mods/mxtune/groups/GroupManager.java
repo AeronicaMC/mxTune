@@ -30,10 +30,11 @@ import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteractSpecific;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -41,6 +42,7 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensio
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 // Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
 // UUID does not work on the client.
@@ -384,6 +386,7 @@ public class GroupManager
         PacketDispatcher.sendToAll(new SyncGroupMessage(buildgroups.trim(), buildmembers.trim()));
     }
 
+    private static int interactFlag = 0;
     /** Forge and FML Event Handling */
     /**
      * TODO: Add a yes/no gui to ask user if that want to join. Indicate if a
@@ -391,36 +394,39 @@ public class GroupManager
      * @param event
      */
     @SubscribeEvent
-    public void onEntityInteractEvent(EntityInteractSpecific event)
+    public void onEntityInteractEvent(EntityInteract event)
     {
         if (event.getTarget() != null && event.getTarget() instanceof EntityPlayer && event.getEntityLiving() instanceof EntityPlayer)
         {
-
             EntityPlayer playerInitiator = (EntityPlayer) event.getEntityPlayer();
             EntityPlayer playerTarget = (EntityPlayer) event.getTarget();
 
-            ModLogger.logInfo(playerInitiator.getDisplayName().getUnformattedText() + " pokes " + playerTarget.getDisplayName().getUnformattedText());
+            ModLogger.debug(playerInitiator.getDisplayName().getUnformattedText() + " pokes " + playerTarget.getDisplayName().getUnformattedText());
 
-            if (!event.getEntityPlayer().worldObj.isRemote)
+            if ((event.getSide() == Side.SERVER) && (interactFlag++ % 2) == 0)
             {
-                /** Server side */
+                
                 Group targetGroup = getMembersGroup(playerTarget.getDisplayName().getUnformattedText());
                 if (targetGroup != null && targetGroup.leaderName.equalsIgnoreCase(playerTarget.getDisplayName()
                         .getUnformattedText()) /* && initatorGroup == null */)
                 {
-                    MusicOptionsUtil.setSParams(playerInitiator, targetGroup.groupID, "", "");
-                    PacketDispatcher.sendTo(new JoinGroupMessage(targetGroup.groupID), (EntityPlayerMP) playerInitiator);
-
-                    /*
-                     * if (addMember(group.groupID,
-                     * playerInitiator.getDisplayName())) {
-                     * playerInitiator.addChatMessage(new ChatComponentText(
-                     * "You Joined " + playerTarget.getDisplayName() +
-                     * "'s group")); playerTarget.addChatMessage(new
-                     * ChatComponentText( playerInitiator.getDisplayName() +
-                     * " joined the group")); }
-                     */
-                 }
+                    if (MusicOptionsUtil.isMuteAll(playerInitiator) == false)
+                    {
+                        if (MusicOptionsUtil.getMuteResult(playerInitiator, playerTarget) == false)
+                        {
+                            MusicOptionsUtil.setSParams(playerInitiator, targetGroup.groupID, "", "");
+                            PacketDispatcher.sendTo(new JoinGroupMessage(targetGroup.groupID), (EntityPlayerMP) playerInitiator);
+                        } else
+                        {
+                            /** target fails the mute options check */
+                            playerInitiator.addChatComponentMessage(new TextComponentTranslation("mxtune.chat.gm.noJoinGroupWhenPlayerIsMuted", new Object[] {playerTarget.getDisplayName().getUnformattedText()}));
+                        }
+                    } else
+                    {
+                        /** MuteALL is true so playerInitator can't join */
+                        playerInitiator.addChatComponentMessage(new TextComponentTranslation("mxtune.chat.gm.noJoinGroupWhenMuteAll"));
+                    }
+                }
             }
         }
     }
@@ -432,7 +438,7 @@ public class GroupManager
         if (group != null)
         {
             event.setResult(SleepResult.NOT_POSSIBLE_NOW);
-            event.getEntityPlayer().addChatMessage(new TextComponentString("You can't sleep while in a JAM!"));
+            event.getEntityPlayer().addChatComponentMessage(new TextComponentTranslation("mxtune.chat.gm.noSleepInJam"));
         }
     }
 
@@ -469,7 +475,6 @@ public class GroupManager
     public void onPlayerLoggedOutEvent(PlayerLoggedOutEvent event)
     {
         removeMember(event.player.getDisplayName().getUnformattedText());
-        ModLogger.logInfo("Disconnected " + event.player.getDisplayNameString());
     }
 
     // @SubscribeEvent
@@ -481,9 +486,9 @@ public class GroupManager
         removeMember(event.player.getDisplayName().getUnformattedText());
     }
 
-    private static void debug(String strMessage) {ModLogger.debug(strMessage);}
+    private static void debug(String strMessage) {/*ModLogger.debug(strMessage);*/}
 
-    private static void log(String strMessage) {ModLogger.logInfo(strMessage);}
+    private static void log(String strMessage) {/*ModLogger.logInfo(strMessage);*/}
 
     private static EntityPlayer getEntityPlayer(String name)
     {

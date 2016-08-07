@@ -147,12 +147,9 @@ public class MMLManager
 
     private static void saveLevelsAndMute()
     {
-        SoundCategory[] asoundcategory = SoundCategory.values();
-        int i = asoundcategory.length;
         Float v;
-        for (int j = 0; j < i; ++j)
+        for (SoundCategory soundcategory: SoundCategory.values())
         {
-            SoundCategory soundcategory = asoundcategory[j];
             v = mc.gameSettings.getSoundLevel(soundcategory);
             savedSoundLevels.put(soundcategory, v.toString());
             mc.gameSettings.setSoundLevel(soundcategory, muteLevel(soundcategory, v));
@@ -163,18 +160,23 @@ public class MMLManager
 
     private static void loadLevelsAndUnMute()
     {
-        SoundCategory[] asoundcategory = SoundCategory.values();
-        int i = asoundcategory.length;
-        Float v;
-        for (int j = 0; j < i; ++j)
+        for (SoundCategory soundcategory: SoundCategory.values())
         {
-            SoundCategory soundcategory = asoundcategory[j];
-            v = Float.valueOf(savedSoundLevels.get(soundcategory));
-            restoreLevel(soundcategory, v);
+            restoreLevel(soundcategory, Float.valueOf(savedSoundLevels.get(soundcategory)));
             mc.gameSettings.saveOptions();
         }
     }
 
+    /** Sound levels are totally hosed so set to 50% */
+    public static void fixLevels()
+    {
+        for (SoundCategory soundcategory: SoundCategory.values())
+        {
+            restoreLevel(soundcategory, 0.5F);
+            mc.gameSettings.saveOptions();
+        }
+    }
+    
     private static float muteLevel(SoundCategory sc, float level)
     {
         switch (sc)
