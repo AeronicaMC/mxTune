@@ -124,7 +124,8 @@ public class GuiMusicOptions extends GuiScreen
     {
         this.buttonList.clear();
         playerListWidth = whiteListWidth = blackListWidth = getFontRenderer().getStringWidth("MWMWMWMWMWMWMWMW") + 10 + 12;
-
+        Keyboard.enableRepeatEvents(true);
+        
         int y = (height - 100) / 2;
         int x = (width - (playerListWidth + whiteListWidth + blackListWidth + 24 + 24)) / 2;
         lst_white = new GuiWhiteList(this, whiteList, x, whiteListWidth, this.getFontRenderer().FONT_HEIGHT + 2);
