@@ -44,8 +44,6 @@ configurations {
 minecraft {
     version = "1.10.2-12.18.1.2042"
     runDir = "run"
-
-	def modDepends = "required-after:Forge@[1.10.2-12.18.1.2041,)"
 	
 	def versionPropsFile = file('version.properties')
 	def versionBuild = ""
@@ -63,7 +61,6 @@ minecraft {
     project.version = project.version + "." + versionBuild
     
     replace "{@version:mod}":project.version
-    replace "{@depends:mod}":modDepends
     
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.

@@ -142,8 +142,8 @@ public class MusicOptionsUtil
         GameProfile gp = null;
         if (minecraftServer != null)
         {
-            // String[] pdat = minecraftServer.getPlayerList().getAvailablePlayerDat();
-            String[] pdat = {"_Fobius.baubback", "c02513f9-576a-44f0-85cf-5d25927325bd", "6155e262-5db9-11e6-8b77-86f30ca893d3"};
+            String[] pdat = minecraftServer.getPlayerList().getAvailablePlayerDat();
+            // String[] pdat = {"_Fobius.baubback", "c02513f9-576a-44f0-85cf-5d25927325bd", "6155e262-5db9-11e6-8b77-86f30ca893d3"};
             for (String n : pdat)
             {
                 ModLogger.logInfo("serverStarted#Player.dat:  " + n);

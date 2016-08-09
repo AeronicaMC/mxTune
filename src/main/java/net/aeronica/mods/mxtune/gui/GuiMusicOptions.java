@@ -304,7 +304,7 @@ public class GuiMusicOptions extends GuiScreen
         if ((this.midiVolume != 0F) && this.lastMuteOption != -1)
         {
             btn_muteOption.enabled = true;
-            this.muteOption = this.lastMuteOption;
+            this.muteOption = MusicOptionsUtil.EnumMuteOptions.OFF.getMetadata();
             btn_muteOption.displayString = MusicOptionsUtil.EnumMuteOptions.byMetadata(this.muteOption).toString();
             this.lastMuteOption = -1;
         }   
