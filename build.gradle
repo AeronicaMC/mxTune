@@ -26,7 +26,7 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "0.3.0.0-dev"
+version = "0.3.1.0-dev"
 group = "net.aeronica.mods.mxtune" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "mxtune-1.10.2"
 
@@ -45,11 +45,25 @@ minecraft {
     version = "1.10.2-12.18.1.2042"
     runDir = "run"
 
-    if (project.version.endsWith('-dev')) {
-        project.version = project.version + "." + new Date().format('yyyy.MM.dd.HH.mm.ss')
+	def modDepends = "required-after:Forge@[1.10.2-12.18.1.2041,)"
+	
+	def versionPropsFile = file('version.properties')
+	def versionBuild = ""
+
+    if (versionPropsFile.canRead()) {
+        def Properties versionProps = new Properties()
+        versionProps.load(new FileInputStream(versionPropsFile))
+        versionBuild = versionProps['VERSION_BUILD'].toInteger() + 1
+        versionProps['VERSION_BUILD'] = versionBuild.toString()
+        versionProps.store(versionPropsFile.newWriter(), null)
+    } else {
+        throw new GradleException("Could not read version.properties!")
     }
+
+    project.version = project.version + "." + versionBuild
     
     replace "{@version:mod}":project.version
+    replace "{@depends:mod}":modDepends
     
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.

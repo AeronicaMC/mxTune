@@ -19,6 +19,8 @@ package net.aeronica.mods.mxtune.options;
 import java.util.List;
 import java.util.UUID;
 
+import com.mojang.authlib.GameProfile;
+
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.resources.I18n;
@@ -137,13 +139,25 @@ public class MusicOptionsUtil
     public static void dumpAllPlayers(MinecraftServer svr)
     {
         MinecraftServer minecraftServer = MXTuneMain.proxy.getMinecraftServer();
+        GameProfile gp = null;
         if (minecraftServer != null)
         {
-            String[] pdat = minecraftServer.getPlayerList().getAvailablePlayerDat();
+            // String[] pdat = minecraftServer.getPlayerList().getAvailablePlayerDat();
+            String[] pdat = {"_Fobius.baubback", "c02513f9-576a-44f0-85cf-5d25927325bd", "6155e262-5db9-11e6-8b77-86f30ca893d3"};
             for (String n : pdat)
             {
                 ModLogger.logInfo("serverStarted#Player.dat:  " + n);
-                ModLogger.logInfo("serverStarted#GameProfile: " + minecraftServer.getPlayerProfileCache().getProfileByUUID(UUID.fromString(n)));
+                try {
+                    gp = minecraftServer.getPlayerProfileCache().getProfileByUUID(UUID.fromString(n));      
+                }
+                catch(IllegalArgumentException e) {  
+                }
+                finally {
+                    if (gp != null)
+                        ModLogger.logInfo("serverStarted#GameProfile: " + gp.toString());
+                    else
+                        ModLogger.logInfo("serverStarted#GameProfile: Invalid UUID string: " + n); 
+                }
             }
         }
     }
