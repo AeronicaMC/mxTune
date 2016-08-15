@@ -1,7 +1,10 @@
 package net.aeronica.libs.mml.core;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+
+import javax.sound.midi.MidiSystem;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -49,6 +52,10 @@ public class TestAntlr
         walker.walk(mmlTrans, tree);
 
         player.mmlPlay(mmlTrans.getSequence());
+        
+//        File f = new File("midifile.mid");
+//        MidiSystem.write(mmlTrans.getSequence(),1,f);
+
 
         System.out.println("\n\nTest End");
     }
