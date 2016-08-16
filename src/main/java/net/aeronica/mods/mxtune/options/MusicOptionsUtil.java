@@ -29,6 +29,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.IStringSerializable;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class MusicOptionsUtil
 {
@@ -138,26 +139,27 @@ public class MusicOptionsUtil
     
     public static void dumpAllPlayers(MinecraftServer svr)
     {
-        MinecraftServer minecraftServer = MXTuneMain.proxy.getMinecraftServer();
+        //MinecraftServer minecraftServer = MXTuneMain.proxy.getMinecraftServer();
+        String[] pdat =  FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getAvailablePlayerDat();
         GameProfile gp = null;
-        if (minecraftServer != null)
+        for (String n : pdat)
         {
-            String[] pdat = minecraftServer.getPlayerList().getAvailablePlayerDat();
-            // String[] pdat = {"_Fobius.baubback", "c02513f9-576a-44f0-85cf-5d25927325bd", "6155e262-5db9-11e6-8b77-86f30ca893d3"};
-            for (String n : pdat)
-            {
-                ModLogger.logInfo("serverStarted#Player.dat:  " + n);
-                try {
-                    gp = minecraftServer.getPlayerProfileCache().getProfileByUUID(UUID.fromString(n));      
+            ModLogger.logInfo("playerDump#Player.dat:  " + n);
+            try {
+                gp = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getProfileByUUID(UUID.fromString(n));      
+            }
+            catch(IllegalArgumentException e) {  
+            }
+            finally {
+                if (gp != null) {
+                    ModLogger.logInfo("playerDump#Name:        " + gp.getName());
+                    ModLogger.logInfo("playerDump#UUID:        " + gp.getId());
+                    ModLogger.logInfo("playerDump#Properties:  " + gp.getProperties());
+                    ModLogger.logInfo("playerDump#isComplete:  " + gp.isComplete());
+                    ModLogger.logInfo("playerDump#isLegacy:    " + gp.isLegacy());
                 }
-                catch(IllegalArgumentException e) {  
-                }
-                finally {
-                    if (gp != null)
-                        ModLogger.logInfo("serverStarted#GameProfile: " + gp.toString());
-                    else
-                        ModLogger.logInfo("serverStarted#GameProfile: Invalid UUID string: " + n); 
-                }
+                else
+                    ModLogger.logInfo("playerDump#GameProfile: Invalid UUID string: " + n); 
             }
         }
     }
