@@ -11,6 +11,9 @@ item.mxtune:item_inst_mando.name=Mandolin
 item.mxtune:item_inst_bongo.name=Bongos
 item.mxtune:item_inst_balalaika.name=Balalaika
 item.mxtune:item_inst_clarinet.name=Clarinet
+item.mxtune:item_inst_musicbox.name=Music Box
+item.mxtune:item_inst_ocarina.name=Ocarina
+item.mxtune:item_inst_sawtooth.name=Sawtooth Lead
 item.mxtune:item_converter.name=Sheet Music Converter
 
 mxtune.configgui.ctgy.general.tooltip=mxTune General Settings

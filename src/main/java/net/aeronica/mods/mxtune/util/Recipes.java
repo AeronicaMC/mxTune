@@ -35,7 +35,10 @@ public class Recipes
      * FLUTE(2, "flute", 74),
      * BONGO(3, "bongo", 117),
      * BALAL(4, "balalaika", 27),
-     * CLARI(5, "clarinet", 72);
+     * CLARI(5, "clarinet", 72),
+     * MUSICBOX(6, "musicbox", 11),
+     * OCARINA(7, "ocarina", 80),
+     * SAWTOOTH(8, "sawtooth", 82);
      */
     public static void register()
     {
@@ -105,6 +108,38 @@ public class Recipes
         });
         GameRegistry.addRecipe(clariRecipe);
 
+        int MUSICBOX = ItemInstrument.EnumInstruments.MUSICBOX.getMetadata();
+        IRecipe musicboxRecipe = new ShapedOreRecipe(new ItemStack(StartupItems.item_instrument, 1, MUSICBOX), new Object[]
+        {
+                "PPP",
+                "PIP",
+                "PPP",
+                        'P', "plankWood",
+                        'I', Items.IRON_INGOT
+        });
+        GameRegistry.addRecipe(musicboxRecipe);
+
+        int OCARINA = ItemInstrument.EnumInstruments.OCARINA.getMetadata();
+        IRecipe ocarinaRecipe = new ShapedOreRecipe(new ItemStack(StartupItems.item_instrument, 1, OCARINA), new Object[]
+        {
+                " C ",
+                "CCC",
+                " C ",
+                        'C', Items.CLAY_BALL
+        });
+        GameRegistry.addRecipe(ocarinaRecipe);
+
+        int SAWTOOTH = ItemInstrument.EnumInstruments.SAWTOOTH.getMetadata();
+        IRecipe sawtoothRecipe = new ShapedOreRecipe(new ItemStack(StartupItems.item_instrument, 1, SAWTOOTH), new Object[]
+        {
+                "I  ",
+                "I  ",
+                "PP ",
+                        'P', "plankWood",
+                        'I', Items.IRON_INGOT
+        });
+        GameRegistry.addRecipe(sawtoothRecipe);
+        
         IRecipe pianoRecipe = new ShapedOreRecipe(new ItemStack(StartupBlocks.item_piano, 1, 0), new Object[]
         {
                 "PRP",

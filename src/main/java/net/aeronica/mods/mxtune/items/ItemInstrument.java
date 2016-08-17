@@ -176,7 +176,10 @@ public class ItemInstrument extends ItemBase implements IInstrument
         FLUTE(2, "flute", 74),
         BONGO(3, "bongo", 117),
         BALAL(4, "balalaika", 28),
-        CLARI(5, "clarinet", 72);
+        CLARI(5, "clarinet", 72),
+        MUSICBOX(6, "musicbox", 11),
+        OCARINA(7, "ocarina", 80),
+        SAWTOOTH(8, "sawtooth", 82);
 
         public int getMetadata() {return this.meta;}
 
