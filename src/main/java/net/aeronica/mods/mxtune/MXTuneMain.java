@@ -30,7 +30,6 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 
@@ -82,12 +81,6 @@ public class MXTuneMain
     {
         proxy.replacePlayerModel();
         proxy.registerHUD();
-    }
-
-    @EventHandler
-    public void serverStarting(FMLServerStartedEvent event)
-    {
-        proxy.serverStarted(event);
     }
 
     /**

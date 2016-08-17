@@ -21,11 +21,9 @@ import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.IStringSerializable;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -137,7 +135,7 @@ public class MusicOptionsUtil
         return result;
     }
     
-    public static void dumpAllPlayers(MinecraftServer svr)
+    public static void dumpAllPlayers()
     {
         //MinecraftServer minecraftServer = MXTuneMain.proxy.getMinecraftServer();
         String[] pdat =  FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getAvailablePlayerDat();

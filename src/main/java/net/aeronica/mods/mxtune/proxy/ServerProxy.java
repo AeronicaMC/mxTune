@@ -19,9 +19,7 @@ package net.aeronica.mods.mxtune.proxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.server.FMLServerHandler;
 
@@ -68,13 +66,7 @@ public class ServerProxy extends CommonProxy
 
     @Override
     public void replacePlayerModel() {}
-
-    @Override
-    public void serverStarted(FMLServerStartedEvent event) {super.serverStarted(event);}
     
-    @Override
-    public MinecraftServer getMinecraftServer() {return super.getMinecraftServer();}
-
     @Override
     public boolean playerIsInCreativeMode(EntityPlayer player)
     {

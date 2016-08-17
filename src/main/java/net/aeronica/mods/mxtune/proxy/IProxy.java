@@ -19,11 +19,9 @@ package net.aeronica.mods.mxtune.proxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -71,19 +69,9 @@ public interface IProxy
 
     /** Register HUD in Client PostInit */
     void registerHUD();
-
-    /** Initialize server dependent mxTune options */
-    void serverStarted(FMLServerStartedEvent event);
     
     /** Returns the instance of Minecraft */
     Minecraft getMinecraft();
-
-    /**
-     * Returns the instance of the Dedicated MinecraftServer on the server,
-     * the Integrated MinecraftServer on the stand alone client,
-     * or NULL if client may be connected to a dedicated server
-     */
-    MinecraftServer getMinecraftServer();
     
     /** Returns the instance of the EntityPlayer on the client, null on the server */
     EntityPlayer getClientPlayer();
