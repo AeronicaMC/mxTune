@@ -18,6 +18,16 @@ public class MMLUtil
     public static int getMIDINote(int rawNote, int mmlOctave, boolean rest)
     {
         int midiNote = getMIDINote(rawNote, mmlOctave);
-        return midiNote + 128;
+        return midiNote + (rest ? 128 : 0);
+    }
+    
+    public static int smartClampMIDI(int midiNote)
+    {
+        while (midiNote < 0 || midiNote > 127)
+        {
+            if (midiNote < 0) midiNote += 12;
+            if (midiNote > 127) midiNote -= 12;
+        }
+        return midiNote;
     }
 }

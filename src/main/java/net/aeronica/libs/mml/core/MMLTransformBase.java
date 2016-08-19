@@ -298,7 +298,8 @@ public abstract class MMLTransformBase extends MMLBaseListener
         int midiNote = 0;
         if (ctx.INT() != null)
         {
-            midiNote = Integer.valueOf(ctx.INT().getText());
+            // XXX: "n#" format is not played correctly. One octave too low. CF Issue #6. Add 12 to fix.
+            midiNote = Integer.valueOf(ctx.INT().getText()) + 12;
         }
         long lengthTicks = durationTicks(mmlLength, dot);
 

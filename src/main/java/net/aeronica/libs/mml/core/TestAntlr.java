@@ -1,10 +1,7 @@
 package net.aeronica.libs.mml.core;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-
-import javax.sound.midi.MidiSystem;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -13,7 +10,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 public class TestAntlr
 {
-    private static String mmlString = TestData.MML0.getMML();
+    private static String mmlString = TestData.MML6.getMML();
     private static byte[] mmlBuf = null;
 
     public static InputStream init()

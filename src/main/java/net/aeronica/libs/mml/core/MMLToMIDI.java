@@ -85,8 +85,8 @@ public class MMLToMIDI extends MMLTransformBase
                 case NOTE:
                 {
                     MONote mmo = (MONote) getMObject(i);
-                    tracks[tk].add(createNoteOnEvent(ch, mmo.getMidiNote(), (int) (scaleVolume(mmo.getNoteVolume()) * 127f / 15f), mmo.getStartingTicks() + ticksOffset));
-                    tracks[tk].add(createNoteOffEvent(ch, mmo.getMidiNote(), (int) (mmo.getNoteVolume() * 127f / 15f), mmo.getStartingTicks() + mmo.getLengthTicks() + ticksOffset - 1));
+                    tracks[tk].add(createNoteOnEvent(ch, MMLUtil.smartClampMIDI(mmo.getMidiNote()), (int) (scaleVolume(mmo.getNoteVolume()) * 127f / 15f), mmo.getStartingTicks() + ticksOffset));
+                    tracks[tk].add(createNoteOffEvent(ch, MMLUtil.smartClampMIDI(mmo.getMidiNote()), (int) (mmo.getNoteVolume() * 127f / 15f), mmo.getStartingTicks() + mmo.getLengthTicks() + ticksOffset - 1));
                     if (mmo.getText() != null)
                     {
                         String text = new String("{\"Note\": \"{Track\":" + tk + ", \"Text\":\"" + mmo.getText() + "\"}}");
