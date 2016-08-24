@@ -28,7 +28,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.SoundCategory;
 
 /**
- * Creates a thread pool of 2 to keep the MIDI system initializations and MML
+ * Creates a thread pool of 20 to keep the MIDI system initializations and MML
  * parsing out of the game loop to keep graphic updates as smooth as silk.
  * 
  * @author Aeronica
@@ -36,7 +36,7 @@ import net.minecraft.util.SoundCategory;
  */
 public class MMLManager
 {
-    private static final int NTHREDS = 20;
+    private static final int NTHREDS = 20; // XXX This is probably too many and wasteful
     private static ExecutorService executor;
     private static volatile Map<String, MMLPlayer> mmlThreads = new HashMap<String, MMLPlayer>();
 
@@ -47,7 +47,7 @@ public class MMLManager
      * want to mute sounds once. New play instances increment the count. As each
      * instance completes or is cancelled the count is decremented.
      */
-    private static volatile int muted = 0;
+    private static int muted = 0;
 
     /** A temporary storage for saved sound category levels */
     private static Map<SoundCategory, String> savedSoundLevels = new HashMap<SoundCategory, String>();
@@ -82,7 +82,7 @@ public class MMLManager
         if (muted > 0)
         {
             muted = 0;
-            ModLogger.logInfo("Un-mute and RESET sound levels");
+            ModLogger.debug("Un-mute and RESET sound levels");
             loadLevelsAndUnMute();
         }
     }
@@ -105,28 +105,28 @@ public class MMLManager
                     }
                 } catch (IllegalArgumentException e)
                 {
-                    ModLogger.logInfo(e.getLocalizedMessage());
+                    ModLogger.logError(e.getLocalizedMessage());
                     e.printStackTrace();
                 } catch (Exception e)
                 {
-                    ModLogger.logInfo(e.getLocalizedMessage());
+                    ModLogger.logError(e.getLocalizedMessage());
                     e.printStackTrace();
                 }
-                ModLogger.logInfo("MMLManager.mmlAbort(): " + resultID);
+                ModLogger.debug("MMLManager.mmlAbort(): " + resultID);
             }
         }
-        ModLogger.logInfo("MMLManager playerLogOff or forced abort!");
+        ModLogger.debug("MMLManager playerLogOff or forced abort!");
     }
     
     public static void muteSounds()
     {
         if (muted++ > 0)
         {
-            ModLogger.logInfo("Mute count: " + muted);
+            ModLogger.debug("Mute count: " + muted);
             return;
         } else
         {
-            ModLogger.logInfo("Mute sounds");
+            ModLogger.debug("Mute sounds");
             saveLevelsAndMute();
         }
     }
@@ -136,11 +136,11 @@ public class MMLManager
         --muted;
         if (muted > 0)
         {
-            ModLogger.logInfo("Un-mute count: " + muted);
+            ModLogger.debug("Un-mute count: " + muted);
         } else
         {
             muted = 0;
-            ModLogger.logInfo("Un-mute sounds");
+            ModLogger.debug("Un-mute sounds");
             loadLevelsAndUnMute();
         }
     }
@@ -252,7 +252,7 @@ public class MMLManager
             ModLogger.logInfo(e.getLocalizedMessage());
             e.printStackTrace();
         }
-        ModLogger.logInfo("registerThread: " + ID + " " + result);
+        ModLogger.debug("registerThread: " + ID + " " + result);
         return result;
     }
 
@@ -272,15 +272,15 @@ public class MMLManager
                     mmlThreads.remove(ID);
                 } catch (IllegalArgumentException e)
                 {
-                    ModLogger.logInfo(e.getLocalizedMessage());
+                    ModLogger.logError(e.getLocalizedMessage());
                     e.printStackTrace();
                 } catch (Exception e)
                 {
-                    ModLogger.logInfo(e.getLocalizedMessage());
+                    ModLogger.logError(e.getLocalizedMessage());
                     e.printStackTrace();
                 }
                 unMuteSounds();
-                ModLogger.logInfo("deregisterThread: " + ID);
+                ModLogger.debug("deregisterThread: " + ID);
             }
         }
     }
@@ -306,14 +306,14 @@ public class MMLManager
                     }
                 } catch (IllegalArgumentException e)
                 {
-                    ModLogger.logInfo(e.getLocalizedMessage());
+                    ModLogger.logError(e.getLocalizedMessage());
                     e.printStackTrace();
                 } catch (Exception e)
                 {
-                    ModLogger.logInfo(e.getLocalizedMessage());
+                    ModLogger.logError(e.getLocalizedMessage());
                     e.printStackTrace();
                 }
-                ModLogger.logInfo("MMLManager.mmlKill(): " + resultID + ", playID: " + playID);
+                ModLogger.debug("MMLManager.mmlKill(): " + resultID + ", playID: " + playID);
             }
         }
     }
@@ -337,8 +337,8 @@ public class MMLManager
         public void run()
         {
             MMLPlayer mp = new MMLPlayer();
-            System.out.println("ThreadedmmlPlay mml: " + mml.substring(0, mml.length() > 25 ? 25 : mml.length()));
-            System.out.println("ThreadedmmlPlay groupID: " + groupID);
+            ModLogger.debug("ThreadedmmlPlay mml: " + mml.substring(0, mml.length() > 25 ? 25 : mml.length()));
+            ModLogger.debug("ThreadedmmlPlay groupID: " + groupID);
             mp.mmlPlay(mml, groupID, closeGUI, volumeIn);
         }
     }

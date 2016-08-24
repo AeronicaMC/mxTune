@@ -286,7 +286,6 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
             String musictext = txt_mmlPaste.getText().trim();
             String musictitle = txt_mmlTitle.getText().trim();
             mmlStop();
-            ModLogger.logInfo("Save new MML to server");
             sendMMLTextToServer(musictitle, musictext);
 
         case 1:
@@ -404,7 +403,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
             /** TODO: Stuff the error into a status window in this GUI */
             e.printStackTrace();
         }
-        inst = synth.getLoadedInstruments();
+        inst = synth.getAvailableInstruments();
         if (inst.length > 0)
         {
             int idx = 0;
@@ -412,7 +411,6 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
             {
                 if (idx++ < 128)
                 {
-                    ModLogger.logInfo("Inst: " + e);
                     instrumentCache.add(e.getName());
                 }
             }
@@ -587,9 +585,6 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         if (this.selectedErrorEntry != null)
         {
             this.txt_mmlPaste.setCursorPosition(this.selectedErrorEntry.charPositionInLine);
-            ModLogger.logInfo("selectErrorIndex.Start: " + this.selectedErrorEntry.offendingToken.getStartIndex());
-            ModLogger.logInfo("selectErrorIndex.End  : " + this.selectedErrorEntry.offendingToken.getStopIndex());
-            ModLogger.logInfo("selectErrorIndex.Hover: " + this.lst_mmlError.isHovering());
             this.txt_mmlPaste.setFocused(true);
         }
         updateState();
@@ -709,22 +704,28 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
             synthesizer = MidiSystem.getSynthesizer();
             synthesizer.open();
             defaultSB = synthesizer.getDefaultSoundbank();
-            ModLogger.logInfo("defaultSB:   " + defaultSB.getName());
 
+            Instrument inst[] = defaultSB.getInstruments();
+            if ((inst.length > 0) && (this.selectedInst > 0) && (this.selectedInst < inst.length))
+            {
+                synthesizer.loadInstrument(inst[this.selectedInst]);
+            }
+            
             sequencer = MidiSystem.getSequencer();
-            sequencer.addMetaEventListener(this);
-            sequencer.setMicrosecondPosition(0l);
-            sequencer.setTempoInBPM((float) masterTempo);
-
-            Sequence seq = mmlTrans.getSequence();
-
             sequencer.open();
             for (Transmitter t : sequencer.getTransmitters())
             {
                 t.setReceiver(synthesizer.getReceiver());
             }
+            sequencer.addMetaEventListener(this);
+            sequencer.setMicrosecondPosition(0L);
+            sequencer.setTickPosition(0L);
+            sequencer.setTempoInBPM((float) masterTempo);
 
+            Sequence seq = mmlTrans.getSequence();
             sequencer.setSequence(seq);
+            /** Sleep and let the synthesizer stabilize */
+            try {Thread.sleep(250);} catch (InterruptedException e) {}
             sequencer.start();
 
             return true;
@@ -733,10 +734,9 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         {
             if (sequencer != null && sequencer.isOpen()) sequencer.close();
             if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
-            ModLogger.logInfo("mmlPlay failed midi TRY " + ex);
+            ModLogger.logError("mmlPlay failed midi TRY " + ex);
 
             MMLManager.unMuteSounds();
-            ;
             return false;
         }
     }
@@ -746,7 +746,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     {
         if (event.getType() == 47)
         { /** end of stream */
-            ModLogger.logInfo("MetaMessage EOS event received");
+            ModLogger.debug("MetaMessage EOS event received");
             mmlStop();
             this.updateButtonState();
         }
