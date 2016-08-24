@@ -34,7 +34,7 @@ public class Resources {
 				+ mod_xm.getResourceDomain() + "/"
 				+ mod_xm.getResourcePath());
 		
-		ModLogger.logInfo("Resource location: " + url);
+		ModLogger.debug("Resource location: " + url);
 		SoundPlayer.getInstance().playNewSound(url, null, pos, true, 1.0F);
 	}
 }

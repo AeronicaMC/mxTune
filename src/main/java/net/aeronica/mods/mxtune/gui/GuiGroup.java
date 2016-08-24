@@ -107,7 +107,7 @@ public class GuiGroup extends GuiScreen
 
     /** Called when the screen is unloaded. Used to disable keyboard repeat events, etc */
     @Override
-    public void onGuiClosed() {ModLogger.logInfo("GuiGroup.onGuiClosed");}
+    public void onGuiClosed() {}
 
     @Override
     public boolean doesGuiPauseGame() {return false;}
@@ -232,13 +232,13 @@ public class GuiGroup extends GuiScreen
         if (guibutton.id >= 10 && guibutton.id < 100)
         {
             sendRequest(GROUPS.MEMBER_REMOVE, "", getMemberButton(guibutton.id));
-            System.out.println("+++ Gui Remove Member: " + GROUPS.MEMBER_REMOVE);
+            ModLogger.debug("+++ Gui Remove Member: " + GROUPS.MEMBER_REMOVE);
             return;
         }
         if (guibutton.id >= 100)
         {
             sendRequest(GROUPS.MEMBER_PROMOTE, "", getMemberButton(guibutton.id));
-            System.out.println("+++ Gui Promote Member: " + GROUPS.MEMBER_PROMOTE);
+            ModLogger.debug("+++ Gui Promote Member: " + GROUPS.MEMBER_PROMOTE);
             return;
         }
 
@@ -248,13 +248,13 @@ public class GuiGroup extends GuiScreen
         case 0:
             /** Create Group */
             sendRequest(GROUPS.GROUP_ADD, "", player.getDisplayName().getUnformattedText());
-            System.out.println("+++ Gui Create Group: " + GROUPS.GROUP_ADD);
+            ModLogger.debug("+++ Gui Create Group: " + GROUPS.GROUP_ADD);
             break;
 
         case 1:
             /** Leave Group */
             sendRequest(GROUPS.MEMBER_REMOVE, "", player.getDisplayName().getUnformattedText());
-            System.out.println("+++ Gui Leave Group: " + GROUPS.MEMBER_REMOVE);
+            ModLogger.debug("+++ Gui Leave Group: " + GROUPS.MEMBER_REMOVE);
             break;
 
         case 2:

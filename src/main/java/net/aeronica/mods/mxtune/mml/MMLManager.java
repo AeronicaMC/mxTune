@@ -245,11 +245,11 @@ public class MMLManager
             }
         } catch (IllegalArgumentException e)
         {
-            ModLogger.logInfo(e.getLocalizedMessage());
+            ModLogger.logError(e.getLocalizedMessage());
             e.printStackTrace();
         } catch (Exception e)
         {
-            ModLogger.logInfo(e.getLocalizedMessage());
+            ModLogger.logError(e.getLocalizedMessage());
             e.printStackTrace();
         }
         ModLogger.debug("registerThread: " + ID + " " + result);

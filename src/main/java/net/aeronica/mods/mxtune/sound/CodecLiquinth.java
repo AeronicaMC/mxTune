@@ -29,7 +29,6 @@ import javax.sound.sampled.AudioFormat;
 import jvst.examples.liquinth.Liquinth;
 import jvst.examples.liquinth.Player;
 import jvst.examples.liquinth.Sequencer;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import paulscode.sound.ICodec;
 import paulscode.sound.SoundBuffer;
 import paulscode.sound.SoundSystemConfig;
@@ -285,8 +284,7 @@ public class CodecLiquinth implements ICodec
             return null;
         }
 
-        int bufferFrameSize = (int) SoundSystemConfig.getStreamingBufferSize() / 4;
-        ModLogger.logInfo("readAll#bufferFrameSize = " + bufferFrameSize);
+        //int bufferFrameSize = (int) SoundSystemConfig.getStreamingBufferSize() / 4;
 
         InputStream inputStream = new java.io.ByteArrayInputStream(thePatchSequence);
 
@@ -390,11 +388,6 @@ public class CodecLiquinth implements ICodec
         endOfStream(SET, true);
         if (!reverseBytes) reverseBytes(fullBuf, 0, fullBuf.length);
 
-        ModLogger.logInfo("SoundSystemConfig.getStreamingBufferSize() = " + SoundSystemConfig.getStreamingBufferSize());
-        ModLogger.logInfo("BufferFrameSize = " + SoundSystemConfig.getStreamingBufferSize() / 4);
-        ModLogger.logInfo("SoundSystem MaxFileSize = " + SoundSystemConfig.getMaxFileSize());
-        ModLogger.logInfo("songDurationTicks = " + songDurationTicks);
-        ModLogger.logInfo("readAll completeBuf.length = " + fullBuf.length);
         SoundBuffer buffer = new SoundBuffer(fullBuf, myAudioFormat);
         return buffer;
     }
@@ -543,7 +536,6 @@ public class CodecLiquinth implements ICodec
             {
                 try
                 {
-                    ModLogger.logInfo("CMD: " + new String(inputBuf, 0, len));
                     setWait(sequencer.runCommand(new String(inputBuf, 0, len)));
                 } catch (IllegalArgumentException exception)
                 {

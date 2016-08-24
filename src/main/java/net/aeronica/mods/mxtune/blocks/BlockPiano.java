@@ -327,7 +327,7 @@ public class BlockPiano extends BlockHorizontal
             spawnEntityItem(worldIn, tile.getInventory().getStackInSlot(0).copy(), pos);
             tile.invalidate();
         }
-        ModLogger.logInfo("BlockPiano#breakBlock " + state.getValue(PART));
+        ModLogger.debug("BlockPiano#breakBlock " + state.getValue(PART));
         super.breakBlock(worldIn, pos, state);
     }
 
@@ -428,7 +428,7 @@ public class BlockPiano extends BlockHorizontal
     @Override
     public TileEntity createTileEntity(World world, IBlockState state)
     {
-        ModLogger.logInfo("BlockPiano#createTileEntity " + state.getValue(PART) + " " + state);
+        ModLogger.debug("BlockPiano#createTileEntity " + state.getValue(PART) + " " + state);
         return new TilePiano(state.getValue(FACING));
     }
 

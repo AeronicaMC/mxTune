@@ -90,7 +90,7 @@ public class ItemInstrument extends ItemBase implements IInstrument
                 if (!PlayManager.getInstance().isPlayerPlaying(playerIn.getDisplayName().getUnformattedText()))
                 {
                     /**TODO Make sure it is OKAY steal and to use this property like this */
-                    itemStackIn.setRepairCost(playerIn.inventory.currentItem+100);
+                    itemStackIn.setRepairCost(playerIn.inventory.currentItem+1000);
                     PlayManager.getInstance().playMusic(playerIn, pos, false);
                 }
             }
@@ -124,7 +124,7 @@ public class ItemInstrument extends ItemBase implements IInstrument
     {
         if (!worldIn.isRemote)
         {
-            if (stack.getRepairCost() == (itemSlot+100) && !isSelected) {
+            if (stack.getRepairCost() == (itemSlot+1000) && !isSelected) {
             stack.setRepairCost(0);
             PlayManager.getInstance().stopMusic(entityIn.getDisplayName().getUnformattedText());
             }

@@ -144,8 +144,8 @@ public class MMLPlayer implements MetaEventListener
         walker.walk(mmlTrans, tree);
         /** ANTLR4 MML Parser END */
 
-        ModLogger.logInfo("playerChannel: " + playerChannel);
-        ModLogger.logInfo("Playing for:   " + playID);
+        ModLogger.debug("playerChannel: " + playerChannel);
+        ModLogger.debug("Playing for:   " + playID);
 
         try
         {
@@ -210,7 +210,7 @@ public class MMLPlayer implements MetaEventListener
             MMLManager.getInstance().deregisterThread(playID);
             if (sequencer != null && sequencer.isOpen()) sequencer.close();
             if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
-            ModLogger.logInfo("MMLPlayer#mmlPlay failed midi TRY " + ex);
+            ModLogger.logError("MMLPlayer#mmlPlay failed midi TRY " + ex);
             return false;
         }
     }
@@ -227,7 +227,7 @@ public class MMLPlayer implements MetaEventListener
              * member, but did not queue MML then your request to close will be
              * ignored. Solo players force close themselves.
              */
-            ModLogger.logInfo("MMLPlayer#mmlKill: " + ID);
+            ModLogger.debug("MMLPlayer#mmlKill: " + ID);
             if (sequencer != null && sequencer.isOpen())
             {
                 sequencer.stop();
@@ -283,7 +283,7 @@ public class MMLPlayer implements MetaEventListener
             sequencer.stop();
             sequencer.setMicrosecondPosition(0L);
             sequencer.removeMetaEventListener(this);
-            ModLogger.logInfo("MetaMessage EOS event for: " + playID);
+            ModLogger.debug("MetaMessage EOS event for: " + playID);
             try
             {
                 Thread.sleep(250);

@@ -119,7 +119,7 @@ public class PlayerMusicOptionsCapability
         @Override
         public IPlayerMusicOptions call() throws Exception
         {
-            ModLogger.logInfo("PlayerMusicOptionsCapability.Factory#call: return new PlayerMusicDefImpl(null);");
+            ModLogger.debug("PlayerMusicOptionsCapability.Factory#call: return new PlayerMusicDefImpl(null);");
             return new PlayerMusicDefImpl(null);
         }
     }

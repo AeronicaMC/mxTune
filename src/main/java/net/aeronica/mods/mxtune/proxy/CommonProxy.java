@@ -21,7 +21,6 @@ import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.handler.SREventHandler;
 import net.aeronica.mods.mxtune.init.StartupBlocks;
 import net.aeronica.mods.mxtune.init.StartupItems;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.Recipes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -91,7 +90,6 @@ public abstract class CommonProxy implements IProxy
     @Override
     public EntityPlayer getPlayerEntity(MessageContext ctx)
     {
-        ModLogger.logInfo("Retrieving player from CommonProxy for message on side " + ctx.side);
         return ctx.getServerHandler().playerEntity;
     }
 

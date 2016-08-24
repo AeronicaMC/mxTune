@@ -26,7 +26,6 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
 import net.aeronica.libs.mml.core.MMLAllowedCharacters;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiPageButtonList;
@@ -643,7 +642,7 @@ public class GuiMMLBox extends Gui
                 {
                     i -= 4;
                 }
-                ModLogger.logInfo("i,j,k (" + i + ", " + j + ", " + k + ") lineScrollOffset:" + this.lineScrollOffset);
+                //ModLogger.debug("i,j,k (" + i + ", " + j + ", " + k + ") lineScrollOffset:" + this.lineScrollOffset);
                 if (!text.isEmpty() && k >= 0 && i >= 0)
                 {
                     String s = this.fontRendererInstance.trimStringToWidth(this.text.substring(k), this.getWidth());
@@ -798,8 +797,6 @@ public class GuiMMLBox extends Gui
             if (numDisplayLines + displayLineStartIdx > maxDisplayLines) numDisplayLines = maxDisplayLines;
 
             this.loadingLists = false;
-            // System.out.println("totalLines:"+totalLines+",
-            // numLines:"+numLines+" ,maxLines:"+maxLines);
             for (int displayIndex = 0; displayIndex < numDisplayLines; displayIndex++)
             {
                 String sLine = lines.get(displayIndex + displayLineStartIdx);

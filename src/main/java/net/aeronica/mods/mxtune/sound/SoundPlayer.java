@@ -96,7 +96,7 @@ public class SoundPlayer
         // File f = new File(path);
         // if(f.exists() && !f.isDirectory()) {
         // if(f.exists()) {
-        ModLogger.logInfo("Path = " + path);
+        ModLogger.debug("Path = " + path);
         // ModLogger.logInfo("Filename = " + modType);
         // } else {
         // ModLogger.logInfo("Path = " + path + " NOT FOUND!");

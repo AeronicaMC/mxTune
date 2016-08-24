@@ -142,7 +142,7 @@ public class MusicOptionsUtil
         GameProfile gp = null;
         for (String n : pdat)
         {
-            ModLogger.logInfo("playerDump#Player.dat:  " + n);
+            ModLogger.debug("playerDump#Player.dat:  " + n);
             try {
                 gp = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getProfileByUUID(UUID.fromString(n));      
             }
@@ -150,14 +150,14 @@ public class MusicOptionsUtil
             }
             finally {
                 if (gp != null) {
-                    ModLogger.logInfo("playerDump#Name:        " + gp.getName());
-                    ModLogger.logInfo("playerDump#UUID:        " + gp.getId());
-                    ModLogger.logInfo("playerDump#Properties:  " + gp.getProperties());
-                    ModLogger.logInfo("playerDump#isComplete:  " + gp.isComplete());
-                    ModLogger.logInfo("playerDump#isLegacy:    " + gp.isLegacy());
+                    ModLogger.debug("playerDump#Name:        " + gp.getName());
+                    ModLogger.debug("playerDump#UUID:        " + gp.getId());
+                    ModLogger.debug("playerDump#Properties:  " + gp.getProperties());
+                    ModLogger.debug("playerDump#isComplete:  " + gp.isComplete());
+                    ModLogger.debug("playerDump#isLegacy:    " + gp.isLegacy());
                 }
                 else
-                    ModLogger.logInfo("playerDump#GameProfile: Invalid UUID string: " + n); 
+                    ModLogger.debug("playerDump#GameProfile: Invalid UUID string: " + n); 
             }
         }
     }

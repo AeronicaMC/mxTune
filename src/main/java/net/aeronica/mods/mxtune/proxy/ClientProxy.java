@@ -25,7 +25,6 @@ import net.aeronica.mods.mxtune.handler.TickHandler;
 import net.aeronica.mods.mxtune.init.BlockModels;
 import net.aeronica.mods.mxtune.init.ItemModels;
 import net.aeronica.mods.mxtune.mml.MMLManager;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
@@ -174,7 +173,6 @@ public class ClientProxy extends CommonProxy
         // Sounds absurd, but it's true.
 
         // Solution is to double-check side before returning the player:
-        ModLogger.logInfo("Retrieving player from ClientProxy for message on side " + ctx.side);
         return (ctx.side.isClient() ? this.getClientPlayer() : super.getPlayerEntity(ctx));
     }
 

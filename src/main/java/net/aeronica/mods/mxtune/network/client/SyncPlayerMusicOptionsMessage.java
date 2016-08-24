@@ -221,7 +221,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     {
         if (side.isClient())
         {
-            ModLogger.logInfo("Synchronizing Music Options player extended properties data on CLIENT");
+            ModLogger.debug("Synchronizing Music Options player extended properties data on CLIENT");
             final IPlayerMusicOptions inst = player.getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
             switch (this.propertyID)
             {

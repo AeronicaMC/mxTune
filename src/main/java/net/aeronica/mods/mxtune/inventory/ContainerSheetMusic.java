@@ -59,7 +59,7 @@ private static IItemHandler itemHandler;
     @Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotIndex)
 	{
-	    ModLogger.logInfo("transferStackInSlot slotIndex: " + slotIndex);
+	    ModLogger.debug("transferStackInSlot slotIndex: " + slotIndex);
 		Slot slot = this.getSlot(slotIndex);
 		
 		if (slot == null || !slot.getHasStack())
@@ -72,7 +72,7 @@ private static IItemHandler itemHandler;
 
 		if (!(stack.getItem() instanceof IMusic) && !((stack.getItem() instanceof ItemMusicPaper) && stack.hasDisplayName())) return null;
 
-		ModLogger.logInfo("stackSize: " + stack.stackSize + ", getSlotStackLimit: " + slot.getSlotStackLimit());
+		ModLogger.debug("stackSize: " + stack.stackSize + ", getSlotStackLimit: " + slot.getSlotStackLimit());
 		if (slotIndex == 0)
 		{
 			if (!this.mergeItemStack(stack, 1, this.inventorySlots.size(), false))

@@ -18,7 +18,6 @@ package net.aeronica.mods.mxtune.inventory;
 
 import net.aeronica.mods.mxtune.init.StartupItems;
 import net.aeronica.mods.mxtune.items.ItemMusicPaper;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -57,7 +56,6 @@ public class ContainerInstrument extends Container
     @Override
     public ItemStack transferStackInSlot(EntityPlayer player, int slotIndex)
     {
-        ModLogger.debug("transferStackInSlot slotIndex: " + slotIndex);
         Slot slot = this.getSlot(slotIndex);
         
         if (slot == null || !slot.getHasStack())
@@ -70,7 +68,6 @@ public class ContainerInstrument extends Container
 
         if (!(stack.getItem() instanceof IMusic) && !((stack.getItem() instanceof ItemMusicPaper) && stack.hasDisplayName())) return null;
 
-        ModLogger.debug("stackSize: " + stack.stackSize + ", getSlotStackLimit: " + slot.getSlotStackLimit());
         if (slotIndex == 0)
         {
             if (!this.mergeItemStack(stack, 1, this.inventorySlots.size(), false))

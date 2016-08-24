@@ -68,7 +68,7 @@ public class StopPlayMessage extends AbstractMessage<StopPlayMessage>
         if (playerSP.getDisplayName().getUnformattedText().equalsIgnoreCase(playID))
         {
             /** TODO: Need to consider tracking isPlaced for each group member for dealing with GUI or Riding player rooting */
-            ModLogger.logInfo("PacketPlayStop: try to close Gui for " + playID);
+            ModLogger.debug("PacketPlayStop: try to close Gui for " + playID);
             Minecraft mc = Minecraft.getMinecraft();
             /** close the playing GUI */
             mc.displayGuiScreen((GuiScreen) null);

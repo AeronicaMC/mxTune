@@ -39,7 +39,6 @@
  */
 package net.aeronica.mods.mxtune.entity;
 
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
@@ -140,7 +139,6 @@ public class EntitySittableBlock extends Entity
         {
             this.setDead();
             worldObj.updateComparatorOutputLevel(getPosition(), worldObj.getBlockState(getPosition()).getBlock());
-            ModLogger.logInfo("EntitySittableBlock#onEntityUpdate setDead() " + this.getEntityId());
         }
     }
 

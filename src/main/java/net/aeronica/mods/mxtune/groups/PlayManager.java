@@ -80,19 +80,19 @@ public class PlayManager
                 String mml = contents.getString("MML");
 
                 mml = mml.replace("MML@", "MML@I" + getPatch(pos, playerIn, isPlaced));
-                ModLogger.logInfo("MML Title: " + title);
-                ModLogger.logInfo("MML Sub25: " + mml.substring(0, (mml.length() >= 25 ? 25 : mml.length())));
+                ModLogger.debug("MML Title: " + title);
+                ModLogger.debug("MML Sub25: " + mml.substring(0, (mml.length() >= 25 ? 25 : mml.length())));
 
                 if (GROUPS.getMembersGroupID(playerIn.getDisplayName().getUnformattedText()) == null)
                 {
                     /** Solo Play */
                     PlayManager.getInstance().playSolo(playerIn, title, mml, playerName, isPlaced);
-                    ModLogger.logInfo("playMusic playSolo");
+                    ModLogger.debug("playMusic playSolo");
                 } else
                 {
                     /** Jam Play */
                     PlayManager.getInstance().queueJam(playerIn, title, mml, playerName, isPlaced);
-                    ModLogger.logInfo("playMusic queueJam");
+                    ModLogger.debug("playMusic queueJam");
                 }                
             }
         }

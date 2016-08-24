@@ -56,7 +56,7 @@ public class CLEventHandler
     @SubscribeEvent
     public void onWorldEventUnload(WorldEvent.Unload event)
     {
-        ModLogger.logInfo("CLEventHandler#onWorldEventUnload");
+        ModLogger.debug("CLEventHandler#onWorldEventUnload");
         MMLManager.getInstance().abortAll();
     }
 }
