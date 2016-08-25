@@ -704,9 +704,9 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
             synthesizer = MidiSystem.getSynthesizer();
             synthesizer.open();
             defaultSB = synthesizer.getDefaultSoundbank();
-
+            synthesizer.unloadAllInstruments(defaultSB);
             Instrument inst[] = defaultSB.getInstruments();
-            if ((inst.length > 0) && (this.selectedInst > 0) && (this.selectedInst < inst.length))
+            if ((inst.length > 0) && (this.selectedInst >= 0) && (this.selectedInst < inst.length))
             {
                 synthesizer.loadInstrument(inst[this.selectedInst]);
             }

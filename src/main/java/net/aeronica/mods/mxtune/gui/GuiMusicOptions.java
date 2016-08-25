@@ -21,9 +21,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.sound.midi.Instrument;
 import javax.sound.midi.MidiChannel;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Soundbank;
 import javax.sound.midi.Synthesizer;
 
 import org.lwjgl.input.Keyboard;
@@ -354,16 +356,44 @@ public class GuiMusicOptions extends GuiScreen
     private Synthesizer synth = null;
     MidiChannel[]   channels;
     MidiChannel channel;
+    boolean synthOK = true;
     
     private void midiInit()
     {
-        try {synth = MidiSystem.getSynthesizer();}
-        catch (MidiUnavailableException e) {e.printStackTrace();}
-        try {synth.open();}
-        catch (MidiUnavailableException e) {e.printStackTrace();}
-        channels = synth.getChannels();
-        channel = channels[channels.length-1];
-        channel.programChange(2);
+        Soundbank defaultSB;
+        Instrument instruments[];
+        final int PATCH = 0;
+        
+        try
+        {
+            synth = MidiSystem.getSynthesizer();
+            synth.open();
+
+            defaultSB = synth.getDefaultSoundbank();
+            synth.unloadAllInstruments(defaultSB);
+            instruments = defaultSB.getInstruments();
+            if (instruments != null && instruments.length > 0) synth.loadInstrument(instruments[PATCH]);
+        } catch (MidiUnavailableException e)
+        {
+            e.printStackTrace();
+            synthOK = false;
+        } catch (IllegalArgumentException e)
+        {
+            e.printStackTrace();
+            synthOK = false;
+        } finally
+        {
+            if (synthOK)
+            {
+                channels = synth.getChannels();
+                if (channels != null && channels.length > 0)
+                {
+                    channel = channels[0];
+                    channel.programChange(PATCH);
+                }
+            } else
+            {synth.close(); synthOK = false;}
+        }
         setWait(2);
     }
     
@@ -414,7 +444,7 @@ public class GuiMusicOptions extends GuiScreen
     {
         nextTick();
 
-        if (waiting) return;   
+        if (waiting | !synthOK) return;   
         
         if (noteOff) {
             noteMidi1 = (int) Math.round(((((Math.sin(cyc)+1.D)/2D) *30.0D)+50.0D));

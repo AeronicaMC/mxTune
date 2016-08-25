@@ -1,6 +1,8 @@
 package net.aeronica.libs.mml.core;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.sound.midi.InvalidMidiDataException;
@@ -12,11 +14,12 @@ import javax.sound.midi.Track;
 
 public class MMLToMIDI extends MMLTransformBase
 {
-    final int MASTER_TEMPO = 120;
-    final double PPQ = 480.0;
-    private final int TICKS_OFFSET = 75;
+    private static final int MASTER_TEMPO = 120;
+    private static final double PPQ = 480.0;
+    private static final int TICKS_OFFSET = 15;
     private Sequence sequence;
     private float fakeVolume = 1F;
+    private HashSet<Integer> patches = new HashSet<Integer>();
 
     public MMLToMIDI(float fakeVolume) { super(fakeVolume); this.fakeVolume = fakeVolume; }
 
@@ -28,6 +31,13 @@ public class MMLToMIDI extends MMLTransformBase
     }
 
     public Sequence getSequence() {return sequence;}
+    
+    public List<Integer> getPatches()
+    {
+        List<Integer> patchList = new ArrayList<Integer>();
+        for (Integer i: patches) patchList.add(i);
+        return patchList;
+    }
 
     @SuppressWarnings("unused")
     @Override
@@ -73,6 +83,7 @@ public class MMLToMIDI extends MMLTransformBase
                 {
                     MOInst mmo = (MOInst) getMObject(i);
                     tracks[tk].add(createProgramChangeEvent(ch, mmo.getInstrument(), mmo.getTicksStart() + ticksOffset));
+                    patches.add(mmo.getInstrument());
                     break;
                 }
                 case PART:

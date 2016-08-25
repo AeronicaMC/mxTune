@@ -63,7 +63,7 @@ public class MMLPlayer implements MetaEventListener
     private static final int masterTempo = 120;
     private boolean closeGUI = true;
     private float fakeVolume;
-
+    
     // private Soundbank sbJammer;
     // private static final ResourceLocation soundFont = new ResourceLocation(
     // ModInfo.ID.toLowerCase(), "synth/MCJammerLT.sf2");
@@ -152,8 +152,13 @@ public class MMLPlayer implements MetaEventListener
             synthesizer = MidiSystem.getSynthesizer();
             synthesizer.open();
             defaultSB = synthesizer.getDefaultSoundbank();
-            instruments = synthesizer.getLoadedInstruments();
-            
+            synthesizer.unloadAllInstruments(defaultSB);
+            instruments = defaultSB.getInstruments();
+            for (Integer patch: mmlTrans.getPatches())
+            {
+                synthesizer.loadInstrument(instruments[patch]);
+            }
+
             /*
              * This is where we setup an alternate Soundbank e.g.
              */
@@ -187,7 +192,7 @@ public class MMLPlayer implements MetaEventListener
 
             sequencer = MidiSystem.getSequencer();
             sequencer.addMetaEventListener(this);
-            sequencer.setMicrosecondPosition(0l);
+            sequencer.setMicrosecondPosition(0L);
             sequencer.setTempoInBPM((float) masterTempo);
 
             Sequence seq = mmlTrans.getSequence();
@@ -201,6 +206,8 @@ public class MMLPlayer implements MetaEventListener
             // sequencer.getTransmitter().setReceiver(synthesizer.getReceiver());
 
             sequencer.setSequence(seq);
+            /** Sleep and let the synthesizer stabilize */
+            try {Thread.sleep(250);} catch (InterruptedException e) {}
             sequencer.start();
 
             return true;
@@ -208,9 +215,11 @@ public class MMLPlayer implements MetaEventListener
         } catch (Exception ex)
         {
             MMLManager.getInstance().deregisterThread(playID);
+            MMLManager.unMuteSounds();
             if (sequencer != null && sequencer.isOpen()) sequencer.close();
             if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
-            ModLogger.logError("MMLPlayer#mmlPlay failed midi TRY " + ex);
+            ModLogger.logError("MMLPlayer#mmlPlay failed midi TRY ");
+            ex.printStackTrace();
             return false;
         }
     }
