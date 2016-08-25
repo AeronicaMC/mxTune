@@ -19,8 +19,14 @@ package net.aeronica.mods.mxtune.mml;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import javax.sound.midi.MidiDevice;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Synthesizer;
 
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -75,7 +81,10 @@ public class MMLManager
     }
 
     /** TODO: Make a real initialization */
-    public void mmlInit() {this.mmlPlay("-Init-=MML@t240v0l64crrrbeadgcf,,;", "-Init-", false, 0F);}
+    public void mmlInit()
+    {
+        this.mmlPlay("-Init-=MML@t240v0l64crrrbeadgcf,,;", "-Init-", false, 0F);
+    }
 
     public static void resetMute()
     {

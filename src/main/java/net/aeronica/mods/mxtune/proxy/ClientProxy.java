@@ -24,7 +24,7 @@ import net.aeronica.mods.mxtune.handler.SoundEventHandler;
 import net.aeronica.mods.mxtune.handler.TickHandler;
 import net.aeronica.mods.mxtune.init.BlockModels;
 import net.aeronica.mods.mxtune.init.ItemModels;
-import net.aeronica.mods.mxtune.mml.MMLManager;
+import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
@@ -138,7 +138,7 @@ public class ClientProxy extends CommonProxy
     @Override
     public void initMML()
     {
-        MMLManager.getInstance().mmlInit();
+        MIDISystemUtil.getInstance().mxTuneInit();
     }
 
     @Override
