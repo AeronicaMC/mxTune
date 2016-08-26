@@ -18,12 +18,12 @@ package net.aeronica.mods.mxtune.util;
 
 import java.util.Vector;
 
+import javax.sound.midi.Instrument;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Soundbank;
 import javax.sound.midi.Synthesizer;
-
 import net.aeronica.mods.mxtune.mml.MMLManager;
 
 public class MIDISystemUtil
@@ -93,7 +93,16 @@ public class MIDISystemUtil
             soundBank = bestSynth.getDefaultSoundbank();
             if (soundBank != null)
             {
-                soundBankAvailable = true;
+                Instrument[] inst = soundBank.getInstruments();
+
+                if (soundBank.getName().isEmpty())
+                    soundBankAvailable = false;
+                else
+                    soundBankAvailable = true;
+                ModLogger.logInfo("--- " + (soundBank.getName().isEmpty()? "*No Name*" : soundBank.getName() ) + " ---");
+                ModLogger.logInfo("Number of instruments: " + inst.length);
+                for (Instrument i: inst) ModLogger.logInfo("       " + i.getName());
+                
             }
         }
         if (bestSynth != null && synthAvailable && soundBankAvailable)
@@ -103,7 +112,8 @@ public class MIDISystemUtil
             ModLogger.logInfo(bestSynthInfo.getVendor());
             ModLogger.logInfo(bestSynthInfo.getVersion());
             ModLogger.logInfo("MaxPolyphony: " + bestSynth.getMaxPolyphony() + ", MaxReceivers: " + ((bestSynth.getMaxReceivers() == -1) ? "Unlimited" : bestSynth.getMaxReceivers()));
-            ModLogger.logInfo("Synthsizer Available: ? " + !bestSynth.isOpen());
+            ModLogger.logInfo("Synthsizer Available: ?         " + synthAvailable);
+            ModLogger.logInfo("Default Sound Bank Available: ? " + soundBankAvailable);
         } else
         {
             ModLogger.logInfo("WARNING - Default Synthesizer available? : " + synthAvailable);
