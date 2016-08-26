@@ -58,6 +58,7 @@ public class MMLPlayer implements MetaEventListener
     private Map<String, String> playerChannel = new HashMap<String, String>();
     private boolean closeGUI = true;
     private float fakeVolume;
+    private boolean midiException = false;
     
     // private Soundbank sbJammer;
     // private static final ResourceLocation soundFont = new ResourceLocation(
@@ -111,8 +112,8 @@ public class MMLPlayer implements MetaEventListener
             mmlBuf = mml.getBytes("US-ASCII");
         } catch (UnsupportedEncodingException e)
         {
-            System.out.println(e.getLocalizedMessage());
             e.printStackTrace();
+            return false;
         }
         is = new java.io.ByteArrayInputStream(mmlBuf);
 
@@ -126,6 +127,7 @@ public class MMLPlayer implements MetaEventListener
         } catch (IOException e1)
         {
             e1.printStackTrace();
+            return false;
         }
         MMLLexer lexer = new MMLLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -150,7 +152,7 @@ public class MMLPlayer implements MetaEventListener
             defaultSB = synthesizer.getDefaultSoundbank();
             synthesizer.unloadAllInstruments(defaultSB);
             instruments = defaultSB.getInstruments();
-            if (instruments.length == 0) throw new UnsupportedOperationException("No Instruments Available!");
+            if (instruments.length == 0) throw new Exception("No Instruments Available!");
             for (Integer patch: mmlTrans.getPatches())
             {
                 synthesizer.loadInstrument(instruments[patch]);
@@ -163,18 +165,27 @@ public class MMLPlayer implements MetaEventListener
             /** Sleep and let the synthesizer stabilize */
             try {Thread.sleep(250);} catch (InterruptedException e) {}
             sequencer.start();
-            return true;
-
         } catch (Exception e)
         {
             MMLManager.getInstance().deregisterThread(playID);
             MMLManager.unMuteSounds();
             if (sequencer != null && sequencer.isOpen()) sequencer.close();
             if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
-            ModLogger.logError("MMLPlayer#mmlPlay failed midi TRY: " + e.getLocalizedMessage());
+            ModLogger.logError("MMLPlayer#mmlPlay MIDI failure: " + e.getLocalizedMessage());
             e.printStackTrace();
+            midiException = true;
             return false;
         }
+        finally
+        {
+            if (midiException)
+            {
+                if (sequencer != null) 
+                    sequencer.removeMetaEventListener(this);
+                return false;
+            }
+        }
+        return true;
     }
 
     public synchronized void mmlKill(String ID, boolean closeGui)

@@ -661,6 +661,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         Soundbank defaultSB;
         byte[] mmlBuf = null;
         InputStream is;
+        boolean midiException = false;
 
         MMLManager.muteSounds();
 
@@ -671,6 +672,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         {
             System.out.println(e.getLocalizedMessage());
             e.printStackTrace();
+            return false;
         }
         is = new java.io.ByteArrayInputStream(mmlBuf);
 
@@ -684,6 +686,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         } catch (IOException e1)
         {
             e1.printStackTrace();
+            return false;
         }
         MMLLexer lexer = new MMLLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -704,7 +707,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
             defaultSB = synthesizer.getDefaultSoundbank();
             synthesizer.unloadAllInstruments(defaultSB);
             Instrument inst[] = defaultSB.getInstruments();
-            if (inst.length == 0) throw new UnsupportedOperationException("No Instruments Available!");
+            if (inst.length == 0) throw new Exception("No Instruments Available!");
             if ((inst.length > 0) && (this.selectedInst >= 0) && (this.selectedInst < inst.length))
             {
                 synthesizer.loadInstrument(inst[this.selectedInst]);
@@ -726,10 +729,20 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
             if (sequencer != null && sequencer.isOpen()) sequencer.close();
             if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
             MMLManager.unMuteSounds();
-            ModLogger.logError("mmlPlay failed midi TRY: " + e.getLocalizedMessage());
+            ModLogger.logError("mmlPlay MIDI failure : " + e.getLocalizedMessage());
             e.printStackTrace();
-            return false;
+            midiException = true;
         }
+        finally
+        {
+            if (midiException)
+            {
+                if (sequencer != null) 
+                    sequencer.removeMetaEventListener(this);
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
