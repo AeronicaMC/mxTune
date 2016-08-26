@@ -28,11 +28,9 @@ import javax.sound.midi.Instrument;
 import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiSystem;
-import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 import javax.sound.midi.Soundbank;
 import javax.sound.midi.Synthesizer;
-import javax.sound.midi.Transmitter;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -51,16 +49,13 @@ public class MMLPlayer implements MetaEventListener
 {
     private Sequencer sequencer = null;
     private Synthesizer synthesizer = null;
-    @SuppressWarnings("unused")
     private Instrument[] instruments;
-    @SuppressWarnings("unused")
     private Soundbank defaultSB;
     private static byte[] mmlBuf = null;
     private InputStream is;
     private String playID = null;
     private Map<String, String> playerMML = new HashMap<String, String>();
     private Map<String, String> playerChannel = new HashMap<String, String>();
-    private static final int masterTempo = 120;
     private boolean closeGUI = true;
     private float fakeVolume;
     
@@ -149,77 +144,35 @@ public class MMLPlayer implements MetaEventListener
 
         try
         {
+            /** Using the default sequencer and synthesizer */
             synthesizer = MidiSystem.getSynthesizer();
             synthesizer.open();
             defaultSB = synthesizer.getDefaultSoundbank();
             synthesizer.unloadAllInstruments(defaultSB);
             instruments = defaultSB.getInstruments();
+            if (instruments.length == 0) throw new UnsupportedOperationException("No Instruments Available!");
             for (Integer patch: mmlTrans.getPatches())
             {
                 synthesizer.loadInstrument(instruments[patch]);
             }
-
-            /*
-             * This is where we setup an alternate Soundbank e.g.
-             */
-            // URL file = MCJammer.class.getResource("/assets/"
-            // + soundFont.getResourceDomain() + "/"
-            // + soundFont.getResourcePath());
-            // ModLogger.logInfo("MMLPlayer.mmlPlay soundfont path: "
-            // + file);
-            //
-            // try {
-            // sbJammer = MidiSystem.getSoundbank(file);
-            // } catch (InvalidMidiDataException e) {
-            // e.printStackTrace();
-            // } catch (IOException e) {
-            // e.printStackTrace();
-            // }
-            //
-            // synthesizer.unloadAllInstruments(synthesizer.getDefaultSoundbank());
-
-            // InstrumentEnum[] instrEnum = InstrumentEnum.values();
-            //
-            // for (int i = 0; i < instrEnum.length; i++) {
-            // instrument = sbJammer.getInstrument(new Patch(0,
-            // instrEnum[i].MidiPatchID));
-            // ModLogger.logInfo("Set Patches: " + instrEnum[i].NameHi + ", "
-            // + instrEnum[i].MidiPatchID + ", loaded: "
-            // + synthesizer.loadInstrument(instrument));
-            // }
-
-            // synthesizer.loadAllInstruments(sbJammer);
-
             sequencer = MidiSystem.getSequencer();
-            sequencer.addMetaEventListener(this);
-            sequencer.setMicrosecondPosition(0L);
-            sequencer.setTempoInBPM((float) masterTempo);
-
-            Sequence seq = mmlTrans.getSequence();
-
             sequencer.open();
-            for (Transmitter t : sequencer.getTransmitters())
-            {
-                t.setReceiver(synthesizer.getReceiver());
-            }
-
-            // sequencer.getTransmitter().setReceiver(synthesizer.getReceiver());
-
-            sequencer.setSequence(seq);
+            sequencer.addMetaEventListener(this);
+            sequencer.setSequence(mmlTrans.getSequence());
+            sequencer.setTickPosition(0L);
             /** Sleep and let the synthesizer stabilize */
             try {Thread.sleep(250);} catch (InterruptedException e) {}
             sequencer.start();
-
             return true;
 
-        } catch (Exception ex)
+        } catch (Exception e)
         {
             MMLManager.getInstance().deregisterThread(playID);
             MMLManager.unMuteSounds();
             if (sequencer != null && sequencer.isOpen()) sequencer.close();
             if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
-            ModLogger.logError("MMLPlayer#mmlPlay failed midi TRY ");
-            ex.printStackTrace();
+            ModLogger.logError("MMLPlayer#mmlPlay failed midi TRY: " + e.getLocalizedMessage());
+            e.printStackTrace();
             return false;
         }
     }
@@ -239,9 +192,12 @@ public class MMLPlayer implements MetaEventListener
             ModLogger.debug("MMLPlayer#mmlKill: " + ID);
             if (sequencer != null && sequencer.isOpen())
             {
-                sequencer.stop();
-                sequencer.setMicrosecondPosition(0L);
-                sequencer.removeMetaEventListener(this);
+                try
+                {
+                    sequencer.stop();
+                    sequencer.setMicrosecondPosition(0L);
+                    sequencer.removeMetaEventListener(this);
+                } catch (Exception e) {}
             }
 
             try
@@ -290,7 +246,7 @@ public class MMLPlayer implements MetaEventListener
         if (event.getType() == 47)
         { // end of stream
             sequencer.stop();
-            sequencer.setMicrosecondPosition(0L);
+            sequencer.setTickPosition(0L);
             sequencer.removeMetaEventListener(this);
             ModLogger.debug("MetaMessage EOS event for: " + playID);
             try
@@ -306,7 +262,6 @@ public class MMLPlayer implements MetaEventListener
             MMLManager.getInstance().deregisterThread(playID);
             if (!playerChannel.isEmpty())
             {
-
                 Set<String> keys = playerChannel.keySet();
                 Iterator<String> it = keys.iterator();
                 if (closeGUI)

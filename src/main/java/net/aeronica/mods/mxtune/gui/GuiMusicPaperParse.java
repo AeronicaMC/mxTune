@@ -28,11 +28,9 @@ import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 import javax.sound.midi.Soundbank;
 import javax.sound.midi.Synthesizer;
-import javax.sound.midi.Transmitter;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BaseErrorListener;
@@ -663,7 +661,6 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         Soundbank defaultSB;
         byte[] mmlBuf = null;
         InputStream is;
-        final int masterTempo = 120;
 
         MMLManager.muteSounds();
 
@@ -701,42 +698,36 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
 
         try
         {
+            /** Using the default sequencer and synthesizer */
             synthesizer = MidiSystem.getSynthesizer();
             synthesizer.open();
             defaultSB = synthesizer.getDefaultSoundbank();
             synthesizer.unloadAllInstruments(defaultSB);
             Instrument inst[] = defaultSB.getInstruments();
+            if (inst.length == 0) throw new UnsupportedOperationException("No Instruments Available!");
             if ((inst.length > 0) && (this.selectedInst >= 0) && (this.selectedInst < inst.length))
             {
                 synthesizer.loadInstrument(inst[this.selectedInst]);
             }
-            
             sequencer = MidiSystem.getSequencer();
             sequencer.open();
-            for (Transmitter t : sequencer.getTransmitters())
-            {
-                t.setReceiver(synthesizer.getReceiver());
-            }
             sequencer.addMetaEventListener(this);
-            sequencer.setMicrosecondPosition(0L);
+            sequencer.setSequence(mmlTrans.getSequence());
             sequencer.setTickPosition(0L);
-            sequencer.setTempoInBPM((float) masterTempo);
 
-            Sequence seq = mmlTrans.getSequence();
-            sequencer.setSequence(seq);
             /** Sleep and let the synthesizer stabilize */
             try {Thread.sleep(250);} catch (InterruptedException e) {}
             sequencer.start();
 
             return true;
 
-        } catch (Exception ex)
+        } catch (Exception e)
         {
             if (sequencer != null && sequencer.isOpen()) sequencer.close();
             if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
-            ModLogger.logError("mmlPlay failed midi TRY " + ex);
-
             MMLManager.unMuteSounds();
+            ModLogger.logError("mmlPlay failed midi TRY: " + e.getLocalizedMessage());
+            e.printStackTrace();
             return false;
         }
     }
@@ -757,7 +748,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         if (sequencer != null && sequencer.isOpen())
         {
             sequencer.stop();
-            sequencer.setMicrosecondPosition(0L);
+            sequencer.setTickPosition(0L);
             sequencer.removeMetaEventListener(this);
             try
             {

@@ -33,7 +33,7 @@ public class MIDISystemUtil
     public static MIDISystemUtil getInstance() {return MIDISystemUtilHolder.INSTANCE;}
 
     private static MidiDevice.Info[] midiDeviceInfo = null;
-    MidiDevice.Info bestSynthInfo = null;
+    private static MidiDevice.Info bestSynthInfo = null;
     private static Synthesizer bestSynth = null;
 
     public void mxTuneInit()
