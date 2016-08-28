@@ -19,6 +19,7 @@ package net.aeronica.mods.mxtune.handler;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.aeronica.mods.mxtune.render.PlacardRenderer;
+import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
@@ -26,6 +27,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 
 public class CLEventHandler
 {
@@ -33,9 +35,7 @@ public class CLEventHandler
     private PlacardRenderer placardRenderer = PlacardRenderer.getInstance();
 
     private CLEventHandler() {}
-
     private static class CLEventHandlerHolder {private static final CLEventHandler INSTANCE = new CLEventHandler();}
-
     public static CLEventHandler getInstance() {return CLEventHandlerHolder.INSTANCE;}
 
     /** Render Placards */
@@ -52,7 +52,13 @@ public class CLEventHandler
             }
         }
     } 
-    
+
+    @SubscribeEvent
+    public void onPlayerLoggedInEvent(PlayerLoggedInEvent event)
+    {
+        MIDISystemUtil.getInstance().onPlayerLoggedInModStatus(event.player);
+    }
+
     @SubscribeEvent
     public void onWorldEventUnload(WorldEvent.Unload event)
     {

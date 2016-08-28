@@ -22,6 +22,7 @@ import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
+import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
@@ -57,9 +58,12 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        if (MusicOptionsUtil.getMuteResult(player, player.worldObj.getPlayerEntityByName(GROUPS.getLeaderOfGroup(groupID))) == false)
+        if (MIDISystemUtil.getInstance().midiUnavailableWarn(player) == false)
         {
-            MMLManager.getInstance().mmlPlay(jamMML, groupID, true, MusicOptionsUtil.getMidiVolume(player));
+            if (MusicOptionsUtil.getMuteResult(player, player.worldObj.getPlayerEntityByName(GROUPS.getLeaderOfGroup(groupID))) == false)
+            {
+                MMLManager.getInstance().mmlPlay(jamMML, groupID, true, MusicOptionsUtil.getMidiVolume(player));
+            }
         }
     }
 }

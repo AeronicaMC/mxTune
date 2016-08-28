@@ -19,7 +19,6 @@ package net.aeronica.mods.mxtune.groups;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.JoinGroupMessage;
 import net.aeronica.mods.mxtune.network.client.SyncGroupMessage;
@@ -39,7 +38,6 @@ import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -456,12 +454,6 @@ public class GroupManager
     public void onLivingAttackEvent(LivingAttackEvent event) {}
 
     /** FML Gaming Events */
-    @SubscribeEvent
-    public void onPlayerLoggedInEvent(PlayerLoggedInEvent event)
-    {
-        event.player.addChatMessage(new TextComponentString("[" + MXTuneMain.MODNAME + "] Welcome!"));
-    }
-
     @SubscribeEvent
     public void onJoinWorld(EntityJoinWorldEvent event)
     {

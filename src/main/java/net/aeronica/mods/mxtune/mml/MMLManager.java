@@ -19,14 +19,8 @@ package net.aeronica.mods.mxtune.mml;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import javax.sound.midi.MidiDevice;
-import javax.sound.midi.MidiSystem;
-import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.Synthesizer;
 
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -154,36 +148,29 @@ public class MMLManager
         }
     }
 
+    // XXX  - Test muting MUSIC only!
     private static void saveLevelsAndMute()
     {
-        Float v;
-        for (SoundCategory soundcategory: SoundCategory.values())
-        {
-            v = mc.gameSettings.getSoundLevel(soundcategory);
-            savedSoundLevels.put(soundcategory, v.toString());
-            mc.gameSettings.setSoundLevel(soundcategory, muteLevel(soundcategory, v));
-            mc.gameSettings.setSoundLevel(soundcategory, muteLevel(soundcategory, v));
-            mc.gameSettings.saveOptions();
-        }
+        Float v = mc.gameSettings.getSoundLevel(SoundCategory.MUSIC);
+        savedSoundLevels.put(SoundCategory.MUSIC, v.toString());
+        mc.gameSettings.setSoundLevel(SoundCategory.MUSIC, muteLevel(SoundCategory.MUSIC, v));
+        mc.gameSettings.setSoundLevel(SoundCategory.MUSIC, muteLevel(SoundCategory.MUSIC, v));
+        mc.gameSettings.saveOptions();
     }
 
+    // XXX - Test muting MUSIC only!
     private static void loadLevelsAndUnMute()
     {
-        for (SoundCategory soundcategory: SoundCategory.values())
-        {
-            restoreLevel(soundcategory, Float.valueOf(savedSoundLevels.get(soundcategory)));
-            mc.gameSettings.saveOptions();
-        }
+        restoreLevel(SoundCategory.MUSIC, Float.valueOf(savedSoundLevels.get(SoundCategory.MUSIC)));
+        mc.gameSettings.saveOptions();
     }
 
+    // XXX - Test muting MUSIC only
     /** Sound levels are totally hosed so set to 50% */
     public static void fixLevels()
     {
-        for (SoundCategory soundcategory: SoundCategory.values())
-        {
-            restoreLevel(soundcategory, 0.75F);
-            mc.gameSettings.saveOptions();
-        }
+        restoreLevel(SoundCategory.MUSIC, 0.33F);
+        mc.gameSettings.saveOptions();
     }
     
     private static float muteLevel(SoundCategory sc, float level)

@@ -50,6 +50,7 @@ import net.aeronica.libs.mml.core.MMLToMIDI;
 import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.MusicTextMessage;
+import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -59,6 +60,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.GuiScrollingList;
 
 public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
@@ -66,6 +68,8 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     public static final int GUI_ID = 7;
     private Minecraft mc;
     private static final String TITLE = I18n.format("mxtune.gui.musicPaperParse.title");
+    private static final String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
+    private static final String NO_SOUNDBANK = I18n.format("mxtune.gui.musicPaperParse.noSoundbank");
     private GuiTextField txt_mmlTitle;
     private GuiMMLBox txt_mmlPaste;
     private GuiTextField lbl_status;
@@ -91,6 +95,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     private String selectedInstName = "";
     private int selectedInst = -1;
     private boolean isPlaying = false;
+    private boolean midiUnavailable;
 
     /** Cached State for when the GUI is resized */
     private boolean isStateCached = false;
@@ -99,7 +104,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     private String cachedMMLText;
     private int cachedSelectedInst;
 
-    public GuiMusicPaperParse() {}
+    public GuiMusicPaperParse() {midiUnavailable = MIDISystemUtil.getInstance().midiUnavailable();}
 
     @Override
     public void updateScreen()
@@ -211,11 +216,15 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
         drawDefaultBackground();
-
+        String localTITLE;
+        if (midiUnavailable)
+            localTITLE = TITLE + " - " + TextFormatting.RED + MIDI_NOT_AVAILABLE;
+        else
+            localTITLE = TITLE;
         /** draw "TITLE" at the top/right column middle */
-        int posX = (this.lst_inst.getRight() + this.width / 2) - getFontRenderer().getStringWidth(TITLE);
+        int posX = (this.width - getFontRenderer().getStringWidth(localTITLE)) / 2;
         int posY = 10;
-        getFontRenderer().drawStringWithShadow(TITLE, posX, posY, 0xD3D3D3);
+        getFontRenderer().drawStringWithShadow(localTITLE, posX, posY, 0xD3D3D3);
 
         /** draw Field names */
         posX = this.lst_inst.getRight() + 10;
@@ -392,28 +401,34 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     private void initInstrumentCache()
     {
         instrumentCache.clear();
-        try
+        if (midiUnavailable)
         {
-            synth = MidiSystem.getSynthesizer();
-            synth.open();
-        } catch (MidiUnavailableException e)
+            instrumentCache.add(NO_SOUNDBANK);
+        } else
         {
-            /** TODO: Stuff the error into a status window in this GUI */
-            e.printStackTrace();
-        }
-        inst = synth.getAvailableInstruments();
-        if (inst.length > 0)
-        {
-            int idx = 0;
-            for (Instrument e : inst)
+            try
             {
-                if (idx++ < 128)
+                synth = MidiSystem.getSynthesizer();
+                synth.open();
+            } catch (MidiUnavailableException e)
+            {
+                /** TODO: Stuff the error into a status window in this GUI */
+                e.printStackTrace();
+            }
+            inst = synth.getAvailableInstruments();
+            if (inst.length > 0)
+            {
+                int idx = 0;
+                for (Instrument e : inst)
                 {
-                    instrumentCache.add(e.getName());
+                    if (idx++ < 128)
+                    {
+                        instrumentCache.add(e.getName());
+                    }
                 }
             }
+            if (synth != null && synth.isOpen()) synth.close();
         }
-        if (synth != null && synth.isOpen()) synth.close();
     }
 
     /** MML Parsing */
@@ -658,6 +673,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
 
     public boolean mmlPlay(String mmlIn)
     {
+        if (MIDISystemUtil.getInstance().midiUnavailable()) return false;
         Soundbank defaultSB;
         byte[] mmlBuf = null;
         InputStream is;

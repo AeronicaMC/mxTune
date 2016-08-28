@@ -16,6 +16,8 @@
  */
 package net.aeronica.mods.mxtune.util;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import javax.sound.midi.Instrument;
@@ -24,8 +26,17 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Soundbank;
 import javax.sound.midi.Synthesizer;
-import net.aeronica.mods.mxtune.mml.MMLManager;
 
+import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.mml.MMLManager;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+@SideOnly(Side.CLIENT)
 public class MIDISystemUtil
 {
     private MIDISystemUtil() {}
@@ -33,13 +44,15 @@ public class MIDISystemUtil
 
     public static MIDISystemUtil getInstance() {return MIDISystemUtilHolder.INSTANCE;}
 
-    private static MidiDevice.Info[] midiDeviceInfo = null;
-    private static MidiDevice.Info bestSynthInfo = null;
-    private static Synthesizer bestSynth = null;
-    private static Soundbank soundBank = null;
-    private static boolean synthAvailable = false;
-    private static boolean soundBankAvailable = false;
-    private static boolean midiAvailable = false;
+    private MidiDevice.Info[] midiDeviceInfo = null;
+    private MidiDevice.Info bestSynthInfo = null;
+    private Synthesizer bestSynth = null;
+    private Soundbank soundBank = null;
+    private boolean synthAvailable = false;
+    private boolean soundBankAvailable = false;
+    private boolean midiAvailable = false;
+    private int timesToWarn = 10;
+    private List<TextComponentString> chatStatus = new ArrayList<TextComponentString>();
 
     public void mxTuneInit()
     {
@@ -48,6 +61,7 @@ public class MIDISystemUtil
         MidiDevice device = null;
         int maxPolyphony = 0;
         Synthesizer testSynth = null;
+        chatStatus.clear();
            
         for (int i = 0; i < midiDeviceInfo.length; i++) {
             try {
@@ -95,6 +109,7 @@ public class MIDISystemUtil
             {
                 Instrument[] inst = soundBank.getInstruments();
 
+                /** XXX: This is workaround for a java.sound.midi system bug */
                 if (soundBank.getName().isEmpty())
                     soundBankAvailable = false;
                 else
@@ -114,13 +129,38 @@ public class MIDISystemUtil
             ModLogger.logInfo("MaxPolyphony: " + bestSynth.getMaxPolyphony() + ", MaxReceivers: " + ((bestSynth.getMaxReceivers() == -1) ? "Unlimited" : bestSynth.getMaxReceivers()));
             ModLogger.logInfo("Synthsizer Available: ?         " + synthAvailable);
             ModLogger.logInfo("Default Sound Bank Available: ? " + soundBankAvailable);
+            addStatus(new TextComponentString("[" + MXTuneMain.MODNAME + "] " + TextFormatting.GREEN +I18n.format("mxtune.chat.msu.midiAvailable")));
+            midiAvailable = true;
         } else
         {
-            ModLogger.logInfo("WARNING - Default Synthesizer available? : " + synthAvailable);
-            ModLogger.logInfo("WARNING - Default Sound Bank available?  : " + soundBankAvailable);
-            ModLogger.logInfo("WARNING - MIDI is unavailable! mxTune cannot function properly!");
+            ModLogger.logError("WARNING - Default Synthesizer available? : " + synthAvailable);
+            ModLogger.logError("WARNING - Default Sound Bank available?  : " + soundBankAvailable);
+            ModLogger.logError("WARNING - MIDI System is missing resources! mxTune cannot function properly!");
+            addStatus(new TextComponentString("[" + MXTuneMain.MODNAME + "] " + TextFormatting.RED +I18n.format("mxtune.chat.msu.midiNotAvailable")));
+            addStatus(new TextComponentString("[" + MXTuneMain.MODNAME + "] " + TextFormatting.YELLOW +I18n.format("mxtune.chat.msu.suggestion.01")));
+            addStatus(new TextComponentString("[" + MXTuneMain.MODNAME + "] " + TextFormatting.YELLOW +I18n.format("mxtune.chat.msu.suggestion.02")));
+
             midiAvailable = false;
         }
         MMLManager.getInstance().mmlInit();
+    }
+    
+    private void addStatus(TextComponentString status)
+    {
+        chatStatus.add(status);
+    }
+    
+    public boolean midiUnavailable() {return !this.midiAvailable;}
+    
+    public boolean midiUnavailableWarn(EntityPlayer playerIn)
+    {
+        boolean unAvailable = midiUnavailable();
+        if (unAvailable && timesToWarn-- > 0) onPlayerLoggedInModStatus(playerIn);
+        return unAvailable;
+    }
+    
+    public void onPlayerLoggedInModStatus(EntityPlayer playerIn)
+    {
+        for (TextComponentString tcs: chatStatus) {playerIn.addChatComponentMessage(tcs);}
     }
 }

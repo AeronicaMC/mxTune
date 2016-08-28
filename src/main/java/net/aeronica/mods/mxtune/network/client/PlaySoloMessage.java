@@ -24,6 +24,7 @@ import net.aeronica.mods.mxtune.gui.GuiPlaying;
 import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
+import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
@@ -93,21 +94,25 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        if (MusicOptionsUtil.getMuteResult(player, player.worldObj.getPlayerEntityByName(playerName)) == false)
+        if (MIDISystemUtil.getInstance().midiUnavailableWarn(player) == false)
         {
-            /**
-             * Solo play format "<playerName|groupID>=MML@...;" Jam play format
-             * just appends with a space between each player=MML sequence
-             * "<playername1>=MML@...abcd; <playername2>=MML@...efga; <playername3>=MML@...bead;"
-             */
-
-            String mml = new String(playerName + "=" + musicText);
-            MMLManager.getInstance().mmlPlay(mml, playerName, true, MusicOptionsUtil.getMidiVolume(player));
-
-            /** Only open the playing gui for the player who is playing */
-            if (player.getDisplayName().getUnformattedText().equalsIgnoreCase(playerName))
+            if (MusicOptionsUtil.getMuteResult(player, player.worldObj.getPlayerEntityByName(playerName)) == false)
             {
-                if (isPlaced | ModConfig.getSoloPlayWhileWalking()==false) player.openGui(MXTuneMain.instance, GuiPlaying.GUI_ID, player.worldObj, 0,0,0);
+                /**
+                 * Solo play format "<playerName|groupID>=MML@...;" Jam play
+                 * format just appends with a space between each player=MML
+                 * sequence
+                 * "<playername1>=MML@...abcd; <playername2>=MML@...efga; <playername3>=MML@...bead;"
+                 */
+
+                String mml = new String(playerName + "=" + musicText);
+                MMLManager.getInstance().mmlPlay(mml, playerName, true, MusicOptionsUtil.getMidiVolume(player));
+
+                /** Only open the playing gui for the player who is playing */
+                if (player.getDisplayName().getUnformattedText().equalsIgnoreCase(playerName))
+                {
+                    if (isPlaced | ModConfig.getSoloPlayWhileWalking() == false) player.openGui(MXTuneMain.instance, GuiPlaying.GUI_ID, player.worldObj, 0, 0, 0);
+                }
             }
         }
     }

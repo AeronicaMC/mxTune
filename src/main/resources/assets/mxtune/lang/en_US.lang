@@ -1,5 +1,4 @@
 < en_US.lang - English localization file >
-mxtune.creativeTabs.musicTab.title=mxTune
 
 item.mxtune:item_basic.name=Magic Music Item
 item.mxtune:block_piano.name=Spinet Piano
@@ -48,8 +47,14 @@ mxtune.gui.musicOptions.muteOption.all=Mute All
 mxtune.gui.musicOptions.reset=Abort/Reset Music
 
 mxtune.gui.musicPaperParse.title=MML Simple Editor
+mxtune.gui.musicPaperParse.noSoundbank=No Soundbank loaded
 
 < Chat messages >
+mxtune.chat.msu.midiAvailable=Ready to play music.
+mxtune.chat.msu.midiNotAvailable=MIDI subsystem failure! Unable to play music!
+mxtune.chat.msu.suggestion.01=Increase memory, change JVM options and/or reduce the number of mods used.
+mxtune.chat.msu.suggestion.02=If using a large sound font, try a smaller one.
+
 mxtune.chat.gm.noJoinGroupWhenMuteAll=You can't join a group because [Mute All] is enabled.
 mxtune.chat.gm.noJoinGroupWhenPlayerIsMuted=You can't join %s's group because they are muted.
 mxtune.chat.gm.noSleepInJam=You can't sleep while in a JAM.

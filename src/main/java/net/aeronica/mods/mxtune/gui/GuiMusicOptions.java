@@ -39,6 +39,7 @@ import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.MusicOptionsMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.options.PlayerLists;
+import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -51,6 +52,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.scoreboard.ScorePlayerTeam;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.GuiScrollingList;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 
@@ -62,6 +64,7 @@ public class GuiMusicOptions extends GuiScreen
     private static final String LABEL_WHITELIST = I18n.format("mxtune.gui.musicOptions.label.whitelist");
     private static final String LABEL_PLAYERS  = I18n.format("mxtune.gui.musicOptions.label.players");
     private static final String LABEL_BLACKLIST  = I18n.format("mxtune.gui.musicOptions.label.blacklist");
+    private static final String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
 
     private GuiButtonExt btn_muteOption;
     private GuiSliderMX btn_midiVolume;
@@ -74,6 +77,7 @@ public class GuiMusicOptions extends GuiScreen
     private EntityPlayer player;
     private float midiVolume;
     private int muteOption;
+    private boolean midiUnavailable;
     private int lastMuteOption = -1;
 
     /** PlayerList */
@@ -106,6 +110,7 @@ public class GuiMusicOptions extends GuiScreen
         this.mc = Minecraft.getMinecraft();
         midiVolume = MusicOptionsUtil.getMidiVolume(player);
         muteOption = MusicOptionsUtil.getMuteOption(player);
+        midiUnavailable = MIDISystemUtil.getInstance().midiUnavailable();
         midiInit();
         initPlayerList();
     }
@@ -193,11 +198,15 @@ public class GuiMusicOptions extends GuiScreen
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
         drawDefaultBackground();
-
+        String localTITLE;
+        if (midiUnavailable)
+            localTITLE = TITLE + " - " + TextFormatting.RED + MIDI_NOT_AVAILABLE;
+        else
+            localTITLE = TITLE;
         /** draw "TITLE" at the top/right column middle */
-        int posX = (this.width - getFontRenderer().getStringWidth(TITLE)) / 2 ;
+        int posX = (this.width - getFontRenderer().getStringWidth(localTITLE)) / 2 ;
         int posY = 10;
-        getFontRenderer().drawStringWithShadow(TITLE, posX, posY, 0xD3D3D3);
+        getFontRenderer().drawStringWithShadow(localTITLE, posX, posY, 0xD3D3D3);
         
         /** draw list names - Whitelist */
         posX = (this.lst_white.getRight() - whiteListWidth / 2) - (getFontRenderer().getStringWidth(LABEL_WHITELIST) / 2);
@@ -363,36 +372,45 @@ public class GuiMusicOptions extends GuiScreen
         Soundbank defaultSB;
         Instrument instruments[];
         final int PATCH = 0;
-        
-        try
-        {
-            synth = MidiSystem.getSynthesizer();
-            synth.open();
 
-            defaultSB = synth.getDefaultSoundbank();
-            synth.unloadAllInstruments(defaultSB);
-            instruments = defaultSB.getInstruments();
-            if (instruments != null && instruments.length > 0) synth.loadInstrument(instruments[PATCH]);
-        } catch (MidiUnavailableException e)
+        if (midiUnavailable)
         {
-            e.printStackTrace();
-            synthOK = false;
-        } catch (IllegalArgumentException e)
+            synthOK = false;  
+        } else
         {
-            e.printStackTrace();
-            synthOK = false;
-        } finally
-        {
-            if (synthOK)
+            try
             {
-                channels = synth.getChannels();
-                if (channels != null && channels.length > 0)
+                synth = MidiSystem.getSynthesizer();
+                synth.open();
+
+                defaultSB = synth.getDefaultSoundbank();
+                synth.unloadAllInstruments(defaultSB);
+                instruments = defaultSB.getInstruments();
+                if (instruments != null && instruments.length > 0) synth.loadInstrument(instruments[PATCH]);
+            } catch (MidiUnavailableException e)
+            {
+                e.printStackTrace();
+                synthOK = false;
+            } catch (IllegalArgumentException e)
+            {
+                e.printStackTrace();
+                synthOK = false;
+            } finally
+            {
+                if (synthOK)
                 {
-                    channel = channels[0];
-                    channel.programChange(PATCH);
+                    channels = synth.getChannels();
+                    if (channels != null && channels.length > 0)
+                    {
+                        channel = channels[0];
+                        channel.programChange(PATCH);
+                    }
+                } else
+                {
+                    synth.close();
+                    synthOK = false;
                 }
-            } else
-            {synth.close(); synthOK = false;}
+            }
         }
         setWait(2);
     }
@@ -403,7 +421,7 @@ public class GuiMusicOptions extends GuiScreen
         nextNote();
     }
     
-    private void midiClose() {synth.close();}
+    private void midiClose() {if (synth != null && synth.isOpen()) synth.close();}
 
     private int tickLen = 1;
     private int noteMidi1, noteMidi2, noteMidi3, noteMidi4, noteMidi5, run1, run2;
