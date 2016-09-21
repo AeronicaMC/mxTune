@@ -76,13 +76,13 @@ public class MMLToMIDI extends MMLTransformBase
                 {
                     MObject mmo = getMObject(i);
                     currentTempo = mmo.getTempo();
-                    tracks[0].add(createTempoMetaEvent(currentTempo, mmo.getTicksStart() + ticksOffset));
+                    tracks[0].add(createTempoMetaEvent(currentTempo, mmo.getStartingTicks() + ticksOffset));
                     break;
                 }
                 case INST:
                 {
                     MObject mmo = getMObject(i);
-                    tracks[tk].add(createProgramChangeEvent(ch, mmo.getInstrument(), mmo.getTicksStart() + ticksOffset));
+                    tracks[tk].add(createProgramChangeEvent(ch, mmo.getInstrument(), mmo.getStartingTicks() + ticksOffset));
                     patches.add(mmo.getInstrument());
                     break;
                 }
@@ -96,12 +96,12 @@ public class MMLToMIDI extends MMLTransformBase
                 case NOTE:
                 {
                     MObject mmo = getMObject(i);
-                    tracks[tk].add(createNoteOnEvent(ch, MMLUtil.smartClampMIDI(mmo.getMidiNote()), (int) (scaleVolume(mmo.getNoteVolume()) * 127f / 15f), mmo.getTicksStart() + ticksOffset));
-                    tracks[tk].add(createNoteOffEvent(ch, MMLUtil.smartClampMIDI(mmo.getMidiNote()), (int) (mmo.getNoteVolume() * 127f / 15f), mmo.getTicksStart() + mmo.getLengthTicks() + ticksOffset - 1));
+                    tracks[tk].add(createNoteOnEvent(ch, MMLUtil.smartClampMIDI(mmo.getMidiNote()), (int) (scaleVolume(mmo.getNoteVolume()) * 127f / 15f), mmo.getStartingTicks() + ticksOffset));
+                    tracks[tk].add(createNoteOffEvent(ch, MMLUtil.smartClampMIDI(mmo.getMidiNote()), (int) (mmo.getNoteVolume() * 127f / 15f), mmo.getStartingTicks() + mmo.getLengthTicks() + ticksOffset - 1));
                     if (mmo.getText() != null)
                     {
                         String text = new String("{\"Note\": \"{Track\":" + tk + ", \"Text\":\"" + mmo.getText() + "\"}}");
-                        tracks[0].add(createTextMetaEvent(text, mmo.getTicksStart() + ticksOffset));
+                        tracks[0].add(createTextMetaEvent(text, mmo.getStartingTicks() + ticksOffset));
                     }
                     break;
                 }

@@ -204,7 +204,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
 
                 saveMO(new MObject.MObjectBuilder(MObject.Type.NOTE)
                         .midiNote(tiedNote.midiNote)
-                        .ticksStart(tiedNote.startingTicks)
+                        .startingTicks(tiedNote.startingTicks)
                         .lengthTicks(lengthTicks)
                         .volume(tiedNote.volume)
                         .text(ctxL.getText())
@@ -221,7 +221,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
             tiedNotes.add(tiedNote);
             saveMO(new MObject.MObjectBuilder(MObject.Type.NOTE)
                     .midiNote(tiedNote.midiNote)
-                    .ticksStart(tiedNote.startingTicks)
+                    .startingTicks(tiedNote.startingTicks)
                     .lengthTicks(lengthTicks)
                     .volume(tiedNote.volume)
                     .text(ctx.getText())
@@ -239,7 +239,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
 
             saveMO(new MObject.MObjectBuilder(MObject.Type.NOTE)
                     .midiNote(tiedNote.midiNote)
-                    .ticksStart(tiedNote.startingTicks)
+                    .startingTicks(tiedNote.startingTicks)
                     .lengthTicks(lengthTicks)
                     .volume(tiedNote.volume)
                     .text(ctxR.getText())
@@ -287,7 +287,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
         {
             saveMO(new MObject.MObjectBuilder(MObject.Type.NOTE)
                     .midiNote(midiNote)
-                    .ticksStart(startingTicks)
+                    .startingTicks(startingTicks)
                     .lengthTicks(length)
                     .volume(volume)
                     .text(ctx.getText())
@@ -324,7 +324,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
         {
             saveMO(new MObject.MObjectBuilder(MObject.Type.NOTE)
                     .midiNote(midiNote)
-                    .ticksStart(startingTicks)
+                    .startingTicks(startingTicks)
                     .lengthTicks(lengthTicks)
                     .volume(volume)
                     .text(ctx.getText())
@@ -363,7 +363,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
         saveMMLVolume(ctx, partState.getVolume());
 
         saveMO(new MObject.MObjectBuilder(MObject.Type.REST)
-                .ticksStart(startingTicks)
+                .startingTicks(startingTicks)
                 .lengthTicks(lengthTicks)
                 .build());
     }
@@ -381,7 +381,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
             instState.setInstrument(value);
             saveMO(new MObject.MObjectBuilder(MObject.Type.INST)
                     .instrument(instState.getInstrument())
-                    .ticksStart(partState.getRunningTicks())
+                    .startingTicks(partState.getRunningTicks())
                     .build());
         }
             break;
@@ -393,7 +393,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
             instState.setTempo(value);
             saveMO(new MObject.MObjectBuilder(MObject.Type.INST)
                     .tempo(instState.getTempo())
-                    .ticksStart(partState.getRunningTicks())
+                    .startingTicks(partState.getRunningTicks())
                     .build());
         }
             break;

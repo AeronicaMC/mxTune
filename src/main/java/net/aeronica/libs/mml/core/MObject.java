@@ -37,7 +37,7 @@ public class MObject
     public Type getType() {return type;}
     public long getlongestPartTicks() {return longestPartTicks;}
     public int getInstrument() {return instrument;}
-    public long getTicksStart() {return startingTicks;}
+    public long getStartingTicks() {return startingTicks;}
     public long getCumulativeTicks() {return cumulativeTicks;}
     public int getMidiNote() {return midiNote;}
     public int getNoteVolume() {return volume;}
@@ -72,7 +72,7 @@ public class MObject
             this.instrument = instrument;
             return this;
         }        
-        public MObjectBuilder ticksStart(long startingTicks)
+        public MObjectBuilder startingTicks(long startingTicks)
         {
             this.startingTicks = startingTicks;
             return this;
@@ -107,8 +107,7 @@ public class MObject
             this.tempo = tempo;
             return this;
         }
-
-        
+       
         public MObject build() {
             MObject mObject = new MObject(this);
             validateMObject(mObject);
