@@ -44,11 +44,16 @@ public abstract class MMLTransformBase extends MMLBaseListener
     void saveMMLVolume(ParserRuleContext ctx, int volume) {mmlVolumes.put(ctx, volume);}
 
     List<IMObjects> mObjects = new ArrayList<IMObjects>();
-
+    
     IMObjects getMObject(int index) {return mObjects.get(index);}
 
     void saveMObject(IMObjects mObject) {mObjects.add(mObject);}
 
+    /** NEW MObject Stuff */
+    List<MObject> mObject = new ArrayList<MObject>();
+    void saveMO(MObject mmo) {mObject.add(mmo);}
+    MObject getMMO(int index) {return mObject.get(index);}
+    
     public MMLTransformBase(float fakeVolume)
     {
         partState = new StatePart();
@@ -104,6 +109,8 @@ public abstract class MMLTransformBase extends MMLBaseListener
         partState.init();
         MOInstBegin mmo = new MOInstBegin();
         saveMObject(mmo);
+        
+        saveMO(new MObject.MObjectBuilder(MObject.Type.INST_BEGIN).build());
     }
 
     @Override
@@ -112,6 +119,8 @@ public abstract class MMLTransformBase extends MMLBaseListener
         instState.collectDurationTicks(partState.getRunningTicks());
         MOInstEnd mmo = new MOInstEnd(partState.getRunningTicks());
         saveMObject(mmo);
+        
+        saveMO(new MObject.MObjectBuilder(MObject.Type.INST_END).cumulativeTicks(partState.getRunningTicks()).build());
     }
 
     @Override
@@ -120,6 +129,8 @@ public abstract class MMLTransformBase extends MMLBaseListener
         instState.collectDurationTicks(partState.getRunningTicks());
         MOPart mmo = new MOPart(partState.getRunningTicks());
         saveMObject(mmo);
+        
+        saveMO(new MObject.MObjectBuilder(MObject.Type.PART).cumulativeTicks(partState.getRunningTicks()).build());
         partState.init();
     }
 
@@ -128,6 +139,8 @@ public abstract class MMLTransformBase extends MMLBaseListener
     {
         MODone mmo = new MODone(instState.getLongestDurationTicks());
         saveMObject(mmo);
+        
+        saveMO(new MObject.MObjectBuilder(MObject.Type.DONE).longestPartTicks(instState.getLongestDurationTicks()).build());
         processMObjects(mObjects);
     }
 
@@ -204,6 +217,14 @@ public abstract class MMLTransformBase extends MMLBaseListener
                 MONote mmo = new MONote(tiedNote.midiNote, tiedNote.startingTicks, lengthTicks, tiedNote.volume);
                 mmo.setText(ctxL.getText());
                 saveMObject(mmo);
+                
+                saveMO(new MObject.MObjectBuilder(MObject.Type.NOTE)
+                        .midiNote(tiedNote.midiNote)
+                        .ticksStart(tiedNote.startingTicks)
+                        .lengthTicks(lengthTicks)
+                        .volume(tiedNote.volume)
+                        .text(ctxL.getText())
+                        .build());
                 isTied = false;
             }
         }
@@ -217,6 +238,14 @@ public abstract class MMLTransformBase extends MMLBaseListener
             MONote mmo = new MONote(tiedNote.midiNote, tiedNote.startingTicks, lengthTicks, tiedNote.volume);
             mmo.setText(ctx.getText());
             saveMObject(mmo);
+            
+            saveMO(new MObject.MObjectBuilder(MObject.Type.NOTE)
+                    .midiNote(tiedNote.midiNote)
+                    .ticksStart(tiedNote.startingTicks)
+                    .lengthTicks(lengthTicks)
+                    .volume(tiedNote.volume)
+                    .text(ctx.getText())
+                    .build());
         } else
         {
             // LAST LONELY RIGHT NOTE
@@ -231,6 +260,14 @@ public abstract class MMLTransformBase extends MMLBaseListener
             MONote mmo = new MONote(tiedNote.midiNote, tiedNote.startingTicks, lengthTicks, tiedNote.volume);
             mmo.setText(ctxR.getText());
             saveMObject(mmo);
+            
+            saveMO(new MObject.MObjectBuilder(MObject.Type.NOTE)
+                    .midiNote(tiedNote.midiNote)
+                    .ticksStart(tiedNote.startingTicks)
+                    .lengthTicks(lengthTicks)
+                    .volume(tiedNote.volume)
+                    .text(ctxR.getText())
+                    .build());
         }
     }
 
@@ -275,6 +312,14 @@ public abstract class MMLTransformBase extends MMLBaseListener
             MONote mmo = new MONote(midiNote, startingTicks, length, volume);
             mmo.setText(ctx.getText());
             saveMObject(mmo);
+            
+            saveMO(new MObject.MObjectBuilder(MObject.Type.NOTE)
+                    .midiNote(midiNote)
+                    .ticksStart(startingTicks)
+                    .lengthTicks(length)
+                    .volume(volume)
+                    .text(ctx.getText())
+                    .build());
         }
         partState.accumulateTicks(length);
 
@@ -308,6 +353,14 @@ public abstract class MMLTransformBase extends MMLBaseListener
             MONote mmo = new MONote(midiNote, startingTicks, lengthTicks, volume);
             mmo.setText(ctx.getText());
             saveMObject(mmo);
+            
+            saveMO(new MObject.MObjectBuilder(MObject.Type.NOTE)
+                    .midiNote(midiNote)
+                    .ticksStart(startingTicks)
+                    .lengthTicks(lengthTicks)
+                    .volume(volume)
+                    .text(ctx.getText())
+                    .build());
         }
 
         partState.accumulateTicks(lengthTicks);
@@ -343,6 +396,11 @@ public abstract class MMLTransformBase extends MMLBaseListener
 
         MORest mmo = new MORest(startingTicks, lengthTicks);
         saveMObject(mmo);
+        
+        saveMO(new MObject.MObjectBuilder(MObject.Type.REST)
+                .ticksStart(startingTicks)
+                .lengthTicks(lengthTicks)
+                .build());
     }
 
     @Override
