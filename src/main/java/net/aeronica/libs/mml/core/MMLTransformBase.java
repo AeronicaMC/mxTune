@@ -43,16 +43,16 @@ public abstract class MMLTransformBase extends MMLBaseListener
 
     void saveMMLVolume(ParserRuleContext ctx, int volume) {mmlVolumes.put(ctx, volume);}
 
-    List<IMObjects> mObjects = new ArrayList<IMObjects>();
+    // List<IMObjects> mObjects = new ArrayList<IMObjects>();
     
-    IMObjects getMObject(int index) {return mObjects.get(index);}
+    // IMObjects getMObject(int index) {return mObjects.get(index);}
 
-    void saveMObject(IMObjects mObject) {mObjects.add(mObject);}
+    // void saveMObject(IMObjects mObject) {mObjects.add(mObject);}
 
     /** NEW MObject Stuff */
     List<MObject> mObject = new ArrayList<MObject>();
     void saveMO(MObject mmo) {mObject.add(mmo);}
-    MObject getMMO(int index) {return mObject.get(index);}
+    MObject getMObject(int index) {return mObject.get(index);}
     
     public MMLTransformBase(float fakeVolume)
     {
@@ -100,16 +100,13 @@ public abstract class MMLTransformBase extends MMLBaseListener
      * 
      * @param mObjects
      */
-    public abstract void processMObjects(List<IMObjects> mObjects);
+    public abstract void processMObjects(List<MObject> mObject);
 
     @Override
     public void enterInst(InstContext ctx)
     {
         instState.init();
         partState.init();
-        MOInstBegin mmo = new MOInstBegin();
-        saveMObject(mmo);
-        
         saveMO(new MObject.MObjectBuilder(MObject.Type.INST_BEGIN).build());
     }
 
@@ -117,9 +114,6 @@ public abstract class MMLTransformBase extends MMLBaseListener
     public void exitInst(InstContext ctx)
     {
         instState.collectDurationTicks(partState.getRunningTicks());
-        MOInstEnd mmo = new MOInstEnd(partState.getRunningTicks());
-        saveMObject(mmo);
-        
         saveMO(new MObject.MObjectBuilder(MObject.Type.INST_END).cumulativeTicks(partState.getRunningTicks()).build());
     }
 
@@ -127,9 +121,6 @@ public abstract class MMLTransformBase extends MMLBaseListener
     public void enterPart(MMLParser.PartContext ctx)
     {
         instState.collectDurationTicks(partState.getRunningTicks());
-        MOPart mmo = new MOPart(partState.getRunningTicks());
-        saveMObject(mmo);
-        
         saveMO(new MObject.MObjectBuilder(MObject.Type.PART).cumulativeTicks(partState.getRunningTicks()).build());
         partState.init();
     }
@@ -137,11 +128,8 @@ public abstract class MMLTransformBase extends MMLBaseListener
     @Override
     public void exitBand(BandContext ctx)
     {
-        MODone mmo = new MODone(instState.getLongestDurationTicks());
-        saveMObject(mmo);
-        
         saveMO(new MObject.MObjectBuilder(MObject.Type.DONE).longestPartTicks(instState.getLongestDurationTicks()).build());
-        processMObjects(mObjects);
+        processMObjects(mObject);
     }
 
     @Override
@@ -214,10 +202,6 @@ public abstract class MMLTransformBase extends MMLBaseListener
                 tiedNote.volume = getMMLVolume(ctxL);
                 tiedNotes.add(tiedNote);
 
-                MONote mmo = new MONote(tiedNote.midiNote, tiedNote.startingTicks, lengthTicks, tiedNote.volume);
-                mmo.setText(ctxL.getText());
-                saveMObject(mmo);
-                
                 saveMO(new MObject.MObjectBuilder(MObject.Type.NOTE)
                         .midiNote(tiedNote.midiNote)
                         .ticksStart(tiedNote.startingTicks)
@@ -235,10 +219,6 @@ public abstract class MMLTransformBase extends MMLBaseListener
 
             tiedNote.lengthTicks = lengthTicks;
             tiedNotes.add(tiedNote);
-            MONote mmo = new MONote(tiedNote.midiNote, tiedNote.startingTicks, lengthTicks, tiedNote.volume);
-            mmo.setText(ctx.getText());
-            saveMObject(mmo);
-            
             saveMO(new MObject.MObjectBuilder(MObject.Type.NOTE)
                     .midiNote(tiedNote.midiNote)
                     .ticksStart(tiedNote.startingTicks)
@@ -257,10 +237,6 @@ public abstract class MMLTransformBase extends MMLBaseListener
             tiedNote.lengthTicks = lengthTicks;
             tiedNotes.add(tiedNote);
 
-            MONote mmo = new MONote(tiedNote.midiNote, tiedNote.startingTicks, lengthTicks, tiedNote.volume);
-            mmo.setText(ctxR.getText());
-            saveMObject(mmo);
-            
             saveMO(new MObject.MObjectBuilder(MObject.Type.NOTE)
                     .midiNote(tiedNote.midiNote)
                     .ticksStart(tiedNote.startingTicks)
@@ -309,10 +285,6 @@ public abstract class MMLTransformBase extends MMLBaseListener
 
         if (!tied)
         {
-            MONote mmo = new MONote(midiNote, startingTicks, length, volume);
-            mmo.setText(ctx.getText());
-            saveMObject(mmo);
-            
             saveMO(new MObject.MObjectBuilder(MObject.Type.NOTE)
                     .midiNote(midiNote)
                     .ticksStart(startingTicks)
@@ -350,10 +322,6 @@ public abstract class MMLTransformBase extends MMLBaseListener
 
         if (!tied)
         {
-            MONote mmo = new MONote(midiNote, startingTicks, lengthTicks, volume);
-            mmo.setText(ctx.getText());
-            saveMObject(mmo);
-            
             saveMO(new MObject.MObjectBuilder(MObject.Type.NOTE)
                     .midiNote(midiNote)
                     .ticksStart(startingTicks)
@@ -394,9 +362,6 @@ public abstract class MMLTransformBase extends MMLBaseListener
         saveNoteRestLength(ctx, lengthTicks);
         saveMMLVolume(ctx, partState.getVolume());
 
-        MORest mmo = new MORest(startingTicks, lengthTicks);
-        saveMObject(mmo);
-        
         saveMO(new MObject.MObjectBuilder(MObject.Type.REST)
                 .ticksStart(startingTicks)
                 .lengthTicks(lengthTicks)
@@ -414,8 +379,10 @@ public abstract class MMLTransformBase extends MMLBaseListener
         case 'I':
         {
             instState.setInstrument(value);
-            MOInst mmo = new MOInst(instState.getInstrument(), partState.getRunningTicks());
-            saveMObject(mmo);
+            saveMO(new MObject.MObjectBuilder(MObject.Type.INST)
+                    .instrument(instState.getInstrument())
+                    .ticksStart(partState.getRunningTicks())
+                    .build());
         }
             break;
         case 'O':
@@ -424,8 +391,10 @@ public abstract class MMLTransformBase extends MMLBaseListener
         case 'T':
         {
             instState.setTempo(value);
-            MOTempo mmo = new MOTempo(instState.getTempo(), partState.getRunningTicks());
-            saveMObject(mmo);
+            saveMO(new MObject.MObjectBuilder(MObject.Type.INST)
+                    .tempo(instState.getTempo())
+                    .ticksStart(partState.getRunningTicks())
+                    .build());
         }
             break;
         case 'V':

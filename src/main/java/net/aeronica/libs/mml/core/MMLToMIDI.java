@@ -41,7 +41,7 @@ public class MMLToMIDI extends MMLTransformBase
 
     @SuppressWarnings("unused")
     @Override
-    public void processMObjects(List<IMObjects> mmlObjects)
+    public void processMObjects(List<MObject> mmlObject)
     {
         // IMObjects.Type type;
         int ch = 0;
@@ -61,59 +61,59 @@ public class MMLToMIDI extends MMLTransformBase
             // tracks[0].add(createTempoMetaEvent(currentTempo, 0));
             tk++; // Track 0 for meta messages;
 
-            for (int i = 0; i < mmlObjects.size(); i++)
+            for (int i = 0; i < mmlObject.size(); i++)
             {
                 /** ref: enum Type {INST_BEGIN, TEMPO, INST, PART, NOTE, REST, INST_END, DONE}; */
                 switch (getMObject(i).getType())
                 {
                 case INST_BEGIN:
                 {
-                    MOInstBegin mmo = (MOInstBegin) getMObject(i);
+                    MObject mmo = getMObject(i);
                     /** Nothing to do in reality **/
                     break;
                 }
                 case TEMPO:
                 {
-                    MOTempo mmo = (MOTempo) getMObject(i);
+                    MObject mmo = getMObject(i);
                     currentTempo = mmo.getTempo();
                     tracks[0].add(createTempoMetaEvent(currentTempo, mmo.getTicksStart() + ticksOffset));
                     break;
                 }
                 case INST:
                 {
-                    MOInst mmo = (MOInst) getMObject(i);
+                    MObject mmo = getMObject(i);
                     tracks[tk].add(createProgramChangeEvent(ch, mmo.getInstrument(), mmo.getTicksStart() + ticksOffset));
                     patches.add(mmo.getInstrument());
                     break;
                 }
                 case PART:
                 {
-                    MOPart mmo = (MOPart) getMObject(i);
+                    MObject mmo = getMObject(i);
                     tk++;
                     if (tk > 23) tk = 23;
                     break;
                 }
                 case NOTE:
                 {
-                    MONote mmo = (MONote) getMObject(i);
-                    tracks[tk].add(createNoteOnEvent(ch, MMLUtil.smartClampMIDI(mmo.getMidiNote()), (int) (scaleVolume(mmo.getNoteVolume()) * 127f / 15f), mmo.getStartingTicks() + ticksOffset));
-                    tracks[tk].add(createNoteOffEvent(ch, MMLUtil.smartClampMIDI(mmo.getMidiNote()), (int) (mmo.getNoteVolume() * 127f / 15f), mmo.getStartingTicks() + mmo.getLengthTicks() + ticksOffset - 1));
+                    MObject mmo = getMObject(i);
+                    tracks[tk].add(createNoteOnEvent(ch, MMLUtil.smartClampMIDI(mmo.getMidiNote()), (int) (scaleVolume(mmo.getNoteVolume()) * 127f / 15f), mmo.getTicksStart() + ticksOffset));
+                    tracks[tk].add(createNoteOffEvent(ch, MMLUtil.smartClampMIDI(mmo.getMidiNote()), (int) (mmo.getNoteVolume() * 127f / 15f), mmo.getTicksStart() + mmo.getLengthTicks() + ticksOffset - 1));
                     if (mmo.getText() != null)
                     {
                         String text = new String("{\"Note\": \"{Track\":" + tk + ", \"Text\":\"" + mmo.getText() + "\"}}");
-                        tracks[0].add(createTextMetaEvent(text, mmo.getStartingTicks() + ticksOffset));
+                        tracks[0].add(createTextMetaEvent(text, mmo.getTicksStart() + ticksOffset));
                     }
                     break;
                 }
                 case REST:
                 {
-                    MORest mmo = (MORest) getMObject(i);
+                    MObject mmo = getMObject(i);
                     /** Nothing to do in reality **/
                     break;
                 }
                 case INST_END:
                 {
-                    MOInstEnd mmo = (MOInstEnd) getMObject(i);
+                    MObject mmo = getMObject(i);
                     tk++;
                     if (tk > 23) tk = 23;
                     ch++;
@@ -123,7 +123,7 @@ public class MMLToMIDI extends MMLTransformBase
                 }
                 case DONE:
                 {
-                    MODone mmo = (MODone) getMObject(i);
+                    MObject mmo = getMObject(i);
                     /**
                      * Create a fake note to extend the play time so decaying
                      * audio does not cutoff suddenly
