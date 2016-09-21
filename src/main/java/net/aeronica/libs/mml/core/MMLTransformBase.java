@@ -391,7 +391,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
         case 'T':
         {
             instState.setTempo(value);
-            saveMO(new MObject.MObjectBuilder(MObject.Type.INST)
+            saveMO(new MObject.MObjectBuilder(MObject.Type.TEMPO)
                     .tempo(instState.getTempo())
                     .startingTicks(partState.getRunningTicks())
                     .build());
