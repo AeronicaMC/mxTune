@@ -1,5 +1,6 @@
 package net.aeronica.libs.mml.core;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
@@ -50,7 +51,9 @@ public class TestAntlr
 
         player.mmlPlay(mmlTrans.getSequence());
         
-//        File f = new File("midifile.mid");
+//        Midi2WavRenderer wr = new Midi2WavRenderer();
+//        File f = new File("midifile.wav");
+//        wr.createWavFile(mmlTrans.getSequence(), f);
 //        MidiSystem.write(mmlTrans.getSequence(),1,f);
 
 
