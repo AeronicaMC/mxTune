@@ -1,6 +1,5 @@
 package net.aeronica.libs.mml.core;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
