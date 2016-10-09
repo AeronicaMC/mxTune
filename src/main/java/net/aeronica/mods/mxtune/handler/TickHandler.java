@@ -39,7 +39,6 @@
  */
 package net.aeronica.mods.mxtune.handler;
 
-import net.aeronica.mods.mxtune.sound.SoundPlayer;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
@@ -59,16 +58,16 @@ public class TickHandler
     {
         if (paused == false && minecraft.isGamePaused())
         {
-            SoundPlayer.getInstance().pauseSounds();
+            //SoundPlayer.getInstance().pauseSounds();
             paused = true;
         } else if (paused == true && !minecraft.isGamePaused())
         {
-            SoundPlayer.getInstance().resumeSounds();
+            //SoundPlayer.getInstance().resumeSounds();
             paused = false;
         }
         if (tick == 0)
         {
-            SoundPlayer.getInstance().cleanUp();
+            //SoundPlayer.getInstance().cleanUp();
         }
         tick = ++tick % 100;
     }

@@ -21,6 +21,7 @@ import net.aeronica.mods.mxtune.handler.GUIHandler;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.options.PlayerMusicOptionsCapability;
 import net.aeronica.mods.mxtune.proxy.IProxy;
+import net.aeronica.mods.mxtune.sound.PlayStatusCapabillity;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.MusicTab;
 import net.minecraft.creativetab.CreativeTabs;
@@ -55,6 +56,7 @@ public class MXTuneMain
     {
         ModLogger.initializeLogging();
         PlayerMusicOptionsCapability.register();
+        PlayStatusCapabillity.register();
         PacketDispatcher.registerPackets();
         proxy.registerEventHandlers();
         proxy.initConfiguration(event);

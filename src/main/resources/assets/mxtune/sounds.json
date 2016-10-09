@@ -1,0 +1,12 @@
+{
+	"pcm-proxy": 
+	{
+		"sounds": 
+		[
+			{
+				"name": "mxtune:pcm-proxy",
+				"stream": true
+			}
+		]
+	}
+}

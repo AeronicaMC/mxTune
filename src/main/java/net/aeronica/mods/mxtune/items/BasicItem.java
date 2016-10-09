@@ -17,7 +17,6 @@
 package net.aeronica.mods.mxtune.items;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.util.Resources;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
@@ -38,13 +37,12 @@ public class BasicItem extends ItemBase
     @Override
     public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
     {
-        if (worldIn.isRemote)
+        if (!worldIn.isRemote)
         {
             if (playerIn.isSneaking())
             {
             } else
             {
-                Resources.testPlay(playerIn.getPosition());
             }
         }
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);

@@ -19,12 +19,15 @@ package net.aeronica.mods.mxtune.proxy;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.handler.SREventHandler;
+import net.aeronica.mods.mxtune.init.ModSounds;
 import net.aeronica.mods.mxtune.init.StartupBlocks;
 import net.aeronica.mods.mxtune.init.StartupItems;
+import net.aeronica.mods.mxtune.sound.MODSoundCategory;
 import net.aeronica.mods.mxtune.util.Recipes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
@@ -34,6 +37,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 /** NEW */
 public abstract class CommonProxy implements IProxy
 {
+
     @Override
     public void initConfiguration(FMLPreInitializationEvent event)
     {
@@ -44,6 +48,7 @@ public abstract class CommonProxy implements IProxy
     @Override
     public void initPayload()
     {
+        ModSounds.init();
         StartupItems.register();
         StartupBlocks.register();
     }

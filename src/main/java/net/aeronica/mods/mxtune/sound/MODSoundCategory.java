@@ -41,7 +41,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * To initialize the class create an instance during FMLPreInitializationEvent in
  * the file with the @Mod annotation or your common proxy class.
  * 
- * Usage example: static final SoundCategory SC_MXTUNE = new MODSoundCategory.add("MXTUNE");
+ * Usage example: static final SoundCategory SC_MXTUNE = MODSoundCategory.add("MXTUNE");
  * 
  * The language file key is "soundCategory.mxtune"
  * The game settings "options.txt" key is "soundCategory_mxtune"

@@ -16,23 +16,19 @@
  */
 package net.aeronica.mods.mxtune.handler;
 
-import net.aeronica.mods.mxtune.sound.CodecLiquinth;
-import net.aeronica.mods.mxtune.sound.SoundPlayer;
+import net.aeronica.mods.mxtune.sound.CodecPCM;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraftforge.client.event.sound.SoundSetupEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import paulscode.sound.SoundSystemConfig;
 import paulscode.sound.SoundSystemException;
-import paulscode.sound.codecs.CodecIBXM;
 
 public class SoundEventHandler
 {
 
     private SoundEventHandler() {}
-
     private static class SoundEventHandlerHolder {private static final SoundEventHandler INSTANCE = new SoundEventHandler();}
-
     public static SoundEventHandler getInstance() {return SoundEventHandlerHolder.INSTANCE;}
 
     @SubscribeEvent
@@ -41,21 +37,18 @@ public class SoundEventHandler
         ModLogger.debug("SoundSetupEvent");
         try
         {
-            SoundSystemConfig.setCodec("mod", CodecIBXM.class);
-            SoundSystemConfig.setCodec("s3m", CodecIBXM.class);
-            SoundSystemConfig.setCodec("xm", CodecIBXM.class);
-            SoundSystemConfig.setCodec("pat", CodecLiquinth.class);
+            SoundSystemConfig.setCodec("nul", CodecPCM.class);
         } catch (SoundSystemException e)
         {
             ModLogger.logError("SetCodec failed ");
             e.printStackTrace();
         }
-        ModLogger.debug(String.format("What codec for test.pat? %s", SoundSystemConfig.getCodec("test.pat")));
     }
 
     @SubscribeEvent
     public void onWorldEvent(WorldEvent.Unload event)
     {
-        SoundPlayer.getInstance().stopSounds();
+        //SoundPlayer.getInstance().stopSounds();
     }
+    
 }
