@@ -16,6 +16,7 @@ item.mxtune:item_inst_sawtooth.name=Sawtooth Lead
 item.mxtune:item_converter.name=Sheet Music Converter
 
 soundCategory.mxtune=mxTune
+mxtune.subtitle.pcm-proxy=Music Plays
 
 mxtune.configgui.ctgy.general.tooltip=mxTune General Settings
 mxtune.configgui.ctgy.general=mxTune General Settings

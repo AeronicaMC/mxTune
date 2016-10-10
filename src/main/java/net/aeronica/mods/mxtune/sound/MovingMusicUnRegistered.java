@@ -209,7 +209,7 @@ public class MovingMusicUnRegistered extends MovingSound
             this.setDonePlaying();
         }
         this.xPosF = (float)this.player.posX;
-        this.yPosF = (float)this.player.posY;
+        this.yPosF = (float)this.player.posY-5;
         this.zPosF = (float)this.player.posZ;
     }
     

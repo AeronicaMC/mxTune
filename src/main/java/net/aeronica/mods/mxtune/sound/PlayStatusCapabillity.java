@@ -6,6 +6,7 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTPrimitive;
+import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -80,16 +81,17 @@ public class PlayStatusCapabillity {
 		}
 	}
 
-	private static class Storage implements Capability.IStorage<IPlayStatus> {
+    private static class Storage implements Capability.IStorage<IPlayStatus> {
 
-		@Override
-		public NBTBase writeNBT(Capability<IPlayStatus> capability, IPlayStatus instance, EnumFacing side) {
-			return null;
-		}
+        @Override
+        public NBTBase writeNBT(Capability<IPlayStatus> capability, IPlayStatus instance, EnumFacing side) {
+            return new NBTTagByte((byte)0);
+        }
 
-		@Override
-		public void readNBT(Capability<IPlayStatus> capability, IPlayStatus instance, EnumFacing side, NBTBase nbt) {
-		}
-	}
-	
+        @Override
+        public void readNBT(Capability<IPlayStatus> capability, IPlayStatus instance, EnumFacing side, NBTBase nbt) {
+            ((NBTPrimitive)nbt).getByte();
+        }
+    }
+    
 }

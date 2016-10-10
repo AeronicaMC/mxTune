@@ -20,8 +20,10 @@ import java.io.IOException;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
+import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.sound.MovingMusicRegistered;
+import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
@@ -101,18 +103,23 @@ public class NewPlaySoloMessage extends AbstractClientMessage<NewPlaySoloMessage
     {
         if (side == Side.CLIENT) {process_client(player, side);}
     }
-    
+
     @SideOnly(Side.CLIENT)
     protected void process_client(EntityPlayer player, Side side)
     {
-        ModLogger.debug("playerName: " + playerName);
-        ModLogger.debug("musicTitle: " + musicTitle);
-        ModLogger.debug("musicText:  " + musicText.substring(0, (musicText.length() >= 25 ? 25 : musicText.length())));
-        ModLogger.debug("entityID:   " + entityID);
-        ModLogger.debug("pos:        " + pos);
-        ModLogger.debug("isPlaced:   " + isPlaced);
-        ClientAudio.play(entityID, musicText, pos, isPlaced);
-        MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MovingMusicRegistered((EntityPlayer) player.getEntityWorld().getEntityByID(this.entityID)));
+        if (MIDISystemUtil.getInstance().midiUnavailableWarn(player) == false)
+        {
+            if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) player.worldObj.getEntityByID(entityID)) == false)
+            {
+                ModLogger.debug("playerName: " + playerName);
+                ModLogger.debug("musicTitle: " + musicTitle);
+                ModLogger.debug("musicText:  " + musicText.substring(0, (musicText.length() >= 25 ? 25 : musicText.length())));
+                ModLogger.debug("entityID:   " + entityID);
+                ModLogger.debug("pos:        " + pos);
+                ModLogger.debug("isPlaced:   " + isPlaced);
+                ClientAudio.play(entityID, musicText, pos, isPlaced);
+                MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MovingMusicRegistered((EntityPlayer) player.getEntityWorld().getEntityByID(this.entityID)));
+            }
+        }
     }
-
 }
