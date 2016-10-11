@@ -17,11 +17,19 @@ package net.aeronica.mods.mxtune.sound;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.minecraft.client.audio.Sound;
+import net.minecraft.client.audio.Sound.Type;
 import net.minecraft.util.ResourceLocation;
 
-public class UnregisteredSound extends Sound
+public class PCMSound extends Sound
 {
-    public UnregisteredSound(String nameIn, float volumeIn, float pitchIn, int weightIn, Type typeIn, boolean isStreaming)
+    
+    /** This will associate the sound with the PCM codec. This represents our sounds.json entry */
+    public PCMSound()
+    {
+        super("pcm-proxy", 1F, 1F, 0, Type.SOUND_EVENT, true);
+    }
+
+    public PCMSound(String nameIn, float volumeIn, float pitchIn, int weightIn, Type typeIn, boolean isStreaming)
     {
         super(nameIn, volumeIn, pitchIn, weightIn, typeIn, isStreaming);
     }

@@ -22,7 +22,7 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
-import net.aeronica.mods.mxtune.sound.MovingMusicRegistered;
+import net.aeronica.mods.mxtune.sound.MusicMoving;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
@@ -118,7 +118,7 @@ public class NewPlaySoloMessage extends AbstractClientMessage<NewPlaySoloMessage
                 ModLogger.debug("pos:        " + pos);
                 ModLogger.debug("isPlaced:   " + isPlaced);
                 ClientAudio.play(entityID, musicText, pos, isPlaced);
-                MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MovingMusicRegistered((EntityPlayer) player.getEntityWorld().getEntityByID(this.entityID)));
+                MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MusicMoving());
             }
         }
     }

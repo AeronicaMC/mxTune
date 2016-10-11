@@ -196,7 +196,7 @@ public class PlayManager
      * "mamberName=MML@... memberName=MML@..."
      * 
      * @param groupID
-     * @return
+     * @return string in Map ready format.
      */
     private String getMML(String groupID)
     {

@@ -146,6 +146,16 @@ public class ClientAudio
         return entityData.containsKey(entityID);
     }
     
+    public static boolean isPlaying(Integer entityID)
+    {
+        if (hasEntity(entityID))
+        {
+            AudioData audioData = entityData.get(entityID);
+            return PlayStatusUtil.isPlaying(audioData.getPlayer());
+        }
+        return false;
+    }
+    
     public static void play(Integer entityID, String musicText, BlockPos pos, boolean isPlaced)
     {
         addEntityIdQueue(entityID);

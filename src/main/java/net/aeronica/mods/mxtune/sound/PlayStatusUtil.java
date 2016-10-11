@@ -16,6 +16,7 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 
@@ -25,4 +26,8 @@ public class PlayStatusUtil
     @CapabilityInject(IPlayStatus.class)
     public static final Capability<IPlayStatus> PLAY_STATUS = null;
     
+    public static boolean isPlaying(EntityPlayer playerIn)
+    {
+        return playerIn.getCapability(PLAY_STATUS, null).isPlaying();
+    }
 }

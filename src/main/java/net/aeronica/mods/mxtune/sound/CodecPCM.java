@@ -151,7 +151,7 @@ public class CodecPCM implements ICodec {
 			return null;
 		}
 		
-		if (endOfStream() | !ClientAudio.hasEntity(entityID) | ClientAudio.isEntityAudioDataError(entityID)) return null;
+		if (endOfStream() | !ClientAudio.isPlaying(entityID) | ClientAudio.isEntityAudioDataError(entityID)) return null;
         if (hasStream == false)
         {
             if (ClientAudio.isEntityAudioDataReady(entityID))
