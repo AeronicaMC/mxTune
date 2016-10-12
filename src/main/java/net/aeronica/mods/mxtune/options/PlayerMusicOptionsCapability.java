@@ -155,8 +155,7 @@ public class PlayerMusicOptionsCapability
                 entry.setString("playerName", instance.getWhiteList().get(i).getPlayerName());
                 listWhite.appendTag(entry);
             }   
-            return properties; // compound;
-            // return instance.serializeNBT();
+            return properties;
         }
 
         @Override
@@ -198,7 +197,6 @@ public class PlayerMusicOptionsCapability
                 }
                 instance.setWhiteList((List<PlayerLists>) blackList);
             }
-            //instance.deserializeNBT((NBTTagCompound) nbt);
         }
     }
 }

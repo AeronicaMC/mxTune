@@ -19,10 +19,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class PlayStatusCapabillity {
 
-	public static void register() {
-		CapabilityManager.INSTANCE.register(IPlayStatus.class, new Storage(), new Factory());
-		MinecraftForge.EVENT_BUS.register(new EventHandler());
-	}
+    public static void register() {
+        CapabilityManager.INSTANCE.register(IPlayStatus.class, new Storage(), new Factory());
+        MinecraftForge.EVENT_BUS.register(new EventHandler());
+    }
 
     public static class EventHandler
     {
@@ -64,22 +64,22 @@ public class PlayStatusCapabillity {
             }
         }
 
-		@SubscribeEvent
-		public void OnPlayerClone(PlayerEvent.Clone evt) {
-			IPlayStatus dead = evt.getOriginal().getCapability(PlayStatusUtil.PLAY_STATUS, null);
-			IPlayStatus live = evt.getEntityPlayer().getCapability(PlayStatusUtil.PLAY_STATUS, null);
-			live.setPlaying(evt.getEntityPlayer(), false);
-		}
+        @SubscribeEvent
+        public void OnPlayerClone(PlayerEvent.Clone evt) {
+            IPlayStatus dead = evt.getOriginal().getCapability(PlayStatusUtil.PLAY_STATUS, null);
+            IPlayStatus live = evt.getEntityPlayer().getCapability(PlayStatusUtil.PLAY_STATUS, null);
+            live.setPlaying(evt.getEntityPlayer(), false);
+        }
 
-	}
+    }
 
-	private static class Factory implements Callable<IPlayStatus> {
+    private static class Factory implements Callable<IPlayStatus> {
 
-		@Override
-		public IPlayStatus call() throws Exception {
-			return new PlayStatusImpl();
-		}
-	}
+        @Override
+        public IPlayStatus call() throws Exception {
+            return new PlayStatusImpl();
+        }
+    }
 
     private static class Storage implements Capability.IStorage<IPlayStatus> {
 

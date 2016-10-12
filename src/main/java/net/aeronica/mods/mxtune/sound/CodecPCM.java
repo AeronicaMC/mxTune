@@ -106,14 +106,10 @@ public class CodecPCM implements ICodec {
 		reverseBytes = b;
 	}
 
-    int inits = 0;
-
     @Override
     public boolean initialize(URL url)
     {
         initialized(SET, false);
-        message("  initialize begin:  " + System.currentTimeMillis());
-        message("  inits: " + inits++);
         if (entityID == -1)
             if ((entityID = ClientAudio.pollEntityIdQueue02()) == null )
             {
@@ -126,7 +122,6 @@ public class CodecPCM implements ICodec {
 
         endOfStream(SET, false);
         initialized(SET, true);
-        message("  initialize end  :  " + System.currentTimeMillis());
 
         return true;
     }
@@ -179,7 +174,6 @@ public class CodecPCM implements ICodec {
 		    } else
 		    {
 		        outputBuffer = appendByteArrays(outputBuffer, zeroBuffer, SAMPLE_SIZE);
-		        message("  zeroBufferCount: " + ++zeroBufferCount);
 		        if (zeroBufferCount > 48) 
 		        {
 		            errorMessage("  MML to PCM audio prcessiong took too long. Aborting!");

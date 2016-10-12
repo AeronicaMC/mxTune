@@ -17,8 +17,10 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'java' // or 'groovy'. Must be explicitly applied
 apply plugin: 'com.github.johnrengelman.shadow'
 
-sourceCompatibility = JavaVersion.VERSION_1_7
-targetCompatibility = JavaVersion.VERSION_1_7
+sourceCompatibility = targetCompatibility = "1.7" // Need this here so eclipse task generates correctly.
+compileJava {
+    sourceCompatibility = targetCompatibility = "1.7"
+}
 
 /*
 // for people who want stable - not yet functional for MC 1.8.8 - we require the forgegradle 2.1 snapshot
@@ -42,7 +44,7 @@ configurations {
 }
 
 minecraft {
-    version = "1.10.2-12.18.1.2095"
+    version = "1.10.2-12.18.2.2103"
     runDir = "run"
 	
 	def versionPropsFile = file('version.properties')

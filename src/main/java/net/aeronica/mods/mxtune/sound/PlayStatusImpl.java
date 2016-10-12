@@ -10,6 +10,8 @@ public class PlayStatusImpl implements IPlayStatus{
 
 	private boolean playing = false;
 
+	public PlayStatusImpl() {}
+	
 	@Override
 	public String toString() {return new String("Playing: " + this.playing);}
 
