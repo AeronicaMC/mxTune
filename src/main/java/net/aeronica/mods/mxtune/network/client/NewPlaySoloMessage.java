@@ -118,7 +118,6 @@ public class NewPlaySoloMessage extends AbstractClientMessage<NewPlaySoloMessage
                 ModLogger.debug("pos:        " + pos);
                 ModLogger.debug("isPlaced:   " + isPlaced);
                 ClientAudio.play(entityID, musicText, pos, isPlaced);
-                MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MusicMoving());
             }
         }
     }

@@ -27,40 +27,41 @@ import javax.sound.sampled.AudioInputStream;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+import net.aeronica.mods.mxtune.MXTuneMain;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-
+@SideOnly(Side.CLIENT)
 public class ClientAudio
 {
 
+    private static final int THREAD_POOL_SIZE = 10;
     private static AudioFormat audioFormat;
     private static ConcurrentLinkedQueue<Integer> entityIDQueue01;
     private static ConcurrentLinkedQueue<Integer> entityIDQueue02;
-    private static Map<Integer, AudioData> entityData;
+    private static Map<Integer, AudioData> entityAudioData;
     
     private final static ThreadFactory threadFactory; 
     private final static ExecutorService executorService; 
     private static  ClientAudio instance;
 
     private ClientAudio(){instance = new ClientAudio();}
-    
-    public static ClientAudio getInstance()
-    {
-        return instance;
-    }
+    public static ClientAudio getInstance() {return instance;}
     
     static {
-        /* Used to track which player/entity want to queue up music to be played */
+        /* Used to track which player/entity queued up music to be played */
         entityIDQueue01 = new ConcurrentLinkedQueue<Integer>();
         entityIDQueue02 = new ConcurrentLinkedQueue<Integer>();
+        /* PCM Signed Monaural little endian */
         audioFormat = new AudioFormat(48000, 16, 1, true, false);
-        entityData = new HashMap<Integer, AudioData>();
+        entityAudioData = new HashMap<Integer, AudioData>();
         
         threadFactory = (ThreadFactory) new ThreadFactoryBuilder()
                 .setNameFormat("mxTune-ClientAudio-%d")
                 .setDaemon(true)
                 .build();
-        executorService = Executors.newFixedThreadPool(10, (java.util.concurrent.ThreadFactory) threadFactory);
+        executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE, (java.util.concurrent.ThreadFactory) threadFactory);
     }
 
        
@@ -101,56 +102,56 @@ public class ClientAudio
     
     public static void setEntityAudioStream(int entityID, AudioInputStream audioStream)
     {
-        AudioData audioData = entityData.get(entityID);
+        AudioData audioData = entityAudioData.get(entityID);
         audioData.setAudioStream(audioStream);
     }
     
     public static void removeEntityAudioData(int entityID)
     {
-        if ((entityData.isEmpty() == false) && entityData.containsKey(entityID))
-            entityData.remove(entityID);
+        if ((entityAudioData.isEmpty() == false) && entityAudioData.containsKey(entityID))
+            entityAudioData.remove(entityID);
     }
     
     public static AudioInputStream getAudioInputStream(int entityID)
     {
-        AudioData audioData = entityData.get(entityID);
+        AudioData audioData = entityAudioData.get(entityID);
         return audioData.getAudioStream();
     }
     
     public static void setEntityAudioDataStatus(Integer entityID, Status status)
     {
-        AudioData audioData = entityData.get(entityID);
+        AudioData audioData = entityAudioData.get(entityID);
         audioData.setStatus(status);
     }
     
     public static boolean isEntityAudioDataWaiting(Integer entityID)
     {
-        AudioData audioData = entityData.get(entityID);
+        AudioData audioData = entityAudioData.get(entityID);
         return audioData.getStatus() == Status.WAITING;
     }
     
     public static boolean isEntityAudioDataError(Integer entityID)
     {
-        AudioData audioData = entityData.get(entityID);
+        AudioData audioData = entityAudioData.get(entityID);
         return audioData.getStatus() == Status.ERROR;
     }
     
     public static boolean isEntityAudioDataReady(Integer entityID)
     {
-        AudioData audioData = entityData.get(entityID);
+        AudioData audioData = entityAudioData.get(entityID);
         return audioData.getStatus() == Status.READY;
     }
     
     public static boolean hasEntity(Integer entityID)
     {
-        return entityData.containsKey(entityID);
+        return entityAudioData.containsKey(entityID);
     }
     
     public static boolean isPlaying(Integer entityID)
     {
         if (hasEntity(entityID))
         {
-            AudioData audioData = entityData.get(entityID);
+            AudioData audioData = entityAudioData.get(entityID);
             return PlayStatusUtil.isPlaying(audioData.getPlayer());
         }
         return false;
@@ -159,23 +160,20 @@ public class ClientAudio
     public static void play(Integer entityID, String musicText, BlockPos pos, boolean isPlaced)
     {
         addEntityIdQueue(entityID);
-        entityData.put(entityID, new AudioData(entityID, musicText));        
-        executorService.execute(new ThreadedPlay(entityID, musicText, pos, isPlaced));
+        entityAudioData.put(entityID, new AudioData(entityID, musicText, pos, isPlaced));        
+        executorService.execute(new ThreadedPlay(entityID, musicText));
+        MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MusicMoving());
     }
     
     private static class ThreadedPlay implements Runnable
     {
         private final Integer entityID;
         private final String musicText;
-        private final BlockPos pos;
-        private boolean isPlaced;
 
-        public ThreadedPlay(Integer entityID, String musicText, BlockPos pos, boolean isPlaced)
+        public ThreadedPlay(Integer entityID, String musicText)
         {
             this.entityID = entityID;
             this.musicText = musicText;
-            this.pos = pos;
-            this.isPlaced = isPlaced;
         }
 
         @Override

@@ -18,12 +18,32 @@ package net.aeronica.mods.mxtune.sound;
 
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.PositionedSound;
+import net.minecraft.client.audio.SoundEventAccessor;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
 
 public class MusicPositioned extends PositionedSound
 {
 
+    
+    SoundEventAccessor soundEventAccessor;
+    
+    public MusicPositioned(EntityPlayer playerIn, BlockPos pos)
+    {
+        super(ModSoundEvents.PCM_PROXY, SoundCategory.getByName("mxtune"));
+        this.sound = new PCMSound();
+        this.volume = 1F;
+        this.pitch = 1F;
+        this.xPosF = (float)pos.getX()+0.5F;
+        this.yPosF = (float)pos.getY()+0.5F;
+        this.zPosF = (float)pos.getZ()+0.5F;
+        this.repeat = false;
+        this.repeatDelay = 0;
+        this.attenuationType = AttenuationType.NONE;
+        this.soundEventAccessor = new SoundEventAccessor(this.sound.getSoundLocation(), "mxtune.subtitle.pcm-proxy");
+    }
 
     public MusicPositioned(ResourceLocation soundId, SoundCategory categoryIn, float volumeIn, float pitchIn, boolean repeatIn, int repeatDelayIn, ISound.AttenuationType attenuationTypeIn, float xIn, float yIn, float zIn)
     {
