@@ -12,11 +12,17 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+/**
+ * A simple non-serialized capability for non-persistent data
+ * @author Paul Boese aka Aeronica
+ *
+ */
 public class PlayStatusCapabillity {
 
     public static void register() {
@@ -32,7 +38,7 @@ public class PlayStatusCapabillity {
         {
             if (event.getEntity() instanceof EntityPlayer)
             {
-                event.addCapability(new ResourceLocation(MXTuneMain.MODID, "IPlayStatus"), new ICapabilitySerializable<NBTPrimitive>()
+                event.addCapability(new ResourceLocation(MXTuneMain.MODID, "IPlayStatus"), new ICapabilityProvider()
                 {
                     IPlayStatus inst = PlayStatusUtil.PLAY_STATUS.getDefaultInstance();
 
@@ -47,19 +53,6 @@ public class PlayStatusCapabillity {
                     {
                         return capability == PlayStatusUtil.PLAY_STATUS ? PlayStatusUtil.PLAY_STATUS.<T> cast(inst) : null;
                     }
-
-                    @Override
-                    public NBTPrimitive serializeNBT()
-                    {
-                        return (NBTPrimitive) PlayStatusUtil.PLAY_STATUS.getStorage().writeNBT(PlayStatusUtil.PLAY_STATUS, inst, null);
-                    }
-
-                    @Override
-                    public void deserializeNBT(NBTPrimitive nbt)
-                    {
-                        PlayStatusUtil.PLAY_STATUS.getStorage().readNBT(PlayStatusUtil.PLAY_STATUS, inst, null, nbt);
-                    }
-
                 });
             }
         }
@@ -70,7 +63,7 @@ public class PlayStatusCapabillity {
             IPlayStatus live = evt.getEntityPlayer().getCapability(PlayStatusUtil.PLAY_STATUS, null);
             live.setPlaying(evt.getEntityPlayer(), false);
         }
-
+        
     }
 
     private static class Factory implements Callable<IPlayStatus> {
@@ -85,12 +78,11 @@ public class PlayStatusCapabillity {
 
         @Override
         public NBTBase writeNBT(Capability<IPlayStatus> capability, IPlayStatus instance, EnumFacing side) {
-            return new NBTTagByte((byte)0);
+            return null;
         }
 
         @Override
         public void readNBT(Capability<IPlayStatus> capability, IPlayStatus instance, EnumFacing side, NBTBase nbt) {
-            ((NBTPrimitive)nbt).getByte();
         }
     }
     
