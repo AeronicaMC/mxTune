@@ -41,7 +41,7 @@ public class MusicPositioned extends PositionedSound
         this.zPosF = (float)pos.getZ()+0.5F;
         this.repeat = false;
         this.repeatDelay = 0;
-        this.attenuationType = AttenuationType.NONE;
+        this.attenuationType = AttenuationType.LINEAR;
         this.soundEventAccessor = new SoundEventAccessor(this.sound.getSoundLocation(), "mxtune.subtitle.pcm-proxy");
     }
 

@@ -18,11 +18,12 @@ package net.aeronica.mods.mxtune.handler;
 
 
 import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.sound.MusicBackground;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.sound.CodecPCM;
 import net.aeronica.mods.mxtune.sound.ModSoundEvents;
+import net.aeronica.mods.mxtune.sound.MusicBackground;
 import net.aeronica.mods.mxtune.sound.MusicMoving;
+import net.aeronica.mods.mxtune.sound.MusicPositioned;
 import net.minecraft.client.audio.ITickableSound;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
@@ -47,19 +48,21 @@ public class SoundEventHandler
     @SubscribeEvent
     public void PlaySoundEvent(PlaySoundEvent e)
     {
-        if (e.getSound().getSoundLocation().equals(ModSoundEvents.PCM_PROXY.getSoundName()) && (e.getSound() instanceof ITickableSound))
+        if (e.getSound().getSoundLocation().equals(ModSoundEvents.PCM_PROXY.getSoundName()))
         {
-            /** entityID is the player holding/wearing the sound producing item */
-            Integer entityId;
-            if ((entityId = ClientAudio.pollEntityIDQueue01()) == null ) return;
-            EntityPlayer player = (EntityPlayer) MXTuneMain.proxy.getClientPlayer().getEntityWorld().getEntityByID(entityId);
-            /** tickable sound replacement */
-            if (entityId == MXTuneMain.proxy.getClientPlayer().getEntityId())
+            /** entityID is the player holding/wearing/using the sound producing item */
+            Integer entityID;
+            if ((entityID = ClientAudio.pollEntityIDQueue01()) == null ) return;
+            EntityPlayer player = (EntityPlayer) MXTuneMain.proxy.getClientPlayer().getEntityWorld().getEntityByID(entityID);
+            /** sound replacement */
+            if (entityID == MXTuneMain.proxy.getClientPlayer().getEntityId())
                 e.setResultSound(new MusicBackground(player));
             else
-                e.setResultSound(new MusicMoving(player));
-        }
-        
+                if (ClientAudio.isPlaced(entityID))
+                    e.setResultSound(new MusicPositioned(player, ClientAudio.getBlockPos(entityID)));
+                else
+                    e.setResultSound(new MusicMoving(player));
+        } 
     }
     
 }

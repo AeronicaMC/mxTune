@@ -157,6 +157,18 @@ public class ClientAudio
         return false;
     }
     
+    public static boolean isPlaced(Integer entityID)
+    {
+        AudioData audioData = entityAudioData.get(entityID);
+        return audioData.isPlaced();
+    }
+    
+    public static BlockPos getBlockPos(Integer entityID)
+    {
+        AudioData audioData = entityAudioData.get(entityID);
+        return audioData.getPos();
+    }
+    
     public static void play(Integer entityID, String musicText, BlockPos pos, boolean isPlaced)
     {
         addEntityIdQueue(entityID);

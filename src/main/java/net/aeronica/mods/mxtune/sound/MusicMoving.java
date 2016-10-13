@@ -28,7 +28,7 @@ public class MusicMoving extends MovingSound
     EntityPlayer player;
     SoundEventAccessor soundEventAccessor;
 
-    /** This is used to fake out the vanilla SoundHandler. From this point well force the system to use the sound codec of our choice */
+    /** This is used to fake out the vanilla SoundHandler. From this point we will force the system to use the sound codec of our choice */
     public MusicMoving(EntityPlayer player)
     {
         super(ModSoundEvents.PCM_PROXY, SoundCategory.getByName("mxtune"));
