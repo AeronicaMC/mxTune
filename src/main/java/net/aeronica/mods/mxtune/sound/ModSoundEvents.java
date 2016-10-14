@@ -17,7 +17,6 @@ package net.aeronica.mods.mxtune.sound;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 

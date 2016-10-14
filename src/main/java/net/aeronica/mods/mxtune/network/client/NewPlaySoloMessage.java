@@ -18,11 +18,9 @@ package net.aeronica.mods.mxtune.network.client;
 
 import java.io.IOException;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
-import net.aeronica.mods.mxtune.sound.MusicMoving;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
