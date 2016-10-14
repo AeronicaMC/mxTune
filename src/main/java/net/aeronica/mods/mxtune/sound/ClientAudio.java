@@ -52,8 +52,8 @@ public class ClientAudio
     
     static {
         /* Used to track which player/entity queued up music to be played */
-        entityIDQueue01 = new ConcurrentLinkedQueue<Integer>();
-        entityIDQueue02 = new ConcurrentLinkedQueue<Integer>();
+        entityIDQueue01 = new ConcurrentLinkedQueue<Integer>(); // Polled in SoundEventHandler#PlaySoundEvent
+        entityIDQueue02 = new ConcurrentLinkedQueue<Integer>(); // Polled in CodecPCM
         /* PCM Signed Monaural little endian */
         audioFormat = new AudioFormat(48000, 16, 1, true, false);
         entityAudioData = new HashMap<Integer, AudioData>();
