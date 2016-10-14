@@ -28,6 +28,7 @@ import javax.sound.sampled.AudioInputStream;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -161,6 +162,12 @@ public class ClientAudio
     {
         AudioData audioData = entityAudioData.get(entityID);
         return audioData.isPlaced();
+    }
+    
+    public static EntityPlayer getEntityPlayer(Integer entityID)
+    {
+        AudioData audioData = entityAudioData.get(entityID);
+        return audioData.getPlayer();
     }
     
     public static BlockPos getBlockPos(Integer entityID)

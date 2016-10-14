@@ -24,7 +24,6 @@ import net.aeronica.mods.mxtune.sound.ModSoundEvents;
 import net.aeronica.mods.mxtune.sound.MusicBackground;
 import net.aeronica.mods.mxtune.sound.MusicMoving;
 import net.aeronica.mods.mxtune.sound.MusicPositioned;
-import net.minecraft.client.audio.ITickableSound;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.SoundSetupEvent;
@@ -48,21 +47,45 @@ public class SoundEventHandler
     @SubscribeEvent
     public void PlaySoundEvent(PlaySoundEvent e)
     {
+        /* Testing for a the PCM_PROXY sound. For playing MML though the MML->PCM ClientAudio chain */
         if (e.getSound().getSoundLocation().equals(ModSoundEvents.PCM_PROXY.getSoundName()))
         {
-            /** entityID is the player holding/wearing/using the sound producing item */
+            /* entityID is the player holding/wearing/using the sound producing item */
             Integer entityID;
-            if ((entityID = ClientAudio.pollEntityIDQueue01()) == null ) return;
-            EntityPlayer player = (EntityPlayer) MXTuneMain.proxy.getClientPlayer().getEntityWorld().getEntityByID(entityID);
-            /** sound replacement */
-            if (entityID == MXTuneMain.proxy.getClientPlayer().getEntityId())
-                e.setResultSound(new MusicBackground(player));
-            else
-                if (ClientAudio.isPlaced(entityID))
-                    e.setResultSound(new MusicPositioned(player, ClientAudio.getBlockPos(entityID)));
+            if ((entityID = ClientAudio.pollEntityIDQueue01()) != null)
+            {
+                EntityPlayer playerPlaying = ClientAudio.getEntityPlayer(entityID);
+                /* 
+                 * --Sound Replacement--
+                 */
+                if (entityID == MXTuneMain.proxy.getClientPlayer().getEntityId())
+                {
+                    /*
+                     * ThePlayer(s) hear their own music without any 3D distance
+                     * effects applied. Not using the built-in background music
+                     * feature here because it's managed by vanilla and might interrupt
+                     * the players music. Doing this also eliminates a pulsing effect
+                     * that occurs when the player moves and 3D sound system updates
+                     * the sound position.
+                     */
+                    e.setResultSound(new MusicBackground(playerPlaying));
+                }
+                else if (ClientAudio.isPlaced(entityID))
+                {
+                    /*
+                     * Positioned music source for instruments that are placed in the world.
+                     */
+                    e.setResultSound(new MusicPositioned(playerPlaying, ClientAudio.getBlockPos(entityID)));
+                }
                 else
-                    e.setResultSound(new MusicMoving(player));
-        } 
+                {
+                    /*
+                     * Moving music source for hand held or worn instruments. 
+                     */
+                    e.setResultSound(new MusicMoving(playerPlaying));
+                }
+            }
+        }
     }
     
 }
