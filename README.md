@@ -10,5 +10,6 @@ This is currently in development and is not recommended for modpacks at this tim
 
 [Development Blog](https://aeronicamods.blogspot.com/ "mxTune - a music mod for minecraft forge")
 
-[![Latest Version on CurseForge](http://cf.way2muchnoise.eu/versions/245356_latest.svg)](https://minecraft.curseforge.com/projects/mxtune/files)
-![Downloads](http://cf.way2muchnoise.eu/245356.svg)
+> [![Versions on CurseForge](http://cf.way2muchnoise.eu/versions/245356.svg)](https://minecraft.curseforge.com/projects/mxtune/files)
+
+> [![Downloads](http://cf.way2muchnoise.eu/245356.svg)](https://minecraft.curseforge.com/projects/mxtune/files)
