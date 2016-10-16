@@ -27,5 +27,5 @@ public class PlayStatusImpl implements IPlayStatus{
 
     @Override
     public boolean isPlaying() {return this.playing;}
-	
+
 }

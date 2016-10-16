@@ -24,6 +24,7 @@ import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.sound.IPlayStatus;
 import net.aeronica.mods.mxtune.sound.NewPlayManager;
 import net.aeronica.mods.mxtune.sound.PlayStatusUtil;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -61,7 +62,7 @@ public class BasicItem extends ItemBase
                 if (playing.isPlaying() == false)
                 {
                     playing.setPlaying(playerIn, true);
-                    itemStackIn.setRepairCost(playerIn.inventory.currentItem+1000);
+                    itemStackIn.setRepairCost(playerIn.getEntityId());
                     MusicOptionsUtil.setSParams(playerIn, "76", "", "");
                     NewPlayManager.playMusic(playerIn, pos, false);
                 }
@@ -82,16 +83,37 @@ public class BasicItem extends ItemBase
     {
         if (!worldIn.isRemote)
         {
+           // ModLogger.logInfo("onUpdate: " + itemSlot);
             if (entityIn.hasCapability(PlayStatusUtil.PLAY_STATUS, null))
             {
                 IPlayStatus playing = entityIn.getCapability(PlayStatusUtil.PLAY_STATUS, null);
-                if (stack.getRepairCost() == (itemSlot + 1000) && !isSelected)
+                if (!isSelected & (stack.getRepairCost() == entityIn.getEntityId()))
                 {
-                    stack.setRepairCost(0);
+                    stack.setRepairCost(-1);
                     playing.setPlaying((EntityPlayer) entityIn, false);
+                    ModLogger.logInfo("onUpdate Stop Playing");
                 }
             }
         }
+    }
+    
+    @Override
+    public boolean onDroppedByPlayer(ItemStack item, EntityPlayer playerIn)
+    {
+        if (!playerIn.getEntityWorld().isRemote)
+        {
+            if (playerIn.hasCapability(PlayStatusUtil.PLAY_STATUS, null))
+            {
+                IPlayStatus playing = playerIn.getCapability(PlayStatusUtil.PLAY_STATUS, null);
+                if (playing.isPlaying() && (item.getRepairCost() == playerIn.getEntityId()))
+                {
+                    item.setRepairCost(-1);
+                    playing.setPlaying(playerIn, false);
+                    ModLogger.logInfo("onDroppedByPlayer Stop Playing");
+                }
+            }
+        }
+        return true;
     }
     
     @Override

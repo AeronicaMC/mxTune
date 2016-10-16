@@ -8,4 +8,5 @@ public interface IPlayStatus {
 	public void setPlaying(EntityPlayer playerIn, boolean playing);
 	
 	public boolean isPlaying();
+
 }

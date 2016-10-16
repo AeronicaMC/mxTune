@@ -22,7 +22,7 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 
 public class PlayStatusUtil
 {
-
+    
     @CapabilityInject(IPlayStatus.class)
     public static final Capability<IPlayStatus> PLAY_STATUS = null;
     
@@ -30,4 +30,5 @@ public class PlayStatusUtil
     {
         return playerIn.getCapability(PLAY_STATUS, null).isPlaying();
     }
+
 }

@@ -142,7 +142,7 @@ public class BlockPiano extends BlockHorizontal
                 {
                     /**
                      * There is no item in the music rack and the player is
-                     * holding an item. We move that item to the pedestal
+                     * holding an item. We move that item into the music rack
                      */
                     tile.getInventory().setStackInSlot(0, playerIn.getHeldItem(hand));
                     playerIn.inventory.setInventorySlotContents(playerIn.inventory.currentItem, null);
