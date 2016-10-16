@@ -27,6 +27,7 @@ public class ModConfig
 	/** General Configuration Settings */
 	private static float listenerRange = 24.0F;	
 	private static boolean soloPlayWhileWalking = true;
+	private static boolean hideWelcomeStatusMessage = false;
 	/** Client Configuration Settings */
 	
 	/** @return the configFile */
@@ -38,11 +39,14 @@ public class ModConfig
 	public static float getListenerRange() {return listenerRange;}
 	
 	public static boolean getSoloPlayWhileWalking() {return soloPlayWhileWalking;}
-			
+	
+	public static boolean hideWelcomeStatusMessage() {return hideWelcomeStatusMessage;}
+	
 	public static void syncConfig()
     {
         listenerRange = configFile.getFloat("listenerRange", Categories.CATEGORY_GENERAL.getName(), listenerRange, 4.0F, 64.0F, "Listener Range", "mxtune.configgui.listenerRange");
         soloPlayWhileWalking = configFile.getBoolean("soloPlayWhileWalking", Categories.CATEGORY_GENERAL.getName(), true, "Can Solo Play While Walking", "mxtune.configgui.soloPlayWhileWalking");
+        hideWelcomeStatusMessage = configFile.getBoolean("hideWelcomeStatusMessage", Categories.CATEGORY_GENERAL.getName(), false, "Hide Welcome Status Message", "mxtune.configgui.hideWelcomeStatusMessage");
         if (configFile.hasChanged()) configFile.save();	
 	}
 	

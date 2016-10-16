@@ -28,7 +28,15 @@ public class PlayStatusUtil
     
     public static boolean isPlaying(EntityPlayer playerIn)
     {
-        return playerIn.getCapability(PLAY_STATUS, null).isPlaying();
+        if (playerIn.hasCapability(PLAY_STATUS, null))
+            return playerIn.getCapability(PLAY_STATUS, null).isPlaying();
+        else
+            return false;
+    }
+    
+    public static void setPlaying(EntityPlayer playerIn, boolean playing){
+        if (playerIn.hasCapability(PLAY_STATUS, null))
+            playerIn.getCapability(PLAY_STATUS, null).setPlaying(playerIn, playing);
     }
 
 }

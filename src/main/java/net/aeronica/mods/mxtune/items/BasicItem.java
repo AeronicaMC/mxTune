@@ -52,16 +52,15 @@ public class BasicItem extends ItemBase
         if (!worldIn.isRemote)
         {
             /** Server Side - Open the instrument inventory GuiInstInvAdjustRotations */
-            IPlayStatus playing = playerIn.getCapability(PlayStatusUtil.PLAY_STATUS, null);
             if (playerIn.isSneaking() && hand.equals(EnumHand.MAIN_HAND))
             {
                 playerIn.openGui(MXTuneMain.instance, GuiInstInvExp.GUI_ID, worldIn, 0,0,0);
             }
             else
             {
-                if (playing.isPlaying() == false)
+                if (PlayStatusUtil.isPlaying(playerIn) == false)
                 {
-                    playing.setPlaying(playerIn, true);
+                    PlayStatusUtil.setPlaying(playerIn, true);
                     itemStackIn.setRepairCost(playerIn.getEntityId());
                     MusicOptionsUtil.setSParams(playerIn, "76", "", "");
                     NewPlayManager.playMusic(playerIn, pos, false);
@@ -83,16 +82,11 @@ public class BasicItem extends ItemBase
     {
         if (!worldIn.isRemote)
         {
-           // ModLogger.logInfo("onUpdate: " + itemSlot);
-            if (entityIn.hasCapability(PlayStatusUtil.PLAY_STATUS, null))
+            if (!isSelected & (stack.getRepairCost() == entityIn.getEntityId()))
             {
-                IPlayStatus playing = entityIn.getCapability(PlayStatusUtil.PLAY_STATUS, null);
-                if (!isSelected & (stack.getRepairCost() == entityIn.getEntityId()))
-                {
-                    stack.setRepairCost(-1);
-                    playing.setPlaying((EntityPlayer) entityIn, false);
-                    ModLogger.logInfo("onUpdate Stop Playing");
-                }
+                stack.setRepairCost(-1);
+                PlayStatusUtil.setPlaying((EntityPlayer) entityIn, false);
+                ModLogger.logInfo("onUpdate Stop Playing");
             }
         }
     }
@@ -102,15 +96,11 @@ public class BasicItem extends ItemBase
     {
         if (!playerIn.getEntityWorld().isRemote)
         {
-            if (playerIn.hasCapability(PlayStatusUtil.PLAY_STATUS, null))
+            if (PlayStatusUtil.isPlaying(playerIn) && (item.getRepairCost() == playerIn.getEntityId()))
             {
-                IPlayStatus playing = playerIn.getCapability(PlayStatusUtil.PLAY_STATUS, null);
-                if (playing.isPlaying() && (item.getRepairCost() == playerIn.getEntityId()))
-                {
-                    item.setRepairCost(-1);
-                    playing.setPlaying(playerIn, false);
-                    ModLogger.logInfo("onDroppedByPlayer Stop Playing");
-                }
+                item.setRepairCost(-1);
+                PlayStatusUtil.setPlaying(playerIn, false);
+                ModLogger.logInfo("onDroppedByPlayer Stop Playing");
             }
         }
         return true;

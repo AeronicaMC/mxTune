@@ -28,6 +28,7 @@ import javax.sound.midi.Soundbank;
 import javax.sound.midi.Synthesizer;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
@@ -161,6 +162,7 @@ public class MIDISystemUtil
     
     public void onPlayerLoggedInModStatus(EntityPlayer playerIn)
     {
-        for (TextComponentString tcs: chatStatus) {playerIn.addChatComponentMessage(tcs);}
+        if (ModConfig.hideWelcomeStatusMessage() == false)
+            for (TextComponentString tcs: chatStatus) {playerIn.addChatComponentMessage(tcs);}
     }
 }
