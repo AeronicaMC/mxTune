@@ -29,16 +29,20 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class Recipes
 {
-    /**
-     * TUBA(0, "tuba", 1),
-     * MANDO(1, "mando", 25),
-     * FLUTE(2, "flute", 74),
-     * BONGO(3, "bongo", 117),
-     * BALAL(4, "balalaika", 27),
-     * CLARI(5, "clarinet", 72),
-     * MUSICBOX(6, "musicbox", 11),
-     * OCARINA(7, "ocarina", 80),
-     * SAWTOOTH(8, "sawtooth", 82);
+    /*
+       TUBA(0, "tuba", 59),
+       MANDO(1, "mando", 25),
+       FLUTE(2, "flute", 74),
+       BONGO(3, "bongo", 117),
+       BALAL(4, "balalaika", 28),
+       CLARI(5, "clarinet", 72),
+       MUSICBOX(6, "musicbox", 11),
+       OCARINA(7, "ocarina", 80),
+       SAWTOOTH(8, "sawtooth", 82),
+       EGUITAR1(9, "eguitarjazz", 27),
+       EGUITAR2(10, "eguitarmuted", 29),
+       EGUITAR3(11, "eguitarover", 30),
+       EGUITAR4(12, "eguitardist", 31);
      */
     public static void register()
     {
@@ -139,6 +143,50 @@ public class Recipes
                         'I', Items.IRON_INGOT
         });
         GameRegistry.addRecipe(sawtoothRecipe);
+
+        int EGUITAR1 = ItemInstrument.EnumInstruments.BALAL.getMetadata();
+        IRecipe jazzguitarRecipe = new ShapedOreRecipe(new ItemStack(StartupItems.item_instrument, 1, EGUITAR1), new Object[]
+        {
+                ".P.",
+                ".P.",
+                "PWP",
+                        'P', "plankWood",
+                        'W', Blocks.WOOL
+        });
+        GameRegistry.addRecipe(jazzguitarRecipe);
+        
+        int EGUITAR2 = ItemInstrument.EnumInstruments.BALAL.getMetadata();
+        IRecipe mutedguitarRecipe = new ShapedOreRecipe(new ItemStack(StartupItems.item_instrument, 1, EGUITAR2), new Object[]
+        {
+                ".P.",
+                ".P.",
+                "PCP",
+                        'P', "plankWood",
+                        'C', Blocks.CLAY
+        });
+        GameRegistry.addRecipe(mutedguitarRecipe);
+        
+        int EGUITAR3 = ItemInstrument.EnumInstruments.BALAL.getMetadata();
+        IRecipe overguitarRecipe = new ShapedOreRecipe(new ItemStack(StartupItems.item_instrument, 1, EGUITAR3), new Object[]
+        {
+                ".P.",
+                ".P.",
+                "PIP",
+                        'P', "plankWood",
+                        'I', Blocks.IRON_BARS
+        });
+        GameRegistry.addRecipe(overguitarRecipe);
+
+        int EGUITAR4 = ItemInstrument.EnumInstruments.BALAL.getMetadata();
+        IRecipe distguitarRecipe = new ShapedOreRecipe(new ItemStack(StartupItems.item_instrument, 1, EGUITAR4), new Object[]
+        {
+                ".P.",
+                ".P.",
+                "PIP",
+                        'P', "plankWood",
+                        'I', Items.REDSTONE
+        });
+        GameRegistry.addRecipe(distguitarRecipe);
         
         IRecipe pianoRecipe = new ShapedOreRecipe(new ItemStack(StartupBlocks.item_piano, 1, 0), new Object[]
         {

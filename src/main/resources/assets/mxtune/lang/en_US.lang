@@ -14,7 +14,6 @@ item.mxtune:item_inst_musicbox.name=Music Box
 item.mxtune:item_inst_ocarina.name=Ocarina
 item.mxtune:item_inst_sawtooth.name=Sawtooth Lead
 item.mxtune:item_inst_eguitarjazz.name=Jazz Guitar
-item.mxtune:item_inst_eguitarclean.name=Electric Guitar Clean
 item.mxtune:item_inst_eguitarmuted.name=Electric Guitar Muted
 item.mxtune:item_inst_eguitarover.name=Overdriven Guitar
 item.mxtune:item_inst_eguitardist.name=Distortion Guitar
