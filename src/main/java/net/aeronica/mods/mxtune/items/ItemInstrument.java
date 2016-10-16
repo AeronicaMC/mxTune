@@ -179,7 +179,11 @@ public class ItemInstrument extends ItemBase implements IInstrument
         CLARI(5, "clarinet", 72),
         MUSICBOX(6, "musicbox", 11),
         OCARINA(7, "ocarina", 80),
-        SAWTOOTH(8, "sawtooth", 82);
+        SAWTOOTH(8, "sawtooth", 82),
+        EGUITAR1(9, "eguitarjazz", 27),
+        EGUITAR2(10, "eguitarmuted", 29),
+        EGUITAR3(11, "eguitarover", 30),
+        EGUITAR4(12, "eguitardist", 31);
 
         public int getMetadata() {return this.meta;}
 
