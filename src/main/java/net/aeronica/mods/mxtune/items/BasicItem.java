@@ -21,10 +21,8 @@ import java.util.List;
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.gui.GuiInstInvExp;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
-import net.aeronica.mods.mxtune.sound.IPlayStatus;
 import net.aeronica.mods.mxtune.sound.NewPlayManager;
 import net.aeronica.mods.mxtune.sound.PlayStatusUtil;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -86,7 +84,6 @@ public class BasicItem extends ItemBase
             {
                 stack.setRepairCost(-1);
                 PlayStatusUtil.setPlaying((EntityPlayer) entityIn, false);
-                ModLogger.logInfo("onUpdate Stop Playing");
             }
         }
     }
@@ -100,7 +97,6 @@ public class BasicItem extends ItemBase
             {
                 item.setRepairCost(-1);
                 PlayStatusUtil.setPlaying(playerIn, false);
-                ModLogger.logInfo("onDroppedByPlayer Stop Playing");
             }
         }
         return true;

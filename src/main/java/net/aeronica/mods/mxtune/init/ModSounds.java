@@ -18,7 +18,6 @@ package net.aeronica.mods.mxtune.init;
 
 import net.aeronica.mods.mxtune.sound.MODSoundCategory;
 import net.aeronica.mods.mxtune.sound.ModSoundEvents;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 
@@ -33,7 +32,6 @@ public class ModSounds
     {
         SC_MXTUNE = MODSoundCategory.add("MXTUNE");
         PCM_PROXY = ModSoundEvents.PCM_PROXY;
-        ModLogger.debug("SC_MXTUNE: " + SC_MXTUNE + " , PCM_PROXY: " + PCM_PROXY);
     }
     
 }
