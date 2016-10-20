@@ -31,7 +31,8 @@ $RECYCLE.BIN/
 .settings
 .gradle
 .launch
-
+gradle
+gradlew
 bin
 build
 run
@@ -61,4 +62,4 @@ lib
 Network Trash Folder
 Temporary Items
 .apdisk
-gradlew
+
