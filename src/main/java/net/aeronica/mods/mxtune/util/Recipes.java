@@ -144,7 +144,7 @@ public class Recipes
         });
         GameRegistry.addRecipe(sawtoothRecipe);
 
-        int EGUITAR1 = ItemInstrument.EnumInstruments.BALAL.getMetadata();
+        int EGUITAR1 = ItemInstrument.EnumInstruments.EGUITAR1.getMetadata();
         IRecipe jazzguitarRecipe = new ShapedOreRecipe(new ItemStack(StartupItems.item_instrument, 1, EGUITAR1), new Object[]
         {
                 ".P.",
@@ -155,7 +155,7 @@ public class Recipes
         });
         GameRegistry.addRecipe(jazzguitarRecipe);
         
-        int EGUITAR2 = ItemInstrument.EnumInstruments.BALAL.getMetadata();
+        int EGUITAR2 = ItemInstrument.EnumInstruments.EGUITAR2.getMetadata();
         IRecipe mutedguitarRecipe = new ShapedOreRecipe(new ItemStack(StartupItems.item_instrument, 1, EGUITAR2), new Object[]
         {
                 ".P.",
@@ -166,7 +166,7 @@ public class Recipes
         });
         GameRegistry.addRecipe(mutedguitarRecipe);
         
-        int EGUITAR3 = ItemInstrument.EnumInstruments.BALAL.getMetadata();
+        int EGUITAR3 = ItemInstrument.EnumInstruments.EGUITAR3.getMetadata();
         IRecipe overguitarRecipe = new ShapedOreRecipe(new ItemStack(StartupItems.item_instrument, 1, EGUITAR3), new Object[]
         {
                 ".P.",
@@ -177,7 +177,7 @@ public class Recipes
         });
         GameRegistry.addRecipe(overguitarRecipe);
 
-        int EGUITAR4 = ItemInstrument.EnumInstruments.BALAL.getMetadata();
+        int EGUITAR4 = ItemInstrument.EnumInstruments.EGUITAR4.getMetadata();
         IRecipe distguitarRecipe = new ShapedOreRecipe(new ItemStack(StartupItems.item_instrument, 1, EGUITAR4), new Object[]
         {
                 ".P.",
