@@ -38,7 +38,7 @@ public class MMLManager
 {
     private static final int NTHREDS = 20; // XXX This is probably too many and wasteful
     private static ExecutorService executor;
-    private static volatile Map<String, MMLPlayer> mmlThreads = new HashMap<String, MMLPlayer>();
+    private static volatile Map<Integer, MMLPlayer> mmlThreads = new HashMap<Integer, MMLPlayer>();
 
     private static Minecraft mc;
 
@@ -68,16 +68,16 @@ public class MMLManager
 
     public static MMLManager getInstance() {return MMLManagerHolder.INSTANCE;}
 
-    public void mmlPlay(String mml, String groupID, boolean closeGUI, float volumeIn)
+    public void mmlPlay(String mml, Integer playerID, boolean closeGUI, float volumeIn)
     {
-        Runnable worker = new ThreadedmmlPlay(mml, groupID, closeGUI, volumeIn);
+        Runnable worker = new ThreadedmmlPlay(mml, playerID, closeGUI, volumeIn);
         executor.execute(worker);
     }
 
     /** TODO: Make a real initialization */
     public void mmlInit()
     {
-        this.mmlPlay("-Init-=MML@t240v0l64crrrbeadgcf,,;", "-Init-", false, 0F);
+        this.mmlPlay("-Init-=MML@t240v0l64crrrbeadgcf,,;", -1, false, 0F);
     }
 
     public static void resetMute()
@@ -95,8 +95,8 @@ public class MMLManager
         resetMute();
         if (mmlThreads != null)
         {
-            Set<String> set = mmlThreads.keySet();
-            for (String resultID : set)
+            Set<Integer> set = mmlThreads.keySet();
+            for (Integer resultID : set)
             {
                 try
                 {
@@ -221,20 +221,20 @@ public class MMLManager
     /**
      * 
      * @param mmlPlayer
-     * @param ID
+     * @param groupID
      * @return false if ID is already registered, or true is successfully
      *         registered
      */
-    public boolean registerThread(MMLPlayer mmlPlayer, String ID)
+    public boolean registerThread(MMLPlayer mmlPlayer, Integer groupID)
     {
         boolean result = false;
         try
         {
             if (mmlThreads != null)
             {
-                if (!mmlThreads.containsKey(ID))
+                if (!mmlThreads.containsKey(groupID))
                 {
-                    mmlThreads.put(ID, mmlPlayer);
+                    mmlThreads.put(groupID, mmlPlayer);
                     muteSounds();
                     result = true;
                 }
@@ -248,24 +248,24 @@ public class MMLManager
             ModLogger.logError(e.getLocalizedMessage());
             e.printStackTrace();
         }
-        ModLogger.debug("registerThread: " + ID + " " + result);
+        ModLogger.debug("registerThread: " + groupID + " " + result);
         return result;
     }
 
     /**
      * de-register the playing thread.
      * 
-     * @param ID
+     * @param resultID
      */
-    public void deregisterThread(String ID)
+    public void deregisterThread(Integer resultID)
     {
         if (mmlThreads != null)
         {
-            if (mmlThreads.containsKey(ID))
+            if (mmlThreads.containsKey(resultID))
             {
                 try
                 {
-                    mmlThreads.remove(ID);
+                    mmlThreads.remove(resultID);
                 } catch (IllegalArgumentException e)
                 {
                     ModLogger.logError(e.getLocalizedMessage());
@@ -276,18 +276,18 @@ public class MMLManager
                     e.printStackTrace();
                 }
                 unMuteSounds();
-                ModLogger.debug("deregisterThread: " + ID);
+                ModLogger.debug("deregisterThread: " + resultID);
             }
         }
     }
 
-    public void mmlKill(String playID, boolean closeGUI)
+    public void mmlKill(Integer playID, boolean closeGUI)
     {
         /**
          * Quite a mess, but here we get the group ID if there is one associated
          * with the player. We use that to get the instance.
          */
-        String resultID = GROUPS.getMembersGroupID(playID) != null ? GROUPS.getMembersGroupID(playID) : playID;
+        Integer resultID = GROUPS.getMembersGroupID(playID) != null ? GROUPS.getMembersGroupID(playID) : playID;
         if (mmlThreads != null)
         {
             if (mmlThreads.containsKey(resultID))
@@ -317,14 +317,14 @@ public class MMLManager
     private class ThreadedmmlPlay implements Runnable
     {
         private final String mml;
-        private final String groupID;
+        private final Integer groupID;
         private boolean closeGUI;
         private float volumeIn;
 
-        public ThreadedmmlPlay(String mml, String groupID, boolean closeGUI, float volumeIn)
+        public ThreadedmmlPlay(String mml, Integer playerID, boolean closeGUI, float volumeIn)
         {
             this.mml = mml;
-            this.groupID = groupID;
+            this.groupID = playerID;
             this.closeGUI = closeGUI;
             this.volumeIn = volumeIn;
         }
@@ -342,13 +342,13 @@ public class MMLManager
     private class ThreadedmmlKill implements Runnable
     {
         private final MMLPlayer pinstance;
-        private final String ID;
+        private final Integer ID;
         private final boolean closeGUI;
 
-        public ThreadedmmlKill(MMLPlayer pInstance, String ID, boolean closeGUI)
+        public ThreadedmmlKill(MMLPlayer pInstance, Integer playID, boolean closeGUI)
         {
             this.pinstance = pInstance;
-            this.ID = ID;
+            this.ID = playID;
             this.closeGUI = closeGUI;
         }
 

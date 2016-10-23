@@ -36,33 +36,33 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
 
     String musicTitle;
     String musicText;
-    String playerName;
+    Integer playerID;
     BlockPos pos;
     boolean isPlaced;
 
     public PlaySoloMessage() {}
 
-    public PlaySoloMessage(String playerName)
+    public PlaySoloMessage(Integer playerID)
     {
-        this.playerName = playerName;
+        this.playerID = playerID;
         this.musicTitle = "";
         this.musicText = "";
         this.pos = new BlockPos(0, 0, 0);
         this.isPlaced = false;
     }
 
-    public PlaySoloMessage(String playerName, String musicTitle, String musicText, boolean isPlaced)
+    public PlaySoloMessage(Integer playerID, String musicTitle, String musicText, boolean isPlaced)
     {
-        this.playerName = playerName;
+        this.playerID = playerID;
         this.musicTitle = musicTitle;
         this.musicText = musicText;
         this.pos = new BlockPos(0, 0, 0);
         this.isPlaced = isPlaced;
     }
 
-    public PlaySoloMessage(String playerName, BlockPos pos, boolean isPlaced)
+    public PlaySoloMessage(Integer playerID, BlockPos pos, boolean isPlaced)
     {
-        this.playerName = playerName;
+        this.playerID = playerID;
         this.musicTitle = "";
         this.musicText = "";
         this.pos = pos;
@@ -72,7 +72,7 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
-        playerName = ByteBufUtils.readUTF8String(buffer);
+        playerID = ByteBufUtils.readVarInt(buffer, 5);
         musicTitle = ByteBufUtils.readUTF8String(buffer);
         musicText = ByteBufUtils.readUTF8String(buffer);
         pos = new BlockPos(ByteBufUtils.readVarInt(buffer, 5), ByteBufUtils.readVarInt(buffer, 5), ByteBufUtils.readVarInt(buffer, 5));
@@ -82,7 +82,7 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
-        ByteBufUtils.writeUTF8String(buffer, playerName);
+        ByteBufUtils.writeVarInt(buffer, playerID, 5);
         ByteBufUtils.writeUTF8String(buffer, musicTitle);
         ByteBufUtils.writeUTF8String(buffer, musicText);
         ByteBufUtils.writeVarInt(buffer, pos.getX(), 5);
@@ -96,7 +96,7 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
     {
         if (MIDISystemUtil.getInstance().midiUnavailableWarn(player) == false)
         {
-            if (MusicOptionsUtil.getMuteResult(player, player.worldObj.getPlayerEntityByName(playerName)) == false)
+            if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) player.worldObj.getEntityByID(playerID)) == false)
             {
                 /**
                  * Solo play format "<playerName|groupID>=MML@...;" Jam play
@@ -105,11 +105,11 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
                  * "<playername1>=MML@...abcd; <playername2>=MML@...efga; <playername3>=MML@...bead;"
                  */
 
-                String mml = new String(playerName + "=" + musicText);
-                MMLManager.getInstance().mmlPlay(mml, playerName, true, MusicOptionsUtil.getMidiVolume(player));
+                String mml = new String(playerID + "=" + musicText);
+                MMLManager.getInstance().mmlPlay(mml, playerID, true, MusicOptionsUtil.getMidiVolume(player));
 
                 /** Only open the playing gui for the player who is playing */
-                if (player.getDisplayName().getUnformattedText().equalsIgnoreCase(playerName))
+                if (player.getEntityId() == (playerID))
                 {
                     if (isPlaced | ModConfig.getSoloPlayWhileWalking() == false) player.openGui(MXTuneMain.instance, GuiPlaying.GUI_ID, player.worldObj, 0, 0, 0);
                 }

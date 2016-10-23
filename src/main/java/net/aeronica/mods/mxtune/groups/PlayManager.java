@@ -48,17 +48,17 @@ public class PlayManager
     private static class PlayManagerHolder {public static final PlayManager INSTANCE = new PlayManager();}
     public static PlayManager getInstance() {return PlayManagerHolder.INSTANCE;}
 
-    private static Map<String, String> membersMML = new HashMap<String, String>();
-    private static Map<String, String> groupsMembers = new HashMap<String, String>();
-    private static Map<String, String> playStatus = new HashMap<String, String>();
+    private static Map<Integer, String> membersMML = new HashMap<Integer, String>();
+    private static Map<Integer, Integer> groupsMembers = new HashMap<Integer, Integer>();
+    private static Map<Integer, String> playStatus = new HashMap<Integer, String>();
 
-    private void setPlaying(String playerName) {playStatus.put(playerName, GROUPS.PLAYING.name());}
+    private void setPlaying(Integer playerID) {playStatus.put(playerID, GROUPS.PLAYING.name());}
 
-    private void setQueued(String playerName) {playStatus.put(playerName, GROUPS.QUEUED.name());}
+    private void setQueued(Integer playerID) {playStatus.put(playerID, GROUPS.QUEUED.name());}
 
     
     @SuppressWarnings("unused")
-    private void setDone(String playerName) {if (playStatus.containsKey(playStatus)) playStatus.remove(playerName);}
+    private void setDone(Integer playerID) {if (playStatus.containsKey(playStatus)) playStatus.remove(playerID);}
 
     /**
      * 
@@ -75,7 +75,7 @@ public class PlayManager
             NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
             if (contents != null)
             {
-                String playerName = playerIn.getDisplayName().getUnformattedText();
+                Integer playerID = playerIn.getEntityId();
                 String title = sheetMusic.getDisplayName();
                 String mml = contents.getString("MML");
 
@@ -83,37 +83,37 @@ public class PlayManager
                 ModLogger.debug("MML Title: " + title);
                 ModLogger.debug("MML Sub25: " + mml.substring(0, (mml.length() >= 25 ? 25 : mml.length())));
 
-                if (GROUPS.getMembersGroupID(playerIn.getDisplayName().getUnformattedText()) == null)
+                if (GROUPS.getMembersGroupID(playerID) == null)
                 {
                     /** Solo Play */
-                    PlayManager.getInstance().playSolo(playerIn, title, mml, playerName, isPlaced);
+                    PlayManager.getInstance().playSolo(playerIn, title, mml, playerID, isPlaced);
                     ModLogger.debug("playMusic playSolo");
                 } else
                 {
                     /** Jam Play */
-                    PlayManager.getInstance().queueJam(playerIn, title, mml, playerName, isPlaced);
+                    PlayManager.getInstance().queueJam(playerIn, title, mml, playerID, isPlaced);
                     ModLogger.debug("playMusic queueJam");
                 }                
             }
         }
     }
 
-    private void playSolo(EntityPlayer playerIn, String title, String mml, String playerName, boolean isPlaced)
+    private void playSolo(EntityPlayer playerIn, String title, String mml, Integer playerID, boolean isPlaced)
     {
-        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playerName, title, mml, isPlaced);
+        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playerID, title, mml, isPlaced);
         PacketDispatcher.sendToAllAround(packetPlaySolo, playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, ModConfig.getListenerRange());
-        setPlaying(playerName);
+        setPlaying(playerID);
         syncStatus();
     }
     
-    private void queueJam(EntityPlayer playerIn, String title, String mml, String playerName, boolean isPlaced)
+    private void queueJam(EntityPlayer playerIn, String title, String mml, Integer playerID, boolean isPlaced)
     {
-        String groupID = GroupManager.getInstance().getMembersGroupID(playerName);
+        Integer groupID = GROUPS.getMembersGroupID(playerID);
         /** Queue members parts */
-        this.queue(groupID, playerName, mml);
+        this.queue(groupID, playerID, mml);
         PacketDispatcher.sendTo(new QueueJamMessage("queue", "only", isPlaced), (EntityPlayerMP) playerIn);
         /** Only send the groups MML when the leader starts the JAM */
-        if (GroupManager.getInstance().isLeader(playerIn.getDisplayName().getUnformattedText()))
+        if (GROUPS.isLeader(playerID))
         {
             mml = this.getMML(groupID);
             PacketDispatcher.sendToAllAround(new PlayJamMessage(mml, groupID), playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, ModConfig.getListenerRange());
@@ -121,13 +121,13 @@ public class PlayManager
         }
     }
 
-    public boolean isPlayerPlaying(String playID) {return (GROUPS.getIndex(playID) & 2) == 2; }
+    public boolean isPlayerPlaying(Integer playID) {return (GROUPS.getIndex(playID) & 2) == 2; }
     /**
      * Stop the playing MML for the specified playID (player name).
      * 
      * @param playID - The players name - e.g. (EntityPlayer) player.getDisplayName().getUnformattedText()
      */
-    public void stopMusic(String playID)
+    public void stopMusic(Integer playID)
     {
         if (isPlayerPlaying(playID))
         {
@@ -158,12 +158,12 @@ public class PlayManager
         String buildStatus = " ";
         try
         {
-            Set<String> keys = playStatus.keySet();
-            Iterator<String> it = keys.iterator();
+            Set<Integer> keys = playStatus.keySet();
+            Iterator<Integer> it = keys.iterator();
             while (it.hasNext())
             {
-                String playerName = (String) it.next();
-                buildStatus = buildStatus + playerName + "=" + playStatus.get(playerName) + " ";
+                Integer playerID = (Integer) it.next();
+                buildStatus = buildStatus + playerID + "=" + playStatus.get(playerID) + " ";
             }
         } catch (Exception e)
         {
@@ -176,13 +176,13 @@ public class PlayManager
         PacketDispatcher.sendToAll(new SyncStatusMessage(buildStatus.trim()));
     }
 
-    private void queue(String groupID, String memberName, String mml)
+    private void queue(Integer groupID, Integer playerID, String mml)
     {
         try
         {
-            membersMML.put(memberName, mml);
-            groupsMembers.put(memberName, groupID);
-            setQueued(memberName);
+            membersMML.put(playerID, mml);
+            groupsMembers.put(playerID, groupID);
+            setQueued(playerID);
             syncStatus();
         } catch (Exception e)
         {
@@ -198,18 +198,18 @@ public class PlayManager
      * @param groupID
      * @return string in Map ready format.
      */
-    private String getMML(String groupID)
+    private String getMML(Integer groupID)
     {
         String buildMML = " ";
         try
         {
-            Set<String> keys = groupsMembers.keySet();
-            Iterator<String> it = keys.iterator();
+            Set<Integer> keys = groupsMembers.keySet();
+            Iterator<Integer> it = keys.iterator();
             while (it.hasNext())
             {
-                String member = (String) it.next();
-                String group = groupsMembers.get(member);
-                if (group.equalsIgnoreCase(groupID))
+                Integer member = (Integer) it.next();
+                Integer group = groupsMembers.get(member);
+                if (group.equals(groupID))
                 {
                     buildMML = buildMML + member + "=" + membersMML.get(member) + " ";
                     it.remove();
@@ -228,21 +228,21 @@ public class PlayManager
     /**
      * Used by the GroupMananger to purge unused/aborted Jam data
      * 
-     * @param memberName
+     * @param memberID
      */
-    public void dequeueMember(String memberName)
+    public void dequeueMember(Integer memberID)
     {
-        if (membersMML != null && !membersMML.isEmpty() && membersMML.containsKey(memberName))
+        if (membersMML != null && !membersMML.isEmpty() && membersMML.containsKey(memberID))
         {
-            membersMML.remove(memberName);
+            membersMML.remove(memberID);
         }
-        if (groupsMembers != null && !groupsMembers.isEmpty() && groupsMembers.containsKey(memberName))
+        if (groupsMembers != null && !groupsMembers.isEmpty() && groupsMembers.containsKey(memberID))
         {
-            groupsMembers.remove(memberName);
+            groupsMembers.remove(memberID);
         }
-        if (playStatus != null && !playStatus.isEmpty() && playStatus.containsKey(memberName))
+        if (playStatus != null && !playStatus.isEmpty() && playStatus.containsKey(memberID))
         {
-            playStatus.remove(memberName);
+            playStatus.remove(memberID);
             syncStatus();
         }
     }

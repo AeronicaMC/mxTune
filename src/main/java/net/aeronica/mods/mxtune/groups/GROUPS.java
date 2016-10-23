@@ -16,6 +16,7 @@
  */
 package net.aeronica.mods.mxtune.groups;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.base.Splitter;
@@ -29,65 +30,65 @@ public enum GROUPS
     public static final int MAX_MEMBERS = 8;
 
     /** Server side, Client side is sync'd with packets */
-    private static Map<String, String> clientGroups;
-    private static Map<String, String> clientMembers;
-    private static Map<String, String> clientPlayStatuses;
+    private static Map<Integer, Integer> clientGroups;
+    private static Map<Integer, Integer> clientMembers;
+    private static Map<Integer, String> clientPlayStatuses;
 
-    public static String getLeaderOfGroup(String groupID)
+    public static Integer getLeaderOfGroup(Integer integer)
     {
-        if (GROUPS.clientGroups != null) { return GROUPS.clientGroups.get(groupID); }
+        if (GROUPS.clientGroups != null) { return GROUPS.clientGroups.get(integer); }
         return null;
     }
 
-    public static String getMembersGroupID(String memberName)
+    public static Integer getMembersGroupID(Integer memberID)
     {
-        if (GROUPS.clientMembers != null) { return GROUPS.clientMembers.get(memberName); }
+        if (GROUPS.clientMembers != null) { return GROUPS.clientMembers.get(memberID); }
         return null;
     }
 
-    public static boolean isLeader(String memberName)
+    public static boolean isLeader(Integer memberID)
     {
-        return memberName.equalsIgnoreCase(getLeaderOfGroup(getMembersGroupID(memberName)));
+        return memberID.equals(getLeaderOfGroup(getMembersGroupID(memberID)));
     }
 
     public static void setClientPlayStatuses(String status)
     {
-        GROUPS.clientPlayStatuses = splitToHashMap(status);
+        GROUPS.clientPlayStatuses = splitToIntStrMap(status);
     }
     
-    public static Map<String, String> getClientMembers()
+    public static Map<Integer, Integer> getClientMembers()
     {
         return GROUPS.clientMembers;
     }
     
     public static void setClientMembers(String members)
     {
-        GROUPS.clientMembers = splitToHashMap(members);
+        GROUPS.clientMembers = splitToIntIntMap(members);
     }
     
-    public static Map<String, String> getClientGroups()
+    public static Map<Integer, Integer> getClientGroups()
     {
         return GROUPS.clientGroups;
     }
     
     public static void setClientGroups(String groups)
     {
-        GROUPS.clientGroups = splitToHashMap(groups);
+        GROUPS.clientGroups = splitToIntIntMap(groups);
     }
     /**
      * getIndex(String playerName)
      * 
      * This is used to return a the index for the playing status icons
      * 
-     * @param playerName
+     * @param playerID
      * @return int
      */
-    public static int getIndex(String playerName)
+    public static int getIndex(Integer playerID)
     {
         int result = 0;
-        if (GROUPS.clientPlayStatuses != null && GROUPS.clientPlayStatuses.containsKey(playerName))
+        if (GROUPS.clientPlayStatuses != null && GROUPS.clientPlayStatuses.containsKey(playerID))
         {
-            switch (GROUPS.valueOf(GROUPS.clientPlayStatuses.get(playerName)))
+            switch (GROUPS.valueOf(GROUPS.clientPlayStatuses.get(playerID)))
             {
             case QUEUED:
                 result = 1;
@@ -97,14 +98,37 @@ public enum GROUPS
             default:
             }
         }
-        return result + (GROUPS.isLeader(playerName) ? 8 : 0);
+        return result + (GROUPS.isLeader(playerID) ? 8 : 0);
     }
 
-    public static Map<String, String> splitToHashMap(String in)
-    {
+    public static Map<Integer, String> splitToIntStrMap(String mapIntString)
+    {       
         try
         {
-            return (Map<String, String>) Splitter.on(" ").withKeyValueSeparator("=").split(in);
+            Map<String, String> inStringString =  (Map<String, String>) Splitter.on(" ").withKeyValueSeparator("=").split(mapIntString);
+            Map<Integer, String> outIntString = new HashMap<Integer, String>();
+            for (String id: inStringString.keySet())
+            {
+                outIntString.put(Integer.valueOf(id), inStringString.get(id));
+            }
+            return outIntString;
+        } catch (IllegalArgumentException e)
+        {
+            return null;
+        }
+    }
+    
+    public static Map<Integer, Integer> splitToIntIntMap(String mapIntString)
+    {       
+        try
+        {
+            Map<String, String> inStringString =  (Map<String, String>) Splitter.on(" ").withKeyValueSeparator("=").split(mapIntString);
+            Map<Integer, Integer> outIntInt = new HashMap<Integer, Integer>();
+            for (String id: inStringString.keySet())
+            {
+                outIntInt.put(Integer.valueOf(id), Integer.valueOf(inStringString.get(id)));
+            }
+            return outIntInt;
         } catch (IllegalArgumentException e)
         {
             return null;

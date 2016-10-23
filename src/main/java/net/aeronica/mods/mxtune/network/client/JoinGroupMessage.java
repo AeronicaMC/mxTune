@@ -28,22 +28,22 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class JoinGroupMessage extends AbstractClientMessage<JoinGroupMessage>
 {
-    String group;
+    Integer groupID;
 
     public JoinGroupMessage() {}
 
-    public JoinGroupMessage(String group) {this.group = group;}
+    public JoinGroupMessage(Integer groupID) {this.groupID = groupID;}
 
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
-        group = ByteBufUtils.readUTF8String(buffer);
+        groupID = ByteBufUtils.readVarInt(buffer, 5);
     }
 
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
-        ByteBufUtils.writeUTF8String(buffer, group);
+        ByteBufUtils.writeVarInt(buffer, groupID, 5);
     }
 
     @Override

@@ -32,22 +32,22 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class StopPlayMessage extends AbstractMessage<StopPlayMessage>
 {
-    private String playID;
+    private Integer playID;
 
     public StopPlayMessage() {}
 
-    public StopPlayMessage(String playID) {this.playID = playID;}
+    public StopPlayMessage(Integer playID2) {this.playID = playID2;}
 
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
-        playID = ByteBufUtils.readUTF8String(buffer);
+        playID = ByteBufUtils.readVarInt(buffer, 5);
     }
 
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
-        ByteBufUtils.writeUTF8String(buffer, playID);
+        ByteBufUtils.writeVarInt(buffer, playID, 5);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class StopPlayMessage extends AbstractMessage<StopPlayMessage>
     public void handleClientSide(EntityPlayer playerSP)
     {
         MMLManager.getInstance().mmlKill(playID, true);
-        if (playerSP.getDisplayName().getUnformattedText().equalsIgnoreCase(playID))
+        if (playerSP.getEntityId() == (playID))
         {
             /** TODO: Need to consider tracking isPlaced for each group member for dealing with GUI or Riding player rooting */
             ModLogger.debug("PacketPlayStop: try to close Gui for " + playID);

@@ -53,9 +53,9 @@ public class MMLPlayer implements MetaEventListener
     private Soundbank defaultSB;
     private static byte[] mmlBuf = null;
     private InputStream is;
-    private String playID = null;
-    private Map<String, String> playerMML = new HashMap<String, String>();
-    private Map<String, String> playerChannel = new HashMap<String, String>();
+    private Integer playID = null;
+    private Map<Integer, String> playerMML = new HashMap<Integer, String>();
+    private Map<Integer, Integer> playerChannel = new HashMap<Integer, Integer>();
     private boolean closeGUI = true;
     private float fakeVolume;
     private boolean midiException = false;
@@ -71,16 +71,16 @@ public class MMLPlayer implements MetaEventListener
      * "<playername1>=MML@...abcd; <playername2>=MML@...efgh; <playername2>=MML@...efgh;"
      * 
      * @param mmml
-     * @param playID
+     * @param groupID
      * @return
      */
     @SuppressWarnings("static-access")
-    public boolean mmlPlay(String mmml, String playID, boolean closeGUI, float volumeIn)
+    public boolean mmlPlay(String mmml, Integer groupID, boolean closeGUI, float volumeIn)
     {
         /** Only one playing instance per playID at a time. */
-        if (!MMLManager.getInstance().registerThread(this, playID)) return false;
-        this.playID = playID;
-        this.playerMML = GROUPS.splitToHashMap(mmml);
+        if (!MMLManager.getInstance().registerThread(this, groupID)) return false;
+        this.playID = groupID;
+        this.playerMML = GROUPS.splitToIntStrMap(mmml);
         this.closeGUI = closeGUI;
         this.fakeVolume = volumeIn;
         String mml = new String();
@@ -96,15 +96,15 @@ public class MMLPlayer implements MetaEventListener
          * Map players to channels and append all the players MML.
          * This mapping is also used to send packets to the close the gui of the musicians
          */
-        Set<String> keys = playerMML.keySet();
-        Iterator<String> it = keys.iterator();
+        Set<Integer> keys = playerMML.keySet();
+        Iterator<Integer> it = keys.iterator();
         Integer ch = 0;
         while (it.hasNext())
         {
-            String playerName = it.next();
-            playerChannel.put(playerName, ch.toString());
+            Integer playerID = it.next();
+            playerChannel.put(playerID, ch);
             ch++;
-            mml += playerMML.get(playerName);
+            mml += playerMML.get(playerID);
         }
 
         try
@@ -142,7 +142,7 @@ public class MMLPlayer implements MetaEventListener
         /** ANTLR4 MML Parser END */
 
         ModLogger.debug("playerChannel: " + playerChannel);
-        ModLogger.debug("Playing for:   " + playID);
+        ModLogger.debug("Playing for:   " + groupID);
 
         try
         {
@@ -167,7 +167,7 @@ public class MMLPlayer implements MetaEventListener
             sequencer.start();
         } catch (Exception e)
         {
-            MMLManager.getInstance().deregisterThread(playID);
+            MMLManager.getInstance().deregisterThread(groupID);
             MMLManager.unMuteSounds();
             if (sequencer != null && sequencer.isOpen()) sequencer.close();
             if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
@@ -188,19 +188,19 @@ public class MMLPlayer implements MetaEventListener
         return true;
     }
 
-    public synchronized void mmlKill(String ID, boolean closeGui)
+    public synchronized void mmlKill(Integer iD, boolean closeGui)
     {
 
         if (playID == null) return;
 
-        if (!playerChannel.isEmpty() && playerChannel.containsKey(ID))
+        if (!playerChannel.isEmpty() && playerChannel.containsKey(iD))
         {
             /**
              * If this is a JAM, tell the JAMMERs they are done. If you're a
              * member, but did not queue MML then your request to close will be
              * ignored. Solo players force close themselves.
              */
-            ModLogger.debug("MMLPlayer#mmlKill: " + ID);
+            ModLogger.debug("MMLPlayer#mmlKill: " + iD);
             if (sequencer != null && sequencer.isOpen())
             {
                 try
@@ -220,18 +220,18 @@ public class MMLPlayer implements MetaEventListener
             if (sequencer != null && sequencer.isOpen()) sequencer.close();
             if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
 
-            Set<String> keys = playerChannel.keySet();
+            Set<Integer> keys = playerChannel.keySet();
             if (closeGui && this.closeGUI)
             {
-                Iterator<String> it = keys.iterator();
+                Iterator<Integer> it = keys.iterator();
                 while (it.hasNext())
                 {
-                    String playerName = it.next();
-                    PacketDispatcher.sendToServer(new StopPlayMessage(playerName));
+                    Integer playerID = it.next();
+                    PacketDispatcher.sendToServer(new StopPlayMessage(playerID));
                 }
             }
             playID = null;
-            String resultID = GROUPS.getMembersGroupID(ID) != null ? GROUPS.getMembersGroupID(ID) : ID;
+            Integer resultID = GROUPS.getMembersGroupID(iD) != null ? GROUPS.getMembersGroupID(iD) : iD;
             MMLManager.getInstance().deregisterThread(resultID);
         }
     }
@@ -273,14 +273,14 @@ public class MMLPlayer implements MetaEventListener
             MMLManager.getInstance().deregisterThread(playID);
             if (!playerChannel.isEmpty())
             {
-                Set<String> keys = playerChannel.keySet();
-                Iterator<String> it = keys.iterator();
+                Set<Integer> keys = playerChannel.keySet();
+                Iterator<Integer> it = keys.iterator();
                 if (closeGUI)
                 {
                     while (it.hasNext())
                     {
-                        String playerName = it.next();
-                        PacketDispatcher.sendToServer(new StopPlayMessage(playerName));
+                        Integer playerID = it.next();
+                        PacketDispatcher.sendToServer(new StopPlayMessage(playerID));
                     }
                 }
             }

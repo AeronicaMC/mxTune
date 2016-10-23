@@ -60,7 +60,7 @@ public class BasicItem extends ItemBase
                 {
                     PlayStatusUtil.setPlaying(playerIn, true);
                     itemStackIn.setRepairCost(playerIn.getEntityId());
-                    MusicOptionsUtil.setSParams(playerIn, "76", "", "");
+                    MusicOptionsUtil.setSParams(playerIn, "46", "", "");
                     NewPlayManager.playMusic(playerIn, pos, false);
                 }
             }

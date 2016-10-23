@@ -87,7 +87,7 @@ public class ItemInstrument extends ItemBase implements IInstrument
             }
             if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && hand.equals(EnumHand.MAIN_HAND))
             {
-                if (!PlayManager.getInstance().isPlayerPlaying(playerIn.getDisplayName().getUnformattedText()))
+                if (!PlayManager.getInstance().isPlayerPlaying(playerIn.getEntityId()))
                 {
                     /**TODO Make sure it is OKAY steal and to use this property like this */
                     itemStackIn.setRepairCost(playerIn.inventory.currentItem+1000);
@@ -126,7 +126,7 @@ public class ItemInstrument extends ItemBase implements IInstrument
         {
             if (stack.getRepairCost() == (itemSlot+1000) && !isSelected) {
             stack.setRepairCost(0);
-            PlayManager.getInstance().stopMusic(entityIn.getDisplayName().getUnformattedText());
+            PlayManager.getInstance().stopMusic(entityIn.getEntityId());
             }
         }
     } 

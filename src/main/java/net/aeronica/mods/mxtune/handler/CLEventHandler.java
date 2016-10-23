@@ -45,9 +45,9 @@ public class CLEventHandler
         if (event.getEntity() instanceof EntityPlayer && !event.getEntity().isInvisible())
         {
             if (GROUPS.getClientMembers() != null /* (mc.thePlayer.equals(player)) */
-                    && GROUPS.getClientMembers().containsKey(event.getEntity().getDisplayName().getUnformattedText()) && !(mc.gameSettings.thirdPersonView == 0 && mc.thePlayer.equals(event.getEntity())))
+                    && GROUPS.getClientMembers().containsKey(event.getEntity().getEntityId()) && !(mc.gameSettings.thirdPersonView == 0 && mc.thePlayer.equals(event.getEntity())))
             {
-                placardRenderer.setPlacard(GROUPS.getIndex(event.getEntity().getDisplayName().getUnformattedText()));
+                placardRenderer.setPlacard(GROUPS.getIndex(event.getEntity().getEntityId()));
                 placardRenderer.doRender(event);
             }
         }

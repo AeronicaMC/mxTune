@@ -86,10 +86,10 @@ public class QueueJamMessage extends AbstractClientMessage<QueueJamMessage>
              * Open the Play GUI on for the JAMMER who either queued his part or
              * the leader who kicks off the JAM
              */
-            if (GROUPS.getMembersGroupID(player.getDisplayName().getUnformattedText()) != null)
+            if (GROUPS.getMembersGroupID(player.getEntityId()) != null)
             {
 
-                if (thePlayer.getDisplayName().getUnformattedText().toLowerCase().contentEquals(player.getDisplayName().getUnformattedText().toLowerCase()))
+                if (thePlayer.getEntityId() == player.getEntityId())
                 {
                     thePlayer.openGui(MXTuneMain.instance, GuiPlaying.GUI_ID, thePlayer.worldObj, 0,0,0);
                 }

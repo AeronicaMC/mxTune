@@ -35,6 +35,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 
 public class GuiGroup extends GuiScreen
 {
@@ -127,7 +128,7 @@ public class GuiGroup extends GuiScreen
 
         drawMembers();
         /** Create and Leave buttons should always reflect group membership */
-        btn_create.enabled = !(btn_leave.enabled = GROUPS.getMembersGroupID(player.getDisplayName().getUnformattedText()) != null);
+        btn_create.enabled = !(btn_leave.enabled = GROUPS.getMembersGroupID(player.getEntityId()) != null);
 
         /** draw the things in the controlList (buttons) */
         super.drawScreen(i, j, f);
@@ -183,8 +184,10 @@ public class GuiGroup extends GuiScreen
     {
         int posX = guiLeft + 12;
         int posY = guiTop + 12;
-        String groupID;
-        String member;
+        Integer groupID;
+        Integer memberID;
+        String leaderName;
+        String memberName;
         int i = 0;
 
         clearMembersButtons();
@@ -192,23 +195,25 @@ public class GuiGroup extends GuiScreen
         /** TODO: use/add sensible methods to make readable - partially done... */
         if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
         {
-            groupID = GROUPS.getMembersGroupID(player.getDisplayName().getUnformattedText());
+            groupID = GROUPS.getMembersGroupID(player.getEntityId());
             if (groupID != null)
             {
                 /** Always put the leader at the TOP of the list */
-                fontRenderer.drawStringWithShadow(GROUPS.getLeaderOfGroup(groupID), posX, posY, 16777215);
+                leaderName = player.worldObj.getEntityByID(GROUPS.getLeaderOfGroup(groupID)).getDisplayName().getUnformattedText();
+                fontRenderer.drawStringWithShadow(TextFormatting.YELLOW + leaderName, posX, posY, 16777215);
                 posY += 10;
                 /** Display the remaining members taking care to not print the leader a 2nd time. */
-                Set<String> set = GROUPS.getClientMembers().keySet();
-                for (Iterator<String> im = set.iterator(); im.hasNext();)
+                Set<Integer> set = GROUPS.getClientMembers().keySet();
+                for (Iterator<Integer> im = set.iterator(); im.hasNext();)
                 {
-                    member = im.next();
-                    if (groupID.equalsIgnoreCase(GROUPS.getMembersGroupID(member)) && !member.equalsIgnoreCase(GROUPS.getLeaderOfGroup(groupID)))
+                    memberID = im.next();
+                    if (groupID.equals(GROUPS.getMembersGroupID(memberID)) && !memberID.equals(GROUPS.getLeaderOfGroup(groupID)))
                     {
-                        fontRenderer.drawStringWithShadow(member, posX, posY, 16777215);
-                        list_btn_members.get(i).memberName = member;
+                        memberName = player.worldObj.getEntityByID(memberID).getDisplayName().getUnformattedText();
+                        fontRenderer.drawStringWithShadow(memberName, posX, posY, 16777215);
+                        list_btn_members.get(i).memberName = memberName;
                         /** Only Leaders get to remove and promote other members! */
-                        if (player.getDisplayName().getUnformattedText().equalsIgnoreCase(GROUPS.getLeaderOfGroup(groupID)))
+                        if (player.getEntityId() == (GROUPS.getLeaderOfGroup(groupID)))
                         {
                             list_btn_members.get(i).btn_delete.enabled = true;
                             list_btn_members.get(i).btn_delete.visible = true;
@@ -273,9 +278,11 @@ public class GuiGroup extends GuiScreen
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 
-    protected void sendRequest(GROUPS operation, String groupID, String memberName)
+    protected void sendRequest(GROUPS operation, String leaderName, String memberName)
     {
-        PacketDispatcher.sendToServer(new ManageGroupMessage(operation.toString(), groupID, memberName));
+        Integer groupID = null;
+        Integer memberID = player.worldObj.getPlayerEntityByName(memberName).getEntityId();
+        PacketDispatcher.sendToServer(new ManageGroupMessage(operation.toString(), groupID, memberID));
     }
 
     protected class MemberButtons

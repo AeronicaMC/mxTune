@@ -93,6 +93,6 @@ public class GuiPlaying extends GuiScreen
 
     private void sendStop()
     {
-        PacketDispatcher.sendToServer(new StopPlayMessage(player.getDisplayName().getUnformattedText()));
+        PacketDispatcher.sendToServer(new StopPlayMessage(player.getEntityId()));
     }
 }

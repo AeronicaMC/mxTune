@@ -174,6 +174,6 @@ public class GuiPlayingChat extends GuiChat
 
     protected void sendStop()
     {
-        PacketDispatcher.sendToServer(new StopPlayMessage(this.mc.thePlayer.getDisplayName().getUnformattedText()));
+        PacketDispatcher.sendToServer(new StopPlayMessage(this.mc.thePlayer.getEntityId()));
     }
 }

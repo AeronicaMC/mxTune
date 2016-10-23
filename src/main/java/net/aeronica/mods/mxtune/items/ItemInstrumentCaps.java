@@ -156,10 +156,10 @@ public class ItemInstrumentCaps extends ItemBase implements IInstrument, IKeyLis
             if (contents != null)
             {
                 /** The packet itself notifies the server to grab the NBT item from the ItemStack and distribute it to all clients. */
-                if (GROUPS.getMembersGroupID(playerIn.getDisplayName().getUnformattedText()) == null)
+                if (GROUPS.getMembersGroupID(playerIn.getEntityId()) == null)
                 {
                     /** Solo Play */
-                    PacketDispatcher.sendToServer(new PlaySoloMessage(playerIn.getDisplayName().getUnformattedText()));
+                    PacketDispatcher.sendToServer(new PlaySoloMessage(playerIn.getEntityId()));
                 } else
                 {
                     /** Jam Play */

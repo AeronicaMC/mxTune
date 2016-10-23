@@ -29,32 +29,33 @@ import net.minecraftforge.fml.relauncher.Side;
 public class ManageGroupMessage extends AbstractServerMessage<ManageGroupMessage>
 {
     String operation;
-    String groupID;
-    String memberName;
+    Integer groupID;
+    Integer memberID;
 
     public ManageGroupMessage() {}
 
-    public ManageGroupMessage(String operation, String groupID, String memberName)
+    public ManageGroupMessage(String operation, Integer groupID, Integer memberName)
     {
         this.operation = operation;
         this.groupID = groupID;
-        this.memberName = memberName;
+        this.memberID = memberName;
     }
 
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
         operation = ByteBufUtils.readUTF8String(buffer);
-        groupID = ByteBufUtils.readUTF8String(buffer);
-        memberName = ByteBufUtils.readUTF8String(buffer);
+        groupID = ByteBufUtils.readVarInt(buffer, 5);
+        memberID = ByteBufUtils.readVarInt(buffer, 5);
     }
 
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
+        if (groupID == null) groupID = -1;
         ByteBufUtils.writeUTF8String(buffer, operation);
-        ByteBufUtils.writeUTF8String(buffer, groupID);
-        ByteBufUtils.writeUTF8String(buffer, memberName);
+        ByteBufUtils.writeVarInt(buffer, groupID, 5);
+        ByteBufUtils.writeVarInt(buffer, memberID, 5);
     }
 
     @Override
@@ -65,16 +66,16 @@ public class ManageGroupMessage extends AbstractServerMessage<ManageGroupMessage
         switch (GROUPS.valueOf(operation))
         {
         case GROUP_ADD:
-            GroupManager.addGroup(memberName);
+            GroupManager.addGroup(memberID);
             break;
         case MEMBER_ADD:
-            GroupManager.addMember(groupID, memberName);
+            GroupManager.addMember(groupID, memberID);
             break;
         case MEMBER_REMOVE:
-            GroupManager.removeMember(memberName);
+            GroupManager.removeMember(memberID);
             break;
         case MEMBER_PROMOTE:
-            GroupManager.setLeader(memberName);
+            GroupManager.setLeader(memberID);
             break;
         default:
         }

@@ -46,58 +46,65 @@ import net.minecraftforge.fml.relauncher.Side;
 // UUID does not work on the client.
 public class GroupManager
 {
+    
     private GroupManager() {}
     private static class GroupManagerHolder {public static final GroupManager INSTANCE = new GroupManager();}
     public static GroupManager getInstance() {return GroupManagerHolder.INSTANCE;}
 
-    /**
+    /*
      * The guts of the GroupManager - After looking over this weeks later I can
      * see I made some bad decisions, but I'll live with it for now. It's called
      * fail fast! Learn from your mistake and move on.
+     * 
+     * 2016-Oct-21 Converted the whole shibang from String Player Names to Integer
+     * Entity IDs. That simplified usage a bit. 
+     * 
+     * Server Side only. Sync'd to the Client side using the GROUPS.class and
+     * the associated networking classes.
      */
     private static class Member
     {
-        public String memberName;
+        public Integer memberEntityID;
     }
 
     private static class Group
     {
-        public String groupID;
-        public String leaderName;
+        public Integer groupID;
+        public Integer leaderEntityID;
         public HashSet<Member> members;
     }
 
     private static HashSet<Group> groups = null;
-    private static Long groupID = 0L;
+    private static Integer groupID = 0;
 
     /**
      * Any player can be a leader or in a group. A player who makes a group is
      * the leader of the group. A player in a group can't join another group.
-     * Each groups gets a unique ID. If the leader leaves a group another member
-     * will be promoted to group leader automatically.
+     * If the leader leaves a group another member will be promoted to group
+     * leader automatically.
      * 
-     * @param creatorName
+     * @param creatorID
      * @return true is successful
      */
-    public static boolean addGroup(String creatorName)
+    public static boolean addGroup(Integer creatorID)
     {
-        log("addGroup " + creatorName);
+        log("addGroup " + creatorID);
         if (groups == null)
         {
             groups = new HashSet<Group>(1, 0.3f);
         }
 
-        if (getGroup(creatorName) == null && (groupsHaveMember(creatorName) == null))
+        if (getGroup(creatorID) == null && (groupsHaveMember(creatorID) == null))
         {
 
             Group theGroup = new Group();
 
-            theGroup.groupID = groupID.toString();
-            groupID++;
-            theGroup.leaderName = creatorName;
+            theGroup.groupID = groupID++; // creatorID;
+            
+            theGroup.leaderEntityID = creatorID;
 
             Member theMember = new Member();
-            theMember.memberName = creatorName;
+            theMember.memberEntityID = creatorID;
 
             theGroup.members = new HashSet<Member>(GROUPS.MAX_MEMBERS);
             theGroup.members.add(theMember);
@@ -111,30 +118,30 @@ public class GroupManager
     }
 
     /**
-     * addMember
+     * addMember TODO: setup language file keys
      * 
      * @param groupID
-     * @param memberName
+     * @param memberID
      * @return
      */
-    public static boolean addMember(String groupID, String memberName)
+    public static boolean addMember(Integer groupID, Integer memberID)
     {
         if (groups != null && !groups.isEmpty())
         {
             Group g = getGroup(groupID);
 
             /** Grab instances of the leader and other player */
-            EntityPlayer playerTarget = getEntityPlayer(g.leaderName);
-            EntityPlayer playerInitiator = getEntityPlayer(memberName);
+            EntityPlayer playerTarget = getEntityPlayer(g.leaderEntityID);
+            EntityPlayer playerInitiator = getEntityPlayer(memberID);
 
-            Member n = groupsHaveMember(memberName);
-            log("addMember " + groupID + " : " + memberName);
+            Member n = groupsHaveMember(memberID);
+            log("addMember " + groupID + " : " + memberID);
             if ((g != null) && (n == null))
             {
                 if (g.members.size() < GROUPS.MAX_MEMBERS)
                 {
                     Member m = new Member();
-                    m.memberName = memberName;
+                    m.memberEntityID = memberID;
                     g.members.add(m);
                     sync();
 
@@ -161,13 +168,13 @@ public class GroupManager
      * Removes a member from all groups potentially changing the leader of a
      * group or removing the group entirely.
      * 
-     * @param name
+     * @param memberID
      * @return the group of the member or null.
      */
-    public static Group removeMember(String name)
+    public static Group removeMember(Integer memberID)
     {
-        log("removeMember " + name);
-        PlayManager.getInstance().dequeueMember(name);
+        log("removeMember " + memberID);
+        PlayManager.getInstance().dequeueMember(memberID);
         if (groups != null && !groups.isEmpty())
         {
             Group theGroup;
@@ -178,14 +185,14 @@ public class GroupManager
                 for (Iterator<Member> im = theGroup.members.iterator(); im.hasNext();)
                 {
                     theMember = (Member) im.next();
-                    if (theMember.memberName.equalsIgnoreCase(name))
+                    if (theMember.memberEntityID.equals(memberID))
                     {
 
-                        if (!theGroup.leaderName.equalsIgnoreCase(name))
+                        if (!theGroup.leaderEntityID.equals(memberID))
                         {
                             /** This is not the leader so simply remove the member. */
                             im.remove();
-                            log("----- removed " + name);
+                            log("----- removed " + memberID);
                             sync();
                             return theGroup;
                         } else
@@ -193,7 +200,7 @@ public class GroupManager
                             /** This is the leader of the group and if we are the last or only member then we will remove the group. */
                             if (theGroup.members.size() == 1)
                             {
-                                log("----- " + theMember.memberName + " is the last member so remove the group");
+                                log("----- " + theMember.memberEntityID + " is the last member so remove the group");
                                 theGroup.members.clear();
                                 theGroup.members = null;
                                 ig.remove();
@@ -208,8 +215,8 @@ public class GroupManager
                             if (ix.hasNext())
                             {
                                 theMember = (Member) ix.next();
-                                theGroup.leaderName = theMember.memberName;
-                                log("----- " + theMember.memberName + " is promoted to the group leader");
+                                theGroup.leaderEntityID = theMember.memberEntityID;
+                                log("----- " + theMember.memberEntityID + " is promoted to the group leader");
                                 sync();
                                 return theGroup;
                             }
@@ -218,7 +225,7 @@ public class GroupManager
                 }
             }
         }
-        log("----- " + name + " is not a member of a group.");
+        log("----- " + memberID + " is not a member of a group.");
         return null;
     }
 
@@ -226,66 +233,42 @@ public class GroupManager
      * setLeader A rather unsafe way to change the leader of the group, but this
      * will do for now
      * 
-     * @param memberName
+     * @param memberID
      * @return success or failure.
      */
-    public static boolean setLeader(String memberName)
+    public static boolean setLeader(Integer memberID)
     {
         boolean result = false;
-        Group g = getMembersGroup(memberName);
+        Group g = getMembersGroup(memberID);
         if (g != null)
         {
-            g.leaderName = memberName;
+            g.leaderEntityID = memberID;
             sync();
             result = true;
         }
         return result;
     }
 
-    public boolean isLeader(String name)
+    public static Integer getMembersGroupID(Integer memberID)
     {
-        return getLeadersGroup(name) != null ? true : false;
-    }
-
-    public String getMembersGroupID(String memberName)
-    {
-        Group group = getMembersGroup(memberName);
+        Group group = getMembersGroup(memberID);
         return group == null ? null : group.groupID;
-    }
-
-    /**
-     * Searches all groups for this leader and returns the group or null.
-     * 
-     * @param leaderName
-     * @return the group or null.
-     */
-    protected static Group getLeadersGroup(String leaderName)
-    {
-        if (groups != null && !groups.isEmpty())
-        {
-            for (Iterator<Group> it = groups.iterator(); it.hasNext();)
-            {
-                Group theGroup = it.next();
-                if (theGroup.leaderName.equalsIgnoreCase(leaderName)) return theGroup;
-            }
-        }
-        return null;
     }
 
     /**
      * Searches all groups and returns the group or null.
      * 
-     * @param groupID
+     * @param creatorID
      * @return the group or null.
      */
-    protected static Group getGroup(String groupID)
+    protected static Group getGroup(Integer creatorID)
     {
         if (groups != null && !groups.isEmpty())
         {
             for (Iterator<Group> it = groups.iterator(); it.hasNext();)
             {
                 Group theGroup = it.next();
-                if (theGroup.groupID.equalsIgnoreCase(groupID)) return theGroup;
+                if (theGroup.groupID.equals(creatorID)) return theGroup;
             }
         }
         return null;
@@ -294,10 +277,10 @@ public class GroupManager
     /**
      * Search all groups for the named member.
      * 
-     * @param memberName
+     * @param memberID
      * @return the Group if found or null.
      */
-    public static Group getMembersGroup(String memberName)
+    public static Group getMembersGroup(Integer memberID)
     {
         if (groups != null && !groups.isEmpty())
         {
@@ -307,7 +290,7 @@ public class GroupManager
                 for (Iterator<Member> im = theGroup.members.iterator(); im.hasNext();)
                 {
                     Member theMember = (Member) im.next();
-                    if (theMember.memberName.equalsIgnoreCase(memberName)) return theGroup;
+                    if (theMember.memberEntityID.equals(memberID)) return theGroup;
                 }
             }
         }
@@ -318,10 +301,10 @@ public class GroupManager
      * Search all groups for the named member.
      * 
      * @param groups
-     * @param name
+     * @param creatorID
      * @return the members if found or null.
      */
-    protected static Member groupsHaveMember(String name)
+    protected static Member groupsHaveMember(Integer creatorID)
     {
         if (groups != null && !groups.isEmpty())
         {
@@ -331,7 +314,7 @@ public class GroupManager
                 for (Iterator<Member> im = theGroup.members.iterator(); im.hasNext();)
                 {
                     Member theMember = (Member) im.next();
-                    if (theMember.memberName.equalsIgnoreCase(name)) return theMember;
+                    if (theMember.memberEntityID.equals(creatorID)) return theMember;
                 }
             }
         }
@@ -346,11 +329,11 @@ public class GroupManager
             {
                 Group theGroup = it.next();
                 debug("Group: " + theGroup.groupID);
-                debug("  Leader: " + theGroup.leaderName);
+                debug("  Leader: " + theGroup.leaderEntityID);
                 for (Iterator<Member> im = theGroup.members.iterator(); im.hasNext();)
                 {
                     Member theMember = (Member) im.next();
-                    debug("    member: " + theMember.memberName);
+                    debug("    member: " + theMember.memberEntityID);
                 }
             }
         }
@@ -367,13 +350,13 @@ public class GroupManager
             {
                 Group theGroup = it.next();
                 debug("Group: " + theGroup.groupID);
-                debug("  Leader: " + theGroup.leaderName);
-                buildgroups = buildgroups + theGroup.groupID + "=" + theGroup.leaderName + " ";
+                debug("  Leader: " + theGroup.leaderEntityID);
+                buildgroups = buildgroups + theGroup.groupID + "=" + theGroup.leaderEntityID + " ";
                 for (Iterator<Member> im = theGroup.members.iterator(); im.hasNext();)
                 {
                     Member theMember = (Member) im.next();
-                    debug("    member: " + theMember.memberName);
-                    buildmembers = buildmembers + theMember.memberName + "=" + theGroup.groupID + " ";
+                    debug("    member: " + theMember.memberEntityID);
+                    buildmembers = buildmembers + theMember.memberEntityID + "=" + theGroup.groupID + " ";
                 }
             }
         }
@@ -404,15 +387,14 @@ public class GroupManager
             if ((event.getSide() == Side.SERVER) && (interactFlag++ % 2) == 0)
             {
                 
-                Group targetGroup = getMembersGroup(playerTarget.getDisplayName().getUnformattedText());
-                if (targetGroup != null && targetGroup.leaderName.equalsIgnoreCase(playerTarget.getDisplayName()
-                        .getUnformattedText()) /* && initatorGroup == null */)
+                Group targetGroup = getMembersGroup(playerTarget.getEntityId());
+                if (targetGroup != null && targetGroup.leaderEntityID.equals(playerTarget.getEntityId()) /* && initatorGroup == null */)
                 {
                     if (MusicOptionsUtil.isMuteAll(playerInitiator) == false)
                     {
                         if (MusicOptionsUtil.getMuteResult(playerInitiator, playerTarget) == false)
                         {
-                            MusicOptionsUtil.setSParams(playerInitiator, targetGroup.groupID, "", "");
+                            MusicOptionsUtil.setSParams(playerInitiator, targetGroup.groupID.toString(), "", "");
                             PacketDispatcher.sendTo(new JoinGroupMessage(targetGroup.groupID), (EntityPlayerMP) playerInitiator);
                         } else
                         {
@@ -432,7 +414,7 @@ public class GroupManager
     @SubscribeEvent
     public void onPlayerSleepInBedEvent(PlayerSleepInBedEvent event)
     {
-        Group group = getMembersGroup(event.getEntityPlayer().getDisplayName().getUnformattedText());
+        Group group = getMembersGroup(event.getEntityPlayer().getEntityId());
         if (group != null)
         {
             event.setResult(SleepResult.NOT_POSSIBLE_NOW);
@@ -446,7 +428,7 @@ public class GroupManager
         if (event.getEntityLiving() instanceof EntityPlayer)
         {
             EntityPlayer player = (EntityPlayer) event.getEntityLiving();
-            removeMember(player.getDisplayName().getUnformattedText());
+            removeMember(player.getEntityId());
         }
     }
 
@@ -466,7 +448,7 @@ public class GroupManager
     @SubscribeEvent
     public void onPlayerLoggedOutEvent(PlayerLoggedOutEvent event)
     {
-        removeMember(event.player.getDisplayName().getUnformattedText());
+        removeMember(event.player.getEntityId());
     }
 
     // @SubscribeEvent
@@ -475,16 +457,17 @@ public class GroupManager
     @SubscribeEvent
     public void onPlayerChangedDimensionEvent(PlayerChangedDimensionEvent event)
     {
-        removeMember(event.player.getDisplayName().getUnformattedText());
+        removeMember(event.player.getEntityId());
     }
 
     private static void debug(String strMessage) {/*ModLogger.debug(strMessage);*/}
 
     private static void log(String strMessage) {/*ModLogger.logInfo(strMessage);*/}
 
-    private static EntityPlayer getEntityPlayer(String name)
+    private static EntityPlayer getEntityPlayer(Integer leaderEntityID)
     {
         MinecraftServer world = FMLCommonHandler.instance().getMinecraftServerInstance();
-        return world.getServer().getEntityWorld().getPlayerEntityByName(name);
+        return (EntityPlayer) world.getServer().getEntityWorld().getEntityByID(leaderEntityID);
     }
+    
 }

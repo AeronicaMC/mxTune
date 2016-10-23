@@ -31,11 +31,11 @@ import net.minecraftforge.fml.relauncher.Side;
 public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
 {
     private String jamMML;
-    private String groupID;
+    private Integer groupID;
 
     public PlayJamMessage() {}
 
-    public PlayJamMessage(String jamMML, String groupID)
+    public PlayJamMessage(String jamMML, Integer groupID)
     {
         this.jamMML = jamMML;
         this.groupID = groupID;
@@ -45,14 +45,14 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
     protected void read(PacketBuffer buffer) throws IOException
     {
         jamMML = ByteBufUtils.readUTF8String(buffer);
-        groupID = ByteBufUtils.readUTF8String(buffer);
+        groupID = ByteBufUtils.readVarInt(buffer, 5);
     }
 
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
         ByteBufUtils.writeUTF8String(buffer, jamMML);
-        ByteBufUtils.writeUTF8String(buffer, groupID);
+        ByteBufUtils.writeVarInt(buffer, groupID, 5);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
     {
         if (MIDISystemUtil.getInstance().midiUnavailableWarn(player) == false)
         {
-            if (MusicOptionsUtil.getMuteResult(player, player.worldObj.getPlayerEntityByName(GROUPS.getLeaderOfGroup(groupID))) == false)
+            if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) player.worldObj.getEntityByID(GROUPS.getLeaderOfGroup(groupID))) == false)
             {
                 MMLManager.getInstance().mmlPlay(jamMML, groupID, true, MusicOptionsUtil.getMidiVolume(player));
             }

@@ -98,7 +98,7 @@ public class GuiJamOverlay extends Gui
 
         if ((player.getHeldItemMainhand() != null) && (player.getHeldItemMainhand().getItem() instanceof IInstrument))
         {
-            int iconIndex = GROUPS.getIndex(player.getDisplayName().getUnformattedText());
+            int iconIndex = GROUPS.getIndex(player.getEntityId());
             this.drawTexturedModalRect(xPos, yPos, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
                     STAT_ICON_SIZE, STAT_ICON_SIZE);
 
@@ -145,26 +145,31 @@ public class GuiJamOverlay extends Gui
     {
         int posX = 2;
         int posY = 22;
-        String groupID;
-        String member;
+        Integer groupID;
+        Integer memberID;
+        String leaderName;
+        String memberName;
 
         if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
         {
-            groupID = GROUPS.getMembersGroupID(player.getDisplayName().getUnformattedText());
+            groupID = GROUPS.getMembersGroupID(player.getEntityId());
+            
             /** Only draw if player is a member of a group */
             if (groupID != null)
             {
                 /** Always put the leader at the TOP of the list */
-                fontRenderer.drawStringWithShadow(TextFormatting.YELLOW + GROUPS.getLeaderOfGroup(groupID), posX, posY, 16777215);
+                leaderName = player.worldObj.getEntityByID(GROUPS.getLeaderOfGroup(groupID)).getDisplayName().getUnformattedText();
+                fontRenderer.drawStringWithShadow(TextFormatting.YELLOW + leaderName, posX, posY, 16777215);
                 posY += 10;
                 /** display the remaining members taking care to not print the leader a 2nd time. */
-                Set<String> set = GROUPS.getClientMembers().keySet();
-                for (Iterator<String> im = set.iterator(); im.hasNext();)
+                Set<Integer> set = GROUPS.getClientMembers().keySet();
+                for (Iterator<Integer> im = set.iterator(); im.hasNext();)
                 {
-                    member = im.next();
-                    if (groupID.equalsIgnoreCase(GROUPS.getMembersGroupID(member)) && !member.equalsIgnoreCase(GROUPS.getLeaderOfGroup(groupID)))
+                    memberID = im.next();
+                    if (groupID.equals(GROUPS.getMembersGroupID(memberID)) && !memberID.equals(GROUPS.getLeaderOfGroup(groupID)))
                     {
-                        fontRenderer.drawStringWithShadow(member, posX, posY, 16777215);
+                        memberName = player.worldObj.getEntityByID(memberID).getDisplayName().getUnformattedText();
+                        fontRenderer.drawStringWithShadow(memberName, posX, posY, 16777215);
                         posY += 10;
                     }
                 }

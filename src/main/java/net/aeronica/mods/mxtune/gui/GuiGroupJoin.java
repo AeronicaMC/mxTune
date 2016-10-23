@@ -61,7 +61,7 @@ public class GuiGroupJoin extends GuiScreen
 
     private EntityPlayer player;
 
-    private String groupID;
+    private Integer groupID;
 
     @Override
     public void initGui()
@@ -92,7 +92,7 @@ public class GuiGroupJoin extends GuiScreen
 //        buttonList.add(gTest);
 
         /** This is a back door way to pass parameters to the GUI. */
-        this.groupID = MusicOptionsUtil.getSParam1(player);
+        this.groupID = Integer.valueOf(MusicOptionsUtil.getSParam1(player));
     }
 
     @Override
@@ -122,26 +122,30 @@ public class GuiGroupJoin extends GuiScreen
     {
         int posX = guiLeft + 12;
         int posY = guiTop + 12;
-        String member;
+        Integer memberID;
+        String memberName;
+        String leaderName;
 
         if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
         {
             if (groupID != null)
             {
                 /** Always put the leader at the TOP of the list */
-                fontRenderer.drawStringWithShadow(GROUPS.getLeaderOfGroup(groupID), posX, posY, 16777215);
+                leaderName = player.worldObj.getEntityByID(GROUPS.getLeaderOfGroup(groupID)).getDisplayName().getUnformattedText();
+                fontRenderer.drawStringWithShadow(leaderName, posX, posY, 16777215);
                 posY += 10;
                 /** display the remaining members taking care to not print the leader a 2nd time. */
-                Set<String> set = GROUPS.getClientMembers().keySet();
-                for (Iterator<String> im = set.iterator(); im.hasNext();)
+                Set<Integer> set = GROUPS.getClientMembers().keySet();
+                for (Iterator<Integer> im = set.iterator(); im.hasNext();)
                 {
-                    member = im.next();
-                    if (groupID.equalsIgnoreCase(GROUPS.getMembersGroupID(member)) && !member.equalsIgnoreCase(GROUPS.getLeaderOfGroup(groupID)))
+                    memberID = im.next();
+                    if (groupID.equals(GROUPS.getMembersGroupID(memberID)) && !memberID.equals(GROUPS.getLeaderOfGroup(groupID)))
                     {
-                        fontRenderer.drawStringWithShadow(member, posX, posY, 16777215);
+                        memberName = player.worldObj.getEntityByID(memberID).getDisplayName().getUnformattedText();
+                        fontRenderer.drawStringWithShadow(memberName, posX, posY, 16777215);
 
                         /** Only Leaders get to remove and promote other members! */
-                        if (player.getDisplayName().getUnformattedText().equalsIgnoreCase(GROUPS.getLeaderOfGroup(groupID)))
+                        if (player.getDisplayName().getUnformattedText().equals(GROUPS.getLeaderOfGroup(groupID)))
                         {
                             /** um, I forget why this is here */
                         }
@@ -163,7 +167,7 @@ public class GuiGroupJoin extends GuiScreen
             return;
         case 0:
             /** Yes */
-            sendRequest(GROUPS.MEMBER_ADD, groupID, player.getDisplayName().getUnformattedText());
+            sendRequest(GROUPS.MEMBER_ADD, groupID, player.getEntityId());
 
         default:
         }
@@ -178,8 +182,8 @@ public class GuiGroupJoin extends GuiScreen
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 
-    protected void sendRequest(GROUPS operation, String groupID, String memberName)
+    protected void sendRequest(GROUPS operation, Integer groupID, Integer memberID)
     {
-        PacketDispatcher.sendToServer(new ManageGroupMessage(operation.toString(), groupID, memberName));
+        PacketDispatcher.sendToServer(new ManageGroupMessage(operation.toString(), groupID, memberID));
     }
 }
