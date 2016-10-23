@@ -46,6 +46,7 @@ public class MML2PCM
         } catch (UnsupportedEncodingException e)
         {
             e.printStackTrace();
+            ClientAudio.setEntityAudioDataStatus(entityID, Status.ERROR);
             return false;
         }
         is = new java.io.ByteArrayInputStream(mmlBuf);
@@ -60,6 +61,7 @@ public class MML2PCM
         } catch (IOException e1)
         {
             e1.printStackTrace();
+            ClientAudio.setEntityAudioDataStatus(entityID, Status.ERROR);
             return false;
         }
         MMLLexer lexer = new MMLLexer(input);
