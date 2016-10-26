@@ -44,19 +44,18 @@ public class MusicMoving extends MovingSound
         this.attenuationType = AttenuationType.LINEAR;
         this.soundEventAccessor = new SoundEventAccessor(this.sound.getSoundLocation(), "mxtune.subtitle.pcm-proxy");
     }
+    
     /** This is used as the key for our PlaySoundEvent handler */
     public MusicMoving()
     {
         super(ModSoundEvents.PCM_PROXY, SoundCategory.getByName("mxtune"));
     }
     
-
     @Override
     public SoundEventAccessor createAccessor(SoundHandler handler)
     {
         return this.soundEventAccessor;
     }
-
 
     @Override
     public void update()
@@ -76,8 +75,8 @@ public class MusicMoving extends MovingSound
     
     public void setDonePlaying()
     {
-        boolean hasSimple = player.hasCapability(PlayStatusUtil.PLAY_STATUS, null); 
-        if (hasSimple) player.getCapability(PlayStatusUtil.PLAY_STATUS, null).setPlaying(this.player, false);
+//        boolean hasSimple = player.hasCapability(PlayStatusUtil.PLAY_STATUS, null); 
+//        if (hasSimple) player.getCapability(PlayStatusUtil.PLAY_STATUS, null).setPlaying(this.player, false);
 
         this.repeat = false;
         this.donePlaying = true;

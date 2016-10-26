@@ -88,6 +88,28 @@ public class BasicItem extends ItemBase
         }
     }
     
+    /*
+     * Called if moved from inventory into the world.
+     * This is distinct from onDroppedByPlayer method
+     * 
+     */
+    @Override
+    public int getEntityLifespan(ItemStack stackIn, World worldIn)
+    {
+        if (!worldIn.isRemote)
+        {
+            EntityPlayer player = (EntityPlayer) worldIn.getEntityByID(stackIn.getRepairCost());
+            if (player != null && (stackIn.getRepairCost() == player.getEntityId()))
+            {
+                stackIn.setRepairCost(-1);
+                PlayStatusUtil.setPlaying(player, false);
+            }
+        }
+
+        // TODO Auto-generated method stub
+        return super.getEntityLifespan(stackIn, worldIn);
+    }
+
     @Override
     public boolean onDroppedByPlayer(ItemStack item, EntityPlayer playerIn)
     {
@@ -101,7 +123,7 @@ public class BasicItem extends ItemBase
         }
         return true;
     }
-    
+
     @Override
     public EnumActionResult onItemUseFirst(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand)
     {
