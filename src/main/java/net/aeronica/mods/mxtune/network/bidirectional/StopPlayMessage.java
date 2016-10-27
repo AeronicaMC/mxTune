@@ -22,6 +22,7 @@ import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
+import net.aeronica.mods.mxtune.sound.PlayStatusUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -80,6 +81,7 @@ public class StopPlayMessage extends AbstractMessage<StopPlayMessage>
     public void handleServerSide(EntityPlayer playerMP)
     {
         PlayManager.dequeueMember(playID);
-        PacketDispatcher.sendToAll(new StopPlayMessage(playID));
+        PlayStatusUtil.setPlaying((EntityPlayer) playerMP.getEntityWorld().getEntityByID(playID), false);
+//        PacketDispatcher.sendToAll(new StopPlayMessage(playID));
     }
 }

@@ -88,10 +88,11 @@ public class ItemInstrument extends ItemBase implements IInstrument
             }
             if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && hand.equals(EnumHand.MAIN_HAND))
             {
-                if (!PlayManager.isPlayerPlaying(playerIn.getEntityId()))
+                if (!PlayStatusUtil.isPlaying(playerIn))
                 {
                     /**TODO Make sure it is OKAY steal and to use this property like this */
                     itemStackIn.setRepairCost(playerIn.getEntityId());
+                    PlayStatusUtil.setPlaying(playerIn, true);
                     PlayManager.playMusic(playerIn, pos, false);
                 }
             }
@@ -125,13 +126,15 @@ public class ItemInstrument extends ItemBase implements IInstrument
     {
         if (!worldIn.isRemote)
         {
-            if (stack.getRepairCost() == (entityIn.getEntityId()) && !isSelected) {
-            stack.setRepairCost(0);
-            PlayManager.stopMusic(entityIn.getEntityId());
+            if (!isSelected & (stack.getRepairCost() == entityIn.getEntityId()))
+            {
+                stack.setRepairCost(-1);
+                PlayStatusUtil.setPlaying((EntityPlayer) entityIn, false);
+                PlayManager.stopMusic(entityIn.getEntityId());
             }
         }
     }
- 
+    
     /*
      * Called if moved from inventory into the world.
      * This is distinct from onDroppedByPlayer method
@@ -146,9 +149,12 @@ public class ItemInstrument extends ItemBase implements IInstrument
             if (player != null && (stackIn.getRepairCost() == player.getEntityId()))
             {
                 stackIn.setRepairCost(-1);
+                PlayStatusUtil.setPlaying(player, false);
                 PlayManager.stopMusic(player.getEntityId());
             }
         }
+
+        // TODO Auto-generated method stub
         return super.getEntityLifespan(stackIn, worldIn);
     }
 
@@ -160,6 +166,7 @@ public class ItemInstrument extends ItemBase implements IInstrument
             if (PlayStatusUtil.isPlaying(playerIn) && (item.getRepairCost() == playerIn.getEntityId()))
             {
                 item.setRepairCost(-1);
+                PlayStatusUtil.setPlaying(playerIn, false);
                 PlayManager.stopMusic(playerIn.getEntityId());
             }
         }

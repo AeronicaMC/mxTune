@@ -153,15 +153,25 @@ public class ClientAudio
     {
         return entityAudioData.containsKey(entityID);
     }
-    
+
     public static boolean isPlaying(Integer entityID)
     {
         if (hasEntity(entityID))
-        {            
-            return GROUPS.isPlaying(entityID);
+        {
+            AudioData audioData = entityAudioData.get(entityID);
+            return PlayStatusUtil.isPlaying(audioData.getPlayer());
         }
         return false;
     }
+
+//    public static boolean isPlaying(Integer entityID)
+//    {
+//        if (hasEntity(entityID))
+//        {            
+//            return GROUPS.isPlaying(entityID);
+//        }
+//        return false;
+//    }
     
     public static boolean isPlaced(Integer entityID)
     {
