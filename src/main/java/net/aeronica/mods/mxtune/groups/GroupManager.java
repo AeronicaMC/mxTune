@@ -41,6 +41,7 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensio
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 // Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
 // UUID does not work on the client.
@@ -174,7 +175,7 @@ public class GroupManager
     public static Group removeMember(Integer memberID)
     {
         log("removeMember " + memberID);
-        PlayManager.getInstance().dequeueMember(memberID);
+        PlayManager.dequeueMember(memberID);
         if (groups != null && !groups.isEmpty())
         {
             Group theGroup;

@@ -31,7 +31,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
-import net.minecraftforge.client.model.b3d.B3DLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -123,7 +122,6 @@ public class ClientProxy extends CommonProxy
         // });
 
         /** The ALL important model loaders so we can use custom models */
-        B3DLoader.INSTANCE.addDomain(MXTuneMain.MODID.toLowerCase());
         OBJLoader.INSTANCE.addDomain(MXTuneMain.MODID.toLowerCase());
         ItemModels.register();
         BlockModels.register();

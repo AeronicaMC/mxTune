@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.GROUPS;
-import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.gui.GuiPlaying;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.minecraft.entity.player.EntityPlayer;
@@ -35,7 +34,6 @@ public class QueueJamMessage extends AbstractClientMessage<QueueJamMessage>
     String musicText;
     BlockPos pos;
     boolean isPlaced;
-    GroupManager GM = GroupManager.getInstance();
 
     public QueueJamMessage()
     {

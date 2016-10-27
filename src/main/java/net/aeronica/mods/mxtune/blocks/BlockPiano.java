@@ -156,7 +156,7 @@ public class BlockPiano extends BlockHorizontal
                 }
             } else if (canPlay && !playerIn.isSneaking())
             {
-                PlayManager.getInstance().playMusic(playerIn, pos, true);
+                PlayManager.playMusic(playerIn, pos, true);
             }
 
         } else

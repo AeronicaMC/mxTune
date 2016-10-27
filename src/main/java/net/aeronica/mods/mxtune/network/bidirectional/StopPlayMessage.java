@@ -29,6 +29,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class StopPlayMessage extends AbstractMessage<StopPlayMessage>
 {
@@ -78,7 +79,7 @@ public class StopPlayMessage extends AbstractMessage<StopPlayMessage>
 
     public void handleServerSide(EntityPlayer playerMP)
     {
-        PlayManager.getInstance().dequeueMember(playID);
+        PlayManager.dequeueMember(playID);
         PacketDispatcher.sendToAll(new StopPlayMessage(playID));
     }
 }

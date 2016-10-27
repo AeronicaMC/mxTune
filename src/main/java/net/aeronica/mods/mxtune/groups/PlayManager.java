@@ -38,6 +38,8 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 // Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
 // UUID does not work on the client.
@@ -48,17 +50,23 @@ public class PlayManager
     private static class PlayManagerHolder {public static final PlayManager INSTANCE = new PlayManager();}
     public static PlayManager getInstance() {return PlayManagerHolder.INSTANCE;}
 
-    private static Map<Integer, String> membersMML = new HashMap<Integer, String>();
-    private static Map<Integer, Integer> groupsMembers = new HashMap<Integer, Integer>();
-    private static Map<Integer, String> playStatus = new HashMap<Integer, String>();
+    private static Map<Integer, String> membersMML;
+    private static Map<Integer, Integer> groupsMembers;
+    private static Map<Integer, String> playStatus;
 
-    private void setPlaying(Integer playerID) {playStatus.put(playerID, GROUPS.PLAYING.name());}
+    static {
+        membersMML = new HashMap<Integer, String>();
+        groupsMembers = new HashMap<Integer, Integer>();
+        playStatus = new HashMap<Integer, String>();
+    }
 
-    private void setQueued(Integer playerID) {playStatus.put(playerID, GROUPS.QUEUED.name());}
+    private static void setPlaying(Integer playerID) {playStatus.put(playerID, GROUPS.PLAYING.name());}
+
+    private static void setQueued(Integer playerID) {playStatus.put(playerID, GROUPS.QUEUED.name());}
 
     
     @SuppressWarnings("unused")
-    private void setDone(Integer playerID) {if (playStatus.containsKey(playStatus)) playStatus.remove(playerID);}
+    private static void setDone(Integer playerID) {if (playStatus.containsKey(playStatus)) playStatus.remove(playerID);}
 
     /**
      * 
@@ -66,7 +74,7 @@ public class PlayManager
      * @param pos       position of block instrument
      * @param isPlaced  true is this is a block instrument
      */
-    public void playMusic(EntityPlayer playerIn, BlockPos pos, boolean isPlaced)
+    public static void playMusic(EntityPlayer playerIn, BlockPos pos, boolean isPlaced)
     {
         if (MusicOptionsUtil.isMuteAll(playerIn)) return;
         ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(pos, playerIn, isPlaced);
@@ -86,19 +94,19 @@ public class PlayManager
                 if (GROUPS.getMembersGroupID(playerID) == null)
                 {
                     /** Solo Play */
-                    PlayManager.getInstance().playSolo(playerIn, title, mml, playerID, isPlaced);
+                    playSolo(playerIn, title, mml, playerID, isPlaced);
                     ModLogger.debug("playMusic playSolo");
                 } else
                 {
                     /** Jam Play */
-                    PlayManager.getInstance().queueJam(playerIn, title, mml, playerID, isPlaced);
+                    queueJam(playerIn, title, mml, playerID, isPlaced);
                     ModLogger.debug("playMusic queueJam");
                 }                
             }
         }
     }
 
-    private void playSolo(EntityPlayer playerIn, String title, String mml, Integer playerID, boolean isPlaced)
+    private static void playSolo(EntityPlayer playerIn, String title, String mml, Integer playerID, boolean isPlaced)
     {
         PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playerID, title, mml, isPlaced);
         PacketDispatcher.sendToAllAround(packetPlaySolo, playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, ModConfig.getListenerRange());
@@ -106,37 +114,38 @@ public class PlayManager
         syncStatus();
     }
     
-    private void queueJam(EntityPlayer playerIn, String title, String mml, Integer playerID, boolean isPlaced)
+    private static void queueJam(EntityPlayer playerIn, String title, String mml, Integer playerID, boolean isPlaced)
     {
         Integer groupID = GROUPS.getMembersGroupID(playerID);
         /** Queue members parts */
-        this.queue(groupID, playerID, mml);
+        queue(groupID, playerID, mml);
         PacketDispatcher.sendTo(new QueueJamMessage("queue", "only", isPlaced), (EntityPlayerMP) playerIn);
         /** Only send the groups MML when the leader starts the JAM */
         if (GROUPS.isLeader(playerID))
         {
-            mml = this.getMML(groupID);
+            mml = getMML(groupID);
             PacketDispatcher.sendToAllAround(new PlayJamMessage(mml, groupID), playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, ModConfig.getListenerRange());
             syncStatus();
         }
     }
 
-    public boolean isPlayerPlaying(Integer playID) {return (GROUPS.getIndex(playID) & 2) == 2; }
+    public static boolean isPlayerPlaying(Integer playID) {return (GROUPS.getIndex(playID) & 2) == 2; }
+    
     /**
      * Stop the playing MML for the specified playID (player name).
      * 
      * @param playID - The players name - e.g. (EntityPlayer) player.getDisplayName().getUnformattedText()
      */
-    public void stopMusic(Integer playID)
+    public static void stopMusic(Integer playID)
     {
         if (isPlayerPlaying(playID))
         {
-            this.dequeueMember(playID);
+            dequeueMember(playID);
             PacketDispatcher.sendToAll(new StopPlayMessage(playID));
         }
     }
     
-    private int getPatch(BlockPos pos, EntityPlayer playerIn, boolean isPlaced)
+    private static int getPatch(BlockPos pos, EntityPlayer playerIn, boolean isPlaced)
     {
         if (isPlaced)
         {
@@ -153,7 +162,7 @@ public class PlayManager
         return 0;
     }
     
-    private void syncStatus()
+    private static void syncStatus()
     {
         String buildStatus = " ";
         try
@@ -176,7 +185,7 @@ public class PlayManager
         PacketDispatcher.sendToAll(new SyncStatusMessage(buildStatus.trim()));
     }
 
-    private void queue(Integer groupID, Integer playerID, String mml)
+    private static void queue(Integer groupID, Integer playerID, String mml)
     {
         try
         {
@@ -198,7 +207,7 @@ public class PlayManager
      * @param groupID
      * @return string in Map ready format.
      */
-    private String getMML(Integer groupID)
+    private static String getMML(Integer groupID)
     {
         String buildMML = " ";
         try
@@ -230,7 +239,7 @@ public class PlayManager
      * 
      * @param memberID
      */
-    public void dequeueMember(Integer memberID)
+    public static void dequeueMember(Integer memberID)
     {
         if (membersMML != null && !membersMML.isEmpty() && membersMML.containsKey(memberID))
         {

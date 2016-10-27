@@ -85,7 +85,7 @@ public class GuiPlaying extends GuiScreen
     public void onGuiClosed()
     {
         sendStop();
-        ModLogger.logInfo("GuiPlaying.onGuiClosed");
+        ModLogger.debug("GuiPlaying.onGuiClosed");
     }
 
     @Override
