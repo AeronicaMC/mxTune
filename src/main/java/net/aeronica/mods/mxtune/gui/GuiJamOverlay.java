@@ -116,6 +116,7 @@ public class GuiJamOverlay extends Gui
 
         drawMusicTitle(player);
         drawGroup(player);
+        drawDebug();
     }
 
     private void drawMusicTitle(EntityPlayer playerIn)
@@ -177,6 +178,15 @@ public class GuiJamOverlay extends Gui
         }
     }
  
+    private void drawDebug()
+    {
+        if (GROUPS.getClientPlayStatuses() != null)
+        {
+            String status = new String("Play Status: " + GROUPS.getClientPlayStatuses().toString());
+            fontRenderer.drawStringWithShadow(status, 2, 60, 16777215);
+        }
+    }
+    
     private String getMusicTitleRaw(ItemStack stackIn)
     {
         ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(stackIn);

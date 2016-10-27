@@ -33,46 +33,39 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class NewPlaySoloMessage extends AbstractClientMessage<NewPlaySoloMessage>
 {
 
+    int entityID;
     String musicTitle;
     String musicText;
-    int entityID;
     BlockPos pos;
     boolean isPlaced;
 
     public NewPlaySoloMessage() {}
     
-    public NewPlaySoloMessage(int entityID, String musicTitle, String musicText, boolean isPlaced)
+    public NewPlaySoloMessage(int entityID, String musicTitle, String musicText)
     {
-        this.musicTitle = musicTitle;
-        this.musicText = musicText;
-        this.entityID = entityID;
-        this.pos = new BlockPos(0, 0, 0);
-        this.isPlaced = isPlaced;
+        this(entityID, musicTitle, musicText, new BlockPos(0,0,0), false);
     }
     
     public NewPlaySoloMessage(Integer entityID, String playerName, String musicTitle, String musicText, boolean isPlaced)
     {
-        this.musicTitle = musicTitle;
-        this.musicText = musicText;
-        this.entityID = entityID;
-        this.pos = new BlockPos(0, 0, 0);
-        this.isPlaced = isPlaced;
+        this(entityID, musicTitle, musicText, new BlockPos(0,0,0), isPlaced);
     }
+    
     public NewPlaySoloMessage(int entityID, String musicTitle, String musicText, BlockPos pos, boolean isPlaced)
     {
+        this.entityID = entityID;
         this.musicTitle = musicTitle;
         this.musicText = musicText;
-        this.entityID = entityID;
         this.pos = pos;
         this.isPlaced = isPlaced;
     }
-
+    
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
+        entityID = ByteBufUtils.readVarInt(buffer, 5);
         musicTitle = ByteBufUtils.readUTF8String(buffer);
         musicText = ByteBufUtils.readUTF8String(buffer);
-        entityID = ByteBufUtils.readVarInt(buffer, 5);
         pos = new BlockPos(ByteBufUtils.readVarInt(buffer, 5), ByteBufUtils.readVarInt(buffer, 5), ByteBufUtils.readVarInt(buffer, 5));
         isPlaced = (ByteBufUtils.readVarShort(buffer)==1);
     }
@@ -80,9 +73,9 @@ public class NewPlaySoloMessage extends AbstractClientMessage<NewPlaySoloMessage
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
+        ByteBufUtils.writeVarInt(buffer, entityID, 5);
         ByteBufUtils.writeUTF8String(buffer, musicTitle);
         ByteBufUtils.writeUTF8String(buffer, musicText);
-        ByteBufUtils.writeVarInt(buffer, entityID, 5);
         ByteBufUtils.writeVarInt(buffer, pos.getX(), 5);
         ByteBufUtils.writeVarInt(buffer, pos.getY(), 5);
         ByteBufUtils.writeVarInt(buffer, pos.getZ(), 5);
@@ -107,7 +100,7 @@ public class NewPlaySoloMessage extends AbstractClientMessage<NewPlaySoloMessage
                 ModLogger.debug("entityID:   " + entityID);
                 ModLogger.debug("pos:        " + pos);
                 ModLogger.debug("isPlaced:   " + isPlaced);
-                /**
+                /*
                  * Solo play format "<playerName|groupID>=MML@...;" Jam play
                  * format just appends with a space between each player=MML
                  * sequence
@@ -118,4 +111,5 @@ public class NewPlaySoloMessage extends AbstractClientMessage<NewPlaySoloMessage
             }
         }
     }
+    
 }
