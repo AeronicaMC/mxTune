@@ -41,7 +41,6 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensio
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 // Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
 // UUID does not work on the client.
@@ -60,7 +59,7 @@ public class GroupManager
      * 2016-Oct-21 Converted the whole shibang from String Player Names to Integer
      * Entity IDs. That simplified usage a bit. 
      * 
-     * Server Side only. Sync'd to the Client side using the GROUPS.class and
+     * Sync'd to the Client side using the GROUPS.class and
      * the associated networking classes.
      */
     private static class Member

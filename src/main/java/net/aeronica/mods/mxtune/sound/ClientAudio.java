@@ -29,6 +29,8 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.GROUPS;
+import net.aeronica.mods.mxtune.network.PacketDispatcher;
+import net.aeronica.mods.mxtune.network.bidirectional.StopPlayMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
@@ -102,7 +104,7 @@ public class ClientAudio
         return audioFormat;
     }
     
-    public static void setEntityAudioStream(int entityID, AudioInputStream audioStream)
+    public synchronized static void setEntityAudioStream(int entityID, AudioInputStream audioStream)
     {
         AudioData audioData = entityAudioData.get(entityID);
         audioData.setAudioStream(audioStream);
@@ -111,10 +113,13 @@ public class ClientAudio
     public static void removeEntityAudioData(int entityID)
     {
         if ((entityAudioData.isEmpty() == false) && entityAudioData.containsKey(entityID))
+        {
             entityAudioData.remove(entityID);
+            stop(entityID);
+        }
     }
     
-    public static AudioInputStream getAudioInputStream(int entityID)
+    public synchronized static AudioInputStream getAudioInputStream(int entityID)
     {
         AudioData audioData = entityAudioData.get(entityID);
         return audioData.getAudioStream();
@@ -182,6 +187,11 @@ public class ClientAudio
         entityAudioData.put(entityID, new AudioData(entityID, musicText, pos, isPlaced));        
         executorService.execute(new ThreadedPlay(entityID, musicText));
         MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MusicMoving());
+    }
+    
+    private static void stop(Integer entityID)
+    {
+        PacketDispatcher.sendToServer(new StopPlayMessage(entityID));
     }
     
     private static class ThreadedPlay implements Runnable
