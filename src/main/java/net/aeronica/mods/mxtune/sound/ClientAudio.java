@@ -28,6 +28,7 @@ import javax.sound.sampled.AudioInputStream;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
@@ -151,9 +152,8 @@ public class ClientAudio
     public static boolean isPlaying(Integer entityID)
     {
         if (hasEntity(entityID))
-        {
-            AudioData audioData = entityAudioData.get(entityID);
-            return PlayStatusUtil.isPlaying(audioData.getPlayer());
+        {            
+            return GROUPS.isPlaying(entityID);
         }
         return false;
     }

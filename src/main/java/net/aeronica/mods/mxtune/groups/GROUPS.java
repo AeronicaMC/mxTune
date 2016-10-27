@@ -100,6 +100,11 @@ public enum GROUPS
         }
         return result + (GROUPS.isLeader(playerID) ? 8 : 0);
     }
+    
+    public synchronized static boolean isPlaying(Integer playerID)
+    {
+        return GROUPS.clientPlayStatuses != null && GROUPS.clientPlayStatuses.containsKey(playerID) ? GROUPS.valueOf((GROUPS.clientPlayStatuses.get(playerID))) == GROUPS.PLAYING : false;
+    }
 
     public static Map<Integer, String> splitToIntStrMap(String mapIntString)
     {       

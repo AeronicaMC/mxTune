@@ -26,6 +26,7 @@ import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.StopPlayMessage;
+import net.aeronica.mods.mxtune.network.client.NewPlaySoloMessage;
 import net.aeronica.mods.mxtune.network.client.PlayJamMessage;
 import net.aeronica.mods.mxtune.network.client.PlaySoloMessage;
 import net.aeronica.mods.mxtune.network.client.QueueJamMessage;
@@ -38,8 +39,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 // Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
 // UUID does not work on the client.
@@ -94,7 +93,8 @@ public class PlayManager
                 if (GROUPS.getMembersGroupID(playerID) == null)
                 {
                     /** Solo Play */
-                    playSolo(playerIn, title, mml, playerID, isPlaced);
+//                    playSolo(playerIn, title, mml, playerID, isPlaced);
+                    playSolo(playerIn, title, mml, playerID, pos, isPlaced);
                     ModLogger.debug("playMusic playSolo");
                 } else
                 {
@@ -106,6 +106,15 @@ public class PlayManager
         }
     }
 
+    private static void playSolo(EntityPlayer playerIn, String title, String mml, Integer playerID, BlockPos pos, boolean isPlaced)
+    {
+        NewPlaySoloMessage packetPlaySolo = new NewPlaySoloMessage(playerID, title, mml, pos, isPlaced);
+        PacketDispatcher.sendToAllAround(packetPlaySolo, playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, ModConfig.getListenerRange());
+        setPlaying(playerID);
+        syncStatus();
+    }
+
+    @SuppressWarnings("unused")
     private static void playSolo(EntityPlayer playerIn, String title, String mml, Integer playerID, boolean isPlaced)
     {
         PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playerID, title, mml, isPlaced);

@@ -56,7 +56,7 @@ public class StopPlayMessage extends AbstractMessage<StopPlayMessage>
     {
         if (side.isClient())
         {
-            handleClientSide(player);
+//            handleClientSide(player);
         } else
         {
             handleServerSide(player);

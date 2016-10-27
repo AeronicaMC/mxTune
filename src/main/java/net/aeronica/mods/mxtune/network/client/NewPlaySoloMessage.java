@@ -35,38 +35,33 @@ public class NewPlaySoloMessage extends AbstractClientMessage<NewPlaySoloMessage
 
     String musicTitle;
     String musicText;
-    String playerName;
     int entityID;
     BlockPos pos;
     boolean isPlaced;
 
     public NewPlaySoloMessage() {}
-
-    public NewPlaySoloMessage(int entityID, String playerName)
+    
+    public NewPlaySoloMessage(int entityID, String musicTitle, String musicText, boolean isPlaced)
     {
-        this.playerName = playerName;
-        this.musicTitle = "";
-        this.musicText = "";
-        this.entityID = entityID;
-        this.pos = new BlockPos(0, 0, 0);
-        this.isPlaced = false;
-    }
-
-    public NewPlaySoloMessage(int entityID, String playerName, String musicTitle, String musicText, boolean isPlaced)
-    {
-        this.playerName = playerName;
         this.musicTitle = musicTitle;
         this.musicText = musicText;
         this.entityID = entityID;
         this.pos = new BlockPos(0, 0, 0);
         this.isPlaced = isPlaced;
     }
-
-    public NewPlaySoloMessage(int entityID, String playerName, BlockPos pos, boolean isPlaced)
+    
+    public NewPlaySoloMessage(Integer entityID, String playerName, String musicTitle, String musicText, boolean isPlaced)
     {
-        this.playerName = playerName;
-        this.musicTitle = "";
-        this.musicText = "";
+        this.musicTitle = musicTitle;
+        this.musicText = musicText;
+        this.entityID = entityID;
+        this.pos = new BlockPos(0, 0, 0);
+        this.isPlaced = isPlaced;
+    }
+    public NewPlaySoloMessage(int entityID, String musicTitle, String musicText, BlockPos pos, boolean isPlaced)
+    {
+        this.musicTitle = musicTitle;
+        this.musicText = musicText;
         this.entityID = entityID;
         this.pos = pos;
         this.isPlaced = isPlaced;
@@ -75,7 +70,6 @@ public class NewPlaySoloMessage extends AbstractClientMessage<NewPlaySoloMessage
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
-        playerName = ByteBufUtils.readUTF8String(buffer);
         musicTitle = ByteBufUtils.readUTF8String(buffer);
         musicText = ByteBufUtils.readUTF8String(buffer);
         entityID = ByteBufUtils.readVarInt(buffer, 5);
@@ -86,7 +80,6 @@ public class NewPlaySoloMessage extends AbstractClientMessage<NewPlaySoloMessage
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
-        ByteBufUtils.writeUTF8String(buffer, playerName);
         ByteBufUtils.writeUTF8String(buffer, musicTitle);
         ByteBufUtils.writeUTF8String(buffer, musicText);
         ByteBufUtils.writeVarInt(buffer, entityID, 5);
@@ -109,13 +102,19 @@ public class NewPlaySoloMessage extends AbstractClientMessage<NewPlaySoloMessage
         {
             if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) player.worldObj.getEntityByID(entityID)) == false)
             {
-                ModLogger.debug("playerName: " + playerName);
                 ModLogger.debug("musicTitle: " + musicTitle);
                 ModLogger.debug("musicText:  " + musicText.substring(0, (musicText.length() >= 25 ? 25 : musicText.length())));
                 ModLogger.debug("entityID:   " + entityID);
                 ModLogger.debug("pos:        " + pos);
                 ModLogger.debug("isPlaced:   " + isPlaced);
-                ClientAudio.play(entityID, musicText, pos, isPlaced);
+                /**
+                 * Solo play format "<playerName|groupID>=MML@...;" Jam play
+                 * format just appends with a space between each player=MML
+                 * sequence
+                 * "<playername1>=MML@...abcd; <playername2>=MML@...efga; <playername3>=MML@...bead;"
+                 */
+                String mml = new String(entityID + "=" + musicText);
+                ClientAudio.play(entityID, mml, pos, isPlaced);
             }
         }
     }

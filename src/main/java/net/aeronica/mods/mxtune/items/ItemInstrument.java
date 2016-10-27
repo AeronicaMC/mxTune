@@ -22,6 +22,7 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiInstrumentInventory;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
+import net.aeronica.mods.mxtune.sound.PlayStatusUtil;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
@@ -90,7 +91,7 @@ public class ItemInstrument extends ItemBase implements IInstrument
                 if (!PlayManager.isPlayerPlaying(playerIn.getEntityId()))
                 {
                     /**TODO Make sure it is OKAY steal and to use this property like this */
-                    itemStackIn.setRepairCost(playerIn.inventory.currentItem+1000);
+                    itemStackIn.setRepairCost(playerIn.getEntityId());
                     PlayManager.playMusic(playerIn, pos, false);
                 }
             }
@@ -124,12 +125,46 @@ public class ItemInstrument extends ItemBase implements IInstrument
     {
         if (!worldIn.isRemote)
         {
-            if (stack.getRepairCost() == (itemSlot+1000) && !isSelected) {
+            if (stack.getRepairCost() == (entityIn.getEntityId()) && !isSelected) {
             stack.setRepairCost(0);
             PlayManager.stopMusic(entityIn.getEntityId());
             }
         }
-    } 
+    }
+ 
+    /*
+     * Called if moved from inventory into the world.
+     * This is distinct from onDroppedByPlayer method
+     * 
+     */
+    @Override
+    public int getEntityLifespan(ItemStack stackIn, World worldIn)
+    {
+        if (!worldIn.isRemote)
+        {
+            EntityPlayer player = (EntityPlayer) worldIn.getEntityByID(stackIn.getRepairCost());
+            if (player != null && (stackIn.getRepairCost() == player.getEntityId()))
+            {
+                stackIn.setRepairCost(-1);
+                PlayManager.stopMusic(player.getEntityId());
+            }
+        }
+        return super.getEntityLifespan(stackIn, worldIn);
+    }
+
+    @Override
+    public boolean onDroppedByPlayer(ItemStack item, EntityPlayer playerIn)
+    {
+        if (!playerIn.getEntityWorld().isRemote)
+        {
+            if (PlayStatusUtil.isPlaying(playerIn) && (item.getRepairCost() == playerIn.getEntityId()))
+            {
+                item.setRepairCost(-1);
+                PlayManager.stopMusic(playerIn.getEntityId());
+            }
+        }
+        return true;
+    }
 
     /**
      * This is where we decide how our item interacts with other entities
