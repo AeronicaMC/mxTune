@@ -134,23 +134,27 @@ public class ClientAudio
     public static boolean isEntityAudioDataWaiting(Integer entityID)
     {
         AudioData audioData = entityAudioData.get(entityID);
+        if (audioData == null) return false;
         return audioData.getStatus() == Status.WAITING;
     }
     
     public static boolean isEntityAudioDataError(Integer entityID)
     {
         AudioData audioData = entityAudioData.get(entityID);
+        if (audioData == null) return true;
         return audioData.getStatus() == Status.ERROR;
     }
     
     public static boolean isEntityAudioDataReady(Integer entityID)
     {
         AudioData audioData = entityAudioData.get(entityID);
+        if (audioData == null) return false;
         return audioData.getStatus() == Status.READY;
     }
     
     public static boolean hasEntity(Integer entityID)
     {
+        if(entityAudioData == null) return false;
         return entityAudioData.containsKey(entityID);
     }
 

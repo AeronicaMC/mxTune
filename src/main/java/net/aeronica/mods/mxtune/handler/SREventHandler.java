@@ -18,6 +18,10 @@ package net.aeronica.mods.mxtune.handler;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.config.ModConfig;
+import net.aeronica.mods.mxtune.inventory.IInstrument;
+import net.aeronica.mods.mxtune.util.ModLogger;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -31,5 +35,27 @@ public class SREventHandler
     public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs)
     {
         if (eventArgs.getModID().equals(MXTuneMain.MODID)) ModConfig.syncConfig();
+    }
+    
+    /* 
+     * Stops a playing instrument if it's placed into a container and the container is closed.
+     * TODO: read the inventory slots list instead so it can be determined if the instrument
+     * is in player inventory or a containers inventory.
+     */
+    @SubscribeEvent
+    public void onEvent(PlayerContainerEvent.Close event)
+    {
+        if (event.getEntityPlayer().worldObj.isRemote) return;
+        for(ItemStack stack: event.getContainer().getInventory())
+        {
+            if (stack != null && stack.getItem() instanceof IInstrument)
+            {
+                ModLogger.logInfo("PCE: " + stack.getRepairCost());
+                if (stack.getRepairCost() > 0)
+                {
+                    stack.getItem().onUpdate(stack, event.getEntityPlayer().getEntityWorld(), event.getEntityPlayer(), 0, false );
+                }
+            }
+        }
     }
 }
