@@ -20,6 +20,7 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -56,6 +57,10 @@ public class SREventHandler
                     stack.getItem().onUpdate(stack, event.getEntityPlayer().getEntityWorld(), event.getEntityPlayer(), 0, false );
                 }
             }
+        }
+        for(Slot slot: event.getContainer().inventorySlots)
+        {
+            ModLogger.logInfo("PCE slot: " +  slot.getSlotIndex() + ", has:" + slot.getHasStack() + ", " + slot.getStack());
         }
     }
 }
