@@ -13,3 +13,5 @@ This is currently in development and is not recommended for modpacks at this tim
 [![Versions on CurseForge](http://cf.way2muchnoise.eu/versions/245356.svg)](https://minecraft.curseforge.com/projects/mxtune/files)
 
 [![Downloads](http://cf.way2muchnoise.eu/245356.svg)](https://minecraft.curseforge.com/projects/mxtune/files)
+
+[CurseForge Badges by way2muchnoise](http://cf.way2muchnoise.eu/)
