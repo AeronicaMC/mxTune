@@ -40,27 +40,29 @@ public class SREventHandler
     
     /* 
      * Stops a playing instrument if it's placed into a container and the container is closed.
-     * TODO: read the inventory slots list instead so it can be determined if the instrument
-     * is in player inventory or a containers inventory.
      */
     @SubscribeEvent
     public void onEvent(PlayerContainerEvent.Close event)
     {
         if (event.getEntityPlayer().worldObj.isRemote) return;
-        for(ItemStack stack: event.getContainer().getInventory())
-        {
-            if (stack != null && stack.getItem() instanceof IInstrument)
-            {
-                ModLogger.logInfo("PCE: " + stack.getRepairCost());
-                if (stack.getRepairCost() > 0)
-                {
-                    stack.getItem().onUpdate(stack, event.getEntityPlayer().getEntityWorld(), event.getEntityPlayer(), 0, false );
-                }
-            }
-        }
         for(Slot slot: event.getContainer().inventorySlots)
         {
-            ModLogger.logInfo("PCE slot: " +  slot.getSlotIndex() + ", has:" + slot.getHasStack() + ", " + slot.getStack());
+            if(!(slot.inventory.getName().contentEquals("container.inventory") ||
+                    slot.inventory.getName().contentEquals("container.crafting") ||
+                    slot.inventory.getName().contentEquals("Result") ||
+                    slot.inventory.getName().contentEquals("container.mxtune.instrument")))
+            {                
+                ItemStack stack = slot.getStack();
+                if (slot.getHasStack() && stack.getItem() instanceof IInstrument)
+                {
+                    ModLogger.logInfo("PCE.close slot: " +  slot.getSlotIndex() + ", has:" + slot.getHasStack() + ", " + slot.getStack() + ", name: " + slot.inventory.getName());
+                    if (stack.getRepairCost() > 0)
+                    {
+                        ModLogger.logInfo("  PCE.close Item.onUpdate: " + stack.getItem().getItemStackDisplayName(stack) + " - Stopped Playing ");
+                        stack.getItem().onUpdate(stack, event.getEntityPlayer().getEntityWorld(), event.getEntityPlayer(), 0, false );
+                    }
+                }
+            }
         }
     }
 }

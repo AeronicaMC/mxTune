@@ -23,7 +23,6 @@ import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiInstrumentInventory;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.sound.PlayStatusUtil;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
@@ -132,7 +131,6 @@ public class ItemInstrument extends ItemBase implements IInstrument
                 stack.setRepairCost(-1);
                 PlayStatusUtil.setPlaying((EntityPlayer) entityIn, false);
                 PlayManager.stopMusic(entityIn.getEntityId());
-                ModLogger.logInfo("II#onUpdate: " + entityIn.getEntityId());
             }
         }
     }
