@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.handler;
 
 
 import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.sound.CodecPCM;
 import net.aeronica.mods.mxtune.sound.ModSoundEvents;
@@ -56,9 +57,9 @@ public class SoundEventHandler
             {
                 EntityPlayer playerPlaying = ClientAudio.getEntityPlayer(entityID);
                 /* 
-                 * --Sound Replacement--
+                 * --Sound Replacement-- TODO: Need to consider GROUP PLAY more carefully -  So a GROUP ID and Flag in AudioData is needed.
                  */
-                if (entityID == MXTuneMain.proxy.getClientPlayer().getEntityId())
+                if (entityID == MXTuneMain.proxy.getClientPlayer().getEntityId() || (GROUPS.getMembersGroupID(GROUPS.getLeaderOfGroup(MXTuneMain.proxy.getClientPlayer().getEntityId()))==entityID))
                 {
                     /*
                      * ThePlayer(s) hear their own music without any 3D distance
@@ -68,14 +69,14 @@ public class SoundEventHandler
                      * that occurs when the player moves and 3D sound system updates
                      * the sound position.
                      */
-                    e.setResultSound(new MusicBackground(playerPlaying));
+                    e.setResultSound(new MusicBackground(playerPlaying)); // TODO: Need to make this group aware!
                 }
                 else if (ClientAudio.isPlaced(entityID))
                 {
                     /*
                      * Positioned music source for instruments that are placed in the world -OR- a GROUP of players JAMMING.
                      */
-                    e.setResultSound(new MusicPositioned(playerPlaying, ClientAudio.getBlockPos(entityID)));
+                    e.setResultSound(new MusicPositioned(ClientAudio.getBlockPos(entityID)));
                 }
                 else
                 {

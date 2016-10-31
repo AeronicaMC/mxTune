@@ -19,7 +19,6 @@ package net.aeronica.mods.mxtune.sound;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.PositionedSound;
 import net.minecraft.client.audio.SoundEventAccessor;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
@@ -30,7 +29,7 @@ public class MusicPositioned extends PositionedSound
     
     SoundEventAccessor soundEventAccessor;
     
-    public MusicPositioned(EntityPlayer playerIn, BlockPos pos)
+    public MusicPositioned(BlockPos pos)
     {
         super(ModSoundEvents.PCM_PROXY, SoundCategory.getByName("mxtune"));
         this.sound = new PCMSound();

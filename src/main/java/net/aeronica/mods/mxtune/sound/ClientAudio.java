@@ -28,7 +28,6 @@ import javax.sound.sampled.AudioInputStream;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.StopPlayMessage;
 import net.minecraft.entity.player.EntityPlayer;
@@ -200,7 +199,13 @@ public class ClientAudio
         addEntityIdQueue(entityID);
         entityAudioData.put(entityID, new AudioData(entityID, musicText, pos, isPlaced));        
         executorService.execute(new ThreadedPlay(entityID, musicText));
-        MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MusicMoving());
+        if(isPlaced)
+        {
+            MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MusicPositioned(pos));
+        } else
+        {
+            MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MusicMoving());
+        }
     }
     
     private static void stop(Integer entityID)
