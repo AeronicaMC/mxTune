@@ -19,45 +19,33 @@ package net.aeronica.mods.mxtune.network.client;
 import java.io.IOException;
 
 import net.aeronica.mods.mxtune.groups.GROUPS;
+import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
-import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 
-public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
+public class PlayJamMessageOld extends AbstractClientMessage<PlayJamMessageOld>
 {
     private String jamMML;
     private Integer groupID;
-    private BlockPos pos;
-    private boolean isPlaced;
 
-    public PlayJamMessage() {}
+    public PlayJamMessageOld() {}
 
-    public PlayJamMessage(String jamMML, Integer groupID)
-    {
-        this(jamMML, groupID, new BlockPos(0,0,0), false);
-    }
-
-    public PlayJamMessage(String jamMML, Integer groupID, BlockPos pos, boolean isPlaced)
+    public PlayJamMessageOld(String jamMML, Integer groupID)
     {
         this.jamMML = jamMML;
         this.groupID = groupID;
-        this.pos = pos;
-        this.isPlaced = isPlaced;
     }
-    
+
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
         jamMML = ByteBufUtils.readUTF8String(buffer);
         groupID = ByteBufUtils.readVarInt(buffer, 5);
-        pos = new BlockPos(ByteBufUtils.readVarInt(buffer, 5), ByteBufUtils.readVarInt(buffer, 5), ByteBufUtils.readVarInt(buffer, 5));
-        isPlaced = (ByteBufUtils.readVarShort(buffer)==1);
     }
 
     @Override
@@ -65,10 +53,6 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
     {
         ByteBufUtils.writeUTF8String(buffer, jamMML);
         ByteBufUtils.writeVarInt(buffer, groupID, 5);
-        ByteBufUtils.writeVarInt(buffer, pos.getX(), 5);
-        ByteBufUtils.writeVarInt(buffer, pos.getY(), 5);
-        ByteBufUtils.writeVarInt(buffer, pos.getZ(), 5);
-        ByteBufUtils.writeVarShort(buffer, isPlaced?1:0);
     }
 
     @Override
@@ -76,9 +60,9 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
     {
         if (MIDISystemUtil.getInstance().midiUnavailableWarn(player) == false)
         {
-            if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) player.worldObj.getEntityByID(GROUPS.getLeaderOfGroup(GROUPS.getMembersGroupID(groupID)))) == false)
+            if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) player.worldObj.getEntityByID(GROUPS.getLeaderOfGroup(groupID))) == false)
             {
-                ClientAudio.play(groupID, jamMML, pos, isPlaced);
+                MMLManager.getInstance().mmlPlay(jamMML, groupID, true, MusicOptionsUtil.getMidiVolume(player));
             }
         }
     }
