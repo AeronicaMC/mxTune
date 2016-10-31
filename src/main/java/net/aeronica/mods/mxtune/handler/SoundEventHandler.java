@@ -73,7 +73,7 @@ public class SoundEventHandler
                 else if (ClientAudio.isPlaced(entityID))
                 {
                     /*
-                     * Positioned music source for instruments that are placed in the world.
+                     * Positioned music source for instruments that are placed in the world -OR- a GROUP of players JAMMING.
                      */
                     e.setResultSound(new MusicPositioned(playerPlaying, ClientAudio.getBlockPos(entityID)));
                 }

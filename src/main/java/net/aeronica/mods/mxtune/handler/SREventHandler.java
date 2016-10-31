@@ -55,10 +55,10 @@ public class SREventHandler
                 ItemStack stack = slot.getStack();
                 if (slot.getHasStack() && stack.getItem() instanceof IInstrument)
                 {
-                    ModLogger.logInfo("PCE.close slot: " +  slot.getSlotIndex() + ", has:" + slot.getHasStack() + ", " + slot.getStack() + ", name: " + slot.inventory.getName());
+                    ModLogger.debug("PCE.close slot: " +  slot.getSlotIndex() + ", has:" + slot.getHasStack() + ", " + slot.getStack().getItem().getItemStackDisplayName(stack) + ", name: " + slot.inventory.getName());
                     if (stack.getRepairCost() > 0)
                     {
-                        ModLogger.logInfo("  PCE.close Item.onUpdate: " + stack.getItem().getItemStackDisplayName(stack) + " - Stopped Playing ");
+                        ModLogger.debug("  PCE.close Item.onUpdate: " + stack.getItem().getItemStackDisplayName(stack) + " - Stopped Playing ");
                         stack.getItem().onUpdate(stack, event.getEntityPlayer().getEntityWorld(), event.getEntityPlayer(), 0, false );
                     }
                 }

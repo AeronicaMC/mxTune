@@ -23,9 +23,6 @@ import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.gui.GuiInstrumentInventory;
 import net.aeronica.mods.mxtune.handler.IKeyListener;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
-import net.aeronica.mods.mxtune.network.PacketDispatcher;
-import net.aeronica.mods.mxtune.network.client.PlaySoloMessage;
-import net.aeronica.mods.mxtune.network.client.QueueJamMessage;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.creativetab.CreativeTabs;
@@ -159,11 +156,11 @@ public class ItemInstrumentCaps extends ItemBase implements IInstrument, IKeyLis
                 if (GROUPS.getMembersGroupID(playerIn.getEntityId()) == null)
                 {
                     /** Solo Play */
-                    PacketDispatcher.sendToServer(new PlaySoloMessage(playerIn.getEntityId()));
+                    //PacketDispatcher.sendToServer(new PlaySoloMessageOld(playerIn.getEntityId()));
                 } else
                 {
                     /** Jam Play */
-                    PacketDispatcher.sendToServer(new QueueJamMessage());
+                   // PacketDispatcher.sendToServer(new QueueJamMessage());
                 }
                 System.out.println("+++ queue play request +++");
             }

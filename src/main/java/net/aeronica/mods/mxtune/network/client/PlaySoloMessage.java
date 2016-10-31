@@ -18,61 +18,52 @@ package net.aeronica.mods.mxtune.network.client;
 
 import java.io.IOException;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.config.ModConfig;
-import net.aeronica.mods.mxtune.gui.GuiPlaying;
-import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
+import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
 {
 
+    int entityID;
     String musicTitle;
     String musicText;
-    Integer playerID;
     BlockPos pos;
     boolean isPlaced;
 
     public PlaySoloMessage() {}
-
-    public PlaySoloMessage(Integer playerID)
+    
+    public PlaySoloMessage(int entityID, String musicTitle, String musicText)
     {
-        this.playerID = playerID;
-        this.musicTitle = "";
-        this.musicText = "";
-        this.pos = new BlockPos(0, 0, 0);
-        this.isPlaced = false;
+        this(entityID, musicTitle, musicText, new BlockPos(0,0,0), false);
     }
-
-    public PlaySoloMessage(Integer playerID, String musicTitle, String musicText, boolean isPlaced)
+    
+    public PlaySoloMessage(Integer entityID, String playerName, String musicTitle, String musicText, boolean isPlaced)
     {
-        this.playerID = playerID;
+        this(entityID, musicTitle, musicText, new BlockPos(0,0,0), isPlaced);
+    }
+    
+    public PlaySoloMessage(int entityID, String musicTitle, String musicText, BlockPos pos, boolean isPlaced)
+    {
+        this.entityID = entityID;
         this.musicTitle = musicTitle;
         this.musicText = musicText;
-        this.pos = new BlockPos(0, 0, 0);
-        this.isPlaced = isPlaced;
-    }
-
-    public PlaySoloMessage(Integer playerID, BlockPos pos, boolean isPlaced)
-    {
-        this.playerID = playerID;
-        this.musicTitle = "";
-        this.musicText = "";
         this.pos = pos;
         this.isPlaced = isPlaced;
     }
-
+    
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
-        playerID = ByteBufUtils.readVarInt(buffer, 5);
+        entityID = ByteBufUtils.readVarInt(buffer, 5);
         musicTitle = ByteBufUtils.readUTF8String(buffer);
         musicText = ByteBufUtils.readUTF8String(buffer);
         pos = new BlockPos(ByteBufUtils.readVarInt(buffer, 5), ByteBufUtils.readVarInt(buffer, 5), ByteBufUtils.readVarInt(buffer, 5));
@@ -82,7 +73,7 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
-        ByteBufUtils.writeVarInt(buffer, playerID, 5);
+        ByteBufUtils.writeVarInt(buffer, entityID, 5);
         ByteBufUtils.writeUTF8String(buffer, musicTitle);
         ByteBufUtils.writeUTF8String(buffer, musicText);
         ByteBufUtils.writeVarInt(buffer, pos.getX(), 5);
@@ -94,26 +85,31 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
     @Override
     public void process(EntityPlayer player, Side side)
     {
+        if (side == Side.CLIENT) {process_client(player, side);}
+    }
+
+    @SideOnly(Side.CLIENT)
+    protected void process_client(EntityPlayer player, Side side)
+    {
         if (MIDISystemUtil.getInstance().midiUnavailableWarn(player) == false)
         {
-            if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) player.worldObj.getEntityByID(playerID)) == false)
+            if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) player.worldObj.getEntityByID(entityID)) == false)
             {
-                /**
+                ModLogger.debug("musicTitle: " + musicTitle);
+                ModLogger.debug("musicText:  " + musicText.substring(0, (musicText.length() >= 25 ? 25 : musicText.length())));
+                ModLogger.debug("entityID:   " + entityID);
+                ModLogger.debug("pos:        " + pos);
+                ModLogger.debug("isPlaced:   " + isPlaced);
+                /*
                  * Solo play format "<playerName|groupID>=MML@...;" Jam play
                  * format just appends with a space between each player=MML
                  * sequence
                  * "<playername1>=MML@...abcd; <playername2>=MML@...efga; <playername3>=MML@...bead;"
                  */
-
-                String mml = new String(playerID + "=" + musicText);
-                MMLManager.getInstance().mmlPlay(mml, playerID, true, MusicOptionsUtil.getMidiVolume(player));
-
-                /** Only open the playing gui for the player who is playing */
-                if (player.getEntityId() == (playerID))
-                {
-                    if (isPlaced | ModConfig.getSoloPlayWhileWalking() == false) player.openGui(MXTuneMain.instance, GuiPlaying.GUI_ID, player.worldObj, 0, 0, 0);
-                }
+                String mml = new String(entityID + "=" + musicText);
+                ClientAudio.play(entityID, mml, pos, isPlaced);
             }
         }
     }
+    
 }

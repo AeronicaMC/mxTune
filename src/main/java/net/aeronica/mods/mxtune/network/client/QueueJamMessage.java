@@ -89,7 +89,7 @@ public class QueueJamMessage extends AbstractClientMessage<QueueJamMessage>
 
                 if (thePlayer.getEntityId() == player.getEntityId())
                 {
-                    thePlayer.openGui(MXTuneMain.instance, GuiPlaying.GUI_ID, thePlayer.worldObj, 0,0,0);
+                    //thePlayer.openGui(MXTuneMain.instance, GuiPlaying.GUI_ID, thePlayer.worldObj, 0,0,0);
                 }
             }
         }
