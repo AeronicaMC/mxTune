@@ -38,6 +38,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.server.FMLServerHandler;
 
 // Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
@@ -159,7 +160,7 @@ public class PlayManager
             {   
                 if(GROUPS.getMembersGroupID(member) == entityGroup)
                 {
-                    EntityPlayer player = (EntityPlayer) Minecraft.getMinecraft().thePlayer.getEntityWorld().getEntityByID(member);
+                    EntityPlayer player = (EntityPlayer) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getEntityByID(member);
                     ModLogger.logInfo("    PM.stopMusic member: " + member);
                     dequeueMember(member);
                     PlayStatusUtil.setPlaying(player, false);
@@ -267,7 +268,7 @@ public class PlayManager
         {   
             if(GROUPS.getMembersGroupID(member) == groupID)
             {
-                EntityPlayer player = (EntityPlayer) Minecraft.getMinecraft().thePlayer.getEntityWorld().getEntityByID(member);
+                EntityPlayer player = (EntityPlayer) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getEntityByID(member);
                 x = x + player.getPosition().getX();
                 y = y + player.getPosition().getY();
                 z = z + player.getPosition().getZ();
