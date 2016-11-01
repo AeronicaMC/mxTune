@@ -40,6 +40,10 @@ public enum GROUPS
         return null;
     }
 
+    public static Integer getMembersGroupLeader(Integer memberID){
+        return getLeaderOfGroup(getMembersGroupID(memberID));
+    }
+    
     public static Integer getMembersGroupID(Integer memberID)
     {
         if (GROUPS.clientMembers != null) { return GROUPS.clientMembers.get(memberID); }

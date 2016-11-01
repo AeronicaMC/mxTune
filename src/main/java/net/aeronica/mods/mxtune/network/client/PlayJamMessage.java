@@ -76,7 +76,7 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
     {
         if (MIDISystemUtil.getInstance().midiUnavailableWarn(player) == false)
         {
-            if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) player.worldObj.getEntityByID(GROUPS.getLeaderOfGroup(GROUPS.getMembersGroupID(groupID)))) == false)
+            if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) player.worldObj.getEntityByID(GROUPS.getMembersGroupLeader(groupID))) == false)
             {
                 ClientAudio.play(groupID, jamMML, pos, isPlaced);
             }

@@ -59,7 +59,7 @@ public class SoundEventHandler
                 /* 
                  * --Sound Replacement-- TODO: Need to consider GROUP PLAY more carefully -  So a GROUP ID and Flag in AudioData is needed.
                  */
-                if (entityID == MXTuneMain.proxy.getClientPlayer().getEntityId() || (GROUPS.getMembersGroupID(GROUPS.getLeaderOfGroup(MXTuneMain.proxy.getClientPlayer().getEntityId()))==entityID))
+                if (entityID == MXTuneMain.proxy.getClientPlayer().getEntityId() || (GROUPS.getMembersGroupLeader(MXTuneMain.proxy.getClientPlayer().getEntityId()))==entityID)
                 {
                     /*
                      * ThePlayer(s) hear their own music without any 3D distance

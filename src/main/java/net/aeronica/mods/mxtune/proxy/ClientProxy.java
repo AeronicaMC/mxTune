@@ -24,6 +24,7 @@ import net.aeronica.mods.mxtune.handler.SoundEventHandler;
 import net.aeronica.mods.mxtune.handler.TickHandler;
 import net.aeronica.mods.mxtune.init.BlockModels;
 import net.aeronica.mods.mxtune.init.ItemModels;
+import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -103,6 +104,7 @@ public class ClientProxy extends CommonProxy
     public void registerEventHandlers()
     {
         super.registerEventHandlers();
+        ClientAudio.getInstance(); /* Force ClientAudio initialization a static on-use initialization is not soon enough */
         MinecraftForge.EVENT_BUS.register(SoundEventHandler.getInstance());
         MinecraftForge.EVENT_BUS.register(TickHandler.getInstance());
         MinecraftForge.EVENT_BUS.register(CLEventHandler.getInstance());

@@ -25,7 +25,6 @@ import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
-import net.aeronica.mods.mxtune.network.bidirectional.StopPlayMessage;
 import net.aeronica.mods.mxtune.network.client.PlayJamMessage;
 import net.aeronica.mods.mxtune.network.client.PlaySoloMessage;
 import net.aeronica.mods.mxtune.network.client.SyncStatusMessage;
@@ -33,13 +32,11 @@ import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.sound.PlayStatusUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.server.FMLServerHandler;
 
 // Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
 // UUID does not work on the client.
@@ -53,11 +50,18 @@ public class PlayManager
     private static Map<Integer, String> membersMML;
     private static Map<Integer, Integer> groupsMembers;
     private static Map<Integer, String> playStatus;
+    private static Integer playID;
 
     static {
         membersMML = new HashMap<Integer, String>();
         groupsMembers = new HashMap<Integer, Integer>();
         playStatus = new HashMap<Integer, String>();
+        playID = 0;
+    }
+    
+    public static Integer getNextPlayID()
+    {
+        return playID++;
     }
 
     private static void setPlaying(Integer playerID) {playStatus.put(playerID, GROUPS.PLAYING.name());}

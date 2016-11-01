@@ -75,7 +75,6 @@ public class GroupManager
     }
 
     private static HashSet<Group> groups = null;
-    private static Integer groupID = 0;
 
     /**
      * Any player can be a leader or in a group. A player who makes a group is
@@ -99,7 +98,7 @@ public class GroupManager
 
             Group theGroup = new Group();
 
-            theGroup.groupID = groupID++; // creatorID;
+            theGroup.groupID = PlayManager.getNextPlayID();
             
             theGroup.leaderEntityID = creatorID;
 
