@@ -28,12 +28,18 @@ import javax.sound.sampled.AudioInputStream;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.StopPlayMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.client.event.sound.PlaySoundEvent;
+import net.minecraftforge.client.event.sound.SoundSetupEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import paulscode.sound.SoundSystemConfig;
+import paulscode.sound.SoundSystemException;
 
 @SideOnly(Side.CLIENT)
 public class ClientAudio
@@ -231,4 +237,55 @@ public class ClientAudio
             p.process(entityID, musicText);
         }
     }
+    
+    @SubscribeEvent
+    public void SoundSetupEvent(SoundSetupEvent event) throws SoundSystemException
+    {
+        SoundSystemConfig.setCodec("nul", CodecPCM.class);
+    }
+
+    @SubscribeEvent
+    public void PlaySoundEvent(PlaySoundEvent e)
+    {
+        /* Testing for a the PCM_PROXY sound. For playing MML though the MML->PCM ClientAudio chain */
+        if (e.getSound().getSoundLocation().equals(ModSoundEvents.PCM_PROXY.getSoundName()))
+        {
+            /* entityID is the player holding/wearing/using the sound producing item */
+            Integer entityID;
+            if ((entityID = ClientAudio.pollEntityIDQueue01()) != null)
+            {
+                EntityPlayer playerPlaying = ClientAudio.getEntityPlayer(entityID);
+                /* 
+                 * --Sound Replacement-- TODO: Need to consider GROUP PLAY more carefully -  So a GROUP ID and Flag in AudioData is needed.
+                 */
+                if (entityID == MXTuneMain.proxy.getClientPlayer().getEntityId() || (GROUPS.getMembersGroupLeader(MXTuneMain.proxy.getClientPlayer().getEntityId()))==entityID)
+                {
+                    /*
+                     * ThePlayer(s) hear their own music without any 3D distance
+                     * effects applied. Not using the built-in background music
+                     * feature here because it's managed by vanilla and might interrupt
+                     * the players music. Doing this also eliminates a pulsing effect
+                     * that occurs when the player moves and 3D sound system updates
+                     * the sound position.
+                     */
+                    e.setResultSound(new MusicBackground(playerPlaying)); // TODO: Need to make this group aware!
+                }
+                else if (ClientAudio.isPlaced(entityID))
+                {
+                    /*
+                     * Positioned music source for instruments that are placed in the world -OR- a GROUP of players JAMMING.
+                     */
+                    e.setResultSound(new MusicPositioned(ClientAudio.getBlockPos(entityID)));
+                }
+                else
+                {
+                    /*
+                     * Moving music source for hand held or worn instruments. 
+                     */
+                    e.setResultSound(new MusicMoving(playerPlaying));
+                }
+            }
+        }
+    }
+ 
 }
