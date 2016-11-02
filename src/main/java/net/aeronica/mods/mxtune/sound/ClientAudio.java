@@ -53,10 +53,9 @@ public class ClientAudio
     
     private final static ThreadFactory threadFactory; 
     private final static ExecutorService executorService; 
-    private static  ClientAudio instance;
-
-    private ClientAudio(){instance = new ClientAudio();}
-    public static ClientAudio getInstance() {return instance;}
+    private ClientAudio() {}
+    private static class ClientAudioHolder {private static final ClientAudio INSTANCE = new ClientAudio();}
+    public static ClientAudio getInstance() {return ClientAudioHolder.INSTANCE;}
     
     static {
         /* Used to track which player/entity queued up music to be played */
