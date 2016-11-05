@@ -89,11 +89,14 @@ public class PlayerMusicOptionsCapability
         @SubscribeEvent
         public void OnPlayerClone(PlayerEvent.Clone event)
         {
+            EntityPlayer player = event.getEntityPlayer();
             IPlayerMusicOptions dead = event.getOriginal().getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
             IPlayerMusicOptions live = event.getEntityPlayer().getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
-            live.setSParams(dead.getSParam1(), dead.getSParam2(), dead.getSParam3());
-            live.setMidiVolume(dead.getMidiVolume());
-            live.setMuteOption(dead.getMuteOption());
+            live.setSParams(player, dead.getSParam1(), dead.getSParam2(), dead.getSParam3());
+            live.setMidiVolume(player, dead.getMidiVolume());
+            live.setMuteOption(player, dead.getMuteOption());
+            live.setBlackList(player, dead.getBlackList());
+            live.setWhiteList(player, dead.getBlackList());
         }
         
         public void onEntityJoinWorld(EntityJoinWorldEvent event)
