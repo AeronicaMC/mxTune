@@ -67,7 +67,6 @@ public class PlayManager
     private static void setPlaying(Integer playerID) {playStatus.put(playerID, GROUPS.PLAYING.name());}
 
     private static void setQueued(Integer playerID) {playStatus.put(playerID, GROUPS.QUEUED.name());}
-
     
     @SuppressWarnings("unused")
     private static void setDone(Integer playerID) {if (playStatus.containsKey(playStatus)) playStatus.remove(playerID);}

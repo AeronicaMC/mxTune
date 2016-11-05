@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.GROUPS;
-import net.aeronica.mods.mxtune.gui.GuiPlaying;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;

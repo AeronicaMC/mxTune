@@ -264,8 +264,6 @@ public class GuiMusicOptions extends GuiScreen
             break;
         case 4:
             /** reset */
-            MMLManager.getInstance().abortAll();
-            MMLManager.fixLevels();
             break;
         case 11:
             if (this.selectedWhiteIndex == -1 | this.selectedWhiteIndex > this.whiteList.size()) break;

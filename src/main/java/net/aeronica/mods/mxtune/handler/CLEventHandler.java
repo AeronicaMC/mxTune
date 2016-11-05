@@ -17,7 +17,6 @@
 package net.aeronica.mods.mxtune.handler;
 
 import net.aeronica.mods.mxtune.groups.GROUPS;
-import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.aeronica.mods.mxtune.render.PlacardRenderer;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -63,6 +62,5 @@ public class CLEventHandler
     public void onWorldEventUnload(WorldEvent.Unload event)
     {
         ModLogger.debug("CLEventHandler#onWorldEventUnload");
-        MMLManager.getInstance().abortAll();
     }
 }
