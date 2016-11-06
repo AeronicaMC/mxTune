@@ -16,31 +16,33 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
+import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.minecraft.client.audio.MovingSound;
 import net.minecraft.client.audio.SoundEventAccessor;
 import net.minecraft.client.audio.SoundHandler;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.SoundCategory;
+import paulscode.sound.Vector3D;
 
 public class MusicMoving extends MovingSound
 {
 
-    EntityPlayer player;
+    Integer playID;
     SoundEventAccessor soundEventAccessor;
 
     /** This is used to fake out the vanilla SoundHandler. From this point we will force the system to use the sound codec of our choice */
-    public MusicMoving(EntityPlayer player)
+    public MusicMoving(Integer playID)
     {
         super(ModSoundEvents.PCM_PROXY, SoundCategory.getByName("mxtune"));
-        this.player = player;
+        this.playID = playID;
         this.sound = new PCMSound();
         this.volume = 1F;
         this.pitch = 1F;
         this.repeat = false;
         this.repeatDelay = 0;
-        this.xPosF = (float)this.player.posX;
-        this.yPosF = (float)this.player.posY;
-        this.zPosF = (float)this.player.posZ;
+        Vector3D pos = GROUPS.getMedianPos(playID);
+        this.xPosF = pos.x;
+        this.yPosF = pos.y;
+        this.zPosF = pos.z;
         this.attenuationType = AttenuationType.LINEAR;
         this.soundEventAccessor = new SoundEventAccessor(this.sound.getSoundLocation(), "mxtune.subtitle.pcm-proxy");
     }
@@ -60,17 +62,18 @@ public class MusicMoving extends MovingSound
     @Override
     public void update()
     {
-        if (this.player != null && !this.player.isDead && (player.hasCapability(PlayStatusUtil.PLAY_STATUS, null)) && (player.getCapability(PlayStatusUtil.PLAY_STATUS, null).isPlaying()))
+        if (this.playID != null && ClientAudio.isPlaying(playID))
         {
-            // stuff like velocity and direction detection and Doppler effects. 
+            Vector3D pos = GROUPS.getMedianPos(playID);
+            this.xPosF = pos.x;
+            this.yPosF = pos.y;
+            this.zPosF = pos.z; 
         }
         else
         {
             this.setDonePlaying();
         }
-        this.xPosF = (float)this.player.posX;
-        this.yPosF = (float)this.player.posY;
-        this.zPosF = (float)this.player.posZ;
+
     }
     
     public void setDonePlaying()

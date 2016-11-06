@@ -16,10 +16,24 @@
  */
 package net.aeronica.mods.mxtune.groups;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.common.base.Splitter;
+
+import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.util.ModLogger;
+import net.minecraft.entity.player.EntityPlayer;
+import paulscode.sound.Vector3D;
 
 // Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
 // UUID does not work on the client.
@@ -30,10 +44,16 @@ public enum GROUPS
     public static final int MAX_MEMBERS = 8;
 
     /** Server side, Client side is sync'd with packets */
+    /* GroupManager */
     private static Map<Integer, Integer> clientGroups;
     private static Map<Integer, Integer> clientMembers;
-    private static Map<Integer, String> clientPlayStatuses;
+    /* PlayManager */
+    private static HashMap<Integer, String> clientPlayStatuses;
+    private static HashMap<Integer, Integer> playIDMembers;
+    private static Set<Integer> activePlayIDs;
 
+
+    /* GroupManager statuses */
     public static Integer getLeaderOfGroup(Integer integer)
     {
         if (GROUPS.clientGroups != null) { return GROUPS.clientGroups.get(integer); }
@@ -55,11 +75,6 @@ public enum GROUPS
         return memberID.equals(getLeaderOfGroup(getMembersGroupID(memberID)));
     }
 
-    public static void setClientPlayStatuses(String status)
-    {
-        GROUPS.clientPlayStatuses = splitToIntStrMap(status);
-    }
-    
     public static Map<Integer, Integer> getClientMembers()
     {
         return GROUPS.clientMembers;
@@ -79,12 +94,13 @@ public enum GROUPS
     {
         GROUPS.clientGroups = splitToIntIntMap(groups);
     }
+    
     /**
-     * getIndex(String playerName)
+     * getIndex(Integer playerID)
      * 
      * This is used to return a the index for the playing status icons
      * 
-     * @param playerID
+     * @param playerID (EntityID)
      * @return int
      */
     public static int getIndex(Integer playerID)
@@ -110,11 +126,79 @@ public enum GROUPS
         return clientPlayStatuses;
     }
 
-    public synchronized static boolean isPlaying(Integer playerID)
+    public static List<Integer> getMembersByPlayID(Integer playID) 
     {
-        return GROUPS.clientPlayStatuses != null && GROUPS.clientPlayStatuses.containsKey(playerID) ? GROUPS.valueOf((GROUPS.clientPlayStatuses.get(playerID))) == GROUPS.PLAYING : false;
+        List<Integer> members = new ArrayList<Integer>();
+        for(Integer someMember: GROUPS.playIDMembers.keySet())
+        {
+            if(GROUPS.playIDMembers.get(someMember).equals(playID))
+            {
+                members.add(GROUPS.playIDMembers.get(someMember));
+            }
+        }
+        return members;
+    }
+    
+    public static Vector3D getMedianPos(Integer playID)
+    {
+        int x, y, z, count; x = y = z = count = 0;
+        Vector3D pos;
+        ModLogger.logInfo("getMedianPos");
+
+        for(Integer member: getMembersByPlayID(playID))
+        {   
+            EntityPlayer player = (EntityPlayer)  MXTuneMain.proxy.getClientPlayer().getEntityWorld().getEntityByID(member);
+            x = x + player.getPosition().getX();
+            y = y + player.getPosition().getY();
+            z = z + player.getPosition().getZ();
+            count++;
+            ModLogger.logInfo("  getMedianPos player:" + player + ", x:" + x + ", count: " + count);
+        }            
+
+        if (count == 0) return new Vector3D(0,0,0);
+        x/=count;
+        y/=count;
+        z/=count;
+        pos = new Vector3D(x,y,z);
+        ModLogger.logInfo("" + pos);
+        return pos;
     }
 
+    public static boolean isClientPlaying(Integer playID)
+    {
+        List<Integer> members = getMembersByPlayID(playID);
+        return ((members!=null) && members.isEmpty())?members.contains(MXTuneMain.proxy.getClientPlayer().getEntityId()):false;
+    }
+    
+    
+    public static boolean isPlaying(Integer playID) { return activePlayIDs != null ? activePlayIDs.contains(playID) : false; }
+
+    public static void setClientPlayStatuses(String clientPlayStatuses)
+    {
+        GROUPS.clientPlayStatuses = deserializeIntStrMap(clientPlayStatuses);
+    }
+        
+    public static Map<Integer, Integer> getPlayIDMembers()
+    {
+        return playIDMembers;
+    }
+
+    public static void setPlayIDMembers(String playIDMembers)
+    {
+        GROUPS.playIDMembers = deserializeIntIntMap(playIDMembers);
+    }
+
+    public static Set<Integer> getActivePlayIDs()
+    {
+        return activePlayIDs;
+    }
+
+    public static void setActivePlayIDs(String setIntString)
+    {
+        activePlayIDs = deserializeIntegerSet(setIntString);
+    }
+    
+    /* Serialization and deserialization methods */
     public static Map<Integer, String> splitToIntStrMap(String mapIntString)
     {       
         try
@@ -148,4 +232,121 @@ public enum GROUPS
             return null;
         }
     }
+
+    public static String serializeIntIntMap(HashMap<Integer, Integer> mapIntInt)
+    {
+        String serializedIntIntMap = null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream os = null;
+        try
+        {
+            os = new ObjectOutputStream(bos);
+            os.writeObject(mapIntInt);
+            serializedIntIntMap = bos.toString();
+            os.close();
+            bos.close();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return serializedIntIntMap;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static HashMap<Integer, Integer> deserializeIntIntMap(String mapIntInt)
+    {
+        ModLogger.logInfo("deserializeIntIntMap: "+mapIntInt);
+        ByteArrayInputStream bis = new ByteArrayInputStream(mapIntInt.getBytes(Charset.defaultCharset()));
+        ObjectInputStream oInputStream = null;
+        HashMap<Integer, Integer> deserializedIntIntMap = null;
+        try
+        {
+            oInputStream = new ObjectInputStream(bis);
+            deserializedIntIntMap = (HashMap<Integer, Integer>) oInputStream.readObject();
+            bis.close();
+            oInputStream.close();
+        } catch (ClassNotFoundException | IOException e)
+        {
+            e.printStackTrace();
+        }        
+        return deserializedIntIntMap;
+    }
+    
+    public static String serializeIntStrMap(HashMap<Integer, String> mapIntStr)
+    {
+        String serializedIntStrMap = null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream os = null;
+        try
+        {
+            os = new ObjectOutputStream(bos);
+            os.writeObject(mapIntStr);
+            serializedIntStrMap = bos.toString();
+            os.close();
+            bos.close();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return serializedIntStrMap;
+    }
+   
+    @SuppressWarnings("unchecked")
+    public static HashMap<Integer, String> deserializeIntStrMap(String mapIntStr)
+    {
+        ModLogger.logInfo("deserializeIntStrMap: "+mapIntStr);
+        ByteArrayInputStream bis = new ByteArrayInputStream(mapIntStr.getBytes(Charset.defaultCharset()));
+        ObjectInputStream oInputStream = null;
+        HashMap<Integer, String> deserializedIntStrMap = null;
+        try
+        {
+            oInputStream = new ObjectInputStream(bis);
+            deserializedIntStrMap = (HashMap<Integer, String>) oInputStream.readObject();
+        } catch (ClassNotFoundException | IOException e)
+        {
+            e.printStackTrace();
+        }        
+        return deserializedIntStrMap;
+    }
+        
+    @SuppressWarnings("unchecked")
+    public static Set<Integer> deserializeIntegerSet(String setIntString)
+    {
+        ModLogger.logInfo("deserializeIntegerSet: "+setIntString);
+        ByteArrayInputStream bis = new ByteArrayInputStream(setIntString.getBytes(Charset.defaultCharset()));
+        ObjectInputStream oInputStream = null;
+        Set<Integer> deserializedSet = null;
+        try
+        {
+            oInputStream = new ObjectInputStream(bis);
+            deserializedSet = (Set<Integer>) oInputStream.readObject();
+            bis.close();
+            oInputStream.close();
+        } catch (ClassNotFoundException | IOException e)
+        {
+            e.printStackTrace();
+        }        
+        return deserializedSet;
+    }
+
+    public static String serializeIntegerSet(Set<Integer> setIntegers)
+    {
+        String serializedSet = null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream os = null;
+        try
+        {
+            os = new ObjectOutputStream(bos);
+            os.writeObject(setIntegers);
+            serializedSet = bos.toString();
+            os.close();
+            bos.close();
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        ModLogger.logInfo("serializeIntegerSet: "+serializedSet);
+        return serializedSet;        
+    }
+    
 }

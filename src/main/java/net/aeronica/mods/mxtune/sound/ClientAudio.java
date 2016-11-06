@@ -162,24 +162,24 @@ public class ClientAudio
         return entityAudioData.containsKey(entityID);
     }
 
-    public static boolean isPlaying(Integer entityID)
-    {
-        if (hasEntity(entityID))
-        {
-            AudioData audioData = entityAudioData.get(entityID);
-            return PlayStatusUtil.isPlaying(audioData.getPlayer());
-        }
-        return false;
-    }
-
 //    public static boolean isPlaying(Integer entityID)
 //    {
 //        if (hasEntity(entityID))
-//        {            
-//            return GROUPS.isPlaying(entityID);
+//        {
+//            AudioData audioData = entityAudioData.get(entityID);
+//            return PlayStatusUtil.isPlaying(audioData.getPlayer());
 //        }
 //        return false;
 //    }
+
+    public static boolean isPlaying(Integer entityID)
+    {
+        if (hasEntity(entityID))
+        {            
+            return GROUPS.isPlaying(entityID);
+        }
+        return false;
+    }
     
     public static boolean isPlaced(Integer entityID)
     {
@@ -249,15 +249,10 @@ public class ClientAudio
         /* Testing for a the PCM_PROXY sound. For playing MML though the MML->PCM ClientAudio chain */
         if (e.getSound().getSoundLocation().equals(ModSoundEvents.PCM_PROXY.getSoundName()))
         {
-            /* entityID is the player holding/wearing/using the sound producing item */
-            Integer entityID;
-            if ((entityID = ClientAudio.pollEntityIDQueue01()) != null)
+            Integer playID;
+            if ((playID = ClientAudio.pollEntityIDQueue01()) != null)
             {
-                EntityPlayer playerPlaying = ClientAudio.getEntityPlayer(entityID);
-                /* 
-                 * --Sound Replacement-- TODO: Need to consider GROUP PLAY more carefully -  So a GROUP ID and Flag in AudioData is needed.
-                 */
-                if (entityID == MXTuneMain.proxy.getClientPlayer().getEntityId() || (GROUPS.getMembersGroupLeader(MXTuneMain.proxy.getClientPlayer().getEntityId()))==entityID)
+                if (GROUPS.isClientPlaying(playID))
                 {
                     /*
                      * ThePlayer(s) hear their own music without any 3D distance
@@ -267,21 +262,21 @@ public class ClientAudio
                      * that occurs when the player moves and 3D sound system updates
                      * the sound position.
                      */
-                    e.setResultSound(new MusicBackground(playerPlaying)); // TODO: Need to make this group aware!
+                    e.setResultSound(new MusicBackground(MXTuneMain.proxy.getClientPlayer())); // TODO: Need to make this group aware!
                 }
-                else if (ClientAudio.isPlaced(entityID))
+                else if (ClientAudio.isPlaced(playID))
                 {
                     /*
                      * Positioned music source for instruments that are placed in the world -OR- a GROUP of players JAMMING.
                      */
-                    e.setResultSound(new MusicPositioned(ClientAudio.getBlockPos(entityID)));
+                    e.setResultSound(new MusicPositioned(ClientAudio.getBlockPos(playID)));
                 }
                 else
                 {
                     /*
                      * Moving music source for hand held or worn instruments. 
                      */
-                    e.setResultSound(new MusicMoving(playerPlaying));
+                    e.setResultSound(new MusicMoving(playID));
                 }
             }
         }

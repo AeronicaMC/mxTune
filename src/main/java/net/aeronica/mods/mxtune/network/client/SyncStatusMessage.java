@@ -27,28 +27,41 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class SyncStatusMessage extends AbstractClientMessage<SyncStatusMessage>
 {
-    String status;
+    String clientPlayStatuses;
+    String playIDMembers;
+    String activePlayIDs;
 
-    public SyncStatusMessage() {this.status = new String();}
+    public SyncStatusMessage() {this.clientPlayStatuses = new String();}
 
-    public SyncStatusMessage(String status) {this.status = status;}
+    public SyncStatusMessage(String clientPlayStatuses, String playIDMembers, String activePlayIDs)
+    {
+        this.clientPlayStatuses = clientPlayStatuses;
+        this.playIDMembers = playIDMembers;
+        this.activePlayIDs = activePlayIDs;
+    }
 
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
-        status = ByteBufUtils.readUTF8String(buffer);
+        clientPlayStatuses = ByteBufUtils.readUTF8String(buffer);
+        playIDMembers = ByteBufUtils.readUTF8String(buffer);
+        activePlayIDs = ByteBufUtils.readUTF8String(buffer);
     }
 
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
-        ByteBufUtils.writeUTF8String(buffer, status);
+        ByteBufUtils.writeUTF8String(buffer, clientPlayStatuses);
+        ByteBufUtils.writeUTF8String(buffer, playIDMembers);
+        ByteBufUtils.writeUTF8String(buffer, activePlayIDs);
 
     }
 
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        GROUPS.setClientPlayStatuses(status);
+        GROUPS.setClientPlayStatuses(clientPlayStatuses);
+        GROUPS.setPlayIDMembers(playIDMembers);
+        GROUPS.setActivePlayIDs(activePlayIDs);
     }
 }
