@@ -200,7 +200,23 @@ public class PlayManager
     
     private static void syncStatus()
     {
+        String buildStatus = " ";
+        try
+        {
+            Set<Integer> keys = playStatus.keySet();
+            Iterator<Integer> it = keys.iterator();
+            while (it.hasNext())
+            {
+                Integer playerID = (Integer) it.next();
+                buildStatus = buildStatus + playerID + "=" + playStatus.get(playerID) + " ";
+            }
+        } catch (Exception e)
+        {
+            ModLogger.logError(e.getLocalizedMessage());
+            e.printStackTrace();
+        }
         /** server side */
+        GROUPS.setClientPlayStatuses(buildStatus.trim());
         GROUPS.setClientPlayStatuses(GROUPS.serializeIntStrMap(membersQueuedStatus));
         GROUPS.setPlayIDMembers(GROUPS.serializeIntIntMap(playIDMembers));
         GROUPS.setActivePlayIDs(GROUPS.serializeIntegerSet(ActivePlayIDs));
