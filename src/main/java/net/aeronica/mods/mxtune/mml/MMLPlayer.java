@@ -80,7 +80,7 @@ public class MMLPlayer implements MetaEventListener
         /** Only one playing instance per playID at a time. */
         if (!MMLManager.getInstance().registerThread(this, groupID)) return false;
         this.playID = groupID;
-        this.playerMML = GROUPS.splitToIntStrMap(mmml);
+        this.playerMML = GROUPS.deserializeIntStrMap(mmml);
         this.closeGUI = closeGUI;
         this.fakeVolume = volumeIn;
         String mml = new String();

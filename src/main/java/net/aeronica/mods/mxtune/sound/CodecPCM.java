@@ -111,7 +111,7 @@ public class CodecPCM implements ICodec {
     {
         initialized(SET, false);
         if (entityID == -1)
-            if ((entityID = ClientAudio.pollEntityIdQueue02()) == null )
+            if ((entityID = ClientAudio.pollPlayIDQueue02()) == null )
             {
                 errorMessage("entityID not initialized: " + entityID);
                 return false;
@@ -146,10 +146,10 @@ public class CodecPCM implements ICodec {
 			return null;
 		}
 		
-		if (endOfStream() | !ClientAudio.isPlaying(entityID) | ClientAudio.isEntityAudioDataError(entityID)) return null;
+		if (endOfStream() | !ClientAudio.isPlaying(entityID) | ClientAudio.isPlayIDAudioDataError(entityID)) return null;
         if (hasStream == false)
         {
-            if (ClientAudio.isEntityAudioDataReady(entityID))
+            if (ClientAudio.isPlayIDAudioDataReady(entityID))
             {
                 audioInputStream = ClientAudio.getAudioInputStream(entityID);
                 hasStream = true;
@@ -174,7 +174,8 @@ public class CodecPCM implements ICodec {
 		    } else
 		    {
 		        outputBuffer = appendByteArrays(outputBuffer, zeroBuffer, SAMPLE_SIZE);
-		        if (zeroBufferCount > 48) 
+		        message("  zeroBufferCount: " + zeroBufferCount);
+		        if (zeroBufferCount++ > 48) 
 		        {
 		            errorMessage("  MML to PCM audio prcessiong took too long. Aborting!");
 		            endOfStream(SET, true);
@@ -209,17 +210,17 @@ public class CodecPCM implements ICodec {
 			errorMessage("Audio Format null in method 'readAll'");
 			return null;
 		}
-        if (endOfStream() | !ClientAudio.hasEntity(entityID) | ClientAudio.isEntityAudioDataError(entityID)) return null;
+        if (endOfStream() | !ClientAudio.hasPlayID(entityID) | ClientAudio.isPlayIDAudioDataError(entityID)) return null;
         
         int bufferSize = 0;
         byte outputBuffer[] = null;
         byte readBuffer[] = new byte[SAMPLE_SIZE];
         while (bufferSize != -1)
         {
-            if (endOfStream() | ClientAudio.isEntityAudioDataError(entityID)) return null;
+            if (endOfStream() | ClientAudio.isPlayIDAudioDataError(entityID)) return null;
             if (hasStream == false)
             {
-                if (ClientAudio.isEntityAudioDataReady(entityID))
+                if (ClientAudio.isPlayIDAudioDataReady(entityID))
                 {
                     audioInputStream = ClientAudio.getAudioInputStream(entityID);
                     hasStream = true;

@@ -16,19 +16,15 @@
  */
 package net.aeronica.mods.mxtune.groups;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.Sets;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -48,8 +44,8 @@ public enum GROUPS
     private static Map<Integer, Integer> clientGroups;
     private static Map<Integer, Integer> clientMembers;
     /* PlayManager */
-    private static HashMap<Integer, String> clientPlayStatuses;
-    private static HashMap<Integer, Integer> playIDMembers;
+    private static Map<Integer, String> clientPlayStatuses;
+    private static Map<Integer, Integer> playIDMembers;
     private static Set<Integer> activePlayIDs;
 
 
@@ -82,7 +78,7 @@ public enum GROUPS
     
     public static void setClientMembers(String members)
     {
-        GROUPS.clientMembers = splitToIntIntMap(members);
+        GROUPS.clientMembers = deserializeIntIntMap(members);
     }
     
     public static Map<Integer, Integer> getClientGroups()
@@ -92,7 +88,7 @@ public enum GROUPS
     
     public static void setClientGroups(String groups)
     {
-        GROUPS.clientGroups = splitToIntIntMap(groups);
+        GROUPS.clientGroups = deserializeIntIntMap(groups);
     }
     
     /**
@@ -126,14 +122,17 @@ public enum GROUPS
         return clientPlayStatuses;
     }
 
-    public static List<Integer> getMembersByPlayID(Integer playID) 
+    public static Set<Integer> getMembersByPlayID(Integer playID) 
     {
-        List<Integer> members = new ArrayList<Integer>();
-        for(Integer someMember: GROUPS.playIDMembers.keySet())
+        Set<Integer> members = Sets.newHashSet();
+        if (playIDMembers != null)
         {
-            if(GROUPS.playIDMembers.get(someMember).equals(playID))
+            for(Integer someMember: GROUPS.playIDMembers.keySet())
             {
-                members.add(GROUPS.playIDMembers.get(someMember));
+                if(GROUPS.playIDMembers.get(someMember).equals(playID))
+                {
+                    members.add(someMember);
+                }
             }
         }
         return members;
@@ -141,18 +140,15 @@ public enum GROUPS
     
     public static Vector3D getMedianPos(Integer playID)
     {
-        int x, y, z, count; x = y = z = count = 0;
+        float x, y, z, count; x = y = z = count = 0;
         Vector3D pos;
-        ModLogger.logInfo("getMedianPos");
-
         for(Integer member: getMembersByPlayID(playID))
         {   
             EntityPlayer player = (EntityPlayer)  MXTuneMain.proxy.getClientPlayer().getEntityWorld().getEntityByID(member);
-            x = x + player.getPosition().getX();
-            y = y + player.getPosition().getY();
-            z = z + player.getPosition().getZ();
+            x = (float) (x + player.getPositionVector().xCoord);
+            y = (float) (y + player.getPositionVector().yCoord);
+            z = (float) (z + player.getPositionVector().zCoord);
             count++;
-            ModLogger.logInfo("  getMedianPos player:" + player + ", x:" + x + ", count: " + count);
         }            
 
         if (count == 0) return new Vector3D(0,0,0);
@@ -160,13 +156,12 @@ public enum GROUPS
         y/=count;
         z/=count;
         pos = new Vector3D(x,y,z);
-        ModLogger.logInfo("" + pos);
         return pos;
     }
 
     public static boolean isClientPlaying(Integer playID)
     {
-        List<Integer> members = getMembersByPlayID(playID);
+        Set<Integer> members = getMembersByPlayID(playID);
         return ((members!=null) && members.isEmpty())?members.contains(MXTuneMain.proxy.getClientPlayer().getEntityId()):false;
     }
     
@@ -199,7 +194,7 @@ public enum GROUPS
     }
     
     /* Serialization and deserialization methods */
-    public static Map<Integer, String> splitToIntStrMap(String mapIntString)
+    public static Map<Integer, String> deserializeIntStrMap(String mapIntString)
     {       
         try
         {
@@ -216,7 +211,7 @@ public enum GROUPS
         }
     }
     
-    public static Map<Integer, Integer> splitToIntIntMap(String mapIntString)
+    public static Map<Integer, Integer> deserializeIntIntMap(String mapIntString)
     {       
         try
         {
@@ -235,118 +230,79 @@ public enum GROUPS
 
     public static String serializeIntIntMap(HashMap<Integer, Integer> mapIntInt)
     {
-        String serializedIntIntMap = null;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream os = null;
+        String serializedIntIntMap = new String(" ");
         try
         {
-            os = new ObjectOutputStream(bos);
-            os.writeObject(mapIntInt);
-            serializedIntIntMap = bos.toString();
-            os.close();
-            bos.close();
-        } catch (IOException e)
+            Set<Integer> keys = mapIntInt.keySet();
+            Iterator<Integer> it = keys.iterator();
+            while (it.hasNext())
+            {
+                Integer integer = (Integer) it.next();
+                serializedIntIntMap = serializedIntIntMap + integer.toString() + "=" + mapIntInt.get(integer).toString() + " ";
+            }
+        } catch (Exception e)
         {
+            ModLogger.logError(e.getLocalizedMessage());
             e.printStackTrace();
         }
-        return serializedIntIntMap;
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static HashMap<Integer, Integer> deserializeIntIntMap(String mapIntInt)
-    {
-        ModLogger.logInfo("deserializeIntIntMap: "+mapIntInt);
-        ByteArrayInputStream bis = new ByteArrayInputStream(mapIntInt.getBytes(Charset.defaultCharset()));
-        ObjectInputStream oInputStream = null;
-        HashMap<Integer, Integer> deserializedIntIntMap = null;
-        try
-        {
-            oInputStream = new ObjectInputStream(bis);
-            deserializedIntIntMap = (HashMap<Integer, Integer>) oInputStream.readObject();
-            bis.close();
-            oInputStream.close();
-        } catch (ClassNotFoundException | IOException e)
-        {
-            e.printStackTrace();
-        }        
-        return deserializedIntIntMap;
+        return serializedIntIntMap.trim();
     }
     
     public static String serializeIntStrMap(HashMap<Integer, String> mapIntStr)
     {
-        String serializedIntStrMap = null;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream os = null;
+        String serializedIntStrMap = new String(" ");
         try
         {
-            os = new ObjectOutputStream(bos);
-            os.writeObject(mapIntStr);
-            serializedIntStrMap = bos.toString();
-            os.close();
-            bos.close();
-        } catch (IOException e)
+            Set<Integer> keys = mapIntStr.keySet();
+            Iterator<Integer> it = keys.iterator();
+            while (it.hasNext())
+            {
+                Integer integer = (Integer) it.next();
+                serializedIntStrMap = serializedIntStrMap + integer + "=" + mapIntStr.get(integer) + " ";
+            }
+        } catch (Exception e)
         {
+            ModLogger.logError(e.getLocalizedMessage());
             e.printStackTrace();
         }
-        return serializedIntStrMap;
+        return serializedIntStrMap.trim();
     }
-   
-    @SuppressWarnings("unchecked")
-    public static HashMap<Integer, String> deserializeIntStrMap(String mapIntStr)
-    {
-        ModLogger.logInfo("deserializeIntStrMap: "+mapIntStr);
-        ByteArrayInputStream bis = new ByteArrayInputStream(mapIntStr.getBytes(Charset.defaultCharset()));
-        ObjectInputStream oInputStream = null;
-        HashMap<Integer, String> deserializedIntStrMap = null;
-        try
-        {
-            oInputStream = new ObjectInputStream(bis);
-            deserializedIntStrMap = (HashMap<Integer, String>) oInputStream.readObject();
-        } catch (ClassNotFoundException | IOException e)
-        {
-            e.printStackTrace();
-        }        
-        return deserializedIntStrMap;
-    }
-        
-    @SuppressWarnings("unchecked")
+            
     public static Set<Integer> deserializeIntegerSet(String setIntString)
     {
-        ModLogger.logInfo("deserializeIntegerSet: "+setIntString);
-        ByteArrayInputStream bis = new ByteArrayInputStream(setIntString.getBytes(Charset.defaultCharset()));
-        ObjectInputStream oInputStream = null;
+        Iterable<String> inString = Splitter.on(' ').split(setIntString);
         Set<Integer> deserializedSet = null;
         try
         {
-            oInputStream = new ObjectInputStream(bis);
-            deserializedSet = (Set<Integer>) oInputStream.readObject();
-            bis.close();
-            oInputStream.close();
-        } catch (ClassNotFoundException | IOException e)
+            deserializedSet =  Sets.newHashSet();
+            for (String id: inString)
+            {
+                if (id != null && !id.isEmpty())
+                    deserializedSet.add(Integer.valueOf(id));
+            }
+        } catch (Exception e)
         {
             e.printStackTrace();
-        }        
+        }
         return deserializedSet;
     }
 
     public static String serializeIntegerSet(Set<Integer> setIntegers)
     {
-        String serializedSet = null;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream os = null;
+        String serializedSet = new String(" ");
         try
         {
-            os = new ObjectOutputStream(bos);
-            os.writeObject(setIntegers);
-            serializedSet = bos.toString();
-            os.close();
-            bos.close();
-        } catch (IOException e)
+            Iterator<Integer> it = setIntegers.iterator();
+            while (it.hasNext())
+            {
+                Integer integer = (Integer) it.next();
+                serializedSet = serializedSet + integer.toString() + " ";
+            }
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
-        ModLogger.logInfo("serializeIntegerSet: "+serializedSet);
-        return serializedSet;        
+        return serializedSet.trim();        
     }
     
 }

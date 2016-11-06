@@ -130,7 +130,7 @@ public class ItemInstrument extends ItemBase implements IInstrument
             {
                 stack.setRepairCost(-1);
                 PlayStatusUtil.setPlaying((EntityPlayer) entityIn, false);
-                PlayManager.stopMusic(entityIn.getEntityId());
+                PlayManager.stopPlayersMusic(entityIn.getEntityId());
             }
         }
     }
@@ -150,7 +150,7 @@ public class ItemInstrument extends ItemBase implements IInstrument
             {
                 stackIn.setRepairCost(-1);
                 PlayStatusUtil.setPlaying(player, false);
-                PlayManager.stopMusic(player.getEntityId());
+                PlayManager.stopPlayersMusic(player.getEntityId());
             }
         }
 
@@ -167,7 +167,7 @@ public class ItemInstrument extends ItemBase implements IInstrument
             {
                 item.setRepairCost(-1);
                 PlayStatusUtil.setPlaying(playerIn, false);
-                PlayManager.stopMusic(playerIn.getEntityId());
+                PlayManager.stopPlayersMusic(playerIn.getEntityId());
             }
         }
         return true;

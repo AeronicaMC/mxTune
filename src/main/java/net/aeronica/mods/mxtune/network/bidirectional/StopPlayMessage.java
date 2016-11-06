@@ -39,7 +39,7 @@ public class StopPlayMessage extends AbstractMessage<StopPlayMessage>
 
     public StopPlayMessage() {}
 
-    public StopPlayMessage(Integer playID2) {this.playID = playID2;}
+    public StopPlayMessage(Integer playID) {this.playID = playID;}
 
     @Override
     protected void read(PacketBuffer buffer) throws IOException
@@ -58,7 +58,7 @@ public class StopPlayMessage extends AbstractMessage<StopPlayMessage>
     {
         if (side.isClient())
         {
-//            handleClientSide(player);
+            handleClientSide(player);
         } else
         {
             handleServerSide(player);
@@ -67,22 +67,11 @@ public class StopPlayMessage extends AbstractMessage<StopPlayMessage>
 
     public void handleClientSide(EntityPlayer playerSP)
     {
-        MMLManager.getInstance().mmlKill(playID, true);
-        if (playerSP.getEntityId() == (playID))
-        {
-            /** TODO: Need to consider tracking isPlaced for each group member for dealing with GUI or Riding player rooting */
-            ModLogger.debug("PacketPlayStop: try to close Gui for " + playID);
-            Minecraft mc = Minecraft.getMinecraft();
-            /** close the playing GUI */
-            mc.displayGuiScreen((GuiScreen) null);
-            mc.setIngameFocus();
-        }
+        // TODO: More Cleanup for playing - resetting all the players PlayStatuses
     }
 
     public void handleServerSide(EntityPlayer playerMP)
     {
-        PlayManager.dequeueMember(playID);
-        PlayStatusUtil.setPlaying((EntityPlayer) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getEntityByID(playID), false);
-//        PacketDispatcher.sendToAll(new StopPlayMessage(playID));
+        PlayManager.stopPlayID(playID);
     }
 }

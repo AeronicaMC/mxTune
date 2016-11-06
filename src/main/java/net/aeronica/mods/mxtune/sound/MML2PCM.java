@@ -57,11 +57,11 @@ public class MML2PCM
      */
     public boolean process(int entityID, String musicText)
     {
-        this.playerMML = GROUPS.splitToIntStrMap(musicText);
+        this.playerMML = GROUPS.deserializeIntStrMap(musicText);
         if (playerMML == null)
         {
             ModLogger.debug("playerMML is null! Check for an issue with NBT, networking, threads");
-            ClientAudio.setEntityAudioDataStatus(entityID, Status.ERROR);
+            ClientAudio.setPlayIDAudioDataStatus(entityID, Status.ERROR);
             return false;
         }
         /**
@@ -85,7 +85,7 @@ public class MML2PCM
         } catch (UnsupportedEncodingException e)
         {
             e.printStackTrace();
-            ClientAudio.setEntityAudioDataStatus(entityID, Status.ERROR);
+            ClientAudio.setPlayIDAudioDataStatus(entityID, Status.ERROR);
             return false;
         }
         is = new java.io.ByteArrayInputStream(mmlBuf);
@@ -100,7 +100,7 @@ public class MML2PCM
         } catch (IOException e1)
         {
             e1.printStackTrace();
-            ClientAudio.setEntityAudioDataStatus(entityID, Status.ERROR);
+            ClientAudio.setPlayIDAudioDataStatus(entityID, Status.ERROR);
             return false;
         }
         MMLLexer lexer = new MMLLexer(input);
@@ -123,24 +123,24 @@ public class MML2PCM
         try
         {
             mw = new Midi2WavRenderer();
-            ClientAudio.setEntityAudioStream(entityID, mw.createPCMStream(mmlTrans.getSequence(), patches, ClientAudio.getAudioFormat()));
+            ClientAudio.setPlayIDAudioStream(entityID, mw.createPCMStream(mmlTrans.getSequence(), patches, ClientAudio.getAudioFormat()));
         } catch (MidiUnavailableException e)
         {
             e.printStackTrace();
-            ClientAudio.setEntityAudioDataStatus(entityID, Status.ERROR);
+            ClientAudio.setPlayIDAudioDataStatus(entityID, Status.ERROR);
             return false;
         } catch (InvalidMidiDataException e)
         {
             e.printStackTrace();
-            ClientAudio.setEntityAudioDataStatus(entityID, Status.ERROR);
+            ClientAudio.setPlayIDAudioDataStatus(entityID, Status.ERROR);
             return false;
         } catch (IOException e)
         {
             e.printStackTrace();
-            ClientAudio.setEntityAudioDataStatus(entityID, Status.ERROR);
+            ClientAudio.setPlayIDAudioDataStatus(entityID, Status.ERROR);
             return false;
         }
-        ClientAudio.setEntityAudioDataStatus(entityID, Status.READY);
+        ClientAudio.setPlayIDAudioDataStatus(entityID, Status.READY);
         return true;
     }
 

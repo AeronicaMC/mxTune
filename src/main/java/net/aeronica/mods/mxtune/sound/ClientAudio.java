@@ -31,7 +31,6 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.StopPlayMessage;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.SoundSetupEvent;
@@ -47,9 +46,9 @@ public class ClientAudio
 
     private static final int THREAD_POOL_SIZE = 10;
     private static AudioFormat audioFormat;
-    private static ConcurrentLinkedQueue<Integer> entityIDQueue01;
-    private static ConcurrentLinkedQueue<Integer> entityIDQueue02;
-    private static Map<Integer, AudioData> entityAudioData;
+    private static ConcurrentLinkedQueue<Integer> playIDQueue01;
+    private static ConcurrentLinkedQueue<Integer> playIDQueue02;
+    private static Map<Integer, AudioData> playIDAudioData;
     
     private final static ThreadFactory threadFactory; 
     private final static ExecutorService executorService; 
@@ -58,12 +57,12 @@ public class ClientAudio
     public static ClientAudio getInstance() {return ClientAudioHolder.INSTANCE;}
     
     static {
-        /* Used to track which player/entity queued up music to be played */
-        entityIDQueue01 = new ConcurrentLinkedQueue<Integer>(); // Polled in SoundEventHandler#PlaySoundEvent
-        entityIDQueue02 = new ConcurrentLinkedQueue<Integer>(); // Polled in CodecPCM
+        /* Used to track which player/groups queued up music to be played by PlayID */
+        playIDQueue01 = new ConcurrentLinkedQueue<Integer>(); // Polled in SoundEventHandler#PlaySoundEvent
+        playIDQueue02 = new ConcurrentLinkedQueue<Integer>(); // Polled in CodecPCM
         /* PCM Signed Monaural little endian */
         audioFormat = new AudioFormat(48000, 16, 1, true, false);
-        entityAudioData = new HashMap<Integer, AudioData>();
+        playIDAudioData = new HashMap<Integer, AudioData>();
         
         threadFactory = (ThreadFactory) new ThreadFactoryBuilder()
                 .setNameFormat("mxTune-ClientAudio-%d")
@@ -78,29 +77,29 @@ public class ClientAudio
         WAITING, READY, ERROR;
     }
     
-    public static boolean addEntityIdQueue(int entityId) 
+    public static boolean addPlayIDQueue(int playID) 
     {
-        return entityIDQueue01.add(entityId) && entityIDQueue02.add(entityId);
+        return playIDQueue01.add(playID) && playIDQueue02.add(playID);
     }
     
-    public static int pollEntityIDQueue01()
+    public static int pollPlayIDQueue01()
     {
-        return entityIDQueue01.poll();
+        return playIDQueue01.poll();
     }
     
-    public static int peekEntityIDQueue01()
+    public static int peekPlayIDQueue01()
     {
-        return entityIDQueue01.peek();
+        return playIDQueue01.peek();
     }
 
-    public static int pollEntityIdQueue02()
+    public static int pollPlayIDQueue02()
     {
-        return entityIDQueue02.poll();
+        return playIDQueue02.poll();
     }
     
-    public static int peekEntityIdQueue02()
+    public static int peekPlayIDQueue02()
     {
-        return entityIDQueue02.peek();
+        return playIDQueue02.peek();
     }
 
    public static AudioFormat getAudioFormat()
@@ -108,102 +107,86 @@ public class ClientAudio
         return audioFormat;
     }
     
-    public synchronized static void setEntityAudioStream(int entityID, AudioInputStream audioStream)
+    public synchronized static void setPlayIDAudioStream(int playID, AudioInputStream audioStream)
     {
-        AudioData audioData = entityAudioData.get(entityID);
+        AudioData audioData = playIDAudioData.get(playID);
         audioData.setAudioStream(audioStream);
     }
     
-    public static void removeEntityAudioData(int entityID)
+    public static void removeEntityAudioData(int playID)
     {
-        if ((entityAudioData.isEmpty() == false) && entityAudioData.containsKey(entityID))
+        if ((playIDAudioData.isEmpty() == false) && playIDAudioData.containsKey(playID))
         {
-            entityAudioData.remove(entityID);
-            stop(entityID);
+            playIDAudioData.remove(playID);
+            stop(playID);
         }
     }
     
-    public synchronized static AudioInputStream getAudioInputStream(int entityID)
+    public synchronized static AudioInputStream getAudioInputStream(int playID)
     {
-        AudioData audioData = entityAudioData.get(entityID);
+        AudioData audioData = playIDAudioData.get(playID);
         return audioData.getAudioStream();
     }
     
-    public static void setEntityAudioDataStatus(Integer entityID, Status status)
+    public static void setPlayIDAudioDataStatus(Integer playID, Status status)
     {
-        AudioData audioData = entityAudioData.get(entityID);
+        AudioData audioData = playIDAudioData.get(playID);
         audioData.setStatus(status);
     }
     
-    public static boolean isEntityAudioDataWaiting(Integer entityID)
+    public static boolean isPlayIDAudioDataWaiting(Integer playID)
     {
-        AudioData audioData = entityAudioData.get(entityID);
+        AudioData audioData = playIDAudioData.get(playID);
         if (audioData == null) return false;
         return audioData.getStatus() == Status.WAITING;
     }
     
-    public static boolean isEntityAudioDataError(Integer entityID)
+    public static boolean isPlayIDAudioDataError(Integer playID)
     {
-        AudioData audioData = entityAudioData.get(entityID);
+        AudioData audioData = playIDAudioData.get(playID);
         if (audioData == null) return true;
         return audioData.getStatus() == Status.ERROR;
     }
     
-    public static boolean isEntityAudioDataReady(Integer entityID)
+    public static boolean isPlayIDAudioDataReady(Integer playID)
     {
-        AudioData audioData = entityAudioData.get(entityID);
+        AudioData audioData = playIDAudioData.get(playID);
         if (audioData == null) return false;
         return audioData.getStatus() == Status.READY;
     }
     
-    public static boolean hasEntity(Integer entityID)
+    public static boolean hasPlayID(Integer playID)
     {
-        if(entityAudioData == null) return false;
-        return entityAudioData.containsKey(entityID);
+        if(playIDAudioData == null) return false;
+        return playIDAudioData.containsKey(playID);
     }
 
-//    public static boolean isPlaying(Integer entityID)
-//    {
-//        if (hasEntity(entityID))
-//        {
-//            AudioData audioData = entityAudioData.get(entityID);
-//            return PlayStatusUtil.isPlaying(audioData.getPlayer());
-//        }
-//        return false;
-//    }
-
-    public static boolean isPlaying(Integer entityID)
+    public static boolean isPlaying(Integer playID)
     {
-        if (hasEntity(entityID))
+        if (hasPlayID(playID))
         {            
-            return GROUPS.isPlaying(entityID);
+            return GROUPS.isPlaying(playID);
         }
         return false;
     }
     
-    public static boolean isPlaced(Integer entityID)
+    public static boolean isPlaced(Integer playID)
     {
-        AudioData audioData = entityAudioData.get(entityID);
+        AudioData audioData = playIDAudioData.get(playID);
         return audioData.isPlaced();
     }
     
-    public static EntityPlayer getEntityPlayer(Integer entityID)
+    public static BlockPos getBlockPos(Integer playID)
     {
-        AudioData audioData = entityAudioData.get(entityID);
-        return audioData.getPlayer();
-    }
-    
-    public static BlockPos getBlockPos(Integer entityID)
-    {
-        AudioData audioData = entityAudioData.get(entityID);
+        AudioData audioData = playIDAudioData.get(playID);
         return audioData.getPos();
     }
     
-    public static void play(Integer entityID, String musicText, BlockPos pos, boolean isPlaced)
+    public static void play(Integer playID, String musicText, BlockPos pos, boolean isPlaced)
     {
-        addEntityIdQueue(entityID);
-        entityAudioData.put(entityID, new AudioData(entityID, musicText, pos, isPlaced));        
-        executorService.execute(new ThreadedPlay(entityID, musicText));
+        addPlayIDQueue(playID);
+        playIDAudioData.put(playID, new AudioData(playID, musicText, pos, isPlaced));        
+        executorService.execute(new ThreadedPlay(playID, musicText));
         if(isPlaced)
         {
             MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MusicPositioned(pos));
@@ -213,19 +196,19 @@ public class ClientAudio
         }
     }
     
-    private static void stop(Integer entityID)
+    private static void stop(Integer playID)
     {
-        PacketDispatcher.sendToServer(new StopPlayMessage(entityID));
+        PacketDispatcher.sendToServer(new StopPlayMessage(playID));
     }
     
     private static class ThreadedPlay implements Runnable
     {
-        private final Integer entityID;
+        private final Integer playID;
         private final String musicText;
 
         public ThreadedPlay(Integer entityID, String musicText)
         {
-            this.entityID = entityID;
+            this.playID = entityID;
             this.musicText = musicText;
         }
 
@@ -233,7 +216,7 @@ public class ClientAudio
         public void run()
         {
             MML2PCM p = new MML2PCM();
-            p.process(entityID, musicText);
+            p.process(playID, musicText);
         }
     }
     
@@ -250,7 +233,7 @@ public class ClientAudio
         if (e.getSound().getSoundLocation().equals(ModSoundEvents.PCM_PROXY.getSoundName()))
         {
             Integer playID;
-            if ((playID = ClientAudio.pollEntityIDQueue01()) != null)
+            if ((playID = ClientAudio.pollPlayIDQueue01()) != null)
             {
                 if (GROUPS.isClientPlaying(playID))
                 {
@@ -262,14 +245,7 @@ public class ClientAudio
                      * that occurs when the player moves and 3D sound system updates
                      * the sound position.
                      */
-                    e.setResultSound(new MusicBackground(MXTuneMain.proxy.getClientPlayer())); // TODO: Need to make this group aware!
-                }
-                else if (ClientAudio.isPlaced(playID))
-                {
-                    /*
-                     * Positioned music source for instruments that are placed in the world -OR- a GROUP of players JAMMING.
-                     */
-                    e.setResultSound(new MusicPositioned(ClientAudio.getBlockPos(playID)));
+                    e.setResultSound(new MusicBackground(MXTuneMain.proxy.getClientPlayer()));
                 }
                 else
                 {

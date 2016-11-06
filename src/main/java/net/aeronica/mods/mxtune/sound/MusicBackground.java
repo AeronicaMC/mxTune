@@ -36,7 +36,7 @@ public class MusicBackground extends PositionedSound
         this.volume = 1F;
         this.pitch = 1F;
         this.xPosF = (float)playerIn.posX;
-        this.yPosF = (float)playerIn.posY+100;
+        this.yPosF = (float)playerIn.posY+10000;
         this.zPosF = (float)playerIn.posZ;
         this.repeat = false;
         this.repeatDelay = 0;
