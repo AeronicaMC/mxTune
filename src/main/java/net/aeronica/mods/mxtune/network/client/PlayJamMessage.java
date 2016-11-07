@@ -78,7 +78,7 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
         {
             if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) player.worldObj.getEntityByID(GROUPS.getMembersGroupLeader(groupID))) == false)
             {
-                ClientAudio.play(groupID, jamMML, pos, isPlaced);
+                ClientAudio.play(groupID, jamMML, pos);
             }
         }
     }

@@ -78,9 +78,6 @@ public class MusicMoving extends MovingSound
     
     public void setDonePlaying()
     {
-//        boolean hasSimple = player.hasCapability(PlayStatusUtil.PLAY_STATUS, null); 
-//        if (hasSimple) player.getCapability(PlayStatusUtil.PLAY_STATUS, null).setPlaying(this.player, false);
-
         this.repeat = false;
         this.donePlaying = true;
         this.repeatDelay = 0;

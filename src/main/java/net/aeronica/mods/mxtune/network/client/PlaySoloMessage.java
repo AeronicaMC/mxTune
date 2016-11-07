@@ -107,7 +107,7 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
                  * "<playername1>=MML@...abcd; <playername2>=MML@...efga; <playername3>=MML@...bead;"
                  */
                 String mml = new String(entityID + "=" + musicText);
-                ClientAudio.play(entityID, mml, pos, isPlaced);
+                ClientAudio.play(entityID, mml, pos);
             }
         }
     }

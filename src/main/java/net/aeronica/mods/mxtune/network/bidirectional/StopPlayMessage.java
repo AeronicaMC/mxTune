@@ -19,22 +19,15 @@ package net.aeronica.mods.mxtune.network.bidirectional;
 import java.io.IOException;
 
 import net.aeronica.mods.mxtune.groups.PlayManager;
-import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
-import net.aeronica.mods.mxtune.network.PacketDispatcher;
-import net.aeronica.mods.mxtune.sound.PlayStatusUtil;
-import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class StopPlayMessage extends AbstractMessage<StopPlayMessage>
 {
+
     private Integer playID;
 
     public StopPlayMessage() {}
@@ -74,4 +67,5 @@ public class StopPlayMessage extends AbstractMessage<StopPlayMessage>
     {
         PlayManager.stopPlayID(playID);
     }
+
 }

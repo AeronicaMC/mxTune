@@ -128,12 +128,11 @@ public class SittableUtil
         {
             if (mount.blockPosX == x && mount.blockPosY == y && mount.blockPosZ == z)
             {
-                if (mount.getPassengers().isEmpty() && !mount.isDead)
-                {
-                    playerIn.startRiding(mount);
-                    mount.updatePassenger(playerIn);
-                    // ModLogger.logInfo("SittableUtil#sitOnBlock: Remount startRiding()" + mount.getEntityId());
-                }
+//                if (mount.getPassengers().isEmpty() && !mount.isDead)
+//                {
+//                    playerIn.startRiding(mount);
+//                    mount.updatePassenger(playerIn);
+//                }
                 return true;
             }
         }

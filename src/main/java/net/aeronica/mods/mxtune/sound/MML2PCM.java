@@ -51,17 +51,17 @@ public class MML2PCM
      * Jam play format inserts with a space between each player=MML sequence
      * "<playername1>=MML@...abcd; <playername2>=MML@...efgh; <playername2>=MML@...efgh;"
      * 
-     * @param entityID
+     * @param playID
      * @param musicText
      * @return false if errors
      */
-    public boolean process(int entityID, String musicText)
+    public boolean process(int playID, String musicText)
     {
         this.playerMML = GROUPS.deserializeIntStrMap(musicText);
         if (playerMML == null)
         {
             ModLogger.debug("playerMML is null! Check for an issue with NBT, networking, threads");
-            ClientAudio.setPlayIDAudioDataStatus(entityID, Status.ERROR);
+            ClientAudio.setPlayIDAudioDataStatus(playID, Status.ERROR);
             return false;
         }
         /**
@@ -85,7 +85,7 @@ public class MML2PCM
         } catch (UnsupportedEncodingException e)
         {
             e.printStackTrace();
-            ClientAudio.setPlayIDAudioDataStatus(entityID, Status.ERROR);
+            ClientAudio.setPlayIDAudioDataStatus(playID, Status.ERROR);
             return false;
         }
         is = new java.io.ByteArrayInputStream(mmlBuf);
@@ -100,7 +100,7 @@ public class MML2PCM
         } catch (IOException e1)
         {
             e1.printStackTrace();
-            ClientAudio.setPlayIDAudioDataStatus(entityID, Status.ERROR);
+            ClientAudio.setPlayIDAudioDataStatus(playID, Status.ERROR);
             return false;
         }
         MMLLexer lexer = new MMLLexer(input);
@@ -123,24 +123,24 @@ public class MML2PCM
         try
         {
             mw = new Midi2WavRenderer();
-            ClientAudio.setPlayIDAudioStream(entityID, mw.createPCMStream(mmlTrans.getSequence(), patches, ClientAudio.getAudioFormat()));
+            ClientAudio.setPlayIDAudioStream(playID, mw.createPCMStream(mmlTrans.getSequence(), patches, ClientAudio.getAudioFormat(playID)));
         } catch (MidiUnavailableException e)
         {
             e.printStackTrace();
-            ClientAudio.setPlayIDAudioDataStatus(entityID, Status.ERROR);
+            ClientAudio.setPlayIDAudioDataStatus(playID, Status.ERROR);
             return false;
         } catch (InvalidMidiDataException e)
         {
             e.printStackTrace();
-            ClientAudio.setPlayIDAudioDataStatus(entityID, Status.ERROR);
+            ClientAudio.setPlayIDAudioDataStatus(playID, Status.ERROR);
             return false;
         } catch (IOException e)
         {
             e.printStackTrace();
-            ClientAudio.setPlayIDAudioDataStatus(entityID, Status.ERROR);
+            ClientAudio.setPlayIDAudioDataStatus(playID, Status.ERROR);
             return false;
         }
-        ClientAudio.setPlayIDAudioDataStatus(entityID, Status.READY);
+        ClientAudio.setPlayIDAudioDataStatus(playID, Status.READY);
         return true;
     }
 

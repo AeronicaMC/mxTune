@@ -16,10 +16,8 @@
  */
 package net.aeronica.mods.mxtune.groups;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -162,10 +160,9 @@ public enum GROUPS
     public static boolean isClientPlaying(Integer playID)
     {
         Set<Integer> members = getMembersByPlayID(playID);
-        return ((members!=null) && members.isEmpty())?members.contains(MXTuneMain.proxy.getClientPlayer().getEntityId()):false;
+        return ((members!=null) && !members.isEmpty()) ? members.contains(MXTuneMain.proxy.getClientPlayer().getEntityId()) : false;
     }
-    
-    
+        
     public static boolean isPlaying(Integer playID) { return activePlayIDs != null ? activePlayIDs.contains(playID) : false; }
 
     public static void setClientPlayStatuses(String clientPlayStatuses)
@@ -194,28 +191,11 @@ public enum GROUPS
     }
     
     /* Serialization and deserialization methods */
-    public static Map<Integer, String> deserializeIntStrMap(String mapIntString)
-    {       
-        try
-        {
-            Map<String, String> inStringString =  (Map<String, String>) Splitter.on(" ").withKeyValueSeparator("=").split(mapIntString);
-            Map<Integer, String> outIntString = new HashMap<Integer, String>();
-            for (String id: inStringString.keySet())
-            {
-                outIntString.put(Integer.valueOf(id), inStringString.get(id));
-            }
-            return outIntString;
-        } catch (IllegalArgumentException e)
-        {
-            return null;
-        }
-    }
-    
     public static Map<Integer, Integer> deserializeIntIntMap(String mapIntString)
     {       
         try
         {
-            Map<String, String> inStringString =  (Map<String, String>) Splitter.on(" ").withKeyValueSeparator("=").split(mapIntString);
+            Map<String, String> inStringString =  (Map<String, String>) Splitter.on(' ').withKeyValueSeparator("=").split(mapIntString);
             Map<Integer, Integer> outIntInt = new HashMap<Integer, Integer>();
             for (String id: inStringString.keySet())
             {
@@ -242,10 +222,26 @@ public enum GROUPS
             }
         } catch (Exception e)
         {
-            ModLogger.logError(e.getLocalizedMessage());
             e.printStackTrace();
         }
         return serializedIntIntMap.trim();
+    }
+    
+    public static Map<Integer, String> deserializeIntStrMap(String mapIntString)
+    {       
+        try
+        {
+            Map<String, String> inStringString =  (Map<String, String>) Splitter.on(' ').withKeyValueSeparator("=").split(mapIntString);
+            Map<Integer, String> outIntString = new HashMap<Integer, String>();
+            for (String id: inStringString.keySet())
+            {
+                outIntString.put(Integer.valueOf(id), inStringString.get(id));
+            }
+            return outIntString;
+        } catch (IllegalArgumentException e)
+        {
+            return null;
+        }
     }
     
     public static String serializeIntStrMap(HashMap<Integer, String> mapIntStr)
@@ -262,7 +258,6 @@ public enum GROUPS
             }
         } catch (Exception e)
         {
-            ModLogger.logError(e.getLocalizedMessage());
             e.printStackTrace();
         }
         return serializedIntStrMap.trim();

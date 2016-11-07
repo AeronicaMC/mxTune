@@ -117,11 +117,12 @@ public class PlayManager
     {
         Integer playID = getNextPlayID();
         queue(playID, playerID, mml);
-        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playID, title, mml, pos, isPlaced);
-        PacketDispatcher.sendToAllAround(packetPlaySolo, playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, ModConfig.getListenerRange());
         setPlaying(playerID);
         activePlayIDs.add(playID);
         syncStatus();
+        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playID, title, mml, pos, isPlaced);
+        PacketDispatcher.sendToAllAround(packetPlaySolo, playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, ModConfig.getListenerRange());
+
     }
     
     private static void queueJam(EntityPlayer playerIn, String title, String mml, Integer playerID)

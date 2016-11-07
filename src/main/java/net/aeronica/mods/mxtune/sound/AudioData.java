@@ -25,16 +25,16 @@ public class AudioData
     private final Integer playID;
     private final String mml;
     private final BlockPos pos;
-    private final boolean isPlaced;
+    private final boolean isClientPlayer;
     private AudioInputStream audioStream;
     private Status status;
     
-    public AudioData(Integer entityID, String mml, BlockPos pos, boolean isPlaced)
+    public AudioData(Integer entityID, String mml, BlockPos pos, boolean isClientPlayer)
     {
         this.playID = entityID;
         this.mml = mml;
         this.pos = pos;
-        this.isPlaced = isPlaced;
+        this.isClientPlayer = isClientPlayer;
         this.status = Status.WAITING;
     }
 
@@ -63,9 +63,9 @@ public class AudioData
         return pos;
     }
     
-    public boolean isPlaced()
+    public boolean isClientPlayer()
     {
-        return isPlaced;
+        return isClientPlayer;
     }
     
     public AudioInputStream getAudioStream()

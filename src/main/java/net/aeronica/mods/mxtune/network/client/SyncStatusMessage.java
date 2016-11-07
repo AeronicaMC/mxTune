@@ -27,11 +27,12 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class SyncStatusMessage extends AbstractClientMessage<SyncStatusMessage>
 {
+
     String clientPlayStatuses;
     String playIDMembers;
     String activePlayIDs;
 
-    public SyncStatusMessage() {this.clientPlayStatuses = new String();}
+    public SyncStatusMessage() {}
 
     public SyncStatusMessage(String clientPlayStatuses, String playIDMembers, String activePlayIDs)
     {
@@ -54,7 +55,6 @@ public class SyncStatusMessage extends AbstractClientMessage<SyncStatusMessage>
         ByteBufUtils.writeUTF8String(buffer, clientPlayStatuses);
         ByteBufUtils.writeUTF8String(buffer, playIDMembers);
         ByteBufUtils.writeUTF8String(buffer, activePlayIDs);
-
     }
 
     @Override
@@ -64,4 +64,5 @@ public class SyncStatusMessage extends AbstractClientMessage<SyncStatusMessage>
         GROUPS.setPlayIDMembers(playIDMembers);
         GROUPS.setActivePlayIDs(activePlayIDs);
     }
+
 }

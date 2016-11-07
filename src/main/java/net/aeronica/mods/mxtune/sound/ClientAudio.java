@@ -31,6 +31,7 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.StopPlayMessage;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.SoundSetupEvent;
@@ -45,7 +46,7 @@ public class ClientAudio
 {
 
     private static final int THREAD_POOL_SIZE = 10;
-    private static AudioFormat audioFormat;
+    private static AudioFormat audioFormat3D, audioFormatStereo;
     private static ConcurrentLinkedQueue<Integer> playIDQueue01;
     private static ConcurrentLinkedQueue<Integer> playIDQueue02;
     private static Map<Integer, AudioData> playIDAudioData;
@@ -61,7 +62,8 @@ public class ClientAudio
         playIDQueue01 = new ConcurrentLinkedQueue<Integer>(); // Polled in SoundEventHandler#PlaySoundEvent
         playIDQueue02 = new ConcurrentLinkedQueue<Integer>(); // Polled in CodecPCM
         /* PCM Signed Monaural little endian */
-        audioFormat = new AudioFormat(48000, 16, 1, true, false);
+        audioFormat3D = new AudioFormat(48000, 16, 1, true, false);
+        audioFormatStereo = new AudioFormat(48000, 16, 2, true, false);
         playIDAudioData = new HashMap<Integer, AudioData>();
         
         threadFactory = (ThreadFactory) new ThreadFactoryBuilder()
@@ -102,9 +104,10 @@ public class ClientAudio
         return playIDQueue02.peek();
     }
 
-   public static AudioFormat getAudioFormat()
+   public static AudioFormat getAudioFormat(Integer playID)
     {
-        return audioFormat;
+       AudioData audioData = playIDAudioData.get(playID);       
+       return audioData.isClientPlayer() ? audioFormatStereo : audioFormat3D;
     }
     
     public synchronized static void setPlayIDAudioStream(int playID, AudioInputStream audioStream)
@@ -173,7 +176,7 @@ public class ClientAudio
     public static boolean isPlaced(Integer playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
-        return audioData.isPlaced();
+        return audioData.isClientPlayer();
     }
     
     public static BlockPos getBlockPos(Integer playID)
@@ -182,18 +185,12 @@ public class ClientAudio
         return audioData.getPos();
     }
     
-    public static void play(Integer playID, String musicText, BlockPos pos, boolean isPlaced)
+    public static void play(Integer playID, String musicText, BlockPos pos)
     {
         addPlayIDQueue(playID);
-        playIDAudioData.put(playID, new AudioData(playID, musicText, pos, isPlaced));        
+        playIDAudioData.put(playID, new AudioData(playID, musicText, pos, GROUPS.isClientPlaying(playID)));        
         executorService.execute(new ThreadedPlay(playID, musicText));
-        if(isPlaced)
-        {
-            MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MusicPositioned(pos));
-        } else
-        {
-            MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MusicMoving());
-        }
+        MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MusicMoving());
     }
     
     private static void stop(Integer playID)
@@ -245,7 +242,7 @@ public class ClientAudio
                      * that occurs when the player moves and 3D sound system updates
                      * the sound position.
                      */
-                    e.setResultSound(new MusicBackground(MXTuneMain.proxy.getClientPlayer()));
+                    e.setResultSound(new MusicBackground());
                 }
                 else
                 {
