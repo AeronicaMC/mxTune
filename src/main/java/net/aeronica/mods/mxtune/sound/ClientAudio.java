@@ -31,7 +31,6 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.StopPlayMessage;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.SoundSetupEvent;
@@ -113,7 +112,7 @@ public class ClientAudio
     public synchronized static void setPlayIDAudioStream(int playID, AudioInputStream audioStream)
     {
         AudioData audioData = playIDAudioData.get(playID);
-        audioData.setAudioStream(audioStream);
+        if (audioData != null) audioData.setAudioStream(audioStream);
     }
     
     public static void removeEntityAudioData(int playID)
@@ -130,13 +129,13 @@ public class ClientAudio
     public synchronized static AudioInputStream getAudioInputStream(int playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
-        return audioData.getAudioStream();
+        return (audioData != null) ? audioData.getAudioStream() : null;
     }
     
     public static void setPlayIDAudioDataStatus(Integer playID, Status status)
     {
         AudioData audioData = playIDAudioData.get(playID);
-        audioData.setStatus(status);
+        if (audioData != null) audioData.setStatus(status);
     }
     
     public static boolean isPlayIDAudioDataWaiting(Integer playID)
@@ -178,12 +177,14 @@ public class ClientAudio
     public static boolean isPlaced(Integer playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
+        if(playIDAudioData == null) return false;
         return audioData.isClientPlayer();
     }
     
     public static BlockPos getBlockPos(Integer playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
+        if(playIDAudioData == null) return new BlockPos(0,0,0);
         return audioData.getPos();
     }
     

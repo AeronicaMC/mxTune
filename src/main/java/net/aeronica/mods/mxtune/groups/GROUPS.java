@@ -42,7 +42,7 @@ public enum GROUPS
     private static Map<Integer, Integer> clientGroups;
     private static Map<Integer, Integer> clientMembers;
     /* PlayManager */
-    private static Map<Integer, String> clientPlayStatuses;
+    private static Map<Integer, String> membersQueuedStatus;
     private static Map<Integer, Integer> playIDMembers;
     private static Set<Integer> activePlayIDs;
 
@@ -100,9 +100,9 @@ public enum GROUPS
     public static int getIndex(Integer playerID)
     {
         int result = 0;
-        if (GROUPS.clientPlayStatuses != null && GROUPS.clientPlayStatuses.containsKey(playerID))
+        if (GROUPS.membersQueuedStatus != null && GROUPS.membersQueuedStatus.containsKey(playerID))
         {
-            switch (GROUPS.valueOf(GROUPS.clientPlayStatuses.get(playerID)))
+            switch (GROUPS.valueOf(GROUPS.membersQueuedStatus.get(playerID)))
             {
             case QUEUED:
                 result = 1;
@@ -117,7 +117,7 @@ public enum GROUPS
     
     public static Map<Integer, String> getClientPlayStatuses()
     {
-        return clientPlayStatuses;
+        return membersQueuedStatus;
     }
 
     public static Set<Integer> getMembersByPlayID(Integer playID) 
@@ -167,7 +167,7 @@ public enum GROUPS
 
     public static void setClientPlayStatuses(String clientPlayStatuses)
     {
-        GROUPS.clientPlayStatuses = deserializeIntStrMap(clientPlayStatuses);
+        GROUPS.membersQueuedStatus = deserializeIntStrMap(clientPlayStatuses);
     }
         
     public static Map<Integer, Integer> getPlayIDMembers()

@@ -31,44 +31,41 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
 {
+
     private String jamMML;
-    private Integer groupID;
+    private Integer playID;
     private BlockPos pos;
-    private boolean isPlaced;
 
     public PlayJamMessage() {}
 
-    public PlayJamMessage(String jamMML, Integer groupID)
+    public PlayJamMessage(String jamMML, Integer playID)
     {
-        this(jamMML, groupID, new BlockPos(0,0,0), false);
+        this(jamMML, playID, new BlockPos(0,0,0));
     }
 
-    public PlayJamMessage(String jamMML, Integer groupID, BlockPos pos, boolean isPlaced)
+    public PlayJamMessage(String jamMML, Integer playID, BlockPos pos)
     {
         this.jamMML = jamMML;
-        this.groupID = groupID;
+        this.playID = playID;
         this.pos = pos;
-        this.isPlaced = isPlaced;
     }
     
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
         jamMML = ByteBufUtils.readUTF8String(buffer);
-        groupID = ByteBufUtils.readVarInt(buffer, 5);
+        playID = ByteBufUtils.readVarInt(buffer, 5);
         pos = new BlockPos(ByteBufUtils.readVarInt(buffer, 5), ByteBufUtils.readVarInt(buffer, 5), ByteBufUtils.readVarInt(buffer, 5));
-        isPlaced = (ByteBufUtils.readVarShort(buffer)==1);
     }
 
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
         ByteBufUtils.writeUTF8String(buffer, jamMML);
-        ByteBufUtils.writeVarInt(buffer, groupID, 5);
+        ByteBufUtils.writeVarInt(buffer, playID, 5);
         ByteBufUtils.writeVarInt(buffer, pos.getX(), 5);
         ByteBufUtils.writeVarInt(buffer, pos.getY(), 5);
         ByteBufUtils.writeVarInt(buffer, pos.getZ(), 5);
-        ByteBufUtils.writeVarShort(buffer, isPlaced?1:0);
     }
 
     @Override
@@ -76,10 +73,11 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
     {
         if (MIDISystemUtil.getInstance().midiUnavailableWarn(player) == false)
         {
-            if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) player.worldObj.getEntityByID(GROUPS.getMembersGroupLeader(groupID))) == false)
+            if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) player.worldObj.getEntityByID(GROUPS.getLeaderOfGroup(playID))) == false)
             {
-                ClientAudio.play(groupID, jamMML, pos);
+                ClientAudio.play(playID, jamMML, pos);
             }
         }
     }
+
 }
