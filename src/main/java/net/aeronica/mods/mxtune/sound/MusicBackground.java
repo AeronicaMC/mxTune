@@ -33,7 +33,7 @@ public class MusicBackground extends PositionedSound
     {
         super(ModSoundEvents.PCM_PROXY, SoundCategory.getByName("mxtune"));
         this.sound = new PCMSound();
-        this.volume = 1F;
+        this.volume = 0.70F;
         this.pitch = 1F;
         this.xPosF = 0;
         this.yPosF = 0;

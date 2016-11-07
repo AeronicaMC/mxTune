@@ -120,8 +120,10 @@ public class ClientAudio
     {
         if ((playIDAudioData.isEmpty() == false) && playIDAudioData.containsKey(playID))
         {
+            AudioData audioData = playIDAudioData.get(playID);
+            if (audioData.isClientPlayer()) stop(playID);
             playIDAudioData.remove(playID);
-            stop(playID);
+            
         }
     }
     
