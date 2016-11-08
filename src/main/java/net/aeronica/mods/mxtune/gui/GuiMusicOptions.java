@@ -34,7 +34,6 @@ import org.lwjgl.input.Mouse;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
 
-import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.MusicOptionsMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
