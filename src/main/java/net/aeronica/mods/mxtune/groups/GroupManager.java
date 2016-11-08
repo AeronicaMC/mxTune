@@ -340,8 +340,8 @@ public class GroupManager
 
     public static void sync()
     {
-        String buildgroups = " ";
-        String buildmembers = " ";
+        String buildgroups = "|";
+        String buildmembers = "|";
 
         if (groups != null && !groups.isEmpty())
         {
@@ -350,12 +350,12 @@ public class GroupManager
                 Group theGroup = it.next();
                 debug("Group: " + theGroup.groupID);
                 debug("  Leader: " + theGroup.leaderEntityID);
-                buildgroups = buildgroups + theGroup.groupID + "=" + theGroup.leaderEntityID + " ";
+                buildgroups = buildgroups + theGroup.groupID + "=" + theGroup.leaderEntityID + "|";
                 for (Iterator<Member> im = theGroup.members.iterator(); im.hasNext();)
                 {
                     Member theMember = (Member) im.next();
                     debug("    member: " + theMember.memberEntityID);
-                    buildmembers = buildmembers + theMember.memberEntityID + "=" + theGroup.groupID + " ";
+                    buildmembers = buildmembers + theMember.memberEntityID + "=" + theGroup.groupID + "|";
                 }
             }
         }

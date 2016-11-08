@@ -117,12 +117,11 @@ public class PlayManager
     {
         Integer playID = getNextPlayID();
         queue(playID, playerID, mml);
-        setPlaying(playerID);
+        String musicText = getMML(playID);
         activePlayIDs.add(playID);
-        syncStatus();
-        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playID, title, mml, pos, isPlaced);
+        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playID, title, musicText, pos, isPlaced);
         PacketDispatcher.sendToAllAround(packetPlaySolo, playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, ModConfig.getListenerRange());
-
+        syncStatus();
     }
     
     private static void queueJam(EntityPlayer playerIn, String title, String mml, Integer playerID)
@@ -134,12 +133,11 @@ public class PlayManager
         /** Only send the groups MML when the leader starts the JAM */
         if (GROUPS.isLeader(playerID))
         {
-            mml = getMML(groupID);
+            String musicText = getMML(groupID);
             BlockPos pos = getMedianPos(groupID);
-            setPlaying(playerID);
             activePlayIDs.add(groupID);
+            PacketDispatcher.sendToAllAround(new PlayJamMessage(groupID, musicText, pos), playerIn.dimension, pos.getX(), pos.getY(), pos.getZ(), ModConfig.getListenerRange());
             syncStatus();
-            PacketDispatcher.sendToAllAround(new PlayJamMessage(mml, groupID, pos), playerIn.dimension, pos.getX(), pos.getY(), pos.getZ(), ModConfig.getListenerRange());
 //            PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playID, title, mml, pos, false);
 //            PacketDispatcher.sendToAllAround(packetPlaySolo, playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, ModConfig.getListenerRange());
 
@@ -264,7 +262,7 @@ public class PlayManager
      */
     private static String getMML(Integer groupID)
     {
-        String buildMML = " ";
+        String buildMML = new String("|");
         try
         {
             Set<Integer> keys = membersPlayID.keySet();
@@ -275,8 +273,7 @@ public class PlayManager
                 Integer group = membersPlayID.get(member);
                 if (group.equals(groupID))
                 {
-                    buildMML = buildMML + member + "=" + membersMML.get(member) + " ";
-                    it.remove();
+                    buildMML = buildMML + "|" + member + "=" + membersMML.get(member);
                     membersMML.remove(member);
                     setPlaying(member);
                 }

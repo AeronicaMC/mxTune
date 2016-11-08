@@ -67,7 +67,7 @@ public class CodecPCM implements ICodec {
     
     Random randInt;
 	
-    Integer playID = -1;
+    Integer playID = null;
     
 	/**
 	 * Processes status messages, warnings, and error messages.
@@ -110,7 +110,7 @@ public class CodecPCM implements ICodec {
     public boolean initialize(URL url)
     {
         initialized(SET, false);
-        if (playID == -1)
+        if (playID == null)
             if ((playID = ClientAudio.pollPlayIDQueue02()) == null )
             {
                 errorMessage("entityID not initialized: " + playID);
@@ -174,7 +174,7 @@ public class CodecPCM implements ICodec {
 		    } else
 		    {
 		        outputBuffer = appendByteArrays(outputBuffer, zeroBuffer, SAMPLE_SIZE);
-		        //message("  zeroBufferCount: " + zeroBufferCount);
+		        message("  zeroBufferCount: " + zeroBufferCount);
 		        if (zeroBufferCount++ > 48) 
 		        {
 		            errorMessage("  MML to PCM audio prcessiong took too long. Aborting!");

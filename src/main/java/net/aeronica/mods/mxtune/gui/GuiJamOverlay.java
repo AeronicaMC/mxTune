@@ -180,10 +180,20 @@ public class GuiJamOverlay extends Gui
  
     private void drawDebug()
     {
-        if (GROUPS.getClientPlayStatuses() != null)
+        if (GROUPS.getClientPlayStatuses() != null && !GROUPS.getClientPlayStatuses().isEmpty())
         {
             String status = new String("Play Status: " + GROUPS.getClientPlayStatuses().toString());
             fontRenderer.drawStringWithShadow(status, 2, 60, 16777215);
+        }
+        if (GROUPS.getPlayIDMembers() != null && !GROUPS.getPlayIDMembers().isEmpty())
+        {
+            String status = new String("PlayID Members: " + GROUPS.getPlayIDMembers().toString());
+            fontRenderer.drawStringWithShadow(status, 2, 70, 16777215);
+        }
+        if (GROUPS.getActivePlayIDs() != null && !GROUPS.getActivePlayIDs().isEmpty())
+        {
+            String status = new String("ActivePlayIDs: " + GROUPS.getActivePlayIDs().toString());
+            fontRenderer.drawStringWithShadow(status, 2, 80, 16777215);
         }
     }
     

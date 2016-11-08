@@ -33,7 +33,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
 {
 
-    int entityID;
+    Integer playID;
     String musicTitle;
     String musicText;
     BlockPos pos;
@@ -41,19 +41,19 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
 
     public PlaySoloMessage() {}
     
-    public PlaySoloMessage(int entityID, String musicTitle, String musicText)
+    public PlaySoloMessage(int playID, String musicTitle, String musicText)
     {
-        this(entityID, musicTitle, musicText, new BlockPos(0,0,0), false);
+        this(playID, musicTitle, musicText, new BlockPos(0,0,0), false);
     }
     
-    public PlaySoloMessage(Integer entityID, String playerName, String musicTitle, String musicText, boolean isPlaced)
+    public PlaySoloMessage(Integer playID, String playerName, String musicTitle, String musicText, boolean isPlaced)
     {
-        this(entityID, musicTitle, musicText, new BlockPos(0,0,0), isPlaced);
+        this(playID, musicTitle, musicText, new BlockPos(0,0,0), isPlaced);
     }
     
-    public PlaySoloMessage(int entityID, String musicTitle, String musicText, BlockPos pos, boolean isPlaced)
+    public PlaySoloMessage(int playID, String musicTitle, String musicText, BlockPos pos, boolean isPlaced)
     {
-        this.entityID = entityID;
+        this.playID = playID;
         this.musicTitle = musicTitle;
         this.musicText = musicText;
         this.pos = pos;
@@ -63,7 +63,7 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
-        entityID = ByteBufUtils.readVarInt(buffer, 5);
+        playID = ByteBufUtils.readVarInt(buffer, 5);
         musicTitle = ByteBufUtils.readUTF8String(buffer);
         musicText = ByteBufUtils.readUTF8String(buffer);
         pos = new BlockPos(ByteBufUtils.readVarInt(buffer, 5), ByteBufUtils.readVarInt(buffer, 5), ByteBufUtils.readVarInt(buffer, 5));
@@ -73,7 +73,7 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
-        ByteBufUtils.writeVarInt(buffer, entityID, 5);
+        ByteBufUtils.writeVarInt(buffer, playID, 5);
         ByteBufUtils.writeUTF8String(buffer, musicTitle);
         ByteBufUtils.writeUTF8String(buffer, musicText);
         ByteBufUtils.writeVarInt(buffer, pos.getX(), 5);
@@ -93,11 +93,11 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
     {
         if (MIDISystemUtil.getInstance().midiUnavailableWarn(player) == false)
         {
-            if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) player.worldObj.getEntityByID(entityID)) == false)
+            if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) player.worldObj.getEntityByID(playID)) == false)
             {
                 ModLogger.debug("musicTitle: " + musicTitle);
                 ModLogger.debug("musicText:  " + musicText.substring(0, (musicText.length() >= 25 ? 25 : musicText.length())));
-                ModLogger.debug("entityID:   " + entityID);
+                ModLogger.debug("entityID:   " + playID);
                 ModLogger.debug("pos:        " + pos);
                 ModLogger.debug("isPlaced:   " + isPlaced);
                 /*
@@ -106,8 +106,8 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
                  * sequence
                  * "<playername1>=MML@...abcd; <playername2>=MML@...efga; <playername3>=MML@...bead;"
                  */
-                String mml = new String(entityID + "=" + musicText);
-                ClientAudio.play(entityID, mml, pos);
+                String mml = new String(playID + "=" + musicText);
+                ClientAudio.play(playID, mml, pos);
             }
         }
     }

@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
 
@@ -195,7 +196,7 @@ public enum GROUPS
     {       
         try
         {
-            Map<String, String> inStringString =  (Map<String, String>) Splitter.on(' ').withKeyValueSeparator("=").split(mapIntString);
+            Map<String, String> inStringString =  (Map<String, String>) Splitter.on('|').omitEmptyStrings().withKeyValueSeparator("=").split(mapIntString);
             Map<Integer, Integer> outIntInt = new HashMap<Integer, Integer>();
             for (String id: inStringString.keySet())
             {
@@ -210,7 +211,7 @@ public enum GROUPS
 
     public static String serializeIntIntMap(HashMap<Integer, Integer> mapIntInt)
     {
-        String serializedIntIntMap = new String(" ");
+        String serializedIntIntMap = new String();
         try
         {
             Set<Integer> keys = mapIntInt.keySet();
@@ -218,7 +219,7 @@ public enum GROUPS
             while (it.hasNext())
             {
                 Integer integer = (Integer) it.next();
-                serializedIntIntMap = serializedIntIntMap + integer.toString() + "=" + mapIntInt.get(integer).toString() + " ";
+                serializedIntIntMap = serializedIntIntMap + integer.toString() + "=" + mapIntInt.get(integer).toString() + "|";
             }
         } catch (Exception e)
         {
@@ -231,7 +232,7 @@ public enum GROUPS
     {       
         try
         {
-            Map<String, String> inStringString =  (Map<String, String>) Splitter.on(' ').withKeyValueSeparator("=").split(mapIntString);
+            Map<String, String> inStringString =  (Map<String, String>) Splitter.on('|').omitEmptyStrings().withKeyValueSeparator("=").split(mapIntString);
             Map<Integer, String> outIntString = new HashMap<Integer, String>();
             for (String id: inStringString.keySet())
             {
@@ -240,13 +241,14 @@ public enum GROUPS
             return outIntString;
         } catch (IllegalArgumentException e)
         {
+            e.printStackTrace();
             return null;
         }
     }
     
     public static String serializeIntStrMap(HashMap<Integer, String> mapIntStr)
     {
-        String serializedIntStrMap = new String(" ");
+        String serializedIntStrMap = new String("|");
         try
         {
             Set<Integer> keys = mapIntStr.keySet();
@@ -254,7 +256,7 @@ public enum GROUPS
             while (it.hasNext())
             {
                 Integer integer = (Integer) it.next();
-                serializedIntStrMap = serializedIntStrMap + integer + "=" + mapIntStr.get(integer) + " ";
+                serializedIntStrMap = serializedIntStrMap + integer + "=" + mapIntStr.get(integer) + "|";
             }
         } catch (Exception e)
         {
@@ -265,7 +267,7 @@ public enum GROUPS
             
     public static Set<Integer> deserializeIntegerSet(String setIntString)
     {
-        Iterable<String> inString = Splitter.on(' ').split(setIntString);
+        Iterable<String> inString = Splitter.on(',').omitEmptyStrings().split(setIntString);
         Set<Integer> deserializedSet = null;
         try
         {
@@ -284,14 +286,14 @@ public enum GROUPS
 
     public static String serializeIntegerSet(Set<Integer> setIntegers)
     {
-        String serializedSet = new String(" ");
+        String serializedSet = new String();
         try
         {
             Iterator<Integer> it = setIntegers.iterator();
             while (it.hasNext())
             {
                 Integer integer = (Integer) it.next();
-                serializedSet = serializedSet + integer.toString() + " ";
+                serializedSet = serializedSet + integer.toString() + ",";
             }
         } catch (Exception e)
         {
