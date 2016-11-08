@@ -273,7 +273,7 @@ public class PlayManager
                 Integer group = membersPlayID.get(member);
                 if (group.equals(groupID))
                 {
-                    buildMML = buildMML + "|" + member + "=" + membersMML.get(member);
+                    buildMML = buildMML + member + "=" + membersMML.get(member) + "|";
                     membersMML.remove(member);
                     setPlaying(member);
                 }
