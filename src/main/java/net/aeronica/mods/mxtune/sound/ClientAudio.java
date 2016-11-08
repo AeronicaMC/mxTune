@@ -170,12 +170,12 @@ public class ClientAudio
     {
         if (hasPlayID(playID))
         {            
-            return GROUPS.isPlaying(playID);
+            return GROUPS.isPlayIDPlaying(playID);
         }
         return false;
     }
     
-    public static boolean isPlaced(Integer playID)
+    public static boolean isClientPlayer(Integer playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
         if(audioData == null) return false;

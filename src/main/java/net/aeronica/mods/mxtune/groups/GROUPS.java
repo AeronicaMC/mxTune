@@ -164,7 +164,7 @@ public enum GROUPS
         return ((members!=null) && !members.isEmpty()) ? members.contains(MXTuneMain.proxy.getClientPlayer().getEntityId()) : false;
     }
         
-    public static boolean isPlaying(Integer playID) { return activePlayIDs != null ? activePlayIDs.contains(playID) : false; }
+    public static boolean isPlayIDPlaying(Integer playID) { return activePlayIDs != null ? activePlayIDs.contains(playID) : false; }
 
     public static void setClientPlayStatuses(String clientPlayStatuses)
     {
@@ -248,7 +248,7 @@ public enum GROUPS
     
     public static String serializeIntStrMap(HashMap<Integer, String> mapIntStr)
     {
-        String serializedIntStrMap = new String("|");
+        String serializedIntStrMap = new String();
         try
         {
             Set<Integer> keys = mapIntStr.keySet();
