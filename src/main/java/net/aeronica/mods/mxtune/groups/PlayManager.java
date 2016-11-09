@@ -120,9 +120,9 @@ public class PlayManager
         queue(playID, playerID, mml);
         String musicText = getMML(playID);
         activePlayIDs.add(playID);
+        syncStatus();
         PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playID, title, musicText, pos, isPlaced);
         PacketDispatcher.sendToAllAround(packetPlaySolo, playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, ModConfig.getListenerRange());
-        syncStatus();
         return playID;
     }
     
@@ -138,8 +138,8 @@ public class PlayManager
             BlockPos pos = getMedianPos(groupID);
             activePlayIDs.add(groupID);
             PacketDispatcher.sendToAllAround(new PlayJamMessage(groupID, musicText, pos), playerIn.dimension, pos.getX(), pos.getY(), pos.getZ(), ModConfig.getListenerRange());
-            syncStatus();
         }
+        syncStatus();
         return groupID;
     }
 
@@ -151,40 +151,6 @@ public class PlayManager
         return isPlayerPlaying(entityID) | isPlayerQueued(entityID);
     }
     public static boolean isActivePlayID(Integer playID) { return activePlayIDs != null ? activePlayIDs.contains(playID) : false; }
-    
-    /**
-     * Stop the playing MML for the specified playID (player name).
-     * 
-     * @param EntityID - The players entity id
-     */
-    public static void stopPlayersMusic(Integer EntityID)
-    {
-        Integer entityGroup = GROUPS.getMembersGroupID(EntityID);
-        ModLogger.logInfo("PM.stopMusic: member: " + EntityID);
-        if (isPlayerPlaying(EntityID) & (entityGroup == null))
-        {
-            ModLogger.logInfo("  PM.stopMusic: player: " + EntityID + ", group: " + entityGroup);
-            dequeueMember(EntityID);
-        }
-        if (isPlayerQueued(EntityID))
-        {
-            ModLogger.logInfo("  PM.stopMusic: queued party member: " + EntityID + ", group: " + entityGroup);
-            dequeueMember(EntityID);
-        }
-        if (isPlayerPlaying(EntityID) & (entityGroup != null))
-        {
-            ModLogger.logInfo("  PM.stopMusic: playing party member: " + EntityID + ", group: " + entityGroup);
-            for(Integer member: GROUPS.getClientMembers().keySet())
-            {   
-                if(GROUPS.getMembersGroupID(member) == entityGroup)
-                {
-                    EntityPlayer player = (EntityPlayer) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getEntityByID(member);
-                    ModLogger.logInfo("    PM.stopMusic member: " + member);
-                    dequeueMember(member);
-                }
-            }
-        }
-    }
     
     public static void stopPlayID(Integer playID)
     {
@@ -201,8 +167,7 @@ public class PlayManager
             }
         }
         dequeuePlayID(playID);
-        syncStatus();
-        
+        syncStatus();        
     }
     
     private static void dequeuePlayID(Integer playID)
@@ -247,7 +212,6 @@ public class PlayManager
             membersMML.put(memberID, mml);
             membersPlayID.put(memberID, playID);
             setQueued(memberID);
-            syncStatus();
         } catch (Exception e)
         {
             ModLogger.logError(e.getLocalizedMessage());
