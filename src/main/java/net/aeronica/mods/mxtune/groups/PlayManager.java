@@ -81,9 +81,9 @@ public class PlayManager
      * @param pos       position of block instrument
      * @param isPlaced  true is this is a block instrument
      */
-    public static void playMusic(EntityPlayer playerIn, BlockPos pos, boolean isPlaced)
+    public static Integer playMusic(EntityPlayer playerIn, BlockPos pos, boolean isPlaced)
     {
-        if (MusicOptionsUtil.isMuteAll(playerIn)) return;
+        if (MusicOptionsUtil.isMuteAll(playerIn)) return null;
         ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(pos, playerIn, isPlaced);
         if (sheetMusic != null)
         {
@@ -98,22 +98,24 @@ public class PlayManager
                 ModLogger.debug("MML Title: " + title);
                 ModLogger.debug("MML Sub25: " + mml.substring(0, (mml.length() >= 25 ? 25 : mml.length())));
 
+                PlayStatusUtil.setPlaying(playerIn, true);
                 if (GROUPS.getMembersGroupID(playerID) == null)
                 {
                     /** Solo Play */
-                    playSolo(playerIn, title, mml, playerID, pos, isPlaced);
                     ModLogger.debug("playMusic playSolo");
+                    return playSolo(playerIn, title, mml, playerID, pos, isPlaced);
                 } else
                 {
                     /** Jam Play */
-                    queueJam(playerIn, title, mml, playerID);
                     ModLogger.debug("playMusic queueJam");
+                    return queueJam(playerIn, title, mml, playerID);
                 }                
             }
         }
+        return null;
     }
 
-    private static void playSolo(EntityPlayer playerIn, String title, String mml, Integer playerID, BlockPos pos, boolean isPlaced)
+    private static Integer playSolo(EntityPlayer playerIn, String title, String mml, Integer playerID, BlockPos pos, boolean isPlaced)
     {
         Integer playID = getNextPlayID();
         queue(playID, playerID, mml);
@@ -122,14 +124,14 @@ public class PlayManager
         PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playID, title, musicText, pos, isPlaced);
         PacketDispatcher.sendToAllAround(packetPlaySolo, playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, ModConfig.getListenerRange());
         syncStatus();
+        return playID;
     }
     
-    private static void queueJam(EntityPlayer playerIn, String title, String mml, Integer playerID)
+    private static Integer queueJam(EntityPlayer playerIn, String title, String mml, Integer playerID)
     {
         Integer groupID = GROUPS.getMembersGroupID(playerID);
         /** Queue members parts */
         queue(groupID, playerID, mml);
-        // PacketDispatcher.sendTo(new QueueJamMessage("queue", "only", isPlaced), (EntityPlayerMP) playerIn);
         /** Only send the groups MML when the leader starts the JAM */
         if (GROUPS.isLeader(playerID))
         {
@@ -138,10 +140,8 @@ public class PlayManager
             activePlayIDs.add(groupID);
             PacketDispatcher.sendToAllAround(new PlayJamMessage(groupID, musicText, pos), playerIn.dimension, pos.getX(), pos.getY(), pos.getZ(), ModConfig.getListenerRange());
             syncStatus();
-//            PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playID, title, mml, pos, false);
-//            PacketDispatcher.sendToAllAround(packetPlaySolo, playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, ModConfig.getListenerRange());
-
         }
+        return groupID;
     }
 
     public static boolean isPlayerPlaying(Integer EntityID) {return (GROUPS.getIndex(EntityID) & 2) == 2; }

@@ -52,7 +52,8 @@ public class ClientAudio
     private static Map<Integer, AudioData> playIDAudioData;
     
     private final static ThreadFactory threadFactory; 
-    private final static ExecutorService executorService; 
+    private final static ExecutorService executorService;
+    
     private ClientAudio() {}
     private static class ClientAudioHolder {private static final ClientAudio INSTANCE = new ClientAudio();}
     public static ClientAudio getInstance() {return ClientAudioHolder.INSTANCE;}
@@ -63,6 +64,7 @@ public class ClientAudio
         playIDQueue02 = new ConcurrentLinkedQueue<Integer>(); // Polled in CodecPCM
         /* PCM Signed Monaural little endian */
         audioFormat3D = new AudioFormat(48000, 16, 1, true, false);
+        /* PCM Signed Stereo little endian */        
         audioFormatStereo = new AudioFormat(48000, 16, 2, true, false);
         playIDAudioData = new HashMap<Integer, AudioData>();
         
@@ -236,8 +238,8 @@ public class ClientAudio
             Integer playID;
             if ((playID = ClientAudio.pollPlayIDQueue01()) != null)
             {
-                ModLogger.logInfo("PlaySoundEvent Stereo: " + (GROUPS.isClientPlaying(playID)) + ", playID: " + playID);
-                if (GROUPS.isClientPlaying(playID))
+                ModLogger.logInfo("PlaySoundEvent Stereo: " + (ClientAudio.isClientPlayer(playID)) + ", playID: " + playID);
+                if (ClientAudio.isClientPlayer(playID))
                 {
                     /*
                      * ThePlayer(s) hear their own music without any 3D distance

@@ -17,8 +17,10 @@
 package net.aeronica.mods.mxtune.items;
 
 import java.util.List;
+import java.util.Set;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiInstrumentInventory;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
@@ -91,9 +93,8 @@ public class ItemInstrument extends ItemBase implements IInstrument
                 if (!PlayStatusUtil.isPlaying(playerIn))
                 {
                     /**TODO Make sure it is OKAY steal and to use this property like this */
-                    itemStackIn.setRepairCost(playerIn.getEntityId());
-                    PlayStatusUtil.setPlaying(playerIn, true);
-                    PlayManager.playMusic(playerIn, pos, false);
+                    Integer playID = PlayManager.playMusic(playerIn, pos, false);
+                    itemStackIn.setRepairCost(playID != null ? playID : -1);
                 }
             }
         } else
@@ -125,11 +126,11 @@ public class ItemInstrument extends ItemBase implements IInstrument
     public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected)
     {
         if (!worldIn.isRemote)
-        {
-            if (!isSelected & (stack.getRepairCost() == entityIn.getEntityId()))
+        {                
+            if (!isSelected && GROUPS.playerHasPlayID(entityIn.getEntityId(), stack.getRepairCost()))
             {
                 stack.setRepairCost(-1);
-                PlayStatusUtil.setPlaying((EntityPlayer) entityIn, false);
+                //PlayStatusUtil.setPlaying((EntityPlayer) entityIn, false);
                 PlayManager.stopPlayersMusic(entityIn.getEntityId());
             }
         }

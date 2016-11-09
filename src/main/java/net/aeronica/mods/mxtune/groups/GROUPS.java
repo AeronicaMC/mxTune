@@ -163,7 +163,13 @@ public enum GROUPS
         Set<Integer> members = getMembersByPlayID(playID);
         return ((members!=null) && !members.isEmpty()) ? members.contains(MXTuneMain.proxy.getClientPlayer().getEntityId()) : false;
     }
-        
+    
+    public static boolean playerHasPlayID(Integer entityID, Integer playID)
+    {
+        Set<Integer> members = GROUPS.getMembersByPlayID(playID);
+        return (members != null && !members.isEmpty()) ? members.contains(entityID) : false;
+    }
+    
     public static boolean isPlayIDPlaying(Integer playID) { return activePlayIDs != null ? activePlayIDs.contains(playID) : false; }
 
     public static void setClientPlayStatuses(String clientPlayStatuses)

@@ -38,8 +38,11 @@ package net.aeronica.mods.mxtune.util;
 
 import java.util.List;
 
+import javax.vecmath.Vector3d;
+
 import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
 import net.minecraft.block.BlockLiquid;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -139,6 +142,22 @@ public class SittableUtil
         return false;
     }
 
+    public static boolean isPlayerSitting(World worldIn, EntityPlayer playerIn, BlockPos pos)
+    {
+        double x = pos.getX(); double y = pos.getY(); double z = pos.getZ();
+        List<EntitySittableBlock> listEMB = worldIn.getEntitiesWithinAABB(EntitySittableBlock.class, new AxisAlignedBB(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(1D, 1D, 1D));
+        if (!listEMB.isEmpty())
+            ModLogger.logInfo("SittableUtil#checkForExistingEntity: listEMB = " + listEMB.size());
+        else
+            return false; 
+        for (EntitySittableBlock mount : listEMB)
+        {
+            ModLogger.logInfo("SittableUtil#isPlayerSitting: mount = " + mount);
+            if (mount.blockPosX == x && mount.blockPosY == y && mount.blockPosZ == z) { return mount.isPassenger(playerIn); }
+        }
+        return false;
+    }
+    
     public static boolean isSomeoneSitting(World world, double x, double y, double z)
     {
         List<EntitySittableBlock> listEMB = world.getEntitiesWithinAABB(EntitySittableBlock.class, new AxisAlignedBB(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(1D, 1D, 1D));
