@@ -98,7 +98,6 @@ public class PlayManager
                 ModLogger.debug("MML Title: " + title);
                 ModLogger.debug("MML Sub25: " + mml.substring(0, (mml.length() >= 25 ? 25 : mml.length())));
 
-                PlayStatusUtil.setPlaying(playerIn, true);
                 if (GROUPS.getMembersGroupID(playerID) == null)
                 {
                     /** Solo Play */
@@ -146,6 +145,11 @@ public class PlayManager
 
     public static boolean isPlayerPlaying(Integer EntityID) {return (GROUPS.getIndex(EntityID) & 2) == 2; }
     public static boolean isPlayerQueued(Integer EntityID) {return (GROUPS.getIndex(EntityID) & 1) == 1; }
+    public static boolean isPlayerPlaying(EntityPlayer playerIn)
+    {
+        Integer entityID = playerIn.getEntityId();
+        return isPlayerPlaying(entityID) | isPlayerQueued(entityID);
+    }
     public static boolean isActivePlayID(Integer playID) { return activePlayIDs != null ? activePlayIDs.contains(playID) : false; }
     
     /**
@@ -177,7 +181,6 @@ public class PlayManager
                     EntityPlayer player = (EntityPlayer) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getEntityByID(member);
                     ModLogger.logInfo("    PM.stopMusic member: " + member);
                     dequeueMember(member);
-                    PlayStatusUtil.setPlaying(player, false);
                 }
             }
         }
@@ -197,7 +200,6 @@ public class PlayManager
                 membersQueuedStatus.remove(member);
             }
         }
-        PlayStatusUtil.stopPlaying(memberSet);
         dequeuePlayID(playID);
         syncStatus();
         

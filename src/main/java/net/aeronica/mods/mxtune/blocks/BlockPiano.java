@@ -115,7 +115,7 @@ public class BlockPiano extends BlockHorizontal
             boolean invHasItem = tile.getInventory().getStackInSlot(0) != null;
             boolean invIsMusic = invHasItem && (tile.getInventory().getStackInSlot(0).getItem() instanceof IMusic) &&
                     tile.getInventory().getStackInSlot(0).hasDisplayName();
-            boolean canPlay = playerIn.isRiding() && invIsMusic && SittableUtil.isPlayerSitting(worldIn, playerIn, pos) && !PlayStatusUtil.isPlaying(playerIn);
+            boolean canPlay = playerIn.isRiding() && invIsMusic && SittableUtil.isPlayerSitting(worldIn, playerIn, pos) && !PlayManager.isPlayerPlaying(playerIn);
             boolean playerHasItem = playerIn.getHeldItem(hand) != null;
             boolean playerHasMusic = playerHasItem && (playerIn.getHeldItem(hand).getItem() instanceof IMusic) && 
                     playerIn.getHeldItem(hand).hasDisplayName();

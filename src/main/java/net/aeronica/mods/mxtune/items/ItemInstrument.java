@@ -90,7 +90,7 @@ public class ItemInstrument extends ItemBase implements IInstrument
             }
             if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && hand.equals(EnumHand.MAIN_HAND))
             {
-                if (!PlayStatusUtil.isPlaying(playerIn))
+                if (!PlayManager.isPlayerPlaying(playerIn))
                 {
                     /**TODO Make sure it is OKAY steal and to use this property like this */
                     Integer playID = PlayManager.playMusic(playerIn, pos, false);
@@ -123,15 +123,15 @@ public class ItemInstrument extends ItemBase implements IInstrument
      * update it's contents.
      */
     @Override
-    public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected)
+    public void onUpdate(ItemStack stackIn, World worldIn, Entity entityIn, int itemSlot, boolean isSelected)
     {
         if (!worldIn.isRemote)
-        {                
-            if (!isSelected && GROUPS.playerHasPlayID(entityIn.getEntityId(), stack.getRepairCost()))
+        {         
+            Integer playID = stackIn.getRepairCost();
+            if (!isSelected && GROUPS.isPlayIDPlaying(playID))
             {
-                stack.setRepairCost(-1);
-                //PlayStatusUtil.setPlaying((EntityPlayer) entityIn, false);
-                PlayManager.stopPlayersMusic(entityIn.getEntityId());
+                PlayManager.stopPlayID(playID);
+                stackIn.setRepairCost(-1);
             }
         }
     }
@@ -146,12 +146,11 @@ public class ItemInstrument extends ItemBase implements IInstrument
     {
         if (!worldIn.isRemote)
         {
-            EntityPlayer player = (EntityPlayer) worldIn.getEntityByID(stackIn.getRepairCost());
-            if (player != null && (stackIn.getRepairCost() == player.getEntityId()))
+            Integer playID = stackIn.getRepairCost();
+            if (GROUPS.isPlayIDPlaying(playID))
             {
+                PlayManager.stopPlayID(playID);
                 stackIn.setRepairCost(-1);
-                PlayStatusUtil.setPlaying(player, false);
-                PlayManager.stopPlayersMusic(player.getEntityId());
             }
         }
 
@@ -160,15 +159,15 @@ public class ItemInstrument extends ItemBase implements IInstrument
     }
 
     @Override
-    public boolean onDroppedByPlayer(ItemStack item, EntityPlayer playerIn)
+    public boolean onDroppedByPlayer(ItemStack stackIn, EntityPlayer playerIn)
     {
         if (!playerIn.getEntityWorld().isRemote)
         {
-            if (PlayStatusUtil.isPlaying(playerIn) && (item.getRepairCost() == playerIn.getEntityId()))
+            Integer playID = stackIn.getRepairCost();
+            if (GROUPS.isPlayIDPlaying(playID))
             {
-                item.setRepairCost(-1);
-                PlayStatusUtil.setPlaying(playerIn, false);
-                PlayManager.stopPlayersMusic(playerIn.getEntityId());
+                PlayManager.stopPlayID(playID);
+                stackIn.setRepairCost(-1);
             }
         }
         return true;
