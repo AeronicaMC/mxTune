@@ -258,7 +258,6 @@ public class PlayManager
     {
         int x, y, z, count; x = y = z = count = 0;
         BlockPos pos;
-        ModLogger.logInfo("getMedianPos");
        
         for(Integer member: GROUPS.getClientMembers().keySet())
         {   
@@ -269,7 +268,6 @@ public class PlayManager
                 y = y + player.getPosition().getY();
                 z = z + player.getPosition().getZ();
                 count++;
-                ModLogger.logInfo("  getMedianPos player:" + player + ", x:" + x + ", count: " + count);
             }
         }            
         
@@ -278,7 +276,6 @@ public class PlayManager
         y/=count;
         z/=count;
         pos = new BlockPos(x,y,z);
-        ModLogger.logInfo("" + pos);
         return pos;
     }
 
@@ -304,7 +301,6 @@ public class PlayManager
                             if (memberA != memberB)
                             {
                                distance = getMemberVector(memberA).distanceTo(getMemberVector(memberB));
-                               ModLogger.logInfo("..testStopDistance: " + distance);
                                if (distance > stopDistance) PlayManager.stopPlayID(playID);
                             }
                         }
@@ -322,7 +318,6 @@ public class PlayManager
             v3d = new Vec3d(player.posX, player.prevPosY, player.posZ);
         else
             v3d = new Vec3d(0,0,0);
-        ModLogger.logInfo("..getMemberVector " + v3d);
         return v3d;
     }
     

@@ -38,11 +38,8 @@ package net.aeronica.mods.mxtune.util;
 
 import java.util.List;
 
-import javax.vecmath.Vector3d;
-
 import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
 import net.minecraft.block.BlockLiquid;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;

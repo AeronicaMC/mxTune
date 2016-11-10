@@ -17,14 +17,12 @@
 package net.aeronica.mods.mxtune.items;
 
 import java.util.List;
-import java.util.Set;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiInstrumentInventory;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
-import net.aeronica.mods.mxtune.sound.PlayStatusUtil;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;

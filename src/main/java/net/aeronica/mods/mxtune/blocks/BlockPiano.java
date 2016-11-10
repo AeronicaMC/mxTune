@@ -25,7 +25,6 @@ import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.init.StartupBlocks;
 import net.aeronica.mods.mxtune.inventory.IMusic;
-import net.aeronica.mods.mxtune.sound.PlayStatusUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SittableUtil;
 import net.minecraft.block.Block;

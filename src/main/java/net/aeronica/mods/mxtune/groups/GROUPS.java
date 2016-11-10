@@ -21,12 +21,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import paulscode.sound.Vector3D;
 
@@ -161,7 +159,6 @@ public enum GROUPS
     public static boolean isClientPlaying(Integer playID)
     {
         Set<Integer> members = GROUPS.getMembersByPlayID(playID);
-        ModLogger.logInfo("isClientPlaying members: " + members + ", client: " + MXTuneMain.proxy.getClientPlayer().getEntityId());
         return ((members!=null) && !members.isEmpty()) ? members.contains(MXTuneMain.proxy.getClientPlayer().getEntityId()) : false;
     }
     
