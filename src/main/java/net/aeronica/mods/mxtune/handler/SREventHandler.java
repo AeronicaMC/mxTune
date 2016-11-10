@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.handler;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.config.ModConfig;
+import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.inventory.Slot;
@@ -25,6 +26,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class SREventHandler
 {
@@ -56,7 +60,7 @@ public class SREventHandler
                 if (slot.getHasStack() && stack.getItem() instanceof IInstrument)
                 {
                     ModLogger.debug("PCE.close slot: " +  slot.getSlotIndex() + ", has:" + slot.getHasStack() + ", " + slot.getStack().getItem().getItemStackDisplayName(stack) + ", name: " + slot.inventory.getName());
-                    if (stack.getRepairCost() > 0)
+                    if (stack.getRepairCost() > -1)
                     {
                         ModLogger.debug("  PCE.close Item.onUpdate: " + stack.getItem().getItemStackDisplayName(stack) + " - Stopped Playing ");
                         stack.getItem().onUpdate(stack, event.getEntityPlayer().getEntityWorld(), event.getEntityPlayer(), 0, false );
@@ -65,4 +69,14 @@ public class SREventHandler
             }
         }
     }
+    
+    private static int count = 0;
+    @SubscribeEvent
+    public void onEvent(ServerTickEvent event)
+    {
+        if (event.side == Side.SERVER && event.phase == TickEvent.Phase.END && (count++ % 40 == 0)) {
+            PlayManager.testStopDistance(10.0d);
+        }
+    }
+    
 }

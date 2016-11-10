@@ -38,6 +38,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 // Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
@@ -60,7 +61,7 @@ public class PlayManager
         membersPlayID = new HashMap<Integer, Integer>();
         membersQueuedStatus = new HashMap<Integer, String>();
         activePlayIDs = Sets.newHashSet();
-        playID = 0;
+        playID = 1;
     }
     
     public static Integer getNextPlayID()
@@ -280,6 +281,50 @@ public class PlayManager
         return pos;
     }
 
+    /**
+     * Called by server tick once every two seconds to calculate the distance between
+     * group members and to stop the playID if the distance exceeds stopDistane.
+     * 
+     * @param stopDistance
+     */
+    public static void testStopDistance(double stopDistance)
+    {
+        if (GROUPS.getActivePlayIDs() != null && !GROUPS.getActivePlayIDs().isEmpty())
+        {
+            double distance = 0;
+            for(Integer playID: GROUPS.getActivePlayIDs())
+            {
+                if (GROUPS.getMembersByPlayID(playID) != null && !GROUPS.getMembersByPlayID(playID).isEmpty())
+                {
+                    for (Integer memberA: GROUPS.getMembersByPlayID(playID))
+                    {
+                        for (Integer memberB:  GROUPS.getMembersByPlayID(playID) )
+                        {
+                            if (memberA != memberB)
+                            {
+                               distance = getMemberVector(memberA).distanceTo(getMemberVector(memberB));
+                               ModLogger.logInfo("..testStopDistance: " + distance);
+                               if (distance > stopDistance) PlayManager.stopPlayID(playID);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private static Vec3d getMemberVector(Integer entityID)
+    {
+        Vec3d v3d;
+        EntityPlayer player = (EntityPlayer) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getEntityByID(entityID);
+        if (player != null)
+            v3d = new Vec3d(player.posX, player.prevPosY, player.posZ);
+        else
+            v3d = new Vec3d(0,0,0);
+        ModLogger.logInfo("..getMemberVector " + v3d);
+        return v3d;
+    }
+    
     /**
      * Used by the GroupMananger to purge unused/aborted Jam data
      * 
