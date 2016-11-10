@@ -161,6 +161,7 @@ public enum GROUPS
     public static boolean isClientPlaying(Integer playID)
     {
         Set<Integer> members = GROUPS.getMembersByPlayID(playID);
+        ModLogger.logInfo("isClientPlaying members: " + members + ", client: " + MXTuneMain.proxy.getClientPlayer().getEntityId());
         return ((members!=null) && !members.isEmpty()) ? members.contains(MXTuneMain.proxy.getClientPlayer().getEntityId()) : false;
     }
     

@@ -132,15 +132,16 @@ public class PlayManager
         Integer groupID = GROUPS.getMembersGroupID(playerID);
         /** Queue members parts */
         queue(groupID, playerID, mml);
+        syncStatus();
         /** Only send the groups MML when the leader starts the JAM */
         if (GROUPS.isLeader(playerID))
         {
             String musicText = getMML(groupID);
             BlockPos pos = getMedianPos(groupID);
             activePlayIDs.add(groupID);
+            syncStatus();
             PacketDispatcher.sendToAllAround(new PlayJamMessage(groupID, musicText, pos), playerIn.dimension, pos.getX(), pos.getY(), pos.getZ(), ModConfig.getListenerRange());
         }
-        syncStatus();
         return groupID;
     }
 
