@@ -227,6 +227,10 @@ public class ClientAudio
     public void SoundSetupEvent(SoundSetupEvent event) throws SoundSystemException
     {
         SoundSystemConfig.setCodec("nul", CodecPCM.class);
+        SoundSystemConfig.setNumberStreamingChannels(8);
+        SoundSystemConfig.setNumberNormalChannels(24);
+        SoundSystemConfig.setNumberStreamingBuffers(4);
+        ModLogger.logInfo("SoundSetupEvent: getNumberStreamingBuffers = " + SoundSystemConfig.getNumberStreamingBuffers());
     }
 
     @SubscribeEvent
