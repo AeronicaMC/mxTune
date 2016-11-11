@@ -215,7 +215,7 @@ public enum GROUPS
 
     public static String serializeIntIntMap(HashMap<Integer, Integer> mapIntInt)
     {
-        String serializedIntIntMap = new String();
+        StringBuilder serializedIntIntMap = new StringBuilder();
         try
         {
             Set<Integer> keys = mapIntInt.keySet();
@@ -223,13 +223,13 @@ public enum GROUPS
             while (it.hasNext())
             {
                 Integer integer = (Integer) it.next();
-                serializedIntIntMap = serializedIntIntMap + integer.toString() + "=" + mapIntInt.get(integer).toString() + "|";
+                serializedIntIntMap.append(integer).append("=").append(mapIntInt.get(integer)).append("|");
             }
         } catch (Exception e)
         {
             e.printStackTrace();
         }
-        return serializedIntIntMap.trim();
+        return serializedIntIntMap.toString();
     }
     
     public static Map<Integer, String> deserializeIntStrMap(String mapIntString)
@@ -252,7 +252,7 @@ public enum GROUPS
     
     public static String serializeIntStrMap(HashMap<Integer, String> mapIntStr)
     {
-        String serializedIntStrMap = new String();
+        StringBuilder serializedIntStrMap = new StringBuilder();
         try
         {
             Set<Integer> keys = mapIntStr.keySet();
@@ -260,13 +260,13 @@ public enum GROUPS
             while (it.hasNext())
             {
                 Integer integer = (Integer) it.next();
-                serializedIntStrMap = serializedIntStrMap + integer + "=" + mapIntStr.get(integer) + "|";
+                serializedIntStrMap.append(integer).append("=").append(mapIntStr.get(integer)).append("|");
             }
         } catch (Exception e)
         {
             e.printStackTrace();
         }
-        return serializedIntStrMap.trim();
+        return serializedIntStrMap.toString();
     }
             
     public static Set<Integer> deserializeIntegerSet(String setIntString)
@@ -290,20 +290,20 @@ public enum GROUPS
 
     public static String serializeIntegerSet(Set<Integer> setIntegers)
     {
-        String serializedSet = new String();
+        StringBuilder serializedSet = new StringBuilder();
         try
         {
             Iterator<Integer> it = setIntegers.iterator();
             while (it.hasNext())
             {
                 Integer integer = (Integer) it.next();
-                serializedSet = serializedSet + integer.toString() + ",";
+                serializedSet.append(integer).append(",");
             }
         } catch (Exception e)
         {
             e.printStackTrace();
         }
-        return serializedSet.trim();        
+        return serializedSet.toString();        
     }
     
 }

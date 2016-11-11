@@ -31,7 +31,6 @@ import net.aeronica.mods.mxtune.network.client.PlayJamMessage;
 import net.aeronica.mods.mxtune.network.client.PlaySoloMessage;
 import net.aeronica.mods.mxtune.network.client.SyncStatusMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
-import net.aeronica.mods.mxtune.sound.PlayStatusUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.entity.player.EntityPlayer;
@@ -230,7 +229,7 @@ public class PlayManager
      */
     private static String getMML(Integer groupID)
     {
-        String buildMML = new String("|");
+        StringBuilder buildMML = new StringBuilder("|");
         try
         {
             Set<Integer> keys = membersPlayID.keySet();
@@ -241,7 +240,7 @@ public class PlayManager
                 Integer group = membersPlayID.get(member);
                 if (group.equals(groupID))
                 {
-                    buildMML = buildMML + member + "=" + membersMML.get(member) + "|";
+                    buildMML.append(member).append("=").append(membersMML.get(member)).append("|");
                     membersMML.remove(member);
                     setPlaying(member);
                 }
@@ -251,7 +250,7 @@ public class PlayManager
             ModLogger.logError(e.getLocalizedMessage());
             e.printStackTrace();
         }
-        return buildMML.trim();
+        return buildMML.toString();
     }
 
     private static BlockPos getMedianPos(Integer groupID)

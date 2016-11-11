@@ -74,8 +74,9 @@ public class SREventHandler
     @SubscribeEvent
     public void onEvent(ServerTickEvent event)
     {
+        /* Fired once every two seconds */
         if (event.side == Side.SERVER && event.phase == TickEvent.Phase.END && (count++ % 40 == 0)) {
-            PlayManager.testStopDistance(10.0d);
+            PlayManager.testStopDistance(ModConfig.getGroupPlayAbortDistance());
         }
     }
     

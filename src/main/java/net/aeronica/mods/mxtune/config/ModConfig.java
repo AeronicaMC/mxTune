@@ -25,7 +25,8 @@ public class ModConfig
 {
 	private static Configuration configFile;
 	/** General Configuration Settings */
-	private static float listenerRange = 24.0F;	
+	private static float listenerRange = 24.0F;
+	private static float groupPlayAbortDistance = 16.0F;
 	private static boolean hideWelcomeStatusMessage = false;
 	/** Client Configuration Settings */
 	
@@ -37,11 +38,14 @@ public class ModConfig
 
 	public static float getListenerRange() {return listenerRange;}
 		
-	public static boolean hideWelcomeStatusMessage() {return hideWelcomeStatusMessage;}
+	public static float getGroupPlayAbortDistance() {return groupPlayAbortDistance;}
+
+    public static boolean hideWelcomeStatusMessage() {return hideWelcomeStatusMessage;}
 	
 	public static void syncConfig()
     {
         listenerRange = configFile.getFloat("listenerRange", Categories.CATEGORY_GENERAL.getName(), listenerRange, 4.0F, 64.0F, "Listener Range", "mxtune.configgui.listenerRange");
+        groupPlayAbortDistance = configFile.getFloat("groupPlayAbortDistance", Categories.CATEGORY_GENERAL.getName(), groupPlayAbortDistance, 10.0F, 24.0F, "Group Play Abort Distance", "mxtune.configgui.groupPlayAbortDistance");
         hideWelcomeStatusMessage = configFile.getBoolean("hideWelcomeStatusMessage", Categories.CATEGORY_GENERAL.getName(), false, "Hide Welcome Status Message", "mxtune.configgui.hideWelcomeStatusMessage");
         if (configFile.hasChanged()) configFile.save();	
 	}

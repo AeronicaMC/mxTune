@@ -123,7 +123,7 @@ public class SittableUtil
     public static boolean checkForExistingEntity(World par1World, double x, double y, double z, EntityPlayer playerIn)
     {
         List<EntitySittableBlock> listEMB = par1World.getEntitiesWithinAABB(EntitySittableBlock.class, new AxisAlignedBB(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(1D, 1D, 1D));
-        ModLogger.logInfo("SittableUtil#checkForExistingEntity: listEMB = " + listEMB.size());
+        // ModLogger.logInfo("SittableUtil#checkForExistingEntity: listEMB = " + listEMB.size());
         for (EntitySittableBlock mount : listEMB)
         {
             if (mount.blockPosX == x && mount.blockPosY == y && mount.blockPosZ == z)
@@ -143,13 +143,10 @@ public class SittableUtil
     {
         double x = pos.getX(); double y = pos.getY(); double z = pos.getZ();
         List<EntitySittableBlock> listEMB = worldIn.getEntitiesWithinAABB(EntitySittableBlock.class, new AxisAlignedBB(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(1D, 1D, 1D));
-        if (!listEMB.isEmpty())
-            ModLogger.logInfo("SittableUtil#checkForExistingEntity: listEMB = " + listEMB.size());
-        else
-            return false; 
+        if (listEMB.isEmpty()) return false; 
         for (EntitySittableBlock mount : listEMB)
         {
-            ModLogger.logInfo("SittableUtil#isPlayerSitting: mount = " + mount);
+            // ModLogger.logInfo("SittableUtil#isPlayerSitting: mount = " + mount);
             if (mount.blockPosX == x && mount.blockPosY == y && mount.blockPosZ == z) { return mount.isPassenger(playerIn); }
         }
         return false;
