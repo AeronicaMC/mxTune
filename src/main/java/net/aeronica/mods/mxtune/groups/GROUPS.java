@@ -26,7 +26,7 @@ import com.google.common.collect.Sets;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.minecraft.entity.player.EntityPlayer;
-import paulscode.sound.Vector3D;
+import net.minecraft.util.math.Vec3d;
 
 // Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
 // UUID does not work on the client.
@@ -135,24 +135,24 @@ public enum GROUPS
         return members;
     }
     
-    public static Vector3D getMedianPos(Integer playID)
+    public static Vec3d getMedianPos(Integer playID)
     {
-        float x, y, z, count; x = y = z = count = 0;
-        Vector3D pos;
+        double x, y, z, count; x = y = z = count = 0;
+        Vec3d pos;
         for(Integer member: getMembersByPlayID(playID))
         {   
             EntityPlayer player = (EntityPlayer)  MXTuneMain.proxy.getClientPlayer().getEntityWorld().getEntityByID(member);
-            x = (float) (x + player.getPositionVector().xCoord);
-            y = (float) (y + player.getPositionVector().yCoord);
-            z = (float) (z + player.getPositionVector().zCoord);
+            x = x + player.getPositionVector().xCoord;
+            y = y + player.getPositionVector().yCoord;
+            z = z + player.getPositionVector().zCoord;
             count++;
         }            
 
-        if (count == 0) return new Vector3D(0,0,0);
+        if (count == 0) return new Vec3d(0,0,0);
         x/=count;
         y/=count;
         z/=count;
-        pos = new Vector3D(x,y,z);
+        pos = new Vec3d(x,y,z);
         return pos;
     }
 
@@ -178,6 +178,18 @@ public enum GROUPS
     public static Map<Integer, Integer> getPlayIDMembers()
     {
         return playIDMembers;
+    }
+    
+    public static Integer getSoloMemberByPlayID(Integer playID)
+    {
+        for(Integer someMember: GROUPS.playIDMembers.keySet())
+        {
+            if(GROUPS.playIDMembers.get(someMember).equals(playID))
+            {
+                return someMember;
+            }
+        }
+        return null;
     }
 
     public static void setPlayIDMembers(String playIDMembers)

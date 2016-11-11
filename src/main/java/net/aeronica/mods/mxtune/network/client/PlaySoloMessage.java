@@ -94,7 +94,9 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
     {
         if (MIDISystemUtil.getInstance().midiUnavailableWarn(player) == false)
         {
-            if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) player.worldObj.getEntityByID(GROUPS.getPlayIDMembers().get(playID))) == false)
+            /* This is messy, but we want to ensure we return a valid player entity ID */
+            Integer otherEntityID = GROUPS.getSoloMemberByPlayID(playID) == null ? player.getEntityId() : GROUPS.getSoloMemberByPlayID(playID);
+            if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) (player.worldObj.getEntityByID(otherEntityID))) == false)
             {
                 ModLogger.debug("musicTitle: " + musicTitle);
                 ModLogger.debug("musicText:  " + musicText.substring(0, (musicText.length() >= 25 ? 25 : musicText.length())));

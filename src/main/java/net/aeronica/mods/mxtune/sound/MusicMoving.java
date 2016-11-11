@@ -21,6 +21,7 @@ import net.minecraft.client.audio.MovingSound;
 import net.minecraft.client.audio.SoundEventAccessor;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.Vec3d;
 import paulscode.sound.Vector3D;
 
 public class MusicMoving extends MovingSound
@@ -39,10 +40,10 @@ public class MusicMoving extends MovingSound
         this.pitch = 1F;
         this.repeat = false;
         this.repeatDelay = 0;
-        Vector3D pos = GROUPS.getMedianPos(playID);
-        this.xPosF = pos.x;
-        this.yPosF = pos.y;
-        this.zPosF = pos.z;
+        Vec3d pos = GROUPS.getMedianPos(playID);
+        this.xPosF = (float) pos.xCoord;
+        this.yPosF = (float) pos.yCoord;
+        this.zPosF = (float) pos.zCoord;
         this.attenuationType = AttenuationType.LINEAR;
         this.soundEventAccessor = new SoundEventAccessor(this.sound.getSoundLocation(), "mxtune.subtitle.pcm-proxy");
     }
@@ -64,10 +65,10 @@ public class MusicMoving extends MovingSound
     {
         if (this.playID != null && ClientAudio.isPlaying(playID))
         {
-            Vector3D pos = GROUPS.getMedianPos(playID);
-            this.xPosF = pos.x;
-            this.yPosF = pos.y;
-            this.zPosF = pos.z; 
+            Vec3d pos = GROUPS.getMedianPos(playID);
+            this.xPosF = (float) pos.xCoord;
+            this.yPosF = (float) pos.yCoord;
+            this.zPosF = (float) pos.zCoord; 
         }
         else
         {
