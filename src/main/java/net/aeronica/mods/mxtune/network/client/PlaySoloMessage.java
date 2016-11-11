@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.network.client;
 
 import java.io.IOException;
 
+import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
@@ -93,7 +94,7 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
     {
         if (MIDISystemUtil.getInstance().midiUnavailableWarn(player) == false)
         {
-            if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) player.worldObj.getEntityByID(playID)) == false)
+            if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) player.worldObj.getEntityByID(GROUPS.getPlayIDMembers().get(playID))) == false)
             {
                 ModLogger.debug("musicTitle: " + musicTitle);
                 ModLogger.debug("musicText:  " + musicText.substring(0, (musicText.length() >= 25 ? 25 : musicText.length())));
