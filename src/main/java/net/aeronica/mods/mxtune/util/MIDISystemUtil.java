@@ -29,7 +29,6 @@ import javax.sound.midi.Synthesizer;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.config.ModConfig;
-import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextComponentString;
@@ -143,7 +142,6 @@ public class MIDISystemUtil
 
             midiAvailable = false;
         }
-        MMLManager.getInstance().mmlInit();
     }
     
     private void addStatus(TextComponentString status)

@@ -50,6 +50,7 @@ import com.sun.media.sound.AudioSynthesizer;
  * user: Paul Boese aka Aeronica
  * removed the JFugue specific pattern signature methods
  */
+@SuppressWarnings("restriction")
 public class Midi2WavRenderer
 {
     private Synthesizer synth;

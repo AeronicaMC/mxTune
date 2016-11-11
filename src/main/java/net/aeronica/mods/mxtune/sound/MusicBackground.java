@@ -29,15 +29,15 @@ public class MusicBackground extends PositionedSound
 
     SoundEventAccessor soundEventAccessor;
     
-    public MusicBackground(EntityPlayer playerIn)
+    public MusicBackground()
     {
         super(ModSoundEvents.PCM_PROXY, SoundCategory.getByName("mxtune"));
         this.sound = new PCMSound();
-        this.volume = 1F;
+        this.volume = 0.70F;
         this.pitch = 1F;
-        this.xPosF = (float)playerIn.posX;
-        this.yPosF = (float)playerIn.posY+100;
-        this.zPosF = (float)playerIn.posZ;
+        this.xPosF = 0;
+        this.yPosF = 0;
+        this.zPosF = 0;
         this.repeat = false;
         this.repeatDelay = 0;
         this.attenuationType = AttenuationType.NONE;

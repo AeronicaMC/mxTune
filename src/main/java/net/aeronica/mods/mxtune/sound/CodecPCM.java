@@ -67,7 +67,7 @@ public class CodecPCM implements ICodec {
     
     Random randInt;
 	
-    Integer entityID = -1;
+    Integer playID = null;
     
 	/**
 	 * Processes status messages, warnings, and error messages.
@@ -110,14 +110,14 @@ public class CodecPCM implements ICodec {
     public boolean initialize(URL url)
     {
         initialized(SET, false);
-        if (entityID == -1)
-            if ((entityID = ClientAudio.pollEntityIdQueue02()) == null )
+        if (playID == null)
+            if ((playID = ClientAudio.pollPlayIDQueue02()) == null )
             {
-                errorMessage("entityID not initialized: " + entityID);
+                errorMessage("entityID not initialized: " + playID);
                 return false;
             } else
             {                
-                myAudioFormat = ClientAudio.getAudioFormat();
+                myAudioFormat = ClientAudio.getAudioFormat(playID);
             }
 
         endOfStream(SET, false);
@@ -146,12 +146,12 @@ public class CodecPCM implements ICodec {
 			return null;
 		}
 		
-		if (endOfStream() | !ClientAudio.isPlaying(entityID) | ClientAudio.isEntityAudioDataError(entityID)) return null;
+		if (endOfStream() | !ClientAudio.isPlaying(playID) | ClientAudio.isPlayIDAudioDataError(playID)) return null;
         if (hasStream == false)
         {
-            if (ClientAudio.isEntityAudioDataReady(entityID))
+            if (ClientAudio.isPlayIDAudioDataReady(playID))
             {
-                audioInputStream = ClientAudio.getAudioInputStream(entityID);
+                audioInputStream = ClientAudio.getAudioInputStream(playID);
                 hasStream = true;
             }
         }
@@ -174,7 +174,8 @@ public class CodecPCM implements ICodec {
 		    } else
 		    {
 		        outputBuffer = appendByteArrays(outputBuffer, zeroBuffer, SAMPLE_SIZE);
-		        if (zeroBufferCount > 48) 
+		        message("  zeroBufferCount: " + zeroBufferCount);
+		        if (zeroBufferCount++ > 48) 
 		        {
 		            errorMessage("  MML to PCM audio prcessiong took too long. Aborting!");
 		            endOfStream(SET, true);
@@ -209,19 +210,19 @@ public class CodecPCM implements ICodec {
 			errorMessage("Audio Format null in method 'readAll'");
 			return null;
 		}
-        if (endOfStream() | !ClientAudio.hasEntity(entityID) | ClientAudio.isEntityAudioDataError(entityID)) return null;
+        if (endOfStream() | !ClientAudio.hasPlayID(playID) | ClientAudio.isPlayIDAudioDataError(playID)) return null;
         
         int bufferSize = 0;
         byte outputBuffer[] = null;
         byte readBuffer[] = new byte[SAMPLE_SIZE];
         while (bufferSize != -1)
         {
-            if (endOfStream() | ClientAudio.isEntityAudioDataError(entityID)) return null;
+            if (endOfStream() | ClientAudio.isPlayIDAudioDataError(playID)) return null;
             if (hasStream == false)
             {
-                if (ClientAudio.isEntityAudioDataReady(entityID))
+                if (ClientAudio.isPlayIDAudioDataReady(playID))
                 {
-                    audioInputStream = ClientAudio.getAudioInputStream(entityID);
+                    audioInputStream = ClientAudio.getAudioInputStream(playID);
                     hasStream = true;
                 }
             }
@@ -277,7 +278,7 @@ public class CodecPCM implements ICodec {
             printStackTrace(e);
         }
         audioInputStream = null;
-        ClientAudio.removeEntityAudioData(entityID);
+        ClientAudio.removeEntityAudioData(playID);
     }
 
 	@Override

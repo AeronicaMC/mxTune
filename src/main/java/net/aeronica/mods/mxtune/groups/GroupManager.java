@@ -59,7 +59,7 @@ public class GroupManager
      * 2016-Oct-21 Converted the whole shibang from String Player Names to Integer
      * Entity IDs. That simplified usage a bit. 
      * 
-     * Server Side only. Sync'd to the Client side using the GROUPS.class and
+     * Sync'd to the Client side using the GROUPS.class and
      * the associated networking classes.
      */
     private static class Member
@@ -75,7 +75,6 @@ public class GroupManager
     }
 
     private static HashSet<Group> groups = null;
-    private static Integer groupID = 0;
 
     /**
      * Any player can be a leader or in a group. A player who makes a group is
@@ -99,7 +98,7 @@ public class GroupManager
 
             Group theGroup = new Group();
 
-            theGroup.groupID = groupID++; // creatorID;
+            theGroup.groupID = PlayManager.getNextPlayID();
             
             theGroup.leaderEntityID = creatorID;
 
@@ -174,7 +173,7 @@ public class GroupManager
     public static Group removeMember(Integer memberID)
     {
         log("removeMember " + memberID);
-        PlayManager.getInstance().dequeueMember(memberID);
+        PlayManager.dequeueMember(memberID);
         if (groups != null && !groups.isEmpty())
         {
             Group theGroup;
@@ -341,8 +340,8 @@ public class GroupManager
 
     public static void sync()
     {
-        String buildgroups = " ";
-        String buildmembers = " ";
+        StringBuilder buildgroups = new StringBuilder("|");
+        StringBuilder buildmembers = new StringBuilder("|");
 
         if (groups != null && !groups.isEmpty())
         {
@@ -351,20 +350,20 @@ public class GroupManager
                 Group theGroup = it.next();
                 debug("Group: " + theGroup.groupID);
                 debug("  Leader: " + theGroup.leaderEntityID);
-                buildgroups = buildgroups + theGroup.groupID + "=" + theGroup.leaderEntityID + " ";
+                buildgroups.append(theGroup.groupID).append("=").append(theGroup.leaderEntityID).append("|");
                 for (Iterator<Member> im = theGroup.members.iterator(); im.hasNext();)
                 {
                     Member theMember = (Member) im.next();
                     debug("    member: " + theMember.memberEntityID);
-                    buildmembers = buildmembers + theMember.memberEntityID + "=" + theGroup.groupID + " ";
+                    buildmembers.append(theMember.memberEntityID).append("=").append(theGroup.groupID).append("|");
                 }
             }
         }
         /** sync server */
-        GROUPS.setClientGroups(buildgroups.trim());
-        GROUPS.setClientMembers(buildmembers.trim());
+        GROUPS.setClientGroups(buildgroups.toString());
+        GROUPS.setClientMembers(buildmembers.toString());
         /** sync to clients */
-        PacketDispatcher.sendToAll(new SyncGroupMessage(buildgroups.trim(), buildmembers.trim()));
+        PacketDispatcher.sendToAll(new SyncGroupMessage(buildgroups.toString(), buildmembers.toString()));
     }
 
     private static int interactFlag = 0;

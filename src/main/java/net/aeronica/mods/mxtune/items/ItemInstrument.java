@@ -19,6 +19,7 @@ package net.aeronica.mods.mxtune.items;
 import java.util.List;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiInstrumentInventory;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
@@ -87,11 +88,11 @@ public class ItemInstrument extends ItemBase implements IInstrument
             }
             if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && hand.equals(EnumHand.MAIN_HAND))
             {
-                if (!PlayManager.getInstance().isPlayerPlaying(playerIn.getEntityId()))
+                if (!PlayManager.isPlayerPlaying(playerIn))
                 {
                     /**TODO Make sure it is OKAY steal and to use this property like this */
-                    itemStackIn.setRepairCost(playerIn.inventory.currentItem+1000);
-                    PlayManager.getInstance().playMusic(playerIn, pos, false);
+                    Integer playID = PlayManager.playMusic(playerIn, pos, false);
+                    itemStackIn.setRepairCost(playID != null ? playID : -1);
                 }
             }
         } else
@@ -120,16 +121,55 @@ public class ItemInstrument extends ItemBase implements IInstrument
      * update it's contents.
      */
     @Override
-    public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected)
+    public void onUpdate(ItemStack stackIn, World worldIn, Entity entityIn, int itemSlot, boolean isSelected)
+    {
+        if (!worldIn.isRemote)
+        {         
+            Integer playID = stackIn.getRepairCost();
+            if (!isSelected && GROUPS.isPlayIDPlaying(playID))
+            {
+                PlayManager.stopPlayID(playID);
+                stackIn.setRepairCost(-1);
+            }
+        }
+    }
+    
+    /*
+     * Called if moved from inventory into the world.
+     * This is distinct from onDroppedByPlayer method
+     * 
+     */
+    @Override
+    public int getEntityLifespan(ItemStack stackIn, World worldIn)
     {
         if (!worldIn.isRemote)
         {
-            if (stack.getRepairCost() == (itemSlot+1000) && !isSelected) {
-            stack.setRepairCost(0);
-            PlayManager.getInstance().stopMusic(entityIn.getEntityId());
+            Integer playID = stackIn.getRepairCost();
+            if (GROUPS.isPlayIDPlaying(playID))
+            {
+                PlayManager.stopPlayID(playID);
+                stackIn.setRepairCost(-1);
             }
         }
-    } 
+
+        // TODO Auto-generated method stub
+        return super.getEntityLifespan(stackIn, worldIn);
+    }
+
+    @Override
+    public boolean onDroppedByPlayer(ItemStack stackIn, EntityPlayer playerIn)
+    {
+        if (!playerIn.getEntityWorld().isRemote)
+        {
+            Integer playID = stackIn.getRepairCost();
+            if (GROUPS.isPlayIDPlaying(playID))
+            {
+                PlayManager.stopPlayID(playID);
+                stackIn.setRepairCost(-1);
+            }
+        }
+        return true;
+    }
 
     /**
      * This is where we decide how our item interacts with other entities

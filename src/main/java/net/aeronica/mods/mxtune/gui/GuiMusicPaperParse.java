@@ -47,7 +47,6 @@ import org.lwjgl.input.Mouse;
 import net.aeronica.libs.mml.core.MMLLexer;
 import net.aeronica.libs.mml.core.MMLParser;
 import net.aeronica.libs.mml.core.MMLToMIDI;
-import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.MusicTextMessage;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
@@ -679,8 +678,6 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         InputStream is;
         boolean midiException = false;
 
-        MMLManager.muteSounds();
-
         try
         {
             mmlBuf = mmlIn.getBytes("US-ASCII");
@@ -744,7 +741,6 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         {
             if (sequencer != null && sequencer.isOpen()) sequencer.close();
             if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
-            MMLManager.unMuteSounds();
             ModLogger.logError("mmlPlay MIDI failure : " + e.getLocalizedMessage());
             e.printStackTrace();
             midiException = true;
@@ -787,8 +783,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
             }
             if (sequencer != null && sequencer.isOpen()) sequencer.close();
             if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
-
-            MMLManager.unMuteSounds();
+            
             this.isPlaying = false;
         }
     }

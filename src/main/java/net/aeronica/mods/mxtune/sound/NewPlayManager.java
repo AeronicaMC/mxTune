@@ -4,7 +4,7 @@ import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.items.BasicItem;
 import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
-import net.aeronica.mods.mxtune.network.client.NewPlaySoloMessage;
+import net.aeronica.mods.mxtune.network.client.PlaySoloMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
@@ -58,7 +58,7 @@ public class NewPlayManager
 
     private static void playSolo(EntityPlayer playerIn, String title, String mml, String playerName, boolean isPlaced)
     {
-        NewPlaySoloMessage packetPlaySolo = new NewPlaySoloMessage(playerIn.getEntityId(), playerName, title, mml, isPlaced);
+        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playerIn.getEntityId(), playerName, title, mml, isPlaced);
         PacketDispatcher.sendToAllAround(packetPlaySolo, playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, 25);  
     }
     

@@ -39,6 +39,7 @@
  */
 package net.aeronica.mods.mxtune.entity;
 
+import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
@@ -49,11 +50,23 @@ import net.minecraft.world.World;
 
 public class EntitySittableBlock extends Entity
 {
+    
     private static final DataParameter<Boolean> SHOULD_SIT = EntityDataManager.<Boolean> createKey(EntitySittableBlock.class, DataSerializers.BOOLEAN);
     public int blockPosX;
     public int blockPosY;
     public int blockPosZ;
     public float yaw;
+    private Integer playID = null;
+
+    public void setPlayID(Integer playID)
+    {
+        this.playID = playID;
+    }
+
+    public Integer getPlayID()
+    {
+        return playID;
+    }
 
     public EntitySittableBlock(World world)
     {
@@ -139,6 +152,7 @@ public class EntitySittableBlock extends Entity
         {
             this.setDead();
             worldObj.updateComparatorOutputLevel(getPosition(), worldObj.getBlockState(getPosition()).getBlock());
+            if (playID != null) PlayManager.stopPlayID(playID);
         }
     }
 
@@ -153,4 +167,5 @@ public class EntitySittableBlock extends Entity
 
     @Override
     public boolean shouldRiderSit() {return ((Boolean) this.dataManager.get(SHOULD_SIT)).booleanValue();}
+    
 }

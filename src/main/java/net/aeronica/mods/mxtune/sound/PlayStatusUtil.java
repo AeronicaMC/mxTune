@@ -16,9 +16,12 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
+import java.util.Set;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class PlayStatusUtil
 {
@@ -39,4 +42,15 @@ public class PlayStatusUtil
             playerIn.getCapability(PLAY_STATUS, null).setPlaying(playerIn, playing);
     }
 
+    public static void stopPlaying(Set<Integer> setEntityIDs)
+    {
+        for(Integer entityID: setEntityIDs)
+        {
+            EntityPlayer player = (EntityPlayer) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getEntityByID(entityID);
+            if (player != null)
+            {
+                setPlaying(player, false);
+            }
+        }
+    }
 }

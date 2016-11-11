@@ -22,8 +22,6 @@ import net.aeronica.mods.mxtune.gui.GuiInstInvExp;
 import net.aeronica.mods.mxtune.gui.GuiInstrumentInventory;
 import net.aeronica.mods.mxtune.gui.GuiMusicOptions;
 import net.aeronica.mods.mxtune.gui.GuiMusicPaperParse;
-import net.aeronica.mods.mxtune.gui.GuiPlaying;
-import net.aeronica.mods.mxtune.gui.GuiPlayingChat;
 import net.aeronica.mods.mxtune.inventory.ContainerInstrument;
 import net.aeronica.mods.mxtune.inventory.InventoryInstrument;
 import net.minecraft.entity.player.EntityPlayer;
@@ -75,12 +73,6 @@ public class GUIHandler implements IGuiHandler
             
         case GuiGroup.GUI_ID:
             return new GuiGroup();
-
-        case GuiPlaying.GUI_ID:
-            return new GuiPlaying();
-
-        case GuiPlayingChat.GUI_ID:
-            return new GuiPlayingChat();
 
         case GuiGroupJoin.GUI_ID:
             return new GuiGroupJoin();

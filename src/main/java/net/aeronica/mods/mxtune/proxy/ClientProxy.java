@@ -20,10 +20,10 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.gui.GuiJamOverlay;
 import net.aeronica.mods.mxtune.handler.CLEventHandler;
 import net.aeronica.mods.mxtune.handler.KeyHandler;
-import net.aeronica.mods.mxtune.handler.SoundEventHandler;
 import net.aeronica.mods.mxtune.handler.TickHandler;
 import net.aeronica.mods.mxtune.init.BlockModels;
 import net.aeronica.mods.mxtune.init.ItemModels;
+import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -31,7 +31,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
-import net.minecraftforge.client.model.b3d.B3DLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -104,7 +103,7 @@ public class ClientProxy extends CommonProxy
     public void registerEventHandlers()
     {
         super.registerEventHandlers();
-        MinecraftForge.EVENT_BUS.register(SoundEventHandler.getInstance());
+        MinecraftForge.EVENT_BUS.register(ClientAudio.getInstance());
         MinecraftForge.EVENT_BUS.register(TickHandler.getInstance());
         MinecraftForge.EVENT_BUS.register(CLEventHandler.getInstance());
         MinecraftForge.EVENT_BUS.register(BlockModels.getInstance());
@@ -123,7 +122,6 @@ public class ClientProxy extends CommonProxy
         // });
 
         /** The ALL important model loaders so we can use custom models */
-        B3DLoader.INSTANCE.addDomain(MXTuneMain.MODID.toLowerCase());
         OBJLoader.INSTANCE.addDomain(MXTuneMain.MODID.toLowerCase());
         ItemModels.register();
         BlockModels.register();

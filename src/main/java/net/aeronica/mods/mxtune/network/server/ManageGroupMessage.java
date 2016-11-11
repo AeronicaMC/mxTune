@@ -61,8 +61,6 @@ public class ManageGroupMessage extends AbstractServerMessage<ManageGroupMessage
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        if (side == Side.CLIENT) return;
-        System.out.println("+++ GroupManage doAction: " + operation);
         switch (GROUPS.valueOf(operation))
         {
         case GROUP_ADD:

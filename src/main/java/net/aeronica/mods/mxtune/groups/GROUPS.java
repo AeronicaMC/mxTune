@@ -17,9 +17,16 @@
 package net.aeronica.mods.mxtune.groups;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.Sets;
+
+import net.aeronica.mods.mxtune.MXTuneMain;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.Vec3d;
 
 // Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
 // UUID does not work on the client.
@@ -30,16 +37,26 @@ public enum GROUPS
     public static final int MAX_MEMBERS = 8;
 
     /** Server side, Client side is sync'd with packets */
+    /* GroupManager */
     private static Map<Integer, Integer> clientGroups;
     private static Map<Integer, Integer> clientMembers;
-    private static Map<Integer, String> clientPlayStatuses;
+    /* PlayManager */
+    private static Map<Integer, String> membersQueuedStatus;
+    private static Map<Integer, Integer> playIDMembers;
+    private static Set<Integer> activePlayIDs;
 
+
+    /* GroupManager statuses */
     public static Integer getLeaderOfGroup(Integer integer)
     {
         if (GROUPS.clientGroups != null) { return GROUPS.clientGroups.get(integer); }
         return null;
     }
 
+    public static Integer getMembersGroupLeader(Integer memberID){
+        return getLeaderOfGroup(getMembersGroupID(memberID));
+    }
+    
     public static Integer getMembersGroupID(Integer memberID)
     {
         if (GROUPS.clientMembers != null) { return GROUPS.clientMembers.get(memberID); }
@@ -51,11 +68,6 @@ public enum GROUPS
         return memberID.equals(getLeaderOfGroup(getMembersGroupID(memberID)));
     }
 
-    public static void setClientPlayStatuses(String status)
-    {
-        GROUPS.clientPlayStatuses = splitToIntStrMap(status);
-    }
-    
     public static Map<Integer, Integer> getClientMembers()
     {
         return GROUPS.clientMembers;
@@ -63,7 +75,7 @@ public enum GROUPS
     
     public static void setClientMembers(String members)
     {
-        GROUPS.clientMembers = splitToIntIntMap(members);
+        GROUPS.clientMembers = deserializeIntIntMap(members);
     }
     
     public static Map<Integer, Integer> getClientGroups()
@@ -73,22 +85,23 @@ public enum GROUPS
     
     public static void setClientGroups(String groups)
     {
-        GROUPS.clientGroups = splitToIntIntMap(groups);
+        GROUPS.clientGroups = deserializeIntIntMap(groups);
     }
+    
     /**
-     * getIndex(String playerName)
+     * getIndex(Integer playerID)
      * 
      * This is used to return a the index for the playing status icons
      * 
-     * @param playerID
+     * @param playerID (EntityID)
      * @return int
      */
     public static int getIndex(Integer playerID)
     {
         int result = 0;
-        if (GROUPS.clientPlayStatuses != null && GROUPS.clientPlayStatuses.containsKey(playerID))
+        if (GROUPS.membersQueuedStatus != null && GROUPS.membersQueuedStatus.containsKey(playerID))
         {
-            switch (GROUPS.valueOf(GROUPS.clientPlayStatuses.get(playerID)))
+            switch (GROUPS.valueOf(GROUPS.membersQueuedStatus.get(playerID)))
             {
             case QUEUED:
                 result = 1;
@@ -100,29 +113,106 @@ public enum GROUPS
         }
         return result + (GROUPS.isLeader(playerID) ? 8 : 0);
     }
+    
+    public static Map<Integer, String> getClientPlayStatuses()
+    {
+        return membersQueuedStatus;
+    }
 
-    public static Map<Integer, String> splitToIntStrMap(String mapIntString)
-    {       
-        try
+    public static Set<Integer> getMembersByPlayID(Integer playID) 
+    {
+        Set<Integer> members = Sets.newHashSet();
+        if (playIDMembers != null)
         {
-            Map<String, String> inStringString =  (Map<String, String>) Splitter.on(" ").withKeyValueSeparator("=").split(mapIntString);
-            Map<Integer, String> outIntString = new HashMap<Integer, String>();
-            for (String id: inStringString.keySet())
+            for(Integer someMember: GROUPS.playIDMembers.keySet())
             {
-                outIntString.put(Integer.valueOf(id), inStringString.get(id));
+                if(GROUPS.playIDMembers.get(someMember).equals(playID))
+                {
+                    members.add(someMember);
+                }
             }
-            return outIntString;
-        } catch (IllegalArgumentException e)
-        {
-            return null;
         }
+        return members;
     }
     
-    public static Map<Integer, Integer> splitToIntIntMap(String mapIntString)
+    public static Vec3d getMedianPos(Integer playID)
+    {
+        double x, y, z, count; x = y = z = count = 0;
+        Vec3d pos;
+        for(Integer member: getMembersByPlayID(playID))
+        {   
+            EntityPlayer player = (EntityPlayer)  MXTuneMain.proxy.getClientPlayer().getEntityWorld().getEntityByID(member);
+            x = x + player.getPositionVector().xCoord;
+            y = y + player.getPositionVector().yCoord;
+            z = z + player.getPositionVector().zCoord;
+            count++;
+        }            
+
+        if (count == 0) return new Vec3d(0,0,0);
+        x/=count;
+        y/=count;
+        z/=count;
+        pos = new Vec3d(x,y,z);
+        return pos;
+    }
+
+    public static boolean isClientPlaying(Integer playID)
+    {
+        Set<Integer> members = GROUPS.getMembersByPlayID(playID);
+        return ((members!=null) && !members.isEmpty()) ? members.contains(MXTuneMain.proxy.getClientPlayer().getEntityId()) : false;
+    }
+    
+    public static boolean playerHasPlayID(Integer entityID, Integer playID)
+    {
+        Set<Integer> members = GROUPS.getMembersByPlayID(playID);
+        return (members != null && !members.isEmpty()) ? members.contains(entityID) : false;
+    }
+    
+    public static boolean isPlayIDPlaying(Integer playID) { return activePlayIDs != null ? activePlayIDs.contains(playID) : false; }
+
+    public static void setClientPlayStatuses(String clientPlayStatuses)
+    {
+        GROUPS.membersQueuedStatus = deserializeIntStrMap(clientPlayStatuses);
+    }
+        
+    public static Map<Integer, Integer> getPlayIDMembers()
+    {
+        return playIDMembers;
+    }
+    
+    public static Integer getSoloMemberByPlayID(Integer playID)
+    {
+        for(Integer someMember: GROUPS.playIDMembers.keySet())
+        {
+            if(GROUPS.playIDMembers.get(someMember).equals(playID))
+            {
+                return someMember;
+            }
+        }
+        return null;
+    }
+
+    public static void setPlayIDMembers(String playIDMembers)
+    {
+        GROUPS.playIDMembers = deserializeIntIntMap(playIDMembers);
+    }
+
+    public static Set<Integer> getActivePlayIDs()
+    {
+        return activePlayIDs;
+    }
+
+    public static void setActivePlayIDs(String setIntString)
+    {
+        activePlayIDs = deserializeIntegerSet(setIntString);
+    }
+    
+    /* Serialization and deserialization methods */
+    public static Map<Integer, Integer> deserializeIntIntMap(String mapIntString)
     {       
         try
         {
-            Map<String, String> inStringString =  (Map<String, String>) Splitter.on(" ").withKeyValueSeparator("=").split(mapIntString);
+            Map<String, String> inStringString =  (Map<String, String>) Splitter.on('|').omitEmptyStrings().withKeyValueSeparator("=").split(mapIntString);
             Map<Integer, Integer> outIntInt = new HashMap<Integer, Integer>();
             for (String id: inStringString.keySet())
             {
@@ -134,4 +224,98 @@ public enum GROUPS
             return null;
         }
     }
+
+    public static String serializeIntIntMap(HashMap<Integer, Integer> mapIntInt)
+    {
+        StringBuilder serializedIntIntMap = new StringBuilder();
+        try
+        {
+            Set<Integer> keys = mapIntInt.keySet();
+            Iterator<Integer> it = keys.iterator();
+            while (it.hasNext())
+            {
+                Integer integer = (Integer) it.next();
+                serializedIntIntMap.append(integer).append("=").append(mapIntInt.get(integer)).append("|");
+            }
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return serializedIntIntMap.toString();
+    }
+    
+    public static Map<Integer, String> deserializeIntStrMap(String mapIntString)
+    {       
+        try
+        {
+            Map<String, String> inStringString =  (Map<String, String>) Splitter.on('|').omitEmptyStrings().withKeyValueSeparator("=").split(mapIntString);
+            Map<Integer, String> outIntString = new HashMap<Integer, String>();
+            for (String id: inStringString.keySet())
+            {
+                outIntString.put(Integer.valueOf(id), inStringString.get(id));
+            }
+            return outIntString;
+        } catch (IllegalArgumentException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    public static String serializeIntStrMap(HashMap<Integer, String> mapIntStr)
+    {
+        StringBuilder serializedIntStrMap = new StringBuilder();
+        try
+        {
+            Set<Integer> keys = mapIntStr.keySet();
+            Iterator<Integer> it = keys.iterator();
+            while (it.hasNext())
+            {
+                Integer integer = (Integer) it.next();
+                serializedIntStrMap.append(integer).append("=").append(mapIntStr.get(integer)).append("|");
+            }
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return serializedIntStrMap.toString();
+    }
+            
+    public static Set<Integer> deserializeIntegerSet(String setIntString)
+    {
+        Iterable<String> inString = Splitter.on(',').omitEmptyStrings().split(setIntString);
+        Set<Integer> deserializedSet = null;
+        try
+        {
+            deserializedSet =  Sets.newHashSet();
+            for (String id: inString)
+            {
+                if (id != null && !id.isEmpty())
+                    deserializedSet.add(Integer.valueOf(id));
+            }
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return deserializedSet;
+    }
+
+    public static String serializeIntegerSet(Set<Integer> setIntegers)
+    {
+        StringBuilder serializedSet = new StringBuilder();
+        try
+        {
+            Iterator<Integer> it = setIntegers.iterator();
+            while (it.hasNext())
+            {
+                Integer integer = (Integer) it.next();
+                serializedSet.append(integer).append(",");
+            }
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return serializedSet.toString();        
+    }
+    
 }

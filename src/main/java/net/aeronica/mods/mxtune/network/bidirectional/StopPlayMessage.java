@@ -19,12 +19,7 @@ package net.aeronica.mods.mxtune.network.bidirectional;
 import java.io.IOException;
 
 import net.aeronica.mods.mxtune.groups.PlayManager;
-import net.aeronica.mods.mxtune.mml.MMLManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
-import net.aeronica.mods.mxtune.network.PacketDispatcher;
-import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
@@ -32,11 +27,12 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class StopPlayMessage extends AbstractMessage<StopPlayMessage>
 {
+
     private Integer playID;
 
     public StopPlayMessage() {}
 
-    public StopPlayMessage(Integer playID2) {this.playID = playID2;}
+    public StopPlayMessage(Integer playID) {this.playID = playID;}
 
     @Override
     protected void read(PacketBuffer buffer) throws IOException
@@ -64,21 +60,12 @@ public class StopPlayMessage extends AbstractMessage<StopPlayMessage>
 
     public void handleClientSide(EntityPlayer playerSP)
     {
-        MMLManager.getInstance().mmlKill(playID, true);
-        if (playerSP.getEntityId() == (playID))
-        {
-            /** TODO: Need to consider tracking isPlaced for each group member for dealing with GUI or Riding player rooting */
-            ModLogger.debug("PacketPlayStop: try to close Gui for " + playID);
-            Minecraft mc = Minecraft.getMinecraft();
-            /** close the playing GUI */
-            mc.displayGuiScreen((GuiScreen) null);
-            mc.setIngameFocus();
-        }
+        // TODO: More Cleanup for playing - resetting all the players PlayStatuses
     }
 
     public void handleServerSide(EntityPlayer playerMP)
     {
-        PlayManager.getInstance().dequeueMember(playID);
-        PacketDispatcher.sendToAll(new StopPlayMessage(playID));
+        PlayManager.stopPlayID(playID);
     }
+
 }

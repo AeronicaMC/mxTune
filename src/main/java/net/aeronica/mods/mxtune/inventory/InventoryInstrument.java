@@ -8,7 +8,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.text.ITextComponent;
 
 public class InventoryInstrument implements IInventory {
-	private static final String name = "Inventory Instrument";
+	private static final String name = "container.mxtune.instrument";
 
 	/** Provides NBT Tag Compound to reference */
 	private final ItemStack stack;

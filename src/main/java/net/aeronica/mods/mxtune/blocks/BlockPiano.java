@@ -21,6 +21,7 @@ import java.util.Random;
 
 import com.google.common.collect.Lists;
 
+import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.init.StartupBlocks;
 import net.aeronica.mods.mxtune.inventory.IMusic;
@@ -113,7 +114,7 @@ public class BlockPiano extends BlockHorizontal
             boolean invHasItem = tile.getInventory().getStackInSlot(0) != null;
             boolean invIsMusic = invHasItem && (tile.getInventory().getStackInSlot(0).getItem() instanceof IMusic) &&
                     tile.getInventory().getStackInSlot(0).hasDisplayName();
-            boolean canPlay = playerIn.isRiding() && invIsMusic;
+            boolean canPlay = playerIn.isRiding() && invIsMusic && SittableUtil.isPlayerSitting(worldIn, playerIn, pos) && !PlayManager.isPlayerPlaying(playerIn);
             boolean playerHasItem = playerIn.getHeldItem(hand) != null;
             boolean playerHasMusic = playerHasItem && (playerIn.getHeldItem(hand).getItem() instanceof IMusic) && 
                     playerIn.getHeldItem(hand).hasDisplayName();
@@ -156,7 +157,7 @@ public class BlockPiano extends BlockHorizontal
                 }
             } else if (canPlay && !playerIn.isSneaking())
             {
-                PlayManager.getInstance().playMusic(playerIn, pos, true);
+                ((EntitySittableBlock) playerIn.getRidingEntity()).setPlayID(PlayManager.playMusic(playerIn, pos, true));
             }
 
         } else
