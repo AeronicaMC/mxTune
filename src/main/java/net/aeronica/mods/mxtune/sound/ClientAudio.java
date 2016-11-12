@@ -184,6 +184,7 @@ public class ClientAudio
         return audioData.isClientPlayer();
     }
     
+    @Deprecated
     public static BlockPos getBlockPos(Integer playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
@@ -230,7 +231,6 @@ public class ClientAudio
         SoundSystemConfig.setNumberStreamingChannels(8);
         SoundSystemConfig.setNumberNormalChannels(24);
         SoundSystemConfig.setNumberStreamingBuffers(4);
-        ModLogger.logInfo("SoundSetupEvent: getNumberStreamingBuffers = " + SoundSystemConfig.getNumberStreamingBuffers());
     }
 
     @SubscribeEvent
