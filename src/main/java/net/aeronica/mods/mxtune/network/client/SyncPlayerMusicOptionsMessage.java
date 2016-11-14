@@ -35,29 +35,13 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 
-/**
- * 
- * A packet to send ALL data stored in your extended properties to the client.
- * This is handy if you only need to send your data once per game session or all
- * of your data needs to be synchronized together; it's also handy while first
- * starting, since you only need one packet for everything - however, you should
- * NOT use such a packet in your final product!!!
- * 
- * Each packet should handle one thing and one thing only, in order to minimize
- * network traffic as much as possible. There is no point sending 20+ fields'
- * worth of data when you just need the current mana amount; conversely, it's
- * foolish to send 20 packets for all the data when the player first loads, when
- * you could send it all in one single packet.
- * 
- * TL;DR - make separate packets for each piece of data, and one big packet for
- * those times when you need to send everything.
- *
- */
 public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPlayerMusicOptionsMessage>
 {
+    
     private byte propertyID;
     private NBTTagCompound data;
-    private float midiVolume;
+    private boolean displayHUD;
+    private int positionHUD;
     private int muteOption;
     private String sParam1, sParam2, sParam3;
     private List<PlayerLists> blackList, whiteList;
@@ -81,8 +65,9 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             this.data = (NBTTagCompound) MusicOptionsUtil.MUSIC_OPTIONS.writeNBT(inst, null);
             break;
 
-        case PlayerMusicDefImpl.SYNC_MIDI_VOLUME:
-            this.midiVolume = inst.getMidiVolume();
+        case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
+            this.displayHUD = inst.isHudDisabled();
+            this.positionHUD = inst.getPositionHud();
             break;
             
         case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
@@ -117,8 +102,9 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         case PlayerMusicDefImpl.SYNC_ALL:
             this.data = buffer.readNBTTagCompoundFromBuffer();
             break;
-        case PlayerMusicDefImpl.SYNC_MIDI_VOLUME:
-            this.midiVolume = buffer.readFloat();
+        case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
+            this.displayHUD = buffer.readBoolean();
+            this.positionHUD = buffer.readInt();
             break;
         case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
            this. muteOption = buffer.readInt();
@@ -171,8 +157,9 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         case PlayerMusicDefImpl.SYNC_ALL:
             buffer.writeNBTTagCompoundToBuffer(this.data);
             break;
-        case PlayerMusicDefImpl.SYNC_MIDI_VOLUME:
-            buffer.writeFloat(this.midiVolume);
+        case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
+            buffer.writeBoolean(this.displayHUD);
+            buffer.writeInt(this.positionHUD);
             break;
         case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
             buffer.writeInt(this.muteOption);
@@ -228,8 +215,8 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             case PlayerMusicDefImpl.SYNC_ALL:
                 MusicOptionsUtil.MUSIC_OPTIONS.readNBT(inst, null, this.data);
                 break;
-            case PlayerMusicDefImpl.SYNC_MIDI_VOLUME:
-                inst.setMidiVolume(this.midiVolume);
+            case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
+                inst.setHudOptions(displayHUD, positionHUD);
                 break;
             case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
                 inst.setMuteOption(this.muteOption);
@@ -247,4 +234,5 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             }
         }
     }
+
 }

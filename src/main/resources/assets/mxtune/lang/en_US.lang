@@ -55,7 +55,9 @@ mxtune.gui.musicOptions.muteOption.others=Mute Others
 mxtune.gui.musicOptions.muteOption.blacklist=Mute Blacklist
 mxtune.gui.musicOptions.muteOption.whitelist=Allow Whitelist
 mxtune.gui.musicOptions.muteOption.all=Mute All
-mxtune.gui.musicOptions.reset=Abort/Reset Music
+mxtune.gui.musicOptions.adj_hud=Adjust HUD
+
+mxtune.gui.hudAdjust.title=Adjust mxTune HUD
 
 mxtune.gui.musicPaperParse.title=MML Simple Editor
 mxtune.gui.musicPaperParse.noSoundbank=No Soundbank loaded

@@ -33,16 +33,14 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessage>
 {
-    private float midiVolume;
     private int muteOption;
     private List<PlayerLists> blackList, whiteList;
     private byte[] byteBuffer = null;
     
     public MusicOptionsMessage() {}
     
-    public MusicOptionsMessage(float midiVolume, int muteOption, List<PlayerLists> blackList, List<PlayerLists> whiteList)
+    public MusicOptionsMessage(int muteOption, List<PlayerLists> blackList, List<PlayerLists> whiteList)
     {
-        this.midiVolume = midiVolume;
         this.muteOption = muteOption;
         this.blackList = blackList;
         this.whiteList = whiteList;
@@ -52,7 +50,6 @@ public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessa
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
-        this.midiVolume = buffer.readFloat();
         this.muteOption = buffer.readInt();
         try{
             // Deserialize data object from a byte array
@@ -86,7 +83,6 @@ public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessa
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
-        buffer.writeFloat(this.midiVolume);
         buffer.writeInt(this.muteOption);
         try{
             // Serialize data object to a byte array
@@ -119,7 +115,6 @@ public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessa
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        MusicOptionsUtil.setMidiVolume(player, this.midiVolume);
         MusicOptionsUtil.setMuteOption(player, this.muteOption);
         MusicOptionsUtil.setBlackList(player, blackList);
         MusicOptionsUtil.setWhiteList(player, whiteList);

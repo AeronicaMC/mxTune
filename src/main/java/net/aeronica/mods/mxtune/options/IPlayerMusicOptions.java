@@ -23,14 +23,14 @@ import net.minecraft.entity.player.EntityPlayer;
 public interface IPlayerMusicOptions
 {   
     public void clearAll(EntityPlayer playerIn);
-
-    /** range 0.0 - 1.0 */
-    public void setMidiVolume(EntityPlayer playerIn, float volumeIn);
-
-    public void setMidiVolume(float volumeIn);
-
-    /** range 0.0 - 1.0 */
-    public float getMidiVolume();
+    
+    public void setHudOptions(EntityPlayer playerIn, boolean disableHud, int positionHud);
+    
+    public void setHudOptions(boolean disableHUD, int positionHud);
+    
+    public boolean isHudDisabled();
+    
+    public int getPositionHud();
     
     public int getMuteOption();
     

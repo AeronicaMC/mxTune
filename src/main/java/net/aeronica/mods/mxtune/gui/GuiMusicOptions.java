@@ -51,7 +51,6 @@ import net.minecraftforge.fml.client.config.GuiButtonExt;
 public class GuiMusicOptions extends GuiScreen
 {
     public static final int GUI_ID = 8;
-    private Minecraft mc;
     private static final String TITLE = I18n.format("mxtune.gui.musicOptions.title");
     private static final String LABEL_WHITELIST = I18n.format("mxtune.gui.musicOptions.label.whitelist");
     private static final String LABEL_PLAYERS  = I18n.format("mxtune.gui.musicOptions.label.players");
@@ -59,14 +58,13 @@ public class GuiMusicOptions extends GuiScreen
     private static final String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
 
     private GuiButtonExt btn_muteOption;
-    private GuiButtonExt btn_cancel, btn_done, btn_reset;
+    private GuiButtonExt btn_cancel, btn_done, btn_adj_hud;
     private GuiButtonExt btn_white_to_players, btn_players_to_white, btn_black_to_players, btn_players_to_black;
     private GuiPlayerList lst_players;
     private GuiWhiteList lst_white;
     private GuiBlackList lst_black;
     
     private EntityPlayer player;
-    private float midiVolume;
     private int muteOption;
     private boolean midiUnavailable;
 
@@ -98,7 +96,6 @@ public class GuiMusicOptions extends GuiScreen
     {
         this.player = playerIn;
         this.mc = Minecraft.getMinecraft();
-        midiVolume = MusicOptionsUtil.getMidiVolume(player);
         muteOption = MusicOptionsUtil.getMuteOption(player);
         midiUnavailable = MIDISystemUtil.getInstance().midiUnavailable();
         initPlayerList();
@@ -141,7 +138,7 @@ public class GuiMusicOptions extends GuiScreen
         x = lst_white.getRight() - whiteListWidth - 2;
         buttonWidth = 225;
         btn_muteOption = new GuiButtonExt(0, x, y, buttonWidth, 20, (MusicOptionsUtil.EnumMuteOptions.byMetadata(muteOption).toString()));
-        btn_reset = new GuiButtonExt(4, x, y+=22, buttonWidth, 20, I18n.format("mxtune.gui.musicOptions.reset"));
+        btn_adj_hud = new GuiButtonExt(4, x, y+=22, buttonWidth, 20, I18n.format("mxtune.gui.musicOptions.adj_hud"));
         
         this.buttonList.add(btn_white_to_players);
         this.buttonList.add(btn_players_to_white);
@@ -151,7 +148,7 @@ public class GuiMusicOptions extends GuiScreen
         this.buttonList.add(btn_muteOption);
         this.buttonList.add(btn_cancel);
         this.buttonList.add(btn_done);
-        this.buttonList.add(btn_reset);
+        this.buttonList.add(btn_adj_hud);
         
         reloadState();
     }
@@ -238,14 +235,16 @@ public class GuiMusicOptions extends GuiScreen
             break;
         case 3:
             /** done */
-            sendOptionsToServer(this.midiVolume, this.muteOption);
+            sendOptionsToServer(this.muteOption);
         case 2:
             /** cancel */
             mc.displayGuiScreen(null);
             mc.setIngameFocus();
             break;
         case 4:
-            /** reset */
+            /** Adjust HUD */
+            sendOptionsToServer(this.muteOption);
+            this.mc.displayGuiScreen(new GuiHudAdjust());
             break;
         case 11:
             if (this.selectedWhiteIndex == -1 | this.selectedWhiteIndex > this.whiteList.size()) break;
@@ -318,9 +317,9 @@ public class GuiMusicOptions extends GuiScreen
 
     public FontRenderer getFontRenderer() {return mc.fontRendererObj;}
     
-    protected void sendOptionsToServer(float midiVolume, int muteOption)
+    protected void sendOptionsToServer(int muteOption)
     {
-        PacketDispatcher.sendToServer(new MusicOptionsMessage(midiVolume, muteOption, blackList, whiteList));
+        PacketDispatcher.sendToServer(new MusicOptionsMessage(muteOption, blackList, whiteList));
     }
     
 

@@ -19,9 +19,12 @@ package net.aeronica.mods.mxtune.gui;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.lwjgl.opengl.GL11;
+
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
+import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -36,116 +39,82 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class GuiJamOverlay extends Gui
 {
     private Minecraft mc = null;
     private FontRenderer fontRenderer = null;
     private static final ResourceLocation textureLocation = new ResourceLocation(MXTuneMain.prependModID("textures/gui/manage_group.png"));
-
-    public GuiJamOverlay(Minecraft mc)
+    
+    private static class GuiJamOverlayHolder {private static final GuiJamOverlay INSTANCE = new GuiJamOverlay();}
+    public static GuiJamOverlay getInstance() {return GuiJamOverlayHolder.INSTANCE;}
+    
+    public GuiJamOverlay()
     {
-        super();
-        this.mc = mc;
+        this.mc = Minecraft.getMinecraft();
         this.fontRenderer = this.mc.fontRendererObj;
     }
 
-    private static final int STAT_ICON_SIZE = 18;
-
-    private static final int STAT_ICON_BASE_U_OFFSET = 0;
-    private static final int STAT_ICON_BASE_V_OFFSET = 165;
-    private static final int STAT_ICONS_PER_ROW = 8;
-
-    /**
-     * This event is called by GuiIngameForge during each frame by
-     * GuiIngameForge.pre() and GuiIngameForce.post().
-     */
+    private static ItemStack lastItemStack = null;
+    private static int hudTimer = 0;
+    private static int count = 0;
+    
+    @SubscribeEvent
+    public void onEvent(ClientTickEvent event)
+    {
+        if (event.side == Side.CLIENT && event.phase == TickEvent.Phase.END)
+        {
+            /* 4 ticks per second */
+            if ((count++ % 5 == 0) && (hudTimer > 0)) hudTimer--;
+        }
+    }
+    
+    private boolean canRenderHud(EntityPlayer playerIn)
+    {        
+        if (mc.currentScreen != null && mc.currentScreen instanceof GuiHudAdjust)
+            return true;
+        else return !MusicOptionsUtil.isHudDisabled(playerIn) && hudTimer > 0;
+    }
+    
+    private static HudData hudData = null;
+    private static int lastWidth = 0;
+    private static int lastHeight = 0;
+    
+    @SuppressWarnings("static-access")
     @SubscribeEvent(priority = EventPriority.NORMAL)
-    public void onRenderExperienceBar(RenderGameOverlayEvent event)
+    public void onRenderExperienceBar(RenderGameOverlayEvent.Post event)
     {
 
         if (mc.gameSettings.showDebugInfo) return;
-        //
-        // We draw after the ExperienceBar has drawn. The event raised by
-        // GuiIngameForge.pre()
-        // will return true from isCancelable. If you call
-        // event.setCanceled(true) in
-        // that case, the portion of rendering which this event represents will
-        // be canceled.
-        // We want to draw *after* the experience bar is drawn, so we make sure
-        // isCancelable() returns
-        // false and that the eventType represents the ExperienceBar event.
-        if (event.isCancelable() || event.getType() != ElementType.EXPERIENCE) { return; }
 
+       if (event.isCancelable() || event.getType() != ElementType.EXPERIENCE) { return; }
         EntityPlayerSP player = this.mc.thePlayer;
-        // Starting position for the status bar - 2 pixels from the top left
-        // corner.
-        int xPos = 2;
-        int yPos = 2;
-        // String s1 = "";
-        // String s2 = "";
-        // if (GROUPS.clientGroups != null || GROUPS.clientMembers != null) {
-        // s1 = GROUPS.clientGroups.toString();
-        // s2 = GROUPS.clientMembers.toString();
-        // }
-        // GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        // GL11.glDisable(GL11.GL_LIGHTING);
-        // GL11.glPushMatrix();
-        // fontRenderer.drawStringWithShadow(s1, 2, 22, 16777215);
-        // fontRenderer.drawStringWithShadow(s2, 2, 32, 16777215);
-        // GL11.glPopMatrix();
+ 
+        int width = event.getResolution().getScaledWidth();
+        int height = event.getResolution().getScaledHeight();
+        if (hudData == null || lastWidth != width || lastHeight != height || !hudData.isEqual(calcHudPositions(MusicOptionsUtil.getPositionHUD(player), width, height)))
+        {
+            hudData = calcHudPositions(MusicOptionsUtil.getPositionHUD(player), width, height);
+            lastWidth = width; lastHeight = height;
+        }
+        
         this.mc.renderEngine.bindTexture(textureLocation);
-
+        ItemStack currentItemStack = player.getHeldItemMainhand();
+        
         if ((player.getHeldItemMainhand() != null) && (player.getHeldItemMainhand().getItem() instanceof IInstrument))
-        {
-            int iconIndex = GROUPS.getIndex(player.getEntityId());
-            this.drawTexturedModalRect(xPos, yPos, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
-                    STAT_ICON_SIZE, STAT_ICON_SIZE);
-
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.NORMAL)
-    public void onRenderText(RenderGameOverlayEvent event)
-    {
-        if (mc.gameSettings.showDebugInfo) return;
-
-        if (event.isCancelable() || event.getType() != ElementType.TEXT) { return; }
-
-        EntityPlayerSP player = this.mc.thePlayer;
-
-        drawMusicTitle(player);
-        drawGroup(player);
-        drawDebug();
-    }
-
-    private void drawMusicTitle(EntityPlayer playerIn)
-    {
-        /** draw the music title if any */
-        if ((playerIn.getHeldItemMainhand() != null) && (playerIn.getHeldItemMainhand().getItem() instanceof IInstrument))
-        {
-            ItemStack is = playerIn.getHeldItemMainhand();
-            fontRenderer.drawStringWithShadow(getMusicTitle(is), 22, 7, 16777215);
-        }
-    }
-
-    private String getMusicTitle(ItemStack stackIn)
-    {
-        String result = TextFormatting.YELLOW + "(empty)";
-        if (stackIn == null) return result;
-        String sheetMusicTitle = this.getMusicTitleRaw(stackIn);
-        /** Display the title of the contained music book. */
-        if (!sheetMusicTitle.isEmpty())
-        {
-            result = TextFormatting.GREEN + sheetMusicTitle;
-        }
-        return result;
+        {            
+            if (lastItemStack==null || !currentItemStack.equals(this.lastItemStack)) {hudTimer = 10; lastItemStack = currentItemStack;}
+            if (canRenderHud(player)) this.renderTest(hudData, player);
+        } else lastItemStack = currentItemStack;
     }
 
     private void drawGroup(EntityPlayer player)
     {
-        int posX = 2;
-        int posY = 22;
+        int posX = 6;
+        int posY = 24;
         Integer groupID;
         Integer memberID;
         String leaderName;
@@ -178,23 +147,90 @@ public class GuiJamOverlay extends Gui
         }
     }
  
+    /*
+     * 0 | 1
+     * 2 | 3
+     * 4 | 5
+     * 6 | 7
+     */
+    public static HudData calcHudPositions(int positionHud, int width, int height)
+    {
+        int posX = 0;
+        int posY= 0;
+        boolean displayLeft = true;
+        boolean displayTop = true;
+
+        switch(positionHud)
+        {
+        case 0:
+            break;
+        case 1:
+            displayLeft = false;
+            posX = width;
+            break;
+        case 2:
+            posY = height / 4;
+            break;
+        case 3:
+            displayLeft = false;
+            posX = width;
+            posY = height / 4;
+            break;
+        case 4:
+            displayTop = false;
+            posY = (height / 2) + (height / 4);
+            break;
+        case 5:
+            displayLeft = false;
+            displayTop = false;
+            posX = width;
+            posY = (height / 2) + (height / 4);
+            break;
+        case 6:
+            displayTop = false;
+            posY = height;
+            break;
+        case 7:
+            displayLeft = false;
+            displayTop = false;
+            posX = width;
+            posY = height;
+            break;
+        default:
+        }
+        return new HudData(posX, posY, displayLeft, displayTop);
+    }
+        
     private void drawDebug()
     {
         if (GROUPS.getClientPlayStatuses() != null && !GROUPS.getClientPlayStatuses().isEmpty())
         {
             String status = new String("Play Status: " + GROUPS.getClientPlayStatuses().toString());
-            fontRenderer.drawStringWithShadow(status, 2, 60, 16777215);
+            fontRenderer.drawStringWithShadow(status, 6, 80, 16777215);
         }
         if (GROUPS.getPlayIDMembers() != null && !GROUPS.getPlayIDMembers().isEmpty())
         {
             String status = new String("PlayID Members: " + GROUPS.getPlayIDMembers().toString());
-            fontRenderer.drawStringWithShadow(status, 2, 70, 16777215);
+            fontRenderer.drawStringWithShadow(status, 6, 90, 16777215);
         }
         if (GROUPS.getActivePlayIDs() != null && !GROUPS.getActivePlayIDs().isEmpty())
         {
             String status = new String("ActivePlayIDs: " + GROUPS.getActivePlayIDs().toString());
-            fontRenderer.drawStringWithShadow(status, 2, 80, 16777215);
+            fontRenderer.drawStringWithShadow(status, 6, 100, 16777215);
         }
+    }
+
+    private String getMusicTitle(ItemStack stackIn)
+    {
+        String result = TextFormatting.YELLOW + "(empty)";
+        if (stackIn == null) return result;
+        String sheetMusicTitle = this.getMusicTitleRaw(stackIn);
+        /** Display the title of the contained music book. */
+        if (!sheetMusicTitle.isEmpty())
+        {
+            result = TextFormatting.GREEN + sheetMusicTitle;
+        }
+        return result;
     }
     
     private String getMusicTitleRaw(ItemStack stackIn)
@@ -209,5 +245,36 @@ public class GuiJamOverlay extends Gui
             }
         }
         return new String();
-    }    
+    }
+
+    
+    
+    private static final int STAT_ICON_SIZE = 18;
+    private static final int STAT_ICON_BASE_U_OFFSET = 0;
+    private static final int STAT_ICON_BASE_V_OFFSET = 165;
+    private static final int STAT_ICONS_PER_ROW = 8;
+
+    private void renderTest(HudData hd, EntityPlayer playerIn)
+    {
+        int alphaBack = 64;
+        int alphaFore = 192;
+        int maxWidth = 256;
+        int maxHeight = 128;
+        GL11.glPushMatrix();
+        GL11.glTranslatef(hd.getPosX(), hd.getPosY(), 0F);
+        GL11.glScalef(.5F, .5F, .5F);
+        drawRect(4, 4, maxWidth, maxHeight, 0x00000000 + (alphaBack << 24));            
+        drawRect(0, 0, maxWidth-4, maxHeight-4, 0xA0A0A0 + (alphaBack << 24));
+        ItemStack is = playerIn.getHeldItemMainhand();
+        int iconIndex = GROUPS.getIndex(playerIn.getEntityId());
+        drawTexturedModalRect(4, 4, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
+                STAT_ICON_SIZE, STAT_ICON_SIZE);
+        fontRenderer.drawStringWithShadow(getMusicTitle(is), 22, 8, 0x00FF00 + (alphaFore << 24));
+        drawGroup(playerIn);
+        drawDebug();
+        drawRect(25, 25, 29, 29, 0xFF0000 + (alphaFore << 24));
+        drawRect(20, 20, 24, 24, 0x00FF00 + (alphaFore << 24));
+        GL11.glPopMatrix();
+    }
+    
 }

@@ -93,12 +93,13 @@ public class PlayerMusicOptionsCapability
             IPlayerMusicOptions dead = event.getOriginal().getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
             IPlayerMusicOptions live = event.getEntityPlayer().getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
             live.setSParams(player, dead.getSParam1(), dead.getSParam2(), dead.getSParam3());
-            live.setMidiVolume(player, dead.getMidiVolume());
+            live.setHudOptions(player, dead.isHudDisabled(), dead.getPositionHud());
             live.setMuteOption(player, dead.getMuteOption());
             live.setBlackList(player, dead.getBlackList());
             live.setWhiteList(player, dead.getBlackList());
         }
         
+//        @SubscribeEvent
         public void onEntityJoinWorld(EntityJoinWorldEvent event)
         {
             if (event.getEntity() instanceof EntityPlayerMP)
@@ -133,7 +134,8 @@ public class PlayerMusicOptionsCapability
         public NBTBase writeNBT(Capability<IPlayerMusicOptions> capability, IPlayerMusicOptions instance, EnumFacing side)
         {
             NBTTagCompound properties = new NBTTagCompound();
-            properties.setFloat("midiVolume", instance.getMidiVolume());
+            properties.setBoolean("disableHUD", instance.isHudDisabled());
+            properties.setInteger("positionHUD", instance.getPositionHud());
             properties.setInteger("muteOption", instance.getMuteOption());
             properties.setString("sParam1", instance.getSParam1());
             properties.setString("sParam2", instance.getSParam2());
@@ -165,7 +167,7 @@ public class PlayerMusicOptionsCapability
         public void readNBT(Capability<IPlayerMusicOptions> capability, IPlayerMusicOptions instance, EnumFacing side, NBTBase nbt)
         {
             NBTTagCompound properties = (NBTTagCompound) nbt;
-            instance.setMidiVolume(properties.getFloat("midiVolume"));
+            instance.setHudOptions(properties.getBoolean("disableHUD"), properties.getInteger("positionHUD"));
             instance.setMuteOption(properties.getInteger("muteOption"));
             instance.setSParams(properties.getString("sParam1"), properties.getString("sParam2"), properties.getString("sParam3"));
             if (properties.hasKey("listBlack", Constants.NBT.TAG_LIST))

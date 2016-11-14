@@ -37,10 +37,12 @@ public class MusicOptionsUtil
 
     @CapabilityInject(IPlayerMusicOptions.class)
     public static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = null;
-
-    public static void setMidiVolume(EntityPlayer playerIn, float volumeIn) {playerIn.getCapability(MUSIC_OPTIONS, null).setMidiVolume(playerIn, volumeIn);}
     
-    public static float getMidiVolume(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getMidiVolume();}
+    public static void setHudOptions(EntityPlayer playerIn, boolean disableHud, int positionHUD) {playerIn.getCapability(MUSIC_OPTIONS, null).setHudOptions(disableHud, positionHUD);}
+    
+    public static boolean isHudDisabled(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).isHudDisabled();}
+    
+    public static int getPositionHUD(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getPositionHud();}
     
     public static boolean isMuteAll(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getMuteOption() == MusicOptionsUtil.EnumMuteOptions.ALL.getMetadata();}
 
