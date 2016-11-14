@@ -38,7 +38,7 @@ public class MusicOptionsUtil
     @CapabilityInject(IPlayerMusicOptions.class)
     public static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = null;
     
-    public static void setHudOptions(EntityPlayer playerIn, boolean disableHud, int positionHUD) {playerIn.getCapability(MUSIC_OPTIONS, null).setHudOptions(disableHud, positionHUD);}
+    public static void setHudOptions(EntityPlayer playerIn, boolean disableHud, int positionHud) {playerIn.getCapability(MUSIC_OPTIONS, null).setHudOptions(disableHud, positionHud);}
     
     public static boolean isHudDisabled(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).isHudDisabled();}
     

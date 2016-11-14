@@ -15,6 +15,7 @@ import net.aeronica.mods.mxtune.network.client.SyncGroupMessage;
 import net.aeronica.mods.mxtune.network.client.SyncPlayStatusMessage;
 import net.aeronica.mods.mxtune.network.client.SyncPlayerMusicOptionsMessage;
 import net.aeronica.mods.mxtune.network.client.SyncStatusMessage;
+import net.aeronica.mods.mxtune.network.server.HudOptionsMessage;
 import net.aeronica.mods.mxtune.network.server.ManageGroupMessage;
 import net.aeronica.mods.mxtune.network.server.MusicOptionsMessage;
 import net.aeronica.mods.mxtune.network.server.MusicTextMessage;
@@ -82,6 +83,7 @@ public class PacketDispatcher
         registerMessage(ManageGroupMessage.class);
         registerMessage(MusicOptionsMessage.class);
         registerMessage(MusicTextMessage.class);
+        registerMessage(HudOptionsMessage.class);
 
         /**
          * If you don't want to make a 'registerMessage' method, you can do it

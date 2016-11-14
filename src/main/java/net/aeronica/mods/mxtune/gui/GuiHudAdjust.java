@@ -22,6 +22,9 @@ import java.io.IOException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
+import net.aeronica.mods.mxtune.network.PacketDispatcher;
+import net.aeronica.mods.mxtune.network.server.HudOptionsMessage;
+import net.aeronica.mods.mxtune.network.server.MusicOptionsMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.Minecraft;
@@ -61,6 +64,8 @@ public class GuiHudAdjust extends GuiScreen
         case 1: /* cancel */
             this.lastHudPos = this.initialHudPos;
         case 0: /* done   */
+            if (lastHudPos != initialHudPos)
+                PacketDispatcher.sendToServer(new HudOptionsMessage(lastHudPos, MusicOptionsUtil.isHudDisabled(mc.thePlayer)));
             MusicOptionsUtil.setHudOptions(mc.thePlayer, MusicOptionsUtil.isHudDisabled(mc.thePlayer), lastHudPos);
             this.mc.displayGuiScreen(new GuiMusicOptions(this.mc.thePlayer));  
             break;
