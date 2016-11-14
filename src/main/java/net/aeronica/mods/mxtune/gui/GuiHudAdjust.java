@@ -41,10 +41,13 @@ public class GuiHudAdjust extends GuiScreen
     private GuiButtonExt btn_cancel, btn_done;
 
     private boolean midiUnavailable;
+    private int initialHudPos;
     
     public GuiHudAdjust()
     {
+        mc = Minecraft.getMinecraft();
         midiUnavailable = MIDISystemUtil.getInstance().midiUnavailable();
+        initialHudPos = MusicOptionsUtil.getPositionHUD(mc.thePlayer);
     }
     
     @Override
@@ -55,8 +58,10 @@ public class GuiHudAdjust extends GuiScreen
 
         switch(button.id)
         {
-        case 0:
-        case 1:
+        case 1: /* cancel */
+            this.lastHudPos = this.initialHudPos;
+        case 0: /* done   */
+            MusicOptionsUtil.setHudOptions(mc.thePlayer, MusicOptionsUtil.isHudDisabled(mc.thePlayer), lastHudPos);
             this.mc.displayGuiScreen(new GuiMusicOptions(this.mc.thePlayer));  
             break;
         default:
@@ -85,9 +90,9 @@ public class GuiHudAdjust extends GuiScreen
         int y = (height) / 2;
         int buttonWidth = 100;
         y = height - 100;
-        int x = (width / 2) - buttonWidth - 2;
-        btn_done = new GuiButtonExt(0, x, y, buttonWidth, 20, I18n.format("gui.done"));
-        btn_cancel = new GuiButtonExt(1, x + buttonWidth + 1 , y, buttonWidth, 20, I18n.format("gui.cancel"));
+        int x = (width / 2) - (buttonWidth/2);
+        btn_done =   new GuiButtonExt(0, x, y, buttonWidth, 20, I18n.format("gui.done"));
+        btn_cancel = new GuiButtonExt(1, x, y+=20, buttonWidth, 20, I18n.format("gui.cancel"));
         
         this.buttonList.add(btn_cancel);
         this.buttonList.add(btn_done);
@@ -114,7 +119,6 @@ public class GuiHudAdjust extends GuiScreen
         int posX = (this.width - getFontRenderer().getStringWidth(localTITLE)) / 2 ;
         int posY = 10;
         getFontRenderer().drawStringWithShadow(localTITLE, posX, posY, 0xD3D3D3);
-        // TODO titles, labels, enclosed lists . . .
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
     
@@ -128,10 +132,9 @@ public class GuiHudAdjust extends GuiScreen
             drawRect(
                     (hd.isDisplayLeft() ? hd.getPosX() + 2 : hd.getPosX() -2),
                     (hd.isDisplayTop()  ? hd.getPosY() + 2 : hd.getPosY() -2),
-                    (hd.isDisplayLeft() ? hd.getPosX() + (width/2) -1 : hd.getPosX() - (width/2) +1),
+                    (hd.isDisplayLeft() ? hd.getPosX() + (width/5) -1 : hd.getPosX() - (width/5) +1),
                     (hd.isDisplayTop()  ? hd.getPosY() + (height/4)-1 : hd.getPosY() - (height/4)+1),
                     ((i == mouseOverHudPos(hd, i)) ? color.getRGB() : darkColor.getRGB()) + (128 << 24));
-            //System.out.println("db: " + i);
         }
     }
 
@@ -139,8 +142,8 @@ public class GuiHudAdjust extends GuiScreen
     private int mouseOverHudPos(HudData hd, int pos)
     {
         if (
-                ((hd.isDisplayLeft() ? hd.getPosX() : hd.getPosX() - (width/2)) < mouseX) &&
-                ((hd.isDisplayLeft() ? hd.getPosX() + (width/2) : (width)) > mouseX) &&
+                ((hd.isDisplayLeft() ? hd.getPosX() : hd.getPosX() - (width/5)) < mouseX) &&
+                ((hd.isDisplayLeft() ? hd.getPosX() + (width/5) : (width)) > mouseX) &&
                 ((hd.isDisplayTop()  ? hd.getPosY() : hd.getPosY() - (height/4)) < mouseY) &&
                 ((hd.isDisplayTop()  ? hd.getPosY() + (height/4) : hd.getPosY())) > mouseY)
         {
