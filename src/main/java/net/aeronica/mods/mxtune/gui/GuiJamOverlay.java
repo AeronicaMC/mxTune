@@ -74,10 +74,12 @@ public class GuiJamOverlay extends Gui
     
     private boolean canRenderHud(EntityPlayer playerIn)
     {        
-        if (mc.currentScreen != null && mc.currentScreen instanceof GuiHudAdjust)
+        if (inGuiHudAdjust())
             return true;
         else return !MusicOptionsUtil.isHudDisabled(playerIn) && hudTimer > 0;
     }
+    
+    private boolean inGuiHudAdjust() {return (mc.currentScreen != null && mc.currentScreen instanceof GuiHudAdjust);}
     
     private static HudData hudData = null;
     private static int lastWidth = 0;
@@ -95,11 +97,12 @@ public class GuiJamOverlay extends Gui
  
         int width = event.getResolution().getScaledWidth();
         int height = event.getResolution().getScaledHeight();
-        if (hudData == null || lastWidth != width || lastHeight != height || !hudData.isEqual(calcHudPositions(MusicOptionsUtil.getPositionHUD(player), width, height)))
-        {
-            hudData = calcHudPositions(MusicOptionsUtil.getPositionHUD(player), width, height);
-            lastWidth = width; lastHeight = height;
-        }
+//        if (hudData == null || lastWidth != width || lastHeight != height || !hudData.isEqual(calcHudPositions(MusicOptionsUtil.getPositionHUD(player), width, height)))
+//        {
+//            hudData = calcHudPositions(MusicOptionsUtil.getPositionHUD(player), width, height);
+//            lastWidth = width; lastHeight = height;
+//        }
+        hudData = calcHudPositions((inGuiHudAdjust() ? MusicOptionsUtil.getAdjustPositionHud() : MusicOptionsUtil.getPositionHUD(player)), width, height);
         
         this.mc.renderEngine.bindTexture(textureLocation);
         ItemStack currentItemStack = player.getHeldItemMainhand();
@@ -256,24 +259,41 @@ public class GuiJamOverlay extends Gui
 
     private void renderTest(HudData hd, EntityPlayer playerIn)
     {
-        int alphaBack = 64;
+        String fiftyTwo = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz";
+        int width52 = fontRenderer.getStringWidth(fiftyTwo);
+        int alphaBack = 128;
         int alphaFore = 192;
-        int maxWidth = 256;
-        int maxHeight = 128;
+        int maxWidth = 255;
+        int maxHeight = 127;
+        int top = hd.isDisplayTop() ? 0 : -maxHeight;
+        int left = hd.isDisplayLeft() ? 0 : -maxWidth;
+        int bottom = hd.isDisplayTop() ? maxHeight : 0;
+        int right = hd.isDisplayLeft() ? maxWidth : 0;
+
+        
         GL11.glPushMatrix();
         GL11.glTranslatef(hd.getPosX(), hd.getPosY(), 0F);
         GL11.glScalef(.5F, .5F, .5F);
-        drawRect(4, 4, maxWidth, maxHeight, 0x00000000 + (alphaBack << 24));            
-        drawRect(0, 0, maxWidth-4, maxHeight-4, 0xA0A0A0 + (alphaBack << 24));
+        drawRect(left+4, top+4, right, bottom, 0x00000000 + (alphaBack << 24));
+        drawRect(left, top, right-4, bottom-4, 0xA0A0A0 + (alphaBack << 24));
+        
         ItemStack is = playerIn.getHeldItemMainhand();
         int iconIndex = GROUPS.getIndex(playerIn.getEntityId());
-        drawTexturedModalRect(4, 4, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
+        drawTexturedModalRect(left+4,     top+4, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
                 STAT_ICON_SIZE, STAT_ICON_SIZE);
-        fontRenderer.drawStringWithShadow(getMusicTitle(is), 22, 8, 0x00FF00 + (alphaFore << 24));
+        drawTexturedModalRect(right-4-18, top+4, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
+                STAT_ICON_SIZE, STAT_ICON_SIZE);
+        drawTexturedModalRect(right-4-18, bottom-4-18, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
+                STAT_ICON_SIZE, STAT_ICON_SIZE);
+        drawTexturedModalRect(left+4,     bottom-4-18, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
+                STAT_ICON_SIZE, STAT_ICON_SIZE);
+        
+        fontRenderer.drawStringWithShadow(getMusicTitle(is), left+22, top+8, 0x00FF00);
+        int center52 = maxWidth/2 - width52/2;
+        fontRenderer.drawStringWithShadow(fiftyTwo, left+center52, top+18, 0x00FFFF);
+        fontRenderer.drawString(fiftyTwo, left+22, top+28, 0xFFFF00);
         drawGroup(playerIn);
         drawDebug();
-        drawRect(25, 25, 29, 29, 0xFF0000 + (alphaFore << 24));
-        drawRect(20, 20, 24, 24, 0x00FF00 + (alphaFore << 24));
         GL11.glPopMatrix();
     }
     

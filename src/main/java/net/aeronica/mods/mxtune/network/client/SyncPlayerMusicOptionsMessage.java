@@ -209,26 +209,26 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         if (side.isClient())
         {
             ModLogger.debug("Synchronizing Music Options player extended properties data on CLIENT");
-            final IPlayerMusicOptions inst = player.getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
+            final IPlayerMusicOptions instance = player.getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
             switch (this.propertyID)
             {
             case PlayerMusicDefImpl.SYNC_ALL:
-                MusicOptionsUtil.MUSIC_OPTIONS.readNBT(inst, null, this.data);
+                MusicOptionsUtil.MUSIC_OPTIONS.readNBT(instance, null, this.data);
                 break;
             case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
-                inst.setHudOptions(displayHUD, positionHUD);
+                instance.setHudOptions(displayHUD, positionHUD);
                 break;
             case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
-                inst.setMuteOption(this.muteOption);
+                instance.setMuteOption(this.muteOption);
                 break;
             case PlayerMusicDefImpl.SYNC_SPARAMS:
-                inst.setSParams(this.sParam1, this.sParam2, this.sParam3);
+                instance.setSParams(this.sParam1, this.sParam2, this.sParam3);
                 break;
             case PlayerMusicDefImpl.SYNC_WHITE_LIST:
-                inst.setWhiteList(this.whiteList);
+                instance.setWhiteList(this.whiteList);
                 break;                
             case PlayerMusicDefImpl.SYNC_BLACK_LIST:
-                inst.setBlackList(this.blackList);
+                instance.setBlackList(this.blackList);
                 break;
             default:
             }

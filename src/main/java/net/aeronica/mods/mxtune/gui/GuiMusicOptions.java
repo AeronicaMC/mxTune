@@ -292,7 +292,7 @@ public class GuiMusicOptions extends GuiScreen
         /** capture the ESC key do we close cleanly */
         if (keyCode == Keyboard.KEY_ESCAPE)
         {
-            actionPerformed((GuiButton) buttonList.get(btn_cancel.id));
+            this.actionPerformed((GuiButton) buttonList.get(btn_cancel.id));
         }
         updateState();
         super.keyTyped(typedChar, keyCode);
@@ -313,6 +313,12 @@ public class GuiMusicOptions extends GuiScreen
         super.mouseClicked(mouseX, mouseY, mouseButton);
     }
     
+    @Override
+    public void onGuiClosed()
+    {
+        Keyboard.enableRepeatEvents(false);
+    }
+
     public Minecraft getMinecraftInstance() {return mc;}
 
     public FontRenderer getFontRenderer() {return mc.fontRendererObj;}

@@ -31,6 +31,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class MusicOptionsUtil
 {
+    
     private MusicOptionsUtil() {}
     private static class MusicOptionsUtilHolder {private static final MusicOptionsUtil INSTANCE = new MusicOptionsUtil();}
     public static MusicOptionsUtil getInstance() {return MusicOptionsUtilHolder.INSTANCE;}
@@ -38,7 +39,7 @@ public class MusicOptionsUtil
     @CapabilityInject(IPlayerMusicOptions.class)
     public static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = null;
     
-    public static void setHudOptions(EntityPlayer playerIn, boolean disableHud, int positionHud) {playerIn.getCapability(MUSIC_OPTIONS, null).setHudOptions(disableHud, positionHud);}
+    public static void setHudOptions(EntityPlayer playerIn, boolean disableHud, int positionHud) {playerIn.getCapability(MUSIC_OPTIONS, null).setHudOptions(playerIn, disableHud, positionHud);}
     
     public static boolean isHudDisabled(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).isHudDisabled();}
     
@@ -73,7 +74,17 @@ public class MusicOptionsUtil
     public static void setWhiteList(EntityPlayer playerIn, List<PlayerLists> whiteList) {playerIn.getCapability(MUSIC_OPTIONS, null).setWhiteList(playerIn, whiteList);}
 
     public static List<PlayerLists> getWhiteList(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getWhiteList();}
-    
+  
+
+    /*
+     * GuiHudAdjust positionHud temporary for use when adjusting the Hud.
+     */
+    private static int adjustPositionHud = 0;
+
+    public static int getAdjustPositionHud() {return adjustPositionHud;}
+
+    public static void setAdjustPositionHud(int posHud) {adjustPositionHud = posHud;}
+
     /**
      * Mute per the muteOptions setting taking care to not mute THEPLAYER (playerIn) except for case ALL
      * 
@@ -207,4 +218,5 @@ public class MusicOptionsUtil
         @Override
         public String getName() {return this.translateKey;}        
     }
+    
 }

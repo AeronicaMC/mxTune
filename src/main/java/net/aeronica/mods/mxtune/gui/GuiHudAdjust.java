@@ -51,25 +51,28 @@ public class GuiHudAdjust extends GuiScreen
         mc = Minecraft.getMinecraft();
         midiUnavailable = MIDISystemUtil.getInstance().midiUnavailable();
         initialHudPos = MusicOptionsUtil.getPositionHUD(mc.thePlayer);
+        MusicOptionsUtil.setAdjustPositionHud(initialHudPos);
     }
     
     @Override
     protected void actionPerformed(GuiButton button) throws IOException
     {
         /** if button is disabled ignore click */
-        if (!button.enabled) return;
-
-        switch(button.id)
+        if (button.enabled)
         {
-        case 1: /* cancel */
-            this.lastHudPos = this.initialHudPos;
-        case 0: /* done   */
-            if (lastHudPos != initialHudPos)
+            switch(button.id)
+            {
+            case 0: /* done   */
                 PacketDispatcher.sendToServer(new HudOptionsMessage(lastHudPos, MusicOptionsUtil.isHudDisabled(mc.thePlayer)));
-            MusicOptionsUtil.setHudOptions(mc.thePlayer, MusicOptionsUtil.isHudDisabled(mc.thePlayer), lastHudPos);
-            this.mc.displayGuiScreen(new GuiMusicOptions(this.mc.thePlayer));  
-            break;
-        default:
+                MusicOptionsUtil.setAdjustPositionHud(this.lastHudPos);
+                this.mc.displayGuiScreen(new GuiMusicOptions(this.mc.thePlayer));  
+                break;
+            case 1: /* cancel */
+                MusicOptionsUtil.setAdjustPositionHud(this.initialHudPos);
+                this.mc.displayGuiScreen(new GuiMusicOptions(this.mc.thePlayer));
+                break;
+            default:
+            }
         }
         super.actionPerformed(button);
     }
@@ -80,7 +83,7 @@ public class GuiHudAdjust extends GuiScreen
         /** capture the ESC key so we close cleanly */
         if (keyCode == Keyboard.KEY_ESCAPE)
         {
-            actionPerformed((GuiButton) buttonList.get(btn_cancel.id));
+            this.actionPerformed((GuiButton) buttonList.get(btn_cancel.id));
             return;
         }
         super.keyTyped(typedChar, keyCode);
@@ -90,11 +93,10 @@ public class GuiHudAdjust extends GuiScreen
     public void initGui()
     {
         this.buttonList.clear();
-        Keyboard.enableRepeatEvents(true);
         
         int y = (height) / 2;
         int buttonWidth = 100;
-        y = height - 100;
+        y = height - 75;
         int x = (width / 2) - (buttonWidth/2);
         btn_done =   new GuiButtonExt(0, x, y, buttonWidth, 20, I18n.format("gui.done"));
         btn_cancel = new GuiButtonExt(1, x, y+=20, buttonWidth, 20, I18n.format("gui.cancel"));
@@ -171,14 +173,9 @@ public class GuiHudAdjust extends GuiScreen
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
-        MusicOptionsUtil.setHudOptions(mc.thePlayer, MusicOptionsUtil.isHudDisabled(mc.thePlayer), lastHudPos);
+        MusicOptionsUtil.setAdjustPositionHud(lastHudPos);
         System.out.println("mouseClicked positionHud: " + lastHudPos);
-    }
-    
-    @Override
-    public void onGuiClosed()
-    {
+        super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override
