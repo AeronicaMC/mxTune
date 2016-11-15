@@ -265,10 +265,10 @@ public class GuiJamOverlay extends Gui
         int alphaFore = 192;
         int maxWidth = 255;
         int maxHeight = 127;
-        int top = hd.isDisplayTop() ? 0 : -maxHeight;
-        int left = hd.isDisplayLeft() ? 0 : -maxWidth;
-        int bottom = hd.isDisplayTop() ? maxHeight : 0;
-        int right = hd.isDisplayLeft() ? maxWidth : 0;
+        int top = hd.top(maxHeight);
+        int left = hd.left(maxWidth);
+        int bottom = hd.bottom(maxHeight);
+        int right = hd.right(maxWidth);
 
         
         GL11.glPushMatrix();

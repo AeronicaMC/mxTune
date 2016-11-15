@@ -29,29 +29,21 @@ public class HudData
         this.posX = posX; this.posY = posY; this.displayLeft = displayLeft; this.displayTop = displayTop;
     }
 
-    public int getPosX()
-    {
-        return posX;
-    }
+    public int getPosX() {return posX;}
 
-    public int getPosY()
-    {
-        return posY;
-    }
+    public int getPosY() {return posY;}
 
-    public boolean isDisplayLeft()
-    {
-        return displayLeft;
-    }
+    public boolean isDisplayLeft() {return displayLeft;}
 
-    public boolean isDisplayTop()
-    {
-        return displayTop;
-    }
+    public boolean isDisplayTop() {return displayTop;}
     
     public boolean isEqual(HudData hudData)
     {
         return (posX == hudData.getPosX()) && (posY == hudData.getPosY()) && (displayLeft == hudData.isDisplayLeft()) && (displayTop == hudData.isDisplayTop());
     }
-
+    
+    public int top(int maxHeight)    { return this.isDisplayTop() ? 0 : -maxHeight; }
+    public int left(int maxWidth)    { return this.isDisplayLeft() ? 0 : -maxWidth; }
+    public int bottom(int maxHeight) { return this.isDisplayTop() ? maxHeight : 0; }
+    public int right(int maxWidth)   { return this.isDisplayLeft() ? maxWidth : 0; }
 }
