@@ -50,6 +50,22 @@ public class HudData
     public int bottom(int maxHeight) { return this.isDisplayTop() ? maxHeight : 0; }
     public int right(int maxWidth)   { return this.isDisplayLeft() ? maxWidth : 0; }
     
+    public int quadX(int maxWidth, int xIn, int padding, int xSize)
+    {
+        if(quadrant == Quadrant.I || quadrant == Quadrant.IV)
+            return left(maxWidth) + xIn + padding + left(xSize);
+        else 
+            return right(maxWidth) - xIn - padding - xSize;
+    }
+
+    public int quadY(int maxHeight, int yIn, int padding, int ySize)
+    {
+        if(quadrant == Quadrant.III || quadrant == Quadrant.IV)
+            return top(maxHeight) + yIn + padding + top(ySize);
+        else
+            return bottom(maxHeight) - yIn - padding - ySize;
+    }
+    
     /*
      * Plane Geometry
      *  II | I

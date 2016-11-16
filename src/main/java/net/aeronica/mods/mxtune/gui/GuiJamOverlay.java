@@ -237,40 +237,45 @@ public class GuiJamOverlay extends Gui
         int right = hd.right(maxWidth);
         
         ItemStack is = playerIn.getHeldItemMainhand();
-        String fiftyTwo = "Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz A really long STRING!";
-               String musicTitle = getMusicTitle(is);
+        String musicTitle = getMusicTitle(is);
         int musicTitleWidth = fontRenderer.getStringWidth(marquee(musicTitle, TITLE_DISPLAY_WIDTH));
-        int musicTitlePos = left + (maxWidth/2 - musicTitleWidth/2);
-        int width52 = fontRenderer.getStringWidth(fiftyTwo);
+        int musicTitlePosC = hd.quadX(maxWidth, 30, 0, musicTitleWidth);//left + (maxWidth/2 - musicTitleWidth/2);
+        int musicTitlePosY = hd.quadY(maxHeight, 10, 0, 10);
         
         GL11.glPushMatrix();
         GL11.glTranslatef(hd.getPosX(), hd.getPosY(), 0F);
-        GL11.glScalef(.55F, .55F, .55F);
+        GL11.glScalef(.5F, .5F, .5F);
         drawRect(left+4, top+4, right, bottom, 0x00000000 + (alphaBack << 24));
         drawRect(left, top, right-4, bottom-4, 0xA0A0A0 + (alphaBack << 24));
         
+        int iconX = hd.quadX(maxWidth, 0, 6, 18);
+        int iconY = hd.quadY(maxHeight, 0, 6, 18);
         int iconIndex = GROUPS.getIndex(playerIn.getEntityId());
-        switch(hd.getQuadrant())
-        {
-        case IV:
-            drawTexturedModalRect(left+4,     top+4, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
-                    STAT_ICON_SIZE, STAT_ICON_SIZE);
-            break;
-        case III:
-            drawTexturedModalRect(right-4-18, top+4, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
-                    STAT_ICON_SIZE, STAT_ICON_SIZE);
-            break;
-        case II:
-            drawTexturedModalRect(right-4-18, bottom-4-18, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
-                    STAT_ICON_SIZE, STAT_ICON_SIZE);
-            break;
-        case I:
-            drawTexturedModalRect(left+4,     bottom-4-18, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
-                    STAT_ICON_SIZE, STAT_ICON_SIZE);
-            break;
-        }
-        fontRenderer.drawStringWithShadow(marquee(musicTitle, TITLE_DISPLAY_WIDTH), musicTitlePos, top+8, 0x00FF00);
+        
+        drawTexturedModalRect(iconX, iconY, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
+                STAT_ICON_SIZE, STAT_ICON_SIZE);
 
+//        switch(hd.getQuadrant())
+//        {
+//        case IV:
+//            drawTexturedModalRect(left+4,     top+4, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
+//                    STAT_ICON_SIZE, STAT_ICON_SIZE);
+//            break;
+//        case III:
+//            drawTexturedModalRect(right-4-18, top+4, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
+//                    STAT_ICON_SIZE, STAT_ICON_SIZE);
+//            break;
+//        case II:
+//            drawTexturedModalRect(right-4-18, bottom-4-18, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
+//                    STAT_ICON_SIZE, STAT_ICON_SIZE);
+//            break;
+//        case I:
+//            drawTexturedModalRect(left+4,     bottom-4-18, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
+//                    STAT_ICON_SIZE, STAT_ICON_SIZE);
+//            break;
+//        }
+        fontRenderer.drawStringWithShadow(marquee(musicTitle, TITLE_DISPLAY_WIDTH), musicTitlePosC, musicTitlePosY, 0x00FF00);
+        
         drawGroup(playerIn);
         drawDebug();
         GL11.glPopMatrix();
