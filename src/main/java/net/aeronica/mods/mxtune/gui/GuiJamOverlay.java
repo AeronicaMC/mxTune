@@ -112,7 +112,7 @@ public class GuiJamOverlay extends Gui
         
         if (inGuiHudAdjust() || ((player.getHeldItemMainhand() != null) && (player.getHeldItemMainhand().getItem() instanceof IInstrument)))
         {            
-            if (lastItemStack==null | !currentItemStack.equals(this.lastItemStack)) {hudTimerReset(); lastItemStack = currentItemStack;}
+            if (lastItemStack==null || !currentItemStack.equals(this.lastItemStack)) {hudTimerReset(); lastItemStack = currentItemStack;}
             if (canRenderHud(player)) this.renderTest(hudData, player);
         } else lastItemStack = currentItemStack;
     }
@@ -245,8 +245,8 @@ public class GuiJamOverlay extends Gui
         GL11.glPushMatrix();
         GL11.glTranslatef(hd.getPosX(), hd.getPosY(), 0F);
         GL11.glScalef(.5F, .5F, .5F);
-        drawRect(left+4, top+4, right, bottom, 0x00000000 + (alphaBack << 24));
-        drawRect(left, top, right-4, bottom-4, 0xA0A0A0 + (alphaBack << 24));
+//        drawRect(left+4, top+4, right, bottom, 0x00000000 + (alphaBack << 24));
+//        drawRect(left, top, right-4, bottom-4, 0xA0A0A0 + (alphaBack << 24));
         
         int iconX = hd.quadX(maxWidth, 0, 6, 18);
         int iconY = hd.quadY(maxHeight, 0, 6, 18);
