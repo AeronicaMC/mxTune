@@ -117,7 +117,7 @@ public class GuiJamOverlay extends Gui
         } else lastItemStack = currentItemStack;
     }
 
-    private void drawGroup(EntityPlayer player)
+    private void drawGroup(EntityPlayer player, HudData hd, int maxWidth, int maxHeight)
     {
         int posX = 6;
         int posY = 24;
@@ -125,7 +125,7 @@ public class GuiJamOverlay extends Gui
         Integer memberID;
         String leaderName;
         String memberName;
-
+        
         if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
         {
             groupID = GROUPS.getMembersGroupID(player.getEntityId());
@@ -135,7 +135,10 @@ public class GuiJamOverlay extends Gui
             {
                 /** Always put the leader at the TOP of the list */
                 leaderName = player.worldObj.getEntityByID(GROUPS.getLeaderOfGroup(groupID)).getDisplayName().getUnformattedText();
-                fontRenderer.drawStringWithShadow(TextFormatting.YELLOW + leaderName, posX, posY, 16777215);
+                int leaderNameWidth = fontRenderer.getStringWidth(leaderName);
+                int qX = hd.quadX(maxWidth, posX, 0, leaderNameWidth);
+                int qY = hd.quadY(maxHeight, posY, 0, 10);
+                fontRenderer.drawStringWithShadow(TextFormatting.YELLOW + leaderName, qX, qY, 0xFFFF00);
                 posY += 10;
                 /** display the remaining members taking care to not print the leader a 2nd time. */
                 Set<Integer> set = GROUPS.getClientMembers().keySet();
@@ -145,7 +148,10 @@ public class GuiJamOverlay extends Gui
                     if (groupID.equals(GROUPS.getMembersGroupID(memberID)) && !memberID.equals(GROUPS.getLeaderOfGroup(groupID)))
                     {
                         memberName = player.worldObj.getEntityByID(memberID).getDisplayName().getUnformattedText();
-                        fontRenderer.drawStringWithShadow(memberName, posX, posY, 16777215);
+                        int memberNameWidth = fontRenderer.getStringWidth(memberName);
+                        qX = hd.quadX(maxWidth, posX, 0, memberNameWidth);
+                        qY = hd.quadY(maxHeight, posY, 0, 10);
+                        fontRenderer.drawStringWithShadow(memberName, qX, qY, 0xAAAAAA);
                         posY += 10;
                     }
                 }
@@ -254,29 +260,9 @@ public class GuiJamOverlay extends Gui
         
         drawTexturedModalRect(iconX, iconY, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
                 STAT_ICON_SIZE, STAT_ICON_SIZE);
-
-//        switch(hd.getQuadrant())
-//        {
-//        case IV:
-//            drawTexturedModalRect(left+4,     top+4, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
-//                    STAT_ICON_SIZE, STAT_ICON_SIZE);
-//            break;
-//        case III:
-//            drawTexturedModalRect(right-4-18, top+4, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
-//                    STAT_ICON_SIZE, STAT_ICON_SIZE);
-//            break;
-//        case II:
-//            drawTexturedModalRect(right-4-18, bottom-4-18, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
-//                    STAT_ICON_SIZE, STAT_ICON_SIZE);
-//            break;
-//        case I:
-//            drawTexturedModalRect(left+4,     bottom-4-18, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
-//                    STAT_ICON_SIZE, STAT_ICON_SIZE);
-//            break;
-//        }
         fontRenderer.drawStringWithShadow(marquee(musicTitle, TITLE_DISPLAY_WIDTH), musicTitlePosC, musicTitlePosY, 0x00FF00);
         
-        drawGroup(playerIn);
+        drawGroup(playerIn, hd, maxWidth, maxHeight);
         drawDebug();
         GL11.glPopMatrix();
     }
