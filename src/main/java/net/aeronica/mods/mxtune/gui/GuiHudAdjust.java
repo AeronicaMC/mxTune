@@ -24,7 +24,6 @@ import org.lwjgl.input.Mouse;
 
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.HudOptionsMessage;
-import net.aeronica.mods.mxtune.network.server.MusicOptionsMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.Minecraft;
@@ -129,11 +128,13 @@ public class GuiHudAdjust extends GuiScreen
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
     
+    /* TODO initialize in InitGui and reuse the instances of HudData */
     private void guiDrawBackground()
     {
+        int height = this.height-24;
         for (int i = 0; i < 8; i++)
         {
-            HudData hd = GuiJamOverlay.calcHudPositions(i, width, height);
+            HudData hd = HudDataFactory.calcHudPositions(i, width, height);
             Color color = new Color(0,255,255);
             Color darkColor = color.darker();
             drawRect(

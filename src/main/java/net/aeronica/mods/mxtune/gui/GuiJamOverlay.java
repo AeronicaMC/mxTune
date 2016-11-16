@@ -61,14 +61,18 @@ public class GuiJamOverlay extends Gui
     private static ItemStack lastItemStack = null;
     private static int hudTimer = 0;
     private static int count = 0;
+    private static final int HUDTIME = 10; /* seconds */
+    private static void hudTimerReset() {hudTimer = HUDTIME;}
     
     @SubscribeEvent
     public void onEvent(ClientTickEvent event)
     {
         if (event.side == Side.CLIENT && event.phase == TickEvent.Phase.END)
         {
-            /* 4 ticks per second */
-            if ((count++ % 5 == 0) && (hudTimer > 0)) hudTimer--;
+            /* once per second second */
+            if ((count++ % 20 == 0) && (hudTimer > 0)) hudTimer--;
+            /* 4 times per second */
+            if (count % 5 == 0) marqueePos++;
         }
     }
     
@@ -90,26 +94,25 @@ public class GuiJamOverlay extends Gui
     public void onRenderExperienceBar(RenderGameOverlayEvent.Post event)
     {
 
-        if (mc.gameSettings.showDebugInfo) return;
+       if (mc.gameSettings.showDebugInfo) return;
 
        if (event.isCancelable() || event.getType() != ElementType.EXPERIENCE) { return; }
         EntityPlayerSP player = this.mc.thePlayer;
  
         int width = event.getResolution().getScaledWidth();
-        int height = event.getResolution().getScaledHeight();
-//        if (hudData == null || lastWidth != width || lastHeight != height || !hudData.isEqual(calcHudPositions(MusicOptionsUtil.getPositionHUD(player), width, height)))
-//        {
-//            hudData = calcHudPositions(MusicOptionsUtil.getPositionHUD(player), width, height);
-//            lastWidth = width; lastHeight = height;
-//        }
-        hudData = calcHudPositions((inGuiHudAdjust() ? MusicOptionsUtil.getAdjustPositionHud() : MusicOptionsUtil.getPositionHUD(player)), width, height);
+        int height = event.getResolution().getScaledHeight() - 24;
+        if (inGuiHudAdjust() || hudData == null || lastWidth != width || lastHeight != height)
+        {
+            hudData = HudDataFactory.calcHudPositions((inGuiHudAdjust() ? MusicOptionsUtil.getAdjustPositionHud() : MusicOptionsUtil.getPositionHUD(player)), width, height);
+            lastWidth = width; lastHeight = height;
+        }
         
         this.mc.renderEngine.bindTexture(textureLocation);
         ItemStack currentItemStack = player.getHeldItemMainhand();
         
-        if ((player.getHeldItemMainhand() != null) && (player.getHeldItemMainhand().getItem() instanceof IInstrument))
+        if (inGuiHudAdjust() || ((player.getHeldItemMainhand() != null) && (player.getHeldItemMainhand().getItem() instanceof IInstrument)))
         {            
-            if (lastItemStack==null || !currentItemStack.equals(this.lastItemStack)) {hudTimer = 10; lastItemStack = currentItemStack;}
+            if (lastItemStack==null | !currentItemStack.equals(this.lastItemStack)) {hudTimerReset(); lastItemStack = currentItemStack;}
             if (canRenderHud(player)) this.renderTest(hudData, player);
         } else lastItemStack = currentItemStack;
     }
@@ -149,60 +152,6 @@ public class GuiJamOverlay extends Gui
             }
         }
     }
- 
-    /*
-     * 0 | 1
-     * 2 | 3
-     * 4 | 5
-     * 6 | 7
-     */
-    public static HudData calcHudPositions(int positionHud, int width, int height)
-    {
-        int posX = 0;
-        int posY= 0;
-        boolean displayLeft = true;
-        boolean displayTop = true;
-
-        switch(positionHud)
-        {
-        case 0:
-            break;
-        case 1:
-            displayLeft = false;
-            posX = width;
-            break;
-        case 2:
-            posY = height / 4;
-            break;
-        case 3:
-            displayLeft = false;
-            posX = width;
-            posY = height / 4;
-            break;
-        case 4:
-            displayTop = false;
-            posY = (height / 2) + (height / 4);
-            break;
-        case 5:
-            displayLeft = false;
-            displayTop = false;
-            posX = width;
-            posY = (height / 2) + (height / 4);
-            break;
-        case 6:
-            displayTop = false;
-            posY = height;
-            break;
-        case 7:
-            displayLeft = false;
-            displayTop = false;
-            posX = width;
-            posY = height;
-            break;
-        default:
-        }
-        return new HudData(posX, posY, displayLeft, displayTop);
-    }
         
     private void drawDebug()
     {
@@ -231,7 +180,7 @@ public class GuiJamOverlay extends Gui
         /** Display the title of the contained music book. */
         if (!sheetMusicTitle.isEmpty())
         {
-            result = TextFormatting.GREEN + sheetMusicTitle;
+            result = sheetMusicTitle;
         }
         return result;
     }
@@ -249,8 +198,27 @@ public class GuiJamOverlay extends Gui
         }
         return new String();
     }
-
     
+    private static int TITLE_DISPLAY_WIDTH = 30;
+    private static int marqueePos = 0;
+    private static int getMarqueePos() {return new Integer(marqueePos);}
+    private static void resetMarqueePos() {marqueePos = 0;}
+    
+    private String marquee(String text, int maxChars)
+    {
+        int marqueePos = getMarqueePos();
+        if(text.length() <= maxChars) return text;
+        StringBuilder sb = new StringBuilder(text);
+        if ((marqueePos+maxChars <= text.length()))
+        {
+            return sb.substring(marqueePos, marqueePos+maxChars);
+        }
+        else
+        {
+            resetMarqueePos();
+            return sb.substring(0, maxChars);
+        }
+    }
     
     private static final int STAT_ICON_SIZE = 18;
     private static final int STAT_ICON_BASE_U_OFFSET = 0;
@@ -259,8 +227,6 @@ public class GuiJamOverlay extends Gui
 
     private void renderTest(HudData hd, EntityPlayer playerIn)
     {
-        String fiftyTwo = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz";
-        int width52 = fontRenderer.getStringWidth(fiftyTwo);
         int alphaBack = 128;
         int alphaFore = 192;
         int maxWidth = 255;
@@ -269,15 +235,20 @@ public class GuiJamOverlay extends Gui
         int left = hd.left(maxWidth);
         int bottom = hd.bottom(maxHeight);
         int right = hd.right(maxWidth);
-
+        
+        ItemStack is = playerIn.getHeldItemMainhand();
+        String musicTitle = getMusicTitle(is);
+        int musicTitleWidth = fontRenderer.getStringWidth(marquee(musicTitle, TITLE_DISPLAY_WIDTH));
+        int musicTitlePos = left + (maxWidth/2 - musicTitleWidth/2);
+        String fiftyTwo = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz";
+        int width52 = fontRenderer.getStringWidth(fiftyTwo);
         
         GL11.glPushMatrix();
         GL11.glTranslatef(hd.getPosX(), hd.getPosY(), 0F);
-        GL11.glScalef(.5F, .5F, .5F);
+        GL11.glScalef(.55F, .55F, .55F);
         drawRect(left+4, top+4, right, bottom, 0x00000000 + (alphaBack << 24));
         drawRect(left, top, right-4, bottom-4, 0xA0A0A0 + (alphaBack << 24));
         
-        ItemStack is = playerIn.getHeldItemMainhand();
         int iconIndex = GROUPS.getIndex(playerIn.getEntityId());
         drawTexturedModalRect(left+4,     top+4, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
                 STAT_ICON_SIZE, STAT_ICON_SIZE);
@@ -288,10 +259,8 @@ public class GuiJamOverlay extends Gui
         drawTexturedModalRect(left+4,     bottom-4-18, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
                 STAT_ICON_SIZE, STAT_ICON_SIZE);
         
-        fontRenderer.drawStringWithShadow(getMusicTitle(is), left+22, top+8, 0x00FF00);
-        int center52 = maxWidth/2 - width52/2;
-        fontRenderer.drawStringWithShadow(fiftyTwo, left+center52, top+18, 0x00FFFF);
-        fontRenderer.drawString(fiftyTwo, left+22, top+28, 0xFFFF00);
+        fontRenderer.drawStringWithShadow(marquee(musicTitle, TITLE_DISPLAY_WIDTH), musicTitlePos, top+8, 0x00FF00);
+
         drawGroup(playerIn);
         drawDebug();
         GL11.glPopMatrix();

@@ -23,15 +23,18 @@ public class HudData
     private final int posY;
     private final boolean displayLeft;
     private final boolean displayTop;
+    private final Quadrant quadrant;
     
-    public HudData(int posX, int posY, boolean displayLeft, boolean displayTop)
+    public HudData(int posX, int posY, boolean displayLeft, boolean displayTop, Quadrant quadrant)
     {
-        this.posX = posX; this.posY = posY; this.displayLeft = displayLeft; this.displayTop = displayTop;
+        this.posX = posX; this.posY = posY; this.displayLeft = displayLeft; this.displayTop = displayTop; this.quadrant = quadrant;
     }
 
     public int getPosX() {return posX;}
 
     public int getPosY() {return posY;}
+    
+    public Quadrant getQuadrant() {return quadrant;};
 
     public boolean isDisplayLeft() {return displayLeft;}
 
@@ -46,4 +49,15 @@ public class HudData
     public int left(int maxWidth)    { return this.isDisplayLeft() ? 0 : -maxWidth; }
     public int bottom(int maxHeight) { return this.isDisplayTop() ? maxHeight : 0; }
     public int right(int maxWidth)   { return this.isDisplayLeft() ? maxWidth : 0; }
+    
+    /*
+     * Plane Geometry
+     *  II | I
+     * ----+----
+     * III | IV
+     */
+    public enum Quadrant {
+        I, II, III, IV
+    }
+    
 }

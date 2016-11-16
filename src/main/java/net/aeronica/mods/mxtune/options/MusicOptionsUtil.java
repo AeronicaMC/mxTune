@@ -74,15 +74,12 @@ public class MusicOptionsUtil
     public static void setWhiteList(EntityPlayer playerIn, List<PlayerLists> whiteList) {playerIn.getCapability(MUSIC_OPTIONS, null).setWhiteList(playerIn, whiteList);}
 
     public static List<PlayerLists> getWhiteList(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getWhiteList();}
-  
 
     /*
      * GuiHudAdjust positionHud temporary for use when adjusting the Hud.
      */
     private static int adjustPositionHud = 0;
-
     public static int getAdjustPositionHud() {return adjustPositionHud;}
-
     public static void setAdjustPositionHud(int posHud) {adjustPositionHud = posHud;}
 
     /**

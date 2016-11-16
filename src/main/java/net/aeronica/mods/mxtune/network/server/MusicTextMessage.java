@@ -67,7 +67,7 @@ public class MusicTextMessage extends AbstractServerMessage<MusicTextMessage>
             ItemStack sheetMusic = new ItemStack(StartupItems.item_sheetmusic);
 
             ModLogger.debug("+++ Write Music book NBT +++");
-            sheetMusic.setStackDisplayName("-" + musicTitle + "-");
+            sheetMusic.setStackDisplayName(musicTitle);
             NBTTagCompound compound = sheetMusic.getTagCompound();
             if (compound != null)
             {
