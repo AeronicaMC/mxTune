@@ -126,7 +126,7 @@ public class ItemInstrument extends ItemBase implements IInstrument
         if (!worldIn.isRemote)
         {         
             Integer playID = stackIn.getRepairCost();
-            if (!isSelected && GROUPS.isPlayIDPlaying(playID))
+            if (!isSelected && PlayManager.hasPlayID(playID))
             {
                 PlayManager.stopPlayID(playID);
                 stackIn.setRepairCost(-1);
@@ -145,7 +145,7 @@ public class ItemInstrument extends ItemBase implements IInstrument
         if (!worldIn.isRemote)
         {
             Integer playID = stackIn.getRepairCost();
-            if (GROUPS.isPlayIDPlaying(playID))
+            if (PlayManager.hasPlayID(playID))
             {
                 PlayManager.stopPlayID(playID);
                 stackIn.setRepairCost(-1);
@@ -162,7 +162,7 @@ public class ItemInstrument extends ItemBase implements IInstrument
         if (!playerIn.getEntityWorld().isRemote)
         {
             Integer playID = stackIn.getRepairCost();
-            if (GROUPS.isPlayIDPlaying(playID))
+            if (PlayManager.hasPlayID(playID))
             {
                 PlayManager.stopPlayID(playID);
                 stackIn.setRepairCost(-1);

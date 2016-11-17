@@ -42,15 +42,14 @@ public enum GROUPS
     private static Map<Integer, Integer> clientMembers;
     /* PlayManager */
     private static Map<Integer, String> membersQueuedStatus;
-    private static Map<Integer, Integer> playIDMembers;
+    private static Map<Integer, Integer> membersPlayID;
     private static Set<Integer> activePlayIDs;
 
 
-    /* GroupManager statuses */
+    /* GroupManager Client Status Methods */
     public static Integer getLeaderOfGroup(Integer integer)
     {
-        if (GROUPS.clientGroups != null) { return GROUPS.clientGroups.get(integer); }
-        return null;
+        return GROUPS.clientGroups != null ? GROUPS.clientGroups.get(integer) : null;
     }
 
     public static Integer getMembersGroupLeader(Integer memberID){
@@ -59,11 +58,10 @@ public enum GROUPS
     
     public static Integer getMembersGroupID(Integer memberID)
     {
-        if (GROUPS.clientMembers != null) { return GROUPS.clientMembers.get(memberID); }
-        return null;
+        return GROUPS.clientMembers != null ? GROUPS.clientMembers.get(memberID) : null;
     }
 
-    public static boolean isLeader(Integer memberID)
+    private static boolean isLeader(Integer memberID)
     {
         return memberID.equals(getLeaderOfGroup(getMembersGroupID(memberID)));
     }
@@ -119,14 +117,15 @@ public enum GROUPS
         return membersQueuedStatus;
     }
 
+     /* PlayManager Client Status Methods */
     public static Set<Integer> getMembersByPlayID(Integer playID) 
     {
         Set<Integer> members = Sets.newHashSet();
-        if (playIDMembers != null)
+        if (membersPlayID != null)
         {
-            for(Integer someMember: GROUPS.playIDMembers.keySet())
+            for(Integer someMember: GROUPS.membersPlayID.keySet())
             {
-                if(GROUPS.playIDMembers.get(someMember).equals(playID))
+                if(GROUPS.membersPlayID.get(someMember).equals(playID))
                 {
                     members.add(someMember);
                 }
@@ -177,14 +176,14 @@ public enum GROUPS
         
     public static Map<Integer, Integer> getPlayIDMembers()
     {
-        return playIDMembers;
+        return membersPlayID;
     }
     
     public static Integer getSoloMemberByPlayID(Integer playID)
     {
-        for(Integer someMember: GROUPS.playIDMembers.keySet())
+        for(Integer someMember: GROUPS.membersPlayID.keySet())
         {
-            if(GROUPS.playIDMembers.get(someMember).equals(playID))
+            if(GROUPS.membersPlayID.get(someMember).equals(playID))
             {
                 return someMember;
             }
@@ -194,7 +193,7 @@ public enum GROUPS
 
     public static void setPlayIDMembers(String playIDMembers)
     {
-        GROUPS.playIDMembers = deserializeIntIntMap(playIDMembers);
+        GROUPS.membersPlayID = deserializeIntIntMap(playIDMembers);
     }
 
     public static Set<Integer> getActivePlayIDs()

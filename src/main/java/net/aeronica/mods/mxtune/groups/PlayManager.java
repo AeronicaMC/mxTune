@@ -98,7 +98,7 @@ public class PlayManager
                 ModLogger.debug("MML Title: " + title);
                 ModLogger.debug("MML Sub25: " + mml.substring(0, (mml.length() >= 25 ? 25 : mml.length())));
 
-                if (GROUPS.getMembersGroupID(playerID) == null)
+                if (GroupManager.getMembersGroupID(playerID) == null)
                 {
                     /** Solo Play */
                     ModLogger.debug("playMusic playSolo");
@@ -128,12 +128,12 @@ public class PlayManager
     
     private static Integer queueJam(EntityPlayer playerIn, String title, String mml, Integer playerID)
     {
-        Integer groupID = GROUPS.getMembersGroupID(playerID);
+        Integer groupID = GroupManager.getMembersGroupID(playerID);
         /** Queue members parts */
         queue(groupID, playerID, mml);
         syncStatus();
         /** Only send the groups MML when the leader starts the JAM */
-        if (GROUPS.isLeader(playerID))
+        if (GroupManager.isLeader(playerID))
         {
             String musicText = getMML(groupID);
             BlockPos pos = getMedianPos(groupID);
@@ -144,18 +144,43 @@ public class PlayManager
         return groupID;
     }
 
-    public static boolean isPlayerPlaying(Integer EntityID) {return (GROUPS.getIndex(EntityID) & 2) == 2; }
-    public static boolean isPlayerQueued(Integer EntityID) {return (GROUPS.getIndex(EntityID) & 1) == 1; }
     public static boolean isPlayerPlaying(EntityPlayer playerIn)
     {
         Integer entityID = playerIn.getEntityId();
-        return isPlayerPlaying(entityID) | isPlayerQueued(entityID);
+        return (membersPlayID != null && !membersPlayID.isEmpty()) ? membersPlayID.containsKey(entityID) : false;
     }
-    public static boolean isActivePlayID(Integer playID) { return activePlayIDs != null ? activePlayIDs.contains(playID) : false; }
+    
+    public static boolean isActivePlayID(Integer playID) { return getActivePlayIDs() != null ? getActivePlayIDs().contains(playID) : false; }
+    
+    public static boolean hasPlayID(Integer playID)
+    {
+        return (membersPlayID != null && !membersPlayID.isEmpty()) ? membersPlayID.containsValue(playID) : false;
+    }
+    
+    public static Set<Integer> getMembersByPlayID(Integer playID) 
+    {
+        Set<Integer> members = Sets.newHashSet();
+        if (membersPlayID != null)
+        {
+            for(Integer someMember: membersPlayID.keySet())
+            {
+                if(membersPlayID.get(someMember).equals(playID))
+                {
+                    members.add(someMember);
+                }
+            }
+        }
+        return members;
+    }
+    
+    private static Set<Integer> getActivePlayIDs()
+    {
+        return activePlayIDs;
+    }
     
     public static void stopPlayID(Integer playID)
     {
-        Set<Integer> memberSet = GROUPS.getMembersByPlayID(playID);
+        Set<Integer> memberSet = getMembersByPlayID(playID);
         for(Integer member: memberSet)
         {
             if (membersPlayID != null && membersPlayID.containsKey(member))
@@ -224,10 +249,10 @@ public class PlayManager
      * Returns a string in Map ready format. e.g.
      * "mamberName=MML@... memberName=MML@..."
      * 
-     * @param groupID
+     * @param playID
      * @return string in Map ready format.
      */
-    private static String getMML(Integer groupID)
+    private static String getMML(Integer playID)
     {
         StringBuilder buildMML = new StringBuilder("|");
         try
@@ -237,8 +262,8 @@ public class PlayManager
             while (it.hasNext())
             {
                 Integer member = (Integer) it.next();
-                Integer group = membersPlayID.get(member);
-                if (group.equals(groupID))
+                Integer memberPlayID = membersPlayID.get(member);
+                if (memberPlayID.equals(playID))
                 {
                     buildMML.append(member).append("=").append(membersMML.get(member)).append("|");
                     membersMML.remove(member);
@@ -260,7 +285,7 @@ public class PlayManager
        
         for(Integer member: GROUPS.getClientMembers().keySet())
         {   
-            if(GROUPS.getMembersGroupID(member) == groupID)
+            if(GroupManager.getMembersGroupID(member) == groupID)
             {
                 EntityPlayer player = (EntityPlayer) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getEntityByID(member);
                 x = x + player.getPosition().getX();
@@ -286,16 +311,16 @@ public class PlayManager
      */
     public static void testStopDistance(double stopDistance)
     {
-        if (GROUPS.getActivePlayIDs() != null && !GROUPS.getActivePlayIDs().isEmpty())
+        if (getActivePlayIDs() != null && !getActivePlayIDs().isEmpty())
         {
             double distance = 0;
-            for(Integer playID: GROUPS.getActivePlayIDs())
+            for(Integer playID: getActivePlayIDs())
             {
-                if (GROUPS.getMembersByPlayID(playID) != null && !GROUPS.getMembersByPlayID(playID).isEmpty())
+                if (getMembersByPlayID(playID) != null && !getMembersByPlayID(playID).isEmpty())
                 {
-                    for (Integer memberA: GROUPS.getMembersByPlayID(playID))
+                    for (Integer memberA: getMembersByPlayID(playID))
                     {
-                        for (Integer memberB:  GROUPS.getMembersByPlayID(playID) )
+                        for (Integer memberB:  getMembersByPlayID(playID) )
                         {
                             if (memberA != memberB)
                             {

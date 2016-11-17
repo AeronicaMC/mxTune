@@ -228,6 +228,12 @@ public class GroupManager
         return null;
     }
 
+    public static boolean isLeader(Integer entityID)
+    {
+        Group g = getMembersGroup(entityID);
+        return (g != null) ? g.leaderEntityID == entityID : false;
+    }
+    
     /**
      * setLeader A rather unsafe way to change the leader of the group, but this
      * will do for now

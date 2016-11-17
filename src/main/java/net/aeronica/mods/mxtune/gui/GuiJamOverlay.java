@@ -120,7 +120,7 @@ public class GuiJamOverlay extends Gui
     private void drawGroup(EntityPlayer player, HudData hd, int maxWidth, int maxHeight)
     {
         int posX = 6;
-        int posY = 24;
+        int posY = 30;
         Integer groupID;
         Integer memberID;
         String leaderName;
