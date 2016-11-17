@@ -231,7 +231,7 @@ public class GroupManager
     public static boolean isLeader(Integer entityID)
     {
         Group g = getMembersGroup(entityID);
-        return (g != null) ? g.leaderEntityID == entityID : false;
+        return (g != null) ? g.leaderEntityID.equals(entityID) : false;
     }
     
     /**

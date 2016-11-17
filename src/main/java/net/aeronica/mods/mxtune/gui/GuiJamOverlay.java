@@ -159,22 +159,32 @@ public class GuiJamOverlay extends Gui
         }
     }
         
-    private void drawDebug()
+    private void drawDebug(HudData hd, int maxWidth, int maxHeight)
     {
+        int statusWidth, qX, qY;
         if (GROUPS.getClientPlayStatuses() != null && !GROUPS.getClientPlayStatuses().isEmpty())
         {
             String status = new String("Play Status: " + GROUPS.getClientPlayStatuses().toString());
-            fontRenderer.drawStringWithShadow(status, 6, 80, 16777215);
+            statusWidth = fontRenderer.getStringWidth(status);
+            qX = hd.quadX(maxWidth, 6, 0, statusWidth);
+            qY = hd.quadY(maxHeight, 80, 0, 10);
+            fontRenderer.drawStringWithShadow(status, qX, qY, 16777215);
         }
         if (GROUPS.getPlayIDMembers() != null && !GROUPS.getPlayIDMembers().isEmpty())
         {
             String status = new String("PlayID Members: " + GROUPS.getPlayIDMembers().toString());
-            fontRenderer.drawStringWithShadow(status, 6, 90, 16777215);
+            statusWidth = fontRenderer.getStringWidth(status);
+            qX = hd.quadX(maxWidth, 6, 0, statusWidth);
+            qY = hd.quadY(maxHeight, 90, 0, 10);
+            fontRenderer.drawStringWithShadow(status, qX, qY, 16777215);
         }
         if (GROUPS.getActivePlayIDs() != null && !GROUPS.getActivePlayIDs().isEmpty())
         {
             String status = new String("ActivePlayIDs: " + GROUPS.getActivePlayIDs().toString());
-            fontRenderer.drawStringWithShadow(status, 6, 100, 16777215);
+            statusWidth = fontRenderer.getStringWidth(status);
+            qX = hd.quadX(maxWidth, 6, 0, statusWidth);
+            qY = hd.quadY(maxHeight, 100, 0, 10);
+            fontRenderer.drawStringWithShadow(status, qX, qY, 16777215);
         }
     }
 
@@ -263,7 +273,7 @@ public class GuiJamOverlay extends Gui
         fontRenderer.drawStringWithShadow(marquee(musicTitle, TITLE_DISPLAY_WIDTH), musicTitlePosC, musicTitlePosY, 0x00FF00);
         
         drawGroup(playerIn, hd, maxWidth, maxHeight);
-        drawDebug();
+        drawDebug(hd, maxWidth, maxHeight);
         GL11.glPopMatrix();
     }
     
