@@ -18,6 +18,9 @@ package net.aeronica.mods.mxtune.groups;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
+
+import com.google.common.collect.Sets;
 
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.JoinGroupMessage;
@@ -76,6 +79,25 @@ public class GroupManager
 
     private static HashSet<Group> groups = null;
 
+    public static Set<Integer> getGroups()
+    {
+        Set<Integer> setGroups = Sets.newHashSet();
+        if (groups != null && !groups.isEmpty())
+        {
+            for (Iterator<Group> it = groups.iterator(); it.hasNext();)
+            {
+                Group theGroup = it.next();
+                setGroups.add(theGroup.groupID.intValue());
+            }
+        }
+        return null;
+    }
+    
+    public static boolean hasGroup(Integer groupID)
+    {
+        return (getGroups() != null && !getGroups().isEmpty()) ? getGroups().contains(groupID) : false;
+    }
+    
     /**
      * Any player can be a leader or in a group. A player who makes a group is
      * the leader of the group. A player in a group can't join another group.

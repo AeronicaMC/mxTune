@@ -20,6 +20,7 @@ import java.util.List;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.GROUPS;
+import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiInstrumentInventory;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
@@ -88,6 +89,8 @@ public class ItemInstrument extends ItemBase implements IInstrument
             }
             if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && hand.equals(EnumHand.MAIN_HAND))
             {
+                if ((GroupManager.getMembersGroupID(playerIn.getEntityId()) == null) && GroupManager.hasGroup(itemStackIn.getRepairCost()))
+                    itemStackIn.setRepairCost(-1);
                 if (!PlayManager.isPlayerPlaying(playerIn))
                 {
                     /**TODO Make sure it is OKAY steal and to use this property like this */
