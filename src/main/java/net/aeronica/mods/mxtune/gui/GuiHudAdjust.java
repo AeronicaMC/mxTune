@@ -62,15 +62,15 @@ public class GuiHudAdjust extends GuiScreen
         this.buttonList.clear();
         lastHudPos = initialHudPos = MusicOptionsUtil.getPositionHUD(playerIn);
         MusicOptionsUtil.setAdjustPositionHud(initialHudPos);
-        initialHudSize = MusicOptionsUtil.getSizeHud(playerIn);
+        initialHudSize = MusicOptionsUtil.getSizeHud(playerIn)*100;
         
         int y = (height) / 2;
         int buttonWidth = 100;
-        y = height - 75;
+        y = height/2;
         int x = (width / 2) - (buttonWidth/2);
-        btn_done =   new GuiButtonExt(0, x, y, buttonWidth, 20, I18n.format("gui.done"));
+        sld_sizeHud = new GuiSliderMX(2, x, y, buttonWidth, 20,  I18n.format("mxtune.gui.hudAdjust.size"), initialHudSize, 50F, 150F, 3.3333333333F);
+        btn_done =   new GuiButtonExt(0, x, y+=20, buttonWidth, 20, I18n.format("gui.done"));
         btn_cancel = new GuiButtonExt(1, x, y+=20, buttonWidth, 20, I18n.format("gui.cancel"));
-        sld_sizeHud = new GuiSliderMX(2, x, y+=20, buttonWidth, 20,  I18n.format("gui.cancel"), initialHudSize, 0.5F, 1.5F, 0.1F);
         
         this.buttonList.add(btn_cancel);
         this.buttonList.add(btn_done);
@@ -86,7 +86,7 @@ public class GuiHudAdjust extends GuiScreen
             switch(button.id)
             {
             case 0: /* done   */
-                PacketDispatcher.sendToServer(new HudOptionsMessage(lastHudPos, MusicOptionsUtil.isHudDisabled(playerIn), sld_sizeHud.getValue()));
+                PacketDispatcher.sendToServer(new HudOptionsMessage(lastHudPos, MusicOptionsUtil.isHudDisabled(playerIn), sld_sizeHud.getValue()/100));
                 MusicOptionsUtil.setAdjustPositionHud(lastHudPos);
                 MusicOptionsUtil.setHudOptions(playerIn, MusicOptionsUtil.isHudDisabled(playerIn), lastHudPos, sld_sizeHud.getValue());
                 mc.displayGuiScreen(new GuiMusicOptions(playerIn));  
@@ -116,7 +116,7 @@ public class GuiHudAdjust extends GuiScreen
     @Override
     public void updateScreen()
     {
-        // TODO Do component updates here
+        MusicOptionsUtil.setAdjustSizeHud(sld_sizeHud.getValue()/100);
         super.updateScreen();
     }
 

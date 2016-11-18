@@ -248,7 +248,7 @@ public class GuiJamOverlay extends Gui
         int alphaFore = 192;
         int maxWidth = 255;
         int maxHeight = 127;
-        float hudScale = MusicOptionsUtil.getSizeHud(playerIn);
+        float hudScale = inGuiHudAdjust() ? MusicOptionsUtil.getAdjustSizeHud() : MusicOptionsUtil.getSizeHud(playerIn);
         int top = hd.top(maxHeight);
         int left = hd.left(maxWidth);
         int bottom = hd.bottom(maxHeight);

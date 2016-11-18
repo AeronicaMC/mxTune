@@ -58,6 +58,7 @@ mxtune.gui.musicOptions.muteOption.all=Mute All
 mxtune.gui.musicOptions.adj_hud=Adjust HUD
 
 mxtune.gui.hudAdjust.title=Adjust mxTune HUD
+mxtune.gui.hudAdjust.size=Size
 
 mxtune.gui.musicPaperParse.title=MML Simple Editor
 mxtune.gui.musicPaperParse.noSoundbank=No Soundbank loaded

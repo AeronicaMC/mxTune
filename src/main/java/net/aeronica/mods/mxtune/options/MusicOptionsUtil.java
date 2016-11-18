@@ -83,6 +83,10 @@ public class MusicOptionsUtil
     private static int adjustPositionHud = 0;
     public static int getAdjustPositionHud() {return adjustPositionHud;}
     public static void setAdjustPositionHud(int posHud) {adjustPositionHud = posHud;}
+    
+    private static float adjustSizeHud = 1.0F;
+    public static float setAdjustSizeHud(float sizeHud) {return adjustSizeHud=sizeHud;}
+    public static float getAdjustSizeHud() {return adjustSizeHud;}
 
     /**
      * Mute per the muteOptions setting taking care to not mute THEPLAYER (playerIn) except for case ALL
