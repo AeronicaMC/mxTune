@@ -42,6 +42,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     private NBTTagCompound data;
     private boolean disableHud;
     private int positionHud;
+    private float sizeHud;
     private int muteOption;
     private String sParam1, sParam2, sParam3;
     private List<PlayerLists> blackList, whiteList;
@@ -68,6 +69,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
             this.disableHud = inst.isHudDisabled();
             this.positionHud = inst.getPositionHud();
+            this.sizeHud = inst.getSizeHud();
             break;
             
         case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
@@ -105,6 +107,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
             this.disableHud = buffer.readBoolean();
             this.positionHud = buffer.readInt();
+            this.sizeHud = buffer.readFloat();
             break;
         case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
            this. muteOption = buffer.readInt();
@@ -160,6 +163,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
             buffer.writeBoolean(this.disableHud);
             buffer.writeInt(this.positionHud);
+            buffer.writeFloat(this.sizeHud);
             break;
         case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
             buffer.writeInt(this.muteOption);
@@ -216,7 +220,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                 MusicOptionsUtil.MUSIC_OPTIONS.readNBT(instance, null, this.data);
                 break;
             case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
-                instance.setHudOptions(disableHud, positionHud);
+                instance.setHudOptions(disableHud, positionHud, sizeHud);
                 break;
             case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
                 instance.setMuteOption(this.muteOption);

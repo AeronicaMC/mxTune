@@ -29,13 +29,15 @@ public class HudOptionsMessage extends AbstractServerMessage<HudOptionsMessage>
 
     private int positionHud;
     private boolean disableHud;
+    private float sizeHud;
     
     public HudOptionsMessage() {}
     
-    public HudOptionsMessage(int positionHud, boolean disableHud)
+    public HudOptionsMessage(int positionHud, boolean disableHud, float sizeHud)
     {
         this.positionHud = positionHud;
         this.disableHud = disableHud;
+        this.sizeHud = sizeHud;
     }
     
     @Override
@@ -43,6 +45,7 @@ public class HudOptionsMessage extends AbstractServerMessage<HudOptionsMessage>
     {
         positionHud = buffer.readInt();
         disableHud = buffer.readBoolean();
+        sizeHud = buffer.readFloat();
     }
 
     @Override
@@ -50,12 +53,13 @@ public class HudOptionsMessage extends AbstractServerMessage<HudOptionsMessage>
     {
         buffer.writeInt(positionHud);
         buffer.writeBoolean(disableHud);
+        buffer.writeFloat(sizeHud);
     }
 
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        MusicOptionsUtil.setHudOptions(player, disableHud, positionHud);
+        MusicOptionsUtil.setHudOptions(player, disableHud, positionHud, sizeHud);
     }
 
 }

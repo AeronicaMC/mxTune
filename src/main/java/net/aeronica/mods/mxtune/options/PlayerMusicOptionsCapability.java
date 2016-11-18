@@ -95,7 +95,7 @@ public class PlayerMusicOptionsCapability
                 IPlayerMusicOptions dead = event.getOriginal().getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
                 IPlayerMusicOptions live = event.getEntityPlayer().getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
                 live.setSParams(player, dead.getSParam1(), dead.getSParam2(), dead.getSParam3());
-                live.setHudOptions(player, dead.isHudDisabled(), dead.getPositionHud());
+                live.setHudOptions(player, dead.isHudDisabled(), dead.getPositionHud(), dead.getSizeHud());
                 live.setMuteOption(player, dead.getMuteOption());
                 live.setBlackList(player, dead.getBlackList());
                 live.setWhiteList(player, dead.getWhiteList());               
@@ -137,8 +137,9 @@ public class PlayerMusicOptionsCapability
         public NBTBase writeNBT(Capability<IPlayerMusicOptions> capability, IPlayerMusicOptions instance, EnumFacing side)
         {
             NBTTagCompound properties = new NBTTagCompound();
-            properties.setBoolean("disableHUD", instance.isHudDisabled());
-            properties.setInteger("positionHUD", instance.getPositionHud());
+            properties.setBoolean("disableHud", instance.isHudDisabled());
+            properties.setInteger("positionHud", instance.getPositionHud());
+            properties.setFloat("sizeHud", instance.getSizeHud());
             properties.setInteger("muteOption", instance.getMuteOption());
             properties.setString("sParam1", instance.getSParam1());
             properties.setString("sParam2", instance.getSParam2());
@@ -170,7 +171,7 @@ public class PlayerMusicOptionsCapability
         public void readNBT(Capability<IPlayerMusicOptions> capability, IPlayerMusicOptions instance, EnumFacing side, NBTBase nbt)
         {
             NBTTagCompound properties = (NBTTagCompound) nbt;
-            instance.setHudOptions(properties.getBoolean("disableHUD"), properties.getInteger("positionHUD"));
+            instance.setHudOptions(properties.getBoolean("disableHud"), properties.getInteger("positionHud"), properties.getFloat("sizeHud"));
             instance.setMuteOption(properties.getInteger("muteOption"));
             instance.setSParams(properties.getString("sParam1"), properties.getString("sParam2"), properties.getString("sParam3"));
             if (properties.hasKey("listBlack", Constants.NBT.TAG_LIST))
@@ -193,7 +194,7 @@ public class PlayerMusicOptionsCapability
             {
                 NBTTagList listWhite = properties.getTagList("listWhite", Constants.NBT.TAG_COMPOUND);
                 int count = listWhite.tagCount();
-                List<PlayerLists> blackList = new ArrayList<PlayerLists>();
+                List<PlayerLists> whiteList = new ArrayList<PlayerLists>();
                 for (int i = 0; i < count; i++)
                 {
                     NBTTagCompound entry = listWhite.getCompoundTagAt(i);
@@ -201,9 +202,9 @@ public class PlayerMusicOptionsCapability
                     plist.setPlayerName(entry.getString("playerName"));
                     plist.setUuid(new UUID(entry.getLong("UUIDMost"), entry.getLong("UUIDLeast")));
                     plist.setOnline(false);
-                    blackList.add(plist);
+                    whiteList.add(plist);
                 }
-                instance.setWhiteList((List<PlayerLists>) blackList);
+                instance.setWhiteList((List<PlayerLists>) whiteList);
             }
         }
     }

@@ -24,13 +24,15 @@ public interface IPlayerMusicOptions
 {   
     public void clearAll(EntityPlayer playerIn);
     
-    public void setHudOptions(EntityPlayer playerIn, boolean disableHud, int positionHud);
+    public void setHudOptions(EntityPlayer playerIn, boolean disableHud, int positionHud, float sizeHud);
     
-    public void setHudOptions(boolean disableHUD, int positionHud);
+    public void setHudOptions(boolean disableHUD, int positionHud, float sizeHud);
     
     public boolean isHudDisabled();
     
     public int getPositionHud();
+    
+    public float getSizeHud();
     
     public int getMuteOption();
     

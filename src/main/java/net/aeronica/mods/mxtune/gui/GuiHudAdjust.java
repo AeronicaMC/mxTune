@@ -31,6 +31,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 
@@ -41,13 +42,17 @@ public class GuiHudAdjust extends GuiScreen
     private static final String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
     
     private GuiButtonExt btn_cancel, btn_done;
+    private GuiSliderMX sld_sizeHud;
 
+    private EntityPlayer playerIn;
     private boolean midiUnavailable;
     private int initialHudPos;
+    private float initialHudSize;
     
     public GuiHudAdjust()
     {
         mc = Minecraft.getMinecraft();
+        this.playerIn = mc.thePlayer;
         midiUnavailable = MIDISystemUtil.getInstance().midiUnavailable();
     }
     
@@ -55,8 +60,9 @@ public class GuiHudAdjust extends GuiScreen
     public void initGui()
     {
         this.buttonList.clear();
-        lastHudPos = initialHudPos = MusicOptionsUtil.getPositionHUD(mc.thePlayer);
+        lastHudPos = initialHudPos = MusicOptionsUtil.getPositionHUD(playerIn);
         MusicOptionsUtil.setAdjustPositionHud(initialHudPos);
+        initialHudSize = MusicOptionsUtil.getSizeHud(playerIn);
         
         int y = (height) / 2;
         int buttonWidth = 100;
@@ -64,9 +70,11 @@ public class GuiHudAdjust extends GuiScreen
         int x = (width / 2) - (buttonWidth/2);
         btn_done =   new GuiButtonExt(0, x, y, buttonWidth, 20, I18n.format("gui.done"));
         btn_cancel = new GuiButtonExt(1, x, y+=20, buttonWidth, 20, I18n.format("gui.cancel"));
+        sld_sizeHud = new GuiSliderMX(2, x, y+=20, buttonWidth, 20,  I18n.format("gui.cancel"), initialHudSize, 0.5F, 1.5F, 0.1F);
         
         this.buttonList.add(btn_cancel);
         this.buttonList.add(btn_done);
+        this.buttonList.add(sld_sizeHud);
     }
     
     @Override
@@ -78,14 +86,14 @@ public class GuiHudAdjust extends GuiScreen
             switch(button.id)
             {
             case 0: /* done   */
-                PacketDispatcher.sendToServer(new HudOptionsMessage(lastHudPos, MusicOptionsUtil.isHudDisabled(mc.thePlayer)));
+                PacketDispatcher.sendToServer(new HudOptionsMessage(lastHudPos, MusicOptionsUtil.isHudDisabled(playerIn), sld_sizeHud.getValue()));
                 MusicOptionsUtil.setAdjustPositionHud(lastHudPos);
-                MusicOptionsUtil.setHudOptions(mc.thePlayer, MusicOptionsUtil.isHudDisabled(mc.thePlayer), lastHudPos);
-                mc.displayGuiScreen(new GuiMusicOptions(mc.thePlayer));  
+                MusicOptionsUtil.setHudOptions(playerIn, MusicOptionsUtil.isHudDisabled(playerIn), lastHudPos, sld_sizeHud.getValue());
+                mc.displayGuiScreen(new GuiMusicOptions(playerIn));  
                 break;
             case 1: /* cancel */
                 MusicOptionsUtil.setAdjustPositionHud(initialHudPos);
-                mc.displayGuiScreen(new GuiMusicOptions(mc.thePlayer));
+                mc.displayGuiScreen(new GuiMusicOptions(playerIn));
                 break;
             default:
             }

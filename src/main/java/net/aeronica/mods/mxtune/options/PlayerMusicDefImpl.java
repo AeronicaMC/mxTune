@@ -32,6 +32,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     /** HUD Options */
     private boolean disableHud;
     private int positionHud;
+    private float sizeHud;
     /** Strings for passing parameters from server to client: for a GUI for example */
     private String sParam1, sParam2, sParam3;
     private List<PlayerLists> whiteList, blackList;
@@ -41,6 +42,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
         this.muteOption = 0;
         this.disableHud = false;
         this.positionHud = 0;
+        this.sizeHud = 1.0F;
         this.sParam1 = this.sParam2 = this.sParam3 = new String("");
         this.whiteList = new ArrayList<PlayerLists>();
         this.blackList = new ArrayList<PlayerLists>();
@@ -51,6 +53,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
         this.muteOption = 0;
         this.disableHud = false;
         this.positionHud = 0;
+        this.sizeHud = 1.0F;
         this.sParam1 = this.sParam2 = this.sParam3 = new String("");
         this.whiteList = new ArrayList<PlayerLists>();
         this.blackList = new ArrayList<PlayerLists>();
@@ -62,23 +65,26 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
         this.muteOption = 0;
         this.disableHud = false;
         this.positionHud = 0;
+        this.sizeHud = 1.0F;
         this.sParam1 = this.sParam2 = this.sParam3 = new String("");
         this.syncAll(playerIn);
     }
 
     @Override
-    public void setHudOptions(EntityPlayer playerIn, boolean disableHud, int positionHud)
+    public void setHudOptions(EntityPlayer playerIn, boolean disableHud, int positionHud, float sizeHud)
     {
         this.disableHud = disableHud;
         this.positionHud = positionHud;
+        this.sizeHud = sizeHud;
         this.sync(playerIn, SYNC_DISPLAY_HUD); 
     }
 
     @Override
-    public void setHudOptions(boolean disableHud, int positionHud)
+    public void setHudOptions(boolean disableHud, int positionHud, float sizeHud)
     {
         this.disableHud = disableHud;
         this.positionHud = positionHud;
+        this.sizeHud = sizeHud;
     }
 
     @Override
@@ -86,6 +92,9 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
 
     @Override
     public int getPositionHud() {return this.positionHud;}
+
+    @Override
+    public float getSizeHud() {return this.sizeHud;}
 
     @Override
     public void setSParams(EntityPlayer playerIn, String sParam1, String sParam2, String sParam3)
