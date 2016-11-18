@@ -45,6 +45,7 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class GuiJamOverlay extends Gui
 {
+    public static final int HOTBAR_CLEARANCE = 34;
     private Minecraft mc = null;
     private FontRenderer fontRenderer = null;
     private static final ResourceLocation textureLocation = new ResourceLocation(MXTuneMain.prependModID("textures/gui/manage_group.png"));
@@ -100,20 +101,20 @@ public class GuiJamOverlay extends Gui
         EntityPlayerSP player = this.mc.thePlayer;
  
         int width = event.getResolution().getScaledWidth();
-        int height = event.getResolution().getScaledHeight() - 24;
+        int height = event.getResolution().getScaledHeight() - HOTBAR_CLEARANCE;
         if (inGuiHudAdjust() || hudData == null || lastWidth != width || lastHeight != height)
         {
             hudData = HudDataFactory.calcHudPositions((inGuiHudAdjust() ? MusicOptionsUtil.getAdjustPositionHud() : MusicOptionsUtil.getPositionHUD(player)), width, height);
             lastWidth = width; lastHeight = height;
         }
-        
+         
         this.mc.renderEngine.bindTexture(textureLocation);
         ItemStack currentItemStack = player.getHeldItemMainhand();
         
-        if (inGuiHudAdjust() || ((player.getHeldItemMainhand() != null) && (player.getHeldItemMainhand().getItem() instanceof IInstrument)))
-        {            
+        if (inGuiHudAdjust() || ((currentItemStack != null) && (currentItemStack.getItem() instanceof IInstrument)))
+        {
             if (lastItemStack==null || !currentItemStack.equals(this.lastItemStack)) {hudTimerReset(); lastItemStack = currentItemStack;}
-            if (canRenderHud(player)) this.renderTest(hudData, player);
+            if (canRenderHud(player)) this.renderHud(hudData, player);
         } else lastItemStack = currentItemStack;
     }
 
@@ -133,7 +134,7 @@ public class GuiJamOverlay extends Gui
             /** Only draw if player is a member of a group */
             if (groupID != null)
             {
-                /** Always put the leader at the TOP of the list */
+                /** Always put the leader at the HEAD of the list */
                 leaderName = player.worldObj.getEntityByID(GROUPS.getLeaderOfGroup(groupID)).getDisplayName().getUnformattedText();
                 int leaderNameWidth = fontRenderer.getStringWidth(leaderName);
                 int qX = hd.quadX(maxWidth, posX, 0, leaderNameWidth);
@@ -168,7 +169,7 @@ public class GuiJamOverlay extends Gui
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 6, 0, statusWidth);
             qY = hd.quadY(maxHeight, 80, 0, 10);
-            fontRenderer.drawStringWithShadow(status, qX, qY, 16777215);
+            fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
         if (GROUPS.getPlayIDMembers() != null && !GROUPS.getPlayIDMembers().isEmpty())
         {
@@ -176,7 +177,7 @@ public class GuiJamOverlay extends Gui
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 6, 0, statusWidth);
             qY = hd.quadY(maxHeight, 90, 0, 10);
-            fontRenderer.drawStringWithShadow(status, qX, qY, 16777215);
+            fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
         if (GROUPS.getActivePlayIDs() != null && !GROUPS.getActivePlayIDs().isEmpty())
         {
@@ -184,7 +185,7 @@ public class GuiJamOverlay extends Gui
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 6, 0, statusWidth);
             qY = hd.quadY(maxHeight, 100, 0, 10);
-            fontRenderer.drawStringWithShadow(status, qX, qY, 16777215);
+            fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
     }
 
@@ -241,12 +242,13 @@ public class GuiJamOverlay extends Gui
     private static final int STAT_ICON_BASE_V_OFFSET = 165;
     private static final int STAT_ICONS_PER_ROW = 8;
 
-    private void renderTest(HudData hd, EntityPlayer playerIn)
+    private void renderHud(HudData hd, EntityPlayer playerIn)
     {
         int alphaBack = 128;
         int alphaFore = 192;
         int maxWidth = 255;
         int maxHeight = 127;
+        float hudScale = 0.75F;
         int top = hd.top(maxHeight);
         int left = hd.left(maxWidth);
         int bottom = hd.bottom(maxHeight);
@@ -260,7 +262,7 @@ public class GuiJamOverlay extends Gui
         
         GL11.glPushMatrix();
         GL11.glTranslatef(hd.getPosX(), hd.getPosY(), 0F);
-        GL11.glScalef(.5F, .5F, .5F);
+        GL11.glScalef(hudScale, hudScale, hudScale);
 //        drawRect(left+4, top+4, right, bottom, 0x00000000 + (alphaBack << 24));
 //        drawRect(left, top, right-4, bottom-4, 0xA0A0A0 + (alphaBack << 24));
         

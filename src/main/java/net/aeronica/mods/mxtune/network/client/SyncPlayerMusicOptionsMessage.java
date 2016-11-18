@@ -40,8 +40,8 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     
     private byte propertyID;
     private NBTTagCompound data;
-    private boolean displayHUD;
-    private int positionHUD;
+    private boolean disableHud;
+    private int positionHud;
     private int muteOption;
     private String sParam1, sParam2, sParam3;
     private List<PlayerLists> blackList, whiteList;
@@ -66,8 +66,8 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             break;
 
         case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
-            this.displayHUD = inst.isHudDisabled();
-            this.positionHUD = inst.getPositionHud();
+            this.disableHud = inst.isHudDisabled();
+            this.positionHud = inst.getPositionHud();
             break;
             
         case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
@@ -103,8 +103,8 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             this.data = buffer.readNBTTagCompoundFromBuffer();
             break;
         case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
-            this.displayHUD = buffer.readBoolean();
-            this.positionHUD = buffer.readInt();
+            this.disableHud = buffer.readBoolean();
+            this.positionHud = buffer.readInt();
             break;
         case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
            this. muteOption = buffer.readInt();
@@ -158,8 +158,8 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             buffer.writeNBTTagCompoundToBuffer(this.data);
             break;
         case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
-            buffer.writeBoolean(this.displayHUD);
-            buffer.writeInt(this.positionHUD);
+            buffer.writeBoolean(this.disableHud);
+            buffer.writeInt(this.positionHud);
             break;
         case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
             buffer.writeInt(this.muteOption);
@@ -216,7 +216,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                 MusicOptionsUtil.MUSIC_OPTIONS.readNBT(instance, null, this.data);
                 break;
             case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
-                instance.setHudOptions(displayHUD, positionHUD);
+                instance.setHudOptions(disableHud, positionHud);
                 break;
             case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
                 instance.setMuteOption(this.muteOption);

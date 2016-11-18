@@ -65,23 +65,22 @@ public class MML2PCM
             return false;
         }
         /**
-         * Map players to channels and append all the players MML.
-         * This mapping is also used to send packets to the close the gui of the musicians
+         * Map players to channels and append all the players MML
          */
         Set<Integer> keys = playerMML.keySet();
         Iterator<Integer> it = keys.iterator();
         Integer ch = 0;
-        String mml = new String();
+        StringBuilder mml = new StringBuilder();
         while (it.hasNext())
         {
             Integer playerID = it.next();
             playerChannel.put(playerID, ch);
             ch++;
-            mml += playerMML.get(playerID);
+            mml.append(playerMML.get(playerID));
         }
         try
         {
-            mmlBuf = mml.getBytes("US-ASCII");
+            mmlBuf = mml.toString().getBytes("US-ASCII");
         } catch (UnsupportedEncodingException e)
         {
             e.printStackTrace();

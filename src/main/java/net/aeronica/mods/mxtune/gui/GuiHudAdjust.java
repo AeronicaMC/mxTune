@@ -49,8 +49,24 @@ public class GuiHudAdjust extends GuiScreen
     {
         mc = Minecraft.getMinecraft();
         midiUnavailable = MIDISystemUtil.getInstance().midiUnavailable();
-        initialHudPos = MusicOptionsUtil.getPositionHUD(mc.thePlayer);
+    }
+    
+    @Override
+    public void initGui()
+    {
+        this.buttonList.clear();
+        lastHudPos = initialHudPos = MusicOptionsUtil.getPositionHUD(mc.thePlayer);
         MusicOptionsUtil.setAdjustPositionHud(initialHudPos);
+        
+        int y = (height) / 2;
+        int buttonWidth = 100;
+        y = height - 75;
+        int x = (width / 2) - (buttonWidth/2);
+        btn_done =   new GuiButtonExt(0, x, y, buttonWidth, 20, I18n.format("gui.done"));
+        btn_cancel = new GuiButtonExt(1, x, y+=20, buttonWidth, 20, I18n.format("gui.cancel"));
+        
+        this.buttonList.add(btn_cancel);
+        this.buttonList.add(btn_done);
     }
     
     @Override
@@ -63,12 +79,13 @@ public class GuiHudAdjust extends GuiScreen
             {
             case 0: /* done   */
                 PacketDispatcher.sendToServer(new HudOptionsMessage(lastHudPos, MusicOptionsUtil.isHudDisabled(mc.thePlayer)));
-                MusicOptionsUtil.setAdjustPositionHud(this.lastHudPos);
-                this.mc.displayGuiScreen(new GuiMusicOptions(this.mc.thePlayer));  
+                MusicOptionsUtil.setAdjustPositionHud(lastHudPos);
+                MusicOptionsUtil.setHudOptions(mc.thePlayer, MusicOptionsUtil.isHudDisabled(mc.thePlayer), lastHudPos);
+                mc.displayGuiScreen(new GuiMusicOptions(mc.thePlayer));  
                 break;
             case 1: /* cancel */
-                MusicOptionsUtil.setAdjustPositionHud(this.initialHudPos);
-                this.mc.displayGuiScreen(new GuiMusicOptions(this.mc.thePlayer));
+                MusicOptionsUtil.setAdjustPositionHud(initialHudPos);
+                mc.displayGuiScreen(new GuiMusicOptions(mc.thePlayer));
                 break;
             default:
             }
@@ -86,22 +103,6 @@ public class GuiHudAdjust extends GuiScreen
             return;
         }
         super.keyTyped(typedChar, keyCode);
-    }
-    
-    @Override
-    public void initGui()
-    {
-        this.buttonList.clear();
-        
-        int y = (height) / 2;
-        int buttonWidth = 100;
-        y = height - 75;
-        int x = (width / 2) - (buttonWidth/2);
-        btn_done =   new GuiButtonExt(0, x, y, buttonWidth, 20, I18n.format("gui.done"));
-        btn_cancel = new GuiButtonExt(1, x, y+=20, buttonWidth, 20, I18n.format("gui.cancel"));
-        
-        this.buttonList.add(btn_cancel);
-        this.buttonList.add(btn_done);
     }
 
     @Override
@@ -131,7 +132,7 @@ public class GuiHudAdjust extends GuiScreen
     /* TODO initialize in InitGui and reuse the instances of HudData */
     private void guiDrawBackground()
     {
-        int height = this.height-24;
+        int height = this.height-GuiJamOverlay.HOTBAR_CLEARANCE;
         for (int i = 0; i < 8; i++)
         {
             HudData hd = HudDataFactory.calcHudPositions(i, width, height);

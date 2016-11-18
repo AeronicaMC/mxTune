@@ -288,6 +288,7 @@ public class PlayManager
             if(GroupManager.getMembersGroupID(member) == groupID)
             {
                 EntityPlayer player = (EntityPlayer) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getEntityByID(member);
+                if(player == null) continue;
                 x = x + player.getPosition().getX();
                 y = y + player.getPosition().getY();
                 z = z + player.getPosition().getZ();

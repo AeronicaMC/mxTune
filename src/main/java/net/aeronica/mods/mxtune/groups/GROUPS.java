@@ -141,6 +141,7 @@ public enum GROUPS
         for(Integer member: getMembersByPlayID(playID))
         {   
             EntityPlayer player = (EntityPlayer)  MXTuneMain.proxy.getClientPlayer().getEntityWorld().getEntityByID(member);
+            if(player == null) continue;
             x = x + player.getPositionVector().xCoord;
             y = y + player.getPositionVector().yCoord;
             z = z + player.getPositionVector().zCoord;

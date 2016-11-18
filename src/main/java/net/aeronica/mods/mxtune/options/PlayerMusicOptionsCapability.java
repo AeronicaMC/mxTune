@@ -89,17 +89,20 @@ public class PlayerMusicOptionsCapability
         @SubscribeEvent
         public void OnPlayerClone(PlayerEvent.Clone event)
         {
-            EntityPlayer player = event.getEntityPlayer();
-            IPlayerMusicOptions dead = event.getOriginal().getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
-            IPlayerMusicOptions live = event.getEntityPlayer().getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
-            live.setSParams(player, dead.getSParam1(), dead.getSParam2(), dead.getSParam3());
-            live.setHudOptions(player, dead.isHudDisabled(), dead.getPositionHud());
-            live.setMuteOption(player, dead.getMuteOption());
-            live.setBlackList(player, dead.getBlackList());
-            live.setWhiteList(player, dead.getBlackList());
+            if(event.isWasDeath())
+            {
+                EntityPlayer player = event.getEntityPlayer();
+                IPlayerMusicOptions dead = event.getOriginal().getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
+                IPlayerMusicOptions live = event.getEntityPlayer().getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
+                live.setSParams(player, dead.getSParam1(), dead.getSParam2(), dead.getSParam3());
+                live.setHudOptions(player, dead.isHudDisabled(), dead.getPositionHud());
+                live.setMuteOption(player, dead.getMuteOption());
+                live.setBlackList(player, dead.getBlackList());
+                live.setWhiteList(player, dead.getWhiteList());               
+            }
         }
-        
-//        @SubscribeEvent
+
+        @SubscribeEvent
         public void onEntityJoinWorld(EntityJoinWorldEvent event)
         {
             if (event.getEntity() instanceof EntityPlayerMP)

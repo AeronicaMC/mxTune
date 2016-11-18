@@ -31,7 +31,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     private int muteOption;
     /** HUD Options */
     private boolean disableHud;
-    private int positionHUD;
+    private int positionHud;
     /** Strings for passing parameters from server to client: for a GUI for example */
     private String sParam1, sParam2, sParam3;
     private List<PlayerLists> whiteList, blackList;
@@ -40,7 +40,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     {
         this.muteOption = 0;
         this.disableHud = false;
-        this.positionHUD = 0;
+        this.positionHud = 0;
         this.sParam1 = this.sParam2 = this.sParam3 = new String("");
         this.whiteList = new ArrayList<PlayerLists>();
         this.blackList = new ArrayList<PlayerLists>();
@@ -50,7 +50,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     {
         this.muteOption = 0;
         this.disableHud = false;
-        this.positionHUD = 0;
+        this.positionHud = 0;
         this.sParam1 = this.sParam2 = this.sParam3 = new String("");
         this.whiteList = new ArrayList<PlayerLists>();
         this.blackList = new ArrayList<PlayerLists>();
@@ -61,31 +61,31 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     {
         this.muteOption = 0;
         this.disableHud = false;
-        this.positionHUD = 0;
+        this.positionHud = 0;
         this.sParam1 = this.sParam2 = this.sParam3 = new String("");
         this.syncAll(playerIn);
     }
 
     @Override
-    public void setHudOptions(EntityPlayer playerIn, boolean disableHud, int positionHUD)
+    public void setHudOptions(EntityPlayer playerIn, boolean disableHud, int positionHud)
     {
         this.disableHud = disableHud;
-        this.positionHUD = positionHUD;
+        this.positionHud = positionHud;
         this.sync(playerIn, SYNC_DISPLAY_HUD); 
     }
 
     @Override
-    public void setHudOptions(boolean disableHud, int positionHUD)
+    public void setHudOptions(boolean disableHud, int positionHud)
     {
         this.disableHud = disableHud;
-        this.positionHUD = positionHUD;
+        this.positionHud = positionHud;
     }
 
     @Override
     public boolean isHudDisabled() {return this.disableHud;}
 
     @Override
-    public int getPositionHud() {return this.positionHUD;}
+    public int getPositionHud() {return this.positionHud;}
 
     @Override
     public void setSParams(EntityPlayer playerIn, String sParam1, String sParam2, String sParam3)
@@ -129,7 +129,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     public void setWhiteList(EntityPlayer playerIn, List<PlayerLists> list) {this.whiteList = list; sync(playerIn, SYNC_WHITE_LIST);}
 
     @Override
-    public List<PlayerLists> getWhiteList() {return this.whiteList;}
+    public List<PlayerLists> getWhiteList() {return new ArrayList<PlayerLists>(this.whiteList);}
 
     @Override
     public void setBlackList(EntityPlayer playerIn, List<PlayerLists> list) {this.blackList = list; sync(playerIn, SYNC_BLACK_LIST);}
@@ -138,7 +138,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     public void setBlackList(List<PlayerLists> list) {this.blackList = list;}
 
     @Override
-    public List<PlayerLists> getBlackList() {return this.blackList;}
+    public List<PlayerLists> getBlackList() {return new ArrayList<PlayerLists>(this.blackList);}
 
     public static final byte SYNC_ALL = 0;
     public static final byte SYNC_DISPLAY_HUD = 1;
