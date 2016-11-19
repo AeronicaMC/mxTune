@@ -124,7 +124,7 @@ public class GuiHudAdjust extends GuiScreen
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
         // drawDefaultBackground();
-        guiDrawBackground();
+        drawHudPositions();
         String localTITLE;
         if (midiUnavailable)
             localTITLE = TITLE + " - " + TextFormatting.RED + MIDI_NOT_AVAILABLE;
@@ -136,9 +136,10 @@ public class GuiHudAdjust extends GuiScreen
         getFontRenderer().drawStringWithShadow(localTITLE, posX, posY, 0xD3D3D3);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
-    
+
+    private int lastHudPos = 0;
     /* TODO initialize in InitGui and reuse the instances of HudData */
-    private void guiDrawBackground()
+    private void drawHudPositions()
     {
         int height = this.height-GuiJamOverlay.HOTBAR_CLEARANCE;
         for (int i = 0; i < 8; i++)
@@ -150,14 +151,14 @@ public class GuiHudAdjust extends GuiScreen
                     (hd.isDisplayLeft() ? hd.getPosX() + 2 : hd.getPosX() -2),
                     (hd.isDisplayTop()  ? hd.getPosY() + 2 : hd.getPosY() -2),
                     (hd.isDisplayLeft() ? hd.getPosX() + (width/5) -1 : hd.getPosX() - (width/5) +1),
-                    (hd.isDisplayTop()  ? hd.getPosY() + (height/4)-1 : hd.getPosY() - (height/4)+1),
+                    (hd.isDisplayTop()  ? hd.getPosY() + (height/4)-1 : hd.getPosY() - (height/4)+1),                                     
                     ((i == mouseOverHudPos(hd, i)) ? color.getRGB() : darkColor.getRGB()) + (128 << 24));
         }
     }
 
-    private int lastHudPos = 0;
     private int mouseOverHudPos(HudData hd, int pos)
     {
+        int height = this.height-GuiJamOverlay.HOTBAR_CLEARANCE;
         if (
                 ((hd.isDisplayLeft() ? hd.getPosX() : hd.getPosX() - (width/5)) < mouseX) &&
                 ((hd.isDisplayLeft() ? hd.getPosX() + (width/5) : (width)) > mouseX) &&
