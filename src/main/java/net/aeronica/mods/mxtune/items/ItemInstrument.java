@@ -19,7 +19,6 @@ package net.aeronica.mods.mxtune.items;
 import java.util.List;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiInstrumentInventory;

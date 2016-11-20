@@ -16,7 +16,6 @@
  */
 package net.aeronica.mods.mxtune.util;
 
-import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
 import net.aeronica.mods.mxtune.blocks.TileInstrument;
 import net.aeronica.mods.mxtune.inventory.IMusic;
