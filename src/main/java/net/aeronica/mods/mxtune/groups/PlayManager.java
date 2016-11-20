@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
+import com.ibm.icu.impl.Assert;
 
 import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.config.ModConfig;
@@ -40,11 +41,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
-// Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
-// UUID does not work on the client.
+/**
+ * The SERVER side class for managing playing
+ * @author Paul Boese aka Aeronica
+ *
+ */
 public class PlayManager
 {
-    /** Don't allow any other class to instantiate the PlayManager */
     private PlayManager() {}
     private static class PlayManagerHolder {public static final PlayManager INSTANCE = new PlayManager();}
     public static PlayManager getInstance() {return PlayManagerHolder.INSTANCE;}
@@ -63,10 +66,7 @@ public class PlayManager
         playID = 1;
     }
     
-    public static Integer getNextPlayID()
-    {
-        return playID++;
-    }
+    private static Integer getNextPlayID() {return (playID == Integer.MAX_VALUE) ? playID=1 : playID++;}
 
     private static void setPlaying(Integer playerID) {membersQueuedStatus.put(playerID, GROUPS.PLAYING.name());}
 
@@ -102,48 +102,83 @@ public class PlayManager
                 {
                     /** Solo Play */
                     ModLogger.debug("playMusic playSolo");
-                    return playSolo(playerIn, title, mml, playerID, pos, isPlaced);
+                    return playSolo(playerIn, mml, playerID);
                 } else
                 {
                     /** Jam Play */
                     ModLogger.debug("playMusic queueJam");
-                    return queueJam(playerIn, title, mml, playerID);
+                    return queueJam(playerIn, mml, playerID);
                 }                
             }
         }
         return null;
     }
 
-    private static Integer playSolo(EntityPlayer playerIn, String title, String mml, Integer playerID, BlockPos pos, boolean isPlaced)
+    private static Integer playSolo(EntityPlayer playerIn, String mml, Integer playerID)
     {
         Integer playID = getNextPlayID();
         queue(playID, playerID, mml);
         String musicText = getMML(playID);
         activePlayIDs.add(playID);
         syncStatus();
-        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playID, title, musicText, pos, isPlaced);
+        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playID, musicText);
         PacketDispatcher.sendToAllAround(packetPlaySolo, playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, ModConfig.getListenerRange());
         return playID;
     }
     
-    private static Integer queueJam(EntityPlayer playerIn, String title, String mml, Integer playerID)
+    private static Integer queueJam(EntityPlayer playerIn, String mml, Integer playerID)
     {
-        Integer groupID = GroupManager.getMembersGroupID(playerID);
+        Integer groupsPlayID = getGroupsPlayID(playerID);
         /** Queue members parts */
-        queue(groupID, playerID, mml);
+        queue(groupsPlayID, playerID, mml);
         syncStatus();
         /** Only send the groups MML when the leader starts the JAM */
         if (GroupManager.isLeader(playerID))
         {
-            String musicText = getMML(groupID);
-            BlockPos pos = getMedianPos(groupID);
-            activePlayIDs.add(groupID);
+            String musicText = getMML(groupsPlayID);
+            Vec3d pos = getMedianPos(groupsPlayID);
+            activePlayIDs.add(groupsPlayID);
             syncStatus();
-            PacketDispatcher.sendToAllAround(new PlayJamMessage(groupID, musicText, pos), playerIn.dimension, pos.getX(), pos.getY(), pos.getZ(), ModConfig.getListenerRange());
+            resetGroupsPlayID(playerID);
+            PlayJamMessage playJamMessage = new PlayJamMessage(playerID, groupsPlayID, musicText);
+            PacketDispatcher.sendToAllAround(playJamMessage, playerIn.dimension, pos.xCoord, pos.yCoord, pos.zCoord, ModConfig.getListenerRange());
         }
-        return groupID;
+        return groupsPlayID;
     }
 
+    /**
+     * Reset the groups PlayID to null.
+     * It's only needed for queuing the MML parts and should be used when the leader kicks off the session.
+     * 
+     * @param membersID
+     */
+    private static void resetGroupsPlayID(Integer membersID)
+    {
+        GroupManager.Group g = GroupManager.getMembersGroup(membersID);
+        Assert.assrt("*** PlayManager#resetGroupsPlayID(Integer memberID): " + membersID + " is not a group member ***", g!=null);
+        g.playID = null;
+    }
+    
+    /**
+     * Generate a new PlayID if this is the first member to queue, or return the existing one.
+     * This assumes the member is already been validated as a member of the group
+     * 
+     * @param membersID
+     * @return
+     */
+    private static Integer getGroupsPlayID(Integer membersID)
+    {
+        GroupManager.Group g = GroupManager.getMembersGroup(membersID);
+        Assert.assrt("*** PlayManager#getGroupsPlayID(Integer memberID): " + membersID + " is not a group member ***", g!=null);
+        if (g.playID == null)
+        {
+            return g.playID = getNextPlayID();
+        } else
+        {
+            return g.playID;
+        }
+    }
+    
     public static boolean isPlayerPlaying(EntityPlayer playerIn)
     {
         Integer entityID = playerIn.getEntityId();
@@ -173,10 +208,7 @@ public class PlayManager
         return members;
     }
     
-    private static Set<Integer> getActivePlayIDs()
-    {
-        return activePlayIDs;
-    }
+    private static Set<Integer> getActivePlayIDs() {return activePlayIDs;}
     
     public static void stopPlayID(Integer playID)
     {
@@ -196,13 +228,7 @@ public class PlayManager
         syncStatus();        
     }
     
-    private static void dequeuePlayID(Integer playID)
-    {
-        if (activePlayIDs != null)
-        {
-            activePlayIDs.remove(playID);
-        }
-    }
+    private static void dequeuePlayID(Integer playID) {if (activePlayIDs != null) activePlayIDs.remove(playID);}
     
     private static int getPatch(BlockPos pos, EntityPlayer playerIn, boolean isPlaced)
     {
@@ -240,21 +266,20 @@ public class PlayManager
             setQueued(memberID);
         } catch (Exception e)
         {
-            ModLogger.logError(e.getLocalizedMessage());
             e.printStackTrace();
         }
     }
 
     /**
      * Returns a string in Map ready format. e.g.
-     * "mamberName=MML@... memberName=MML@..."
+     * "playerId1=MML@...;|playerId2=MML@...|playerId3=MML@..."
      * 
      * @param playID
      * @return string in Map ready format.
      */
     private static String getMML(Integer playID)
     {
-        StringBuilder buildMML = new StringBuilder("|");
+        StringBuilder buildMML = new StringBuilder("");
         try
         {
             Set<Integer> keys = membersPlayID.keySet();
@@ -272,35 +297,35 @@ public class PlayManager
             }
         } catch (Exception e)
         {
-            ModLogger.logError(e.getLocalizedMessage());
             e.printStackTrace();
         }
         return buildMML.toString();
     }
 
-    private static BlockPos getMedianPos(Integer groupID)
+    /**
+     * 
+     * @param playID
+     * @return
+     */
+    public static Vec3d getMedianPos(Integer playID)
     {
-        int x, y, z, count; x = y = z = count = 0;
-        BlockPos pos;
-       
-        for(Integer member: GROUPS.getClientMembers().keySet())
+        double x, y, z, count; x = y = z = count = 0;
+        Vec3d pos;
+        for(Integer member: getMembersByPlayID(playID))
         {   
-            if(GroupManager.getMembersGroupID(member) == groupID)
-            {
-                EntityPlayer player = (EntityPlayer) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getEntityByID(member);
-                if(player == null) continue;
-                x = x + player.getPosition().getX();
-                y = y + player.getPosition().getY();
-                z = z + player.getPosition().getZ();
-                count++;
-            }
+            EntityPlayer player = (EntityPlayer) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getEntityByID(member);
+            if(player == null) continue;
+            x = x + player.getPositionVector().xCoord;
+            y = y + player.getPositionVector().yCoord;
+            z = z + player.getPositionVector().zCoord;
+            count++;
         }            
-        
-        if (count == 0) return new BlockPos(0,0,0);
+
+        if (count == 0) return new Vec3d(0,0,0);
         x/=count;
         y/=count;
         z/=count;
-        pos = new BlockPos(x,y,z);
+        pos = new Vec3d(x,y,z);
         return pos;
     }
 

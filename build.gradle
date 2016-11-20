@@ -32,12 +32,6 @@ version = "0.3.1.0-dev"
 group = "net.aeronica.mods.mxtune" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "mxtune-1.10.2"
 
-repositories {
-   flatDir {
-       dirs 'xjars'
-   }
-}
-
 configurations {
     shadow
     compile.extendsFrom shadow
@@ -78,7 +72,6 @@ dependencies {
 	// Shadow these jars then later we'll use the Shadow plugin to relocate them into our final jar
 	// shadow "net.sunyijun:bit-utils:1.1.0" // using good'ol maven
 	shadow "org.antlr:antlr4-runtime:4.5.2-1" // use ANTLR version 4
-	shadow name: "liquinth-a42" // a local jar in the project directory 'xjars' see repositories..flatDir stuff above.
 	
     // you may put jars on which you depend on in ./libs
     // or you may define them like so..
@@ -106,7 +99,6 @@ shadowJar {
 	archiveName = tasks.jar.archiveName
 	//configurations = [project.configurations.shadow]
 	//relocate 'net.sunyijun.bit', 'net.aeronica.shadowedlibs.bit'
-	relocate 'jvst.examples.liquinth', 'net.aeronica.shadowedlibs.liquinth'
 	relocate 'org.antlr.v4.runtime', 'net.aeronica.shadowedlibs.org.antlr.v4.runtime' 
 }
 
@@ -152,8 +144,4 @@ processResources
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
-}
-
-sourceSets {
-    main.java.srcDirs += 'xjars'
 }

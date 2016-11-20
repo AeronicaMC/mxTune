@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
@@ -59,10 +58,6 @@ public class SyncGroupMessage extends AbstractClientMessage<SyncGroupMessage>
         /** Client side - build - replace the groups and members hashes */
         if (side.isClient())
         {
-            ModLogger.debug("+++Server PacketGroupSync doAction on behalf of " + player.getDisplayName() + " +++");
-            ModLogger.debug("  +++ Groups:  " + groups);
-            ModLogger.debug("  +++ members: " + members);
-
             GROUPS.setClientGroups(groups);
             GROUPS.setClientMembers(members);
         }

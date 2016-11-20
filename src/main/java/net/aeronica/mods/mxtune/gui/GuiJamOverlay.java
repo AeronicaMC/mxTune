@@ -63,7 +63,7 @@ public class GuiJamOverlay extends Gui
 
     private static int hudTimer = 0;
     private static int count = 0;
-    private static final int HUDTIME = 10; /* seconds */
+    private static final int HUDTIME = 5; /* seconds */
     private static void hudTimerReset() {hudTimer = HUDTIME;}
     
     @SubscribeEvent
@@ -107,8 +107,11 @@ public class GuiJamOverlay extends Gui
  
         int width = event.getResolution().getScaledWidth();
         int height = event.getResolution().getScaledHeight() - HOTBAR_CLEARANCE;
-
-        hudData = HudDataFactory.calcHudPositions((inGuiHudAdjust() ? MusicOptionsUtil.getAdjustPositionHud() : MusicOptionsUtil.getPositionHUD(player)), width, height);
+        if (hudData == null || inGuiHudAdjust() || lastWidth != width || lastHeight != height)
+        {
+            hudData = HudDataFactory.calcHudPositions((inGuiHudAdjust() ? MusicOptionsUtil.getAdjustPositionHud() : MusicOptionsUtil.getPositionHUD(player)), width, height);
+            lastWidth = width; lastHeight = height;
+        }
          
         this.mc.renderEngine.bindTexture(textureLocation);
         
@@ -127,7 +130,7 @@ public class GuiJamOverlay extends Gui
             placed = false;
         }
         
-        if (inGuiHudAdjust() || ((itemStack != null) && ((itemStack.getItem() instanceof IInstrument)) || placed))
+        if (inGuiHudAdjust() || ((itemStack != null) && ((itemStack.getItem() instanceof IInstrument) || placed)))
         {
             if (lastItemStack==null || (itemStack != null && !itemStack.equals(this.lastItemStack))) {hudTimerReset(); lastItemStack = itemStack;}
             if (canRenderHud(player)) this.renderHud(hudData, player, sheetMusic);

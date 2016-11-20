@@ -53,6 +53,7 @@ public class GroupManager
     private GroupManager() {}
     private static class GroupManagerHolder {public static final GroupManager INSTANCE = new GroupManager();}
     public static GroupManager getInstance() {return GroupManagerHolder.INSTANCE;}
+    private static Integer groupID = 1;
 
     /*
      * The guts of the GroupManager - After looking over this weeks later I can
@@ -70,9 +71,10 @@ public class GroupManager
         public Integer memberEntityID;
     }
 
-    private static class Group
+    public static class Group
     {
         public Integer groupID;
+        public Integer playID;
         public Integer leaderEntityID;
         public HashSet<Member> members;
     }
@@ -98,6 +100,8 @@ public class GroupManager
         return (getGroups() != null && !getGroups().isEmpty()) ? getGroups().contains(groupID) : false;
     }
     
+    private static Integer getNextGroupID() {return (groupID == Integer.MAX_VALUE) ? groupID=1 : groupID++;}
+    
     /**
      * Any player can be a leader or in a group. A player who makes a group is
      * the leader of the group. A player in a group can't join another group.
@@ -120,7 +124,8 @@ public class GroupManager
 
             Group theGroup = new Group();
 
-            theGroup.groupID = PlayManager.getNextPlayID();
+            theGroup.groupID = getNextGroupID();
+            theGroup.playID = null;
             
             theGroup.leaderEntityID = creatorID;
 
@@ -137,7 +142,7 @@ public class GroupManager
         log("----- Can't create a group if you are a member of a group.");
         return false;
     }
-
+    
     /**
      * addMember TODO: setup language file keys
      * 

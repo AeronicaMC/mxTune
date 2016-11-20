@@ -16,7 +16,6 @@
  */
 package net.aeronica.mods.mxtune.blocks;
 
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -30,6 +29,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 public class TileInstrument extends TileEntity
 {
+    
     private ItemStackHandler inventory = new StackHandler(1);
     private EnumFacing facing = EnumFacing.NORTH;
 
@@ -46,7 +46,6 @@ public class TileInstrument extends TileEntity
         inventory = new StackHandler(1); // ItemStackHandler
         inventory.deserializeNBT(tag);
         facing = EnumFacing.getFront(tag.getInteger("facing"));
-        ModLogger.logInfo("TileInstrument#readFromNBT: " + tag);
     }
 
     @Override

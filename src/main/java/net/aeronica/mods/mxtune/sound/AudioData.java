@@ -18,22 +18,19 @@ package net.aeronica.mods.mxtune.sound;
 import javax.sound.sampled.AudioInputStream;
 
 import net.aeronica.mods.mxtune.sound.ClientAudio.Status;
-import net.minecraft.util.math.BlockPos;
 
 public class AudioData
 {
     private final Integer playID;
     private final String mml;
-    private final BlockPos pos;
     private final boolean isClientPlayer;
     private AudioInputStream audioStream;
     private Status status;
     
-    public AudioData(Integer entityID, String mml, BlockPos pos, boolean isClientPlayer)
+    public AudioData(Integer entityID, String mml, boolean isClientPlayer)
     {
         this.playID = entityID;
         this.mml = mml;
-        this.pos = pos;
         this.isClientPlayer = isClientPlayer;
         this.status = Status.WAITING;
     }
@@ -56,11 +53,6 @@ public class AudioData
     public String getMml()
     {
         return mml;
-    }
-
-    public BlockPos getPos()
-    {
-        return pos;
     }
     
     public boolean isClientPlayer()

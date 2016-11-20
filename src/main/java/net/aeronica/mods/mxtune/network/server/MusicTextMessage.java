@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import net.aeronica.mods.mxtune.init.StartupItems;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -63,10 +62,8 @@ public class MusicTextMessage extends AbstractServerMessage<MusicTextMessage>
 
         if (player.getHeldItemMainhand() != null)
         {
-            //ItemStack musicPaper = player.getHeldItemMainhand();
             ItemStack sheetMusic = new ItemStack(StartupItems.item_sheetmusic);
 
-            ModLogger.debug("+++ Write Music book NBT +++");
             sheetMusic.setStackDisplayName(musicTitle);
             NBTTagCompound compound = sheetMusic.getTagCompound();
             if (compound != null)
@@ -79,7 +76,6 @@ public class MusicTextMessage extends AbstractServerMessage<MusicTextMessage>
         
             if (!player.inventory.addItemStackToInventory(sheetMusic.copy()))
             {
-                ModLogger.debug("+++ Drop Music +++");
                 player.dropItem(sheetMusic, false, false);
             }
             player.inventoryContainer.detectAndSendChanges();

@@ -1,6 +1,6 @@
 < en_US.lang - English localization file >
 
-item.mxtune:item_basic.name=Magic Music Item
+item.mxtune:item_basic.name=mxTune Test Item
 item.mxtune:block_piano.name=Spinet Piano
 item.mxtune:item_musicpaper.name=Music Paper
 item.mxtune:item_sheetmusic.name="Sheet Music" - Should never be seen unless the Name is removed.

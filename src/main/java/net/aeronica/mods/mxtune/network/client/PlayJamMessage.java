@@ -26,60 +26,52 @@ import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
 {
 
+    private Integer leaderID;
     private Integer playID;
-    private BlockPos pos;
     private String jamMML;
     
     public PlayJamMessage() {}
 
-    public PlayJamMessage(Integer playID, String jamMML)
+    public PlayJamMessage(Integer leaderID, Integer playID, String jamMML)
     {
-        this(playID, jamMML, new BlockPos(0,0,0));
-    }
-
-    public PlayJamMessage(Integer playID, String jamMML,  BlockPos pos)
-    {
+        this.leaderID = leaderID;
         this.playID = playID;
-        this.pos = pos;
         this.jamMML = jamMML;
     }
     
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
-        playID = ByteBufUtils.readVarInt(buffer, 5);
-        pos = new BlockPos(ByteBufUtils.readVarInt(buffer, 5), ByteBufUtils.readVarInt(buffer, 5), ByteBufUtils.readVarInt(buffer, 5));
+        leaderID = buffer.readInt();
+        playID = buffer.readInt();
         jamMML = ByteBufUtils.readUTF8String(buffer);
     }
 
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
-        ByteBufUtils.writeVarInt(buffer, playID, 5);
-        ByteBufUtils.writeVarInt(buffer, pos.getX(), 5);
-        ByteBufUtils.writeVarInt(buffer, pos.getY(), 5);
-        ByteBufUtils.writeVarInt(buffer, pos.getZ(), 5);
+        buffer.writeInt(leaderID);
+        buffer.writeInt(playID);
         ByteBufUtils.writeUTF8String(buffer, jamMML);
     }
 
     @Override
     public void process(EntityPlayer player, Side side)
     {
+        ModLogger.logInfo("PlayJamMessage#process");
         if (MIDISystemUtil.getInstance().midiUnavailableWarn(player) == false)
         {
-            if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) player.worldObj.getEntityByID(GROUPS.getLeaderOfGroup(playID))) == false)
+            if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) player.worldObj.getEntityByID(GROUPS.getMembersGroupLeader(leaderID))) == false)
             {
                 ModLogger.logInfo("musicText:  " + jamMML.substring(0, (jamMML.length() >= 25 ? 25 : jamMML.length())));
                 ModLogger.logInfo("playID:     " + playID);
-                ModLogger.logInfo("pos:        " + pos);
-                ClientAudio.play(playID, jamMML, pos);
+                ClientAudio.play(playID, jamMML);
             }
         }
     }

@@ -19,10 +19,8 @@ package net.aeronica.mods.mxtune.items;
 import java.util.List;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.gui.GuiInstInvExp;
-import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
-import net.aeronica.mods.mxtune.sound.NewPlayManager;
-import net.aeronica.mods.mxtune.sound.PlayStatusUtil;
+import net.aeronica.mods.mxtune.groups.PlayManager;
+import net.aeronica.mods.mxtune.gui.GuiInstrumentInventory;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -52,16 +50,15 @@ public class BasicItem extends ItemBase
             /** Server Side - Open the instrument inventory GuiInstInvAdjustRotations */
             if (playerIn.isSneaking() && hand.equals(EnumHand.MAIN_HAND))
             {
-                playerIn.openGui(MXTuneMain.instance, GuiInstInvExp.GUI_ID, worldIn, 0,0,0);
+                playerIn.openGui(MXTuneMain.instance, GuiInstrumentInventory.GUI_ID, worldIn, 0,0,0);
             }
-            else
+            if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && hand.equals(EnumHand.MAIN_HAND))
             {
-                if (PlayStatusUtil.isPlaying(playerIn) == false)
+                if (!PlayManager.isPlayerPlaying(playerIn))
                 {
-                    PlayStatusUtil.setPlaying(playerIn, true);
-                    itemStackIn.setRepairCost(playerIn.getEntityId());
-                    MusicOptionsUtil.setSParams(playerIn, "46", "", "");
-                    NewPlayManager.playMusic(playerIn, pos, false);
+                    /**TODO Make sure it is OKAY steal and to use this property like this */
+                    Integer playID = PlayManager.playMusic(playerIn, pos, false);
+                    itemStackIn.setRepairCost(playID != null ? playID : -1);
                 }
             }
         } else
@@ -76,14 +73,15 @@ public class BasicItem extends ItemBase
      * update it's contents.
      */
     @Override
-    public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected)
+    public void onUpdate(ItemStack stackIn, World worldIn, Entity entityIn, int itemSlot, boolean isSelected)
     {
         if (!worldIn.isRemote)
-        {
-            if (!isSelected & (stack.getRepairCost() == entityIn.getEntityId()))
+        {         
+            Integer playID = stackIn.getRepairCost();
+            if (!isSelected && PlayManager.hasPlayID(playID))
             {
-                stack.setRepairCost(-1);
-                PlayStatusUtil.setPlaying((EntityPlayer) entityIn, false);
+                PlayManager.stopPlayID(playID);
+                stackIn.setRepairCost(-1);
             }
         }
     }
@@ -98,11 +96,11 @@ public class BasicItem extends ItemBase
     {
         if (!worldIn.isRemote)
         {
-            EntityPlayer player = (EntityPlayer) worldIn.getEntityByID(stackIn.getRepairCost());
-            if (player != null && (stackIn.getRepairCost() == player.getEntityId()))
+            Integer playID = stackIn.getRepairCost();
+            if (PlayManager.hasPlayID(playID))
             {
+                PlayManager.stopPlayID(playID);
                 stackIn.setRepairCost(-1);
-                PlayStatusUtil.setPlaying(player, false);
             }
         }
 
@@ -111,14 +109,15 @@ public class BasicItem extends ItemBase
     }
 
     @Override
-    public boolean onDroppedByPlayer(ItemStack item, EntityPlayer playerIn)
+    public boolean onDroppedByPlayer(ItemStack stackIn, EntityPlayer playerIn)
     {
         if (!playerIn.getEntityWorld().isRemote)
         {
-            if (PlayStatusUtil.isPlaying(playerIn) && (item.getRepairCost() == playerIn.getEntityId()))
+            Integer playID = stackIn.getRepairCost();
+            if (PlayManager.hasPlayID(playID))
             {
-                item.setRepairCost(-1);
-                PlayStatusUtil.setPlaying(playerIn, false);
+                PlayManager.stopPlayID(playID);
+                stackIn.setRepairCost(-1);
             }
         }
         return true;

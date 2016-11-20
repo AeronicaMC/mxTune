@@ -28,7 +28,6 @@ import net.aeronica.mods.mxtune.options.IPlayerMusicOptions;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.options.PlayerLists;
 import net.aeronica.mods.mxtune.options.PlayerMusicDefImpl;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
@@ -212,7 +211,6 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     {
         if (side.isClient())
         {
-            ModLogger.debug("Synchronizing Music Options player extended properties data on CLIENT: " + propertyID);
             final IPlayerMusicOptions instance = player.getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
             switch (this.propertyID)
             {

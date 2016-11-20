@@ -25,7 +25,6 @@ import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.init.StartupBlocks;
 import net.aeronica.mods.mxtune.inventory.IMusic;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.PlacedInstrumentUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.EnumPushReaction;
@@ -74,8 +73,6 @@ public class BlockPiano extends BlockInstrument2H
         super(Material.WOOD, blockName);
         setDefaultState(this.blockState.getBaseState().withProperty(PART, BlockPiano.EnumPartType.LEFT).withProperty(OCCUPIED, Boolean.valueOf(false)));
     }
-
-
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
@@ -309,7 +306,6 @@ public class BlockPiano extends BlockInstrument2H
             spawnEntityItem(worldIn, tile.getInventory().getStackInSlot(0).copy(), pos);
             tile.invalidate();
         }
-        ModLogger.debug("BlockPiano#breakBlock " + state.getValue(PART));
         super.breakBlock(worldIn, pos, state);
     }
 
@@ -410,7 +406,6 @@ public class BlockPiano extends BlockInstrument2H
     @Override
     public TileEntity createTileEntity(World world, IBlockState state)
     {
-        ModLogger.debug("BlockPiano#createTileEntity " + state.getValue(PART) + " " + state);
         return new TileInstrument(state.getValue(FACING));
     }
 

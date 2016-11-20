@@ -22,7 +22,6 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
@@ -126,7 +125,6 @@ public class PlayerMusicOptionsCapability
         @Override
         public IPlayerMusicOptions call() throws Exception
         {
-            ModLogger.debug("PlayerMusicOptionsCapability.Factory#call: return new PlayerMusicDefImpl(null);");
             return new PlayerMusicDefImpl(null);
         }
     }

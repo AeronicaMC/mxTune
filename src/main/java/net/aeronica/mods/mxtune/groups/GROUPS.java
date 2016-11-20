@@ -28,8 +28,6 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;
 
-// Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
-// UUID does not work on the client.
 public enum GROUPS
 {
     GROUP_ADD, MEMBER_ADD, MEMBER_REMOVE, MEMBER_PROMOTE, QUEUED, PLAYING;

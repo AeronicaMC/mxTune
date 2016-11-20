@@ -26,7 +26,6 @@ import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -35,52 +34,28 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
 {
 
     Integer playID;
-    String musicTitle;
     String musicText;
-    BlockPos pos;
-    boolean isPlaced;
 
     public PlaySoloMessage() {}
     
-    public PlaySoloMessage(int playID, String musicTitle, String musicText)
-    {
-        this(playID, musicTitle, musicText, new BlockPos(0,0,0), false);
-    }
-    
-    public PlaySoloMessage(Integer playID, String playerName, String musicTitle, String musicText, boolean isPlaced)
-    {
-        this(playID, musicTitle, musicText, new BlockPos(0,0,0), isPlaced);
-    }
-    
-    public PlaySoloMessage(int playID, String musicTitle, String musicText, BlockPos pos, boolean isPlaced)
+    public PlaySoloMessage(Integer playID, String musicText)
     {
         this.playID = playID;
-        this.musicTitle = musicTitle;
         this.musicText = musicText;
-        this.pos = pos;
-        this.isPlaced = isPlaced;
     }
     
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
-        playID = ByteBufUtils.readVarInt(buffer, 5);
-        musicTitle = ByteBufUtils.readUTF8String(buffer);
+        playID = buffer.readInt();
         musicText = ByteBufUtils.readUTF8String(buffer);
-        pos = new BlockPos(ByteBufUtils.readVarInt(buffer, 5), ByteBufUtils.readVarInt(buffer, 5), ByteBufUtils.readVarInt(buffer, 5));
-        isPlaced = (ByteBufUtils.readVarShort(buffer)==1);
     }
 
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
-        ByteBufUtils.writeVarInt(buffer, playID, 5);
-        ByteBufUtils.writeUTF8String(buffer, musicTitle);
+        buffer.writeInt(playID);
         ByteBufUtils.writeUTF8String(buffer, musicText);
-        ByteBufUtils.writeVarInt(buffer, pos.getX(), 5);
-        ByteBufUtils.writeVarInt(buffer, pos.getY(), 5);
-        ByteBufUtils.writeVarInt(buffer, pos.getZ(), 5);
-        ByteBufUtils.writeVarShort(buffer, isPlaced?1:0);
     }
 
     @Override
@@ -98,19 +73,9 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
             Integer otherEntityID = GROUPS.getSoloMemberByPlayID(playID) == null ? player.getEntityId() : GROUPS.getSoloMemberByPlayID(playID);
             if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) (player.worldObj.getEntityByID(otherEntityID))) == false)
             {
-                ModLogger.debug("musicTitle: " + musicTitle);
                 ModLogger.debug("musicText:  " + musicText.substring(0, (musicText.length() >= 25 ? 25 : musicText.length())));
                 ModLogger.debug("entityID:   " + playID);
-                ModLogger.debug("pos:        " + pos);
-                ModLogger.debug("isPlaced:   " + isPlaced);
-                /*
-                 * Solo play format "<playerName|groupID>=MML@...;" Jam play
-                 * format just appends with a space between each player=MML
-                 * sequence
-                 * "<playername1>=MML@...abcd; <playername2>=MML@...efga; <playername3>=MML@...bead;"
-                 */
-                String mml = new String(playID + "=" + musicText);
-                ClientAudio.play(playID, mml, pos);
+                ClientAudio.play(playID, musicText);
             }
         }
     }

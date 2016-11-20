@@ -22,7 +22,6 @@ import net.minecraft.client.audio.SoundEventAccessor;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.Vec3d;
-import paulscode.sound.Vector3D;
 
 public class MusicMoving extends MovingSound
 {

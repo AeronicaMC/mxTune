@@ -31,8 +31,6 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.StopPlayMessage;
-import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.SoundSetupEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -184,18 +182,10 @@ public class ClientAudio
         return audioData.isClientPlayer();
     }
     
-    @Deprecated
-    public static BlockPos getBlockPos(Integer playID)
-    {
-        AudioData audioData = playIDAudioData.get(playID);
-        if(audioData == null) return new BlockPos(0,0,0);
-        return audioData.getPos();
-    }
-    
-    public static void play(Integer playID, String musicText, BlockPos pos)
+    public static void play(Integer playID, String musicText)
     {
         addPlayIDQueue(playID);
-        playIDAudioData.put(playID, new AudioData(playID, musicText, pos, GROUPS.isClientPlaying(playID)));        
+        playIDAudioData.put(playID, new AudioData(playID, musicText, GROUPS.isClientPlaying(playID)));        
         executorService.execute(new ThreadedPlay(playID, musicText));
         MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MusicMoving());
     }
@@ -242,7 +232,6 @@ public class ClientAudio
             Integer playID;
             if ((playID = ClientAudio.pollPlayIDQueue01()) != null)
             {
-                ModLogger.logInfo("PlaySoundEvent Stereo: " + (ClientAudio.isClientPlayer(playID)) + ", playID: " + playID);
                 if (ClientAudio.isClientPlayer(playID))
                 {
                     /*

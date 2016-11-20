@@ -88,8 +88,6 @@ public class ItemInstrument extends ItemBase implements IInstrument
             }
             if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && hand.equals(EnumHand.MAIN_HAND))
             {
-                if ((GroupManager.getMembersGroupID(playerIn.getEntityId()) == null) && GroupManager.hasGroup(itemStackIn.getRepairCost()))
-                    itemStackIn.setRepairCost(-1);
                 if (!PlayManager.isPlayerPlaying(playerIn))
                 {
                     /**TODO Make sure it is OKAY steal and to use this property like this */
