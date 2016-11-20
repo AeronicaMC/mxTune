@@ -19,7 +19,7 @@ package net.aeronica.mods.mxtune.init;
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.blocks.RendererPiano;
-import net.aeronica.mods.mxtune.blocks.TilePiano;
+import net.aeronica.mods.mxtune.blocks.TileInstrument;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMap;
@@ -72,7 +72,7 @@ public class BlockModels
         ModelLoader.setCustomModelResourceLocation(StartupBlocks.item_piano, DEFAULT_ITEM_SUBTYPE, new ModelResourceLocation(modid + ":" + "block_piano", "inventory"));
 
         rendererPiano = new RendererPiano();  
-        ClientRegistry.bindTileEntitySpecialRenderer(TilePiano.class, rendererPiano);
+        ClientRegistry.bindTileEntitySpecialRenderer(TileInstrument.class, rendererPiano);
     }
     
     private static RendererPiano rendererPiano;

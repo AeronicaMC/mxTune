@@ -26,6 +26,7 @@ import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.HudOptionsMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -86,12 +87,17 @@ public class GuiHudAdjust extends GuiScreen
             switch(button.id)
             {
             case 0: /* done   */
+                ModLogger.logInfo("done lastHudPos:    " + lastHudPos);
+                ModLogger.logInfo("done initialHudPos: " + initialHudPos);
+                
                 PacketDispatcher.sendToServer(new HudOptionsMessage(lastHudPos, MusicOptionsUtil.isHudDisabled(playerIn), sld_sizeHud.getValue()/100));
                 MusicOptionsUtil.setAdjustPositionHud(lastHudPos);
-                MusicOptionsUtil.setHudOptions(playerIn, MusicOptionsUtil.isHudDisabled(playerIn), lastHudPos, sld_sizeHud.getValue());
+                MusicOptionsUtil.setHudOptions(playerIn, MusicOptionsUtil.isHudDisabled(playerIn), lastHudPos, sld_sizeHud.getValue()/100);
                 mc.displayGuiScreen(new GuiMusicOptions(playerIn));  
                 break;
             case 1: /* cancel */
+                ModLogger.logInfo("canceled lastHudPos:    " + lastHudPos);
+                ModLogger.logInfo("canceled initialHudPos: " + initialHudPos);
                 MusicOptionsUtil.setAdjustPositionHud(initialHudPos);
                 mc.displayGuiScreen(new GuiMusicOptions(playerIn));
                 break;
@@ -167,7 +173,7 @@ public class GuiHudAdjust extends GuiScreen
         {
             return lastHudPos = pos;
         }
-        return lastHudPos;
+        return -1;
     }
     
     private int mouseX;

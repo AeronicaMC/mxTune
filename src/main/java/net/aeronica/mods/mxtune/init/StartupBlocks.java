@@ -18,7 +18,7 @@ package net.aeronica.mods.mxtune.init;
 
 import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.blocks.ItemPiano;
-import net.aeronica.mods.mxtune.blocks.TilePiano;
+import net.aeronica.mods.mxtune.blocks.TileInstrument;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class StartupBlocks
@@ -34,6 +34,6 @@ public class StartupBlocks
         GameRegistry.register(block_piano = (BlockPiano) new BlockPiano("block_piano"));
         GameRegistry.register(item_piano = (ItemPiano) new ItemPiano("block_piano"));
 
-        GameRegistry.registerTileEntityWithAlternatives(TilePiano.class, "PianoTile", "Piano Tile");
+        GameRegistry.registerTileEntityWithAlternatives(TileInstrument.class, "TileInstrument", "PianoTile");
     }
 }

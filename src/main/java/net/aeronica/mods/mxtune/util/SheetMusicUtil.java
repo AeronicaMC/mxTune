@@ -17,8 +17,10 @@
 package net.aeronica.mods.mxtune.util;
 
 import net.aeronica.mods.mxtune.blocks.BlockPiano;
-import net.aeronica.mods.mxtune.blocks.TilePiano;
+import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
+import net.aeronica.mods.mxtune.blocks.TileInstrument;
 import net.aeronica.mods.mxtune.inventory.IMusic;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -56,11 +58,11 @@ public class SheetMusicUtil
     {
         if (isPlaced)
         {
-            if (playerIn.worldObj.getBlockState(pos).getBlock() instanceof BlockPiano)
+            if (playerIn.worldObj.getBlockState(pos).getBlock() instanceof IPlacedInstrument)
             {
-                BlockPiano piano = (BlockPiano) playerIn.worldObj.getBlockState(pos).getBlock();
-                TilePiano te = piano.getTE(playerIn.worldObj, pos);
-                return te.getInventory().getStackInSlot(0);
+                Block placedInst = (Block) playerIn.worldObj.getBlockState(pos).getBlock();
+                TileInstrument te = ((IPlacedInstrument) placedInst).getTE(playerIn.worldObj, pos);
+                return te.getInventory().getStackInSlot(0).copy();
             }
         } else
         {
@@ -85,7 +87,7 @@ public class SheetMusicUtil
         if (hasCap)
         {
             IItemHandler itemInv = stackIn.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-            ItemStack sheetMusic = itemInv.getStackInSlot(0);
+            ItemStack sheetMusic = itemInv.getStackInSlot(0).copy();
             if (sheetMusic != null && sheetMusic.hasDisplayName() && (sheetMusic.getItem() instanceof IMusic) && sheetMusic.getTagCompound().hasKey("MusicBook", Constants.NBT.TAG_COMPOUND))
             {
                 return sheetMusic;

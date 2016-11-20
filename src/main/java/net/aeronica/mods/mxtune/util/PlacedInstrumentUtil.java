@@ -45,7 +45,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class SittableUtil
+public class PlacedInstrumentUtil
 {
     /** Gets a Block position under a players feet. works on blocks, half slabs, carpets. */
     private static BlockPos blockUnderFoot(EntityPlayer playerIn)
@@ -160,5 +160,15 @@ public class SittableUtil
             if (mount.blockPosX == x && mount.blockPosY == y && mount.blockPosZ == z) { return mount.getRidingEntity() != null; }
         }
         return false;
+    }
+    
+    public static boolean isRiding(EntityPlayer playerIn)
+    {
+        return (playerIn !=null && !playerIn.isDead && playerIn.isRiding() && playerIn.getRidingEntity() instanceof EntitySittableBlock);
+    }
+    
+    public static BlockPos getRiddenBlock(EntityPlayer playerIn)
+    {
+        return isRiding(playerIn) ? ((EntitySittableBlock)playerIn.getRidingEntity()).getBlockPos() : BlockPos.ORIGIN;
     }
 }

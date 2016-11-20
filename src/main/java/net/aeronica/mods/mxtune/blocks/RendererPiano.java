@@ -42,7 +42,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RendererPiano extends TileEntitySpecialRenderer<TilePiano>
+public class RendererPiano extends TileEntitySpecialRenderer<TileInstrument>
 {
     double xMusicOffset = 0D, zMusicOffset = 0D;
     EnumFacing facing = EnumFacing.NORTH;
@@ -110,7 +110,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano>
     }
 
     @Override
-    public void renderTileEntityAt(TilePiano te, double x, double y, double z, float partialTicks, int destroyStage)
+    public void renderTileEntityAt(TileInstrument te, double x, double y, double z, float partialTicks, int destroyStage)
     {
         /** Translations for the sheet music, music rack and bench */
         facing = te.getFacing();
@@ -178,7 +178,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano>
         GlStateManager.popAttrib();
     }
 
-    private void renderRack(TilePiano te)
+    private void renderRack(TileInstrument te)
     {
         GlStateManager.pushMatrix();
 
@@ -210,7 +210,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano>
         GlStateManager.popMatrix();
     }
 
-    private void renderBench(TilePiano te)
+    private void renderBench(TileInstrument te)
     {
         GlStateManager.pushMatrix();
 
@@ -242,7 +242,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano>
         GlStateManager.popMatrix();
     }
 
-    private void renderSheetMusic(TilePiano te)
+    private void renderSheetMusic(TileInstrument te)
     {
         ItemStack stack = te.getInventory().getStackInSlot(0);
         if (stack != null)

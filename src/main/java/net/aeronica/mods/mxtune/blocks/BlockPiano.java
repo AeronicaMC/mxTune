@@ -26,7 +26,7 @@ import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.init.StartupBlocks;
 import net.aeronica.mods.mxtune.inventory.IMusic;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.aeronica.mods.mxtune.util.SittableUtil;
+import net.aeronica.mods.mxtune.util.PlacedInstrumentUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
@@ -61,7 +61,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * NOTES: Future reference
  * registerItem(389, "item_frame", (new ItemHangingEntity(EntityItemFrame.class)).setUnlocalizedName("frame"));
  */
-public class BlockPiano extends BlockHorizontal
+public class BlockPiano extends BlockInstrument2H
 {
     public static final PropertyEnum<BlockPiano.EnumPartType> PART = PropertyEnum.<BlockPiano.EnumPartType> create("part", BlockPiano.EnumPartType.class);
     public static final PropertyBool OCCUPIED = PropertyBool.create("occupied");
@@ -73,29 +73,11 @@ public class BlockPiano extends BlockHorizontal
 
     public BlockPiano(String blockName)
     {
-        super(Material.WOOD);
-        setBlockName(this, blockName);
-        this.setSoundType(SoundType.WOOD);
-        setHardness(0.2F);
-        disableStats();
+        super(Material.WOOD, blockName);
         setDefaultState(this.blockState.getBaseState().withProperty(PART, BlockPiano.EnumPartType.LEFT).withProperty(OCCUPIED, Boolean.valueOf(false)));
     }
 
-    /**
-     * Set the registry name of {@code item} to {@code itemName} and the
-     * unlocalised name to the full registry name.<br>
-     * <br>
-     * 
-     * @param block
-     *            The block
-     * @param blockName
-     *            The block's name
-     */
-    public static void setBlockName(Block block, String blockName)
-    {
-        block.setRegistryName(blockName);
-        block.setUnlocalizedName(block.getRegistryName().toString());
-    }
+
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
@@ -109,12 +91,12 @@ public class BlockPiano extends BlockHorizontal
                 state = worldIn.getBlockState(pos);
                 if (state.getBlock() != this) { return true; }
             }
-            TilePiano tile = getTE(worldIn, pos);
+            TileInstrument tile = getTE(worldIn, pos);
             if (tile.isInvalid()) return true;
             boolean invHasItem = tile.getInventory().getStackInSlot(0) != null;
             boolean invIsMusic = invHasItem && (tile.getInventory().getStackInSlot(0).getItem() instanceof IMusic) &&
                     tile.getInventory().getStackInSlot(0).hasDisplayName();
-            boolean canPlay = playerIn.isRiding() && invIsMusic && SittableUtil.isPlayerSitting(worldIn, playerIn, pos) && !PlayManager.isPlayerPlaying(playerIn);
+            boolean canPlay = playerIn.isRiding() && invIsMusic && PlacedInstrumentUtil.isPlayerSitting(worldIn, playerIn, pos) && !PlayManager.isPlayerPlaying(playerIn);
             boolean playerHasItem = playerIn.getHeldItem(hand) != null;
             boolean playerHasMusic = playerHasItem && (playerIn.getHeldItem(hand).getItem() instanceof IMusic) && 
                     playerIn.getHeldItem(hand).hasDisplayName();
@@ -168,8 +150,9 @@ public class BlockPiano extends BlockHorizontal
     }
 
     public int getPatch() {return 0;}
-
-    public TilePiano getTE(World worldIn, BlockPos pos) {return (TilePiano) worldIn.getTileEntity(pos);}
+    
+    @Override
+    public TileInstrument getTE(World worldIn, BlockPos pos) {return (TileInstrument) worldIn.getTileEntity(pos);}
 
     private boolean sitPiano(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn)
     {
@@ -197,7 +180,7 @@ public class BlockPiano extends BlockHorizontal
             zOffset = -0.375D;
             yaw = 0F;
         }
-        return SittableUtil.sitOnBlock(worldIn, pos.getX(), pos.getY(), pos.getZ(), playerIn, xOffset, 4 * 0.0625, zOffset, yaw);
+        return PlacedInstrumentUtil.sitOnBlock(worldIn, pos.getX(), pos.getY(), pos.getZ(), playerIn, xOffset, 4 * 0.0625, zOffset, yaw);
     }
 
     @Override
@@ -322,7 +305,7 @@ public class BlockPiano extends BlockHorizontal
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
     {
-        TilePiano tile = ((TilePiano) worldIn.getTileEntity(pos));
+        TileInstrument tile = ((TileInstrument) worldIn.getTileEntity(pos));
         if (state.getValue(PART) == BlockPiano.EnumPartType.LEFT && tile != null && tile.getInventory().getStackInSlot(0) != null)
         {
             spawnEntityItem(worldIn, tile.getInventory().getStackInSlot(0).copy(), pos);
@@ -430,7 +413,7 @@ public class BlockPiano extends BlockHorizontal
     public TileEntity createTileEntity(World world, IBlockState state)
     {
         ModLogger.debug("BlockPiano#createTileEntity " + state.getValue(PART) + " " + state);
-        return new TilePiano(state.getValue(FACING));
+        return new TileInstrument(state.getValue(FACING));
     }
 
     /**

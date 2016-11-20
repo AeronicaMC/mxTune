@@ -52,9 +52,10 @@ public class EntitySittableBlock extends Entity
 {
     
     private static final DataParameter<Boolean> SHOULD_SIT = EntityDataManager.<Boolean> createKey(EntitySittableBlock.class, DataSerializers.BOOLEAN);
-    public int blockPosX;
-    public int blockPosY;
-    public int blockPosZ;
+    private static final DataParameter<BlockPos> BLOCK_POS = EntityDataManager.<BlockPos> createKey(EntitySittableBlock.class, DataSerializers.BLOCK_POS);
+    public int blockPosX = 0;
+    public int blockPosY = 0;
+    public int blockPosZ = 0;
     public float yaw;
     private Integer playID = null;
 
@@ -68,6 +69,11 @@ public class EntitySittableBlock extends Entity
         return playID;
     }
 
+    public BlockPos getBlockPos()
+    {
+        return ((BlockPos) this.dataManager.get(BLOCK_POS)).toImmutable();
+    }
+    
     public EntitySittableBlock(World world)
     {
         super(world);
@@ -75,6 +81,7 @@ public class EntitySittableBlock extends Entity
         this.height = 0.0001F;
         this.width = 0.0001F;
         this.dataManager.set(SHOULD_SIT, Boolean.valueOf(true));
+        this.dataManager.set(BLOCK_POS, new BlockPos(0,0,0));
     }
 
     /** Allow riding standing up if shouldRiderSit is false */
@@ -86,6 +93,7 @@ public class EntitySittableBlock extends Entity
         this.blockPosZ = (int) z;
         setPosition(x + 0.5D, y + y0ffset, z + 0.5D);
         this.dataManager.set(SHOULD_SIT, Boolean.valueOf(shouldRiderSit));
+        this.dataManager.set(BLOCK_POS, new BlockPos(blockPosX,blockPosY,blockPosZ));
     }
 
     public EntitySittableBlock(World world, double x, double y, double z, double xOffset, double yOffset, double zOffset)
@@ -96,6 +104,7 @@ public class EntitySittableBlock extends Entity
         this.blockPosZ = (int) z;
         setPosition(x + xOffset, y + yOffset, z + zOffset);
         this.dataManager.set(SHOULD_SIT, Boolean.valueOf(true));
+        this.dataManager.set(BLOCK_POS, new BlockPos(blockPosX,blockPosY,blockPosZ));
     }
 
     public EntitySittableBlock(World world, double x, double y, double z, double xOffset, double yOffset, double zOffset, float yaw)
@@ -107,6 +116,7 @@ public class EntitySittableBlock extends Entity
         this.yaw = yaw;
         this.setPositionAndRotation(x + xOffset, y + yOffset, z + zOffset, yaw, 0);
         this.dataManager.set(SHOULD_SIT, Boolean.valueOf(true));
+        this.dataManager.set(BLOCK_POS, new BlockPos(blockPosX,blockPosY,blockPosZ));
     }
 
     public EntitySittableBlock(World world, double x, double y, double z, double y0ffset, int rotation, double rotationOffset)
@@ -117,6 +127,7 @@ public class EntitySittableBlock extends Entity
         this.blockPosZ = (int) z;
         setPostionConsideringRotation(x + 0.5D, y + y0ffset, z + 0.5D, rotation, rotationOffset);
         this.dataManager.set(SHOULD_SIT, Boolean.valueOf(true));
+        this.dataManager.set(BLOCK_POS, new BlockPos(blockPosX,blockPosY,blockPosZ));
     }
 
     public void setPostionConsideringRotation(double x, double y, double z, int rotation, double rotationOffset)
@@ -157,7 +168,11 @@ public class EntitySittableBlock extends Entity
     }
 
     @Override
-    protected void entityInit() {this.dataManager.register(SHOULD_SIT, Boolean.valueOf(true));}
+    protected void entityInit()
+    {
+        this.dataManager.register(SHOULD_SIT, Boolean.valueOf(true));
+        this.dataManager.register(BLOCK_POS, new BlockPos(blockPosX, blockPosY, blockPosZ));
+    }
 
     @Override
     public void readEntityFromNBT(NBTTagCompound nbttagcompound) {}

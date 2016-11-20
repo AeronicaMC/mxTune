@@ -25,7 +25,9 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
+import net.aeronica.mods.mxtune.util.PlacedInstrumentUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
@@ -34,6 +36,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -59,7 +62,6 @@ public class GuiJamOverlay extends Gui
         this.fontRenderer = this.mc.fontRendererObj;
     }
 
-    private static ItemStack lastItemStack = null;
     private static int hudTimer = 0;
     private static int count = 0;
     private static final int HUDTIME = 10; /* seconds */
@@ -89,6 +91,10 @@ public class GuiJamOverlay extends Gui
     private static HudData hudData = null;
     private static int lastWidth = 0;
     private static int lastHeight = 0;
+    private static boolean placed = false;
+    private static ItemStack lastItemStack = null;
+    private static ItemStack sheetMusic;
+    private static ItemStack itemStack;
     
     @SuppressWarnings("static-access")
     @SubscribeEvent(priority = EventPriority.NORMAL)
@@ -102,20 +108,31 @@ public class GuiJamOverlay extends Gui
  
         int width = event.getResolution().getScaledWidth();
         int height = event.getResolution().getScaledHeight() - HOTBAR_CLEARANCE;
-        if (inGuiHudAdjust() || hudData == null || lastWidth != width || lastHeight != height)
-        {
-            hudData = HudDataFactory.calcHudPositions((inGuiHudAdjust() ? MusicOptionsUtil.getAdjustPositionHud() : MusicOptionsUtil.getPositionHUD(player)), width, height);
-            lastWidth = width; lastHeight = height;
-        }
+
+        hudData = HudDataFactory.calcHudPositions((inGuiHudAdjust() ? MusicOptionsUtil.getAdjustPositionHud() : MusicOptionsUtil.getPositionHUD(player)), width, height);
          
         this.mc.renderEngine.bindTexture(textureLocation);
-        ItemStack currentItemStack = player.getHeldItemMainhand();
         
-        if (inGuiHudAdjust() || ((currentItemStack != null) && (currentItemStack.getItem() instanceof IInstrument)))
+        
+        if(PlacedInstrumentUtil.isRiding(player))
         {
-            if (lastItemStack==null || !currentItemStack.equals(this.lastItemStack)) {hudTimerReset(); lastItemStack = currentItemStack;}
-            if (canRenderHud(player)) this.renderHud(hudData, player);
-        } else lastItemStack = currentItemStack;
+            BlockPos pos = PlacedInstrumentUtil.getRiddenBlock(player);
+            sheetMusic = SheetMusicUtil.getSheetMusic(pos, player, true);
+            if (!placed) hudTimerReset();
+            placed = true;
+        }
+        else 
+        {
+            itemStack = player.getHeldItemMainhand();
+            sheetMusic = SheetMusicUtil.getSheetMusic(itemStack);
+            placed = false;
+        }
+        
+        if (inGuiHudAdjust() || ((itemStack != null) && ((itemStack.getItem() instanceof IInstrument)) || placed))
+        {
+            if (lastItemStack==null || (itemStack != null && !itemStack.equals(this.lastItemStack))) {hudTimerReset(); lastItemStack = itemStack;}
+            if (canRenderHud(player)) this.renderHud(hudData, player, sheetMusic);
+        } else lastItemStack = itemStack;
     }
 
     private void drawGroup(EntityPlayer player, HudData hd, int maxWidth, int maxHeight)
@@ -193,7 +210,7 @@ public class GuiJamOverlay extends Gui
     {
         String result = TextFormatting.YELLOW + "(empty)";
         if (stackIn == null) return result;
-        String sheetMusicTitle = this.getMusicTitleRaw(stackIn);
+        String sheetMusicTitle = getMusicTitleRaw(stackIn);
         /** Display the title of the contained music book. */
         if (!sheetMusicTitle.isEmpty())
         {
@@ -202,9 +219,8 @@ public class GuiJamOverlay extends Gui
         return result;
     }
     
-    private String getMusicTitleRaw(ItemStack stackIn)
+    public static String getMusicTitleRaw(ItemStack sheetMusic)
     {
-        ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(stackIn);
         if (sheetMusic != null)
         {
             NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
@@ -242,32 +258,31 @@ public class GuiJamOverlay extends Gui
     private static final int STAT_ICON_BASE_V_OFFSET = 165;
     private static final int STAT_ICONS_PER_ROW = 8;
 
-    private void renderHud(HudData hd, EntityPlayer playerIn)
+    private void renderHud(HudData hd, EntityPlayer playerIn, ItemStack sheetMusic)
     {
         int alphaBack = 128;
         int alphaFore = 192;
-        int maxWidth = 255;
-        int maxHeight = 127;
+        int maxWidth = 256;
+        int maxHeight = 128;
         float hudScale = inGuiHudAdjust() ? MusicOptionsUtil.getAdjustSizeHud() : MusicOptionsUtil.getSizeHud(playerIn);
         int top = hd.top(maxHeight);
         int left = hd.left(maxWidth);
         int bottom = hd.bottom(maxHeight);
         int right = hd.right(maxWidth);
         
-        ItemStack is = playerIn.getHeldItemMainhand();
-        String musicTitle = getMusicTitle(is);
+        String musicTitle = getMusicTitle(sheetMusic);
         int musicTitleWidth = fontRenderer.getStringWidth(marquee(musicTitle, TITLE_DISPLAY_WIDTH));
         int musicTitlePosC = hd.quadX(maxWidth, 30, 0, musicTitleWidth);//left + (maxWidth/2 - musicTitleWidth/2);
         int musicTitlePosY = hd.quadY(maxHeight, 10, 0, 10);
         
         GL11.glPushMatrix();
         GL11.glTranslatef(hd.getPosX(), hd.getPosY(), 0F);
-        GL11.glScalef(hudScale, hudScale, hudScale);
+        //GL11.glScalef(hudScale, hudScale, hudScale);
 //        drawRect(left+4, top+4, right, bottom, 0x00000000 + (alphaBack << 24));
 //        drawRect(left, top, right-4, bottom-4, 0xA0A0A0 + (alphaBack << 24));
         
-        int iconX = hd.quadX(maxWidth, 0, 6, 18);
-        int iconY = hd.quadY(maxHeight, 0, 6, 18);
+        int iconX = hd.quadX(maxWidth, 0, 0, 18);
+        int iconY = hd.quadY(maxHeight, 0, 0, 18);
         int iconIndex = GROUPS.getIndex(playerIn.getEntityId());
         
         drawTexturedModalRect(iconX, iconY, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
