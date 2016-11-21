@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
-import com.ibm.icu.impl.Assert;
 
 import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.config.ModConfig;
@@ -155,8 +154,7 @@ public class PlayManager
     private static void resetGroupsPlayID(Integer membersID)
     {
         GroupManager.Group g = GroupManager.getMembersGroup(membersID);
-        Assert.assrt("*** PlayManager#resetGroupsPlayID(Integer memberID): " + membersID + " is not a group member ***", g!=null);
-        g.playID = null;
+        if (g!=null) g.playID = null;
     }
     
     /**
@@ -169,14 +167,7 @@ public class PlayManager
     private static Integer getGroupsPlayID(Integer membersID)
     {
         GroupManager.Group g = GroupManager.getMembersGroup(membersID);
-        Assert.assrt("*** PlayManager#getGroupsPlayID(Integer memberID): " + membersID + " is not a group member ***", g!=null);
-        if (g.playID == null)
-        {
-            return g.playID = getNextPlayID();
-        } else
-        {
-            return g.playID;
-        }
+        return (g!=null) ? ((g.playID == null) ? g.playID = getNextPlayID() : g.playID) : null;
     }
     
     public static boolean isPlayerPlaying(EntityPlayer playerIn)
