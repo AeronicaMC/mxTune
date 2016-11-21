@@ -66,14 +66,14 @@ public class PlayManager
         playID = 1;
     }
     
+    private static Map<Integer, String> getMapMembersMML() {return membersMML;}
+    private static HashMap<Integer, Integer> getHashMapMembersPlayID() {return membersPlayID;}
+    private static Set<Integer> getSetActivePlayIDs() {return activePlayIDs;}
+    private static HashMap<Integer, String> getHashMapMembersQueuedStatus() {return membersQueuedStatus;}
+
     private static Integer getNextPlayID() {return (playID == Integer.MAX_VALUE) ? playID=1 : playID++;}
-
-    private static void setPlaying(Integer playerID) {membersQueuedStatus.put(playerID, GROUPS.PLAYING.name());}
-
-    private static void setQueued(Integer playerID) {membersQueuedStatus.put(playerID, GROUPS.QUEUED.name());}
-    
-    @SuppressWarnings("unused")
-    private static void setDone(Integer playerID) {if (membersQueuedStatus.containsKey(membersQueuedStatus)) membersQueuedStatus.remove(playerID);}
+    private static void setPlaying(Integer playerID) {getHashMapMembersQueuedStatus().put(playerID, GROUPS.PLAYING.name());}
+    private static void setQueued(Integer playerID) {getHashMapMembersQueuedStatus().put(playerID, GROUPS.QUEUED.name());}
 
     /**
      * 
@@ -119,7 +119,7 @@ public class PlayManager
         Integer playID = getNextPlayID();
         queue(playID, playerID, mml);
         String musicText = getMML(playID);
-        activePlayIDs.add(playID);
+        getSetActivePlayIDs().add(playID);
         syncStatus();
         PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playID, musicText);
         PacketDispatcher.sendToAllAround(packetPlaySolo, playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, ModConfig.getListenerRange());
@@ -137,7 +137,7 @@ public class PlayManager
         {
             String musicText = getMML(groupsPlayID);
             Vec3d pos = getMedianPos(groupsPlayID);
-            activePlayIDs.add(groupsPlayID);
+            getSetActivePlayIDs().add(groupsPlayID);
             syncStatus();
             resetGroupsPlayID(playerID);
             PlayJamMessage playJamMessage = new PlayJamMessage(playerID, groupsPlayID, musicText);
@@ -182,24 +182,24 @@ public class PlayManager
     public static boolean isPlayerPlaying(EntityPlayer playerIn)
     {
         Integer entityID = playerIn.getEntityId();
-        return (membersPlayID != null && !membersPlayID.isEmpty()) ? membersPlayID.containsKey(entityID) : false;
+        return (getHashMapMembersPlayID() != null && !getHashMapMembersPlayID().isEmpty()) ? getHashMapMembersPlayID().containsKey(entityID) : false;
     }
     
-    public static boolean isActivePlayID(Integer playID) { return getActivePlayIDs() != null ? getActivePlayIDs().contains(playID) : false; }
+    public static boolean isActivePlayID(Integer playID) { return getSetActivePlayIDs() != null ? getSetActivePlayIDs().contains(playID) : false; }
     
     public static boolean hasPlayID(Integer playID)
     {
-        return (membersPlayID != null && !membersPlayID.isEmpty()) ? membersPlayID.containsValue(playID) : false;
+        return (getHashMapMembersPlayID() != null && !getHashMapMembersPlayID().isEmpty()) ? getHashMapMembersPlayID().containsValue(playID) : false;
     }
     
     public static Set<Integer> getMembersByPlayID(Integer playID) 
     {
         Set<Integer> members = Sets.newHashSet();
-        if (membersPlayID != null)
+        if (getHashMapMembersPlayID() != null)
         {
-            for(Integer someMember: membersPlayID.keySet())
+            for(Integer someMember: getHashMapMembersPlayID().keySet())
             {
-                if(membersPlayID.get(someMember).equals(playID))
+                if(getHashMapMembersPlayID().get(someMember).equals(playID))
                 {
                     members.add(someMember);
                 }
@@ -207,28 +207,26 @@ public class PlayManager
         }
         return members;
     }
-    
-    private static Set<Integer> getActivePlayIDs() {return activePlayIDs;}
-    
+        
     public static void stopPlayID(Integer playID)
     {
         Set<Integer> memberSet = getMembersByPlayID(playID);
         for(Integer member: memberSet)
         {
-            if (membersPlayID != null && membersPlayID.containsKey(member))
+            if (getHashMapMembersPlayID() != null && getHashMapMembersPlayID().containsKey(member))
             {
-                membersPlayID.remove(member, playID);
+                getHashMapMembersPlayID().remove(member, playID);
             }
-            if (membersQueuedStatus != null && membersQueuedStatus.containsKey(member))
+            if (getHashMapMembersQueuedStatus() != null && getHashMapMembersQueuedStatus().containsKey(member))
             {
-                membersQueuedStatus.remove(member);
+                getHashMapMembersQueuedStatus().remove(member);
             }
         }
         dequeuePlayID(playID);
         syncStatus();        
     }
     
-    private static void dequeuePlayID(Integer playID) {if (activePlayIDs != null) activePlayIDs.remove(playID);}
+    private static void dequeuePlayID(Integer playID) {if (getSetActivePlayIDs() != null) getSetActivePlayIDs().remove(playID);}
     
     private static int getPatch(BlockPos pos, EntityPlayer playerIn, boolean isPlaced)
     {
@@ -250,19 +248,19 @@ public class PlayManager
     private static void syncStatus()
     {
         /** server side */
-        GROUPS.setClientPlayStatuses(GROUPS.serializeIntStrMap(membersQueuedStatus));
-        GROUPS.setPlayIDMembers(GROUPS.serializeIntIntMap(membersPlayID));
-        GROUPS.setActivePlayIDs(GROUPS.serializeIntegerSet(activePlayIDs));
+        GROUPS.setClientPlayStatuses(GROUPS.serializeIntStrMap(getHashMapMembersQueuedStatus()));
+        GROUPS.setPlayIDMembers(GROUPS.serializeIntIntMap(getHashMapMembersPlayID()));
+        GROUPS.setActivePlayIDs(GROUPS.serializeIntegerSet(getSetActivePlayIDs()));
         /** client side */
-        PacketDispatcher.sendToAll(new SyncStatusMessage(GROUPS.serializeIntStrMap(membersQueuedStatus), GROUPS.serializeIntIntMap(membersPlayID), GROUPS.serializeIntegerSet(activePlayIDs)));
+        PacketDispatcher.sendToAll(new SyncStatusMessage(GROUPS.serializeIntStrMap(getHashMapMembersQueuedStatus()), GROUPS.serializeIntIntMap(getHashMapMembersPlayID()), GROUPS.serializeIntegerSet(getSetActivePlayIDs())));
     }
 
     private static void queue(Integer playID, Integer memberID, String mml)
     {
         try
         {
-            membersMML.put(memberID, mml);
-            membersPlayID.put(memberID, playID);
+            getMapMembersMML().put(memberID, mml);
+            getHashMapMembersPlayID().put(memberID, playID);
             setQueued(memberID);
         } catch (Exception e)
         {
@@ -282,16 +280,16 @@ public class PlayManager
         StringBuilder buildMML = new StringBuilder("");
         try
         {
-            Set<Integer> keys = membersPlayID.keySet();
+            Set<Integer> keys = getHashMapMembersPlayID().keySet();
             Iterator<Integer> it = keys.iterator();
             while (it.hasNext())
             {
                 Integer member = (Integer) it.next();
-                Integer memberPlayID = membersPlayID.get(member);
+                Integer memberPlayID = getHashMapMembersPlayID().get(member);
                 if (memberPlayID.equals(playID))
                 {
-                    buildMML.append(member).append("=").append(membersMML.get(member)).append("|");
-                    membersMML.remove(member);
+                    buildMML.append(member).append("=").append(getMapMembersMML().get(member)).append("|");
+                    getMapMembersMML().remove(member);
                     setPlaying(member);
                 }
             }
@@ -337,10 +335,10 @@ public class PlayManager
      */
     public static void testStopDistance(double stopDistance)
     {
-        if (getActivePlayIDs() != null && !getActivePlayIDs().isEmpty())
+        if (getSetActivePlayIDs() != null && !getSetActivePlayIDs().isEmpty())
         {
             double distance = 0;
-            for(Integer playID: getActivePlayIDs())
+            for(Integer playID: getSetActivePlayIDs())
             {
                 if (getMembersByPlayID(playID) != null && !getMembersByPlayID(playID).isEmpty())
                 {
@@ -378,21 +376,21 @@ public class PlayManager
      */
     public static void dequeueMember(Integer memberID)
     {
-        if (activePlayIDs != null && (membersPlayID != null && !membersPlayID.isEmpty() && membersPlayID.containsKey(memberID)))
+        if (getSetActivePlayIDs() != null && (getHashMapMembersPlayID() != null && !getHashMapMembersPlayID().isEmpty() && getHashMapMembersPlayID().containsKey(memberID)))
         {
-            activePlayIDs.remove(membersPlayID.get(memberID));
+            getSetActivePlayIDs().remove(getHashMapMembersPlayID().get(memberID));
         }
-        if (membersMML != null && !membersMML.isEmpty() && membersMML.containsKey(memberID))
+        if (getMapMembersMML() != null && !getMapMembersMML().isEmpty() && getMapMembersMML().containsKey(memberID))
         {
-            membersMML.remove(memberID);
+            getMapMembersMML().remove(memberID);
         }
-        if (membersPlayID != null && !membersPlayID.isEmpty() && membersPlayID.containsKey(memberID))
+        if (getHashMapMembersPlayID() != null && !getHashMapMembersPlayID().isEmpty() && getHashMapMembersPlayID().containsKey(memberID))
         {
-            membersPlayID.remove(memberID);
+            getHashMapMembersPlayID().remove(memberID);
         }
-        if (membersQueuedStatus != null && !membersQueuedStatus.isEmpty() && membersQueuedStatus.containsKey(memberID))
+        if (getHashMapMembersQueuedStatus() != null && !getHashMapMembersQueuedStatus().isEmpty() && getHashMapMembersQueuedStatus().containsKey(memberID))
         {
-            membersQueuedStatus.remove(memberID);
+            getHashMapMembersQueuedStatus().remove(memberID);
             syncStatus();
         }
     }
