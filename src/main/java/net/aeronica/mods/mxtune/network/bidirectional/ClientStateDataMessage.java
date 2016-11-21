@@ -78,7 +78,7 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        ModLogger.debug("CLEventHandler#onWorld Side: " + side);
+        ModLogger.debug("ClientStateDataMessage#process Side: " + side);
         if (side.isClient())
         {
             handleClientSide(player);

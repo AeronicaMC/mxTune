@@ -25,6 +25,8 @@ import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.SoundCategory;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * ClientStateMonitor<p>
@@ -35,6 +37,7 @@ import net.minecraft.util.SoundCategory;
  * @author Paul Boese aka Aeronica
  *
  */
+@SideOnly(Side.CLIENT)
 public class ClientStateMonitor
 {
 
