@@ -17,17 +17,17 @@ public class ModLogger
         modLogger = LogManager.getLogger(MXTuneMain.MODID);
     }
 
-    public static void logInfo(String msg)
+    public static void info(String msg)
     {
         modLogger.log(Level.INFO, msg);
     }
 
-    public static void logWarning(String msg)
+    public static void warning(String msg)
     {
         modLogger.log(Level.WARN, msg);
     }
 
-    public static void logError(String msg)
+    public static void error(String msg)
     {
         modLogger.log(Level.ERROR, msg);
     }

@@ -741,7 +741,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         {
             if (sequencer != null && sequencer.isOpen()) sequencer.close();
             if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
-            ModLogger.logError("mmlPlay MIDI failure : " + e.getLocalizedMessage());
+            ModLogger.error("mmlPlay MIDI failure : " + e.getLocalizedMessage());
             e.printStackTrace();
             midiException = true;
         }

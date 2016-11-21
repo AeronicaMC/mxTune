@@ -117,7 +117,7 @@ public class MML2PCM
         Integer[] patches = new Integer[mmlTrans.getPatches().size()];
         mmlTrans.getPatches().toArray(patches);
         for (int patch: patches)
-            ModLogger.logInfo("  Patches: " + patch);
+            ModLogger.info("  Patches: " + patch);
         Midi2WavRenderer mw;
         try
         {

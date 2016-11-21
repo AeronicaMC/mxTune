@@ -22,7 +22,7 @@ import java.util.UUID;
 public class PlayerLists implements Serializable
 {
     /**
-     * 
+     * Serialized PlayerLists
      */
     private static final long serialVersionUID = -86044260522231311L;
     String playerName;

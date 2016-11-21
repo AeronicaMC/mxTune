@@ -87,8 +87,8 @@ public class GuiHudAdjust extends GuiScreen
             switch(button.id)
             {
             case 0: /* done   */
-                ModLogger.logInfo("done lastHudPos:    " + lastHudPos);
-                ModLogger.logInfo("done initialHudPos: " + initialHudPos);
+                ModLogger.info("done lastHudPos:    " + lastHudPos);
+                ModLogger.info("done initialHudPos: " + initialHudPos);
                 
                 PacketDispatcher.sendToServer(new HudOptionsMessage(lastHudPos, MusicOptionsUtil.isHudDisabled(playerIn), sld_sizeHud.getValue()/100));
                 MusicOptionsUtil.setAdjustPositionHud(lastHudPos);
@@ -96,8 +96,8 @@ public class GuiHudAdjust extends GuiScreen
                 mc.displayGuiScreen(new GuiMusicOptions(playerIn));  
                 break;
             case 1: /* cancel */
-                ModLogger.logInfo("canceled lastHudPos:    " + lastHudPos);
-                ModLogger.logInfo("canceled initialHudPos: " + initialHudPos);
+                ModLogger.info("canceled lastHudPos:    " + lastHudPos);
+                ModLogger.info("canceled initialHudPos: " + initialHudPos);
                 MusicOptionsUtil.setAdjustPositionHud(initialHudPos);
                 mc.displayGuiScreen(new GuiMusicOptions(playerIn));
                 break;

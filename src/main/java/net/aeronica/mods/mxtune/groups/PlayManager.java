@@ -70,9 +70,6 @@ public class PlayManager
     private static void setPlaying(Integer playerID) {membersQueuedStatus.put(playerID, GROUPS.PLAYING.name());}
 
     private static void setQueued(Integer playerID) {membersQueuedStatus.put(playerID, GROUPS.QUEUED.name());}
-    
-    @SuppressWarnings("unused")
-    private static void setDone(Integer playerID) {if (membersQueuedStatus.containsKey(membersQueuedStatus)) membersQueuedStatus.remove(playerID);}
 
     /**
      * 
@@ -176,7 +173,7 @@ public class PlayManager
         return (membersPlayID != null && !membersPlayID.isEmpty()) ? membersPlayID.containsKey(entityID) : false;
     }
     
-    public static boolean isActivePlayID(Integer playID) { return getActivePlayIDs() != null ? getActivePlayIDs().contains(playID) : false; }
+    public static boolean isActivePlayID(Integer playID) { return activePlayIDs != null ? activePlayIDs.contains(playID) : false; }
     
     public static boolean hasPlayID(Integer playID)
     {
@@ -198,8 +195,6 @@ public class PlayManager
         }
         return members;
     }
-    
-    private static Set<Integer> getActivePlayIDs() {return activePlayIDs;}
     
     public static void stopPlayID(Integer playID)
     {
@@ -328,10 +323,10 @@ public class PlayManager
      */
     public static void testStopDistance(double stopDistance)
     {
-        if (getActivePlayIDs() != null && !getActivePlayIDs().isEmpty())
+        if (activePlayIDs != null && !activePlayIDs.isEmpty())
         {
             double distance = 0;
-            for(Integer playID: getActivePlayIDs())
+            for(Integer playID: activePlayIDs)
             {
                 if (getMembersByPlayID(playID) != null && !getMembersByPlayID(playID).isEmpty())
                 {

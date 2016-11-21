@@ -114,28 +114,28 @@ public class MIDISystemUtil
                     soundBankAvailable = false;
                 else
                     soundBankAvailable = true;
-                ModLogger.logInfo("--- " + (soundBank.getName().isEmpty()? "*No Name*" : soundBank.getName() ) + " ---");
-                ModLogger.logInfo("Number of instruments: " + inst.length);
-                for (Instrument i: inst) ModLogger.logInfo("       " + i.getName());
+                ModLogger.info("--- " + (soundBank.getName().isEmpty()? "*No Name*" : soundBank.getName() ) + " ---");
+                ModLogger.info("Number of instruments: " + inst.length);
+                for (Instrument i: inst) ModLogger.info("       " + i.getName());
                 
             }
         }
         if (bestSynth != null && synthAvailable && soundBankAvailable)
         {
-            ModLogger.logInfo(bestSynthInfo.getName());
-            ModLogger.logInfo(bestSynthInfo.getDescription());
-            ModLogger.logInfo(bestSynthInfo.getVendor());
-            ModLogger.logInfo(bestSynthInfo.getVersion());
-            ModLogger.logInfo("MaxPolyphony: " + bestSynth.getMaxPolyphony() + ", MaxReceivers: " + ((bestSynth.getMaxReceivers() == -1) ? "Unlimited" : bestSynth.getMaxReceivers()));
-            ModLogger.logInfo("Synthsizer Available: ?         " + synthAvailable);
-            ModLogger.logInfo("Default Sound Bank Available: ? " + soundBankAvailable);
+            ModLogger.info(bestSynthInfo.getName());
+            ModLogger.info(bestSynthInfo.getDescription());
+            ModLogger.info(bestSynthInfo.getVendor());
+            ModLogger.info(bestSynthInfo.getVersion());
+            ModLogger.info("MaxPolyphony: " + bestSynth.getMaxPolyphony() + ", MaxReceivers: " + ((bestSynth.getMaxReceivers() == -1) ? "Unlimited" : bestSynth.getMaxReceivers()));
+            ModLogger.info("Synthsizer Available: ?         " + synthAvailable);
+            ModLogger.info("Default Sound Bank Available: ? " + soundBankAvailable);
             addStatus(new TextComponentString("[" + MXTuneMain.MODNAME + "] " + TextFormatting.GREEN +I18n.format("mxtune.chat.msu.midiAvailable")));
             midiAvailable = true;
         } else
         {
-            ModLogger.logError("WARNING - Default Synthesizer available? : " + synthAvailable);
-            ModLogger.logError("WARNING - Default Sound Bank available?  : " + soundBankAvailable);
-            ModLogger.logError("WARNING - MIDI System is missing resources! mxTune cannot function properly!");
+            ModLogger.error("WARNING - Default Synthesizer available? : " + synthAvailable);
+            ModLogger.error("WARNING - Default Sound Bank available?  : " + soundBankAvailable);
+            ModLogger.error("WARNING - MIDI System is missing resources! mxTune cannot function properly!");
             addStatus(new TextComponentString("[" + MXTuneMain.MODNAME + "] " + TextFormatting.RED +I18n.format("mxtune.chat.msu.midiNotAvailable")));
             addStatus(new TextComponentString("[" + MXTuneMain.MODNAME + "] " + TextFormatting.YELLOW +I18n.format("mxtune.chat.msu.suggestion.01")));
             addStatus(new TextComponentString("[" + MXTuneMain.MODNAME + "] " + TextFormatting.YELLOW +I18n.format("mxtune.chat.msu.suggestion.02")));

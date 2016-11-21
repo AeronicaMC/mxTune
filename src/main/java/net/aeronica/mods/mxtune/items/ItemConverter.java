@@ -77,7 +77,7 @@ public class ItemConverter extends ItemBase
             if (invChanged)
             {
                 playerIn.inventoryContainer.detectAndSendChanges();
-                ModLogger.logInfo("ItemConverter#onItemRightClick: " + countUpdated + " Sheet Music Item(s) Updated");
+                ModLogger.info("ItemConverter#onItemRightClick: " + countUpdated + " Sheet Music Item(s) Updated");
             }
         }
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);
@@ -91,7 +91,7 @@ public class ItemConverter extends ItemBase
             {
                 NBTTagCompound musicBookOld = contentsOld.getCompoundTag("MusicBook");
                 
-                ModLogger.logInfo("sheetMusicConversion: " + musicPaper.getDisplayName());
+                ModLogger.info("sheetMusicConversion: " + musicPaper.getDisplayName());
                 ItemStack sheetMusic = new ItemStack(StartupItems.item_sheetmusic);
                 sheetMusic.setStackDisplayName(musicPaper.getDisplayName());
                 
@@ -118,29 +118,29 @@ public class ItemConverter extends ItemBase
      */
     public void destroyIInventory(IItemHandler itemHandlerIn, ItemStack stackIn)
     {
-        ModLogger.logInfo("itemHandlerIn: " +  itemHandlerIn.getStackInSlot(0));
-        ModLogger.logInfo("stackIn:       " +  stackIn);
+        ModLogger.info("itemHandlerIn: " +  itemHandlerIn.getStackInSlot(0));
+        ModLogger.info("stackIn:       " +  stackIn);
         
         if (stackIn.hasTagCompound())
         {
             NBTTagList items = stackIn.getTagCompound().getTagList("ItemInventory", Constants.NBT.TAG_COMPOUND);
             if (items.tagCount() == 1)
             {
-                ModLogger.logInfo("stackIn Has ItemInventory: true");
+                ModLogger.info("stackIn Has ItemInventory: true");
                 NBTTagCompound item = (NBTTagCompound) items.getCompoundTagAt(0);
                 ItemStack sheetMusicOld = ItemStack.loadItemStackFromNBT(item);
                 NBTTagCompound contents = (NBTTagCompound) sheetMusicOld.getTagCompound().getTag("MusicBook");
                 if (contents != null)
                 {
                     /** This ItemStack has Music */
-                    ModLogger.logInfo("stackIn Has MusicBook/MML: " + contents.getTag("MML"));
+                    ModLogger.info("stackIn Has MusicBook/MML: " + contents.getTag("MML"));
                     /** Convert to new format and place it in CapItemInv slot */
                     ItemStack sheetMusicNew = this.sheetMusicConversion(sheetMusicOld);
                     itemHandlerIn.insertItem(0, sheetMusicNew, false);
                 }
             }
             /** Blow Away the old ItemInventory and tag */
-            ModLogger.logInfo("stackIn Delete OLD ItemInventory");
+            ModLogger.info("stackIn Delete OLD ItemInventory");
             stackIn.getTagCompound().removeTag("ItemInventory");
             if (stackIn.getTagCompound().hasNoTags())
                 stackIn.setTagCompound(null);
@@ -149,22 +149,22 @@ public class ItemConverter extends ItemBase
 
     public void convertIInventory(InventoryInstrument invInst, ItemStack stackIn)
     {
-        ModLogger.logInfo("InventoryInstrument: " +  invInst.getStackInSlot(0));
-        ModLogger.logInfo("stackIn:             " +  stackIn);
+        ModLogger.info("InventoryInstrument: " +  invInst.getStackInSlot(0));
+        ModLogger.info("stackIn:             " +  stackIn);
         
         if (stackIn.hasTagCompound())
         {
             NBTTagList items = stackIn.getTagCompound().getTagList("ItemInventory", Constants.NBT.TAG_COMPOUND);
             if (items.tagCount() == 1)
             {
-                ModLogger.logInfo("stackIn Has ItemInventory: true");
+                ModLogger.info("stackIn Has ItemInventory: true");
                 NBTTagCompound item = (NBTTagCompound) items.getCompoundTagAt(0);
                 ItemStack sheetMusicOld = ItemStack.loadItemStackFromNBT(item);
                 NBTTagCompound contents = (NBTTagCompound) sheetMusicOld.getTagCompound().getTag("MusicBook");
                 if (contents != null  && (sheetMusicOld.getItem() instanceof ItemMusicPaper))
                 {
                     /** This ItemStack has Music */
-                    ModLogger.logInfo("stackIn Has MusicBook/MML: " + contents.getTag("MML"));
+                    ModLogger.info("stackIn Has MusicBook/MML: " + contents.getTag("MML"));
                     /** Convert to new format and place it in CapItemInv slot */
                     ItemStack sheetMusicNew = this.sheetMusicConversion(sheetMusicOld);
                     invInst.setInventorySlotContents(0, sheetMusicNew);
@@ -176,8 +176,8 @@ public class ItemConverter extends ItemBase
 
     public void convertIItemStackHander(IItemHandler itemHandlerIn)
     {
-        ModLogger.logInfo("itemHandlerIn: " + itemHandlerIn);
-        ModLogger.logInfo("stackIn:       " + itemHandlerIn.getStackInSlot(0));
+        ModLogger.info("itemHandlerIn: " + itemHandlerIn);
+        ModLogger.info("stackIn:       " + itemHandlerIn.getStackInSlot(0));
 
         if (MXTuneMain.proxy.getEffectiveSide() == Side.CLIENT) return;
                 
@@ -188,7 +188,7 @@ public class ItemConverter extends ItemBase
             if (contents != null)
             {
                 /** This ItemStack has Music */
-                ModLogger.logInfo("stackIn Has MusicBook/MML: " + contents.getTag("MML"));
+                ModLogger.info("stackIn Has MusicBook/MML: " + contents.getTag("MML"));
                 /** Convert to new format and place it in CapItemInv slot */
                 ItemStack sheetMusicNew = this.sheetMusicConversion(sheetMusicOld);
                 itemHandlerIn.insertItem(0, sheetMusicNew, false);

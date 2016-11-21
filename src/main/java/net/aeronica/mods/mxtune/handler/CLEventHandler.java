@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.handler;
 
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.render.PlacardRenderer;
+import net.aeronica.mods.mxtune.status.ClientStateMonitor;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
@@ -56,6 +57,7 @@ public class CLEventHandler
     public void onPlayerLoggedInEvent(PlayerLoggedInEvent event)
     {
         MIDISystemUtil.getInstance().onPlayerLoggedInModStatus(event.player);
+        ClientStateMonitor.initialize();
     }
 
     @SubscribeEvent
