@@ -161,10 +161,15 @@ public class PlacedInstrumentUtil
         }
         return false;
     }
-    
+
+    /**
+     * The player is riding/using a placed instrument
+     * @param playerIn
+     * @return
+     */
     public static boolean isRiding(EntityPlayer playerIn)
     {
-        return (playerIn !=null && !playerIn.isDead && playerIn.isRiding() && playerIn.getRidingEntity() instanceof EntitySittableBlock);
+        return ((playerIn !=null) && !playerIn.isDead && playerIn.isRiding() && (playerIn.getRidingEntity() instanceof EntitySittableBlock));
     }
     
     public static BlockPos getRiddenBlock(EntityPlayer playerIn)

@@ -72,7 +72,7 @@ public class GuiJamOverlay extends Gui
         if (event.side == Side.CLIENT && event.phase == TickEvent.Phase.END)
         {
             /* once per second second */
-            if ((count++ % 20 == 0) && (hudTimer > 0)) hudTimer--;
+            if ((count++ % 20 == 0) && (hudTimer > 0)) {hudTimer--;}
             /* 4 times per second */
             if (count % 5 == 0) marqueePos++;
         }
@@ -82,7 +82,7 @@ public class GuiJamOverlay extends Gui
     {        
         if (inGuiHudAdjust())
             return true;
-        else return !MusicOptionsUtil.isHudDisabled(playerIn) && hudTimer > 0;
+        else return (!MusicOptionsUtil.isHudDisabled(playerIn) && (hudTimer > 0));
     }
     
     private boolean inGuiHudAdjust() {return (mc.currentScreen != null && mc.currentScreen instanceof GuiHudAdjust);}
@@ -90,10 +90,13 @@ public class GuiJamOverlay extends Gui
     private static HudData hudData = null;
     private static int lastWidth = 0;
     private static int lastHeight = 0;
-    private static boolean placed = false;
+    private static boolean riding;
     private static ItemStack lastItemStack = null;
     private static ItemStack sheetMusic;
     private static ItemStack itemStack;
+    
+    private static boolean isRidingFlag() {return riding;}
+    private static void setRidingFlag(boolean flag) {riding = flag;}
     
     @SuppressWarnings("static-access")
     @SubscribeEvent(priority = EventPriority.NORMAL)
@@ -120,19 +123,18 @@ public class GuiJamOverlay extends Gui
         {
             BlockPos pos = PlacedInstrumentUtil.getRiddenBlock(player);
             sheetMusic = SheetMusicUtil.getSheetMusic(pos, player, true);
-            if (!placed) hudTimerReset();
-            placed = true;
-        }
-        else 
+            if (isRidingFlag()==false) hudTimerReset();
+            setRidingFlag(true);
+        } else 
         {
             itemStack = player.getHeldItemMainhand();
             sheetMusic = SheetMusicUtil.getSheetMusic(itemStack);
-            placed = false;
+            setRidingFlag(false);
         }
         
-        if (inGuiHudAdjust() || ((itemStack != null) && ((itemStack.getItem() instanceof IInstrument) || placed)))
+        if (inGuiHudAdjust() || ((itemStack != null) && (itemStack.getItem() instanceof IInstrument)) || isRidingFlag())
         {
-            if (lastItemStack==null || (itemStack != null && !itemStack.equals(this.lastItemStack))) {hudTimerReset(); lastItemStack = itemStack;}
+            if ((lastItemStack==null || (itemStack != null && !itemStack.equals(this.lastItemStack))) && !isRidingFlag()) {hudTimerReset(); lastItemStack = itemStack;}
             if (canRenderHud(player)) this.renderHud(hudData, player, sheetMusic);
         } else lastItemStack = itemStack;
     }

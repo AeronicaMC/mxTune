@@ -5,7 +5,7 @@
 package net.aeronica.mods.mxtune.network;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.network.bidirectional.PlaySoundPacket;
+import net.aeronica.mods.mxtune.network.bidirectional.QueryPlayAbilityMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.SendKeyMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.StopPlayMessage;
 import net.aeronica.mods.mxtune.network.client.JoinGroupMessage;
@@ -93,9 +93,9 @@ public class PacketDispatcher
         // OpenGuiMessage.class, packetId++, Side.SERVER);
 
         /** Bidirectional packets: */
-        registerMessage(PlaySoundPacket.class);
         registerMessage(StopPlayMessage.class);
         registerMessage(SendKeyMessage.class);
+        registerMessage(QueryPlayAbilityMessage.class);
     }
 
     /**

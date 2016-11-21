@@ -29,6 +29,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.GROUPS;
+import net.aeronica.mods.mxtune.init.ModSounds;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.StopPlayMessage;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
@@ -84,22 +85,22 @@ public class ClientAudio
         return playIDQueue01.add(playID) && playIDQueue02.add(playID);
     }
     
-    public static int pollPlayIDQueue01()
+    public static Integer pollPlayIDQueue01()
     {
         return playIDQueue01.poll();
     }
     
-    public static int peekPlayIDQueue01()
+    public static Integer peekPlayIDQueue01()
     {
         return playIDQueue01.peek();
     }
 
-    public static int pollPlayIDQueue02()
+    public static Integer pollPlayIDQueue02()
     {
         return playIDQueue02.poll();
     }
     
-    public static int peekPlayIDQueue02()
+    public static Integer peekPlayIDQueue02()
     {
         return playIDQueue02.peek();
     }
@@ -184,6 +185,7 @@ public class ClientAudio
     
     public static void play(Integer playID, String musicText)
     {
+        if(isMxtuneVolumeOn() == false) return; // TODO: Needs A MUCH better option than this...
         addPlayIDQueue(playID);
         playIDAudioData.put(playID, new AudioData(playID, musicText, GROUPS.isClientPlaying(playID)));        
         executorService.execute(new ThreadedPlay(playID, musicText));
@@ -212,6 +214,11 @@ public class ClientAudio
             MML2PCM p = new MML2PCM();
             p.process(playID, musicText);
         }
+    }
+    
+    private static boolean isMxtuneVolumeOn()
+    {
+        return MXTuneMain.proxy.getMinecraft().gameSettings.getSoundLevel(ModSounds.SC_MXTUNE) > 0F;
     }
     
     @SubscribeEvent
