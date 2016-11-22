@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.aeronica.mods.mxtune.network.bidirectional;
+package net.aeronica.mods.mxtune.network.client;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -22,25 +22,22 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import net.aeronica.mods.mxtune.network.AbstractMessage;
-import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
+import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
+import net.aeronica.mods.mxtune.status.CSDChatStatus;
 import net.aeronica.mods.mxtune.status.ClientStateData;
-import net.aeronica.mods.mxtune.status.ServerCSDManager;
-import net.aeronica.mods.mxtune.util.MIDISystemUtil;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
-public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessage>
+public class SendCSDChatMessage extends AbstractClientMessage<SendCSDChatMessage>
 {
 
     private ClientStateData csd;
     private byte[] byteBuffer = null;
     
-    public ClientStateDataMessage() {}
+    public SendCSDChatMessage() {}
     
-    public ClientStateDataMessage(ClientStateData csd) { this.csd = csd;}
+    public SendCSDChatMessage(ClientStateData csd) {this.csd = csd;}
     
     @Override
     protected void read(PacketBuffer buffer) throws IOException
@@ -80,26 +77,7 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        ModLogger.debug("ClientStateDataMessage#process Side: " + side);
-        if (side.isClient())
-        {
-            handleClientSide(player);
-        } else
-        {
-            handleServerSide(player);
-        }
-    }
-
-    public void handleClientSide(EntityPlayer playerIn)
-    {
-        ClientCSDMonitor.collectAndSend();
-        MIDISystemUtil.getInstance().onPlayerLoggedInModStatus(playerIn);
-    }
-
-    public void handleServerSide(EntityPlayer playerIn)
-    {
-        ModLogger.info("ClientStateDataMessage csd: " + csd);
-        ServerCSDManager.updateState(playerIn, csd);
+        new CSDChatStatus(player, csd); 
     }
 
 }

@@ -26,6 +26,7 @@ import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.JoinGroupMessage;
 import net.aeronica.mods.mxtune.network.client.SyncGroupMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
+import net.aeronica.mods.mxtune.status.ServerCSDManager;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayer.SleepResult;
@@ -41,6 +42,7 @@ import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -476,6 +478,12 @@ public class GroupManager
             GroupManager.sync();
         }
     }
+    
+    @SubscribeEvent
+    public void onPlayerLoggedInEvent(PlayerLoggedInEvent event)
+    {
+        ServerCSDManager.queryClient(event.player);
+    } 
     
     @SubscribeEvent
     public void onPlayerLoggedOutEvent(PlayerLoggedOutEvent event)

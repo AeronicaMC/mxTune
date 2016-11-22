@@ -23,7 +23,9 @@ import net.aeronica.mods.mxtune.network.bidirectional.ClientStateDataMessage;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreenOptionsSounds;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.SoundCategory;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -38,20 +40,23 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  *
  */
 @SideOnly(Side.CLIENT)
-public class ClientStateMonitor
+public class ClientCSDMonitor
 {
 
-    private static ClientStateData csd;
-    private static Minecraft mc;
+    private static ClientStateData csd = null;
+    private static Minecraft mc = null;
     private static GameSettings gs;
     
     /*
      * Collect initial state just after logging on to a server then post it to the server.
      */
-    public static void initialize()
+    public static void collectAndSend()
     {
-        mc = MXTuneMain.proxy.getMinecraft();
-        gs = mc.gameSettings;
+        if(mc==null)
+        {
+            mc = MXTuneMain.proxy.getMinecraft();
+            gs = mc.gameSettings;
+        }
         csd = snapShot();
         sendToServer();
         ModLogger.info("ClientStateMonitor#initialize: " + csd);
@@ -73,5 +78,48 @@ public class ClientStateMonitor
     {
         ClientStateDataMessage message = new ClientStateDataMessage(csd);
         PacketDispatcher.sendToServer(message);
+    }
+    
+    private static boolean inGui = false;
+    public static void detectAndSend()
+    {
+        if(mc==null)
+        {
+            mc = MXTuneMain.proxy.getMinecraft();
+            gs = mc.gameSettings;
+        }
+        if (mc.currentScreen instanceof GuiScreenOptionsSounds && !inGui)
+        {
+            ModLogger.info("Opened GuiScreenOptionsSounds");
+            inGui=true;
+        }
+        else if(!(mc.currentScreen instanceof GuiScreenOptionsSounds) && inGui)
+        {
+            ModLogger.info("Closed GuiScreenOptionsSounds");
+            inGui=false;
+            ClientStateData ss = snapShot();
+            if(csd!=null && !csd.equals(ss)) 
+            {
+                csd = ss;
+                sendToServer();
+                ModLogger.info("ClientStateData ***Changed*** Sending to server");
+            }
+        }
+    }
+    
+    public static boolean canMXTunesPlay()
+    {
+        return (csd !=null && csd.isGood());
+    }
+    
+    /**
+     * A Client side version to send the current status to the players chat.
+     * @param playerIn
+     */
+    public static void sendErrorViaChat(EntityPlayer playerIn)
+    {
+        if (csd==null)
+            snapShot();
+            new CSDChatStatus(playerIn, csd);   
     }
 }

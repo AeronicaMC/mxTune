@@ -29,9 +29,9 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.GROUPS;
-import net.aeronica.mods.mxtune.init.ModSounds;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.StopPlayMessage;
+import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.SoundSetupEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -185,11 +185,13 @@ public class ClientAudio
     
     public static void play(Integer playID, String musicText)
     {
-        if(isMxtuneVolumeOn() == false) return; // TODO: Needs A MUCH better option than this...
-        addPlayIDQueue(playID);
-        playIDAudioData.put(playID, new AudioData(playID, musicText, GROUPS.isClientPlaying(playID)));        
-        executorService.execute(new ThreadedPlay(playID, musicText));
-        MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MusicMoving());
+        if(ClientCSDMonitor.canMXTunesPlay())
+        {
+            addPlayIDQueue(playID);
+            playIDAudioData.put(playID, new AudioData(playID, musicText, GROUPS.isClientPlaying(playID)));        
+            executorService.execute(new ThreadedPlay(playID, musicText));
+            MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MusicMoving());
+        }
     }
     
     private static void stop(Integer playID)
@@ -214,11 +216,6 @@ public class ClientAudio
             MML2PCM p = new MML2PCM();
             p.process(playID, musicText);
         }
-    }
-    
-    private static boolean isMxtuneVolumeOn()
-    {
-        return MXTuneMain.proxy.getMinecraft().gameSettings.getSoundLevel(ModSounds.SC_MXTUNE) > 0F;
     }
     
     @SubscribeEvent

@@ -20,7 +20,6 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;

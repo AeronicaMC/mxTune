@@ -25,6 +25,7 @@ import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.init.StartupBlocks;
 import net.aeronica.mods.mxtune.inventory.IMusic;
+import net.aeronica.mods.mxtune.status.ServerCSDManager;
 import net.aeronica.mods.mxtune.util.PlacedInstrumentUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.EnumPushReaction;
@@ -134,7 +135,10 @@ public class BlockPiano extends BlockInstrument2H
                 }
             } else if (canPlay && !playerIn.isSneaking())
             {
-                ((EntitySittableBlock) playerIn.getRidingEntity()).setPlayID(PlayManager.playMusic(playerIn, pos, true));
+                if (ServerCSDManager.canMXTunesPlay(playerIn))
+                    ((EntitySittableBlock) playerIn.getRidingEntity()).setPlayID(PlayManager.playMusic(playerIn, pos, true));
+                else
+                    ServerCSDManager.sendErrorViaChat(playerIn);
             }
 
         } else

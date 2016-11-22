@@ -72,3 +72,6 @@ mxtune.chat.msu.suggestion.02=If using a large sound font, try a smaller one.
 mxtune.chat.gm.noJoinGroupWhenMuteAll=You can't join a group because [Mute All] is enabled.
 mxtune.chat.gm.noJoinGroupWhenPlayerIsMuted=You can't join %s's group because they are muted.
 mxtune.chat.gm.noSleepInJam=You can't sleep while in a JAM.
+
+mxtune.chat.musicAndSound.masterVolumeOff=The Master Volume is OFF! Can't Play!
+mxtune.chat.musicAndSound.mxTuneVolumeOff=The mxTune Volume is OFF! Can't Play!

@@ -25,6 +25,7 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
+import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.util.PlacedInstrumentUtil;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.client.Minecraft;
@@ -75,6 +76,8 @@ public class GuiJamOverlay extends Gui
             if ((count++ % 20 == 0) && (hudTimer > 0)) {hudTimer--;}
             /* 4 times per second */
             if (count % 5 == 0) marqueePos++;
+            /* once every 1/2 second */
+            if (count % 10 == 0) ClientCSDMonitor.detectAndSend();
         }
     }
     

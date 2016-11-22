@@ -18,16 +18,11 @@ package net.aeronica.mods.mxtune.handler;
 
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.render.PlacardRenderer;
-import net.aeronica.mods.mxtune.status.ClientStateMonitor;
-import net.aeronica.mods.mxtune.util.MIDISystemUtil;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.RenderLivingEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 
 public class CLEventHandler
 {
@@ -44,8 +39,10 @@ public class CLEventHandler
     {
         if (event.getEntity() instanceof EntityPlayer && !event.getEntity().isInvisible())
         {
-            if (GROUPS.getClientMembers() != null /* (mc.thePlayer.equals(player)) */
-                    && GROUPS.getClientMembers().containsKey(event.getEntity().getEntityId()) && !(mc.gameSettings.thirdPersonView == 0 && mc.thePlayer.equals(event.getEntity())))
+            if (
+                    GROUPS.getClientMembers() != null /* (mc.thePlayer.equals(player)) */
+                    && GROUPS.getClientMembers().containsKey(event.getEntity().getEntityId()) &&
+                    !(mc.gameSettings.thirdPersonView == 0 && mc.thePlayer.equals(event.getEntity())))
             {
                 placardRenderer.setPlacard(GROUPS.getIndex(event.getEntity().getEntityId()));
                 placardRenderer.doRender(event);
@@ -53,16 +50,4 @@ public class CLEventHandler
         }
     } 
 
-    @SubscribeEvent
-    public void onPlayerLoggedInEvent(PlayerLoggedInEvent event)
-    {
-        MIDISystemUtil.getInstance().onPlayerLoggedInModStatus(event.player);
-        ClientStateMonitor.initialize();
-    }
-
-    @SubscribeEvent
-    public void onWorldEventUnload(WorldEvent.Unload event)
-    {
-        ModLogger.debug("CLEventHandler#onWorldEventUnload");
-    }
 }
