@@ -32,6 +32,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -52,6 +53,7 @@ public class GuiJamOverlay extends Gui
     private Minecraft mc = null;
     private FontRenderer fontRenderer = null;
     private static final ResourceLocation textureLocation = new ResourceLocation(MXTuneMain.prependModID("textures/gui/manage_group.png"));
+    private StatusWidget statusWidget;
     
     private static class GuiJamOverlayHolder {private static final GuiJamOverlay INSTANCE = new GuiJamOverlay();}
     public static GuiJamOverlay getInstance() {return GuiJamOverlayHolder.INSTANCE;}
@@ -60,6 +62,7 @@ public class GuiJamOverlay extends Gui
     {
         this.mc = Minecraft.getMinecraft();
         this.fontRenderer = this.mc.fontRendererObj;
+        statusWidget = new StatusWidget();
     }
 
     private static int hudTimer = 0;
@@ -118,10 +121,7 @@ public class GuiJamOverlay extends Gui
             hudData = HudDataFactory.calcHudPositions((inGuiHudAdjust() ? MusicOptionsUtil.getAdjustPositionHud() : MusicOptionsUtil.getPositionHUD(player)), width, height);
             lastWidth = width; lastHeight = height;
         }
-         
-        this.mc.renderEngine.bindTexture(textureLocation);
-        
-        
+                
         if(PlacedInstrumentUtil.isRiding(player))
         {
             BlockPos pos = PlacedInstrumentUtil.getRiddenBlock(player);
@@ -144,8 +144,8 @@ public class GuiJamOverlay extends Gui
 
     private void drawGroup(EntityPlayer player, HudData hd, int maxWidth, int maxHeight)
     {
-        int posX = 6;
-        int posY = 30;
+        int posX = 0;
+        int posY = 90;
         Integer groupID;
         Integer memberID;
         String leaderName;
@@ -161,8 +161,8 @@ public class GuiJamOverlay extends Gui
                 /** Always put the leader at the HEAD of the list */
                 leaderName = player.worldObj.getEntityByID(GROUPS.getLeaderOfGroup(groupID)).getDisplayName().getUnformattedText();
                 int leaderNameWidth = fontRenderer.getStringWidth(leaderName);
-                int qX = hd.quadX(maxWidth, posX, 0, leaderNameWidth);
-                int qY = hd.quadY(maxHeight, posY, 0, 10);
+                int qX = hd.quadX(maxWidth, posX, 4, leaderNameWidth);
+                int qY = hd.quadY(maxHeight, posY, 4, 10);
                 fontRenderer.drawStringWithShadow(TextFormatting.YELLOW + leaderName, qX, qY, 0xFFFF00);
                 posY += 10;
                 /** display the remaining members taking care to not print the leader a 2nd time. */
@@ -259,41 +259,28 @@ public class GuiJamOverlay extends Gui
             return sb.substring(0, maxChars);
         }
     }
-    
-    private static final int STAT_ICON_SIZE = 18;
-    private static final int STAT_ICON_BASE_U_OFFSET = 0;
-    private static final int STAT_ICON_BASE_V_OFFSET = 165;
-    private static final int STAT_ICONS_PER_ROW = 8;
 
     private void renderHud(HudData hd, EntityPlayer playerIn, ItemStack sheetMusic)
     {
-        int alphaBack = 128;
-        int alphaFore = 192;
         int maxWidth = 256;
         int maxHeight = 128;
         float hudScale = inGuiHudAdjust() ? MusicOptionsUtil.getAdjustSizeHud() : MusicOptionsUtil.getSizeHud(playerIn);
-        int top = hd.top(maxHeight);
-        int left = hd.left(maxWidth);
-        int bottom = hd.bottom(maxHeight);
-        int right = hd.right(maxWidth);
         
         String musicTitle = getMusicTitle(sheetMusic);
         int musicTitleWidth = fontRenderer.getStringWidth(marquee(musicTitle, TITLE_DISPLAY_WIDTH));
-        int musicTitlePosC = hd.quadX(maxWidth, 30, 0, musicTitleWidth);//left + (maxWidth/2 - musicTitleWidth/2);
-        int musicTitlePosY = hd.quadY(maxHeight, 10, 0, 10);
+        int musicTitlePosC = hd.quadX(maxWidth, 0, 4, musicTitleWidth);//left + (maxWidth/2 - musicTitleWidth/2);
+        int musicTitlePosY = hd.quadY(maxHeight, 80, 4, 10);
         
         GL11.glPushMatrix();
         GL11.glTranslatef(hd.getPosX(), hd.getPosY(), 0F);
-        //GL11.glScalef(hudScale, hudScale, hudScale);
-//        drawRect(left+4, top+4, right, bottom, 0x00000000 + (alphaBack << 24));
-//        drawRect(left, top, right-4, bottom-4, 0xA0A0A0 + (alphaBack << 24));
-        
-        int iconX = hd.quadX(maxWidth, 0, 0, 18);
-        int iconY = hd.quadY(maxHeight, 0, 0, 18);
+        GL11.glScalef(hudScale, hudScale, hudScale);
+
+        int iconX = hd.quadX(maxWidth, 0, 2, statusWidget.WIDGET_WIDTH);
+        int iconY = hd.quadY(maxHeight, 0, 2, statusWidget.WIDGET_HEIGHT);
         int iconIndex = GROUPS.getIndex(playerIn.getEntityId());
-        
-        drawTexturedModalRect(iconX, iconY, STAT_ICON_BASE_U_OFFSET + iconIndex % STAT_ICONS_PER_ROW * STAT_ICON_SIZE, STAT_ICON_BASE_V_OFFSET + iconIndex / STAT_ICONS_PER_ROW * STAT_ICON_SIZE,
-                STAT_ICON_SIZE, STAT_ICON_SIZE);
+
+        setTexture(statusWidget.getTexture());
+        statusWidget.draw(playerIn, iconX, iconY);
         fontRenderer.drawStringWithShadow(marquee(musicTitle, TITLE_DISPLAY_WIDTH), musicTitlePosC, musicTitlePosY, 0x00FF00);
         
         drawGroup(playerIn, hd, maxWidth, maxHeight);
@@ -301,4 +288,5 @@ public class GuiJamOverlay extends Gui
         GL11.glPopMatrix();
     }
     
+    public void setTexture(ResourceLocation texture) { this.mc.renderEngine.bindTexture(texture);}
 }

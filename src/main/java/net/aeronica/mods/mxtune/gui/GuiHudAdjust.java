@@ -63,13 +63,13 @@ public class GuiHudAdjust extends GuiScreen
         this.buttonList.clear();
         lastHudPos = initialHudPos = MusicOptionsUtil.getPositionHUD(playerIn);
         MusicOptionsUtil.setAdjustPositionHud(initialHudPos);
-        initialHudSize = MusicOptionsUtil.getSizeHud(playerIn)*100;
+        initialHudSize = (MusicOptionsUtil.getSizeHud(playerIn)*100) < 50F ? 50F : MusicOptionsUtil.getSizeHud(playerIn)*100;
         
         int y = (height) / 2;
         int buttonWidth = 100;
         y = height/2;
         int x = (width / 2) - (buttonWidth/2);
-        sld_sizeHud = new GuiSliderMX(2, x, y, buttonWidth, 20,  I18n.format("mxtune.gui.hudAdjust.size"), initialHudSize, 50F, 150F, 3.3333333333F);
+        sld_sizeHud = new GuiSliderMX(2, x, y, buttonWidth, 20,  I18n.format("mxtune.gui.hudAdjust.size"), initialHudSize, 50F, 100F, 1F);
         btn_done =   new GuiButtonExt(0, x, y+=20, buttonWidth, 20, I18n.format("gui.done"));
         btn_cancel = new GuiButtonExt(1, x, y+=20, buttonWidth, 20, I18n.format("gui.cancel"));
         
@@ -191,7 +191,6 @@ public class GuiHudAdjust extends GuiScreen
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
         MusicOptionsUtil.setAdjustPositionHud(lastHudPos);
-        System.out.println("mouseClicked positionHud: " + lastHudPos);
         super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 

@@ -22,6 +22,10 @@ import java.util.Set;
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 
@@ -36,24 +40,23 @@ public class StatusWidget extends Gui
     public StatusWidget() {}
     
     private static final ResourceLocation textureStatusWidgets = new ResourceLocation(MXTuneMain.prependModID("textures/gui/status_widgets.png"));
-    public final int WIDGET_WIDTH = 48;
-    public final int WIDGET_HEIGHT = 33;
-    private final int[][] notePosMembers = { {25,0},{25,8},{25,16},{25,24}, {33,4},{33,12},{33,20} };
+    public final int WIDGET_WIDTH = 112;
+    public final int WIDGET_HEIGHT = 80;
     
     public ResourceLocation getTexture() {return textureStatusWidgets;}
         
     public void draw(EntityPlayer player, int posX, int posY)
     {
+        int[][] notePosMembers = { {50,4},{50,20},{50,36},{50,52}, {68,12},{68,28},{68,44}, {68,60} };
+
         int left = posX;
         int top = posY;
         int right = posX + WIDGET_WIDTH;
         int bottom = posY + WIDGET_HEIGHT;
-        /* translucent background */
-        drawRect(left, top, right, bottom, 0xA0A0A0 + (128 << 24));
         /* staff */
         drawTexturedModalRect(left, top, 0, 0, WIDGET_WIDTH, WIDGET_HEIGHT);
         /* alto clef */
-        drawTexturedModalRect(left+4, top, 0, 48, 32, 32);
+//        drawTexturedModalRect(left+4, top, 0, 48, 32, 32);
 
         Integer groupID;
         Integer memberID;
@@ -62,28 +65,73 @@ public class StatusWidget extends Gui
         if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
         {
             groupID = GROUPS.getMembersGroupID(player.getEntityId());
-            
+            int i = 0;
             /** Only draw if player is a member of a group */
             if (groupID != null)
             {
-                // int i=0;
                 Set<Integer> set = GROUPS.getClientMembers().keySet();
-                //for (Iterator<Integer> im = set.iterator(); im.hasNext();)
-                for (int i=0; i<7; i++)
+                for (Iterator<Integer> im = set.iterator(); im.hasNext();)
                 {
-                    //memberID = im.next();
-                    int x = left + notePosMembers[i][0];
-                    int y = top + notePosMembers[i][1]; 
-                    drawTexturedModalRect(x, y, 0, 40, 8, 8);
+                    memberID = im.next();
+                    if (i<notePosMembers.length)
+                    {
+                        int x = left + notePosMembers[i][0];
+                        int y = top + notePosMembers[i][1]; 
+                        drawTexturedModalRect(x, y, 0, 104, 24, 16);
+                    }
                 }
             }
             else
             {
-                /* draw quarter note/rest for the solo player */
+                /* draw whole note/rest for the solo player */
+                int x = left + notePosMembers[0][0];
+                int y = top + notePosMembers[0][1]; 
+                drawTexturedModalRect(x, y, 0, 104, 24, 16);
             }
         }
 
     }
+
+    /**
+     * Copied from the vanilla Gui class, but removed the GlStateManager blend enable/disable method calls.
+     * @param left
+     * @param top
+     * @param right
+     * @param bottom
+     * @param color
+     */
+    public static void drawRect(int left, int top, int right, int bottom, int color)
+    {
+        if (left < right)
+        {
+            int i = left;
+            left = right;
+            right = i;
+        }
+
+        if (top < bottom)
+        {
+            int j = top;
+            top = bottom;
+            bottom = j;
+        }
+
+        float f3 = (float)(color >> 24 & 255) / 255.0F;
+        float f = (float)(color >> 16 & 255) / 255.0F;
+        float f1 = (float)(color >> 8 & 255) / 255.0F;
+        float f2 = (float)(color & 255) / 255.0F;
+        Tessellator tessellator = Tessellator.getInstance();
+        VertexBuffer vertexbuffer = tessellator.getBuffer();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        GlStateManager.color(f, f1, f2, f3);
+        vertexbuffer.begin(7, DefaultVertexFormats.POSITION);
+        vertexbuffer.pos((double)left, (double)bottom, 0.0D).endVertex();
+        vertexbuffer.pos((double)right, (double)bottom, 0.0D).endVertex();
+        vertexbuffer.pos((double)right, (double)top, 0.0D).endVertex();
+        vertexbuffer.pos((double)left, (double)top, 0.0D).endVertex();
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+    }
     
-       
 }

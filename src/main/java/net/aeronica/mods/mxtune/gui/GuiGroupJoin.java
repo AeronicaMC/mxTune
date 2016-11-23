@@ -42,7 +42,7 @@ public class GuiGroupJoin extends GuiScreen
     private Minecraft mc;
     private FontRenderer fontRenderer = null;
 
-    private static final ResourceLocation score_entryTexture = new ResourceLocation(MXTuneMain.prependModID("textures/gui/manage_group.png"));
+    private static final ResourceLocation guiTexture = new ResourceLocation(MXTuneMain.prependModID("textures/gui/manage_group.png"));
 
     /** The X size of the group window in pixels. */
     protected int xSize = 239;
@@ -178,7 +178,7 @@ public class GuiGroupJoin extends GuiScreen
     protected void drawGuiBackground()
     {
         GL11.glColor4f(1F, 1F, 1F, 1F);
-        mc.renderEngine.bindTexture(score_entryTexture);
+        mc.renderEngine.bindTexture(guiTexture);
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 

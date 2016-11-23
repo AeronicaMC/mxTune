@@ -18,7 +18,6 @@ package net.aeronica.mods.mxtune.handler;
 
 import net.aeronica.mods.mxtune.gui.GuiGroup;
 import net.aeronica.mods.mxtune.gui.GuiGroupJoin;
-import net.aeronica.mods.mxtune.gui.GuiInstInvExp;
 import net.aeronica.mods.mxtune.gui.GuiInstrumentInventory;
 import net.aeronica.mods.mxtune.gui.GuiMusicOptions;
 import net.aeronica.mods.mxtune.gui.GuiMusicPaperParse;
@@ -44,11 +43,6 @@ public class GUIHandler implements IGuiHandler
             /** Use the player's held item to create the inventory */
             return new ContainerInstrument(playerIn, playerIn.inventory,
                     new InventoryInstrument(playerIn.getHeldItemMainhand()));
-
-        case GuiInstInvExp.GUI_ID:
-            /** Use the player's held item to create the inventory */
-            return new ContainerInstrument(playerIn, playerIn.inventory,
-                    new InventoryInstrument(playerIn.getHeldItemMainhand()));
            
         default:
             return null;
@@ -64,10 +58,6 @@ public class GUIHandler implements IGuiHandler
             return new GuiMusicPaperParse();
 
         case GuiInstrumentInventory.GUI_ID:
-            return new GuiInstrumentInventory((ContainerInstrument) new ContainerInstrument(playerIn, playerIn.inventory,
-                    new InventoryInstrument(playerIn.getHeldItemMainhand())));
-
-        case GuiInstInvExp.GUI_ID:
             return new GuiInstrumentInventory((ContainerInstrument) new ContainerInstrument(playerIn, playerIn.inventory,
                     new InventoryInstrument(playerIn.getHeldItemMainhand())));
             
