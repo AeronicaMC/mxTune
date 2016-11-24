@@ -27,9 +27,9 @@ import net.minecraft.util.ResourceLocation;
 
 public class PlacardRenderer
 {
-    private static final int PLAC_ICON_SIZE = 18;
-    private static final int PLAC_ICON_BASE_U_OFFSET = 0;
-    private static final int PLAC_ICON_BASE_V_OFFSET = 165;
+    private static final int PLAC_ICON_SIZE = 24;
+    private static final int PLAC_ICON_BASE_U_OFFSET = 54;
+    private static final int PLAC_ICON_BASE_V_OFFSET = 200;
     private static final int PLAC_ICONS_PER_ROW = 8;
     private static final int PLAC_TEXTURE_SIZE = 256;
     /*
@@ -38,7 +38,7 @@ public class PlacardRenderer
      * PLAC_ICONS_PER_ROW * PLAC_ICON_SIZE, PLAC_ICON_SIZE, PLAC_ICON_SIZE);
      */
 
-    private final ResourceLocation placardTextures = new ResourceLocation(MXTuneMain.prependModID("textures/gui/manage_group.png"));
+    private final ResourceLocation placardTextures = new ResourceLocation(MXTuneMain.prependModID("textures/gui/status_widgets.png"));
     private final float PLACARD_RANGE = 32.0f;
     private int index = 0;
 

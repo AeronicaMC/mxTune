@@ -38,6 +38,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -55,10 +56,17 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class GuiJamOverlay extends Gui
 {
+    private static final String INSTRUMENT_INVENTORY_EMPTY = "["+I18n.format("mxtune.instrumentInventory.empty")+"]";
+    private static final ResourceLocation TEXTURE_STATUS = new ResourceLocation(MXTuneMain.prependModID("textures/gui/status_widgets.png"));
     public static final int HOTBAR_CLEARANCE = 40;
     private static final int WIDGET_WIDTH = 256;
     private static final int WIDGET_HEIGHT = 104;
-    private static final ResourceLocation textureStatusWidgets = new ResourceLocation(MXTuneMain.prependModID("textures/gui/status_widgets.png"));
+
+    private static final int PLAC_ICON_SIZE = 24;
+    private static final int PLAC_ICON_BASE_U_OFFSET = 54;
+    private static final int PLAC_ICON_BASE_V_OFFSET = 200;
+    private static final int PLAC_ICONS_PER_ROW = 8;
+    private static final int PLAC_TEXTURE_SIZE = 256;
 
     private Minecraft mc = null;
     private FontRenderer fontRenderer = null;
@@ -77,6 +85,7 @@ public class GuiJamOverlay extends Gui
     private static final int HUDTIME = 5; /* seconds */
     private static void hudTimerReset() {hudTimer = HUDTIME;}
     
+    @SuppressWarnings("static-access")
     @SubscribeEvent
     public void onEvent(ClientTickEvent event)
     {
@@ -88,6 +97,7 @@ public class GuiJamOverlay extends Gui
             if (count % 5 == 0) marqueePos++;
             /* once every 1/2 second */
             if (count % 10 == 0) ClientCSDMonitor.detectAndSend();
+            count += this.partialTicks;
         }
     }
     
@@ -107,6 +117,7 @@ public class GuiJamOverlay extends Gui
     private static ItemStack lastItemStack = null;
     private static ItemStack sheetMusic;
     private static ItemStack itemStack;
+    private static float partialTicks;
     
     private static boolean isRidingFlag() {return riding;}
     private static void setRidingFlag(boolean flag) {riding = flag;}
@@ -123,6 +134,7 @@ public class GuiJamOverlay extends Gui
  
         int width = event.getResolution().getScaledWidth();
         int height = event.getResolution().getScaledHeight() - HOTBAR_CLEARANCE;
+        partialTicks = event.getPartialTicks();
         if (hudData == null || inGuiHudAdjust() || lastWidth != width || lastHeight != height)
         {
             hudData = HudDataFactory.calcHudPositions((inGuiHudAdjust() ? MusicOptionsUtil.getAdjustPositionHud() : MusicOptionsUtil.getPositionHUD(player)), width, height);
@@ -145,7 +157,10 @@ public class GuiJamOverlay extends Gui
         if (inGuiHudAdjust() || ((itemStack != null) && (itemStack.getItem() instanceof IInstrument)) || isRidingFlag())
         {
             if ((lastItemStack==null || (itemStack != null && !itemStack.equals(this.lastItemStack))) && !isRidingFlag()) {hudTimerReset(); lastItemStack = itemStack;}
-            if (canRenderHud(player)) this.renderHud(hudData, player, sheetMusic);
+            if (canRenderHud(player))
+                renderHud(hudData, player, sheetMusic);
+            else
+                renderMini(hudData, player);
         } else lastItemStack = itemStack;
     }
 
@@ -200,6 +215,7 @@ public class GuiJamOverlay extends Gui
             this.memberNameWidth = memberNameWidth;
         }
     }
+    
     private List<GroupData> processGroup(EntityPlayer playerIn)
     {
         ArrayList<GroupData> groupData = new ArrayList<GroupData>();
@@ -219,7 +235,7 @@ public class GuiJamOverlay extends Gui
             /** Only draw if player is a member of a group */
             if (groupID != null)
             {
-                /** Always put the leader at the HEAD of the list */
+                /** Always add the leader at the HEAD of the list */
                 memberID = GROUPS.getLeaderOfGroup(groupID);
                 memberName = playerIn.worldObj.getEntityByID(memberID).getDisplayName().getUnformattedText();
                 memberNameWidth = fontRenderer.getStringWidth(memberName);
@@ -229,7 +245,7 @@ public class GuiJamOverlay extends Gui
                 groupData.add(memberData);
                 index++;
 
-                /** display the remaining members taking care to not print the leader a 2nd time. */
+                /** Add the remaining members taking care to not add the leader a 2nd time. */
                 Set<Integer> set = GROUPS.getClientMembers().keySet();
                 for (Iterator<Integer> im = set.iterator(); im.hasNext();)
                 {
@@ -250,6 +266,7 @@ public class GuiJamOverlay extends Gui
         return groupData;
     }
         
+    @SuppressWarnings("unused")
     private void drawDebug(HudData hd, int maxWidth, int maxHeight)
     {
         int statusWidth, qX, qY;
@@ -290,15 +307,11 @@ public class GuiJamOverlay extends Gui
 
     private String getMusicTitle(ItemStack stackIn)
     {
-        String result = "" + TextFormatting.OBFUSCATED + "(empty)";
-        if (stackIn == null) return result;
         String sheetMusicTitle = getMusicTitleRaw(stackIn);
-        /** Display the title of the contained music book. */
-        if (!sheetMusicTitle.isEmpty())
-        {
-            result = sheetMusicTitle;
-        }
-        return result;
+        if (sheetMusicTitle.isEmpty())
+            return INSTRUMENT_INVENTORY_EMPTY;
+        else
+            return sheetMusicTitle;
     }
     
     public static String getMusicTitleRaw(ItemStack sheetMusic)
@@ -317,22 +330,28 @@ public class GuiJamOverlay extends Gui
     private static int TITLE_DISPLAY_WIDTH = 30;
     private static int marqueePos = 0;
     private static int getMarqueePos() {return new Integer(marqueePos);}
-    private static void resetMarqueePos() {marqueePos = 0;}
-    
-    private String marquee(String text, int maxChars)
+
+    private String marquee(String text, int window)
     {
         int marqueePos = getMarqueePos();
-        if(text.length() <= maxChars) return text;
-        StringBuilder sb = new StringBuilder(text);
-        if ((marqueePos+maxChars <= text.length()))
-        {
-            return sb.substring(marqueePos, marqueePos+maxChars);
-        }
+        if(text.length() <= window) return text;
+        StringBuilder sb = new StringBuilder(text).append("   ");
+        int head = marqueePos % sb.length();
+        int tail = (head+window) % sb.length();
+        if (head < tail)
+            return sb.substring(head, tail);
         else
-        {
-            resetMarqueePos();
-            return sb.substring(0, maxChars);
+            return sb.toString().substring(head, sb.length()) + (sb.substring(0,tail));
+    }
+    
+    @SuppressWarnings("unused")
+    private String spaces(int length)
+    {
+        StringBuffer outputBuffer = new StringBuffer(length);
+        for (int i = 0; i < length; i++){
+            outputBuffer.append(" ");
         }
+        return outputBuffer.toString();
     }
     
     private void renderHud(HudData hd, EntityPlayer playerIn, ItemStack sheetMusic)
@@ -350,9 +369,31 @@ public class GuiJamOverlay extends Gui
         int iconX = hd.quadX(maxWidth, 0, 2, WIDGET_WIDTH);
         int iconY = hd.quadY(maxHeight, 0, 2, WIDGET_HEIGHT);
 
-        setTexture(textureStatusWidgets);
+        setTexture(TEXTURE_STATUS);
         drawWidget(playerIn, iconX, iconY, musicTitle);
-        drawDebug(hd, maxWidth, maxHeight);
+//        drawDebug(hd, maxWidth, maxHeight);
+        GL11.glPopMatrix();
+    }
+    
+    private void renderMini(HudData hd, EntityPlayer playerIn)
+    {
+        int maxWidth = 256;
+        int maxHeight = 128;
+        float hudScale = inGuiHudAdjust() ? MusicOptionsUtil.getAdjustSizeHud() : MusicOptionsUtil.getSizeHud(playerIn);
+                
+        GL11.glPushMatrix();
+        GL11.glTranslatef(hd.getPosX(), hd.getPosY(), 0F);
+//        GL11.glScalef(hudScale, hudScale, hudScale);
+
+        int iconX = hd.quadX(maxWidth, 0, 2, PLAC_ICON_SIZE);
+        int iconY = hd.quadY(maxHeight, 0, 2, PLAC_ICON_SIZE);
+        int index = GROUPS.getIndex(playerIn.getEntityId());
+        setTexture(TEXTURE_STATUS);
+         this.drawTexturedModalRect(iconX, iconY, PLAC_ICON_BASE_U_OFFSET + index %
+         PLAC_ICONS_PER_ROW * PLAC_ICON_SIZE, PLAC_ICON_BASE_V_OFFSET + index /
+         PLAC_ICONS_PER_ROW * PLAC_ICON_SIZE, PLAC_ICON_SIZE, PLAC_ICON_SIZE);
+         
+//        drawDebug(hd, maxWidth, maxHeight);
         GL11.glPopMatrix();
     }
     
@@ -363,7 +404,7 @@ public class GuiJamOverlay extends Gui
      * status widget.
      *
      */
-    private static Integer[][] notePosMembers = { {20,23},{38,31},{20,39},{38,47},{20,55},{38,63},{20,71},{38,79} };
+    private static Integer[][] notePosMembers = { {45,23},{140,31},{45,39},{140,47},{45,55},{140,63},{45,71},{140,79} };
     /**
      * Maps play status to a note symbol on a texture.
      *
@@ -380,8 +421,7 @@ public class GuiJamOverlay extends Gui
         E7(7, 0,104),
         LEADER_REST(8, 96, 104),
         LEADER_QUEUED(9, 24, 104),
-        E10(10,24,104),
-        LEADER_NOTE(11, 24, 104);
+        LEADER_NOTE(10,24,104);
 
         public int getMetadata() {return this.meta;}
 
@@ -411,7 +451,7 @@ public class GuiJamOverlay extends Gui
         drawTexturedModalRect(left, top, 0, 0, WIDGET_WIDTH, WIDGET_HEIGHT);
         
         /* alto clef */
-//        drawTexturedModalRect(left+4, top, 0, 48, 32, 32);
+        drawTexturedModalRect(left+14+4, top+23, 0, 136, 28, 64);
         
         /* draw the notes/rests for members */
         List<GroupData> groupData = processGroup(playerIn);
@@ -451,11 +491,14 @@ public class GuiJamOverlay extends Gui
             /** Only draw if player is a member of a group */
             if (GROUPS.getMembersGroupID(playerIn.getEntityId()) != null)
             {
+                int oddEven = 1;
                 for (GroupData gd: groupData)
                 {
                     int x = left + gd.notePos.getFirst() +28;
                     int y = top + gd.notePos.getSecond() + 4; 
-                    fontRenderer.drawString(TextFormatting.BOLD + gd.getMemberName(), x, y, 0x543722);
+                    int textWidth = fontRenderer.getStringWidth(TextFormatting.BOLD +marquee(gd.getMemberName(), 10));
+                    if (oddEven++ % 2 == 0) drawRect(x-2, y-2, x+textWidth+2, y+10, 0xC89558 + (208 << 24));
+                    fontRenderer.drawString(TextFormatting.BOLD + marquee(gd.getMemberName(), 10), x, y, 0x543722);
                 }
             }
             else
@@ -465,15 +508,15 @@ public class GuiJamOverlay extends Gui
                 int x = left + notePosMembers[0][0] + 28;
                 int y = top + notePosMembers[0][1] + 4;
                 String name = (playerIn.getDisplayName().getUnformattedText());
-                fontRenderer.drawString(TextFormatting.BOLD + name, x, y, 0x543722);
+                fontRenderer.drawString(TextFormatting.BOLD + marquee(name, 10), x, y, 0x543722);
             }
         }
         
         /* draw the music title */
         int musicTitleWidth = fontRenderer.getStringWidth(TextFormatting.BOLD + marquee(musicTitle, TITLE_DISPLAY_WIDTH));
-        int musicTitlePosC = left + (WIDGET_WIDTH/2 - musicTitleWidth/2);
+        int musicTitlePosX = left + (WIDGET_WIDTH/2 - musicTitleWidth/2);
         int musicTitlePosY = top + 10;
-        fontRenderer.drawString(TextFormatting.BOLD + marquee(musicTitle, TITLE_DISPLAY_WIDTH), musicTitlePosC, musicTitlePosY, 0x543722);
+        fontRenderer.drawString(TextFormatting.BOLD + marquee(musicTitle, TITLE_DISPLAY_WIDTH), musicTitlePosX, musicTitlePosY, 0x543722);
         
     }
     

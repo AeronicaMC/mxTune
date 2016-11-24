@@ -19,6 +19,8 @@ item.mxtune:item_inst_eguitarover.name=Overdriven Guitar
 item.mxtune:item_inst_eguitardist.name=Distortion Guitar
 item.mxtune:item_converter.name=Sheet Music Converter
 
+mxtune.instrumentInventory.empty=No Sheet Music Found
+
 soundCategory.mxtune=mxTune
 mxtune.subtitle.pcm-proxy=Music Plays
 
