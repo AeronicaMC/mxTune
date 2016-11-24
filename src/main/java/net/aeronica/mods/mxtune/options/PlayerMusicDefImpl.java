@@ -30,9 +30,9 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     /** Music Options*/
     private int muteOption;
     /** HUD Options */
-    private boolean disableHud;
+    private boolean disableHud =  false;
     private int positionHud;
-    private float sizeHud;
+    private float sizeHud = 0.5F;
     /** Strings for passing parameters from server to client: for a GUI for example */
     private String sParam1, sParam2, sParam3;
     private List<PlayerLists> whiteList, blackList;
@@ -42,7 +42,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
         this.muteOption = 0;
         this.disableHud = false;
         this.positionHud = 0;
-        this.sizeHud = 1.0F;
+        this.sizeHud = 0.5F;
         this.sParam1 = this.sParam2 = this.sParam3 = new String("");
         this.whiteList = new ArrayList<PlayerLists>();
         this.blackList = new ArrayList<PlayerLists>();
@@ -53,7 +53,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
         this.muteOption = 0;
         this.disableHud = false;
         this.positionHud = 0;
-        this.sizeHud = 1.0F;
+        this.sizeHud = 0.5F;
         this.sParam1 = this.sParam2 = this.sParam3 = new String("");
         this.whiteList = new ArrayList<PlayerLists>();
         this.blackList = new ArrayList<PlayerLists>();
@@ -65,7 +65,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
         this.muteOption = 0;
         this.disableHud = false;
         this.positionHud = 0;
-        this.sizeHud = 1.0F;
+        this.sizeHud = 0.5F;
         this.sParam1 = this.sParam2 = this.sParam3 = new String("");
         this.syncAll(playerIn);
     }

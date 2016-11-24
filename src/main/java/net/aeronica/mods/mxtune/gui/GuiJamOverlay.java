@@ -16,7 +16,9 @@
  */
 package net.aeronica.mods.mxtune.gui;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.lwjgl.opengl.GL11;
@@ -33,10 +35,14 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -49,11 +55,13 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class GuiJamOverlay extends Gui
 {
-    public static final int HOTBAR_CLEARANCE = 34;
+    public static final int HOTBAR_CLEARANCE = 40;
+    private static final int WIDGET_WIDTH = 256;
+    private static final int WIDGET_HEIGHT = 104;
+    private static final ResourceLocation textureStatusWidgets = new ResourceLocation(MXTuneMain.prependModID("textures/gui/status_widgets.png"));
+
     private Minecraft mc = null;
     private FontRenderer fontRenderer = null;
-    private static final ResourceLocation textureLocation = new ResourceLocation(MXTuneMain.prependModID("textures/gui/manage_group.png"));
-    private StatusWidget statusWidget;
     
     private static class GuiJamOverlayHolder {private static final GuiJamOverlay INSTANCE = new GuiJamOverlay();}
     public static GuiJamOverlay getInstance() {return GuiJamOverlayHolder.INSTANCE;}
@@ -62,7 +70,6 @@ public class GuiJamOverlay extends Gui
     {
         this.mc = Minecraft.getMinecraft();
         this.fontRenderer = this.mc.fontRendererObj;
-        statusWidget = new StatusWidget();
     }
 
     private static int hudTimer = 0;
@@ -142,29 +149,86 @@ public class GuiJamOverlay extends Gui
         } else lastItemStack = itemStack;
     }
 
-    private void drawGroup(EntityPlayer player, HudData hd, int maxWidth, int maxHeight)
+    protected class GroupData
     {
-        int posX = 0;
-        int posY = 90;
+        Integer memberID;
+        String memberName;
+        Integer memberNameWidth;
+        Tuple<Integer, Integer> notePos;
+        Integer playStatus;
+           
+        public GroupData(Integer memberID, String memberName, Integer memberNameWidth, Tuple<Integer, Integer> notePos, Integer playStatus)
+        {
+            super();
+            this.memberID = memberID;
+            this.memberName = memberName;
+            this.memberNameWidth = memberNameWidth;
+            this.notePos = notePos;
+            this.playStatus = playStatus;
+        }
+        
+        public Integer getPlayStatus()
+        {
+            return playStatus;
+        }
+        public void setPlayStatus(Integer playStatus)
+        {
+            this.playStatus = playStatus;
+        }
+        public Tuple<Integer, Integer> getNotePos()
+        {
+            return notePos;
+        }
+        public void setNotePos(Tuple<Integer, Integer> notePos)
+        {
+            this.notePos = notePos;
+        }
+        public String getMemberName()
+        {
+            return memberName;
+        }
+        public void setMemberName(String memberName)
+        {
+            this.memberName = memberName;
+        }
+        public Integer getMemberNameWidth()
+        {
+            return memberNameWidth;
+        }
+        public void setMemberNameWidth(Integer memberNameWidth)
+        {
+            this.memberNameWidth = memberNameWidth;
+        }
+    }
+    private List<GroupData> processGroup(EntityPlayer playerIn)
+    {
+        ArrayList<GroupData> groupData = new ArrayList<GroupData>();
+        int index = 0;
+        Integer memberNameWidth;
+        Tuple<Integer, Integer> notePos;
+        Integer playStatus;
         Integer groupID;
         Integer memberID;
-        String leaderName;
         String memberName;
+        GroupData memberData = null;
         
         if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
         {
-            groupID = GROUPS.getMembersGroupID(player.getEntityId());
+            groupID = GROUPS.getMembersGroupID(playerIn.getEntityId());
             
             /** Only draw if player is a member of a group */
             if (groupID != null)
             {
                 /** Always put the leader at the HEAD of the list */
-                leaderName = player.worldObj.getEntityByID(GROUPS.getLeaderOfGroup(groupID)).getDisplayName().getUnformattedText();
-                int leaderNameWidth = fontRenderer.getStringWidth(leaderName);
-                int qX = hd.quadX(maxWidth, posX, 4, leaderNameWidth);
-                int qY = hd.quadY(maxHeight, posY, 4, 10);
-                fontRenderer.drawStringWithShadow(TextFormatting.YELLOW + leaderName, qX, qY, 0xFFFF00);
-                posY += 10;
+                memberID = GROUPS.getLeaderOfGroup(groupID);
+                memberName = playerIn.worldObj.getEntityByID(memberID).getDisplayName().getUnformattedText();
+                memberNameWidth = fontRenderer.getStringWidth(memberName);
+                playStatus = GROUPS.getIndex(memberID);     
+                notePos = new Tuple<Integer, Integer>( notePosMembers[index][0],  notePosMembers[index][1]);
+                memberData = new GroupData(memberID, memberName, memberNameWidth, notePos, playStatus);
+                groupData.add(memberData);
+                index++;
+
                 /** display the remaining members taking care to not print the leader a 2nd time. */
                 Set<Integer> set = GROUPS.getClientMembers().keySet();
                 for (Iterator<Integer> im = set.iterator(); im.hasNext();)
@@ -172,16 +236,18 @@ public class GuiJamOverlay extends Gui
                     memberID = im.next();
                     if (groupID.equals(GROUPS.getMembersGroupID(memberID)) && !memberID.equals(GROUPS.getLeaderOfGroup(groupID)))
                     {
-                        memberName = player.worldObj.getEntityByID(memberID).getDisplayName().getUnformattedText();
-                        int memberNameWidth = fontRenderer.getStringWidth(memberName);
-                        qX = hd.quadX(maxWidth, posX, 0, memberNameWidth);
-                        qY = hd.quadY(maxHeight, posY, 0, 10);
-                        fontRenderer.drawStringWithShadow(memberName, qX, qY, 0xAAAAAA);
-                        posY += 10;
+                        memberName = playerIn.worldObj.getEntityByID(memberID).getDisplayName().getUnformattedText();
+                        memberNameWidth = fontRenderer.getStringWidth(memberName);
+                        playStatus = GROUPS.getIndex(memberID);     
+                        notePos = new Tuple<Integer, Integer>( notePosMembers[index][0],  notePosMembers[index][1]);
+                        memberData = new GroupData(memberID, memberName, memberNameWidth, notePos, playStatus);
+                        groupData.add(memberData);
+                        index++;
                     }
                 }
             }
         }
+        return groupData;
     }
         
     private void drawDebug(HudData hd, int maxWidth, int maxHeight)
@@ -191,31 +257,40 @@ public class GuiJamOverlay extends Gui
         {
             String status = new String("Play Status: " + GROUPS.getClientPlayStatuses().toString());
             statusWidth = fontRenderer.getStringWidth(status);
-            qX = hd.quadX(maxWidth, 6, 0, statusWidth);
-            qY = hd.quadY(maxHeight, 80, 0, 10);
+            qX = hd.quadX(maxWidth, 0, 4, statusWidth);
+            qY = hd.quadY(maxHeight, 110, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
         if (GROUPS.getPlayIDMembers() != null && !GROUPS.getPlayIDMembers().isEmpty())
         {
             String status = new String("PlayID Members: " + GROUPS.getPlayIDMembers().toString());
             statusWidth = fontRenderer.getStringWidth(status);
-            qX = hd.quadX(maxWidth, 6, 0, statusWidth);
-            qY = hd.quadY(maxHeight, 90, 0, 10);
+            qX = hd.quadX(maxWidth, 0, 4, statusWidth);
+            qY = hd.quadY(maxHeight, 120, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
         if (GROUPS.getActivePlayIDs() != null && !GROUPS.getActivePlayIDs().isEmpty())
         {
             String status = new String("ActivePlayIDs: " + GROUPS.getActivePlayIDs().toString());
             statusWidth = fontRenderer.getStringWidth(status);
-            qX = hd.quadX(maxWidth, 6, 0, statusWidth);
-            qY = hd.quadY(maxHeight, 100, 0, 10);
+            qX = hd.quadX(maxWidth, 0, 4, statusWidth);
+            qY = hd.quadY(maxHeight, 130, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
+        if (GROUPS.getActivePlayIDs() != null && !GROUPS.getActivePlayIDs().isEmpty())
+        {
+            String status = new String("GROUPS.index:  " + GROUPS.getIndex(mc.thePlayer.getEntityId()));
+            statusWidth = fontRenderer.getStringWidth(status);
+            qX = hd.quadX(maxWidth, 0, 4, statusWidth);
+            qY = hd.quadY(maxHeight, 140, 4, 10);
+            fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
+        }
+
     }
 
     private String getMusicTitle(ItemStack stackIn)
     {
-        String result = TextFormatting.YELLOW + "(empty)";
+        String result = "" + TextFormatting.OBFUSCATED + "(empty)";
         if (stackIn == null) return result;
         String sheetMusicTitle = getMusicTitleRaw(stackIn);
         /** Display the title of the contained music book. */
@@ -238,7 +313,7 @@ public class GuiJamOverlay extends Gui
         }
         return new String();
     }
-    
+
     private static int TITLE_DISPLAY_WIDTH = 30;
     private static int marqueePos = 0;
     private static int getMarqueePos() {return new Integer(marqueePos);}
@@ -259,7 +334,7 @@ public class GuiJamOverlay extends Gui
             return sb.substring(0, maxChars);
         }
     }
-
+    
     private void renderHud(HudData hd, EntityPlayer playerIn, ItemStack sheetMusic)
     {
         int maxWidth = 256;
@@ -267,26 +342,182 @@ public class GuiJamOverlay extends Gui
         float hudScale = inGuiHudAdjust() ? MusicOptionsUtil.getAdjustSizeHud() : MusicOptionsUtil.getSizeHud(playerIn);
         
         String musicTitle = getMusicTitle(sheetMusic);
-        int musicTitleWidth = fontRenderer.getStringWidth(marquee(musicTitle, TITLE_DISPLAY_WIDTH));
-        int musicTitlePosC = hd.quadX(maxWidth, 0, 4, musicTitleWidth);//left + (maxWidth/2 - musicTitleWidth/2);
-        int musicTitlePosY = hd.quadY(maxHeight, 80, 4, 10);
         
         GL11.glPushMatrix();
         GL11.glTranslatef(hd.getPosX(), hd.getPosY(), 0F);
         GL11.glScalef(hudScale, hudScale, hudScale);
 
-        int iconX = hd.quadX(maxWidth, 0, 2, statusWidget.WIDGET_WIDTH);
-        int iconY = hd.quadY(maxHeight, 0, 2, statusWidget.WIDGET_HEIGHT);
-        int iconIndex = GROUPS.getIndex(playerIn.getEntityId());
+        int iconX = hd.quadX(maxWidth, 0, 2, WIDGET_WIDTH);
+        int iconY = hd.quadY(maxHeight, 0, 2, WIDGET_HEIGHT);
 
-        setTexture(statusWidget.getTexture());
-        statusWidget.draw(playerIn, iconX, iconY);
-        fontRenderer.drawStringWithShadow(marquee(musicTitle, TITLE_DISPLAY_WIDTH), musicTitlePosC, musicTitlePosY, 0x00FF00);
-        
-        drawGroup(playerIn, hd, maxWidth, maxHeight);
+        setTexture(textureStatusWidgets);
+        drawWidget(playerIn, iconX, iconY, musicTitle);
         drawDebug(hd, maxWidth, maxHeight);
         GL11.glPopMatrix();
     }
     
+    /**
+     * This is not exactly the ideal way to store positional data for the notation symbols.
+     * TODO: Think about a note factory that calculates the note position and symbols
+     * based on play status and rules of the staff. LOL, seems like alot of work for a
+     * status widget.
+     *
+     */
+    private static Integer[][] notePosMembers = { {20,23},{38,31},{20,39},{38,47},{20,55},{38,63},{20,71},{38,79} };
+    /**
+     * Maps play status to a note symbol on a texture.
+     *
+     */
+    public static enum NOTATION
+    {
+        REST(0, 96, 104),
+        QUEUED(1, 96, 104),
+        NOTE(2, 0, 104),
+        E3(3, 0,104),
+        E4(4, 0,104),
+        E5(5, 0,104),
+        E6(6, 0,104),
+        E7(7, 0,104),
+        LEADER_REST(8, 96, 104),
+        LEADER_QUEUED(9, 24, 104),
+        E10(10,24,104),
+        LEADER_NOTE(11, 24, 104);
+
+        public int getMetadata() {return this.meta;}
+
+        public static NOTATION byMetadata(int meta)
+        {
+            if (meta < 0 || meta >= META_LOOKUP.length) {meta = 0;}
+            return META_LOOKUP[meta];
+        }
+        public int getX() {return this.x;}
+        public int getY() {return this.y;}
+        
+        private final int meta;
+        private final int x, y;
+        private static final NOTATION[] META_LOOKUP = new NOTATION[values().length];
+
+        private NOTATION(int i_meta, int i_x, int i_y) {this.meta = i_meta; this.x=i_x; y=i_y;}
+
+        static {for (NOTATION value : values()) {META_LOOKUP[value.getMetadata()] = value;}}
+    }
+    
+    private void drawWidget(EntityPlayer playerIn, int posX, int posY, String musicTitle)
+    {
+        int left = posX;
+        int top = posY;
+        NOTATION eNOTATION;
+        /* draw the widget background */
+        drawTexturedModalRect(left, top, 0, 0, WIDGET_WIDTH, WIDGET_HEIGHT);
+        
+        /* alto clef */
+//        drawTexturedModalRect(left+4, top, 0, 48, 32, 32);
+        
+        /* draw the notes/rests for members */
+        List<GroupData> groupData = processGroup(playerIn);
+ 
+        if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
+        {
+            /** Only draw if player is a member of a group */
+            if (GROUPS.getMembersGroupID(playerIn.getEntityId()) != null)
+            {
+                for (GroupData gd: groupData)
+                {
+                    int status = GROUPS.getIndex(gd.memberID);
+                    eNOTATION = NOTATION.byMetadata(status);
+                    int nX = eNOTATION.getX();
+                    int nY = eNOTATION.getY();
+                    int x = left + gd.notePos.getFirst();
+                    int y = top + gd.notePos.getSecond(); 
+                    drawTexturedModalRect(x, y, nX, nY, 24, 16);
+                }
+            }
+            else
+            {
+                /* draw whole note/rest for the solo player */
+                int status = GROUPS.getIndex(playerIn.getEntityId());
+                eNOTATION = NOTATION.byMetadata(status);
+                int nX = eNOTATION.getX();
+                int nY = eNOTATION.getY();
+                int x = left + notePosMembers[0][0];
+                int y = top + notePosMembers[0][1]; 
+                drawTexturedModalRect(x, y, nX, nY, 24, 16);
+            }
+        }
+        
+        /* draw the names solo player/members */
+        if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
+        {
+            /** Only draw if player is a member of a group */
+            if (GROUPS.getMembersGroupID(playerIn.getEntityId()) != null)
+            {
+                for (GroupData gd: groupData)
+                {
+                    int x = left + gd.notePos.getFirst() +28;
+                    int y = top + gd.notePos.getSecond() + 4; 
+                    fontRenderer.drawString(TextFormatting.BOLD + gd.getMemberName(), x, y, 0x543722);
+                }
+            }
+            else
+            {
+                /* draw the name of the solo player */
+                GROUPS.getIndex(playerIn.getEntityId());
+                int x = left + notePosMembers[0][0] + 28;
+                int y = top + notePosMembers[0][1] + 4;
+                String name = (playerIn.getDisplayName().getUnformattedText());
+                fontRenderer.drawString(TextFormatting.BOLD + name, x, y, 0x543722);
+            }
+        }
+        
+        /* draw the music title */
+        int musicTitleWidth = fontRenderer.getStringWidth(TextFormatting.BOLD + marquee(musicTitle, TITLE_DISPLAY_WIDTH));
+        int musicTitlePosC = left + (WIDGET_WIDTH/2 - musicTitleWidth/2);
+        int musicTitlePosY = top + 10;
+        fontRenderer.drawString(TextFormatting.BOLD + marquee(musicTitle, TITLE_DISPLAY_WIDTH), musicTitlePosC, musicTitlePosY, 0x543722);
+        
+    }
+    
     public void setTexture(ResourceLocation texture) { this.mc.renderEngine.bindTexture(texture);}
+    
+    /**
+     * Copied from the vanilla Gui class, but removed the GlStateManager blend enable/disable method calls.
+     * @param left
+     * @param top
+     * @param right
+     * @param bottom
+     * @param color
+     */
+    public static void drawRect(int left, int top, int right, int bottom, int color)
+    {
+        if (left < right)
+        {
+            int i = left;
+            left = right;
+            right = i;
+        }
+
+        if (top < bottom)
+        {
+            int j = top;
+            top = bottom;
+            bottom = j;
+        }
+
+        float f3 = (float)(color >> 24 & 255) / 255.0F;
+        float f = (float)(color >> 16 & 255) / 255.0F;
+        float f1 = (float)(color >> 8 & 255) / 255.0F;
+        float f2 = (float)(color & 255) / 255.0F;
+        Tessellator tessellator = Tessellator.getInstance();
+        VertexBuffer vertexbuffer = tessellator.getBuffer();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        GlStateManager.color(f, f1, f2, f3);
+        vertexbuffer.begin(7, DefaultVertexFormats.POSITION);
+        vertexbuffer.pos((double)left, (double)bottom, 0.0D).endVertex();
+        vertexbuffer.pos((double)right, (double)bottom, 0.0D).endVertex();
+        vertexbuffer.pos((double)right, (double)top, 0.0D).endVertex();
+        vertexbuffer.pos((double)left, (double)top, 0.0D).endVertex();
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+    }
 }
