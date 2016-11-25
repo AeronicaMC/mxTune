@@ -60,6 +60,7 @@ public class SyncGroupMessage extends AbstractClientMessage<SyncGroupMessage>
         {
             GROUPS.setClientGroups(groups);
             GROUPS.setClientMembers(members);
+            GROUPS.setGroupsMembers(members);
         }
     }
 }

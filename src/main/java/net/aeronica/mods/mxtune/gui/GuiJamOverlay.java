@@ -272,7 +272,7 @@ public class GuiJamOverlay extends Gui
         int statusWidth, qX, qY;
         if (GROUPS.getClientPlayStatuses() != null && !GROUPS.getClientPlayStatuses().isEmpty())
         {
-            String status = new String("Play Status: " + GROUPS.getClientPlayStatuses().toString());
+            String status = new String("Play Status:    " + GROUPS.getClientPlayStatuses().toString());
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
             qY = hd.quadY(maxHeight, 110, 4, 10);
@@ -288,7 +288,7 @@ public class GuiJamOverlay extends Gui
         }
         if (GROUPS.getActivePlayIDs() != null && !GROUPS.getActivePlayIDs().isEmpty())
         {
-            String status = new String("ActivePlayIDs: " + GROUPS.getActivePlayIDs().toString());
+            String status = new String("ActivePlayIDs:  " + GROUPS.getActivePlayIDs().toString());
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
             qY = hd.quadY(maxHeight, 130, 4, 10);
@@ -296,13 +296,29 @@ public class GuiJamOverlay extends Gui
         }
         if (GROUPS.getActivePlayIDs() != null && !GROUPS.getActivePlayIDs().isEmpty())
         {
-            String status = new String("GROUPS.index:  " + GROUPS.getIndex(mc.thePlayer.getEntityId()));
+            String status = new String("GROUPS.index:   " + GROUPS.getIndex(mc.thePlayer.getEntityId()));
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
             qY = hd.quadY(maxHeight, 140, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
-
+        if (GROUPS.getGroupsMembers() != null && !GROUPS.getGroupsMembers().isEmpty())
+        {
+            String status = new String("GroupsMembers:  " + GROUPS.getGroupsMembers());
+            statusWidth = fontRenderer.getStringWidth(status);
+            qX = hd.quadX(maxWidth, 0, 4, statusWidth);
+            qY = hd.quadY(maxHeight, 150, 4, 10);
+            fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
+        }
+        if (GROUPS.getGroupsMembers() != null && !GROUPS.getGroupsMembers().isEmpty())
+        {
+            String status = new String("Group Distance: " + GROUPS.getGroupMembersScaledDistance(mc.thePlayer));
+            statusWidth = fontRenderer.getStringWidth(status);
+            qX = hd.quadX(maxWidth, 0, 4, statusWidth);
+            qY = hd.quadY(maxHeight, 160, 4, 10);
+            fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
+        }
+        
     }
 
     private String getMusicTitle(ItemStack stackIn)
@@ -371,7 +387,7 @@ public class GuiJamOverlay extends Gui
 
         setTexture(TEXTURE_STATUS);
         drawWidget(playerIn, iconX, iconY, musicTitle);
-//        drawDebug(hd, maxWidth, maxHeight);
+        drawDebug(hd, maxWidth, maxHeight);
         GL11.glPopMatrix();
     }
     
@@ -379,7 +395,7 @@ public class GuiJamOverlay extends Gui
     {
         int maxWidth = PLAC_ICON_SIZE;
         int maxHeight = PLAC_ICON_SIZE;
-                
+
         GL11.glPushMatrix();
         GL11.glTranslatef(hd.getPosX(), hd.getPosY(), 0F);
 
@@ -387,10 +403,12 @@ public class GuiJamOverlay extends Gui
         int iconY = hd.quadY(maxHeight, 0, 2, PLAC_ICON_SIZE);
         int index = GROUPS.getIndex(playerIn.getEntityId());
         setTexture(TEXTURE_STATUS);
-         this.drawTexturedModalRect(iconX, iconY, PLAC_ICON_BASE_U_OFFSET + index %
-         PLAC_ICONS_PER_ROW * PLAC_ICON_SIZE, PLAC_ICON_BASE_V_OFFSET + index /
-         PLAC_ICONS_PER_ROW * PLAC_ICON_SIZE, PLAC_ICON_SIZE, PLAC_ICON_SIZE);
-         
+        this.drawTexturedModalRect(iconX, iconY, PLAC_ICON_BASE_U_OFFSET + index %
+                PLAC_ICONS_PER_ROW * PLAC_ICON_SIZE, PLAC_ICON_BASE_V_OFFSET + index /
+                PLAC_ICONS_PER_ROW * PLAC_ICON_SIZE, PLAC_ICON_SIZE, PLAC_ICON_SIZE);
+
+        drawDebug(hd, maxWidth, maxHeight);
+
         GL11.glPopMatrix();
     }
     
@@ -408,17 +426,17 @@ public class GuiJamOverlay extends Gui
      */
     public static enum NOTATION
     {
-        REST(0, 96, 104),
-        QUEUED(1, 96, 104),
-        NOTE(2, 0, 104),
+        MEMBER_REST(0, 96, 104),
+        MEMBER_QUEUED(1, 144, 104),
+        MEMBER_PLAY(2, 0, 104),
         E3(3, 0,104),
         E4(4, 0,104),
         E5(5, 0,104),
         E6(6, 0,104),
         E7(7, 0,104),
         LEADER_REST(8, 96, 104),
-        LEADER_QUEUED(9, 24, 104),
-        LEADER_NOTE(10,24,104);
+        LEADER_QUEUED(9, 144, 104),
+        LEADER_PLAY(10,0,104);
 
         public int getMetadata() {return this.meta;}
 

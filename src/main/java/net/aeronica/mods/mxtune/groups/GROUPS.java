@@ -22,9 +22,12 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Sets;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.config.ModConfig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;
 
@@ -38,6 +41,7 @@ public enum GROUPS
     /* GroupManager */
     private static Map<Integer, Integer> clientGroups;
     private static Map<Integer, Integer> clientMembers;
+    private static ListMultimap<Integer, Integer> groupsMembers;
     /* PlayManager */
     private static Map<Integer, String> membersQueuedStatus;
     private static Map<Integer, Integer> membersPlayID;
@@ -59,6 +63,22 @@ public enum GROUPS
         return GROUPS.clientMembers != null ? GROUPS.clientMembers.get(memberID) : null;
     }
 
+    public static Set<Integer> getPlayersGroupMembers(EntityPlayer playerIn)
+    {
+        Integer groupID = GROUPS.getMembersGroupID(playerIn.getEntityId());
+        if(groupID != null)
+        {
+            Set<Integer> members = Sets.newHashSet();
+            for (Integer group: groupsMembers.keySet())
+            {
+                if(groupID == group)
+                    members.addAll(groupsMembers.get(group));
+            }       
+            return members;
+        }
+        return null;
+    }
+    
     private static boolean isLeader(Integer memberID)
     {
         return memberID.equals(getLeaderOfGroup(getMembersGroupID(memberID)));
@@ -82,6 +102,16 @@ public enum GROUPS
     public static void setClientGroups(String groups)
     {
         GROUPS.clientGroups = deserializeIntIntMap(groups);
+    }
+    
+    public static void setGroupsMembers(String members)
+    {
+        GROUPS.groupsMembers = deserializeIntIntListMultimapSwapped(members);
+    }
+    
+    public static ListMultimap<Integer, Integer> getGroupsMembers()
+    {
+        return groupsMembers;
     }
     
     /**
@@ -154,6 +184,51 @@ public enum GROUPS
         return pos;
     }
 
+    /**
+     * Called by client tick once every two seconds to calculate the distance between
+     * group members in relation to a maximum after which the server will stop any music the
+     * group is performing.
+     * 
+     * @param stopDistance
+     * #return 0-1D, where 1 represents the critical stop.
+     */
+    public static double getGroupMembersScaledDistance(EntityPlayer playerIn)
+    {
+        Set<Integer> members = getPlayersGroupMembers(playerIn);
+        double distance = 0;
+        if (members != null && !members.isEmpty())
+        {  
+            for (Integer memberA: members)
+            {
+                for (Integer memberB:  members )
+                {
+                    if (memberA != memberB)
+                    {
+                        double maxPlayerDistance = getMemberVector(memberA).distanceTo(getMemberVector(memberB));
+                        double maxDistance = ModConfig.getGroupPlayAbortDistance();
+                        distance = scaleBetween(maxPlayerDistance, 0, maxDistance, 0D, 1D);
+                    }
+                }
+            }
+        }
+        return distance;
+    }
+
+    private static double scaleBetween(double unscaledNum, double minAllowed, double maxAllowed, double min, double max) {
+        return (maxAllowed - minAllowed) * (unscaledNum - min) / (max - min) + minAllowed;
+      }
+    
+    private static Vec3d getMemberVector(Integer entityID)
+    {
+        Vec3d v3d;
+        EntityPlayer player = (EntityPlayer) MXTuneMain.proxy.getClientPlayer().getEntityWorld().getEntityByID(entityID);
+        if (player != null)
+            v3d = new Vec3d(player.posX, player.prevPosY, player.posZ);
+        else
+            v3d = new Vec3d(0,0,0);
+        return v3d;
+    }
+    
     public static boolean isClientPlaying(Integer playID)
     {
         Set<Integer> members = GROUPS.getMembersByPlayID(playID);
@@ -189,7 +264,7 @@ public enum GROUPS
         }
         return null;
     }
-
+    
     public static void setPlayIDMembers(String playIDMembers)
     {
         GROUPS.membersPlayID = deserializeIntIntMap(playIDMembers);
@@ -240,6 +315,30 @@ public enum GROUPS
             e.printStackTrace();
         }
         return serializedIntIntMap.toString();
+    }
+    
+    /**
+     * This was created specifically to make the groupsMembers ListMultimap
+     * without duplicating network traffic to send a complementary structure.
+     * @param hashTableString
+     * @return a ListMultimap where the keys and values have been swapped.
+     */
+    public static ListMultimap<Integer, Integer> deserializeIntIntListMultimapSwapped(String hashTableString)
+    {
+        try
+        {
+            Map<String, String> inStringString =  (Map<String, String>) Splitter.on('|').omitEmptyStrings().withKeyValueSeparator("=").split(hashTableString);
+            ListMultimap<Integer, Integer> outListMultimapIntInt = ArrayListMultimap.create();
+            for (String id: inStringString.keySet())
+            {
+                outListMultimapIntInt.put(Integer.valueOf(inStringString.get(id)), Integer.valueOf(id));
+            }
+            return outListMultimapIntInt;
+        } catch (IllegalArgumentException e)
+        {
+            return null;
+        }
+
     }
     
     public static Map<Integer, String> deserializeIntStrMap(String mapIntString)
