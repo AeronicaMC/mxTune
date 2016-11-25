@@ -195,7 +195,9 @@ public enum GROUPS
     public static double getGroupMembersScaledDistance(EntityPlayer playerIn)
     {
         Set<Integer> members = getPlayersGroupMembers(playerIn);
-        double distance = 0;
+        double abortDistance = ModConfig.getGroupPlayAbortDistance();
+        double distance = 0D;
+        double maxDistance = 0D;
         if (members != null && !members.isEmpty())
         {  
             for (Integer memberA: members)
@@ -204,9 +206,9 @@ public enum GROUPS
                 {
                     if (memberA != memberB)
                     {
-                        double maxPlayerDistance = getMemberVector(memberA).distanceTo(getMemberVector(memberB));
-                        double maxDistance = ModConfig.getGroupPlayAbortDistance();
-                        distance = scaleBetween(maxPlayerDistance, 0, maxDistance, 0D, 1D);
+                        double playerDistance = getMemberVector(memberA).distanceTo(getMemberVector(memberB));
+                        if (playerDistance > maxDistance) maxDistance = playerDistance;
+                        distance = Math.min(1.0D, scaleBetween(maxDistance, 0, 1D, 0D, abortDistance));
                     }
                 }
             }

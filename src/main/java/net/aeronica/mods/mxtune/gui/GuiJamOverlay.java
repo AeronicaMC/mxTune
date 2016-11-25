@@ -16,6 +16,7 @@
  */
 package net.aeronica.mods.mxtune.gui;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -66,7 +67,6 @@ public class GuiJamOverlay extends Gui
     private static final int PLAC_ICON_BASE_U_OFFSET = 54;
     private static final int PLAC_ICON_BASE_V_OFFSET = 200;
     private static final int PLAC_ICONS_PER_ROW = 8;
-    private static final int PLAC_TEXTURE_SIZE = 256;
 
     private Minecraft mc = null;
     private FontRenderer fontRenderer = null;
@@ -312,7 +312,7 @@ public class GuiJamOverlay extends Gui
         }
         if (GROUPS.getGroupsMembers() != null && !GROUPS.getGroupsMembers().isEmpty())
         {
-            String status = new String("Group Distance: " + GROUPS.getGroupMembersScaledDistance(mc.thePlayer));
+            String status = String.format("Group Distance: %-1.2f", GROUPS.getGroupMembersScaledDistance(mc.thePlayer));
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
             qY = hd.quadY(maxHeight, 160, 4, 10);
@@ -387,10 +387,11 @@ public class GuiJamOverlay extends Gui
 
         setTexture(TEXTURE_STATUS);
         drawWidget(playerIn, iconX, iconY, musicTitle);
-        drawDebug(hd, maxWidth, maxHeight);
+//        drawDebug(hd, maxWidth, maxHeight);
         GL11.glPopMatrix();
     }
     
+    @SuppressWarnings("static-access")
     private void renderMini(HudData hd, EntityPlayer playerIn)
     {
         int maxWidth = PLAC_ICON_SIZE;
@@ -399,6 +400,7 @@ public class GuiJamOverlay extends Gui
         GL11.glPushMatrix();
         GL11.glTranslatef(hd.getPosX(), hd.getPosY(), 0F);
 
+        /* draw the status icon */
         int iconX = hd.quadX(maxWidth, 0, 2, PLAC_ICON_SIZE);
         int iconY = hd.quadY(maxHeight, 0, 2, PLAC_ICON_SIZE);
         int index = GROUPS.getIndex(playerIn.getEntityId());
@@ -407,7 +409,15 @@ public class GuiJamOverlay extends Gui
                 PLAC_ICONS_PER_ROW * PLAC_ICON_SIZE, PLAC_ICON_BASE_V_OFFSET + index /
                 PLAC_ICONS_PER_ROW * PLAC_ICON_SIZE, PLAC_ICON_SIZE, PLAC_ICON_SIZE);
 
-        drawDebug(hd, maxWidth, maxHeight);
+        /* draw the group member distance bar */
+        double dist = GROUPS.getGroupMembersScaledDistance(playerIn);
+        if (dist > 0D)
+        {
+            Color color = new Color(127,255,0);
+            int colorRGB = color.HSBtoRGB((float)((1.0D-dist)*0.5D), 1F, 1F);
+            drawRect(iconX+4, iconY+20, iconX+4 + (int)(15*dist), iconY+22, colorRGB + (208 << 24));
+        }
+//        drawDebug(hd, maxWidth, maxHeight);
 
         GL11.glPopMatrix();
     }
@@ -533,6 +543,15 @@ public class GuiJamOverlay extends Gui
         int musicTitlePosY = top + 10;
         fontRenderer.drawString(TextFormatting.BOLD + marquee(musicTitle, TITLE_DISPLAY_WIDTH), musicTitlePosX, musicTitlePosY, 0x543722);
         
+        /* draw the group member distance bar */
+        double dist = GROUPS.getGroupMembersScaledDistance(playerIn);
+        if (dist > 0D)
+        {
+            Color color = new Color(127,255,0);
+            @SuppressWarnings("static-access")
+            int colorRGB = color.HSBtoRGB((float)((1.0D-dist)*0.5D), 1F, 1F);
+            drawRect(left+237, top+24 + 62 - (int)(62*dist), left+240, top+87, colorRGB + (144 << 24));
+        }
     }
     
     public void setTexture(ResourceLocation texture) { this.mc.renderEngine.bindTexture(texture);}
