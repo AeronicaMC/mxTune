@@ -377,13 +377,11 @@ public class GuiJamOverlay extends Gui
     
     private void renderMini(HudData hd, EntityPlayer playerIn)
     {
-        int maxWidth = 256;
-        int maxHeight = 128;
-        float hudScale = inGuiHudAdjust() ? MusicOptionsUtil.getAdjustSizeHud() : MusicOptionsUtil.getSizeHud(playerIn);
+        int maxWidth = PLAC_ICON_SIZE;
+        int maxHeight = PLAC_ICON_SIZE;
                 
         GL11.glPushMatrix();
         GL11.glTranslatef(hd.getPosX(), hd.getPosY(), 0F);
-//        GL11.glScalef(hudScale, hudScale, hudScale);
 
         int iconX = hd.quadX(maxWidth, 0, 2, PLAC_ICON_SIZE);
         int iconY = hd.quadY(maxHeight, 0, 2, PLAC_ICON_SIZE);
@@ -393,7 +391,6 @@ public class GuiJamOverlay extends Gui
          PLAC_ICONS_PER_ROW * PLAC_ICON_SIZE, PLAC_ICON_BASE_V_OFFSET + index /
          PLAC_ICONS_PER_ROW * PLAC_ICON_SIZE, PLAC_ICON_SIZE, PLAC_ICON_SIZE);
          
-//        drawDebug(hd, maxWidth, maxHeight);
         GL11.glPopMatrix();
     }
     
