@@ -135,11 +135,11 @@ public class GuiJamOverlay extends Gui
         int width = event.getResolution().getScaledWidth();
         int height = event.getResolution().getScaledHeight() - HOTBAR_CLEARANCE;
         partialTicks = event.getPartialTicks();
-        if (hudData == null || inGuiHudAdjust() || lastWidth != width || lastHeight != height)
-        {
+//        if (hudData == null || inGuiHudAdjust() || lastWidth != width || lastHeight != height)
+//        {
             hudData = HudDataFactory.calcHudPositions((inGuiHudAdjust() ? MusicOptionsUtil.getAdjustPositionHud() : MusicOptionsUtil.getPositionHUD(player)), width, height);
             lastWidth = width; lastHeight = height;
-        }
+//        }
                 
         if(PlacedInstrumentUtil.isRiding(player))
         {

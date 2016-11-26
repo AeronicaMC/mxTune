@@ -113,7 +113,7 @@ public class CodecPCM implements ICodec {
         if (playID == null)
             if ((playID = ClientAudio.pollPlayIDQueue02()) == null )
             {
-                errorMessage("entityID not initialized: " + playID);
+                errorMessage("playID not initialized: " + playID);
                 return false;
             } else
             {                

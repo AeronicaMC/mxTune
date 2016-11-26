@@ -34,6 +34,6 @@ public class StartupBlocks
         GameRegistry.register(block_piano = (BlockPiano) new BlockPiano("block_piano"));
         GameRegistry.register(item_piano = (ItemPiano) new ItemPiano("block_piano"));
 
-        GameRegistry.registerTileEntityWithAlternatives(TileInstrument.class, "TileInstrument", "PianoTile");
+        GameRegistry.registerTileEntityWithAlternatives(TileInstrument.class, "mxtune_tile_instrument", "PianoTile", "TileInstrument");
     }
 }

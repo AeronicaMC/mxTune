@@ -23,6 +23,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage;
+import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.status.ClientStateData;
 import net.aeronica.mods.mxtune.status.ServerCSDManager;
@@ -94,6 +95,7 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
     {
         ClientCSDMonitor.collectAndSend();
         MIDISystemUtil.getInstance().onPlayerLoggedInModStatus(playerIn);
+        ClientAudio.init(playerIn);
     }
 
     public void handleServerSide(EntityPlayer playerIn)
