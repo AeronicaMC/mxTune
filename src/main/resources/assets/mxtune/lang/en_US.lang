@@ -28,11 +28,11 @@ mxtune.configgui.ctgy.general.tooltip=mxTune General Settings
 mxtune.configgui.ctgy.general=mxTune General Settings
 
 mxtune.configgui.listenerRange=Listener Range
-mxtune.configgui.listenerRange.tooltip=The radius around a music source in blocks in which a player can hear music.
+mxtune.configgui.listenerRange.tooltip=The radius around a music source in blocks in which a player can hear music. [range: 10.0 ~ 64.0]
 mxtune.configgui.hideWelcomeStatusMessage=Hide Welcome Status Message
 mxtune.configgui.hideWelcomeStatusMessage.tooltip=Exactly as the name implies, if true the welcome message is not displayed.
 mxtune.configgui.groupPlayAbortDistance=Jam Abort Distance
-mxtune.configgui.groupPlayAbortDistance.tooltip=The maximum euclidean distance between playing members in a jam session. Exceeding this distance will stop the music.
+mxtune.configgui.groupPlayAbortDistance.tooltip=The maximum distance between group members. Exceeding this distance will stop the music. [range: 10.0 ~ 24.0]
 soloPlayWhileWalking=Deprecated Option!
 soloPlayWhileWalking.tooltip="B:soloPlayWhileWalking=true" is Deprecated! Please manually remove the option from the mxtune.cfg
 
