@@ -1,0 +1,149 @@
+2016-11-26: mxtune-1.10.2-0.3.1.0-dev.9
+New status HUD. New option on Music Options dialog to adjust the size the position of the HUD. It's a bit derpy right now. It needs more love.
+New look for the group status placards for players.
+No more PLAYING GUI for the PIANO. You will be able to chat while you play!
+No more PLAYING GUI for JAM/GROUP Sessions! You CAN Walk and RUN while JAMMING - BUT...
+... While JAMMING Music Will Stop if the DISTANCE between the JAMMERS goes beyond a set LIMIT!
+All mxTune music will be 3D audio sound sources for LISTENERS. Music PLAYERS will hear other SOLOISTS and GROUPS in 3D, but will HEAR their OWN PLAYING in STEREO.
+A new audio chain the pregenerates the audio and the then plays it. This allows the 3D effects and eliminates stutters that could occur in the old chain.
+Removed the Volume Control from the mxTune Music Options Dialog and placed it on the Vanilla Music & Sound Options dialog. This means that mxTune music can be adjusted like any other sounds in Minecraft.
+
+Known issues:
+Starting to play may fail. Just retry. It may be related to accidentally bumping the mouse wheel/scroll while playing. Depends how sloppy/sensitive it is.
+
+Notes:
+I've left some logging turned on the group play and the PCM audio codec. You will see INFO lines in the log like this:
+[14:05:20] [Thread-11/INFO]:   zeroBufferCount: 0
+[14:05:20] [Thread-11/INFO]:   zeroBufferCount: 1
+[14:05:20] [Thread-11/INFO]:   zeroBufferCount: 2
+[14:05:20] [Thread-11/INFO]:   zeroBufferCount: 3
+[14:05:20] [Thread-11/INFO]:   zeroBufferCount: 4
+[14:05:20] [Thread-11/INFO]:   zeroBufferCount: 5
+[14:05:20] [Thread-11/INFO]:   zeroBufferCount: 6
+...
+[14:05:22] [Thread-10/INFO]: cleanup
+These are buffers of dead silence that are generated while the audio chain converts the MML to audio. Depending on the speed of your CPU and load on your game and JAVA there may be more.If there are more than 40 per play, your PC is probably too slow to run mxTune properly. It's hard to tell though. I only have my own PC to test on. Please let me know. "cleanup" is posted for any error or the end a clean play. Not very helpful, I need to improve error messages for the audio chain.
+
+FIXED:
+Blacklist and Whitelist were lost when a player died or changed dimensions. They are now saved properly.
+
+DROPPED:
+No more support for Minecraft 1.9.4. I will concentrate on 1.10.2, 1.11+. A release for 1.11 will occur sometime in December.
+----
+
+2016-10-23: mxtune-1.10.2-0.3.1.0-dev.8, mxtune-1.9.4-0.3.1.0-dev.8
+Fixed recipes for
+
+Jazz Guitar
+Electric Guitar Muted
+Overdriven Guitar
+Distortion Guitar
+----
+
+2016-10-16: mxtune-1.10.2-0.3.1.0-dev.7, mxtune-1.9.4-0.3.1.0-dev.7
+Add some Guitars! 
+
+Jazz Guitar
+Electric Guitar Muted
+Overdriven Guitar
+Distortion Guitar
+ 
+Continued to work on the new MML->PCM 3D  audio chain. The Magic Music Item (Creative Item) is a test instrument that uses this new system. The volume control for this item is on the vanilla "Music & Sounds Options..." dialog.
+----
+
+2016-10-11: mxtune-1.10.2-0.3.1.0-dev.6, mxtune-1.9.4-0.3.1.0-dev.6
+For Forge builds 1.10.2-12.18.1.2094+
+
+Only changes you'll see are with the creative only "Magic Music Item." It now uses a new audio chain that allows playing music via the 3D sound system. It's currently a solo fixed voice only item. It features linear volume attenuation. So listeners will hear the sound within a 16 block radius and have the potential to hear the sound if they are present within a 24 block radius of the music source.
+----
+
+2016-08-27: mxtune-1.10.2-0.3.1.0-dev.5, mxtune-1.9.4-0.3.1.0-dev.5
+Warn player about missing MIDI resources and provide suggestions to resolve. Warn 10 times at most.
+Improve MIDI Synthesizer and Soundbank initializations.
+Only mute background music while playing.
+
+Less log spam.
+----
+
+2016-08-18: mxtune-1.10.2-0.3.1.0-dev.4, mxtune-1.9.4-0.3.1.0-dev.4
+Correct MML "n#" issue where notes are played one octave too low. Closes Issue #6
+
+Issue #6
+It seems that when notes are played using the n# format, they're exactly one octave too low in-game.
+
+Sample case:
+
+MML@cn48cn48cn48cn48,;
+All the notes played above should be the same, but in-game they're not.
+----
+
+2016-08-10: mxtune-1.10.2-0.3.1.0-dev.3, mxtune-1.9.4-0.3.1.0-dev.3
+Requests: Add a new hand held instrument. The "Music Box".
+
+For the heck of it: Added an "Ocarina" and "Sawtooth Lead".
+
+There is still a huge amount of work to do before I think about making this pretty and configurable so you are stuck with my ugly textures for now :D
+----
+
+2016-08-08: Beta mxtune-1.10.2-0.3.1.0-dev.2, mxtune-1.9.4-0.3.1.0-dev.2
+Fix:
+
+java.lang.IllegalArgumentException: Invalid UUID string: _Fobius.baubback
+ 	at java.util.UUID.fromString(UUID.java:194)
+ 	at net.aeronica.mods.mxtune.options.MusicOptionsUtil.dumpAllPlayers(MusicOptionsUtil.java:146)
+----
+
+2016-08-07: Beta mxtune-1.10.2-0.3.0.0-dev.2016.08.07.14.51.25, mxtune-1.9.4-0.3.0.0-dev.2016.08.07.15.05.04
+Updated the Music Options dialog. Currently on the "P" keybind.
+
+In multiplayer you can now create white and black lists to fine tune who you want to hear, or not. At the moment there must be other players online to populate the Players list.
+----
+
+2016-07-23: Alpha mxtune-1.9.4-0.3.0.0-dev.2016.07.23.22.09.31
+Add a server side config option for allowing a player to walk and play music - Solo only using a hand held instrument. Set to True be default. Server owners should make sure to update the config file.
+
+To stop playing simply switch items.
+
+This is a first pass at doing this. There are some issues to be resolved.
+
+Prevent a player from moving the active instrument in inventory while playing.
+As of yet undiscovered issues or corner use cases. 
+Setting this version to Beta so it appears in the Curse Client mod list. I think it's time to get some more opinions. This is still very much in early stages of development.
+----
+
+2016-07-21: Alpha mxtune-1.9.4-0.3.0.0-dev.2016.07.21.15.00.14
+Added a new feature: MML Music Volume. Now available on the mxTune Music Options dialog accessible via the "P" key.
+
+This feature is still under construction. The mute options have not been implemented at this time.
+
+General code cleanup and refactoring. Moved "Play" initiation code from the client side to the server side and eliminated two network packets in the process.
+----
+
+2016-07-18: Alpha mxtune-1.9.4-0.3.0-dev.2016.07.18.21.18.10.jar
+Fix corrupt textures on TESR lazy loaded models if a player adds a resource pack while in game. Force a model reload during the TextureStitchEvent.
+
+Stop MML music playing on the client a when the player disconnects.
+----
+
+2016-07-13: Alpha mxtune-1.9.4-0.3.0-dev.2016.07.12.18.44.36.jar
+Made a change to the Music Paper item. Currently this item can be music paper OR sheet music depending on an internal property. The problem with that is that when in sheet music form, it can still be stacked to 16 pieces as long as the name is the same. And there lies a problem since you could overwrite a tune with the same name. This also makes inventory operations and slot mechanics somewhat difficult. Ideally I want a single item stack in instrument inventory.
+
+To solve this issue I have created a Sheet Music item with a max stack size of one. Converting the old sheet music to the new sheet music is easy. If the sheet music resides in an instrument inventory it will be automatically converted upon opening.
+
+Old style sheet music now has a red border and note symbol. The new item sheet music uses the current green note. Both will still work in instruments. I have included an item to convert any existing sheet music items to the new sheet music items. See the creative tab. Simply place the old sheet music into player inventory then hold the Sheet Music Converter in your main hand and right click.
+----
+
+2016-06-07: Alpha mxtune-1.9.4-2016.06.06.jar
+Updated the MML input dialog. Now parses MML and displays the errors in a list. Clicking on and error moves the cursor to the error in the editor. This is intended as a very simple editor to fix simple problems. As an added feature the the MML can be test played in the dialog. Only the player using the dialog will hear the music.
+
+This jar will also work with 1.10.
+----
+
+2016-05-23: Alpha mxtune-1.9.4-2016.05.23.jar
+Added more temporary recipes. Limited Spinet Piano item to stack size of one.
+----
+
+2016-05-22: Alpha mxtune-1.9.4-2016.05.22.jar
+2016-05-22 Initial public alpha release. Absolutely will have bugs. Built using Forge 1.9.4-12.17.0.1909-1.9.4.
+----
+
