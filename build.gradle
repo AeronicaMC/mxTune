@@ -9,7 +9,7 @@ buildscript {
 		}	
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
 		classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
     }
 }
@@ -17,17 +17,11 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'java' // or 'groovy'. Must be explicitly applied
 apply plugin: 'com.github.johnrengelman.shadow'
 
-sourceCompatibility = targetCompatibility = "1.7" // Need this here so eclipse task generates correctly.
+sourceCompatibility = targetCompatibility = "1.8" // Need this here so eclipse task generates correctly.
 compileJava {
-    sourceCompatibility = targetCompatibility = "1.7"
+    sourceCompatibility = targetCompatibility = "1.8"
 }
 
-/*
-// for people who want stable - not yet functional for MC 1.8.8 - we require the forgegradle 2.1 snapshot
-plugins {
-    id "net.minecraftforge.gradle.forge" version "2.0.2"
-}
-*/
 version = "0.3.1.0-dev"
 group = "net.aeronica.mods.mxtune" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "mxtune-1.10.2"
