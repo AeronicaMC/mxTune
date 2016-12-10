@@ -42,7 +42,7 @@ public class CLEventHandler
             if (
                     GROUPS.getClientMembers() != null /* (mc.thePlayer.equals(player)) */
                     && GROUPS.getClientMembers().containsKey(event.getEntity().getEntityId()) &&
-                    !(mc.gameSettings.thirdPersonView == 0 && mc.thePlayer.equals(event.getEntity())))
+                    !(mc.gameSettings.thirdPersonView == 0 && mc.player.equals(event.getEntity())))
             {
                 placardRenderer.setPlacard(GROUPS.getIndex(event.getEntity().getEntityId()));
                 placardRenderer.doRender(event);

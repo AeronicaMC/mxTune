@@ -57,10 +57,10 @@ public class SheetMusicUtil
     {
         if (isPlaced)
         {
-            if (playerIn.worldObj.getBlockState(pos).getBlock() instanceof IPlacedInstrument)
+            if (playerIn.getEntityWorld().getBlockState(pos).getBlock() instanceof IPlacedInstrument)
             {
-                Block placedInst = (Block) playerIn.worldObj.getBlockState(pos).getBlock();
-                TileInstrument te = ((IPlacedInstrument) placedInst).getTE(playerIn.worldObj, pos);
+                Block placedInst = (Block) playerIn.getEntityWorld().getBlockState(pos).getBlock();
+                TileInstrument te = ((IPlacedInstrument) placedInst).getTE(playerIn.getEntityWorld(), pos);
                 return te.getInventory().getStackInSlot(0).copy();
             }
         } else
@@ -100,7 +100,7 @@ public class SheetMusicUtil
             if (items.tagCount() == 1)
             {
                 NBTTagCompound item = (NBTTagCompound) items.getCompoundTagAt(0);
-                ItemStack sheetMusicOld = ItemStack.loadItemStackFromNBT(item);
+                ItemStack sheetMusicOld = new ItemStack(item);
                 NBTTagCompound contents = (NBTTagCompound) sheetMusicOld.getTagCompound().getTag("MusicBook");
                 if (contents != null)
                 {

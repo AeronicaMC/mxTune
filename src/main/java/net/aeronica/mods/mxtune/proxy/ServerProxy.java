@@ -59,12 +59,6 @@ public class ServerProxy extends CommonProxy
     }
 
     @Override
-    public void initEntities()
-    {
-        // EntityRegistry.getInstance().serverInit();
-    }
-
-    @Override
     public void replacePlayerModel() {}
     
     @Override

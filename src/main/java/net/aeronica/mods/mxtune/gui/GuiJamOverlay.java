@@ -130,7 +130,7 @@ public class GuiJamOverlay extends Gui
        if (mc.gameSettings.showDebugInfo) return;
 
        if (event.isCancelable() || event.getType() != ElementType.EXPERIENCE) { return; }
-        EntityPlayerSP player = this.mc.thePlayer;
+        EntityPlayerSP player = this.mc.player;
  
         int width = event.getResolution().getScaledWidth();
         int height = event.getResolution().getScaledHeight() - HOTBAR_CLEARANCE;
@@ -237,7 +237,7 @@ public class GuiJamOverlay extends Gui
             {
                 /** Always add the leader at the HEAD of the list */
                 memberID = GROUPS.getLeaderOfGroup(groupID);
-                memberName = playerIn.worldObj.getEntityByID(memberID).getDisplayName().getUnformattedText();
+                memberName = playerIn.getEntityWorld().getEntityByID(memberID).getDisplayName().getUnformattedText();
                 memberNameWidth = fontRenderer.getStringWidth(memberName);
                 playStatus = GROUPS.getIndex(memberID);     
                 notePos = new Tuple<Integer, Integer>( notePosMembers[index][0],  notePosMembers[index][1]);
@@ -252,7 +252,7 @@ public class GuiJamOverlay extends Gui
                     memberID = im.next();
                     if (groupID.equals(GROUPS.getMembersGroupID(memberID)) && !memberID.equals(GROUPS.getLeaderOfGroup(groupID)))
                     {
-                        memberName = playerIn.worldObj.getEntityByID(memberID).getDisplayName().getUnformattedText();
+                        memberName = playerIn.getEntityWorld().getEntityByID(memberID).getDisplayName().getUnformattedText();
                         memberNameWidth = fontRenderer.getStringWidth(memberName);
                         playStatus = GROUPS.getIndex(memberID);     
                         notePos = new Tuple<Integer, Integer>( notePosMembers[index][0],  notePosMembers[index][1]);
@@ -296,7 +296,7 @@ public class GuiJamOverlay extends Gui
         }
         if (GROUPS.getActivePlayIDs() != null && !GROUPS.getActivePlayIDs().isEmpty())
         {
-            String status = new String("GROUPS.index:   " + GROUPS.getIndex(mc.thePlayer.getEntityId()));
+            String status = new String("GROUPS.index:   " + GROUPS.getIndex(mc.player.getEntityId()));
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
             qY = hd.quadY(maxHeight, 140, 4, 10);
@@ -312,7 +312,7 @@ public class GuiJamOverlay extends Gui
         }
         if (GROUPS.getGroupsMembers() != null && !GROUPS.getGroupsMembers().isEmpty())
         {
-            String status = String.format("Group Distance: %-1.2f", GROUPS.getGroupMembersScaledDistance(mc.thePlayer));
+            String status = String.format("Group Distance: %-1.2f", GROUPS.getGroupMembersScaledDistance(mc.player));
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
             qY = hd.quadY(maxHeight, 160, 4, 10);

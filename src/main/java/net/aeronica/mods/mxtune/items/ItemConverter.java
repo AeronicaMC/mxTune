@@ -47,7 +47,7 @@ public class ItemConverter extends ItemBase
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
     {
         boolean invChanged = false;
         int countUpdated = 0;
@@ -80,7 +80,7 @@ public class ItemConverter extends ItemBase
                 ModLogger.info("ItemConverter#onItemRightClick: " + countUpdated + " Sheet Music Item(s) Updated");
             }
         }
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);
+        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
     }
 
     public ItemStack sheetMusicConversion(ItemStack musicPaper)
@@ -128,7 +128,7 @@ public class ItemConverter extends ItemBase
             {
                 ModLogger.info("stackIn Has ItemInventory: true");
                 NBTTagCompound item = (NBTTagCompound) items.getCompoundTagAt(0);
-                ItemStack sheetMusicOld = ItemStack.loadItemStackFromNBT(item);
+                ItemStack sheetMusicOld = new ItemStack(item);
                 NBTTagCompound contents = (NBTTagCompound) sheetMusicOld.getTagCompound().getTag("MusicBook");
                 if (contents != null)
                 {
@@ -159,7 +159,7 @@ public class ItemConverter extends ItemBase
             {
                 ModLogger.info("stackIn Has ItemInventory: true");
                 NBTTagCompound item = (NBTTagCompound) items.getCompoundTagAt(0);
-                ItemStack sheetMusicOld = ItemStack.loadItemStackFromNBT(item);
+                ItemStack sheetMusicOld = new ItemStack(item);
                 NBTTagCompound contents = (NBTTagCompound) sheetMusicOld.getTagCompound().getTag("MusicBook");
                 if (contents != null  && (sheetMusicOld.getItem() instanceof ItemMusicPaper))
                 {
@@ -198,7 +198,7 @@ public class ItemConverter extends ItemBase
     
     /** Activate this item unconditionally */
     @Override
-    public EnumActionResult onItemUseFirst(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand)
+    public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand handIn)
     {
         return EnumActionResult.FAIL;
     }

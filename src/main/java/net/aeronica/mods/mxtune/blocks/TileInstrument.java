@@ -114,11 +114,11 @@ public class TileInstrument extends TileEntity
     public void syncToClient()
     {
         markDirty();
-        if (worldObj != null)
+        if (world != null)
         {
-            if (!worldObj.isRemote && !this.isInvalid())
+            if (!world.isRemote && !this.isInvalid())
             {
-                IBlockState state = worldObj.getBlockState(getPos());
+                IBlockState state = world.getBlockState(getPos());
                 /**
                  * Sets the block state at a given location. Flag 1 will cause a
                  * block update. Flag 2 will send the change to clients (you
@@ -126,7 +126,7 @@ public class TileInstrument extends TileEntity
                  * being re-rendered, if this is a client world. Flags can be
                  * added together.
                  */
-                worldObj.notifyBlockUpdate(getPos(), state, state, 3);
+                world.notifyBlockUpdate(getPos(), state, state, 3);
             }
         }
     }

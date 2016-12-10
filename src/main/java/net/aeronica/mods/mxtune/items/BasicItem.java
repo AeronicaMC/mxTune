@@ -40,19 +40,21 @@ public class BasicItem extends ItemBase
         super(itemName);
         setCreativeTab(MXTuneMain.TAB_MUSIC);
     }
-
+    
     @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
     {
+
         BlockPos pos = new BlockPos((int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ);
         if (!worldIn.isRemote)
         {
+            ItemStack itemStackIn = playerIn.getHeldItem(handIn);
             /** Server Side - Open the instrument inventory GuiInstInvAdjustRotations */
-            if (playerIn.isSneaking() && hand.equals(EnumHand.MAIN_HAND))
+            if (playerIn.isSneaking() && handIn.equals(EnumHand.MAIN_HAND) && !itemStackIn.equals(ItemStack.EMPTY))
             {
                 playerIn.openGui(MXTuneMain.instance, GuiInstrumentInventory.GUI_ID, worldIn, 0,0,0);
             }
-            if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && hand.equals(EnumHand.MAIN_HAND))
+            if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && handIn.equals(EnumHand.MAIN_HAND))
             {
                 if (!PlayManager.isPlayerPlaying(playerIn))
                 {
@@ -65,7 +67,7 @@ public class BasicItem extends ItemBase
         {
             // Client Side - nothing to do
         }
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);
+        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
     }
 
     /* 
@@ -124,7 +126,7 @@ public class BasicItem extends ItemBase
     }
 
     @Override
-    public EnumActionResult onItemUseFirst(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand)
+    public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand)
     {
         // return EnumActionResult.SUCCESS to activate on AIR only
         // return EnumActionResult.FAIL to activate unconditionally and skip

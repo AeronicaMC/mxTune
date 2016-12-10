@@ -16,7 +16,6 @@
  */
 package net.aeronica.mods.mxtune;
 
-import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
 import net.aeronica.mods.mxtune.handler.GUIHandler;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.options.PlayerMusicOptionsCapability;
@@ -31,7 +30,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.registry.EntityRegistry;
 
 @Mod(modid = MXTuneMain.MODID, name = MXTuneMain.MODNAME, version = MXTuneMain.VERSION, dependencies = MXTuneMain.DEPS, guiFactory = MXTuneMain.GUIFACTORY)
 public class MXTuneMain
@@ -39,8 +37,7 @@ public class MXTuneMain
     public static final String MODID = "mxtune";
     public static final String MODNAME = "mxTune";
     public static final String VERSION = "{@version:mod}";
-    public static final String DEPS = "required-after:Forge@[1.10.2-12.18.2.2121,)";
-//    public static final String DEPS = "required-after:Forge@[1.9.4-12.17.0.1974,)";
+    public static final String DEPS = "required-after:forge@[1.11-13.19.0.2187,)";
     public static final String GUIFACTORY = "net.aeronica.mods.mxtune.config.ModGuiFactory"; 
 
     @Mod.Instance(MODID)
@@ -70,9 +67,6 @@ public class MXTuneMain
         proxy.registerKeyBindings();
         proxy.registerRecipes();
         proxy.initMML();
-
-        /** Entity Registering */
-        EntityRegistry.registerModEntity(EntitySittableBlock.class, "MountableBlock", 0, this, 80, 1, false);
 
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, GUIHandler.getInstance());
     }

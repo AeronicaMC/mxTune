@@ -69,4 +69,5 @@ public class ItemBase extends Item
         item.setRegistryName(itemName);
         item.setUnlocalizedName(item.getRegistryName().toString());
     }
+
 }

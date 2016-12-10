@@ -19,7 +19,6 @@ package net.aeronica.mods.mxtune.util;
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.init.StartupItems;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -40,5 +39,5 @@ public class MusicTab extends CreativeTabs
     public ItemStack getIconItemStack() {return new ItemStack(StartupItems.item_instrument, 1, 1);}
 
     @Override
-    public Item getTabIconItem() {return null;}
+    public ItemStack getTabIconItem() {return ItemStack.EMPTY;}
 }

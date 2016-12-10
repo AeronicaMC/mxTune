@@ -132,18 +132,18 @@ public class GuiSliderMX extends GuiButton
 
     private float normalizeValue(float param)
     {
-        return MathHelper.clamp_float((this.snapToStepClamp(param) - this.valueMin) / (this.valueMax - this.valueMin), 0.0F, 1.0F);
+        return MathHelper.clamp((this.snapToStepClamp(param) - this.valueMin) / (this.valueMax - this.valueMin), 0.0F, 1.0F);
     }
 
     public float denormalizeValue(float p_148262_1_)
     {
-        return this.snapToStepClamp(this.valueMin + (this.valueMax - this.valueMin) * MathHelper.clamp_float(p_148262_1_, 0.0F, 1.0F));
+        return this.snapToStepClamp(this.valueMin + (this.valueMax - this.valueMin) * MathHelper.clamp(p_148262_1_, 0.0F, 1.0F));
     }
 
     private float snapToStepClamp(float p_148268_1_)
     {
         p_148268_1_ = this.snapToStep(p_148268_1_);
-        return MathHelper.clamp_float(p_148268_1_, this.valueMin, this.valueMax);
+        return MathHelper.clamp(p_148268_1_, this.valueMin, this.valueMax);
     }
 
     private float snapToStep(float p_148264_1_)

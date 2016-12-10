@@ -101,7 +101,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         switch (propertyID)
         {
         case PlayerMusicDefImpl.SYNC_ALL:
-            this.data = buffer.readNBTTagCompoundFromBuffer();
+            this.data = buffer.readCompoundTag();
             break;
         case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
             this.disableHud = buffer.readBoolean();
@@ -157,7 +157,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         switch (this.propertyID)
         {
         case PlayerMusicDefImpl.SYNC_ALL:
-            buffer.writeNBTTagCompoundToBuffer(this.data);
+            buffer.writeCompoundTag(this.data);
             break;
         case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
             buffer.writeBoolean(this.disableHud);

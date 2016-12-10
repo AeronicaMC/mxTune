@@ -77,7 +77,7 @@ public class GuiGroup extends GuiScreen
 
         this.mc = Minecraft.getMinecraft();
         this.fontRenderer = mc.fontRendererObj;
-        this.player = mc.thePlayer;
+        this.player = mc.player;
 
         this.guiLeft = (this.width - this.xSize) / 2;
         this.guiTop = (this.height - this.ySize) / 2;
@@ -199,7 +199,7 @@ public class GuiGroup extends GuiScreen
             if (groupID != null)
             {
                 /** Always put the leader at the TOP of the list */
-                leaderName = player.worldObj.getEntityByID(GROUPS.getLeaderOfGroup(groupID)).getDisplayName().getUnformattedText();
+                leaderName = player.getEntityWorld().getEntityByID(GROUPS.getLeaderOfGroup(groupID)).getDisplayName().getUnformattedText();
                 fontRenderer.drawStringWithShadow(TextFormatting.YELLOW + leaderName, posX, posY, 16777215);
                 posY += 10;
                 /** Display the remaining members taking care to not print the leader a 2nd time. */
@@ -209,7 +209,7 @@ public class GuiGroup extends GuiScreen
                     memberID = im.next();
                     if (groupID.equals(GROUPS.getMembersGroupID(memberID)) && !memberID.equals(GROUPS.getLeaderOfGroup(groupID)))
                     {
-                        memberName = player.worldObj.getEntityByID(memberID).getDisplayName().getUnformattedText();
+                        memberName = player.getEntityWorld().getEntityByID(memberID).getDisplayName().getUnformattedText();
                         fontRenderer.drawStringWithShadow(memberName, posX, posY, 16777215);
                         list_btn_members.get(i).memberName = memberName;
                         /** Only Leaders get to remove and promote other members! */
@@ -281,7 +281,7 @@ public class GuiGroup extends GuiScreen
     protected void sendRequest(GROUPS operation, String leaderName, String memberName)
     {
         Integer groupID = null;
-        Integer memberID = player.worldObj.getPlayerEntityByName(memberName).getEntityId();
+        Integer memberID = player.getEntityWorld().getPlayerEntityByName(memberName).getEntityId();
         PacketDispatcher.sendToServer(new ManageGroupMessage(operation.toString(), groupID, memberID));
     }
 

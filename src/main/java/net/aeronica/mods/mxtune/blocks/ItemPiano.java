@@ -45,7 +45,7 @@ public class ItemPiano extends ItemBase
     /** Called when a Block is right-clicked with this Item */
     @SuppressWarnings("deprecation")
     @Override
-    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public EnumActionResult onItemUse(EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand handIn, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
         if (worldIn.isRemote)
         {
@@ -59,13 +59,13 @@ public class ItemPiano extends ItemBase
         {
             IBlockState iblockstate = worldIn.getBlockState(pos);
             Block block = iblockstate.getBlock();
-
+            ItemStack stack = playerIn.getHeldItem(handIn);
             /** Looking at the ground or a replaceable block like grass. */
             boolean flag = block.isReplaceable(worldIn, pos);
             if (!flag) pos = pos.up();
 
             /**determine the direction the player is facing */
-            int i = MathHelper.floor_double((double) (playerIn.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+            int i = MathHelper.floor((double) (playerIn.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
             EnumFacing enumfacing = EnumFacing.getHorizontal(i);
             /**get the next block in line. */
             BlockPos blockpos = pos.offset(enumfacing);
@@ -91,7 +91,7 @@ public class ItemPiano extends ItemBase
 
                     SoundType soundtype = iblockstate1.getBlock().getSoundType();
                     worldIn.playSound((EntityPlayer) null, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-                    --stack.stackSize;
+                    stack.setCount(stack.getCount()-1);
                     return EnumActionResult.SUCCESS;
                 } else
                 {

@@ -31,7 +31,7 @@ public class GuiInstrumentInventory extends GuiContainer {
 		this.mc = Minecraft.getMinecraft();
 
 		// The slot inventory.currentItem is 0 based
-		this.theInvItemSlot = mc.thePlayer.inventory.currentItem;
+		this.theInvItemSlot = mc.player.inventory.currentItem;
 		this.fontRenderer = mc.fontRendererObj;
 
 		xSize = 184;
@@ -47,9 +47,9 @@ public class GuiInstrumentInventory extends GuiContainer {
 	// NOTE: In Forge 804, bindTexture() is func_110577_a()
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		if (mc.thePlayer.getHeldItemMainhand() == null)
+		if (mc.player.getHeldItemMainhand() == null)
 			return;
-		String s = mc.thePlayer.getHeldItemMainhand().getDisplayName();
+		String s = mc.player.getHeldItemMainhand().getDisplayName();
 		this.fontRenderer.drawString(s, this.xSize / 2 - this.fontRenderer.getStringWidth(s) / 2, 12, 4210752);
 		this.fontRenderer.drawString(I18n.format("container.inventory"), 12, this.ySize - 96 + 4, 4210752);
 	}

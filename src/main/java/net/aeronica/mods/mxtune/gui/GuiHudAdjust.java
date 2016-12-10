@@ -53,7 +53,7 @@ public class GuiHudAdjust extends GuiScreen
     public GuiHudAdjust()
     {
         mc = Minecraft.getMinecraft();
-        this.playerIn = mc.thePlayer;
+        this.playerIn = mc.player;
         midiUnavailable = MIDISystemUtil.getInstance().midiUnavailable();
     }
     

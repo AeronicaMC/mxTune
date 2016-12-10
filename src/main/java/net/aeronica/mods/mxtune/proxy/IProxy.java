@@ -45,6 +45,9 @@ public interface IProxy
     /** Initialize Items and Blocks in Common PreInit */
     void initPayload();
 
+    /** Initialize Entities */
+    void initEntities();
+    
     /**
      * Register the renderers during client PreInit, does nothing on the server
      */
@@ -63,9 +66,6 @@ public interface IProxy
 
     /** Initializes and reads the configuration file with the options relevant to the current side */
     void initConfiguration(FMLPreInitializationEvent event);
-
-    /** Initializes the EntityRegistry */
-    void initEntities();
 
     /** Register HUD in Client PostInit */
     void registerHUD();

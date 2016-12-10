@@ -19,6 +19,7 @@ package net.aeronica.mods.mxtune.proxy;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.handler.SREventHandler;
+import net.aeronica.mods.mxtune.init.ModEntities;
 import net.aeronica.mods.mxtune.init.ModSounds;
 import net.aeronica.mods.mxtune.init.StartupBlocks;
 import net.aeronica.mods.mxtune.init.StartupItems;
@@ -56,6 +57,11 @@ public abstract class CommonProxy implements IProxy
         Recipes.register();
     }
 
+    public void initEntities()
+    {
+        ModEntities.init();
+    }
+    
     @Override
     public void initMML() {}
 

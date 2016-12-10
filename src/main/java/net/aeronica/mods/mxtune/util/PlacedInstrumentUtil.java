@@ -66,7 +66,7 @@ public class PlacedInstrumentUtil
 
             double blockheight = worldIn.getBlockState(underFoot).getBoundingBox(null, underFoot).maxY;
             EntitySittableBlock nemb = new EntitySittableBlock(worldIn, underFoot.getX(), underFoot.getY(), underFoot.getZ(), blockheight + 6 * 0.0625F, false);
-            worldIn.spawnEntityInWorld(nemb);
+            worldIn.spawnEntity(nemb);
             playerIn.startRiding(nemb, true);
             // ModLogger.logInfo("SittableUtil#standOnBlock: startRiding()");
         }
@@ -78,7 +78,7 @@ public class PlacedInstrumentUtil
         if (!checkForExistingEntity(worldIn, x, y, z, playerIn))
         {
             EntitySittableBlock nemb = new EntitySittableBlock(worldIn, x, y, z, yOffset, true);
-            worldIn.spawnEntityInWorld(nemb);
+            worldIn.spawnEntity(nemb);
             playerIn.startRiding(nemb, true);
             // ModLogger.logInfo("SittableUtil#sitOnBlock: Initial startRiding()");
         }
@@ -90,7 +90,7 @@ public class PlacedInstrumentUtil
         if (!checkForExistingEntity(worldIn, x, y, z, playerIn))
         {
             EntitySittableBlock nemb = new EntitySittableBlock(worldIn, x, y, z, xOffset, yOffset, zOffset);
-            worldIn.spawnEntityInWorld(nemb);
+            worldIn.spawnEntity(nemb);
             playerIn.startRiding(nemb, true);
             // ModLogger.logInfo("SittableUtil#sitOnBlock: Initial startRiding()");
         }
@@ -102,7 +102,7 @@ public class PlacedInstrumentUtil
         if (!checkForExistingEntity(worldIn, x, y, z, playerIn))
         {
             EntitySittableBlock nemb = new EntitySittableBlock(worldIn, x, y, z, xOffset, yOffset, zOffset, yaw);
-            worldIn.spawnEntityInWorld(nemb);
+            worldIn.spawnEntity(nemb);
             playerIn.startRiding(nemb, true);
             // ModLogger.logInfo("SittableUtil#sitOnBlock: Initial startRiding()" + nemb.getPosition());
         }
@@ -114,7 +114,7 @@ public class PlacedInstrumentUtil
         if (!checkForExistingEntity(worldIn, x, y, z, playerIn))
         {
             EntitySittableBlock nemb = new EntitySittableBlock(worldIn, x, y, z, par6, metadata, offset);
-            worldIn.spawnEntityInWorld(nemb);
+            worldIn.spawnEntity(nemb);
             playerIn.startRiding(nemb);
         }
         return true;

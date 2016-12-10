@@ -47,7 +47,7 @@ public class SREventHandler
     @SubscribeEvent
     public void onEvent(PlayerContainerEvent.Close event)
     {
-        if (event.getEntityPlayer().worldObj.isRemote) return;
+        if (event.getEntityPlayer().getEntityWorld().isRemote) return;
         for(Slot slot: event.getContainer().inventorySlots)
         {
             if(!(slot.inventory.getName().contentEquals("container.inventory") ||

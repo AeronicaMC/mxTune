@@ -2,9 +2,11 @@ package net.aeronica.mods.mxtune.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 
 public class InventoryInstrument implements IInventory {
@@ -17,7 +19,8 @@ public class InventoryInstrument implements IInventory {
 	public static final int INV_SIZE = 1;
 
 	/** Inventory's size must be same as number of slots you add to the Container class */
-	ItemStack[] inventory = new ItemStack[INV_SIZE];
+	//ItemStack[] inventory = new ItemStack[INV_SIZE];
+	private final NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(INV_SIZE, ItemStack.EMPTY);
 
 	/**
 	 * @param itemstack
@@ -25,7 +28,6 @@ public class InventoryInstrument implements IInventory {
 	 */
 	public InventoryInstrument(ItemStack itemstack) {
 		this.stack = itemstack;
-
 		// Create a new NBT Tag Compound if one doesn't already exist, or you will crash
 		if (!this.stack.hasTagCompound()) {
 			this.stack.setTagCompound(new NBTTagCompound());
@@ -37,42 +39,46 @@ public class InventoryInstrument implements IInventory {
 
 	@Override
 	public int getSizeInventory() {
-		return inventory.length;
+		return inventory.size();
 	}
 
 	@Override
 	public ItemStack getStackInSlot(int slot) {
-		return inventory[slot];
+		return inventory.get(slot);
 	}
 
-	@Override
-	public ItemStack decrStackSize(int slot, int amount) {
-		ItemStack stack = getStackInSlot(slot);
-		if (stack != null) {
-			if (stack.stackSize > amount) {
-				stack = stack.splitStack(amount);
-				// Don't forget this line or your inventory will not be saved!
-				this.markDirty();;
-			} else {
-				setInventorySlotContents(slot, null);
-			}
-		}
-		return stack;
-	}
 
-//	@Override
-//	public ItemStack getStackInSlotOnClosing(int slot) {
+//	public ItemStack decrStackSize(int slot, int amount) {
 //		ItemStack stack = getStackInSlot(slot);
-//		setInventorySlotContents(slot, null);
+//		if (!stack.equals(ItemStack.EMPTY)) {
+//			if (stack.getCount() > amount) {
+//				stack = stack.splitStack(amount);
+//				// Don't forget this line or your inventory will not be saved!
+//				this.markDirty();;
+//			} else {
+//				setInventorySlotContents(slot, ItemStack.EMPTY);
+//			}
+//		}
 //		return stack;
 //	}
+	@Override	
+	public ItemStack decrStackSize(int index, int count)
+	{
+	    ItemStack itemstack = ItemStackHelper.getAndSplit(this.inventory, index, count);
+
+	    if (!itemstack.isEmpty())
+	    {
+	        this.markDirty();
+	    }
+
+	    return itemstack;
+	}
 
 	@Override
 	public void setInventorySlotContents(int slot, ItemStack itemstack) {
-		this.inventory[slot] = itemstack;
-
-		if (itemstack != null && itemstack.stackSize > this.getInventoryStackLimit()) {
-			itemstack.stackSize = this.getInventoryStackLimit();
+		inventory.set(slot, itemstack);
+		if (!itemstack.equals(ItemStack.EMPTY) && itemstack.getCount() > this.getInventoryStackLimit()) {
+			itemstack.setCount(this.getInventoryStackLimit());
 		}
 		// Don't forget this line or your inventory will not be saved!
 		this.markDirty();;
@@ -80,7 +86,7 @@ public class InventoryInstrument implements IInventory {
 
 	@Override
 	public int getInventoryStackLimit() {
-		return 1;
+		return INV_SIZE;
 	}
 
 	/**
@@ -91,16 +97,11 @@ public class InventoryInstrument implements IInventory {
 	@Override
 	public void markDirty() {
 		for (int i = 0; i < this.getSizeInventory(); ++i) {
-			if (this.getStackInSlot(i) != null && this.getStackInSlot(i).stackSize == 0)
-				this.setInventorySlotContents(i, null);
+			if (!this.getStackInSlot(i).equals(ItemStack.EMPTY) && this.getStackInSlot(i).getCount() == 0)
+				this.setInventorySlotContents(i, ItemStack.EMPTY);
 		}
 		// This line here does the work:
 		this.writeToNBT(this.stack.getTagCompound());
-	}
-
-	@Override
-	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
-		return true;
 	}
 
 	/**
@@ -128,7 +129,7 @@ public class InventoryInstrument implements IInventory {
 
 			// Just double-checking that the saved slot index is within our inventory array bounds
 			if (slot >= 0 && slot < getSizeInventory()) {
-				setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(item));
+				setInventorySlotContents(slot, new ItemStack(item));
 			}
 		}
 	}
@@ -142,7 +143,7 @@ public class InventoryInstrument implements IInventory {
 
 		for (int i = 0; i < getSizeInventory(); ++i) {
 			// Only write stacks that contain items
-			if (getStackInSlot(i) != null) {
+			if (!getStackInSlot(i).isEmpty()) {
 				// Make a new NBT Tag Compound to write the itemstack and slot index to
 				NBTTagCompound item = new NBTTagCompound();
 				item.setInteger("Slot", i);
@@ -176,8 +177,7 @@ public class InventoryInstrument implements IInventory {
 
 	@Override
 	public ItemStack removeStackFromSlot(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		return decrStackSize(index, stack.getCount());
 	}
 
 	@Override
@@ -215,4 +215,18 @@ public class InventoryInstrument implements IInventory {
 		// TODO Auto-generated method stub
 		
 	}
+
+    @Override
+    public boolean isEmpty()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean isUsableByPlayer(EntityPlayer player)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

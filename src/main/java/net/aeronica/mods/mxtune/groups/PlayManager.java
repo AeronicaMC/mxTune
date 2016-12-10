@@ -220,9 +220,9 @@ public class PlayManager
     {
         if (isPlaced)
         {
-            if (playerIn.worldObj.getBlockState(pos).getBlock() instanceof BlockPiano)
+            if (playerIn.getEntityWorld().getBlockState(pos).getBlock() instanceof BlockPiano)
             {
-                BlockPiano piano = (BlockPiano) playerIn.worldObj.getBlockState(pos).getBlock();
+                BlockPiano piano = (BlockPiano) playerIn.getEntityWorld().getBlockState(pos).getBlock();
                 return piano.getPatch();
             }
         } else
