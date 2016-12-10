@@ -29,7 +29,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
     ParseTreeProperty<Integer> mmlVolumes = new ParseTreeProperty<Integer>();
     ParseTreeProperty<Long> startTicks = new ParseTreeProperty<Long>();
 
-    int getMidiNote(ParserRuleContext ctx) {return ctx != null ? midiNotes.get(ctx) : null;}
+    Integer getMidiNote(ParserRuleContext ctx) {return ctx != null ? midiNotes.get(ctx) : null;}
     void saveMidiNote(ParserRuleContext ctx, int midiNote) {midiNotes.put(ctx, midiNote);}
 
     long getNoteRestLength(ParserRuleContext ctx) {return noteRestLengths.get(ctx);};
