@@ -19,7 +19,6 @@ public class InventoryInstrument implements IInventory {
 	public static final int INV_SIZE = 1;
 
 	/** Inventory's size must be same as number of slots you add to the Container class */
-	//ItemStack[] inventory = new ItemStack[INV_SIZE];
 	private final NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(INV_SIZE, ItemStack.EMPTY);
 
 	/**
@@ -38,29 +37,11 @@ public class InventoryInstrument implements IInventory {
 	}
 
 	@Override
-	public int getSizeInventory() {
-		return inventory.size();
-	}
+	public int getSizeInventory() {return inventory.size();}
 
 	@Override
-	public ItemStack getStackInSlot(int slot) {
-		return inventory.get(slot);
-	}
+	public ItemStack getStackInSlot(int slot) {return inventory.get(slot);}
 
-
-//	public ItemStack decrStackSize(int slot, int amount) {
-//		ItemStack stack = getStackInSlot(slot);
-//		if (!stack.equals(ItemStack.EMPTY)) {
-//			if (stack.getCount() > amount) {
-//				stack = stack.splitStack(amount);
-//				// Don't forget this line or your inventory will not be saved!
-//				this.markDirty();;
-//			} else {
-//				setInventorySlotContents(slot, ItemStack.EMPTY);
-//			}
-//		}
-//		return stack;
-//	}
 	@Override	
 	public ItemStack decrStackSize(int index, int count)
 	{
@@ -85,9 +66,7 @@ public class InventoryInstrument implements IInventory {
 	}
 
 	@Override
-	public int getInventoryStackLimit() {
-		return INV_SIZE;
-	}
+	public int getInventoryStackLimit() {return INV_SIZE;}
 
 	/**
 	 * This is the method that will handle saving the inventory contents, as it is called (or should be called!) anytime
@@ -138,16 +117,16 @@ public class InventoryInstrument implements IInventory {
 	 * A custom method to write our inventory to an ItemStack's NBT compound
 	 */
 	public void writeToNBT(NBTTagCompound compound) {
-		// Create a new NBT Tag List to store itemstacks as NBT Tags
+		// Create a new NBT Tag List to store ItemStacks as NBT Tags
 		NBTTagList items = new NBTTagList();
 
 		for (int i = 0; i < getSizeInventory(); ++i) {
 			// Only write stacks that contain items
 			if (!getStackInSlot(i).isEmpty()) {
-				// Make a new NBT Tag Compound to write the itemstack and slot index to
+				// Make a new NBT Tag Compound to write the ItemStack and slot index to
 				NBTTagCompound item = new NBTTagCompound();
 				item.setInteger("Slot", i);
-				// Writes the itemstack in slot(i) to the Tag Compound we just made
+				// Writes the ItemStack in slot(i) to the Tag Compound we just made
 				getStackInSlot(i).writeToNBT(item);
 
 				// add the tag compound to our tag list
@@ -159,74 +138,39 @@ public class InventoryInstrument implements IInventory {
 	}
 
 	@Override
-	public String getName() {
-		return name;
-	}
+	public String getName() {return name;}
 
 	@Override
-	public boolean hasCustomName() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public boolean hasCustomName() {return false;}
 
 	@Override
-	public ITextComponent getDisplayName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public ITextComponent getDisplayName() {return null;}
 
 	@Override
-	public ItemStack removeStackFromSlot(int index) {
-		return decrStackSize(index, stack.getCount());
-	}
+	public ItemStack removeStackFromSlot(int index) {return decrStackSize(index, stack.getCount());}
 
 	@Override
-	public void openInventory(EntityPlayer player) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void openInventory(EntityPlayer player) {}
 
 	@Override
-	public void closeInventory(EntityPlayer player) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void closeInventory(EntityPlayer player) {}
 
 	@Override
-	public int getField(int id) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	public int getField(int id) {return 0;}
 
 	@Override
-	public void setField(int id, int value) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void setField(int id, int value) {}
 
 	@Override
-	public int getFieldCount() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	public int getFieldCount() {return 0;}
 
 	@Override
-	public void clear() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void clear() {}
 
     @Override
-    public boolean isEmpty()
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
+    public boolean isEmpty() {return false;}
 
     @Override
-    public boolean isUsableByPlayer(EntityPlayer player)
-    {
-        // TODO Auto-generated method stub
-        return false;
-    }
+    public boolean isUsableByPlayer(EntityPlayer player) {return false;}
+    
 }
