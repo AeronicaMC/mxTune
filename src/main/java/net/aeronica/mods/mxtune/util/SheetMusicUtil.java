@@ -26,8 +26,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 
 public class SheetMusicUtil
 {
@@ -80,19 +78,6 @@ public class SheetMusicUtil
     {
         if (stackIn == null) return null;
         
-        /** CapabilityItemHandler stuff */
-        boolean hasCap = stackIn.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-        //ModLogger.debug("SheetMusicUtils#getSheetMusic stackIn has ITEM_HANDLER_CAPABILITY " + hasCap);
-        if (hasCap)
-        {
-            IItemHandler itemInv = stackIn.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-            ItemStack sheetMusic = itemInv.getStackInSlot(0).copy();
-            if (sheetMusic != null && sheetMusic.hasDisplayName() && (sheetMusic.getItem() instanceof IMusic) && sheetMusic.getTagCompound().hasKey("MusicBook", Constants.NBT.TAG_COMPOUND))
-            {
-                return sheetMusic;
-            }
-        }
-
         if (stackIn.hasTagCompound())
         {
             /** IInvetory legacy stuff */
