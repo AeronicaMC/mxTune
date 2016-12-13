@@ -16,7 +16,6 @@
  */
 package net.aeronica.mods.mxtune.inventory;
 
-import net.aeronica.mods.mxtune.init.StartupItems;
 import net.aeronica.mods.mxtune.items.ItemMusicPaper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -50,7 +49,6 @@ public class ContainerInstrument extends Container
                 this.addSlotToContainer(new Slot(inventoryIn, ++slotIndex, 18 * j + 12, 18 * i + 84));
             }
         }
-        StartupItems.item_converter.convertIInventory(invInst, player.getHeldItemMainhand());
     }
 
     @Override

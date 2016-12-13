@@ -33,7 +33,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.items.IItemHandler;
 
 public class ItemConverter extends ItemBase
@@ -170,28 +169,6 @@ public class ItemConverter extends ItemBase
                     invInst.setInventorySlotContents(0, sheetMusicNew);
                     invInst.markDirty();
                 }
-            }
-        }
-    }
-
-    public void convertIItemStackHander(IItemHandler itemHandlerIn)
-    {
-        ModLogger.debug("itemHandlerIn: " + itemHandlerIn);
-        ModLogger.debug("stackIn:       " + itemHandlerIn.getStackInSlot(0));
-
-        if (MXTuneMain.proxy.getEffectiveSide() == Side.CLIENT) return;
-                
-        ItemStack sheetMusicOld = itemHandlerIn.getStackInSlot(0);
-        if (sheetMusicOld != null && sheetMusicOld.hasTagCompound() && (sheetMusicOld.getItem() instanceof ItemMusicPaper))
-        {
-            NBTTagCompound contents = (NBTTagCompound) sheetMusicOld.getTagCompound().getTag("MusicBook");
-            if (contents != null)
-            {
-                /** This ItemStack has Music */
-                ModLogger.debug("stackIn Has MusicBook/MML: " + contents.getTag("MML"));
-                /** Convert to new format and place it in CapItemInv slot */
-                ItemStack sheetMusicNew = this.sheetMusicConversion(sheetMusicOld);
-                itemHandlerIn.insertItem(0, sheetMusicNew, false);
             }
         }
     }
