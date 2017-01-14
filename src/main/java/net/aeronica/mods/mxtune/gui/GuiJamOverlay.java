@@ -154,9 +154,9 @@ public class GuiJamOverlay extends Gui
             setRidingFlag(false);
         }
         
-        if (inGuiHudAdjust() || ((itemStack != null) && (itemStack.getItem() instanceof IInstrument)) || isRidingFlag())
+        if (inGuiHudAdjust() || ((!itemStack.equals(ItemStack.EMPTY)) && (itemStack.getItem() instanceof IInstrument)) || isRidingFlag())
         {
-            if ((lastItemStack==null || (itemStack != null && !itemStack.equals(this.lastItemStack))) && !isRidingFlag()) {hudTimerReset(); lastItemStack = itemStack;}
+            if ((lastItemStack.equals(ItemStack.EMPTY) || (!itemStack.equals(ItemStack.EMPTY) && !itemStack.equals(this.lastItemStack))) && !isRidingFlag()) {hudTimerReset(); lastItemStack = itemStack;}
             if (canRenderHud(player))
                 renderHud(hudData, player, sheetMusic);
             else
@@ -332,7 +332,7 @@ public class GuiJamOverlay extends Gui
     
     public static String getMusicTitleRaw(ItemStack sheetMusic)
     {
-        if (sheetMusic != null)
+        if (!sheetMusic.equals(ItemStack.EMPTY))
         {
             NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
             if (contents != null)
