@@ -50,7 +50,6 @@ public class SheetMusicUtil
         return new String();
     }
 
-    /** A version that deals with Block Piano TE, but need to be made generic at some point */
     public static ItemStack getSheetMusic(BlockPos pos, EntityPlayer playerIn, boolean isPlaced)
     {
         if (isPlaced)
@@ -59,28 +58,26 @@ public class SheetMusicUtil
             {
                 Block placedInst = (Block) playerIn.worldObj.getBlockState(pos).getBlock();
                 TileInstrument te = ((IPlacedInstrument) placedInst).getTE(playerIn.worldObj, pos);
-                return te.getInventory().getStackInSlot(0).copy();
+                if(te.getInventory().getStackInSlot(0) != null)
+                    return te.getInventory().getStackInSlot(0).copy();
             }
         } else
         {
             ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(playerIn.getHeldItemMainhand());
             if (sheetMusic != null && sheetMusic.hasDisplayName() && (sheetMusic.getItem() instanceof IMusic) && sheetMusic.getTagCompound().hasKey("MusicBook", Constants.NBT.TAG_COMPOUND))
             {
-                //ModLogger.debug("stackIn: " + sheetMusic.getItem().getUnlocalizedName() + ", Title: " + sheetMusic.getDisplayName());
                 return sheetMusic;
             }
         }
         return null;
     }
     
-    /** TODO: remove IInventory stuff after couple alpha builds */
     public static ItemStack getSheetMusic(ItemStack stackIn)
     {
         if (stackIn == null) return null;
         
         if (stackIn.hasTagCompound())
         {
-            /** IInvetory legacy stuff */
             NBTTagList items = stackIn.getTagCompound().getTagList("ItemInventory", Constants.NBT.TAG_COMPOUND);
             if (items.tagCount() == 1)
             {
