@@ -16,7 +16,6 @@
  */
 package net.aeronica.mods.mxtune.status;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.init.ModSounds;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.ClientStateDataMessage;
@@ -44,19 +43,14 @@ public class ClientCSDMonitor
 {
 
     private static ClientStateData csd = null;
-    private static Minecraft mc = null;
-    private static GameSettings gs;
+    private static Minecraft mc = Minecraft.getMinecraft();
+    private static GameSettings gameSettings = Minecraft.getMinecraft().gameSettings;
     
     /*
      * Collect initial state just after logging on to a server then post it to the server.
      */
     public static void collectAndSend()
     {
-        if(mc==null)
-        {
-            mc = MXTuneMain.proxy.getMinecraft();
-            gs = mc.gameSettings;
-        }
         csd = snapShot();
         sendToServer();
         ModLogger.info("ClientStateMonitor#initialize: " + csd);
@@ -66,8 +60,8 @@ public class ClientCSDMonitor
     {
         return new ClientStateData(
                 MIDISystemUtil.getInstance().midiUnavailable()==false,
-                gs.getSoundLevel(SoundCategory.MASTER)>0F,
-                gs.getSoundLevel(ModSounds.SC_MXTUNE)>0F);
+                gameSettings.getSoundLevel(SoundCategory.MASTER)>0F,
+                gameSettings.getSoundLevel(ModSounds.SC_MXTUNE)>0F);
     }
     
     /*
@@ -83,11 +77,7 @@ public class ClientCSDMonitor
     private static boolean inGui = false;
     public static void detectAndSend()
     {
-        if(mc==null)
-        {
-            mc = MXTuneMain.proxy.getMinecraft();
-            gs = mc.gameSettings;
-        }
+
         if (mc.currentScreen instanceof GuiScreenOptionsSounds && !inGui)
         {
             ModLogger.info("Opened GuiScreenOptionsSounds");

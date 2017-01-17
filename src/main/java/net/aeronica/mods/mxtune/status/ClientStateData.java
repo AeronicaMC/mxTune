@@ -54,7 +54,7 @@ public class ClientStateData implements Serializable
     @Override
     public String toString()
     {
-        return super.toString() + " {midiAvailable="+midiAvailable+", isMasterVolumeOn="+masterVolumeOn+", mxtuneVolumeOn="+mxtuneVolumeOn+"}";
+        return new String("{midiAvailable="+midiAvailable+", isMasterVolumeOn="+masterVolumeOn+", mxtuneVolumeOn="+mxtuneVolumeOn+"}");
     }
     
 }
