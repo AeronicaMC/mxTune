@@ -35,13 +35,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.model.TRSRTransformation;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
+@Mod.EventBusSubscriber(Side.CLIENT)
 public class RendererPiano extends TileEntitySpecialRenderer<TileInstrument>
 {
     double xMusicOffset = 0D, zMusicOffset = 0D;
@@ -55,12 +59,14 @@ public class RendererPiano extends TileEntitySpecialRenderer<TileInstrument>
     private IModel benchModel;
     private IBakedModel bakedBenchModel;
 
-    // invoke this from the TextureStitchEvent
     public void reBakeModels()
     {
         bakedRackModel = null;
         bakedBenchModel = null;   
     }
+    
+    @SubscribeEvent
+    public void event(TextureStitchEvent.Post e) { reBakeModels(); }
     
     private IBakedModel getRackBakedModel()
     {

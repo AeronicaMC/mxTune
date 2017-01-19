@@ -21,5 +21,5 @@ import net.minecraft.world.World;
 
 public interface IPlacedInstrument
 {
-    public TileInstrument getTE(World worldIn, BlockPos pos);
+    public <T extends TileInstrument> T getTE(World worldIn, BlockPos pos);
 }
