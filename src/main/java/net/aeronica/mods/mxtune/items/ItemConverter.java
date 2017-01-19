@@ -18,10 +18,11 @@ package net.aeronica.mods.mxtune.items;
 import java.util.List;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.init.StartupItems;
+import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.inventory.InventoryInstrument;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -35,12 +36,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.IItemHandler;
 
-public class ItemConverter extends ItemBase
+public class ItemConverter extends Item
 {
 
-    public ItemConverter(String itemName)
+    public ItemConverter()
     {
-        super(itemName);
         this.setMaxStackSize(1);
         this.setCreativeTab(MXTuneMain.TAB_MUSIC);
     }
@@ -91,7 +91,7 @@ public class ItemConverter extends ItemBase
                 NBTTagCompound musicBookOld = contentsOld.getCompoundTag("MusicBook");
                 
                 ModLogger.debug("sheetMusicConversion: " + musicPaper.getDisplayName());
-                ItemStack sheetMusic = new ItemStack(StartupItems.item_sheetmusic);
+                ItemStack sheetMusic = new ItemStack(ModItems.ITEM_SHEET_MUSIC);
                 sheetMusic.setStackDisplayName(musicPaper.getDisplayName());
                 
                 NBTTagCompound compoundNew = sheetMusic.getTagCompound();

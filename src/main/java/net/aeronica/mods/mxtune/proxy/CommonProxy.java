@@ -46,8 +46,7 @@ public abstract class CommonProxy implements IProxy
     public void initPayload()
     {
         ModSounds.init();
-        StartupItems.register();
-        StartupBlocks.register();
+        ModBlocks.registerTileEntities();
     }
 
     @Override

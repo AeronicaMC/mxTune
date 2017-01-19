@@ -227,7 +227,7 @@ public class PlayManager
             }
         } else
         {
-            ItemInstrument.EnumInstruments enumInst = ItemInstrument.EnumInstruments.byMetadata(playerIn.getHeldItemMainhand().getMetadata());
+            ItemInstrument.EnumType enumInst = ItemInstrument.EnumType.byMetadata(playerIn.getHeldItemMainhand().getMetadata());
             return enumInst.getPatch();
         }
         return 0;

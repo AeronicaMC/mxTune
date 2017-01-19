@@ -20,8 +20,6 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.gui.GuiJamOverlay;
 import net.aeronica.mods.mxtune.handler.CLEventHandler;
 import net.aeronica.mods.mxtune.handler.KeyHandler;
-import net.aeronica.mods.mxtune.init.BlockModels;
-import net.aeronica.mods.mxtune.init.ItemModels;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.Minecraft;
@@ -104,7 +102,6 @@ public class ClientProxy extends CommonProxy
         super.registerEventHandlers();
         MinecraftForge.EVENT_BUS.register(ClientAudio.getInstance());
         MinecraftForge.EVENT_BUS.register(CLEventHandler.getInstance());
-        MinecraftForge.EVENT_BUS.register(BlockModels.getInstance());
     }
 
     @Override
@@ -121,8 +118,6 @@ public class ClientProxy extends CommonProxy
 
         /** The ALL important model loaders so we can use custom models */
         OBJLoader.INSTANCE.addDomain(MXTuneMain.MODID.toLowerCase());
-        ItemModels.register();
-        BlockModels.register();
     }
 
     @Override
