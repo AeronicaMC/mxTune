@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.init.ModBlocks;
+import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.inventory.IMusic;
 import net.aeronica.mods.mxtune.status.ServerCSDManager;
 import net.aeronica.mods.mxtune.util.PlacedInstrumentUtil;
@@ -87,7 +88,7 @@ public class BlockPiano extends BlockInstrument2H
                 state = worldIn.getBlockState(pos);
                 if (state.getBlock() != this) { return true; }
             }
-            TileInstrument tile = getTE(worldIn, pos);
+            TilePiano tile = (TilePiano) getTE(worldIn, pos);
             if (tile.isInvalid()) return true;
             boolean invHasItem = tile.getInventory().getStackInSlot(0) != null;
             boolean invIsMusic = invHasItem && (tile.getInventory().getStackInSlot(0).getItem() instanceof IMusic) &&
@@ -151,7 +152,7 @@ public class BlockPiano extends BlockInstrument2H
     public int getPatch() {return 0;}
     
     @Override
-    public TileInstrument getTE(World worldIn, BlockPos pos) {return (TileInstrument) worldIn.getTileEntity(pos);}
+    public <T extends TileInstrument> T getTE(World worldIn, BlockPos pos) {return (T) worldIn.getTileEntity(pos);}
 
     private boolean sitPiano(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn)
     {
@@ -216,7 +217,7 @@ public class BlockPiano extends BlockInstrument2H
     @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return state.getValue(PART) == BlockPiano.EnumPartType.LEFT ? null : Item.getItemFromBlock(ModBlocks.BLOCK_PIANO);
+        return state.getValue(PART) == BlockPiano.EnumPartType.LEFT ? null : ModItems.ITEM_PIANO;
     }
 
     @Override
@@ -304,7 +305,7 @@ public class BlockPiano extends BlockInstrument2H
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
     {
-        TileInstrument tile = ((TileInstrument) worldIn.getTileEntity(pos));
+        TilePiano tile = ((TilePiano) worldIn.getTileEntity(pos));
         if (state.getValue(PART) == BlockPiano.EnumPartType.LEFT && tile != null && tile.getInventory().getStackInSlot(0) != null)
         {
             spawnEntityItem(worldIn, tile.getInventory().getStackInSlot(0).copy(), pos);
@@ -410,7 +411,7 @@ public class BlockPiano extends BlockInstrument2H
     @Override
     public TileEntity createTileEntity(World world, IBlockState state)
     {
-        return new TileInstrument(state.getValue(FACING));
+        return new TilePiano(state.getValue(FACING));
     }
 
     /**

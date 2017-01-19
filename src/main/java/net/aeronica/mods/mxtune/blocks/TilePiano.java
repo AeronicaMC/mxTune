@@ -16,27 +16,12 @@
  */
 package net.aeronica.mods.mxtune.blocks;
 
-import net.minecraft.block.BlockHorizontal;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.util.EnumFacing;
 
-public class BlockInstrument2H extends BlockHorizontal implements IPlacedInstrument
+public class TilePiano extends TileInstrument
 {
 
-    protected BlockInstrument2H(Material material)
-    {
-        super(material);
-        this.setSoundType(SoundType.WOOD);
-        setHardness(0.2F);
-        disableStats();
-    }
+    public TilePiano() {}
 
-    @Override
-    public <T extends TileInstrument> T getTE(World worldIn, BlockPos pos)
-    {
-        return null;
-    }
-    
+    public TilePiano(EnumFacing facing) {this.facing = facing;}
 }

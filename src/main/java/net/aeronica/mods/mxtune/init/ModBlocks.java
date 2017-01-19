@@ -5,8 +5,7 @@ import java.util.Set;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.blocks.BlockPiano;
-import net.aeronica.mods.mxtune.blocks.ItemPiano;
-import net.aeronica.mods.mxtune.blocks.TileInstrument;
+import net.aeronica.mods.mxtune.blocks.TilePiano;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -65,13 +64,14 @@ public class ModBlocks
     }
     
     public static void registerTileEntities() {
-        registerTileEntity(TileInstrument.class, "tile_instrument");
+        // FIXME: Use for legacy 1.10.2 -> 11.1
+        GameRegistry.registerTileEntityWithAlternatives(TilePiano.class, MXTuneMain.prependModID("tile_piano"), "mxtune_tile_instrument", "PianoTile", "TileInstrument");
+        // FIXME: Use this for 1.11.2+
+        //registerTileEntity(TilePiano.class, "tile_piano", "mxtune_tile_instrument");
     }
 
     private static <T extends Block> T registerBlock(T block, String name) {
-//        block.setRegistryName(name.toLowerCase());
-//        block.setUnlocalizedName(block.getRegistryName().toString());
-        block.setRegistryName(MXTuneMain.MODID, name);
+        block.setRegistryName(name.toLowerCase());
         block.setUnlocalizedName(block.getRegistryName().toString());
         return block;
     }

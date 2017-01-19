@@ -31,7 +31,7 @@ public class TileInstrument extends TileEntity
 {
     
     private ItemStackHandler inventory = new StackHandler(1);
-    private EnumFacing facing = EnumFacing.NORTH;
+    protected EnumFacing facing = EnumFacing.NORTH;
 
     public TileInstrument() {}
 

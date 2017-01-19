@@ -175,7 +175,7 @@ public class CodecPCM implements ICodec {
 		    {
 		        outputBuffer = appendByteArrays(outputBuffer, zeroBuffer, SAMPLE_SIZE);
 		        message("  zeroBufferCount: " + zeroBufferCount);
-		        if (zeroBufferCount++ > 48) 
+		        if (zeroBufferCount++ > 64) 
 		        {
 		            errorMessage("  MML to PCM audio prcessiong took too long. Aborting!");
 		            endOfStream(SET, true);
