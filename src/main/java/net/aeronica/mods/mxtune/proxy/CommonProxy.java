@@ -19,10 +19,9 @@ package net.aeronica.mods.mxtune.proxy;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.handler.SREventHandler;
+import net.aeronica.mods.mxtune.init.ModBlocks;
 import net.aeronica.mods.mxtune.init.ModEntities;
 import net.aeronica.mods.mxtune.init.ModSounds;
-import net.aeronica.mods.mxtune.init.StartupBlocks;
-import net.aeronica.mods.mxtune.init.StartupItems;
 import net.aeronica.mods.mxtune.util.Recipes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -47,8 +46,7 @@ public abstract class CommonProxy implements IProxy
     public void initPayload()
     {
         ModSounds.init();
-        StartupItems.register();
-        StartupBlocks.register();
+        ModBlocks.registerTileEntities();
     }
 
     @Override

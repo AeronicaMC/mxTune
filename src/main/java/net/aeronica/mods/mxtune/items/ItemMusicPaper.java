@@ -24,6 +24,7 @@ import net.aeronica.mods.mxtune.inventory.IMusic;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.IItemPropertyGetter;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
@@ -36,11 +37,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 /** TODO: Swapping the icon is a nice trick, but I think a distinct item for Sheet Music would make dealing with item testing easier */
-public class ItemMusicPaper extends ItemBase implements IMusic
+public class ItemMusicPaper extends Item implements IMusic
 {
-    public ItemMusicPaper(String itemName)
+    public ItemMusicPaper()
     {
-        super(itemName);
         this.setMaxStackSize(16);
         this.setCreativeTab(MXTuneMain.TAB_MUSIC);
         this.addPropertyOverride(new ResourceLocation("written"), new IItemPropertyGetter()

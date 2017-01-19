@@ -17,12 +17,13 @@
 package net.aeronica.mods.mxtune.blocks;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.init.StartupBlocks;
-import net.aeronica.mods.mxtune.items.ItemBase;
+import net.aeronica.mods.mxtune.init.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
@@ -32,12 +33,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public class ItemPiano extends ItemBase
+public class ItemPiano extends Item
 {
 
-    public ItemPiano(String itemName)
+    public ItemPiano()
     {
-        super(itemName);
         setMaxStackSize(1);
         setCreativeTab(MXTuneMain.TAB_MUSIC);
     }
@@ -80,7 +80,7 @@ public class ItemPiano extends ItemBase
                 /** Disallow placing blocks on water or other unstable blocks */
                 if (flag2 && flag3 && worldIn.getBlockState(pos.down()).isFullyOpaque() && worldIn.getBlockState(blockpos.down()).isFullyOpaque())
                 {
-                    IBlockState iblockstate1 = StartupBlocks.block_piano.getDefaultState().withProperty(BlockPiano.OCCUPIED, Boolean.valueOf(false)).withProperty(BlockPiano.FACING, enumfacing)
+                    IBlockState iblockstate1 = ModBlocks.BLOCK_PIANO.getDefaultState().withProperty(BlockPiano.OCCUPIED, Boolean.valueOf(false)).withProperty(BlockPiano.FACING, enumfacing)
                             .withProperty(BlockPiano.PART, BlockPiano.EnumPartType.LEFT);
 
                     if (worldIn.setBlockState(pos, iblockstate1, 11))

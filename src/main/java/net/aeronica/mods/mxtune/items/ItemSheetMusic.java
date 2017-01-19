@@ -19,16 +19,16 @@ import java.util.List;
 
 import net.aeronica.mods.mxtune.inventory.IMusic;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextFormatting;
 
-public class ItemSheetMusic extends ItemBase implements IMusic
+public class ItemSheetMusic extends Item implements IMusic
 {
 
-    public ItemSheetMusic(String itemName)
+    public ItemSheetMusic()
     {
-        super(itemName);
         this.setMaxStackSize(1);
     }
 

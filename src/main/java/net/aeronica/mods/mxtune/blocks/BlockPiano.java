@@ -23,7 +23,7 @@ import com.google.common.collect.Lists;
 
 import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
 import net.aeronica.mods.mxtune.groups.PlayManager;
-import net.aeronica.mods.mxtune.init.StartupBlocks;
+import net.aeronica.mods.mxtune.init.ModBlocks;
 import net.aeronica.mods.mxtune.inventory.IMusic;
 import net.aeronica.mods.mxtune.status.ServerCSDManager;
 import net.aeronica.mods.mxtune.util.PlacedInstrumentUtil;
@@ -69,9 +69,9 @@ public class BlockPiano extends BlockInstrument2H
     protected static final AxisAlignedBB MUSIC_RACK_AABB_NE = new AxisAlignedBB(0.5D, 1.0D, 0.0D, 1.0D, 1.5D, 0.5D);
     protected static final AxisAlignedBB MUSIC_RACK_AABB_SE = new AxisAlignedBB(0.5D, 1.0D, 0.5D, 1.0D, 1.5D, 1.0D);
 
-    public BlockPiano(String blockName)
+    public BlockPiano()
     {
-        super(Material.WOOD, blockName);
+        super(Material.WOOD);
         setDefaultState(this.blockState.getBaseState().withProperty(PART, BlockPiano.EnumPartType.LEFT).withProperty(OCCUPIED, Boolean.valueOf(false)));
     }
 
@@ -216,7 +216,7 @@ public class BlockPiano extends BlockInstrument2H
     @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return state.getValue(PART) == BlockPiano.EnumPartType.LEFT ? null : StartupBlocks.item_piano;
+        return state.getValue(PART) == BlockPiano.EnumPartType.LEFT ? null : Item.getItemFromBlock(ModBlocks.BLOCK_PIANO);
     }
 
     @Override
@@ -285,7 +285,7 @@ public class BlockPiano extends BlockInstrument2H
     public BlockRenderLayer getBlockLayer() {return BlockRenderLayer.CUTOUT;}
 
     @Override
-    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {return new ItemStack(StartupBlocks.item_piano);}
+    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {return new ItemStack(ModBlocks.BLOCK_PIANO);}
 
     @Override
     public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player)

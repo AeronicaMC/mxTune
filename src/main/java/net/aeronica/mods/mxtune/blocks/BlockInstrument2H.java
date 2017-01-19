@@ -16,7 +16,6 @@
  */
 package net.aeronica.mods.mxtune.blocks;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -26,28 +25,14 @@ import net.minecraft.world.World;
 public class BlockInstrument2H extends BlockHorizontal implements IPlacedInstrument
 {
 
-    protected BlockInstrument2H(Material material, String blockName)
+    protected BlockInstrument2H(Material material)
     {
         super(material);
-        setBlockName(this, blockName);
         this.setSoundType(SoundType.WOOD);
         setHardness(0.2F);
         disableStats();
     }
-    /**
-     * Set the registry name of {@code item} to {@code itemName} and the
-     * Unlocalized name to the full registry name.<br>
-     * 
-     * @param block
-     *            The block
-     * @param blockName
-     *            The block's name
-     */
-    public static void setBlockName(Block block, String blockName)
-    {
-        block.setRegistryName(blockName);
-        block.setUnlocalizedName(block.getRegistryName().toString());
-    }
+
     @Override
     public TileInstrument getTE(World worldIn, BlockPos pos)
     {

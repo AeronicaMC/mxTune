@@ -18,7 +18,7 @@ package net.aeronica.mods.mxtune.network.server;
 
 import java.io.IOException;
 
-import net.aeronica.mods.mxtune.init.StartupItems;
+import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -62,7 +62,7 @@ public class MusicTextMessage extends AbstractServerMessage<MusicTextMessage>
 
         if (player.getHeldItemMainhand() != null)
         {
-            ItemStack sheetMusic = new ItemStack(StartupItems.item_sheetmusic);
+            ItemStack sheetMusic = new ItemStack(ModItems.ITEM_SHEET_MUSIC);
 
             sheetMusic.setStackDisplayName(musicTitle);
             NBTTagCompound compound = sheetMusic.getTagCompound();

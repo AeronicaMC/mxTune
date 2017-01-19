@@ -23,6 +23,7 @@ import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiInstrumentInventory;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.status.ServerCSDManager;
+import net.aeronica.mods.mxtune.util.IVariant;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
@@ -34,21 +35,19 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 /**
- * @author Paul
+ * @author Paul Boese a.k.a Aeronica
  *
  */
-public class ItemInstrument extends ItemBase implements IInstrument
+public class ItemInstrument extends Item implements IInstrument
 {
-    public ItemInstrument(String itemName)
+    public ItemInstrument()
     {
-        super(itemName);
         setHasSubtypes(true);
         setMaxStackSize(1);
         setMaxDamage(0);
@@ -59,7 +58,7 @@ public class ItemInstrument extends ItemBase implements IInstrument
     public String getUnlocalizedName(ItemStack stack)
     {
         int metadata = stack.getMetadata();
-        EnumInstruments inst = EnumInstruments.byMetadata(metadata);
+        EnumType inst = EnumType.byMetadata(metadata);
         return super.getUnlocalizedName() + "_" + inst.getName();
     }
 
@@ -69,7 +68,7 @@ public class ItemInstrument extends ItemBase implements IInstrument
     @Override
     public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems)
     {
-        for (EnumInstruments inst : EnumInstruments.values())
+        for (EnumType inst : EnumType.values())
         {
             ItemStack subItemStack = new ItemStack(itemIn, 1, inst.getMetadata());
             subItems.add(subItemStack);
@@ -212,11 +211,11 @@ public class ItemInstrument extends ItemBase implements IInstrument
     public int getPatch(ItemStack stackIn)
     {
         int patch = (stackIn != null) ? stackIn.getMetadata() : 0;
-        EnumInstruments inst = EnumInstruments.byMetadata(patch);
+        EnumType inst = EnumType.byMetadata(patch);
         return inst.getPatch();
     }
 
-    public static enum EnumInstruments implements IStringSerializable
+    public static enum EnumType implements IVariant
     {
         TUBA(0, "tuba", 59),
         MANDO(1, "mando", 25),
@@ -237,7 +236,7 @@ public class ItemInstrument extends ItemBase implements IInstrument
         @Override
         public String toString() {return this.name;}
 
-        public static EnumInstruments byMetadata(int meta)
+        public static EnumType byMetadata(int meta)
         {
             if (meta < 0 || meta >= META_LOOKUP.length) {meta = 0;}
             return META_LOOKUP[meta];
@@ -250,9 +249,9 @@ public class ItemInstrument extends ItemBase implements IInstrument
         private final int meta;
         private final String name;
         private final int patch;
-        private static final EnumInstruments[] META_LOOKUP = new EnumInstruments[values().length];
+        private static final EnumType[] META_LOOKUP = new EnumType[values().length];
 
-        private EnumInstruments(int i_meta, String i_name, int i_patch)
+        private EnumType(int i_meta, String i_name, int i_patch)
         {
             this.meta = i_meta;
             this.name = i_name;
@@ -261,10 +260,16 @@ public class ItemInstrument extends ItemBase implements IInstrument
 
         static
         {
-            for (EnumInstruments value : values())
+            for (EnumType value : values())
             {
                 META_LOOKUP[value.getMetadata()] = value;
             }
+        }
+
+        @Override
+        public int getMeta()
+        {
+            return meta;
         }
     }
 }
