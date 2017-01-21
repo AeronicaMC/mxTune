@@ -40,12 +40,13 @@
  */
 package net.aeronica.mods.mxtune.init;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
 import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.blocks.RendererPiano;
-import net.aeronica.mods.mxtune.blocks.TileInstrument;
+import net.aeronica.mods.mxtune.blocks.TilePiano;
 import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.aeronica.mods.mxtune.util.IVariant;
 import net.minecraft.block.Block;
@@ -90,7 +91,7 @@ public class ModModelManager
     }
     
     public void registerTileRenderers() {
-        registerTESR(TileInstrument.class, new RendererPiano());
+        registerTESR(TilePiano.class, new RendererPiano());
     }
 
     /**
@@ -102,14 +103,19 @@ public class ModModelManager
         // registerItemModel(ModBlocks.BLOCK_PIANO);
         
 
-        registerVariantItemModels(ModItems.ITEM_INSTRUMENT, ItemInstrument.EnumType.values());
+        registerItemModelsWithSubtypes(ModItems.ITEM_INSTRUMENT, ItemInstrument.EnumType.values());
 
         // Then register items with default model names
         ModItems.RegistrationHandler.ITEMS.stream().filter(item -> !itemsRegistered.contains(item)).forEach(this::registerItemModel);
     }
     
+    private static ArrayList<Object> tesrRenderers = new ArrayList<Object>();
+    
+    public static ArrayList<Object> getTESRRenderers() {return tesrRenderers;}
+    
     public <T extends TileEntity> void registerTESR(Class<T> tile, TileEntitySpecialRenderer<T> renderer) {
         ClientRegistry.bindTileEntitySpecialRenderer(tile, renderer);
+        tesrRenderers.add(renderer);
     }
 
     public <T extends Block> void registerItemModel(T block)
@@ -173,7 +179,7 @@ public class ModModelManager
     /**
      * Register a model for each metadata value of an {@link Item} corresponding to the values in {@code values}.
      * <p>
-     * Uses the registry name as the domain/path and {@code "[variantName]=[valueName]"} as the variant.
+     * Uses the registry name as the domain/path and {@code "[unlocalizedName]_[valueName]"} for the item/model json.
      * <p>
      * Uses {@link IVariant#getMeta()} to determine the metadata of each value.
      *
@@ -181,9 +187,40 @@ public class ModModelManager
      * @param values      The values
      * @param <T>         The value type
      */
-    private <T extends IVariant> void registerVariantItemModels(Item item, T[] values) {
+    private <T extends IVariant> void registerItemModelsWithSubtypes(Item item, T[] values) {
         for (T value : values) {
-            registerItemModelForMeta(item, value.getMeta(), value.getName());
+            registerItemModelForMetaAndType(item, value.getMeta(), value.getName());
+        }
+    }
+    
+    /**
+     * Register a model for a metadata value an {@link Item}.
+     * <p>
+     * Uses the registry name as the domain/path and {@code type} as the variant.
+     *
+     * @param item     The Item
+     * @param metadata The metadata
+     * @param type  The type
+     */
+    private void registerItemModelForMetaAndType(Item item, int metadata, String type) {
+        registerItemModelForMeta(item, metadata, new ModelResourceLocation(new ResourceLocation(item.getRegistryName().toString() + "_" + type), "inventory"));
+    }
+
+    /**
+     * Register a model for each metadata value of an {@link Item} corresponding to the values in {@code values}.
+     * <p>
+     * Uses the registry name as the domain/path and {@code "[variantName]=[valueName]"} as the variant.
+     * <p>
+     * Uses {@link IVariant#getMeta()} to determine the metadata of each value.
+     *
+     * @param item        The Item
+     * @param variantName The variant name
+     * @param values      The values
+     * @param <T>         The value type
+     */
+    private <T extends IVariant> void registerVariantItemModels(Item item, String variantName, T[] values) {
+        for (T value : values) {
+            registerItemModelForMeta(item, value.getMeta(), variantName + "=" + value.getName());
         }
     }
 
@@ -197,7 +234,7 @@ public class ModModelManager
      * @param variant  The variant
      */
     private void registerItemModelForMeta(Item item, int metadata, String variant) {
-        registerItemModelForMeta(item, metadata, new ModelResourceLocation(new ResourceLocation(item.getRegistryName().toString() + "_" + variant), "inventory"));
+        registerItemModelForMeta(item, metadata, new ModelResourceLocation(item.getRegistryName(), variant));
     }
 
     /**

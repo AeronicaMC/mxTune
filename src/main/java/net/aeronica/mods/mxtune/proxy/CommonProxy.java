@@ -18,7 +18,7 @@ package net.aeronica.mods.mxtune.proxy;
 
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.GroupManager;
-import net.aeronica.mods.mxtune.handler.SREventHandler;
+import net.aeronica.mods.mxtune.handler.CommonEventHandler;
 import net.aeronica.mods.mxtune.init.ModBlocks;
 import net.aeronica.mods.mxtune.init.ModEntities;
 import net.aeronica.mods.mxtune.init.ModSounds;
@@ -78,7 +78,7 @@ public abstract class CommonProxy implements IProxy
     @Override
     public void registerEventHandlers()
     {
-        MinecraftForge.EVENT_BUS.register(SREventHandler.getInstance());
+        MinecraftForge.EVENT_BUS.register(CommonEventHandler.INSTANCE);
         MinecraftForge.EVENT_BUS.register(GroupManager.getInstance());
     }
 

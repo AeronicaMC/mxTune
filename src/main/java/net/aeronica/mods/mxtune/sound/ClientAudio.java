@@ -42,9 +42,10 @@ import paulscode.sound.SoundSystemConfig;
 import paulscode.sound.SoundSystemException;
 
 @SideOnly(Side.CLIENT)
-public class ClientAudio
+public enum ClientAudio
 {
 
+    INSTANCE;
     private static final int THREAD_POOL_SIZE = 10;
     private static final AudioFormat audioFormat3D, audioFormatStereo;
     private static ConcurrentLinkedQueue<Integer> playIDQueue01;
@@ -55,8 +56,6 @@ public class ClientAudio
     private final static ExecutorService executorService;
     
     private ClientAudio() {}
-    private static class ClientAudioHolder {private static final ClientAudio INSTANCE = new ClientAudio();}
-    public static ClientAudio getInstance() {return ClientAudioHolder.INSTANCE;}
     
     static {
         /* Used to track which player/groups queued up music to be played by PlayID */

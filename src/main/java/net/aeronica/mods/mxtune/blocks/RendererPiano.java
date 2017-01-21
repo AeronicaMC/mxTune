@@ -21,6 +21,7 @@ import org.lwjgl.opengl.GL11;
 import com.google.common.base.Function;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.init.IReBakeModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -35,18 +36,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.model.TRSRTransformation;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-@Mod.EventBusSubscriber(Side.CLIENT)
-public class RendererPiano extends TileEntitySpecialRenderer<TileInstrument>
+public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implements IReBakeModel
 {
     double xMusicOffset = 0D, zMusicOffset = 0D;
     EnumFacing facing = EnumFacing.NORTH;
@@ -59,14 +56,12 @@ public class RendererPiano extends TileEntitySpecialRenderer<TileInstrument>
     private IModel benchModel;
     private IBakedModel bakedBenchModel;
 
-    public void reBakeModels()
+    @Override
+    public void reBakeModel()
     {
         bakedRackModel = null;
         bakedBenchModel = null;   
     }
-    
-    @SubscribeEvent
-    public void event(TextureStitchEvent.Post e) { reBakeModels(); }
     
     private IBakedModel getRackBakedModel()
     {
@@ -116,7 +111,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TileInstrument>
     }
 
     @Override
-    public void renderTileEntityAt(TileInstrument te, double x, double y, double z, float partialTicks, int destroyStage)
+    public void renderTileEntityAt(TilePiano te, double x, double y, double z, float partialTicks, int destroyStage)
     {
         /** Translations for the sheet music, music rack and bench */
         facing = te.getFacing();
