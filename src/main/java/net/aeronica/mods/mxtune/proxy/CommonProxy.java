@@ -73,7 +73,7 @@ public abstract class CommonProxy implements IProxy
     @Override
     public void registerEventHandlers()
     {
-        MinecraftForge.EVENT_BUS.register(SREventHandler.getInstance());
+        MinecraftForge.EVENT_BUS.register(CommonEventHandler.INSTANCE);
         MinecraftForge.EVENT_BUS.register(GroupManager.getInstance());
     }
 
