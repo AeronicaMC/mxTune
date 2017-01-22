@@ -90,7 +90,7 @@ public class MML2PCM
         is = new java.io.ByteArrayInputStream(mmlBuf);
 
         /** ANTLR4 MML Parser BEGIN */
-        MMLToMIDI mmlTrans = new MMLToMIDI(1.0F);
+        MMLToMIDI mmlTrans = new MMLToMIDI(0.9F);
         ANTLRInputStream input = null;
 
         try

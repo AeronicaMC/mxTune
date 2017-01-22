@@ -1,3 +1,30 @@
+2017-01-21: mxtune-1.10.2-0.3.1.0-dev.12
+Issue#11 Major issue with EnderStorage mod
+Caused by: java.lang.NullPointerException
+ at net.aeronica.mods.mxtune.handler.SREventHandler.onEvent(SREventHandler.java:53) ~[SREventHandler.class:?] 
+ at net.minecraftforge.fml.common.eventhandler.ASMEventHandler_252_SREventHandler_onEvent_Close.invoke(.dynamic) ~[?:?]
+
+FIX:
+Found a missing NULL check.
+NPE fixed with the mxtune-1.10.2-0.3.1.0-dev.12 release. Will implement a suggestion by Jason for the next release: Stop playing on any GUI opening.
+
+Change:
+Adjust MML2MIDI max volume to 0.9F -> MML v0-15 now maps to MIDI v0-114 
+----
+
+2017-01-21: mxtune-1.10.2-0.3.1.0-dev.11
+skipped
+----
+
+2016-12-12: mxtune-1.10.2-0.3.1.0-dev.10
+Issue#9: mxtune-1.10.2-0.3.1.0-dev.9.jar Crash if aim use mercurial_eye of projecte
+java.lang.NullPointerException: Unexpected error
+ at net.aeronica.mods.mxtune.util.SheetMusicUtil.getSheetMusic(SheetMusicUtil.java:89)
+ at net.aeronica.mods.mxtune.gui.GuiJamOverlay.onRenderExperienceBar(GuiJamOverlay.java:153)
+ 
+Remove old capability item handler code from SheetMusicUtil and ItemConverter.
+----
+
 2016-11-26: mxtune-1.10.2-0.3.1.0-dev.9
 New status HUD. New option on Music Options dialog to adjust the size the position of the HUD. It's a bit derpy right now. It needs more love.
 New look for the group status placards for players.
