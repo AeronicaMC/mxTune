@@ -50,7 +50,8 @@ public enum CommonEventHandler
         if (event.getEntityPlayer().getEntityWorld().isRemote) return;
         for(Slot slot: event.getContainer().inventorySlots)
         {
-            if(!(slot.inventory.getName().contentEquals("container.inventory") ||
+            if(slot != null && slot.inventory != null && slot.inventory.getName() != null &&
+                    !(slot.inventory.getName().contentEquals("container.inventory") ||
                     slot.inventory.getName().contentEquals("container.crafting") ||
                     slot.inventory.getName().contentEquals("Result") ||
                     slot.inventory.getName().contentEquals("container.mxtune.instrument")))
