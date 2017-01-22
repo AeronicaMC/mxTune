@@ -114,7 +114,7 @@ public class GuiJamOverlay extends Gui
     private static int lastWidth = 0;
     private static int lastHeight = 0;
     private static boolean riding;
-    private static ItemStack lastItemStack = ItemStack.EMPTY;
+    private static ItemStack lastItemStack = null;
     private static ItemStack sheetMusic;
     private static ItemStack itemStack;
     private static float partialTicks;

@@ -35,7 +35,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -44,11 +43,10 @@ import net.minecraft.world.World;
  * @author Paul
  *
  */
-public class ItemInstrument extends ItemBase implements IInstrument
+public class ItemInstrument extends Item implements IInstrument
 {
-    public ItemInstrument(String itemName)
+    public ItemInstrument()
     {
-        super(itemName);
         setHasSubtypes(true);
         setMaxStackSize(1);
         setMaxDamage(0);
