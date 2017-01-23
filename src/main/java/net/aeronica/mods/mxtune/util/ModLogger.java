@@ -1,39 +1,41 @@
 package net.aeronica.mods.mxtune.util;
 
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
+public class ModLogger {
 
-/** TODO: This need to be reviewed - Use Forge's logger? */
-public class ModLogger
-{
+    private static Logger logger;
 
-    private static Logger modLogger;
-
-    public static void initializeLogging()
-    {
-        modLogger = LogManager.getLogger(MXTuneMain.MODID);
+    public static void setLogger(Logger logger) {
+        if (ModLogger.logger != null) {
+            throw new IllegalStateException("Attempt to replace logger");
+        }
+        ModLogger.logger = logger;
     }
 
-    public static void info(String msg)
-    {
-        modLogger.log(Level.INFO, msg);
+    public static void log(Level level, String format, Object... data) {
+        logger.printf(level, format, data);
     }
 
-    public static void warning(String msg)
-    {
-        modLogger.log(Level.WARN, msg);
+    public static void info(String format, Object... data){
+        log(Level.INFO, format, data);
+    }
+    
+    public static void debug(String format, Object... data){
+        log(Level.DEBUG, format, data);
+    }
+    
+    public static void warning(String format, Object... data){
+        log(Level.WARN, format, data);
     }
 
-    public static void error(String msg)
-    {
-        modLogger.log(Level.ERROR, msg);
+    public static void error(String format, Object... data){
+        log(Level.ERROR, format, data);
     }
 
-    public static void debug(String msg)
-    {
-        modLogger.log(Level.DEBUG, msg);
+    public static void fatal(String format, Object... data){
+        log(Level.FATAL, format, data);
     }
+
 }
