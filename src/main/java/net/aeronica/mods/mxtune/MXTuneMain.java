@@ -51,7 +51,7 @@ public class MXTuneMain
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
-        ModLogger.initializeLogging();
+        ModLogger.setLogger(event.getModLog());
         PlayerMusicOptionsCapability.register();
         PacketDispatcher.registerPackets();
         proxy.registerEventHandlers();
