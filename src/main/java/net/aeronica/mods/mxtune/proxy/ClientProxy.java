@@ -21,6 +21,7 @@ import net.aeronica.mods.mxtune.gui.GuiJamOverlay;
 import net.aeronica.mods.mxtune.handler.ClientEventHandler;
 import net.aeronica.mods.mxtune.handler.KeyHandler;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
+import net.aeronica.mods.mxtune.tabula.TabulaModelLoader;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -28,16 +29,44 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class ClientProxy extends CommonProxy
 {
+    
+
+    @Override
+    public void preInit(FMLPreInitializationEvent event)
+    {
+        super.preInit(event);
+        ModelLoaderRegistry.registerLoader(TabulaModelLoader.INSTANCE);
+        TabulaModelLoader.INSTANCE.addDomain(MXTuneMain.MODID);
+        OBJLoader.INSTANCE.addDomain(MXTuneMain.MODID);
+    }
+
+    @Override
+    public void init(FMLInitializationEvent event)
+    {
+        super.init(event);
+        
+    }
+
+    @Override
+    public void postInit(FMLPostInitializationEvent event)
+    {
+        super.postInit(event);
+        
+    }
+    
     @Override
     public Side getPhysicalSide() {return Side.CLIENT;}
 
@@ -107,17 +136,6 @@ public class ClientProxy extends CommonProxy
     @Override
     public void registerRenderers()
     {
-        // ItemRegistry.getInstance().registerRenderers();
-        /** Try using this in a LayerRenderer */
-        // RenderingRegistry.registerEntityRenderingHandler(PlacardEntity.class,
-        // new IRenderFactory<PlacardEntity>() {
-        // @Override
-        // public Render<? super PlacardEntity> createRenderFor(RenderManager
-        // manager) { return new PlacardRender(manager); }
-        // });
-
-        /** The ALL important model loaders so we can use custom models */
-        OBJLoader.INSTANCE.addDomain(MXTuneMain.MODID.toLowerCase());
     }
 
     @Override

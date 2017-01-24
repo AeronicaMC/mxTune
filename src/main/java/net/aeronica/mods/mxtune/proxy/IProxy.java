@@ -21,12 +21,33 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 
 public interface IProxy
 {
+    
+    /**
+     * FML preInit
+     * @param event
+     */
+    public void preInit(FMLPreInitializationEvent event);
+    
+    /**
+     * FML init
+     * @param event
+     */
+    public void init(FMLInitializationEvent event);
+    
+    /**
+     * FML postInit
+     * @param event
+     */
+    public void postInit(FMLPostInitializationEvent event);
+    
     /**
      * @return The physical side, is always Side.SERVER on the server and
      *         Side.CLIENT on the client
