@@ -2,6 +2,7 @@ package net.aeronica.mods.mxtune.tabula.baked;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import javax.vecmath.Point2f;
 import javax.vecmath.Point2i;
@@ -25,6 +26,7 @@ import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.IModel;
+import net.minecraftforge.client.model.IModelCustomData;
 import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.common.model.TRSRTransformation;
@@ -36,19 +38,25 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * @since 1.0.0
  */
 @SideOnly(Side.CLIENT)
-public class VanillaTabulaModel implements IModel {
+public class VanillaTabulaModel implements IModel, IModelCustomData {
     private TabulaModelContainer model;
     private ResourceLocation particle;
     private ImmutableList<ResourceLocation> textures;
     private ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transforms;
+    private CustomData customData;
 
     public VanillaTabulaModel(TabulaModelContainer model, ResourceLocation particle, ImmutableList<ResourceLocation> textures, ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transforms) {
+        this(model, particle, textures, transforms, new CustomData());
+    }
+
+    public VanillaTabulaModel(TabulaModelContainer model, ResourceLocation particle, ImmutableList<ResourceLocation> textures, ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transforms, CustomData customData) {
         this.model = model;
         this.particle = particle;
         this.textures = textures;
         this.transforms = transforms;
+        this.customData = customData;
     }
-
+    
     @Override
     public Collection<ResourceLocation> getDependencies() {
         return ImmutableList.of();
@@ -273,5 +281,42 @@ public class VanillaTabulaModel implements IModel {
     @Override
     public IModelState getDefaultState() {
         return TRSRTransformation.identity();
+    }
+
+    @Override
+    public IModel process(ImmutableMap<String, String> customData)
+    {
+        VanillaTabulaModel ret = new VanillaTabulaModel(this.model, this.particle, this.textures, this.transforms, new CustomData(this.customData, customData));
+        return ret;
+    }
+    
+    static class CustomData
+    {
+        public int patch = 0;
+        public int bank = 0;
+        public boolean instrument = false;
+
+        public CustomData(CustomData parent, ImmutableMap<String, String> customData)
+        {
+            this.patch = parent.patch;
+            this.bank = parent.bank;
+            this.instrument = parent.instrument;
+            this.process(customData);
+        }
+
+        public CustomData() {}
+
+        public void process(ImmutableMap<String, String> customData)
+        {
+            for (Map.Entry<String, String> e : customData.entrySet())
+            {
+                if (e.getKey().equals("patch"))
+                    this.patch = Integer.valueOf(e.getValue());
+                else if (e.getKey().equals("bank"))
+                    this.bank = Integer.valueOf(e.getValue());
+                else if (e.getKey().equals("instrument"))
+                    this.instrument = Boolean.valueOf(e.getValue());
+            }
+        }
     }
 }
