@@ -45,7 +45,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SuppressWarnings("deprecation")
 @SideOnly(Side.CLIENT)
 public enum TabulaModelLoader implements ICustomModelLoader, JsonDeserializationContext {
-    INSTANCE_TEST;
+    INSTANCE;
     
     private final Set<String> enabledDomains = new HashSet<String>();
     private Gson gson = new GsonBuilder().registerTypeAdapter(ItemTransformVec3f.class, new ItemTransformVec3fDeserializer()).registerTypeAdapter(ItemCameraTransforms.class, new ItemCameraTransformsDeserializer()).create();
@@ -74,7 +74,7 @@ public enum TabulaModelLoader implements ICustomModelLoader, JsonDeserialization
             path += TabulaUtils.EXT;
         }
         InputStream stream = TabulaModelLoader.class.getResourceAsStream(path);
-        return TabulaModelLoader.INSTANCE_TEST.loadTabulaModel(this.getModelJsonStream(path, stream));
+        return TabulaModelLoader.INSTANCE.loadTabulaModel(this.getModelJsonStream(path, stream));
     }
 
     /**
@@ -189,7 +189,7 @@ public enum TabulaModelLoader implements ICustomModelLoader, JsonDeserialization
         ResourceLocation tblLocation = new ResourceLocation(tblLocationStr);
         IResource tblResource = this.manager.getResource(tblLocation);
         InputStream modelStream = this.getModelJsonStream(tblLocation.toString(), tblResource.getInputStream());
-        TabulaModelContainer modelJson = TabulaModelLoader.INSTANCE_TEST.loadTabulaModel(modelStream);
+        TabulaModelContainer modelJson = TabulaModelLoader.INSTANCE.loadTabulaModel(modelStream);
         modelStream.close();
         ImmutableList.Builder<ResourceLocation> builder = ImmutableList.builder();
         int layer = 0;
