@@ -54,6 +54,7 @@ public class MXTuneMain
         ModLogger.setLogger(event.getModLog());
         PlayerMusicOptionsCapability.register();
         PacketDispatcher.registerPackets();
+        proxy.preInit(event);
         proxy.registerEventHandlers();
         proxy.initConfiguration(event);
         proxy.initPayload();
@@ -64,6 +65,7 @@ public class MXTuneMain
     @EventHandler
     public void init(FMLInitializationEvent event)
     {
+        proxy.init(event);
         proxy.registerKeyBindings();
         proxy.registerRecipes();
         proxy.initMML();
@@ -74,6 +76,7 @@ public class MXTuneMain
     @EventHandler
     public void postInit(FMLPostInitializationEvent event)
     {
+        proxy.postInit(event);
         proxy.replacePlayerModel();
         proxy.registerHUD();
     }

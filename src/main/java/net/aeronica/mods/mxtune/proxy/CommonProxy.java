@@ -29,12 +29,32 @@ import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public abstract class CommonProxy implements IProxy
 {
 
+    @Override
+    public void preInit(FMLPreInitializationEvent event)
+    {
+
+    }
+
+    @Override
+    public void init(FMLInitializationEvent event)
+    {
+        
+    }
+
+    @Override
+    public void postInit(FMLPostInitializationEvent event)
+    {
+        
+    }
+    
     @Override
     public void initConfiguration(FMLPreInitializationEvent event)
     {
