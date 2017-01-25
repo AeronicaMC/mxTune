@@ -24,7 +24,9 @@ import java.util.Set;
 import com.google.common.collect.Sets;
 
 import net.aeronica.mods.mxtune.blocks.BlockPiano;
+import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
 import net.aeronica.mods.mxtune.config.ModConfig;
+import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.PlayJamMessage;
@@ -81,7 +83,7 @@ public class PlayManager
     {
         if (MusicOptionsUtil.isMuteAll(playerIn)) return null;
         ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(pos, playerIn, isPlaced);
-        if (sheetMusic != null)
+        if (!sheetMusic.equals(ItemStack.EMPTY))
         {
             NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
             if (contents != null)
@@ -222,13 +224,13 @@ public class PlayManager
         {
             if (playerIn.getEntityWorld().getBlockState(pos).getBlock() instanceof BlockPiano)
             {
-                BlockPiano piano = (BlockPiano) playerIn.getEntityWorld().getBlockState(pos).getBlock();
-                return piano.getPatch();
+                IPlacedInstrument placedInst = (IPlacedInstrument) playerIn.getEntityWorld().getBlockState(pos).getBlock();
+                return placedInst.getPatch();
             }
         } else
         {
-            ItemInstrument.EnumType enumInst = ItemInstrument.EnumType.byMetadata(playerIn.getHeldItemMainhand().getMetadata());
-            return enumInst.getPatch();
+            IInstrument inst = (IInstrument) playerIn.getHeldItemMainhand().getItem();
+            return inst.getPatch(playerIn.getHeldItemMainhand().getMetadata());
         }
         return 0;
     }

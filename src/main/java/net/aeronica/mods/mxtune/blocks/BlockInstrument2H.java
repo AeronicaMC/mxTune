@@ -22,7 +22,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BlockInstrument2H extends BlockHorizontal implements IPlacedInstrument
+public abstract class BlockInstrument2H extends BlockHorizontal implements IPlacedInstrument
 {
 
     protected BlockInstrument2H(Material material)
@@ -31,12 +31,6 @@ public class BlockInstrument2H extends BlockHorizontal implements IPlacedInstrum
         this.setSoundType(SoundType.WOOD);
         setHardness(0.2F);
         disableStats();
-    }
-
-    @Override
-    public <T extends TileInstrument> T getTE(World worldIn, BlockPos pos)
-    {
-        return null;
     }
     
 }

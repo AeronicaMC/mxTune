@@ -208,11 +208,10 @@ public class ItemInstrument extends Item implements IInstrument
         }
     }
 
-    public int getPatch(ItemStack stackIn)
+    @Override
+    public int getPatch(int meta)
     {
-        int patch = (stackIn != null) ? stackIn.getMetadata() : 0;
-        EnumType inst = EnumType.byMetadata(patch);
-        return inst.getPatch();
+        return EnumType.byMetadata(meta).getPatch();
     }
 
     public static enum EnumType implements IVariant

@@ -246,7 +246,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
     private void renderSheetMusic(TileInstrument te)
     {
         ItemStack stack = te.getInventory().getStackInSlot(0);
-        if (stack != null)
+        if (!stack.equals(ItemStack.EMPTY))
         {
             RenderHelper.enableStandardItemLighting();
             GlStateManager.enableLighting();
