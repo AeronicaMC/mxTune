@@ -1,5 +1,6 @@
 package net.aeronica.mods.mxtune.sound;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -9,6 +10,8 @@ import java.util.Random;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 import paulscode.sound.ICodec;
 import paulscode.sound.SoundBuffer;
@@ -60,6 +63,11 @@ public class CodecPCM implements ICodec {
 	 */
     AudioInputStream audioInputStream = null;
 
+    /**
+     * A dummy stream just to open a handle to the proxy sound file.
+     */
+    AudioInputStream dummyInputStream = null;
+
     public static final int SAMPLE_SIZE = 10240;
     
     byte noiseBuffer[] = new byte[SAMPLE_SIZE];
@@ -105,12 +113,14 @@ public class CodecPCM implements ICodec {
 	public void reverseByteOrder(boolean b) {
 		reverseBytes = b;
 	}
-
+	
     @Override
     public boolean initialize(URL url)
     {
+        
         initialized(SET, false);
         if (playID == null)
+        {
             if ((playID = ClientAudio.pollPlayIDQueue02()) == null )
             {
                 errorMessage("playID not initialized: " + playID);
@@ -119,6 +129,32 @@ public class CodecPCM implements ICodec {
             {                
                 myAudioFormat = ClientAudio.getAudioFormat(playID);
             }
+        }
+        
+        if( url == null )
+        {
+            errorMessage( "url null in method 'initialize'" );
+            cleanup();
+            return false;
+        }
+        try
+        {
+            dummyInputStream = AudioSystem.getAudioInputStream(
+                                  new BufferedInputStream( url.openStream() ) );
+        }
+        catch( UnsupportedAudioFileException uafe )
+        {
+            errorMessage( "Unsupported audio format in method 'initialize'" );
+            printStackTrace( uafe );
+            return false;
+        }
+        catch( IOException ioe )
+        {
+            errorMessage( "Error setting up audio input stream in method " +
+                          "'initialize'" );
+            printStackTrace( ioe );
+            return false;
+        }
 
         endOfStream(SET, false);
         initialized(SET, true);
@@ -279,6 +315,15 @@ public class CodecPCM implements ICodec {
         }
         audioInputStream = null;
         ClientAudio.removeEntityAudioData(playID);
+        
+        if( dummyInputStream != null )
+            try
+            {
+                dummyInputStream.close();
+            }
+            catch( Exception e )
+            {}
+        dummyInputStream = null;
     }
 
 	@Override
@@ -456,7 +501,7 @@ public class CodecPCM implements ICodec {
 	 *            Message to print.
 	 */
 	private void errorMessage(String message) {
-		logger.errorMessage("CodecGervillMidi", message, 0);
+		logger.errorMessage("CodecPCM", message, 0);
 	}
 
 	/**
