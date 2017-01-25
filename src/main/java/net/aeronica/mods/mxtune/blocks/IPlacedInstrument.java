@@ -22,4 +22,6 @@ import net.minecraft.world.World;
 public interface IPlacedInstrument
 {
     public <T extends TileInstrument> T getTE(World worldIn, BlockPos pos);
+    
+    public int getPatch();
 }

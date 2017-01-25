@@ -16,4 +16,7 @@
  */
 package net.aeronica.mods.mxtune.inventory;
 
-public interface IInstrument {}
+public interface IInstrument 
+{
+    public int getPatch(int meta);
+}
