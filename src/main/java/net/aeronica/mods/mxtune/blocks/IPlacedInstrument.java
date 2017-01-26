@@ -21,7 +21,18 @@ import net.minecraft.world.World;
 
 public interface IPlacedInstrument
 {
-    public <T extends TileInstrument> T getTE(World worldIn, BlockPos pos);
+    /**
+     * Get the TE associated with the block
+     * @param worldIn
+     * @param pos
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    default public <T extends TileInstrument> T getTE(World worldIn, BlockPos pos) {return (T) worldIn.getTileEntity(pos);}
     
+    /**
+     * Get the patch for this placed instrument
+     * @return GM 1 Patch in the range of 1-127
+     */
     public int getPatch();
 }

@@ -32,5 +32,5 @@ public abstract class BlockInstrument2H extends BlockHorizontal implements IPlac
         setHardness(0.2F);
         disableStats();
     }
-    
+ 
 }
