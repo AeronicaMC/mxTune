@@ -149,10 +149,7 @@ public class BlockPiano extends BlockInstrument2H
         return true;
     }
 
-    public int getPatch() {return 0;}
-    
-    @Override
-    public <T extends TileInstrument> T getTE(World worldIn, BlockPos pos) {return (T) worldIn.getTileEntity(pos);}
+    public int getPatch() {return 1;}
 
     private boolean sitPiano(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn)
     {
