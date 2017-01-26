@@ -108,11 +108,11 @@ public class TabulaAnimationComponent implements Comparable<Object>
 
     public void animate(TabulaCubeContainer cubeInfo, float time)
     {
-        float prog = MathHelper.clamp((time - startKey) / (float)length, 0F, 1F);
+        float prog = MathHelper.clamp_float((time - startKey) / (float)length, 0F, 1F);
         float mag = prog;
         if(getProgressionCurve() != null)
         {
-            mag = MathHelper.clamp((float)getProgressionCurve().value(prog), 0.0F, 1.0F);
+            mag = MathHelper.clamp_float((float)getProgressionCurve().value(prog), 0.0F, 1.0F);
         }
         if(time >= startKey)
         {
@@ -143,11 +143,11 @@ public class TabulaAnimationComponent implements Comparable<Object>
 
     public void reset(TabulaCubeContainer cubeInfo, float time)
     {
-        float prog = MathHelper.clamp((time - startKey) / (float)length, 0F, 1F);
+        float prog = MathHelper.clamp_float((time - startKey) / (float)length, 0F, 1F);
         float mag = prog;
         if(getProgressionCurve() != null)
         {
-            mag = MathHelper.clamp((float)getProgressionCurve().value(prog), 0.0F, 1.0F);
+            mag = MathHelper.clamp_float((float)getProgressionCurve().value(prog), 0.0F, 1.0F);
         }
         if(time >= startKey)
         {
