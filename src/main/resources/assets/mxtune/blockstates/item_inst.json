@@ -1,0 +1,63 @@
+{
+	"forge_marker": 1,
+	"defaults": {
+		"model": "mxtune:item/generated"
+	},
+	"variants": {
+		"item_inst": {
+			"tuba": {
+				"textures": {
+					"layer0": "mxtune:items/item_inst.tuba"
+				}
+			},
+			"mando": {
+				"textures": {
+					"layer0": "mxtune:items/item_inst.mando"
+				}
+			},
+			"flute": {
+				"textures": {
+					"layer0": "mxtune:items/item_inst.flute"
+				}
+			},
+			"bongo": {
+				"textures": {
+					"layer0": "mxtune:items/item_inst.bongo"
+				}
+			},
+			"balalaika": {
+				"model": "mxtune:item/item_inst.balalaika"
+			},
+			"clarinet": {
+				"model": "mxtune:item/item_inst.clarinet"
+			},
+			"musicbox": {
+				"textures": {
+					"layer0": "mxtune:items/item_inst.musicbox"
+				}
+			},
+			"ocarina": {
+				"textures": {
+					"layer0": "mxtune:items/item_inst.ocarina"
+				}
+			},
+			"sawtooth": {
+				"textures": {
+					"layer0": "mxtune:items/item_inst.sawtooth"
+				}
+			},
+			"eguitarjazz": {
+				"model": "mxtune:item/item_inst.eguitarjazz"
+			},
+			"eguitarmuted": {
+				"model": "mxtune:item/item_inst.eguitarmuted"
+			},
+			"eguitarover": {
+				"model": "mxtune:item/item_inst.eguitarover"
+			},
+			"eguitardist": {
+				"model": "mxtune:item/item_inst.eguitardist"
+			}			
+		}
+	}
+}

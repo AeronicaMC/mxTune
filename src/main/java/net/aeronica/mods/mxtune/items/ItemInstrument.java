@@ -55,11 +55,8 @@ public class ItemInstrument extends Item implements IInstrument
     }
 
     @Override
-    public String getUnlocalizedName(ItemStack stack)
-    {
-        int metadata = stack.getMetadata();
-        EnumType inst = EnumType.byMetadata(metadata);
-        return super.getUnlocalizedName() + "_" + inst.getName();
+    public String getUnlocalizedName(ItemStack stack) {
+        return super.getUnlocalizedName(stack) + "." + EnumType.byMetadata(stack.getMetadata()).getName();
     }
 
     @Override
@@ -220,8 +217,8 @@ public class ItemInstrument extends Item implements IInstrument
         MANDO(1, "mando", 25),
         FLUTE(2, "flute", 74),
         BONGO(3, "bongo", 117),
-        BALAL(4, "balalaika", 28),
-        CLARI(5, "clarinet", 72),
+        BALALAIKA(4, "balalaika", 28),
+        CLARINET(5, "clarinet", 72),
         MUSICBOX(6, "musicbox", 11),
         OCARINA(7, "ocarina", 80),
         SAWTOOTH(8, "sawtooth", 82),

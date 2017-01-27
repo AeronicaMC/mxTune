@@ -81,7 +81,7 @@ public class Recipes
         GameRegistry.addRecipe(bongoRecipe);
 
         // Uses OreDictionary lookup for plankWood
-        int BALAL = ItemInstrument.EnumType.BALAL.getMetadata();
+        int BALAL = ItemInstrument.EnumType.BALALAIKA.getMetadata();
         IRecipe balalaikaRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, BALAL), new Object[]
         {
                 ".P.",
@@ -102,7 +102,7 @@ public class Recipes
         });
         GameRegistry.addRecipe(fluteRecipe);
 
-        int CLARI = ItemInstrument.EnumType.CLARI.getMetadata();
+        int CLARI = ItemInstrument.EnumType.CLARINET.getMetadata();
         IRecipe clariRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, CLARI), new Object[]
         {
                 "P",

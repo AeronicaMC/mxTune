@@ -103,7 +103,7 @@ public class ModModelManager
         // registerItemModel(ModBlocks.BLOCK_PIANO);
         
 
-        registerItemModelsWithSubtypes(ModItems.ITEM_INSTRUMENT, ItemInstrument.EnumType.values());
+        registerVariantItemModels(ModItems.ITEM_INSTRUMENT, "item_inst", ItemInstrument.EnumType.values());
 
         // Then register items with default model names
         ModItems.RegistrationHandler.ITEMS.stream().filter(item -> !itemsRegistered.contains(item)).forEach(this::registerItemModel);
@@ -206,6 +206,7 @@ public class ModModelManager
         registerItemModelForMeta(item, metadata, new ModelResourceLocation(new ResourceLocation(item.getRegistryName().toString() + "_" + type), "inventory"));
     }
 
+    
     /**
      * Register a model for each metadata value of an {@link Item} corresponding to the values in {@code values}.
      * <p>
