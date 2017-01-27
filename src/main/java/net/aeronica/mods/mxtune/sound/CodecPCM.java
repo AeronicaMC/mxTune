@@ -198,7 +198,7 @@ public class CodecPCM implements ICodec {
 		nextBuffer(SAMPLE_SIZE);
 		try
         {	
-		    if (hasStream)
+		    if (hasStream && audioInputStream != null)
 		    {
             bufferSize = audioInputStream.read(readBuffer);
             if (bufferSize > 0) outputBuffer = appendByteArrays(outputBuffer, readBuffer, bufferSize);
