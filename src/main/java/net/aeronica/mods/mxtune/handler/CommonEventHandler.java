@@ -20,6 +20,7 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
@@ -42,30 +43,12 @@ public enum CommonEventHandler
     }
     
     /* 
-     * Stops a playing instrument if it's placed into a container and the container is closed.
+     * Stops a playing player if they open any inventory.
      */
     @SubscribeEvent
-    public void onEvent(PlayerContainerEvent.Close event)
+    public void onEvent(PlayerContainerEvent.Open event)
     {
-        if (event.getEntityPlayer().getEntityWorld().isRemote) return;
-        for(Slot slot: event.getContainer().inventorySlots)
-        {
-            if(slot != null && slot.inventory != null && slot.inventory.getName() != null &&
-                    !(slot.inventory.getName().contentEquals("container.inventory") ||
-                    slot.inventory.getName().contentEquals("container.crafting") ||
-                    slot.inventory.getName().contentEquals("Result") ||
-                    slot.inventory.getName().contentEquals("container.mxtune.instrument")))
-            {                
-                ItemStack stack = slot.getStack();
-                if (slot.getHasStack() && stack.getItem() instanceof IInstrument)
-                {
-                    if (stack.getRepairCost() > -1)
-                    {
-                        stack.getItem().onUpdate(stack, event.getEntityPlayer().getEntityWorld(), event.getEntityPlayer(), 0, false );
-                    }
-                }
-            }
-        }
+        PlayManager.stopPlayingPlayer(event.getEntityLiving());
     }
     
     private static int count = 0;
