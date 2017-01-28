@@ -35,12 +35,12 @@ public class AudioData
         this.status = Status.WAITING;
     }
 
-    public Status getStatus()
+    synchronized public Status getStatus()
     {
         return status;
     }
 
-    public void setStatus(Status status)
+    synchronized public void setStatus(Status status)
     {
         this.status = status;
     }
@@ -60,12 +60,12 @@ public class AudioData
         return isClientPlayer;
     }
     
-    public AudioInputStream getAudioStream()
+    synchronized public AudioInputStream getAudioStream()
     {
         return audioStream;
     }
 
-    public void setAudioStream(AudioInputStream audioStream)
+    synchronized public void setAudioStream(AudioInputStream audioStream)
     {
         this.audioStream = audioStream;
     }
