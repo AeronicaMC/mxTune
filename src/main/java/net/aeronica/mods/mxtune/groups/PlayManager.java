@@ -27,7 +27,6 @@ import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
-import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.PlayJamMessage;
 import net.aeronica.mods.mxtune.network.client.PlaySoloMessage;
@@ -35,6 +34,7 @@ import net.aeronica.mods.mxtune.network.client.SyncStatusMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -44,14 +44,14 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 
 /**
  * The SERVER side class for managing playing
+ * FIXME: Refactor this class along with GROUPS and GroupManager and the associated packet messages
  * @author Paul Boese aka Aeronica
  *
  */
-public class PlayManager
+public enum PlayManager
 {
-    private PlayManager() {}
-    private static class PlayManagerHolder {public static final PlayManager INSTANCE = new PlayManager();}
-    public static PlayManager getInstance() {return PlayManagerHolder.INSTANCE;}
+    
+    INSTANCE;
 
     private static Map<Integer, String> membersMML;
     private static HashMap<Integer, String> membersQueuedStatus;
@@ -169,10 +169,20 @@ public class PlayManager
         return (g!=null) ? ((g.playID == null) ? g.playID = getNextPlayID() : g.playID) : null;
     }
     
-    public static boolean isPlayerPlaying(EntityPlayer playerIn)
+    public static Integer getPlayersPlayID(Integer entityID)
     {
-        Integer entityID = playerIn.getEntityId();
+        playID = (membersPlayID != null && !membersPlayID.isEmpty()) ? membersPlayID.get(entityID) : null;
+        return playID;
+    }
+    
+    public static boolean isPlayerPlaying(Integer entityID)
+    {
         return (membersPlayID != null && !membersPlayID.isEmpty()) ? membersPlayID.containsKey(entityID) : false;
+    }
+    
+    public static  <T extends EntityLivingBase> boolean isPlayerPlaying(T entityLivingIn)
+    {
+        return isPlayerPlaying(entityLivingIn.getEntityId());
     }
     
     public static boolean isActivePlayID(Integer playID) { return activePlayIDs != null ? activePlayIDs.contains(playID) : false; }
@@ -198,22 +208,37 @@ public class PlayManager
         return members;
     }
     
+    public static <T extends EntityLivingBase> void stopPlayingPlayer(T entityLivingIn)
+    {
+        stopPlayingPlayer(entityLivingIn.getEntityId());
+    }
+    
+    public static void stopPlayingPlayer(Integer entityID)
+    {
+        if (isPlayerPlaying(entityID))
+        {
+            stopPlayID(PlayManager.getPlayersPlayID(entityID));
+        }
+    }
+    
     public static void stopPlayID(Integer playID)
     {
-        Set<Integer> memberSet = getMembersByPlayID(playID);
-        for(Integer member: memberSet)
-        {
-            if (membersPlayID != null && membersPlayID.containsKey(member))
+        if (playID != null) {
+            Set<Integer> memberSet = getMembersByPlayID(playID);
+            for(Integer member: memberSet)
             {
-                membersPlayID.remove(member, playID);
+                if (membersPlayID != null && membersPlayID.containsKey(member))
+                {
+                    membersPlayID.remove(member, playID);
+                }
+                if (membersQueuedStatus != null && membersQueuedStatus.containsKey(member))
+                {
+                    membersQueuedStatus.remove(member);
+                }
             }
-            if (membersQueuedStatus != null && membersQueuedStatus.containsKey(member))
-            {
-                membersQueuedStatus.remove(member);
-            }
+            dequeuePlayID(playID);
+            syncStatus();        
         }
-        dequeuePlayID(playID);
-        syncStatus();        
     }
     
     private static void dequeuePlayID(Integer playID) {if (activePlayIDs != null) activePlayIDs.remove(playID);}
@@ -293,7 +318,7 @@ public class PlayManager
     /**
      * 
      * @param playID
-     * @return
+     * @return Vec3d
      */
     public static Vec3d getMedianPos(Integer playID)
     {
