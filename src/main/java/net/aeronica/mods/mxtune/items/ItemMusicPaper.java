@@ -60,7 +60,7 @@ public class ItemMusicPaper extends Item implements IMusic
         {
             /** Client side */
             ItemStack itemStackIn = playerIn.getHeldItem(handIn);
-            if (playerIn.isSneaking() && !itemStackIn.hasDisplayName() && handIn.equals(EnumHand.MAIN_HAND) && !itemStackIn.equals(ItemStack.EMPTY))
+            if (!itemStackIn.hasDisplayName() && handIn.equals(EnumHand.MAIN_HAND) && !itemStackIn.equals(ItemStack.EMPTY))
             {
                 playerIn.openGui(MXTuneMain.instance, GuiMusicPaperParse.GUI_ID, worldIn, (int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ);
             }
