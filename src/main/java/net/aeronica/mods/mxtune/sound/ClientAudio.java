@@ -17,7 +17,6 @@ package net.aeronica.mods.mxtune.sound;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -66,7 +65,7 @@ public enum ClientAudio
         audioFormat3D = new AudioFormat(48000, 16, 1, true, false);
         /* PCM Signed Stereo little endian */        
         audioFormatStereo = new AudioFormat(48000, 16, 2, true, false);
-        playIDAudioData = new ConcurrentHashMap<Integer, AudioData>(new HashMap<Integer, AudioData>());
+        playIDAudioData = new HashMap<Integer, AudioData>();
         
         threadFactory = (ThreadFactory) new ThreadFactoryBuilder()
                 .setNameFormat("mxTune-ClientAudio-%d")
@@ -113,13 +112,13 @@ public enum ClientAudio
        return audioData.isClientPlayer() ? audioFormatStereo : audioFormat3D;
     }
     
-    synchronized public static void setPlayIDAudioStream(int playID, AudioInputStream audioStream)
+    public synchronized static void setPlayIDAudioStream(int playID, AudioInputStream audioStream)
     {
         AudioData audioData = playIDAudioData.get(playID);
         if (audioData != null) audioData.setAudioStream(audioStream);
     }
     
-    synchronized public static void removeEntityAudioData(int playID)
+    public static void removeEntityAudioData(int playID)
     {
         if ((playIDAudioData.isEmpty() == false) && playIDAudioData.containsKey(playID))
         {
@@ -130,33 +129,33 @@ public enum ClientAudio
         inInit = false;
     }
     
-    synchronized public static AudioInputStream getAudioInputStream(int playID)
+    public synchronized static AudioInputStream getAudioInputStream(int playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
         return (audioData != null) ? audioData.getAudioStream() : null;
     }
     
-    synchronized public static void setPlayIDAudioDataStatus(Integer playID, Status status)
+    public static void setPlayIDAudioDataStatus(Integer playID, Status status)
     {
         AudioData audioData = playIDAudioData.get(playID);
         if (audioData != null) audioData.setStatus(status);
     }
     
-    synchronized public static boolean isPlayIDAudioDataWaiting(Integer playID)
+    public static boolean isPlayIDAudioDataWaiting(Integer playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
         if (audioData == null) return false;
         return audioData.getStatus() == Status.WAITING;
     }
     
-    synchronized public static boolean isPlayIDAudioDataError(Integer playID)
+    public static boolean isPlayIDAudioDataError(Integer playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
         if (audioData == null) return true;
         return audioData.getStatus() == Status.ERROR;
     }
     
-    synchronized public static boolean isPlayIDAudioDataReady(Integer playID)
+    public static boolean isPlayIDAudioDataReady(Integer playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
         if (audioData == null) return false;
