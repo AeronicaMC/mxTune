@@ -264,7 +264,7 @@ public class CodecPCM implements ICodec {
             }
             try
             {
-                if (hasStream)
+                if (hasStream && audioInputStream != null)
                 {
                     bufferSize = audioInputStream.read(readBuffer);
                     if (bufferSize > 0) outputBuffer = appendByteArrays(outputBuffer, readBuffer, bufferSize);
@@ -273,7 +273,7 @@ public class CodecPCM implements ICodec {
                     nextBuffer(SAMPLE_SIZE);
                     outputBuffer = appendByteArrays(outputBuffer, noiseBuffer, SAMPLE_SIZE);
                     message("  zeroBufferCount: " + ++zeroBufferCount);
-                    if (zeroBufferCount > 48) 
+                    if (zeroBufferCount > 64) 
                     {
                         errorMessage("  MML to PCM audio prcessiong took too long. Aborting!");
                         endOfStream(SET, true);
