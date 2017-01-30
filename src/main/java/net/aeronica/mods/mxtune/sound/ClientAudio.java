@@ -27,6 +27,7 @@ import javax.sound.sampled.AudioInputStream;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
@@ -38,11 +39,12 @@ import net.minecraftforge.client.event.sound.SoundSetupEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import paulscode.sound.IStreamListener;
 import paulscode.sound.SoundSystemConfig;
 import paulscode.sound.SoundSystemException;
 
 @SideOnly(Side.CLIENT)
-public enum ClientAudio
+public enum ClientAudio implements IStreamListener
 {
 
     INSTANCE;
@@ -248,6 +250,7 @@ public enum ClientAudio
         SoundSystemConfig.setNumberStreamingChannels(8);
         SoundSystemConfig.setNumberNormalChannels(24);
         SoundSystemConfig.setNumberStreamingBuffers(4);
+        SoundSystemConfig.addStreamListener(INSTANCE); 
     }
 
     @SubscribeEvent
@@ -280,6 +283,13 @@ public enum ClientAudio
                 }
             }
         }
+    }
+
+    @Override
+    public void endOfStream(String sourcename, int queueSize)
+    {
+        ModLogger.info("ClientAudio endOfStream Source:     " + sourcename);
+        ModLogger.info("ClientAudio endOfStream Queue Size: " + queueSize);          
     }
  
 }
