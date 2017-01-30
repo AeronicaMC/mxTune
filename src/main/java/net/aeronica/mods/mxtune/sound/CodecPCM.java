@@ -501,7 +501,7 @@ public class CodecPCM implements ICodec {
 	 *            Message to print.
 	 */
 	private void errorMessage(String message) {
-		logger.errorMessage("CodecPCM", message, 0);
+		logger.errorMessage("[mxtune] CodecPCM", message, 0);
 	}
 
 	/**
@@ -516,7 +516,7 @@ public class CodecPCM implements ICodec {
 
 	private void message(String message)
 	{
-	    logger.message(message, 0);
+	    logger.message("[mxtune]: CodecPCM " + message, 0);
 	}
 	
 }
