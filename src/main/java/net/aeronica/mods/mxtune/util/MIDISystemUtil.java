@@ -162,7 +162,7 @@ public class MIDISystemUtil
     public void onPlayerLoggedInModStatus(EntityPlayer playerIn)
     {
         if (ModConfig.hideWelcomeStatusMessage() == false)
-            for (TextComponentString tcs: chatStatus) {playerIn.addChatComponentMessage(tcs);}
+            for (TextComponentString tcs: chatStatus) {playerIn.sendMessage(tcs);}
     }
     
 }

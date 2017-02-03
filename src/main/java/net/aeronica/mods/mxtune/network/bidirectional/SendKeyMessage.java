@@ -66,11 +66,11 @@ public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
     {
         if (keyBindingDesc.equalsIgnoreCase("mxtune.key.openParty"))
         {
-            playerSP.openGui(MXTuneMain.instance, GuiGroup.GUI_ID, playerSP.worldObj, 0, 0, 0);
+            playerSP.openGui(MXTuneMain.instance, GuiGroup.GUI_ID, playerSP.world, 0, 0, 0);
         }
         if (keyBindingDesc.equalsIgnoreCase("mxtune.key.openMusicOptions"))
         {
-            playerSP.openGui(MXTuneMain.instance, GuiMusicOptions.GUI_ID, playerSP.worldObj, 0, 0, 0);
+            playerSP.openGui(MXTuneMain.instance, GuiMusicOptions.GUI_ID, playerSP.world, 0, 0, 0);
         }
     }
 

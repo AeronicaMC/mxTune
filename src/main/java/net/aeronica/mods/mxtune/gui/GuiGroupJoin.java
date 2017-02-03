@@ -70,7 +70,7 @@ public class GuiGroupJoin extends GuiScreen
 
         this.mc = Minecraft.getMinecraft();
         this.fontRenderer = mc.fontRendererObj;
-        this.player = mc.thePlayer;
+        this.player = mc.player;
 
         this.guiLeft = (this.width - this.xSize) / 2;
         this.guiTop = (this.height - this.ySize) / 2;
@@ -131,7 +131,7 @@ public class GuiGroupJoin extends GuiScreen
             if (groupID != null)
             {
                 /** Always put the leader at the TOP of the list */
-                leaderName = player.worldObj.getEntityByID(GROUPS.getLeaderOfGroup(groupID)).getDisplayName().getUnformattedText();
+                leaderName = player.world.getEntityByID(GROUPS.getLeaderOfGroup(groupID)).getDisplayName().getUnformattedText();
                 fontRenderer.drawStringWithShadow(leaderName, posX, posY, 16777215);
                 posY += 10;
                 /** display the remaining members taking care to not print the leader a 2nd time. */
@@ -141,7 +141,7 @@ public class GuiGroupJoin extends GuiScreen
                     memberID = im.next();
                     if (groupID.equals(GROUPS.getMembersGroupID(memberID)) && !memberID.equals(GROUPS.getLeaderOfGroup(groupID)))
                     {
-                        memberName = player.worldObj.getEntityByID(memberID).getDisplayName().getUnformattedText();
+                        memberName = player.world.getEntityByID(memberID).getDisplayName().getUnformattedText();
                         fontRenderer.drawStringWithShadow(memberName, posX, posY, 16777215);
 
                         /** Only Leaders get to remove and promote other members! */

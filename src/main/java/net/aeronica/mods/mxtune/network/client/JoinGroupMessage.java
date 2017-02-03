@@ -51,7 +51,7 @@ public class JoinGroupMessage extends AbstractClientMessage<JoinGroupMessage>
     {
         if (side.isClient())
         {
-            player.openGui(MXTuneMain.instance, GuiGroupJoin.GUI_ID, player.worldObj, (int) player.posX, (int) player.posY, (int) player.posZ);
+            player.openGui(MXTuneMain.instance, GuiGroupJoin.GUI_ID, player.world, (int) player.posX, (int) player.posY, (int) player.posZ);
         }
     }
 }

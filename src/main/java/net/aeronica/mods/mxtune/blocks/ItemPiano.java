@@ -65,7 +65,7 @@ public class ItemPiano extends Item
             if (!flag) pos = pos.up();
 
             /**determine the direction the player is facing */
-            int i = MathHelper.floor_double((double) (playerIn.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+            int i = MathHelper.floor((double) (playerIn.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
             EnumFacing enumfacing = EnumFacing.getHorizontal(i);
             /**get the next block in line. */
             BlockPos blockpos = pos.offset(enumfacing);

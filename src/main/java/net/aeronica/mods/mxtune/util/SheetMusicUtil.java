@@ -54,10 +54,10 @@ public class SheetMusicUtil
     {
         if (isPlaced)
         {
-            if (playerIn.worldObj.getBlockState(pos).getBlock() instanceof IPlacedInstrument)
+            if (playerIn.getEntityWorld().getBlockState(pos).getBlock() instanceof IPlacedInstrument)
             {
-                Block placedInst = (Block) playerIn.worldObj.getBlockState(pos).getBlock();
-                TileInstrument te = ((IPlacedInstrument) placedInst).getTE(playerIn.worldObj, pos);
+                Block placedInst = (Block) playerIn.getEntityWorld().getBlockState(pos).getBlock();
+                TileInstrument te = ((IPlacedInstrument) placedInst).getTE(playerIn.getEntityWorld(), pos);
                 if(te.getInventory().getStackInSlot(0) != null)
                     return te.getInventory().getStackInSlot(0).copy();
             }

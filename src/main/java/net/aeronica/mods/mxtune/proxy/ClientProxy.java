@@ -77,10 +77,10 @@ public class ClientProxy extends CommonProxy
     public Minecraft getMinecraft() {return Minecraft.getMinecraft();}
 
     @Override
-    public EntityPlayer getClientPlayer() {return Minecraft.getMinecraft().thePlayer;}
+    public EntityPlayer getClientPlayer() {return Minecraft.getMinecraft().player;}
 
     @Override
-    public World getClientWorld() {return Minecraft.getMinecraft().theWorld;}
+    public World getClientWorld() {return Minecraft.getMinecraft().world;}
 
     @Override
     public void spawnMusicParticles(EntityPlayer player) {}

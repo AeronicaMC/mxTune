@@ -561,9 +561,9 @@ public class GuiMusicOptions extends GuiScreen
         blackList = MusicOptionsUtil.getBlackList(player);
         
         PlayerLists pList;
-        if (!(this.mc.isIntegratedServerRunning() && this.mc.thePlayer.connection.getPlayerInfoMap().size() <= 1))
+        if (!(this.mc.isIntegratedServerRunning() && this.mc.player.connection.getPlayerInfoMap().size() <= 1))
         {
-            NetHandlerPlayClient nethandlerplayclient = this.getMinecraftInstance().thePlayer.connection;
+            NetHandlerPlayClient nethandlerplayclient = this.getMinecraftInstance().player.connection;
             List<NetworkPlayerInfo> list = ENTRY_ORDERING.<NetworkPlayerInfo> sortedCopy(nethandlerplayclient.getPlayerInfoMap());
             for (NetworkPlayerInfo networkplayerinfo : list)
             {

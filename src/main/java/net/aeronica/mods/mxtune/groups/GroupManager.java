@@ -173,19 +173,19 @@ public class GroupManager
                     g.members.add(m);
                     sync();
 
-                    playerInitiator.addChatMessage(new TextComponentString("You Joined " + playerTarget.getDisplayName().getFormattedText() + "'s group"));
-                    playerTarget.addChatMessage(new TextComponentString(playerInitiator.getDisplayName().getFormattedText() + " joined the group"));
+                    playerInitiator.sendMessage(new TextComponentString("You Joined " + playerTarget.getDisplayName().getFormattedText() + "'s group"));
+                    playerTarget.sendMessage(new TextComponentString(playerInitiator.getDisplayName().getFormattedText() + " joined the group"));
                     return true;
                 }
 
                 log("----- Can't join. Too many members.");
-                playerInitiator.addChatMessage(new TextComponentString("You can't join " + playerTarget.getDisplayName().getFormattedText() + "'s group. Too many members."));
-                playerTarget.addChatMessage(new TextComponentString(playerInitiator.getDisplayName().getFormattedText() + " can't join group. Too many members."));
+                playerInitiator.sendMessage(new TextComponentString("You can't join " + playerTarget.getDisplayName().getFormattedText() + "'s group. Too many members."));
+                playerTarget.sendMessage(new TextComponentString(playerInitiator.getDisplayName().getFormattedText() + " can't join group. Too many members."));
                 return false;
             }
 
             log("----- Can't join a group if you are a member of a group.");
-            playerInitiator.addChatMessage(new TextComponentString("You can't join a group if you are a member of a group."));
+            playerInitiator.sendMessage(new TextComponentString("You can't join a group if you are a member of a group."));
             return false;
         }
         log("----- No group exists!");
@@ -433,12 +433,12 @@ public class GroupManager
                         } else
                         {
                             /** target fails the mute options check */
-                            playerInitiator.addChatComponentMessage(new TextComponentTranslation("mxtune.chat.gm.noJoinGroupWhenPlayerIsMuted", new Object[] {playerTarget.getDisplayName().getUnformattedText()}));
+                            playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.gm.noJoinGroupWhenPlayerIsMuted", new Object[] {playerTarget.getDisplayName().getUnformattedText()}));
                         }
                     } else
                     {
                         /** MuteALL is true so playerInitator can't join */
-                        playerInitiator.addChatComponentMessage(new TextComponentTranslation("mxtune.chat.gm.noJoinGroupWhenMuteAll"));
+                        playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.gm.noJoinGroupWhenMuteAll"));
                     }
                 }
             }
@@ -452,7 +452,7 @@ public class GroupManager
         if (group != null)
         {
             event.setResult(SleepResult.NOT_POSSIBLE_NOW);
-            event.getEntityPlayer().addChatComponentMessage(new TextComponentTranslation("mxtune.chat.gm.noSleepInJam"));
+            event.getEntityPlayer().sendMessage(new TextComponentTranslation("mxtune.chat.gm.noSleepInJam"));
         }
     }
 

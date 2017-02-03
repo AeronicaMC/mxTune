@@ -98,10 +98,10 @@ public class InventoryInstrument implements IInventory {
 		this.writeToNBT(this.stack.getTagCompound());
 	}
 
-	@Override
-	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
-		return true;
-	}
+    @Override
+    public boolean isUsableByPlayer(EntityPlayer player) {
+        return true;
+    }
 
 	/**
 	 * This method doesn't seem to do what it claims to do, as items can still be left-clicked and placed in the
@@ -215,4 +215,5 @@ public class InventoryInstrument implements IInventory {
 		// TODO Auto-generated method stub
 		
 	}
+
 }
