@@ -1,3 +1,16 @@
+2017-02-03: mxtune-1.10.2-0.3.1.0-dev.15, mxtune-1.11-0.3.1.0-dev.15
+Changes:
+Activate Music Paper on right click or shift right click.
+Simplify stopping music when a player interacts with an inventory (Read: the way I did it before was really dumb)
+Prevent accidental creation of title-less sheet music.
+Identity CodecPCM mod source when logging.
+Additional debug for sources in ClientAudio.
+----
+
+2017-01-25: mxtune-1.10.2-0.3.1.0-dev.14
+Attempt to fix intermittent issues with songs not playing. Open a dummy stream to the supplied URL in CodecPCM and close it in cleanup.
+----
+
 2017-01-21: mxtune-1.10.2-0.3.1.0-dev.12
 Issue#11 Major issue with EnderStorage mod
 Caused by: java.lang.NullPointerException
