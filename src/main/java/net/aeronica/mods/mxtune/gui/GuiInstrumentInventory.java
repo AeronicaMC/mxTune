@@ -32,7 +32,7 @@ public class GuiInstrumentInventory extends GuiContainer {
 
 		// The slot inventory.currentItem is 0 based
 		this.theInvItemSlot = mc.player.inventory.currentItem;
-		this.fontRenderer = mc.fontRendererObj;
+		this.fontRenderer = mc.fontRenderer;
 
 		xSize = 184;
 		ySize = 166;

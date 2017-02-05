@@ -218,7 +218,7 @@ public class BlockPiano extends BlockInstrument2H
     }
 
     @Override
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB aaBBIn, List<AxisAlignedBB> listAABB, Entity entity)
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, Entity entityIn, boolean p_185477_7_)
     {
         List<AxisAlignedBB> list = Lists.<AxisAlignedBB> newArrayList();
         list.add(PIANO_BODY_AABB);
@@ -255,7 +255,7 @@ public class BlockPiano extends BlockInstrument2H
         }
         for (AxisAlignedBB axisalignedbb : list)
         {
-            addCollisionBoxToList(pos, aaBBIn, listAABB, axisalignedbb);
+            addCollisionBoxToList(pos, entityBox, collidingBoxes, axisalignedbb);
         }
     }
 

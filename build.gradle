@@ -24,7 +24,7 @@ compileJava {
 
 version = "0.3.1.0-dev"
 group = "net.aeronica.mods.mxtune" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "mxtune-1.11"
+archivesBaseName = "mxtune-1.11.2"
 
 configurations {
     shadow
@@ -32,7 +32,7 @@ configurations {
 }
 
 minecraft {
-    version = "1.11-13.19.1.2189"
+    version = "1.11.2-13.20.0.2226"
     runDir = "run"
 	
 	def versionPropsFile = file('version.properties')
@@ -58,7 +58,7 @@ minecraft {
     // Use non-default mappings at your own risk. they may not allways work.
     // simply re-run your setup task after changing the mappings to update your workspace.
     // mappings = "snapshot_20160518"
-    mappings = "snapshot_20161209"
+    mappings = "snapshot_20170204"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
     // useDepAts = true
 }

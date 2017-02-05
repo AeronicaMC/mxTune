@@ -37,7 +37,7 @@ public class MXTuneMain
     public static final String MODID = "mxtune";
     public static final String MODNAME = "mxTune";
     public static final String VERSION = "{@version:mod}";
-    public static final String DEPS = "required-after:forge@[1.11-13.19.0.2188,)";
+    public static final String DEPS = "required-after:forge@[1.11.2-13.20.0.2225,)";
     public static final String GUIFACTORY = "net.aeronica.mods.mxtune.config.ModGuiFactory"; 
 
     @Mod.Instance(MODID)

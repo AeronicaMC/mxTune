@@ -69,7 +69,7 @@ public class GuiGroupJoin extends GuiScreen
         Keyboard.enableRepeatEvents(false);
 
         this.mc = Minecraft.getMinecraft();
-        this.fontRenderer = mc.fontRendererObj;
+        this.fontRenderer = mc.fontRenderer;
         this.player = mc.player;
 
         this.guiLeft = (this.width - this.xSize) / 2;

@@ -77,7 +77,7 @@ public class GuiJamOverlay extends Gui
     public GuiJamOverlay()
     {
         this.mc = Minecraft.getMinecraft();
-        this.fontRenderer = this.mc.fontRendererObj;
+        this.fontRenderer = this.mc.fontRenderer;
     }
 
     private static int hudTimer = 0;

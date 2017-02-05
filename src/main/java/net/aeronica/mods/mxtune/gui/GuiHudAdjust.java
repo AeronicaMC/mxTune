@@ -199,6 +199,6 @@ public class GuiHudAdjust extends GuiScreen
     
     public Minecraft getMinecraftInstance() {return mc;}
 
-    public FontRenderer getFontRenderer() {return mc.fontRendererObj;}
+    public FontRenderer getFontRenderer() {return mc.fontRenderer;}
 
 }

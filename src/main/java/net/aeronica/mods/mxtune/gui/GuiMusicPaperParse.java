@@ -665,7 +665,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
 
     public Minecraft getMinecraftInstance() {return mc;}
 
-    public FontRenderer getFontRenderer() {return mc.fontRendererObj;}
+    public FontRenderer getFontRenderer() {return mc.fontRenderer;}
 
     /** MML Player */
     private Sequencer sequencer = null;
