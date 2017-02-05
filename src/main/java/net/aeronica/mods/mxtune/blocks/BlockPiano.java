@@ -90,6 +90,7 @@ public class BlockPiano extends BlockInstrument2H
             }
             TilePiano tile = (TilePiano) getTE(worldIn, pos);
             if (tile.isInvalid()) return true;
+            boolean isOccupied = PlacedInstrumentUtil.isSomeoneSitting(worldIn, pos);
             boolean invHasItem = !tile.getInventory().getStackInSlot(0).equals(ItemStack.EMPTY);
             boolean invIsMusic = invHasItem && (tile.getInventory().getStackInSlot(0).getItem() instanceof IMusic) &&
                     tile.getInventory().getStackInSlot(0).hasDisplayName();
@@ -98,7 +99,7 @@ public class BlockPiano extends BlockInstrument2H
             boolean playerHasMusic = playerHasItem && (playerIn.getHeldItem(hand).getItem() instanceof IMusic) && 
                     playerIn.getHeldItem(hand).hasDisplayName();
 
-            if (playerIn.isSneaking())
+            if (playerIn.isSneaking() && !isOccupied)
             {
                 /** Remove music from the piano */
                 ItemStack itemStack = tile.getInventory().getStackInSlot(0);
@@ -112,7 +113,7 @@ public class BlockPiano extends BlockInstrument2H
                     tile.syncToClient();
                     playerIn.openContainer.detectAndSendChanges();
                 }
-            } else if (!playerIn.isRiding() && invIsMusic)
+            } else if (!playerIn.isRiding() && invIsMusic && !isOccupied)
             {
                 return sitPiano(worldIn, pos, state, playerIn);
             } else if (!playerIn.isRiding() && !invHasItem)
