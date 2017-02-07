@@ -38,6 +38,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * @author Paul
@@ -61,6 +63,7 @@ public class ItemInstrument extends Item implements IInstrument
     @Override
     public boolean getShareTag() {return true;}
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems)
     {
@@ -74,7 +77,6 @@ public class ItemInstrument extends Item implements IInstrument
     @Override
     public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
     {
-        BlockPos pos = new BlockPos((int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ);
         if (!worldIn.isRemote)
         {
             /** Server Side - Open the instrument inventory GuiInstInvAdjustRotations */
@@ -89,7 +91,7 @@ public class ItemInstrument extends Item implements IInstrument
                     if (!PlayManager.isPlayerPlaying(playerIn))
                     {
                         /**TODO Make sure it is OKAY steal and to use this property like this */
-                        Integer playID = PlayManager.playMusic(playerIn, pos, false);
+                        Integer playID = PlayManager.playMusic(playerIn);
                         itemStackIn.setRepairCost(playID != null ? playID : -1);
                     }
                 } 
