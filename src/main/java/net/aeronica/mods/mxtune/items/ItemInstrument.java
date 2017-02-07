@@ -39,6 +39,8 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * @author Paul Boese a.k.a Aeronica
@@ -62,6 +64,7 @@ public class ItemInstrument extends Item implements IInstrument
     @Override
     public boolean getShareTag() {return true;}
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems)
     {
@@ -75,7 +78,6 @@ public class ItemInstrument extends Item implements IInstrument
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
     {
-        BlockPos pos = new BlockPos((int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ);
         if (!worldIn.isRemote)
         {
             ItemStack itemStackIn = playerIn.getHeldItem(handIn);
@@ -91,7 +93,7 @@ public class ItemInstrument extends Item implements IInstrument
                     if (!PlayManager.isPlayerPlaying(playerIn))
                     {
                         /**TODO Make sure it is OKAY steal and to use this property like this */
-                        Integer playID = PlayManager.playMusic(playerIn, pos, false);
+                        Integer playID = PlayManager.playMusic(playerIn);
                         itemStackIn.setRepairCost(playID != null ? playID : -1);
                     }
                 } 

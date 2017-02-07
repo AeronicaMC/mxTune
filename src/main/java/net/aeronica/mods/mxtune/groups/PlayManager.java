@@ -67,6 +67,10 @@ public enum PlayManager
         playID = 1;
     }
     
+    /**
+     * Play ID's 1 to Integer.MAX, -1 for invalid, 0 for initialization only, null if not set.
+     * @return a unique play id
+     */
     private static Integer getNextPlayID() {return (playID == Integer.MAX_VALUE) ? playID=1 : playID++;}
 
     private static void setPlaying(Integer playerID) {membersQueuedStatus.put(playerID, GROUPS.PLAYING.name());}
@@ -74,10 +78,32 @@ public enum PlayManager
     private static void setQueued(Integer playerID) {membersQueuedStatus.put(playerID, GROUPS.QUEUED.name());}
 
     /**
-     * 
+     * For playing music from an Item
      * @param playerIn
-     * @param pos       position of block instrument
-     * @param isPlaced  true is this is a block instrument
+     * @return a unique play id
+     */
+    public static Integer playMusic(EntityPlayer playerIn)
+    {
+        return playMusic(playerIn, null, false);
+    }
+ 
+    /**
+     * For playing music from a block/placed instrument 
+     * @param playerIn
+     * @param pos position of block instrument
+     * @return a unique play id
+     */
+    public static Integer playMusic(EntityPlayer playerIn, BlockPos pos)
+    {
+        return playMusic(playerIn, pos, true);
+    }
+    
+    /**
+     * For playing music
+     * @param playerIn
+     * @param pos position of block instrument
+     * @param isPlaced true is this is a block instrument
+     * @return a unique play id
      */
     public static Integer playMusic(EntityPlayer playerIn, BlockPos pos, boolean isPlaced)
     {

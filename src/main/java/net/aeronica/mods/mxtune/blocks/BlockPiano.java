@@ -138,7 +138,7 @@ public class BlockPiano extends BlockInstrument2H
             } else if (canPlay && !playerIn.isSneaking())
             {
                 if (ServerCSDManager.canMXTunesPlay(playerIn))
-                    ((EntitySittableBlock) playerIn.getRidingEntity()).setPlayID(PlayManager.playMusic(playerIn, pos, true));
+                    ((EntitySittableBlock) playerIn.getRidingEntity()).setPlayID(PlayManager.playMusic(playerIn, pos));
                 else
                     ServerCSDManager.sendErrorViaChat(playerIn);
             }
