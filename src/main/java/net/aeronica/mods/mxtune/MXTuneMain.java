@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune;
 
 import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
 import net.aeronica.mods.mxtune.handler.GUIHandler;
+import net.aeronica.mods.mxtune.init.ModSounds;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.options.PlayerMusicOptionsCapability;
 import net.aeronica.mods.mxtune.proxy.IProxy;
@@ -55,6 +56,7 @@ public class MXTuneMain
     public void preInit(FMLPreInitializationEvent event)
     {
         ModLogger.setLogger(event.getModLog());
+        ModSounds.init();
         PlayerMusicOptionsCapability.register();
         PacketDispatcher.registerPackets();
         proxy.preInit(event);
