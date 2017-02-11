@@ -160,11 +160,7 @@ public class PlacedInstrumentUtil
     public static boolean isSomeoneSitting(World world, double x, double y, double z)
     {
         List<EntitySittableBlock> listEMB = world.getEntitiesWithinAABB(EntitySittableBlock.class, new AxisAlignedBB(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(0.5D, 0.5D, 0.5D));
-        for (EntitySittableBlock mount : listEMB)
-        {
-            return true;
-        }
-        return false;
+        return !listEMB.isEmpty();
     }
 
     /**
