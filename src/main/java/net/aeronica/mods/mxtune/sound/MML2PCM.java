@@ -123,17 +123,7 @@ public class MML2PCM
         {
             mw = new Midi2WavRenderer();
             ClientAudio.setPlayIDAudioStream(playID, mw.createPCMStream(mmlTrans.getSequence(), patches, ClientAudio.getAudioFormat(playID)));
-        } catch (MidiUnavailableException e)
-        {
-            e.printStackTrace();
-            ClientAudio.setPlayIDAudioDataStatus(playID, Status.ERROR);
-            return false;
-        } catch (InvalidMidiDataException e)
-        {
-            e.printStackTrace();
-            ClientAudio.setPlayIDAudioDataStatus(playID, Status.ERROR);
-            return false;
-        } catch (IOException e)
+        } catch (MidiUnavailableException | InvalidMidiDataException | IOException e)
         {
             e.printStackTrace();
             ClientAudio.setPlayIDAudioDataStatus(playID, Status.ERROR);

@@ -39,6 +39,7 @@ public class MusicMoving extends MovingSound
         this.pitch = 1F;
         this.repeat = false;
         this.repeatDelay = 0;
+        this.donePlaying = false;
         Vec3d pos = GROUPS.getMedianPos(playID);
         this.xPosF = (float) pos.xCoord;
         this.yPosF = (float) pos.yCoord;
