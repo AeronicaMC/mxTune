@@ -27,12 +27,12 @@ import javax.sound.sampled.AudioInputStream;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.StopPlayMessage;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.SoundSetupEvent;
@@ -272,7 +272,7 @@ public enum ClientAudio implements IStreamListener
                      * that occurs when the player moves and 3D sound system updates
                      * the sound position.
                      */
-                    e.setResultSound(new MusicBackground());
+                    e.setResultSound(new MusicBackground(playID));
                 }
                 else
                 {

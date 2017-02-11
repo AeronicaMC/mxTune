@@ -16,21 +16,26 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
-import net.minecraft.client.audio.ISound;
-import net.minecraft.client.audio.PositionedSound;
+import net.minecraft.client.audio.MovingSound;
 import net.minecraft.client.audio.SoundEventAccessor;
 import net.minecraft.client.audio.SoundHandler;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 
-public class MusicBackground extends PositionedSound
+/**
+ * Using MovingSound just to make this ITickableSound based. This keeps the sound from timing out after 20 ticks.
+ * @author Paul Boese a.k.a. Aeronica
+ *
+ */
+public class MusicBackground extends MovingSound
 {
 
+    Integer playID;
     SoundEventAccessor soundEventAccessor;
     
-    public MusicBackground()
+    public MusicBackground(Integer playID)
     {
         super(ModSoundEvents.PCM_PROXY, SoundCategory.getByName("mxtune"));
+        this.playID = playID;
         this.sound = new PCMSound();
         this.volume = 0.70F;
         this.pitch = 1F;
@@ -39,27 +44,36 @@ public class MusicBackground extends PositionedSound
         this.zPosF = 0;
         this.repeat = false;
         this.repeatDelay = 0;
+        this.donePlaying = false;
         this.attenuationType = AttenuationType.NONE;
         this.soundEventAccessor = new SoundEventAccessor(this.sound.getSoundLocation(), "mxtune.subtitle.pcm-proxy");
-    }
-
-    public MusicBackground(ResourceLocation soundId, SoundCategory categoryIn, float volumeIn, float pitchIn, boolean repeatIn, int repeatDelayIn, ISound.AttenuationType attenuationTypeIn, float xIn, float yIn, float zIn)
-    {
-        super(soundId, categoryIn);
-        this.volume = volumeIn;
-        this.pitch = pitchIn;
-        this.xPosF = xIn;
-        this.yPosF = yIn;
-        this.zPosF = zIn;
-        this.repeat = repeatIn;
-        this.repeatDelay = repeatDelayIn;
-        this.attenuationType = attenuationTypeIn;
     }
 
     @Override
     public SoundEventAccessor createAccessor(SoundHandler handler)
     {
         return this.soundEventAccessor;
+    }
+
+    @Override
+    public void update()
+    {
+        if (this.playID != null && ClientAudio.isPlaying(playID))
+        {
+            /* update nothing - just hold the stream open until done */
+        }
+        else
+        {
+            this.setDonePlaying();
+        }
+
+    }
+    
+    public void setDonePlaying()
+    {
+        this.repeat = false;
+        this.donePlaying = true;
+        this.repeatDelay = 0;
     }
 
 }
