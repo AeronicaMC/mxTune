@@ -77,7 +77,7 @@ public class BlockPiano extends BlockInstrument2H
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         if (!worldIn.isRemote)
         {
@@ -91,11 +91,11 @@ public class BlockPiano extends BlockInstrument2H
             TilePiano tile = (TilePiano) getTE(worldIn, pos);
             if (tile.isInvalid()) return true;
             boolean isOccupied = PlacedInstrumentUtil.isSomeoneSitting(worldIn, pos);
-            boolean invHasItem = !tile.getInventory().getStackInSlot(0).equals(ItemStack.EMPTY);
+            boolean invHasItem = tile.getInventory().getStackInSlot(0) != null;
             boolean invIsMusic = invHasItem && (tile.getInventory().getStackInSlot(0).getItem() instanceof IMusic) &&
                     tile.getInventory().getStackInSlot(0).hasDisplayName();
             boolean canPlay = playerIn.isRiding() && invIsMusic && PlacedInstrumentUtil.isPlayerSitting(worldIn, playerIn, pos) && !PlayManager.isPlayerPlaying(playerIn);
-            boolean playerHasItem = !playerIn.getHeldItem(hand).equals(ItemStack.EMPTY);
+            boolean playerHasItem = playerIn.getHeldItem(hand) != null;
             boolean playerHasMusic = playerHasItem && (playerIn.getHeldItem(hand).getItem() instanceof IMusic) && 
                     playerIn.getHeldItem(hand).hasDisplayName();
 
@@ -103,7 +103,7 @@ public class BlockPiano extends BlockInstrument2H
             {
                 /** Remove music from the piano */
                 ItemStack itemStack = tile.getInventory().getStackInSlot(0);
-                tile.getInventory().setStackInSlot(0, ItemStack.EMPTY);
+                tile.getInventory().setStackInSlot(0, null);
                 if (!playerIn.inventory.addItemStackToInventory(itemStack))
                 {
                     /** Not possible. Throw item in the world */
@@ -126,7 +126,7 @@ public class BlockPiano extends BlockInstrument2H
                      * holding an item. We move that item into the music rack
                      */
                     tile.getInventory().setStackInSlot(0, playerIn.getHeldItem(hand));
-                    playerIn.inventory.setInventorySlotContents(playerIn.inventory.currentItem, ItemStack.EMPTY);
+                    playerIn.inventory.setInventorySlotContents(playerIn.inventory.currentItem, null);
 
                     /**
                      * Make sure the client knows about the changes in the
@@ -190,7 +190,7 @@ public class BlockPiano extends BlockInstrument2H
 
     /** Called when a neighboring block changes. */
     @Override
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
         EnumFacing enumfacing = (EnumFacing) state.getValue(FACING);
 
@@ -219,7 +219,7 @@ public class BlockPiano extends BlockInstrument2H
     }
 
     @Override
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, Entity entityIn, boolean p_185477_7_)
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, Entity entityIn)
     {
         List<AxisAlignedBB> list = Lists.<AxisAlignedBB> newArrayList();
         list.add(PIANO_BODY_AABB);
