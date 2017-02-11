@@ -1,3 +1,11 @@
+2017-02-11: mxtune-1.10.2-0.3.1.0-dev.16, mxtune-1.11-0.3.1.0-dev.16
+Changes:
+Attempt to fix intermittent issues with songs stopping prematurely.
+Move soundCategory initialization for the mxTune volume control earlier in the pre-initialization.
+Prevent removing sheet music from the piano when it is occupied.
+Remove Tabula loader and related classes. Using models with large texture sheets is not a good idea.
+----
+
 2017-02-03: mxtune-1.10.2-0.3.1.0-dev.15, mxtune-1.11-0.3.1.0-dev.15
 Changes:
 Activate Music Paper on right click or shift right click.
