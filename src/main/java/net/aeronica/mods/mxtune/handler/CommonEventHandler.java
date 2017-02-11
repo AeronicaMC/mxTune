@@ -19,10 +19,6 @@ package net.aeronica.mods.mxtune.handler;
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.PlayManager;
-import net.aeronica.mods.mxtune.inventory.IInstrument;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -43,7 +39,7 @@ public enum CommonEventHandler
     }
     
     /* 
-     * Stops a playing player if they open any inventory.
+     * Stops a playing player if they open any non-player inventory.
      */
     @SubscribeEvent
     public void onEvent(PlayerContainerEvent.Open event)

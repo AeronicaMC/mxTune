@@ -40,6 +40,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 
+@SuppressWarnings("deprecation")
 public class PlayerMusicOptionsCapability
 {
     public static void register()
