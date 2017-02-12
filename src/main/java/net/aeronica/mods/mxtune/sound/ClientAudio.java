@@ -33,7 +33,6 @@ import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.StopPlayMessage;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.SoundSetupEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -128,7 +127,6 @@ public enum ClientAudio implements IStreamListener
             if (audioData.isClientPlayer()) stop(playID);
             playIDAudioData.remove(playID);
         }
-        inInit = false;
     }
     
     public synchronized static AudioInputStream getAudioInputStream(int playID)
@@ -174,7 +172,7 @@ public enum ClientAudio implements IStreamListener
     {
         if (hasPlayID(playID))
         {            
-            return (inInit==true) ? true : GROUPS.isPlayIDPlaying(playID);
+            return GROUPS.isPlayIDPlaying(playID);
         }
         return false;
     }
@@ -186,28 +184,6 @@ public enum ClientAudio implements IStreamListener
         return audioData.isClientPlayer();
     }
 
-    private static final String INIT_MML = "PPP=MML@i69t240v0rcegrceg,i72v0reg>c<reg>c,i73v0rg>ce<rg>ce;";
-    private static boolean inInit = false;
-    /**
-     * A cheap and dirty safe initialization that just exercises
-     * the audio chain silently. 
-     * @param playerIn
-     */
-    public static void init(EntityPlayer playerIn)
-    {
-        if(ClientCSDMonitor.canMXTunesPlay())
-        {
-            Integer playID = 9999;
-            inInit = true;
-            Integer entityID = playerIn.getEntityId();
-            String musicText = new String(INIT_MML).replaceAll("PPP", entityID.toString());
-            addPlayIDQueue(playID);
-            playIDAudioData.put(playID, new AudioData(playID, musicText, true));        
-            executorService.execute(new ThreadedPlay(playID, musicText));
-            MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MusicMoving());
-        }
-    }
- 
     public static void play(Integer playID, String musicText)
     {
         if(ClientCSDMonitor.canMXTunesPlay())
