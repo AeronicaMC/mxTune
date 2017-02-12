@@ -31,13 +31,14 @@ $RECYCLE.BIN/
 .settings
 .gradle
 .launch
-gradle
-gradlew
 bin
 build
 run
 minecraft
 lib
+!gradle
+!gradlew
+!gradlew.bat
 
 # OSX
 # =========================
