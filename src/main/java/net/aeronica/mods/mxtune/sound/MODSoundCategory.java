@@ -57,7 +57,9 @@ public class MODSoundCategory
 {
     
     private static final String SRG_soundLevels = "field_186714_aM";
+    private static final String OBF_soundLevels = "aP";
     private static final String SRG_SOUND_CATEGORIES = "field_187961_k";
+    private static final String OBF_SOUND_CATEGORIES = "k";
     private static Map<SoundCategory, Float> soundLevels;
     private static MODSoundCategory instance = new MODSoundCategory();
     
@@ -83,7 +85,7 @@ public class MODSoundCategory
         constantName = new String(name.toUpperCase().replace(" ", ""));
         referenceName = new String(constantName.toLowerCase());
         soundCategory =  EnumHelper.addEnum(SoundCategory.class , constantName, new Class[]{String.class}, new Object[]{referenceName});
-        SOUND_CATEGORIES = ObfuscationReflectionHelper.getPrivateValue(SoundCategory.class, SoundCategory.VOICE ,"SOUND_CATEGORIES", SRG_SOUND_CATEGORIES);
+        SOUND_CATEGORIES = ObfuscationReflectionHelper.getPrivateValue(SoundCategory.class, SoundCategory.VOICE ,"SOUND_CATEGORIES", SRG_SOUND_CATEGORIES, OBF_SOUND_CATEGORIES);
         if (SOUND_CATEGORIES.containsKey(referenceName))
             throw new Error("Clash in Sound Category name pools! Cannot insert " + constantName);
         SOUND_CATEGORIES.put(referenceName, soundCategory);
@@ -99,7 +101,7 @@ public class MODSoundCategory
         /** SoundCategory now contains 'name' sound category so build a new map */
         soundLevels = Maps.newEnumMap(SoundCategory.class);
         /** Replace the map in the GameSettings.class */
-        ObfuscationReflectionHelper.setPrivateValue(GameSettings.class, Minecraft.getMinecraft().gameSettings, soundLevels, "soundLevels", SRG_soundLevels);
+        ObfuscationReflectionHelper.setPrivateValue(GameSettings.class, Minecraft.getMinecraft().gameSettings, soundLevels, "soundLevels", SRG_soundLevels, OBF_soundLevels);
     }
 
 }
