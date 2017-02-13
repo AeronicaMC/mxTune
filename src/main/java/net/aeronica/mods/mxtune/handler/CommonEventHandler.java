@@ -44,7 +44,8 @@ public enum CommonEventHandler
     @SubscribeEvent
     public void onEvent(PlayerContainerEvent.Open event)
     {
-        PlayManager.stopPlayingPlayer(event.getEntityLiving());
+        if(MXTuneMain.proxy.getEffectiveSide() == Side.SERVER)
+            PlayManager.stopPlayingPlayer(event.getEntityLiving());
     }
     
     private static int count = 0;
