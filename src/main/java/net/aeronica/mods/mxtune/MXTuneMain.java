@@ -53,7 +53,6 @@ public class MXTuneMain
     public void preInit(FMLPreInitializationEvent event)
     {
         ModLogger.setLogger(event.getModLog());
-        ModSounds.init();
         PlayerMusicOptionsCapability.register();
         PacketDispatcher.registerPackets();
         proxy.preInit(event);

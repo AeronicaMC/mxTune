@@ -42,6 +42,7 @@ public class ModBlocks
             };
 
             registry.registerAll(blocks);
+            ModSounds.init();
         }
 
         /**

@@ -20,18 +20,25 @@ import net.aeronica.mods.mxtune.sound.MODSoundCategory;
 import net.aeronica.mods.mxtune.sound.ModSoundEvents;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraftforge.fml.common.FMLLog;
 
 public class ModSounds
 {
     
     public static SoundCategory SC_MXTUNE;
     public static SoundEvent PCM_PROXY;
+    private static boolean initialized = false;
     private ModSounds() {}
     
     public static void init()
     {
-        SC_MXTUNE = MODSoundCategory.add("MXTUNE");
-        PCM_PROXY = ModSoundEvents.PCM_PROXY;
+        if (!initialized)
+        {
+            FMLLog.info("[mxTune] ModSounds Intialized");
+            SC_MXTUNE = MODSoundCategory.add("MXTUNE");
+            PCM_PROXY = ModSoundEvents.PCM_PROXY;
+            initialized = true;
+        }
     }
     
 }
