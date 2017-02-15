@@ -78,12 +78,12 @@ public class ClientCSDMonitor
     public static void detectAndSend()
     {
 
-        if (mc.currentScreen instanceof GuiScreenOptionsSounds && !inGui)
+        if (mc.currentScreen != null && mc.currentScreen instanceof GuiScreenOptionsSounds && !inGui)
         {
             ModLogger.info("Opened GuiScreenOptionsSounds");
             inGui=true;
         }
-        else if(!(mc.currentScreen instanceof GuiScreenOptionsSounds) && inGui)
+        else if ((mc.currentScreen == null || !(mc.currentScreen instanceof GuiScreenOptionsSounds)) && inGui)
         {
             ModLogger.info("Closed GuiScreenOptionsSounds");
             inGui=false;
