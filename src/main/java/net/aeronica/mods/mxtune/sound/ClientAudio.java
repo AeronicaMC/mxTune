@@ -34,6 +34,8 @@ import net.aeronica.mods.mxtune.network.server.PlayStoppedMessage;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.MusicTicker;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.audio.SoundManager;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.PlayStreamingSourceEvent;
@@ -58,7 +60,11 @@ public enum ClientAudio implements IStreamListener
     private static final String SRG_sndSystem = "field_148620_e";
     private static final String OBF_sndSystem = "f";
     private static SoundSystem sndSystem;
-
+    private static final String SRG_mcMusicTicker = "field_147126_aw";
+    private static final String OBF_mcMusicTicker = "aK";
+    private static MusicTicker mcMusicTicker;
+    private static final String SRG_timeUntilNextMusic = "field_147676_d";
+    private static final String OBF_timeUntilNextMusic = "d";
 
     private static final int THREAD_POOL_SIZE = 8;
     private static final AudioFormat audioFormat3D, audioFormatStereo;
@@ -220,18 +226,21 @@ public enum ClientAudio implements IStreamListener
             playIDAudioData.put(playID, new AudioData(playID, musicText, GROUPS.isClientPlaying(playID)));        
             executorService.execute(new ThreadedPlay(playID, musicText));
             MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MusicMoving());
+            stopVanillaMusic();
         }
     }
     
     private static void notify(Integer playID)
     {
         if (playID != null) PacketDispatcher.sendToServer(new PlayStoppedMessage(playID));
+        resumeVanillaMusic();
     }
     
     public static void stop(Integer playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
         if (audioData != null) sndSystem.fadeOut(audioData.getUuid(), null, 100);
+        resumeVanillaMusic();
     }
     
     private static class ThreadedPlay implements Runnable
@@ -253,13 +262,27 @@ public enum ClientAudio implements IStreamListener
         }
     }
     
+    private static void stopVanillaMusic()
+    {
+        ModLogger.debug("ClientAudio stopVanillaMusic - STOP");
+        mcMusicTicker.stopMusic();
+        ObfuscationReflectionHelper.setPrivateValue(MusicTicker.class, mcMusicTicker, Integer.MAX_VALUE, "timeUntilNextMusic", SRG_timeUntilNextMusic, OBF_timeUntilNextMusic);
+    }
+    
+    private static void resumeVanillaMusic()
+    {
+        ModLogger.debug("ClientAudio resumeVanillaMusic - RESUME");
+        ObfuscationReflectionHelper.setPrivateValue(MusicTicker.class, mcMusicTicker, 100, "timeUntilNextMusic", SRG_timeUntilNextMusic, OBF_timeUntilNextMusic);
+    }
+    
     private void init()
     {
         if (sndSystem == null || sndSystem.randomNumberGenerator == null)
         {
-            sndManager = ObfuscationReflectionHelper.getPrivateValue(net.minecraft.client.audio.SoundHandler.class, Minecraft.getMinecraft().getSoundHandler(),
+            sndManager = ObfuscationReflectionHelper.getPrivateValue(SoundHandler.class, Minecraft.getMinecraft().getSoundHandler(),
                     "sndManager", SRG_sndManager, OBF_sndManager);
             sndSystem = ObfuscationReflectionHelper.getPrivateValue(SoundManager.class, sndManager, "sndSystem", SRG_sndSystem, OBF_sndSystem);
+            mcMusicTicker = ObfuscationReflectionHelper.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(), "mcMusicTicker", SRG_mcMusicTicker, OBF_mcMusicTicker);
         }
     }
     
