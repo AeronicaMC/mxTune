@@ -30,15 +30,20 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
-import net.aeronica.mods.mxtune.network.bidirectional.StopPlayMessage;
+import net.aeronica.mods.mxtune.network.server.PlayStoppedMessage;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.SoundManager;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
+import net.minecraftforge.client.event.sound.PlayStreamingSourceEvent;
 import net.minecraftforge.client.event.sound.SoundSetupEvent;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import paulscode.sound.IStreamListener;
+import paulscode.sound.SoundSystem;
 import paulscode.sound.SoundSystemConfig;
 import paulscode.sound.SoundSystemException;
 
@@ -47,10 +52,19 @@ public enum ClientAudio implements IStreamListener
 {
 
     INSTANCE;
-    private static final int THREAD_POOL_SIZE = 10;
+    private static final String SRG_sndManager = "field_147694_f";
+    private static final String OBF_sndManager = "f";
+    private static SoundManager sndManager;
+    private static final String SRG_sndSystem = "field_148620_e";
+    private static final String OBF_sndSystem = "f";
+    private static SoundSystem sndSystem;
+
+
+    private static final int THREAD_POOL_SIZE = 8;
     private static final AudioFormat audioFormat3D, audioFormatStereo;
     private static ConcurrentLinkedQueue<Integer> playIDQueue01;
     private static ConcurrentLinkedQueue<Integer> playIDQueue02;
+    private static ConcurrentLinkedQueue<Integer> playIDQueue03;
     private static Map<Integer, AudioData> playIDAudioData;
     
     private final static ThreadFactory threadFactory; 
@@ -60,8 +74,9 @@ public enum ClientAudio implements IStreamListener
     
     static {
         /* Used to track which player/groups queued up music to be played by PlayID */
-        playIDQueue01 = new ConcurrentLinkedQueue<Integer>(); // Polled in SoundEventHandler#PlaySoundEvent
+        playIDQueue01 = new ConcurrentLinkedQueue<Integer>(); // Polled in ClientAudio#PlaySoundEvent
         playIDQueue02 = new ConcurrentLinkedQueue<Integer>(); // Polled in CodecPCM
+        playIDQueue03 = new ConcurrentLinkedQueue<Integer>(); // Polled in ClientAudio#playStreamingSourceEvent
         /* PCM Signed Monaural little endian */
         audioFormat3D = new AudioFormat(48000, 16, 1, true, false);
         /* PCM Signed Stereo little endian */        
@@ -84,7 +99,7 @@ public enum ClientAudio implements IStreamListener
     
     public static boolean addPlayIDQueue(int playID) 
     {
-        return playIDQueue01.add(playID) && playIDQueue02.add(playID);
+        return playIDQueue01.add(playID) && playIDQueue02.add(playID) && playIDQueue03.add(playID);
     }
     
     public static Integer pollPlayIDQueue01()
@@ -107,16 +122,38 @@ public enum ClientAudio implements IStreamListener
         return playIDQueue02.peek();
     }
 
+    public static Integer pollPlayIDQueue03()
+    {
+        return playIDQueue03.poll();
+    }
+    
+    public static Integer peekPlayIDQueue03()
+    {
+        return playIDQueue03.peek();
+    }
+    
    public static AudioFormat getAudioFormat(Integer playID)
     {
        AudioData audioData = playIDAudioData.get(playID);       
        return audioData.isClientPlayer() ? audioFormatStereo : audioFormat3D;
     }
     
-    public synchronized static void setPlayIDAudioStream(int playID, AudioInputStream audioStream)
+    public synchronized static void setPlayIDAudioStream(Integer playID, AudioInputStream audioStream)
     {
         AudioData audioData = playIDAudioData.get(playID);
         if (audioData != null) audioData.setAudioStream(audioStream);
+    }
+    
+    public static void setUuid(Integer playID, String uuid)
+    {
+        AudioData audioData = playIDAudioData.get(playID);
+        if (audioData != null) audioData.setUuid(uuid);
+    }
+    
+    public String getUuid(Integer playID)
+    {
+        AudioData audioData = playIDAudioData.get(playID);       
+        return audioData.getUuid();
     }
     
     public static void removeEntityAudioData(int playID)
@@ -124,7 +161,7 @@ public enum ClientAudio implements IStreamListener
         if ((playIDAudioData.isEmpty() == false) && playIDAudioData.containsKey(playID))
         {
             AudioData audioData = playIDAudioData.get(playID);
-            if (audioData.isClientPlayer()) stop(playID);
+            if (audioData.isClientPlayer()) notify(playID);
             playIDAudioData.remove(playID);
         }
     }
@@ -167,15 +204,6 @@ public enum ClientAudio implements IStreamListener
         if(playIDAudioData.isEmpty()) return false;
         return playIDAudioData.containsKey(playID);
     }
-
-    public static boolean isPlaying(Integer playID)
-    {
-        if (hasPlayID(playID))
-        {            
-            return GROUPS.isPlayIDPlaying(playID);
-        }
-        return false;
-    }
     
     public static boolean isClientPlayer(Integer playID)
     {
@@ -195,9 +223,15 @@ public enum ClientAudio implements IStreamListener
         }
     }
     
-    private static void stop(Integer playID)
+    private static void notify(Integer playID)
     {
-        PacketDispatcher.sendToServer(new StopPlayMessage(playID));
+        if (playID != null) PacketDispatcher.sendToServer(new PlayStoppedMessage(playID));
+    }
+    
+    public static void stop(Integer playID)
+    {
+        AudioData audioData = playIDAudioData.get(playID);
+        if (audioData != null) sndSystem.fadeOut(audioData.getUuid(), null, 100);
     }
     
     private static class ThreadedPlay implements Runnable
@@ -219,6 +253,16 @@ public enum ClientAudio implements IStreamListener
         }
     }
     
+    private void init()
+    {
+        if (sndSystem == null || sndSystem.randomNumberGenerator == null)
+        {
+            sndManager = ObfuscationReflectionHelper.getPrivateValue(net.minecraft.client.audio.SoundHandler.class, Minecraft.getMinecraft().getSoundHandler(),
+                    "sndManager", SRG_sndManager, OBF_sndManager);
+            sndSystem = ObfuscationReflectionHelper.getPrivateValue(SoundManager.class, sndManager, "sndSystem", SRG_sndSystem, OBF_sndSystem);
+        }
+    }
+    
     @SubscribeEvent
     public void SoundSetupEvent(SoundSetupEvent event) throws SoundSystemException
     {
@@ -226,7 +270,8 @@ public enum ClientAudio implements IStreamListener
         SoundSystemConfig.setNumberStreamingChannels(8);
         SoundSystemConfig.setNumberNormalChannels(24);
         SoundSystemConfig.setNumberStreamingBuffers(4);
-        SoundSystemConfig.addStreamListener(INSTANCE); 
+        SoundSystemConfig.addStreamListener(INSTANCE);
+        sndSystem = null;
     }
 
     @SubscribeEvent
@@ -235,6 +280,7 @@ public enum ClientAudio implements IStreamListener
         /* Testing for a the PCM_PROXY sound. For playing MML though the MML->PCM ClientAudio chain */
         if (e.getSound().getSoundLocation().equals(ModSoundEvents.PCM_PROXY.getSoundName()))
         {
+            init();
             Integer playID;
             if ((playID = ClientAudio.pollPlayIDQueue01()) != null)
             {
@@ -261,6 +307,19 @@ public enum ClientAudio implements IStreamListener
         }
     }
 
+    @SubscribeEvent
+    public void PlayStreamingSourceEvent(PlayStreamingSourceEvent e)
+    {
+        if (e.getSound().getSoundLocation().equals(ModSoundEvents.PCM_PROXY.getSoundName())) {
+            Integer playID;
+            if ((playID = ClientAudio.pollPlayIDQueue03()) != null)
+            {
+                ClientAudio.setUuid(playID, e.getUuid());
+            }
+        }
+        ModLogger.info("ClientAudio PlayStreamingSourceEvent: uuid: %s, ISound: %s", e.getUuid(), e.getSound());
+    }
+    
     @Override
     public void endOfStream(String sourcename, int queueSize)
     {

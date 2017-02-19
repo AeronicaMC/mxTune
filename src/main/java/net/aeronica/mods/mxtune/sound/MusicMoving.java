@@ -63,7 +63,7 @@ public class MusicMoving extends MovingSound
     @Override
     public void update()
     {
-        if (this.playID != null && ClientAudio.isPlaying(playID))
+        if (this.playID != null && ClientAudio.hasPlayID(playID))
         {
             Vec3d pos = GROUPS.getMedianPos(playID);
             this.xPosF = (float) pos.xCoord;

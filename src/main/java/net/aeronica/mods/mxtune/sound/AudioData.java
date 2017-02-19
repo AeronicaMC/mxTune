@@ -25,6 +25,7 @@ public class AudioData
     private final String mml;
     private final boolean isClientPlayer;
     private AudioInputStream audioStream;
+    private String uuid;
     private Status status;
     
     public AudioData(Integer entityID, String mml, boolean isClientPlayer)
@@ -68,6 +69,16 @@ public class AudioData
     public void setAudioStream(AudioInputStream audioStream)
     {
         this.audioStream = audioStream;
+    }
+
+    public String getUuid()
+    {
+        return uuid;
+    }
+
+    public void setUuid(String uuid)
+    {
+        this.uuid = uuid;
     }
     
 }
