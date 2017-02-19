@@ -64,11 +64,7 @@ public class SheetMusicUtil
             }
         } else
         {
-            ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(playerIn.getHeldItemMainhand());
-            if (sheetMusic != null && sheetMusic.hasDisplayName() && (sheetMusic.getItem() instanceof IMusic) && sheetMusic.getTagCompound().hasKey("MusicBook", Constants.NBT.TAG_COMPOUND))
-            {
-                return sheetMusic;
-            }
+            return SheetMusicUtil.getSheetMusic(playerIn.getHeldItemMainhand());
         }
         return null;
     }
@@ -76,7 +72,7 @@ public class SheetMusicUtil
     public static ItemStack getSheetMusic(ItemStack stackIn)
     {
         if (stackIn == null) return null;
-        
+
         if (stackIn.hasTagCompound() && stackIn.getItem() instanceof IInstrument)
         {
             NBTTagList items = stackIn.getTagCompound().getTagList("ItemInventory", Constants.NBT.TAG_COMPOUND);
@@ -84,10 +80,13 @@ public class SheetMusicUtil
             {
                 NBTTagCompound item = (NBTTagCompound) items.getCompoundTagAt(0);
                 ItemStack sheetMusicOld = ItemStack.loadItemStackFromNBT(item);
-                NBTTagCompound contents = (NBTTagCompound) sheetMusicOld.getTagCompound().getTag("MusicBook");
-                if (contents != null)
+                if (sheetMusicOld != null && sheetMusicOld.getItem() instanceof IMusic)
                 {
-                    return sheetMusicOld;
+                    NBTTagCompound contents = (NBTTagCompound) sheetMusicOld.getTagCompound().getTag("MusicBook");
+                    if (contents != null)
+                    {
+                        return sheetMusicOld;
+                    }
                 }
             }
         }
