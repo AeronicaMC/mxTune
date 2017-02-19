@@ -23,7 +23,6 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 
-import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
@@ -54,25 +53,17 @@ public enum PlayManager
     
     INSTANCE;
 
-    private static Map<Integer, String> membersMML;
-    private static HashMap<Integer, String> membersQueuedStatus;
-    private static HashMap<Integer, Integer> membersPlayID;
-    private static Set<Integer> activePlayIDs;
-    private static Integer playID;
-
-    static {
-        membersMML = new HashMap<Integer, String>();
-        membersPlayID = new HashMap<Integer, Integer>();
-        membersQueuedStatus = new HashMap<Integer, String>();
-        activePlayIDs = Sets.newHashSet();
-        playID = 1;
-    }
+    private static Map<Integer, String> membersMML = new HashMap<Integer, String>();
+    private static HashMap<Integer, String> membersQueuedStatus = new HashMap<Integer, String>();
+    private static HashMap<Integer, Integer> membersPlayID = new HashMap<Integer, Integer>();
+    private static Set<Integer> activePlayIDs = Sets.newHashSet();
+    private static int uniquePlayID = 1;
     
     /**
      * Play ID's 1 to Integer.MAX, -1 for invalid, 0 for initialization only, null if not set.
      * @return a unique play id
      */
-    private static Integer getNextPlayID() {return (playID == Integer.MAX_VALUE) ? playID=1 : playID++;}
+    private static int getNextPlayID() {return (uniquePlayID == Integer.MAX_VALUE) ? uniquePlayID = 1 : uniquePlayID++;}
 
     private static void setPlaying(Integer playerID) {membersQueuedStatus.put(playerID, GROUPS.PLAYING.name());}
 
@@ -104,7 +95,7 @@ public enum PlayManager
      * @param playerIn
      * @param pos position of block instrument
      * @param isPlaced true is this is a block instrument
-     * @return a unique play id
+     * @return a unique play id or null if unable to play
      */
     public static Integer playMusic(EntityPlayer playerIn, BlockPos pos, boolean isPlaced)
     {
@@ -198,8 +189,7 @@ public enum PlayManager
     
     public static Integer getPlayersPlayID(Integer entityID)
     {
-        playID = (membersPlayID != null && !membersPlayID.isEmpty()) ? membersPlayID.get(entityID) : null;
-        return playID;
+        return (membersPlayID != null && !membersPlayID.isEmpty()) ? membersPlayID.get(entityID) : null;
     }
     
     public static boolean isPlayerPlaying(Integer entityID)
