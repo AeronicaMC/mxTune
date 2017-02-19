@@ -1,3 +1,22 @@
+2017-02-19: mxtune-1.10.2-0.3.1.0-dev.18, mxtune-1.11-0.3.1.0-dev.18
+Fixes:
+Issue #15: [1.11.2-0.3.1.0-dev.16] Odd crash, now player can't log on to server
+java.lang.NullPointerException: Unexpected error
+ at net.aeronica.mods.mxtune.util.SheetMusicUtil.getSheetMusic(SheetMusicUtil.java:86)
+ at net.aeronica.mods.mxtune.gui.GuiJamOverlay.onRenderExperienceBar(GuiJamOverlay.java:153)
+ at net.minecraftforge.fml.common.eventhandler.ASMEventHandler_1089_GuiJamOverlay_onRenderExperienceBar_Post.invoke(.dynamic)
+Add an instanceof check for IInstrument to the SheetMusicUtil#getSheetMusic method to ensure it does not try to open a non-existent inventory.
+
+Issue #1: [Minor Tweak] Music Paper should use dyeBlack oredict in its recipe.
+Replaced the shapeless recipe with a shaped recipe and used dyeBlack.
+
+Changes:
+Clean up and add instanceof test for IMusic. Make SheetMusicUtil class and enum. Remove short-circuit logic in favor of clearer brace indentation.
+Adjust recipes to use oredict names where possible.
+Resolve clarinet recipe conflict with Quark vertical planks. Now uses 1 sugarcane and 2 plankWood. Changed the Flute recipe to use 2 sugarcane and 1 plankWood.
+Minor changes to instrument right, left and shift-right click actions when equipped to the off-hand. Offhand playing is not supported at this time.
+
+----
 2017-02-18: mxtune-1.10.2-0.3.1.0-dev.17, mxtune-1.11-0.3.1.0-dev.17
 Changes:
 Rework the Play Music chain to improve reliability and eliminate clicks and pops on abrupt cutoff.
