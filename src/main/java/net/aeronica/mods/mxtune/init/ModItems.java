@@ -18,9 +18,9 @@ import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import net.minecraftforge.fml.common.registry.IForgeRegistry;
 
 @SuppressWarnings("unused")
-@ObjectHolder(MXTuneMain.MODID)
 public class ModItems
 {
+    
     public static final ItemInstrument ITEM_INSTRUMENT = registerItem(new ItemInstrument(), "item_inst");
     public static final ItemMusicPaper ITEM_MUSIC_PAPER = registerItem(new ItemMusicPaper(), "item_musicpaper");
     public static final ItemSheetMusic ITEM_SHEET_MUSIC = registerItem(new ItemSheetMusic(), "item_sheetmusic");
