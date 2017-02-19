@@ -2,6 +2,10 @@
 Changes:
 Rework the Play Music chain to improve reliability and eliminate clicks and pops on abrupt cutoff.
 Stop and resume vanilla background music when mxTune is playing. Limited streaming channels require this to prevent the background music from interrupting an mxTune play session.
+Move ModSounds initialization during block registration. This ensures the mxTune SoundCategory and pcm_proxy sound event is setup before the sound system starts up.
+Ensure client request MIDI status packet is only called from the effective server side. Remove ClientAudio#init method that was attempting to exercise the audio chain at the moment a player logs onto the game.
+Add gradle project files to ease building for anyone who want to contribute.
+
 ----
 
 2017-02-11: mxtune-1.10.2-0.3.1.0-dev.16, mxtune-1.11-0.3.1.0-dev.16
