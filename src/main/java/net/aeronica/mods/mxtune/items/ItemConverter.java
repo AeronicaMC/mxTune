@@ -104,7 +104,7 @@ public class ItemConverter extends Item
                 }
             }
         }
-        return null;
+        return ItemStack.EMPTY;
     }
     
     /**
