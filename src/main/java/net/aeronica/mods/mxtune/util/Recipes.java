@@ -21,7 +21,6 @@ import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -52,8 +51,8 @@ public class Recipes
                 "GGG",
                 ".I.",
                 ".I.", 
-                        'I', Items.IRON_INGOT,
-                        'G', Items.GOLD_NUGGET
+                        'I', "ingotIron",
+                        'G', "nuggetGold"
         });
         GameRegistry.addRecipe(tubaRecipe);
 
@@ -64,7 +63,7 @@ public class Recipes
                 ".P.",
                 "PSP",
                         'P', "plankWood",
-                        'S', Items.STRING
+                        'S', "string"
         });
         GameRegistry.addRecipe(mandoRecipe);
 
@@ -75,8 +74,8 @@ public class Recipes
                 "PSP",
                 "PPP",
                         'P', "plankWood",
-                        'L', Items.LEATHER,
-                        'S', Items.STRING
+                        'L', "leather",
+                        'S', "string"
         });
         GameRegistry.addRecipe(bongoRecipe);
 
@@ -88,27 +87,29 @@ public class Recipes
                 ".P.",
                 "PIP",
                         'P', "plankWood",
-                        'I', Items.IRON_INGOT
+                        'I', "ingotIron"
         });
         GameRegistry.addRecipe(balalaikaRecipe);
 
         int FLUTE = ItemInstrument.EnumType.FLUTE.getMetadata();
         IRecipe fluteRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, FLUTE), new Object[]
         {
-                "I",
-                "I",
-                "I",
-                        'I', Items.IRON_INGOT
+                "P",
+                "R",
+                "R",
+                        'P', "plankWood",
+                        'R', "sugarcane"
         });
         GameRegistry.addRecipe(fluteRecipe);
 
         int CLARI = ItemInstrument.EnumType.CLARINET.getMetadata();
         IRecipe clariRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, CLARI), new Object[]
         {
+                "R",
                 "P",
                 "P",
-                "P",
-                        'P', "plankWood"
+                        'P', "plankWood",
+                        'R', "sugarcane"
         });
         GameRegistry.addRecipe(clariRecipe);
 
@@ -119,7 +120,7 @@ public class Recipes
                 "PIP",
                 "PPP",
                         'P', "plankWood",
-                        'I', Items.IRON_INGOT
+                        'I', "ingotIron"
         });
         GameRegistry.addRecipe(musicboxRecipe);
 
@@ -140,7 +141,7 @@ public class Recipes
                 "I  ",
                 "PP ",
                         'P', "plankWood",
-                        'I', Items.IRON_INGOT
+                        'I', "ingotIron"
         });
         GameRegistry.addRecipe(sawtoothRecipe);
 
@@ -184,7 +185,7 @@ public class Recipes
                 ".P.",
                 "PIP",
                         'P', "plankWood",
-                        'I', Items.REDSTONE
+                        'I', "dustRedstone"
         });
         GameRegistry.addRecipe(distguitarRecipe);
         
@@ -199,17 +200,14 @@ public class Recipes
         });
         GameRegistry.addRecipe(pianoRecipe);
 
-        /*
-         * Music Paper
-         */
-        final int BLACK_DYE_DAMAGE_VALUE = EnumDyeColor.BLACK.getDyeDamage();
-        GameRegistry.addShapelessRecipe(new ItemStack(ModItems.ITEM_MUSIC_PAPER, 4, 0), new Object[]
+        IRecipe musicPaper = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_MUSIC_PAPER, 4, 0), new Object[]
         {
-                new ItemStack(Items.PAPER, 1),
-                new ItemStack(Items.PAPER, 1),
-                new ItemStack(Items.PAPER, 1),
-                new ItemStack(Items.PAPER, 1),
-                new ItemStack(Items.DYE, 1, BLACK_DYE_DAMAGE_VALUE)
+                "PP",
+                "PP",
+                "D",
+                        'P', "paper",
+                        'D', "dyeBlack"
         });
+        GameRegistry.addRecipe(musicPaper);
     }
 }
