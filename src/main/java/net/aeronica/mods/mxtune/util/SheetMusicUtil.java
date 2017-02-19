@@ -28,15 +28,9 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
 
-public class SheetMusicUtil
+public enum SheetMusicUtil
 {
-    private static SheetMusicUtil INSTANCE = new SheetMusicUtil();
-    
-    public static SheetMusicUtil getInstance()
-    {
-       return INSTANCE; 
-    }
-    
+    ;
     public static String getMusicTitle(ItemStack stackIn)
     {
         ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(stackIn);
@@ -71,21 +65,22 @@ public class SheetMusicUtil
     
     public static ItemStack getSheetMusic(ItemStack stackIn)
     {
-        if (stackIn == null) return null;
-
-        if (stackIn.hasTagCompound() && stackIn.getItem() instanceof IInstrument)
+        if (stackIn != null)
         {
-            NBTTagList items = stackIn.getTagCompound().getTagList("ItemInventory", Constants.NBT.TAG_COMPOUND);
-            if (items.tagCount() == 1)
+            if (stackIn.hasTagCompound() && stackIn.getItem() instanceof IInstrument)
             {
-                NBTTagCompound item = (NBTTagCompound) items.getCompoundTagAt(0);
-                ItemStack sheetMusicOld = ItemStack.loadItemStackFromNBT(item);
-                if (sheetMusicOld != null && sheetMusicOld.getItem() instanceof IMusic)
+                NBTTagList items = stackIn.getTagCompound().getTagList("ItemInventory", Constants.NBT.TAG_COMPOUND);
+                if (items.tagCount() == 1)
                 {
-                    NBTTagCompound contents = (NBTTagCompound) sheetMusicOld.getTagCompound().getTag("MusicBook");
-                    if (contents != null)
+                    NBTTagCompound item = (NBTTagCompound) items.getCompoundTagAt(0);
+                    ItemStack sheetMusicOld = ItemStack.loadItemStackFromNBT(item);
+                    if (sheetMusicOld != null && sheetMusicOld.getItem() instanceof IMusic)
                     {
-                        return sheetMusicOld;
+                        NBTTagCompound contents = (NBTTagCompound) sheetMusicOld.getTagCompound().getTag("MusicBook");
+                        if (contents != null)
+                        {
+                            return sheetMusicOld;
+                        }
                     }
                 }
             }
