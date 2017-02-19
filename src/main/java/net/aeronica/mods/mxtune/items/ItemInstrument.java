@@ -19,6 +19,7 @@ package net.aeronica.mods.mxtune.items;
 import java.util.List;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiInstrumentInventory;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
@@ -75,16 +76,16 @@ public class ItemInstrument extends Item implements IInstrument
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
+    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand handIn)
     {
         if (!worldIn.isRemote)
         {
             /** Server Side - Open the instrument inventory GuiInstInvAdjustRotations */
-            if (playerIn.isSneaking() && hand.equals(EnumHand.MAIN_HAND))
+            if (playerIn.isSneaking() && handIn.equals(EnumHand.MAIN_HAND))
             {
                 playerIn.openGui(MXTuneMain.instance, GuiInstrumentInventory.GUI_ID, worldIn, 0,0,0);
             }
-            if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && hand.equals(EnumHand.MAIN_HAND))
+            if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && handIn.equals(EnumHand.MAIN_HAND))
             {
                 if (ServerCSDManager.canMXTunesPlay(playerIn))
                 {
@@ -102,12 +103,13 @@ public class ItemInstrument extends Item implements IInstrument
         {
             // Client Side - nothing to do
         }
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);
+        return handIn.equals(EnumHand.MAIN_HAND) ? new ActionResult<ItemStack>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn)):
+            new ActionResult<ItemStack>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
     }
 
     /** Activate the instrument unconditionally */
     @Override
-    public EnumActionResult onItemUseFirst(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand)
+    public EnumActionResult onItemUseFirst(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand handIn)
     {
         // ModLogger.logInfo("Inst#onItemUseFirst hand: " + hand + ", side: " +
         // side + ", pos: " + pos);
@@ -116,9 +118,15 @@ public class ItemInstrument extends Item implements IInstrument
         // vanilla processing
         // return EnumActionResult.PASS to activate on AIR, or let Vanilla
         // process
-        return EnumActionResult.PASS;
+        return handIn.equals(EnumHand.MAIN_HAND) ? EnumActionResult.PASS : EnumActionResult.FAIL;
     }
-
+    
+    @Override
+    public boolean doesSneakBypassUse(ItemStack stack, net.minecraft.world.IBlockAccess world, BlockPos pos, EntityPlayer player)
+    {   
+        return world.getBlockState(pos).getBlock() instanceof IPlacedInstrument;
+    }
+    
     /* 
      * Called each tick as long the item is on a player inventory. Uses by maps to check if is on a player hand and
      * update it's contents.
