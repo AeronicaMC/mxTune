@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.util;
 
 import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
 import net.aeronica.mods.mxtune.blocks.TileInstrument;
+import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.inventory.IMusic;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -76,7 +77,7 @@ public class SheetMusicUtil
     {
         if (stackIn.equals(ItemStack.EMPTY)) return ItemStack.EMPTY;
         
-        if (stackIn.hasTagCompound())
+        if (stackIn.hasTagCompound() && stackIn.getItem() instanceof IInstrument)
         {
             NBTTagList items = stackIn.getTagCompound().getTagList("ItemInventory", Constants.NBT.TAG_COMPOUND);
             if (items.tagCount() == 1)
