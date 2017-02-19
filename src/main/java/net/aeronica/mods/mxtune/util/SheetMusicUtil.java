@@ -28,15 +28,9 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
 
-public class SheetMusicUtil
+public enum SheetMusicUtil
 {
-    private static SheetMusicUtil INSTANCE = new SheetMusicUtil();
-    
-    public static SheetMusicUtil getInstance()
-    {
-       return INSTANCE; 
-    }
-    
+    ;
     public static String getMusicTitle(ItemStack stackIn)
     {
         ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(stackIn);
@@ -64,30 +58,30 @@ public class SheetMusicUtil
             }
         } else
         {
-            ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(playerIn.getHeldItemMainhand());
-            if (!sheetMusic.equals(ItemStack.EMPTY) && sheetMusic.hasDisplayName() && (sheetMusic.getItem() instanceof IMusic) && sheetMusic.getTagCompound().hasKey("MusicBook", Constants.NBT.TAG_COMPOUND))
-            {
-                return sheetMusic;
-            }
+            return SheetMusicUtil.getSheetMusic(playerIn.getHeldItemMainhand());
         }
         return ItemStack.EMPTY;
     }
     
     public static ItemStack getSheetMusic(ItemStack stackIn)
     {
-        if (stackIn.equals(ItemStack.EMPTY)) return ItemStack.EMPTY;
-        
-        if (stackIn.hasTagCompound() && stackIn.getItem() instanceof IInstrument)
+        if (!stackIn.equals(ItemStack.EMPTY))
         {
-            NBTTagList items = stackIn.getTagCompound().getTagList("ItemInventory", Constants.NBT.TAG_COMPOUND);
-            if (items.tagCount() == 1)
+            if (stackIn.hasTagCompound() && stackIn.getItem() instanceof IInstrument)
             {
-                NBTTagCompound item = (NBTTagCompound) items.getCompoundTagAt(0);
-                ItemStack sheetMusicOld = new ItemStack(item);
-                NBTTagCompound contents = (NBTTagCompound) sheetMusicOld.getTagCompound().getTag("MusicBook");
-                if (contents != null)
+                NBTTagList items = stackIn.getTagCompound().getTagList("ItemInventory", Constants.NBT.TAG_COMPOUND);
+                if (items.tagCount() == 1)
                 {
-                    return sheetMusicOld;
+                    NBTTagCompound item = (NBTTagCompound) items.getCompoundTagAt(0);
+                    ItemStack sheetMusicOld = new ItemStack(item);
+                    if (!sheetMusicOld.equals(ItemStack.EMPTY) && sheetMusicOld.getItem() instanceof IMusic)
+                    {
+                        NBTTagCompound contents = (NBTTagCompound) sheetMusicOld.getTagCompound().getTag("MusicBook");
+                        if (contents != null)
+                        {
+                            return sheetMusicOld;
+                        }
+                    }
                 }
             }
         }

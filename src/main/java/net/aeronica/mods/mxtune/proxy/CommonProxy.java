@@ -20,7 +20,6 @@ import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.handler.CommonEventHandler;
 import net.aeronica.mods.mxtune.init.ModBlocks;
-import net.aeronica.mods.mxtune.init.ModEntities;
 import net.aeronica.mods.mxtune.util.Recipes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -73,10 +72,7 @@ public abstract class CommonProxy implements IProxy
         Recipes.register();
     }
 
-    public void initEntities()
-    {
-        ModEntities.init();
-    }
+    public void initEntities() {}
     
     @Override
     public void initMML() {}
