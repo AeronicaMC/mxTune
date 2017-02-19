@@ -1,3 +1,9 @@
+2017-02-18: mxtune-1.10.2-0.3.1.0-dev.17, mxtune-1.11-0.3.1.0-dev.17
+Changes:
+Rework the Play Music chain to improve reliability and eliminate clicks and pops on abrupt cutoff.
+Stop and resume vanilla background music when mxTune is playing. Limited streaming channels require this to prevent the background music from interrupting an mxTune play session.
+----
+
 2017-02-11: mxtune-1.10.2-0.3.1.0-dev.16, mxtune-1.11-0.3.1.0-dev.16
 Changes:
 Attempt to fix intermittent issues with songs stopping prematurely.
