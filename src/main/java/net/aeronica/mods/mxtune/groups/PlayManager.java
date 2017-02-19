@@ -30,6 +30,7 @@ import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.PlayJamMessage;
 import net.aeronica.mods.mxtune.network.client.PlaySoloMessage;
+import net.aeronica.mods.mxtune.network.client.StopPlayMessage;
 import net.aeronica.mods.mxtune.network.client.SyncStatusMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -234,6 +235,19 @@ public enum PlayManager
         return members;
     }
     
+    public static <T extends EntityLivingBase> void playingEnded(T entityLivingIn, Integer playID)
+    {
+        if (isPlayerPlaying(entityLivingIn)){
+            if (membersPlayID != null) membersPlayID.remove(entityLivingIn.getEntityId());
+            if (membersQueuedStatus != null && membersQueuedStatus.containsKey(entityLivingIn.getEntityId()))
+            {
+                membersQueuedStatus.remove(entityLivingIn.getEntityId());
+            }
+            dequeuePlayID(playID);
+            syncStatus();
+        }
+    }
+        
     public static <T extends EntityLivingBase> void stopPlayingPlayer(T entityLivingIn)
     {
         stopPlayingPlayer(entityLivingIn.getEntityId());
@@ -246,25 +260,24 @@ public enum PlayManager
             stopPlayID(PlayManager.getPlayersPlayID(entityID));
         }
     }
-    
+
     public static void stopPlayID(Integer playID)
     {
-        if (playID != null) {
-            Set<Integer> memberSet = getMembersByPlayID(playID);
-            for(Integer member: memberSet)
+        Set<Integer> memberSet = getMembersByPlayID(playID);
+        for(Integer member: memberSet)
+        {
+            if (membersPlayID != null && membersPlayID.containsKey(member))
             {
-                if (membersPlayID != null && membersPlayID.containsKey(member))
-                {
-                    membersPlayID.remove(member, playID);
-                }
-                if (membersQueuedStatus != null && membersQueuedStatus.containsKey(member))
-                {
-                    membersQueuedStatus.remove(member);
-                }
+                membersPlayID.remove(member, playID);
             }
-            dequeuePlayID(playID);
-            syncStatus();        
+            if (membersQueuedStatus != null && membersQueuedStatus.containsKey(member))
+            {
+                membersQueuedStatus.remove(member);
+            }
         }
+        dequeuePlayID(playID);
+        syncStatus();        
+        PacketDispatcher.sendToAll(new StopPlayMessage(playID));
     }
     
     private static void dequeuePlayID(Integer playID) {if (activePlayIDs != null) activePlayIDs.remove(playID);}
@@ -273,7 +286,7 @@ public enum PlayManager
     {
         if (isPlaced)
         {
-            if (playerIn.getEntityWorld().getBlockState(pos).getBlock() instanceof BlockPiano)
+            if (playerIn.getEntityWorld().getBlockState(pos).getBlock() instanceof IPlacedInstrument)
             {
                 IPlacedInstrument placedInst = (IPlacedInstrument) playerIn.getEntityWorld().getBlockState(pos).getBlock();
                 return placedInst.getPatch();
@@ -417,6 +430,7 @@ public enum PlayManager
      */
     public static void dequeueMember(Integer memberID)
     {
+        Integer playID =  getPlayersPlayID(memberID);
         if (activePlayIDs != null && (membersPlayID != null && !membersPlayID.isEmpty() && membersPlayID.containsKey(memberID)))
         {
             activePlayIDs.remove(membersPlayID.get(memberID));
@@ -432,7 +446,7 @@ public enum PlayManager
         if (membersQueuedStatus != null && !membersQueuedStatus.isEmpty() && membersQueuedStatus.containsKey(memberID))
         {
             membersQueuedStatus.remove(memberID);
-            syncStatus();
+            stopPlayID(playID);
         }
     }
     
