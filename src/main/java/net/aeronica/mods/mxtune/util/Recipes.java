@@ -202,9 +202,9 @@ public class Recipes
 
         IRecipe musicPaper = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_MUSIC_PAPER, 4, 0), new Object[]
         {
-                "PP",
-                "PP",
-                "D",
+                "PP.",
+                "PP.",
+                "D..",
                         'P', "paper",
                         'D', "dyeBlack"
         });
