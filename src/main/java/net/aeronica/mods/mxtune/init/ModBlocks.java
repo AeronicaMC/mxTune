@@ -18,7 +18,6 @@ import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import net.minecraftforge.fml.common.registry.IForgeRegistry;
 
 @SuppressWarnings("unused")
-@ObjectHolder(MXTuneMain.MODID)
 public class ModBlocks
 {
    
