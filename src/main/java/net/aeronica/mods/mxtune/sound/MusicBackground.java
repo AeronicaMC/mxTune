@@ -58,7 +58,7 @@ public class MusicBackground extends MovingSound
     @Override
     public void update()
     {
-        if (this.playID != null && ClientAudio.isPlaying(playID))
+        if (this.playID != null && ClientAudio.hasPlayID(playID))
         {
             /* update nothing - just hold the stream open until done */
         }

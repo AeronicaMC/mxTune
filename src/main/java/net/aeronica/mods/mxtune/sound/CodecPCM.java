@@ -116,8 +116,7 @@ public class CodecPCM implements ICodec {
 	
     @Override
     public boolean initialize(URL url)
-    {
-        
+    {        
         initialized(SET, false);
         if (playID == null)
         {
@@ -150,8 +149,7 @@ public class CodecPCM implements ICodec {
         }
         catch( IOException ioe )
         {
-            errorMessage( "Error setting up audio input stream in method " +
-                          "'initialize'" );
+            errorMessage( "Error setting up audio input stream in method " + "'initialize'" );
             printStackTrace( ioe );
             return false;
         }
@@ -178,11 +176,16 @@ public class CodecPCM implements ICodec {
 
 		// Check to make sure there is an audio format:
 		if (myAudioFormat == null) {
-			errorMessage("Audio Format null in method 'read'");
+			errorMessage("Audio Format null in 'read'");
 			return null;
 		}
 		
-		if (endOfStream() | !ClientAudio.isPlaying(playID) | ClientAudio.isPlayIDAudioDataError(playID)) return null;
+		if (ClientAudio.isPlayIDAudioDataError(playID))
+		{
+		    errorMessage("Audio Data Error in 'read'");
+		    return null;
+		}
+		
         if (hasStream == false)
         {
             if (ClientAudio.isPlayIDAudioDataReady(playID))
@@ -210,10 +213,10 @@ public class CodecPCM implements ICodec {
 		    } else
 		    {
 		        outputBuffer = appendByteArrays(outputBuffer, zeroBuffer, SAMPLE_SIZE);
-		        message("  zeroBufferCount: " + zeroBufferCount);
+		        message("zeroBufferCount: " + zeroBufferCount + ", bufferSize: " + bufferSize);
 		        if (zeroBufferCount++ > 64) 
 		        {
-		            errorMessage("  MML to PCM audio prcessiong took too long. Aborting!");
+		            errorMessage("MML to PCM audio prcessiong took too long. Aborting!");
 		            endOfStream(SET, true);
 		            return null;
 		        }
@@ -221,6 +224,8 @@ public class CodecPCM implements ICodec {
         } catch (IOException e)
         {
             printStackTrace(e);
+            endOfStream(SET, true);
+            return null;
         }
 				
 		// Reverse the byte order if necessary:
@@ -246,14 +251,14 @@ public class CodecPCM implements ICodec {
 			errorMessage("Audio Format null in method 'readAll'");
 			return null;
 		}
-        if (endOfStream() | !ClientAudio.hasPlayID(playID) | ClientAudio.isPlayIDAudioDataError(playID)) return null;
+        if (endOfStream() || ClientAudio.isPlayIDAudioDataError(playID)) return null;
         
         int bufferSize = 0;
         byte outputBuffer[] = null;
         byte readBuffer[] = new byte[SAMPLE_SIZE];
         while (bufferSize != -1)
         {
-            if (endOfStream() | ClientAudio.isPlayIDAudioDataError(playID)) return null;
+            if (endOfStream() || ClientAudio.isPlayIDAudioDataError(playID)) return null;
             if (hasStream == false)
             {
                 if (ClientAudio.isPlayIDAudioDataReady(playID))
@@ -275,7 +280,7 @@ public class CodecPCM implements ICodec {
                     message("  zeroBufferCount: " + ++zeroBufferCount);
                     if (zeroBufferCount > 64) 
                     {
-                        errorMessage("  MML to PCM audio prcessiong took too long. Aborting!");
+                        errorMessage("MML to PCM audio prcessiong took too long. Aborting!");
                         endOfStream(SET, true);
                         return null;
                     }
@@ -306,24 +311,27 @@ public class CodecPCM implements ICodec {
     {
 	    message("cleanup");
 	    if (audioInputStream != null)
-        try
-        {
-            audioInputStream.close();
-        } catch (IOException e)
-        {
-            printStackTrace(e);
-        }
-        audioInputStream = null;
-        ClientAudio.removeEntityAudioData(playID);
-        
-        if( dummyInputStream != null )
-            try
-            {
-                dummyInputStream.close();
-            }
-            catch( Exception e )
-            {}
-        dummyInputStream = null;
+	        try
+	    {
+	            audioInputStream.close();
+	    } catch (IOException e)
+	    {
+	        printStackTrace(e);
+	    }
+	    audioInputStream = null;
+
+	    if( dummyInputStream != null )
+	        try
+	    {
+	            dummyInputStream.close();
+	    }
+	    catch( Exception e )
+	    {
+	        printStackTrace(e);
+	    }
+	    dummyInputStream = null;
+	    
+	    ClientAudio.removeEntityAudioData(playID);
     }
 
 	@Override
