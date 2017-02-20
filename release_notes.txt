@@ -1,11 +1,11 @@
-2017-02-20: mxtune-1.10.2-0.3.1.0-dev.19, mxtune-1.11-0.3.1.0-dev.19
+2017-02-20: mxtune-1.10.2-0.3.1.0-dev.19, mxtune-1.11.2-0.3.1.0-dev.19
 Changes:
 Turn off logging for the SoundSystem endOfStream events. On some systems this was causing the fml-client-latest logs to grow very large.
 Troubleshoot and make some change to the ClientAudio classes thread use, and use of the synchronized specifier.
 Poached ConfigureSound from Dynamic Surroundings and added configuration options for it. This allows using all of the available sound channels.
 ----
 
-2017-02-19: mxtune-1.10.2-0.3.1.0-dev.18, mxtune-1.11-0.3.1.0-dev.18
+2017-02-19: mxtune-1.10.2-0.3.1.0-dev.18, mxtune-1.11.2-0.3.1.0-dev.18
 Fixes:
 Issue #15: [1.11.2-0.3.1.0-dev.16] Odd crash, now player can't log on to server
 java.lang.NullPointerException: Unexpected error
@@ -24,7 +24,7 @@ Resolve clarinet recipe conflict with Quark vertical planks. Now uses 1 sugarcan
 Minor changes to instrument right, left and shift-right click actions when equipped to the off-hand. Offhand playing is not supported at this time.
 
 ----
-2017-02-18: mxtune-1.10.2-0.3.1.0-dev.17, mxtune-1.11-0.3.1.0-dev.17
+2017-02-18: mxtune-1.10.2-0.3.1.0-dev.17, mxtune-1.11.2-0.3.1.0-dev.17
 Changes:
 Rework the Play Music chain to improve reliability and eliminate clicks and pops on abrupt cutoff.
 Stop and resume vanilla background music when mxTune is playing. Limited streaming channels require this to prevent the background music from interrupting an mxTune play session.
@@ -34,7 +34,7 @@ Add gradle project files to ease building for anyone who want to contribute.
 
 ----
 
-2017-02-11: mxtune-1.10.2-0.3.1.0-dev.16, mxtune-1.11-0.3.1.0-dev.16
+2017-02-11: mxtune-1.10.2-0.3.1.0-dev.16, mxtune-1.11.2-0.3.1.0-dev.16
 Changes:
 Attempt to fix intermittent issues with songs stopping prematurely.
 Move soundCategory initialization for the mxTune volume control earlier in the pre-initialization.
@@ -42,7 +42,7 @@ Prevent removing sheet music from the piano when it is occupied.
 Remove Tabula loader and related classes. Using models with large texture sheets is not a good idea.
 ----
 
-2017-02-03: mxtune-1.10.2-0.3.1.0-dev.15, mxtune-1.11-0.3.1.0-dev.15
+2017-02-03: mxtune-1.10.2-0.3.1.0-dev.15, mxtune-1.11.2-0.3.1.0-dev.15
 Changes:
 Activate Music Paper on right click or shift right click.
 Simplify stopping music when a player interacts with an inventory (Read: the way I did it before was really dumb)
