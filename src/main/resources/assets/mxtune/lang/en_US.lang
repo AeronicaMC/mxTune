@@ -32,6 +32,12 @@ mxtune.configgui.hideWelcomeStatusMessage=Hide Welcome Status Message
 mxtune.configgui.hideWelcomeStatusMessage.tooltip=Exactly as the name implies, if true the welcome message is not displayed.
 mxtune.configgui.groupPlayAbortDistance=Jam Abort Distance
 mxtune.configgui.groupPlayAbortDistance.tooltip=The maximum distance between group members. Exceeding this distance will stop the music. [range: 10.0 ~ 24.0]
+mxtune.configgui.autoConfigureChannels=Automatically configure sound channels
+mxtune.configgui.autoConfigureChannels.tooltip=Automatically configure sound channels
+mxtune.configgui.normalSoundChannelCount=Normal sound channels (manual)
+mxtune.configgui.normalSoundChannelCount.tooltip=Number of normal sound channels to configure in the sound system (manual)
+mxtune.configgui.streamingSoundChannelCount=Streaming sound channels (manual)
+mxtune.configgui.streamingSoundChannelCount.tooltip=Number of streaming sound channels to configure in the sound system (manual)
 soloPlayWhileWalking=Deprecated Option!
 soloPlayWhileWalking.tooltip="B:soloPlayWhileWalking=true" is Deprecated! Please manually remove the option from the mxtune.cfg
 
