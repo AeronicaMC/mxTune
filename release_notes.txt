@@ -1,3 +1,10 @@
+2017-02-20: mxtune-1.10.2-0.3.1.0-dev.19, mxtune-1.11-0.3.1.0-dev.19
+Changes:
+Turn off logging for the SoundSystem endOfStream events. On some systems this was causing the fml-client-latest logs to grow very large.
+Troubleshoot and make some change to the ClientAudio classes thread use, and use of the synchronized specifier.
+Poached ConfigureSound from Dynamic Surroundings and added configuration options for it. This allows using all of the available sound channels.
+----
+
 2017-02-19: mxtune-1.10.2-0.3.1.0-dev.18, mxtune-1.11-0.3.1.0-dev.18
 Fixes:
 Issue #15: [1.11.2-0.3.1.0-dev.16] Odd crash, now player can't log on to server
