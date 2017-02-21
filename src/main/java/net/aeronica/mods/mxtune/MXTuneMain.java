@@ -32,14 +32,15 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
-@Mod(modid = MXTuneMain.MODID, name = MXTuneMain.MODNAME, version = MXTuneMain.VERSION, dependencies = MXTuneMain.DEPS, guiFactory = MXTuneMain.GUIFACTORY)
+@Mod(modid = MXTuneMain.MODID, name = MXTuneMain.MODNAME, version = MXTuneMain.VERSION, dependencies = MXTuneMain.DEPS, guiFactory = MXTuneMain.GUIFACTORY, updateJSON = MXTuneMain.UPDATE)
 public class MXTuneMain
 {
     public static final String MODID = "mxtune";
     public static final String MODNAME = "mxTune";
     public static final String VERSION = "{@version:mod}";
     public static final String DEPS = "required-after:forge@[1.11.2-13.20.0.2228,)";
-    public static final String GUIFACTORY = "net.aeronica.mods.mxtune.config.ModGuiFactory"; 
+    public static final String GUIFACTORY = "net.aeronica.mods.mxtune.config.ModGuiFactory";
+    public static final String UPDATE = "https://gist.githubusercontent.com/Aeronica/dbc2619e0011d5bdbe7a162d0c6aa82b/raw/update.json";
 
     @Mod.Instance(MODID)
     public static MXTuneMain instance;
