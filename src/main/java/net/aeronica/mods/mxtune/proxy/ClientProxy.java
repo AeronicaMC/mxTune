@@ -140,7 +140,7 @@ public class ClientProxy extends CommonProxy
     @Override
     public void initMML()
     {
-        MIDISystemUtil.getInstance().mxTuneInit();
+        MIDISystemUtil.mxTuneInit();
     }
 
     @Override

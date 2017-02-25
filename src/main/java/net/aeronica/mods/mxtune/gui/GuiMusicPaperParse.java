@@ -103,7 +103,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     private String cachedMMLText;
     private int cachedSelectedInst;
 
-    public GuiMusicPaperParse() {midiUnavailable = MIDISystemUtil.getInstance().midiUnavailable();}
+    public GuiMusicPaperParse() {midiUnavailable = MIDISystemUtil.midiUnavailable();}
 
     @Override
     public void updateScreen()
@@ -673,7 +673,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
 
     public boolean mmlPlay(String mmlIn)
     {
-        if (MIDISystemUtil.getInstance().midiUnavailable()) return false;
+        if (midiUnavailable) return false;
         Soundbank defaultSB;
         byte[] mmlBuf = null;
         InputStream is;

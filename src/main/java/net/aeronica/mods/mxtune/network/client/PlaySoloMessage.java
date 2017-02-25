@@ -67,7 +67,7 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
     @SideOnly(Side.CLIENT)
     protected void process_client(EntityPlayer player, Side side)
     {
-        if (MIDISystemUtil.getInstance().midiUnavailableWarn(player) == false)
+        if (MIDISystemUtil.midiUnavailableWarn(player) == false)
         {
             /* This is messy, but we want to ensure we return a valid player entity ID */
             Integer otherEntityID = GROUPS.getSoloMemberByPlayID(playID) == null ? player.getEntityId() : GROUPS.getSoloMemberByPlayID(playID);

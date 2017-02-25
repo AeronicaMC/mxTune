@@ -37,24 +37,21 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class MIDISystemUtil
+public enum MIDISystemUtil
 {
-    private MIDISystemUtil() {}
-    private static class MIDISystemUtilHolder {public static final MIDISystemUtil INSTANCE = new MIDISystemUtil();}
 
-    public static MIDISystemUtil getInstance() {return MIDISystemUtilHolder.INSTANCE;}
+    ;
+    private static MidiDevice.Info[] midiDeviceInfo = null;
+    private static MidiDevice.Info bestSynthInfo = null;
+    private static Synthesizer bestSynth = null;
+    private static Soundbank soundBank = null;
+    private static boolean synthAvailable = false;
+    private static boolean soundBankAvailable = false;
+    private static boolean midiAvailable = false;
+    private static int timesToWarn = 10;
+    private static List<TextComponentString> chatStatus = new ArrayList<TextComponentString>();
 
-    private MidiDevice.Info[] midiDeviceInfo = null;
-    private MidiDevice.Info bestSynthInfo = null;
-    private Synthesizer bestSynth = null;
-    private Soundbank soundBank = null;
-    private boolean synthAvailable = false;
-    private boolean soundBankAvailable = false;
-    private boolean midiAvailable = false;
-    private int timesToWarn = 10;
-    private List<TextComponentString> chatStatus = new ArrayList<TextComponentString>();
-
-    public void mxTuneInit()
+    public static void mxTuneInit()
     {
         midiDeviceInfo = MidiSystem.getMidiDeviceInfo();
         Vector<MidiDevice.Info> synthInfos = new Vector<MidiDevice.Info>();
@@ -144,21 +141,21 @@ public class MIDISystemUtil
         }
     }
     
-    private void addStatus(TextComponentString status)
+    private static void addStatus(TextComponentString status)
     {
         chatStatus.add(status);
     }
     
-    public boolean midiUnavailable() {return !this.midiAvailable;}
+    public static boolean midiUnavailable() {return !midiAvailable;}
     
-    public boolean midiUnavailableWarn(EntityPlayer playerIn)
+    public static boolean midiUnavailableWarn(EntityPlayer playerIn)
     {
         boolean unAvailable = midiUnavailable();
         if (unAvailable && timesToWarn-- > 0) onPlayerLoggedInModStatus(playerIn);
         return unAvailable;
     }
     
-    public void onPlayerLoggedInModStatus(EntityPlayer playerIn)
+    public static void onPlayerLoggedInModStatus(EntityPlayer playerIn)
     {
         if (ModConfig.hideWelcomeStatusMessage() == false)
             for (TextComponentString tcs: chatStatus) {playerIn.sendMessage(tcs);}

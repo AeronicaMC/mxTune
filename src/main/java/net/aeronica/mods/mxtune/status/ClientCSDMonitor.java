@@ -59,7 +59,7 @@ public class ClientCSDMonitor
     private static ClientStateData snapShot()
     {
         return new ClientStateData(
-                MIDISystemUtil.getInstance().midiUnavailable()==false,
+                MIDISystemUtil.midiUnavailable()==false,
                 gameSettings.getSoundLevel(SoundCategory.MASTER)>0F,
                 gameSettings.getSoundLevel(ModSounds.SC_MXTUNE)>0F);
     }
