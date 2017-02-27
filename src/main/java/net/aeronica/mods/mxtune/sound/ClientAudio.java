@@ -87,19 +87,14 @@ public enum ClientAudio implements IStreamListener
 
     INSTANCE;
     private static final String SRG_sndManager = "field_147694_f";
-    private static final String OBF_sndManager = "f";
     private static SoundManager sndManager;
     private static final String SRG_sndSystem = "field_148620_e";
-    private static final String OBF_sndSystem = "f";
     private static SoundSystem sndSystem;
     private static final String SRG_mcMusicTicker = "field_147126_aw";
-    private static final String OBF_mcMusicTicker = "aK";
     private static MusicTicker mcMusicTicker;
     private static final String SRG_playingSounds = "field_148629_h";
-    private static final String OBF_playingSounds = "i";
     private static Map<String, ISound> playingSounds;
     private static final String SRG_timeUntilNextMusic = "field_147676_d";
-    private static final String OBF_timeUntilNextMusic = "d";
     
     private static final int THREAD_POOL_SIZE = 2;
     private static final AudioFormat audioFormat3D, audioFormatStereo;
@@ -297,14 +292,15 @@ public enum ClientAudio implements IStreamListener
 
     private static void stopVanillaMusic()
     {
+        ModLogger.info("ClientAudio stopVanillaMusic - STOP");
         mcMusicTicker.stopMusic();
-        ObfuscationReflectionHelper.setPrivateValue(MusicTicker.class, mcMusicTicker, Integer.MAX_VALUE, "timeUntilNextMusic", SRG_timeUntilNextMusic, OBF_timeUntilNextMusic);
+        ObfuscationReflectionHelper.setPrivateValue(MusicTicker.class, mcMusicTicker, Integer.MAX_VALUE, "timeUntilNextMusic", SRG_timeUntilNextMusic);
     }
 
     private static void resumeVanillaMusic()
     {
-        ModLogger.debug("ClientAudio resumeVanillaMusic - RESUME");
-        ObfuscationReflectionHelper.setPrivateValue(MusicTicker.class, mcMusicTicker, 100, "timeUntilNextMusic", SRG_timeUntilNextMusic, OBF_timeUntilNextMusic);
+        ModLogger.info("ClientAudio resumeVanillaMusic - RESUME");
+        ObfuscationReflectionHelper.setPrivateValue(MusicTicker.class, mcMusicTicker, 100, "timeUntilNextMusic", SRG_timeUntilNextMusic);
     }
 
     public static void init()
@@ -312,13 +308,13 @@ public enum ClientAudio implements IStreamListener
         if (sndSystem == null || sndSystem.randomNumberGenerator == null)
         {
             sndManager = ObfuscationReflectionHelper.getPrivateValue(SoundHandler.class, Minecraft.getMinecraft().getSoundHandler(),
-                    "sndManager", SRG_sndManager, OBF_sndManager);
+                    "sndManager", SRG_sndManager);
             sndSystem = ObfuscationReflectionHelper.getPrivateValue(SoundManager.class, sndManager,
-                    "sndSystem", SRG_sndSystem, OBF_sndSystem);
+                    "sndSystem", SRG_sndSystem);
             playingSounds = ObfuscationReflectionHelper.getPrivateValue(SoundManager.class, sndManager,
-                    "playingSounds", SRG_playingSounds, OBF_playingSounds);
+                    "playingSounds", SRG_playingSounds);
             mcMusicTicker = ObfuscationReflectionHelper.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(),
-                    "mcMusicTicker", SRG_mcMusicTicker, OBF_mcMusicTicker);
+                    "mcMusicTicker", SRG_mcMusicTicker);
             configureSound();
         }
     }
@@ -375,7 +371,7 @@ public enum ClientAudio implements IStreamListener
             if (ClientAudio.peekPlayIDQueue03() != null)
                 ClientAudio.setUuid(ClientAudio.pollPlayIDQueue03(), e.getUuid());
         }
-//        ModLogger.debug("ClientAudio PlayStreamingSourceEvent: uuid: %s, ISound: %s", e.getUuid(), e.getSound());
+        ModLogger.info("ClientAudio PlayStreamingSourceEvent: uuid: %s, ISound: %s", e.getUuid(), e.getSound());
     }
     
     @Override
