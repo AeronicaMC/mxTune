@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
+import javax.sound.sampled.AudioInputStream;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -122,7 +123,8 @@ public class MML2PCM
         try
         {
             mw = new Midi2WavRenderer();
-            ClientAudio.setPlayIDAudioStream(playID, mw.createPCMStream(mmlTrans.getSequence(), patches, ClientAudio.getAudioFormat(playID)));
+            AudioInputStream ais = mw.createPCMStream(mmlTrans.getSequence(), patches, ClientAudio.getAudioFormat(playID));
+            ClientAudio.setPlayIDAudioStream(playID, ais);
         } catch (MidiUnavailableException | InvalidMidiDataException | IOException e)
         {
             e.printStackTrace();
