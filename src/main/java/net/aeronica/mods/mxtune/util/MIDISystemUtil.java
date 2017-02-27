@@ -16,11 +16,14 @@
  */
 package net.aeronica.mods.mxtune.util;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
 import javax.sound.midi.Instrument;
+import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
@@ -31,6 +34,7 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
@@ -101,7 +105,14 @@ public enum MIDISystemUtil
         }
         if (bestSynth != null && synthAvailable)
         {
-            soundBank = bestSynth.getDefaultSoundbank();
+            try
+            {
+                soundBank = MidiSystem.getSoundbank(getMXTuneSB());
+            } catch (InvalidMidiDataException | IOException e)
+            {
+                e.printStackTrace();
+                soundBank = null;
+            }
             if (soundBank != null)
             {
                 Instrument[] inst = soundBank.getInstruments();
@@ -161,4 +172,12 @@ public enum MIDISystemUtil
             for (TextComponentString tcs: chatStatus) {playerIn.sendMessage(tcs);}
     }
     
+    private static final ResourceLocation SOUND_FONT = new ResourceLocation(MXTuneMain.MODID, "synth/mxtune.sf2");
+    
+    public static URL getMXTuneSB()
+    {
+        URL file = MXTuneMain.class.getResource("/assets/" + SOUND_FONT.getResourceDomain() + "/" + SOUND_FONT.getResourcePath());
+        ModLogger.debug("Sound font path: %s", file);
+        return file;
+    }
 }

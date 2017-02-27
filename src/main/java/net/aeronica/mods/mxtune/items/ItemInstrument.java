@@ -223,19 +223,19 @@ public class ItemInstrument extends Item implements IInstrument
 
     public static enum EnumType implements IVariant
     {
-        TUBA(0, "tuba", 59),
-        MANDO(1, "mando", 25),
-        FLUTE(2, "flute", 74),
-        BONGO(3, "bongo", 117),
-        BALALAIKA(4, "balalaika", 28),
-        CLARINET(5, "clarinet", 72),
-        MUSICBOX(6, "musicbox", 11),
-        OCARINA(7, "ocarina", 80),
-        SAWTOOTH(8, "sawtooth", 82),
-        EGUITAR1(9, "eguitarjazz", 27),
-        EGUITAR2(10, "eguitarmuted", 29),
-        EGUITAR3(11, "eguitarover", 30),
-        EGUITAR4(12, "eguitardist", 31);
+        TUBA(0, "tuba", 10),
+        MANDO(1, "mando", 3),
+        FLUTE(2, "flute", 4), // flute
+        BONGO(3, "bongo", 5), // whistle
+        BALALAIKA(4, "balalaika", 1), // lute
+        CLARINET(5, "clarinet", 6),
+        MUSICBOX(6, "musicbox", 11), // harp
+        OCARINA(7, "ocarina", 7), // shaku 
+        SAWTOOTH(8, "sawtooth", 9), // Cello
+        EGUITAR1(9, "eguitarjazz", 2), // ukulele
+        EGUITAR2(10, "eguitarmuted", 11), // Celtic Harp
+        EGUITAR3(11, "eguitarover", 13), // overdrive guitar
+        EGUITAR4(12, "eguitardist", 8); // violin
 
         public int getMetadata() {return this.meta;}
 
