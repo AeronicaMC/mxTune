@@ -40,8 +40,11 @@
 package net.aeronica.mods.mxtune.sound;
 
 import java.nio.IntBuffer;
+import java.util.Enumeration;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentHashMap.KeySetView;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -60,6 +63,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.GROUPS;
+import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.PlayStoppedMessage;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
@@ -69,11 +73,17 @@ import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.audio.SoundManager;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.PlayStreamingSourceEvent;
 import net.minecraftforge.client.event.sound.SoundSetupEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import paulscode.sound.IStreamListener;
@@ -81,6 +91,7 @@ import paulscode.sound.SoundSystem;
 import paulscode.sound.SoundSystemConfig;
 import paulscode.sound.SoundSystemException;
 
+// TODO: Add cleanup for JoinWorld and Respawn events. Needed to reset the vanilla music pause code and remove dead playIDs.
 @SideOnly(Side.CLIENT)
 public enum ClientAudio implements IStreamListener
 {
@@ -192,7 +203,7 @@ public enum ClientAudio implements IStreamListener
     
     public static void removeEntityAudioData(int playID)
     {
-        if ((playIDAudioData.isEmpty() == false) && playIDAudioData.containsKey(playID))
+        if (playIDAudioData.containsKey(playID))
         {
             AudioData audioData = playIDAudioData.get(playID);
             if (audioData.isClientPlayer()) notify(playID);
@@ -261,14 +272,12 @@ public enum ClientAudio implements IStreamListener
     private static void notify(Integer playID)
     {
         if (playID != null) PacketDispatcher.sendToServer(new PlayStoppedMessage(playID));
-        resumeVanillaMusic();
     }
     
     public static void stop(Integer playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
         if (audioData != null) sndSystem.fadeOut(audioData.getUuid(), null, 100);
-        resumeVanillaMusic();
     }
     
     private static class ThreadedPlay implements Runnable
@@ -292,18 +301,32 @@ public enum ClientAudio implements IStreamListener
 
     private static void stopVanillaMusic()
     {
-        ModLogger.info("ClientAudio stopVanillaMusic - STOP");
+        ModLogger.info("ClientAudio stopVanillaMusic - PAUSED on %d active sessions.", playIDAudioData.mappingCount());
+        setVanillaMusicPaused(true);
         mcMusicTicker.stopMusic();
         ObfuscationReflectionHelper.setPrivateValue(MusicTicker.class, mcMusicTicker, Integer.MAX_VALUE, "timeUntilNextMusic", SRG_timeUntilNextMusic);
     }
 
     private static void resumeVanillaMusic()
     {
-        ModLogger.info("ClientAudio resumeVanillaMusic - RESUME");
+        ModLogger.info("ClientAudio resumeVanillaMusic - RESUMED");
         ObfuscationReflectionHelper.setPrivateValue(MusicTicker.class, mcMusicTicker, 100, "timeUntilNextMusic", SRG_timeUntilNextMusic);
     }
+    
+    private static boolean vanillaMusicPaused = false;
+    private static void setVanillaMusicPaused(boolean flag) { vanillaMusicPaused = flag; }
+    private static boolean isVanillaMusicPaused() { return vanillaMusicPaused; }
+    
+    private static void updateClientAudio()
+    {
+        if(isVanillaMusicPaused() && playIDAudioData != null && playIDAudioData.mappingCount() == 0)
+        {
+            resumeVanillaMusic();
+            setVanillaMusicPaused(false);
+        }  
+    }
 
-    public static void init()
+    private static void init()
     {
         if (sndSystem == null || sndSystem.randomNumberGenerator == null)
         {
@@ -316,6 +339,45 @@ public enum ClientAudio implements IStreamListener
             mcMusicTicker = ObfuscationReflectionHelper.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(),
                     "mcMusicTicker", SRG_mcMusicTicker);
             configureSound();
+            setVanillaMusicPaused(false);
+        }
+    }
+    
+    private static void cleanup()
+    {
+        setVanillaMusicPaused(false);
+        // TODO: stop all music clean up playIDAudioData...
+        KeySetView<Integer, AudioData> keys = playIDAudioData.keySet();
+        keys.forEach(k -> stop(k));
+    }
+    
+    @SubscribeEvent
+    public void onJoinWorld(EntityJoinWorldEvent event)
+    {
+        if (event.getEntity() instanceof EntityPlayerSP && event.getEntity().getEntityId() == MXTuneMain.proxy.getClientPlayer().getEntityId())
+        {
+            cleanup();
+            ModLogger.info("ClientAudio EntityJoinWorldEvent: %s", event.getEntity().getName());
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerRespawnEvent(PlayerRespawnEvent event)
+    {
+        cleanup();
+        ModLogger.info("ClientAudio PlayerRespawnEvent: %s", event.player.getName());
+    }
+
+    
+    private static int count = 0;
+    @SubscribeEvent
+    public void onEvent(ClientTickEvent event)
+    {
+        if (event.side == Side.CLIENT && event.phase == TickEvent.Phase.END)
+        {
+            /* once every 2 seconds */
+            if (count % 40 == 0)
+                updateClientAudio();
         }
     }
     
