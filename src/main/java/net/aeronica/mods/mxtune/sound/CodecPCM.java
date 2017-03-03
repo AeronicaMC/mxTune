@@ -68,7 +68,7 @@ public class CodecPCM implements ICodec {
      */
     AudioInputStream dummyInputStream = null;
 
-    public static final int SAMPLE_SIZE = 10240;
+    public static final int SAMPLE_SIZE = 10240 * 4;
     
     byte noiseBuffer[] = new byte[SAMPLE_SIZE];
     byte zeroBuffer[] = new byte[SAMPLE_SIZE];
@@ -191,12 +191,13 @@ public class CodecPCM implements ICodec {
             if (ClientAudio.isPlayIDAudioDataReady(playID))
             {
                 audioInputStream = ClientAudio.getAudioInputStream(playID);
+                message("Waiting buffer count: " + zeroBufferCount);
                 hasStream = true;
             }
         }
 
         int bufferSize = 0;
-        byte readBuffer[] = new byte[SAMPLE_SIZE];
+        byte readBuffer[] = new byte[SoundSystemConfig.getStreamingBufferSize()];
 		byte outputBuffer[] = null;
 		nextBuffer(SAMPLE_SIZE);
 		try
@@ -213,7 +214,6 @@ public class CodecPCM implements ICodec {
 		    } else
 		    {
 		        outputBuffer = appendByteArrays(outputBuffer, zeroBuffer, SAMPLE_SIZE);
-		        message("zeroBufferCount: " + zeroBufferCount + ", bufferSize: " + bufferSize);
 		        if (zeroBufferCount++ > 64) 
 		        {
 		            errorMessage("MML to PCM audio prcessiong took too long. Aborting!");
