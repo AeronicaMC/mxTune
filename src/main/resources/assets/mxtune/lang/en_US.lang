@@ -18,6 +18,12 @@ item.mxtune:item_inst.cello.name=Cello
 item.mxtune:item_inst.harp.name=Harp
 item.mxtune:item_inst.tuned_flute.name=Tuned Flute
 item.mxtune:item_inst.tuned_whistle.name=Tuned Whistle
+item.mxtune:item_inst.bass_drum.name=Bass Drum
+item.mxtune:item_inst.snare_drum.name=Snare Drum
+item.mxtune:item_inst.cymbels.name=Cymbels
+item.mxtune:item_inst.hand_chimes.name=Hand Chimes
+item.mxtune:item_inst.recorder.name=Recorder
+item.mxtune:item_inst.trumpet.name=Trumpet
 item.mxtune:item_converter.name=Sheet Music Converter
 
 mxtune.instrumentInventory.empty=No Sheet Music Found

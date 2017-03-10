@@ -237,7 +237,14 @@ public class ItemInstrument extends Item implements IInstrument
         CELLO(11, "cello", 24),
         HARP(12, "harp", 25),
         TUNED_FLUTE(13, "tuned_flute", 56),
-        TUNED_WHISTLE(14, "tuned_whistle", 57);
+        TUNED_WHISTLE(14, "tuned_whistle", 57),
+        BASS_DRUM(15, "bass_drum", 67),
+        SNARE_DRUM(16, "snare_drum", 68),
+        CYMBELS(17, "cymbels", 69),
+        HAND_CHIMES(18, "hand_chimes", 78),
+        RECORDER(19, "recorder", 81),
+        TRUMPET(20, "trumpet", 91),
+        ;
 
         public int getMetadata() {return this.meta;}
 
