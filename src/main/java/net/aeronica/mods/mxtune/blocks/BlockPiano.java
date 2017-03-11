@@ -150,7 +150,7 @@ public class BlockPiano extends BlockInstrument2H
         return true;
     }
 
-    public int getPatch() {return 1;}
+    public int getPatch() {return 22;}
 
     private boolean sitPiano(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn)
     {

@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.sound.midi.Instrument;
+import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiSystem;
@@ -103,7 +104,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     private String cachedMMLText;
     private int cachedSelectedInst;
 
-    public GuiMusicPaperParse() {midiUnavailable = MIDISystemUtil.getInstance().midiUnavailable();}
+    public GuiMusicPaperParse() {midiUnavailable = MIDISystemUtil.midiUnavailable();}
 
     @Override
     public void updateScreen()
@@ -400,6 +401,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     /** Load Default General MIDI instruments */
     private void initInstrumentCache()
     {
+        Soundbank soundBank;
         instrumentCache.clear();
         if (midiUnavailable)
         {
@@ -408,28 +410,65 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         {
             try
             {
-                synth = MidiSystem.getSynthesizer();
-                synth.open();
-            } catch (MidiUnavailableException e)
+                soundBank = MidiSystem.getSoundbank(MIDISystemUtil.getMXTuneSB());
+            } catch (InvalidMidiDataException | IOException e)
             {
-                /** TODO: Stuff the error into a status window in this GUI */
                 e.printStackTrace();
+                soundBank = null;
             }
-            inst = synth.getAvailableInstruments();
-            if (inst.length > 0)
+            if (soundBank != null)
             {
-                int idx = 0;
-                for (Instrument e : inst)
+                inst = soundBank.getInstruments();
+                if (inst.length > 0)
                 {
-                    if (idx++ < 128)
+                    int idx = 0;
+                    for (Instrument e : inst)
                     {
-                        instrumentCache.add(e.getName());
+                        if (idx++ < 128)
+                        {
+                            instrumentCache.add(e.getName());
+                        }
                     }
                 }
+            } else
+            {
+                instrumentCache.add(NO_SOUNDBANK);
             }
-            if (synth != null && synth.isOpen()) synth.close();
         }
     }
+    
+//    private void initInstrumentCache()
+//    {
+//        instrumentCache.clear();
+//        if (midiUnavailable)
+//        {
+//            instrumentCache.add(NO_SOUNDBANK);
+//        } else
+//        {
+//            try
+//            {
+//                synth = MidiSystem.getSynthesizer();
+//                synth.open();
+//            } catch (MidiUnavailableException e)
+//            {
+//                /** TODO: Stuff the error into a status window in this GUI */
+//                e.printStackTrace();
+//            }
+//            inst = synth.getAvailableInstruments();
+//            if (inst.length > 0)
+//            {
+//                int idx = 0;
+//                for (Instrument e : inst)
+//                {
+//                    if (idx++ < 128)
+//                    {
+//                        instrumentCache.add(e.getName());
+//                    }
+//                }
+//            }
+//            if (synth != null && synth.isOpen()) synth.close();
+//        }
+//    }
 
     /** MML Parsing */
     private void parseMML(String mml)
@@ -673,8 +712,8 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
 
     public boolean mmlPlay(String mmlIn)
     {
-        if (MIDISystemUtil.getInstance().midiUnavailable()) return false;
-        Soundbank defaultSB;
+        if (midiUnavailable) return false;
+        Soundbank defaultSB, soundBank;
         byte[] mmlBuf = null;
         InputStream is;
         boolean midiException = false;
@@ -716,17 +755,24 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         try
         {
             /** Using the default sequencer and synthesizer */
-            synthesizer = MidiSystem.getSynthesizer();
-            synthesizer.open();
-            defaultSB = synthesizer.getDefaultSoundbank();
-            synthesizer.unloadAllInstruments(defaultSB);
-            Instrument inst[] = defaultSB.getInstruments();
+            if (synthesizer == null)
+                synthesizer = MidiSystem.getSynthesizer();
+            if (synthesizer != null && !synthesizer.isOpen())
+                synthesizer.open();
+            
+            soundBank = MidiSystem.getSoundbank(MIDISystemUtil.getMXTuneSB());
+            synthesizer.unloadAllInstruments(synthesizer.getDefaultSoundbank());
+//            defaultSB = synthesizer.getDefaultSoundbank();
+//            synthesizer.unloadAllInstruments(defaultSB);
+//            synthesizer.loadAllInstruments(soundBank);
+            Instrument inst[] = soundBank.getInstruments();
             if (inst.length == 0) throw new Exception("No Instruments Available!");
             if ((inst.length > 0) && (this.selectedInst >= 0) && (this.selectedInst < inst.length))
             {
                 synthesizer.loadInstrument(inst[this.selectedInst]);
             }
-            sequencer = MidiSystem.getSequencer();
+            sequencer = MidiSystem.getSequencer(false);
+            sequencer.getTransmitter().setReceiver(synthesizer.getReceiver());
             sequencer.open();
             sequencer.addMetaEventListener(this);
             sequencer.setSequence(mmlTrans.getSequence());

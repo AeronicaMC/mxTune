@@ -94,7 +94,7 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
     public void handleClientSide(EntityPlayer playerIn)
     {
         ClientCSDMonitor.collectAndSend();
-        MIDISystemUtil.getInstance().onPlayerLoggedInModStatus(playerIn);
+        MIDISystemUtil.onPlayerLoggedInModStatus(playerIn);
     }
 
     public void handleServerSide(EntityPlayer playerIn)

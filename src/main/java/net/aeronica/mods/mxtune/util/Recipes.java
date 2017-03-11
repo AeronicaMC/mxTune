@@ -44,7 +44,7 @@ public class Recipes
        EGUITAR4(12, "eguitardist", 31);
      */
     public static void register()
-    {
+    { /*
         int TUBA = ItemInstrument.EnumType.TUBA.getMetadata();
         IRecipe tubaRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, TUBA), new Object[]
         {
@@ -209,5 +209,5 @@ public class Recipes
                         'D', "dyeBlack"
         });
         GameRegistry.addRecipe(musicPaper);
-    }
+    */}
 }

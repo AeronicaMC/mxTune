@@ -16,7 +16,7 @@ public class MMLToMIDI extends MMLTransformBase
 {
     private static final int MASTER_TEMPO = 120;
     private static final double PPQ = 480.0;
-    private static final int TICKS_OFFSET = 15;
+    private static final int TICKS_OFFSET = (int) (PPQ);
     private Sequence sequence;
     private float fakeVolume = 1F;
     private HashSet<Integer> patches = new HashSet<Integer>();
@@ -39,7 +39,6 @@ public class MMLToMIDI extends MMLTransformBase
         return patchList;
     }
 
-    @SuppressWarnings("unused")
     @Override
     public void processMObjects(List<MObject> mmlObject)
     {
@@ -59,43 +58,40 @@ public class MMLToMIDI extends MMLTransformBase
             Track[] tracks = sequence.getTracks();
             // tracks[0].add(createTempoMetaEvent(currentTempo, ticksOffset));
             // tracks[0].add(createTempoMetaEvent(currentTempo, 0));
-            tk++; // Track 0 for meta messages;
+            // tk++; // Track 0 for meta messages;
 
             for (int i = 0; i < mmlObject.size(); i++)
             {
                 /** ref: enum Type {INST_BEGIN, TEMPO, INST, PART, NOTE, REST, INST_END, DONE}; */
-                switch (getMObject(i).getType())
+                MObject mmo = getMObject(i);
+                switch (mmo.getType())
                 {
                 case INST_BEGIN:
                 {
-                    MObject mmo = getMObject(i);
+                    
                     /** Nothing to do in reality **/
                     break;
                 }
                 case TEMPO:
                 {
-                    MObject mmo = getMObject(i);
                     currentTempo = mmo.getTempo();
                     tracks[0].add(createTempoMetaEvent(currentTempo, mmo.getStartingTicks() + ticksOffset));
                     break;
                 }
                 case INST:
                 {
-                    MObject mmo = getMObject(i);
                     tracks[tk].add(createProgramChangeEvent(ch, mmo.getInstrument(), mmo.getStartingTicks() + ticksOffset));
                     patches.add(mmo.getInstrument());
                     break;
                 }
                 case PART:
                 {
-                    MObject mmo = getMObject(i);
                     tk++;
                     if (tk > 23) tk = 23;
                     break;
                 }
                 case NOTE:
                 {
-                    MObject mmo = getMObject(i);
                     tracks[tk].add(createNoteOnEvent(ch, MMLUtil.smartClampMIDI(mmo.getMidiNote()), (int) (scaleVolume(mmo.getNoteVolume()) * 127f / 15f), mmo.getStartingTicks() + ticksOffset));
                     tracks[tk].add(createNoteOffEvent(ch, MMLUtil.smartClampMIDI(mmo.getMidiNote()), (int) (mmo.getNoteVolume() * 127f / 15f), mmo.getStartingTicks() + mmo.getLengthTicks() + ticksOffset - 1));
                     if (mmo.getText() != null)
@@ -107,13 +103,11 @@ public class MMLToMIDI extends MMLTransformBase
                 }
                 case REST:
                 {
-                    MObject mmo = getMObject(i);
                     /** Nothing to do in reality **/
                     break;
                 }
                 case INST_END:
                 {
-                    MObject mmo = getMObject(i);
                     tk++;
                     if (tk > 23) tk = 23;
                     ch++;
@@ -123,7 +117,6 @@ public class MMLToMIDI extends MMLTransformBase
                 }
                 case DONE:
                 {
-                    MObject mmo = getMObject(i);
                     /**
                      * Create a fake note to extend the play time so decaying
                      * audio does not cutoff suddenly

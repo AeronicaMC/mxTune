@@ -5,14 +5,27 @@
 	},
 	"variants": {
 		"item_inst": {
-			"tuba": {
+			"lute": {
+				"model": "mxtune:item/item_inst.lute"
+			},
+			"ukulele": {
 				"textures": {
-					"layer0": "mxtune:items/item_inst.tuba"
+					"layer0": "mxtune:items/item_inst.ukulele"
 				}
 			},
-			"mando": {
+			"mandolin": {
 				"textures": {
-					"layer0": "mxtune:items/item_inst.mando"
+					"layer0": "mxtune:items/item_inst.mandolin"
+				}
+			},
+			"whistle": {
+				"textures": {
+					"layer0": "mxtune:items/item_inst.whistle"
+				}
+			},
+			"roncadora": {
+				"textures": {
+					"layer0": "mxtune:items/item_inst.roncadora"
 				}
 			},
 			"flute": {
@@ -20,44 +33,77 @@
 					"layer0": "mxtune:items/item_inst.flute"
 				}
 			},
-			"bongo": {
+			"chalameu": {
+				"model": "mxtune:item/item_inst.chalameu"
+			},
+			"tuba": {
 				"textures": {
-					"layer0": "mxtune:items/item_inst.bongo"
+					"layer0": "mxtune:items/item_inst.tuba"
 				}
 			},
-			"balalaika": {
-				"model": "mxtune:item/item_inst.balalaika"
-			},
-			"clarinet": {
-				"model": "mxtune:item/item_inst.clarinet"
-			},
-			"musicbox": {
+			"lyre": {
 				"textures": {
-					"layer0": "mxtune:items/item_inst.musicbox"
+					"layer0": "mxtune:items/item_inst.lyre"
+				}
+			},			
+			"electic_guitar": {
+				"model": "mxtune:item/item_inst.electic_guitar"
+			},
+			"violin": {
+				"textures": {
+					"layer0": "mxtune:items/item_inst.violin"
 				}
 			},
-			"ocarina": {
+			"cello": {
 				"textures": {
-					"layer0": "mxtune:items/item_inst.ocarina"
+					"layer0": "mxtune:items/item_inst.cello"
 				}
 			},
-			"sawtooth": {
+			"harp": {
 				"textures": {
-					"layer0": "mxtune:items/item_inst.sawtooth"
+					"layer0": "mxtune:items/item_inst.harp"
 				}
 			},
-			"eguitarjazz": {
-				"model": "mxtune:item/item_inst.eguitarjazz"
+			"tuned_flute": {
+				"textures": {
+					"layer0": "mxtune:items/item_inst.tuned_flute"
+				}
 			},
-			"eguitarmuted": {
-				"model": "mxtune:item/item_inst.eguitarmuted"
+			"tuned_whistle": {
+				"textures": {
+					"layer0": "mxtune:items/item_inst.tuned_whistle"
+				}
 			},
-			"eguitarover": {
-				"model": "mxtune:item/item_inst.eguitarover"
+			"bass_drum": {
+				"textures": {
+					"layer0": "mxtune:items/item_inst.bass_drum"
+				}
 			},
-			"eguitardist": {
-				"model": "mxtune:item/item_inst.eguitardist"
-			}			
+			"snare_drum": {
+				"textures": {
+					"layer0": "mxtune:items/item_inst.snare_drum"
+				}
+			},
+			"cymbels": {
+				"textures": {
+					"layer0": "mxtune:items/item_inst.cymbels"
+				}
+			},
+			"hand_chimes": {
+				"textures": {
+					"layer0": "mxtune:items/item_inst.hand_chimes"
+				}
+			},
+			"recorder": {
+				"textures": {
+					"layer0": "mxtune:items/item_inst.recorder"
+				}
+			},
+			"trumpet": {
+				"textures": {
+					"layer0": "mxtune:items/item_inst.trumpet"
+				}
+			}
 		}
 	}
 }
