@@ -481,10 +481,10 @@ public enum ClientAudio implements IStreamListener
             e.printStackTrace();
         }
 
-        normalChannelCount = ModConfig.normalSoundChannelCount;
-        streamChannelCount = ModConfig.streamingSoundChannelCount;
+        normalChannelCount = ModConfig.getNormalSoundChannelCount();
+        streamChannelCount = ModConfig.getStreamingSoundChannelCount();
 
-        if (ModConfig.autoConfigureChannels && totalChannels > 64) {
+        if (ModConfig.getAutoConfigureChannels() && totalChannels > 64) {
             totalChannels = ((totalChannels + 1) * 3) / 4;
             streamChannelCount = totalChannels / 5;
             normalChannelCount = totalChannels - streamChannelCount;
