@@ -101,7 +101,7 @@ public enum PlayManager
     {
         if (MusicOptionsUtil.isMuteAll(playerIn)) return null;
         ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(pos, playerIn, isPlaced);
-        if (sheetMusic != null)
+        if (!sheetMusic.equals(ItemStack.EMPTY))
         {
             NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
             if (contents != null)

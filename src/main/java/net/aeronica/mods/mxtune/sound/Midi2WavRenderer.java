@@ -23,6 +23,7 @@ package net.aeronica.mods.mxtune.sound;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,6 +47,8 @@ import javax.sound.sampled.AudioSystem;
 
 import com.sun.media.sound.AudioSynthesizer;
 
+import net.aeronica.mods.mxtune.util.MIDISystemUtil;
+
 /*
  * user: Paul Boese aka Aeronica
  * removed the JFugue specific pattern signature methods
@@ -61,6 +64,15 @@ public class Midi2WavRenderer
     }
 
     private Soundbank loadSoundbank(File soundbankFile) throws MidiUnavailableException, InvalidMidiDataException, IOException
+    {
+        Soundbank soundbank = MidiSystem.getSoundbank(soundbankFile);
+        if (!synth.isSoundbankSupported(soundbank)) {
+            throw new IOException("Soundbank not supported by synthesizer");
+        }
+        return soundbank;
+    }
+    
+    private Soundbank loadSoundbank(URL soundbankFile) throws MidiUnavailableException, InvalidMidiDataException, IOException
     {
         Soundbank soundbank = MidiSystem.getSoundbank(soundbankFile);
         if (!synth.isSoundbankSupported(soundbank)) {
@@ -147,29 +159,38 @@ public class Midi2WavRenderer
     public AudioInputStream createPCMStream(Sequence sequence, Integer[] patches, AudioFormat format) throws MidiUnavailableException, InvalidMidiDataException, IOException
     {
        
-        AudioSynthesizer synth = findAudioSynthesizer();
-        if (synth == null) {
+        Soundbank soundbank = loadSoundbank(MIDISystemUtil.getMXTuneSB());
+        this.synth.open();
+                
+        AudioSynthesizer aSynth = findAudioSynthesizer();
+        if (aSynth == null) {
             throw new IOException("No AudioSynthesizer was found!");
-        }
-        // Load soundbank
-        Soundbank soundbank = synth.getDefaultSoundbank();
-        this.synth.unloadAllInstruments(soundbank);
-        for (int patch : patches) {
-            this.synth.loadInstrument(soundbank.getInstrument(new Patch(0, patch)));
         }
         
         Map<String, Object> p = new HashMap<String, Object>();
         p.put("interpolation", "sinc");
         p.put("max polyphony", "1024");
-        AudioInputStream outputStream = synth.openStream(format, p);
+        AudioInputStream outputStream = aSynth.openStream(format, p);
 
+        Soundbank defsbk = aSynth.getDefaultSoundbank();
+        if (defsbk != null)
+            aSynth.unloadAllInstruments(defsbk);
+        
+        aSynth.loadAllInstruments(soundbank);
+        aSynth.unloadAllInstruments(soundbank);
+        for (int patch : patches) {
+            aSynth.loadInstrument(soundbank.getInstrument(new Patch(0, patch)));
+        }
+        
         // Play Sequence into AudioSynthesizer Receiver.
-        double total = send(sequence, synth.getReceiver());
+        Receiver receiver = aSynth.getReceiver();
+        double total = send(sequence, receiver);
 
         // Calculate how long the WAVE file needs to be.
         long len = (long) (outputStream.getFormat().getFrameRate() * (total + 4));
         outputStream = new AudioInputStream(outputStream, outputStream.getFormat(), len);
 
+        receiver.close();
         this.synth.close();
         return outputStream;
     }

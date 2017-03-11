@@ -58,34 +58,34 @@ public class ContainerInstrument extends Container
         
         if (slot == null || !slot.getHasStack())
         {
-            return null;
+            return ItemStack.EMPTY;
         }
 
         ItemStack stack = slot.getStack();
         ItemStack newStack = stack.copy();
 
-        if (!(stack.getItem() instanceof IMusic) && !((stack.getItem() instanceof ItemMusicPaper) && stack.hasDisplayName())) return null;
+        if (!(stack.getItem() instanceof IMusic) && !((stack.getItem() instanceof ItemMusicPaper) && stack.hasDisplayName())) return ItemStack.EMPTY;
 
         if (slotIndex == 0)
         {
             if (!this.mergeItemStack(stack, 1, this.inventorySlots.size(), false))
-                return null;
+                return ItemStack.EMPTY;
             slot.onSlotChanged();
         }
         else if (!this.mergeItemStack(stack, 0, 1, false))
         {
-            return null;
+            return ItemStack.EMPTY;
         }
-        if (stack.stackSize == 0)
+        if (stack.getCount() == 0)
         {
-            slot.putStack(null);
+            slot.putStack(ItemStack.EMPTY);
         }
         else
         {
             slot.onSlotChanged();
         }
 
-        slot.onPickupFromSlot(player, newStack);
+        slot.onSlotChanged();
         return newStack;
     }
     

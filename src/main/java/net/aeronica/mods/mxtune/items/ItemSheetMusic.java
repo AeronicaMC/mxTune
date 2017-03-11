@@ -41,7 +41,7 @@ public class ItemSheetMusic extends Item implements IMusic
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void addInformation(ItemStack stackIn, EntityPlayer playerIn, List tooltip, boolean advanced)
     {
-        if (stackIn == null) return;
+        if (stackIn.equals(ItemStack.EMPTY)) return;
         /** Display the contents of the sheet music. */
         if (stackIn.hasTagCompound())
         {

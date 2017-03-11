@@ -97,7 +97,7 @@ public class GuiMusicOptions extends GuiScreen
         this.player = playerIn;
         this.mc = Minecraft.getMinecraft();
         muteOption = MusicOptionsUtil.getMuteOption(player);
-        midiUnavailable = MIDISystemUtil.getInstance().midiUnavailable();
+        midiUnavailable = MIDISystemUtil.midiUnavailable();
         initPlayerList();
     }
     
@@ -321,7 +321,7 @@ public class GuiMusicOptions extends GuiScreen
 
     public Minecraft getMinecraftInstance() {return mc;}
 
-    public FontRenderer getFontRenderer() {return mc.fontRendererObj;}
+    public FontRenderer getFontRenderer() {return mc.fontRenderer;}
     
     protected void sendOptionsToServer(int muteOption)
     {

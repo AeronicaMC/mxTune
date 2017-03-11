@@ -5,11 +5,9 @@
   "description": "MML Music for all occasions",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "http://www.aeronica.net",
-  "updateUrl": "",
+  "url": "https://minecraft.curseforge.com/projects/mxtune",
   "authorList": ["Aeronica"],
-  "credits": "The Forge and FML guys, TheGreyGhost, coolAlias, Choonster,  diesieben07, McJty, MrCrayFish, BedrockMiner, The Modding Community",
-  "logoFile": "logo.png",
+  "credits": "The Forge and FML guys, TheGreyGhost, coolAlias, Choonster,  diesieben07, McJty, OreCruncher, MrCrayFish, BedrockMiner, The Modding Community",
   "screenshots": [],
   "dependencies": []
 }
