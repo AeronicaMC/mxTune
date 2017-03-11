@@ -92,15 +92,10 @@ public class GroupManager
             for (Iterator<Group> it = groups.iterator(); it.hasNext();)
             {
                 Group theGroup = it.next();
-                setGroups.add(theGroup.groupID.intValue());
+                setGroups.add(theGroup.groupID);
             }
         }
         return null;
-    }
-    
-    public static boolean hasGroup(Integer groupID)
-    {
-        return (getGroups() != null && !getGroups().isEmpty()) ? getGroups().contains(groupID) : false;
     }
     
     private static Integer getNextGroupID() {return (groupID == Integer.MAX_VALUE) ? groupID=1 : groupID++;}

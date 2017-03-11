@@ -164,7 +164,8 @@ public enum GROUPS
     
     public static Vec3d getMedianPos(Integer playID)
     {
-        double x, y, z, count; x = y = z = count = 0;
+        double x, y, z; x = y = z = 0;
+        int count = 0;
         Vec3d pos;
         for(Integer member: getMembersByPlayID(playID))
         {   
