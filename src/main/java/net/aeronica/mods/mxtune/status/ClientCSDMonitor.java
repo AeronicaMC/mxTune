@@ -88,7 +88,7 @@ public class ClientCSDMonitor
             ModLogger.info("Closed GuiScreenOptionsSounds");
             inGui=false;
             ClientStateData ss = snapShot();
-            if(csd!=null && !csd.equals(ss)) 
+            if(csd!=null && !csd.isEqual(ss)) 
             {
                 csd = ss;
                 sendToServer();
