@@ -42,9 +42,9 @@ public class ClientStateData implements Serializable
 
     public boolean isMxtuneVolumeOn() {return mxtuneVolumeOn;}
     
-    public boolean equals(ClientStateData csd)
+    public boolean isEqual(ClientStateData csd)
     {
-        return this.masterVolumeOn == csd.midiAvailable && this.masterVolumeOn == csd.masterVolumeOn && this.mxtuneVolumeOn == csd.mxtuneVolumeOn;
+        return csd != null ? this.masterVolumeOn == csd.midiAvailable && this.masterVolumeOn == csd.masterVolumeOn && this.mxtuneVolumeOn == csd.mxtuneVolumeOn : false;
     }
     
     public boolean isGood() {return this.masterVolumeOn==true && this.masterVolumeOn==true && this.mxtuneVolumeOn==true;}
@@ -54,7 +54,7 @@ public class ClientStateData implements Serializable
     @Override
     public String toString()
     {
-        return new String("{midiAvailable="+midiAvailable+", isMasterVolumeOn="+masterVolumeOn+", mxtuneVolumeOn="+mxtuneVolumeOn+"}");
+        return "{midiAvailable="+midiAvailable+", isMasterVolumeOn="+masterVolumeOn+", mxtuneVolumeOn="+mxtuneVolumeOn+"}";
     }
     
 }
