@@ -40,9 +40,7 @@
 package net.aeronica.mods.mxtune.sound;
 
 import java.nio.IntBuffer;
-import java.util.Enumeration;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentHashMap.KeySetView;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -63,7 +61,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.GROUPS;
-import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.PlayStoppedMessage;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
@@ -74,15 +71,14 @@ import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.audio.SoundManager;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.PlayStreamingSourceEvent;
 import net.minecraftforge.client.event.sound.SoundSetupEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -201,7 +197,7 @@ public enum ClientAudio implements IStreamListener
         return audioData.getUuid();
     }
     
-    public static void removeEntityAudioData(int playID)
+    public static void removePlayIDAudioData(int playID)
     {
         if (playIDAudioData.containsKey(playID))
         {
@@ -304,13 +300,19 @@ public enum ClientAudio implements IStreamListener
         ModLogger.info("ClientAudio stopVanillaMusic - PAUSED on %d active sessions.", playIDAudioData.mappingCount());
         setVanillaMusicPaused(true);
         mcMusicTicker.stopMusic();
-        ObfuscationReflectionHelper.setPrivateValue(MusicTicker.class, mcMusicTicker, Integer.MAX_VALUE, "timeUntilNextMusic", SRG_timeUntilNextMusic);
+        setVanillaMusicTimer(Integer.MAX_VALUE);
     }
 
     private static void resumeVanillaMusic()
     {
         ModLogger.info("ClientAudio resumeVanillaMusic - RESUMED");
-        ObfuscationReflectionHelper.setPrivateValue(MusicTicker.class, mcMusicTicker, 100, "timeUntilNextMusic", SRG_timeUntilNextMusic);
+        setVanillaMusicTimer(100);
+    }
+       
+    private static void setVanillaMusicTimer(int value)
+    {
+        if (mcMusicTicker != null)
+            ObfuscationReflectionHelper.setPrivateValue(MusicTicker.class, mcMusicTicker, value, "timeUntilNextMusic", SRG_timeUntilNextMusic); 
     }
     
     private static boolean vanillaMusicPaused = false;
@@ -323,7 +325,11 @@ public enum ClientAudio implements IStreamListener
         {
             resumeVanillaMusic();
             setVanillaMusicPaused(false);
-        }  
+        }  else
+        if (playIDAudioData != null && playIDAudioData.mappingCount() != 0) {
+            // don't allow the timer to count down while ClientAudio sessions are playing
+            setVanillaMusicTimer(Integer.MAX_VALUE);
+        }
     }
 
     private static void init()

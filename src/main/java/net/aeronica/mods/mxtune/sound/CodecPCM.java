@@ -331,7 +331,7 @@ public class CodecPCM implements ICodec {
 	    }
 	    dummyInputStream = null;
 	    
-	    ClientAudio.removeEntityAudioData(playID);
+	    ClientAudio.removePlayIDAudioData(playID);
     }
 
 	@Override
