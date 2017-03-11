@@ -159,7 +159,9 @@ public class EntitySittableBlock extends Entity
     @Override
     public void onEntityUpdate()
     {
-        if (!this.world.isRemote) if ((this.getPassengers().isEmpty() && !this.isDead) | this.world.isAirBlock(new BlockPos(blockPosX, blockPosY, blockPosZ)))
+        if (!this.world.isRemote &&
+                ((this.getPassengers().isEmpty() && !this.isDead) ||
+                        this.world.isAirBlock(new BlockPos(blockPosX, blockPosY, blockPosZ))))
         {
             this.setDead();
             world.updateComparatorOutputLevel(getPosition(), world.getBlockState(getPosition()).getBlock());
