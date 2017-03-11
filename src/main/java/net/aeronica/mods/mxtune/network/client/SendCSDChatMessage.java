@@ -25,6 +25,7 @@ import java.io.ObjectOutputStream;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.status.CSDChatStatus;
 import net.aeronica.mods.mxtune.status.ClientStateData;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
@@ -51,7 +52,7 @@ public class SendCSDChatMessage extends AbstractClientMessage<SendCSDChatMessage
             csd = (ClientStateData) in.readObject();
         } catch (ClassNotFoundException e)
         {
-            e.printStackTrace();
+            ModLogger.error(e.getMessage());
         }
         in.close();  
     }
@@ -69,7 +70,7 @@ public class SendCSDChatMessage extends AbstractClientMessage<SendCSDChatMessage
             // Get the bytes of the serialized object
             byteBuffer = bos.toByteArray();
         } catch (IOException e) {
-            e.printStackTrace();
+            ModLogger.error(e.getMessage());
         }
         buffer.writeByteArray(byteBuffer);
     }
