@@ -77,15 +77,13 @@ public class MODSoundCategory
     {
         Map<String, SoundCategory> SOUND_CATEGORIES;
 
-        String constantName;
-        String referenceName;
         SoundCategory soundCategory;
-        constantName = new String(name.toUpperCase().replace(" ", ""));
-        referenceName = new String(constantName.toLowerCase());
+        String constantName = name.toUpperCase().replace(" ", "");
+        String referenceName = constantName.toLowerCase();
         soundCategory =  EnumHelper.addEnum(SoundCategory.class , constantName, new Class[]{String.class}, new Object[]{referenceName});
         SOUND_CATEGORIES = ObfuscationReflectionHelper.getPrivateValue(SoundCategory.class, SoundCategory.VOICE ,"SOUND_CATEGORIES", SRG_SOUND_CATEGORIES);
         if (SOUND_CATEGORIES.containsKey(referenceName))
-            throw new Error("Clash in Sound Category name pools! Cannot insert " + constantName);
+            throwCategorySoundError(constantName);
         SOUND_CATEGORIES.put(referenceName, soundCategory);
         if (FMLLaunchHandler.side() == Side.CLIENT) setSoundLevels();
 
@@ -100,6 +98,11 @@ public class MODSoundCategory
         soundLevels = Maps.newEnumMap(SoundCategory.class);
         /** Replace the map in the GameSettings.class */
         ObfuscationReflectionHelper.setPrivateValue(GameSettings.class, Minecraft.getMinecraft().gameSettings, soundLevels, "soundLevels", SRG_soundLevels);
+    }
+    
+    private static void throwCategorySoundError(String s)
+    {
+        throw new Error("Clash in Sound Category name pools! Cannot insert " + s);
     }
 
 }
