@@ -28,7 +28,6 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiSystem;
-import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequencer;
 import javax.sound.midi.Soundbank;
 import javax.sound.midi.Synthesizer;
@@ -704,7 +703,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
 
     public Minecraft getMinecraftInstance() {return mc;}
 
-    public FontRenderer getFontRenderer() {return mc.fontRenderer;}
+    public FontRenderer getFontRenderer() {return mc.fontRendererObj;}
 
     /** MML Player */
     private Sequencer sequencer = null;

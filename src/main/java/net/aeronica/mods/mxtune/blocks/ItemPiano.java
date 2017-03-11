@@ -44,7 +44,7 @@ public class ItemPiano extends Item
     /** Called when a Block is right-clicked with this Item */
     @SuppressWarnings("deprecation")
     @Override
-    public EnumActionResult onItemUse(EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand handIn, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand handIn, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
         if (worldIn.isRemote)
         {
@@ -58,7 +58,6 @@ public class ItemPiano extends Item
         {
             IBlockState iblockstate = worldIn.getBlockState(pos);
             Block block = iblockstate.getBlock();
-            ItemStack stack = playerIn.getHeldItem(handIn);
             /** Looking at the ground or a replaceable block like grass. */
             boolean flag = block.isReplaceable(worldIn, pos);
             if (!flag) pos = pos.up();
@@ -90,7 +89,7 @@ public class ItemPiano extends Item
 
                     SoundType soundtype = iblockstate1.getBlock().getSoundType();
                     worldIn.playSound((EntityPlayer) null, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-                    stack.setCount(stack.getCount()-1);
+                    --stack.stackSize;
                     return EnumActionResult.SUCCESS;
                 } else
                 {

@@ -46,7 +46,7 @@ public class ItemConverter extends Item
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
+    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand handIn)
     {
         boolean invChanged = false;
         int countUpdated = 0;
@@ -59,11 +59,11 @@ public class ItemConverter extends Item
             for (int index = 0; index < size; index++)
             {
                 stack = playerIn.inventory.getStackInSlot(index);
-                if (!stack.equals(ItemStack.EMPTY))
+                if (stack != null)
                 {
                     ItemStack sheetMusicStack = this.sheetMusicConversion(stack);
                     ModLogger.debug("inventorySlot index: " + index + ", stack: " + stack);
-                    if (!sheetMusicStack.equals(ItemStack.EMPTY))
+                    if (sheetMusicStack != null)
                     {                      
                         //playerIn.inventory.decrStackSize(index, playerIn.inventory.getInventoryStackLimit());
                         playerIn.inventory.decrStackSize(index, playerIn.inventory.getInventoryStackLimit());
@@ -84,7 +84,7 @@ public class ItemConverter extends Item
 
     public ItemStack sheetMusicConversion(ItemStack musicPaper)
     {
-        if (!musicPaper.equals(ItemStack.EMPTY) && (musicPaper.getItem() instanceof ItemMusicPaper) && musicPaper.hasDisplayName() && musicPaper.hasTagCompound()) {
+        if (musicPaper != null && (musicPaper.getItem() instanceof ItemMusicPaper) && musicPaper.hasDisplayName() && musicPaper.hasTagCompound()) {
             NBTTagCompound contentsOld = musicPaper.getTagCompound();
             if (contentsOld.hasKey("MusicBook"))
             {
@@ -104,7 +104,7 @@ public class ItemConverter extends Item
                 }
             }
         }
-        return ItemStack.EMPTY;
+        return null;
     }
     
     /**
@@ -127,7 +127,7 @@ public class ItemConverter extends Item
             {
                 ModLogger.debug("stackIn Has ItemInventory: true");
                 NBTTagCompound item = (NBTTagCompound) items.getCompoundTagAt(0);
-                ItemStack sheetMusicOld = new ItemStack(item);
+                ItemStack sheetMusicOld = ItemStack.loadItemStackFromNBT(item);
                 NBTTagCompound contents = (NBTTagCompound) sheetMusicOld.getTagCompound().getTag("MusicBook");
                 if (contents != null)
                 {
@@ -158,7 +158,7 @@ public class ItemConverter extends Item
             {
                 ModLogger.debug("stackIn Has ItemInventory: true");
                 NBTTagCompound item = (NBTTagCompound) items.getCompoundTagAt(0);
-                ItemStack sheetMusicOld = new ItemStack(item);
+                ItemStack sheetMusicOld = ItemStack.loadItemStackFromNBT(item);
                 NBTTagCompound contents = (NBTTagCompound) sheetMusicOld.getTagCompound().getTag("MusicBook");
                 if (contents != null  && (sheetMusicOld.getItem() instanceof ItemMusicPaper))
                 {
@@ -175,7 +175,7 @@ public class ItemConverter extends Item
     
     /** Activate this item unconditionally */
     @Override
-    public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand handIn)
+    public EnumActionResult onItemUseFirst(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand handIn)
     {
         return EnumActionResult.FAIL;
     }

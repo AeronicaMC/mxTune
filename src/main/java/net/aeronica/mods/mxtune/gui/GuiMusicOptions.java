@@ -321,7 +321,7 @@ public class GuiMusicOptions extends GuiScreen
 
     public Minecraft getMinecraftInstance() {return mc;}
 
-    public FontRenderer getFontRenderer() {return mc.fontRenderer;}
+    public FontRenderer getFontRenderer() {return mc.fontRendererObj;}
     
     protected void sendOptionsToServer(int muteOption)
     {
