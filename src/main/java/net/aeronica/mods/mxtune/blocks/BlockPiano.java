@@ -107,7 +107,7 @@ public class BlockPiano extends BlockInstrument2H
                 if (!playerIn.inventory.addItemStackToInventory(itemStack))
                 {
                     /** Not possible. Throw item in the world */
-                    if (itemStack != null) spawnEntityItem(worldIn, itemStack, pos);
+                    if (!itemStack.equals(ItemStack.EMPTY)) spawnEntityItem(worldIn, itemStack, pos);
                 } else
                 {
                     tile.syncToClient();
@@ -304,7 +304,7 @@ public class BlockPiano extends BlockInstrument2H
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
     {
         TilePiano tile = ((TilePiano) worldIn.getTileEntity(pos));
-        if (state.getValue(PART) == BlockPiano.EnumPartType.LEFT && tile != null && tile.getInventory().getStackInSlot(0) != null)
+        if (state.getValue(PART) == BlockPiano.EnumPartType.LEFT && tile != null && !tile.getInventory().getStackInSlot(0).equals(ItemStack.EMPTY))
         {
             spawnEntityItem(worldIn, tile.getInventory().getStackInSlot(0).copy(), pos);
             tile.invalidate();
