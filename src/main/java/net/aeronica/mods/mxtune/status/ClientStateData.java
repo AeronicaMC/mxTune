@@ -44,13 +44,11 @@ public class ClientStateData implements Serializable
     
     public boolean isEqual(ClientStateData csd)
     {
-        return csd != null ? this.masterVolumeOn == csd.midiAvailable && this.masterVolumeOn == csd.masterVolumeOn && this.mxtuneVolumeOn == csd.mxtuneVolumeOn : false;
+        return csd != null ? this.midiAvailable == csd.midiAvailable && this.masterVolumeOn == csd.masterVolumeOn && this.mxtuneVolumeOn == csd.mxtuneVolumeOn : false;
     }
     
-    public boolean isGood() {return this.masterVolumeOn==true && this.masterVolumeOn==true && this.mxtuneVolumeOn==true;}
+    public boolean isGood() {return this.midiAvailable==true && this.masterVolumeOn==true && this.mxtuneVolumeOn==true;}
     
-    public boolean isFail() {return (this.masterVolumeOn==false || this.masterVolumeOn==false || this.mxtuneVolumeOn==false)==true;}
-
     @Override
     public String toString()
     {

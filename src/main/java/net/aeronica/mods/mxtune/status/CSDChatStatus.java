@@ -29,7 +29,7 @@ public class CSDChatStatus
     EntityPlayer playerIn;
     public CSDChatStatus(EntityPlayer playerIn, ClientStateData csd)
     {
-        this.csd = new ClientStateData(csd.isMidiAvailable(), csd.isMasterVolumeOn(), csd.isMxtuneVolumeOn());
+        this.csd = csd;
         this.playerIn = playerIn;
         process();
     }

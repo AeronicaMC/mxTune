@@ -99,7 +99,7 @@ public class ClientCSDMonitor
     
     public static boolean canMXTunesPlay()
     {
-        return (csd !=null && csd.isGood());
+        return (csd != null && csd.isGood());
     }
     
     /**
@@ -108,8 +108,10 @@ public class ClientCSDMonitor
      */
     public static void sendErrorViaChat(EntityPlayer playerIn)
     {
-        if (csd==null)
-            snapShot();
-            new CSDChatStatus(playerIn, csd);   
+        if (csd == null)
+        {
+            csd=snapShot();
+        }
+        new CSDChatStatus(playerIn, csd);   
     }
 }
