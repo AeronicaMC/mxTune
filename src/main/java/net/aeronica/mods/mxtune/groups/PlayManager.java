@@ -351,7 +351,8 @@ public enum PlayManager
      */
     public static Vec3d getMedianPos(Integer playID)
     {
-        double x, y, z, count; x = y = z = count = 0;
+        double x, y, z; x = y = z = 0;
+        int count = 0;
         Vec3d pos;
         for(Integer member: getMembersByPlayID(playID))
         {   
@@ -381,7 +382,6 @@ public enum PlayManager
     {
         if (activePlayIDs != null && !activePlayIDs.isEmpty())
         {
-            double distance = 0;
             for(Integer playID: activePlayIDs)
             {
                 if (getMembersByPlayID(playID) != null && !getMembersByPlayID(playID).isEmpty())
@@ -392,7 +392,7 @@ public enum PlayManager
                         {
                             if (memberA != memberB)
                             {
-                               distance = getMemberVector(memberA).distanceTo(getMemberVector(memberB));
+                                double distance = getMemberVector(memberA).distanceTo(getMemberVector(memberB));
                                if (distance > stopDistance) PlayManager.stopPlayID(playID);
                             }
                         }
