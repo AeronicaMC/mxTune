@@ -23,7 +23,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage;
-import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.status.ClientStateData;
 import net.aeronica.mods.mxtune.status.ServerCSDManager;
@@ -63,18 +62,15 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
-        try{
-            // Serialize data object to a byte array
-            ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
-            ObjectOutputStream out = new ObjectOutputStream(bos) ;
-            out.writeObject(csd);
-            out.close();
+        // Serialize data object to a byte array
+        ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
+        ObjectOutputStream out = new ObjectOutputStream(bos) ;
+        out.writeObject(csd);
+        out.close();
 
-            // Get the bytes of the serialized object
-            byteBuffer = bos.toByteArray();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // Get the bytes of the serialized object
+        byteBuffer = bos.toByteArray();
+
         buffer.writeByteArray(byteBuffer);
     }
 

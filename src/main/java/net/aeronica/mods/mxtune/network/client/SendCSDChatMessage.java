@@ -25,7 +25,6 @@ import java.io.ObjectOutputStream;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.status.CSDChatStatus;
 import net.aeronica.mods.mxtune.status.ClientStateData;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
@@ -52,7 +51,7 @@ public class SendCSDChatMessage extends AbstractClientMessage<SendCSDChatMessage
             csd = (ClientStateData) in.readObject();
         } catch (ClassNotFoundException e)
         {
-            ModLogger.error(e.getMessage());
+            e.printStackTrace();
         }
         in.close();  
     }
@@ -60,18 +59,15 @@ public class SendCSDChatMessage extends AbstractClientMessage<SendCSDChatMessage
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
-        try{
-            // Serialize data object to a byte array
-            ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
-            ObjectOutputStream out = new ObjectOutputStream(bos) ;
-            out.writeObject(csd);
-            out.close();
+        // Serialize data object to a byte array
+        ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
+        ObjectOutputStream out = new ObjectOutputStream(bos) ;
+        out.writeObject(csd);
+        out.close();
 
-            // Get the bytes of the serialized object
-            byteBuffer = bos.toByteArray();
-        } catch (IOException e) {
-            ModLogger.error(e.getMessage());
-        }
+        // Get the bytes of the serialized object
+        byteBuffer = bos.toByteArray();
+
         buffer.writeByteArray(byteBuffer);
     }
 
