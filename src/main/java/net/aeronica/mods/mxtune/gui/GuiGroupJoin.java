@@ -145,7 +145,7 @@ public class GuiGroupJoin extends GuiScreen
                         fontRenderer.drawStringWithShadow(memberName, posX, posY, 16777215);
 
                         /** Only Leaders get to remove and promote other members! */
-                        if (player.getDisplayName().getUnformattedText().equals(GROUPS.getLeaderOfGroup(groupID)))
+                        if (player.getEntityId() == (GROUPS.getLeaderOfGroup(groupID)))
                         {
                             /** GuiGroup enable/disable and visibility setup for buttons here */
                         }

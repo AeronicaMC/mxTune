@@ -135,6 +135,7 @@ public enum GROUPS
                 break;
             case PLAYING:
                 result = 2;
+                break;
             default:
             }
         }
