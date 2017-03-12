@@ -30,7 +30,7 @@ public class SyncGroupMessage extends AbstractClientMessage<SyncGroupMessage>
 
     private String groups, members;
 
-    public SyncGroupMessage() {this.groups = this.members = new String();}
+    public SyncGroupMessage() {this.groups = this.members = "";}
 
     public SyncGroupMessage(String groups, String members)
     {

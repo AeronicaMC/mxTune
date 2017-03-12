@@ -43,7 +43,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
         this.disableHud = false;
         this.positionHud = 0;
         this.sizeHud = 0.5F;
-        this.sParam1 = this.sParam2 = this.sParam3 = new String("");
+        this.sParam1 = this.sParam2 = this.sParam3 = "";
         this.whiteList = new ArrayList<PlayerLists>();
         this.blackList = new ArrayList<PlayerLists>();
     }
@@ -54,7 +54,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
         this.disableHud = false;
         this.positionHud = 0;
         this.sizeHud = 0.5F;
-        this.sParam1 = this.sParam2 = this.sParam3 = new String("");
+        this.sParam1 = this.sParam2 = this.sParam3 = "";
         this.whiteList = new ArrayList<PlayerLists>();
         this.blackList = new ArrayList<PlayerLists>();
     }
@@ -66,7 +66,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
         this.disableHud = false;
         this.positionHud = 0;
         this.sizeHud = 0.5F;
-        this.sParam1 = this.sParam2 = this.sParam3 = new String("");
+        this.sParam1 = this.sParam2 = this.sParam3 = "";
         this.syncAll(playerIn);
     }
 
