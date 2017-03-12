@@ -70,8 +70,11 @@ public class CodecPCM implements ICodec {
 
     public static final int SAMPLE_SIZE = 10240 * 4;
     
-    byte noiseBuffer[] = new byte[SAMPLE_SIZE];
-    byte zeroBuffer[] = new byte[SAMPLE_SIZE];
+    byte[] noiseBuffer = new byte[SAMPLE_SIZE];
+    byte[] zeroBuffer = new byte[SAMPLE_SIZE];
+    
+    boolean hasStream = false;
+    int zeroBufferCount = 0;
     
     Random randInt;
 	
@@ -91,7 +94,7 @@ public class CodecPCM implements ICodec {
     private void nextBuffer(int sampleSize)
     {
         for (int i=0;i<sampleSize; i+=2){
-            int x = ((short) (randInt.nextInt()/3)*2);
+            int x = (short) (randInt.nextInt()/3)*2;
             noiseBuffer[i] = (byte) x;
             noiseBuffer[i+1]= (byte) (x >> 8);
             zeroBuffer[i] = zeroBuffer[i+1] = 0;
@@ -165,47 +168,38 @@ public class CodecPCM implements ICodec {
 		return initialized(GET, XXX);
 	}
 
-	boolean hasStream = false;
-	int zeroBufferCount = 0;
 	@Override
 	public SoundBuffer read() {
 		if (!initialized) {
 			errorMessage("Not initialized in 'read'");
 			return null;
 		}
-
-		// Check to make sure there is an audio format:
 		if (myAudioFormat == null) {
 			errorMessage("Audio Format null in 'read'");
 			return null;
 		}
-		
 		if (ClientAudio.isPlayIDAudioDataError(playID))
 		{
 		    errorMessage("Audio Data Error in 'read'");
 		    return null;
 		}
-		
-        if (hasStream == false)
-        {
-            if (ClientAudio.isPlayIDAudioDataReady(playID))
-            {
-                audioInputStream = ClientAudio.getAudioInputStream(playID);
-                message("Waiting buffer count: " + zeroBufferCount);
-                hasStream = true;
-            }
-        }
-
+		if (!hasStream && ClientAudio.isPlayIDAudioDataReady(playID))
+		{
+		    audioInputStream = ClientAudio.getAudioInputStream(playID);
+		    message("Waiting buffer count: " + zeroBufferCount);
+		    hasStream = true;
+		}
         int bufferSize = 0;
-        byte readBuffer[] = new byte[SoundSystemConfig.getStreamingBufferSize()];
-		byte outputBuffer[] = null;
+        byte[] readBuffer = new byte[SoundSystemConfig.getStreamingBufferSize()];
+		byte[] outputBuffer = null;
 		nextBuffer(SAMPLE_SIZE);
 		try
         {	
 		    if (hasStream && audioInputStream != null)
 		    {
             bufferSize = audioInputStream.read(readBuffer);
-            if (bufferSize > 0) outputBuffer = appendByteArrays(outputBuffer, readBuffer, bufferSize);
+            if (bufferSize > 0)
+                outputBuffer = appendByteArrays(outputBuffer, readBuffer, bufferSize);
             if (bufferSize == -1)
                 {
                     endOfStream(SET, true);
@@ -227,15 +221,9 @@ public class CodecPCM implements ICodec {
             endOfStream(SET, true);
             return null;
         }
-				
-		// Reverse the byte order if necessary:
-		if (!reverseBytes)
+		if (!reverseBytes && outputBuffer != null)
 			reverseBytes(outputBuffer, 0, outputBuffer.length);
-
-		// Wrap the data into a SoundBuffer:
-		SoundBuffer buffer = new SoundBuffer(outputBuffer, myAudioFormat);
-
-		return buffer;
+		return new SoundBuffer(outputBuffer, myAudioFormat);
 	}
 
 	/** load the entire buffer at once */
@@ -245,27 +233,23 @@ public class CodecPCM implements ICodec {
 			errorMessage("Not initialized in 'readAll'");
 			return null;
 		}
-
-		// Check to make sure there is an audio format:
 		if (myAudioFormat == null) {
 			errorMessage("Audio Format null in method 'readAll'");
 			return null;
 		}
-        if (endOfStream() || ClientAudio.isPlayIDAudioDataError(playID)) return null;
-        
+        if (endOfStream() || ClientAudio.isPlayIDAudioDataError(playID))
+            return null;     
         int bufferSize = 0;
-        byte outputBuffer[] = null;
-        byte readBuffer[] = new byte[SAMPLE_SIZE];
+        byte[] outputBuffer = null;
+        byte[] readBuffer = new byte[SAMPLE_SIZE];
         while (bufferSize != -1)
         {
-            if (endOfStream() || ClientAudio.isPlayIDAudioDataError(playID)) return null;
-            if (hasStream == false)
+            if (endOfStream() || ClientAudio.isPlayIDAudioDataError(playID))
+                return null;
+            if (!hasStream && ClientAudio.isPlayIDAudioDataReady(playID))
             {
-                if (ClientAudio.isPlayIDAudioDataReady(playID))
-                {
-                    audioInputStream = ClientAudio.getAudioInputStream(playID);
-                    hasStream = true;
-                }
+                audioInputStream = ClientAudio.getAudioInputStream(playID);
+                hasStream = true;
             }
             try
             {
@@ -290,20 +274,14 @@ public class CodecPCM implements ICodec {
                 printStackTrace(e);
             }
         }
-        
-       // Reverse the byte order if necessary:
-        if (!reverseBytes)
+        if (!reverseBytes && outputBuffer != null)
             reverseBytes(outputBuffer, 0, outputBuffer.length);
-
-        // Wrap the data into a SoundBuffer:
-        SoundBuffer buffer = new SoundBuffer(outputBuffer, myAudioFormat);
-
-        return buffer;
+        return new SoundBuffer(outputBuffer, myAudioFormat);
 	}
 
 	@Override
 	public boolean endOfStream() {
-		return endOfStream(GET, XXX);
+	    return endOfStream(GET, XXX);
 	}
 
 	@Override
@@ -423,23 +401,23 @@ public class CodecPCM implements ICodec {
 	/**
 	 * Converts sound bytes to little-endian format.
 	 * 
-	 * @param audio_bytes
+	 * @param audioBytes
 	 *            The original wave data
-	 * @param two_bytes_data
+	 * @param twoBytesData
 	 *            For stereo sounds.
 	 * @return byte array containing the converted data.
 	 */
 	@SuppressWarnings("unused") // Forge
-	private static byte[] convertAudioBytes(byte[] audio_bytes, boolean two_bytes_data) {
-		ByteBuffer dest = ByteBuffer.allocateDirect(audio_bytes.length);
+	private static byte[] convertAudioBytes(byte[] audioBytes, boolean twoBytesData) {
+		ByteBuffer dest = ByteBuffer.allocateDirect(audioBytes.length);
 		dest.order(ByteOrder.nativeOrder());
-		ByteBuffer src = ByteBuffer.wrap(audio_bytes);
+		ByteBuffer src = ByteBuffer.wrap(audioBytes);
 		src.order(ByteOrder.LITTLE_ENDIAN);
-		if (two_bytes_data) {
-			ShortBuffer dest_short = dest.asShortBuffer();
-			ShortBuffer src_short = src.asShortBuffer();
-			while (src_short.hasRemaining()) {
-				dest_short.put(src_short.get());
+		if (twoBytesData) {
+			ShortBuffer destShort = dest.asShortBuffer();
+			ShortBuffer srcShort = src.asShortBuffer();
+			while (srcShort.hasRemaining()) {
+				destShort.put(srcShort.get());
 			}
 		} else {
 			while (src.hasRemaining()) {
@@ -475,7 +453,7 @@ public class CodecPCM implements ICodec {
 		byte[] newArray;
 		if (arrayOne == null && arrayTwo == null) {
 			// no data, just return
-			return null;
+			return new byte[0];
 		} else if (arrayOne == null) {
 			// create the new array, same length as arrayTwo:
 			newArray = new byte[length];
