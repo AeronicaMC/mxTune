@@ -54,7 +54,7 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
             csd = (ClientStateData) in.readObject();
         } catch (ClassNotFoundException e)
         {
-            e.printStackTrace();
+            ModLogger.error(e);
         }
         in.close();  
     }
