@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.sound.midi.Instrument;
 import javax.sound.midi.InvalidMidiDataException;
@@ -53,12 +52,12 @@ public enum MIDISystemUtil
     private static boolean soundBankAvailable = false;
     private static boolean midiAvailable = false;
     private static int timesToWarn = 10;
-    private static List<TextComponentString> chatStatus = new ArrayList<TextComponentString>();
+    private static List<TextComponentString> chatStatus = new ArrayList<>();
 
     public static void mxTuneInit()
     {
         midiDeviceInfo = MidiSystem.getMidiDeviceInfo();
-        Vector<MidiDevice.Info> synthInfos = new Vector<MidiDevice.Info>();
+        List<MidiDevice.Info> synthInfos = new ArrayList<>();
         MidiDevice device = null;
         int maxPolyphony = 0;
         Synthesizer testSynth = null;
@@ -68,7 +67,7 @@ public enum MIDISystemUtil
             try {
                 device = MidiSystem.getMidiDevice(midiDeviceInfo[i]);
             } catch (MidiUnavailableException e) {
-                e.printStackTrace();
+                ModLogger.error(e);
                 midiAvailable = false;
             }
             if (device instanceof Synthesizer) {
@@ -87,8 +86,8 @@ public enum MIDISystemUtil
                 testSynth = (Synthesizer) MidiSystem.getMidiDevice(info);
             } catch (MidiUnavailableException e)
             {
+                ModLogger.error(e);
                 synthAvailable = false;
-                e.printStackTrace();
             }
             finally
             {
@@ -110,7 +109,7 @@ public enum MIDISystemUtil
                 soundBank = MidiSystem.getSoundbank(getMXTuneSB());
             } catch (InvalidMidiDataException | IOException e)
             {
-                e.printStackTrace();
+                ModLogger.error(e);
                 soundBank = null;
             }
             if (soundBank != null)
@@ -149,6 +148,8 @@ public enum MIDISystemUtil
             addStatus(new TextComponentString("[" + MXTuneMain.MODNAME + "] " + TextFormatting.YELLOW +I18n.format("mxtune.chat.msu.suggestion.02")));
 
             midiAvailable = false;
+            device.close();
+            testSynth.close();
         }
     }
     
