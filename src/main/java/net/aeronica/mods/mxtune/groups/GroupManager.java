@@ -117,7 +117,7 @@ public class GroupManager
             groups = new HashSet<Group>(1, 0.3f);
         }
 
-        if (getGroup(creatorID) == null && (groupsHaveMember(creatorID) == null))
+        if (getGroup(creatorID) == null && !groupsHaveMember(creatorID))
         {
 
             Group theGroup = new Group();
@@ -158,9 +158,8 @@ public class GroupManager
             EntityPlayer playerTarget = getEntityPlayer(g.leaderEntityID);
             EntityPlayer playerInitiator = getEntityPlayer(memberID);
 
-            Member n = groupsHaveMember(memberID);
             log("addMember " + groupID + " : " + memberID);
-            if ((g != null) && (n == null))
+            if ((g != null) && !groupsHaveMember(memberID))
             {
                 if (g.members.size() < GROUPS.MAX_MEMBERS)
                 {
@@ -328,13 +327,12 @@ public class GroupManager
     }
 
     /**
-     * Search all groups for the named member.
+     * Search all groups for the memberID.
      * 
-     * @param groups
-     * @param creatorID
-     * @return the members if found or null.
+     * @param memberID
+     * @return true if the memberID is found.
      */
-    protected static Member groupsHaveMember(Integer creatorID)
+    protected static boolean groupsHaveMember(Integer memberID)
     {
         if (groups != null && !groups.isEmpty())
         {
@@ -344,11 +342,11 @@ public class GroupManager
                 for (Iterator<Member> im = theGroup.members.iterator(); im.hasNext();)
                 {
                     Member theMember = (Member) im.next();
-                    if (theMember.memberEntityID.equals(creatorID)) return theMember;
+                    if (theMember.memberEntityID.equals(memberID)) return true;
                 }
             }
         }
-        return null;
+        return false;
     }
 
     public static void dump()
