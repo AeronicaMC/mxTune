@@ -323,7 +323,7 @@ public enum PlayManager
             setQueued(memberID);
         } catch (Exception e)
         {
-            e.printStackTrace();
+            ModLogger.error(e);
         }
     }
 
@@ -354,7 +354,7 @@ public enum PlayManager
             }
         } catch (Exception e)
         {
-            e.printStackTrace();
+            ModLogger.error(e);
         }
         return buildMML.toString();
     }
@@ -364,22 +364,25 @@ public enum PlayManager
      * @param playID
      * @return Vec3d
      */
-    public static Vec3d getMedianPos(Integer playID)
+    public static Vec3d getMedianPos(int playID)
     {
-        double x, y, z; x = y = z = 0;
+        double x, y, z;
+        x = y = z = 0;
         int count = 0;
         Vec3d pos;
-        for(Integer member: getMembersByPlayID(playID))
+        for(int member: getMembersByPlayID(playID))
         {   
             EntityPlayer player = (EntityPlayer) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getEntityByID(member);
-            if(player == null) continue;
+            if(player == null)
+                continue;
             x = x + player.getPositionVector().xCoord;
             y = y + player.getPositionVector().yCoord;
             z = z + player.getPositionVector().zCoord;
             count++;
         }            
 
-        if (count == 0) return new Vec3d(0,0,0);
+        if (count == 0)
+            return Vec3d.ZERO;
         x/=count;
         y/=count;
         z/=count;
