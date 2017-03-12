@@ -21,12 +21,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.options.PlayerLists;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
@@ -72,10 +74,10 @@ public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessa
             blackList =  (ArrayList<PlayerLists>) in.readObject();
             in.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            ModLogger.error(e);
         } catch (ClassNotFoundException e)
         {
-            e.printStackTrace();
+            ModLogger.error(e);
         }
 
     }
@@ -88,26 +90,26 @@ public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessa
             // Serialize data object to a byte array
             ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
             ObjectOutputStream out = new ObjectOutputStream(bos) ;
-            out.writeObject(whiteList);
+            out.writeObject((Serializable) whiteList);
             out.close();
 
             // Get the bytes of the serialized object
             byteBuffer = bos.toByteArray();
         } catch (IOException e) {
-            e.printStackTrace();
+            ModLogger.error(e);
         }
         buffer.writeByteArray(byteBuffer);
         try{
             // Serialize data object to a byte array
             ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
             ObjectOutputStream out = new ObjectOutputStream(bos) ;
-            out.writeObject(blackList);
+            out.writeObject((Serializable) blackList);
             out.close();
 
             // Get the bytes of the serialized object
             byteBuffer = bos.toByteArray();
         } catch (IOException e) {
-            e.printStackTrace();
+            ModLogger.error(e);
         }
         buffer.writeByteArray(byteBuffer);
     }
