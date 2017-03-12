@@ -31,22 +31,22 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
 {
-    public String keyBindingDesc;
+    private String keyBindingDesc;
 
-    public SendKeyMessage() {}
+    public SendKeyMessage() {/* Required by the PacketDispacher */}
 
-    public SendKeyMessage(String kb) {keyBindingDesc = kb;}
+    public SendKeyMessage(String kb) {this.keyBindingDesc = kb;}
 
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
-        keyBindingDesc = ByteBufUtils.readUTF8String(buffer);
+        this.keyBindingDesc = ByteBufUtils.readUTF8String(buffer);
     }
 
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
-        ByteBufUtils.writeUTF8String(buffer, keyBindingDesc);
+        ByteBufUtils.writeUTF8String(buffer, this.keyBindingDesc);
     }
 
     @Override
@@ -64,11 +64,11 @@ public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
 
     public void handleClientSide(EntityPlayer playerSP)
     {
-        if (keyBindingDesc.equalsIgnoreCase("mxtune.key.openParty"))
+        if ("mxtune.key.openParty".equalsIgnoreCase(this.keyBindingDesc))
         {
             playerSP.openGui(MXTuneMain.instance, GuiGroup.GUI_ID, playerSP.getEntityWorld(), 0, 0, 0);
         }
-        if (keyBindingDesc.equalsIgnoreCase("mxtune.key.openMusicOptions"))
+        if ("mxtune.key.openMusicOptions".equalsIgnoreCase(this.keyBindingDesc))
         {
             playerSP.openGui(MXTuneMain.instance, GuiMusicOptions.GUI_ID, playerSP.getEntityWorld(), 0, 0, 0);
         }
@@ -76,7 +76,7 @@ public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
 
     public void handleServerSide(EntityPlayer playerMP)
     {
-        PacketDispatcher.sendTo(new SendKeyMessage(keyBindingDesc), (EntityPlayerMP) playerMP);
+        PacketDispatcher.sendTo(new SendKeyMessage(this.keyBindingDesc), (EntityPlayerMP) playerMP);
     }
 
 }
