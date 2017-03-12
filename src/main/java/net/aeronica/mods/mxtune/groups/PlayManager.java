@@ -53,17 +53,24 @@ public enum PlayManager
     
     INSTANCE;
 
-    private static Map<Integer, String> membersMML = new HashMap<Integer, String>();
-    private static HashMap<Integer, String> membersQueuedStatus = new HashMap<Integer, String>();
-    private static HashMap<Integer, Integer> membersPlayID = new HashMap<Integer, Integer>();
+    private static Map<Integer, String> membersMML = new HashMap<>();
+    private static HashMap<Integer, String> membersQueuedStatus = new HashMap<>();
+    private static HashMap<Integer, Integer> membersPlayID = new HashMap<>();
     private static Set<Integer> activePlayIDs = Sets.newHashSet();
     private static int uniquePlayID = 1;
     
     /**
      * Play ID's 1 to Integer.MAX, -1 for invalid, 0 for initialization only, null if not set.
-     * @return a unique play id
+     * @return a unique positive play id
      */
-    private static int getNextPlayID() {return (uniquePlayID == Integer.MAX_VALUE) ? uniquePlayID = 1 : uniquePlayID++;}
+    private static int getNextPlayID()
+    {
+        if (uniquePlayID == Integer.MAX_VALUE)
+            uniquePlayID = 1;
+        else
+            uniquePlayID++;
+        return uniquePlayID;
+    }
 
     private static void setPlaying(Integer playerID) {membersQueuedStatus.put(playerID, GROUPS.PLAYING.name());}
 
@@ -99,7 +106,8 @@ public enum PlayManager
      */
     public static Integer playMusic(EntityPlayer playerIn, BlockPos pos, boolean isPlaced)
     {
-        if (MusicOptionsUtil.isMuteAll(playerIn)) return null;
+        if (MusicOptionsUtil.isMuteAll(playerIn))
+            return null;
         ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(pos, playerIn, isPlaced);
         if (!sheetMusic.equals(ItemStack.EMPTY))
         {
@@ -112,7 +120,7 @@ public enum PlayManager
 
                 mml = mml.replace("MML@", "MML@I" + getPatch(pos, playerIn, isPlaced));
                 ModLogger.debug("MML Title: " + title);
-                ModLogger.debug("MML Sub25: " + mml.substring(0, (mml.length() >= 25 ? 25 : mml.length())));
+                ModLogger.debug("MML Sub25: " + mml.substring(0, mml.length() >= 25 ? 25 : mml.length()));
 
                 if (GroupManager.getMembersGroupID(playerID) == null)
                 {
@@ -171,7 +179,8 @@ public enum PlayManager
     private static void resetGroupsPlayID(Integer membersID)
     {
         GroupManager.Group g = GroupManager.getMembersGroup(membersID);
-        if (g!=null) g.playID = null;
+        if (g!=null)
+            g.playID = null;
     }
     
     /**
@@ -184,9 +193,14 @@ public enum PlayManager
     private static Integer getGroupsPlayID(Integer membersID)
     {
         GroupManager.Group g = GroupManager.getMembersGroup(membersID);
-        return (g!=null) ? ((g.playID == null) ? g.playID = getNextPlayID() : g.playID) : null;
+        Integer playID = null;
+        if (g!=null && g.playID == null)
+            playID = g.playID = getNextPlayID();
+        else
+            playID = g.playID;
+        return playID;
     }
-    
+
     public static Integer getPlayersPlayID(Integer entityID)
     {
         return (membersPlayID != null && !membersPlayID.isEmpty()) ? membersPlayID.get(entityID) : null;
