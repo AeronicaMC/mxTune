@@ -28,6 +28,7 @@ import com.google.common.collect.Sets;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.config.ModConfig;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;
 
@@ -293,13 +294,14 @@ public enum GROUPS
         {
             Map<String, String> inStringString =  (Map<String, String>) Splitter.on('|').omitEmptyStrings().withKeyValueSeparator("=").split(mapIntString);
             Map<Integer, Integer> outIntInt = new HashMap<Integer, Integer>();
-            for (String id: inStringString.keySet())
+            for (Map.Entry<String,String> entry: inStringString.entrySet())
             {
-                outIntInt.put(Integer.valueOf(id), Integer.valueOf(inStringString.get(id)));
+                outIntInt.put(Integer.valueOf(entry.getKey()), Integer.valueOf(entry.getValue()));
             }
             return outIntInt;
         } catch (IllegalArgumentException e)
         {
+            ModLogger.error(e);
             return null;
         }
     }
@@ -318,7 +320,7 @@ public enum GROUPS
             }
         } catch (Exception e)
         {
-            e.printStackTrace();
+            ModLogger.error(e);
         }
         return serializedIntIntMap.toString();
     }
@@ -335,13 +337,14 @@ public enum GROUPS
         {
             Map<String, String> inStringString =  (Map<String, String>) Splitter.on('|').omitEmptyStrings().withKeyValueSeparator("=").split(hashTableString);
             ListMultimap<Integer, Integer> outListMultimapIntInt = ArrayListMultimap.create();
-            for (String id: inStringString.keySet())
+            for (Map.Entry<String,String> entry: inStringString.entrySet())
             {
-                outListMultimapIntInt.put(Integer.valueOf(inStringString.get(id)), Integer.valueOf(id));
+                outListMultimapIntInt.put(Integer.valueOf(entry.getValue()), Integer.valueOf(entry.getKey()));
             }
             return outListMultimapIntInt;
         } catch (IllegalArgumentException e)
         {
+            ModLogger.error(e);
             return null;
         }
 
@@ -353,14 +356,14 @@ public enum GROUPS
         {
             Map<String, String> inStringString =  (Map<String, String>) Splitter.on('|').omitEmptyStrings().withKeyValueSeparator("=").split(mapIntString);
             Map<Integer, String> outIntString = new HashMap<Integer, String>();
-            for (String id: inStringString.keySet())
+            for (Map.Entry<String,String> entry: inStringString.entrySet())
             {
-                outIntString.put(Integer.valueOf(id), inStringString.get(id));
+                outIntString.put(Integer.valueOf(entry.getKey()), entry.getValue());
             }
             return outIntString;
         } catch (IllegalArgumentException e)
         {
-            e.printStackTrace();
+            ModLogger.error(e);
             return null;
         }
     }
@@ -379,7 +382,7 @@ public enum GROUPS
             }
         } catch (Exception e)
         {
-            e.printStackTrace();
+            ModLogger.error(e);
         }
         return serializedIntStrMap.toString();
     }
@@ -398,7 +401,7 @@ public enum GROUPS
             }
         } catch (Exception e)
         {
-            e.printStackTrace();
+            ModLogger.error(e);
         }
         return deserializedSet;
     }
@@ -416,7 +419,7 @@ public enum GROUPS
             }
         } catch (Exception e)
         {
-            e.printStackTrace();
+            ModLogger.error(e);
         }
         return serializedSet.toString();        
     }
