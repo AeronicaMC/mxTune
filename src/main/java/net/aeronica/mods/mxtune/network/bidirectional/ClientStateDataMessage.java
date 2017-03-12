@@ -36,42 +36,21 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
 {
 
     private ClientStateData csd;
-    private byte[] byteBuffer = null;
     
-    public ClientStateDataMessage() {}
+    public ClientStateDataMessage() {/* Required by the PacketDispacher */}
     
     public ClientStateDataMessage(ClientStateData csd) { this.csd = csd;}
     
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
-        // Deserialize data object from a byte array
-        byteBuffer = buffer.readByteArray();
-        ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
-        ObjectInputStream in = new ObjectInputStream(bis) ;
-        try
-        {
-            csd = (ClientStateData) in.readObject();
-        } catch (ClassNotFoundException e)
-        {
-            ModLogger.error(e);
-        }
-        in.close();  
+        this.csd = readCSD(buffer);
     }
 
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
-        // Serialize data object to a byte array
-        ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
-        ObjectOutputStream out = new ObjectOutputStream(bos) ;
-        out.writeObject(csd);
-        out.close();
-
-        // Get the bytes of the serialized object
-        byteBuffer = bos.toByteArray();
-
-        buffer.writeByteArray(byteBuffer);
+        writeCSD(buffer, csd);
     }
 
     @Override
@@ -97,6 +76,39 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
     {
         ModLogger.info("ClientStateDataMessage csd: " + csd);
         ServerCSDManager.updateState(playerIn, csd);
+    }
+
+    public static ClientStateData readCSD(PacketBuffer buffer) throws IOException
+    {
+        // Deserialize data object from a byte array
+        ClientStateData csd = null;
+        byte[] byteBuffer = buffer.readByteArray();
+
+        ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
+        ObjectInputStream in = new ObjectInputStream(bis) ;
+        try
+        {
+            csd = (ClientStateData) in.readObject();
+        } catch (ClassNotFoundException e)
+        {
+            ModLogger.error(e);
+        }
+        in.close(); 
+        return csd;
+    }
+    
+    public static void writeCSD(PacketBuffer buffer, ClientStateData csd) throws IOException
+    {
+        // Serialize data object to a byte array
+        byte[] byteBuffer = null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
+        ObjectOutputStream out = new ObjectOutputStream(bos) ;
+        out.writeObject(csd);
+        out.close();
+
+        // Get the bytes of the serialized object
+        byteBuffer = bos.toByteArray();
+        buffer.writeByteArray(byteBuffer);
     }
 
 }
