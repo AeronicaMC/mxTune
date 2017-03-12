@@ -151,33 +151,6 @@ public class MusicOptionsUtil
         return result;
     }
     
-    public static void dumpAllPlayers()
-    {
-        //MinecraftServer minecraftServer = MXTuneMain.proxy.getMinecraftServer();
-        String[] pdat =  FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getAvailablePlayerDat();
-        GameProfile gp = null;
-        for (String n : pdat)
-        {
-            ModLogger.debug("playerDump#Player.dat:  " + n);
-            try {
-                gp = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getProfileByUUID(UUID.fromString(n));      
-            }
-            catch(IllegalArgumentException e) {  
-            }
-            finally {
-                if (gp != null) {
-                    ModLogger.debug("playerDump#Name:        " + gp.getName());
-                    ModLogger.debug("playerDump#UUID:        " + gp.getId());
-                    ModLogger.debug("playerDump#Properties:  " + gp.getProperties());
-                    ModLogger.debug("playerDump#isComplete:  " + gp.isComplete());
-                    ModLogger.debug("playerDump#isLegacy:    " + gp.isLegacy());
-                }
-                else
-                    ModLogger.debug("playerDump#GameProfile: Invalid UUID string: " + n); 
-            }
-        }
-    }
-    
     public static enum EnumMuteOptions implements IStringSerializable
     {
         OFF(0, "mxtune.gui.musicOptions.muteOption.off"),
