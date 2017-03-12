@@ -188,16 +188,17 @@ public enum PlayManager
      * This assumes the member is already been validated as a member of the group
      * 
      * @param membersID
-     * @return
+     * @return a unique playID or null if something went wrong
      */
     private static Integer getGroupsPlayID(Integer membersID)
     {
         GroupManager.Group g = GroupManager.getMembersGroup(membersID);
         Integer playID = null;
-        if (g!=null && g.playID == null)
-            playID = g.playID = getNextPlayID();
-        else
-            playID = g.playID;
+        if (g!=null)
+            if (g.playID == null)
+                playID = g.playID = getNextPlayID();
+            else
+                playID = g.playID;
         return playID;
     }
 
