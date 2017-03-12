@@ -109,7 +109,7 @@ public class GroupManager
      * @param creatorID
      * @return true is successful
      */
-    public static boolean addGroup(Integer creatorID)
+    public static boolean addGroup(int creatorID)
     {
         log("addGroup " + creatorID);
         if (groups == null)
@@ -148,19 +148,20 @@ public class GroupManager
      * @param memberID
      * @return
      */
-    public static boolean addMember(Integer groupID, Integer memberID)
+    public static boolean addMember(int groupID, int memberID)
     {
         if (groups != null && !groups.isEmpty())
         {
             Group g = getGroup(groupID);
 
-            /** Grab instances of the leader and other player */
-            EntityPlayer playerTarget = getEntityPlayer(g.leaderEntityID);
+            /** Grab instance of the other player */
             EntityPlayer playerInitiator = getEntityPlayer(memberID);
 
             log("addMember " + groupID + " : " + memberID);
             if ((g != null) && !groupsHaveMember(memberID))
             {
+                /** Grab instance of the leader */
+                EntityPlayer playerTarget = getEntityPlayer(g.leaderEntityID);
                 if (g.members.size() < GROUPS.MAX_MEMBERS)
                 {
                     Member m = new Member();
@@ -194,7 +195,7 @@ public class GroupManager
      * @param memberID
      * @return the group of the member or null.
      */
-    public static Group removeMember(Integer memberID)
+    public static Group removeMember(int memberID)
     {
         log("removeMember " + memberID);
         PlayManager.dequeueMember(memberID);
@@ -252,7 +253,7 @@ public class GroupManager
         return null;
     }
 
-    public static boolean isLeader(Integer entityID)
+    public static boolean isLeader(int entityID)
     {
         Group g = getMembersGroup(entityID);
         return (g != null) ? g.leaderEntityID.equals(entityID) : false;
@@ -265,7 +266,7 @@ public class GroupManager
      * @param memberID
      * @return success or failure.
      */
-    public static boolean setLeader(Integer memberID)
+    public static boolean setLeader(int memberID)
     {
         boolean result = false;
         Group g = getMembersGroup(memberID);
@@ -278,7 +279,7 @@ public class GroupManager
         return result;
     }
 
-    public static Integer getMembersGroupID(Integer memberID)
+    public static Integer getMembersGroupID(int memberID)
     {
         Group group = getMembersGroup(memberID);
         return group == null ? null : group.groupID;
@@ -290,7 +291,7 @@ public class GroupManager
      * @param creatorID
      * @return the group or null.
      */
-    protected static Group getGroup(Integer creatorID)
+    protected static Group getGroup(int creatorID)
     {
         if (groups != null && !groups.isEmpty())
         {
@@ -309,7 +310,7 @@ public class GroupManager
      * @param memberID
      * @return the Group if found or null.
      */
-    public static Group getMembersGroup(Integer memberID)
+    public static Group getMembersGroup(int memberID)
     {
         if (groups != null && !groups.isEmpty())
         {
@@ -332,7 +333,7 @@ public class GroupManager
      * @param memberID
      * @return true if the memberID is found.
      */
-    protected static boolean groupsHaveMember(Integer memberID)
+    protected static boolean groupsHaveMember(int memberID)
     {
         if (groups != null && !groups.isEmpty())
         {
