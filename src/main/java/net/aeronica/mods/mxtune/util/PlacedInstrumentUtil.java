@@ -45,8 +45,9 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class PlacedInstrumentUtil
-{
+public enum PlacedInstrumentUtil
+{    
+    ;
     /** Gets a Block position under a players feet. works on blocks, half slabs, carpets. */
     private static BlockPos blockUnderFoot(EntityPlayer playerIn)
     {
@@ -62,8 +63,8 @@ public class PlacedInstrumentUtil
         {
             BlockPos underFoot = blockUnderFoot(playerIn);
             /* Standing on Fluids or Air is not allowed */
-            if ((worldIn.getBlockState(underFoot).getBlock() instanceof BlockLiquid) | worldIn.isAirBlock(underFoot)) return false;
-
+            if ((worldIn.getBlockState(underFoot).getBlock() instanceof BlockLiquid) || worldIn.isAirBlock(underFoot))
+                return false;
             double blockheight = worldIn.getBlockState(underFoot).getBoundingBox(null, underFoot).maxY;
             EntitySittableBlock nemb = new EntitySittableBlock(worldIn, underFoot.getX(), underFoot.getY(), underFoot.getZ(), blockheight + 6 * 0.0625F, false);
             worldIn.spawnEntity(nemb);
@@ -131,12 +132,18 @@ public class PlacedInstrumentUtil
 
     public static boolean isPlayerSitting(World worldIn, EntityPlayer playerIn, BlockPos pos)
     {
-        double x = pos.getX(); double y = pos.getY(); double z = pos.getZ();
+        double x = pos.getX();
+        double y = pos.getY();
+        double z = pos.getZ();
+        
         List<EntitySittableBlock> listEMB = worldIn.getEntitiesWithinAABB(EntitySittableBlock.class, new AxisAlignedBB(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(1D, 1D, 1D));
-        if (listEMB.isEmpty()) return false; 
+        if (listEMB.isEmpty())
+            return false;
+        
         for (EntitySittableBlock mount : listEMB)
         {
-            if (mount.getBlockPosX() == x && mount.getBlockPosY() == y && mount.getBlockPosZ() == z) { return mount.isPassenger(playerIn); }
+            if (mount.getBlockPosX() == x && mount.getBlockPosY() == y && mount.getBlockPosZ() == z)
+                return mount.isPassenger(playerIn);
         }
         return false;
     }
@@ -158,11 +165,12 @@ public class PlacedInstrumentUtil
      */
     public static boolean isRiding(EntityPlayer playerIn)
     {
-        return ((playerIn !=null) && !playerIn.isDead && playerIn.isRiding() && (playerIn.getRidingEntity() instanceof EntitySittableBlock));
+        return (playerIn !=null) && !playerIn.isDead && playerIn.isRiding() && (playerIn.getRidingEntity() instanceof EntitySittableBlock);
     }
     
     public static BlockPos getRiddenBlock(EntityPlayer playerIn)
     {
         return isRiding(playerIn) ? ((EntitySittableBlock)playerIn.getRidingEntity()).getBlockPos() : BlockPos.ORIGIN;
     }
+    
 }
