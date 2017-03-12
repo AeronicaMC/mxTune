@@ -62,7 +62,7 @@ public class InventoryInstrument implements IInventory {
 			itemstack.setCount(this.getInventoryStackLimit());
 		}
 		// Don't forget this line or your inventory will not be saved!
-		this.markDirty();;
+		this.markDirty();
 	}
 
 	@Override
