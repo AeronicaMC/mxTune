@@ -100,7 +100,7 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
     public static void writeCSD(PacketBuffer buffer, ClientStateData csd) throws IOException
     {
         // Serialize data object to a byte array
-        byte[] byteBuffer = null;
+        byte[] byteBuffer;
         ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
         ObjectOutputStream out = new ObjectOutputStream(bos) ;
         out.writeObject(csd);
