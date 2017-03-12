@@ -133,18 +133,18 @@ public class GuiSliderMX extends GuiButton
         return this.snapToStepClamp(this.valueMin + (this.valueMax - this.valueMin) * MathHelper.clamp(param, 0.0F, 1.0F));
     }
 
-    private float snapToStepClamp(float param)
+    private float snapToStepClamp(float paramIn)
     {
-        param = this.snapToStep(param);
-        return MathHelper.clamp(param, this.valueMin, this.valueMax);
+        return MathHelper.clamp(this.snapToStep(paramIn), this.valueMin, this.valueMax);
     }
 
-    private float snapToStep(float param)
+    private float snapToStep(float paramIn)
     {
+        float snapped = paramIn;
         if (this.valueStep > 0.0F)
         {
-            param = this.valueStep * (float) Math.round(param / this.valueStep);
+            snapped = this.valueStep * (float) Math.round(paramIn / this.valueStep);
         }
-        return param;
+        return snapped;
     }
 }
