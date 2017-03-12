@@ -401,7 +401,7 @@ public class BlockPiano extends BlockInstrument2H
         public String getName() {return this.name;}
     }
 
-    /** TileEntity stuff */
+    /* TileEntity stuff */
     @Deprecated
     @Override
     public EnumBlockRenderType getRenderType(IBlockState state)
