@@ -61,14 +61,13 @@ public class PlacedInstrumentUtil
         if (!checkForExistingEntity(worldIn, x, y, z, playerIn))
         {
             BlockPos underFoot = blockUnderFoot(playerIn);
-            /** Standing on Fluids or Air is not allowed */
+            /* Standing on Fluids or Air is not allowed */
             if ((worldIn.getBlockState(underFoot).getBlock() instanceof BlockLiquid) | worldIn.isAirBlock(underFoot)) return false;
 
             double blockheight = worldIn.getBlockState(underFoot).getBoundingBox(null, underFoot).maxY;
             EntitySittableBlock nemb = new EntitySittableBlock(worldIn, underFoot.getX(), underFoot.getY(), underFoot.getZ(), blockheight + 6 * 0.0625F, false);
             worldIn.spawnEntity(nemb);
             playerIn.startRiding(nemb, true);
-            // ModLogger.logInfo("SittableUtil#standOnBlock: startRiding()");
         }
         return true;
     }
@@ -80,7 +79,6 @@ public class PlacedInstrumentUtil
             EntitySittableBlock nemb = new EntitySittableBlock(worldIn, x, y, z, yOffset, true);
             worldIn.spawnEntity(nemb);
             playerIn.startRiding(nemb, true);
-            // ModLogger.logInfo("SittableUtil#sitOnBlock: Initial startRiding()");
         }
         return true;
     }
@@ -92,7 +90,6 @@ public class PlacedInstrumentUtil
             EntitySittableBlock nemb = new EntitySittableBlock(worldIn, x, y, z, xOffset, yOffset, zOffset);
             worldIn.spawnEntity(nemb);
             playerIn.startRiding(nemb, true);
-            // ModLogger.logInfo("SittableUtil#sitOnBlock: Initial startRiding()");
         }
         return true;
     }
@@ -104,7 +101,6 @@ public class PlacedInstrumentUtil
             EntitySittableBlock nemb = new EntitySittableBlock(worldIn, x, y, z, xOffset, yOffset, zOffset, yaw);
             worldIn.spawnEntity(nemb);
             playerIn.startRiding(nemb, true);
-            // ModLogger.logInfo("SittableUtil#sitOnBlock: Initial startRiding()" + nemb.getPosition());
         }
         return true;
     }
@@ -123,16 +119,10 @@ public class PlacedInstrumentUtil
     public static boolean checkForExistingEntity(World par1World, double x, double y, double z, EntityPlayer playerIn)
     {
         List<EntitySittableBlock> listEMB = par1World.getEntitiesWithinAABB(EntitySittableBlock.class, new AxisAlignedBB(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(1D, 1D, 1D));
-        // ModLogger.logInfo("SittableUtil#checkForExistingEntity: listEMB = " + listEMB.size());
         for (EntitySittableBlock mount : listEMB)
         {
-            if (mount.blockPosX == x && mount.blockPosY == y && mount.blockPosZ == z)
+            if (mount.getBlockPosX() == x && mount.getBlockPosY() == y && mount.getBlockPosZ() == z)
             {
-//                if (mount.getPassengers().isEmpty() && !mount.isDead)
-//                {
-//                    playerIn.startRiding(mount);
-//                    mount.updatePassenger(playerIn);
-//                }
                 return true;
             }
         }
@@ -146,8 +136,7 @@ public class PlacedInstrumentUtil
         if (listEMB.isEmpty()) return false; 
         for (EntitySittableBlock mount : listEMB)
         {
-            // ModLogger.logInfo("SittableUtil#isPlayerSitting: mount = " + mount);
-            if (mount.blockPosX == x && mount.blockPosY == y && mount.blockPosZ == z) { return mount.isPassenger(playerIn); }
+            if (mount.getBlockPosX() == x && mount.getBlockPosY() == y && mount.getBlockPosZ() == z) { return mount.isPassenger(playerIn); }
         }
         return false;
     }
@@ -164,9 +153,8 @@ public class PlacedInstrumentUtil
     }
 
     /**
-     * The player is riding/using a placed instrument
      * @param playerIn
-     * @return
+     * @return true if playerIn is riding a placed instrument
      */
     public static boolean isRiding(EntityPlayer playerIn)
     {

@@ -53,10 +53,10 @@ public class EntitySittableBlock extends Entity
     
     private static final DataParameter<Boolean> SHOULD_SIT = EntityDataManager.<Boolean> createKey(EntitySittableBlock.class, DataSerializers.BOOLEAN);
     private static final DataParameter<BlockPos> BLOCK_POS = EntityDataManager.<BlockPos> createKey(EntitySittableBlock.class, DataSerializers.BLOCK_POS);
-    public int blockPosX = 0;
-    public int blockPosY = 0;
-    public int blockPosZ = 0;
-    public float yaw;
+    private int blockPosX = 0;
+    private int blockPosY = 0;
+    private int blockPosZ = 0;
+    private float yaw;
     private Integer playID = null;
 
     public void setPlayID(Integer playID)
@@ -184,5 +184,14 @@ public class EntitySittableBlock extends Entity
 
     @Override
     public boolean shouldRiderSit() {return ((Boolean) this.dataManager.get(SHOULD_SIT)).booleanValue();}
+
+    public int getBlockPosX() {return blockPosX;}
+
+    public int getBlockPosY() {return blockPosY;}
+
+    public int getBlockPosZ() {return blockPosZ;}
+
+    public float getYaw() {return yaw;}
+    
     
 }
