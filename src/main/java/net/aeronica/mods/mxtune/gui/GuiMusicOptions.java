@@ -306,15 +306,6 @@ public class GuiMusicOptions extends GuiScreen
         super.keyTyped(typedChar, keyCode);
     }
 
-    @SuppressWarnings("unused")
-    @Override
-    public void handleMouseInput() throws IOException
-    {
-        int mouseX = Mouse.getEventX() * this.width / this.mc.displayWidth;
-        int mouseY = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;        
-        super.handleMouseInput();
-    }
-
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
@@ -443,7 +434,7 @@ public class GuiMusicOptions extends GuiScreen
 
             String s = font.trimStringToWidth(ins, listWidth - 10);
             /** light Blue */
-            font.drawStringWithShadow(s, this.left + 3, slotTop, 0xADD8E6);
+            font.drawStringWithShadow(s, (float)this.left + 3, slotTop, 0xADD8E6);
             drawPing(this.parent ,this.left + 3, listWidth - 10, slotTop, this.whiteLists.get(slotIdx));
         }
     }
@@ -502,7 +493,7 @@ public class GuiMusicOptions extends GuiScreen
 
             String s = font.trimStringToWidth(ins, listWidth - 10);
             /** light Blue */
-            font.drawStringWithShadow(s, this.left + 3, slotTop, 0xADD8E6);
+            font.drawStringWithShadow(s, (float)this.left + 3, slotTop, 0xADD8E6);
             drawPing(this.parent ,this.left + 3, listWidth - 10, slotTop, this.blackLists.get(slotIdx));
         }
     }
