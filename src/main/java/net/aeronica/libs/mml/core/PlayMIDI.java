@@ -29,9 +29,11 @@ public class PlayMIDI implements MetaEventListener
                 Thread.sleep(250);
             } catch (InterruptedException e)
             {
+                TestAntlr.logger.error(e);
+            } finally {
+                if (sequencer != null && sequencer.isOpen()) sequencer.close();
+                if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
             }
-            if (sequencer != null && sequencer.isOpen()) sequencer.close();
-            if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
         }
         if (event.getType() == 81)
         {
@@ -101,15 +103,15 @@ public class PlayMIDI implements MetaEventListener
             }
 
             // sequencer.getTransmitter().setReceiver(synthesizer.getReceiver());
-
             sequencer.setSequence(sequence);
             sequencer.start();
 
-        } catch (Exception ex)
+        } catch (Exception e)
         {
+            TestAntlr.logger.error(e);
+        } finally {
             if (sequencer != null && sequencer.isOpen()) sequencer.close();
             if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
-            System.out.println("PlayMIDI#mmlPlay failed midi TRY " + ex);
         }
         return true;
     }
