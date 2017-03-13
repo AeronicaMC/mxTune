@@ -19,6 +19,8 @@ package net.aeronica.mods.mxtune.options;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IStringSerializable;
@@ -28,6 +30,7 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 public enum MusicOptionsUtil
 {
     ;
+    @Nullable
     @CapabilityInject(IPlayerMusicOptions.class)
     public static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = null;
     
@@ -137,55 +140,58 @@ public enum MusicOptionsUtil
     public static boolean getMuteResult(EntityPlayer playerIn, EntityPlayer otherPlayer)
     {
         boolean result = false;
-        switch (getMuteOptionEnum(playerIn))
+        if (playerIn != null && otherPlayer != null)
         {
-        case OFF:
-            result = false; break;
-        case ALL:
-            result = true; break;
-        case OTHERS:
-            result = !playerIn.equals(otherPlayer); break;
-        case WHITELIST:
-        {
-            if (!playerIn.equals(otherPlayer))
+            switch (getMuteOptionEnum(playerIn))
             {
-                boolean flag = true;
-                for (PlayerLists w : getWhiteList(playerIn))
+            case OFF:
+                result = false; break;
+            case ALL:
+                result = true; break;
+            case OTHERS:
+                result = !playerIn.equals(otherPlayer); break;
+            case WHITELIST:
+            {
+                if (!playerIn.equals(otherPlayer))
                 {
-                    if (w.getUuid().equals(otherPlayer.getUniqueID()))
+                    boolean flag = true;
+                    for (PlayerLists w : getWhiteList(playerIn))
                     {
-                        flag = false;
-                        break;
+                        if (w.getUuid().equals(otherPlayer.getUniqueID()))
+                        {
+                            flag = false;
+                            break;
+                        }
                     }
-                }
-                result = flag;
-            } else
-            {
-                result = false;
-            }
-            break;
-        }
-        case BLACKLIST:
-        {
-            if (!playerIn.equals(otherPlayer))
-            {
-                boolean flag = false;
-                for (PlayerLists w : getBlackList(playerIn))
+                    result = flag;
+                } else
                 {
-                    if (w.getUuid().equals(otherPlayer.getUniqueID()))
-                    {
-                        flag = true;
-                        break;
-                    }
+                    result = false;
                 }
-                result = flag;
-            } else
-            {
-                result = false;
+                break;
             }
-            break;
-        }
-        default:
+            case BLACKLIST:
+            {
+                if (!playerIn.equals(otherPlayer))
+                {
+                    boolean flag = false;
+                    for (PlayerLists w : getBlackList(playerIn))
+                    {
+                        if (w.getUuid().equals(otherPlayer.getUniqueID()))
+                        {
+                            flag = true;
+                            break;
+                        }
+                    }
+                    result = flag;
+                } else
+                {
+                    result = false;
+                }
+                break;
+            }
+            default:
+            }
         }
         return result;
     }
