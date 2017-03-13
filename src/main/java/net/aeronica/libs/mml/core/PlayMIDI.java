@@ -30,6 +30,7 @@ public class PlayMIDI implements MetaEventListener
             } catch (InterruptedException e)
             {
                 TestAntlr.logger.error(e);
+                Thread.currentThread().interrupt();
             } finally {
                 if (sequencer != null && sequencer.isOpen()) sequencer.close();
                 if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
@@ -75,8 +76,9 @@ public class PlayMIDI implements MetaEventListener
 
     // convert from microseconds per quarter note to beats per minute and vice
     // versa
-    private static float convertTempo(float value)
+    private static float convertTempo(float valueIn)
     {
+        float value = valueIn;
         if (value <= 0)
         {
             value = 0.1f;
