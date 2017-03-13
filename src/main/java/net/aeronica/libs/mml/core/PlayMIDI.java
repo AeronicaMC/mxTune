@@ -108,11 +108,10 @@ public class PlayMIDI implements MetaEventListener
 
         } catch (Exception e)
         {
-            TestAntlr.logger.error(e);
-        } finally {
             if (sequencer != null && sequencer.isOpen()) sequencer.close();
             if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
-        }
+            TestAntlr.logger.error(e);
+        } 
         return true;
     }
 }
