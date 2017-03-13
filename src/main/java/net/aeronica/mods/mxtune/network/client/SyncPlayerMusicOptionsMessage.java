@@ -21,6 +21,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
@@ -60,9 +62,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         switch (propertyID)
         {
         case PlayerMusicDefImpl.SYNC_ALL:
-            /** create a new tag compound */
             this.data = new NBTTagCompound();
-            /** and save our player's data into it */
             this.data = (NBTTagCompound) MusicOptionsUtil.MUSIC_OPTIONS.writeNBT(inst, null);
             break;
 
@@ -118,30 +118,10 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             this.sParam3 = ByteBufUtils.readUTF8String(buffer);
             break;
         case PlayerMusicDefImpl.SYNC_WHITE_LIST:
-            try{
-                // Deserialize data object from a byte array
-                byteBuffer = buffer.readByteArray();
-                ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
-                ObjectInputStream in = new ObjectInputStream(bis) ;
-                whiteList =  (List<PlayerLists>) in.readObject();
-                in.close();
-            } catch (ClassNotFoundException | IOException e)
-            {
-                ModLogger.error(e);
-            }
+            this.whiteList = readPlayerList(buffer);
             break;            
         case PlayerMusicDefImpl.SYNC_BLACK_LIST:
-            try{
-                // Deserialize data object from a byte array
-                byteBuffer = buffer.readByteArray();
-                ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
-                ObjectInputStream in = new ObjectInputStream(bis) ;
-                blackList =  (List<PlayerLists>) in.readObject();
-                in.close();
-            } catch (ClassNotFoundException | IOException e)
-            {
-                ModLogger.error(e);
-            }
+            this.blackList = readPlayerList(buffer);
             break;
         default:        
         }
@@ -170,34 +150,10 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             ByteBufUtils.writeUTF8String(buffer, this.sParam3);
             break;
         case PlayerMusicDefImpl.SYNC_WHITE_LIST:
-            try{
-                // Serialize data object to a byte array
-                ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
-                ObjectOutputStream out = new ObjectOutputStream(bos) ;
-                out.writeObject(whiteList);
-                out.close();
-
-                // Get the bytes of the serialized object
-                byteBuffer = bos.toByteArray();
-            } catch (IOException e) {
-                ModLogger.error(e);
-            }
-            buffer.writeByteArray(byteBuffer);
+            writePlayerList(buffer, this.whiteList);
             break;            
         case PlayerMusicDefImpl.SYNC_BLACK_LIST:
-            try{
-                // Serialize data object to a byte array
-                ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
-                ObjectOutputStream out = new ObjectOutputStream(bos) ;
-                out.writeObject(blackList);
-                out.close();
-
-                // Get the bytes of the serialized object
-                byteBuffer = bos.toByteArray();
-            } catch (IOException e) {
-                ModLogger.error(e);
-            }
-            buffer.writeByteArray(byteBuffer);
+            writePlayerList(buffer, this.blackList);
             break;
         default:
         }
@@ -228,6 +184,41 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             instance.setBlackList(this.blackList);
             break;
         default:
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected List<PlayerLists> readPlayerList(PacketBuffer buffer) throws IOException
+    {
+        List<PlayerLists> playerList = Collections.emptyList();
+        try{
+            // Deserialize data object from a byte array
+            byteBuffer = buffer.readByteArray();
+            ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
+            ObjectInputStream in = new ObjectInputStream(bis) ;
+            playerList = (List<PlayerLists>) in.readObject();
+            in.close();            
+        } catch (ClassNotFoundException | IOException e)
+        {
+            ModLogger.error(e);
+        }
+        return playerList;
+    }
+
+    protected void writePlayerList(PacketBuffer buffer, List<PlayerLists> playerListIn) throws IOException
+    {
+        try{
+            // Serialize data object to a byte array
+            ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
+            ObjectOutputStream out = new ObjectOutputStream(bos) ;
+            out.writeObject((Serializable) playerListIn);
+            out.close();
+
+            // Get the bytes of the serialized object
+            byteBuffer = bos.toByteArray();
+            buffer.writeByteArray(byteBuffer);
+        } catch (IOException e) {
+            ModLogger.error(e);
         }
     }
 
