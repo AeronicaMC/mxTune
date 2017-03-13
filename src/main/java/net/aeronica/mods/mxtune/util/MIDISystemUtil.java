@@ -29,6 +29,8 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Soundbank;
 import javax.sound.midi.Synthesizer;
 
+import com.sun.media.sound.AudioSynthesizer;
+
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.minecraft.client.resources.I18n;
@@ -39,6 +41,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SuppressWarnings("restriction")
 @SideOnly(Side.CLIENT)
 public enum MIDISystemUtil
 {
@@ -69,8 +72,10 @@ public enum MIDISystemUtil
             } catch (MidiUnavailableException e) {
                 ModLogger.error(e);
                 midiAvailable = false;
+            } finally {
+                device.close();
             }
-            if (device instanceof Synthesizer) {
+            if (device instanceof AudioSynthesizer) {
                 synthInfos.add(midiDeviceInfo[i]);
                 synthAvailable = true;
             }
@@ -83,7 +88,7 @@ public enum MIDISystemUtil
             ModLogger.debug(info.getVersion());
             try
             {
-                testSynth = (Synthesizer) MidiSystem.getMidiDevice(info);
+                testSynth = (AudioSynthesizer) MidiSystem.getMidiDevice(info);
             } catch (MidiUnavailableException e)
             {
                 ModLogger.error(e);
@@ -100,6 +105,7 @@ public enum MIDISystemUtil
                         bestSynth =  testSynth;
                     }
                 }
+                testSynth.close();
             }
         }
         if (bestSynth != null && synthAvailable)
@@ -148,8 +154,6 @@ public enum MIDISystemUtil
             addStatus(new TextComponentString("[" + MXTuneMain.MODNAME + "] " + TextFormatting.YELLOW +I18n.format("mxtune.chat.msu.suggestion.02")));
 
             midiAvailable = false;
-            device.close();
-            testSynth.close();
         }
     }
     
