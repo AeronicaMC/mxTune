@@ -71,7 +71,7 @@ public class MODSoundCategory
      * 
      * @param name
      * @return a unique SoundCategory
-     * @throws SoundCategoryException 
+     * @throws SoundCategoryRuntimeException 
      * @throws fatal error if name is not unique
      */    
     public static SoundCategory add(String name)
@@ -84,7 +84,7 @@ public class MODSoundCategory
         soundCategory =  EnumHelper.addEnum(SoundCategory.class , constantName, new Class[]{String.class}, new Object[]{referenceName});
         SOUND_CATEGORIES = ObfuscationReflectionHelper.getPrivateValue(SoundCategory.class, SoundCategory.VOICE ,"SOUND_CATEGORIES", SRG_SOUND_CATEGORIES);
         if (SOUND_CATEGORIES.containsKey(referenceName))
-            throw new SoundCategoryException("Clash in Sound Category name pools! Cannot insert " + constantName);
+            throw new SoundCategoryRuntimeException("Clash in Sound Category name pools! Cannot insert " + constantName);
         SOUND_CATEGORIES.put(referenceName, soundCategory);
         if (FMLLaunchHandler.side() == Side.CLIENT) setSoundLevels();
 
