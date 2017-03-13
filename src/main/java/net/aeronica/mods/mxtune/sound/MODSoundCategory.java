@@ -20,6 +20,7 @@ import java.util.Map;
 
 import com.google.common.collect.Maps;
 
+import net.aeronica.mods.mxtune.util.SoundCategoryException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.SoundCategory;
@@ -71,6 +72,7 @@ public class MODSoundCategory
      * 
      * @param name
      * @return a unique SoundCategory
+     * @throws SoundCategoryException 
      * @throws fatal error if name is not unique
      */    
     public static SoundCategory add(String name)
@@ -83,7 +85,7 @@ public class MODSoundCategory
         soundCategory =  EnumHelper.addEnum(SoundCategory.class , constantName, new Class[]{String.class}, new Object[]{referenceName});
         SOUND_CATEGORIES = ObfuscationReflectionHelper.getPrivateValue(SoundCategory.class, SoundCategory.VOICE ,"SOUND_CATEGORIES", SRG_SOUND_CATEGORIES);
         if (SOUND_CATEGORIES.containsKey(referenceName))
-            throwCategorySoundError(constantName);
+            throw new SoundCategoryException("Clash in Sound Category name pools! Cannot insert " + constantName);
         SOUND_CATEGORIES.put(referenceName, soundCategory);
         if (FMLLaunchHandler.side() == Side.CLIENT) setSoundLevels();
 
@@ -98,11 +100,6 @@ public class MODSoundCategory
         soundLevels = Maps.newEnumMap(SoundCategory.class);
         /** Replace the map in the GameSettings.class */
         ObfuscationReflectionHelper.setPrivateValue(GameSettings.class, Minecraft.getMinecraft().gameSettings, soundLevels, "soundLevels", SRG_soundLevels);
-    }
-    
-    private static void throwCategorySoundError(String s)
-    {
-        throw new Error("Clash in Sound Category name pools! Cannot insert " + s);
     }
 
 }
