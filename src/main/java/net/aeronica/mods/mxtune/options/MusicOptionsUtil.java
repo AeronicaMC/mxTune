@@ -30,7 +30,6 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 public enum MusicOptionsUtil
 {
     ;
-    @Nullable
     @CapabilityInject(IPlayerMusicOptions.class)
     public static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = null;
     

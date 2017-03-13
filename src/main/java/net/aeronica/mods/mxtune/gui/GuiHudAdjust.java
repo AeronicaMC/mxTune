@@ -26,7 +26,6 @@ import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.HudOptionsMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -39,16 +38,19 @@ import net.minecraftforge.fml.client.config.GuiButtonExt;
 public class GuiHudAdjust extends GuiScreen
 {
 
-    private static final String TITLE = I18n.format("mxtune.gui.hudAdjust.title");
-    private static final String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
+    static final String TITLE = I18n.format("mxtune.gui.hudAdjust.title");
+    static final String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
     
-    private GuiButtonExt btn_cancel, btn_done;
-    private GuiSliderMX sld_sizeHud;
+    GuiButtonExt buttonCancel;
+    GuiButtonExt buttonDone;
+    GuiSliderMX sliderHudSize;
 
-    private EntityPlayer playerIn;
-    private boolean midiUnavailable;
-    private int initialHudPos;
-    private float initialHudSize;
+    EntityPlayer playerIn;
+    boolean midiUnavailable;
+    int initialHudPos;
+    private int lastHudPos = 0;
+    private int mouseX;
+    private int mouseY;
     
     public GuiHudAdjust()
     {
@@ -60,22 +62,23 @@ public class GuiHudAdjust extends GuiScreen
     @Override
     public void initGui()
     {
+        float initialHudSize = (MusicOptionsUtil.getSizeHud(playerIn)*100) < 50F ? 50F : MusicOptionsUtil.getSizeHud(playerIn)*100;
         this.buttonList.clear();
         lastHudPos = initialHudPos = MusicOptionsUtil.getPositionHUD(playerIn);
         MusicOptionsUtil.setAdjustPositionHud(initialHudPos);
-        initialHudSize = (MusicOptionsUtil.getSizeHud(playerIn)*100) < 50F ? 50F : MusicOptionsUtil.getSizeHud(playerIn)*100;
         
-        int y = (height) / 2;
+        int y = height/2;
         int buttonWidth = 100;
-        y = height/2;
         int x = (width / 2) - (buttonWidth/2);
-        sld_sizeHud = new GuiSliderMX(2, x, y, buttonWidth, 20,  I18n.format("mxtune.gui.hudAdjust.size"), initialHudSize, 50F, 100F, 1F);
-        btn_done =   new GuiButtonExt(0, x, y+=20, buttonWidth, 20, I18n.format("gui.done"));
-        btn_cancel = new GuiButtonExt(1, x, y+=20, buttonWidth, 20, I18n.format("gui.cancel"));
+        sliderHudSize = new GuiSliderMX(2, x, y, buttonWidth, 20,  I18n.format("mxtune.gui.hudAdjust.size"), initialHudSize, 50F, 100F, 1F);
+        y+=20;
+        buttonDone =   new GuiButtonExt(0, x, y, buttonWidth, 20, I18n.format("gui.done"));
+        y+=20;
+        buttonCancel = new GuiButtonExt(1, x, y, buttonWidth, 20, I18n.format("gui.cancel"));
         
-        this.buttonList.add(btn_cancel);
-        this.buttonList.add(btn_done);
-        this.buttonList.add(sld_sizeHud);
+        this.buttonList.add(buttonCancel);
+        this.buttonList.add(buttonDone);
+        this.buttonList.add(sliderHudSize);
     }
     
     @Override
@@ -87,17 +90,12 @@ public class GuiHudAdjust extends GuiScreen
             switch(button.id)
             {
             case 0: /* done   */
-                ModLogger.info("done lastHudPos:    " + lastHudPos);
-                ModLogger.info("done initialHudPos: " + initialHudPos);
-                
-                PacketDispatcher.sendToServer(new HudOptionsMessage(lastHudPos, MusicOptionsUtil.isHudDisabled(playerIn), sld_sizeHud.getValue()/100));
+                PacketDispatcher.sendToServer(new HudOptionsMessage(lastHudPos, MusicOptionsUtil.isHudDisabled(playerIn), sliderHudSize.getValue()/100));
                 MusicOptionsUtil.setAdjustPositionHud(lastHudPos);
-                MusicOptionsUtil.setHudOptions(playerIn, MusicOptionsUtil.isHudDisabled(playerIn), lastHudPos, sld_sizeHud.getValue()/100);
+                MusicOptionsUtil.setHudOptions(playerIn, MusicOptionsUtil.isHudDisabled(playerIn), lastHudPos, sliderHudSize.getValue()/100);
                 mc.displayGuiScreen(new GuiMusicOptions(playerIn));  
                 break;
             case 1: /* cancel */
-                ModLogger.info("canceled lastHudPos:    " + lastHudPos);
-                ModLogger.info("canceled initialHudPos: " + initialHudPos);
                 MusicOptionsUtil.setAdjustPositionHud(initialHudPos);
                 mc.displayGuiScreen(new GuiMusicOptions(playerIn));
                 break;
@@ -113,7 +111,7 @@ public class GuiHudAdjust extends GuiScreen
         /** capture the ESC key so we close cleanly */
         if (keyCode == Keyboard.KEY_ESCAPE)
         {
-            this.actionPerformed((GuiButton) buttonList.get(btn_cancel.id));
+            this.actionPerformed((GuiButton) buttonList.get(buttonCancel.id));
             return;
         }
         super.keyTyped(typedChar, keyCode);
@@ -122,14 +120,13 @@ public class GuiHudAdjust extends GuiScreen
     @Override
     public void updateScreen()
     {
-        MusicOptionsUtil.setAdjustSizeHud(sld_sizeHud.getValue()/100);
+        MusicOptionsUtil.setAdjustSizeHud(sliderHudSize.getValue()/100);
         super.updateScreen();
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
-        // drawDefaultBackground();
         drawHudPositions();
         String localTITLE;
         if (midiUnavailable)
@@ -143,8 +140,6 @@ public class GuiHudAdjust extends GuiScreen
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
-    private int lastHudPos = 0;
-    /* TODO initialize in InitGui and reuse the instances of HudData */
     private void drawHudPositions()
     {
         int height = this.height-GuiJamOverlay.HOTBAR_CLEARANCE;
@@ -175,9 +170,6 @@ public class GuiHudAdjust extends GuiScreen
         }
         return -1;
     }
-    
-    private int mouseX;
-    private int mouseY;
     
     @Override
     public void handleMouseInput() throws IOException
