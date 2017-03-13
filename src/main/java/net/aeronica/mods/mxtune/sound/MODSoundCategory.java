@@ -20,7 +20,6 @@ import java.util.Map;
 
 import com.google.common.collect.Maps;
 
-import net.aeronica.mods.mxtune.util.SoundCategoryException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.SoundCategory;

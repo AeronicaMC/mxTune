@@ -14,33 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.aeronica.mods.mxtune.util;
+package net.aeronica.mods.mxtune.network;
 
-public class SoundCategoryException extends RuntimeException
+public class NetworkMessageRuntimeException extends RuntimeException
 {
 
-    private static final long serialVersionUID = 4030124026364725855L;
+    private static final long serialVersionUID = -9021184631369763016L;
 
-    public SoundCategoryException() { /* empty by design */ }
+    public NetworkMessageRuntimeException() {/* empty by design */}
 
-    public SoundCategoryException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace)
+    public NetworkMessageRuntimeException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace)
     {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
-    public SoundCategoryException(String message, Throwable cause)
+    public NetworkMessageRuntimeException(String message, Throwable cause)
     {
         super(message, cause);
     }
 
-    public SoundCategoryException(String message)
+    public NetworkMessageRuntimeException(String message)
     {
         super(message);
     }
 
-    public SoundCategoryException(Throwable cause)
+    public NetworkMessageRuntimeException(Throwable cause)
     {
         super(cause);
     }
-    
+
 }
