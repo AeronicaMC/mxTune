@@ -42,7 +42,6 @@ public class MMLToMIDI extends MMLTransformBase
     @Override
     public void processMObjects(List<MObject> mmlObject)
     {
-        // IMObjects.Type type;
         int ch = 0;
         int tk = 0;
         long ticksOffset = TICKS_OFFSET;
@@ -56,20 +55,17 @@ public class MMLToMIDI extends MMLTransformBase
                 sequence.createTrack().add(createMsg(192, 0, 0, 100, 0l));
             }
             Track[] tracks = sequence.getTracks();
-            // tracks[0].add(createTempoMetaEvent(currentTempo, ticksOffset));
-            // tracks[0].add(createTempoMetaEvent(currentTempo, 0));
-            // tk++; // Track 0 for meta messages;
 
             for (int i = 0; i < mmlObject.size(); i++)
             {
-                /** ref: enum Type {INST_BEGIN, TEMPO, INST, PART, NOTE, REST, INST_END, DONE}; */
+                /* ref: enum Type {INST_BEGIN, TEMPO, INST, PART, NOTE, REST, INST_END, DONE}; */
                 MObject mmo = getMObject(i);
                 switch (mmo.getType())
                 {
                 case INST_BEGIN:
-                {
-                    
-                    /** Nothing to do in reality **/
+                case REST:
+                {                    
+                    /* Nothing to do in this implementation */
                     break;
                 }
                 case TEMPO:
@@ -96,14 +92,9 @@ public class MMLToMIDI extends MMLTransformBase
                     tracks[tk].add(createNoteOffEvent(ch, MMLUtil.smartClampMIDI(mmo.getMidiNote()), (int) (mmo.getNoteVolume() * 127f / 15f), mmo.getStartingTicks() + mmo.getLengthTicks() + ticksOffset - 1));
                     if (mmo.getText() != null)
                     {
-                        String text = new String("{\"Note\": \"{Track\":" + tk + ", \"Text\":\"" + mmo.getText() + "\"}}");
+                        String text = "{\"Note\": \"{Track\":" + tk + ", \"Text\":\"" + mmo.getText() + "\"}}";
                         tracks[0].add(createTextMetaEvent(text, mmo.getStartingTicks() + ticksOffset));
                     }
-                    break;
-                }
-                case REST:
-                {
-                    /** Nothing to do in reality **/
                     break;
                 }
                 case INST_END:
