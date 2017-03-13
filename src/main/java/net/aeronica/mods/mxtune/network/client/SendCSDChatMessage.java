@@ -29,7 +29,7 @@ import net.minecraftforge.fml.relauncher.Side;
 public class SendCSDChatMessage extends AbstractClientMessage<SendCSDChatMessage>
 {
 
-    private ClientStateData csd;
+    ClientStateData csd;
     
     public SendCSDChatMessage() {/* Required by the PacketDispacher */}
     

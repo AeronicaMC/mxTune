@@ -28,6 +28,7 @@ import net.aeronica.mods.mxtune.options.IPlayerMusicOptions;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.options.PlayerLists;
 import net.aeronica.mods.mxtune.options.PlayerMusicDefImpl;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
@@ -37,22 +38,22 @@ import net.minecraftforge.fml.relauncher.Side;
 public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPlayerMusicOptionsMessage>
 {
     
-    private byte propertyID;
-    private NBTTagCompound data;
-    private boolean disableHud;
-    private int positionHud;
-    private float sizeHud;
-    private int muteOption;
-    private String sParam1, sParam2, sParam3;
-    private List<PlayerLists> blackList, whiteList;
+    byte propertyID;
+    NBTTagCompound data;
+    boolean disableHud;
+    int positionHud;
+    float sizeHud;
+    int muteOption;
+    String sParam1;
+    String sParam2;
+    String sParam3;
+    List<PlayerLists> blackList;
+    List<PlayerLists> whiteList;
 
     private byte[] byteBuffer = null;
     
-    // The basic, no-argument constructor MUST be included to use the new
-    // automated handling
-    public SyncPlayerMusicOptionsMessage() {}
+    public SyncPlayerMusicOptionsMessage() {/* Required by the PacketDispacher */}
 
-    // We need to initialize our data, so provide a suitable constructor:
     public SyncPlayerMusicOptionsMessage(IPlayerMusicOptions inst, byte propertyID)
     {
         this.propertyID = propertyID;
@@ -124,11 +125,9 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                 ObjectInputStream in = new ObjectInputStream(bis) ;
                 whiteList =  (List<PlayerLists>) in.readObject();
                 in.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e)
+            } catch (ClassNotFoundException | IOException e)
             {
-                e.printStackTrace();
+                ModLogger.error(e);
             }
             break;            
         case PlayerMusicDefImpl.SYNC_BLACK_LIST:
@@ -139,11 +138,9 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                 ObjectInputStream in = new ObjectInputStream(bis) ;
                 blackList =  (List<PlayerLists>) in.readObject();
                 in.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e)
+            } catch (ClassNotFoundException | IOException e)
             {
-                e.printStackTrace();
+                ModLogger.error(e);
             }
             break;
         default:        
@@ -183,7 +180,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                 // Get the bytes of the serialized object
                 byteBuffer = bos.toByteArray();
             } catch (IOException e) {
-                e.printStackTrace();
+                ModLogger.error(e);
             }
             buffer.writeByteArray(byteBuffer);
             break;            
@@ -198,7 +195,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                 // Get the bytes of the serialized object
                 byteBuffer = bos.toByteArray();
             } catch (IOException e) {
-                e.printStackTrace();
+                ModLogger.error(e);
             }
             buffer.writeByteArray(byteBuffer);
             break;
@@ -209,31 +206,28 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        if (side.isClient())
+        final IPlayerMusicOptions instance = player.getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
+        switch (this.propertyID)
         {
-            final IPlayerMusicOptions instance = player.getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
-            switch (this.propertyID)
-            {
-            case PlayerMusicDefImpl.SYNC_ALL:
-                MusicOptionsUtil.MUSIC_OPTIONS.readNBT(instance, null, this.data);
-                break;
-            case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
-                instance.setHudOptions(disableHud, positionHud, sizeHud);
-                break;
-            case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
-                instance.setMuteOption(this.muteOption);
-                break;
-            case PlayerMusicDefImpl.SYNC_SPARAMS:
-                instance.setSParams(this.sParam1, this.sParam2, this.sParam3);
-                break;
-            case PlayerMusicDefImpl.SYNC_WHITE_LIST:
-                instance.setWhiteList(this.whiteList);
-                break;                
-            case PlayerMusicDefImpl.SYNC_BLACK_LIST:
-                instance.setBlackList(this.blackList);
-                break;
-            default:
-            }
+        case PlayerMusicDefImpl.SYNC_ALL:
+            MusicOptionsUtil.MUSIC_OPTIONS.readNBT(instance, null, this.data);
+            break;
+        case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
+            instance.setHudOptions(disableHud, positionHud, sizeHud);
+            break;
+        case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
+            instance.setMuteOption(this.muteOption);
+            break;
+        case PlayerMusicDefImpl.SYNC_SPARAMS:
+            instance.setSParams(this.sParam1, this.sParam2, this.sParam3);
+            break;
+        case PlayerMusicDefImpl.SYNC_WHITE_LIST:
+            instance.setWhiteList(this.whiteList);
+            break;                
+        case PlayerMusicDefImpl.SYNC_BLACK_LIST:
+            instance.setBlackList(this.blackList);
+            break;
+        default:
         }
     }
 

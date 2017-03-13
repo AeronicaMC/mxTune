@@ -32,11 +32,11 @@ import net.minecraftforge.fml.relauncher.Side;
 public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
 {
 
-    private Integer leaderID;
-    private Integer playID;
-    private String jamMML;
+    Integer leaderID;
+    Integer playID;
+    String jamMML;
     
-    public PlayJamMessage() {}
+    public PlayJamMessage() {/* Required by the PacketDispacher */}
 
     public PlayJamMessage(Integer leaderID, Integer playID, String jamMML)
     {

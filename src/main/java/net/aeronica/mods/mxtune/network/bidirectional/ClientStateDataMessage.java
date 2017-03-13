@@ -35,7 +35,7 @@ import net.minecraftforge.fml.relauncher.Side;
 public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessage>
 {
 
-    private ClientStateData csd;
+    ClientStateData csd;
     
     public ClientStateDataMessage() {/* Required by the PacketDispacher */}
     
@@ -56,7 +56,6 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        ModLogger.debug("ClientStateDataMessage#process Side: " + side);
         if (side.isClient())
         {
             handleClientSide(player);
@@ -74,7 +73,6 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
 
     public void handleServerSide(EntityPlayer playerIn)
     {
-        ModLogger.info("ClientStateDataMessage csd: " + csd);
         ServerCSDManager.updateState(playerIn, csd);
     }
 

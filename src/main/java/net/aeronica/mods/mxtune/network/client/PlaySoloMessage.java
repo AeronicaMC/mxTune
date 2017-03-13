@@ -28,7 +28,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
 {
@@ -36,7 +35,7 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
     Integer playID;
     String musicText;
 
-    public PlaySoloMessage() {}
+    public PlaySoloMessage() {/* Required by the PacketDispacher */}
     
     public PlaySoloMessage(Integer playID, String musicText)
     {
@@ -61,12 +60,6 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        if (side == Side.CLIENT) {process_client(player, side);}
-    }
-
-    @SideOnly(Side.CLIENT)
-    protected void process_client(EntityPlayer player, Side side)
-    {
         if (MIDISystemUtil.midiUnavailableWarn(player) == false)
         {
             /* This is messy, but we want to ensure we return a valid player entity ID */
@@ -79,5 +72,5 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
             }
         }
     }
-    
+
 }

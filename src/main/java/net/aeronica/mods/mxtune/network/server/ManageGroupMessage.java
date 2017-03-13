@@ -32,7 +32,7 @@ public class ManageGroupMessage extends AbstractServerMessage<ManageGroupMessage
     Integer groupID;
     Integer memberID;
 
-    public ManageGroupMessage() {}
+    public ManageGroupMessage() {/* Required by the PacketDispacher */}
 
     public ManageGroupMessage(String operation, Integer groupID, Integer memberName)
     {

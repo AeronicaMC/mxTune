@@ -32,7 +32,7 @@ public class MusicTextMessage extends AbstractServerMessage<MusicTextMessage>
     String musicTitle;
     String musicText;
 
-    public MusicTextMessage() {}
+    public MusicTextMessage() {/* Required by the PacketDispacher */}
 
     public MusicTextMessage(String musicTitle, String musicText)
     {

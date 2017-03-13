@@ -31,7 +31,7 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
 {
-    private String keyBindingDesc;
+    String keyBindingDesc;
 
     public SendKeyMessage() {/* Required by the PacketDispacher */}
 
