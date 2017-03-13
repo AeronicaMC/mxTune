@@ -17,17 +17,13 @@
 package net.aeronica.mods.mxtune.options;
 
 import java.util.List;
-import java.util.UUID;
 
-import com.mojang.authlib.GameProfile;
-
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IStringSerializable;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class MusicOptionsUtil
 {
@@ -39,43 +35,43 @@ public class MusicOptionsUtil
     @CapabilityInject(IPlayerMusicOptions.class)
     public static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = null;
     
-    public static void setHudOptions(EntityPlayer playerIn, boolean disableHud, int positionHud, float sizeHud) {playerIn.getCapability(MUSIC_OPTIONS, null).setHudOptions(playerIn, disableHud, positionHud, sizeHud);}
+    public static void setHudOptions(EntityPlayer playerIn, boolean disableHud, int positionHud, float sizeHud) {playerIn.getCapability(MUSIC_OPTIONS, EnumFacing.UP).setHudOptions(playerIn, disableHud, positionHud, sizeHud);}
     
-    public static boolean isHudDisabled(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).isHudDisabled();}
+    public static boolean isHudDisabled(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, EnumFacing.UP).isHudDisabled();}
     
-    public static int getPositionHUD(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getPositionHud();}
+    public static int getPositionHUD(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, EnumFacing.UP).getPositionHud();}
     
-    public static float getSizeHud(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getSizeHud();}
+    public static float getSizeHud(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, EnumFacing.UP).getSizeHud();}
     
-    public static boolean isMuteAll(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getMuteOption() == MusicOptionsUtil.EnumMuteOptions.ALL.getMetadata();}
+    public static boolean isMuteAll(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, EnumFacing.UP).getMuteOption() == MusicOptionsUtil.EnumMuteOptions.ALL.getMetadata();}
 
-    public static void setMuteOption(EntityPlayer playerIn, int muteOptionIn) {playerIn.getCapability(MUSIC_OPTIONS, null).setMuteOption(playerIn, muteOptionIn);}
+    public static void setMuteOption(EntityPlayer playerIn, int muteOptionIn) {playerIn.getCapability(MUSIC_OPTIONS, EnumFacing.UP).setMuteOption(playerIn, muteOptionIn);}
     
     public static MusicOptionsUtil.EnumMuteOptions getMuteOptionEnum(EntityPlayer playerIn)
     {
-        return MusicOptionsUtil.EnumMuteOptions.byMetadata(playerIn.getCapability(MUSIC_OPTIONS, null).getMuteOption());
+        return MusicOptionsUtil.EnumMuteOptions.byMetadata(playerIn.getCapability(MUSIC_OPTIONS, EnumFacing.UP).getMuteOption());
     }
     
-    public static int getMuteOption(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getMuteOption();}
+    public static int getMuteOption(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, EnumFacing.UP).getMuteOption();}
     
     public static void setSParams(EntityPlayer playerIn, String sParam1, String sParam2, String sParam3)
     {
-        playerIn.getCapability(MUSIC_OPTIONS, null).setSParams(playerIn, sParam1, sParam2, sParam3);
+        playerIn.getCapability(MUSIC_OPTIONS, EnumFacing.UP).setSParams(playerIn, sParam1, sParam2, sParam3);
     }
     
-    public static String getSParam1(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getSParam1();}
+    public static String getSParam1(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, EnumFacing.UP).getSParam1();}
 
-    public static String getSParam2(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getSParam2();}
+    public static String getSParam2(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, EnumFacing.UP).getSParam2();}
 
-    public static String getSParam3(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getSParam3();}
+    public static String getSParam3(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, EnumFacing.UP).getSParam3();}
     
-    public static void setBlackList(EntityPlayer playerIn, List<PlayerLists> blackList) {playerIn.getCapability(MUSIC_OPTIONS, null).setBlackList(playerIn, blackList);}
+    public static void setBlackList(EntityPlayer playerIn, List<PlayerLists> blackList) {playerIn.getCapability(MUSIC_OPTIONS, EnumFacing.UP).setBlackList(playerIn, blackList);}
 
-    public static List<PlayerLists> getBlackList(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getBlackList();}
+    public static List<PlayerLists> getBlackList(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, EnumFacing.UP).getBlackList();}
     
-    public static void setWhiteList(EntityPlayer playerIn, List<PlayerLists> whiteList) {playerIn.getCapability(MUSIC_OPTIONS, null).setWhiteList(playerIn, whiteList);}
+    public static void setWhiteList(EntityPlayer playerIn, List<PlayerLists> whiteList) {playerIn.getCapability(MUSIC_OPTIONS, EnumFacing.UP).setWhiteList(playerIn, whiteList);}
 
-    public static List<PlayerLists> getWhiteList(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getWhiteList();}
+    public static List<PlayerLists> getWhiteList(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, EnumFacing.UP).getWhiteList();}
 
     /*
      * GuiHudAdjust positionHud temporary value for use when adjusting the Hud.
@@ -179,8 +175,9 @@ public class MusicOptionsUtil
             }
         }
 
-        public static EnumMuteOptions byMetadata(int meta)
+        public static EnumMuteOptions byMetadata(int metaIn)
         {
+            int meta = metaIn;
             if (meta < 0 || meta >= META_LOOKUP.length)
             {
                 meta = 0;
