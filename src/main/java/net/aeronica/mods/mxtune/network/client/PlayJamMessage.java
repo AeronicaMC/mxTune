@@ -64,13 +64,13 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        ModLogger.info("PlayJamMessage#process");
+        ModLogger.debug("PlayJamMessage#process");
         if (MIDISystemUtil.midiUnavailableWarn(player) == false)
         {
             if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) player.getEntityWorld().getEntityByID(GROUPS.getMembersGroupLeader(leaderID))) == false)
             {
-                ModLogger.info("musicText:  " + jamMML.substring(0, (jamMML.length() >= 25 ? 25 : jamMML.length())));
-                ModLogger.info("playID:     " + playID);
+                ModLogger.debug("musicText:  " + jamMML.substring(0, (jamMML.length() >= 25 ? 25 : jamMML.length())));
+                ModLogger.debug("playID:     " + playID);
                 ClientAudio.play(playID, jamMML);
             }
         }
