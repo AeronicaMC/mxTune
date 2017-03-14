@@ -28,7 +28,6 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiSystem;
-import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequencer;
 import javax.sound.midi.Soundbank;
 import javax.sound.midi.Synthesizer;
@@ -88,7 +87,6 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     private int selectedError = -1;
 
     /** Instruments */
-    private Synthesizer synth;
     private Instrument[] inst;
     private ArrayList<String> instrumentCache;
     private int instListWidth;
@@ -713,7 +711,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     public boolean mmlPlay(String mmlIn)
     {
         if (midiUnavailable) return false;
-        Soundbank defaultSB, soundBank;
+        Soundbank soundBank;
         byte[] mmlBuf = null;
         InputStream is;
         boolean midiException = false;
@@ -730,7 +728,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         is = new java.io.ByteArrayInputStream(mmlBuf);
 
         /** ANTLR4 MML Parser BEGIN */
-        MMLToMIDI mmlTrans = new MMLToMIDI(0.8F);
+        MMLToMIDI mmlTrans = new MMLToMIDI();
         ANTLRInputStream input = null;
 
         try
@@ -762,9 +760,6 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
             
             soundBank = MidiSystem.getSoundbank(MIDISystemUtil.getMXTuneSB());
             synthesizer.unloadAllInstruments(synthesizer.getDefaultSoundbank());
-//            defaultSB = synthesizer.getDefaultSoundbank();
-//            synthesizer.unloadAllInstruments(defaultSB);
-//            synthesizer.loadAllInstruments(soundBank);
             Instrument inst[] = soundBank.getInstruments();
             if (inst.length == 0) throw new Exception("No Instruments Available!");
             if ((inst.length > 0) && (this.selectedInst >= 0) && (this.selectedInst < inst.length))

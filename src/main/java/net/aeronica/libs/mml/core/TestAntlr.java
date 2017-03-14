@@ -33,7 +33,7 @@ public class TestAntlr
         System.out.println("Test Begin\n");
         InputStream is = init();
         PlayMIDI player = new PlayMIDI();
-        MMLToMIDI mmlTrans = new MMLToMIDI(1.0F);
+        MMLToMIDI mmlTrans = new MMLToMIDI();
 
         ANTLRInputStream input = new ANTLRInputStream(is);
         MMLLexer lexer = new MMLLexer(input);
