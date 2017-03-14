@@ -19,8 +19,6 @@ package net.aeronica.mods.mxtune.options;
 import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IStringSerializable;
@@ -35,87 +33,87 @@ public enum MusicOptionsUtil
     
     public static void setHudOptions(EntityPlayer playerIn, boolean disableHud, int positionHud, float sizeHud)
     {
-        if (playerIn != null)
+        if (MUSIC_OPTIONS != null)
             playerIn.getCapability(MUSIC_OPTIONS, null).setHudOptions(playerIn, disableHud, positionHud, sizeHud);
     }
 
     public static boolean isHudDisabled(EntityPlayer playerIn)
     {
-        return playerIn != null ? playerIn.getCapability(MUSIC_OPTIONS, null).isHudDisabled() : false;
+        return MUSIC_OPTIONS != null ? playerIn.getCapability(MUSIC_OPTIONS, null).isHudDisabled() : false;
     }
     
     public static int getPositionHUD(EntityPlayer playerIn)
     {
-        return playerIn != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getPositionHud() : 6;
+        return MUSIC_OPTIONS != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getPositionHud() : 6;
     }
 
     public static float getSizeHud(EntityPlayer playerIn)
     {
-        return playerIn != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getSizeHud() : 0.5F;
+        return MUSIC_OPTIONS != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getSizeHud() : 0.5F;
     }
     
     public static boolean isMuteAll(EntityPlayer playerIn)
     {
-        return playerIn != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getMuteOption() == MusicOptionsUtil.EnumMuteOptions.ALL.getMetadata() : false;
+        return MUSIC_OPTIONS != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getMuteOption() == MusicOptionsUtil.EnumMuteOptions.ALL.getMetadata() : false;
     }
 
     public static void setMuteOption(EntityPlayer playerIn, int muteOptionIn)
     {
-        if (playerIn != null)
+        if (MUSIC_OPTIONS != null)
             playerIn.getCapability(MUSIC_OPTIONS, null).setMuteOption(playerIn, muteOptionIn);
     }
 
     public static MusicOptionsUtil.EnumMuteOptions getMuteOptionEnum(EntityPlayer playerIn)
     {
-        return playerIn != null ? MusicOptionsUtil.EnumMuteOptions.byMetadata(playerIn.getCapability(MUSIC_OPTIONS, null).getMuteOption()) : MusicOptionsUtil.EnumMuteOptions.OFF;
+        return MUSIC_OPTIONS != null ? MusicOptionsUtil.EnumMuteOptions.byMetadata(playerIn.getCapability(MUSIC_OPTIONS, null).getMuteOption()) : MusicOptionsUtil.EnumMuteOptions.OFF;
     }
     
     public static int getMuteOption(EntityPlayer playerIn)
     {
-        return playerIn != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getMuteOption() : MusicOptionsUtil.EnumMuteOptions.OFF.getMetadata();
+        return MUSIC_OPTIONS != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getMuteOption() : MusicOptionsUtil.EnumMuteOptions.OFF.getMetadata();
     }
     
     public static void setSParams(EntityPlayer playerIn, String sParam1, String sParam2, String sParam3)
     {
-        if (playerIn != null)
+        if (MUSIC_OPTIONS != null)
             playerIn.getCapability(MUSIC_OPTIONS, null).setSParams(playerIn, sParam1, sParam2, sParam3);
     }
     
     public static String getSParam1(EntityPlayer playerIn)
     {
-        return playerIn != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getSParam1() : "";
+        return MUSIC_OPTIONS != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getSParam1() : "";
     }
 
     public static String getSParam2(EntityPlayer playerIn)
     {
-        return playerIn != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getSParam2() : "";
+        return MUSIC_OPTIONS != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getSParam2() : "";
     }
 
     public static String getSParam3(EntityPlayer playerIn)
     {
-        return playerIn != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getSParam3() : "";
+        return MUSIC_OPTIONS != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getSParam3() : "";
     }
     
     public static void setBlackList(EntityPlayer playerIn, List<PlayerLists> blackList)
     {
-        if (playerIn != null)
+        if (MUSIC_OPTIONS != null)
             playerIn.getCapability(MUSIC_OPTIONS, null).setBlackList(playerIn, blackList);
     }
 
     public static List<PlayerLists> getBlackList(EntityPlayer playerIn)
     {
-        return playerIn != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getBlackList() : Collections.emptyList();
+        return MUSIC_OPTIONS != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getBlackList() : Collections.emptyList();
     }
     
     public static void setWhiteList(EntityPlayer playerIn, List<PlayerLists> whiteList)
     {
-        if (playerIn != null)
+        if (MUSIC_OPTIONS != null)
             playerIn.getCapability(MUSIC_OPTIONS, null).setWhiteList(playerIn, whiteList);
     }
 
     public static List<PlayerLists> getWhiteList(EntityPlayer playerIn)
     {
-        return playerIn!= null ? playerIn.getCapability(MUSIC_OPTIONS, null).getWhiteList() : Collections.emptyList();
+        return MUSIC_OPTIONS!= null ? playerIn.getCapability(MUSIC_OPTIONS, null).getWhiteList() : Collections.emptyList();
     }
 
     /*
