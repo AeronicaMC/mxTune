@@ -114,6 +114,7 @@ public enum ClientAudio implements IStreamListener
     private final static ExecutorService executorService;
     
     static {
+        sndSystem = null;
         /* Used to track which player/groups queued up music to be played by PlayID */
         playIDQueue01 = new ConcurrentLinkedQueue<Integer>(); // Polled in ClientAudio#PlaySoundEvent
         playIDQueue02 = new ConcurrentLinkedQueue<Integer>(); // Polled in CodecPCM
@@ -321,18 +322,32 @@ public enum ClientAudio implements IStreamListener
     
     private static void updateClientAudio()
     {
-        if(isVanillaMusicPaused() && playIDAudioData != null && playIDAudioData.mappingCount() == 0)
-        {
-            resumeVanillaMusic();
-            setVanillaMusicPaused(false);
-        }  else
-        if (playIDAudioData != null && playIDAudioData.mappingCount() != 0) {
-            // don't allow the timer to count down while ClientAudio sessions are playing
-            setVanillaMusicTimer(Integer.MAX_VALUE);
+        if (sndSystem != null && playIDAudioData != null)
+        { 
+            if(isVanillaMusicPaused() && playIDAudioData.mappingCount() == 0)
+            {
+                resumeVanillaMusic();
+                setVanillaMusicPaused(false);
+            }  else if (playIDAudioData.mappingCount() > 0)
+            {
+                // don't allow the timer to count down while ClientAudio sessions are playing
+                setVanillaMusicTimer(Integer.MAX_VALUE);
+            }
+            // Remove inactive playIDs
+            for (ConcurrentHashMap.Entry<Integer, AudioData> entry : playIDAudioData.entrySet())
+            {
+                if (!GROUPS.getActivePlayIDs().contains(entry.getKey()))
+                {
+                    stop(entry.getKey());
+                    entry.getValue().setStatus(Status.ERROR);
+                    entry.getValue().setAudioStream(null);
+                    playIDAudioData.remove(entry.getKey());
+                }
+            }
         }
     }
 
-    private static void init()
+    private static void init() throws Midi2WavRendererRuntimeException
     {
         if (sndSystem == null || sndSystem.randomNumberGenerator == null)
         {
@@ -352,7 +367,6 @@ public enum ClientAudio implements IStreamListener
     private static void cleanup()
     {
         setVanillaMusicPaused(false);
-        // TODO: stop all music clean up playIDAudioData...
         KeySetView<Integer, AudioData> keys = playIDAudioData.keySet();
         keys.forEach(k -> stop(k));
     }
@@ -392,6 +406,7 @@ public enum ClientAudio implements IStreamListener
     {
         SoundSystemConfig.setCodec("nul", CodecPCM.class);
 //        SoundSystemConfig.addStreamListener(INSTANCE);
+        ModLogger.info("Sound Setup Event %s", event);
         sndSystem = null;
     }
 
