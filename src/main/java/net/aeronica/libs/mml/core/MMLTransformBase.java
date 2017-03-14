@@ -220,8 +220,13 @@ public abstract class MMLTransformBase extends MMLBaseListener
         } else
         {
             // LAST LONELY RIGHT NOTE
-            if (ctxR == null)
-                throw new Error("MMLTransformBase.exitTied(...): Right note context, ctxR, unexpected null! Tied note count: " + count);
+            if (ctxR == null) try
+            {
+                throw new MMLParseException("MMLTransformBase.exitTied(...): Right note context, ctxR, unexpected null! Tied note count: " + count);
+            } catch (MMLParseException e)
+            {
+                ModLogger.error(e);
+            }
             tiedNote = new StructTiedNotes();
             tiedNote.startingTicks = getStartTicks(ctxR);
             lengthTicks = getNoteRestLength(ctxR);
