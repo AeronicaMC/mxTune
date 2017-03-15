@@ -74,8 +74,10 @@ public class BlockPiano extends BlockInstrument2H
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos posIn, IBlockState stateIn, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
     {
+        BlockPos pos = posIn;
+        IBlockState state = stateIn;
         if (!worldIn.isRemote)
         {
             /** SERVER SIDE */
@@ -176,7 +178,7 @@ public class BlockPiano extends BlockInstrument2H
             zOffset = -0.375D;
             yaw = 0F;
         }
-        return PlacedInstrumentUtil.sitOnBlock(worldIn, pos.getX(), pos.getY(), pos.getZ(), playerIn, xOffset, 4 * 0.0625, zOffset, yaw);
+        return PlacedInstrumentUtil.sitOnBlock(worldIn, pos, playerIn, xOffset, 4 * 0.0625, zOffset, yaw);
     }
 
     @Override
@@ -215,7 +217,10 @@ public class BlockPiano extends BlockInstrument2H
     {
         return state.getValue(PART) == BlockPiano.EnumPartType.LEFT ? null : ModItems.ITEM_PIANO;
     }
-
+    
+    /**
+     * @Deprecated  Mojang's messing with stuff
+     */
     @Deprecated
     @Override
     public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, Entity entityIn, boolean p_185477_7_)
@@ -272,10 +277,16 @@ public class BlockPiano extends BlockInstrument2H
         }
     }
 
+    /**
+     * @Deprecated  Mojang's messing with stuff
+     */
     @Deprecated
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {return PIANO_BODY_AABB;}
 
+    /**
+     * @Deprecated  Mojang's messing with stuff
+     */
     @Deprecated
     @Override
     public EnumPushReaction getMobilityFlag(IBlockState state) {return EnumPushReaction.DESTROY;}
@@ -284,6 +295,9 @@ public class BlockPiano extends BlockInstrument2H
     @Override
     public BlockRenderLayer getBlockLayer() {return BlockRenderLayer.CUTOUT;}
 
+    /**
+     * @Deprecated  Mojang's messing with stuff
+     */
     @Deprecated
     @Override
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {return new ItemStack(ModBlocks.BLOCK_PIANO);}
@@ -314,7 +328,11 @@ public class BlockPiano extends BlockInstrument2H
         super.breakBlock(worldIn, pos, state);
     }
 
-    /** Convert the given metadata into a BlockState for this Block */
+    /**
+     * Convert the given metadata into a BlockState for this Block
+     * 
+     * @Deprecated  Mojang's messing with stuff
+     */
     @Deprecated
     @Override
     public IBlockState getStateFromMeta(int meta)
@@ -328,6 +346,8 @@ public class BlockPiano extends BlockInstrument2H
      * Get the actual Block state of this Block at the given position. This
      * applies properties not visible in the metadata, such as fence
      * connections.
+     * 
+     * @Deprecated  Mojang's messing with stuff
      */
     @Deprecated
     @Override
@@ -346,7 +366,11 @@ public class BlockPiano extends BlockInstrument2H
         return stateOut;
     }
 
-    /** Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed blockstate. */
+    /**
+     * Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed blockstate.
+     * 
+     * @Deprecated  Mojang's messing with stuff
+     */
     @Deprecated
     @Override
     public IBlockState withRotation(IBlockState state, Rotation rot)
@@ -354,7 +378,10 @@ public class BlockPiano extends BlockInstrument2H
         return state.withProperty(FACING, rot.rotate((EnumFacing) state.getValue(FACING)));
     }
 
-    /** Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed blockstate. */
+    /** Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed blockstate.
+     *
+     * @Deprecated  Mojang's messing with stuff
+     */
     @Deprecated
     @Override
     public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
@@ -402,6 +429,10 @@ public class BlockPiano extends BlockInstrument2H
     }
 
     /* TileEntity stuff */
+
+    /** 
+     * @Deprecated  Mojang's messing with stuff
+     */
     @Deprecated
     @Override
     public EnumBlockRenderType getRenderType(IBlockState state)
