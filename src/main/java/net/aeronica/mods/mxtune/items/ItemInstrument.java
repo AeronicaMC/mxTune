@@ -105,8 +105,8 @@ public class ItemInstrument extends Item implements IInstrument
         {
             // Client Side - nothing to do
         }
-        return handIn.equals(EnumHand.MAIN_HAND) ? new ActionResult<ItemStack>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn)):
-            new ActionResult<ItemStack>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
+        return handIn.equals(EnumHand.MAIN_HAND) ? new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn)):
+            new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
     }
 
     /** Activate the instrument unconditionally */
@@ -164,8 +164,6 @@ public class ItemInstrument extends Item implements IInstrument
                 stackIn.setRepairCost(-1);
             }
         }
-
-        // TODO Auto-generated method stub
         return super.getEntityLifespan(stackIn, worldIn);
     }
 
@@ -221,7 +219,7 @@ public class ItemInstrument extends Item implements IInstrument
         return EnumType.byMetadata(meta).getPatch();
     }
 
-    public static enum EnumType implements IVariant
+    public enum EnumType implements IVariant
     {
         LUTE(0, "lute", 1),
         UKULELE(1, "ukulele", 2),
@@ -251,10 +249,11 @@ public class ItemInstrument extends Item implements IInstrument
         @Override
         public String toString() {return this.name;}
 
-        public static EnumType byMetadata(int meta)
+        public static EnumType byMetadata(int metaIn)
         {
-            if (meta < 0 || meta >= META_LOOKUP.length) {meta = 0;}
-            return META_LOOKUP[meta];
+            int metaLocal = metaIn;
+            if (metaLocal < 0 || metaLocal >= META_LOOKUP.length) {metaLocal = 0;}
+            return META_LOOKUP[metaLocal];
         }
 
         public String getName() {return this.name;}
@@ -266,11 +265,11 @@ public class ItemInstrument extends Item implements IInstrument
         private final int patch;
         private static final EnumType[] META_LOOKUP = new EnumType[values().length];
 
-        private EnumType(int i_meta, String i_name, int i_patch)
+        private EnumType(int metaIn, String nameIn, int patchIn)
         {
-            this.meta = i_meta;
-            this.name = i_name;
-            this.patch = i_patch;
+            this.meta = metaIn;
+            this.name = nameIn;
+            this.patch = patchIn;
         }
 
         static

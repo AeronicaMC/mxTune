@@ -23,7 +23,6 @@ import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class StopPlayMessage extends AbstractClientMessage<StopPlayMessage>
 {
