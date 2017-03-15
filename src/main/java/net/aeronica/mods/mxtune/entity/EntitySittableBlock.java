@@ -105,21 +105,24 @@ public class EntitySittableBlock extends Entity
         this.dataManager.set(BLOCK_POS, posIn);
     }
 
-    public void setPostionConsideringRotation(double x, double y, double z, int rotation, double rotationOffset)
+    private void setPostionConsideringRotation(double xIn, double yIn, double zIn, int rotationIn, double rotationOffsetIn)
     {
-        switch (rotation)
+        double x = xIn;
+        double y = yIn;
+        double z = zIn;
+        switch (rotationIn)
         {
         case 2:
-            z += rotationOffset;
+            z += rotationOffsetIn;
             break;
         case 0:
-            z -= rotationOffset;
+            z -= rotationOffsetIn;
             break;
         case 3:
-            x -= rotationOffset;
+            x -= rotationOffsetIn;
             break;
         case 1:
-            x += rotationOffset;
+            x += rotationOffsetIn;
             break;
         }
         setPosition(x, y, z);
@@ -184,7 +187,16 @@ public class EntitySittableBlock extends Entity
     {
         // Entities are unique in each world so there should never be a case where they are equal
         // At the the super class level they are tested by their assigned entityID.
+        // Overridden as a SonarQube recommendation
         return super.equals(otherEntity);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        // At the the super class level the hash code is the entityID.
+        // Overridden as a SonarQube recommendation
+        return super.hashCode();
     }
 
 }

@@ -44,13 +44,14 @@ public class ItemPiano extends Item
     /** Called when a Block is right-clicked with this Item */
     @SuppressWarnings("deprecation")
     @Override
-    public EnumActionResult onItemUse(EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand handIn, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public EnumActionResult onItemUse(EntityPlayer playerIn, World worldIn, BlockPos posIn, EnumHand handIn, EnumFacing facingIn, float hitX, float hitY, float hitZ)
     {
+        BlockPos pos = posIn;
         if (worldIn.isRemote)
         {
             /** Client side so just return */
             return EnumActionResult.SUCCESS;
-        } else if (facing != EnumFacing.UP)
+        } else if (facingIn != EnumFacing.UP)
         {
             /** Can't place the blocks this way */
             return EnumActionResult.FAIL;
@@ -70,7 +71,7 @@ public class ItemPiano extends Item
             BlockPos blockpos = pos.offset(enumfacing);
 
             /** pos = block at cursor; blockpos = one block beyond the cursor in direction player is facing */
-            if (playerIn.canPlayerEdit(pos, facing, stack) && playerIn.canPlayerEdit(blockpos, facing, stack))
+            if (playerIn.canPlayerEdit(pos, facingIn, stack) && playerIn.canPlayerEdit(blockpos, facingIn, stack))
             {
                 boolean flag1 = worldIn.getBlockState(blockpos).getBlock().isReplaceable(worldIn, blockpos);
                 boolean flag2 = flag || worldIn.isAirBlock(pos);
