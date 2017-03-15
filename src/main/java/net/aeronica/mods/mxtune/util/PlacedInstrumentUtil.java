@@ -57,72 +57,75 @@ public enum PlacedInstrumentUtil
         return new BlockPos(x, y, z);
     }
 
-    public static boolean standOnBlock(World worldIn, double x, double y, double z, EntityPlayer playerIn)
+    public static boolean standOnBlock(World worldIn, BlockPos posIn, EntityPlayer playerIn)
     {
-        if (!checkForExistingEntity(worldIn, x, y, z, playerIn))
+        if (!checkForExistingEntity(worldIn, posIn, playerIn))
         {
             BlockPos underFoot = blockUnderFoot(playerIn);
             /* Standing on Fluids or Air is not allowed */
             if ((worldIn.getBlockState(underFoot).getBlock() instanceof BlockLiquid) || worldIn.isAirBlock(underFoot))
                 return false;
             double blockheight = worldIn.getBlockState(underFoot).getBoundingBox(null, underFoot).maxY;
-            EntitySittableBlock nemb = new EntitySittableBlock(worldIn, underFoot.getX(), underFoot.getY(), underFoot.getZ(), blockheight + 6 * 0.0625F, false);
+            EntitySittableBlock nemb = new EntitySittableBlock(worldIn, underFoot, blockheight + 6 * 0.0625F, false);
             worldIn.spawnEntity(nemb);
             playerIn.startRiding(nemb, true);
         }
         return true;
     }
 
-    public static boolean sitOnBlock(World worldIn, double x, double y, double z, EntityPlayer playerIn, double yOffset)
+    public static boolean sitOnBlock(World worldIn, BlockPos posIn, EntityPlayer playerIn, double yOffset)
     {
-        if (!checkForExistingEntity(worldIn, x, y, z, playerIn))
+        if (!checkForExistingEntity(worldIn, posIn, playerIn))
         {
-            EntitySittableBlock nemb = new EntitySittableBlock(worldIn, x, y, z, yOffset, true);
+            EntitySittableBlock nemb = new EntitySittableBlock(worldIn, posIn, yOffset, true);
             worldIn.spawnEntity(nemb);
             playerIn.startRiding(nemb, true);
         }
         return true;
     }
 
-    public static boolean sitOnBlock(World worldIn, double x, double y, double z, EntityPlayer playerIn, double xOffset, double yOffset, double zOffset)
+    public static boolean sitOnBlock(World worldIn, BlockPos posIn, EntityPlayer playerIn, double xOffset, double yOffset, double zOffset)
     {
-        if (!checkForExistingEntity(worldIn, x, y, z, playerIn))
+        if (!checkForExistingEntity(worldIn, posIn, playerIn))
         {
-            EntitySittableBlock nemb = new EntitySittableBlock(worldIn, x, y, z, xOffset, yOffset, zOffset);
+            EntitySittableBlock nemb = new EntitySittableBlock(worldIn, posIn, xOffset, yOffset, zOffset);
             worldIn.spawnEntity(nemb);
             playerIn.startRiding(nemb, true);
         }
         return true;
     }
 
-    public static boolean sitOnBlock(World worldIn, double x, double y, double z, EntityPlayer playerIn, double xOffset, double yOffset, double zOffset, float yaw)
+    public static boolean sitOnBlock(World worldIn, BlockPos posIn, EntityPlayer playerIn, double xOffset, double yOffset, double zOffset, float yaw)
     {
-        if (!checkForExistingEntity(worldIn, x, y, z, playerIn))
+        if (!checkForExistingEntity(worldIn, posIn, playerIn))
         {
-            EntitySittableBlock nemb = new EntitySittableBlock(worldIn, x, y, z, xOffset, yOffset, zOffset, yaw);
+            EntitySittableBlock nemb = new EntitySittableBlock(worldIn, posIn, xOffset, yOffset, zOffset, yaw);
             worldIn.spawnEntity(nemb);
             playerIn.startRiding(nemb, true);
         }
         return true;
     }
 
-    public static boolean sitOnBlockWithRotationOffset(World worldIn, double x, double y, double z, EntityPlayer playerIn, double par6, int metadata, double offset)
+    public static boolean sitOnBlockWithRotationOffset(World worldIn, BlockPos posIn, EntityPlayer playerIn, double yOffset, int metadata, double offset)
     {
-        if (!checkForExistingEntity(worldIn, x, y, z, playerIn))
+        if (!checkForExistingEntity(worldIn, posIn, playerIn))
         {
-            EntitySittableBlock nemb = new EntitySittableBlock(worldIn, x, y, z, par6, metadata, offset);
+            EntitySittableBlock nemb = new EntitySittableBlock(worldIn, posIn, yOffset, metadata, offset);
             worldIn.spawnEntity(nemb);
             playerIn.startRiding(nemb);
         }
         return true;
     }
 
-    public static boolean checkForExistingEntity(World par1World, double x, double y, double z, EntityPlayer playerIn)
+    public static boolean checkForExistingEntity(World par1World, BlockPos posIn, EntityPlayer playerIn)
     {
+        int x = posIn.getX();
+        int y = posIn.getY();
+        int z = posIn.getZ();
         List<EntitySittableBlock> listEMB = par1World.getEntitiesWithinAABB(EntitySittableBlock.class, new AxisAlignedBB(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(1D, 1D, 1D));
         for (EntitySittableBlock mount : listEMB)
         {
-            if (mount.getBlockPosX() == x && mount.getBlockPosY() == y && mount.getBlockPosZ() == z)
+            if (mount.getBlockPos().equals(posIn))
             {
                 return true;
             }
@@ -130,19 +133,18 @@ public enum PlacedInstrumentUtil
         return false;
     }
 
-    public static boolean isPlayerSitting(World worldIn, EntityPlayer playerIn, BlockPos pos)
+    public static boolean isPlayerSitting(World worldIn, EntityPlayer playerIn, BlockPos posIn)
     {
-        double x = pos.getX();
-        double y = pos.getY();
-        double z = pos.getZ();
-        
+        int x = posIn.getX();
+        int y = posIn.getY();
+        int z = posIn.getZ();  
         List<EntitySittableBlock> listEMB = worldIn.getEntitiesWithinAABB(EntitySittableBlock.class, new AxisAlignedBB(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(1D, 1D, 1D));
         if (listEMB.isEmpty())
             return false;
         
         for (EntitySittableBlock mount : listEMB)
         {
-            if (mount.getBlockPosX() == x && mount.getBlockPosY() == y && mount.getBlockPosZ() == z)
+            if (mount.getBlockPos().equals(posIn))
                 return mount.isPassenger(playerIn);
         }
         return false;
