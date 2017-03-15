@@ -100,12 +100,12 @@ public class GuiMMLBox extends Gui
         this.width = width;
         this.height = height;
 
-        this.text = new String();
+        this.text = "";
         this.fontHeight = this.fontRendererInstance.FONT_HEIGHT;
         this.topTextBox = this.yPosition - (this.height / 2) + fontHeight;
         this.displayLineStartIdx = this.scrollAmount = 0;
-        this.lineWidths = new HashMap<Integer, Integer>();
-        this.lines = new ArrayList<String>();
+        this.lineWidths = new HashMap<>();
+        this.lines = new ArrayList<>();
         this.maxDisplayLines = this.height / fontHeight;
         this.loadingLists = true;
     }
@@ -179,7 +179,7 @@ public class GuiMMLBox extends Gui
         int i = this.cursorPosition < this.selectionEnd ? this.cursorPosition : this.selectionEnd;
         int j = this.cursorPosition < this.selectionEnd ? this.selectionEnd : this.cursorPosition;
         int k = this.maxStringLength - this.text.length() - (i - j);
-        int l = 0;
+        int l;
 
         if (!this.text.isEmpty())
         {
@@ -775,7 +775,7 @@ public class GuiMMLBox extends Gui
             }
             int totalBufferLines = lines.size();
             int numDisplayLines = totalBufferLines;
-            int charCount = 0;
+            int charCount;
 
             /** Handle any vertical scroll requests */
             if (scrollAmount != 0)
@@ -849,7 +849,7 @@ public class GuiMMLBox extends Gui
                 /** Draw the rest of the line after the cursor */
                 if (!sLine.isEmpty() && cursorInLine && cursorPos < sLine.length())
                 {
-                    j1 = this.fontRendererInstance.drawStringWithShadow(sLine.substring(cursorPos), (float) j1, (float) yBackDraw, statusColor);
+                   j1 = this.fontRendererInstance.drawStringWithShadow(sLine.substring(cursorPos), (float) j1, (float) yBackDraw, statusColor);
                 }
 
                 /** Draw the cursor */
@@ -877,8 +877,13 @@ public class GuiMMLBox extends Gui
     /**
      * Draws the current selection and a vertical line cursor in the text box.
      */
-    private void drawCursorVertical(int startX, int startY, int endX, int endY)
+    private void drawCursorVertical(int startXIn, int startYIn, int endXIn, int endYIn)
     {
+        int startX = startXIn;
+        int startY = startYIn;
+        int endX = endXIn;
+        int endY = endYIn;
+        
         if (startX < endX)
         {
             int i = startX;
@@ -1039,8 +1044,9 @@ public class GuiMMLBox extends Gui
      * cursor position mark the edges of the selection). If the anchor is set
      * beyond the bounds of the current text, it will be put back inside.
      */
-    public void setSelectionPos(int position)
+    public void setSelectionPos(int positionIn)
     {
+        int position = positionIn;
         int i = this.text.length();
 
         if (position > i)
