@@ -19,11 +19,11 @@ public class ModLogger {
     }
     
     /**
-     * Log a stack trace for &lt;T extends Exception&gt; {@link e} at the specified log {@link level}
+     * Log a stack trace for &lt;T extends Throwable&gt; {@link e} at the specified log {@link level}
      * @param level     The specified log level
      * @param e         The raw exception 
      */
-    public static <T extends Exception> void log(Level level, T e)
+    public static <T extends Throwable> void log(Level level, T e)
     {
         if (e != null) {
             log(level, "%s", e.getLocalizedMessage());
@@ -56,43 +56,43 @@ public class ModLogger {
      * Log a stack trace for &lt;T extends Exception&gt; {@link e} at log Level.INFO
      * @param e         The raw exception 
      */
-    public static <T extends Exception> void info(T e)
+    public static <T extends Throwable> void info(T e)
     {
         log(Level.INFO, e);
     }
     
     /**
-     * Log a stack trace for &lt;T extends Exception&gt; {@link e} at log Level.DEBUG
+     * Log a stack trace for &lt;T extends Throwable&gt; {@link e} at log Level.DEBUG
      * @param e         The raw exception 
      */
-    public static <T extends Exception> void debug(T e)
+    public static <T extends Throwable> void debug(T e)
     {
         log(Level.DEBUG, e);
     }
     
     /**
-     * Log a stack trace for &lt;T extends Exception&gt; {@link e} at log Level.WARM
+     * Log a stack trace for &lt;T extends Throwable&gt; {@link e} at log Level.WARM
      * @param e         The raw exception 
      */
-    public static <T extends Exception> void warning(T e)
+    public static <T extends Throwable> void warning(T e)
     {
         log(Level.WARN, e);
     }
     
     /**
-     * Log a stack trace for &lt;T extends Exception&gt; {@link e} at log Level.ERROR
+     * Log a stack trace for &lt;T extends Throwable&gt; {@link e} at log Level.ERROR
      * @param e         The raw exception 
      */
-    public static <T extends Exception> void error(T e)
+    public static <T extends Throwable> void error(T e)
     {
         log(Level.ERROR, e);
     }
     
     /**
-     * Log a stack trace for &lt;T extends Exception&gt; {@link e} at log Level.FATAL
+     * Log a stack trace for &lt;T extends Throwable&gt; {@link e} at log Level.FATAL
      * @param e         The raw exception 
      */
-    public static <T extends Exception> void fatal(T e)
+    public static <T extends Throwable> void fatal(T e)
     {
         log(Level.FATAL, e);
     }
