@@ -421,7 +421,7 @@ public class GroupManager
                 {
                     if (MusicOptionsUtil.isMuteAll(playerInitiator) == false)
                     {
-                        if (MusicOptionsUtil.getMuteResult(playerInitiator, playerTarget) == false)
+                        if (!MusicOptionsUtil.isPlayerMuted(playerInitiator, playerTarget))
                         {
                             MusicOptionsUtil.setSParams(playerInitiator, targetGroup.groupID.toString(), "", "");
                             PacketDispatcher.sendTo(new JoinGroupMessage(targetGroup.groupID), (EntityPlayerMP) playerInitiator);

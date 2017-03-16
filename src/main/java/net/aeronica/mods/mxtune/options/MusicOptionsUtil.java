@@ -25,11 +25,13 @@ import net.minecraft.util.IStringSerializable;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 
-public enum MusicOptionsUtil
+public class MusicOptionsUtil
 {
-    ;
+
     @CapabilityInject(IPlayerMusicOptions.class)
     public static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = null;
+    
+    private MusicOptionsUtil() {}
     
     public static void setHudOptions(EntityPlayer playerIn, boolean disableHud, int positionHud, float sizeHud)
     {
@@ -134,7 +136,7 @@ public enum MusicOptionsUtil
      * @param otherPlayer
      * @return true if muted
      */
-    public static boolean getMuteResult(EntityPlayer playerIn, EntityPlayer otherPlayer)
+    public static boolean isPlayerMuted(EntityPlayer playerIn, EntityPlayer otherPlayer)
     {
         boolean result = false;
         if (playerIn != null && otherPlayer != null)

@@ -67,7 +67,7 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
         ModLogger.debug("PlayJamMessage#process");
         if (MIDISystemUtil.midiUnavailableWarn(player) == false)
         {
-            if (MusicOptionsUtil.getMuteResult(player, (EntityPlayer) player.getEntityWorld().getEntityByID(GROUPS.getMembersGroupLeader(leaderID))) == false)
+            if (!MusicOptionsUtil.isPlayerMuted(player, (EntityPlayer) player.getEntityWorld().getEntityByID(GROUPS.getMembersGroupLeader(leaderID))))
             {
                 ModLogger.debug("musicText:  " + jamMML.substring(0, (jamMML.length() >= 25 ? 25 : jamMML.length())));
                 ModLogger.debug("playID:     " + playID);
