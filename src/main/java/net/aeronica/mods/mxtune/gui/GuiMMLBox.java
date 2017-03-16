@@ -43,8 +43,8 @@ public class GuiMMLBox extends Gui
 {
     private final int id;
     private final FontRenderer fontRendererInstance;
-    public int xPosition;
-    public int yPosition;
+    public final int xPosition;
+    public final int yPosition;
     /** Keep track of the displayed lines, cursor and selection highlighting */
     private int topTextBox;
     private int fontHeight;
@@ -55,8 +55,8 @@ public class GuiMMLBox extends Gui
     private HashMap<Integer, Integer> lineWidths;
     private boolean loadingLists;
     /** The width of this text field. */
-    public int width;
-    public int height;
+    public final int width;
+    public final int height;
     /** Has the current text being edited on the textbox. */
     private String text;
     private int maxStringLength = 32;
