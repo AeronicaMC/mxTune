@@ -22,11 +22,13 @@ public class ModBlocks
 {
    
     public static final BlockPiano BLOCK_PIANO = registerBlock(new BlockPiano(), "block_piano");
-
+    private ModBlocks() {}
+    
     @Mod.EventBusSubscriber
     public static class RegistrationHandler {
-        public static final Set<Item> ITEM_BLOCKS = new HashSet<>();
-
+        protected static final Set<Item> ITEM_BLOCKS = new HashSet<>();
+        private RegistrationHandler() {}
+        
         /**
          * Register this mod's {@link Block}s.
          *
@@ -65,10 +67,7 @@ public class ModBlocks
     }
     
     public static void registerTileEntities() {
-        // FIXME: Use for legacy 1.10.2 -> 11.1
         GameRegistry.registerTileEntityWithAlternatives(TilePiano.class, MXTuneMain.prependModID("tile_piano"), "mxtune_tile_instrument", "PianoTile", "TileInstrument");
-        // FIXME: Use this for 1.11.2+
-        //registerTileEntity(TilePiano.class, "tile_piano", "mxtune_tile_instrument");
     }
 
     private static <T extends Block> T registerBlock(T block, String name) {
