@@ -51,7 +51,7 @@ public class MMLToMIDI extends MMLTransformBase
             sequence = new Sequence(Sequence.PPQ, (int) PPQ);
             for (int i = 0; i < 24; i++)
             {
-                sequence.createTrack().add(createMsg(192, 0, 0, 100, 0l));
+                sequence.createTrack();
             }
             Track[] tracks = sequence.getTracks();
 
