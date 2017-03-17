@@ -53,11 +53,11 @@ public enum PlayManager
     
     INSTANCE;
 
-    private static Map<Integer, String> membersMML = new HashMap<>();
-    private static HashMap<Integer, String> membersQueuedStatus = new HashMap<>();
-    private static HashMap<Integer, Integer> membersPlayID = new HashMap<>();
-    private static Set<Integer> activePlayIDs = Sets.newHashSet();
-    private static int uniquePlayID = 1;
+    static Map<Integer, String> membersMML = new HashMap<>();
+    static HashMap<Integer, String> membersQueuedStatus = new HashMap<>();
+    static HashMap<Integer, Integer> membersPlayID = new HashMap<>();
+    static Set<Integer> activePlayIDs = Sets.newHashSet();
+    static int uniquePlayID = 1;
     
     /**
      * Play ID's 1 to Integer.MAX, -1 for invalid, 0 for initialization only, null if not set.

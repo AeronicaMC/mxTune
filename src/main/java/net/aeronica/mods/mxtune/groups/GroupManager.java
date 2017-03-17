@@ -71,15 +71,15 @@ public class GroupManager
      */
     private static class Member
     {
-        public Integer memberEntityID;
+        Integer memberEntityID;
     }
 
     public static class Group
     {
-        public Integer groupID;
-        public Integer playID;
-        public Integer leaderEntityID;
-        public HashSet<Member> members;
+        Integer groupID;
+        Integer playID;
+        Integer leaderEntityID;
+        HashSet<Member> members;
     }
 
     private static HashSet<Group> groups = null;
