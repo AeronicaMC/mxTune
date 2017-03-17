@@ -60,11 +60,12 @@ public class EntitySittableBlock extends Entity
     public EntitySittableBlock(World world)
     {
         super(world);
+        blockPos = BlockPos.ORIGIN;
         this.noClip = true;
         this.height = 0.0001F;
         this.width = 0.0001F;
         this.dataManager.set(SHOULD_SIT, Boolean.valueOf(true));
-        this.dataManager.set(BLOCK_POS, new BlockPos(0,0,0));
+        this.dataManager.set(BLOCK_POS,blockPos);
     }
 
     /** Allow riding standing up if shouldRiderSit is false */
@@ -137,9 +138,7 @@ public class EntitySittableBlock extends Entity
     @Override
     public void onEntityUpdate()
     {
-        if (!this.world.isRemote &&
-                ((this.getPassengers().isEmpty() && !this.isDead) ||
-                        this.world.isAirBlock(blockPos)))
+        if (!this.world.isRemote && ((this.getPassengers().isEmpty() && !this.isDead) || ( this.world.isAirBlock(blockPos))))
         {
             this.setDead();
             world.updateComparatorOutputLevel(getPosition(), world.getBlockState(getPosition()).getBlock());
@@ -163,7 +162,7 @@ public class EntitySittableBlock extends Entity
     @Override
     public boolean shouldRiderSit() {return ((Boolean) this.dataManager.get(SHOULD_SIT)).booleanValue();}
 
-    public BlockPos getBlockPos1() {return blockPos;}
+    public BlockPos getMountedPosition() {return blockPos;}
 
     public float getYaw() {return yaw;}
     

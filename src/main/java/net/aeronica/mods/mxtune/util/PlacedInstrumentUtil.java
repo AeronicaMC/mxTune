@@ -125,7 +125,7 @@ public enum PlacedInstrumentUtil
         List<EntitySittableBlock> listEMB = par1World.getEntitiesWithinAABB(EntitySittableBlock.class, new AxisAlignedBB(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(1D, 1D, 1D));
         for (EntitySittableBlock mount : listEMB)
         {
-            if (mount.getBlockPos().equals(posIn))
+            if (mount.getMountedPosition().equals(posIn))
             {
                 return true;
             }
@@ -144,7 +144,7 @@ public enum PlacedInstrumentUtil
         
         for (EntitySittableBlock mount : listEMB)
         {
-            if (mount.getBlockPos().equals(posIn))
+            if (mount.getMountedPosition().equals(posIn))
                 return mount.isPassenger(playerIn);
         }
         return false;
