@@ -23,18 +23,17 @@ import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class ManageGroupMessage extends AbstractServerMessage<ManageGroupMessage>
 {
-    String operation;
+    int operation;
     Integer groupID;
     Integer memberID;
 
     public ManageGroupMessage() {/* Required by the PacketDispacher */}
 
-    public ManageGroupMessage(String operation, Integer groupID, Integer memberName)
+    public ManageGroupMessage(int operation, Integer groupID, Integer memberName)
     {
         this.operation = operation;
         this.groupID = groupID;
@@ -44,35 +43,35 @@ public class ManageGroupMessage extends AbstractServerMessage<ManageGroupMessage
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
-        operation = ByteBufUtils.readUTF8String(buffer);
-        groupID = ByteBufUtils.readVarInt(buffer, 5);
-        memberID = ByteBufUtils.readVarInt(buffer, 5);
+        operation = buffer.readInt();
+        groupID = buffer.readInt();
+        memberID = buffer.readInt();
     }
 
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
         if (groupID == null) groupID = -1;
-        ByteBufUtils.writeUTF8String(buffer, operation);
-        ByteBufUtils.writeVarInt(buffer, groupID, 5);
-        ByteBufUtils.writeVarInt(buffer, memberID, 5);
+        buffer.writeInt(operation);
+        buffer.writeInt(groupID);
+        buffer.writeInt(memberID);
     }
 
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        switch (GROUPS.valueOf(operation))
+        switch (operation)
         {
-        case GROUP_ADD:
+        case GROUPS.GROUP_ADD:
             GroupManager.addGroup(memberID);
             break;
-        case MEMBER_ADD:
+        case GROUPS.MEMBER_ADD:
             GroupManager.addMember(groupID, memberID);
             break;
-        case MEMBER_REMOVE:
+        case GROUPS.MEMBER_REMOVE:
             GroupManager.removeMember(memberID);
             break;
-        case MEMBER_PROMOTE:
+        case GROUPS.MEMBER_PROMOTE:
             GroupManager.setLeader(memberID);
             break;
         default:

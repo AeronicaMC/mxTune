@@ -54,7 +54,7 @@ public enum PlayManager
     INSTANCE;
 
     static Map<Integer, String> membersMML = new HashMap<>();
-    static HashMap<Integer, String> membersQueuedStatus = new HashMap<>();
+    static HashMap<Integer, Integer> membersQueuedStatus = new HashMap<>();
     static HashMap<Integer, Integer> membersPlayID = new HashMap<>();
     static Set<Integer> activePlayIDs = Sets.newHashSet();
     static int uniquePlayID = 1;
@@ -72,9 +72,9 @@ public enum PlayManager
         return uniquePlayID;
     }
 
-    private static void setPlaying(Integer playerID) {membersQueuedStatus.put(playerID, GROUPS.PLAYING.name());}
+    private static void setPlaying(Integer playerID) {membersQueuedStatus.put(playerID, GROUPS.PLAYING);}
 
-    private static void setQueued(Integer playerID) {membersQueuedStatus.put(playerID, GROUPS.QUEUED.name());}
+    private static void setQueued(Integer playerID) {membersQueuedStatus.put(playerID, GROUPS.QUEUED);}
 
     /**
      * For playing music from an Item
@@ -307,11 +307,11 @@ public enum PlayManager
     private static void syncStatus()
     {
         /** server side */
-        GROUPS.setClientPlayStatuses(GROUPS.serializeIntStrMap(membersQueuedStatus));
+        GROUPS.setClientPlayStatuses(GROUPS.serializeIntIntMap(membersQueuedStatus));
         GROUPS.setPlayIDMembers(GROUPS.serializeIntIntMap(membersPlayID));
         GROUPS.setActivePlayIDs(GROUPS.serializeIntegerSet(activePlayIDs));
         /** client side */
-        PacketDispatcher.sendToAll(new SyncStatusMessage(GROUPS.serializeIntStrMap(membersQueuedStatus), GROUPS.serializeIntIntMap(membersPlayID), GROUPS.serializeIntegerSet(activePlayIDs)));
+        PacketDispatcher.sendToAll(new SyncStatusMessage(GROUPS.serializeIntIntMap(membersQueuedStatus), GROUPS.serializeIntIntMap(membersPlayID), GROUPS.serializeIntegerSet(activePlayIDs)));
     }
 
     private static void queue(Integer playID, Integer memberID, String mml)

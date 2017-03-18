@@ -32,9 +32,14 @@ import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;
 
-public enum GROUPS
+public class GROUPS
 {
-    GROUP_ADD, MEMBER_ADD, MEMBER_REMOVE, MEMBER_PROMOTE, QUEUED, PLAYING;
+    public static final int GROUP_ADD = 1;
+    public static final int MEMBER_ADD = 2;
+    public static final int MEMBER_REMOVE =3;
+    public static final int MEMBER_PROMOTE = 4;
+    public static final int QUEUED = 5;
+    public static final int PLAYING = 6;
 
     public static final int MAX_MEMBERS = 8;
 
@@ -44,7 +49,7 @@ public enum GROUPS
     private static Map<Integer, Integer> clientMembers;
     private static ListMultimap<Integer, Integer> groupsMembers;
     /* PlayManager */
-    private static Map<Integer, String> membersQueuedStatus;
+    private static Map<Integer, Integer> membersQueuedStatus;
     private static Map<Integer, Integer> membersPlayID;
     private static Set<Integer> activePlayIDs;
 
@@ -128,7 +133,7 @@ public enum GROUPS
         int result = 0;
         if (GROUPS.membersQueuedStatus != null && GROUPS.membersQueuedStatus.containsKey(playerID))
         {
-            switch (GROUPS.valueOf(GROUPS.membersQueuedStatus.get(playerID)))
+            switch (GROUPS.membersQueuedStatus.get(playerID))
             {
             case QUEUED:
                 result = 1;
@@ -142,7 +147,7 @@ public enum GROUPS
         return result + (GROUPS.isLeader(playerID) ? 8 : 0);
     }
     
-    public static Map<Integer, String> getClientPlayStatuses()
+    public static Map<Integer, Integer> getClientPlayStatuses()
     {
         return membersQueuedStatus;
     }
@@ -253,7 +258,7 @@ public enum GROUPS
 
     public static void setClientPlayStatuses(String clientPlayStatuses)
     {
-        GROUPS.membersQueuedStatus = deserializeIntStrMap(clientPlayStatuses);
+        GROUPS.membersQueuedStatus = deserializeIntIntMap(clientPlayStatuses);
     }
         
     public static Map<Integer, Integer> getPlayIDMembers()

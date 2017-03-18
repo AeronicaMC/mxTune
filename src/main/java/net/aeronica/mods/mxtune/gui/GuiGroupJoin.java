@@ -191,8 +191,8 @@ public class GuiGroupJoin extends GuiScreen
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 
-    protected void sendRequest(GROUPS operation, Integer groupID, Integer memberID)
+    protected void sendRequest(int operation, Integer groupID, Integer memberID)
     {
-        PacketDispatcher.sendToServer(new ManageGroupMessage(operation.toString(), groupID, memberID));
+        PacketDispatcher.sendToServer(new ManageGroupMessage(operation, groupID, memberID));
     }
 }
