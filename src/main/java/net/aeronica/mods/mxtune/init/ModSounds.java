@@ -25,7 +25,7 @@ import net.minecraftforge.fml.common.FMLLog;
 public class ModSounds
 {
     
-    public static SoundCategory SC_MXTUNE;
+    public static final SoundCategory SC_MXTUNE = MODSoundCategory.add("MXTUNE");;
     public static final SoundEvent PCM_PROXY = ModSoundEvents.PCM_PROXY;
     private static boolean initialized = false;
     private ModSounds() {}
@@ -35,7 +35,6 @@ public class ModSounds
         if (!initialized)
         {
             FMLLog.info("[mxTune] ModSounds Intialized");
-            SC_MXTUNE = MODSoundCategory.add("MXTUNE");
             initialized = true;
         }
     }
