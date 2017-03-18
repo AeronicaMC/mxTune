@@ -86,7 +86,8 @@ public class MODSoundCategory
         if (SOUND_CATEGORIES.containsKey(referenceName))
             throw new SoundCategoryRuntimeException("Clash in Sound Category name pools! Cannot insert " + constantName);
         SOUND_CATEGORIES.put(referenceName, soundCategory);
-        if (FMLLaunchHandler.side() == Side.CLIENT) setSoundLevels();
+        if (FMLLaunchHandler.side() == Side.CLIENT)
+            setSoundLevels();
 
         return soundCategory;
     }

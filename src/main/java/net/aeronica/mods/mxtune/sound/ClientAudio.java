@@ -178,7 +178,7 @@ public enum ClientAudio
    public static AudioFormat getAudioFormat(Integer playID)
     {
        AudioData audioData = playIDAudioData.get(playID);
-       if (playIDAudioData == null || playIDAudioData.isEmpty())
+       if (audioData == null)
            return null;
        return audioData.isClientPlayer() ? audioFormatStereo : audioFormat3D;
     }
