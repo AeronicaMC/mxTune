@@ -27,11 +27,11 @@ import net.minecraftforge.fml.relauncher.Side;
 public class HudOptionsMessage extends AbstractServerMessage<HudOptionsMessage>
 {
 
-    private int positionHud;
-    private boolean disableHud;
-    private float sizeHud;
+    int positionHud;
+    boolean disableHud;
+    float sizeHud;
     
-    public HudOptionsMessage() {}
+    public HudOptionsMessage() {/* Required by the PacketDispacher */}
     
     public HudOptionsMessage(int positionHud, boolean disableHud, float sizeHud)
     {

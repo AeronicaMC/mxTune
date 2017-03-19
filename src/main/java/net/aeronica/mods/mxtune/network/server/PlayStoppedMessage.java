@@ -29,7 +29,7 @@ public class PlayStoppedMessage extends AbstractServerMessage<PlayStoppedMessage
 
     int playID;
     
-    public PlayStoppedMessage() {}
+    public PlayStoppedMessage() {/* Required by the PacketDispacher */}
     
     public PlayStoppedMessage(int playID) {this.playID = playID;}
     

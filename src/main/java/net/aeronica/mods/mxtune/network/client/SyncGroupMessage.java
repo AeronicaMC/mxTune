@@ -28,9 +28,10 @@ import net.minecraftforge.fml.relauncher.Side;
 public class SyncGroupMessage extends AbstractClientMessage<SyncGroupMessage>
 {
 
-    private String groups, members;
+    String groups;
+    String members;
 
-    public SyncGroupMessage() {this.groups = this.members = new String();}
+    public SyncGroupMessage() {/* Required by the PacketDispacher */}
 
     public SyncGroupMessage(String groups, String members)
     {
@@ -55,12 +56,9 @@ public class SyncGroupMessage extends AbstractClientMessage<SyncGroupMessage>
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        /** Client side - build - replace the groups and members hashes */
-        if (side.isClient())
-        {
-            GROUPS.setClientGroups(groups);
-            GROUPS.setClientMembers(members);
-            GROUPS.setGroupsMembers(members);
-        }
+        GROUPS.setClientGroups(groups);
+        GROUPS.setClientMembers(members);
+        GROUPS.setGroupsMembers(members);
     }
+
 }

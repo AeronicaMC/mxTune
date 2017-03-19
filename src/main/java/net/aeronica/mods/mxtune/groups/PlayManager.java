@@ -53,21 +53,28 @@ public enum PlayManager
     
     INSTANCE;
 
-    private static Map<Integer, String> membersMML = new HashMap<Integer, String>();
-    private static HashMap<Integer, String> membersQueuedStatus = new HashMap<Integer, String>();
-    private static HashMap<Integer, Integer> membersPlayID = new HashMap<Integer, Integer>();
-    private static Set<Integer> activePlayIDs = Sets.newHashSet();
-    private static int uniquePlayID = 1;
+    static Map<Integer, String> membersMML = new HashMap<>();
+    static HashMap<Integer, Integer> membersQueuedStatus = new HashMap<>();
+    static HashMap<Integer, Integer> membersPlayID = new HashMap<>();
+    static Set<Integer> activePlayIDs = Sets.newHashSet();
+    static int uniquePlayID = 1;
     
     /**
      * Play ID's 1 to Integer.MAX, -1 for invalid, 0 for initialization only, null if not set.
-     * @return a unique play id
+     * @return a unique positive play id
      */
-    private static int getNextPlayID() {return (uniquePlayID == Integer.MAX_VALUE) ? uniquePlayID = 1 : uniquePlayID++;}
+    private static int getNextPlayID()
+    {
+        if (uniquePlayID == Integer.MAX_VALUE)
+            uniquePlayID = 1;
+        else
+            uniquePlayID++;
+        return uniquePlayID;
+    }
 
-    private static void setPlaying(Integer playerID) {membersQueuedStatus.put(playerID, GROUPS.PLAYING.name());}
+    private static void setPlaying(Integer playerID) {membersQueuedStatus.put(playerID, GROUPS.PLAYING);}
 
-    private static void setQueued(Integer playerID) {membersQueuedStatus.put(playerID, GROUPS.QUEUED.name());}
+    private static void setQueued(Integer playerID) {membersQueuedStatus.put(playerID, GROUPS.QUEUED);}
 
     /**
      * For playing music from an Item
@@ -99,7 +106,8 @@ public enum PlayManager
      */
     public static Integer playMusic(EntityPlayer playerIn, BlockPos pos, boolean isPlaced)
     {
-        if (MusicOptionsUtil.isMuteAll(playerIn)) return null;
+        if (MusicOptionsUtil.isMuteAll(playerIn))
+            return null;
         ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(pos, playerIn, isPlaced);
         if (sheetMusic != null)
         {
@@ -112,7 +120,7 @@ public enum PlayManager
 
                 mml = mml.replace("MML@", "MML@I" + getPatch(pos, playerIn, isPlaced));
                 ModLogger.debug("MML Title: " + title);
-                ModLogger.debug("MML Sub25: " + mml.substring(0, (mml.length() >= 25 ? 25 : mml.length())));
+                ModLogger.debug("MML Sub25: " + mml.substring(0, mml.length() >= 25 ? 25 : mml.length()));
 
                 if (GroupManager.getMembersGroupID(playerID) == null)
                 {
@@ -171,7 +179,8 @@ public enum PlayManager
     private static void resetGroupsPlayID(Integer membersID)
     {
         GroupManager.Group g = GroupManager.getMembersGroup(membersID);
-        if (g!=null) g.playID = null;
+        if (g!=null)
+            g.playID = null;
     }
     
     /**
@@ -179,14 +188,20 @@ public enum PlayManager
      * This assumes the member is already been validated as a member of the group
      * 
      * @param membersID
-     * @return
+     * @return a unique playID or null if something went wrong
      */
     private static Integer getGroupsPlayID(Integer membersID)
     {
         GroupManager.Group g = GroupManager.getMembersGroup(membersID);
-        return (g!=null) ? ((g.playID == null) ? g.playID = getNextPlayID() : g.playID) : null;
+        Integer playID = null;
+        if (g!=null)
+            if (g.playID == null)
+                playID = g.playID = getNextPlayID();
+            else
+                playID = g.playID;
+        return playID;
     }
-    
+
     public static Integer getPlayersPlayID(Integer entityID)
     {
         return (membersPlayID != null && !membersPlayID.isEmpty()) ? membersPlayID.get(entityID) : null;
@@ -292,11 +307,11 @@ public enum PlayManager
     private static void syncStatus()
     {
         /** server side */
-        GROUPS.setClientPlayStatuses(GROUPS.serializeIntStrMap(membersQueuedStatus));
+        GROUPS.setClientPlayStatuses(GROUPS.serializeIntIntMap(membersQueuedStatus));
         GROUPS.setPlayIDMembers(GROUPS.serializeIntIntMap(membersPlayID));
         GROUPS.setActivePlayIDs(GROUPS.serializeIntegerSet(activePlayIDs));
         /** client side */
-        PacketDispatcher.sendToAll(new SyncStatusMessage(GROUPS.serializeIntStrMap(membersQueuedStatus), GROUPS.serializeIntIntMap(membersPlayID), GROUPS.serializeIntegerSet(activePlayIDs)));
+        PacketDispatcher.sendToAll(new SyncStatusMessage(GROUPS.serializeIntIntMap(membersQueuedStatus), GROUPS.serializeIntIntMap(membersPlayID), GROUPS.serializeIntegerSet(activePlayIDs)));
     }
 
     private static void queue(Integer playID, Integer memberID, String mml)
@@ -308,7 +323,7 @@ public enum PlayManager
             setQueued(memberID);
         } catch (Exception e)
         {
-            e.printStackTrace();
+            ModLogger.error(e);
         }
     }
 
@@ -339,7 +354,7 @@ public enum PlayManager
             }
         } catch (Exception e)
         {
-            e.printStackTrace();
+            ModLogger.error(e);
         }
         return buildMML.toString();
     }
@@ -349,22 +364,25 @@ public enum PlayManager
      * @param playID
      * @return Vec3d
      */
-    public static Vec3d getMedianPos(Integer playID)
+    public static Vec3d getMedianPos(int playID)
     {
-        double x, y, z; x = y = z = 0;
+        double x, y, z;
+        x = y = z = 0;
         int count = 0;
         Vec3d pos;
-        for(Integer member: getMembersByPlayID(playID))
+        for(int member: getMembersByPlayID(playID))
         {   
             EntityPlayer player = (EntityPlayer) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getEntityByID(member);
-            if(player == null) continue;
+            if(player == null)
+                continue;
             x = x + player.getPositionVector().xCoord;
             y = y + player.getPositionVector().yCoord;
             z = z + player.getPositionVector().zCoord;
             count++;
         }            
 
-        if (count == 0) return new Vec3d(0,0,0);
+        if (count == 0)
+            return Vec3d.ZERO;
         x/=count;
         y/=count;
         z/=count;

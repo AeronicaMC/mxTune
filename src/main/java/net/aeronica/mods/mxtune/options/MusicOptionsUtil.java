@@ -16,66 +16,107 @@
  */
 package net.aeronica.mods.mxtune.options;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
-import com.mojang.authlib.GameProfile;
-
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IStringSerializable;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class MusicOptionsUtil
 {
-    
-    private MusicOptionsUtil() {}
-    private static class MusicOptionsUtilHolder {private static final MusicOptionsUtil INSTANCE = new MusicOptionsUtil();}
-    public static MusicOptionsUtil getInstance() {return MusicOptionsUtilHolder.INSTANCE;}
 
     @CapabilityInject(IPlayerMusicOptions.class)
     public static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = null;
     
-    public static void setHudOptions(EntityPlayer playerIn, boolean disableHud, int positionHud, float sizeHud) {playerIn.getCapability(MUSIC_OPTIONS, null).setHudOptions(playerIn, disableHud, positionHud, sizeHud);}
+    private MusicOptionsUtil() {}
     
-    public static boolean isHudDisabled(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).isHudDisabled();}
-    
-    public static int getPositionHUD(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getPositionHud();}
-    
-    public static float getSizeHud(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getSizeHud();}
-    
-    public static boolean isMuteAll(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getMuteOption() == MusicOptionsUtil.EnumMuteOptions.ALL.getMetadata();}
-
-    public static void setMuteOption(EntityPlayer playerIn, int muteOptionIn) {playerIn.getCapability(MUSIC_OPTIONS, null).setMuteOption(playerIn, muteOptionIn);}
-    
-    public static MusicOptionsUtil.EnumMuteOptions getMuteOptionEnum(EntityPlayer playerIn)
+    public static void setHudOptions(EntityPlayer playerIn, boolean disableHud, int positionHud, float sizeHud)
     {
-        return MusicOptionsUtil.EnumMuteOptions.byMetadata(playerIn.getCapability(MUSIC_OPTIONS, null).getMuteOption());
+        if (MUSIC_OPTIONS != null)
+            playerIn.getCapability(MUSIC_OPTIONS, null).setHudOptions(playerIn, disableHud, positionHud, sizeHud);
+    }
+
+    public static boolean isHudDisabled(EntityPlayer playerIn)
+    {
+        return MUSIC_OPTIONS != null ? playerIn.getCapability(MUSIC_OPTIONS, null).isHudDisabled() : false;
     }
     
-    public static int getMuteOption(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getMuteOption();}
+    public static int getPositionHUD(EntityPlayer playerIn)
+    {
+        return MUSIC_OPTIONS != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getPositionHud() : 6;
+    }
+
+    public static float getSizeHud(EntityPlayer playerIn)
+    {
+        return MUSIC_OPTIONS != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getSizeHud() : 0.5F;
+    }
+    
+    public static boolean isMuteAll(EntityPlayer playerIn)
+    {
+        return MUSIC_OPTIONS != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getMuteOption() == MusicOptionsUtil.EnumMuteOptions.ALL.getMetadata() : false;
+    }
+
+    public static void setMuteOption(EntityPlayer playerIn, int muteOptionIn)
+    {
+        if (MUSIC_OPTIONS != null)
+            playerIn.getCapability(MUSIC_OPTIONS, null).setMuteOption(playerIn, muteOptionIn);
+    }
+
+    public static MusicOptionsUtil.EnumMuteOptions getMuteOptionEnum(EntityPlayer playerIn)
+    {
+        return MUSIC_OPTIONS != null ? MusicOptionsUtil.EnumMuteOptions.byMetadata(playerIn.getCapability(MUSIC_OPTIONS, null).getMuteOption()) : MusicOptionsUtil.EnumMuteOptions.OFF;
+    }
+    
+    public static int getMuteOption(EntityPlayer playerIn)
+    {
+        return MUSIC_OPTIONS != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getMuteOption() : MusicOptionsUtil.EnumMuteOptions.OFF.getMetadata();
+    }
     
     public static void setSParams(EntityPlayer playerIn, String sParam1, String sParam2, String sParam3)
     {
-        playerIn.getCapability(MUSIC_OPTIONS, null).setSParams(playerIn, sParam1, sParam2, sParam3);
+        if (MUSIC_OPTIONS != null)
+            playerIn.getCapability(MUSIC_OPTIONS, null).setSParams(playerIn, sParam1, sParam2, sParam3);
     }
     
-    public static String getSParam1(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getSParam1();}
+    public static String getSParam1(EntityPlayer playerIn)
+    {
+        return MUSIC_OPTIONS != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getSParam1() : "";
+    }
 
-    public static String getSParam2(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getSParam2();}
+    public static String getSParam2(EntityPlayer playerIn)
+    {
+        return MUSIC_OPTIONS != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getSParam2() : "";
+    }
 
-    public static String getSParam3(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getSParam3();}
+    public static String getSParam3(EntityPlayer playerIn)
+    {
+        return MUSIC_OPTIONS != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getSParam3() : "";
+    }
     
-    public static void setBlackList(EntityPlayer playerIn, List<PlayerLists> blackList) {playerIn.getCapability(MUSIC_OPTIONS, null).setBlackList(playerIn, blackList);}
+    public static void setBlackList(EntityPlayer playerIn, List<PlayerLists> blackList)
+    {
+        if (MUSIC_OPTIONS != null)
+            playerIn.getCapability(MUSIC_OPTIONS, null).setBlackList(playerIn, blackList);
+    }
 
-    public static List<PlayerLists> getBlackList(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getBlackList();}
+    public static List<PlayerLists> getBlackList(EntityPlayer playerIn)
+    {
+        return MUSIC_OPTIONS != null ? playerIn.getCapability(MUSIC_OPTIONS, null).getBlackList() : Collections.emptyList();
+    }
     
-    public static void setWhiteList(EntityPlayer playerIn, List<PlayerLists> whiteList) {playerIn.getCapability(MUSIC_OPTIONS, null).setWhiteList(playerIn, whiteList);}
+    public static void setWhiteList(EntityPlayer playerIn, List<PlayerLists> whiteList)
+    {
+        if (MUSIC_OPTIONS != null)
+            playerIn.getCapability(MUSIC_OPTIONS, null).setWhiteList(playerIn, whiteList);
+    }
 
-    public static List<PlayerLists> getWhiteList(EntityPlayer playerIn) {return playerIn.getCapability(MUSIC_OPTIONS, null).getWhiteList();}
+    public static List<PlayerLists> getWhiteList(EntityPlayer playerIn)
+    {
+        return MUSIC_OPTIONS!= null ? playerIn.getCapability(MUSIC_OPTIONS, null).getWhiteList() : Collections.emptyList();
+    }
 
     /*
      * GuiHudAdjust positionHud temporary value for use when adjusting the Hud.
@@ -95,90 +136,66 @@ public class MusicOptionsUtil
      * @param otherPlayer
      * @return true if muted
      */
-    public static boolean getMuteResult(EntityPlayer playerIn, EntityPlayer otherPlayer)
+    public static boolean isPlayerMuted(EntityPlayer playerIn, EntityPlayer otherPlayer)
     {
         boolean result = false;
-        switch (getMuteOptionEnum(playerIn))
+        if (playerIn != null && otherPlayer != null)
         {
-        case OFF:
-            result = false; break;
-        case ALL:
-            result = true; break;
-        case OTHERS:
-            result = !playerIn.equals(otherPlayer); break;
-        case WHITELIST:
-        {
-            if (!playerIn.equals(otherPlayer))
+            switch (getMuteOptionEnum(playerIn))
             {
-                boolean flag = true;
-                for (PlayerLists w : getWhiteList(playerIn))
+            case OFF:
+                result = false; break;
+            case ALL:
+                result = true; break;
+            case OTHERS:
+                result = !playerIn.equals(otherPlayer); break;
+            case WHITELIST:
+            {
+                if (!playerIn.equals(otherPlayer))
                 {
-                    if (w.getUuid().equals(otherPlayer.getUniqueID()))
+                    boolean flag = true;
+                    for (PlayerLists w : getWhiteList(playerIn))
                     {
-                        flag = false;
-                        break;
+                        if (w.getUuid().equals(otherPlayer.getUniqueID()))
+                        {
+                            flag = false;
+                            break;
+                        }
                     }
-                }
-                result = flag;
-            } else
-            {
-                result = false;
-            }
-            break;
-        }
-        case BLACKLIST:
-        {
-            if (!playerIn.equals(otherPlayer))
-            {
-                boolean flag = false;
-                for (PlayerLists w : getBlackList(playerIn))
+                    result = flag;
+                } else
                 {
-                    if (w.getUuid().equals(otherPlayer.getUniqueID()))
-                    {
-                        flag = true;
-                        break;
-                    }
+                    result = false;
                 }
-                result = flag;
-            } else
-            {
-                result = false;
+                break;
             }
-            break;
-        }
-        default:
+            case BLACKLIST:
+            {
+                if (!playerIn.equals(otherPlayer))
+                {
+                    boolean flag = false;
+                    for (PlayerLists w : getBlackList(playerIn))
+                    {
+                        if (w.getUuid().equals(otherPlayer.getUniqueID()))
+                        {
+                            flag = true;
+                            break;
+                        }
+                    }
+                    result = flag;
+                } else
+                {
+                    result = false;
+                }
+                break;
+            }
+            default:
+            }
         }
         return result;
     }
     
-    public static void dumpAllPlayers()
-    {
-        //MinecraftServer minecraftServer = MXTuneMain.proxy.getMinecraftServer();
-        String[] pdat =  FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getAvailablePlayerDat();
-        GameProfile gp = null;
-        for (String n : pdat)
-        {
-            ModLogger.debug("playerDump#Player.dat:  " + n);
-            try {
-                gp = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getProfileByUUID(UUID.fromString(n));      
-            }
-            catch(IllegalArgumentException e) {  
-            }
-            finally {
-                if (gp != null) {
-                    ModLogger.debug("playerDump#Name:        " + gp.getName());
-                    ModLogger.debug("playerDump#UUID:        " + gp.getId());
-                    ModLogger.debug("playerDump#Properties:  " + gp.getProperties());
-                    ModLogger.debug("playerDump#isComplete:  " + gp.isComplete());
-                    ModLogger.debug("playerDump#isLegacy:    " + gp.isLegacy());
-                }
-                else
-                    ModLogger.debug("playerDump#GameProfile: Invalid UUID string: " + n); 
-            }
-        }
-    }
-    
-    public static enum EnumMuteOptions implements IStringSerializable
+    public enum EnumMuteOptions implements IStringSerializable
     {
         OFF(0, "mxtune.gui.musicOptions.muteOption.off"),
         OTHERS(1, "mxtune.gui.musicOptions.muteOption.others"),
@@ -206,8 +223,9 @@ public class MusicOptionsUtil
             }
         }
 
-        public static EnumMuteOptions byMetadata(int meta)
+        public static EnumMuteOptions byMetadata(int metaIn)
         {
+            int meta = metaIn;
             if (meta < 0 || meta >= META_LOOKUP.length)
             {
                 meta = 0;

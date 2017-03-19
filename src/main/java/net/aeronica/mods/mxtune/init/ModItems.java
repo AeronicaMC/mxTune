@@ -29,7 +29,7 @@ public class ModItems
    
     @Mod.EventBusSubscriber
     public static class RegistrationHandler {
-        public static final Set<Item> ITEMS = new HashSet<>();
+        protected static final Set<Item> ITEMS = new HashSet<>();
 
         /**
          * Register this mod's {@link Item}s.

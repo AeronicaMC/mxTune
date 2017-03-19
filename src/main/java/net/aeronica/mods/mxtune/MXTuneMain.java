@@ -18,7 +18,6 @@ package net.aeronica.mods.mxtune;
 
 import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
 import net.aeronica.mods.mxtune.handler.GUIHandler;
-import net.aeronica.mods.mxtune.init.ModSounds;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.options.PlayerMusicOptionsCapability;
 import net.aeronica.mods.mxtune.proxy.IProxy;
@@ -51,7 +50,7 @@ public class MXTuneMain
     public static IProxy proxy;
 
     public static final CreativeTabs TAB_MUSIC = new MusicTab(CreativeTabs.getNextID(), MODNAME);
-
+    
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {

@@ -18,10 +18,9 @@ public class MMLToMIDI extends MMLTransformBase
     private static final double PPQ = 480.0;
     private static final int TICKS_OFFSET = (int) (PPQ);
     private Sequence sequence;
-    private float fakeVolume = 1F;
     private HashSet<Integer> patches = new HashSet<Integer>();
 
-    public MMLToMIDI(float fakeVolume) { super(fakeVolume); this.fakeVolume = fakeVolume; }
+    public MMLToMIDI() {}
 
     @Override
     public long durationTicks(int mmlNoteLength, boolean dottedLEN)
@@ -42,7 +41,6 @@ public class MMLToMIDI extends MMLTransformBase
     @Override
     public void processMObjects(List<MObject> mmlObject)
     {
-        // IMObjects.Type type;
         int ch = 0;
         int tk = 0;
         long ticksOffset = TICKS_OFFSET;
@@ -53,23 +51,20 @@ public class MMLToMIDI extends MMLTransformBase
             sequence = new Sequence(Sequence.PPQ, (int) PPQ);
             for (int i = 0; i < 24; i++)
             {
-                sequence.createTrack().add(createMsg(192, 0, 0, 100, 0l));
+                sequence.createTrack();
             }
             Track[] tracks = sequence.getTracks();
-            // tracks[0].add(createTempoMetaEvent(currentTempo, ticksOffset));
-            // tracks[0].add(createTempoMetaEvent(currentTempo, 0));
-            // tk++; // Track 0 for meta messages;
 
             for (int i = 0; i < mmlObject.size(); i++)
             {
-                /** ref: enum Type {INST_BEGIN, TEMPO, INST, PART, NOTE, REST, INST_END, DONE}; */
+                /* ref: enum Type {INST_BEGIN, TEMPO, INST, PART, NOTE, REST, INST_END, DONE}; */
                 MObject mmo = getMObject(i);
                 switch (mmo.getType())
                 {
                 case INST_BEGIN:
-                {
-                    
-                    /** Nothing to do in reality **/
+                case REST:
+                {                    
+                    /* Nothing to do in this implementation */
                     break;
                 }
                 case TEMPO:
@@ -92,18 +87,13 @@ public class MMLToMIDI extends MMLTransformBase
                 }
                 case NOTE:
                 {
-                    tracks[tk].add(createNoteOnEvent(ch, MMLUtil.smartClampMIDI(mmo.getMidiNote()), (int) (scaleVolume(mmo.getNoteVolume()) * 127f / 15f), mmo.getStartingTicks() + ticksOffset));
+                    tracks[tk].add(createNoteOnEvent(ch, MMLUtil.smartClampMIDI(mmo.getMidiNote()), (int) (mmo.getNoteVolume() * 127f / 15f), mmo.getStartingTicks() + ticksOffset));
                     tracks[tk].add(createNoteOffEvent(ch, MMLUtil.smartClampMIDI(mmo.getMidiNote()), (int) (mmo.getNoteVolume() * 127f / 15f), mmo.getStartingTicks() + mmo.getLengthTicks() + ticksOffset - 1));
                     if (mmo.getText() != null)
                     {
-                        String text = new String("{\"Note\": \"{Track\":" + tk + ", \"Text\":\"" + mmo.getText() + "\"}}");
+                        String text = "{\"Note\": \"{Track\":" + tk + ", \"Text\":\"" + mmo.getText() + "\"}}";
                         tracks[0].add(createTextMetaEvent(text, mmo.getStartingTicks() + ticksOffset));
                     }
-                    break;
-                }
-                case REST:
-                {
-                    /** Nothing to do in reality **/
                     break;
                 }
                 case INST_END:
@@ -133,11 +123,6 @@ public class MMLToMIDI extends MMLTransformBase
         {
             System.out.println("MMLToMIDI#processMObjects failed: " + ex);
         }
-    }
-
-    private int scaleVolume(int volumeIn)
-    {
-        return (int) Math.round((float)volumeIn * (Math.exp(this.fakeVolume)-1)/(Math.E-1));
     }
     
     protected MidiEvent createMsg(int mComd, int mChan, int mDat1, int mDat2, long mTime)

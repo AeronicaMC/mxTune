@@ -2,9 +2,6 @@ package net.aeronica.libs.mml.core;
 
 /*
  * MML Object builder class
- * This is an attempt to use the Builder Pattern to simplify the collection of MML objects during
- * the MML parse and eliminating all the individual object classes and the ugliness of using
- * non-type-safe dereferencing in the concrete converter class. e.g. MMLToMIDI.
  */
 public class MObject
 {
@@ -115,10 +112,10 @@ public class MObject
         }
         public void validateMObject(MObject mObject)
         {
-            // TODO: basic validations
+            // basic validations
         }
     }
     
-    public static enum Type { INST_BEGIN, TEMPO, INST, PART, NOTE, REST, INST_END, DONE };
+    public enum Type { INST_BEGIN, TEMPO, INST, PART, NOTE, REST, INST_END, DONE }
     
 }

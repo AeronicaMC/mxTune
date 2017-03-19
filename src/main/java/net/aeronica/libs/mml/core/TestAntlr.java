@@ -7,11 +7,14 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TestAntlr
 {
     private static String mmlString = TestData.MML6.getMML();
     private static byte[] mmlBuf = null;
+    public static final Logger logger = LogManager.getLogger();
 
     public static InputStream init()
     {
@@ -20,8 +23,7 @@ public class TestAntlr
             mmlBuf = mmlString.getBytes("US-ASCII");
         } catch (UnsupportedEncodingException e)
         {
-            System.out.println(e.getLocalizedMessage());
-            e.printStackTrace();
+            logger.error(e);
         }
         return new java.io.ByteArrayInputStream(mmlBuf);
     }
@@ -31,7 +33,7 @@ public class TestAntlr
         System.out.println("Test Begin\n");
         InputStream is = init();
         PlayMIDI player = new PlayMIDI();
-        MMLToMIDI mmlTrans = new MMLToMIDI(1.0F);
+        MMLToMIDI mmlTrans = new MMLToMIDI();
 
         ANTLRInputStream input = new ANTLRInputStream(is);
         MMLLexer lexer = new MMLLexer(input);

@@ -42,7 +42,7 @@ public enum SheetMusicUtil
                 return sheetMusic.getDisplayName();
             }
         }
-        return new String();
+        return "";
     }
 
     public static ItemStack getSheetMusic(BlockPos pos, EntityPlayer playerIn, boolean isPlaced)
@@ -51,9 +51,9 @@ public enum SheetMusicUtil
         {
             if (playerIn.getEntityWorld().getBlockState(pos).getBlock() instanceof IPlacedInstrument)
             {
-                Block placedInst = (Block) playerIn.getEntityWorld().getBlockState(pos).getBlock();
+                Block placedInst = playerIn.getEntityWorld().getBlockState(pos).getBlock();
                 TileInstrument te = ((IPlacedInstrument) placedInst).getTE(playerIn.getEntityWorld(), pos);
-                if(te.getInventory().getStackInSlot(0) != null)
+                iif(te.getInventory().getStackInSlot(0) != null)
                     return te.getInventory().getStackInSlot(0).copy();
             }
         } else
@@ -65,22 +65,19 @@ public enum SheetMusicUtil
     
     public static ItemStack getSheetMusic(ItemStack stackIn)
     {
-        if (stackIn != null)
+        if (stackIn != null && stackIn.hasTagCompound() && stackIn.getItem() instanceof IInstrument)
         {
-            if (stackIn.hasTagCompound() && stackIn.getItem() instanceof IInstrument)
+            NBTTagList items = stackIn.getTagCompound().getTagList("ItemInventory", Constants.NBT.TAG_COMPOUND);
+            if (items.tagCount() == 1)
             {
-                NBTTagList items = stackIn.getTagCompound().getTagList("ItemInventory", Constants.NBT.TAG_COMPOUND);
-                if (items.tagCount() == 1)
+                NBTTagCompound item = items.getCompoundTagAt(0);
+                ItemStack sheetMusicOld = new ItemStack(item);
+                if (sheetMusicOld != null && sheetMusicOld.getItem() instanceof IMusic)
                 {
-                    NBTTagCompound item = (NBTTagCompound) items.getCompoundTagAt(0);
-                    ItemStack sheetMusicOld = ItemStack.loadItemStackFromNBT(item);
-                    if (sheetMusicOld != null && sheetMusicOld.getItem() instanceof IMusic)
+                    NBTTagCompound contents = (NBTTagCompound) sheetMusicOld.getTagCompound().getTag("MusicBook");
+                    if (contents != null)
                     {
-                        NBTTagCompound contents = (NBTTagCompound) sheetMusicOld.getTagCompound().getTag("MusicBook");
-                        if (contents != null)
-                        {
-                            return sheetMusicOld;
-                        }
+                        return sheetMusicOld;
                     }
                 }
             }

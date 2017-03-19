@@ -9,6 +9,6 @@ public class StructTiedNotes
 
     public String toString()
     {
-        return new String("midi:" + midiNote + ", startingTicks:" + startingTicks + ", lengthTicks:" + lengthTicks + ", volume:" + volume + "\n");
+        return "midi:" + midiNote + ", startingTicks:" + startingTicks + ", lengthTicks:" + lengthTicks + ", volume:" + volume + "\n";
     }
 }

@@ -10,6 +10,7 @@ import net.aeronica.libs.mml.core.MMLParser.AnoteContext;
 import net.aeronica.libs.mml.core.MMLParser.BandContext;
 import net.aeronica.libs.mml.core.MMLParser.InstContext;
 import net.aeronica.libs.mml.core.MMLParser.LenContext;
+import net.aeronica.mods.mxtune.util.ModLogger;
 
 /**
  * Transforms MML into a set of data structures that can be used to generate
@@ -24,15 +25,24 @@ public abstract class MMLTransformBase extends MMLBaseListener
     StatePart partState;
     
     /** annotate parse tree for tied note processing */
-    ParseTreeProperty<Integer> midiNotes = new ParseTreeProperty<Integer>();
-    ParseTreeProperty<Long> noteRestLengths = new ParseTreeProperty<Long>();
-    ParseTreeProperty<Integer> mmlVolumes = new ParseTreeProperty<Integer>();
-    ParseTreeProperty<Long> startTicks = new ParseTreeProperty<Long>();
+    ParseTreeProperty<Integer> midiNotes = new ParseTreeProperty<>();
+    ParseTreeProperty<Long> noteRestLengths = new ParseTreeProperty<>();
+    ParseTreeProperty<Integer> mmlVolumes = new ParseTreeProperty<>();
+    ParseTreeProperty<Long> startTicks = new ParseTreeProperty<>();
 
+    /** MObject - store the parse results for later conversion to the desired format */
+    List<MObject> mObject = new ArrayList<>();
+    
+    public MMLTransformBase()
+    {
+        instState = new StateInst();
+        partState = new StatePart();
+    }
+    
     Integer getMidiNote(ParserRuleContext ctx) {return ctx != null ? midiNotes.get(ctx) : null;}
     void saveMidiNote(ParserRuleContext ctx, int midiNote) {midiNotes.put(ctx, midiNote);}
 
-    long getNoteRestLength(ParserRuleContext ctx) {return noteRestLengths.get(ctx);};
+    long getNoteRestLength(ParserRuleContext ctx) {return noteRestLengths.get(ctx);}
     void saveNoteRestLength(ParserRuleContext ctx, long length) {noteRestLengths.put(ctx, length);}
 
     long getStartTicks(ParserRuleContext ctx) {return startTicks.get(ctx);}
@@ -41,16 +51,8 @@ public abstract class MMLTransformBase extends MMLBaseListener
     int getMMLVolume(ParserRuleContext ctx) {return mmlVolumes.get(ctx);}
     void saveMMLVolume(ParserRuleContext ctx, int volume) {mmlVolumes.put(ctx, volume);}
 
-    /** MObject - store the parse results for later conversion to the desired format */
-    List<MObject> mObject = new ArrayList<MObject>();
     void addMObject(MObject mmo) {mObject.add(mmo);}
     MObject getMObject(int index) {return mObject.get(index);}
-    
-    public MMLTransformBase(float fakeVolume)
-    {
-        partState = new StatePart();
-        instState = new StateInst();
-    }
 
     /**
      * <code>
@@ -129,16 +131,13 @@ public abstract class MMLTransformBase extends MMLBaseListener
     {
         if (ctx.OCTAVE() != null)
         {
-            char c = (char) ctx.OCTAVE().getText().charAt(0);
-            switch (c)
-            {
-            case '<':
+            char c = ctx.OCTAVE().getText().charAt(0);
+            if ('<' == c)
                 partState.downOctave();
-                break;
-            case '>':
+            else if ('>' == c)
                 partState.upOctave();
-                break;
-            }
+            else
+                ModLogger.error("MMLTransformBase.enterOctave: \'<\' or \'>\' expected but \'%c\' was parsed!", c);
         }
     }
 
@@ -150,14 +149,14 @@ public abstract class MMLTransformBase extends MMLBaseListener
     {
         partState.setTied(false);
 
-        List<StructTiedNotes> tiedNotes = new ArrayList<StructTiedNotes>();
+        List<StructTiedNotes> tiedNotes = new ArrayList<>();
         StructTiedNotes tiedNote = null;
 
         boolean isTied = false;
         long lengthTicks = 0;
-        int noteLeft = 0;
+        int noteLeft;
         int noteRight = 0;
-        AnoteContext ctxL = null;
+        AnoteContext ctxL;
         AnoteContext ctxR = null;
 
         List<AnoteContext> listAnotes = ctx.anote();
@@ -221,6 +220,13 @@ public abstract class MMLTransformBase extends MMLBaseListener
         } else
         {
             // LAST LONELY RIGHT NOTE
+            if (ctxR == null) try
+            {
+                throw new MMLParseException("MMLTransformBase.exitTied(...): Right note context, ctxR, unexpected null! Tied note count: " + count);
+            } catch (MMLParseException e)
+            {
+                ModLogger.error(e);
+            }
             tiedNote = new StructTiedNotes();
             tiedNote.startingTicks = getStartTicks(ctxR);
             lengthTicks = getNoteRestLength(ctxR);
@@ -248,11 +254,11 @@ public abstract class MMLTransformBase extends MMLBaseListener
         boolean dot = partState.isDotted();
         boolean tied = partState.isTied();
 
-        int rawNote = Integer.valueOf(ctx.NOTE().getText().toUpperCase().charAt(0));
+        int rawNote = ctx.NOTE().getText().toUpperCase().charAt(0);
         int midiNote = MMLUtil.getMIDINote(rawNote, partState.getOctave());
         if (ctx.ACC() != null)
         {
-            char c = (char) ctx.ACC().getText().charAt(0);
+            char c = ctx.ACC().getText().charAt(0);
             switch (c)
             {
             case '+':
@@ -262,6 +268,8 @@ public abstract class MMLTransformBase extends MMLBaseListener
             case '-':
                 midiNote--;
                 break;
+            default:
+                // NOP
             }
         }
         if (ctx.INT() != null)
@@ -307,7 +315,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
         int midiNote = 0;
         if (ctx.INT() != null)
         {
-            // XXX: "n#" format is not played correctly. One octave too low. CF Issue #6. Add 12 to fix.
+            // "n#" format is not played correctly. One octave too low. CF Issue #6. Add 12 to fix.
             midiNote = Integer.valueOf(ctx.INT().getText()) + 12;
         }
         long lengthTicks = durationTicks(mmlLength, dot);
@@ -363,9 +371,10 @@ public abstract class MMLTransformBase extends MMLBaseListener
     @Override
     public void enterCmd(MMLParser.CmdContext ctx)
     {
-        if (ctx.INT() == null) return;
-        char c = (char) ctx.CMD().getText().toUpperCase().charAt(0);
-        int value = Integer.valueOf(ctx.INT().getText());
+        if (ctx.INT() == null)
+            return;
+        char c = ctx.CMD().getText().toUpperCase().charAt(0);
+        int value = Integer.parseInt(ctx.INT().getText());
         switch (c)
         {
         case 'I':
@@ -392,6 +401,8 @@ public abstract class MMLTransformBase extends MMLBaseListener
         case 'V':
             partState.setVolume(value);
             break;
+        default:
+            // NOP
         }
 
     }
@@ -399,10 +410,10 @@ public abstract class MMLTransformBase extends MMLBaseListener
     @Override
     public void enterLen(LenContext ctx)
     {
-        if (ctx.INT() == null) return;
+        if (ctx.INT() == null)
+            return;
         boolean dotted = false;
-        // char c = (char) ctx.LEN().getText().toUpperCase().charAt(0);
-        int value = Integer.valueOf(ctx.INT().getText());
+        int value = Integer.parseInt(ctx.INT().getText());
         if (!ctx.DOT().isEmpty())
         {
             dotted = true;

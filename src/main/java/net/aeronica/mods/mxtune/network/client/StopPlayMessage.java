@@ -18,58 +18,37 @@ package net.aeronica.mods.mxtune.network.client;
 
 import java.io.IOException;
 
-import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class StopPlayMessage extends AbstractClientMessage<StopPlayMessage>
 {
 
-    private Integer playID;
+    int playID;
 
-    public StopPlayMessage() {}
+    public StopPlayMessage() {/* Required by the PacketDispacher */}
 
-    public StopPlayMessage(Integer playID) {this.playID = playID;}
+    public StopPlayMessage(int playID) {this.playID = playID;}
 
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
-        playID = ByteBufUtils.readVarInt(buffer, 5);
+        playID = buffer.readInt();
     }
 
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
-        ByteBufUtils.writeVarInt(buffer, playID, 5);
+        buffer.writeInt(playID);
     }
 
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        if (side.isClient())
-        {
-            handleClientSide(player);
-        } else
-        {
-            handleServerSide(player);
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    public void handleClientSide(EntityPlayer playerSP)
-    {
-        // TODO: More Cleanup for playing - resetting all the players PlayStatuses
         ClientAudio.stop(playID);
-    }
-
-    public void handleServerSide(EntityPlayer playerMP)
-    {
-        //PlayManager.stopPlayID(playID);
     }
 
 }

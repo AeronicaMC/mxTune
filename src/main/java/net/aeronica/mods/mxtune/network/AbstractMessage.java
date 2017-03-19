@@ -120,7 +120,7 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
     {
         if (!msg.isValidOnSide(ctx.side))
         {
-            throw new RuntimeException("Invalid side " + ctx.side.name() + " for " + msg.getClass().getSimpleName());
+            throw new NetworkMessageRuntimeException("Invalid side " + ctx.side.name() + " for " + msg.getClass().getSimpleName());
         } else if (msg.requiresMainThread())
         {
             checkThreadAndEnqueue(msg, ctx);

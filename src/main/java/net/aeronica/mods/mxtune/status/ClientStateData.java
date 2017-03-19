@@ -47,7 +47,7 @@ public class ClientStateData implements Serializable
         return csd != null ? this.midiAvailable == csd.midiAvailable && this.masterVolumeOn == csd.masterVolumeOn && this.mxtuneVolumeOn == csd.mxtuneVolumeOn : false;
     }
     
-    public boolean isGood() {return this.midiAvailable==true && this.masterVolumeOn==true && this.mxtuneVolumeOn==true;}
+    public boolean isGood() {return this.midiAvailable && this.masterVolumeOn && this.mxtuneVolumeOn;}
     
     @Override
     public String toString()

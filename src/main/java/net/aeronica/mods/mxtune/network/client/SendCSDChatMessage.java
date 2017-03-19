@@ -16,13 +16,10 @@
  */
 package net.aeronica.mods.mxtune.network.client;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
+import net.aeronica.mods.mxtune.network.bidirectional.ClientStateDataMessage;
 import net.aeronica.mods.mxtune.status.CSDChatStatus;
 import net.aeronica.mods.mxtune.status.ClientStateData;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,43 +29,22 @@ import net.minecraftforge.fml.relauncher.Side;
 public class SendCSDChatMessage extends AbstractClientMessage<SendCSDChatMessage>
 {
 
-    private ClientStateData csd;
-    private byte[] byteBuffer = null;
+    ClientStateData csd;
     
-    public SendCSDChatMessage() {}
+    public SendCSDChatMessage() {/* Required by the PacketDispacher */}
     
     public SendCSDChatMessage(ClientStateData csd) {this.csd = csd;}
     
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
-        // Deserialize data object from a byte array
-        byteBuffer = buffer.readByteArray();
-        ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
-        ObjectInputStream in = new ObjectInputStream(bis) ;
-        try
-        {
-            csd = (ClientStateData) in.readObject();
-        } catch (ClassNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-        in.close();  
+        this.csd = ClientStateDataMessage.readCSD(buffer);
     }
 
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
-        // Serialize data object to a byte array
-        ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
-        ObjectOutputStream out = new ObjectOutputStream(bos) ;
-        out.writeObject(csd);
-        out.close();
-
-        // Get the bytes of the serialized object
-        byteBuffer = bos.toByteArray();
-
-        buffer.writeByteArray(byteBuffer);
+        ClientStateDataMessage.writeCSD(buffer, this.csd);
     }
 
     @Override

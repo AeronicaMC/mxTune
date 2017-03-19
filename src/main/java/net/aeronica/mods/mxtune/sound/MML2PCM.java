@@ -61,7 +61,9 @@ public class MML2PCM
         this.playerMML = GROUPS.deserializeIntStrMap(musicText);
         if (playerMML == null)
         {
-            ModLogger.debug("playerMML is null! Check for an issue with NBT, networking, threads");
+            ModLogger.error("MML2PCM playerMML is null! Check for an issue with NBT, networking, threads. PlayID", playID, musicText);
+            ModLogger.error("MML2PCM PlayID: %d", playID);
+            ModLogger.error("MML2PCM MML: %s", musicText.substring(0, musicText.length() >= 60 ? 60 : musicText.length()));
             ClientAudio.setPlayIDAudioDataStatus(playID, Status.ERROR);
             return false;
         }
@@ -84,22 +86,22 @@ public class MML2PCM
             mmlBuf = mml.toString().getBytes("US-ASCII");
         } catch (UnsupportedEncodingException e)
         {
-            e.printStackTrace();
+            ModLogger.error(e);
             ClientAudio.setPlayIDAudioDataStatus(playID, Status.ERROR);
             return false;
         }
         is = new java.io.ByteArrayInputStream(mmlBuf);
 
         /** ANTLR4 MML Parser BEGIN */
-        MMLToMIDI mmlTrans = new MMLToMIDI(1.0F);
+        MMLToMIDI mmlTrans = new MMLToMIDI();
         ANTLRInputStream input = null;
 
         try
         {
             input = new ANTLRInputStream(is);
-        } catch (IOException e1)
+        } catch (IOException e)
         {
-            e1.printStackTrace();
+            ModLogger.error(e);
             ClientAudio.setPlayIDAudioDataStatus(playID, Status.ERROR);
             return false;
         }
@@ -118,16 +120,16 @@ public class MML2PCM
         Integer[] patches = new Integer[mmlTrans.getPatches().size()];
         mmlTrans.getPatches().toArray(patches);
         for (int patch: patches)
-            ModLogger.info("  Patches: " + patch);
-        Midi2WavRenderer mw;
+            ModLogger.info("MML2PCM Patch: " + patch);
+      
         try
         {
-            mw = new Midi2WavRenderer();
+            Midi2WavRenderer mw = new Midi2WavRenderer();
             AudioInputStream ais = mw.createPCMStream(mmlTrans.getSequence(), patches, ClientAudio.getAudioFormat(playID));
             ClientAudio.setPlayIDAudioStream(playID, ais);
         } catch (MidiUnavailableException | InvalidMidiDataException | IOException e)
         {
-            e.printStackTrace();
+            ModLogger.error(e);
             ClientAudio.setPlayIDAudioDataStatus(playID, Status.ERROR);
             return false;
         }

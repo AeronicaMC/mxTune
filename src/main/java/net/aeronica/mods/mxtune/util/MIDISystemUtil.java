@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.sound.midi.Instrument;
 import javax.sound.midi.InvalidMidiDataException;
@@ -29,6 +28,8 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Soundbank;
 import javax.sound.midi.Synthesizer;
+
+import com.sun.media.sound.AudioSynthesizer;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.config.ModConfig;
@@ -40,6 +41,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SuppressWarnings("restriction")
 @SideOnly(Side.CLIENT)
 public enum MIDISystemUtil
 {
@@ -53,12 +55,12 @@ public enum MIDISystemUtil
     private static boolean soundBankAvailable = false;
     private static boolean midiAvailable = false;
     private static int timesToWarn = 10;
-    private static List<TextComponentString> chatStatus = new ArrayList<TextComponentString>();
+    private static List<TextComponentString> chatStatus = new ArrayList<>();
 
     public static void mxTuneInit()
     {
         midiDeviceInfo = MidiSystem.getMidiDeviceInfo();
-        Vector<MidiDevice.Info> synthInfos = new Vector<MidiDevice.Info>();
+        List<MidiDevice.Info> synthInfos = new ArrayList<>();
         MidiDevice device = null;
         int maxPolyphony = 0;
         Synthesizer testSynth = null;
@@ -68,10 +70,12 @@ public enum MIDISystemUtil
             try {
                 device = MidiSystem.getMidiDevice(midiDeviceInfo[i]);
             } catch (MidiUnavailableException e) {
-                e.printStackTrace();
+                ModLogger.error(e);
                 midiAvailable = false;
+            } finally {
+                device.close();
             }
-            if (device instanceof Synthesizer) {
+            if (device instanceof AudioSynthesizer) {
                 synthInfos.add(midiDeviceInfo[i]);
                 synthAvailable = true;
             }
@@ -84,11 +88,11 @@ public enum MIDISystemUtil
             ModLogger.debug(info.getVersion());
             try
             {
-                testSynth = (Synthesizer) MidiSystem.getMidiDevice(info);
+                testSynth = (AudioSynthesizer) MidiSystem.getMidiDevice(info);
             } catch (MidiUnavailableException e)
             {
+                ModLogger.error(e);
                 synthAvailable = false;
-                e.printStackTrace();
             }
             finally
             {
@@ -101,6 +105,7 @@ public enum MIDISystemUtil
                         bestSynth =  testSynth;
                     }
                 }
+                testSynth.close();
             }
         }
         if (bestSynth != null && synthAvailable)
@@ -110,7 +115,7 @@ public enum MIDISystemUtil
                 soundBank = MidiSystem.getSoundbank(getMXTuneSB());
             } catch (InvalidMidiDataException | IOException e)
             {
-                e.printStackTrace();
+                ModLogger.error(e);
                 soundBank = null;
             }
             if (soundBank != null)
