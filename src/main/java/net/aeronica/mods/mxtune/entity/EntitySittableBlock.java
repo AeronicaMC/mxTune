@@ -50,101 +50,80 @@ import net.minecraft.world.World;
 
 public class EntitySittableBlock extends Entity
 {
-    
-    private static final DataParameter<Boolean> SHOULD_SIT = EntityDataManager.<Boolean> createKey(EntitySittableBlock.class, DataSerializers.BOOLEAN);
-    private static final DataParameter<BlockPos> BLOCK_POS = EntityDataManager.<BlockPos> createKey(EntitySittableBlock.class, DataSerializers.BLOCK_POS);
-    public int blockPosX = 0;
-    public int blockPosY = 0;
-    public int blockPosZ = 0;
-    public float yaw;
-    private Integer playID = null;
 
-    public void setPlayID(Integer playID)
-    {
-        this.playID = playID;
-    }
-
-    public Integer getPlayID()
-    {
-        return playID;
-    }
-
-    public BlockPos getBlockPos()
-    {
-        return ((BlockPos) this.dataManager.get(BLOCK_POS)).toImmutable();
-    }
+    static final DataParameter<Boolean> SHOULD_SIT = EntityDataManager.<Boolean> createKey(EntitySittableBlock.class, DataSerializers.BOOLEAN);
+    static final DataParameter<BlockPos> BLOCK_POS = EntityDataManager.<BlockPos> createKey(EntitySittableBlock.class, DataSerializers.BLOCK_POS);
+    BlockPos blockPos;
+    float yaw;
+    Integer playID = null;
     
     public EntitySittableBlock(World world)
     {
         super(world);
+        blockPos = BlockPos.ORIGIN;
         this.noClip = true;
         this.height = 0.0001F;
         this.width = 0.0001F;
         this.dataManager.set(SHOULD_SIT, Boolean.valueOf(true));
-        this.dataManager.set(BLOCK_POS, new BlockPos(0,0,0));
+        this.dataManager.set(BLOCK_POS,blockPos);
     }
 
     /** Allow riding standing up if shouldRiderSit is false */
-    public EntitySittableBlock(World world, double x, double y, double z, double y0ffset, boolean shouldRiderSit)
+    public EntitySittableBlock(World world, BlockPos posIn, double y0ffset, boolean shouldRiderSit)
     {
         this(world);
-        this.blockPosX = (int) x;
-        this.blockPosY = (int) y;
-        this.blockPosZ = (int) z;
-        setPosition(x + 0.5D, y + y0ffset, z + 0.5D);
+        this.blockPos = posIn;
+        setPosition(posIn.getX() + 0.5D, posIn.getY() + y0ffset, posIn.getZ() + 0.5D);
         this.dataManager.set(SHOULD_SIT, Boolean.valueOf(shouldRiderSit));
-        this.dataManager.set(BLOCK_POS, new BlockPos(blockPosX,blockPosY,blockPosZ));
+        this.dataManager.set(BLOCK_POS, posIn);
     }
 
-    public EntitySittableBlock(World world, double x, double y, double z, double xOffset, double yOffset, double zOffset)
+    public EntitySittableBlock(World world, BlockPos posIn, double xOffset, double yOffset, double zOffset)
     {
         this(world);
-        this.blockPosX = (int) x;
-        this.blockPosY = (int) y;
-        this.blockPosZ = (int) z;
-        setPosition(x + xOffset, y + yOffset, z + zOffset);
+        this.blockPos = posIn;
+        setPosition(posIn.getX() + xOffset, posIn.getY() + yOffset, posIn.getZ() + zOffset);
         this.dataManager.set(SHOULD_SIT, Boolean.valueOf(true));
-        this.dataManager.set(BLOCK_POS, new BlockPos(blockPosX,blockPosY,blockPosZ));
+        this.dataManager.set(BLOCK_POS, posIn);
     }
 
-    public EntitySittableBlock(World world, double x, double y, double z, double xOffset, double yOffset, double zOffset, float yaw)
+    public EntitySittableBlock(World world, BlockPos posIn, double xOffset, double yOffset, double zOffset, float yaw)
     {
         this(world);
-        this.blockPosX = (int) x;
-        this.blockPosY = (int) y;
-        this.blockPosZ = (int) z;
+        this.blockPos = posIn;
         this.yaw = yaw;
-        this.setPositionAndRotation(x + xOffset, y + yOffset, z + zOffset, yaw, 0);
+        this.setPositionAndRotation(posIn.getX() + xOffset, posIn.getY() + yOffset, posIn.getZ() + zOffset, yaw, 0);
         this.dataManager.set(SHOULD_SIT, Boolean.valueOf(true));
-        this.dataManager.set(BLOCK_POS, new BlockPos(blockPosX,blockPosY,blockPosZ));
+        this.dataManager.set(BLOCK_POS, posIn);
     }
 
-    public EntitySittableBlock(World world, double x, double y, double z, double y0ffset, int rotation, double rotationOffset)
+    public EntitySittableBlock(World world, BlockPos posIn, double y0ffset, int rotation, double rotationOffset)
     {
         this(world);
-        this.blockPosX = (int) x;
-        this.blockPosY = (int) y;
-        this.blockPosZ = (int) z;
-        setPostionConsideringRotation(x + 0.5D, y + y0ffset, z + 0.5D, rotation, rotationOffset);
+        this.blockPos = posIn;
+        setPostionConsideringRotation(posIn.getX() + 0.5D, posIn.getY() + y0ffset, posIn.getZ() + 0.5D, rotation, rotationOffset);
         this.dataManager.set(SHOULD_SIT, Boolean.valueOf(true));
-        this.dataManager.set(BLOCK_POS, new BlockPos(blockPosX,blockPosY,blockPosZ));
+        this.dataManager.set(BLOCK_POS, posIn);
     }
 
-    public void setPostionConsideringRotation(double x, double y, double z, int rotation, double rotationOffset)
+    private void setPostionConsideringRotation(double xIn, double yIn, double zIn, int rotationIn, double rotationOffsetIn)
     {
-        switch (rotation)
+        double x = xIn;
+        double y = yIn;
+        double z = zIn;
+        switch (rotationIn)
         {
         case 2:
-            z += rotationOffset;
+            z += rotationOffsetIn;
             break;
         case 0:
-            z -= rotationOffset;
+            z -= rotationOffsetIn;
             break;
         case 3:
-            x -= rotationOffset;
+            x -= rotationOffsetIn;
             break;
         case 1:
-            x += rotationOffset;
+            x += rotationOffsetIn;
             break;
         }
         setPosition(x, y, z);
@@ -159,9 +138,7 @@ public class EntitySittableBlock extends Entity
     @Override
     public void onEntityUpdate()
     {
-        if (!this.world.isRemote &&
-                ((this.getPassengers().isEmpty() && !this.isDead) ||
-                        this.world.isAirBlock(new BlockPos(blockPosX, blockPosY, blockPosZ))))
+        if (!this.world.isRemote && ((this.getPassengers().isEmpty() && !this.isDead) || ( this.world.isAirBlock(blockPos))))
         {
             this.setDead();
             world.updateComparatorOutputLevel(getPosition(), world.getBlockState(getPosition()).getBlock());
@@ -173,7 +150,7 @@ public class EntitySittableBlock extends Entity
     protected void entityInit()
     {
         this.dataManager.register(SHOULD_SIT, Boolean.valueOf(true));
-        this.dataManager.register(BLOCK_POS, new BlockPos(blockPosX, blockPosY, blockPosZ));
+        this.dataManager.register(BLOCK_POS, blockPos);
     }
 
     @Override
@@ -184,5 +161,41 @@ public class EntitySittableBlock extends Entity
 
     @Override
     public boolean shouldRiderSit() {return ((Boolean) this.dataManager.get(SHOULD_SIT)).booleanValue();}
+
+    public BlockPos getMountedPosition() {return blockPos;}
+
+    public float getYaw() {return yaw;}
     
+    public void setPlayID(Integer playID)
+    {
+        this.playID = playID;
+    }
+
+    public Integer getPlayID()
+    {
+        return playID;
+    }
+
+    public BlockPos getBlockPos()
+    {
+        return (this.dataManager.get(BLOCK_POS)).toImmutable();
+    }
+    
+    @Override
+    public boolean equals(Object otherEntity)
+    {
+        // Entities are unique in each world so there should never be a case where they are equal
+        // At the the super class level they are tested by their assigned entityID.
+        // Overridden as a SonarQube recommendation
+        return super.equals(otherEntity);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        // At the the super class level the hash code is the entityID.
+        // Overridden as a SonarQube recommendation
+        return super.hashCode();
+    }
+
 }

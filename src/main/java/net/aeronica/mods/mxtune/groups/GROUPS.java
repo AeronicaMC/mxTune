@@ -28,12 +28,18 @@ import com.google.common.collect.Sets;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.config.ModConfig;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;
 
-public enum GROUPS
+public class GROUPS
 {
-    GROUP_ADD, MEMBER_ADD, MEMBER_REMOVE, MEMBER_PROMOTE, QUEUED, PLAYING;
+    public static final int GROUP_ADD = 1;
+    public static final int MEMBER_ADD = 2;
+    public static final int MEMBER_REMOVE =3;
+    public static final int MEMBER_PROMOTE = 4;
+    public static final int QUEUED = 5;
+    public static final int PLAYING = 6;
 
     public static final int MAX_MEMBERS = 8;
 
@@ -43,7 +49,7 @@ public enum GROUPS
     private static Map<Integer, Integer> clientMembers;
     private static ListMultimap<Integer, Integer> groupsMembers;
     /* PlayManager */
-    private static Map<Integer, String> membersQueuedStatus;
+    private static Map<Integer, Integer> membersQueuedStatus;
     private static Map<Integer, Integer> membersPlayID;
     private static Set<Integer> activePlayIDs;
 
@@ -127,20 +133,21 @@ public enum GROUPS
         int result = 0;
         if (GROUPS.membersQueuedStatus != null && GROUPS.membersQueuedStatus.containsKey(playerID))
         {
-            switch (GROUPS.valueOf(GROUPS.membersQueuedStatus.get(playerID)))
+            switch (GROUPS.membersQueuedStatus.get(playerID))
             {
             case QUEUED:
                 result = 1;
                 break;
             case PLAYING:
                 result = 2;
+                break;
             default:
             }
         }
         return result + (GROUPS.isLeader(playerID) ? 8 : 0);
     }
     
-    public static Map<Integer, String> getClientPlayStatuses()
+    public static Map<Integer, Integer> getClientPlayStatuses()
     {
         return membersQueuedStatus;
     }
@@ -162,22 +169,25 @@ public enum GROUPS
         return members;
     }
     
-    public static Vec3d getMedianPos(Integer playID)
+    public static Vec3d getMedianPos(int playID)
     {
-        double x, y, z; x = y = z = 0;
+        double x, y, z;
+        x = y = z = 0;
         int count = 0;
         Vec3d pos;
-        for(Integer member: getMembersByPlayID(playID))
+        for(int member: getMembersByPlayID(playID))
         {   
             EntityPlayer player = (EntityPlayer)  MXTuneMain.proxy.getClientPlayer().getEntityWorld().getEntityByID(member);
-            if(player == null) continue;
+            if(player == null)
+                continue;
             x = x + player.getPositionVector().xCoord;
             y = y + player.getPositionVector().yCoord;
             z = z + player.getPositionVector().zCoord;
             count++;
         }            
 
-        if (count == 0) return new Vec3d(0,0,0);
+        if (count == 0)
+            return Vec3d.ZERO;
         x/=count;
         y/=count;
         z/=count;
@@ -248,7 +258,7 @@ public enum GROUPS
 
     public static void setClientPlayStatuses(String clientPlayStatuses)
     {
-        GROUPS.membersQueuedStatus = deserializeIntStrMap(clientPlayStatuses);
+        GROUPS.membersQueuedStatus = deserializeIntIntMap(clientPlayStatuses);
     }
         
     public static Map<Integer, Integer> getPlayIDMembers()
@@ -290,13 +300,14 @@ public enum GROUPS
         {
             Map<String, String> inStringString =  (Map<String, String>) Splitter.on('|').omitEmptyStrings().withKeyValueSeparator("=").split(mapIntString);
             Map<Integer, Integer> outIntInt = new HashMap<Integer, Integer>();
-            for (String id: inStringString.keySet())
+            for (Map.Entry<String,String> entry: inStringString.entrySet())
             {
-                outIntInt.put(Integer.valueOf(id), Integer.valueOf(inStringString.get(id)));
+                outIntInt.put(Integer.valueOf(entry.getKey()), Integer.valueOf(entry.getValue()));
             }
             return outIntInt;
         } catch (IllegalArgumentException e)
         {
+            ModLogger.error(e);
             return null;
         }
     }
@@ -315,7 +326,7 @@ public enum GROUPS
             }
         } catch (Exception e)
         {
-            e.printStackTrace();
+            ModLogger.error(e);
         }
         return serializedIntIntMap.toString();
     }
@@ -332,13 +343,14 @@ public enum GROUPS
         {
             Map<String, String> inStringString =  (Map<String, String>) Splitter.on('|').omitEmptyStrings().withKeyValueSeparator("=").split(hashTableString);
             ListMultimap<Integer, Integer> outListMultimapIntInt = ArrayListMultimap.create();
-            for (String id: inStringString.keySet())
+            for (Map.Entry<String,String> entry: inStringString.entrySet())
             {
-                outListMultimapIntInt.put(Integer.valueOf(inStringString.get(id)), Integer.valueOf(id));
+                outListMultimapIntInt.put(Integer.valueOf(entry.getValue()), Integer.valueOf(entry.getKey()));
             }
             return outListMultimapIntInt;
         } catch (IllegalArgumentException e)
         {
+            ModLogger.error(e);
             return null;
         }
 
@@ -350,14 +362,14 @@ public enum GROUPS
         {
             Map<String, String> inStringString =  (Map<String, String>) Splitter.on('|').omitEmptyStrings().withKeyValueSeparator("=").split(mapIntString);
             Map<Integer, String> outIntString = new HashMap<Integer, String>();
-            for (String id: inStringString.keySet())
+            for (Map.Entry<String,String> entry: inStringString.entrySet())
             {
-                outIntString.put(Integer.valueOf(id), inStringString.get(id));
+                outIntString.put(Integer.valueOf(entry.getKey()), entry.getValue());
             }
             return outIntString;
         } catch (IllegalArgumentException e)
         {
-            e.printStackTrace();
+            ModLogger.error(e);
             return null;
         }
     }
@@ -376,7 +388,7 @@ public enum GROUPS
             }
         } catch (Exception e)
         {
-            e.printStackTrace();
+            ModLogger.error(e);
         }
         return serializedIntStrMap.toString();
     }
@@ -395,7 +407,7 @@ public enum GROUPS
             }
         } catch (Exception e)
         {
-            e.printStackTrace();
+            ModLogger.error(e);
         }
         return deserializedSet;
     }
@@ -413,7 +425,7 @@ public enum GROUPS
             }
         } catch (Exception e)
         {
-            e.printStackTrace();
+            ModLogger.error(e);
         }
         return serializedSet.toString();        
     }

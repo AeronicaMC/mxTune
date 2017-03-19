@@ -57,12 +57,17 @@ public class GuiMusicOptions extends GuiScreen
     private static final String LABEL_BLACKLIST  = I18n.format("mxtune.gui.musicOptions.label.blacklist");
     private static final String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
 
-    private GuiButtonExt btn_muteOption;
-    private GuiButtonExt btn_cancel, btn_done, btn_adj_hud;
-    private GuiButtonExt btn_white_to_players, btn_players_to_white, btn_black_to_players, btn_players_to_black;
-    private GuiPlayerList lst_players;
-    private GuiWhiteList lst_white;
-    private GuiBlackList lst_black;
+    private GuiButtonExt buttonMuteOption;
+    private GuiButtonExt buttonCancel;
+    private GuiButtonExt buttonDone;
+    private GuiButtonExt buttonAdjHud;
+    private GuiButtonExt buttonWhiteToPlayers;
+    private GuiButtonExt buttonPlayersToWhite;
+    private GuiButtonExt buttonBlackToPlayers;
+    private GuiButtonExt buttonPlayersToBlack;
+    private GuiPlayerList listBoxPlayers;
+    private GuiWhiteList listBoxWhite;
+    private GuiBlackList listBoxBlack;
     
     private EntityPlayer player;
     private int muteOption;
@@ -105,9 +110,9 @@ public class GuiMusicOptions extends GuiScreen
     public void updateScreen()
     {
         updateGuiElments();
-        selectedPlayerIndex = this.lst_players.selectedIndex(playerList.indexOf(selectedPlayerList));
-        selectedWhiteIndex = this.lst_white.selectedIndex(whiteList.indexOf(selectedWhiteList));
-        selectedBlackIndex = this.lst_black.selectedIndex(blackList.indexOf(selectedBlackList));
+        selectedPlayerIndex = this.listBoxPlayers.selectedIndex(playerList.indexOf(selectedPlayerList));
+        selectedWhiteIndex = this.listBoxWhite.selectedIndex(whiteList.indexOf(selectedWhiteList));
+        selectedBlackIndex = this.listBoxBlack.selectedIndex(blackList.indexOf(selectedBlackList));
         super.updateScreen();
     }
 
@@ -120,35 +125,35 @@ public class GuiMusicOptions extends GuiScreen
         
         int y = (height - 100) / 2;
         int x = (width - (playerListWidth + whiteListWidth + blackListWidth + 24 + 24)) / 2;
-        lst_white = new GuiWhiteList(this, whiteList, x, whiteListWidth, this.getFontRenderer().FONT_HEIGHT + 2);
-        btn_white_to_players = new GuiButtonExt(11, lst_white.getRight()+2, y, 20, 20, ">");
-        btn_players_to_white = new GuiButtonExt(12, lst_white.getRight()+2, y + 25, 20, 20, "<");
-        lst_players = new GuiPlayerList(this, playerList, playerListWidth, this.getFontRenderer().FONT_HEIGHT + 2);
-        btn_players_to_black = new GuiButtonExt(13, lst_players.getRight()+2, y, 20, 20, ">");
-        btn_black_to_players = new GuiButtonExt(14, lst_players.getRight()+2, y + 25, 20, 20, "<");
-        lst_black = new GuiBlackList(this, blackList, blackListWidth, this.getFontRenderer().FONT_HEIGHT + 2);
+        listBoxWhite = new GuiWhiteList(this, whiteList, x, whiteListWidth, this.getFontRenderer().FONT_HEIGHT + 2);
+        buttonWhiteToPlayers = new GuiButtonExt(11, listBoxWhite.getRight()+2, y, 20, 20, ">");
+        buttonPlayersToWhite = new GuiButtonExt(12, listBoxWhite.getRight()+2, y + 25, 20, 20, "<");
+        listBoxPlayers = new GuiPlayerList(this, playerList, playerListWidth, this.getFontRenderer().FONT_HEIGHT + 2);
+        buttonPlayersToBlack = new GuiButtonExt(13, listBoxPlayers.getRight()+2, y, 20, 20, ">");
+        buttonBlackToPlayers = new GuiButtonExt(14, listBoxPlayers.getRight()+2, y + 25, 20, 20, "<");
+        listBoxBlack = new GuiBlackList(this, blackList, blackListWidth, this.getFontRenderer().FONT_HEIGHT + 2);
 
         int buttonWidth = 100;
         y = height - 100 + 4 + 5;
-        x = lst_black.getRight() - buttonWidth + 2;
-        btn_done = new GuiButtonExt(3, x, y, buttonWidth, 20, I18n.format("gui.done"));
-        btn_cancel = new GuiButtonExt(2, x, y+22, buttonWidth, 20, I18n.format("gui.cancel"));
+        x = listBoxBlack.getRight() - buttonWidth + 2;
+        buttonDone = new GuiButtonExt(3, x, y, buttonWidth, 20, I18n.format("gui.done"));
+        buttonCancel = new GuiButtonExt(2, x, y+22, buttonWidth, 20, I18n.format("gui.cancel"));
 
         y = height - 100 + 4 + 5;
-        x = lst_white.getRight() - whiteListWidth - 2;
+        x = listBoxWhite.getRight() - whiteListWidth - 2;
         buttonWidth = 225;
-        btn_muteOption = new GuiButtonExt(0, x, y, buttonWidth, 20, (MusicOptionsUtil.EnumMuteOptions.byMetadata(muteOption).toString()));
-        btn_adj_hud = new GuiButtonExt(4, x, y+=22, buttonWidth, 20, I18n.format("mxtune.gui.musicOptions.adj_hud"));
+        buttonMuteOption = new GuiButtonExt(0, x, y, buttonWidth, 20, (MusicOptionsUtil.EnumMuteOptions.byMetadata(muteOption).toString()));
+        buttonAdjHud = new GuiButtonExt(4, x, y+=22, buttonWidth, 20, I18n.format("mxtune.gui.musicOptions.adj_hud"));
         
-        this.buttonList.add(btn_white_to_players);
-        this.buttonList.add(btn_players_to_white);
-        this.buttonList.add(btn_players_to_black);
-        this.buttonList.add(btn_black_to_players);
+        this.buttonList.add(buttonWhiteToPlayers);
+        this.buttonList.add(buttonPlayersToWhite);
+        this.buttonList.add(buttonPlayersToBlack);
+        this.buttonList.add(buttonBlackToPlayers);
         
-        this.buttonList.add(btn_muteOption);
-        this.buttonList.add(btn_cancel);
-        this.buttonList.add(btn_done);
-        this.buttonList.add(btn_adj_hud);
+        this.buttonList.add(buttonMuteOption);
+        this.buttonList.add(buttonCancel);
+        this.buttonList.add(buttonDone);
+        this.buttonList.add(buttonAdjHud);
         
         reloadState();
     }
@@ -157,9 +162,9 @@ public class GuiMusicOptions extends GuiScreen
     {
         if (!isStateCached) return;
         
-        this.lst_players.elementClicked(this.cachedSelectedPlayerIndex, false);
-        this.lst_white.elementClicked(this.cachedSelectedWhiteIndex, false);
-        this.lst_black.elementClicked(this.cachedSelectedBlackIndex, false);
+        this.listBoxPlayers.elementClicked(this.cachedSelectedPlayerIndex, false);
+        this.listBoxWhite.elementClicked(this.cachedSelectedWhiteIndex, false);
+        this.listBoxBlack.elementClicked(this.cachedSelectedBlackIndex, false);
         updateButtonState();
     }
     
@@ -174,7 +179,7 @@ public class GuiMusicOptions extends GuiScreen
     
     private void updateButtonState()
     {
-        
+       /* unused */ 
     }
     
     @Override
@@ -192,24 +197,24 @@ public class GuiMusicOptions extends GuiScreen
         getFontRenderer().drawStringWithShadow(localTITLE, posX, posY, 0xD3D3D3);
         
         /** draw list names - Whitelist */
-        posX = (this.lst_white.getRight() - whiteListWidth / 2) - (getFontRenderer().getStringWidth(LABEL_WHITELIST) / 2);
+        posX = (this.listBoxWhite.getRight() - whiteListWidth / 2) - (getFontRenderer().getStringWidth(LABEL_WHITELIST) / 2);
         posY = 20;
         getFontRenderer().drawStringWithShadow(LABEL_WHITELIST, posX, posY, 0xD3D3D3);
 
         /** Players list */
-        posX = this.lst_players.getRight() - playerListWidth / 2 - (getFontRenderer().getStringWidth(LABEL_PLAYERS) / 2);
+        posX = this.listBoxPlayers.getRight() - playerListWidth / 2 - (getFontRenderer().getStringWidth(LABEL_PLAYERS) / 2);
         posY = 20;
         getFontRenderer().drawStringWithShadow(LABEL_PLAYERS, posX, posY, 0xD3D3D3);
 
         /** Blacklist */
-        posX = this.lst_black.getRight() - blackListWidth / 2 - (getFontRenderer().getStringWidth(LABEL_BLACKLIST) / 2);
+        posX = this.listBoxBlack.getRight() - blackListWidth / 2 - (getFontRenderer().getStringWidth(LABEL_BLACKLIST) / 2);
         posY = 20;
         getFontRenderer().drawStringWithShadow(LABEL_BLACKLIST, posX, posY, 0xD3D3D3);
 
         
-        lst_white.drawScreen(mouseX, mouseY, partialTicks);
-        lst_players.drawScreen(mouseX, mouseY, partialTicks);
-        lst_black.drawScreen(mouseX, mouseY, partialTicks);
+        listBoxWhite.drawScreen(mouseX, mouseY, partialTicks);
+        listBoxPlayers.drawScreen(mouseX, mouseY, partialTicks);
+        listBoxBlack.drawScreen(mouseX, mouseY, partialTicks);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
@@ -226,7 +231,7 @@ public class GuiMusicOptions extends GuiScreen
         case 0:
             /** Increment Mute Option */
             this.muteOption = ((++this.muteOption) % MusicOptionsUtil.EnumMuteOptions.values().length);
-            btn_muteOption.displayString = MusicOptionsUtil.EnumMuteOptions.byMetadata(muteOption).toString();
+            buttonMuteOption.displayString = MusicOptionsUtil.EnumMuteOptions.byMetadata(muteOption).toString();
           break;
 
         case 1:
@@ -236,10 +241,11 @@ public class GuiMusicOptions extends GuiScreen
         case 3:
             /** done */
             sendOptionsToServer(this.muteOption);
+            cleanup();
+            break;
         case 2:
             /** cancel */
-            mc.displayGuiScreen(null);
-            mc.setIngameFocus();
+            cleanup();
             break;
         case 4:
             /** Adjust HUD */
@@ -247,31 +253,27 @@ public class GuiMusicOptions extends GuiScreen
             this.mc.displayGuiScreen(new GuiHudAdjust());
             break;
         case 11:
-            if (this.selectedWhiteIndex == -1 | this.selectedWhiteIndex > this.whiteList.size()) break;
+            if (this.selectedWhiteIndex == -1 || this.selectedWhiteIndex > this.whiteList.size()) break;
             t = this.whiteList.get(this.selectedWhiteIndex);
             this.whiteList.remove(this.selectedWhiteIndex);
-            //this.selectedWhiteIndex = -1;
             this.playerList.add(t);
             break;            
         case 12:
-            if (this.selectedPlayerIndex == -1 | this.selectedPlayerIndex > this.playerList.size()) break;
+            if (this.selectedPlayerIndex == -1 || this.selectedPlayerIndex > this.playerList.size()) break;
             t = this.playerList.get(this.selectedPlayerIndex);
             this.playerList.remove(this.selectedPlayerIndex);
-            //this.selectedPlayerIndex = -1;
             this.whiteList.add(t);
             break;
         case 13:
-            if (this.selectedPlayerIndex == -1 | this.selectedPlayerIndex > this.playerList.size()) break;
+            if (this.selectedPlayerIndex == -1 || this.selectedPlayerIndex > this.playerList.size()) break;
             t = this.playerList.get(this.selectedPlayerIndex);
             this.playerList.remove(this.selectedPlayerIndex);
-            //this.selectedPlayerIndex = -1;
             this.blackList.add(t);
             break;
         case 14:
-            if (this.selectedBlackIndex == -1 | this.selectedBlackIndex > this.blackList.size()) break;
+            if (this.selectedBlackIndex == -1 || this.selectedBlackIndex > this.blackList.size()) break;
             t = this.blackList.get(this.selectedBlackIndex);
             this.blackList.remove(this.selectedBlackIndex);
-            //this.selectedBlackIndex = -1;
             this.playerList.add(t);
             break;            
 
@@ -281,9 +283,15 @@ public class GuiMusicOptions extends GuiScreen
         updateState();
     }
 
+    private void cleanup()
+    {
+        mc.displayGuiScreen(null);
+        mc.setIngameFocus();
+    }
+    
     private void updateGuiElments()
     {
-        // unused
+        /* unused */
     }
     
     @Override
@@ -292,19 +300,10 @@ public class GuiMusicOptions extends GuiScreen
         /** capture the ESC key do we close cleanly */
         if (keyCode == Keyboard.KEY_ESCAPE)
         {
-            this.actionPerformed((GuiButton) buttonList.get(btn_cancel.id));
+            this.actionPerformed((GuiButton) buttonList.get(buttonCancel.id));
         }
         updateState();
         super.keyTyped(typedChar, keyCode);
-    }
-
-    @SuppressWarnings("unused")
-    @Override
-    public void handleMouseInput() throws IOException
-    {
-        int mouseX = Mouse.getEventX() * this.width / this.mc.displayWidth;
-        int mouseY = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;        
-        super.handleMouseInput();
     }
 
     @Override
@@ -330,8 +329,8 @@ public class GuiMusicOptions extends GuiScreen
     
 
     /** Lists - Players, Whitelist, Blacklist */
- // Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
- // UUID does not work on the client.
+    // Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
+    // UUID does not work on the client.
     
     public static class GuiPlayerList extends GuiScrollingList
     {
@@ -340,7 +339,7 @@ public class GuiMusicOptions extends GuiScreen
         
         public GuiPlayerList(GuiMusicOptions parent, List<PlayerLists> playerLists,  int listWidth, int slotHeight)
         {
-            super(parent.getMinecraftInstance(), listWidth, parent.height - 32 - 100 + 4, 32, parent.height - 100 + 4, parent.lst_white.getRight()+ 24, slotHeight, parent.width, parent.height);
+            super(parent.getMinecraftInstance(), listWidth, parent.height - 32 - 100 + 4, 32, parent.height - 100 + 4, parent.listBoxWhite.getRight()+ 24, slotHeight, parent.width, parent.height);
             this.parent = parent;
             this.playerLists = playerLists;
         }
@@ -376,7 +375,7 @@ public class GuiMusicOptions extends GuiScreen
 
             String s = font.trimStringToWidth(ins, listWidth - 10);
             /** light Blue */
-            font.drawStringWithShadow(s, this.left + 3, slotTop, 0xADD8E6);
+            font.drawStringWithShadow(s, (float)this.left + 3, slotTop, 0xADD8E6);
             drawPing(this.parent ,this.left + 3, listWidth - 10, slotTop, this.playerLists.get(slotIdx));
         }
     }
@@ -435,7 +434,7 @@ public class GuiMusicOptions extends GuiScreen
 
             String s = font.trimStringToWidth(ins, listWidth - 10);
             /** light Blue */
-            font.drawStringWithShadow(s, this.left + 3, slotTop, 0xADD8E6);
+            font.drawStringWithShadow(s, (float)this.left + 3, slotTop, 0xADD8E6);
             drawPing(this.parent ,this.left + 3, listWidth - 10, slotTop, this.whiteLists.get(slotIdx));
         }
     }
@@ -458,7 +457,7 @@ public class GuiMusicOptions extends GuiScreen
         
         public GuiBlackList(GuiMusicOptions parent, List<PlayerLists> blackLists,  int listWidth, int slotHeight)
         {
-            super(parent.getMinecraftInstance(), listWidth, parent.height - 32 - 100 + 4, 32, parent.height - 100 + 4, parent.lst_players.getRight() + 24, slotHeight, parent.width, parent.height);
+            super(parent.getMinecraftInstance(), listWidth, parent.height - 32 - 100 + 4, 32, parent.height - 100 + 4, parent.listBoxPlayers.getRight() + 24, slotHeight, parent.width, parent.height);
             this.parent = parent;
             this.blackLists = blackLists;
         }
@@ -494,7 +493,7 @@ public class GuiMusicOptions extends GuiScreen
 
             String s = font.trimStringToWidth(ins, listWidth - 10);
             /** light Blue */
-            font.drawStringWithShadow(s, this.left + 3, slotTop, 0xADD8E6);
+            font.drawStringWithShadow(s, (float)this.left + 3, slotTop, 0xADD8E6);
             drawPing(this.parent ,this.left + 3, listWidth - 10, slotTop, this.blackLists.get(slotIdx));
         }
     }

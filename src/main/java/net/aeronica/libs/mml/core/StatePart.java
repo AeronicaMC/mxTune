@@ -24,7 +24,7 @@ public class StatePart
     @Override
     public String toString()
     {
-        return new String("@PartState: oct=" + octave + ", vol=" + volume + ", mmlLength=" + mmlLength + " ,runningTicks=" + runningTicks + ", tied=" + tied);
+        return "@PartState: oct=" + octave + ", vol=" + volume + ", mmlLength=" + mmlLength + " ,runningTicks=" + runningTicks + ", tied=" + tied;
     }
 
     public int getVolume() {return volume;}

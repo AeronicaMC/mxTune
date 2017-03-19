@@ -34,7 +34,7 @@ public class HudData
 
     public int getPosY() {return posY;}
     
-    public Quadrant getQuadrant() {return quadrant;};
+    public Quadrant getQuadrant() {return quadrant;}
 
     public boolean isDisplayLeft() {return displayLeft;}
 

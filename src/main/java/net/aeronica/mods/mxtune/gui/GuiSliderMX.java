@@ -28,10 +28,6 @@ public class GuiSliderMX extends GuiButton
     private float value;
     private String name;
     private boolean dragging = false;
-
-    private int width;
-    private int height;
-
     private final float valueStep;
     private final float valueMin;
     private final float valueMax;
@@ -57,24 +53,21 @@ public class GuiSliderMX extends GuiButton
 
     public int getWidth() {return this.width;}
 
-    private String getSliderText() {return String.format(this.name + ": %06.2f", this.value);}
+    private String getSliderText() {return String.format("%s: %06.2f", this.name, this.value);}
 
     /** Returns 0 if the button is disabled, 1 if the mouse is NOT hovering over this button and 2 if it IS hovering over this button. */
     @Override
-    public int getHoverState(boolean p_146114_1_) {return 0;}
+    public int getHoverState(boolean mouseOver) {return 0;}
 
     /** Fired when the mouse button is dragged. Equivalent of MouseListener.mouseDragged(MouseEvent e). */
     @Override
-    protected void mouseDragged(Minecraft minecraft, int p_146119_2_, int p_146119_3_)
+    protected void mouseDragged(Minecraft minecraft, int mouseX, int mouseY)
     {
         if (this.visible)
         {
-            // if (this.dragging && p_146119_2_ > this.xPosition && p_146119_2_
-            // < this.xPosition + this.width && p_146119_3_ > this.yPosition &&
-            // p_146119_3_ < this.yPosition + this.height)
             if (this.dragging)
             {
-                this.sliderValue = (float) (p_146119_2_ - (this.xPosition + 4)) / (float) (this.width - 8);
+                this.sliderValue = (float) (mouseX - (this.xPosition + 4)) / (float) (this.width - 8);
 
                 if (this.sliderValue < 0.0F)
                 {
@@ -100,11 +93,11 @@ public class GuiSliderMX extends GuiButton
 
     /** Returns true if the mouse has been pressed on this control. Equivalent of MouseListener.mousePressed(MouseEvent e). */
     @Override
-    public boolean mousePressed(Minecraft p_146116_1_, int p_146116_2_, int p_146116_3_)
+    public boolean mousePressed(Minecraft mcIn, int mouseX, int mouseY)
     {
-        if (super.mousePressed(p_146116_1_, p_146116_2_, p_146116_3_))
+        if (super.mousePressed(mcIn, mouseX, mouseY))
         {
-            this.sliderValue = (float) (p_146116_2_ - (this.xPosition + 4)) / (float) (this.width - 8);
+            this.sliderValue = (float) (mouseX - (this.xPosition + 4)) / (float) (this.width - 8);
 
             if (this.sliderValue < 0.0F)
             {
@@ -128,30 +121,30 @@ public class GuiSliderMX extends GuiButton
 
     /** Fired when the mouse button is released. Equivalent of MouseListener.mouseReleased(MouseEvent e). */
     @Override
-    public void mouseReleased(int p_146118_1_, int p_146118_2_) {this.dragging = false;}
+    public void mouseReleased(int mouseX, int mouseY) {this.dragging = false;}
 
     private float normalizeValue(float param)
     {
         return MathHelper.clamp((this.snapToStepClamp(param) - this.valueMin) / (this.valueMax - this.valueMin), 0.0F, 1.0F);
     }
 
-    public float denormalizeValue(float p_148262_1_)
+    public float denormalizeValue(float param)
     {
-        return this.snapToStepClamp(this.valueMin + (this.valueMax - this.valueMin) * MathHelper.clamp(p_148262_1_, 0.0F, 1.0F));
+        return this.snapToStepClamp(this.valueMin + (this.valueMax - this.valueMin) * MathHelper.clamp(param, 0.0F, 1.0F));
     }
 
-    private float snapToStepClamp(float p_148268_1_)
+    private float snapToStepClamp(float paramIn)
     {
-        p_148268_1_ = this.snapToStep(p_148268_1_);
-        return MathHelper.clamp(p_148268_1_, this.valueMin, this.valueMax);
+        return MathHelper.clamp(this.snapToStep(paramIn), this.valueMin, this.valueMax);
     }
 
-    private float snapToStep(float p_148264_1_)
+    private float snapToStep(float paramIn)
     {
+        float snapped = paramIn;
         if (this.valueStep > 0.0F)
         {
-            p_148264_1_ = this.valueStep * (float) Math.round(p_148264_1_ / this.valueStep);
+            snapped = this.valueStep * (float) Math.round(paramIn / this.valueStep);
         }
-        return p_148264_1_;
+        return snapped;
     }
 }

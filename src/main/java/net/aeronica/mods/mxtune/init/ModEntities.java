@@ -24,8 +24,10 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 public class ModEntities
 {
 
-    private static int entityID = 0;
+    protected static int entityID = 0;
     
+    private ModEntities() {}
+
     private static int getEntityID() {return entityID++;}
     
     public static void init()
@@ -35,9 +37,9 @@ public class ModEntities
     
     private static void registerModEntity(Class<? extends Entity> entityClass, String name, int trackingRange, int updateFrequency, boolean sendsVelocityUpdates)
     {
-        EntityRegistry.registerModEntity(entityClass, MXTuneMain.prependModID(name), getEntityID(), MXTuneMain.instance, 80, 1, false);
-//        EntityRegistry.registerModEntity(new ResourceLocation(MXTuneMain.prependModID(name)), entityClass, name, getEntityID(), MXTuneMain.instance, 80, 1, false);
+        EntityRegistry.registerModEntity(entityClass, MXTuneMain.prependModID(name), getEntityID(), MXTuneMain.instance, trackingRange, updateFrequency, sendsVelocityUpdates);
     }
+
 }
 
 

@@ -29,9 +29,12 @@ public class PlayMIDI implements MetaEventListener
                 Thread.sleep(250);
             } catch (InterruptedException e)
             {
+                TestAntlr.logger.error(e);
+                Thread.currentThread().interrupt();
+            } finally {
+                if (sequencer != null && sequencer.isOpen()) sequencer.close();
+                if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
             }
-            if (sequencer != null && sequencer.isOpen()) sequencer.close();
-            if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
         }
         if (event.getType() == 81)
         {
@@ -73,8 +76,9 @@ public class PlayMIDI implements MetaEventListener
 
     // convert from microseconds per quarter note to beats per minute and vice
     // versa
-    private static float convertTempo(float value)
+    private static float convertTempo(float valueIn)
     {
+        float value = valueIn;
         if (value <= 0)
         {
             value = 0.1f;
@@ -101,16 +105,15 @@ public class PlayMIDI implements MetaEventListener
             }
 
             // sequencer.getTransmitter().setReceiver(synthesizer.getReceiver());
-
             sequencer.setSequence(sequence);
             sequencer.start();
 
-        } catch (Exception ex)
+        } catch (Exception e)
         {
             if (sequencer != null && sequencer.isOpen()) sequencer.close();
             if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
-            System.out.println("PlayMIDI#mmlPlay failed midi TRY " + ex);
-        }
+            TestAntlr.logger.error(e);
+        } 
         return true;
     }
 }

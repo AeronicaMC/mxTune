@@ -226,7 +226,7 @@ public class GuiJamOverlay extends Gui
         Integer groupID;
         Integer memberID;
         String memberName;
-        GroupData memberData = null;
+        GroupData memberData;
         
         if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
         {
@@ -272,7 +272,7 @@ public class GuiJamOverlay extends Gui
         int statusWidth, qX, qY;
         if (GROUPS.getClientPlayStatuses() != null && !GROUPS.getClientPlayStatuses().isEmpty())
         {
-            String status = new String("Play Status:    " + GROUPS.getClientPlayStatuses().toString());
+            String status = "Play Status:    " + GROUPS.getClientPlayStatuses().toString();
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
             qY = hd.quadY(maxHeight, 110, 4, 10);
@@ -280,7 +280,7 @@ public class GuiJamOverlay extends Gui
         }
         if (GROUPS.getPlayIDMembers() != null && !GROUPS.getPlayIDMembers().isEmpty())
         {
-            String status = new String("PlayID Members: " + GROUPS.getPlayIDMembers().toString());
+            String status = "PlayID Members: " + GROUPS.getPlayIDMembers().toString();
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
             qY = hd.quadY(maxHeight, 120, 4, 10);
@@ -288,7 +288,7 @@ public class GuiJamOverlay extends Gui
         }
         if (GROUPS.getActivePlayIDs() != null && !GROUPS.getActivePlayIDs().isEmpty())
         {
-            String status = new String("ActivePlayIDs:  " + GROUPS.getActivePlayIDs().toString());
+            String status = "ActivePlayIDs:  " + GROUPS.getActivePlayIDs().toString();
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
             qY = hd.quadY(maxHeight, 130, 4, 10);
@@ -296,7 +296,7 @@ public class GuiJamOverlay extends Gui
         }
         if (GROUPS.getActivePlayIDs() != null && !GROUPS.getActivePlayIDs().isEmpty())
         {
-            String status = new String("GROUPS.index:   " + GROUPS.getIndex(mc.player.getEntityId()));
+            String status = "GROUPS.index:   " + GROUPS.getIndex(mc.player.getEntityId());
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
             qY = hd.quadY(maxHeight, 140, 4, 10);
@@ -304,7 +304,7 @@ public class GuiJamOverlay extends Gui
         }
         if (GROUPS.getGroupsMembers() != null && !GROUPS.getGroupsMembers().isEmpty())
         {
-            String status = new String("GroupsMembers:  " + GROUPS.getGroupsMembers());
+            String status = "GroupsMembers:  " + GROUPS.getGroupsMembers();
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
             qY = hd.quadY(maxHeight, 150, 4, 10);
@@ -340,12 +340,12 @@ public class GuiJamOverlay extends Gui
                 return sheetMusic.getDisplayName();
             }
         }
-        return new String();
+        return "";
     }
 
     private static int TITLE_DISPLAY_WIDTH = 30;
     private static int marqueePos = 0;
-    private static int getMarqueePos() {return new Integer(marqueePos);}
+    private static int getMarqueePos() {return marqueePos;}
 
     private String marquee(String text, int window)
     {
@@ -363,7 +363,7 @@ public class GuiJamOverlay extends Gui
     @SuppressWarnings("unused")
     private String spaces(int length)
     {
-        StringBuffer outputBuffer = new StringBuffer(length);
+        StringBuilder outputBuffer = new StringBuilder(length);
         for (int i = 0; i < length; i++){
             outputBuffer.append(" ");
         }
@@ -450,10 +450,11 @@ public class GuiJamOverlay extends Gui
 
         public int getMetadata() {return this.meta;}
 
-        public static NOTATION byMetadata(int meta)
+        public static NOTATION byMetadata(int metaIn)
         {
-            if (meta < 0 || meta >= META_LOOKUP.length) {meta = 0;}
-            return META_LOOKUP[meta];
+            int metaLocal = metaIn;
+            if (metaLocal < 0 || metaLocal >= META_LOOKUP.length) {metaLocal = 0;}
+            return META_LOOKUP[metaLocal];
         }
         public int getX() {return this.x;}
         public int getY() {return this.y;}
@@ -462,7 +463,7 @@ public class GuiJamOverlay extends Gui
         private final int x, y;
         private static final NOTATION[] META_LOOKUP = new NOTATION[values().length];
 
-        private NOTATION(int i_meta, int i_x, int i_y) {this.meta = i_meta; this.x=i_x; y=i_y;}
+        private NOTATION(int metaIn, int xIn, int yIn) {this.meta = metaIn; this.x=xIn; y=yIn;}
 
         static {for (NOTATION value : values()) {META_LOOKUP[value.getMetadata()] = value;}}
     }
@@ -564,8 +565,13 @@ public class GuiJamOverlay extends Gui
      * @param bottom
      * @param color
      */
-    public static void drawRect(int left, int top, int right, int bottom, int color)
+    public static void drawRect(int leftIn, int topIn, int rightIn, int bottomIn, int color)
     {
+        int left = leftIn;
+        int top = topIn;
+        int right = rightIn;
+        int bottom = bottomIn;
+        
         if (left < right)
         {
             int i = left;

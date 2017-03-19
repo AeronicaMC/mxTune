@@ -21,23 +21,26 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.options.PlayerLists;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessage>
 {
-    private int muteOption;
-    private List<PlayerLists> blackList, whiteList;
-    private byte[] byteBuffer = null;
+    int muteOption;
+    List<PlayerLists> blackList;
+    List<PlayerLists> whiteList;
+    byte[] byteBuffer = null;
     
-    public MusicOptionsMessage() {}
+    public MusicOptionsMessage() {/* Required by the PacketDispacher */}
     
     public MusicOptionsMessage(int muteOption, List<PlayerLists> blackList, List<PlayerLists> whiteList)
     {
@@ -51,31 +54,23 @@ public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessa
     protected void read(PacketBuffer buffer) throws IOException
     {
         this.muteOption = buffer.readInt();
-        try{
+        try {
             // Deserialize data object from a byte array
             byteBuffer = buffer.readByteArray();
             ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
             ObjectInputStream in = new ObjectInputStream(bis) ;
             whiteList =  (ArrayList<PlayerLists>) in.readObject();
             in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-        try{
+
             // Deserialize data object from a byte array
             byteBuffer = buffer.readByteArray();
-            ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
-            ObjectInputStream in = new ObjectInputStream(bis) ;
+            bis = new ByteArrayInputStream(byteBuffer) ;
+            in = new ObjectInputStream(bis) ;
             blackList =  (ArrayList<PlayerLists>) in.readObject();
             in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e)
+        } catch (ClassNotFoundException | IOException e)
         {
-            e.printStackTrace();
+            ModLogger.error(e);
         }
 
     }
@@ -84,38 +79,35 @@ public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessa
     protected void write(PacketBuffer buffer) throws IOException
     {
         buffer.writeInt(this.muteOption);
-        try{
+        try {
             // Serialize data object to a byte array
             ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
             ObjectOutputStream out = new ObjectOutputStream(bos) ;
-            out.writeObject(whiteList);
+            out.writeObject((Serializable) whiteList);
             out.close();
 
             // Get the bytes of the serialized object
             byteBuffer = bos.toByteArray();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        buffer.writeByteArray(byteBuffer);
-        try{
+            buffer.writeByteArray(byteBuffer);
+
             // Serialize data object to a byte array
-            ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
-            ObjectOutputStream out = new ObjectOutputStream(bos) ;
-            out.writeObject(blackList);
+            bos = new ByteArrayOutputStream() ;
+            out = new ObjectOutputStream(bos) ;
+            out.writeObject((Serializable) blackList);
             out.close();
 
             // Get the bytes of the serialized object
             byteBuffer = bos.toByteArray();
+            buffer.writeByteArray(byteBuffer);
         } catch (IOException e) {
-            e.printStackTrace();
+            ModLogger.error(e);
         }
-        buffer.writeByteArray(byteBuffer);
     }
 
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        MusicOptionsUtil.setMuteOption(player, this.muteOption);
+        MusicOptionsUtil.setMuteOption(player, muteOption);
         MusicOptionsUtil.setBlackList(player, blackList);
         MusicOptionsUtil.setWhiteList(player, whiteList);
     }

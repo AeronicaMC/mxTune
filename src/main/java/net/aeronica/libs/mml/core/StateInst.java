@@ -50,7 +50,7 @@ public class StateInst
     @Override
     public String toString()
     {
-        return new String("\n@CommonState: tempo=" + tempo + ", instrument=" + instrument);
+        return "\n@CommonState: tempo=" + tempo + ", instrument=" + instrument;
     }
 
     private int getMinMax(int min, int max, int value) {return (int) Math.max(Math.min(max, value), min);}

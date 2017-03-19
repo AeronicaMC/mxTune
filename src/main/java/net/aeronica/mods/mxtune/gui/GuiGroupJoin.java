@@ -145,9 +145,9 @@ public class GuiGroupJoin extends GuiScreen
                         fontRenderer.drawStringWithShadow(memberName, posX, posY, 16777215);
 
                         /** Only Leaders get to remove and promote other members! */
-                        if (player.getDisplayName().getUnformattedText().equals(GROUPS.getLeaderOfGroup(groupID)))
+                        if (player.getEntityId() == (GROUPS.getLeaderOfGroup(groupID)))
                         {
-                            /** um, I forget why this is here */
+                            /** GuiGroup enable/disable and visibility setup for buttons here */
                         }
                         posY += 10;
                     }
@@ -160,21 +160,30 @@ public class GuiGroupJoin extends GuiScreen
     protected void actionPerformed(GuiButton guibutton)
     {
 
-        /** id 0 = yes; 1 = no; */
+        /* id 0 = yes; 1 = no; */
         switch (guibutton.id)
         {
         case 2:
-            return;
+            /* No */
+            cleanup();
+            break;
         case 0:
-            /** Yes */
+            /* Yes */
             sendRequest(GROUPS.MEMBER_ADD, groupID, player.getEntityId());
-
+            cleanup();
+            break;
+            
         default:
         }
+        cleanup();
+    }
+
+    protected void cleanup()
+    {
         mc.displayGuiScreen(null);
         mc.setIngameFocus();
     }
-
+    
     protected void drawGuiBackground()
     {
         GL11.glColor4f(1F, 1F, 1F, 1F);
@@ -182,8 +191,8 @@ public class GuiGroupJoin extends GuiScreen
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 
-    protected void sendRequest(GROUPS operation, Integer groupID, Integer memberID)
+    protected void sendRequest(int operation, Integer groupID, Integer memberID)
     {
-        PacketDispatcher.sendToServer(new ManageGroupMessage(operation.toString(), groupID, memberID));
+        PacketDispatcher.sendToServer(new ManageGroupMessage(operation, groupID, memberID));
     }
 }

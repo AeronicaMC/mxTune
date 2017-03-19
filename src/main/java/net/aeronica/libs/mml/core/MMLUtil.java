@@ -1,7 +1,8 @@
 package net.aeronica.libs.mml.core;
 
-public class MMLUtil
+public enum MMLUtil
 {
+    ;
     /** int[0] is not used. Used to reorder ASCII letters to musical notes taking into account accidentals. That is ABCDEFG to CDEFGAB */
     private static final int[] doerayme = {50, 9, 11, 0, 2, 4, 5, 7};
 
@@ -21,13 +22,14 @@ public class MMLUtil
         return midiNote + (rest ? 128 : 0);
     }
     
-    public static int smartClampMIDI(int midiNote)
+    public static int smartClampMIDI(int midiNoteIn)
     {
-        while (midiNote < 0 || midiNote > 127)
+        int midiNoteClamped = midiNoteIn;
+        while (midiNoteClamped < 0 || midiNoteClamped > 127)
         {
-            if (midiNote < 0) midiNote += 12;
-            if (midiNote > 127) midiNote -= 12;
+            if (midiNoteClamped < 0) midiNoteClamped += 12;
+            if (midiNoteClamped > 127) midiNoteClamped -= 12;
         }
-        return midiNote;
+        return midiNoteClamped;
     }
 }

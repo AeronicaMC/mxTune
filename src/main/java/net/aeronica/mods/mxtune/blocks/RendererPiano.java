@@ -22,6 +22,7 @@ import com.google.common.base.Function;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.init.IReBakeModel;
+import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -73,7 +74,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
                 rackModel = ModelLoaderRegistry.getModel(new ResourceLocation(MXTuneMain.MODID, "block/piano_rack"));
             } catch (Exception e)
             {
-                throw new RuntimeException(e);
+                throw new MXTuneRuntimeException(e);
             }
             bakedRackModel = rackModel.bake(TRSRTransformation.identity(), DefaultVertexFormats.BLOCK, new Function<ResourceLocation, TextureAtlasSprite>()
             {
@@ -96,7 +97,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
                 benchModel = ModelLoaderRegistry.getModel(new ResourceLocation(MXTuneMain.MODID, "block/piano_bench"));
             } catch (Exception e)
             {
-                throw new RuntimeException(e);
+                throw new MXTuneRuntimeException(e);
             }
             bakedBenchModel = benchModel.bake(TRSRTransformation.identity(), DefaultVertexFormats.BLOCK, new Function<ResourceLocation, TextureAtlasSprite>()
             {
@@ -183,9 +184,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
     {
         GlStateManager.pushMatrix();
 
-        // long angle = (System.currentTimeMillis() / 10) % 360;
         GlStateManager.rotate(face[facing.getIndex()] - 90, 0, 1, 0);
-        // GlStateManager.rotate(10, 0, 0, 1);
         RenderHelper.disableStandardItemLighting();
         this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         if (Minecraft.isAmbientOcclusionEnabled())
@@ -215,9 +214,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
     {
         GlStateManager.pushMatrix();
 
-        // long angle = (System.currentTimeMillis() / 10) % 360;
         GlStateManager.rotate(face[facing.getIndex()] - 90, 0, 1, 0);
-        // GlStateManager.rotate(10, 0, 0, 1);
         RenderHelper.disableStandardItemLighting();
         this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         if (Minecraft.isAmbientOcclusionEnabled())
@@ -263,43 +260,4 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
         }
     }
 
-//    /** https://github.com/sinkillerj/ProjectE/blob/MC19/src/main/java/moze_intel/projecte/rendering/PedestalRenderer.java */
-//    public void OldrenderTileEntityAt(TilePiano te, double x, double y, double z, float partialTicks, int destroyStage)
-//    {
-//        if (!te.isInvalid())
-//        {
-//            if (te.getInventory().getStackInSlot(0) != null)
-//            {
-//                facing = te.getFacing();
-//                if (facing.equals(EnumFacing.NORTH))
-//                {
-//                    xMusicOffset = 0.0D;
-//                    zMusicOffset = -0.5D;
-//                } else if (facing.equals(EnumFacing.SOUTH))
-//                {
-//                    xMusicOffset = 0.0D;
-//                    zMusicOffset = 0.5D;
-//                } else if (facing.equals(EnumFacing.EAST))
-//                {
-//                    xMusicOffset = 0.5D;
-//                    zMusicOffset = 0.0D;
-//                }
-//                if (facing.equals(EnumFacing.WEST))
-//                {
-//                    xMusicOffset = -0.5D;
-//                    zMusicOffset = 0.0D;
-//                }
-//
-//                GlStateManager.pushMatrix();
-//                GlStateManager.translate(x + 0.5 + xMusicOffset, y + 1.2, z + 0.5 + zMusicOffset);
-//                GlStateManager.scale(0.5, 0.5, 0.5);
-//                GlStateManager.translate(0, 0.1 * Math.sin(0.1 * (te.getWorld().getTotalWorldTime() + partialTicks)), 0);
-//                float angle = (te.getWorld().getTotalWorldTime() + partialTicks) / 20.0F * (180F / (float) Math.PI);
-//                GlStateManager.rotate(angle, 0.0F, 1.0F, 0.0F);
-//                Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-//                Minecraft.getMinecraft().getRenderItem().renderItem(te.getInventory().getStackInSlot(0), ItemCameraTransforms.TransformType.GROUND);
-//                GlStateManager.popMatrix();
-//            }
-//        }
-//    }
 }

@@ -32,7 +32,7 @@ public class SyncStatusMessage extends AbstractClientMessage<SyncStatusMessage>
     String playIDMembers;
     String activePlayIDs;
 
-    public SyncStatusMessage() {}
+    public SyncStatusMessage() {/* Required by the PacketDispacher */}
 
     public SyncStatusMessage(String clientPlayStatuses, String playIDMembers, String activePlayIDs)
     {

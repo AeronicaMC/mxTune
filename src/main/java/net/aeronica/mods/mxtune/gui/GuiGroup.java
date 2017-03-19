@@ -192,7 +192,6 @@ public class GuiGroup extends GuiScreen
 
         clearMembersButtons();
 
-        /** TODO: use/add sensible methods to make readable - partially done... */
         if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
         {
             groupID = GROUPS.getMembersGroupID(player.getEntityId());
@@ -278,11 +277,11 @@ public class GuiGroup extends GuiScreen
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 
-    protected void sendRequest(GROUPS operation, String leaderName, String memberName)
+    protected void sendRequest(int operation, String leaderName, String memberName)
     {
         Integer groupID = null;
         Integer memberID = player.world.getPlayerEntityByName(memberName).getEntityId();
-        PacketDispatcher.sendToServer(new ManageGroupMessage(operation.toString(), groupID, memberID));
+        PacketDispatcher.sendToServer(new ManageGroupMessage(operation, groupID, memberID));
     }
 
     protected class MemberButtons

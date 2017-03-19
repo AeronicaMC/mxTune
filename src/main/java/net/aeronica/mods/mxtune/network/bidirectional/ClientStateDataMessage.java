@@ -35,49 +35,27 @@ import net.minecraftforge.fml.relauncher.Side;
 public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessage>
 {
 
-    private ClientStateData csd;
-    private byte[] byteBuffer = null;
+    ClientStateData csd;
     
-    public ClientStateDataMessage() {}
+    public ClientStateDataMessage() {/* Required by the PacketDispacher */}
     
     public ClientStateDataMessage(ClientStateData csd) { this.csd = csd;}
     
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
-        // Deserialize data object from a byte array
-        byteBuffer = buffer.readByteArray();
-        ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
-        ObjectInputStream in = new ObjectInputStream(bis) ;
-        try
-        {
-            csd = (ClientStateData) in.readObject();
-        } catch (ClassNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-        in.close();  
+        this.csd = readCSD(buffer);
     }
 
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
-        // Serialize data object to a byte array
-        ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
-        ObjectOutputStream out = new ObjectOutputStream(bos) ;
-        out.writeObject(csd);
-        out.close();
-
-        // Get the bytes of the serialized object
-        byteBuffer = bos.toByteArray();
-
-        buffer.writeByteArray(byteBuffer);
+        writeCSD(buffer, csd);
     }
 
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        ModLogger.debug("ClientStateDataMessage#process Side: " + side);
         if (side.isClient())
         {
             handleClientSide(player);
@@ -95,8 +73,40 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
 
     public void handleServerSide(EntityPlayer playerIn)
     {
-        ModLogger.info("ClientStateDataMessage csd: " + csd);
         ServerCSDManager.updateState(playerIn, csd);
+    }
+
+    public static ClientStateData readCSD(PacketBuffer buffer) throws IOException
+    {
+        // Deserialize data object from a byte array
+        ClientStateData csd = null;
+        byte[] byteBuffer = buffer.readByteArray();
+
+        ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
+        ObjectInputStream in = new ObjectInputStream(bis) ;
+        try
+        {
+            csd = (ClientStateData) in.readObject();
+        } catch (ClassNotFoundException e)
+        {
+            ModLogger.error(e);
+        }
+        in.close(); 
+        return csd;
+    }
+    
+    public static void writeCSD(PacketBuffer buffer, ClientStateData csd) throws IOException
+    {
+        // Serialize data object to a byte array
+        byte[] byteBuffer;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
+        ObjectOutputStream out = new ObjectOutputStream(bos) ;
+        out.writeObject(csd);
+        out.close();
+
+        // Get the bytes of the serialized object
+        byteBuffer = bos.toByteArray();
+        buffer.writeByteArray(byteBuffer);
     }
 
 }

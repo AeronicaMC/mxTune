@@ -17,7 +17,21 @@ public class ModLogger {
     public static void log(Level level, String format, Object... data) {
         logger.printf(level, format, data);
     }
-
+    
+    /**
+     * Log a stack trace for &lt;T extends Throwable&gt; {@link e} at the specified log {@link level}
+     * @param level     The specified log level
+     * @param e         The raw exception 
+     */
+    public static <T extends Throwable> void log(Level level, T e)
+    {
+        if (e != null) {
+            log(level, "%s", e.getLocalizedMessage());
+            for(StackTraceElement s: e.getStackTrace())
+                log(level, "%s", s.toString());
+        }
+    }
+    
     public static void info(String format, Object... data){
         log(Level.INFO, format, data);
     }
@@ -38,4 +52,49 @@ public class ModLogger {
         log(Level.FATAL, format, data);
     }
 
+    /**
+     * Log a stack trace for &lt;T extends Exception&gt; {@link e} at log Level.INFO
+     * @param e         The raw exception 
+     */
+    public static <T extends Throwable> void info(T e)
+    {
+        log(Level.INFO, e);
+    }
+    
+    /**
+     * Log a stack trace for &lt;T extends Throwable&gt; {@link e} at log Level.DEBUG
+     * @param e         The raw exception 
+     */
+    public static <T extends Throwable> void debug(T e)
+    {
+        log(Level.DEBUG, e);
+    }
+    
+    /**
+     * Log a stack trace for &lt;T extends Throwable&gt; {@link e} at log Level.WARM
+     * @param e         The raw exception 
+     */
+    public static <T extends Throwable> void warning(T e)
+    {
+        log(Level.WARN, e);
+    }
+    
+    /**
+     * Log a stack trace for &lt;T extends Throwable&gt; {@link e} at log Level.ERROR
+     * @param e         The raw exception 
+     */
+    public static <T extends Throwable> void error(T e)
+    {
+        log(Level.ERROR, e);
+    }
+    
+    /**
+     * Log a stack trace for &lt;T extends Throwable&gt; {@link e} at log Level.FATAL
+     * @param e         The raw exception 
+     */
+    public static <T extends Throwable> void fatal(T e)
+    {
+        log(Level.FATAL, e);
+    }
+    
 }

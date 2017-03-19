@@ -164,7 +164,7 @@ public class Midi2WavRenderer
                 
         AudioSynthesizer aSynth = findAudioSynthesizer();
         if (aSynth == null) {
-            throw new IOException("No AudioSynthesizer was found!");
+            throw new Midi2WavRendererRuntimeException("No AudioSynthesizer was found!");
         }
         
         Map<String, Object> p = new HashMap<String, Object>();
@@ -226,7 +226,6 @@ public class Midi2WavRenderer
     public double send(Sequence seq, Receiver recv) 
     {
         float divtype = seq.getDivisionType();
-        assert (seq.getDivisionType() == Sequence.PPQ);
         Track[] tracks = seq.getTracks();
         int[] trackspos = new int[tracks.length];
         int mpq = 500000;
@@ -251,15 +250,17 @@ public class Midi2WavRenderer
             if (seltrack == -1)
                 break;
             trackspos[seltrack]++;
+            if (selevent == null)
+                throw new Midi2WavRendererRuntimeException("Null MidiEvent in \'send\' method: " +seq);
             long tick = selevent.getTick();
-            if (divtype == Sequence.PPQ)
+            if ((int)divtype == (int)Sequence.PPQ)
                 curtime += ((tick - lasttick) * mpq) / seqres;
             else
                 curtime = (long) ((tick * 1000000.0 * divtype) / seqres);
             lasttick = tick;
             MidiMessage msg = selevent.getMessage();
             if (msg instanceof MetaMessage) {
-                if (divtype == Sequence.PPQ)
+                if ((int)divtype == (int)Sequence.PPQ)
                     if (((MetaMessage) msg).getType() == 0x51) {
                         byte[] data = ((MetaMessage) msg).getData();
                         mpq = ((data[0] & 0xff) << 16)

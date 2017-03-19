@@ -21,6 +21,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
@@ -28,6 +30,7 @@ import net.aeronica.mods.mxtune.options.IPlayerMusicOptions;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.options.PlayerLists;
 import net.aeronica.mods.mxtune.options.PlayerMusicDefImpl;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
@@ -37,31 +40,29 @@ import net.minecraftforge.fml.relauncher.Side;
 public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPlayerMusicOptionsMessage>
 {
     
-    private byte propertyID;
-    private NBTTagCompound data;
-    private boolean disableHud;
-    private int positionHud;
-    private float sizeHud;
-    private int muteOption;
-    private String sParam1, sParam2, sParam3;
-    private List<PlayerLists> blackList, whiteList;
+    byte propertyID;
+    NBTTagCompound data;
+    boolean disableHud;
+    int positionHud;
+    float sizeHud;
+    int muteOption;
+    String sParam1;
+    String sParam2;
+    String sParam3;
+    List<PlayerLists> blackList;
+    List<PlayerLists> whiteList;
 
     private byte[] byteBuffer = null;
     
-    // The basic, no-argument constructor MUST be included to use the new
-    // automated handling
-    public SyncPlayerMusicOptionsMessage() {}
+    public SyncPlayerMusicOptionsMessage() {/* Required by the PacketDispacher */}
 
-    // We need to initialize our data, so provide a suitable constructor:
     public SyncPlayerMusicOptionsMessage(IPlayerMusicOptions inst, byte propertyID)
     {
         this.propertyID = propertyID;
         switch (propertyID)
         {
         case PlayerMusicDefImpl.SYNC_ALL:
-            /** create a new tag compound */
             this.data = new NBTTagCompound();
-            /** and save our player's data into it */
             this.data = (NBTTagCompound) MusicOptionsUtil.MUSIC_OPTIONS.writeNBT(inst, null);
             break;
 
@@ -117,34 +118,10 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             this.sParam3 = ByteBufUtils.readUTF8String(buffer);
             break;
         case PlayerMusicDefImpl.SYNC_WHITE_LIST:
-            try{
-                // Deserialize data object from a byte array
-                byteBuffer = buffer.readByteArray();
-                ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
-                ObjectInputStream in = new ObjectInputStream(bis) ;
-                whiteList =  (List<PlayerLists>) in.readObject();
-                in.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e)
-            {
-                e.printStackTrace();
-            }
+            this.whiteList = readPlayerList(buffer);
             break;            
         case PlayerMusicDefImpl.SYNC_BLACK_LIST:
-            try{
-                // Deserialize data object from a byte array
-                byteBuffer = buffer.readByteArray();
-                ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
-                ObjectInputStream in = new ObjectInputStream(bis) ;
-                blackList =  (List<PlayerLists>) in.readObject();
-                in.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e)
-            {
-                e.printStackTrace();
-            }
+            this.blackList = readPlayerList(buffer);
             break;
         default:        
         }
@@ -173,34 +150,10 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             ByteBufUtils.writeUTF8String(buffer, this.sParam3);
             break;
         case PlayerMusicDefImpl.SYNC_WHITE_LIST:
-            try{
-                // Serialize data object to a byte array
-                ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
-                ObjectOutputStream out = new ObjectOutputStream(bos) ;
-                out.writeObject(whiteList);
-                out.close();
-
-                // Get the bytes of the serialized object
-                byteBuffer = bos.toByteArray();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            buffer.writeByteArray(byteBuffer);
+            writePlayerList(buffer, this.whiteList);
             break;            
         case PlayerMusicDefImpl.SYNC_BLACK_LIST:
-            try{
-                // Serialize data object to a byte array
-                ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
-                ObjectOutputStream out = new ObjectOutputStream(bos) ;
-                out.writeObject(blackList);
-                out.close();
-
-                // Get the bytes of the serialized object
-                byteBuffer = bos.toByteArray();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            buffer.writeByteArray(byteBuffer);
+            writePlayerList(buffer, this.blackList);
             break;
         default:
         }
@@ -209,31 +162,63 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        if (side.isClient())
+        final IPlayerMusicOptions instance = player.getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
+        switch (this.propertyID)
         {
-            final IPlayerMusicOptions instance = player.getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
-            switch (this.propertyID)
-            {
-            case PlayerMusicDefImpl.SYNC_ALL:
-                MusicOptionsUtil.MUSIC_OPTIONS.readNBT(instance, null, this.data);
-                break;
-            case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
-                instance.setHudOptions(disableHud, positionHud, sizeHud);
-                break;
-            case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
-                instance.setMuteOption(this.muteOption);
-                break;
-            case PlayerMusicDefImpl.SYNC_SPARAMS:
-                instance.setSParams(this.sParam1, this.sParam2, this.sParam3);
-                break;
-            case PlayerMusicDefImpl.SYNC_WHITE_LIST:
-                instance.setWhiteList(this.whiteList);
-                break;                
-            case PlayerMusicDefImpl.SYNC_BLACK_LIST:
-                instance.setBlackList(this.blackList);
-                break;
-            default:
-            }
+        case PlayerMusicDefImpl.SYNC_ALL:
+            MusicOptionsUtil.MUSIC_OPTIONS.readNBT(instance, null, this.data);
+            break;
+        case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
+            instance.setHudOptions(disableHud, positionHud, sizeHud);
+            break;
+        case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
+            instance.setMuteOption(this.muteOption);
+            break;
+        case PlayerMusicDefImpl.SYNC_SPARAMS:
+            instance.setSParams(this.sParam1, this.sParam2, this.sParam3);
+            break;
+        case PlayerMusicDefImpl.SYNC_WHITE_LIST:
+            instance.setWhiteList(this.whiteList);
+            break;                
+        case PlayerMusicDefImpl.SYNC_BLACK_LIST:
+            instance.setBlackList(this.blackList);
+            break;
+        default:
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected List<PlayerLists> readPlayerList(PacketBuffer buffer) throws IOException
+    {
+        List<PlayerLists> playerList = Collections.emptyList();
+        try{
+            // Deserialize data object from a byte array
+            byteBuffer = buffer.readByteArray();
+            ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
+            ObjectInputStream in = new ObjectInputStream(bis) ;
+            playerList = (List<PlayerLists>) in.readObject();
+            in.close();            
+        } catch (ClassNotFoundException | IOException e)
+        {
+            ModLogger.error(e);
+        }
+        return playerList;
+    }
+
+    protected void writePlayerList(PacketBuffer buffer, List<PlayerLists> playerListIn) throws IOException
+    {
+        try{
+            // Serialize data object to a byte array
+            ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
+            ObjectOutputStream out = new ObjectOutputStream(bos) ;
+            out.writeObject((Serializable) playerListIn);
+            out.close();
+
+            // Get the bytes of the serialized object
+            byteBuffer = bos.toByteArray();
+            buffer.writeByteArray(byteBuffer);
+        } catch (IOException e) {
+            ModLogger.error(e);
         }
     }
 
