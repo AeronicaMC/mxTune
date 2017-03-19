@@ -18,7 +18,7 @@ public class SlotInstrument extends Slot
     public boolean isItemValid(ItemStack stack)
     {
         
-        return !stack.equals(ItemStack.EMPTY) && ((stack.getItem() instanceof ItemSheetMusic) || (stack.getItem() instanceof ItemMusicPaper))
+        return stack != null && ((stack.getItem() instanceof ItemSheetMusic) || (stack.getItem() instanceof ItemMusicPaper))
                 && stack.hasTagCompound() && stack.getTagCompound().hasKey("MusicBook") ? true : false;
     }
 

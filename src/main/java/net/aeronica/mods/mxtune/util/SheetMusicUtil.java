@@ -53,7 +53,7 @@ public enum SheetMusicUtil
             {
                 Block placedInst = playerIn.getEntityWorld().getBlockState(pos).getBlock();
                 TileInstrument te = ((IPlacedInstrument) placedInst).getTE(playerIn.getEntityWorld(), pos);
-                iif(te.getInventory().getStackInSlot(0) != null)
+                if(te.getInventory().getStackInSlot(0) != null)
                     return te.getInventory().getStackInSlot(0).copy();
             }
         } else
@@ -71,7 +71,7 @@ public enum SheetMusicUtil
             if (items.tagCount() == 1)
             {
                 NBTTagCompound item = items.getCompoundTagAt(0);
-                ItemStack sheetMusicOld = new ItemStack(item);
+                ItemStack sheetMusicOld = ItemStack.loadItemStackFromNBT(item);
                 if (sheetMusicOld != null && sheetMusicOld.getItem() instanceof IMusic)
                 {
                     NBTTagCompound contents = (NBTTagCompound) sheetMusicOld.getTagCompound().getTag("MusicBook");
@@ -84,4 +84,5 @@ public enum SheetMusicUtil
         }
         return null;
     }
+    
 }

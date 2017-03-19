@@ -44,7 +44,7 @@ public class ItemPiano extends Item
     /** Called when a Block is right-clicked with this Item */
     @SuppressWarnings("deprecation")
     @Override
-    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos posIn, EnumHand handIn, EnumFacing facingIn, float hitX, float hitY, float hitZ)
+    public EnumActionResult onItemUse(ItemStack stackIn, EntityPlayer playerIn, World worldIn, BlockPos posIn, EnumHand handIn, EnumFacing facingIn, float hitX, float hitY, float hitZ)
     {
         BlockPos pos = posIn;
         if (worldIn.isRemote)
