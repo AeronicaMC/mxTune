@@ -19,11 +19,12 @@ package net.aeronica.mods.mxtune.blocks;
 import java.util.List;
 import java.util.Random;
 
+import javax.annotation.Nullable;
+
 import com.google.common.collect.Lists;
 
 import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
 import net.aeronica.mods.mxtune.groups.PlayManager;
-import net.aeronica.mods.mxtune.init.ModBlocks;
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.inventory.IMusic;
 import net.aeronica.mods.mxtune.status.ServerCSDManager;
@@ -192,15 +193,16 @@ public class BlockPiano extends BlockInstrument2H
     @Override
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
-        EnumFacing enumfacing = (EnumFacing) state.getValue(FACING);
+        EnumFacing enumfacing = state.getValue(FACING);
 
-        if (state.getValue(PART) == BlockPiano.EnumPartType.LEFT)
+        if (state.getValue(PART) == BlockPiano.EnumPartType.RIGHT)
         {
-            if (worldIn.getBlockState(pos.offset(enumfacing)).getBlock() != this)
+            if (worldIn.getBlockState(pos.offset(enumfacing.getOpposite())).getBlock() != this)
             {
                 worldIn.setBlockToAir(pos);
             }
-        } else if (worldIn.getBlockState(pos.offset(enumfacing.getOpposite())).getBlock() != this)
+        }
+        else if (worldIn.getBlockState(pos.offset(enumfacing)).getBlock() != this)
         {
             worldIn.setBlockToAir(pos);
 
@@ -211,15 +213,8 @@ public class BlockPiano extends BlockInstrument2H
         }
     }
 
-    /** Get the Item that this Block should drop when harvested. */
-    @Override
-    public Item getItemDropped(IBlockState state, Random rand, int fortune)
-    {
-        return state.getValue(PART) == BlockPiano.EnumPartType.LEFT ? null : ModItems.ITEM_PIANO;
-    }
-    
     /**
-     * @Deprecated  Mojang's messing with stuff
+     * @deprecated  Mojang's messing with stuff
      */
     @Deprecated
     @Override
@@ -278,14 +273,14 @@ public class BlockPiano extends BlockInstrument2H
     }
 
     /**
-     * @Deprecated  Mojang's messing with stuff
+     * @deprecated  Mojang's messing with stuff
      */
     @Deprecated
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {return PIANO_BODY_AABB;}
 
     /**
-     * @Deprecated  Mojang's messing with stuff
+     * @deprecated  Mojang's messing with stuff
      */
     @Deprecated
     @Override
@@ -295,17 +290,16 @@ public class BlockPiano extends BlockInstrument2H
     @Override
     public BlockRenderLayer getBlockLayer() {return BlockRenderLayer.CUTOUT;}
 
-    /**
-     * @Deprecated  Mojang's messing with stuff
-     */
-    @Deprecated
     @Override
-    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) {return new ItemStack(ModBlocks.BLOCK_PIANO);}
-
+    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
+    {
+        return new ItemStack(ModItems.ITEM_PIANO);
+    }
+    
     @Override
     public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player)
     {
-        if (player.capabilities.isCreativeMode && state.getValue(PART) == BlockPiano.EnumPartType.LEFT)
+        if (player.capabilities.isCreativeMode && state.getValue(PART) == BlockPiano.EnumPartType.RIGHT)
         {
             BlockPos blockpos = pos.offset(((EnumFacing) state.getValue(FACING)).getOpposite());
 
@@ -329,17 +323,38 @@ public class BlockPiano extends BlockInstrument2H
     }
 
     /**
+     * Get the Item that this Block should drop when harvested.
+     */
+    @Nullable
+    public Item getItemDropped(IBlockState state, Random rand, int fortune)
+    {
+        return state.getValue(PART) == BlockPiano.EnumPartType.RIGHT ? null : ModItems.ITEM_PIANO;
+    }
+    
+    /**
+     * Spawns this Block's drops into the World as EntityItems.
+     */
+    @Override
+    public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
+    {
+        if (state.getValue(PART) == BlockPiano.EnumPartType.LEFT   )
+        {
+            super.dropBlockAsItemWithChance(worldIn, pos, state, chance, 0);
+        }
+    }
+
+    /**
      * Convert the given metadata into a BlockState for this Block
      * 
-     * @Deprecated  Mojang's messing with stuff
+     * @deprecated  Mojang's messing with stuff
      */
     @Deprecated
     @Override
     public IBlockState getStateFromMeta(int meta)
     {
         EnumFacing enumfacing = EnumFacing.getHorizontal(meta);
-        return (meta & 8) > 0 ? this.getDefaultState().withProperty(PART, BlockPiano.EnumPartType.LEFT).withProperty(FACING, enumfacing).withProperty(OCCUPIED, Boolean.valueOf((meta & 4) > 0))
-                : this.getDefaultState().withProperty(PART, BlockPiano.EnumPartType.RIGHT).withProperty(FACING, enumfacing);
+        return (meta & 8) > 0 ? this.getDefaultState().withProperty(PART, BlockPiano.EnumPartType.RIGHT).withProperty(FACING, enumfacing).withProperty(OCCUPIED, Boolean.valueOf((meta & 4) > 0))
+                : this.getDefaultState().withProperty(PART, BlockPiano.EnumPartType.LEFT).withProperty(FACING, enumfacing);
     }
 
     /**
@@ -347,7 +362,7 @@ public class BlockPiano extends BlockInstrument2H
      * applies properties not visible in the metadata, such as fence
      * connections.
      * 
-     * @Deprecated  Mojang's messing with stuff
+     * @deprecated  Mojang's messing with stuff
      */
     @Deprecated
     @Override
@@ -369,7 +384,7 @@ public class BlockPiano extends BlockInstrument2H
     /**
      * Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed blockstate.
      * 
-     * @Deprecated  Mojang's messing with stuff
+     * @deprecated  Mojang's messing with stuff
      */
     @Deprecated
     @Override
@@ -380,7 +395,7 @@ public class BlockPiano extends BlockInstrument2H
 
     /** Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed blockstate.
      *
-     * @Deprecated  Mojang's messing with stuff
+     * @deprecated  Mojang's messing with stuff
      */
     @Deprecated
     @Override
@@ -415,7 +430,8 @@ public class BlockPiano extends BlockInstrument2H
 
     public enum EnumPartType implements IStringSerializable
     {
-        LEFT("left"), RIGHT("right");
+        RIGHT("right"),
+        LEFT("left");
 
         private final String name;
 
@@ -431,7 +447,7 @@ public class BlockPiano extends BlockInstrument2H
     /* TileEntity stuff */
 
     /** 
-     * @Deprecated  Mojang's messing with stuff
+     * @deprecated  Mojang's messing with stuff
      */
     @Deprecated
     @Override
@@ -474,4 +490,5 @@ public class BlockPiano extends BlockInstrument2H
         entityitem.motionZ = world.rand.nextGaussian() * 0.05;
         world.spawnEntity(entityitem);
     }
+
 }
