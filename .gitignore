@@ -35,6 +35,8 @@ bin
 build
 run
 minecraft
+mc10_2
+mc11_2
 lib
 !gradle
 !gradlew

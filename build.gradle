@@ -38,7 +38,7 @@ configurations {
 
 minecraft {
     version = "1.10.2-12.18.3.2185"
-    runDir = "minecraft"
+    runDir = "mc10_2"
 	
 	def versionPropsFile = file('version.properties')
 	def versionBuild = ""
