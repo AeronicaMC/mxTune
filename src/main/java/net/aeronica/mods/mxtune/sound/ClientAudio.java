@@ -113,6 +113,11 @@ public enum ClientAudio
     final static ThreadFactory threadFactory; 
     
     static int count = 0;
+    static boolean vanillaMusicPaused = false;
+    
+    static final int SOUND_QUEUE_SLACK = 6;
+    static int normalChannelCount = 0;
+    static int streamChannelCount = 0;
     
     static {
         sndSystem = null;
@@ -320,9 +325,15 @@ public enum ClientAudio
             ObfuscationReflectionHelper.setPrivateValue(MusicTicker.class, mcMusicTicker, value, "timeUntilNextMusic", SRG_timeUntilNextMusic); 
     }
     
-    private static boolean vanillaMusicPaused = false;
-    private static void setVanillaMusicPaused(boolean flag) { vanillaMusicPaused = flag; }
-    private static boolean isVanillaMusicPaused() { return vanillaMusicPaused; }
+    private static void setVanillaMusicPaused(boolean flag)
+    {
+        vanillaMusicPaused = flag;
+    }
+    
+    private static boolean isVanillaMusicPaused()
+    {
+        return vanillaMusicPaused;
+    }
     
     private static void updateClientAudio()
     {
@@ -343,8 +354,6 @@ public enum ClientAudio
                 if (!GROUPS.getActivePlayIDs().contains(entry.getKey()))
                 {
                     stop(entry.getKey());
-                    entry.getValue().setStatus(Status.ERROR);
-                    entry.getValue().setAudioStream(null);
                     playIDAudioData.remove(entry.getKey());
                 }
             }
@@ -462,14 +471,9 @@ public enum ClientAudio
         ModLogger.info("ClientAudio PlayStreamingSourceEvent: uuid: %s, ISound: %s", e.getUuid(), e.getSound());
     }
 
-    /**
+    /*
      * This section Poached from Dynamic Surroundings
      */
-    private static final int SOUND_QUEUE_SLACK = 6;
-
-    private static int normalChannelCount = 0;
-    private static int streamChannelCount = 0;
-
     public int currentSoundCount() {
         return playingSounds.size();
     }
@@ -478,7 +482,7 @@ public enum ClientAudio
         return currentSoundCount() < (normalChannelCount - SOUND_QUEUE_SLACK);
     }
 
-    public static void configureSound() {
+    private static void configureSound() {
         int totalChannels = -1;
 
         try {
