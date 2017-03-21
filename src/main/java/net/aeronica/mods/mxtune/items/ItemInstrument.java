@@ -99,12 +99,12 @@ public class ItemInstrument extends Item implements IInstrument
                 else
                     ServerCSDManager.sendErrorViaChat(playerIn);
             }
+            return handIn.equals(EnumHand.MAIN_HAND) ? new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn)):
+                new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
         } else
         {
-            // Client Side - nothing to do
+            return new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
         }
-        return handIn.equals(EnumHand.MAIN_HAND) ? new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn)):
-            new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
     }
 
     /** Activate the instrument unconditionally */
@@ -186,7 +186,7 @@ public class ItemInstrument extends Item implements IInstrument
     @Override
     public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer playerIn, EntityLivingBase target, EnumHand hand)
     {
-        return true;// super.itemInteractionForEntity(stack, playerIn, target, hand);
+        return true;
     }
 
     /**
