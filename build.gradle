@@ -50,6 +50,7 @@ minecraft {
     replaceIn "net/aeronica/mods/mxtune/MXTuneMain.java"
     replace "{@VERSION}", project.version
     replace "{@FORGE_VERSION}", "${config.minecraftVersion}-${config.forgeVersion}"
+    replace "required-after:forge@[1.9.4-12.17.0.2051,)" , "required-after:forge@[${config.minecraftVersion}-${config.forgeVersion},)"
 }
 
 dependencies {
