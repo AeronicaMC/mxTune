@@ -36,8 +36,8 @@ public class MXTuneMain
 {
     public static final String MODID = "mxtune";
     public static final String MODNAME = "mxTune";
-    public static final String VERSION = "{@version:mod}";
-    public static final String DEPS = "required-after:forge@[1.11.2-13.20.0.2228,)";
+    public static final String VERSION = "{@VERSION}";
+    public static final String DEPS = "required-after:forge@[1.9.4-12.17.0.2051,)";
     public static final String GUIFACTORY = "net.aeronica.mods.mxtune.config.ModGuiFactory";
     public static final String UPDATE = "https://gist.githubusercontent.com/Aeronica/dbc2619e0011d5bdbe7a162d0c6aa82b/raw/update.json";
 
