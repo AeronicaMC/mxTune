@@ -21,4 +21,4 @@ cache:
   - "$HOME/.gradle"
   - ".gradle"
 notifications:
-    email: false
+  email: false
