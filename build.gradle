@@ -50,7 +50,7 @@ minecraft {
     replaceIn "net/aeronica/mods/mxtune/MXTuneMain.java"
     replace "{@VERSION}", project.version
     replace "{@FORGE_VERSION}", "${config.minecraftVersion}-${config.forgeVersion}"
-    replace "required-after:forge@[1.9.4-12.17.0.2051,)" , "required-after:forge@[${config.minecraftVersion}-${config.forgeVersion},)"
+    replace "required-after:forge@[1.9.4-12.17.0.2051,)", "required-after:forge@[${config.minecraftVersion}-${config.forgeVersion},)"
 }
 
 dependencies {
@@ -109,6 +109,6 @@ sonarqube {
     properties {  
         property "sonar.projectName", "mxTune"
         property "sonar.host.url", "https://sonarqube.com"
-        property "sonar.branch", "1.10.2"
+        property "sonar.branch", "${config.projectBranch}"
     }
 }
