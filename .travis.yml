@@ -13,7 +13,7 @@ jdk:
 before_install:
 - chmod +x gradlew
 script:
-- "./gradlew sonarqube"
+- "./gradlew clean test build sonarqube"
 cache:
   directories:
   - "$HOME/.m2/repository"
