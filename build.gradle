@@ -1,4 +1,5 @@
-
+// 1.10.2 build file before Mojang enforced lower case names in the resource folder
+// and Forge enforced lower case MODIDs. e.g. Forge -> forge
 // For those who want the bleeding edge
 buildscript {
     repositories {
@@ -50,7 +51,7 @@ minecraft {
     replaceIn "net/aeronica/mods/mxtune/MXTuneMain.java"
     replace "{@VERSION}", project.version
     replace "{@FORGE_VERSION}", "${config.minecraftVersion}-${config.forgeVersion}"
-    replace "required-after:forge@[1.9.4-12.17.0.2051,)", "required-after:forge@[${config.minecraftVersion}-${config.forgeVersion},)"
+    replace "required-after:Forge@[1.9.4-12.17.0.2051,)", "required-after:Forge@[${config.minecraftVersion}-${config.forgeVersion},)"
 }
 
 dependencies {
@@ -110,5 +111,6 @@ sonarqube {
         property "sonar.projectName", "mxTune"
         property "sonar.host.url", "https://sonarqube.com"
         property "sonar.branch", "${config.projectBranch}"
+        property "sonar.coverage.exclusions", "**/*"
     }
 }
