@@ -110,5 +110,6 @@ sonarqube {
         property "sonar.projectName", "mxTune"
         property "sonar.host.url", "https://sonarqube.com"
         property "sonar.branch", "${config.projectBranch}"
+        property "sonar.coverage.exclusions", "**/*"
     }
 }
