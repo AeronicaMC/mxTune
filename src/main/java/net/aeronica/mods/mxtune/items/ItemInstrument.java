@@ -34,7 +34,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
@@ -79,9 +78,9 @@ public class ItemInstrument extends Item implements IInstrument
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
     {
+        ItemStack itemStackIn = playerIn.getHeldItem(handIn);
         if (!worldIn.isRemote)
         {
-            ItemStack itemStackIn = playerIn.getHeldItem(handIn);
             /** Server Side - Open the instrument inventory GuiInstInvAdjustRotations */
             if (playerIn.isSneaking() && handIn.equals(EnumHand.MAIN_HAND))
             {
@@ -93,36 +92,25 @@ public class ItemInstrument extends Item implements IInstrument
                 {
                     if (!PlayManager.isPlayerPlaying(playerIn))
                     {
-                        /**TODO Make sure it is OKAY steal and to use this property like this */
                         Integer playID = PlayManager.playMusic(playerIn);
                         itemStackIn.setRepairCost(playID != null ? playID : -1);
                     }
                 } 
                 else
+                {
                     ServerCSDManager.sendErrorViaChat(playerIn);
+                }
             }
-            return handIn.equals(EnumHand.MAIN_HAND) ? new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn)):
-                new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
-        } else
-        {
-            return new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
         }
-    }
-
-    /** Activate the instrument unconditionally */
-    @Override
-    public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand)
-    {
-        // ModLogger.logInfo("Inst#onItemUseFirst hand: " + hand + ", side: " +
-        // side + ", pos: " + pos);
         // return EnumActionResult.SUCCESS to activate on AIR only
-        // return EnumActionResult.FAIL to activate unconditionally and skip
-        // vanilla processing
-        // return EnumActionResult.PASS to activate on AIR, or let Vanilla
-        // process
-        return hand.equals(EnumHand.MAIN_HAND) ? EnumActionResult.PASS : EnumActionResult.FAIL;
+        // return EnumActionResult.FAIL to activate unconditionally and skip vanilla processing
+        // return EnumActionResult.PASS to activate on AIR, or let Vanilla process
+        return new ActionResult<>(EnumActionResult.SUCCESS, itemStackIn);
     }
 
+    /**
+     * Off-hand (shield-slot) instrument will allow sneak-right click to remove music from a placed instrument.
+     */
     @Override
     public boolean doesSneakBypassUse(ItemStack stack, net.minecraft.world.IBlockAccess world, BlockPos pos, EntityPlayer player)
     {   
