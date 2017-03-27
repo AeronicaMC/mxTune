@@ -23,7 +23,6 @@ package net.aeronica.mods.mxtune.sound;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,15 +63,6 @@ public class Midi2WavRenderer
     }
 
     private Soundbank loadSoundbank(File soundbankFile) throws MidiUnavailableException, InvalidMidiDataException, IOException
-    {
-        Soundbank soundbank = MidiSystem.getSoundbank(soundbankFile);
-        if (!synth.isSoundbankSupported(soundbank)) {
-            throw new IOException("Soundbank not supported by synthesizer");
-        }
-        return soundbank;
-    }
-    
-    private Soundbank loadSoundbank(URL soundbankFile) throws MidiUnavailableException, InvalidMidiDataException, IOException
     {
         Soundbank soundbank = MidiSystem.getSoundbank(soundbankFile);
         if (!synth.isSoundbankSupported(soundbank)) {
@@ -160,7 +150,7 @@ public class Midi2WavRenderer
     public AudioInputStream createPCMStream(Sequence sequence, Integer[] patches, AudioFormat format) throws MidiUnavailableException, InvalidMidiDataException, IOException
     {
        
-        Soundbank soundbank = loadSoundbank(MIDISystemUtil.getMXTuneSB());
+        Soundbank soundbank = MIDISystemUtil.getMXTuneSoundBank();
         this.synth.open();
                 
         AudioSynthesizer aSynth = findAudioSynthesizer();
