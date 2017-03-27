@@ -103,7 +103,27 @@
 				"textures": {
 					"layer0": "mxtune:items/item_inst.trumpet"
 				}
-			}
+			},
+			"harpsicord": {
+				"textures": {
+					"layer0": "mxtune:items/item_inst.harpsicord"
+				}
+			},
+			"harpsicord_coupled": {
+				"textures": {
+					"layer0": "mxtune:items/item_inst.harpsicord_coupled"
+				}
+			},
+			"standard": {
+				"textures": {
+					"layer0": "mxtune:items/item_inst.standard"
+				}
+			},
+			"orchestra": {
+				"textures": {
+					"layer0": "mxtune:items/item_inst.orchestra"
+				}
+			}					
 		}
 	}
 }

@@ -24,6 +24,10 @@ item.mxtune:item_inst.cymbels.name=Cymbels
 item.mxtune:item_inst.hand_chimes.name=Hand Chimes
 item.mxtune:item_inst.recorder.name=Recorder
 item.mxtune:item_inst.trumpet.name=Trumpet
+item.mxtune:item_inst.harpsicord.name=Harpsicord
+item.mxtune:item_inst.harpsicord_coupled.name=Harpsicord Coupled
+item.mxtune:item_inst.standard.name=Standard Perc. Set
+item.mxtune:item_inst.orchestra.name=Orchesta Perc. Set
 item.mxtune:item_converter.name=Sheet Music Converter
 
 mxtune.instrumentInventory.empty=No Sheet Music Found
