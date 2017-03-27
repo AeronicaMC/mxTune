@@ -118,7 +118,7 @@ public enum PlayManager
                 String title = sheetMusic.getDisplayName();
                 String mml = contents.getString("MML");
 
-                mml = mml.replace("MML@", "MML@I" + getPatch(pos, playerIn, isPlaced));
+                mml = mml.replace("MML@", "MML@I" + getPackedPreset(pos, playerIn, isPlaced));
                 ModLogger.debug("MML Title: " + title);
                 ModLogger.debug("MML Sub25: " + mml.substring(0, mml.length() >= 25 ? 25 : mml.length()));
 
@@ -287,21 +287,22 @@ public enum PlayManager
     
     private static void dequeuePlayID(Integer playID) {if (activePlayIDs != null) activePlayIDs.remove(playID);}
     
-    private static int getPatch(BlockPos pos, EntityPlayer playerIn, boolean isPlaced)
+    private static int getPackedPreset(BlockPos pos, EntityPlayer playerIn, boolean isPlaced)
     {
+        int packedPreset = 0;
         if (isPlaced)
         {
             if (playerIn.getEntityWorld().getBlockState(pos).getBlock() instanceof IPlacedInstrument)
             {
                 IPlacedInstrument placedInst = (IPlacedInstrument) playerIn.getEntityWorld().getBlockState(pos).getBlock();
-                return placedInst.getPatch();
+                packedPreset =  placedInst.getPatch();
             }
         } else
         {
             IInstrument inst = (IInstrument) playerIn.getHeldItemMainhand().getItem();
-            return inst.getPatch(playerIn.getHeldItemMainhand().getMetadata());
+            packedPreset =  inst.getPatch(playerIn.getHeldItemMainhand().getMetadata());
         }
-        return 0;
+        return packedPreset;
     }
     
     private static void syncStatus()
