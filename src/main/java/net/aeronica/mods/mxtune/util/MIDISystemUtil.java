@@ -50,12 +50,13 @@ public enum MIDISystemUtil
     private static MidiDevice.Info[] midiDeviceInfo = null;
     private static MidiDevice.Info bestSynthInfo = null;
     private static Synthesizer bestSynth = null;
-    private static Soundbank soundBank = null;
+    private static Soundbank mxTuneSoundBank = null;
     private static boolean synthAvailable = false;
     private static boolean soundBankAvailable = false;
     private static boolean midiAvailable = false;
     private static int timesToWarn = 10;
     private static List<TextComponentString> chatStatus = new ArrayList<>();
+    private static final ResourceLocation SOUND_FONT = new ResourceLocation(MXTuneMain.MODID, "synth/mxtune.sf2");
 
     public static void mxTuneInit()
     {
@@ -112,24 +113,24 @@ public enum MIDISystemUtil
         {
             try
             {
-                soundBank = MidiSystem.getSoundbank(getMXTuneSB());
+                mxTuneSoundBank = MidiSystem.getSoundbank(getMXTuneSoundBankURL());
             } catch (InvalidMidiDataException | IOException e)
             {
                 ModLogger.error(e);
-                soundBank = null;
+                mxTuneSoundBank = null;
             }
-            if (soundBank != null)
+            if (mxTuneSoundBank != null)
             {
-                Instrument[] inst = soundBank.getInstruments();
+                Instrument[] inst = mxTuneSoundBank.getInstruments();
 
-                /** XXX: This is workaround for a java.sound.midi system bug */
-                if (soundBank.getName().isEmpty())
+                /** This is workaround for a java.sound.midi system bug */
+                if (mxTuneSoundBank.getName().isEmpty())
                     soundBankAvailable = false;
                 else
                     soundBankAvailable = true;
-                ModLogger.info("--- " + (soundBank.getName().isEmpty()? "*No Name*" : soundBank.getName() ) + " ---");
+                ModLogger.info("--- " + (mxTuneSoundBank.getName().isEmpty()? "*No Name*" : mxTuneSoundBank.getName() ) + " ---");
                 ModLogger.info("Number of instruments: " + inst.length);
-                for (Instrument i: inst) ModLogger.info("       " + i.getName());
+                for (Instrument i: inst) ModLogger.info("(%5d, %3d) %s", i.getPatch().getBank(), i.getPatch().getProgram(), i.getName());
                 
             }
         }
@@ -177,12 +178,16 @@ public enum MIDISystemUtil
             for (TextComponentString tcs: chatStatus) {playerIn.sendMessage(tcs);}
     }
     
-    private static final ResourceLocation SOUND_FONT = new ResourceLocation(MXTuneMain.MODID, "synth/mxtune.sf2");
-    
-    public static URL getMXTuneSB()
+    private static URL getMXTuneSoundBankURL()
     {
         URL file = MXTuneMain.class.getResource("/assets/" + SOUND_FONT.getResourceDomain() + "/" + SOUND_FONT.getResourcePath());
         ModLogger.debug("Sound font path: %s", file);
         return file;
     }
+    
+    public static Soundbank getMXTuneSoundBank()
+    {
+        return mxTuneSoundBank;
+    }
+    
 }

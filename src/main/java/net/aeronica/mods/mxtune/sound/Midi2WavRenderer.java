@@ -23,7 +23,6 @@ package net.aeronica.mods.mxtune.sound;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,15 +63,6 @@ public class Midi2WavRenderer
     }
 
     private Soundbank loadSoundbank(File soundbankFile) throws MidiUnavailableException, InvalidMidiDataException, IOException
-    {
-        Soundbank soundbank = MidiSystem.getSoundbank(soundbankFile);
-        if (!synth.isSoundbankSupported(soundbank)) {
-            throw new IOException("Soundbank not supported by synthesizer");
-        }
-        return soundbank;
-    }
-    
-    private Soundbank loadSoundbank(URL soundbankFile) throws MidiUnavailableException, InvalidMidiDataException, IOException
     {
         Soundbank soundbank = MidiSystem.getSoundbank(soundbankFile);
         if (!synth.isSoundbankSupported(soundbank)) {
@@ -147,6 +137,7 @@ public class Midi2WavRenderer
 
     /**
      * Creates a PCM stream based on the Sequence, patches and audio format, using the default soundbank.
+     * Note: This uses the mxTune soundfont only
      *  
      * @param sequence
      * @param patches
@@ -159,7 +150,7 @@ public class Midi2WavRenderer
     public AudioInputStream createPCMStream(Sequence sequence, Integer[] patches, AudioFormat format) throws MidiUnavailableException, InvalidMidiDataException, IOException
     {
        
-        Soundbank soundbank = loadSoundbank(MIDISystemUtil.getMXTuneSB());
+        Soundbank soundbank = MIDISystemUtil.getMXTuneSoundBank();
         this.synth.open();
                 
         AudioSynthesizer aSynth = findAudioSynthesizer();
@@ -177,11 +168,7 @@ public class Midi2WavRenderer
             aSynth.unloadAllInstruments(defsbk);
         
         aSynth.loadAllInstruments(soundbank);
-        aSynth.unloadAllInstruments(soundbank);
-        for (int patch : patches) {
-            aSynth.loadInstrument(soundbank.getInstrument(new Patch(0, patch)));
-        }
-        
+
         // Play Sequence into AudioSynthesizer Receiver.
         Receiver receiver = aSynth.getReceiver();
         double total = send(sequence, receiver);

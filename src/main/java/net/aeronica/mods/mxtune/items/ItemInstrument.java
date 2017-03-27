@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.items;
 
 import java.util.List;
 
+import net.aeronica.libs.mml.core.MMLUtil;
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
 import net.aeronica.mods.mxtune.groups.PlayManager;
@@ -34,7 +35,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
@@ -79,9 +79,9 @@ public class ItemInstrument extends Item implements IInstrument
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
     {
+        ItemStack itemStackIn = playerIn.getHeldItem(handIn);
         if (!worldIn.isRemote)
         {
-            ItemStack itemStackIn = playerIn.getHeldItem(handIn);
             /** Server Side - Open the instrument inventory GuiInstInvAdjustRotations */
             if (playerIn.isSneaking() && handIn.equals(EnumHand.MAIN_HAND))
             {
@@ -93,36 +93,25 @@ public class ItemInstrument extends Item implements IInstrument
                 {
                     if (!PlayManager.isPlayerPlaying(playerIn))
                     {
-                        /**TODO Make sure it is OKAY steal and to use this property like this */
                         Integer playID = PlayManager.playMusic(playerIn);
                         itemStackIn.setRepairCost(playID != null ? playID : -1);
                     }
                 } 
                 else
+                {
                     ServerCSDManager.sendErrorViaChat(playerIn);
+                }
             }
-            return handIn.equals(EnumHand.MAIN_HAND) ? new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn)):
-                new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
-        } else
-        {
-            return new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
         }
-    }
-
-    /** Activate the instrument unconditionally */
-    @Override
-    public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand)
-    {
-        // ModLogger.logInfo("Inst#onItemUseFirst hand: " + hand + ", side: " +
-        // side + ", pos: " + pos);
         // return EnumActionResult.SUCCESS to activate on AIR only
-        // return EnumActionResult.FAIL to activate unconditionally and skip
-        // vanilla processing
-        // return EnumActionResult.PASS to activate on AIR, or let Vanilla
-        // process
-        return hand.equals(EnumHand.MAIN_HAND) ? EnumActionResult.PASS : EnumActionResult.FAIL;
+        // return EnumActionResult.FAIL to activate unconditionally and skip vanilla processing
+        // return EnumActionResult.PASS to activate on AIR, or let Vanilla process
+        return new ActionResult<>(EnumActionResult.SUCCESS, itemStackIn);
     }
 
+    /**
+     * Off-hand (shield-slot) instrument will allow sneak-right click to remove music from a placed instrument.
+     */
     @Override
     public boolean doesSneakBypassUse(ItemStack stack, net.minecraft.world.IBlockAccess world, BlockPos pos, EntityPlayer player)
     {   
@@ -221,27 +210,31 @@ public class ItemInstrument extends Item implements IInstrument
 
     public enum EnumType implements IVariant
     {
-        LUTE(0, "lute", 1),
-        UKULELE(1, "ukulele", 2),
-        MANDOLIN(2, "mandolin", 3),
-        WHISTLE(3, "whistle", 4),
-        RONCADORA(4, "roncadora", 5),
-        FLUTE(5, "flute", 6),
-        CHALAMEU(6, "chalameu", 7),
-        TUBA(7, "tuba", 19),
-        LYRE(8, "lyre", 20),
-        ELECTRIC_GUITAR(9, "electic_guitar", 21),
-        VIOLIN(10, "violin", 23),
-        CELLO(11, "cello", 24),
-        HARP(12, "harp", 25),
-        TUNED_FLUTE(13, "tuned_flute", 56),
-        TUNED_WHISTLE(14, "tuned_whistle", 57),
-        BASS_DRUM(15, "bass_drum", 67),
-        SNARE_DRUM(16, "snare_drum", 68),
-        CYMBELS(17, "cymbels", 69),
-        HAND_CHIMES(18, "hand_chimes", 78),
-        RECORDER(19, "recorder", 81),
-        TRUMPET(20, "trumpet", 91),
+        LUTE(0, "lute", 0),
+        UKULELE(1, "ukulele", 1),
+        MANDOLIN(2, "mandolin", 2),
+        WHISTLE(3, "whistle", 3),
+        RONCADORA(4, "roncadora", 4),
+        FLUTE(5, "flute", 5),
+        CHALAMEU(6, "chalameu", 6),
+        TUBA(7, "tuba", 18),
+        LYRE(8, "lyre", 19),
+        ELECTRIC_GUITAR(9, "electic_guitar", 20),
+        VIOLIN(10, "violin", 22),
+        CELLO(11, "cello", 23),
+        HARP(12, "harp", 24),
+        TUNED_FLUTE(13, "tuned_flute", 55),
+        TUNED_WHISTLE(14, "tuned_whistle", 56),
+        BASS_DRUM(15, "bass_drum", 66),
+        SNARE_DRUM(16, "snare_drum", 67),
+        CYMBELS(17, "cymbels", 68),
+        HAND_CHIMES(18, "hand_chimes", 77),
+        RECORDER(19, "recorder", MMLUtil.preset2PackedPreset(16, 74)),
+        TRUMPET(20, "trumpet", MMLUtil.preset2PackedPreset(16, 56)),
+        HARPSICORD(21, "harpsicord", MMLUtil.preset2PackedPreset(16, 6)),
+        HARPSICORD_COUPLED(22, "harpsicord_coupled", MMLUtil.preset2PackedPreset(16, 7)),
+        STANDARD(23, "standard", MMLUtil.preset2PackedPreset(128, 0)),
+        ORCHESTRA(24, "orchestra", MMLUtil.preset2PackedPreset(128, 48)),
         ;
 
         public int getMetadata() {return this.meta;}

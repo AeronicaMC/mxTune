@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Patch;
 import javax.sound.sampled.AudioInputStream;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -35,6 +36,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import net.aeronica.libs.mml.core.MMLLexer;
 import net.aeronica.libs.mml.core.MMLParser;
 import net.aeronica.libs.mml.core.MMLToMIDI;
+import net.aeronica.libs.mml.core.MMLUtil;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.sound.ClientAudio.Status;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -117,15 +119,18 @@ public class MML2PCM
         walker.walk(mmlTrans, tree);
         /** ANTLR4 MML Parser END */
 
-        Integer[] patches = new Integer[mmlTrans.getPatches().size()];
-        mmlTrans.getPatches().toArray(patches);
-        for (int patch: patches)
-            ModLogger.info("MML2PCM Patch: " + patch);
+        Integer[] packedPresets = new Integer[mmlTrans.getPackedPresets().size()];
+        mmlTrans.getPackedPresets().toArray(packedPresets);
+        for (int packedPreset: packedPresets)
+        {
+            Patch patchPreset = MMLUtil.packetPreset2Patch(packedPreset);
+            ModLogger.info("MML2PCM preset: bank: %d, program %d", patchPreset.getBank(), patchPreset.getProgram());       
+        }
       
         try
         {
             Midi2WavRenderer mw = new Midi2WavRenderer();
-            AudioInputStream ais = mw.createPCMStream(mmlTrans.getSequence(), patches, ClientAudio.getAudioFormat(playID));
+            AudioInputStream ais = mw.createPCMStream(mmlTrans.getSequence(), packedPresets, ClientAudio.getAudioFormat(playID));
             ClientAudio.setPlayIDAudioStream(playID, ais);
         } catch (MidiUnavailableException | InvalidMidiDataException | IOException e)
         {
