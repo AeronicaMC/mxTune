@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.items;
 
 import java.util.List;
 
+import net.aeronica.libs.mml.core.MMLUtil;
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
 import net.aeronica.mods.mxtune.groups.PlayManager;
@@ -207,27 +208,31 @@ public class ItemInstrument extends Item implements IInstrument
 
     public enum EnumType implements IVariant
     {
-        LUTE(0, "lute", 1),
-        UKULELE(1, "ukulele", 2),
-        MANDOLIN(2, "mandolin", 3),
-        WHISTLE(3, "whistle", 4),
-        RONCADORA(4, "roncadora", 5),
-        FLUTE(5, "flute", 6),
-        CHALAMEU(6, "chalameu", 7),
-        TUBA(7, "tuba", 19),
-        LYRE(8, "lyre", 20),
-        ELECTRIC_GUITAR(9, "electic_guitar", 21),
-        VIOLIN(10, "violin", 23),
-        CELLO(11, "cello", 24),
-        HARP(12, "harp", 25),
-        TUNED_FLUTE(13, "tuned_flute", 56),
-        TUNED_WHISTLE(14, "tuned_whistle", 57),
-        BASS_DRUM(15, "bass_drum", 67),
-        SNARE_DRUM(16, "snare_drum", 68),
-        CYMBELS(17, "cymbels", 69),
-        HAND_CHIMES(18, "hand_chimes", 78),
-        RECORDER(19, "recorder", 81),
-        TRUMPET(20, "trumpet", 91),
+        LUTE(0, "lute", 0),
+        UKULELE(1, "ukulele", 1),
+        MANDOLIN(2, "mandolin", 2),
+        WHISTLE(3, "whistle", 3),
+        RONCADORA(4, "roncadora", 4),
+        FLUTE(5, "flute", 5),
+        CHALAMEU(6, "chalameu", 6),
+        TUBA(7, "tuba", 18),
+        LYRE(8, "lyre", 19),
+        ELECTRIC_GUITAR(9, "electic_guitar", 20),
+        VIOLIN(10, "violin", 22),
+        CELLO(11, "cello", 23),
+        HARP(12, "harp", 24),
+        TUNED_FLUTE(13, "tuned_flute", 55),
+        TUNED_WHISTLE(14, "tuned_whistle", 56),
+        BASS_DRUM(15, "bass_drum", 66),
+        SNARE_DRUM(16, "snare_drum", 67),
+        CYMBELS(17, "cymbels", 68),
+        HAND_CHIMES(18, "hand_chimes", 77),
+        RECORDER(19, "recorder", MMLUtil.preset2PackedPreset(16, 74)),
+        TRUMPET(20, "trumpet", MMLUtil.preset2PackedPreset(16, 56)),
+        HARPSICORD(21, "harpsicord", MMLUtil.preset2PackedPreset(16, 6)),
+        HARPSICORD_COUPLED(22, "harpsicord_coupled", MMLUtil.preset2PackedPreset(16, 7)),
+        STANDARD(23, "standard", MMLUtil.preset2PackedPreset(128, 0)),
+        ORCHESTRA(24, "orchestra", MMLUtil.preset2PackedPreset(128, 48)),
         ;
 
         public int getMetadata() {return this.meta;}
