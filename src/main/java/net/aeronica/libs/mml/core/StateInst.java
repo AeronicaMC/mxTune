@@ -36,8 +36,8 @@ public class StateInst
 
     public void setInstrument(int gmInstrument)
     {
-        /* MIDI patch number = GM instrument - 1 */
-        this.instrument = (getMinMax(1, 128, gmInstrument)) - 1;
+        /* Packed preset number 0-16,511 - bank 0-128, preset 0-127, zero based */
+        this.instrument = (getMinMax(0, 0x407F, gmInstrument));
     }
 
     public void collectDurationTicks(long durationTicks)
