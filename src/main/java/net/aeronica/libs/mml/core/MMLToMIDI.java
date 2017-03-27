@@ -8,6 +8,7 @@ import java.util.List;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiEvent;
+import javax.sound.midi.Patch;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
@@ -18,7 +19,7 @@ public class MMLToMIDI extends MMLTransformBase
     private static final double PPQ = 480.0;
     private static final int TICKS_OFFSET = (int) (PPQ);
     private Sequence sequence;
-    private HashSet<Integer> patches = new HashSet<Integer>();
+    private HashSet<Integer> packedPresets = new HashSet<Integer>();
 
     public MMLToMIDI() {}
 
@@ -31,11 +32,11 @@ public class MMLToMIDI extends MMLTransformBase
 
     public Sequence getSequence() {return sequence;}
     
-    public List<Integer> getPatches()
+    public List<Integer> getPackedPresets()
     {
-        List<Integer> patchList = new ArrayList<Integer>();
-        for (Integer i: patches) patchList.add(i);
-        return patchList;
+        List<Integer> packedPresetList = new ArrayList<Integer>();
+        for (Integer i: packedPresets) packedPresetList.add(i);
+        return packedPresetList;
     }
 
     @Override
@@ -75,8 +76,24 @@ public class MMLToMIDI extends MMLTransformBase
                 }
                 case INST:
                 {
-                    tracks[tk].add(createProgramChangeEvent(ch, mmo.getInstrument(), mmo.getStartingTicks() + ticksOffset));
-                    patches.add(mmo.getInstrument());
+                    Patch preset = MMLUtil.packetPreset2Patch(mmo.getInstrument());
+                    int bank =  preset.getBank();
+                    int programPreset = preset.getProgram();
+                    /* Detect a percussion set */
+                    if (bank == 128)
+                    {
+                        /* Set Bank Select for Rhythm Channel MSB 0x78, LSB 0x00  - 14 bits only */
+                        bank = 0x7800 >>> 1;
+                    }
+                    else
+                    {
+                        /* Convert the preset bank to the Bank Select bank */
+                        bank = bank << 7;
+                    }
+                    tracks[tk].add(createBankSelectEventMSB(ch, bank, mmo.getStartingTicks() + ticksOffset-2));
+                    tracks[tk].add(createBankSelectEventLSB(ch, bank, mmo.getStartingTicks() + ticksOffset-1));
+                    tracks[tk].add(createProgramChangeEvent(ch, programPreset, mmo.getStartingTicks() + ticksOffset));
+                    packedPresets.add(mmo.getInstrument());
                     break;
                 }
                 case PART:
@@ -153,6 +170,20 @@ public class MMLToMIDI extends MMLTransformBase
         return evt;
     }
 
+    protected MidiEvent createBankSelectEventMSB(int channel, int value, long tick) throws InvalidMidiDataException
+    {
+        ShortMessage msg = new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, 0, value >> 7);
+        MidiEvent evt = new MidiEvent(msg, tick);
+        return evt;
+    }
+    
+    protected MidiEvent createBankSelectEventLSB(int channel, int value, long tick) throws InvalidMidiDataException
+    {
+        ShortMessage msg = new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, 32, value & 0x7F);
+        MidiEvent evt = new MidiEvent(msg, tick);
+        return evt;
+    }
+    
     protected MidiEvent createNoteOnEvent(int channel, int pitch, int velocity, long tick) throws InvalidMidiDataException
     {
         ShortMessage msg = new ShortMessage();

@@ -122,14 +122,14 @@ public enum MIDISystemUtil
             {
                 Instrument[] inst = soundBank.getInstruments();
 
-                /** XXX: This is workaround for a java.sound.midi system bug */
+                /** This is workaround for a java.sound.midi system bug */
                 if (soundBank.getName().isEmpty())
                     soundBankAvailable = false;
                 else
                     soundBankAvailable = true;
                 ModLogger.info("--- " + (soundBank.getName().isEmpty()? "*No Name*" : soundBank.getName() ) + " ---");
                 ModLogger.info("Number of instruments: " + inst.length);
-                for (Instrument i: inst) ModLogger.info("       " + i.getName());
+                for (Instrument i: inst) ModLogger.info("       %s, bank: %d, program: %d, data: %s", i.getName(), i.getPatch().getBank(), i.getPatch().getProgram(), i.getData());
                 
             }
         }

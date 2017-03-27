@@ -147,6 +147,7 @@ public class Midi2WavRenderer
 
     /**
      * Creates a PCM stream based on the Sequence, patches and audio format, using the default soundbank.
+     * Note: This uses the mxTune soundfont only
      *  
      * @param sequence
      * @param patches
@@ -177,11 +178,7 @@ public class Midi2WavRenderer
             aSynth.unloadAllInstruments(defsbk);
         
         aSynth.loadAllInstruments(soundbank);
-        aSynth.unloadAllInstruments(soundbank);
-        for (int patch : patches) {
-            aSynth.loadInstrument(soundbank.getInstrument(new Patch(0, patch)));
-        }
-        
+
         // Play Sequence into AudioSynthesizer Receiver.
         Receiver receiver = aSynth.getReceiver();
         double total = send(sequence, receiver);
