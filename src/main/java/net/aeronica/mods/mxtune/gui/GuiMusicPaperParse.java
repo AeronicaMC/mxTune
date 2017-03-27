@@ -47,6 +47,7 @@ import org.lwjgl.input.Mouse;
 import net.aeronica.libs.mml.core.MMLLexer;
 import net.aeronica.libs.mml.core.MMLParser;
 import net.aeronica.libs.mml.core.MMLToMIDI;
+import net.aeronica.libs.mml.core.MMLUtil;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.MusicTextMessage;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
@@ -88,6 +89,11 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     ParseErrorEntry selectedErrorEntry;
     int selectedError = -1;
 
+    /** MML Player */
+    private Sequencer sequencer = null;
+    @SuppressWarnings("restriction")
+    private com.sun.media.sound.AudioSynthesizer synthesizer = null;
+    
     /** Instruments */
     ArrayList<Instrument> instrumentCache;
     int instListWidth;
@@ -696,17 +702,42 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
 
     public FontRenderer getFontRenderer() {return mc.fontRendererObj;}
 
-    /** MML Player */
-    private Sequencer sequencer = null;
-    @SuppressWarnings("restriction")
-    private com.sun.media.sound.AudioSynthesizer synthesizer = null;
-
+    /** Table Flip!
+     * Because of the apparent different interpretations of MIDI and
+     * SoundFont specifications and the way Sun implemented
+     * {@link javax.sound.midi.Instrument}, soundfont loading, etc.:
+     * <br/><br/>
+     * A soundfont preset bank:0, program:0 for a piano AND
+     * a soundfont preset bank:128, program:0 for a standard percussion set
+     * produce identical {@link javax.sound.midi.Patch} objects using
+     * {@link Patch javax.sound.midi.Instrument.getPatch()}
+     * <br/><br/>
+     * While a synthesizer can load the Instrument directly, if you want
+     * to manipulate or test values for bank or program settings you are
+     * out of luck.
+     */
     @SuppressWarnings("restriction")
     public boolean mmlPlay(String mmlIn)
     {
         String mml = mmlIn;
         Instrument inst = instrumentCache.get(selectedInst);
-        mml = mml.replace("MML@", "MML@i" + (inst.getPatch().getProgram()+1));
+        
+        /* Table Flip! */
+        boolean isPercussionSet = inst.getName().contains("Standard") || inst.getName().contains("Orchestra");
+        /* A SoundFont 2.04 preset allows 128 banks 0-127) plus the percussion
+         * set for 129 sets! OwO However when you get a patch from an
+         * Instrument from a loaded soundfont you will find the bank value
+         * for the preset is left shifted 7 bits. However what's worse is that
+         * for preset bank:128 the value returned by getBank() is ZERO!
+         * So as a workaround I check the name of instrument to see if it's a percussion set.
+         */
+        int bank = inst.getPatch().getBank() >>> 7;
+        int program = inst.getPatch().getProgram();
+        int packedPreset = isPercussionSet ? MMLUtil.preset2PackedPreset(128, program) : MMLUtil.preset2PackedPreset(bank, program);
+        
+        mml = mml.replace("MML@", "MML@i" + packedPreset);
+        ModLogger.debug("GuiMusicPaperParse.mmlPlay(): %s", mml.substring(0, mml.length() >= 25 ? 25 : mml.length()));
+        
         if (midiUnavailable) return false;
         byte[] mmlBuf = null;
         InputStream is;
