@@ -75,9 +75,9 @@ public class ItemInstrument extends Item implements IInstrument
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
+    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand handIn)
     {
-        ItemStack itemStackIn = playerIn.getHeldItem(handIn);
+        ItemStack itemStack = playerIn.getHeldItem(handIn);
         if (!worldIn.isRemote)
         {
             /** Server Side - Open the instrument inventory GuiInstInvAdjustRotations */
@@ -85,7 +85,7 @@ public class ItemInstrument extends Item implements IInstrument
             {
                 playerIn.openGui(MXTuneMain.instance, GuiInstrumentInventory.GUI_ID, worldIn, 0,0,0);
             }
-            if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && handIn.equals(EnumHand.MAIN_HAND))
+            if (!playerIn.isSneaking() && itemStack.hasTagCompound() && handIn.equals(EnumHand.MAIN_HAND))
             {
                 if (ServerCSDManager.canMXTunesPlay(playerIn))
                 {
@@ -104,7 +104,7 @@ public class ItemInstrument extends Item implements IInstrument
         // return EnumActionResult.SUCCESS to activate on AIR only
         // return EnumActionResult.FAIL to activate unconditionally and skip vanilla processing
         // return EnumActionResult.PASS to activate on AIR, or let Vanilla process
-        return new ActionResult<>(EnumActionResult.SUCCESS, itemStackIn);
+        return new ActionResult<>(EnumActionResult.SUCCESS, itemStack);
     }
 
     /**
