@@ -446,14 +446,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
             instrumentCache.add(getNullInstrument());
         } else
         {
-            try
-            {
-                soundBank = MidiSystem.getSoundbank(MIDISystemUtil.getMXTuneSB());
-            } catch (InvalidMidiDataException | IOException e)
-            {
-                ModLogger.error(e);
-                soundBank = null;
-            }
+            soundBank = MIDISystemUtil.getMXTuneSoundBank();
             if (soundBank != null)
             {
                 inst = soundBank.getInstruments();
