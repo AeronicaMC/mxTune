@@ -16,7 +16,6 @@
  */
 package net.aeronica.mods.mxtune.util;
 
-import net.aeronica.mods.mxtune.init.ModBlocks;
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.minecraft.init.Blocks;
@@ -25,39 +24,49 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 public class Recipes
 {
     /*
-       TUBA(0, "tuba", 59),
-       MANDO(1, "mando", 25),
-       FLUTE(2, "flute", 74),
-       BONGO(3, "bongo", 117),
-       BALAL(4, "balalaika", 28),
-       CLARI(5, "clarinet", 72),
-       MUSICBOX(6, "musicbox", 11),
-       OCARINA(7, "ocarina", 80),
-       SAWTOOTH(8, "sawtooth", 82),
-       EGUITAR1(9, "eguitarjazz", 27),
-       EGUITAR2(10, "eguitarmuted", 29),
-       EGUITAR3(11, "eguitarover", 30),
-       EGUITAR4(12, "eguitardist", 31);
+        -LUTE(0, "lute", 0),
+        -UKULELE(1, "ukulele", 1),
+        -MANDOLIN(2, "mandolin", 2),
+        -WHISTLE(3, "whistle", 3),
+        -RONCADORA(4, "roncadora", 4),
+        -FLUTE(5, "flute", 5),
+        -CHALAMEU(6, "chalameu", 6),
+        -TUBA(7, "tuba", 18),
+        -LYRE(8, "lyre", 19),
+        -ELECTRIC_GUITAR(9, "electic_guitar", 20),
+        -VIOLIN(10, "violin", 22),
+        -CELLO(11, "cello", 23),
+        -HARP(12, "harp", 24),
+        -TUNED_FLUTE(13, "tuned_flute", 55),
+        -TUNED_WHISTLE(14, "tuned_whistle", 56),
+        -BASS_DRUM(15, "bass_drum", 66),
+        -SNARE_DRUM(16, "snare_drum", 67),
+        -CYMBELS(17, "cymbels", 68),
+        -HAND_CHIMES(18, "hand_chimes", 77),
+        -RECORDER(19, "recorder", MMLUtil.preset2PackedPreset(16, 74)),
+        -TRUMPET(20, "trumpet", MMLUtil.preset2PackedPreset(16, 56)),
+        -HARPSICORD(21, "harpsicord", MMLUtil.preset2PackedPreset(16, 6)),
+        -HARPSICORD_COUPLED(22, "harpsicord_coupled", MMLUtil.preset2PackedPreset(16, 7)),
+        -STANDARD(23, "standard", MMLUtil.preset2PackedPreset(128, 0)),
+        -ORCHESTRA(24, "orchestra", MMLUtil.preset2PackedPreset(128, 48)),
+        -PIANO
      */
     public static void register()
-    { /*
-        int TUBA = ItemInstrument.EnumType.TUBA.getMetadata();
-        IRecipe tubaRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, TUBA), new Object[]
+    {
+        
+        IRecipe musicPaper = new ShapelessOreRecipe(new ItemStack(ModItems.ITEM_MUSIC_PAPER, 4, 0), new Object[]
         {
-                "GGG",
-                ".I.",
-                ".I.", 
-                        'I', "ingotIron",
-                        'G', "nuggetGold"
+                "paper", "paper", "paper", "paper", "dyeBlack"
         });
-        GameRegistry.addRecipe(tubaRecipe);
+        GameRegistry.addRecipe(musicPaper);
 
-        int MANDO = ItemInstrument.EnumType.MANDO.getMetadata();
-        IRecipe mandoRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, MANDO), new Object[]
+        int mandolinMeta = ItemInstrument.EnumType.MANDOLIN.getMetadata();
+        IRecipe mandolinRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, mandolinMeta), new Object[]
         {
                 ".P.",
                 ".P.",
@@ -65,23 +74,21 @@ public class Recipes
                         'P', "plankWood",
                         'S', "string"
         });
-        GameRegistry.addRecipe(mandoRecipe);
+        GameRegistry.addRecipe(mandolinRecipe);
 
-        int BONGO = ItemInstrument.EnumType.BONGO.getMetadata();
-        IRecipe bongoRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, BONGO), new Object[]
+        int ukuleleMeta = ItemInstrument.EnumType.UKULELE.getMetadata();
+        IRecipe ukuleleRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, ukuleleMeta), new Object[]
         {
-                "LLL",
-                "PSP",
-                "PPP",
+                ".P.",
+                ".P.",
+                "PWP",
                         'P', "plankWood",
-                        'L', "leather",
-                        'S', "string"
+                        'W', Blocks.WOOL
         });
-        GameRegistry.addRecipe(bongoRecipe);
+        GameRegistry.addRecipe(ukuleleRecipe);
 
-        // Uses OreDictionary lookup for plankWood
-        int BALAL = ItemInstrument.EnumType.BALALAIKA.getMetadata();
-        IRecipe balalaikaRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, BALAL), new Object[]
+        int luteMeta = ItemInstrument.EnumType.LUTE.getMetadata();
+        IRecipe luteRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, luteMeta), new Object[]
         {
                 ".P.",
                 ".P.",
@@ -89,10 +96,41 @@ public class Recipes
                         'P', "plankWood",
                         'I', "ingotIron"
         });
-        GameRegistry.addRecipe(balalaikaRecipe);
+        GameRegistry.addRecipe(luteRecipe);
 
-        int FLUTE = ItemInstrument.EnumType.FLUTE.getMetadata();
-        IRecipe fluteRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, FLUTE), new Object[]
+        int whistleMeta = ItemInstrument.EnumType.WHISTLE.getMetadata();
+        IRecipe whistleRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, whistleMeta), new Object[]
+        {
+                "C",
+                "C",
+                "C",
+                        'C', Items.CLAY_BALL
+        });
+        GameRegistry.addRecipe(whistleRecipe);
+
+        ItemStack whistleStack = new ItemStack(ModItems.ITEM_INSTRUMENT, 1, whistleMeta);
+        int tunedWhistleMeta = ItemInstrument.EnumType.TUNED_WHISTLE.getMetadata();
+        IRecipe tunedWhistleRecipe = new ShapelessOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, tunedWhistleMeta), new Object[]
+        {
+                whistleStack,
+                "nuggetGold"
+        });
+
+        GameRegistry.addRecipe(tunedWhistleRecipe);
+
+        int roncadoraMeta = ItemInstrument.EnumType.RONCADORA.getMetadata();
+        IRecipe roncadoraRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, roncadoraMeta), new Object[]
+        {
+                "R",
+                "C",
+                "C",
+                        'C', Items.CLAY_BALL,
+                        'R', "sugarcane"
+        });
+        GameRegistry.addRecipe(roncadoraRecipe);
+
+        int fluteMeta = ItemInstrument.EnumType.FLUTE.getMetadata();
+        IRecipe fluteRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, fluteMeta), new Object[]
         {
                 "P",
                 "R",
@@ -102,8 +140,17 @@ public class Recipes
         });
         GameRegistry.addRecipe(fluteRecipe);
 
-        int CLARI = ItemInstrument.EnumType.CLARINET.getMetadata();
-        IRecipe clariRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, CLARI), new Object[]
+        ItemStack fluteStack = new ItemStack(ModItems.ITEM_INSTRUMENT, 1, fluteMeta);
+        int tunedFluteMeta = ItemInstrument.EnumType.TUNED_FLUTE.getMetadata();
+        IRecipe tuneFluteReciped = new ShapelessOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, tunedFluteMeta), new Object[]
+        {
+                fluteStack,
+                "nuggetGold"
+        });
+        GameRegistry.addRecipe(tuneFluteReciped);
+
+        int chalameuMeta = ItemInstrument.EnumType.CHALAMEU.getMetadata();
+        IRecipe chalameuRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, chalameuMeta), new Object[]
         {
                 "R",
                 "P",
@@ -111,75 +158,66 @@ public class Recipes
                         'P', "plankWood",
                         'R', "sugarcane"
         });
-        GameRegistry.addRecipe(clariRecipe);
+        GameRegistry.addRecipe(chalameuRecipe);
 
-        int MUSICBOX = ItemInstrument.EnumType.MUSICBOX.getMetadata();
-        IRecipe musicboxRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, MUSICBOX), new Object[]
+        int recorderMeta = ItemInstrument.EnumType.RECORDER.getMetadata();
+        IRecipe recorderRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, recorderMeta), new Object[]
         {
-                "PPP",
-                "PIP",
-                "PPP",
+                "B",
+                "P",
+                "P",
                         'P', "plankWood",
-                        'I', "ingotIron"
+                        'B', "bone"
         });
-        GameRegistry.addRecipe(musicboxRecipe);
+        GameRegistry.addRecipe(recorderRecipe);
 
-        int OCARINA = ItemInstrument.EnumType.OCARINA.getMetadata();
-        IRecipe ocarinaRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, OCARINA), new Object[]
+        int tubaMeta = ItemInstrument.EnumType.TUBA.getMetadata();
+        IRecipe tubaRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, tubaMeta), new Object[]
         {
-                " C ",
-                "CCC",
-                " C ",
-                        'C', Items.CLAY_BALL
+                "GGG",
+                ".I.",
+                ".I.", 
+                        'I', "ingotIron",
+                        'G', "nuggetGold"
         });
-        GameRegistry.addRecipe(ocarinaRecipe);
+        GameRegistry.addRecipe(tubaRecipe);
 
-        int SAWTOOTH = ItemInstrument.EnumType.SAWTOOTH.getMetadata();
-        IRecipe sawtoothRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, SAWTOOTH), new Object[]
+        int trumpetMeta = ItemInstrument.EnumType.TRUMPET.getMetadata();
+        IRecipe trumpetRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, trumpetMeta), new Object[]
         {
-                "I  ",
-                "I  ",
-                "PP ",
-                        'P', "plankWood",
-                        'I', "ingotIron"
+                "GGG",
+                ".I.",
+                ".I.", 
+                        'I', "nuggetIron",
+                        'G', "nuggetGold"
         });
-        GameRegistry.addRecipe(sawtoothRecipe);
+        GameRegistry.addRecipe(trumpetRecipe);
 
-        int EGUITAR1 = ItemInstrument.EnumType.EGUITAR1.getMetadata();
-        IRecipe jazzguitarRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, EGUITAR1), new Object[]
+        int lyreMeta = ItemInstrument.EnumType.LYRE.getMetadata();
+        IRecipe lyreRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, lyreMeta), new Object[]
         {
-                ".P.",
-                ".P.",
-                "PWP",
-                        'P', "plankWood",
-                        'W', Blocks.WOOL
+                "PP.",
+                "SSS",
+                ".PP", 
+                        'S', "string",
+                        'P', "plankWood"
         });
-        GameRegistry.addRecipe(jazzguitarRecipe);
-        
-        int EGUITAR2 = ItemInstrument.EnumType.EGUITAR2.getMetadata();
-        IRecipe mutedguitarRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, EGUITAR2), new Object[]
-        {
-                ".P.",
-                ".P.",
-                "PCP",
-                        'P', "plankWood",
-                        'C', Blocks.CLAY
-        });
-        GameRegistry.addRecipe(mutedguitarRecipe);
-        
-        int EGUITAR3 = ItemInstrument.EnumType.EGUITAR3.getMetadata();
-        IRecipe overguitarRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, EGUITAR3), new Object[]
-        {
-                ".P.",
-                ".P.",
-                "PIP",
-                        'P', "plankWood",
-                        'I', Blocks.IRON_BARS
-        });
-        GameRegistry.addRecipe(overguitarRecipe);
+        GameRegistry.addRecipe(lyreRecipe);
 
-        int EGUITAR4 = ItemInstrument.EnumType.EGUITAR4.getMetadata();
-        IRecipe distguitarRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, EGUITAR4), new Object[]
+        int harpMeta = ItemInstrument.EnumType.HARP.getMetadata();
+        IRecipe harpRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, harpMeta), new Object[]
+        {
+                "PP.",
+                "SSS",
+                ".II", 
+                        'S', "string",
+                        'P', "plankWood",
+                        'I', "ingotIron",
+        });
+        GameRegistry.addRecipe(harpRecipe);
+
+        int electricGuitarMeta = ItemInstrument.EnumType.ELECTRIC_GUITAR.getMetadata();
+        IRecipe electricGuitarRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, electricGuitarMeta), new Object[]
         {
                 ".P.",
                 ".P.",
@@ -187,9 +225,77 @@ public class Recipes
                         'P', "plankWood",
                         'I', "dustRedstone"
         });
-        GameRegistry.addRecipe(distguitarRecipe);
+        GameRegistry.addRecipe(electricGuitarRecipe);
+
+        int bassDrumMeta = ItemInstrument.EnumType.BASS_DRUM.getMetadata();
+        IRecipe bassDrumRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, bassDrumMeta), new Object[]
+        {
+                "PPL",
+                "PIL",
+                "PPL",
+                        'P', "plankWood",
+                        'I', "ingotIron",
+                        'L', "leather"
+        });
+        GameRegistry.addRecipe(bassDrumRecipe);
+
+        int snareDrumMeta = ItemInstrument.EnumType.SNARE_DRUM.getMetadata();
+        IRecipe snareDrumRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, snareDrumMeta), new Object[]
+        {
+                "LLL",
+                "PSP",
+                "PPP",
+                        'P', "plankWood",
+                        'L', "leather",
+                        'S', "string"
+        });
+        GameRegistry.addRecipe(snareDrumRecipe);
+
+        int cymbelsMeta = ItemInstrument.EnumType.CYMBELS.getMetadata();
+        IRecipe cymbelsRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, cymbelsMeta), new Object[]
+        {
+                "GG.",
+                "GI.",
+                ".II",
+                        'G', "nuggetGold",
+                        'I', "nuggetIron"
+        });
+        GameRegistry.addRecipe(cymbelsRecipe);
+
+        int handChimesMeta = ItemInstrument.EnumType.HAND_CHIMES.getMetadata();
+        IRecipe handChimesRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, handChimesMeta), new Object[]
+        {
+                "PPP",
+                "III",
+                "PPP",
+                        'P', "plankWood",
+                        'I', "nuggetIron"
+        });
+        GameRegistry.addRecipe(handChimesRecipe);
         
-        IRecipe pianoRecipe = new ShapedOreRecipe(new ItemStack(ModBlocks.BLOCK_PIANO, 1, 0), new Object[]
+        int celloMeta = ItemInstrument.EnumType.CELLO.getMetadata();
+        IRecipe celloRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, celloMeta), new Object[]
+        {
+                ".P.",
+                "PPP",
+                "PBP",
+                        'P', "plankWood",
+                        'B', "bone"
+        });
+        GameRegistry.addRecipe(celloRecipe);
+        
+        int violinMeta = ItemInstrument.EnumType.VIOLIN.getMetadata();
+        IRecipe violinRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, violinMeta), new Object[]
+        {
+                ".P.",
+                "PPP",
+                "PDP",
+                        'P', "plankWood",
+                        'D', "dyeRed"
+        });
+        GameRegistry.addRecipe(violinRecipe);
+        
+        IRecipe pianoRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_PIANO, 1, 0), new Object[]
         {
                 "PRP",
                 "PFP",
@@ -199,15 +305,53 @@ public class Recipes
                         'R', Items.ITEM_FRAME
         });
         GameRegistry.addRecipe(pianoRecipe);
-
-        IRecipe musicPaper = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_MUSIC_PAPER, 4, 0), new Object[]
+        
+        int hapsicordMeta = ItemInstrument.EnumType.HARPSICORD.getMetadata();
+        IRecipe harsicordRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, hapsicordMeta), new Object[]
         {
-                "PP.",
-                "PP.",
-                "D..",
-                        'P', "paper",
-                        'D', "dyeBlack"
+                "PRP",
+                "PFP",
+                "PPP",
+                        'P', "plankWood",
+                        'F', "feather",
+                        'R', Items.ITEM_FRAME
         });
-        GameRegistry.addRecipe(musicPaper);
-    */}
+        GameRegistry.addRecipe(harsicordRecipe);
+        
+        int harpsicordCoupledMeta = ItemInstrument.EnumType.HARPSICORD_COUPLED.getMetadata();
+        IRecipe harpsicordCoupledRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, harpsicordCoupledMeta), new Object[]
+        {
+                "PRP",
+                "PFP",
+                "PFP",
+                        'P', "plankWood",
+                        'F', "feather",
+                        'R', Items.ITEM_FRAME
+        });
+        GameRegistry.addRecipe(harpsicordCoupledRecipe);
+
+        int orchestraMeta = ItemInstrument.EnumType.ORCHESTRA.getMetadata();
+        IRecipe orchestraRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, orchestraMeta), new Object[]
+        {
+                "PPL",
+                "PIL",
+                "PPL",
+                        'P', "plankWood",
+                        'I', "ingotGold",
+                        'L', "leather"
+        });
+        GameRegistry.addRecipe(orchestraRecipe);
+    
+        int standardMeta = ItemInstrument.EnumType.STANDARD.getMetadata();
+        IRecipe standardRecipe = new ShapedOreRecipe(new ItemStack(ModItems.ITEM_INSTRUMENT, 1, standardMeta), new Object[]
+        {
+                "LLL",
+                "PIP",
+                "PPP",
+                        'P', "plankWood",
+                        'L', "leather",
+                        'I', "nuggetGold"
+        });
+        GameRegistry.addRecipe(standardRecipe);
+    }   
 }
