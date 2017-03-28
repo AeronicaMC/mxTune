@@ -11,11 +11,14 @@ Soundfont Goals:
 
 Due to instrument changes, you are stuck with my cheap textures and limited json models. Some instruments like the harpsicord, cello,
 and percussion sets will eventually become block instruments. That is they will need to be placed into the world to be used. Similar
-to the piano.
+to the piano. Recipes changed and updated to reflect the new soundfont.
 
 Fixes:
 Small improvements to starting and stopping play. Tunes should not stop in the middle of play anymore. Still more work to be done. I'm
 aware of some threading and network data synchronization issues. Sections of code to be re-written.
+
+Piano was dropping it's item in creative mode when broken. This has been corrected, but you will need break and re-place all pianos in
+the world. Any enclosed sheet music is gone forever. Sorry, it had to be done.
 
 Added support to the build for Travis CI and SonarCube. As a result many bugs and security vulnerabilities have been squashed.
 ----
