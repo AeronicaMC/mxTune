@@ -1,3 +1,25 @@
+2017-03-28: mxtune-1.10.2-0.4.0-dev.20, mxtune-1.11.2-0.4.0-dev.20
+Note:
+This release intended primarily to get feedback about the new soundfont and instruments.
+Changes:
+Added a soundfont (assets/mxtune/synth/mxtune.sf2). Now music on all clients will have same instruments/timbre. The soundfont is
+modeled on Mabinogi instruments. This is a WORK-IN-PROGRESS! This is NOT the final version of the soundfont.
+Soundfont Goals:
+1) Make the instruments sound as good as those in Mabinogi, but a little different.
+2) Keep it small. It's currently about 10MB.
+3) Add some additional instruments. For now harpsicord, coupled harpsicord, recorder, trumpet, standard percussion set, and orchestral percussion set.
+
+Due to instrument changes, you are stuck with my cheap textures and limited json models. Some instruments like the harpsicord, cello,
+and percussion sets will eventually become block instruments. That is they will need to be placed into the world to be used. Similar
+to the piano.
+
+Fixes:
+Small improvements to starting and stopping play. Tunes should not stop in the middle of play anymore. Still more work to be done. I'm
+aware of some threading and network data synchronization issues. Sections of code to be re-written.
+
+Added support to the build for Travis CI and SonarCube. As a result many bugs and security vulnerabilities have been squashed.
+----
+
 2017-02-20: mxtune-1.10.2-0.3.1.0-dev.19, mxtune-1.11.2-0.3.1.0-dev.19
 Changes:
 Turn off logging for the SoundSystem endOfStream events. On some systems this was causing the fml-client-latest logs to grow very large.
