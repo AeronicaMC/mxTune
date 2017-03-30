@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.status;
 
-import net.aeronica.mods.mxtune.init.ModSounds;
+import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.ClientStateDataMessage;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
@@ -61,7 +61,7 @@ public class ClientCSDMonitor
         return new ClientStateData(
                 MIDISystemUtil.midiUnavailable()==false,
                 gameSettings.getSoundLevel(SoundCategory.MASTER)>0F,
-                gameSettings.getSoundLevel(ModSounds.SC_MXTUNE)>0F);
+                gameSettings.getSoundLevel(MXTuneMain.SC_MXTUNE)>0F);
     }
     
     /*
