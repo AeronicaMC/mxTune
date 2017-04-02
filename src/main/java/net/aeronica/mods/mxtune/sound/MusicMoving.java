@@ -32,7 +32,7 @@ public class MusicMoving extends MovingSound
     /** This is used to fake out the vanilla SoundHandler. From this point we will force the system to use the sound codec of our choice */
     public MusicMoving(Integer playID)
     {
-        super(ModSoundEvents.PCM_PROXY, SoundCategory.getByName("mxtune"));
+        super(ModSoundEvents.PCM_PROXY, SoundCategory.PLAYERS);
         this.playID = playID;
         this.sound = new PCMSound();
         this.volume = 1F;

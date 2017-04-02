@@ -41,7 +41,7 @@ public class CSDChatStatus
         if(csd.isMasterVolumeOn()==false)
             playerIn.sendMessage(new TextComponentString("[" + MXTuneMain.MODNAME + "] " + TextFormatting.YELLOW +I18n.format("mxtune.chat.musicAndSound.masterVolumeOff")));
         if(csd.isMxtuneVolumeOn()==false)
-            playerIn.sendMessage(new TextComponentString("[" + MXTuneMain.MODNAME + "] " + TextFormatting.YELLOW +I18n.format("mxtune.chat.musicAndSound.mxTuneVolumeOff")));            
+            playerIn.sendMessage(new TextComponentString("[" + MXTuneMain.MODNAME + "] " + TextFormatting.YELLOW +I18n.format("mxtune.chat.musicAndSound.playersVolumeOff")));            
     }
     
 }

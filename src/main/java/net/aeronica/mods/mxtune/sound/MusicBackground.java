@@ -34,7 +34,7 @@ public class MusicBackground extends MovingSound
     
     public MusicBackground(Integer playID)
     {
-        super(ModSoundEvents.PCM_PROXY, SoundCategory.getByName("mxtune"));
+        super(ModSoundEvents.PCM_PROXY, SoundCategory.PLAYERS);
         this.playID = playID;
         this.sound = new PCMSound();
         this.volume = 0.70F;
