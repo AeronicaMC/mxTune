@@ -31,7 +31,7 @@ public class MusicPositioned extends PositionedSound
     
     public MusicPositioned(BlockPos pos)
     {
-        super(ModSoundEvents.PCM_PROXY, SoundCategory.getByName("mxtune"));
+        super(ModSoundEvents.PCM_PROXY, SoundCategory.PLAYERS);
         this.sound = new PCMSound();
         this.volume = 1F;
         this.pitch = 1F;
