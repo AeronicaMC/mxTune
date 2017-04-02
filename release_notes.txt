@@ -1,3 +1,8 @@
+2017-03-30: mxtune-1.10.2-0.4.0-dev.22, mxtune-1.11.2-0.4.0-dev.22
+Fixes:
+Issue #16 "Crash on Music & Sounds Menu"; Remove the problematic ModSoundCategory class. It was a nice idea, but ultimately enums and reflection is a dicey thing. Especially in the world of Forge and Minecraft modding.
+----
+
 2017-03-30: mxtune-1.10.2-0.4.0-dev.21, mxtune-1.11.2-0.4.0-dev.21
 Fixes:
 Possible fix for issue #16 "Crash on Music & Sounds Menu"
