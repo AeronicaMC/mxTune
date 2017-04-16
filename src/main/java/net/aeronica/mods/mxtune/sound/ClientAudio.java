@@ -40,7 +40,6 @@
 package net.aeronica.mods.mxtune.sound;
 
 import java.nio.IntBuffer;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentHashMap.KeySetView;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -66,7 +65,6 @@ import net.aeronica.mods.mxtune.network.server.PlayStoppedMessage;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.audio.SoundManager;
@@ -75,7 +73,6 @@ import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.PlayStreamingSourceEvent;
 import net.minecraftforge.client.event.sound.SoundSetupEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -91,15 +88,10 @@ public enum ClientAudio
 {
 
     INSTANCE;
-    static final String SRG_sndManager = "field_147694_f";
+    static SoundHandler handler;
     static SoundManager sndManager;
-    static final String SRG_sndSystem = "field_148620_e";
     static SoundSystem sndSystem;
-    static final String SRG_mcMusicTicker = "field_147126_aw";
-    static MusicTicker mcMusicTicker;
-    static final String SRG_playingSounds = "field_148629_h";
-    static Map<String, ISound> playingSounds;
-    static final String SRG_timeUntilNextMusic = "field_147676_d";
+    static MusicTicker musicTicker;
     
     static final int THREAD_POOL_SIZE = 2;
     static final AudioFormat audioFormat3D;
@@ -115,6 +107,7 @@ public enum ClientAudio
     static int count = 0;
     static boolean vanillaMusicPaused = false;
     
+    static final int MAX_STREAM_CHANNELS = 16;
     static final int SOUND_QUEUE_SLACK = 6;
     static int normalChannelCount = 0;
     static int streamChannelCount = 0;
@@ -282,7 +275,7 @@ public enum ClientAudio
     public static void stop(Integer playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
-        if (audioData != null)
+        if (audioData != null && sndSystem != null && audioData.getUuid() != null)
             sndSystem.fadeOut(audioData.getUuid(), null, 100);
     }
     
@@ -309,7 +302,7 @@ public enum ClientAudio
     {
         ModLogger.info("ClientAudio stopVanillaMusic - PAUSED on %d active sessions.", playIDAudioData.mappingCount());
         setVanillaMusicPaused(true);
-        mcMusicTicker.stopMusic();
+        musicTicker.stopMusic();
         setVanillaMusicTimer(Integer.MAX_VALUE);
     }
 
@@ -321,8 +314,8 @@ public enum ClientAudio
        
     private static void setVanillaMusicTimer(int value)
     {
-        if (mcMusicTicker != null)
-            ObfuscationReflectionHelper.setPrivateValue(MusicTicker.class, mcMusicTicker, value, "timeUntilNextMusic", SRG_timeUntilNextMusic); 
+        if (musicTicker != null)
+            musicTicker.timeUntilNextMusic = value;
     }
     
     private static void setVanillaMusicPaused(boolean flag)
@@ -364,15 +357,10 @@ public enum ClientAudio
     {
         if (sndSystem == null || sndSystem.randomNumberGenerator == null)
         {
-            sndManager = ObfuscationReflectionHelper.getPrivateValue(SoundHandler.class, Minecraft.getMinecraft().getSoundHandler(),
-                    "sndManager", SRG_sndManager);
-            sndSystem = ObfuscationReflectionHelper.getPrivateValue(SoundManager.class, sndManager,
-                    "sndSystem", SRG_sndSystem);
-            playingSounds = ObfuscationReflectionHelper.getPrivateValue(SoundManager.class, sndManager,
-                    "playingSounds", SRG_playingSounds);
-            mcMusicTicker = ObfuscationReflectionHelper.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(),
-                    "mcMusicTicker", SRG_mcMusicTicker);
-            configureSound();
+            handler = Minecraft.getMinecraft().getSoundHandler();
+            sndManager = handler.sndManager;
+            sndSystem = sndManager.sndSystem;
+            musicTicker = Minecraft.getMinecraft().getMusicTicker();
             setVanillaMusicPaused(false);
         }
     }
@@ -416,12 +404,7 @@ public enum ClientAudio
     {
         SoundSystemConfig.setCodec("nul", CodecPCM.class);
         ModLogger.info("Sound Setup Event %s", event);
-        forceClientAudioInit();
-    }
-
-    private static void forceClientAudioInit()
-    {
-        sndSystem = null;
+        configureSound();
     }
     
     @SubscribeEvent
@@ -475,7 +458,7 @@ public enum ClientAudio
      * This section Poached from Dynamic Surroundings
      */
     public int currentSoundCount() {
-        return playingSounds.size();
+        return sndManager.playingSounds.size();
     }
 
     public boolean canFitSound() {
@@ -503,7 +486,7 @@ public enum ClientAudio
 
         if (ModConfig.getAutoConfigureChannels() && totalChannels > 64) {
             totalChannels = ((totalChannels + 1) * 3) / 4;
-            streamChannelCount = totalChannels / 5;
+            streamChannelCount = Math.min(totalChannels / 5, MAX_STREAM_CHANNELS);
             normalChannelCount = totalChannels - streamChannelCount;
         }
 
