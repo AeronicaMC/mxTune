@@ -72,6 +72,13 @@ jar {
         from(project.zipTree(dep)){
             exclude 'META-INF', 'META-INF/**'
         }
+}
+jar {
+        
+    manifest {
+	
+	    attributes 'FMLAT': 'mxtune_at.cfg'
+		}
     }
 }
 jar.dependsOn shadowJar
@@ -103,6 +110,8 @@ processResources {
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
+    
+    rename '(.+_at.cfg)', 'META-INF/$1'
 }
 
 sonarqube {
