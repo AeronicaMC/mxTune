@@ -73,14 +73,14 @@ jar {
         from(project.zipTree(dep)){
             exclude 'META-INF', 'META-INF/**'
         }
+	}
 }
 jar {
         
     manifest {
 	
 	    attributes 'FMLAT': 'mxtune_at.cfg'
-		}
-    }
+	}
 }
 jar.dependsOn shadowJar
 jar.enabled = false
