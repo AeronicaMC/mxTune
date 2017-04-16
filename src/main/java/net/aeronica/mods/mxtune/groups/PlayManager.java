@@ -280,9 +280,9 @@ public enum PlayManager
                 membersQueuedStatus.remove(member);
             }
         }
+        PacketDispatcher.sendToAll(new StopPlayMessage(playID));
         dequeuePlayID(playID);
         syncStatus();        
-        PacketDispatcher.sendToAll(new StopPlayMessage(playID));
     }
     
     private static void dequeuePlayID(Integer playID) {if (activePlayIDs != null) activePlayIDs.remove(playID);}
