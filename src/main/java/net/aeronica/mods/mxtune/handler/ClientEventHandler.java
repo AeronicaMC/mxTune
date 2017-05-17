@@ -39,7 +39,7 @@ public enum ClientEventHandler
     @SubscribeEvent
     public void onRenderPlayerEvent(RenderLivingEvent.Specials.Post<EntityLivingBase> event)
     {
-        if (event.getEntity() instanceof EntityPlayer && !event.getEntity().isInvisible())
+        if (event.getEntity() instanceof EntityPlayer && !event.getEntity().isInvisible() && !mc.gameSettings.showDebugInfo && !mc.gameSettings.hideGUI)
         {
             if (
                     GROUPS.getClientMembers() != null /* (mc.thePlayer.equals(player)) */
