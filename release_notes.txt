@@ -1,3 +1,14 @@
+2017-05-17: mxtune-1.11.2-0.4.0-dev.24
+Fixes:
+Change improper stack empty tests from "<stack>.equals(ItemStack.EMPTY) to "<stack>.isEmpty()"
+ref: https://www.reddit.com/r/feedthebeast/comments/6bnc1h/psa_for_modders_on_1112_do_not_compare_your/
+
+Changes:
+Update to Forge 13.20.0.2298. Change ModConfigGui to explicitly indicate GUI usage and create the instance.
+
+Hide JAM Placard when in debug or the HUD is hidden.
+----
+
 2017-04-02: mxtune-1.10.2-0.4.0-dev.23, mxtune-1.11.2-0.4.0-dev.23
 Additions:
 Korean language file from tinywolf3 at www.minecraftforum.net.
