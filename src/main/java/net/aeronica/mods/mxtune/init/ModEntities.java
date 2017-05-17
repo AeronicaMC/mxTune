@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.init;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
+import net.aeronica.mods.mxtune.world.VillageMusician;
 import net.minecraft.entity.Entity;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 
@@ -33,6 +34,7 @@ public class ModEntities
     public static void init()
     {
         registerModEntity(EntitySittableBlock.class, "MountableBlock", 80, 1, false);
+        VillageMusician.init();
     }
     
     private static void registerModEntity(Class<? extends Entity> entityClass, String name, int trackingRange, int updateFrequency, boolean sendsVelocityUpdates)
