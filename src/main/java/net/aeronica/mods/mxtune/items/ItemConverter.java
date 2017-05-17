@@ -59,11 +59,11 @@ public class ItemConverter extends Item
             for (int index = 0; index < size; index++)
             {
                 stack = playerIn.inventory.getStackInSlot(index);
-                if (!stack.equals(ItemStack.EMPTY))
+                if (!stack.isEmpty())
                 {
                     ItemStack sheetMusicStack = this.sheetMusicConversion(stack);
                     ModLogger.debug("inventorySlot index: " + index + ", stack: " + stack);
-                    if (!sheetMusicStack.equals(ItemStack.EMPTY))
+                    if (!sheetMusicStack.isEmpty())
                     {                      
                         //playerIn.inventory.decrStackSize(index, playerIn.inventory.getInventoryStackLimit());
                         playerIn.inventory.decrStackSize(index, playerIn.inventory.getInventoryStackLimit());
@@ -84,7 +84,7 @@ public class ItemConverter extends Item
 
     public ItemStack sheetMusicConversion(ItemStack musicPaper)
     {
-        if (!musicPaper.equals(ItemStack.EMPTY) && (musicPaper.getItem() instanceof ItemMusicPaper) && musicPaper.hasDisplayName() && musicPaper.hasTagCompound()) {
+        if (!musicPaper.isEmpty() && (musicPaper.getItem() instanceof ItemMusicPaper) && musicPaper.hasDisplayName() && musicPaper.hasTagCompound()) {
             NBTTagCompound contentsOld = musicPaper.getTagCompound();
             if (contentsOld.hasKey("MusicBook"))
             {

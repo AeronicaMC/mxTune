@@ -48,7 +48,7 @@ public class ItemMusicPaper extends Item implements IMusic
             @SideOnly(Side.CLIENT)
             public float apply(ItemStack stack, World worldIn, EntityLivingBase entityIn)
             {
-                return !stack.equals(ItemStack.EMPTY) && isItemMusicPaper(stack) && stack.hasDisplayName() ? 1.0F : 0.0F;
+                return !stack.isEmpty() && isItemMusicPaper(stack) && stack.hasDisplayName() ? 1.0F : 0.0F;
             }
         });
     }
@@ -60,7 +60,7 @@ public class ItemMusicPaper extends Item implements IMusic
         {
             /** Client side */
             ItemStack itemStackIn = playerIn.getHeldItem(handIn);
-            if (!itemStackIn.hasDisplayName() && handIn.equals(EnumHand.MAIN_HAND) && !itemStackIn.equals(ItemStack.EMPTY))
+            if (!itemStackIn.hasDisplayName() && handIn.equals(EnumHand.MAIN_HAND) && !itemStackIn.isEmpty())
             {
                 playerIn.openGui(MXTuneMain.instance, GuiMusicPaperParse.GUI_ID, worldIn, (int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ);
             }
@@ -87,7 +87,7 @@ public class ItemMusicPaper extends Item implements IMusic
     /** Check of the item stack we are holding is the type we are interested in */
     protected boolean isItemMusicPaper(ItemStack stack)
     {
-        return !stack.equals(ItemStack.EMPTY) && stack.getItem() instanceof ItemMusicPaper;
+        return !stack.isEmpty() && stack.getItem() instanceof ItemMusicPaper;
     }
 
     /**
@@ -101,7 +101,7 @@ public class ItemMusicPaper extends Item implements IMusic
     @Override
     public boolean hasMML(ItemStack itemStackIn)
     {
-        if (!itemStackIn.equals(ItemStack.EMPTY))
+        if (!itemStackIn.isEmpty())
         {
             if (itemStackIn.hasTagCompound())
             {
@@ -119,7 +119,7 @@ public class ItemMusicPaper extends Item implements IMusic
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void addInformation(ItemStack stackIn, EntityPlayer playerIn, List tooltip, boolean advanced)
     {
-        if (stackIn.equals(ItemStack.EMPTY)) return;
+        if (stackIn.isEmpty()) return;
         /** Display the contents of the sheet music. */
         if (stackIn.hasTagCompound())
         {

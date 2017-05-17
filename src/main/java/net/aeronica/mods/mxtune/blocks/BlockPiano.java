@@ -93,11 +93,11 @@ public class BlockPiano extends BlockInstrument2H
             if (tile.isInvalid())
                 return true;
             boolean isOccupied = PlacedInstrumentUtil.isSomeoneSitting(worldIn, pos);
-            boolean invHasItem = !tile.getInventory().getStackInSlot(0).equals(ItemStack.EMPTY);
+            boolean invHasItem = !tile.getInventory().getStackInSlot(0).isEmpty();
             boolean invIsMusic = invHasItem && (tile.getInventory().getStackInSlot(0).getItem() instanceof IMusic) &&
                     tile.getInventory().getStackInSlot(0).hasDisplayName();
             boolean canPlay = playerIn.isRiding() && invIsMusic && PlacedInstrumentUtil.isPlayerSitting(worldIn, playerIn, pos) && !PlayManager.isPlayerPlaying(playerIn);
-            boolean playerHasItem = !playerIn.getHeldItem(hand).equals(ItemStack.EMPTY);
+            boolean playerHasItem = !playerIn.getHeldItem(hand).isEmpty();
             boolean playerHasMusic = playerHasItem && (playerIn.getHeldItem(hand).getItem() instanceof IMusic) && 
                     playerIn.getHeldItem(hand).hasDisplayName();
 
@@ -109,7 +109,7 @@ public class BlockPiano extends BlockInstrument2H
                 if (!playerIn.inventory.addItemStackToInventory(itemStack))
                 {
                     /** Not possible. Throw item in the world */
-                    if (!itemStack.equals(ItemStack.EMPTY))
+                    if (!itemStack.isEmpty())
                         spawnEntityItem(worldIn, itemStack, pos);
                 } else
                 {
@@ -317,7 +317,7 @@ public class BlockPiano extends BlockInstrument2H
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
     {
         TilePiano tile = (TilePiano) worldIn.getTileEntity(pos);
-        if (state.getValue(PART) == BlockPiano.EnumPartType.LEFT && tile != null && !tile.getInventory().getStackInSlot(0).equals(ItemStack.EMPTY))
+        if (state.getValue(PART) == BlockPiano.EnumPartType.LEFT && tile != null && !tile.getInventory().getStackInSlot(0).isEmpty())
         {
             spawnEntityItem(worldIn, tile.getInventory().getStackInSlot(0).copy(), pos);
             tile.invalidate();

@@ -58,7 +58,7 @@ public class InventoryInstrument implements IInventory {
 	@Override
 	public void setInventorySlotContents(int slot, ItemStack itemstack) {
 		inventory.set(slot, itemstack);
-		if (!itemstack.equals(ItemStack.EMPTY) && itemstack.getCount() > this.getInventoryStackLimit()) {
+		if (!itemstack.isEmpty() && itemstack.getCount() > this.getInventoryStackLimit()) {
 			itemstack.setCount(this.getInventoryStackLimit());
 		}
 		// Don't forget this line or your inventory will not be saved!
@@ -76,7 +76,7 @@ public class InventoryInstrument implements IInventory {
 	@Override
 	public void markDirty() {
 		for (int i = 0; i < this.getSizeInventory(); ++i) {
-			if (!this.getStackInSlot(i).equals(ItemStack.EMPTY) && this.getStackInSlot(i).getCount() == 0)
+			if (!this.getStackInSlot(i).isEmpty() && this.getStackInSlot(i).getCount() == 0)
 				this.setInventorySlotContents(i, ItemStack.EMPTY);
 		}
 		// This line here does the work:

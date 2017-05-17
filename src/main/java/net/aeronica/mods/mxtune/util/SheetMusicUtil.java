@@ -34,7 +34,7 @@ public enum SheetMusicUtil
     public static String getMusicTitle(ItemStack stackIn)
     {
         ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(stackIn);
-        if (!sheetMusic.equals(ItemStack.EMPTY))
+        if (!sheetMusic.isEmpty())
         {
             NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
             if (contents != null)
@@ -53,7 +53,7 @@ public enum SheetMusicUtil
             {
                 Block placedInst = playerIn.getEntityWorld().getBlockState(pos).getBlock();
                 TileInstrument te = ((IPlacedInstrument) placedInst).getTE(playerIn.getEntityWorld(), pos);
-                if(!te.getInventory().getStackInSlot(0).equals(ItemStack.EMPTY))
+                if(!te.getInventory().getStackInSlot(0).isEmpty())
                     return te.getInventory().getStackInSlot(0).copy();
             }
         } else
@@ -65,14 +65,14 @@ public enum SheetMusicUtil
     
     public static ItemStack getSheetMusic(ItemStack stackIn)
     {
-        if (!stackIn.equals(ItemStack.EMPTY) && stackIn.hasTagCompound() && stackIn.getItem() instanceof IInstrument)
+        if (!stackIn.isEmpty() && stackIn.hasTagCompound() && stackIn.getItem() instanceof IInstrument)
         {
             NBTTagList items = stackIn.getTagCompound().getTagList("ItemInventory", Constants.NBT.TAG_COMPOUND);
             if (items.tagCount() == 1)
             {
                 NBTTagCompound item = items.getCompoundTagAt(0);
                 ItemStack sheetMusicOld = new ItemStack(item);
-                if (!sheetMusicOld.equals(ItemStack.EMPTY) && sheetMusicOld.getItem() instanceof IMusic)
+                if (!sheetMusicOld.isEmpty() && sheetMusicOld.getItem() instanceof IMusic)
                 {
                     NBTTagCompound contents = (NBTTagCompound) sheetMusicOld.getTagCompound().getTag("MusicBook");
                     if (contents != null)
