@@ -111,7 +111,7 @@ public class ClientProxy extends CommonProxy
         Side effectiveSide = FMLCommonHandler.instance().getEffectiveSide();
         if (effectiveSide == Side.SERVER)
         {
-            return FMLClientHandler.instance().getServer().worldServerForDimension(dimension);
+            return FMLClientHandler.instance().getServer().getWorld(dimension);
         } else
         {
             return getClientWorld();

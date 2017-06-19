@@ -41,9 +41,9 @@ public class MusicMoving extends MovingSound
         this.repeatDelay = 0;
         this.donePlaying = false;
         Vec3d pos = GROUPS.getMedianPos(playID);
-        this.xPosF = (float) pos.xCoord;
-        this.yPosF = (float) pos.yCoord;
-        this.zPosF = (float) pos.zCoord;
+        this.xPosF = (float) pos.x;
+        this.yPosF = (float) pos.y;
+        this.zPosF = (float) pos.z;
         this.attenuationType = AttenuationType.LINEAR;
         this.soundEventAccessor = new SoundEventAccessor(this.sound.getSoundLocation(), "mxtune.subtitle.pcm-proxy");
     }
@@ -66,9 +66,9 @@ public class MusicMoving extends MovingSound
         if (this.playID != null && ClientAudio.hasPlayID(playID))
         {
             Vec3d pos = GROUPS.getMedianPos(playID);
-            this.xPosF = (float) pos.xCoord;
-            this.yPosF = (float) pos.yCoord;
-            this.zPosF = (float) pos.zCoord; 
+            this.xPosF = (float) pos.x;
+            this.yPosF = (float) pos.y;
+            this.zPosF = (float) pos.z; 
         }
         else
         {

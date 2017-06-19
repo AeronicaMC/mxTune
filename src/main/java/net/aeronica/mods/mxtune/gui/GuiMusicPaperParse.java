@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.sound.midi.Instrument;
-import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MetaEventListener;
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiSystem;
@@ -255,7 +254,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
             String helperText = "Enter a Title!";
             int helperWidth = getFontRenderer().getStringWidth(helperText);
             int fontHeight = getFontRenderer().FONT_HEIGHT + 2;
-            getFontRenderer().drawString(helperText, textMMLTitle.xPosition + textMMLTitle.width / 2 - helperWidth / 2, textMMLTitle.yPosition + fontHeight / 2, HelperTextColor());
+            getFontRenderer().drawString(helperText, textMMLTitle.x + textMMLTitle.width / 2 - helperWidth / 2, textMMLTitle.y + fontHeight / 2, HelperTextColor());
         }
         if (textMMLPaste.getText().isEmpty())
         {

@@ -180,9 +180,9 @@ public class GROUPS
             EntityPlayer player = (EntityPlayer)  MXTuneMain.proxy.getClientPlayer().getEntityWorld().getEntityByID(member);
             if(player == null)
                 continue;
-            x = x + player.getPositionVector().xCoord;
-            y = y + player.getPositionVector().yCoord;
-            z = z + player.getPositionVector().zCoord;
+            x = x + player.getPositionVector().x;
+            y = y + player.getPositionVector().y;
+            z = z + player.getPositionVector().z;
             count++;
         }            
 

@@ -165,7 +165,7 @@ public enum PlayManager
             syncStatus();
             resetGroupsPlayID(playerID);
             PlayJamMessage playJamMessage = new PlayJamMessage(playerID, groupsPlayID, musicText);
-            PacketDispatcher.sendToAllAround(playJamMessage, playerIn.dimension, pos.xCoord, pos.yCoord, pos.zCoord, ModConfig.getListenerRange());
+            PacketDispatcher.sendToAllAround(playJamMessage, playerIn.dimension, pos.x, pos.y, pos.z, ModConfig.getListenerRange());
         }
         return groupsPlayID;
     }
@@ -376,9 +376,9 @@ public enum PlayManager
             EntityPlayer player = (EntityPlayer) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getEntityByID(member);
             if(player == null)
                 continue;
-            x = x + player.getPositionVector().xCoord;
-            y = y + player.getPositionVector().yCoord;
-            z = z + player.getPositionVector().zCoord;
+            x = x + player.getPositionVector().x;
+            y = y + player.getPositionVector().y;
+            z = z + player.getPositionVector().z;
             count++;
         }            
 

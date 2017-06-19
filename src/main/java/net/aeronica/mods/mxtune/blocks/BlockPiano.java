@@ -268,7 +268,7 @@ public class BlockPiano extends BlockInstrument2H
         {
             AxisAlignedBB axisalignedbb = addedAABB.offset(pos);
 
-            if (aaBBIn.intersectsWith(axisalignedbb))
+            if (aaBBIn.intersects(axisalignedbb))
             {
                 listAABB.add(axisalignedbb);
             }

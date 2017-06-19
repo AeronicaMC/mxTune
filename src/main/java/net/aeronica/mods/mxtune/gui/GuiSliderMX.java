@@ -67,7 +67,7 @@ public class GuiSliderMX extends GuiButton
         {
             if (this.dragging)
             {
-                this.sliderValue = (float) (mouseX - (this.xPosition + 4)) / (float) (this.width - 8);
+                this.sliderValue = (float) (mouseX - (this.x + 4)) / (float) (this.width - 8);
 
                 if (this.sliderValue < 0.0F)
                 {
@@ -86,8 +86,8 @@ public class GuiSliderMX extends GuiButton
 
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             /** Draws a textured rectangle at the stored z-value. Args: x, y, u, v, width, height */
-            this.drawTexturedModalRect(this.xPosition + (int) (this.sliderValue * (float) (this.width - 8)), this.yPosition, 0, 66, 4, this.height);
-            this.drawTexturedModalRect(this.xPosition + (int) (this.sliderValue * (float) (this.width - 8)) + 4, this.yPosition, 196, 66, 4, this.height);
+            this.drawTexturedModalRect(this.x + (int) (this.sliderValue * (float) (this.width - 8)), this.y, 0, 66, 4, this.height);
+            this.drawTexturedModalRect(this.x + (int) (this.sliderValue * (float) (this.width - 8)) + 4, this.y, 196, 66, 4, this.height);
         }
     }
 
@@ -97,7 +97,7 @@ public class GuiSliderMX extends GuiButton
     {
         if (super.mousePressed(mcIn, mouseX, mouseY))
         {
-            this.sliderValue = (float) (mouseX - (this.xPosition + 4)) / (float) (this.width - 8);
+            this.sliderValue = (float) (mouseX - (this.x + 4)) / (float) (this.width - 8);
 
             if (this.sliderValue < 0.0F)
             {

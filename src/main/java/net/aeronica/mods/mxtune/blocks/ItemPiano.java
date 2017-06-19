@@ -78,7 +78,7 @@ public class ItemPiano extends Item
                 boolean flag3 = flag1 || worldIn.isAirBlock(blockpos);
 
                 /** Disallow placing blocks on water or other unstable blocks */
-                if (flag2 && flag3 && worldIn.getBlockState(pos.down()).isFullyOpaque() && worldIn.getBlockState(blockpos.down()).isFullyOpaque())
+                if (flag2 && flag3 && worldIn.getBlockState(pos.down()).isFullCube() && worldIn.getBlockState(blockpos.down()).isFullCube())
                 {
                     IBlockState iblockstate1 = ModBlocks.BLOCK_PIANO.getDefaultState().withProperty(BlockPiano.OCCUPIED, Boolean.valueOf(false)).withProperty(BlockPiano.FACING, enumfacing)
                             .withProperty(BlockPiano.PART, BlockPiano.EnumPartType.LEFT);
