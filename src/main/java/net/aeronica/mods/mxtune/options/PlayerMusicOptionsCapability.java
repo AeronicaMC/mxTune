@@ -22,6 +22,7 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
@@ -40,7 +41,6 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 
-@SuppressWarnings("deprecation")
 public class PlayerMusicOptionsCapability
 {
     public static void register()
@@ -52,9 +52,9 @@ public class PlayerMusicOptionsCapability
     public static class EventHandler
     {
         @SubscribeEvent
-        public void onEntityConstruct(final AttachCapabilitiesEvent.Entity event)
+        public void onEntityConstruct(final AttachCapabilitiesEvent<Entity> event)
         {
-            if (event.getEntity() instanceof EntityPlayer)
+            if (event.getObject() instanceof EntityPlayer)
             {
                 event.addCapability(new ResourceLocation(MXTuneMain.MODID, "IPlayerMusicOptions"), new ICapabilitySerializable<NBTTagCompound>()
                 {
