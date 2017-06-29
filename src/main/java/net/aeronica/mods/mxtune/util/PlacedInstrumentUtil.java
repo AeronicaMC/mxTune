@@ -122,7 +122,7 @@ public enum PlacedInstrumentUtil
         int x = posIn.getX();
         int y = posIn.getY();
         int z = posIn.getZ();
-        List<EntitySittableBlock> listEMB = par1World.getEntitiesWithinAABB(EntitySittableBlock.class, new AxisAlignedBB(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(1D, 1D, 1D));
+        List<EntitySittableBlock> listEMB = par1World.getEntitiesWithinAABB(EntitySittableBlock.class, new AxisAlignedBB(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).grow(1D, 1D, 1D));
         for (EntitySittableBlock mount : listEMB)
         {
             if (mount.getMountedPosition().equals(posIn))
@@ -138,13 +138,13 @@ public enum PlacedInstrumentUtil
         int x = posIn.getX();
         int y = posIn.getY();
         int z = posIn.getZ();  
-        List<EntitySittableBlock> listEMB = worldIn.getEntitiesWithinAABB(EntitySittableBlock.class, new AxisAlignedBB(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(1D, 1D, 1D));
+        List<EntitySittableBlock> listEMB = worldIn.getEntitiesWithinAABB(EntitySittableBlock.class, new AxisAlignedBB(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).grow(1.0D, 1.0D, 1.0D));
         if (listEMB.isEmpty())
             return false;
         
         for (EntitySittableBlock mount : listEMB)
         {
-            if (mount.getMountedPosition().equals(posIn))
+           if (mount.getMountedPosition().equals(posIn))
                 return mount.isPassenger(playerIn);
         }
         return false;
@@ -157,7 +157,7 @@ public enum PlacedInstrumentUtil
     
     public static boolean isSomeoneSitting(World world, double x, double y, double z)
     {
-        List<EntitySittableBlock> listEMB = world.getEntitiesWithinAABB(EntitySittableBlock.class, new AxisAlignedBB(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).expand(0.5D, 0.5D, 0.5D));
+        List<EntitySittableBlock> listEMB = world.getEntitiesWithinAABB(EntitySittableBlock.class, new AxisAlignedBB(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).grow(0.5D, 0.5D, 0.5D));
         return !listEMB.isEmpty();
     }
 
