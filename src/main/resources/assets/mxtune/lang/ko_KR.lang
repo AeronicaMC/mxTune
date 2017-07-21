@@ -94,3 +94,5 @@ mxtune.chat.gm.noSleepInJam=JAM 중에는 잘 수 없습니다.
 
 mxtune.chat.musicAndSound.masterVolumeOff=메인 볼륨이 꺼져 있어요! 연주 불가능!
 mxtune.chat.musicAndSound.playersVolumeOff=사용자 볼륨이 꺼져 있어요! 연주 불가능!
+
+entity.Villager.mxtune:musician=음악가
