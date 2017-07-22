@@ -48,6 +48,7 @@ import net.aeronica.libs.mml.core.MMLLexer;
 import net.aeronica.libs.mml.core.MMLParser;
 import net.aeronica.libs.mml.core.MMLToMIDI;
 import net.aeronica.libs.mml.core.MMLUtil;
+import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.MusicTextMessage;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
@@ -76,6 +77,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     GuiButton buttonCancel;
     GuiButton buttonPlay;
     GuiButton buttonStop;
+    GuiLink mmlLink;
     GuiParserErrorList listBoxMMLError;
     GuiInstruments listBoxInstruments;
     int helperTextCounter;
@@ -149,11 +151,15 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         buttonCancel = new GuiButton(1, (this.listBoxInstruments.getRight() + this.width / 2) - 150 + 25, this.height - 32, 75, 20, I18n.format("gui.cancel"));
         buttonPlay = new GuiButton(2, 10, this.height - 49, this.instListWidth, 20, I18n.format("mxtune.gui.button.play"));
         buttonStop = new GuiButton(3, 10, this.height - 27, this.instListWidth, 20, I18n.format("mxtune.gui.button.stop"));
+        mmlLink = new GuiLink(4, this.width - 10 , 20, ModConfig.getMmlLink(), GuiLink.AlignText.Right); 
+        buttonPlay.enabled = false;
+        buttonStop.enabled = false;
         buttonOkay.enabled = false;
         this.buttonList.add(buttonOkay);
         this.buttonList.add(buttonCancel);
         this.buttonList.add(buttonPlay);
         this.buttonList.add(buttonStop);
+        this.buttonList.add(mmlLink);
 
         /** create MML Title field */
         int posX = this.listBoxInstruments.getRight() + 5;
@@ -322,6 +328,10 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         case 3:
             /** Stop playing MML */
             mmlStop();
+            break;
+            
+        case 4:
+            this.handleComponentClick(mmlLink.getLinkComponent());
             break;
         default:
         }

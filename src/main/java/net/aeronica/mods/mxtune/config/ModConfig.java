@@ -28,6 +28,7 @@ public class ModConfig
 	private static float listenerRange = 24.0F;
 	private static float groupPlayAbortDistance = 10.0F;
 	private static boolean hideWelcomeStatusMessage = false;
+	private static String mmlLink = "https://mabibeats.com/";
 	/** Client Configuration Settings */
     private static boolean autoConfigureChannels = true;
     private static int normalSoundChannelCount = 24;
@@ -50,12 +51,15 @@ public class ModConfig
     public static int getNormalSoundChannelCount() {return normalSoundChannelCount;}
     
     public static int getStreamingSoundChannelCount() {return streamingSoundChannelCount;}
-    
-	public static void syncConfig()
+
+    public static String getMmlLink() {return mmlLink;}
+
+    public static void syncConfig()
     {
         listenerRange = configFile.getFloat("listenerRange", Categories.CATEGORY_GENERAL.getName(), listenerRange, 10.0F, 64.0F, "Listener Range", "mxtune.configgui.listenerRange");
         groupPlayAbortDistance = configFile.getFloat("groupPlayAbortDistance", Categories.CATEGORY_GENERAL.getName(), groupPlayAbortDistance, 10.0F, 24.0F, "Group Play Abort Distance", "mxtune.configgui.groupPlayAbortDistance");
         hideWelcomeStatusMessage = configFile.getBoolean("hideWelcomeStatusMessage", Categories.CATEGORY_GENERAL.getName(), hideWelcomeStatusMessage, "Hide Welcome Status Message", "mxtune.configgui.hideWelcomeStatusMessage");
+        mmlLink = configFile.getString("mmlLink", Categories.CATEGORY_GENERAL.getName(), "https://mabibeats.com/", "MML Site URL", "mxtune.configgui.mmlLink");
         
         autoConfigureChannels = configFile.getBoolean("autoConfigureChannels", Categories.CATEGORY_CLIENT.getName(), autoConfigureChannels, "Automatically configure sound channels", "mxtune.configgui.autoConfigureChannels");
         normalSoundChannelCount  = configFile.getInt("normalSoundChannelCount", Categories.CATEGORY_CLIENT.getName(), normalSoundChannelCount, 4, 60, "Number of normal sound channels to configure in the sound system (manual)", "mxtune.configgui.normalSoundChannelCount");

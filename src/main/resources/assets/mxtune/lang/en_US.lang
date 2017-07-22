@@ -50,6 +50,8 @@ mxtune.configgui.normalSoundChannelCount=Normal sound channels (manual)
 mxtune.configgui.normalSoundChannelCount.tooltip=Number of normal sound channels to configure in the sound system (manual)
 mxtune.configgui.streamingSoundChannelCount=Streaming sound channels (manual)
 mxtune.configgui.streamingSoundChannelCount.tooltip=Number of streaming sound channels to configure in the sound system (manual)
+mxtune.configgui.mmlLink=MML Site Link
+mxtune.configgui.mmlLink.tooltip=Enter a valid URL. Please test the URL thoroughly. If it is not a valid link it will appear RED in the MML Simple Editor dialog.
 soloPlayWhileWalking=Deprecated Option!
 soloPlayWhileWalking.tooltip="B:soloPlayWhileWalking=true" is Deprecated! Please manually remove the option from the mxtune.cfg
 
