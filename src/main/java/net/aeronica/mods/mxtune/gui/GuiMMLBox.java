@@ -19,6 +19,8 @@ package net.aeronica.mods.mxtune.gui;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.lwjgl.input.Keyboard;
 
@@ -26,6 +28,7 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
 import net.aeronica.libs.mml.core.MMLAllowedCharacters;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiPageButtonList;
@@ -126,6 +129,11 @@ public class GuiMMLBox extends Gui
         ++this.cursorCounter;
     }
 
+    public boolean isEmpty()
+    {
+        return this.text.isEmpty();
+    }
+    
     /**
      * Sets the text of the textbox, and moves the cursor to the end.
      */
@@ -151,6 +159,57 @@ public class GuiMMLBox extends Gui
     public String getText()
     {
         return this.text;
+    }
+    
+    /**
+     * Returns the contents of the textbox
+     */
+    public String getTextToParse()
+    {
+        String regex = "([vV][0123456789]+)";
+        Pattern pattern = Pattern.compile(regex);
+        boolean volumesArcheAge = false;
+
+        /* ArcheAge Semi-Compatibility Adjustments */
+        String copy = this.text.toString();
+        Matcher matches = pattern.matcher(copy);
+        String volumeReplace = copy.toString();
+        HashMap<String, Integer> volumes = new HashMap<String, Integer>();
+        
+        while(matches.find())
+        {
+            String sVol = copy.substring(matches.start(), matches.end());
+            String rVol = sVol.replaceAll("[vV]", "");
+
+            int vol;
+            try { vol = Integer.parseInt(rVol); }
+            catch (NumberFormatException e) { vol = 10; }              
+            if (vol > 15)
+                volumesArcheAge = true;
+            volumes.put(sVol, vol);           
+        }
+        
+        for (String sVol:volumes.keySet())
+        {
+            int mVol = volumes.get(sVol);
+            if (volumesArcheAge)
+                mVol = mVol / 8;
+            volumeReplace = volumeReplace.replaceAll(sVol, "v" + mVol);
+            ModLogger.info("volume: %s, %d", sVol, mVol);
+        }
+        
+        // If there are "MML@" tokens in weird places assume a new part
+        copy = volumeReplace.replaceAll("\\B(MML\\@)", ",");
+        // remove any remaining "MML@" and ";" tokens
+        copy = copy.replaceAll("(MML\\@)|;", "");
+        StringBuilder sb = new StringBuilder(copy);
+        // Add the required MML BEGIN and END tokens
+        if (!copy.regionMatches(true, 0, "MML@", 0, 4) && copy.length() > 0)
+            sb.insert(0, "MML@");
+        if (!copy.endsWith(";") && copy.length() > 0)
+            sb.append(";");
+        ModLogger.info(sb.toString());
+        return sb.toString();
     }
 
     /**

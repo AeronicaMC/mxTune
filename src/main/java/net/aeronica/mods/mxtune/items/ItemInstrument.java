@@ -27,6 +27,7 @@ import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.status.ServerCSDManager;
 import net.aeronica.mods.mxtune.util.IVariant;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -43,6 +44,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
+ * @author Paul Boese a.k.a Aeronica
  *
  */
 public class ItemInstrument extends Item implements IInstrument
@@ -186,7 +188,7 @@ public class ItemInstrument extends Item implements IInstrument
     @Override
     public int getMaxItemUseDuration(ItemStack itemstack)
     {
-        return 1;
+        return 72000;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -195,9 +197,9 @@ public class ItemInstrument extends Item implements IInstrument
     {
         String musicTitle = SheetMusicUtil.getMusicTitle(stackIn);
         if (!musicTitle.isEmpty())
-        {
             tooltip.add(TextFormatting.GREEN + "Title: " + musicTitle);
-        }
+        
+        tooltip.add(TextFormatting.RESET + I18n.format("item.mxtune:item_instrument.help"));
     }
 
     @Override

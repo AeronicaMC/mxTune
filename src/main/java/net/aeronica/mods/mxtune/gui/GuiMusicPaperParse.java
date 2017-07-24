@@ -67,9 +67,9 @@ import net.minecraftforge.fml.client.GuiScrollingList;
 public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
 {
     public static final int GUI_ID = 7;
-    static final String TITLE = I18n.format("mxtune.gui.musicPaperParse.title");
-    static final String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
-    static final String NO_SOUNDBANK = I18n.format("mxtune.gui.musicPaperParse.noSoundbank");
+    String TITLE;
+    String MIDI_NOT_AVAILABLE;
+    String NO_SOUNDBANK;
     GuiTextField textMMLTitle;
     GuiMMLBox textMMLPaste;
     GuiTextField labelStatus;
@@ -81,7 +81,8 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     GuiParserErrorList listBoxMMLError;
     GuiInstruments listBoxInstruments;
     int helperTextCounter;
-    short helperTextColor;
+    int helperTextColor;
+    boolean helperState;
 
     /** MML Parser */
     static byte[] mmlBuf = null;
@@ -126,6 +127,10 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     @Override
     public void initGui()
     {
+        TITLE = I18n.format("mxtune.gui.musicPaperParse.title");
+        MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
+        NO_SOUNDBANK = I18n.format("mxtune.gui.musicPaperParse.noSoundbank");
+        
         this.mc = Minecraft.getMinecraft();
         parseErrorListener = new ParseErrorListener();
         parseErrorCache = new ArrayList<ParseErrorEntry>();
@@ -198,7 +203,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         this.textMMLPaste.setText(cachedMMLText);
         this.listBoxInstruments.elementClicked(cachedSelectedInst, false);
         this.isPlaying = this.cachedIsPlaying;
-        this.parseMML(this.textMMLPaste.getText());
+        this.parseMML(this.textMMLPaste.getTextToParse());
         updateButtonState();
     }
 
@@ -217,7 +222,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     private void updateButtonState()
     {
         /** enable OKAY button when Title Field is greater than 0 chars and passes the MML parsing tests */
-        boolean isOK = (textMMLPaste.getText().length() > 0) && parseErrorCache.isEmpty() && !textMMLTitle.getText().isEmpty();
+        boolean isOK = (!textMMLPaste.isEmpty()) && parseErrorCache.isEmpty() && !textMMLTitle.getText().isEmpty();
         ((GuiButton) buttonList.get(buttonOkay.id)).enabled = isOK;
         ((GuiButton) buttonList.get(buttonPlay.id)).enabled = !this.isPlaying && isOK;
         ((GuiButton) buttonList.get(buttonStop.id)).enabled = this.isPlaying && isOK;
@@ -258,14 +263,14 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         /** draw helpers */
         if (textMMLTitle.getText().isEmpty())
         {
-            String helperText = "Enter a Title!";
+            String helperText = I18n.format("Enter a Title!");
             int helperWidth = getFontRenderer().getStringWidth(helperText);
             int fontHeight = getFontRenderer().FONT_HEIGHT + 2;
             getFontRenderer().drawString(helperText, textMMLTitle.xPosition + textMMLTitle.width / 2 - helperWidth / 2, textMMLTitle.yPosition + fontHeight / 2, HelperTextColor());
         }
-        if (textMMLPaste.getText().isEmpty())
+        if (textMMLPaste.isEmpty())
         {
-            String helperText = "Paste in MML!";
+            String helperText = I18n.format("Paste MML in clipboard format");
             int helperWidth = getFontRenderer().getStringWidth(helperText);
             int fontHeight = getFontRenderer().FONT_HEIGHT + 2;
             getFontRenderer().drawString(helperText, textMMLPaste.xPosition + textMMLPaste.width / 2 - helperWidth / 2, textMMLPaste.yPosition + textMMLPaste.height / 2 - fontHeight / 2,
@@ -282,11 +287,19 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
 
     private int HelperTextColor()
     {
-        boolean updown = helperTextCounter / 32 % 2 == 0;
-        helperTextColor = (short) (updown ? Math.min(0xC0, ++helperTextColor) : Math.max(0x20, --helperTextColor));
+        final int LO = 0x30;
+        final int HI = 0xD0;
+        
+        if (this.helperTextCounter % 20 == 0) 
+        {
+//            helperState = helperTextColor <= LO && !helperState ? !helperState : helperTextColor >= HI && helperState ? !helperState : helperState;
+            helperState = helperTextColor <= LO && !helperState ? !helperState : helperState;
+            helperState = helperTextColor >= HI && helperState ? !helperState : helperState;
+        }
+        helperTextColor = (short) (helperState ? Math.min(HI, ++helperTextColor) : Math.max(LO, --helperTextColor));
         int color = helperTextColor;
         color &= 0xFF;
-        int RGB = ((color << 16) + (color << 8) + color);
+        int RGB = ((color << 16) + (color << 8) + -color);
         return RGB;
     }
 
@@ -301,7 +314,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         {
         case 0:
             /** Done / OKAY - Save MML */
-            String musictext = textMMLPaste.getText().trim();
+            String musictext = textMMLPaste.getTextToParse().trim();
             String musictitle = textMMLTitle.getText().trim();
             mmlStop();
             sendMMLTextToServer(musictitle, musictext);
@@ -321,7 +334,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
                 this.selectedInst = 0;
                 this.listBoxInstruments.elementClicked(selectedInst, false);
             }
-            String mml = this.textMMLPaste.getText();
+            String mml = this.textMMLPaste.getTextToParse();
             this.isPlaying = mmlPlay(mml);
             break;
 
@@ -368,7 +381,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
                 textMMLTitle.setFocused(true);
             }
         }
-        parseMML(textMMLPaste.getText());
+        parseMML(textMMLPaste.getTextToParse());
         updateState();
         /** perform click event on ok button when Enter is pressed */
         if (c == '\n' || c == '\r')

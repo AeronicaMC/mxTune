@@ -21,6 +21,7 @@ import java.util.List;
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.gui.GuiMusicPaperParse;
 import net.aeronica.mods.mxtune.inventory.IMusic;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.IItemPropertyGetter;
@@ -36,7 +37,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-/** TODO: Swapping the icon is a nice trick, but I think a distinct item for Sheet Music would make dealing with item testing easier */
 public class ItemMusicPaper extends Item implements IMusic
 {
     public ItemMusicPaper()
@@ -134,6 +134,9 @@ public class ItemMusicPaper extends Item implements IMusic
                     tooltip.add(TextFormatting.RED + mml.getString("MML").substring(0, mml.getString("MML").length() > 25 ? 25 : mml.getString("MML").length()));
                 }
             }
+        } else
+        {
+            tooltip.add(TextFormatting.RESET + I18n.format("item.mxtune:item_musicpaper.help"));
         }
     }
 }

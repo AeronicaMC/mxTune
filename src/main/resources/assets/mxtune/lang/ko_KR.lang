@@ -2,7 +2,9 @@
 
 item.mxtune:block_piano.name=스피넷 피아노
 item.mxtune:item_musicpaper.name=악보 용지
+item.mxtune:item_musicpaper.help=MML을 입력하려면 마우스 오른쪽 버튼을 클릭하십시오
 item.mxtune:item_sheetmusic.name="음악 악보" - Should never be seen unless the Name is removed.
+item.mxtune:item_sheetmusic.help=오류 : MML을 찾을 수 없습니다!
 item.mxtune:item_inst.lute.name=류트
 item.mxtune:item_inst.ukulele.name=우쿨렐레
 item.mxtune:item_inst.mandolin.name=만돌린
@@ -29,6 +31,7 @@ item.mxtune:item_inst.harpsicord_coupled.name=하프시코드 커플
 item.mxtune:item_inst.standard.name=표준 타악기 세트
 item.mxtune:item_inst.orchestra.name=오케스트라 타악기 세트
 item.mxtune:item_converter.name=음악 악보 변환기
+item.mxtune:item_instrument.help=Shift + 오른쪽 클릭으로 음악 삽입 / 제거
 
 mxtune.instrumentInventory.empty=음악 악보가 없음
 
@@ -83,6 +86,8 @@ mxtune.gui.hudAdjust.size=Size
 
 mxtune.gui.musicPaperParse.title=MML 간단 편집기
 mxtune.gui.musicPaperParse.noSoundbank=사운드뱅크가 없음
+mxtune.gui.musicPaperParse.enterTitle=제목 입력!
+mxtune.gui.musicPaperParse.enterMML=MML을 클립 보드 형식으로 붙여 넣으십시오!
 
 < Chat messages >
 mxtune.chat.msu.midiAvailable=음악을 연주할 준비가 되었습니다.
