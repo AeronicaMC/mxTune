@@ -27,6 +27,7 @@ import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.status.ServerCSDManager;
 import net.aeronica.mods.mxtune.util.IVariant;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -106,7 +107,7 @@ public class ItemInstrument extends Item implements IInstrument
         // return EnumActionResult.SUCCESS to activate on AIR only
         // return EnumActionResult.FAIL to activate unconditionally and skip vanilla processing
         // return EnumActionResult.PASS to activate on AIR, or let Vanilla process
-        return new ActionResult<>(EnumActionResult.SUCCESS, itemStackIn);
+        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);
     }
 
     /**
@@ -188,7 +189,7 @@ public class ItemInstrument extends Item implements IInstrument
     @Override
     public int getMaxItemUseDuration(ItemStack itemstack)
     {
-        return 1;
+        return 72000;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -197,9 +198,9 @@ public class ItemInstrument extends Item implements IInstrument
     {
         String musicTitle = SheetMusicUtil.getMusicTitle(stackIn);
         if (!musicTitle.isEmpty())
-        {
             tooltip.add(TextFormatting.GREEN + "Title: " + musicTitle);
-        }
+        
+        tooltip.add(TextFormatting.RESET + I18n.format("item.mxtune:item_instrument.help"));
     }
 
     @Override

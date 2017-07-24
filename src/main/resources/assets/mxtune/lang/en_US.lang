@@ -2,7 +2,9 @@
 
 item.mxtune:block_piano.name=Spinet Piano
 item.mxtune:item_musicpaper.name=Music Paper
+item.mxtune:item_musicpaper.help=Right click to enter MML
 item.mxtune:item_sheetmusic.name="Sheet Music" - Should never be seen unless the Name is removed.
+item.mxtune:item_sheetmusic.help=Error: No MML Found!
 item.mxtune:item_inst.lute.name=Lute
 item.mxtune:item_inst.ukulele.name=Ukulele
 item.mxtune:item_inst.mandolin.name=Mandolin
@@ -29,6 +31,7 @@ item.mxtune:item_inst.harpsicord_coupled.name=Harpsicord Coupled
 item.mxtune:item_inst.standard.name=Standard Perc. Set
 item.mxtune:item_inst.orchestra.name=Orchesta Perc. Set
 item.mxtune:item_converter.name=Sheet Music Converter
+item.mxtune:item_instrument.help=Shift + right click to insert/remove music
 
 mxtune.instrumentInventory.empty=No Sheet Music Found
 
@@ -83,6 +86,8 @@ mxtune.gui.hudAdjust.size=Size
 
 mxtune.gui.musicPaperParse.title=MML Simple Editor
 mxtune.gui.musicPaperParse.noSoundbank=No Soundbank loaded
+mxtune.gui.musicPaperParse.enterTitle=Enter a Title!
+mxtune.gui.musicPaperParse.enterMML=Paste MML in clipboard format!
 
 < Chat messages >
 mxtune.chat.msu.midiAvailable=Ready to play music.
