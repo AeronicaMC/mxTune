@@ -67,9 +67,15 @@ import net.minecraftforge.fml.client.GuiScrollingList;
 public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
 {
     public static final int GUI_ID = 7;
-    String TITLE;
-    String MIDI_NOT_AVAILABLE;
-    String NO_SOUNDBANK;
+    // Localization Keys
+    String TITLE = I18n.format("mxtune.gui.musicPaperParse.title");
+    String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
+    String NO_SOUNDBANK = I18n.format("mxtune.gui.musicPaperParse.noSoundbank");
+    String HELPER_ENTER_TITLE = I18n.format("mxtune.gui.musicPaperParse.enterTitle");
+    String HELPER_ENTER_MML = I18n.format("mxtune.gui.musicPaperParse.enterMML");
+    String LABEL_INSTRUMENTS = I18n.format("mxtune.gui.musicPaperParse.labelInstruments");
+    String LABEL_TITLE_MML = I18n.format("mxtune.gui.musicPaperParse.labelTitleMML");
+    
     GuiTextField textMMLTitle;
     GuiMMLBox textMMLPaste;
     GuiTextField labelStatus;
@@ -126,11 +132,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
 
     @Override
     public void initGui()
-    {
-        TITLE = I18n.format("mxtune.gui.musicPaperParse.title");
-        MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
-        NO_SOUNDBANK = I18n.format("mxtune.gui.musicPaperParse.noSoundbank");
-        
+    {        
         this.mc = Minecraft.getMinecraft();
         parseErrorListener = new ParseErrorListener();
         parseErrorCache = new ArrayList<ParseErrorEntry>();
@@ -245,12 +247,12 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         /** draw Field names */
         posX = this.listBoxInstruments.getRight() + 10;
         posY = 20;
-        getFontRenderer().drawStringWithShadow("Title / MML@:", posX, posY, 0xD3D3D3);
+        getFontRenderer().drawStringWithShadow(LABEL_TITLE_MML, posX, posY, 0xD3D3D3);
 
         /** draw the instrument list */
         posX = 10;
         posY = 20;
-        getFontRenderer().drawStringWithShadow("Instruments", posX, posY, 0xD3D3D3);
+        getFontRenderer().drawStringWithShadow(LABEL_INSTRUMENTS, posX, posY, 0xD3D3D3);
 
         listBoxInstruments.drawScreen(mouseX, mouseY, partialTicks);
         listBoxMMLError.drawScreen(mouseX, mouseY, partialTicks);
@@ -263,17 +265,15 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         /** draw helpers */
         if (textMMLTitle.getText().isEmpty())
         {
-            String helperText = I18n.format("Enter a Title!");
-            int helperWidth = getFontRenderer().getStringWidth(helperText);
+            int helperWidth = getFontRenderer().getStringWidth(HELPER_ENTER_TITLE);
             int fontHeight = getFontRenderer().FONT_HEIGHT + 2;
-            getFontRenderer().drawString(helperText, textMMLTitle.xPosition + textMMLTitle.width / 2 - helperWidth / 2, textMMLTitle.yPosition + fontHeight / 2, HelperTextColor());
+            getFontRenderer().drawString(HELPER_ENTER_TITLE, textMMLTitle.xPosition + textMMLTitle.width / 2 - helperWidth / 2, textMMLTitle.yPosition + fontHeight / 2, HelperTextColor());
         }
         if (textMMLPaste.isEmpty())
         {
-            String helperText = I18n.format("Paste MML in clipboard format");
-            int helperWidth = getFontRenderer().getStringWidth(helperText);
+            int helperWidth = getFontRenderer().getStringWidth(HELPER_ENTER_MML);
             int fontHeight = getFontRenderer().FONT_HEIGHT + 2;
-            getFontRenderer().drawString(helperText, textMMLPaste.xPosition + textMMLPaste.width / 2 - helperWidth / 2, textMMLPaste.yPosition + textMMLPaste.height / 2 - fontHeight / 2,
+            getFontRenderer().drawString(HELPER_ENTER_MML, textMMLPaste.xPosition + textMMLPaste.width / 2 - helperWidth / 2, textMMLPaste.yPosition + textMMLPaste.height / 2 - fontHeight / 2,
                     HelperTextColor());
         }
 
