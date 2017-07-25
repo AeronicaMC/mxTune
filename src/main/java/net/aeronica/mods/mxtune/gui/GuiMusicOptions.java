@@ -22,7 +22,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
@@ -51,51 +50,52 @@ import net.minecraftforge.fml.client.config.GuiButtonExt;
 public class GuiMusicOptions extends GuiScreen
 {
     public static final int GUI_ID = 8;
-    private static final String TITLE = I18n.format("mxtune.gui.musicOptions.title");
-    private static final String LABEL_WHITELIST = I18n.format("mxtune.gui.musicOptions.label.whitelist");
-    private static final String LABEL_PLAYERS  = I18n.format("mxtune.gui.musicOptions.label.players");
-    private static final String LABEL_BLACKLIST  = I18n.format("mxtune.gui.musicOptions.label.blacklist");
-    private static final String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
+    String TITLE = I18n.format("mxtune.gui.musicOptions.title");
+    String LABEL_WHITELIST = I18n.format("mxtune.gui.musicOptions.label.whitelist");
+    String LABEL_PLAYERS  = I18n.format("mxtune.gui.musicOptions.label.players");
+    String LABEL_BLACKLIST  = I18n.format("mxtune.gui.musicOptions.label.blacklist");
+    String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
+    String BUTTON_ADJ_HUD = I18n.format("mxtune.gui.musicOptions.adjHud");
 
-    private GuiButtonExt buttonMuteOption;
-    private GuiButtonExt buttonCancel;
-    private GuiButtonExt buttonDone;
-    private GuiButtonExt buttonAdjHud;
-    private GuiButtonExt buttonWhiteToPlayers;
-    private GuiButtonExt buttonPlayersToWhite;
-    private GuiButtonExt buttonBlackToPlayers;
-    private GuiButtonExt buttonPlayersToBlack;
-    private GuiPlayerList listBoxPlayers;
-    private GuiWhiteList listBoxWhite;
-    private GuiBlackList listBoxBlack;
+    GuiButtonExt buttonMuteOption;
+    GuiButtonExt buttonCancel;
+    GuiButtonExt buttonDone;
+    GuiButtonExt buttonAdjHud;
+    GuiButtonExt buttonWhiteToPlayers;
+    GuiButtonExt buttonPlayersToWhite;
+    GuiButtonExt buttonBlackToPlayers;
+    GuiButtonExt buttonPlayersToBlack;
+    GuiPlayerList listBoxPlayers;
+    GuiWhiteList listBoxWhite;
+    GuiBlackList listBoxBlack;
     
-    private EntityPlayer player;
-    private int muteOption;
-    private boolean midiUnavailable;
+    EntityPlayer player;
+    int muteOption;
+    boolean midiUnavailable;
 
     /** PlayerList */
-    private List<PlayerLists> playerList; 
-    private int selectedPlayerIndex = -1;
-    private PlayerLists selectedPlayerList = new PlayerLists();
-    private int playerListWidth;
+    List<PlayerLists> playerList; 
+    int selectedPlayerIndex = -1;
+    PlayerLists selectedPlayerList = new PlayerLists();
+    int playerListWidth;
 
     /** WhiteList */
-    private List<PlayerLists> whiteList; 
-    private int selectedWhiteIndex = -1;
-    private PlayerLists selectedWhiteList = new PlayerLists();
-    private int whiteListWidth;
+    List<PlayerLists> whiteList; 
+    int selectedWhiteIndex = -1;
+    PlayerLists selectedWhiteList = new PlayerLists();
+    int whiteListWidth;
     
     /** WhiteList */
-    private List<PlayerLists> blackList; 
-    private int selectedBlackIndex = -1;
-    private PlayerLists selectedBlackList = new PlayerLists();
-    private int blackListWidth;
+    List<PlayerLists> blackList; 
+    int selectedBlackIndex = -1;
+    PlayerLists selectedBlackList = new PlayerLists();
+    int blackListWidth;
 
     /** Cached State for when the GUI is resized */
-    private boolean isStateCached = false;
-    private int cachedSelectedPlayerIndex = -1;
-    private int cachedSelectedWhiteIndex = -1;
-    private int cachedSelectedBlackIndex = -1;
+    boolean isStateCached = false;
+    int cachedSelectedPlayerIndex = -1;
+    int cachedSelectedWhiteIndex = -1;
+    int cachedSelectedBlackIndex = -1;
 
     public GuiMusicOptions(EntityPlayer playerIn)
     {
@@ -143,7 +143,7 @@ public class GuiMusicOptions extends GuiScreen
         x = listBoxWhite.getRight() - whiteListWidth - 2;
         buttonWidth = 225;
         buttonMuteOption = new GuiButtonExt(0, x, y, buttonWidth, 20, (MusicOptionsUtil.EnumMuteOptions.byMetadata(muteOption).toString()));
-        buttonAdjHud = new GuiButtonExt(4, x, y+=22, buttonWidth, 20, I18n.format("mxtune.gui.musicOptions.adj_hud"));
+        buttonAdjHud = new GuiButtonExt(4, x, y+=22, buttonWidth, 20, BUTTON_ADJ_HUD);
         
         this.buttonList.add(buttonWhiteToPlayers);
         this.buttonList.add(buttonPlayersToWhite);

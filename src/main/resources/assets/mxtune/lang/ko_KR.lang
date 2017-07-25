@@ -79,15 +79,17 @@ mxtune.gui.musicOptions.muteOption.others=다른 참가자 침묵
 mxtune.gui.musicOptions.muteOption.blacklist=블랙리스트 침묵
 mxtune.gui.musicOptions.muteOption.whitelist=화이트리스트 허용
 mxtune.gui.musicOptions.muteOption.all=모두 침묵
-mxtune.gui.musicOptions.adj_hud=Adjust HUD
+mxtune.gui.musicOptions.adjHud=HUD 위치
 
-mxtune.gui.hudAdjust.title=Adjust mxTune HUD
-mxtune.gui.hudAdjust.size=Size
+mxtune.gui.hudAdjust.title=HUD 위치
+mxtune.gui.hudAdjust.size=HUD 크기
 
 mxtune.gui.musicPaperParse.title=MML 간단 편집기
 mxtune.gui.musicPaperParse.noSoundbank=사운드뱅크가 없음
 mxtune.gui.musicPaperParse.enterTitle=제목 입력!
 mxtune.gui.musicPaperParse.enterMML=MML을 클립 보드 형식으로 붙여 넣으십시오!
+mxtune.gui.musicPaperParse.labelInstruments=악기들
+mxtune.gui.musicPaperParse.labelTitleMML=제목 / MML@:
 
 < Chat messages >
 mxtune.chat.msu.midiAvailable=음악을 연주할 준비가 되었습니다.

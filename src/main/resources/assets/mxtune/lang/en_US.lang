@@ -79,15 +79,17 @@ mxtune.gui.musicOptions.muteOption.others=Mute Others
 mxtune.gui.musicOptions.muteOption.blacklist=Mute Blacklist
 mxtune.gui.musicOptions.muteOption.whitelist=Allow Whitelist
 mxtune.gui.musicOptions.muteOption.all=Mute All
-mxtune.gui.musicOptions.adj_hud=Adjust HUD
+mxtune.gui.musicOptions.adjHud=HUD Position
 
 mxtune.gui.hudAdjust.title=Adjust mxTune HUD
-mxtune.gui.hudAdjust.size=Size
+mxtune.gui.hudAdjust.size=HUD Size
 
 mxtune.gui.musicPaperParse.title=MML Simple Editor
 mxtune.gui.musicPaperParse.noSoundbank=No Soundbank loaded
 mxtune.gui.musicPaperParse.enterTitle=Enter a Title!
 mxtune.gui.musicPaperParse.enterMML=Paste MML in clipboard format!
+mxtune.gui.musicPaperParse.labelInstruments=Instruments
+mxtune.gui.musicPaperParse.labelTitleMML=Title / MML@:
 
 < Chat messages >
 mxtune.chat.msu.midiAvailable=Ready to play music.
