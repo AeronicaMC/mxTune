@@ -19,8 +19,6 @@ package net.aeronica.mods.mxtune.gui;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.lwjgl.input.Keyboard;
 
@@ -166,40 +164,12 @@ public class GuiMMLBox extends Gui
      */
     public String getTextToParse()
     {
-        String regex = "([vV][0123456789]+)";
-        Pattern pattern = Pattern.compile(regex);
-        boolean volumesArcheAge = false;
 
         /* ArcheAge Semi-Compatibility Adjustments */
         String copy = this.text.toString();
-        Matcher matches = pattern.matcher(copy);
-        String volumeReplace = copy.toString();
-        HashMap<String, Integer> volumes = new HashMap<String, Integer>();
-        
-        while(matches.find())
-        {
-            String sVol = copy.substring(matches.start(), matches.end());
-            String rVol = sVol.replaceAll("[vV]", "");
-
-            int vol;
-            try { vol = Integer.parseInt(rVol); }
-            catch (NumberFormatException e) { vol = 10; }              
-            if (vol > 15)
-                volumesArcheAge = true;
-            volumes.put(sVol, vol);           
-        }
-        
-        for (String sVol:volumes.keySet())
-        {
-            int mVol = volumes.get(sVol);
-            if (volumesArcheAge)
-                mVol = mVol / 8;
-            volumeReplace = volumeReplace.replaceAll(sVol, "v" + mVol);
-            ModLogger.info("volume: %s, %d", sVol, mVol);
-        }
         
         // If there are "MML@" tokens in weird places assume a new part
-        copy = volumeReplace.replaceAll("\\B(MML\\@)", ",");
+        copy = copy.replaceAll("\\B(MML\\@)", ",");
         // remove any remaining "MML@" and ";" tokens
         copy = copy.replaceAll("(MML\\@)|;", "");
         StringBuilder sb = new StringBuilder(copy);

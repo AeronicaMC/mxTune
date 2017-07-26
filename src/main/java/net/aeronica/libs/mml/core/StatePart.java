@@ -3,6 +3,7 @@ package net.aeronica.libs.mml.core;
 public class StatePart
 {
     private int volume;
+    private boolean volumeArcheAge;
     private int octave;
     private int mmlLength;
     private boolean dotted;
@@ -14,6 +15,7 @@ public class StatePart
     public void init()
     {
         volume = 8;
+        volumeArcheAge = false;
         octave = 4;
         mmlLength = 4;
         dotted = false;
@@ -27,9 +29,20 @@ public class StatePart
         return "@PartState: oct=" + octave + ", vol=" + volume + ", mmlLength=" + mmlLength + " ,runningTicks=" + runningTicks + ", tied=" + tied;
     }
 
-    public int getVolume() {return volume;}
+    public int getVolume()
+    {
+        if (this.volumeArcheAge)
+            return volume;
+        else
+            return getMinMax(0, 127, volume * 128 / 15);
+    }
 
-    public void setVolume(int volume) {this.volume = getMinMax(0, 15, volume);}
+    public void setVolume(int volume)
+    {
+        this.volume = getMinMax(0, 127, volume);
+        if (this.volume > 15)
+            volumeArcheAge = true;
+    }
 
     public int getOctave() {return octave;}
 
