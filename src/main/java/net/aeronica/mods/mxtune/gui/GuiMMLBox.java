@@ -169,8 +169,6 @@ public class GuiMMLBox extends Gui
         
         // remove any remaining "MML@" and ";" tokens
         copy = copy.replaceAll("(MML\\@)|;", "");
-        // compress runs of commas to a single comma
-        copy = copy.replaceAll(",+", ",");
         StringBuilder sb = new StringBuilder(copy);
         // Add the required MML BEGIN and END tokens
         if (!copy.regionMatches(true, 0, "MML@", 0, 4) && copy.length() > 0)
