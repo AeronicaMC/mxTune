@@ -175,7 +175,6 @@ public class GuiMMLBox extends Gui
             sb.insert(0, "MML@");
         if (!copy.endsWith(";") && copy.length() > 0)
             sb.append(";");
-        ModLogger.info(sb.toString());
         return sb.toString();
     }
 
