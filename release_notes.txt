@@ -1,3 +1,19 @@
+2017-07-27: mxtune-1.11.2-0.4.0-dev.25
+Fixes:
+Issue #2 Extraneous input '&' after note length command: Now allows the tie of a tied note to exist before or after an interspersed command e.g. "c.&c16l64&c" or "c.&c16&l64c" 
+Issue #17 "Musician Villager Entity Name": Added language key for the Musician Villager.
+Issue #18 "Suggestion; MML@ & final ;": Add a URL link to the "MML Simple Editor" dialog. URL is configurable. default URL is https://mabibeats.com/
+
+Changes:
+Improved ArcheAge MML support. Now detects ArcheAge MML volume levels and "does the right thing".
+Improved MML parsing by making it less strict. It will allow silly MML like accidentals on rests: e.g. "a&a&R+8.l16a" The "MML@" and ";" tokens in the MML entry dialog is optional. Allow rests between in tied notes. Rests will extend overall length of the tied as expected.
+Added more localization string for GUIs.
+Improved tool-tips on instruments and music paper.
+
+Breakage:
+Updated to latest the MCP mappings and in the process I broke placement of the piano. I did fix it, but if a piano looks weird break it and replace it. Sheet Music that may have been on on the piano is lost forever. Sorry.
+----
+
 2017-05-17: mxtune-1.11.2-0.4.0-dev.24
 Fixes:
 Change improper stack empty tests from "<stack>.equals(ItemStack.EMPTY) to "<stack>.isEmpty()"
