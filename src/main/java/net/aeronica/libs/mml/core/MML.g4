@@ -24,11 +24,26 @@ inst	: begin                 // treat each as a separate instrument
 		)* end
 		;
 
+test    : begin* (mono|part)+ end* EOF; // parse testing: ignore MML@ and ; tokens
+
+mono    : 
+        ( rest
+        | anote
+        | tied
+        | octave
+        | cmd
+        | len
+        | begin                 // for ArcheAge we'll allow silly things
+        | end                   // for ArcheAge we'll allow silly things
+        )+
+        ;
+
 rest    : REST                  // Possible rest formats
         | REST INT
         | REST DOT+
         | REST INT DOT+
-        | REST ACC {notifyErrorListeners("unexpected accidental '+#-'");}
+        | REST ACC*             // for ArcheAge we'll allow silly things
+        | REST TIE*             // for ArcheAge we'll allow silly things
         ;
 
 note	: NOTE					// possible note formats
@@ -46,8 +61,8 @@ midi	: MIDI INT  			// match MIDI note
         ;
 
 anote   : (note|midi) ;
-        
-tied    : anote (cmd|len|octave)* (TIE (cmd|len|octave)* anote)+     // match tied note
+
+tied    : anote ((cmd|len|octave)* TIE (cmd|len|octave)* anote)+     // match tied note
         ;
         
 octave  : OCTAVE ;
