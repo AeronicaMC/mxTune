@@ -204,7 +204,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         this.textMMLPaste.setText(cachedMMLText);
         this.listBoxInstruments.elementClicked(cachedSelectedInst, false);
         this.isPlaying = this.cachedIsPlaying;
-        this.parseMML(this.textMMLPaste.getTextToParse());
+        this.parseMML(this.textMMLPaste.getText());
         updateButtonState();
     }
 
@@ -380,7 +380,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
                 textMMLTitle.setFocused(true);
             }
         }
-        parseMML(textMMLPaste.getTextToParse());
+        parseMML(textMMLPaste.getText());
         updateState();
         /** perform click event on ok button when Enter is pressed */
         if (c == '\n' || c == '\r')
@@ -512,7 +512,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         parser.addErrorListener(parseErrorListener);
         parser.setBuildParseTree(true);
         parseErrorCache.clear();
-        parser.inst();
+        parser.test();
         for (ParseErrorEntry e : parseErrorListener.getParseErrorEntries())
         {
             parseErrorCache.add(e);

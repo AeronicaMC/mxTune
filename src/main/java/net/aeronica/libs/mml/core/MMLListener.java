@@ -30,6 +30,26 @@ public interface MMLListener extends ParseTreeListener {
 	 */
 	void exitInst(MMLParser.InstContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MMLParser#test}.
+	 * @param ctx the parse tree
+	 */
+	void enterTest(MMLParser.TestContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MMLParser#test}.
+	 * @param ctx the parse tree
+	 */
+	void exitTest(MMLParser.TestContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MMLParser#mono}.
+	 * @param ctx the parse tree
+	 */
+	void enterMono(MMLParser.MonoContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MMLParser#mono}.
+	 * @param ctx the parse tree
+	 */
+	void exitMono(MMLParser.MonoContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MMLParser#rest}.
 	 * @param ctx the parse tree
 	 */

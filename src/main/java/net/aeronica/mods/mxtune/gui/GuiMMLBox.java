@@ -164,14 +164,13 @@ public class GuiMMLBox extends Gui
      */
     public String getTextToParse()
     {
-
-        /* ArcheAge Semi-Compatibility Adjustments */
+        /* ArcheAge Semi-Compatibility Adjustments and fixes for stupid MML */
         String copy = this.text.toString();
         
-        // If there are "MML@" tokens in weird places assume a new part
-        copy = copy.replaceAll("\\B(MML\\@)", ",");
         // remove any remaining "MML@" and ";" tokens
         copy = copy.replaceAll("(MML\\@)|;", "");
+        // compress runs of commas to a single comma
+        copy = copy.replaceAll(",+", ",");
         StringBuilder sb = new StringBuilder(copy);
         // Add the required MML BEGIN and END tokens
         if (!copy.regionMatches(true, 0, "MML@", 0, 4) && copy.length() > 0)
