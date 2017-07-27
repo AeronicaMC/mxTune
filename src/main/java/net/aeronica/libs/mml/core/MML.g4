@@ -42,8 +42,10 @@ rest    : REST                  // Possible rest formats
         | REST INT
         | REST DOT+
         | REST INT DOT+
-        | REST ACC*             // for ArcheAge we'll allow silly things
-        | REST TIE*             // for ArcheAge we'll allow silly things
+        | REST ACC              // for ArcheAge we'll allow silly things
+        | REST ACC INT          // for ArcheAge we'll allow silly things
+        | REST ACC DOT+         // for ArcheAge we'll allow silly things
+        | REST ACC INT DOT+     // for ArcheAge we'll allow silly things
         ;
 
 note	: NOTE					// possible note formats
@@ -62,7 +64,7 @@ midi	: MIDI INT  			// match MIDI note
 
 anote   : (note|midi) ;
 
-tied    : anote ((cmd|len|octave)* TIE (cmd|len|octave)* anote)+     // match tied note
+tied    : anote ((cmd|len|octave|rest)* TIE (cmd|len|octave|rest)* anote)+     // match tied note
         ;
         
 octave  : OCTAVE ;
