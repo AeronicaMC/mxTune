@@ -34,7 +34,7 @@ public class StatePart
         if (this.volumeArcheAge)
             return volume;
         else
-            return getMinMax(0, 127, volume * 128 / 15);
+            return getMinMax(0, 127, volume * 127 / 15);
     }
 
     public void setVolume(int volume)
