@@ -68,7 +68,6 @@ public class MXTuneMain
     {
         proxy.init(event);
         proxy.registerKeyBindings();
-        proxy.registerRecipes();
         proxy.initMML();
 
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, GUIHandler.getInstance());

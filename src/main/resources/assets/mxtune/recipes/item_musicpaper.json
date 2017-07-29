@@ -1,0 +1,24 @@
+{
+  "result": {
+    "item": "mxtune:item_musicpaper",
+    "count": 4
+  },
+  "ingredients": [
+    {
+      "item": "#PAPER"
+    },
+    {
+      "item": "#PAPER"
+    },
+    {
+      "item": "#PAPER"
+    },
+    {
+      "item": "#PAPER"
+    },
+    {
+      "item": "#DYEBLACK"
+    }
+  ],
+  "type": "forge:ore_shapeless"
+}

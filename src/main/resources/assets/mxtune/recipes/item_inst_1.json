@@ -1,0 +1,21 @@
+{
+  "result": {
+    "item": "mxtune:item_inst",
+    "data": 1
+  },
+  "pattern": [
+    " P ",
+    " P ",
+    "PWP"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "P": {
+      "item": "#PLANKWOOD"
+    },
+    "W": {
+      "item": "minecraft:wool",
+      "data": 0
+    }
+  }
+}

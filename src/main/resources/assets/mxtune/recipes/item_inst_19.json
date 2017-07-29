@@ -1,0 +1,20 @@
+{
+  "result": {
+    "item": "mxtune:item_inst",
+    "data": 19
+  },
+  "pattern": [
+    "B",
+    "P",
+    "P"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "P": {
+      "item": "#PLANKWOOD"
+    },
+    "B": {
+      "item": "#BONE"
+    }
+  }
+}

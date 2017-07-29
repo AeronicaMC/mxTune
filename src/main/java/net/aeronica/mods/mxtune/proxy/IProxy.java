@@ -74,9 +74,6 @@ public interface IProxy
      */
     void registerRenderers();
 
-    /** Register recipes in Common Init */
-    void registerRecipes();
-
     /** Initialize MML in Client Init */
     void initMML();
 

@@ -1,0 +1,20 @@
+{
+  "result": {
+    "item": "mxtune:item_inst",
+    "data": 8
+  },
+  "pattern": [
+    "PP ",
+    "SSS",
+    " PP"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "P": {
+      "item": "#PLANKWOOD"
+    },
+    "S": {
+      "item": "#STRING"
+    }
+  }
+}

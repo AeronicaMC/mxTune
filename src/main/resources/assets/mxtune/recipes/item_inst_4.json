@@ -1,0 +1,20 @@
+{
+  "result": {
+    "item": "mxtune:item_inst",
+    "data": 4
+  },
+  "pattern": [
+    "R",
+    "C",
+    "C"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "R": {
+      "item": "#SUGARCANE"
+    },
+    "C": {
+      "item": "minecraft:clay_ball"
+    }
+  }
+}

@@ -94,12 +94,6 @@ public class ClientProxy extends CommonProxy
     }
 
     @Override
-    public void registerRecipes()
-    {
-        super.registerRecipes();
-    }
-
-    @Override
     public void initEntities()
     {
         super.initEntities();

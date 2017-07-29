@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "mxtune:item_inst",
+    "data": 24
+  },
+  "pattern": [
+    "PPL",
+    "PIL",
+    "PPL"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "P": {
+      "item": "#PLANKWOOD"
+    },
+    "I": {
+      "item": "#INGOTGOLD"
+    },
+    "L": {
+      "item": "#LEATHER"
+    }
+  }
+}

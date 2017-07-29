@@ -1,0 +1,16 @@
+{
+  "result": {
+    "item": "mxtune:item_inst",
+    "data": 14
+  },
+  "ingredients": [
+    {
+      "item": "mxtune:item_inst",
+      "data": 3
+    },
+    {
+      "item": "#NUGGETGOLD"
+    }
+  ],
+  "type": "forge:ore_shapeless"
+}

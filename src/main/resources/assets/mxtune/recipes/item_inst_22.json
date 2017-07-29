@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "mxtune:item_inst",
+    "data": 22
+  },
+  "pattern": [
+    "PRP",
+    "PFP",
+    "PFP"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "P": {
+      "item": "#PLANKWOOD"
+    },
+    "R": {
+      "item": "minecraft:item_frame"
+    },
+    "F": {
+      "item": "#FEATHER"
+    }
+  }
+}
