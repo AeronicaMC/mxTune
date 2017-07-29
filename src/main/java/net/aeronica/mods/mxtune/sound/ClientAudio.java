@@ -93,7 +93,7 @@ public enum ClientAudio
     static SoundSystem sndSystem;
     static MusicTicker musicTicker;
     
-    static final int THREAD_POOL_SIZE = 2;
+    static final int THREAD_POOL_SIZE = 4;
     static final AudioFormat audioFormat3D;
     static final AudioFormat audioFormatStereo;
     static ConcurrentLinkedQueue<Integer> playIDQueue01;
