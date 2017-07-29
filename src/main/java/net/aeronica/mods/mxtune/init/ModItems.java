@@ -3,7 +3,6 @@ package net.aeronica.mods.mxtune.init;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.blocks.ItemPiano;
 import net.aeronica.mods.mxtune.items.ItemConverter;
 import net.aeronica.mods.mxtune.items.ItemInstrument;
@@ -14,8 +13,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
-import net.minecraftforge.fml.common.registry.IForgeRegistry;
+import net.minecraftforge.registries.IForgeRegistry;
 
 @SuppressWarnings("unused")
 public class ModItems

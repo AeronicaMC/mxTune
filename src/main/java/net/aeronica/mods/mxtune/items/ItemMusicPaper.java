@@ -18,10 +18,13 @@ package net.aeronica.mods.mxtune.items;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.gui.GuiMusicPaperParse;
 import net.aeronica.mods.mxtune.inventory.IMusic;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.IItemPropertyGetter;
@@ -116,8 +119,8 @@ public class ItemMusicPaper extends Item implements IMusic
         return false;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public void addInformation(ItemStack stackIn, EntityPlayer playerIn, List tooltip, boolean advanced)
+    @Override
+    public void addInformation(ItemStack stackIn, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
     {
         /** Display the contents of the sheet music. */
         if (stackIn.hasTagCompound())

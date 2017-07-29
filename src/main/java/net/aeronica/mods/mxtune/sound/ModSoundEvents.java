@@ -18,18 +18,18 @@ package net.aeronica.mods.mxtune.sound;
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
+@ObjectHolder(MXTuneMain.MODID)
 public class ModSoundEvents {
-    public static final SoundEvent PCM_PROXY;
-    /**
-     * Register the {@link SoundEvent}s.
-     */
-    private ModSoundEvents() {}
     
-    static {
-        PCM_PROXY = registerSound("pcm-proxy");
-    }
+    @ObjectHolder("pcm-proxy")
+    public static final SoundEvent PCM_PROXY = registerSound("pcm-proxy");
+
     /**
      * Register a {@link SoundEvent}.
      * 
@@ -39,6 +39,17 @@ public class ModSoundEvents {
      */
     private static SoundEvent registerSound(String soundName) {
         final ResourceLocation soundID = new ResourceLocation(MXTuneMain.MODID, soundName);
-        return GameRegistry.register(new SoundEvent(soundID).setRegistryName(soundID));
+        return new SoundEvent(soundID).setRegistryName(soundID);
     }
+
+    @Mod.EventBusSubscriber(modid = MXTuneMain.MODID)
+    public static class RegistrationHandler {
+        @SubscribeEvent
+        public static void registerSoundEvents(final RegistryEvent.Register<SoundEvent> event) {
+            event.getRegistry().registerAll(
+                    PCM_PROXY
+            );
+        }
+    }
+    
 }

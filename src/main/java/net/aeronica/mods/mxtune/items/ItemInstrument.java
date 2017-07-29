@@ -17,6 +17,10 @@
 package net.aeronica.mods.mxtune.items;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.annotation.Nullable;
 
 import net.aeronica.libs.mml.core.MMLUtil;
 import net.aeronica.mods.mxtune.MXTuneMain;
@@ -28,6 +32,7 @@ import net.aeronica.mods.mxtune.status.ServerCSDManager;
 import net.aeronica.mods.mxtune.util.IVariant;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -68,12 +73,14 @@ public class ItemInstrument extends Item implements IInstrument
 
     @SideOnly(Side.CLIENT)
     @Override
-    public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems)
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems)
     {
-        for (EnumType inst : EnumType.values())
-        {
-            ItemStack subItemStack = new ItemStack(itemIn, 1, inst.getMetadata());
-            subItems.add(subItemStack);
+        if (isInCreativeTab(tab)) {
+            final List<ItemStack> items = Stream.of(EnumType.values())
+                    .map(enumType -> new ItemStack(this, 1, enumType.getMeta()))
+                    .collect(Collectors.toList());
+
+            subItems.addAll(items);
         }
     }
 
@@ -192,9 +199,8 @@ public class ItemInstrument extends Item implements IInstrument
         return 72000;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public void addInformation(ItemStack stackIn, EntityPlayer playerIn, List tooltip, boolean advanced)
+    public void addInformation(ItemStack stackIn, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
     {
         String musicTitle = SheetMusicUtil.getMusicTitle(stackIn);
         if (!musicTitle.isEmpty())

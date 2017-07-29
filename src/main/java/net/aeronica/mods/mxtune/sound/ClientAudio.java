@@ -298,11 +298,22 @@ public enum ClientAudio
         }
     }
 
+    // Copied from vanilla 1.11.2 MusicTicker class
+    private static void stopMusic()
+    {
+        if (musicTicker.currentMusic != null)
+        {
+            handler.stopSound(musicTicker.currentMusic);
+            musicTicker.currentMusic = null;
+            musicTicker.timeUntilNextMusic = 0;
+        }
+    }
+    
     private static void stopVanillaMusic()
     {
         ModLogger.info("ClientAudio stopVanillaMusic - PAUSED on %d active sessions.", playIDAudioData.mappingCount());
         setVanillaMusicPaused(true);
-        musicTicker.stopMusic();
+        stopMusic();
         setVanillaMusicTimer(Integer.MAX_VALUE);
     }
 

@@ -35,9 +35,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
@@ -111,8 +111,8 @@ public class GuiJamOverlay extends Gui
     private boolean inGuiHudAdjust() {return (mc.currentScreen != null && mc.currentScreen instanceof GuiHudAdjust);}
     
     private static HudData hudData = null;
-    private static int lastWidth = 0;
-    private static int lastHeight = 0;
+//    private static int lastWidth = 0;
+//    private static int lastHeight = 0;
     private static boolean riding;
     private static ItemStack lastItemStack = ItemStack.EMPTY;
     private static ItemStack sheetMusic;
@@ -138,7 +138,7 @@ public class GuiJamOverlay extends Gui
 //        if (hudData == null || inGuiHudAdjust() || lastWidth != width || lastHeight != height)
 //        {
             hudData = HudDataFactory.calcHudPositions((inGuiHudAdjust() ? MusicOptionsUtil.getAdjustPositionHud() : MusicOptionsUtil.getPositionHUD(player)), width, height);
-            lastWidth = width; lastHeight = height;
+//            lastWidth = width; lastHeight = height;
 //        }
                 
         if(PlacedInstrumentUtil.isRiding(player))
@@ -591,15 +591,15 @@ public class GuiJamOverlay extends Gui
         float f1 = (float)(color >> 8 & 255) / 255.0F;
         float f2 = (float)(color & 255) / 255.0F;
         Tessellator tessellator = Tessellator.getInstance();
-        VertexBuffer vertexbuffer = tessellator.getBuffer();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         GlStateManager.disableTexture2D();
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         GlStateManager.color(f, f1, f2, f3);
-        vertexbuffer.begin(7, DefaultVertexFormats.POSITION);
-        vertexbuffer.pos((double)left, (double)bottom, 0.0D).endVertex();
-        vertexbuffer.pos((double)right, (double)bottom, 0.0D).endVertex();
-        vertexbuffer.pos((double)right, (double)top, 0.0D).endVertex();
-        vertexbuffer.pos((double)left, (double)top, 0.0D).endVertex();
+        bufferBuilder.begin(7, DefaultVertexFormats.POSITION);
+        bufferBuilder.pos((double)left, (double)bottom, 0.0D).endVertex();
+        bufferBuilder.pos((double)right, (double)bottom, 0.0D).endVertex();
+        bufferBuilder.pos((double)right, (double)top, 0.0D).endVertex();
+        bufferBuilder.pos((double)left, (double)top, 0.0D).endVertex();
         tessellator.draw();
         GlStateManager.enableTexture2D();
     }

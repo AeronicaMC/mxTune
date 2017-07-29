@@ -14,7 +14,7 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.common.registry.IForgeRegistry;
+import net.minecraftforge.registries.IForgeRegistry;
 
 @SuppressWarnings("unused")
 public class ModBlocks
@@ -65,7 +65,7 @@ public class ModBlocks
     }
     
     public static void registerTileEntities() {
-        GameRegistry.registerTileEntityWithAlternatives(TilePiano.class, MXTuneMain.prependModID("tile_piano"), "mxtune_tile_instrument", "PianoTile", "TileInstrument");
+        GameRegistry.registerTileEntity(TilePiano.class, "tile_piano");
     }
 
     private static <T extends Block> T registerBlock(T block, String name) {
@@ -82,7 +82,4 @@ public class ModBlocks
         GameRegistry.registerTileEntity(tileEntityClass, MXTuneMain.prependModID(name));
     }
 
-    private static void registerTileEntity(Class<? extends TileEntity> tileEntityClass, String name, String legacyName) {
-        GameRegistry.registerTileEntityWithAlternatives(tileEntityClass, MXTuneMain.prependModID(name), MXTuneMain.prependModID(legacyName));
-    }
 }

@@ -26,14 +26,13 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
 import net.aeronica.libs.mml.core.MMLAllowedCharacters;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiPageButtonList;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
@@ -934,16 +933,16 @@ public class GuiMMLBox extends Gui
         }
 
         Tessellator tessellator = Tessellator.getInstance();
-        VertexBuffer vertexbuffer = tessellator.getBuffer();
+        BufferBuilder bufferBuilder = tessellator.getBuffer();
         GlStateManager.color(0.0F, 0.0F, 255.0F, 255.0F);
         GlStateManager.disableTexture2D();
         GlStateManager.enableColorLogic();
         GlStateManager.colorLogicOp(GlStateManager.LogicOp.OR_REVERSE);
-        vertexbuffer.begin(7, DefaultVertexFormats.POSITION);
-        vertexbuffer.pos((double) startX, (double) endY, 0.0D).endVertex();
-        vertexbuffer.pos((double) endX, (double) endY, 0.0D).endVertex();
-        vertexbuffer.pos((double) endX, (double) startY, 0.0D).endVertex();
-        vertexbuffer.pos((double) startX, (double) startY, 0.0D).endVertex();
+        bufferBuilder.begin(7, DefaultVertexFormats.POSITION);
+        bufferBuilder.pos((double) startX, (double) endY, 0.0D).endVertex();
+        bufferBuilder.pos((double) endX, (double) endY, 0.0D).endVertex();
+        bufferBuilder.pos((double) endX, (double) startY, 0.0D).endVertex();
+        bufferBuilder.pos((double) startX, (double) startY, 0.0D).endVertex();
         tessellator.draw();
         GlStateManager.disableColorLogic();
         GlStateManager.enableTexture2D();

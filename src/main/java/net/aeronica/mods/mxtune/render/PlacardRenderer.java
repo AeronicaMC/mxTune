@@ -17,9 +17,9 @@
 package net.aeronica.mods.mxtune.render;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.EntityLivingBase;
@@ -80,14 +80,14 @@ public class PlacardRenderer
             GlStateManager.scale(f11, f11, f11);
 
             Tessellator tessellator = Tessellator.getInstance();
-            VertexBuffer vertexbuffer = tessellator.getBuffer();
+            BufferBuilder bufferbuilder = tessellator.getBuffer();
 
             double w = 0.5D;
-            vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-            vertexbuffer.pos(w, 0, 0).tex(f2, f5).endVertex(); // 1
-            vertexbuffer.pos(-w, 0, 0).tex(f3, f5).endVertex(); // 2
-            vertexbuffer.pos(-w, 1, 0).tex(f3, f4).endVertex(); // 3
-            vertexbuffer.pos(w, 1, 0).tex(f2, f4).endVertex(); // 4
+            bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
+            bufferbuilder.pos(w, 0, 0).tex(f2, f5).endVertex(); // 1
+            bufferbuilder.pos(-w, 0, 0).tex(f3, f5).endVertex(); // 2
+            bufferbuilder.pos(-w, 1, 0).tex(f3, f4).endVertex(); // 3
+            bufferbuilder.pos(w, 1, 0).tex(f2, f4).endVertex(); // 4
             Tessellator.getInstance().draw();
 
             GlStateManager.enableLighting();

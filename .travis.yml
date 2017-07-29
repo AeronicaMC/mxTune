@@ -4,7 +4,7 @@ install: true
 addons:
   sonarqube:
     branches:
-      - 1.11.2
+      - 1.12
     organization: "aeronica-github"
     token:
       secure: "fUnD2awh0N0bnRnBd2IV3mapm9qpSUnaoEDdQak3HVUxcuGD7F88tj3K2DSby+z44oGJt7z0AWXWlMCC/ID/MHPT+V14fr54sF+3/nT+zxsVmqbCZiUH+s8MZoapnm50LkIDyk0Yq/31Q/swZ43Fmm3mzxpUlcyjFJyPHhG/3UlzkkaYW+8zR/joMHbk3btufik4fCFNEkhrfqEhj+cz0vD7GCFSNSrq9aiUiLZ0hp7nWehHojkPcygrnn6Ygyt7i455z8ZQ65AKYWHLkEq8AuqKdhxuIUGCxie+aSVoo3V9G2nwencwc2yOPsfBVMtijTVpZ2wpLzeMpxfqS/b8FShUTj/AtxTfNap8AvtDOR995aMm4Fihpsohn9b6crmk5LEIJ9zXPpGQr7OOzO4an4bS2/hw/VlQaz9QL383a+Qw4EZiYw2nCmSC3l7oYsoLIfbj/K0bdUIggyG2zwy70m4N/xYlRhj7IkM9b5iaskEGgKGYoqPRdnLL9X1QtFbe5k8biuU24HCI7Xu3cYVkig3bFLNvOhdhCyXCqWEOnnQEaHipkkD4RzUveibhQomJiuw0unHyhc9e/D90Zpg22bHeB9iHTZjPkCq0oIlYppymQR8C6wLh5j8E3I5G+3fKmjSTyHZI+lMoaNI6FK4I/PficbQzwPQgmXbFIzLf/wk="

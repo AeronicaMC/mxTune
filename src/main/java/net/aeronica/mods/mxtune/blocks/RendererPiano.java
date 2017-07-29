@@ -112,7 +112,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
     }
 
     @Override
-    public void renderTileEntityAt(TilePiano te, double x, double y, double z, float partialTicks, int destroyStage)
+    public void render(TilePiano te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
     {
         /** Translations for the sheet music, music rack and bench */
         facing = te.getFacing();

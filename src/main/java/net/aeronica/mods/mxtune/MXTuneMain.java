@@ -20,11 +20,9 @@ import net.aeronica.mods.mxtune.handler.GUIHandler;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.options.PlayerMusicOptionsCapability;
 import net.aeronica.mods.mxtune.proxy.IProxy;
-import net.aeronica.mods.mxtune.sound.ModSoundEvents;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.MusicTab;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -42,8 +40,6 @@ public class MXTuneMain
     public static final String DEPS = "required-after:forge@[1.9.4-12.17.0.2051,)";
     public static final String GUIFACTORY = "net.aeronica.mods.mxtune.config.ModGuiFactory";
     public static final String UPDATE = "https://gist.githubusercontent.com/Aeronica/dbc2619e0011d5bdbe7a162d0c6aa82b/raw/update.json";
-
-    public static final SoundEvent PCM_PROXY = ModSoundEvents.PCM_PROXY;
     
     @Mod.Instance(MODID)
     public static MXTuneMain instance;

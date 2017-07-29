@@ -17,13 +17,16 @@ package net.aeronica.mods.mxtune.items;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import net.aeronica.mods.mxtune.inventory.IMusic;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.World;
 
 public class ItemSheetMusic extends Item implements IMusic
 {
@@ -39,8 +42,8 @@ public class ItemSheetMusic extends Item implements IMusic
         return true;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public void addInformation(ItemStack stackIn, EntityPlayer playerIn, List tooltip, boolean advanced)
+    @Override
+    public void addInformation(ItemStack stackIn, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
     {
         if (stackIn.isEmpty()) return;
         /** Display the contents of the sheet music. */
