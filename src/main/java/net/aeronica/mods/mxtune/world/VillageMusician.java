@@ -16,7 +16,6 @@
  */
 package net.aeronica.mods.mxtune.world;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.aeronica.mods.mxtune.util.VillagerUtils;
@@ -24,24 +23,19 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerCareer;
 import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession;
 
-@ObjectHolder(MXTuneMain.MODID)
 public class VillageMusician
 {
     
-    public static VillagerProfession MUSICIAN;
-    
-    private static void init()
+    private static VillagerProfession villagerMusician()
     {
-        VillagerProfession MUSICIAN =
-                new VillagerProfession("mxtune:musician", "mxtune:textures/entity/musican.png",
-                        "minecraft:textures/entity/zombie_villager/zombie_villager.png");
-        VillagerCareer musician_career = new VillagerCareer(MUSICIAN, "mxtune:musician");
+        VillagerProfession musician = new VillagerProfession("mxtune:musician", "mxtune:textures/entity/musican.png",
+                "minecraft:textures/entity/zombie_villager/zombie_villager.png");
+        VillagerCareer musician_career = new VillagerCareer(musician, "mxtune:musician");
         VillagerUtils.addSellTrade(musician_career, new ItemStack(Items.LEATHER, 1), 1, 2);
         VillagerUtils.addSellTrade(musician_career, new ItemStack(Items.STRING, 1), 1, 2);
         VillagerUtils.addSellTrade(musician_career, new ItemStack(ModItems.ITEM_MUSIC_PAPER, 1), 1, 2);
@@ -52,16 +46,17 @@ public class VillageMusician
         VillagerUtils.addSellTrade(4, musician_career, new ItemStack(ModItems.ITEM_INSTRUMENT, 1, ItemInstrument.EnumType.ELECTRIC_GUITAR.getMeta()), 3, 6);
         VillagerUtils.addSellTrade(4, musician_career, new ItemStack(ModItems.ITEM_INSTRUMENT, 1, ItemInstrument.EnumType.HAND_CHIMES.getMeta()), 3, 6);
         VillagerUtils.addSellTrade(5, musician_career, new ItemStack(ModItems.ITEM_PIANO), 6, 10);
+        return musician;
     }
 
-//    @Mod.EventBusSubscriber(modid = MXTuneMain.MODID)
-//    public static class RegistrationHandler {
-//        @SubscribeEvent
-//        public static void registerSoundEvents(final RegistryEvent.Register<VillagerProfession> event) {
-//            init();
-//            event.getRegistry().registerAll(
-//                    MUSICIAN
-//            );
-//        }
-//    }
+    @EventBusSubscriber
+    public static class RegistrationHandler
+    {
+        @SubscribeEvent
+        public static void registerVillagers(final RegistryEvent.Register<VillagerProfession> event)
+        {
+            event.getRegistry().register(villagerMusician());
+        }
+    }
+    
 }
