@@ -16,15 +16,11 @@ import scala.Char;
 public class GuiInstrumentInventory extends GuiContainer {
 	public static final int GUI_ID = 1;
 
-	private Minecraft mc;
 	private FontRenderer fontRenderer = null;
 	int theInvItemSlot;
 
 	private static final ResourceLocation inventoryTexture = new ResourceLocation(
 			MXTuneMain.prependModID("textures/gui/instrument_inventory.png"));
-
-	/** The inventory to render on screen */
-	// private final InventoryInstrument inventory;
 
 	public GuiInstrumentInventory(ContainerInstrument containerInstrument) {
 		super(containerInstrument);
@@ -38,13 +34,33 @@ public class GuiInstrumentInventory extends GuiContainer {
 		ySize = 166;
 	}
 
+    /**
+     * Draws the screen and all the components in it including tool tips
+     */
+	@Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks)
+    {
+        this.drawDefaultBackground();
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        this.renderHoveredToolTip(mouseX, mouseY);
+    }
+
+	/**
+	 * Draw the tool tips of items in this inventory
+	 */
+	@Override
+    protected void renderHoveredToolTip(int mouseX, int mouseY)
+    {
+        if (this.getSlotUnderMouse() != null && this.getSlotUnderMouse().getHasStack())
+        {
+            this.renderToolTip(this.getSlotUnderMouse().getStack(), mouseX, mouseY);
+        }
+    }
+
 	/**
 	 * Draw the foreground layer for the GuiContainer (everything in front of
 	 * the items)
 	 */
-	// NOTE: In Forge 804, getString() is named func_135053_a()
-	// NOTE: In Forge 804, renderEngine is func_110434_K()
-	// NOTE: In Forge 804, bindTexture() is func_110577_a()
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		if (mc.player.getHeldItemMainhand() == null)
@@ -62,13 +78,13 @@ public class GuiInstrumentInventory extends GuiContainer {
 	}
 
 	/*
-	 * Don't allow the held inventory to be moved from it's slot.
+	 * Don't allow the held instrument to be moved from it's slot.
 	 * 
 	 */
 	@Override
-	protected void keyTyped(char par1, int par2) throws IOException {
-		if (Char.char2int(par1) == (this.theInvItemSlot + 49))
+	protected void keyTyped(char typedChar, int keyCode) throws IOException {
+		if (Char.char2int(typedChar) == (this.theInvItemSlot + 49))
 			return;
-		super.keyTyped(par1, par2);
+		super.keyTyped(typedChar, keyCode);
 	}
 }
