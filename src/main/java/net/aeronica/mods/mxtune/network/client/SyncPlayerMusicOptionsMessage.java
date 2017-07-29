@@ -94,7 +94,6 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {

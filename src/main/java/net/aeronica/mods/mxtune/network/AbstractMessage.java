@@ -6,8 +6,6 @@ package net.aeronica.mods.mxtune.network;
 
 import java.io.IOException;
 
-import com.google.common.base.Throwables;
-
 import io.netty.buffer.ByteBuf;
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.minecraft.entity.player.EntityPlayer;
@@ -91,7 +89,7 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
             read(new PacketBuffer(buffer));
         } catch (IOException e)
         {
-            throw Throwables.propagate(e);
+            throw new NetworkMessageRuntimeException(e);
         }
     }
 
@@ -103,7 +101,7 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
             write(new PacketBuffer(buffer));
         } catch (IOException e)
         {
-            throw Throwables.propagate(e);
+            throw new NetworkMessageRuntimeException(e);
         }
     }
 
