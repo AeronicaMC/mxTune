@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
+import javax.annotation.Nonnull;
+
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,6 +34,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.Constants;
@@ -43,6 +46,11 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 
 public class PlayerMusicOptionsCapability
 {
+    
+    @CapabilityInject(IPlayerMusicOptions.class)
+    @Nonnull
+    private static Capability<IPlayerMusicOptions> MUSIC_OPTIONS;
+    
     public static void register()
     {
         CapabilityManager.INSTANCE.register(IPlayerMusicOptions.class, new Storage(), new Factory());
@@ -58,29 +66,29 @@ public class PlayerMusicOptionsCapability
             {
                 event.addCapability(new ResourceLocation(MXTuneMain.MODID, "IPlayerMusicOptions"), new ICapabilitySerializable<NBTTagCompound>()
                 {
-                    final IPlayerMusicOptions optionsInst = MusicOptionsUtil.MUSIC_OPTIONS.getDefaultInstance();
+                    final IPlayerMusicOptions optionsInst = MUSIC_OPTIONS.getDefaultInstance();
 
                     @Override
                     public boolean hasCapability(Capability<?> capability, EnumFacing facing)
                     {
-                        return capability == MusicOptionsUtil.MUSIC_OPTIONS;
+                        return capability == MUSIC_OPTIONS;
                     }
 
                     @SuppressWarnings("unchecked")
                     @Override
                     public <T> T getCapability(Capability<T> capability, EnumFacing facing)
                     {
-                        return capability == MusicOptionsUtil.MUSIC_OPTIONS ? (T) optionsInst : null;
+                        return capability == MUSIC_OPTIONS ? (T) optionsInst : null;
                     }
 
                     public NBTTagCompound serializeNBT()
                     {
-                        return (NBTTagCompound) MusicOptionsUtil.MUSIC_OPTIONS.getStorage().writeNBT(MusicOptionsUtil.MUSIC_OPTIONS, optionsInst, null);
+                        return (NBTTagCompound) MUSIC_OPTIONS.getStorage().writeNBT(MUSIC_OPTIONS, optionsInst, null);
                     }
 
                     public void deserializeNBT(NBTTagCompound nbt)
                     {
-                        MusicOptionsUtil.MUSIC_OPTIONS.getStorage().readNBT(MusicOptionsUtil.MUSIC_OPTIONS, optionsInst, null, nbt);
+                        MUSIC_OPTIONS.getStorage().readNBT(MUSIC_OPTIONS, optionsInst, null, nbt);
                     }
                 });
             }
@@ -92,8 +100,8 @@ public class PlayerMusicOptionsCapability
             if(event.isWasDeath())
             {
                 EntityPlayer player = event.getEntityPlayer();
-                IPlayerMusicOptions dead = event.getOriginal().getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
-                IPlayerMusicOptions live = event.getEntityPlayer().getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
+                IPlayerMusicOptions dead = event.getOriginal().getCapability(MUSIC_OPTIONS, null);
+                IPlayerMusicOptions live = event.getEntityPlayer().getCapability(MUSIC_OPTIONS, null);
                 live.setSParams(player, dead.getSParam1(), dead.getSParam2(), dead.getSParam3());
                 live.setHudOptions(player, dead.isHudDisabled(), dead.getPositionHud(), dead.getSizeHud());
                 live.setMuteOption(player, dead.getMuteOption());
@@ -107,7 +115,7 @@ public class PlayerMusicOptionsCapability
         {
             if (event.getEntity() instanceof EntityPlayerMP)
             {
-                IPlayerMusicOptions inst = ((EntityPlayerMP) event.getEntity()).getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
+                IPlayerMusicOptions inst = ((EntityPlayerMP) event.getEntity()).getCapability(MUSIC_OPTIONS, null);
                 inst.syncAll((EntityPlayer) event.getEntity());
             }
         }
@@ -115,7 +123,7 @@ public class PlayerMusicOptionsCapability
         @SubscribeEvent
         public void onPlayerLoggedInEvent(PlayerLoggedInEvent event)
         {
-            IPlayerMusicOptions inst = event.player.getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
+            IPlayerMusicOptions inst = event.player.getCapability(MUSIC_OPTIONS, null);
             inst.syncAll(event.player);
         }
 

@@ -25,21 +25,28 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.options.IPlayerMusicOptions;
-import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.options.PlayerLists;
 import net.aeronica.mods.mxtune.options.PlayerMusicDefImpl;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPlayerMusicOptionsMessage>
 {
-    
+
+    @CapabilityInject(IPlayerMusicOptions.class)
+    @Nonnull
+    private static Capability<IPlayerMusicOptions> MUSIC_OPTIONS;
+
     byte propertyID;
     NBTTagCompound data;
     boolean disableHud;
@@ -63,7 +70,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         {
         case PlayerMusicDefImpl.SYNC_ALL:
             this.data = new NBTTagCompound();
-            this.data = (NBTTagCompound) MusicOptionsUtil.MUSIC_OPTIONS.writeNBT(inst, null);
+            this.data = (NBTTagCompound) MUSIC_OPTIONS.writeNBT(inst, null);
             break;
 
         case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
@@ -161,11 +168,11 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        final IPlayerMusicOptions instance = player.getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null);
+        final IPlayerMusicOptions instance = player.getCapability(MUSIC_OPTIONS, null);
         switch (this.propertyID)
         {
         case PlayerMusicDefImpl.SYNC_ALL:
-            MusicOptionsUtil.MUSIC_OPTIONS.readNBT(instance, null, this.data);
+            MUSIC_OPTIONS.readNBT(instance, null, this.data);
             break;
         case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
             instance.setHudOptions(disableHud, positionHud, sizeHud);

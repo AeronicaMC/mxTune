@@ -31,7 +31,7 @@ public class MusicOptionsUtil
 
     @CapabilityInject(IPlayerMusicOptions.class)
     @Nonnull
-    public static Capability<IPlayerMusicOptions> MUSIC_OPTIONS;
+    private static Capability<IPlayerMusicOptions> MUSIC_OPTIONS;
     
     private MusicOptionsUtil() {}
     

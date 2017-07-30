@@ -19,14 +19,22 @@ package net.aeronica.mods.mxtune.options;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.SyncPlayerMusicOptionsMessage;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
 
 public class PlayerMusicDefImpl implements IPlayerMusicOptions
 {
+    @CapabilityInject(IPlayerMusicOptions.class)
+    @Nonnull
+    private static Capability<IPlayerMusicOptions> MUSIC_OPTIONS;
+    
     /** Music Options*/
     private int muteOption;
     /** HUD Options */
@@ -162,7 +170,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     {
         if (playerIn != null && !playerIn.getEntityWorld().isRemote)
         {
-            PacketDispatcher.sendTo(new SyncPlayerMusicOptionsMessage(playerIn.getCapability(MusicOptionsUtil.MUSIC_OPTIONS, null), propertyID), (EntityPlayerMP) playerIn);
+            PacketDispatcher.sendTo(new SyncPlayerMusicOptionsMessage(playerIn.getCapability(MUSIC_OPTIONS, null), propertyID), (EntityPlayerMP) playerIn);
         }
     }
 }
