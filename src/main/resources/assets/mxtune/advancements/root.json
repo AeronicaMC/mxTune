@@ -1,0 +1,33 @@
+{
+    "display":
+    {
+        "icon": {
+            "item": "mxtune:item_sheetmusic"
+        },
+        "title": {
+            "translate": "advancements.mxtune.root.title"
+        },
+        "description": {
+            "translate": "advancements.mxtune.root.description"
+        },
+        "background": "mxtune:textures/gui/advancements/backgrounds/music_paper.png",
+        "show_toast": true,
+        "announce_to_chat": true
+    },
+    "criteria":
+    {
+        "paper_heaven": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "minecraft:paper"
+                    }
+                ]
+            }
+        }
+    },
+    "rewards": {
+        "recipes": [ "mxtune:item_musicpaper" ] 
+    }
+}

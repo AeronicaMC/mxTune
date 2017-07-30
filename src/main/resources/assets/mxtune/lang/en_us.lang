@@ -1,5 +1,6 @@
 < en_US.lang - English localization file >
-
+advancements.mxtune.root.title=mxTune
+advancements.mxtune.root.description=Making Music Starts with Paper
 item.mxtune:block_piano.name=Spinet Piano
 item.mxtune:item_musicpaper.name=Music Paper
 item.mxtune:item_musicpaper.help=Right click to enter MML
