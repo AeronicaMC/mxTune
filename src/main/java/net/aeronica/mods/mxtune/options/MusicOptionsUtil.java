@@ -18,7 +18,7 @@ package net.aeronica.mods.mxtune.options;
 
 import java.util.List;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
@@ -30,15 +30,14 @@ public class MusicOptionsUtil
 {
 
     @CapabilityInject(IPlayerMusicOptions.class)
-    @Nullable
-    public static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = null;
+    @Nonnull
+    public static Capability<IPlayerMusicOptions> MUSIC_OPTIONS;
     
     private MusicOptionsUtil() {}
     
     public static void setHudOptions(EntityPlayer playerIn, boolean disableHud, int positionHud, float sizeHud)
     {
-        if (MUSIC_OPTIONS != null)
-            playerIn.getCapability(MUSIC_OPTIONS, null).setHudOptions(playerIn, disableHud, positionHud, sizeHud);
+        playerIn.getCapability(MUSIC_OPTIONS, null).setHudOptions(playerIn, disableHud, positionHud, sizeHud);
     }
 
     public static boolean isHudDisabled(EntityPlayer playerIn)
