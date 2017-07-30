@@ -35,10 +35,12 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessage>
 {
+    
     int muteOption;
     List<PlayerLists> blackList;
     List<PlayerLists> whiteList;
     byte[] byteBuffer = null;
+    boolean canProcess = true;
     
     public MusicOptionsMessage() {/* Required by the PacketDispacher */}
     
@@ -70,6 +72,7 @@ public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessa
             in.close();
         } catch (ClassNotFoundException | IOException e)
         {
+            canProcess = false;
             ModLogger.error(e);
         }
 
@@ -107,8 +110,11 @@ public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessa
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        MusicOptionsUtil.setMuteOption(player, muteOption);
-        MusicOptionsUtil.setBlackList(player, blackList);
-        MusicOptionsUtil.setWhiteList(player, whiteList);
+        if (canProcess)
+        {
+            MusicOptionsUtil.setMuteOption(player, muteOption);
+            MusicOptionsUtil.setBlackList(player, blackList);
+            MusicOptionsUtil.setWhiteList(player, whiteList);
+        }
     }
 }
