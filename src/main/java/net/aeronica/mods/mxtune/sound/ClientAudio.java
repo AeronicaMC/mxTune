@@ -39,6 +39,7 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
+import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentHashMap.KeySetView;
@@ -207,7 +208,16 @@ public enum ClientAudio
         {
             AudioData audioData = playIDAudioData.get(playID);
             if (audioData.isClientPlayer())
+            {
                 notify(playID);
+                try
+                {
+                    audioData.getAudioStream().close();
+                } catch (IOException e)
+                {
+                    ModLogger.error(e);
+                }
+            }
             playIDAudioData.remove(playID);
         }
     }
