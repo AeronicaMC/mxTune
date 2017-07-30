@@ -40,7 +40,7 @@ public class PlacardRenderer
 
     private final ResourceLocation placardTextures = new ResourceLocation(MXTuneMain.prependModID("textures/gui/status_widgets.png"));
     private final float PLACARD_RANGE = 32.0f;
-    private int index = 0;
+    private double index = 0;
 
     private PlacardRenderer() {}
 

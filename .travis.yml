@@ -14,7 +14,6 @@ before_install:
 - chmod +x gradlew
 script:
 - "./gradlew clean build sonarqube"
-dist: precise
 cache:
   directories:
   - "$HOME/.m2/repository"
