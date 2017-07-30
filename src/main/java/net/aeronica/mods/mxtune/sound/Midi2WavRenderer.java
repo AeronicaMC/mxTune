@@ -118,14 +118,8 @@ public class Midi2WavRenderer
         Map<String, Object> p = new HashMap<String, Object>();
         p.put("interpolation", "sinc");
         p.put("max polyphony", "1024");
-        AudioInputStream stream = null;
-        try
-        {
-            stream = synth.openStream(format, p);
-        } finally {
-            // nothing to do - SonarCloud
-        }
-        
+        AudioInputStream stream = synth.openStream(format, p);
+
         // Play Sequence into AudioSynthesizer Receiver.
         Receiver receiver = synth.getReceiver();
         double total = send(sequence, receiver);
@@ -167,13 +161,7 @@ public class Midi2WavRenderer
         Map<String, Object> p = new HashMap<String, Object>();
         p.put("interpolation", "sinc");
         p.put("max polyphony", "1024");
-        AudioInputStream outputStream = null;
-        try
-        {
-            outputStream = aSynth.openStream(format, p);
-        } finally {
-            // nothing to do - SonarCloud
-        }
+        AudioInputStream outputStream = aSynth.openStream(format, p);
 
         Soundbank defsbk = aSynth.getDefaultSoundbank();
         if (defsbk != null)
