@@ -117,7 +117,7 @@ processResources {
 sonarqube {
     properties {  
         property "sonar.projectName", "mxTune"
-        property "sonar.host.url", "https://sonarqube.com"
+        property "sonar.host.url", "https://sonarcloud.io"
         property "sonar.branch", "${config.projectBranch}"
         property "sonar.coverage.exclusions", "**/*"
     }

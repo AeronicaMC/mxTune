@@ -2,7 +2,7 @@ language: java
 sudo: false
 install: true
 addons:
-  sonarqube:
+  sonarcloud:
     branches:
       - 1.12
     organization: "aeronica-github"
