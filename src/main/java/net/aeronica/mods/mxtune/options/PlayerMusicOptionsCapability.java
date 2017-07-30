@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
-import javax.annotation.Nonnull;
-
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -48,8 +46,7 @@ public class PlayerMusicOptionsCapability
 {
     
     @CapabilityInject(IPlayerMusicOptions.class)
-    @Nonnull
-    private static Capability<IPlayerMusicOptions> MUSIC_OPTIONS;
+    private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = null;
     
     public static void register()
     {

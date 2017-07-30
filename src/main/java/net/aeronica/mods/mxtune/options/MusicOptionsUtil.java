@@ -18,8 +18,6 @@ package net.aeronica.mods.mxtune.options;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IStringSerializable;
@@ -30,8 +28,7 @@ public class MusicOptionsUtil
 {
 
     @CapabilityInject(IPlayerMusicOptions.class)
-    @Nonnull
-    private static Capability<IPlayerMusicOptions> MUSIC_OPTIONS;
+    private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = null;
     
     private MusicOptionsUtil() {}
     

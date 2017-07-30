@@ -25,8 +25,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.options.IPlayerMusicOptions;
 import net.aeronica.mods.mxtune.options.PlayerLists;
@@ -44,8 +42,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
 {
 
     @CapabilityInject(IPlayerMusicOptions.class)
-    @Nonnull
-    private static Capability<IPlayerMusicOptions> MUSIC_OPTIONS;
+    private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = null;
 
     byte propertyID;
     NBTTagCompound data;

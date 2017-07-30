@@ -19,8 +19,6 @@ package net.aeronica.mods.mxtune.options;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.SyncPlayerMusicOptionsMessage;
 import net.minecraft.entity.EntityLivingBase;
@@ -32,8 +30,7 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 public class PlayerMusicDefImpl implements IPlayerMusicOptions
 {
     @CapabilityInject(IPlayerMusicOptions.class)
-    @Nonnull
-    private static Capability<IPlayerMusicOptions> MUSIC_OPTIONS;
+    private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = null;
     
     /** Music Options*/
     private int muteOption;
