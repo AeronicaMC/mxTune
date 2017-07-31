@@ -1,0 +1,30 @@
+{
+    "display":
+    {
+        "icon": {
+            "item": "mxtune:block_piano"
+        },
+        "title": {
+            "translate": "advancements.mxtune.music.root.title"
+        },
+        "description": {
+            "translate": "advancements.mxtune.music.root.description"
+        },
+        "background": "mxtune:textures/gui/advancements/backgrounds/music.png",
+        "show_toast": false,
+        "announce_to_chat": false
+    },
+    "criteria":
+    {
+        "needs_reeds": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "reeds"
+                    }
+                ]
+            }
+        }
+    }
+}
