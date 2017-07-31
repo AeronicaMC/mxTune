@@ -1,6 +1,10 @@
 < ko_KR.lang - Korean localization file >
-advancements.mxtune.root.title=mxTune
-advancements.mxtune.root.description=Making Music Starts with Paper
+advancements.mxtune.music.root.title=mxTune
+advancements.mxtune.music.root.description=Making Music Starts with Paper
+advancements.mxtune.music.craft_paper.title=It's Black
+advancements.mxtune.music.craft_paper.description=You need get your hands dirty
+advancements.mxtune.music.write_sheetmusic.title=Write Music
+advancements.mxtune.music.write_sheetmusic.description=Put pen to the paper
 item.mxtune:block_piano.name=스피넷 피아노
 item.mxtune:item_musicpaper.name=악보 용지
 item.mxtune:item_musicpaper.help=MML을 입력하려면 마우스 오른쪽 버튼을 클릭하십시오

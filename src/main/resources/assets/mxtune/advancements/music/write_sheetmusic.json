@@ -1,0 +1,26 @@
+{
+    "display": {
+        "icon": {
+            "item": "mxtune:item_sheetmusic"
+        },
+        "title": {
+            "translate": "advancements.mxtune.music.write_sheetmusic.title"
+        },
+        "description": {
+            "translate": "advancements.mxtune.music.write_sheetmusic.description"
+        }
+    },
+    "parent": "mxtune:music/craft_paper",
+    "criteria": {
+        "write_sheetmusic": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "mxtune:item_sheetmusic"
+                    }
+                ]
+            }
+        }
+    }
+}

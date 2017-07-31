@@ -1,0 +1,32 @@
+{
+  "parent": "mxtune:recipes/root",
+  "rewards": {
+    "recipes": [
+      "mxtune:item_musicpaper"
+    ]
+  },
+  "criteria": {
+    "has_reeds": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:reeds"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "mxtune:item_musicpaper"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_reeds",
+      "has_the_recipe"
+    ]
+  ]
+}

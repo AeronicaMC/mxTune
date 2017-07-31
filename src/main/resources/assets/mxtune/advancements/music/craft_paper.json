@@ -1,0 +1,27 @@
+{
+    "display": {
+        "icon": {
+            "item": "mxtune:item_musicpaper"
+        },
+        "title": {
+            "translate": "advancements.mxtune.music.craft_paper.title"
+        },
+        "description": {
+            "translate": "advancements.mxtune.music.craft_paper.description"
+        }
+    },
+    "parent": "mxtune:music/root",
+    "criteria": {
+        "get_black_dye": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "dye",
+                        "data": 0
+                    }
+                ]
+            }
+        }
+    }
+}

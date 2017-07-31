@@ -1,6 +1,10 @@
 < en_US.lang - English localization file >
-advancements.mxtune.root.title=mxTune
-advancements.mxtune.root.description=Making Music Starts with Paper
+advancements.mxtune.music.root.title=mxTune
+advancements.mxtune.music.root.description=Making Music Starts with Paper
+advancements.mxtune.music.craft_paper.title=Paper and Ink
+advancements.mxtune.music.craft_paper.description=You need to get your hands dirty
+advancements.mxtune.music.write_sheetmusic.title=Write Music
+advancements.mxtune.music.write_sheetmusic.description=Put pen to the paper
 item.mxtune:block_piano.name=Spinet Piano
 item.mxtune:item_musicpaper.name=Music Paper
 item.mxtune:item_musicpaper.help=Right click to enter MML
