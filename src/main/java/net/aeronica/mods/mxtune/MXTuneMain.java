@@ -24,14 +24,18 @@ import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.MusicTab;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
-@Mod(modid = MXTuneMain.MODID, name = MXTuneMain.MODNAME, version = MXTuneMain.VERSION, dependencies = MXTuneMain.DEPS, guiFactory = MXTuneMain.GUIFACTORY, updateJSON = MXTuneMain.UPDATE)
+@Mod(modid = MXTuneMain.MODID, name = MXTuneMain.MODNAME, version = MXTuneMain.VERSION,
+     dependencies = MXTuneMain.DEPS,
+     guiFactory = MXTuneMain.GUIFACTORY, updateJSON = MXTuneMain.UPDATE,
+     certificateFingerprint = "999640c365a8443393a1a21df2c0ede9488400e9")
+
 public class MXTuneMain
 {
     public static final String MODID = "mxtune";
@@ -49,7 +53,7 @@ public class MXTuneMain
 
     public static final CreativeTabs TAB_MUSIC = new MusicTab(CreativeTabs.getNextID(), MODNAME);
     
-    @EventHandler
+    @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
         ModLogger.setLogger(event.getModLog());
@@ -63,7 +67,7 @@ public class MXTuneMain
         proxy.registerRenderers();
     }
 
-    @EventHandler
+    @Mod.EventHandler
     public void init(FMLInitializationEvent event)
     {
         proxy.init(event);
@@ -73,7 +77,7 @@ public class MXTuneMain
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, GUIHandler.getInstance());
     }
 
-    @EventHandler
+    @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event)
     {
         proxy.postInit(event);
@@ -81,6 +85,11 @@ public class MXTuneMain
         proxy.registerHUD();
     }
 
+    @Mod.EventHandler
+    public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
+        System.out.printf("*** [mxTune] Invalid fingerprint detected! ***\n");
+    }
+    
     /**
      * Prepend the name with the mod ID, suitable for ResourceLocations such as
      * textures.
