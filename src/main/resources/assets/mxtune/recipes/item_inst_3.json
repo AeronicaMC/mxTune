@@ -4,13 +4,13 @@
     "data": 3
   },
   "pattern": [
-    "C",
-    "C",
-    "C"
+    "X",
+    "X",
+    "X"
   ],
   "type": "minecraft:crafting_shaped",
   "key": {
-    "C": {
+    "X": {
       "item": "minecraft:clay_ball"
     }
   }

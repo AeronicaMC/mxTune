@@ -4,9 +4,9 @@
     "data": 19
   },
   "pattern": [
-    "B",
-    "P",
-    "P"
+    " B ",
+    " P ",
+    " P "
   ],
   "type": "forge:ore_shaped",
   "key": {
