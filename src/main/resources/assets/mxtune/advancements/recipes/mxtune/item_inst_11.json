@@ -1,0 +1,43 @@
+{
+  "parent": "mxtune:recipes/root",
+  "rewards": {
+    "recipes": [
+      "mxtune:item_inst_11"
+    ]
+  },
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "mxtune:item_inst_11"
+      }
+    },
+    "has_bone": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:bone"
+          }
+        ]
+      }
+    },
+    "has_planks": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:planks"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_bone",
+      "has_planks"
+    ]
+  ]
+}

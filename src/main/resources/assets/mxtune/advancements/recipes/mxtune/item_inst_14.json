@@ -1,0 +1,44 @@
+{
+  "parent": "mxtune:recipes/root",
+  "rewards": {
+    "recipes": [
+      "mxtune:item_inst_14"
+    ]
+  },
+  "criteria": {
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "mxtune:item_inst_14"
+      }
+    },
+    "has_whistle": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "mxtune:item_inst",
+            "data": 3
+          }
+        ]
+      }
+    },
+    "has_gold_nugget": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "minecraft:gold_nugget"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_whistle",
+      "has_gold_nugget"
+    ]
+  ]
+}
