@@ -1,3 +1,7 @@
+2017-08-02: mxtune-1.12-0.5.0-beta.1
+Initial port to Minecraft and Forge 1.12. JAR is now signed. Now uses JSONS for Recipes. Added a simple Advancement Tab for mxTune.
+----
+
 2017-07-27: mxtune-1.11.2-0.4.0-dev.25
 Fixes:
 Issue #2 Extraneous input '&' after note length command: Now allows the tie of a tied note to exist before or after an interspersed command e.g. "c.&c16l64&c" or "c.&c16&l64c" 
