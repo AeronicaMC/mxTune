@@ -4,16 +4,16 @@
     "data": 5
   },
   "pattern": [
-    " P ",
-    " R ",
-    " R "
+    " # ",
+    " X ",
+    " X "
   ],
   "type": "forge:ore_shaped",
   "key": {
-    "P": {
+    "#": {
       "item": "#PLANKWOOD"
     },
-    "R": {
+    "X": {
       "item": "#SUGARCANE"
     }
   }
