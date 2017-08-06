@@ -49,15 +49,15 @@ public class GuiLink extends GuiButton
     {
         if (this.visible)
         {
-            FontRenderer fontrenderer = mc.fontRenderer;
+            FontRenderer fontrenderer = mc.fontRendererObj;
             ITextComponent formattedLink = ForgeHooks.newChatWithLinks(this.displayString, false);
             int stringWidth = fontrenderer.getStringWidth(formattedLink.getFormattedText());
             if (this.alignText.equals(AlignText.Left))
-                this.drawString(fontrenderer, formattedLink.getFormattedText(), this.x, this.y, 0xFF0000);
+                this.drawString(fontrenderer, formattedLink.getFormattedText(), this.xPosition, this.yPosition, 0xFF0000);
             else if (this.alignText.equals(AlignText.Center))
-                this.drawString(fontrenderer, formattedLink.getFormattedText(), this.x - stringWidth + stringWidth / 2, this.y, 0xFF0000);
+                this.drawString(fontrenderer, formattedLink.getFormattedText(), this.xPosition - stringWidth + stringWidth / 2, this.yPosition, 0xFF0000);
             else if (this.alignText.equals(AlignText.Right))
-                this.drawString(fontrenderer, formattedLink.getFormattedText(), this.x - stringWidth, this.y, 0xFF0000);
+                this.drawString(fontrenderer, formattedLink.getFormattedText(), this.xPosition - stringWidth, this.yPosition, 0xFF0000);
         }
     }
 
@@ -65,16 +65,16 @@ public class GuiLink extends GuiButton
     public boolean mousePressed(Minecraft mc, int mouseX, int mouseY)
     {
         boolean result = false;
-        FontRenderer fontrenderer = mc.fontRenderer;
+        FontRenderer fontrenderer = mc.fontRendererObj;
         ITextComponent formattedLink = ForgeHooks.newChatWithLinks(this.displayString, false);
         int stringWidth = fontrenderer.getStringWidth(formattedLink.getFormattedText());
         int stringHeight = fontrenderer.FONT_HEIGHT;
         if (this.alignText.equals(AlignText.Left))
-            result =  this.enabled && this.visible && mouseX >= this.x && mouseX < this.x + stringWidth && mouseY >= this.y && mouseY < this.y + stringHeight;
+            result =  this.enabled && this.visible && mouseX >= this.xPosition && mouseX < this.xPosition + stringWidth && mouseY >= this.yPosition && mouseY < this.yPosition + stringHeight;
         else if (this.alignText.equals(AlignText.Center))
-            result =  this.enabled && this.visible && mouseX >= this.x - stringWidth / 2 && mouseX < this.x + stringWidth / 2 && mouseY >= this.y && mouseY < this.y + stringHeight;
+            result =  this.enabled && this.visible && mouseX >= this.xPosition - stringWidth / 2 && mouseX < this.xPosition + stringWidth / 2 && mouseY >= this.yPosition && mouseY < this.yPosition + stringHeight;
         else if (this.alignText.equals(AlignText.Right))
-            result =  this.enabled && this.visible && mouseX >= this.x - stringWidth && mouseX < this.x && mouseY >= this.y && mouseY < this.y + stringHeight;
+            result =  this.enabled && this.visible && mouseX >= this.xPosition - stringWidth && mouseX < this.xPosition && mouseY >= this.yPosition && mouseY < this.yPosition + stringHeight;
             
         return result;
     }
