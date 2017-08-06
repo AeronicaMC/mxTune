@@ -35,7 +35,7 @@ public class VillageMusician
     public static void init()
     {
         VillagerProfession musician =
-                new VillagerProfession("mxtune:musician", "mxtune:textures/entity/musican.png",
+                new VillagerProfession("mxtune:musician", "mxtune:textures/entity/musician.png",
                         "minecraft:textures/entity/zombie_villager/zombie_villager.png");
         VillagerCareer musician_career = new VillagerCareer(musician, "mxtune:musician");
         VillagerUtils.addSellTrade(musician_career, new ItemStack(Items.LEATHER, 1), 1, 2);
