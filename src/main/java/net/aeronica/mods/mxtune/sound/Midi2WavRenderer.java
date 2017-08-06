@@ -69,7 +69,7 @@ public class Midi2WavRenderer
      * @throws InvalidMidiDataException
      * @throws IOException
      */
-    public AudioInputStream createPCMStream(Sequence sequence, Integer[] patches, AudioFormat format) throws MidiUnavailableException, InvalidMidiDataException, IOException
+    public AudioInputStream createPCMStream(Sequence sequence, AudioFormat format) throws MidiUnavailableException, InvalidMidiDataException, IOException
     {    
         Soundbank soundbank = MIDISystemUtil.getMXTuneSoundBank();               
         AudioSynthesizer aSynth = findAudioSynthesizer();

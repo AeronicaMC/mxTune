@@ -35,7 +35,7 @@ public class MMLToMIDI extends MMLTransformBase
     public List<Integer> getPackedPresets()
     {
         List<Integer> packedPresetList = new ArrayList<Integer>();
-        for (Integer i: packedPresets) packedPresetList.add(i);
+        packedPresetList.addAll(packedPresets);
         return packedPresetList;
     }
 
