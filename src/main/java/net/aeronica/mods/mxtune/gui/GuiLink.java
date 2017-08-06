@@ -52,13 +52,21 @@ public class GuiLink extends GuiButton
             FontRenderer fontrenderer = mc.fontRendererObj;
             ITextComponent formattedLink = ForgeHooks.newChatWithLinks(this.displayString, false);
             int stringWidth = fontrenderer.getStringWidth(formattedLink.getFormattedText());
-            if (this.alignText.equals(AlignText.Left))
-                this.drawString(fontrenderer, formattedLink.getFormattedText(), this.xPosition, this.yPosition, 0xFF0000);
-            else if (this.alignText.equals(AlignText.Center))
-                this.drawString(fontrenderer, formattedLink.getFormattedText(), this.xPosition - stringWidth + stringWidth / 2, this.yPosition, 0xFF0000);
-            else if (this.alignText.equals(AlignText.Right))
-                this.drawString(fontrenderer, formattedLink.getFormattedText(), this.xPosition - stringWidth, this.yPosition, 0xFF0000);
-        }
+            int alignX = this.xPosition;
+            switch (this.alignText)
+            {
+            case Right:
+                alignX = this.xPosition - stringWidth;
+                break;
+            case Center:
+                alignX = this.xPosition - stringWidth + stringWidth / 2;
+                break;
+            case Left:
+                break;
+            default:
+            }
+            this.drawString(fontrenderer, formattedLink.getFormattedText(), alignX, this.yPosition, 0xFF0000);
+         }
     }
 
     @Override
