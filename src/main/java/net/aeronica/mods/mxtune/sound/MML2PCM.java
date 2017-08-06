@@ -119,9 +119,7 @@ public class MML2PCM
         walker.walk(mmlTrans, tree);
         /** ANTLR4 MML Parser END */
 
-        Integer[] packedPresets = new Integer[mmlTrans.getPackedPresets().size()];
-        mmlTrans.getPackedPresets().toArray(packedPresets);
-        for (int packedPreset: packedPresets)
+        for (int packedPreset: mmlTrans.getPackedPresets())
         {
             Patch patchPreset = MMLUtil.packetPreset2Patch(packedPreset);
             ModLogger.info("MML2PCM preset: bank: %d, program %d", patchPreset.getBank(), patchPreset.getProgram());       
@@ -130,7 +128,7 @@ public class MML2PCM
         try
         {
             Midi2WavRenderer mw = new Midi2WavRenderer();
-            AudioInputStream ais = mw.createPCMStream(mmlTrans.getSequence(), packedPresets, ClientAudio.getAudioFormat(playID));
+            AudioInputStream ais = mw.createPCMStream(mmlTrans.getSequence(), ClientAudio.getAudioFormat(playID));
             ClientAudio.setPlayIDAudioStream(playID, ais);
         } catch (MidiUnavailableException | InvalidMidiDataException | IOException e)
         {
