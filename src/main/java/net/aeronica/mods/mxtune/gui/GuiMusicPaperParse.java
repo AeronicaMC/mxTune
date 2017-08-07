@@ -146,8 +146,9 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
 
         for (Instrument in : instrumentCache)
         {
-            instListWidth = Math.max(instListWidth, getFontRenderer().getStringWidth(in.getName()) + 10);
-            instListWidth = Math.max(instListWidth, getFontRenderer().getStringWidth(in.getName()) + 5 + this.getFontRenderer().FONT_HEIGHT + 2);
+            int stringWidth = getFontRenderer().getStringWidth(I18n.format(in.getName()));
+            instListWidth = Math.max(instListWidth, stringWidth + 10);
+            instListWidth = Math.max(instListWidth, stringWidth + 5 + this.getFontRenderer().FONT_HEIGHT + 2);
         }
         instListWidth = Math.min(instListWidth, 150);
 
@@ -482,7 +483,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
             }
         }
     }
-
+    
     /** MML Parsing */
     private void parseMML(String mml)
     {
@@ -695,7 +696,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
             FontRenderer font = this.parent.getFontRenderer();
             Instrument ins = inst.get(slotIdx);
 
-            String s = font.trimStringToWidth(ins.getName(), listWidth - 10);
+            String s = font.trimStringToWidth(I18n.format(ins.getName()), listWidth - 10);
             /** light Blue */
             font.drawStringWithShadow(s, (float)this.left + 3, slotTop, 0xADD8E6);
         }
