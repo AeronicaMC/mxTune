@@ -33,10 +33,37 @@ item.mxtune:item_inst.orchestra.name=오케스트라 타악기 세트
 item.mxtune:item_converter.name=음악 악보 변환기
 item.mxtune:item_instrument.help=Shift + 오른쪽 클릭으로 음악 삽입 / 제거
 
+sf.mxtune.m.lute=M 류트
+sf.mxtune.m.ukulele=M 우쿨렐레
+sf.mxtune.m.mandolin=M 만돌린
+sf.mxtune.m.whistle=M 휘파람
+sf.mxtune.m.roncador=M 론카 도라
+sf.mxtune.m.flute=M 플루트
+sf.mxtune.m.chalameu=M 칼루 뮤
+sf.mxtune.m.tuba=M 튜바
+sf.mxtune.m.lyre=M 거문고
+sf.mxtune.m.eguitar=M 전자 기타
+sf.mxtune.m.piano=M 피아노
+sf.mxtune.m.violin=M 바이올린
+sf.mxtune.m.cello=M 첼로
+sf.mxtune.m.harp=M 하프
+sf.mxtune.t.flute=튜닝 된 플루트
+sf.mxtune.t.whistle=조정 휘슬
+sf.mxtune.m.bdrum=M 베이스 드럼
+sf.mxtune.m.snare=M 작은 북
+sf.mxtune.m.cymbals=M 심벌즈
+sf.mxtune.m.hchime=M 손 차임 스
+sf.mxtune.g.hrpsicd=하프시 코드
+sf.mxtune.g.chrpsicd=결합 된 하프시 코드
+sf.mxtune.g.trumpet=트럼펫
+sf.mxtune.g.recorder=리코더
+sf.mxtune.p.stdset=표준 타악기 세트
+sf.mxtune.p.orchset=오케스트라 타악기 세트
+
 mxtune.instrumentInventory.empty=음악 악보가 없음
 
 soundCategory.mxtune=mxTune
-mxtune.subtitle.pcm-proxy=Music Plays
+mxtune.subtitle.pcm-proxy=음악 소리
 
 mxtune.configgui.ctgy.general.tooltip=mxTune General Settings
 mxtune.configgui.ctgy.general=mxTune General Settings
@@ -61,8 +88,8 @@ soloPlayWhileWalking.tooltip="B:soloPlayWhileWalking=true" is Deprecated! Please
 mxtune.configgui.ctgy.client.tooltip=mxTune Client Settings
 mxtune.configgui.ctgy.client=mxTune Client Settings
 
-mxtune.key.openParty=Open Party
-mxtune.key.openMusicOptions=Music Options
+mxtune.key.openParty=열린 그룹
+mxtune.key.openMusicOptions=음악 옵션
 
 mxtune.gui.button.play=연주
 mxtune.gui.button.stop=중지
@@ -91,7 +118,6 @@ mxtune.gui.musicPaperParse.enterMML=MML을 클립 보드 형식으로 붙여 넣
 mxtune.gui.musicPaperParse.labelInstruments=악기들
 mxtune.gui.musicPaperParse.labelTitleMML=제목 / MML@:
 
-< Chat messages >
 mxtune.chat.msu.midiAvailable=음악을 연주할 준비가 되었습니다.
 mxtune.chat.msu.midiNotAvailable=미디 시스템 실패! 음악을 연주할 수 없어요!
 mxtune.chat.msu.suggestion.01=JVM 옵션의 메모리를 늘려보거나 다른 모드를 줄여서 용량을 확보해 보세요.
