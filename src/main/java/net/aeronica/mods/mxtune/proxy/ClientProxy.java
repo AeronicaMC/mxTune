@@ -17,9 +17,7 @@
 package net.aeronica.mods.mxtune.proxy;
 
 import net.aeronica.mods.mxtune.gui.GuiJamOverlay;
-import net.aeronica.mods.mxtune.handler.ClientEventHandler;
 import net.aeronica.mods.mxtune.handler.KeyHandler;
-import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -116,8 +114,6 @@ public class ClientProxy extends CommonProxy
     public void registerEventHandlers()
     {
         super.registerEventHandlers();
-        MinecraftForge.EVENT_BUS.register(ClientAudio.INSTANCE);
-        MinecraftForge.EVENT_BUS.register(ClientEventHandler.INSTANCE);
     }
 
     @Override

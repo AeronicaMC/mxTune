@@ -25,19 +25,22 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
-public enum ClientEventHandler
+@Mod.EventBusSubscriber(Side.CLIENT)
+public class ClientEventHandler
 {
-    INSTANCE;
-    Minecraft mc = Minecraft.getMinecraft();
-    private PlacardRenderer placardRenderer = PlacardRenderer.getInstance();
+    
+    static Minecraft mc = Minecraft.getMinecraft();
+    static PlacardRenderer placardRenderer = PlacardRenderer.getInstance();
 
     private ClientEventHandler() {}
 
     /** Render Placards */
     @SubscribeEvent
-    public void onRenderPlayerEvent(RenderLivingEvent.Specials.Post<EntityLivingBase> event)
+    public static void onRenderPlayerEvent(RenderLivingEvent.Specials.Post<EntityLivingBase> event)
     {
         if (event.getEntity() instanceof EntityPlayer && !event.getEntity().isInvisible() && !mc.gameSettings.showDebugInfo && !mc.gameSettings.hideGUI)
         {
@@ -53,7 +56,7 @@ public enum ClientEventHandler
     } 
     
     @SubscribeEvent
-    public void textureRestitchEvent(TextureStitchEvent.Post e)
+    public static void textureRestitchEvent(TextureStitchEvent.Post e)
     {
         ModModelManager.getTESRRenderers().stream().filter(p -> p instanceof IReBakeModel).forEach(p -> ((IReBakeModel)p).reBakeModel());
     }

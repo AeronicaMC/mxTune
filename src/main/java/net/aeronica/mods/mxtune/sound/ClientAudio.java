@@ -74,6 +74,7 @@ import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.PlayStreamingSourceEvent;
 import net.minecraftforge.client.event.sound.SoundSetupEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -85,10 +86,10 @@ import paulscode.sound.SoundSystemConfig;
 import paulscode.sound.SoundSystemException;
 
 @SideOnly(Side.CLIENT)
-public enum ClientAudio
+@Mod.EventBusSubscriber(Side.CLIENT)
+public class ClientAudio
 {
 
-    INSTANCE;
     static SoundHandler handler;
     static SoundManager sndManager;
     static SoundSystem sndSystem;
@@ -133,6 +134,7 @@ public enum ClientAudio
         executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE, (java.util.concurrent.ThreadFactory) threadFactory);
     }
 
+    private ClientAudio() { /* Nothing to do */ }
        
     public enum Status
     {
@@ -394,7 +396,7 @@ public enum ClientAudio
     }
     
     @SubscribeEvent
-    public void onJoinWorld(EntityJoinWorldEvent event)
+    public static void onJoinWorld(EntityJoinWorldEvent event)
     {
         if (event.getEntity() instanceof EntityPlayerSP && event.getEntity().getEntityId() == MXTuneMain.proxy.getClientPlayer().getEntityId())
         {
@@ -404,14 +406,14 @@ public enum ClientAudio
     }
 
     @SubscribeEvent
-    public void onPlayerRespawnEvent(PlayerRespawnEvent event)
+    public static void onPlayerRespawnEvent(PlayerRespawnEvent event)
     {
         cleanup();
         ModLogger.info("ClientAudio PlayerRespawnEvent: %s", event.player.getName());
     }
 
     @SubscribeEvent
-    public void onEvent(ClientTickEvent event)
+    public static void onEvent(ClientTickEvent event)
     {
         if (event.side == Side.CLIENT && event.phase == TickEvent.Phase.END && count % 40 == 0)
         {
@@ -421,7 +423,7 @@ public enum ClientAudio
     }
     
     @SubscribeEvent
-    public void soundSetupEvent(SoundSetupEvent event) throws SoundSystemException
+    public static void soundSetupEvent(SoundSetupEvent event) throws SoundSystemException
     {
         SoundSystemConfig.setCodec("nul", CodecPCM.class);
         ModLogger.info("Sound Setup Event %s", event);
@@ -429,7 +431,7 @@ public enum ClientAudio
     }
     
     @SubscribeEvent
-    public void PlaySoundEvent(PlaySoundEvent e)
+    public static void PlaySoundEvent(PlaySoundEvent e)
     {
         init();
         /* Testing for a the PCM_PROXY sound. For playing MML though the MML->PCM ClientAudio chain */
@@ -478,13 +480,6 @@ public enum ClientAudio
     /*
      * This section Poached from Dynamic Surroundings
      */
-    public int currentSoundCount() {
-        return sndManager.playingSounds.size();
-    }
-
-    public boolean canFitSound() {
-        return currentSoundCount() < (normalChannelCount - SOUND_QUEUE_SLACK);
-    }
 
     private static void configureSound() {
         int totalChannels = -1;
