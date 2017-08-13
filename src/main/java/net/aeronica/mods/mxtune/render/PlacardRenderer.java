@@ -39,7 +39,10 @@ public class PlacardRenderer
 
     private PlacardRenderer() {}
 
-    private static class PlacardRendererHolder {private static final PlacardRenderer INSTANCE = new PlacardRenderer();}
+    private static class PlacardRendererHolder {
+        private static final PlacardRenderer INSTANCE = new PlacardRenderer();
+        private PlacardRendererHolder() {}
+    }
 
     public static PlacardRenderer getInstance() {return PlacardRendererHolder.INSTANCE;}
 
