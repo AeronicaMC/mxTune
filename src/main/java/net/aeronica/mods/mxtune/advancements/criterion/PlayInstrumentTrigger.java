@@ -26,7 +26,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.minecraft.advancements.ICriterionTrigger;
 import net.minecraft.advancements.PlayerAdvancements;
 import net.minecraft.advancements.critereon.AbstractCriterionInstance;
@@ -42,17 +41,17 @@ public class PlayInstrumentTrigger implements ICriterionTrigger<PlayInstrumentTr
 
     static class Instance extends AbstractCriterionInstance
     {
-        private final Integer temp;
+        private final String instrumentName;
 
-        Instance(Integer temp)
+        Instance(String instrumentName)
         {
             super(ID);
-            this.temp = temp;
+            this.instrumentName = instrumentName;
         }
 
-        boolean test(Integer temp)
+        boolean test(String instrumentName)
         {
-            return this.temp == temp;
+            return this.instrumentName.equals(instrumentName);
         }
     }
 
@@ -86,23 +85,22 @@ public class PlayInstrumentTrigger implements ICriterionTrigger<PlayInstrumentTr
         listeners.remove(playerAdvancementsIn);
     }
 
-    public void trigger(EntityPlayerMP player, Integer instrument)
+    public void trigger(EntityPlayerMP player, String instrumentName)
     {
         Listeners ls = listeners.get(player.getAdvancements());
         if(ls != null)
-            ls.trigger(instrument);
+            ls.trigger(instrumentName);
     }
     
-    @SuppressWarnings("unused")
     @Override
     public Instance deserializeInstance(JsonObject json, JsonDeserializationContext context)
     {
-        String name = JsonUtils.getString(json, "instrument");
-        Integer instrument = ItemInstrument.EnumType.valueOf(name).getPatch();
-        if(instrument == null)
-            throw new JsonSyntaxException("Unknown instrument: '" + name + "'");
+        String instrumentName = JsonUtils.getString(json, "instrument");
+
+        if(instrumentName == null)
+            throw new JsonSyntaxException("Unknown instrument: '" + instrumentName + "'");
         else
-            return new Instance(instrument);
+            return new Instance(instrumentName);
     }
 
     
@@ -131,10 +129,10 @@ public class PlayInstrumentTrigger implements ICriterionTrigger<PlayInstrumentTr
             listeners.remove(listener);
         }
 
-        public void trigger(Integer temp)
+        public void trigger(String instrumentName)
         {
             listeners.stream()
-                .filter(listener -> listener.getCriterionInstance().test(temp))
+                .filter(listener -> listener.getCriterionInstance().test(instrumentName))
                 .collect(ImmutableList.toImmutableList()) //Need this intermediate list to avoid ConcurrentModificationException
                 .forEach(listener -> listener.grantCriterion(playerAdvancements));
         }

@@ -1,0 +1,69 @@
+{
+    "display": {
+        "icon": {
+            "item": "mxtune:item_inst",
+            "data": 12
+        },
+        "title": {
+            "translate": "advancements.mxtune.music.play_all_plucked_inst.title"
+        },
+        "description": {
+            "translate": "advancements.mxtune.music.play_all_plucked_inst.description"
+        },
+        "frame": "challenge"
+    },
+    "parent": "mxtune:music/play_plucked_inst",
+    "rewards": {
+        "experience": 100
+    },
+    "criteria": {
+        "play_lute": {
+            "trigger": "mxtune:play_instrument",
+            "conditions": {
+                "instrument": "LUTE"
+            }
+        },
+        "play_ukulele": {
+            "trigger": "mxtune:play_instrument",
+            "conditions": {
+                "instrument": "UKULELE"
+            }
+        },
+        "play_mandolin": {
+            "trigger": "mxtune:play_instrument",
+            "conditions": {
+                "instrument": "MANDOLIN"
+            }
+        },
+        "play_lyre": {
+            "trigger": "mxtune:play_instrument",
+            "conditions": {
+                "instrument": "LYRE"
+            }
+        },
+        "play_electric_guitar": {
+            "trigger": "mxtune:play_instrument",
+            "conditions": {
+                "instrument": "ELECTRIC_GUITAR"
+            }
+        },
+        "play_harp": {
+            "trigger": "mxtune:play_instrument",
+            "conditions": {
+                "instrument": "HARP"
+            }
+        },
+        "play_harpsichord": {
+            "trigger": "mxtune:play_instrument",
+            "conditions": {
+                "instrument": "HARPSICORD"
+            }
+        },       
+        "play_harpsichord_coupled": {
+            "trigger": "mxtune:play_instrument",
+            "conditions": {
+                "instrument": "HARPSICORD_COUPLED"
+            }
+        }                 
+    }   
+}

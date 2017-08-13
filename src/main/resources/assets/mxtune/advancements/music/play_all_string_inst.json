@@ -1,0 +1,33 @@
+{
+    "display": {
+        "icon": {
+            "item": "mxtune:item_inst",
+            "data": 11
+        },
+        "title": {
+            "translate": "advancements.mxtune.music.play_all_string_inst.title"
+        },
+        "description": {
+            "translate": "advancements.mxtune.music.play_all_string_inst.description"
+        },
+        "frame": "challenge"
+    },
+    "parent": "mxtune:music/play_string_inst",
+    "rewards": {
+        "experience": 100
+    },
+    "criteria": {
+        "play_violin": {
+            "trigger": "mxtune:play_instrument",
+            "conditions": {
+                "instrument": "VIOLIN"
+            }
+        },
+        "play_cello": {
+            "trigger": "mxtune:play_instrument",
+            "conditions": {
+                "instrument": "CELLO"
+            }
+        }                                                 
+    }   
+}

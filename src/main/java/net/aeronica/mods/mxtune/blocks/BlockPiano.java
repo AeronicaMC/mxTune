@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
 
+import net.aeronica.mods.mxtune.advancements.ModCriteriaTriggers;
 import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.init.ModItems;
@@ -40,6 +41,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -141,7 +143,10 @@ public class BlockPiano extends BlockInstrument2H
             } else if (canPlay && !playerIn.isSneaking())
             {
                 if (ServerCSDManager.canMXTunesPlay(playerIn))
+                {
                     ((EntitySittableBlock) playerIn.getRidingEntity()).setPlayID(PlayManager.playMusic(playerIn, pos));
+                    ModCriteriaTriggers.PLAY_INSTRUMENT.trigger((EntityPlayerMP) playerIn, "PIANO");
+                }
                 else
                     ServerCSDManager.sendErrorViaChat(playerIn);
             }

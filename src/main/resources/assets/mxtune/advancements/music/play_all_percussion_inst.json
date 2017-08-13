@@ -1,0 +1,63 @@
+{
+    "display": {
+        "icon": {
+            "item": "mxtune:item_inst",
+            "data": 24
+        },
+        "title": {
+            "translate": "advancements.mxtune.music.play_all_percussion_inst.title"
+        },
+        "description": {
+            "translate": "advancements.mxtune.music.play_all_percussion_inst.description"
+        },
+        "frame": "challenge"
+    },
+    "parent": "mxtune:music/play_percussion_inst",
+    "rewards": {
+        "experience": 100
+    },
+    "criteria": {
+        "play_bass_drum": {
+            "trigger": "mxtune:play_instrument",
+            "conditions": {
+                "instrument": "BASS_DRUM"
+            }
+        },
+        "play_snare_drum": {
+            "trigger": "mxtune:play_instrument",
+            "conditions": {
+                "instrument": "SNARE_DRUM"
+            }
+        },
+        "play_cymbels": {
+            "trigger": "mxtune:play_instrument",
+            "conditions": {
+                "instrument": "CYMBELS"
+            }
+        },                                                
+        "play_hand_chimes": {
+            "trigger": "mxtune:play_instrument",
+            "conditions": {
+                "instrument": "HAND_CHIMES"
+            }
+        },
+        "play_standard_set": {
+            "trigger": "mxtune:play_instrument",
+            "conditions": {
+                "instrument": "STANDARD"
+            }
+        },
+        "play_orchestra_set": {
+            "trigger": "mxtune:play_instrument",
+            "conditions": {
+                "instrument": "ORCHESTRA"
+            }
+        },
+        "play_piano": {
+            "trigger": "mxtune:play_instrument",
+            "conditions": {
+                "instrument": "PIANO"
+            }
+        } 
+    }   
+}

@@ -21,7 +21,8 @@
             "conditions": {
                 "items": [
                     {
-                        "item": "reeds"
+                        "type": "forge:ore_dict",
+                        "ore": "sugarcane"
                     }
                 ]
             }

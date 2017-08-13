@@ -1,0 +1,35 @@
+{
+    "display": {
+        "icon": {
+            "item": "mxtune:item_inst",
+            "data": 20
+        },
+        "title": {
+            "translate": "advancements.mxtune.music.play_brass_inst.title"
+        },
+        "description": {
+            "translate": "advancements.mxtune.music.play_brass_inst.description"
+        }
+    },
+    "parent": "mxtune:music/write_sheetmusic",
+    "criteria": {
+        "play_tuba": {
+            "trigger": "mxtune:play_instrument",
+            "conditions": {
+                "instrument": "TUBA"
+            }
+        },
+        "play_trumpet": {
+            "trigger": "mxtune:play_instrument",
+            "conditions": {
+                "instrument": "TRUMPET"
+            }
+        }                                                 
+    },
+    "requirements": [
+        [
+            "play_tuba",
+            "play_trumpet"
+        ]
+    ]    
+}

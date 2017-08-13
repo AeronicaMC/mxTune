@@ -1,0 +1,27 @@
+{
+    "display": {
+        "icon": {
+            "item": "mxtune:item_inst",
+            "data": 6
+        },
+        "title": {
+            "translate": "advancements.mxtune.music.play_all_reed_inst.title"
+        },
+        "description": {
+            "translate": "advancements.mxtune.music.play_all_reed_inst.description"
+        },
+        "frame": "challenge"
+    },
+    "parent": "mxtune:music/play_reed_inst",
+    "rewards": {
+        "experience": 25
+    },
+    "criteria": {
+        "play_chalumeau": {
+            "trigger": "mxtune:play_instrument",
+            "conditions": {
+                "instrument": "CHALAMEU"
+            }
+        }                                                 
+    }   
+}
