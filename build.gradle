@@ -122,13 +122,16 @@ sonarqube {
         property "sonar.coverage.exclusions", "**/*"
     }
 }
-    
+
 task signJar(type: SignJar, dependsOn: reobfJar) {
-    onlyIf { project.hasProperty('keyStore') }
-    keyStore = project.keyStore // This needs to be a path to the keystore file
-    alias = project.keyStoreAlias
-    storePass = project.keyStorePass
-    keyPass = project.keyStoreKeyPass
+    onlyIf {
+        project.hasProperty("keyStore")
+    }
+     
+    keyStore = project.findProperty('keyStore')
+    alias = project.findProperty('keyStoreAlias')
+    storePass = project.findProperty('keyStorePass')
+    keyPass = project.findProperty('keyStoreKeyPass')
     inputFile = jar.archivePath
     outputFile = jar.archivePath
 }
