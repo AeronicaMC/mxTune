@@ -1,4 +1,10 @@
 {
+  "conditions": [
+      {
+          "type": "mxtune:recipe_enabled",
+          "item": "mxtune:block_piano"
+      }
+  ],
   "result": {
     "item": "mxtune:block_piano"
   },

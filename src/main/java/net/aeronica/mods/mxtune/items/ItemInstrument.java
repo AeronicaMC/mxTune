@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
 
 import net.aeronica.libs.mml.core.MMLUtil;
 import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.advancements.ModCriteriaTriggers;
 import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiInstrumentInventory;
@@ -37,6 +38,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
@@ -103,6 +105,8 @@ public class ItemInstrument extends Item implements IInstrument
                     {
                         Integer playID = PlayManager.playMusic(playerIn);
                         itemStackIn.setRepairCost(playID != null ? playID : -1);
+                        if (playID != null)
+                            ModCriteriaTriggers.PLAY_INSTRUMENT.trigger((EntityPlayerMP) playerIn, EnumType.byMetadata(itemStackIn.getMetadata()).getPatch());
                     }
                 } 
                 else

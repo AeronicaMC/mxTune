@@ -1,0 +1,23 @@
+{
+    "display": {
+        "icon": {
+            "item": "mxtune:item_inst",
+            "data": 0
+        },
+        "title": {
+            "translate": "advancements.mxtune.music.play_lute.title"
+        },
+        "description": {
+            "translate": "advancements.mxtune.music.play_lute.description"
+        }
+    },
+    "parent": "mxtune:music/write_sheetmusic",
+    "criteria": {
+        "play_lute": {
+            "trigger": "mxtune:play_instrument",
+            "conditions": {
+                "instrument": "LUTE"
+            }
+        }
+    }
+}

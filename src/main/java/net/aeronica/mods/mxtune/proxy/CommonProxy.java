@@ -16,6 +16,7 @@
  */
 package net.aeronica.mods.mxtune.proxy;
 
+import net.aeronica.mods.mxtune.advancements.ModCriteriaTriggers;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.handler.CommonEventHandler;
@@ -38,7 +39,7 @@ public abstract class CommonProxy implements IProxy
     @Override
     public void preInit(FMLPreInitializationEvent event)
     {
-
+        ModCriteriaTriggers.init();
     }
 
     @Override

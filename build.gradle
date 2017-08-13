@@ -123,10 +123,6 @@ sonarqube {
     }
     
 task signJar(type: SignJar, dependsOn: reobfJar) {
-    onlyIf { // Skip the task if our secret data isn't available
-        project.hasProperty('keyStore')
-    }
-
     keyStore = project.keyStore // This needs to be a path to the keystore file
     alias = project.keyStoreAlias
     storePass = project.keyStorePass
@@ -135,6 +131,8 @@ task signJar(type: SignJar, dependsOn: reobfJar) {
     outputFile = jar.archivePath
 }
 
-// build.dependsOn signJar
+signJar.onlyIf { project.hasProperty('keyStore') }
+
+build.dependsOn signJar
 
 }

@@ -1,0 +1,6 @@
+
+{
+    "conditions": {
+        "recipe_enabled": "net.aeronica.mods.mxtune.crafting.RecipeEnabledFactory"
+    }
+}
