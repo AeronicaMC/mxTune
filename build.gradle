@@ -121,6 +121,7 @@ sonarqube {
         property "sonar.branch", "${config.projectBranch}"
         property "sonar.coverage.exclusions", "**/*"
     }
+}
     
 task signJar(type: SignJar, dependsOn: reobfJar) {
     keyStore = project.keyStore // This needs to be a path to the keystore file
@@ -135,4 +136,3 @@ signJar.onlyIf { project.hasProperty('keyStore') }
 
 build.dependsOn signJar
 
-}
