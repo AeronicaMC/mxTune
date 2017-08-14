@@ -1,4 +1,10 @@
 {
+  "conditions": [
+    {
+      "type": "mxtune:recipe_enabled",
+      "item": "mxtune:item_inst_0"
+    }
+  ],  
   "result": {
     "item": "mxtune:item_inst",
     "data": 0

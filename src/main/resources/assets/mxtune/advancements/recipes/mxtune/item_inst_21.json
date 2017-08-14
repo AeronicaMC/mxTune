@@ -17,7 +17,8 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:feather"
+            "type": "forge:ore_dict",
+            "ore": "feather"
           }
         ]
       }
@@ -37,7 +38,8 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:planks"
+            "type": "forge:ore_dict",
+            "ore": "plankWood"
           }
         ]
       }

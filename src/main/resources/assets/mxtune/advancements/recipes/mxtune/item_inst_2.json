@@ -17,7 +17,8 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:planks"
+            "type": "forge:ore_dict",
+            "ore": "plankWood"
           }
         ]
       }
@@ -27,7 +28,8 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:string"
+            "type": "forge:ore_dict",
+            "ore": "string"
           }
         ]
       }

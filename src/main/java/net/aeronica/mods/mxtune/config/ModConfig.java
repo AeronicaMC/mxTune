@@ -75,7 +75,8 @@ public class ModConfig
 	
     public enum Categories {
         CATEGORY_GENERAL("general"),
-        CATEGORY_CLIENT("client");
+        CATEGORY_CLIENT("client"),
+        CATEGPRY_RECIPES("recipes");
 
         private final String name;
 

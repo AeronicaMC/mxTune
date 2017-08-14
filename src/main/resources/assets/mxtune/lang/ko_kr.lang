@@ -40,7 +40,7 @@ item.mxtune:item_inst.mandolin.name=만돌린
 item.mxtune:item_inst.whistle.name=호루라기
 item.mxtune:item_inst.roncadora.name=론카도라
 item.mxtune:item_inst.flute.name=플루트
-item.mxtune:item_inst.chalameu.name=샬뤼모
+item.mxtune:item_inst.chalumeau.name=샬뤼모
 item.mxtune:item_inst.tuba.name=튜바
 item.mxtune:item_inst.lyre.name=리라
 item.mxtune:item_inst.electic_guitar.name=전기 기타
@@ -55,8 +55,8 @@ item.mxtune:item_inst.cymbels.name=심벌즈
 item.mxtune:item_inst.hand_chimes.name=핸드 차임
 item.mxtune:item_inst.recorder.name=리코더
 item.mxtune:item_inst.trumpet.name=트럼펫
-item.mxtune:item_inst.harpsicord.name=하프시코드
-item.mxtune:item_inst.harpsicord_coupled.name=하프시코드 커플
+item.mxtune:item_inst.harpsichord.name=하프시코드
+item.mxtune:item_inst.harpsichord_coupled.name=하프시코드 커플
 item.mxtune:item_inst.standard.name=표준 타악기 세트
 item.mxtune:item_inst.orchestra.name=오케스트라 타악기 세트
 item.mxtune:item_converter.name=음악 악보 변환기
@@ -96,6 +96,10 @@ mxtune.subtitle.pcm-proxy=음악 소리
 
 mxtune.configgui.ctgy.general.tooltip=mxTune General Settings
 mxtune.configgui.ctgy.general=mxTune General Settings
+mxtune.configgui.ctgy.client.tooltip=mxTune Client Settings
+mxtune.configgui.ctgy.client=mxTune Client Settings
+mxtune.configgui.ctgy.recipes.tooltip=mxTune Recipe Settings
+mxtune.configgui.ctgy.recipes=mxTune Recipes
 
 mxtune.configgui.listenerRange=Listener Range
 mxtune.configgui.listenerRange.tooltip=The radius around a music source in blocks in which a player can hear music. [range: 10.0 ~ 64.0]
@@ -111,11 +115,6 @@ mxtune.configgui.streamingSoundChannelCount=Streaming sound channels (manual)
 mxtune.configgui.streamingSoundChannelCount.tooltip=Number of streaming sound channels to configure in the sound system (manual)
 mxtune.configgui.mmlLink=MML Site Link
 mxtune.configgui.mmlLink.tooltip=Enter a valid URL. Please test the URL thoroughly. If it is not a valid link it will appear RED in the MML 간단 편집기 dialog.
-soloPlayWhileWalking=Deprecated Option!
-soloPlayWhileWalking.tooltip="B:soloPlayWhileWalking=true" is Deprecated! Please manually remove the option from the mxtune.cfg
-
-mxtune.configgui.ctgy.client.tooltip=mxTune Client Settings
-mxtune.configgui.ctgy.client=mxTune Client Settings
 
 mxtune.key.openParty=열린 그룹
 mxtune.key.openMusicOptions=음악 옵션

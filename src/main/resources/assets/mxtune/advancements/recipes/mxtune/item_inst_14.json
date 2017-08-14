@@ -28,7 +28,8 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:gold_nugget"
+            "type": "forge:ore_dict",
+            "ore": "nuggetGold"
           }
         ]
       }

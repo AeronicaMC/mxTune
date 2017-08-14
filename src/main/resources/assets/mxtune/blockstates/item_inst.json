@@ -33,8 +33,8 @@
 					"layer0": "mxtune:items/item_inst.flute"
 				}
 			},
-			"chalameu": {
-				"model": "mxtune:item/item_inst.chalameu"
+			"chalumeau": {
+				"model": "mxtune:item/item_inst.chalumeau"
 			},
 			"tuba": {
 				"textures": {
@@ -104,14 +104,14 @@
 					"layer0": "mxtune:items/item_inst.trumpet"
 				}
 			},
-			"harpsicord": {
+			"harpsichord": {
 				"textures": {
-					"layer0": "mxtune:items/item_inst.harpsicord"
+					"layer0": "mxtune:items/item_inst.harpsichord"
 				}
 			},
-			"harpsicord_coupled": {
+			"harpsichord_coupled": {
 				"textures": {
-					"layer0": "mxtune:items/item_inst.harpsicord_coupled"
+					"layer0": "mxtune:items/item_inst.harpsichord_coupled"
 				}
 			},
 			"standard": {

@@ -17,7 +17,8 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:leather"
+            "type": "forge:ore_dict",
+            "ore": "leather"
           }
         ]
       }
@@ -27,7 +28,8 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:gold_nugget"
+            "type": "forge:ore_dict",
+            "ore": "nuggetGold"
           }
         ]
       }
@@ -37,7 +39,8 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:planks"
+            "type": "forge:ore_dict",
+            "ore": "plankWood"
           }
         ]
       }

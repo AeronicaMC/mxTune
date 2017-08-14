@@ -17,8 +17,8 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:dye",
-            "data": 1
+            "type": "forge:ore_dict",
+            "ore": "dyeRed"
           }
         ]
       }
@@ -28,7 +28,8 @@
       "conditions": {
         "items": [
           {
-            "item": "minecraft:planks"
+            "type": "forge:ore_dict",
+            "ore": "plankWood"
           }
         ]
       }
