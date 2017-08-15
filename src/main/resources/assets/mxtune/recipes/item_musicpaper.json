@@ -20,5 +20,5 @@
       "item": "#DYEBLACK"
     }
   ],
-  "type": "forge:ore_shapeless"
+  "type": "mxtune:disablable_ore_shapeless"
 }

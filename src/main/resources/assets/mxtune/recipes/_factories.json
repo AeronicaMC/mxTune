@@ -1,6 +1,7 @@
 
 {
-    "conditions": {
-        "recipe_enabled": "net.aeronica.mods.mxtune.crafting.RecipeEnabledFactory"
-    }
+  "recipes": {
+    "disablable_ore_shaped": "net.aeronica.mods.mxtune.crafting.DisablableShapedOreRecipeFactory",
+    "disablable_ore_shapeless": "net.aeronica.mods.mxtune.crafting.DisablableShapelessOreRecipeFactory"
+  }    
 }

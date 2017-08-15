@@ -1,10 +1,4 @@
 {
-  "conditions": [
-      {
-          "type": "mxtune:recipe_enabled",
-          "item": "mxtune:block_piano"
-      }
-  ],
   "result": {
     "item": "mxtune:block_piano"
   },
@@ -13,7 +7,7 @@
     "PFP",
     "PPP"
   ],
-  "type": "forge:ore_shaped",
+  "type": "mxtune:disablable_ore_shaped",
   "key": {
     "P": {
       "item": "#PLANKWOOD"
