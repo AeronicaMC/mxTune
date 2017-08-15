@@ -60,6 +60,7 @@ item.mxtune:item_inst.harpsichord_coupled.name=하프시코드 커플
 item.mxtune:item_inst.standard.name=표준 타악기 세트
 item.mxtune:item_inst.orchestra.name=오케스트라 타악기 세트
 item.mxtune:item_converter.name=음악 악보 변환기
+item.mxtune:item_instrument.title=표제
 item.mxtune:item_instrument.help=Shift + 오른쪽 클릭으로 음악 삽입 / 제거
 
 sf.mxtune.m.lute=M 류트

@@ -208,7 +208,7 @@ public class ItemInstrument extends Item implements IInstrument
     {
         String musicTitle = SheetMusicUtil.getMusicTitle(stackIn);
         if (!musicTitle.isEmpty())
-            tooltip.add(TextFormatting.GREEN + "Title: " + musicTitle);
+            tooltip.add(TextFormatting.GREEN + I18n.format("item.mxtune:item_instrument.title") + ": " + musicTitle);
         
         tooltip.add(TextFormatting.RESET + I18n.format("item.mxtune:item_instrument.help"));
     }
@@ -248,8 +248,6 @@ public class ItemInstrument extends Item implements IInstrument
         ORCHESTRA(24, "orchestra", MMLUtil.preset2PackedPreset(128, 48)),
         ;
 
-        public int getMetadata() {return this.meta;}
-
         @Override
         public String toString() {return this.name;}
 
@@ -280,7 +278,7 @@ public class ItemInstrument extends Item implements IInstrument
         {
             for (EnumType value : values())
             {
-                META_LOOKUP[value.getMetadata()] = value;
+                META_LOOKUP[value.getMeta()] = value;
             }
         }
 

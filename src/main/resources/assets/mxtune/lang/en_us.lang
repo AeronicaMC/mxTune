@@ -60,6 +60,7 @@ item.mxtune:item_inst.harpsichord_coupled.name=Harpsichord Coupled
 item.mxtune:item_inst.standard.name=Standard Perc. Set
 item.mxtune:item_inst.orchestra.name=Orchesta Perc. Set
 item.mxtune:item_converter.name=Sheet Music Converter
+item.mxtune:item_instrument.title=Title
 item.mxtune:item_instrument.help=Shift + right click to insert/remove music
 
 sf.mxtune.m.lute=M Lute
