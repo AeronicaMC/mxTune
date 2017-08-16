@@ -46,8 +46,8 @@
 					"layer0": "mxtune:items/item_inst.lyre"
 				}
 			},			
-			"electic_guitar": {
-				"model": "mxtune:item/item_inst.electic_guitar"
+			"electric_guitar": {
+				"model": "mxtune:item/item_inst.electric_guitar"
 			},
 			"violin": {
 				"textures": {

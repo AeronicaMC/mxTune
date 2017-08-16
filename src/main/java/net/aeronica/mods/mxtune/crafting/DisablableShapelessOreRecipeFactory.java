@@ -19,8 +19,6 @@ import javax.annotation.Nonnull;
 
 import com.google.gson.JsonObject;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -46,7 +44,8 @@ public class DisablableShapelessOreRecipeFactory implements IRecipeFactory
         
         ItemStack result = recipe.getRecipeOutput();
         NonNullList<Ingredient> input = recipe.getIngredients();
-        return new DisablableRecipe(new ResourceLocation(MXTuneMain.MODID, "disableable_shapeless_ore_crafting"), input, result);
+        return new DisablableRecipe(null, input, result);
+        //return new DisablableRecipe(new ResourceLocation(MXTuneMain.MODID, "disableable_shapeless_ore_crafting"), input, result);
     }
 
     public static class DisablableRecipe extends ShapelessOreRecipe {
@@ -60,16 +59,13 @@ public class DisablableShapelessOreRecipeFactory implements IRecipeFactory
         @Nonnull
         public ItemStack getCraftingResult(InventoryCrafting var1)
         {
-            ItemStack newOutput = this.output.copy();
-            ItemStack itemstack = ItemStack.EMPTY;
-            ModLogger.info("*** unlocalized name: %s", newOutput.getUnlocalizedName());
-            return newOutput;
+            return RecipeFactoryUtils.enabledRecipe(this.output) ? this.output.copy() : ItemStack.EMPTY;
         }
 
         @Override
         public boolean isHidden()
         {
-            return false;
+            return !RecipeFactoryUtils.enabledRecipe(this.output);
         }
     }
     

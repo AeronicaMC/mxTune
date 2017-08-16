@@ -43,7 +43,7 @@ item.mxtune:item_inst.flute.name=플루트
 item.mxtune:item_inst.chalumeau.name=샬뤼모
 item.mxtune:item_inst.tuba.name=튜바
 item.mxtune:item_inst.lyre.name=리라
-item.mxtune:item_inst.electic_guitar.name=전기 기타
+item.mxtune:item_inst.electric_guitar.name=전기 기타
 item.mxtune:item_inst.violin.name=바이올린
 item.mxtune:item_inst.cello.name=첼로
 item.mxtune:item_inst.harp.name=하프
@@ -116,6 +116,8 @@ mxtune.configgui.streamingSoundChannelCount=Streaming sound channels (manual)
 mxtune.configgui.streamingSoundChannelCount.tooltip=Number of streaming sound channels to configure in the sound system (manual)
 mxtune.configgui.mmlLink=MML Site Link
 mxtune.configgui.mmlLink.tooltip=Enter a valid URL. Please test the URL thoroughly. If it is not a valid link it will appear RED in the MML 간단 편집기 dialog.
+mxtune.configgui.enabledRecipes=Enabled Recipes
+mxtune.configgui.enabledRecipes.tooltip=Remove a recipe to disable it. Alternately append _off. *** Requires MC Restart - Cannot be changed while IN-WORLD ***
 
 mxtune.key.openParty=열린 그룹
 mxtune.key.openMusicOptions=음악 옵션

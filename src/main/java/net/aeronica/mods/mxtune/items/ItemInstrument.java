@@ -230,7 +230,7 @@ public class ItemInstrument extends Item implements IInstrument
         CHALAMEU(6, "chalumeau", 6),
         TUBA(7, "tuba", 18),
         LYRE(8, "lyre", 19),
-        ELECTRIC_GUITAR(9, "electic_guitar", 20),
+        ELECTRIC_GUITAR(9, "electric_guitar", 20),
         VIOLIN(10, "violin", 22),
         CELLO(11, "cello", 23),
         HARP(12, "harp", 24),

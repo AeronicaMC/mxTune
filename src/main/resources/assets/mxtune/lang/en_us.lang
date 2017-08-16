@@ -43,7 +43,7 @@ item.mxtune:item_inst.flute.name=Flute
 item.mxtune:item_inst.chalumeau.name=Chalumeau
 item.mxtune:item_inst.tuba.name=Tuba
 item.mxtune:item_inst.lyre.name=Lyre
-item.mxtune:item_inst.electic_guitar.name=Electric Guitar
+item.mxtune:item_inst.electric_guitar.name=Electric Guitar
 item.mxtune:item_inst.violin.name=violin
 item.mxtune:item_inst.cello.name=Cello
 item.mxtune:item_inst.harp.name=Harp
@@ -116,6 +116,8 @@ mxtune.configgui.streamingSoundChannelCount=Streaming sound channels (manual)
 mxtune.configgui.streamingSoundChannelCount.tooltip=Number of streaming sound channels to configure in the sound system (manual)
 mxtune.configgui.mmlLink=MML Site Link
 mxtune.configgui.mmlLink.tooltip=Enter a valid URL. Please test the URL thoroughly. If it is not a valid link it will appear RED in the MML Simple Editor dialog.
+mxtune.configgui.enabledRecipes=Enabled Recipes
+mxtune.configgui.enabledRecipes.tooltip=Remove a recipe to disable it. Alternately append _off. *** Requires MC Restart - Cannot be changed while IN-WORLD ***
 
 mxtune.key.openParty=Open Party
 mxtune.key.openMusicOptions=Music Options

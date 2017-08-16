@@ -8,7 +8,7 @@
     " X ",
     " X "
   ],
-  "type": "forge:ore_shaped",
+  "type": "mxtune:disablable_ore_shaped",
   "key": {
     "#": {
       "item": "#PLANKWOOD"

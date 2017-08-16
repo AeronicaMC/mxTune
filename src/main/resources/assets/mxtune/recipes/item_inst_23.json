@@ -8,7 +8,7 @@
     "PIP",
     "PPP"
   ],
-  "type": "forge:ore_shaped",
+  "type": "mxtune:disablable_ore_shaped",
   "key": {
     "P": {
       "item": "#PLANKWOOD"
