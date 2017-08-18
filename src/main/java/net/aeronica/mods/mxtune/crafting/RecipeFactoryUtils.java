@@ -24,13 +24,13 @@ import net.minecraft.item.ItemStack;
 public class RecipeFactoryUtils
 {
 
-    private RecipeFactoryUtils() { /* Nothing to do */ }
+    private RecipeFactoryUtils() { /* NOP */ }
     
     public static boolean enabledRecipe(ItemStack stackIn)
     {
         String unlocalizedName = stackIn.getUnlocalizedName().replaceFirst("item\\.", "");
         Boolean state = Arrays.asList(ModConfig.getEnabledRecipes()).contains(unlocalizedName);
-        ModLogger.debug("enabledRecipe? %s %s", unlocalizedName, state);
+        ModLogger.info("enabledRecipe? %s %s", unlocalizedName, state);
         return state;
     }
     

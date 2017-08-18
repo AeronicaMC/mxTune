@@ -16,6 +16,7 @@
  */
 package net.aeronica.mods.mxtune;
 
+import net.aeronica.mods.mxtune.advancements.ModCriteriaTriggers;
 import net.aeronica.mods.mxtune.handler.GUIHandler;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.options.PlayerMusicOptionsCapability;
@@ -31,9 +32,9 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
-@Mod(modid = MXTuneMain.MODID, name = MXTuneMain.MODNAME, version = MXTuneMain.VERSION, acceptedMinecraftVersions = "[1.12,1.13)",
-     dependencies = MXTuneMain.DEPS,
-     guiFactory = MXTuneMain.GUIFACTORY, updateJSON = MXTuneMain.UPDATE,
+@Mod(modid = MXTuneMain.MODID, name = MXTuneMain.MODNAME, version = MXTuneMain.VERSION,
+     acceptedMinecraftVersions = "[1.12.1,1.13)",
+     dependencies = MXTuneMain.DEPS, updateJSON = MXTuneMain.UPDATE,
      certificateFingerprint = "999640c365a8443393a1a21df2c0ede9488400e9")
 
 public class MXTuneMain
@@ -41,8 +42,7 @@ public class MXTuneMain
     public static final String MODID = "mxtune";
     public static final String MODNAME = "mxTune";
     public static final String VERSION = "{@VERSION}";
-    public static final String DEPS = ""; // "required-after:forge@[1.9.4-12.17.0.2051,)";
-    public static final String GUIFACTORY = "net.aeronica.mods.mxtune.config.ModGuiFactory";
+    public static final String DEPS = "required-after:forge@[1.9.4-12.17.0.2051,)";
     public static final String UPDATE = "https://gist.githubusercontent.com/Aeronica/dbc2619e0011d5bdbe7a162d0c6aa82b/raw/update.json";
     
     @Mod.Instance(MODID)
@@ -57,6 +57,7 @@ public class MXTuneMain
     public void preInit(FMLPreInitializationEvent event)
     {
         ModLogger.setLogger(event.getModLog());
+        ModCriteriaTriggers.init();
         PlayerMusicOptionsCapability.register();
         PacketDispatcher.registerPackets();
         proxy.preInit(event);

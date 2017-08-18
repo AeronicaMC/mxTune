@@ -16,6 +16,8 @@
  */
 package net.aeronica.mods.mxtune.proxy;
 
+import java.util.regex.Pattern;
+
 import net.aeronica.mods.mxtune.gui.GuiJamOverlay;
 import net.aeronica.mods.mxtune.handler.KeyHandler;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
@@ -27,6 +29,9 @@ import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.config.GuiEditArray;
+import net.minecraftforge.fml.client.config.GuiEditArrayEntries;
+import net.minecraftforge.fml.client.config.IConfigElement;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -37,7 +42,8 @@ import net.minecraftforge.fml.relauncher.Side;
 public class ClientProxy extends CommonProxy
 {
     
-
+    private static Pattern validationPattern = Pattern.compile("(mxtune:[a-z]*([_|a-z])*[.]*[a-z|_]*)"); 
+    
     @Override
     public void preInit(FMLPreInitializationEvent event)
     {
@@ -174,4 +180,21 @@ public class ClientProxy extends CommonProxy
         return (ctx.side.isClient() ? this.getMinecraft() : super.getThreadFromContext(ctx));
     }
 
+    public static class EnabledRecipeEntry extends GuiEditArrayEntries.StringEntry
+    {
+
+        public EnabledRecipeEntry(GuiEditArray owningScreen, GuiEditArrayEntries owningEntryList, IConfigElement configElement, Object value)
+        {
+            super(owningScreen, owningEntryList, configElement, value);
+        }
+        
+        @Override
+        public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partial)
+        {
+//            Boolean OK = Arrays.asList(ModConfig.receipeDefaults).contains(textFieldValue.getText());
+//            textFieldValue.setTextColor((int) (OK ? 0x00FF00 : 0xFF0000));
+//            super.drawEntry(slotIndex, x, y, listWidth, slotHeight, mouseX, mouseY, isSelected, partial);
+        }
+    }
+    
 }

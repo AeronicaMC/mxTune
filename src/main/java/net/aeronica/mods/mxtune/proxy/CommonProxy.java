@@ -16,8 +16,6 @@
  */
 package net.aeronica.mods.mxtune.proxy;
 
-import net.aeronica.mods.mxtune.advancements.ModCriteriaTriggers;
-import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.handler.CommonEventHandler;
 import net.aeronica.mods.mxtune.init.ModBlocks;
@@ -27,7 +25,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -39,7 +36,6 @@ public abstract class CommonProxy implements IProxy
     @Override
     public void preInit(FMLPreInitializationEvent event)
     {
-        ModCriteriaTriggers.init();
     }
 
     @Override
@@ -57,8 +53,6 @@ public abstract class CommonProxy implements IProxy
     @Override
     public void initConfiguration(FMLPreInitializationEvent event)
     {
-        ModConfig.setConfigFile(new Configuration(event.getSuggestedConfigurationFile()));
-        ModConfig.syncConfig();
     }
 
     @Override
@@ -90,7 +84,7 @@ public abstract class CommonProxy implements IProxy
     public void registerEventHandlers()
     {
         MinecraftForge.EVENT_BUS.register(CommonEventHandler.INSTANCE);
-        MinecraftForge.EVENT_BUS.register(GroupManager.getInstance());
+        MinecraftForge.EVENT_BUS.register(GroupManager.INSTANCE);
     }
 
     @Override

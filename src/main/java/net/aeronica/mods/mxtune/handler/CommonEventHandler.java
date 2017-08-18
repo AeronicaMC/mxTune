@@ -20,23 +20,18 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
-public enum CommonEventHandler
+@Mod.EventBusSubscriber
+public class CommonEventHandler
 {
     
-    INSTANCE;
+    public static final CommonEventHandler INSTANCE = new CommonEventHandler();
     private CommonEventHandler() {}
-    
-    @SubscribeEvent
-    public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs)
-    {
-        if (eventArgs.getModID().equals(MXTuneMain.MODID)) ModConfig.syncConfig();
-    }
     
     /* 
      * Stops a playing player if they open any non-player inventory.

@@ -41,6 +41,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
@@ -50,13 +51,14 @@ import net.minecraftforge.fml.relauncher.Side;
 
 // Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
 // UUID does not work on the client.
+@Mod.EventBusSubscriber
 public class GroupManager
 {
     
-    private GroupManager() {}
-    private static class GroupManagerHolder {public static final GroupManager INSTANCE = new GroupManager();}
-    public static GroupManager getInstance() {return GroupManagerHolder.INSTANCE;}
+    public static final GroupManager INSTANCE = new GroupManager();
     private static Integer groupID = 1;
+    
+    private GroupManager() {}
 
     /*
      * The guts of the GroupManager - After looking over this weeks later I can
