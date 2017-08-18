@@ -72,11 +72,11 @@ public class ModConfig
 
         @Config.Comment("Sound Channel Configuration")
         @Config.LangKey("mxtune.configgui.soundChannelConfig")
-        public static Sound sound = new Sound();
+        public static final Sound sound = new Sound();
         
         @Config.Comment("Internet Resources")
         @Config.LangKey("mxtune.configgui.internetResouces")
-        public static Links links = new Links();
+        public static final Links links = new Links();
         
         public static class Sound
         {
