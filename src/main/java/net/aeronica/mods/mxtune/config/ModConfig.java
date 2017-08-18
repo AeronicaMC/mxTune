@@ -56,14 +56,14 @@ public class ModConfig
 
     public static void syncConfig()
     {
-        listenerRange = configFile.getFloat("listenerRange", Categories.CATEGORY_GENERAL.getName(), listenerRange, 10.0F, 64.0F, "Listener Range", "mxtune.configgui.listenerRange");
-        groupPlayAbortDistance = configFile.getFloat("groupPlayAbortDistance", Categories.CATEGORY_GENERAL.getName(), groupPlayAbortDistance, 10.0F, 24.0F, "Group Play Abort Distance", "mxtune.configgui.groupPlayAbortDistance");
-        hideWelcomeStatusMessage = configFile.getBoolean("hideWelcomeStatusMessage", Categories.CATEGORY_GENERAL.getName(), hideWelcomeStatusMessage, "Hide Welcome Status Message", "mxtune.configgui.hideWelcomeStatusMessage");
-        mmlLink = configFile.getString("mmlLink", Categories.CATEGORY_GENERAL.getName(), "https://archeagemmllibrary.com/", "MML Site URL", "mxtune.configgui.mmlLink");
+        listenerRange = configFile.getFloat("listenerRange", Categories.CATEGORY_GENERAL.getName(), listenerRange, 10.0F, 64.0F, "Listener Range", "config.mxtune:listenerRange");
+        groupPlayAbortDistance = configFile.getFloat("groupPlayAbortDistance", Categories.CATEGORY_GENERAL.getName(), groupPlayAbortDistance, 10.0F, 24.0F, "Group Play Abort Distance", "config.mxtune:groupPlayAbortDistance");
+        hideWelcomeStatusMessage = configFile.getBoolean("hideWelcomeStatusMessage", Categories.CATEGORY_GENERAL.getName(), hideWelcomeStatusMessage, "Hide Welcome Status Message", "config.mxtune:hideWelcomeStatusMessage");
+        mmlLink = configFile.getString("mmlLink", Categories.CATEGORY_GENERAL.getName(), "https://mabibeats.com/", "MML Site URL", "config.mxtune:mmlLink");
         
-        autoConfigureChannels = configFile.getBoolean("autoConfigureChannels", Categories.CATEGORY_CLIENT.getName(), autoConfigureChannels, "Automatically configure sound channels", "mxtune.configgui.autoConfigureChannels");
-        normalSoundChannelCount  = configFile.getInt("normalSoundChannelCount", Categories.CATEGORY_CLIENT.getName(), normalSoundChannelCount, 4, 60, "Number of normal sound channels to configure in the sound system (manual)", "mxtune.configgui.normalSoundChannelCount");
-        streamingSoundChannelCount = configFile.getInt("streamingSoundChannelCount", Categories.CATEGORY_CLIENT.getName(), streamingSoundChannelCount, 4, 60, "Number of streaming sound channels to configure in the sound system (manual)", "mxtune.configgui.streamingSoundChannelCount");
+        autoConfigureChannels = configFile.getBoolean("autoConfigureChannels", Categories.CATEGORY_CLIENT.getName(), autoConfigureChannels, "Automatically configure sound channels", "config.mxtune:autoConfigureChannels");
+        normalSoundChannelCount  = configFile.getInt("normalSoundChannelCount", Categories.CATEGORY_CLIENT.getName(), normalSoundChannelCount, 4, 60, "Number of normal sound channels to configure in the sound system (manual)", "config.mxtune:normalSoundChannelCount");
+        streamingSoundChannelCount = configFile.getInt("streamingSoundChannelCount", Categories.CATEGORY_CLIENT.getName(), streamingSoundChannelCount, 4, 60, "Number of streaming sound channels to configure in the sound system (manual)", "config.mxtune:streamingSoundChannelCount");
         if (configFile.hasChanged()) configFile.save();	
 	}
 	
@@ -86,7 +86,7 @@ public class ModConfig
         public String getName() {return this.name;}
 
         public String getLangKey() {
-            return MXTuneMain.MODID.toLowerCase() +".configgui.ctgy." + this.name;
+            return "config.mxtune:ctgy." + this.name;
         }
     }
 }
