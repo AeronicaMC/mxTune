@@ -32,26 +32,26 @@ public class ModConfig
     private ModConfig() { /* NOP */ }
 
     @Config(modid=MXTuneMain.MODID, name="mxtune/mxtune", type=Config.Type.INSTANCE, category="server")
-    @Config.LangKey("config.mxtune:title")
+    @Config.LangKey("config.mxtune:ctgy.general")
     public static class Server
     {
         /** General Configuration Settings */
         @Config.Name("Listener Range")
-        @Config.LangKey("mxtune.configgui.listenerRange")
+        @Config.LangKey("config.mxtune:listenerRange")
         @Config.RangeDouble(min=10.0D, max=64.0D)
         public static float listenerRange = 24.0F;
 
         @Config.Name("Group Play Abort Distance")
-        @Config.LangKey("mxtune.configgui.groupPlayAbortDistance")
+        @Config.LangKey("config.mxtune:groupPlayAbortDistance")
         @Config.RangeDouble(min=10.0D, max=24.0D)    
         public static float groupPlayAbortDistance = 10.0F;
 
         @Config.Name("Hide Welcome Status Message")
-        @Config.LangKey("mxtune.configgui.hideWelcomeStatusMessage")   
+        @Config.LangKey("config.mxtune:hideWelcomeStatusMessage")   
         public static boolean hideWelcomeStatusMessage = false;
 
         @Config.Name("Enabled Recipes")
-        @Config.LangKey("mxtune.configgui.enabledRecipes")
+        @Config.LangKey("config.mxtune:enabledRecipes")
         @Config.RequiresMcRestart
         public static String[] enabledRecipes = {
                 "mxtune:block_piano", "mxtune:item_inst.lute", "mxtune:item_inst.ukulele", "mxtune:item_inst.mandolin",
@@ -66,31 +66,31 @@ public class ModConfig
 
     /** Client Configuration Settings */
     @Config(modid = MXTuneMain.MODID, name="mxtune/mxtune_client", category="client")
-    @Config.LangKey("config.mxtune:client_title")
+    @Config.LangKey("config.mxtune:ctgy.client")
     public static class Client
     {   
 
         @Config.Comment("Sound Channel Configuration")
-        @Config.LangKey("mxtune.configgui.soundChannelConfig")
+        @Config.LangKey("config.mxtune:soundChannelConfig")
         public static final Sound sound = new Sound();
         
         @Config.Comment("Internet Resources")
-        @Config.LangKey("mxtune.configgui.internetResouces")
+        @Config.LangKey("config.mxtune:internetResouces")
         public static final Links links = new Links();
         
         public static class Sound
         {
             @Config.Name("Automatically configure sound channels")
-            @Config.LangKey("mxtune.configgui.autoConfigureChannels")
+            @Config.LangKey("config.mxtune:autoConfigureChannels")
             public boolean autoConfigureChannels = true;
 
             @Config.Name("Number of normal sound channels (manual)")
-            @Config.LangKey("mxtune.configgui.normalSoundChannelCount")
+            @Config.LangKey("config.mxtune:normalSoundChannelCount")
             @Config.RangeInt(min=4, max=60)
             public int normalSoundChannelCount = 24;
 
             @Config.Name("Number of streaming sound channels (manual)")
-            @Config.LangKey("mxtune.configgui.streamingSoundChannelCount")
+            @Config.LangKey("config.mxtune:streamingSoundChannelCount")
             @Config.RangeInt(min=4, max=60)
             public int streamingSoundChannelCount = 8;
         }
@@ -98,7 +98,7 @@ public class ModConfig
         public static class Links
         {
             @Config.Name("Site Links")
-            @Config.LangKey("mxtune.configgui.mmlLink")
+            @Config.LangKey("config.mxtune:mmlLink")
             public String site = "https://mabibeats.com/";
         }
     }
