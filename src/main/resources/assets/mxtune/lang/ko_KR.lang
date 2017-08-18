@@ -65,28 +65,28 @@ mxtune.instrumentInventory.empty=음악 악보가 없음
 soundCategory.mxtune=mxTune
 mxtune.subtitle.pcm-proxy=음악 소리
 
-mxtune.configgui.ctgy.general.tooltip=mxTune General Settings
-mxtune.configgui.ctgy.general=mxTune General Settings
+config.mxtune:ctgy.general.tooltip=mxTune General Settings
+config.mxtune:ctgy.general=mxTune General Settings
 
-mxtune.configgui.listenerRange=Listener Range
-mxtune.configgui.listenerRange.tooltip=The radius around a music source in blocks in which a player can hear music. [range: 10.0 ~ 64.0]
-mxtune.configgui.hideWelcomeStatusMessage=Hide Welcome Status Message
-mxtune.configgui.hideWelcomeStatusMessage.tooltip=Exactly as the name implies, if true the welcome message is not displayed.
-mxtune.configgui.groupPlayAbortDistance=Jam Abort Distance
-mxtune.configgui.groupPlayAbortDistance.tooltip=The maximum distance between group members. Exceeding this distance will stop the music. [range: 10.0 ~ 24.0]
-mxtune.configgui.autoConfigureChannels=Automatically configure sound channels
-mxtune.configgui.autoConfigureChannels.tooltip=Automatically configure sound channels
-mxtune.configgui.normalSoundChannelCount=Normal sound channels (manual)
-mxtune.configgui.normalSoundChannelCount.tooltip=Number of normal sound channels to configure in the sound system (manual)
-mxtune.configgui.streamingSoundChannelCount=Streaming sound channels (manual)
-mxtune.configgui.streamingSoundChannelCount.tooltip=Number of streaming sound channels to configure in the sound system (manual)
-mxtune.configgui.mmlLink=MML Site Link
-mxtune.configgui.mmlLink.tooltip=Enter a valid URL. Please test the URL thoroughly. If it is not a valid link it will appear RED in the MML 간단 편집기 dialog.
+config.mxtune:listenerRange=Listener Range
+config.mxtune:listenerRange.tooltip=The radius around a music source in blocks in which a player can hear music. [range: 10.0 ~ 64.0]
+config.mxtune:hideWelcomeStatusMessage=Hide Welcome Status Message
+config.mxtune:hideWelcomeStatusMessage.tooltip=Exactly as the name implies, if true the welcome message is not displayed.
+config.mxtune:groupPlayAbortDistance=Jam Abort Distance
+config.mxtune:groupPlayAbortDistance.tooltip=The maximum distance between group members. Exceeding this distance will stop the music. [range: 10.0 ~ 24.0]
+config.mxtune:autoConfigureChannels=Automatically configure sound channels
+config.mxtune:autoConfigureChannels.tooltip=Automatically configure sound channels
+config.mxtune:normalSoundChannelCount=Normal sound channels (manual)
+config.mxtune:normalSoundChannelCount.tooltip=Number of normal sound channels to configure in the sound system (manual)
+config.mxtune:streamingSoundChannelCount=Streaming sound channels (manual)
+config.mxtune:streamingSoundChannelCount.tooltip=Number of streaming sound channels to configure in the sound system (manual)
+config.mxtune:mmlLink=MML Site Link
+config.mxtune:mmlLink.tooltip=Enter a valid URL. Please test the URL thoroughly. If it is not a valid link it will appear RED in the MML 간단 편집기 dialog.
 soloPlayWhileWalking=Deprecated Option!
 soloPlayWhileWalking.tooltip="B:soloPlayWhileWalking=true" is Deprecated! Please manually remove the option from the mxtune.cfg
 
-mxtune.configgui.ctgy.client.tooltip=mxTune Client Settings
-mxtune.configgui.ctgy.client=mxTune Client Settings
+config.mxtune:ctgy.client.tooltip=mxTune Client Settings
+config.mxtune:ctgy.client=mxTune Client Settings
 
 mxtune.key.openParty=열린 그룹
 mxtune.key.openMusicOptions=음악 옵션
