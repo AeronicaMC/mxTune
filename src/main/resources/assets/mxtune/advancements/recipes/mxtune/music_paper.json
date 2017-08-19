@@ -2,7 +2,7 @@
   "parent": "mxtune:recipes/root",
   "rewards": {
     "recipes": [
-      "mxtune:item_musicpaper"
+      "mxtune:music_paper"
     ]
   },
   "criteria": {
@@ -20,7 +20,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "mxtune:item_musicpaper"
+        "recipe": "mxtune:music_paper"
       }
     }
   },

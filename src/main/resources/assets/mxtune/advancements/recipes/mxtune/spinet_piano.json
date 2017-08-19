@@ -2,7 +2,7 @@
   "parent": "mxtune:recipes/root",
   "rewards": {
     "recipes": [
-      "mxtune:block_piano"
+      "mxtune:spinet_piano"
     ]
   },
   "criteria": {
@@ -19,7 +19,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "mxtune:block_piano"       
+        "recipe": "mxtune:spinet_piano"       
       }
     }
   },

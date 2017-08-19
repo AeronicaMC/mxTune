@@ -139,7 +139,7 @@ public class ItemMusicPaper extends Item implements IMusic
             }
         } else
         {
-            tooltip.add(TextFormatting.RESET + I18n.format("item.mxtune:item_musicpaper.help"));
+            tooltip.add(TextFormatting.RESET + I18n.format("item.mxtune:music_paper.help"));
         }
     }
 }

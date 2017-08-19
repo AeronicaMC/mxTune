@@ -40,12 +40,11 @@ public class DisablableShapelessOreRecipeFactory implements IRecipeFactory
     @Override
     public IRecipe parse(JsonContext context, JsonObject json)
     {
-        ShapelessOreRecipe recipe = ShapelessOreRecipe.factory(context, json);
-        
+        ShapelessOreRecipe recipe = ShapelessOreRecipe.factory(context, json);      
         ItemStack result = recipe.getRecipeOutput();
         NonNullList<Ingredient> input = recipe.getIngredients();
-        return new DisablableRecipe(null, input, result);
-        //return new DisablableRecipe(new ResourceLocation(MXTuneMain.MODID, "disableable_shapeless_ore_crafting"), input, result);
+        ResourceLocation group = recipe.getGroup().isEmpty() ? null : new ResourceLocation(recipe.getGroup());
+        return new DisablableRecipe(group, input, result);
     }
 
     public static class DisablableRecipe extends ShapelessOreRecipe {

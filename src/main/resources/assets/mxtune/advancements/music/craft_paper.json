@@ -1,13 +1,13 @@
 {
     "display": {
         "icon": {
-            "item": "mxtune:item_musicpaper"
+            "item": "mxtune:music_paper"
         },
         "title": {
-            "translate": "advancements.mxtune.music.craft_paper.title"
+            "translate": "advancements.mxtune:music.craft_paper.title"
         },
         "description": {
-            "translate": "advancements.mxtune.music.craft_paper.description"
+            "translate": "advancements.mxtune:music.craft_paper.description"
         }
     },
     "parent": "mxtune:music/root",
@@ -19,6 +19,10 @@
                     {
                         "type": "forge:ore_dict",
                         "ore": "dyeBlack"
+                    },
+                    {
+                        "type": "forge:ore_dict",
+                        "ore": "paper"
                     }
                 ]
             }

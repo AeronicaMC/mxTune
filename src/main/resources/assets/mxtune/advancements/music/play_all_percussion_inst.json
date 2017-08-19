@@ -1,14 +1,14 @@
 {
     "display": {
         "icon": {
-            "item": "mxtune:item_inst",
+            "item": "mxtune:instrument",
             "data": 24
         },
         "title": {
-            "translate": "advancements.mxtune.music.play_all_percussion_inst.title"
+            "translate": "advancements.mxtune:music.play_all_percussion_inst.title"
         },
         "description": {
-            "translate": "advancements.mxtune.music.play_all_percussion_inst.description"
+            "translate": "advancements.mxtune:music.play_all_percussion_inst.description"
         },
         "frame": "challenge"
     },
@@ -20,43 +20,43 @@
         "play_bass_drum": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "BASS_DRUM"
+                "instrument": "bass_drum"
             }
         },
         "play_snare_drum": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "SNARE_DRUM"
+                "instrument": "snare_drum"
             }
         },
         "play_cymbels": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "CYMBELS"
+                "instrument": "cymbels"
             }
         },                                                
         "play_hand_chimes": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "HAND_CHIMES"
+                "instrument": "hand_chimes"
             }
         },
         "play_standard_set": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "STANDARD"
+                "instrument": "standard_set"
             }
         },
         "play_orchestra_set": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "ORCHESTRA"
+                "instrument": "orchestra_set"
             }
         },
         "play_piano": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "PIANO"
+                "instrument": "spinet_piano"
             }
         } 
     }   

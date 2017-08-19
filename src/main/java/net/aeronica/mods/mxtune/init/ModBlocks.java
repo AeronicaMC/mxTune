@@ -20,7 +20,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 public class ModBlocks
 {
    
-    public static final BlockPiano BLOCK_PIANO = registerBlock(new BlockPiano(), "block_piano");
+    public static final BlockPiano SPINET_PIANO = registerBlock(new BlockPiano(), "spinet_piano");
     private ModBlocks() {}
     
     @Mod.EventBusSubscriber
@@ -38,7 +38,7 @@ public class ModBlocks
             final IForgeRegistry<Block> registry = event.getRegistry();
 
             final Block[] blocks = {
-                    BLOCK_PIANO,
+                    SPINET_PIANO,
             };
 
             registry.registerAll(blocks);
@@ -65,7 +65,7 @@ public class ModBlocks
     }
     
     public static void registerTileEntities() {
-        GameRegistry.registerTileEntity(TilePiano.class, "tile_piano");
+        GameRegistry.registerTileEntity(TilePiano.class, "tile_spinet_piano");
     }
 
     private static <T extends Block> T registerBlock(T block, String name) {

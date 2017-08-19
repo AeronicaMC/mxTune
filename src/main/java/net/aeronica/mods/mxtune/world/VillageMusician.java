@@ -45,7 +45,7 @@ public class VillageMusician
         VillagerUtils.addSellTrade(3, musician_career, new ItemStack(ModItems.ITEM_INSTRUMENT, 1, ItemInstrument.EnumType.TUNED_FLUTE.getMeta()), 3, 6);
         VillagerUtils.addSellTrade(4, musician_career, new ItemStack(ModItems.ITEM_INSTRUMENT, 1, ItemInstrument.EnumType.ELECTRIC_GUITAR.getMeta()), 3, 6);
         VillagerUtils.addSellTrade(4, musician_career, new ItemStack(ModItems.ITEM_INSTRUMENT, 1, ItemInstrument.EnumType.HAND_CHIMES.getMeta()), 3, 6);
-        VillagerUtils.addSellTrade(5, musician_career, new ItemStack(ModItems.ITEM_PIANO), 6, 10);
+        VillagerUtils.addSellTrade(5, musician_career, new ItemStack(ModItems.ITEM_SPINET_PIANO), 6, 10);
         return musician;
     }
 

@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.aeronica.mods.mxtune.blocks.ItemPiano;
-import net.aeronica.mods.mxtune.items.ItemConverter;
 import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.aeronica.mods.mxtune.items.ItemMusicPaper;
 import net.aeronica.mods.mxtune.items.ItemSheetMusic;
@@ -19,11 +18,10 @@ import net.minecraftforge.registries.IForgeRegistry;
 public class ModItems
 {
     
-    public static final ItemInstrument ITEM_INSTRUMENT = registerItem(new ItemInstrument(), "item_inst");
-    public static final ItemMusicPaper ITEM_MUSIC_PAPER = registerItem(new ItemMusicPaper(), "item_musicpaper");
-    public static final ItemSheetMusic ITEM_SHEET_MUSIC = registerItem(new ItemSheetMusic(), "item_sheetmusic");
-    public static final ItemConverter ITEM_CONVERTER = registerItem(new ItemConverter(), "item_converter");
-    public static final ItemPiano ITEM_PIANO = registerItem(new ItemPiano(), "block_piano");
+    public static final ItemInstrument ITEM_INSTRUMENT = registerItem(new ItemInstrument(), "instrument");
+    public static final ItemMusicPaper ITEM_MUSIC_PAPER = registerItem(new ItemMusicPaper(), "music_paper");
+    public static final ItemSheetMusic ITEM_SHEET_MUSIC = registerItem(new ItemSheetMusic(), "sheet_music");
+    public static final ItemPiano ITEM_SPINET_PIANO = registerItem(new ItemPiano(), "spinet_piano");
    
     @Mod.EventBusSubscriber
     public static class RegistrationHandler {
@@ -40,8 +38,7 @@ public class ModItems
                     ITEM_INSTRUMENT,
                     ITEM_MUSIC_PAPER,
                     ITEM_SHEET_MUSIC,
-                    ITEM_CONVERTER,
-                    ITEM_PIANO,
+                    ITEM_SPINET_PIANO,
             };
 
             final IForgeRegistry<Item> registry = event.getRegistry();

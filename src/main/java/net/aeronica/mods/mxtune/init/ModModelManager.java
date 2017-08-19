@@ -83,12 +83,12 @@ public class ModModelManager
     
     private void registerBlockModels()
     {
-        ModelLoader.setCustomStateMapper(ModBlocks.BLOCK_PIANO, new StateMap.Builder().ignore(new IProperty[]
+        ModelLoader.setCustomStateMapper(ModBlocks.SPINET_PIANO, new StateMap.Builder().ignore(new IProperty[]
                 {
                         BlockPiano.OCCUPIED
                 }).build());
 
-        registerItemModel(ModBlocks.BLOCK_PIANO);
+        registerItemModel(ModBlocks.SPINET_PIANO);
     }
     
     public void registerTileRenderers() {
@@ -104,7 +104,7 @@ public class ModModelManager
         // registerItemModel(ModBlocks.BLOCK_PIANO);
         
 
-        registerVariantItemModels(ModItems.ITEM_INSTRUMENT, "item_inst", ItemInstrument.EnumType.values());
+        registerVariantItemModels(ModItems.ITEM_INSTRUMENT, "instrument", ItemInstrument.EnumType.values());
 
         // Then register items with default model names
         ModItems.RegistrationHandler.ITEMS.stream().filter(item -> !itemsRegistered.contains(item)).forEach(this::registerItemModel);

@@ -30,7 +30,7 @@ public class RecipeFactoryUtils
     {
         String unlocalizedName = stackIn.getUnlocalizedName().replaceFirst("item\\.", "");
         Boolean state = Arrays.asList(ModConfig.getEnabledRecipes()).contains(unlocalizedName);
-        ModLogger.info("enabledRecipe? %s %s", unlocalizedName, state);
+        ModLogger.debug("enabledRecipe? %s %s", unlocalizedName, state);
         return state;
     }
     

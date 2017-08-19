@@ -54,13 +54,14 @@ public class ModConfig
         @Config.LangKey("config.mxtune:enabledRecipes")
         @Config.RequiresMcRestart
         public static String[] enabledRecipes = {
-                "mxtune:block_piano", "mxtune:item_inst.lute", "mxtune:item_inst.ukulele", "mxtune:item_inst.mandolin",
-                "mxtune:item_inst.whistle", "mxtune:item_inst.roncadora", "mxtune:item_inst.flute", "mxtune:item_inst.chalumeau",
-                "mxtune:item_inst.tuba", "mxtune:item_inst.lyre", "mxtune:item_inst.electric_guitar", "mxtune:item_inst.violin",
-                "mxtune:item_inst.cello", "mxtune:item_inst.harp", "mxtune:item_inst.tuned_flute", "mxtune:item_inst.tuned_whistle",
-                "mxtune:item_inst.bass_drum", "mxtune:item_inst.snare_drum", "mxtune:item_inst.cymbels", "mxtune:item_inst.hand_chimes",
-                "mxtune:item_inst.recorder", "mxtune:item_inst.trumpet", "mxtune:item_inst.harpsichord", "mxtune:item_inst.harpsichord_coupled",
-                "mxtune:item_inst.standard", "mxtune:item_inst.orchestra", "mxtune:item_musicpaper"
+                "mxtune:music_paper", "mxtune:spinet_piano",
+                "mxtune:instrument.bass_drum", "mxtune:instrument.cello", "mxtune:instrument.chalumeau", "mxtune:instrument.cymbels",
+                "mxtune:instrument.electric_guitar", "mxtune:instrument.flute", "mxtune:instrument.hand_chimes","mxtune:instrument.harp",
+                "mxtune:instrument.harpsichord", "mxtune:instrument.harpsichord_coupled", "mxtune:instrument.lute", "mxtune:instrument.lyre",
+                "mxtune:instrument.mandolin", "mxtune:instrument.orchestra_set", "mxtune:instrument.recorder", "mxtune:instrument.roncadora",
+                "mxtune:instrument.snare_drum", "mxtune:instrument.standard_set", "mxtune:instrument.trumpet", "mxtune:instrument.tuba",
+                "mxtune:instrument.tuned_flute", "mxtune:instrument.tuned_whistle", "mxtune:instrument.ukulele",
+                "mxtune:instrument.violin", "mxtune:instrument.whistle"
         };
     }
 
@@ -106,9 +107,6 @@ public class ModConfig
     /** @return the configFile */
     public static Configuration getConfigFile() {return null;}
 
-    /** @param configFile the configFile to set */
-    public static void setConfigFile(Configuration configFile) { /* TODO */ }
-
     public static float getListenerRange() {return Server.listenerRange;}
 
     public static float getGroupPlayAbortDistance() {return Server.groupPlayAbortDistance;}
@@ -124,22 +122,21 @@ public class ModConfig
     public static String getMmlLink() {return Client.links.site;}
 
     public static String[] getEnabledRecipes() {return Server.enabledRecipes;}
-
-    //    public static void syncConfig()
-    //    {
-    //        Configuration configFile = null;
-    //        listenerRange = configFile.getFloat("listenerRange", "general", listenerRange, 10.0F, 64.0F, "Listener Range", "mxtune.configgui.listenerRange");
-    //        groupPlayAbortDistance = configFile.getFloat("groupPlayAbortDistance", "general", groupPlayAbortDistance, 10.0F, 24.0F, "Group Play Abort Distance", "mxtune.configgui.groupPlayAbortDistance");
-    //        hideWelcomeStatusMessage = configFile.getBoolean("hideWelcomeStatusMessage", "general", hideWelcomeStatusMessage, "Hide Welcome Status Message", "mxtune.configgui.hideWelcomeStatusMessage");
-    //        mmlLink = configFile.getString("mmlLink", "general", "https://mabibeats.com/", "MML Site URL", "mxtune.configgui.mmlLink");
-    //        
-    //        autoConfigureChannels = configFile.getBoolean("autoConfigureChannels", "client", autoConfigureChannels, "Automatically configure sound channels", "mxtune.configgui.autoConfigureChannels");
-    //        normalSoundChannelCount  = configFile.getInt("normalSoundChannelCount", "client", normalSoundChannelCount, 4, 60, "Number of normal sound channels to configure in the sound system (manual)", "mxtune.configgui.normalSoundChannelCount");
-    //        streamingSoundChannelCount = configFile.getInt("streamingSoundChannelCount", "client", streamingSoundChannelCount, 4, 60, "Number of streaming sound channels to configure in the sound system (manual)", "mxtune.configgui.streamingSoundChannelCount");
-    //                
-    //        //enabledRecipes = configFile.get("recipes", "enabledRecipes", receipeDefaults, "Enabled Recipes", true, receipeDefaults.length, validationPattern).setLanguageKey("mxtune.configgui.enabledRecipes").setArrayEntryClass(ModConfig.EnabledRecipeEntry.class).setRequiresMcRestart(true);
-    //        if (configFile.hasChanged()) configFile.save();
-    //	}
+    
+    public static String[] getDefaultRecipes()
+    {        
+        final String[] defaultRecipes = {
+                "mxtune:music_paper", "mxtune:spinet_piano",
+                "mxtune:instrument.bass_drum", "mxtune:instrument.cello", "mxtune:instrument.chalumeau", "mxtune:instrument.cymbels",
+                "mxtune:instrument.electric_guitar", "mxtune:instrument.flute", "mxtune:instrument.hand_chimes","mxtune:instrument.harp",
+                "mxtune:instrument.harpsichord", "mxtune:instrument.harpsichord_coupled", "mxtune:instrument.lute", "mxtune:instrument.lyre",
+                "mxtune:instrument.mandolin", "mxtune:instrument.orchestra_set", "mxtune:instrument.recorder", "mxtune:instrument.roncadora",
+                "mxtune:instrument.snare_drum", "mxtune:instrument.standard_set", "mxtune:instrument.trumpet", "mxtune:instrument.tuba",
+                "mxtune:instrument.tuned_flute", "mxtune:instrument.tuned_whistle", "mxtune:instrument.ukulele",
+                "mxtune:instrument.violin", "mxtune:instrument.whistle"
+        };
+        return defaultRecipes;
+    }
 
     @Mod.EventBusSubscriber
     public static class RegistrationHandler {

@@ -1,28 +1,28 @@
 {
     "display": {
         "icon": {
-            "item": "mxtune:item_inst",
+            "item": "mxtune:instrument",
             "data": 10
         },
         "title": {
-            "translate": "advancements.mxtune.music.play_string_inst.title"
+            "translate": "advancements.mxtune:music.play_string_inst.title"
         },
         "description": {
-            "translate": "advancements.mxtune.music.play_string_inst.description"
+            "translate": "advancements.mxtune:music.play_string_inst.description"
         }
     },
-    "parent": "mxtune:music/write_sheetmusic",
+    "parent": "mxtune:music/write_sheet_music",
     "criteria": {
         "play_violin": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "VIOLIN"
+                "instrument": "violin"
             }
         },
         "play_cello": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "CELLO"
+                "instrument": "cello"
             }
         }                                                 
     },

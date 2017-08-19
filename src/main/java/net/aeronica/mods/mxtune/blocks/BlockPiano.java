@@ -145,7 +145,7 @@ public class BlockPiano extends BlockInstrument2H
                 if (ServerCSDManager.canMXTunesPlay(playerIn))
                 {
                     ((EntitySittableBlock) playerIn.getRidingEntity()).setPlayID(PlayManager.playMusic(playerIn, pos));
-                    ModCriteriaTriggers.PLAY_INSTRUMENT.trigger((EntityPlayerMP) playerIn, "PIANO");
+                    ModCriteriaTriggers.PLAY_INSTRUMENT.trigger((EntityPlayerMP) playerIn, "spinet_piano");
                 }
                 else
                     ServerCSDManager.sendErrorViaChat(playerIn);
@@ -301,7 +301,7 @@ public class BlockPiano extends BlockInstrument2H
     @Override
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
-        return new ItemStack(ModItems.ITEM_PIANO);
+        return new ItemStack(ModItems.ITEM_SPINET_PIANO);
     }
     
     @Override
@@ -336,7 +336,7 @@ public class BlockPiano extends BlockInstrument2H
     @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return state.getValue(PART) == BlockPiano.EnumPartType.RIGHT ? null : ModItems.ITEM_PIANO;
+        return state.getValue(PART) == BlockPiano.EnumPartType.RIGHT ? null : ModItems.ITEM_SPINET_PIANO;
     }
     
     /**

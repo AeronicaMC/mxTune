@@ -106,7 +106,7 @@ public class ItemInstrument extends Item implements IInstrument
                         Integer playID = PlayManager.playMusic(playerIn);
                         itemStackIn.setRepairCost(playID != null ? playID : -1);
                         if (playID != null)
-                            ModCriteriaTriggers.PLAY_INSTRUMENT.trigger((EntityPlayerMP) playerIn, EnumType.byMetadata(itemStackIn.getMetadata()).name());
+                            ModCriteriaTriggers.PLAY_INSTRUMENT.trigger((EntityPlayerMP) playerIn, EnumType.byMetadata(itemStackIn.getMetadata()).getName());
                     }
                 } 
                 else
@@ -208,9 +208,9 @@ public class ItemInstrument extends Item implements IInstrument
     {
         String musicTitle = SheetMusicUtil.getMusicTitle(stackIn);
         if (!musicTitle.isEmpty())
-            tooltip.add(TextFormatting.GREEN + I18n.format("item.mxtune:item_instrument.title") + ": " + musicTitle);
+            tooltip.add(TextFormatting.GREEN + I18n.format("item.mxtune:instrument.title") + ": " + musicTitle);
         
-        tooltip.add(TextFormatting.RESET + I18n.format("item.mxtune:item_instrument.help"));
+        tooltip.add(TextFormatting.RESET + I18n.format("item.mxtune:instrument.help"));
     }
 
     @Override
@@ -227,7 +227,7 @@ public class ItemInstrument extends Item implements IInstrument
         WHISTLE(3, "whistle", 3),
         RONCADORA(4, "roncadora", 4),
         FLUTE(5, "flute", 5),
-        CHALAMEU(6, "chalumeau", 6),
+        CHALUMEAU(6, "chalumeau", 6),
         TUBA(7, "tuba", 18),
         LYRE(8, "lyre", 19),
         ELECTRIC_GUITAR(9, "electric_guitar", 20),
@@ -242,10 +242,10 @@ public class ItemInstrument extends Item implements IInstrument
         HAND_CHIMES(18, "hand_chimes", 77),
         RECORDER(19, "recorder", MMLUtil.preset2PackedPreset(16, 74)),
         TRUMPET(20, "trumpet", MMLUtil.preset2PackedPreset(16, 56)),
-        HARPSICORD(21, "harpsichord", MMLUtil.preset2PackedPreset(16, 6)),
-        HARPSICORD_COUPLED(22, "harpsichord_coupled", MMLUtil.preset2PackedPreset(16, 7)),
-        STANDARD(23, "standard", MMLUtil.preset2PackedPreset(128, 0)),
-        ORCHESTRA(24, "orchestra", MMLUtil.preset2PackedPreset(128, 48)),
+        HARPSICHORD(21, "harpsichord", MMLUtil.preset2PackedPreset(16, 6)),
+        HARPSICHORD_COUPLED(22, "harpsichord_coupled", MMLUtil.preset2PackedPreset(16, 7)),
+        STANDARD_SET(23, "standard_set", MMLUtil.preset2PackedPreset(128, 0)),
+        ORCHESTRA_SET(24, "orchestra_set", MMLUtil.preset2PackedPreset(128, 48)),
         ;
 
         @Override

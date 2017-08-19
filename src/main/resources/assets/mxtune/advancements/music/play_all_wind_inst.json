@@ -1,14 +1,14 @@
 {
     "display": {
         "icon": {
-            "item": "mxtune:item_inst",
+            "item": "mxtune:instrument",
             "data": 19
         },
         "title": {
-            "translate": "advancements.mxtune.music.play_all_wind_inst.title"
+            "translate": "advancements.mxtune:music.play_all_wind_inst.title"
         },
         "description": {
-            "translate": "advancements.mxtune.music.play_all_wind_inst.description"
+            "translate": "advancements.mxtune:music.play_all_wind_inst.description"
         },
         "frame": "challenge"
     },
@@ -20,37 +20,37 @@
         "play_whistle": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "WHISTLE"
+                "instrument": "whistle"
             }
         },
         "play_roncadora": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "RONCADORA"
+                "instrument": "roncadora"
             }
         },
         "play_flute": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "FLUTE"
+                "instrument": "flute"
             }
         },
         "play_tuned_flute": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "TUNED_FLUTE"
+                "instrument": "tuned_flute"
             }
         },
         "play_tuned_whistle": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "TUNED_WHISTLE"
+                "instrument": "tuned_whistle"
             }
         },
         "play_recorder": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "RECORDER"
+                "instrument": "recorder"
             }
         }                                                  
     }  

@@ -1,14 +1,14 @@
 {
     "display": {
         "icon": {
-            "item": "mxtune:item_inst",
+            "item": "mxtune:instrument",
             "data": 7
         },
         "title": {
-            "translate": "advancements.mxtune.music.play_all_brass_inst.title"
+            "translate": "advancements.mxtune:music.play_all_brass_inst.title"
         },
         "description": {
-            "translate": "advancements.mxtune.music.play_all_brass_inst.description"
+            "translate": "advancements.mxtune:music.play_all_brass_inst.description"
         },
         "frame": "challenge"
     },
@@ -20,13 +20,13 @@
         "play_tuba": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "TUBA"
+                "instrument": "tuba"
             }
         },
         "play_trumpet": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "TRUMPET"
+                "instrument": "trumpet"
             }
         }                                                 
     } 

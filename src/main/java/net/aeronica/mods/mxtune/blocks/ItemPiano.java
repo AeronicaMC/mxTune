@@ -80,7 +80,7 @@ public class ItemPiano extends Item
                 /** Disallow placing blocks on water or other unstable blocks */
                 if (flag2 && flag3 && worldIn.getBlockState(pos.down()).isFullCube() && worldIn.getBlockState(blockpos.down()).isFullCube())
                 {
-                    IBlockState iblockstate1 = ModBlocks.BLOCK_PIANO.getDefaultState().withProperty(BlockPiano.OCCUPIED, Boolean.valueOf(false)).withProperty(BlockPiano.FACING, enumfacing)
+                    IBlockState iblockstate1 = ModBlocks.SPINET_PIANO.getDefaultState().withProperty(BlockPiano.OCCUPIED, Boolean.valueOf(false)).withProperty(BlockPiano.FACING, enumfacing)
                             .withProperty(BlockPiano.PART, BlockPiano.EnumPartType.LEFT);
 
                     if (worldIn.setBlockState(pos, iblockstate1, 11))

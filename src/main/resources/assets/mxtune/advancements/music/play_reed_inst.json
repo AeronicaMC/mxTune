@@ -1,22 +1,22 @@
 {
     "display": {
         "icon": {
-            "item": "mxtune:item_inst",
+            "item": "mxtune:instrument",
             "data": 6
         },
         "title": {
-            "translate": "advancements.mxtune.music.play_reed_inst.title"
+            "translate": "advancements.mxtune:music.play_reed_inst.title"
         },
         "description": {
-            "translate": "advancements.mxtune.music.play_reed_inst.description"
+            "translate": "advancements.mxtune:music.play_reed_inst.description"
         }
     },
-    "parent": "mxtune:music/write_sheetmusic",
+    "parent": "mxtune:music/write_sheet_music",
     "criteria": {
         "play_chalumeau": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "CHALAMEU"
+                "instrument": "chalumeau"
             }
         }                                                 
     },

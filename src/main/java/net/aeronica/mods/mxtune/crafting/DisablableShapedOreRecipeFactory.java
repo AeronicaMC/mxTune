@@ -19,7 +19,6 @@ import javax.annotation.Nonnull;
 
 import com.google.gson.JsonObject;
 
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -42,14 +41,13 @@ public class DisablableShapedOreRecipeFactory implements IRecipeFactory
     public IRecipe parse(JsonContext context, JsonObject json)
     {
         ShapedOreRecipe recipe = ShapedOreRecipe.factory(context, json);
-
         ShapedPrimer primer = new ShapedPrimer();
         primer.width = recipe.getWidth();
         primer.height = recipe.getHeight();
         primer.mirrored = JsonUtils.getBoolean(json, "mirrored", true);
         primer.input = recipe.getIngredients();
-        return new DisablableRecipe(null, recipe.getRecipeOutput(), primer); 
-        //return new DisablableRecipe(new ResourceLocation(MXTuneMain.MODID, "disableable_shaped_ore_crafting"), recipe.getRecipeOutput(), primer); 
+        ResourceLocation group = recipe.getGroup().isEmpty() ? null : new ResourceLocation(recipe.getGroup());
+        return new DisablableRecipe(group, recipe.getRecipeOutput(), primer); 
     }
 
     public static class DisablableRecipe extends ShapedOreRecipe {

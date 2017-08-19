@@ -1,14 +1,14 @@
 {
     "display": {
         "icon": {
-            "item": "mxtune:item_inst",
+            "item": "mxtune:instrument",
             "data": 12
         },
         "title": {
-            "translate": "advancements.mxtune.music.play_all_plucked_inst.title"
+            "translate": "advancements.mxtune:music.play_all_plucked_inst.title"
         },
         "description": {
-            "translate": "advancements.mxtune.music.play_all_plucked_inst.description"
+            "translate": "advancements.mxtune:music.play_all_plucked_inst.description"
         },
         "frame": "challenge"
     },
@@ -20,49 +20,49 @@
         "play_lute": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "LUTE"
+                "instrument": "lute"
             }
         },
         "play_ukulele": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "UKULELE"
+                "instrument": "ukulele"
             }
         },
         "play_mandolin": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "MANDOLIN"
+                "instrument": "mandolin"
             }
         },
         "play_lyre": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "LYRE"
+                "instrument": "lyre"
             }
         },
         "play_electric_guitar": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "ELECTRIC_GUITAR"
+                "instrument": "electric_guitar"
             }
         },
         "play_harp": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "HARP"
+                "instrument": "harp"
             }
         },
         "play_harpsichord": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "HARPSICORD"
+                "instrument": "harpsichord"
             }
         },       
         "play_harpsichord_coupled": {
             "trigger": "mxtune:play_instrument",
             "conditions": {
-                "instrument": "HARPSICORD_COUPLED"
+                "instrument": "harpsichord_coupled"
             }
         }                 
     }   
