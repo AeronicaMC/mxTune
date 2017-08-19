@@ -1,0 +1,21 @@
+{
+  "result": {
+    "item": "mxtune:instrument",
+    "data": 1
+  },
+  "pattern": [
+    " P ",
+    " P ",
+    "PWP"
+  ],
+  "type": "mxtune:disablable_ore_shaped",
+  "key": {
+    "P": {
+      "item": "#PLANKWOOD"
+    },
+    "W": {
+      "item": "minecraft:wool",
+      "data": 0
+    }
+  }
+}

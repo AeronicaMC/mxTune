@@ -1,0 +1,129 @@
+{
+	"forge_marker": 1,
+	"defaults": {
+		"model": "mxtune:item/generated"
+	},
+	"variants": {
+		"instrument": {
+			"lute": {
+				"model": "mxtune:item/lute"
+			},
+			"ukulele": {
+				"textures": {
+					"layer0": "mxtune:items/ukulele"
+				}
+			},
+			"mandolin": {
+				"textures": {
+					"layer0": "mxtune:items/mandolin"
+				}
+			},
+			"whistle": {
+				"textures": {
+					"layer0": "mxtune:items/whistle"
+				}
+			},
+			"roncadora": {
+				"textures": {
+					"layer0": "mxtune:items/roncadora"
+				}
+			},
+			"flute": {
+				"textures": {
+					"layer0": "mxtune:items/flute"
+				}
+			},
+			"chalumeau": {
+				"model": "mxtune:item/chalumeau"
+			},
+			"tuba": {
+				"textures": {
+					"layer0": "mxtune:items/tuba"
+				}
+			},
+			"lyre": {
+				"textures": {
+					"layer0": "mxtune:items/lyre"
+				}
+			},			
+			"electric_guitar": {
+				"model": "mxtune:item/electric_guitar"
+			},
+			"violin": {
+				"textures": {
+					"layer0": "mxtune:items/violin"
+				}
+			},
+			"cello": {
+				"textures": {
+					"layer0": "mxtune:items/cello"
+				}
+			},
+			"harp": {
+				"textures": {
+					"layer0": "mxtune:items/harp"
+				}
+			},
+			"tuned_flute": {
+				"textures": {
+					"layer0": "mxtune:items/tuned_flute"
+				}
+			},
+			"tuned_whistle": {
+				"textures": {
+					"layer0": "mxtune:items/tuned_whistle"
+				}
+			},
+			"bass_drum": {
+				"textures": {
+					"layer0": "mxtune:items/bass_drum"
+				}
+			},
+			"snare_drum": {
+				"textures": {
+					"layer0": "mxtune:items/snare_drum"
+				}
+			},
+			"cymbels": {
+				"textures": {
+					"layer0": "mxtune:items/cymbels"
+				}
+			},
+			"hand_chimes": {
+				"textures": {
+					"layer0": "mxtune:items/hand_chimes"
+				}
+			},
+			"recorder": {
+				"textures": {
+					"layer0": "mxtune:items/recorder"
+				}
+			},
+			"trumpet": {
+				"textures": {
+					"layer0": "mxtune:items/trumpet"
+				}
+			},
+			"harpsichord": {
+				"textures": {
+					"layer0": "mxtune:items/harpsichord"
+				}
+			},
+			"harpsichord_coupled": {
+				"textures": {
+					"layer0": "mxtune:items/harpsichord_coupled"
+				}
+			},
+			"standard_set": {
+				"textures": {
+					"layer0": "mxtune:items/standard_set"
+				}
+			},
+			"orchestra_set": {
+				"textures": {
+					"layer0": "mxtune:items/orchestra_set"
+				}
+			}					
+		}
+	}
+}

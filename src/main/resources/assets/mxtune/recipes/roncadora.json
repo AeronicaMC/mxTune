@@ -1,0 +1,20 @@
+{
+  "result": {
+    "item": "mxtune:instrument",
+    "data": 4
+  },
+  "pattern": [
+    " # ",
+    " X ",
+    " X "
+  ],
+  "type": "mxtune:disablable_ore_shaped",
+  "key": {
+    "#": {
+      "item": "#SUGARCANE"
+    },
+    "X": {
+      "item": "minecraft:clay_ball"
+    }
+  }
+}

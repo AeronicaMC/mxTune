@@ -1,0 +1,20 @@
+{
+  "result": {
+    "item": "mxtune:instrument",
+    "data": 2
+  },
+  "pattern": [
+    " P ",
+    " P ",
+    "PSP"
+  ],
+  "type": "mxtune:disablable_ore_shaped",
+  "key": {
+    "P": {
+      "item": "#PLANKWOOD"
+    },
+    "S": {
+      "item": "#STRING"
+    }
+  }
+}

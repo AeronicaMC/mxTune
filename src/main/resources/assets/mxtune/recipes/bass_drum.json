@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "mxtune:instrument",
+    "data": 15
+  },
+  "pattern": [
+    "PPL",
+    "PIL",
+    "PPL"
+  ],
+  "type": "mxtune:disablable_ore_shaped",
+  "key": {
+    "P": {
+      "item": "#PLANKWOOD"
+    },
+    "I": {
+      "item": "#INGOTIRON"
+    },
+    "L": {
+      "item": "#LEATHER"
+    }
+  }
+}

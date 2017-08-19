@@ -1,0 +1,20 @@
+{
+  "result": {
+    "item": "mxtune:instrument",
+    "data": 7
+  },
+  "pattern": [
+    "GGG",
+    " I ",
+    " I "
+  ],
+  "type": "mxtune:disablable_ore_shaped",
+  "key": {
+    "G": {
+      "item": "#NUGGETGOLD"
+    },
+    "I": {
+      "item": "#INGOTIRON"
+    }
+  }
+}

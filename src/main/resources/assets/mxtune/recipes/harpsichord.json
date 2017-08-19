@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "mxtune:instrument",
+    "data": 21
+  },
+  "pattern": [
+    "PRP",
+    "PFP",
+    "PPP"
+  ],
+  "type": "mxtune:disablable_ore_shaped",
+  "key": {
+    "P": {
+      "item": "#PLANKWOOD"
+    },
+    "R": {
+      "item": "minecraft:item_frame"
+    },
+    "F": {
+      "item": "#FEATHER"
+    }
+  }
+}

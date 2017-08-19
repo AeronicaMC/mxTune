@@ -1,0 +1,20 @@
+{
+  "result": {
+    "item": "mxtune:instrument",
+    "data": 6
+  },
+  "pattern": [
+    " R ",
+    " P ",
+    " P "
+  ],
+  "type": "mxtune:disablable_ore_shaped",
+  "key": {
+    "P": {
+      "item": "#PLANKWOOD"
+    },
+    "R": {
+      "item": "#SUGARCANE"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "result": {
+    "item": "mxtune:instrument",
+    "data": 14
+  },
+  "ingredients": [
+    {
+      "item": "mxtune:instrument",
+      "data": 3
+    },
+    {
+      "item": "#NUGGETGOLD"
+    }
+  ],
+  "type": "mxtune:disablable_ore_shapeless"
+}
