@@ -17,7 +17,7 @@
       "conditions": {
         "items": [
           {
-            "item": "mxtune:item_inst",
+            "item": "mxtune:instrument",
             "data": 5
           }
         ]

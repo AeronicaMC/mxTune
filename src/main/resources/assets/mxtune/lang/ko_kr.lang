@@ -101,6 +101,8 @@ config.mxtune:ctgy.client=mxTune Client Settings
 config.mxtune:ctgy.recipes.tooltip=mxTune Recipe Settings
 config.mxtune:ctgy.recipes=mxTune Recipes
 
+config.mxtune:generalSoundConfig=Sound Settings
+config.mxtune:generalSoundConfig.tooltip=Sound Settings
 config.mxtune:listenerRange=Listener Range
 config.mxtune:listenerRange.tooltip=The radius around a music source in blocks in which a player can hear music. [range: 10.0 ~ 64.0]
 config.mxtune:hideWelcomeStatusMessage=Hide Welcome Status Message

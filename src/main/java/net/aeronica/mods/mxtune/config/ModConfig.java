@@ -16,59 +16,55 @@
  */
 package net.aeronica.mods.mxtune.config;
 
+import java.util.Map;
+
+import com.google.common.collect.Maps;
+
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
 
 public class ModConfig
 {
     
     private ModConfig() { /* NOP */ }
 
-    @Config(modid=MXTuneMain.MODID, name="mxtune/mxtune", type=Config.Type.INSTANCE, category="server")
+    @Config(modid=MXTuneMain.MODID, name = MXTuneMain.MODID + "/" +MXTuneMain.MODID, type=Config.Type.INSTANCE, category="general")
     @Config.LangKey("config.mxtune:ctgy.general")
-    public static class Server
+    public static class CFG_GENERAL
     {
-        /** General Configuration Settings */
-        @Config.Name("Listener Range")
-        @Config.LangKey("config.mxtune:listenerRange")
-        @Config.RangeDouble(min=10.0D, max=64.0D)
-        public static float listenerRange = 24.0F;
+        @Config.Comment("Sound Configuration")
+        @Config.LangKey("config.mxtune:generalSoundConfig")
+        public static final Sound sound = new Sound();
+        
+        public static class Sound
+        {
+            /** General Configuration Settings */
+            @Config.Name("Listener Range")
+            @Config.LangKey("config.mxtune:listenerRange")
+            @Config.RangeDouble(min=10.0D, max=64.0D)
+            public float listenerRange = 24.0F;
 
-        @Config.Name("Group Play Abort Distance")
-        @Config.LangKey("config.mxtune:groupPlayAbortDistance")
-        @Config.RangeDouble(min=10.0D, max=24.0D)    
-        public static float groupPlayAbortDistance = 10.0F;
+            @Config.Name("Group Play Abort Distance")
+            @Config.LangKey("config.mxtune:groupPlayAbortDistance")
+            @Config.RangeDouble(min=10.0D, max=24.0D)    
+            public float groupPlayAbortDistance = 10.0F;
 
-        @Config.Name("Hide Welcome Status Message")
-        @Config.LangKey("config.mxtune:hideWelcomeStatusMessage")   
-        public static boolean hideWelcomeStatusMessage = false;
-
-        @Config.Name("Enabled Recipes")
-        @Config.LangKey("config.mxtune:enabledRecipes")
-        @Config.RequiresMcRestart
-        public static String[] enabledRecipes = {
-                "mxtune:music_paper", "mxtune:spinet_piano",
-                "mxtune:instrument.bass_drum", "mxtune:instrument.cello", "mxtune:instrument.chalumeau", "mxtune:instrument.cymbels",
-                "mxtune:instrument.electric_guitar", "mxtune:instrument.flute", "mxtune:instrument.hand_chimes","mxtune:instrument.harp",
-                "mxtune:instrument.harpsichord", "mxtune:instrument.harpsichord_coupled", "mxtune:instrument.lute", "mxtune:instrument.lyre",
-                "mxtune:instrument.mandolin", "mxtune:instrument.orchestra_set", "mxtune:instrument.recorder", "mxtune:instrument.roncadora",
-                "mxtune:instrument.snare_drum", "mxtune:instrument.standard_set", "mxtune:instrument.trumpet", "mxtune:instrument.tuba",
-                "mxtune:instrument.tuned_flute", "mxtune:instrument.tuned_whistle", "mxtune:instrument.ukulele",
-                "mxtune:instrument.violin", "mxtune:instrument.whistle"
-        };
+            @Config.Name("Hide Welcome Status Message")
+            @Config.LangKey("config.mxtune:hideWelcomeStatusMessage")   
+            public boolean hideWelcomeStatusMessage = false;
+        }
     }
 
     /** Client Configuration Settings */
-    @Config(modid = MXTuneMain.MODID, name="mxtune/mxtune_client", category="client")
+    @Config(modid = MXTuneMain.MODID, name = MXTuneMain.MODID + "/" +MXTuneMain.MODID, category="client")
     @Config.LangKey("config.mxtune:ctgy.client")
-    public static class Client
+    public static class CFG_CLIENT
     {   
 
         @Config.Comment("Sound Channel Configuration")
@@ -103,41 +99,70 @@ public class ModConfig
             public String site = "https://mabibeats.com/";
         }
     }
-
-    /** @return the configFile */
-    public static Configuration getConfigFile() {return null;}
-
-    public static float getListenerRange() {return Server.listenerRange;}
-
-    public static float getGroupPlayAbortDistance() {return Server.groupPlayAbortDistance;}
-
-    public static boolean hideWelcomeStatusMessage() {return Server.hideWelcomeStatusMessage;}
-
-    public static boolean getAutoConfigureChannels() {return Client.sound.autoConfigureChannels;}
-
-    public static int getNormalSoundChannelCount() {return Client.sound.normalSoundChannelCount;}
-
-    public static int getStreamingSoundChannelCount() {return Client.sound.streamingSoundChannelCount;}
-
-    public static String getMmlLink() {return Client.links.site;}
-
-    public static String[] getEnabledRecipes() {return Server.enabledRecipes;}
     
-    public static String[] getDefaultRecipes()
-    {        
-        final String[] defaultRecipes = {
-                "mxtune:music_paper", "mxtune:spinet_piano",
-                "mxtune:instrument.bass_drum", "mxtune:instrument.cello", "mxtune:instrument.chalumeau", "mxtune:instrument.cymbels",
-                "mxtune:instrument.electric_guitar", "mxtune:instrument.flute", "mxtune:instrument.hand_chimes","mxtune:instrument.harp",
-                "mxtune:instrument.harpsichord", "mxtune:instrument.harpsichord_coupled", "mxtune:instrument.lute", "mxtune:instrument.lyre",
-                "mxtune:instrument.mandolin", "mxtune:instrument.orchestra_set", "mxtune:instrument.recorder", "mxtune:instrument.roncadora",
-                "mxtune:instrument.snare_drum", "mxtune:instrument.standard_set", "mxtune:instrument.trumpet", "mxtune:instrument.tuba",
-                "mxtune:instrument.tuned_flute", "mxtune:instrument.tuned_whistle", "mxtune:instrument.ukulele",
-                "mxtune:instrument.violin", "mxtune:instrument.whistle"
-        };
-        return defaultRecipes;
-    }
+    @Config(modid = MXTuneMain.MODID, name = MXTuneMain.MODID + "/" +MXTuneMain.MODID + "_recipes", type = Config.Type.INSTANCE, category="recipe")
+    @Config.LangKey("config.mxtune:ctgy.recipes")
+    public static class CONFIG_RECIPE
+    { 
+        @Config.Name("toggles")
+        @Config.Comment({"mxTune Recipes", "Requires a Server Restart if Changed!", "B:<name>=(true|false)"})
+        @Config.RequiresMcRestart
+        public static Map<String, Boolean> recipeToggles;
 
+        private static final String[] modItemRecipeNames = {
+                "music_paper", "spinet_piano",
+                "bass_drum", "cello", "chalumeau", "cymbels",
+                "electric_guitar", "flute", "hand_chimes","harp",
+                "harpsichord", "harpsichord_coupled", "lute", "lyre",
+                "mandolin", "orchestra_set", "recorder", "roncadora",
+                "snare_drum", "standard_set", "trumpet", "tuba",
+                "tuned_flute", "tuned_whistle", "ukulele",
+                "violin", "whistle"
+        };
+        
+        static
+        {
+            recipeToggles = Maps.newHashMap();
+            for (int i = 0; i < modItemRecipeNames.length; i++)
+            {
+                recipeToggles.put(modItemRecipeNames[i], true);
+            }
+        }
+    }
+    
+    public static float getListenerRange() {return CFG_GENERAL.sound.listenerRange;}
+
+    public static float getGroupPlayAbortDistance() {return CFG_GENERAL.sound.groupPlayAbortDistance;}
+
+    public static boolean hideWelcomeStatusMessage() {return CFG_GENERAL.sound.hideWelcomeStatusMessage;}
+
+    public static boolean getAutoConfigureChannels() {return CFG_CLIENT.sound.autoConfigureChannels;}
+
+    public static int getNormalSoundChannelCount() {return CFG_CLIENT.sound.normalSoundChannelCount;}
+
+    public static int getStreamingSoundChannelCount() {return CFG_CLIENT.sound.streamingSoundChannelCount;}
+
+    public static String getMmlLink() {return CFG_CLIENT.links.site;}
+
+    /**
+     * Will only allow this mods recipes to be disabled
+     * @param stackIn
+     * @return recipe state
+     */
+    public static boolean isRecipeEnabled(ItemStack stackIn)
+    {
+        String modName = stackIn.getUnlocalizedName().replaceFirst("item\\." + MXTuneMain.MODID + ":", "");
+        modName = modName.replaceFirst("instrument\\.", "");
+        boolean enableState = CONFIG_RECIPE.recipeToggles.containsKey(modName) ? CONFIG_RECIPE.recipeToggles.get(modName) && !modName.contains(":"): true;
+        ModLogger.debug("Recipe Enabled? %s %s", modName, enableState);
+        return enableState;
+    }
+    
+    public static boolean isRecipeHidden(ItemStack stackIn)
+    {
+        return !isRecipeEnabled(stackIn);
+    }
+    
     @Mod.EventBusSubscriber
     public static class RegistrationHandler {
 

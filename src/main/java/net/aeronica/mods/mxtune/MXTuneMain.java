@@ -33,7 +33,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 @Mod(modid = MXTuneMain.MODID, name = MXTuneMain.MODNAME, version = MXTuneMain.VERSION,
-     acceptedMinecraftVersions = "[1.12.1,1.13)",
+     acceptedMinecraftVersions = "[1.12,1.13)",
      dependencies = MXTuneMain.DEPS, updateJSON = MXTuneMain.UPDATE,
      certificateFingerprint = "999640c365a8443393a1a21df2c0ede9488400e9")
 

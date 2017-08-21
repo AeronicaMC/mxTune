@@ -19,6 +19,7 @@ import javax.annotation.Nonnull;
 
 import com.google.gson.JsonObject;
 
+import net.aeronica.mods.mxtune.config.ModConfig;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -58,13 +59,13 @@ public class DisablableShapelessOreRecipeFactory implements IRecipeFactory
         @Nonnull
         public ItemStack getCraftingResult(InventoryCrafting var1)
         {
-            return RecipeFactoryUtils.enabledRecipe(this.output) ? this.output.copy() : ItemStack.EMPTY;
+            return ModConfig.isRecipeEnabled(this.output) ? this.output.copy() : ItemStack.EMPTY;
         }
 
         @Override
         public boolean isHidden()
         {
-            return !RecipeFactoryUtils.enabledRecipe(this.output);
+            return ModConfig.isRecipeHidden(this.output);
         }
     }
     
