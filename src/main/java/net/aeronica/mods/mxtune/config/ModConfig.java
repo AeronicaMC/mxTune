@@ -156,10 +156,11 @@ public class ModConfig
      */
     public static boolean isRecipeEnabled(ItemStack stackIn)
     {
-        String modName = stackIn.getUnlocalizedName().replaceFirst("item\\." + MXTuneMain.MODID + ":", "");
-        modName = modName.replaceFirst("instrument\\.", "");
-        boolean enableState = CFG_RECIPE.recipeToggles.containsKey(modName) ? CFG_RECIPE.recipeToggles.get(modName) && !modName.contains(":"): true;
-        ModLogger.debug("Recipe Enabled? %s %s", modName, enableState);
+        // strip off "item." and "instrument." to get the raw item name without domain and item base names
+        String itemName = stackIn.getUnlocalizedName().replaceFirst("item\\." + MXTuneMain.MODID + ":", "");
+        itemName = itemName.replaceFirst("instrument\\.", "");
+        boolean enableState = CFG_RECIPE.recipeToggles.containsKey(itemName) ? CFG_RECIPE.recipeToggles.get(itemName) && !itemName.contains(":"): true;
+        ModLogger.debug("Recipe Enabled? %s %s", itemName, enableState);
         return enableState;
     }
     
