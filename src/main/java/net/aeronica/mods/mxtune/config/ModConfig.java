@@ -24,6 +24,12 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.Config.Comment;
+import net.minecraftforge.common.config.Config.LangKey;
+import net.minecraftforge.common.config.Config.Name;
+import net.minecraftforge.common.config.Config.RangeInt;
+import net.minecraftforge.common.config.Config.RequiresMcRestart;
+import net.minecraftforge.common.config.Config.Type;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -34,79 +40,78 @@ public class ModConfig
     
     private ModConfig() { /* NOP */ }
 
-    @Config(modid=MXTuneMain.MODID, name = MXTuneMain.MODID + "/" +MXTuneMain.MODID, category="general")
-    @Config.LangKey("config.mxtune:ctgy.general")
-    public static class CFG_GENERAL
-    {
-        
-        @Config.Comment("General Configuration")
-        @Config.LangKey("config.mxtune:generalConfig")
-        public static final General general = new General();
-        
-        public static class General
-        {
-            @Config.Name("Hide Welcome Status Message")
-            @Config.LangKey("config.mxtune:hideWelcomeStatusMessage")   
-            public boolean hideWelcomeStatusMessage = false;
-            
-            @Config.Name("Listener Range")
-            @Config.LangKey("config.mxtune:listenerRange")
-            @Config.RangeInt(min=10, max=64)
-            public int listenerRange = 24;
-
-            @Config.Name("Group Play Abort Distance")
-            @Config.LangKey("config.mxtune:groupPlayAbortDistance")
-            @Config.RangeInt(min=10, max=24)    
-            public int groupPlayAbortDistance = 10;
-        }
-    }
-
     /** Client Configuration Settings */
-    @Config(modid = MXTuneMain.MODID, name = MXTuneMain.MODID + "/" +MXTuneMain.MODID, category="client")
-    @Config.LangKey("config.mxtune:ctgy.client")
+    @Config(modid = MXTuneMain.MODID, name = MXTuneMain.MODID + "/" +MXTuneMain.MODID + "_client", category="client")
+    @LangKey("config.mxtune:ctgy.client")
     public static class CFG_CLIENT
     {   
-
-        @Config.Comment("Sound Channel Configuration")
-        @Config.LangKey("config.mxtune:soundChannelConfig")
+        @Comment("Sound Channel Configuration")
+        @LangKey("config.mxtune:soundChannelConfig")
         public static final Sound sound = new Sound();
         
-        @Config.Comment("Internet Resources")
-        @Config.LangKey("config.mxtune:internetResouces")
+        @Comment("Internet Resources")
+        @LangKey("config.mxtune:internetResouces")
         public static final Links links = new Links();
         
         public static class Sound
         {
-            @Config.Name("Automatically configure sound channels")
-            @Config.LangKey("config.mxtune:autoConfigureChannels")
+            @Name("Automatically configure sound channels")
+            @LangKey("config.mxtune:autoConfigureChannels")
             public boolean autoConfigureChannels = true;
 
-            @Config.Name("Number of normal sound channels (manual)")
+            @Config.Name("Number of Normal Sound Channels (manual)")
             @Config.LangKey("config.mxtune:normalSoundChannelCount")
             @Config.RangeInt(min=4, max=60)
             public int normalSoundChannelCount = 24;
 
-            @Config.Name("Number of streaming sound channels (manual)")
-            @Config.LangKey("config.mxtune:streamingSoundChannelCount")
-            @Config.RangeInt(min=4, max=60)
+            @Name("Number of Streaming Sound Channels (manual)")
+            @LangKey("config.mxtune:streamingSoundChannelCount")
+            @RangeInt(min=4, max=60)
             public int streamingSoundChannelCount = 8;
         }
         
         public static class Links
         {
-            @Config.Name("Site Links")
-            @Config.LangKey("config.mxtune:mmlLink")
+            @Name("Site Links")
+            @LangKey("config.mxtune:mmlLink")
             public String site = "https://mabibeats.com/";
         }
     }
     
-    @Config(modid = MXTuneMain.MODID, name = MXTuneMain.MODID + "/" +MXTuneMain.MODID + "_recipes", type = Config.Type.INSTANCE, category="recipe")
-    @Config.LangKey("config.mxtune:ctgy.recipes")
-    public static class CONFIG_RECIPE
+    @Config(modid=MXTuneMain.MODID, name = MXTuneMain.MODID + "/" +MXTuneMain.MODID + "_general", category="general")
+    @LangKey("config.mxtune:ctgy.general")
+    public static class CFG_GENERAL
+    {
+        
+        @Comment("General Configuration")
+        @LangKey("config.mxtune:generalConfig")
+        public static final General general = new General();
+        
+        public static class General
+        {
+            @Name("Disable Welcome Status Message")
+            @LangKey("config.mxtune:hideWelcomeStatusMessage")   
+            public boolean hideWelcomeStatusMessage = false;
+            
+            @Name("Listener Range")
+            @LangKey("config.mxtune:listenerRange")
+            @RangeInt(min=10, max=64)
+            public int listenerRange = 24;
+
+            @Name("Group Play Abort Distance")
+            @LangKey("config.mxtune:groupPlayAbortDistance")
+            @RangeInt(min=10, max=24)    
+            public int groupPlayAbortDistance = 10;
+        }
+    }
+    
+    @Config(modid = MXTuneMain.MODID, name = MXTuneMain.MODID + "/" +MXTuneMain.MODID + "_recipes", type = Type.INSTANCE, category="recipe")
+    @LangKey("config.mxtune:ctgy.recipes")
+    public static class CFG_RECIPE
     { 
-        @Config.Name("toggles")
-        @Config.Comment({"mxTune Recipes", "Requires a Server Restart if Changed!", "B:<name>=(true|false)"})
-        @Config.RequiresMcRestart
+        @Name("Toggles")
+        @Comment({"mxTune Recipes", "Requires a Server Restart if Changed!", "B:<name>=(true|false)"})
+        @RequiresMcRestart
         public static Map<String, Boolean> recipeToggles;
 
         private static final String[] modItemRecipeNames = {
@@ -153,7 +158,7 @@ public class ModConfig
     {
         String modName = stackIn.getUnlocalizedName().replaceFirst("item\\." + MXTuneMain.MODID + ":", "");
         modName = modName.replaceFirst("instrument\\.", "");
-        boolean enableState = CONFIG_RECIPE.recipeToggles.containsKey(modName) ? CONFIG_RECIPE.recipeToggles.get(modName) && !modName.contains(":"): true;
+        boolean enableState = CFG_RECIPE.recipeToggles.containsKey(modName) ? CFG_RECIPE.recipeToggles.get(modName) && !modName.contains(":"): true;
         ModLogger.debug("Recipe Enabled? %s %s", modName, enableState);
         return enableState;
     }
