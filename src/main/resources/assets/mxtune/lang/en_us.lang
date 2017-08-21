@@ -95,11 +95,11 @@ soundCategory.mxtune=mxTune
 mxtune.subtitle.pcm-proxy=Music Plays
 
 config.mxtune:ctgy.general.tooltip=mxTune General Settings
-config.mxtune:ctgy.general=mxTune General Settings
+config.mxtune:ctgy.general=mxTune General
 config.mxtune:ctgy.client.tooltip=mxTune Client Settings
-config.mxtune:ctgy.client=mxTune Client Settings
+config.mxtune:ctgy.client=mxTune Client
 config.mxtune:ctgy.recipes.tooltip=mxTune Recipe Settings
-config.mxtune:ctgy.recipes=mxTune Recipes
+config.mxtune:ctgy.recipes=mxTune Recipe
 
 config.mxtune:generalSoundConfig=Sound Settings
 config.mxtune:generalSoundConfig.tooltip=Sound Settings
