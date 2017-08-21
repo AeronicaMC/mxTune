@@ -34,30 +34,30 @@ public class ModConfig
     
     private ModConfig() { /* NOP */ }
 
-    @Config(modid=MXTuneMain.MODID, name = MXTuneMain.MODID + "/" +MXTuneMain.MODID, type=Config.Type.INSTANCE, category="general")
+    @Config(modid=MXTuneMain.MODID, name = MXTuneMain.MODID + "/" +MXTuneMain.MODID, category="general")
     @Config.LangKey("config.mxtune:ctgy.general")
     public static class CFG_GENERAL
     {
-        @Config.Comment("Sound Configuration")
-        @Config.LangKey("config.mxtune:generalSoundConfig")
-        public static final Sound sound = new Sound();
         
-        public static class Sound
+        @Config.Comment("General Configuration")
+        @Config.LangKey("config.mxtune:generalConfig")
+        public static final General general = new General();
+        
+        public static class General
         {
-            /** General Configuration Settings */
-            @Config.Name("Listener Range")
-            @Config.LangKey("config.mxtune:listenerRange")
-            @Config.RangeDouble(min=10.0D, max=64.0D)
-            public float listenerRange = 24.0F;
-
-            @Config.Name("Group Play Abort Distance")
-            @Config.LangKey("config.mxtune:groupPlayAbortDistance")
-            @Config.RangeDouble(min=10.0D, max=24.0D)    
-            public float groupPlayAbortDistance = 10.0F;
-
             @Config.Name("Hide Welcome Status Message")
             @Config.LangKey("config.mxtune:hideWelcomeStatusMessage")   
             public boolean hideWelcomeStatusMessage = false;
+            
+            @Config.Name("Listener Range")
+            @Config.LangKey("config.mxtune:listenerRange")
+            @Config.RangeInt(min=10, max=64)
+            public int listenerRange = 24;
+
+            @Config.Name("Group Play Abort Distance")
+            @Config.LangKey("config.mxtune:groupPlayAbortDistance")
+            @Config.RangeInt(min=10, max=24)    
+            public int groupPlayAbortDistance = 10;
         }
     }
 
@@ -130,11 +130,11 @@ public class ModConfig
         }
     }
     
-    public static float getListenerRange() {return CFG_GENERAL.sound.listenerRange;}
+    public static float getListenerRange() {return (float)CFG_GENERAL.general.listenerRange;}
 
-    public static float getGroupPlayAbortDistance() {return CFG_GENERAL.sound.groupPlayAbortDistance;}
+    public static float getGroupPlayAbortDistance() {return (float)CFG_GENERAL.general.groupPlayAbortDistance;}
 
-    public static boolean hideWelcomeStatusMessage() {return CFG_GENERAL.sound.hideWelcomeStatusMessage;}
+    public static boolean hideWelcomeStatusMessage() {return CFG_GENERAL.general.hideWelcomeStatusMessage;}
 
     public static boolean getAutoConfigureChannels() {return CFG_CLIENT.sound.autoConfigureChannels;}
 
