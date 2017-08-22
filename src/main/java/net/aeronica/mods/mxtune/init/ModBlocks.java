@@ -61,11 +61,13 @@ public class ModBlocks
                 registry.register(item.setRegistryName(item.getBlock().getRegistryName()));
                 ITEM_BLOCKS.add(item);
             }
+            
+            registerTileEntities();
         }
     }
     
-    public static void registerTileEntities() {
-        GameRegistry.registerTileEntity(TilePiano.class, "tile_spinet_piano");
+    private static void registerTileEntities() {
+        GameRegistry.registerTileEntity(TilePiano.class, "tile_piano");
     }
 
     private static <T extends Block> T registerBlock(T block, String name) {

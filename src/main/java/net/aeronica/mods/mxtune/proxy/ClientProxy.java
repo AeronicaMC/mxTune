@@ -83,21 +83,6 @@ public class ClientProxy extends CommonProxy
     public void spawnMusicParticles(EntityPlayer player) {}
 
     @Override
-    public void initConfiguration(FMLPreInitializationEvent event)
-    {
-        super.initConfiguration(event);
-    }
-
-    @Override
-    public void initPayload()
-    {
-        super.initPayload();
-        // LayerThePlayer layer = new LayerThePlayer();
-        // ((RenderPlayer)Minecraft.getMinecraft().getRenderManager().getSkinMap().get("default")).addLayer(layer);
-        // ((RenderPlayer)Minecraft.getMinecraft().getRenderManager().getSkinMap().get("slim")).addLayer(layer);
-    }
-
-    @Override
     public void initEntities()
     {
         super.initEntities();

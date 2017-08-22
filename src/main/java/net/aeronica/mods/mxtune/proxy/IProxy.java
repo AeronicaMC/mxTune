@@ -63,9 +63,6 @@ public interface IProxy
     /** Registers the relevant event handlers for the current side */
     void registerEventHandlers();
 
-    /** Initialize Items and Blocks in Common PreInit */
-    void initPayload();
-
     /** Initialize Entities */
     void initEntities();
     
@@ -81,9 +78,6 @@ public interface IProxy
      * Register the key bindings during client Init, does nothing on the server
      */
     void registerKeyBindings();
-
-    /** Initializes and reads the configuration file with the options relevant to the current side */
-    void initConfiguration(FMLPreInitializationEvent event);
 
     /** Register HUD in Client PostInit */
     void registerHUD();

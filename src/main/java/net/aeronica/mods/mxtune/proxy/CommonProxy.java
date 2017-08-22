@@ -40,25 +40,13 @@ public abstract class CommonProxy implements IProxy
 
     @Override
     public void init(FMLInitializationEvent event)
-    {
-        
+    {        
     }
 
     @Override
     public void postInit(FMLPostInitializationEvent event)
     {
         
-    }
-    
-    @Override
-    public void initConfiguration(FMLPreInitializationEvent event)
-    {
-    }
-
-    @Override
-    public void initPayload()
-    {
-        ModBlocks.registerTileEntities();
     }
 
     public void initEntities() {

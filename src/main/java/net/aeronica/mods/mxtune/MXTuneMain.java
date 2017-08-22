@@ -62,8 +62,6 @@ public class MXTuneMain
         PacketDispatcher.registerPackets();
         proxy.preInit(event);
         proxy.registerEventHandlers();
-        proxy.initConfiguration(event);
-        proxy.initPayload();
         proxy.initEntities();
         proxy.registerRenderers();
     }
