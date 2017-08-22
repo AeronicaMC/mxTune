@@ -7,7 +7,6 @@ Changes:
  * Recipes can be disabled via configuration file/GUI. A Server Restart is Required. Ideally these should be disabled before a world is generated.
  * Localize the sound font instrument names.
  * Added advancements for playing instruments.
-
 ----
 
 2017-08-02: mxtune-1.12-0.5.0-beta.1
