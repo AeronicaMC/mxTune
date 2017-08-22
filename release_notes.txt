@@ -1,3 +1,15 @@
+2017-08-21 mxtune-1.12.1-0.5.0-beta.2
+Changes:
+ * Update to using Forge 14.22.0.2459.
+ * Refactor block, item and recipe names to allow disabling mxTune recipes via the configuration file/GUI. Mappings will be updated automatically in existing worlds.
+ * Switch to using the Forge Configuration Annotation System. Now have 3 configuration files under the config/mxtune directory: mxtune_client.cfg, mxtune_general.cfg, and mxtune_recipes.cfg.
+ * Sheet Music Converter has been removed.
+ * Recipes can be disabled via configuration file/GUI. A Server Restart is Required. Ideally these should be disabled before a world is generated.
+ * Localize the sound font instrument names.
+ * Added advancements for playing instruments.
+
+----
+
 2017-08-02: mxtune-1.12-0.5.0-beta.1
 Initial port to Minecraft and Forge 1.12. JAR is now signed. Now uses JSONS for Recipes. Added a simple Advancement Tab for mxTune.
 ----
