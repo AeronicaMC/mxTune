@@ -66,7 +66,7 @@ public class DisablableShapedOreRecipeFactory implements IRecipeFactory
         }
 
         @Override
-        public boolean isHidden()
+        public boolean isDynamic()
         {
             return ModConfig.isRecipeHidden(this.output.copy());
         }                

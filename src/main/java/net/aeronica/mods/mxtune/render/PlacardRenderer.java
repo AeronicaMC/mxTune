@@ -53,7 +53,7 @@ public class PlacardRenderer
         RenderLivingBase<?> renderer = (RenderLivingBase<?>) event.getRenderer().getRenderManager().getEntityRenderObject(event.getEntity());
         renderer.bindTexture(placardTextures);
 
-        double d0 = event.getEntity().getDistanceSqToEntity(renderer.getRenderManager().renderViewEntity);
+        double d0 = event.getEntity().getDistanceSq(renderer.getRenderManager().renderViewEntity);
         if (d0 <= (PLACARD_RANGE * PLACARD_RANGE))
         {
             double placardHeight = event.getEntity().isSneaking() ? 0.22d : 0.35d;
