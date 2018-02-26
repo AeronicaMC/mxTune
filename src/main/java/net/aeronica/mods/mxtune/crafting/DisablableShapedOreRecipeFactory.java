@@ -43,8 +43,8 @@ public class DisablableShapedOreRecipeFactory implements IRecipeFactory
     {
         ShapedOreRecipe recipe = ShapedOreRecipe.factory(context, json);
         ShapedPrimer primer = new ShapedPrimer();
-        primer.width = recipe.getWidth();
-        primer.height = recipe.getHeight();
+        primer.width = recipe.getRecipeWidth();
+        primer.height = recipe.getRecipeHeight();
         primer.mirrored = JsonUtils.getBoolean(json, "mirrored", true);
         primer.input = recipe.getIngredients();
         ResourceLocation group = recipe.getGroup().isEmpty() ? null : new ResourceLocation(recipe.getGroup());

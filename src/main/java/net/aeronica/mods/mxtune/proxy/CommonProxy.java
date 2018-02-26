@@ -18,7 +18,6 @@ package net.aeronica.mods.mxtune.proxy;
 
 import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.handler.CommonEventHandler;
-import net.aeronica.mods.mxtune.init.ModBlocks;
 import net.aeronica.mods.mxtune.init.ModEntities;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;

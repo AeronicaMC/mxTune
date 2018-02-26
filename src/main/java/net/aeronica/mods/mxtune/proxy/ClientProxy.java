@@ -16,8 +16,6 @@
  */
 package net.aeronica.mods.mxtune.proxy;
 
-import java.util.regex.Pattern;
-
 import net.aeronica.mods.mxtune.gui.GuiJamOverlay;
 import net.aeronica.mods.mxtune.handler.KeyHandler;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
@@ -41,8 +39,6 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class ClientProxy extends CommonProxy
 {
-    
-    private static Pattern validationPattern = Pattern.compile("(mxtune:[a-z]*([_|a-z])*[.]*[a-z|_]*)"); 
     
     @Override
     public void preInit(FMLPreInitializationEvent event)
