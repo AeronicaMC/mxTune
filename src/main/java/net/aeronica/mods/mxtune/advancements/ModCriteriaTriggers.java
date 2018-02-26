@@ -23,12 +23,8 @@
  */
 package net.aeronica.mods.mxtune.advancements;
 
-import java.lang.reflect.Method;
-
 import net.aeronica.mods.mxtune.advancements.criterion.PlayInstrumentTrigger;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.advancements.ICriterionTrigger;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 /**
  * Copied and adapted to my needs from code by:
@@ -42,16 +38,7 @@ public class ModCriteriaTriggers
 
     public static void init()
     {
-        //TODO: Remove this once Forge supports registering your own criteria
-        Method registerMethod = ReflectionHelper.findMethod(CriteriaTriggers.class, "register", "func_192118_a", ICriterionTrigger.class);
-        try
-        {
-            registerMethod.invoke(null, PLAY_INSTRUMENT);
-        }
-        catch(ReflectiveOperationException e)
-        {
-            throw new RuntimeException(e);
-        }
+        CriteriaTriggers.register(PLAY_INSTRUMENT);
     }
 
 }
