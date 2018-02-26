@@ -139,7 +139,7 @@ public class MusicOptionsUtil
             switch (getMuteOptionEnum(playerIn))
             {
             case OFF:
-                result = false; break;
+                break;
             case ALL:
                 result = true; break;
             case OTHERS:
