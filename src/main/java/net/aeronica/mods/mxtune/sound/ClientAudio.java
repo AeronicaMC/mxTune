@@ -103,8 +103,8 @@ public class ClientAudio
     static ConcurrentLinkedQueue<Integer> playIDQueue03;
     static ConcurrentHashMap<Integer, AudioData> playIDAudioData;
     
-    final static ExecutorService executorService;
-    final static ThreadFactory threadFactory; 
+    static ExecutorService executorService = null;
+    static ThreadFactory threadFactory = null; 
     
     static int count = 0;
     static boolean vanillaMusicPaused = false;
@@ -124,18 +124,25 @@ public class ClientAudio
         audioFormat3D = new AudioFormat(48000, 16, 1, true, false);
         /* PCM Signed Stereo little endian */        
         audioFormatStereo = new AudioFormat(48000, 16, 2, true, false);
-        playIDAudioData = new ConcurrentHashMap<>();
-        
-        threadFactory = new ThreadFactoryBuilder()
-                .setNameFormat("mxTune-ClientAudio-%d")
-                .setDaemon(true)
-                .setPriority(Thread.NORM_PRIORITY)
-                .build();
-        executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE, (java.util.concurrent.ThreadFactory) threadFactory);
+        playIDAudioData = new ConcurrentHashMap<>();      
     }
 
     private ClientAudio() { /* Nothing to do */ }
        
+    private static void startThreadFactory()
+    {
+        if (threadFactory == null)
+        {
+            threadFactory = new ThreadFactoryBuilder()
+                    .setNameFormat("mxTune-ClientAudio-%d")
+                    .setDaemon(true)
+                    .setPriority(Thread.NORM_PRIORITY)
+                    .build();
+            executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE, (java.util.concurrent.ThreadFactory) threadFactory);
+        }
+
+    }
+    
     public enum Status
     {
         WAITING, READY, ERROR;
@@ -268,6 +275,7 @@ public class ClientAudio
 
     public static synchronized void play(Integer playID, String musicText)
     {
+        startThreadFactory();
         if(ClientCSDMonitor.canMXTunesPlay())
         {
             addPlayIDQueue(playID);
