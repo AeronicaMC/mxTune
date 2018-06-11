@@ -14,7 +14,7 @@ This is currently in development and is not recommended for modpacks at this tim
 [![Downloads](http://cf.way2muchnoise.eu/245356.svg)](https://minecraft.curseforge.com/projects/mxtune/files)
 
 [![Build Status](https://api.travis-ci.org/Aeronica/mxTune.svg?branch=1.12)](https://travis-ci.org/Aeronica/mxTune)
-[![Quality Gate](https://sonarqube.com/api/badges/gate?key=net.aeronica.mods.mxtune:mxTune:1.12)](https://sonarqube.com/dashboard/index/net.aeronica.mods.mxtune:mxTune:1.12)
-[![Technical Debt Ratio](https://sonarqube.com/api/badges/measure?key=net.aeronica.mods.mxtune:mxTune:1.12&metric=sqale_debt_ratio)](https://sonarqube.com/dashboard/index/net.aeronica.mods.mxtune:mxTune:1.12)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=net.aeronica.mods.mxtune%3AmxTune%3A1.12&metric=alert_status)](https://sonarcloud.io/dashboard?id=net.aeronica.mods.mxtune%3AmxTune%3A1.12)
+[![Technical Debt Ratio](https://sonarcloud.io/api/project_badges/measure?project=net.aeronica.mods.mxtune%3AmxTune%3A1.12&metric=sqale_index)](https://sonarcloud.io/dashboard?id=net.aeronica.mods.mxtune%3AmxTune%3A1.12)
 
 *[CurseForge Badges by way2muchnoise](http://cf.way2muchnoise.eu/)*
