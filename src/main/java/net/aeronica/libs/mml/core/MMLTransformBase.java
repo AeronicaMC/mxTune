@@ -202,7 +202,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
                         .startingTicks(tiedNote.startingTicks)
                         .lengthTicks(lengthTicks)
                         .volume(tiedNote.volume)
-                        .text(ctxL.getText())
+                        .text(ctxL != null ? ctxL.getText() : "")
                         .build());
                 isTied = false;
             }
@@ -244,7 +244,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
                     .startingTicks(tiedNote.startingTicks)
                     .lengthTicks(lengthTicks)
                     .volume(tiedNote.volume)
-                    .text(ctxR.getText())
+                    .text(ctxR != null ? ctxR.getText() : "")
                     .build());
         }
     }
