@@ -3,6 +3,8 @@ package net.aeronica.libs.mml.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 
@@ -154,9 +156,11 @@ public abstract class MMLTransformBase extends MMLBaseListener
 
         boolean isTied = false;
         long lengthTicks = 0;
-        int noteLeft;
+        int noteLeft = 0;
         int noteRight = 0;
-        AnoteContext ctxL;
+        @Nullable
+        AnoteContext ctxL = null;
+        @Nullable
         AnoteContext ctxR = null;
 
         List<AnoteContext> listAnotes = ctx.anote();
