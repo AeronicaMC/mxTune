@@ -42,7 +42,7 @@ public class MXTuneMain
     public static final String MODID = "mxtune";
     public static final String MODNAME = "mxTune";
     public static final String VERSION = "{@VERSION}";
-    public static final String DEPS = "required-after:forge@[1.9.4-12.17.0.2051,)";
+    public static final String DEPS = "required-after:forge@[1.12.2-14.23.4.2705,)";
     public static final String UPDATE = "https://gist.githubusercontent.com/Aeronica/dbc2619e0011d5bdbe7a162d0c6aa82b/raw/update.json";
     
     @Mod.Instance(MODID)
