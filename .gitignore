@@ -33,6 +33,7 @@ $RECYCLE.BIN/
 .launch
 bin
 build
+out
 run
 minecraft
 mc10_2
