@@ -45,7 +45,7 @@ public class TileInstrument extends TileEntity
         super.readFromNBT(tag);
         inventory = new StackHandler(1); // ItemStackHandler
         inventory.deserializeNBT(tag);
-        facing = EnumFacing.getFront(tag.getInteger("facing"));
+        facing = EnumFacing.byIndex(tag.getInteger("facing"));
     }
 
     @Override

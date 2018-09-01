@@ -292,11 +292,11 @@ public class BlockPiano extends BlockInstrument2H
      */
     @Deprecated
     @Override
-    public EnumPushReaction getMobilityFlag(IBlockState state) {return EnumPushReaction.DESTROY;}
+    public EnumPushReaction getPushReaction(IBlockState state) {return EnumPushReaction.DESTROY;}
 
     @SideOnly(Side.CLIENT)
     @Override
-    public BlockRenderLayer getBlockLayer() {return BlockRenderLayer.CUTOUT;}
+    public BlockRenderLayer getRenderLayer() {return BlockRenderLayer.CUTOUT;}
 
     @Override
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
@@ -360,7 +360,7 @@ public class BlockPiano extends BlockInstrument2H
     @Override
     public IBlockState getStateFromMeta(int meta)
     {
-        EnumFacing enumfacing = EnumFacing.getHorizontal(meta);
+        EnumFacing enumfacing = EnumFacing.byHorizontalIndex(meta);
         return (meta & 8) > 0 ? this.getDefaultState().withProperty(PART, BlockPiano.EnumPartType.RIGHT).withProperty(FACING, enumfacing).withProperty(OCCUPIED, Boolean.valueOf((meta & 4) > 0))
                 : this.getDefaultState().withProperty(PART, BlockPiano.EnumPartType.LEFT).withProperty(FACING, enumfacing);
     }

@@ -66,8 +66,8 @@ public class ItemInstrument extends Item implements IInstrument
     }
 
     @Override
-    public String getUnlocalizedName(ItemStack stack) {
-        return super.getUnlocalizedName(stack) + "." + EnumType.byMetadata(stack.getMetadata()).getName();
+    public String getTranslationKey(ItemStack stack) {
+        return super.getTranslationKey(stack) + "." + EnumType.byMetadata(stack.getMetadata()).getName();
     }
 
     @Override

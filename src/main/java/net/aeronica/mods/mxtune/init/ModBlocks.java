@@ -72,7 +72,7 @@ public class ModBlocks
 
     private static <T extends Block> T registerBlock(T block, String name) {
         block.setRegistryName(name.toLowerCase());
-        block.setUnlocalizedName(block.getRegistryName().toString());
+        block.setTranslationKey(block.getRegistryName().toString());
         return block;
     }
 

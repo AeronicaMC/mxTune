@@ -29,15 +29,15 @@ public class MusicTab extends CreativeTabs
 
     @Override
     @SideOnly(Side.CLIENT)
-    public String getTranslatedTabLabel()
+    public String getTranslationKey()
     {
         return MXTuneMain.MODNAME;
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public ItemStack getIconItemStack() {return new ItemStack(ModItems.ITEM_INSTRUMENT, 1, 1);}
+    public ItemStack getIcon() {return new ItemStack(ModItems.ITEM_INSTRUMENT, 1, 1);}
 
     @Override
-    public ItemStack getTabIconItem() {return ItemStack.EMPTY;}
+    public ItemStack createIcon() {return ItemStack.EMPTY;}
 }

@@ -180,7 +180,7 @@ public enum MIDISystemUtil
     
     private static URL getMXTuneSoundBankURL()
     {
-        URL file = MXTuneMain.class.getResource("/assets/" + SOUND_FONT.getResourceDomain() + "/" + SOUND_FONT.getResourcePath());
+        URL file = MXTuneMain.class.getResource("/assets/" + SOUND_FONT.getNamespace() + "/" + SOUND_FONT.getPath());
         ModLogger.debug("Sound font path: %s", file);
         return file;
     }

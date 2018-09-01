@@ -21,6 +21,8 @@ import net.minecraft.client.audio.SoundEventAccessor;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.util.SoundCategory;
 
+import net.minecraft.client.audio.ISound.AttenuationType;
+
 /**
  * Using MovingSound just to make this ITickableSound based. This keeps the sound from timing out after 20 ticks.
  * @author Paul Boese a.k.a. Aeronica

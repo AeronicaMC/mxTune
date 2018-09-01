@@ -23,6 +23,8 @@ import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.Vec3d;
 
+import net.minecraft.client.audio.ISound.AttenuationType;
+
 public class MusicMoving extends MovingSound
 {
 

@@ -19,6 +19,8 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.minecraft.client.audio.Sound;
 import net.minecraft.util.ResourceLocation;
 
+import net.minecraft.client.audio.Sound.Type;
+
 public class PCMSound extends Sound
 {
     
@@ -40,6 +42,6 @@ public class PCMSound extends Sound
     @Override
     public ResourceLocation getSoundAsOggLocation()
     {
-        return new ResourceLocation(MXTuneMain.MODID, "music/" + getSoundLocation().getResourcePath() + ".nul");
+        return new ResourceLocation(MXTuneMain.MODID, "music/" + getSoundLocation().getPath() + ".nul");
     }
 }

@@ -23,6 +23,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 
+import net.minecraft.client.audio.ISound.AttenuationType;
+
 public class MusicPositioned extends PositionedSound
 {
 

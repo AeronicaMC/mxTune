@@ -44,15 +44,15 @@ public class ModMigrationMapping
         public static void missingItemMapping(RegistryEvent.MissingMappings<Item> event)
         {
             for (RegistryEvent.MissingMappings.Mapping<Item> missing : event.getMappings()) {
-                if (missing.key.getResourceDomain().equals(MXTuneMain.MODID) && missing.key.getResourcePath().equals("block_piano")) {
+                if (missing.key.getNamespace().equals(MXTuneMain.MODID) && missing.key.getPath().equals("block_piano")) {
                     missing.remap(ModItems.ITEM_SPINET_PIANO);
-                } else if(missing.key.getResourceDomain().equals(MXTuneMain.MODID) && missing.key.getResourcePath().equals("item_inst")){
+                } else if(missing.key.getNamespace().equals(MXTuneMain.MODID) && missing.key.getPath().equals("item_inst")){
                     missing.remap(ModItems.ITEM_INSTRUMENT);
-                } else if(missing.key.getResourceDomain().equals(MXTuneMain.MODID) && missing.key.getResourcePath().equals("item_musicpaper")){
+                } else if(missing.key.getNamespace().equals(MXTuneMain.MODID) && missing.key.getPath().equals("item_musicpaper")){
                     missing.remap(ModItems.ITEM_MUSIC_PAPER);
-                } else if(missing.key.getResourceDomain().equals(MXTuneMain.MODID) && missing.key.getResourcePath().equals("item_sheetmusic")){
+                } else if(missing.key.getNamespace().equals(MXTuneMain.MODID) && missing.key.getPath().equals("item_sheetmusic")){
                     missing.remap(ModItems.ITEM_SHEET_MUSIC);
-                } else if(missing.key.getResourceDomain().equals(MXTuneMain.MODID) && missing.key.getResourcePath().equals("item_converter")){
+                } else if(missing.key.getNamespace().equals(MXTuneMain.MODID) && missing.key.getPath().equals("item_converter")){
                     missing.ignore();
                 }
             }            
