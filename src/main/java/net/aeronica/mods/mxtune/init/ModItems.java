@@ -1,11 +1,8 @@
 package net.aeronica.mods.mxtune.init;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import net.aeronica.mods.mxtune.blocks.ItemPiano;
 import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.aeronica.mods.mxtune.items.ItemMusicPaper;
+import net.aeronica.mods.mxtune.items.ItemPiano;
 import net.aeronica.mods.mxtune.items.ItemSheetMusic;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -14,10 +11,12 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @SuppressWarnings("unused")
 public class ModItems
 {
-    
     public static final ItemInstrument ITEM_INSTRUMENT = registerItem(new ItemInstrument(), "instrument");
     public static final ItemMusicPaper ITEM_MUSIC_PAPER = registerItem(new ItemMusicPaper(), "music_paper");
     public static final ItemSheetMusic ITEM_SHEET_MUSIC = registerItem(new ItemSheetMusic(), "sheet_music");
@@ -62,5 +61,4 @@ public class ModItems
         }
         return registerItem(item, simpleName);
     }
-
 }
