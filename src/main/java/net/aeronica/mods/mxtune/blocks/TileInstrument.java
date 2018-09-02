@@ -29,8 +29,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 public class TileInstrument extends TileEntity
 {
-    
-    private ItemStackHandler inventory = new StackHandler(1);
+    protected ItemStackHandler inventory = new StackHandler(1);
     protected EnumFacing facing = EnumFacing.NORTH;
 
     public TileInstrument() {}
@@ -147,5 +146,4 @@ public class TileInstrument extends TileEntity
     }
     
     public IItemHandlerModifiable getInventory() {return inventory;}
-    
 }
