@@ -21,7 +21,6 @@ import java.util.Set;
 @SuppressWarnings("unused")
 public class ModBlocks
 {
-   
     public static final BlockPiano SPINET_PIANO = registerBlock(new BlockPiano(), "spinet_piano");
     private ModBlocks() {}
     
@@ -69,8 +68,7 @@ public class ModBlocks
     }
     
     private static void registerTileEntities() {
-        GameRegistry.registerTileEntity(TilePiano.class, new ResourceLocation(MXTuneMain.MODID,"tile_piano"));
-        CompoundDataFixer x;
+        registerTileEntity(TilePiano.class, "tile_piano");
     }
 
     private static <T extends Block> T registerBlock(T block, String name) {
@@ -84,7 +82,6 @@ public class ModBlocks
     }
 
     private static void registerTileEntity(Class<? extends TileEntity> tileEntityClass, String name) {
-        GameRegistry.registerTileEntity(tileEntityClass, MXTuneMain.prependModID(name));
+        GameRegistry.registerTileEntity(tileEntityClass, new ResourceLocation(MXTuneMain.MODID, name));
     }
-
 }
