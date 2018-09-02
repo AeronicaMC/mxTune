@@ -1,8 +1,5 @@
 package net.aeronica.mods.mxtune.init;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.blocks.TilePiano;
@@ -10,11 +7,16 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.util.CompoundDataFixer;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 public class ModBlocks
@@ -67,7 +69,8 @@ public class ModBlocks
     }
     
     private static void registerTileEntities() {
-        GameRegistry.registerTileEntity(TilePiano.class, "tile_piano");
+        GameRegistry.registerTileEntity(TilePiano.class, new ResourceLocation(MXTuneMain.MODID,"tile_piano"));
+        CompoundDataFixer x;
     }
 
     private static <T extends Block> T registerBlock(T block, String name) {
