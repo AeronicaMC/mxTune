@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -61,14 +61,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockPiano extends BlockInstrument2H
 {
-    
     public static final PropertyEnum<BlockPiano.EnumPartType> PART = PropertyEnum.<BlockPiano.EnumPartType> create("part", BlockPiano.EnumPartType.class);
     public static final PropertyBool OCCUPIED = PropertyBool.create("occupied");
-    protected static final AxisAlignedBB PIANO_BODY_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
-    protected static final AxisAlignedBB MUSIC_RACK_AABB_NW = new AxisAlignedBB(0.0D, 1.0D, 0.0D, 0.5D, 1.5D, 0.5D);
-    protected static final AxisAlignedBB MUSIC_RACK_AABB_SW = new AxisAlignedBB(0.0D, 1.0D, 0.5D, 0.5D, 1.5D, 1.0D);
-    protected static final AxisAlignedBB MUSIC_RACK_AABB_NE = new AxisAlignedBB(0.5D, 1.0D, 0.0D, 1.0D, 1.5D, 0.5D);
-    protected static final AxisAlignedBB MUSIC_RACK_AABB_SE = new AxisAlignedBB(0.5D, 1.0D, 0.5D, 1.0D, 1.5D, 1.0D);
+    private static final AxisAlignedBB PIANO_BODY_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
+    private static final AxisAlignedBB MUSIC_RACK_AABB_NW = new AxisAlignedBB(0.0D, 1.0D, 0.0D, 0.5D, 1.5D, 0.5D);
+    private static final AxisAlignedBB MUSIC_RACK_AABB_SW = new AxisAlignedBB(0.0D, 1.0D, 0.5D, 0.5D, 1.5D, 1.0D);
+    private static final AxisAlignedBB MUSIC_RACK_AABB_NE = new AxisAlignedBB(0.5D, 1.0D, 0.0D, 1.0D, 1.5D, 0.5D);
+    private static final AxisAlignedBB MUSIC_RACK_AABB_SE = new AxisAlignedBB(0.5D, 1.0D, 0.5D, 1.0D, 1.5D, 1.0D);
 
     public BlockPiano()
     {
@@ -83,7 +82,7 @@ public class BlockPiano extends BlockInstrument2H
         IBlockState state = stateIn;
         if (!worldIn.isRemote)
         {
-            /** SERVER SIDE */
+            /* SERVER SIDE */
             if (state.getValue(PART) == BlockPiano.EnumPartType.RIGHT)
             {
                 pos = pos.offset((EnumFacing) state.getValue(FACING).getOpposite());
@@ -105,12 +104,12 @@ public class BlockPiano extends BlockInstrument2H
 
             if (playerIn.isSneaking() && !isOccupied)
             {
-                /** Remove music from the piano */
+                /* Remove music from the piano */
                 ItemStack itemStack = tile.getInventory().getStackInSlot(0);
                 tile.getInventory().setStackInSlot(0, ItemStack.EMPTY);
                 if (!playerIn.inventory.addItemStackToInventory(itemStack))
                 {
-                    /** Not possible. Throw item in the world */
+                    /* Not possible. Throw item in the world */
                     if (!itemStack.isEmpty())
                         spawnEntityItem(worldIn, itemStack, pos);
                 } else
@@ -123,17 +122,17 @@ public class BlockPiano extends BlockInstrument2H
                 return sitPiano(worldIn, pos, state, playerIn);
             } else if (!playerIn.isRiding() && !invHasItem)
             {
-                /** Place music on the piano */
+                /* Place music on the piano */
                 if (playerHasMusic)
                 {
-                    /**
+                    /*
                      * There is no item in the music rack and the player is
                      * holding an item. We move that item into the music rack
                      */
                     tile.getInventory().setStackInSlot(0, playerIn.getHeldItem(hand));
                     playerIn.inventory.setInventorySlotContents(playerIn.inventory.currentItem, ItemStack.EMPTY);
 
-                    /**
+                    /*
                      * Make sure the client knows about the changes in the
                      * player inventory
                      */
@@ -191,13 +190,16 @@ public class BlockPiano extends BlockInstrument2H
     }
 
     @Override
+    @Deprecated
     public boolean isFullCube(IBlockState state) {return false;}
 
-    /** Used to determine ambient occlusion and culling when rebuilding chunks for render */
+    // Used to determine ambient occlusion and culling when rebuilding chunks for render
     @Override
+    @Deprecated
     public boolean isOpaqueCube(IBlockState state) {return false;}
 
-    /** Called when a neighboring block changes. */
+    // Called when a neighboring block changes.
+    @Deprecated
     @Override
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
@@ -221,9 +223,6 @@ public class BlockPiano extends BlockInstrument2H
         }
     }
 
-    /**
-     * @deprecated  Mojang's messing with stuff
-     */
     @Deprecated
     @Override
     public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, Entity entityIn, boolean p_185477_7_)
@@ -267,6 +266,7 @@ public class BlockPiano extends BlockInstrument2H
         }
     }
 
+    @Deprecated
     protected static void addCollisionBoxToList(BlockPos pos, AxisAlignedBB aaBBIn, List<AxisAlignedBB> listAABB, AxisAlignedBB addedAABB)
     {
         if (addedAABB != NULL_AABB)
@@ -280,16 +280,10 @@ public class BlockPiano extends BlockInstrument2H
         }
     }
 
-    /**
-     * @deprecated  Mojang's messing with stuff
-     */
     @Deprecated
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {return PIANO_BODY_AABB;}
 
-    /**
-     * @deprecated  Mojang's messing with stuff
-     */
     @Deprecated
     @Override
     public EnumPushReaction getPushReaction(IBlockState state) {return EnumPushReaction.DESTROY;}
@@ -298,6 +292,7 @@ public class BlockPiano extends BlockInstrument2H
     @Override
     public BlockRenderLayer getRenderLayer() {return BlockRenderLayer.CUTOUT;}
 
+    @Deprecated
     @Override
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
@@ -330,18 +325,15 @@ public class BlockPiano extends BlockInstrument2H
         super.breakBlock(worldIn, pos, state);
     }
 
-    /**
-     * Get the Item that this Block should drop when harvested.
-     */
+    // Get the Item that this Block should drop when harvested.
+    @SuppressWarnings("NullableProblems")
     @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return state.getValue(PART) == BlockPiano.EnumPartType.RIGHT ? null : ModItems.ITEM_SPINET_PIANO;
     }
-    
-    /**
-     * Spawns this Block's drops into the World as EntityItems.
-     */
+
+    // Spawns this Block's drops into the World as EntityItems.
     @Override
     public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
     {
@@ -351,11 +343,7 @@ public class BlockPiano extends BlockInstrument2H
         }
     }
 
-    /**
-     * Convert the given metadata into a BlockState for this Block
-     * 
-     * @deprecated  Mojang's messing with stuff
-     */
+    // Convert the given metadata into a BlockState for this Block
     @Deprecated
     @Override
     public IBlockState getStateFromMeta(int meta)
@@ -365,12 +353,10 @@ public class BlockPiano extends BlockInstrument2H
                 : this.getDefaultState().withProperty(PART, BlockPiano.EnumPartType.LEFT).withProperty(FACING, enumfacing);
     }
 
-    /**
+    /*
      * Get the actual Block state of this Block at the given position. This
      * applies properties not visible in the metadata, such as fence
      * connections.
-     * 
-     * @deprecated  Mojang's messing with stuff
      */
     @Deprecated
     @Override
@@ -389,11 +375,7 @@ public class BlockPiano extends BlockInstrument2H
         return stateOut;
     }
 
-    /**
-     * Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed blockstate.
-     * 
-     * @deprecated  Mojang's messing with stuff
-     */
+    //Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed blockstate.
     @Deprecated
     @Override
     public IBlockState withRotation(IBlockState state, Rotation rot)
@@ -401,23 +383,20 @@ public class BlockPiano extends BlockInstrument2H
         return state.withProperty(FACING, rot.rotate((EnumFacing) state.getValue(FACING)));
     }
 
-    /** Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed blockstate.
-     *
-     * @deprecated  Mojang's messing with stuff
-     */
+    // Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed blockstate.
     @Deprecated
     @Override
     public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
     {
-        return state.withRotation(mirrorIn.toRotation((EnumFacing) state.getValue(FACING)));
+        return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
     }
 
-    /** Convert the BlockState into the correct metadata value */
+    /* Convert the BlockState into the correct metadata value */
     @Override
     public int getMetaFromState(IBlockState state)
     {
         int i = 0;
-        i = i | ((EnumFacing) state.getValue(FACING)).getHorizontalIndex();
+        i = i | state.getValue(FACING).getHorizontalIndex();
         if (state.getValue(PART) == BlockPiano.EnumPartType.RIGHT)
         {
             i |= 8;
@@ -454,9 +433,6 @@ public class BlockPiano extends BlockInstrument2H
 
     /* TileEntity stuff */
 
-    /** 
-     * @deprecated  Mojang's messing with stuff
-     */
     @Deprecated
     @Override
     public EnumBlockRenderType getRenderType(IBlockState state)
@@ -467,7 +443,7 @@ public class BlockPiano extends BlockInstrument2H
     @Override
     public boolean hasTileEntity(IBlockState state)
     {
-        /** We only need one Tile Entity per piano. We will reference the LEFT block only. */
+        /* We only need one Tile Entity per piano. We will reference the LEFT block only. */
         return state.getValue(PART) == BlockPiano.EnumPartType.LEFT;
     }
 
@@ -477,17 +453,17 @@ public class BlockPiano extends BlockInstrument2H
         return new TilePiano(state.getValue(FACING));
     }
 
-    /**
+    /*
      * Stuff for utility class e.g.
      * https://github.com/sinkillerj/ProjectE/blob/MC19/src/main/java/moze_intel
      * /projecte/utils/WorldHelper.java
      */
-    public static void spawnEntityItem(World world, ItemStack stack, BlockPos pos)
+    private static void spawnEntityItem(World world, ItemStack stack, BlockPos pos)
     {
         spawnEntityItem(world, stack, pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public static void spawnEntityItem(World world, ItemStack stack, double x, double y, double z)
+    private static void spawnEntityItem(World world, ItemStack stack, double x, double y, double z)
     {
         float f = world.rand.nextFloat() * 0.8F + 0.1F;
         float f1 = world.rand.nextFloat() * 0.8F + 0.1F;
@@ -498,5 +474,4 @@ public class BlockPiano extends BlockInstrument2H
         entityitem.motionZ = world.rand.nextGaussian() * 0.05;
         world.spawnEntity(entityitem);
     }
-
 }
