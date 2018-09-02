@@ -14,9 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.aeronica.mods.mxtune.blocks;
+package net.aeronica.mods.mxtune.items;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.init.ModBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -34,7 +35,6 @@ import net.minecraft.world.World;
 
 public class ItemPiano extends Item
 {
-
     public ItemPiano()
     {
         setMaxStackSize(1);
@@ -49,35 +49,35 @@ public class ItemPiano extends Item
         BlockPos pos = posIn;
         if (worldIn.isRemote)
         {
-            /** Client side so just return */
+            /* Client side so just return */
             return EnumActionResult.SUCCESS;
         } else if (facingIn != EnumFacing.UP)
         {
-            /** Can't place the blocks this way */
+            /* Can't place the blocks this way */
             return EnumActionResult.FAIL;
         } else
         {
             IBlockState iblockstate = worldIn.getBlockState(pos);
             Block block = iblockstate.getBlock();
             ItemStack stack = playerIn.getHeldItem(handIn);
-            /** Looking at the ground or a replaceable block like grass. */
+            /* Looking at the ground or a replaceable block like grass. */
             boolean flag = block.isReplaceable(worldIn, pos);
             if (!flag) pos = pos.up();
 
-            /**determine the direction the player is facing */
+            /* determine the direction the player is facing */
             int i = MathHelper.floor((double) (playerIn.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
             EnumFacing enumfacing = EnumFacing.byHorizontalIndex(i);
-            /**get the next block in line. */
+            /* get the next block in line. */
             BlockPos blockpos = pos.offset(enumfacing);
 
-            /** pos = block at cursor; blockpos = one block beyond the cursor in direction player is facing */
+            /* pos = block at cursor; blockpos = one block beyond the cursor in direction player is facing */
             if (playerIn.canPlayerEdit(pos, facingIn, stack) && playerIn.canPlayerEdit(blockpos, facingIn, stack))
             {
                 boolean flag1 = worldIn.getBlockState(blockpos).getBlock().isReplaceable(worldIn, blockpos);
                 boolean flag2 = flag || worldIn.isAirBlock(pos);
                 boolean flag3 = flag1 || worldIn.isAirBlock(blockpos);
 
-                /** Disallow placing blocks on water or other unstable blocks */
+                /* Disallow placing blocks on water or other unstable blocks */
                 if (flag2 && flag3 && worldIn.getBlockState(pos.down()).isFullCube() && worldIn.getBlockState(blockpos.down()).isFullCube())
                 {
                     IBlockState iblockstate1 = ModBlocks.SPINET_PIANO.getDefaultState().withProperty(BlockPiano.OCCUPIED, Boolean.valueOf(false)).withProperty(BlockPiano.FACING, enumfacing)
@@ -90,7 +90,7 @@ public class ItemPiano extends Item
                     }
 
                     SoundType soundtype = iblockstate1.getBlock().getSoundType();
-                    worldIn.playSound((EntityPlayer) null, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
+                    worldIn.playSound(null, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
                     stack.setCount(stack.getCount()-1);
                     return EnumActionResult.SUCCESS;
                 } else
