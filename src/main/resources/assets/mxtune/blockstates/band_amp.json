@@ -1,0 +1,16 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "mxtune:band_amp"
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory": [{}],
+    "facing": {
+      "north": { "transform": "identity"                   },
+      "south": { "transform": { "rotation": { "y": 180 } } },
+      "east":  { "transform": { "rotation": { "y": 270 } } },
+      "west":  { "transform": { "rotation": { "y": 90  } } }
+    }
+  }
+}

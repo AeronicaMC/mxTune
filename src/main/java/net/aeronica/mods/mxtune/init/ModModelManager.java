@@ -40,10 +40,7 @@
  */
 package net.aeronica.mods.mxtune.init;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
+import net.aeronica.mods.mxtune.blocks.BlockBandAmp;
 import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.blocks.RendererPiano;
 import net.aeronica.mods.mxtune.blocks.TilePiano;
@@ -66,11 +63,14 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 @SuppressWarnings("unused")
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ModModelManager
 {
-    
     public static final ModModelManager INSTANCE =  new ModModelManager();
     private ModModelManager() {}
     
@@ -83,12 +83,22 @@ public class ModModelManager
     
     private void registerBlockModels()
     {
-        ModelLoader.setCustomStateMapper(ModBlocks.SPINET_PIANO, new StateMap.Builder().ignore(new IProperty[]
-                {
-                        BlockPiano.OCCUPIED
-                }).build());
-
+        ModelLoader.setCustomStateMapper(ModBlocks.SPINET_PIANO,
+                                         new StateMap.Builder().ignore(
+                                                 new IProperty[]
+                                                         {
+                                                                 BlockPiano.OCCUPIED
+                                                         }).build());
         registerItemModel(ModBlocks.SPINET_PIANO);
+
+        ModelLoader.setCustomStateMapper(ModBlocks.BAND_AMP,
+                                         new StateMap.Builder().ignore(
+                                                 new IProperty[]
+                                                         {
+                                                                 BlockBandAmp.POWERED,
+                                                                 BlockBandAmp.MODE
+                                                         }).build());
+        registerItemModel(ModBlocks.BAND_AMP);
     }
     
     public void registerTileRenderers() {
@@ -252,5 +262,4 @@ public class ModModelManager
         itemsRegistered.add(item);
         ModelLoader.setCustomModelResourceLocation(item, metadata, modelResourceLocation);
     }
-
 }

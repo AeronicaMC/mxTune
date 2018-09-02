@@ -1,14 +1,15 @@
 package net.aeronica.mods.mxtune.init;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.blocks.BlockBandAmp;
 import net.aeronica.mods.mxtune.blocks.BlockPiano;
+import net.aeronica.mods.mxtune.blocks.TileBandAmp;
 import net.aeronica.mods.mxtune.blocks.TilePiano;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.util.CompoundDataFixer;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -22,6 +23,9 @@ import java.util.Set;
 public class ModBlocks
 {
     public static final BlockPiano SPINET_PIANO = registerBlock(new BlockPiano(), "spinet_piano");
+    public static final BlockBandAmp BAND_AMP = registerBlock(new BlockBandAmp(false), "band_amp");
+    public static final ItemBlock ITEM_BAND_AMP = (ItemBlock) (new ItemBlock(ModBlocks.BAND_AMP)).setCreativeTab(MXTuneMain.TAB_MUSIC);
+
     private ModBlocks() {}
     
     @Mod.EventBusSubscriber
@@ -40,6 +44,7 @@ public class ModBlocks
 
             final Block[] blocks = {
                     SPINET_PIANO,
+                    BAND_AMP,
             };
 
             registry.registerAll(blocks);
@@ -53,7 +58,7 @@ public class ModBlocks
         @SubscribeEvent
         public static void registerItemBlocks(RegistryEvent.Register<Item> event) {
             final ItemBlock[] items = {
-                    
+                    ITEM_BAND_AMP,
             };
 
             final IForgeRegistry<Item> registry = event.getRegistry();
@@ -69,6 +74,7 @@ public class ModBlocks
     
     private static void registerTileEntities() {
         registerTileEntity(TilePiano.class, "tile_piano");
+        registerTileEntity(TileBandAmp.class, "tile_band_amp");
     }
 
     private static <T extends Block> T registerBlock(T block, String name) {
