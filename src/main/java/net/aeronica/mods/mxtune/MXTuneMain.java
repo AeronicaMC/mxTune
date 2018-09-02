@@ -17,6 +17,7 @@
 package net.aeronica.mods.mxtune;
 
 import net.aeronica.mods.mxtune.advancements.ModCriteriaTriggers;
+import net.aeronica.mods.mxtune.blocks.TileIdFixer;
 import net.aeronica.mods.mxtune.handler.GUIHandler;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.options.PlayerMusicOptionsCapability;
@@ -24,6 +25,9 @@ import net.aeronica.mods.mxtune.proxy.IProxy;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.MusicTab;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraftforge.common.util.CompoundDataFixer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
@@ -44,6 +48,7 @@ public class MXTuneMain
     public static final String VERSION = "{@VERSION}";
     public static final String DEPS = "required-after:forge@[1.12.2-14.23.4.2705,)";
     public static final String UPDATE = "https://gist.githubusercontent.com/Aeronica/dbc2619e0011d5bdbe7a162d0c6aa82b/raw/update.json";
+    public static final int MXTUNE_DATA_FIXER_VERSION = 1;
     
     @Mod.Instance(MODID)
     public static MXTuneMain instance;
@@ -74,6 +79,9 @@ public class MXTuneMain
         proxy.initMML();
 
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, GUIHandler.getInstance());
+
+        CompoundDataFixer fixer = FMLCommonHandler.instance().getDataFixer();
+        fixer.init(MXTuneMain.MODID, MXTUNE_DATA_FIXER_VERSION).registerFix(FixTypes.BLOCK_ENTITY, new TileIdFixer());
     }
 
     @Mod.EventHandler
