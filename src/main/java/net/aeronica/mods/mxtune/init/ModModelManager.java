@@ -90,15 +90,6 @@ public class ModModelManager
                                                                  BlockPiano.OCCUPIED
                                                          }).build());
         registerItemModel(ModBlocks.SPINET_PIANO);
-
-        ModelLoader.setCustomStateMapper(ModBlocks.BAND_AMP,
-                                         new StateMap.Builder().ignore(
-                                                 new IProperty[]
-                                                         {
-                                                                 BlockBandAmp.POWERED,
-                                                                 BlockBandAmp.MODE
-                                                         }).build());
-        registerItemModel(ModBlocks.BAND_AMP);
     }
     
     public void registerTileRenderers() {
@@ -109,11 +100,7 @@ public class ModModelManager
      * Register this mod's {@link Item} models.
      */
     private void registerItemModels() {
-        // registerItemModel(ModItems.ITEM_MUSIC_PAPER);
-        // registerItemModel(ModItems.ITEM_SHEET_MUSIC);
-        // registerItemModel(ModBlocks.BLOCK_PIANO);
-        
-
+        // Register variant Item models
         registerVariantItemModels(ModItems.ITEM_INSTRUMENT, "instrument", ItemInstrument.EnumType.values());
 
         // Then register items with default model names

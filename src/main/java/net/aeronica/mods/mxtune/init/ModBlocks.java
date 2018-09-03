@@ -23,8 +23,7 @@ import java.util.Set;
 public class ModBlocks
 {
     public static final BlockPiano SPINET_PIANO = registerBlock(new BlockPiano(), "spinet_piano");
-    public static final BlockBandAmp BAND_AMP = registerBlock(new BlockBandAmp(false), "band_amp");
-    public static final ItemBlock ITEM_BAND_AMP = (ItemBlock) (new ItemBlock(ModBlocks.BAND_AMP)).setCreativeTab(MXTuneMain.TAB_MUSIC);
+    public static final BlockBandAmp BAND_AMP = registerBlock(new BlockBandAmp(), "band_amp");
 
     private ModBlocks() {}
     
@@ -58,7 +57,6 @@ public class ModBlocks
         @SubscribeEvent
         public static void registerItemBlocks(RegistryEvent.Register<Item> event) {
             final ItemBlock[] items = {
-                    ITEM_BAND_AMP,
             };
 
             final IForgeRegistry<Item> registry = event.getRegistry();
