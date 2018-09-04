@@ -739,7 +739,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         Instrument inst = instrumentCache.get(selectedInst);
         
         /* Table Flip! */
-        boolean isPercussionSet = inst.getName().contains("Standard") || inst.getName().contains("Orchestra");
+        boolean isPercussionSet = (inst.getName().contains("stdset") || inst.getName().contains("orchset"));
         /* A SoundFont 2.04 preset allows 128 banks 0-127) plus the percussion
          * set for 129 sets! OwO However when you get a patch from an
          * Instrument from a loaded soundfont you will find the bank value
@@ -752,6 +752,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         int packedPreset = isPercussionSet ? MMLUtil.preset2PackedPreset(128, program) : MMLUtil.preset2PackedPreset(bank, program);
         
         mml = mml.replace("MML@", "MML@i" + packedPreset);
+        ModLogger.debug("GuiMusicPaperParse.mmlPlay() name: %s, bank %05d, program %03d, packed %08d, perc: %s", inst.getName(), bank, program, packedPreset, isPercussionSet);
         ModLogger.debug("GuiMusicPaperParse.mmlPlay(): %s", mml.substring(0, mml.length() >= 25 ? 25 : mml.length()));
         
         if (midiUnavailable) return false;
