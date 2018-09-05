@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -37,7 +37,6 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
-import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.lwjgl.input.Keyboard;
@@ -67,35 +66,34 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
 {
     public static final int GUI_ID = 7;
     // Localization Keys
-    String TITLE = I18n.format("mxtune.gui.musicPaperParse.title");
-    String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
-    String NO_SOUNDBANK = I18n.format("mxtune.gui.musicPaperParse.noSoundbank");
-    String HELPER_ENTER_TITLE = I18n.format("mxtune.gui.musicPaperParse.enterTitle");
-    String HELPER_ENTER_MML = I18n.format("mxtune.gui.musicPaperParse.enterMML");
-    String LABEL_INSTRUMENTS = I18n.format("mxtune.gui.musicPaperParse.labelInstruments");
-    String LABEL_TITLE_MML = I18n.format("mxtune.gui.musicPaperParse.labelTitleMML");
-    
-    GuiTextField textMMLTitle;
-    GuiMMLBox textMMLPaste;
-    GuiTextField labelStatus;
-    GuiButton buttonOkay;
-    GuiButton buttonCancel;
-    GuiButton buttonPlay;
-    GuiButton buttonStop;
-    GuiLink mmlLink;
-    GuiParserErrorList listBoxMMLError;
-    GuiInstruments listBoxInstruments;
-    int helperTextCounter;
-    int helperTextColor;
-    boolean helperState;
+    private String TITLE = I18n.format("mxtune.gui.musicPaperParse.title");
+    private String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
+    private String NO_SOUNDBANK = I18n.format("mxtune.gui.musicPaperParse.noSoundbank");
+    private String HELPER_ENTER_TITLE = I18n.format("mxtune.gui.musicPaperParse.enterTitle");
+    private String HELPER_ENTER_MML = I18n.format("mxtune.gui.musicPaperParse.enterMML");
+    private String LABEL_INSTRUMENTS = I18n.format("mxtune.gui.musicPaperParse.labelInstruments");
+    private String LABEL_TITLE_MML = I18n.format("mxtune.gui.musicPaperParse.labelTitleMML");
+
+    private GuiTextField textMMLTitle;
+    private GuiMMLBox textMMLPaste;
+    private GuiTextField labelStatus;
+    private GuiButton buttonOkay;
+    private GuiButton buttonCancel;
+    private GuiButton buttonPlay;
+    private GuiButton buttonStop;
+    private GuiLink mmlLink;
+    private GuiParserErrorList listBoxMMLError;
+    private GuiInstruments listBoxInstruments;
+    private int helperTextCounter;
+    private int helperTextColor;
+    private boolean helperState;
 
     /** MML Parser */
-    static byte[] mmlBuf = null;
-    InputStream is;
-    ParseErrorListener parseErrorListener = null;
-    ArrayList<ParseErrorEntry> parseErrorCache;
-    ParseErrorEntry selectedErrorEntry;
-    int selectedError = -1;
+    private static byte[] mmlBuf = null;
+    private ParseErrorListener parseErrorListener = null;
+    private ArrayList<ParseErrorEntry> parseErrorCache;
+    private ParseErrorEntry selectedErrorEntry;
+    private int selectedError;
 
     /** MML Player */
     private Sequencer sequencer = null;
@@ -103,12 +101,12 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     private com.sun.media.sound.AudioSynthesizer synthesizer = null;
     
     /** Instruments */
-    ArrayList<Instrument> instrumentCache;
-    int instListWidth;
-    Instrument selectedInstID = null;
-    int selectedInst = -1;
-    boolean isPlaying = false;
-    boolean midiUnavailable;
+    private ArrayList<Instrument> instrumentCache;
+    private int instListWidth;
+    private Instrument selectedInstID = null;
+    private int selectedInst;
+    private boolean isPlaying = false;
+    private boolean midiUnavailable;
 
     /** Cached State for when the GUI is resized */
     private boolean isStateCached = false;
@@ -134,9 +132,9 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     {        
         this.mc = Minecraft.getMinecraft();
         parseErrorListener = new ParseErrorListener();
-        parseErrorCache = new ArrayList<ParseErrorEntry>();
-        instrumentCache = new ArrayList<Instrument>();
-        selectedError = selectedInst = -1;
+        parseErrorCache = new ArrayList<>();
+        instrumentCache = new ArrayList<>();
+        selectedError = -1;
         selectedInst = -1;
         initInstrumentCache();
 
@@ -168,7 +166,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         this.buttonList.add(buttonStop);
         this.buttonList.add(mmlLink);
 
-        /** create MML Title field */
+        /* create MML Title field */
         int posX = this.listBoxInstruments.getRight() + 5;
         int posY = 32;
         textMMLTitle = new GuiTextField(0, getFontRenderer(), posX, posY, this.width - posX - 10, 18);
@@ -176,14 +174,14 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         textMMLTitle.setCanLoseFocus(true);
         textMMLTitle.setMaxStringLength(50);
 
-        /** create MML Paste/Edit field */
+        /* create MML Paste/Edit field */
         posY = 32 + 18 + 5;
         textMMLPaste = new GuiMMLBox(1, getFontRenderer(), posX, posY, this.width - posX - 10, 62);
         textMMLPaste.setFocused(false);
         textMMLPaste.setCanLoseFocus(true);
         textMMLPaste.setMaxStringLength(10000);
 
-        /** create Status line */
+        /* create Status line */
         posY = 32 + 18 + 5 + 62 + 5;
         labelStatus = new GuiTextField(2, getFontRenderer(), posX, posY, this.width - posX - 10, 18);
         labelStatus.setFocused(false);
@@ -191,7 +189,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         labelStatus.setEnabled(false);
         labelStatus.setMaxStringLength(80);
 
-        /** create Parse Error selector */
+        /* create Parse Error selector */
         posY = 32 + 18 + 5 + 62 + 5 + 18 + 5;
         listBoxMMLError = new GuiParserErrorList(this, parseErrorCache, posX, posY, this.width - posX - 10, this.height - posY - 42, this.getFontRenderer().FONT_HEIGHT + 2);
 
@@ -223,11 +221,11 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
 
     private void updateButtonState()
     {
-        /** enable OKAY button when Title Field is greater than 0 chars and passes the MML parsing tests */
+        /* enable OKAY button when Title Field is greater than 0 chars and passes the MML parsing tests */
         boolean isOK = (!textMMLPaste.isEmpty()) && parseErrorCache.isEmpty() && !textMMLTitle.getText().isEmpty();
-        ((GuiButton) buttonList.get(buttonOkay.id)).enabled = isOK;
-        ((GuiButton) buttonList.get(buttonPlay.id)).enabled = !this.isPlaying && isOK;
-        ((GuiButton) buttonList.get(buttonStop.id)).enabled = this.isPlaying && isOK;
+        buttonList.get(buttonOkay.id).enabled = isOK;
+        buttonList.get(buttonPlay.id).enabled = !this.isPlaying && isOK;
+        buttonList.get(buttonStop.id).enabled = this.isPlaying && isOK;
     }
 
     @Override
@@ -239,17 +237,17 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
             localTITLE = TITLE + " - " + TextFormatting.RED + MIDI_NOT_AVAILABLE;
         else
             localTITLE = TITLE;
-        /** draw "TITLE" at the top/right column middle */
+        /* draw "TITLE" at the top/right column middle */
         int posX = (this.width - getFontRenderer().getStringWidth(localTITLE)) / 2;
         int posY = 10;
         getFontRenderer().drawStringWithShadow(localTITLE, posX, posY, 0xD3D3D3);
 
-        /** draw Field names */
+        /* draw Field names */
         posX = this.listBoxInstruments.getRight() + 10;
         posY = 20;
         getFontRenderer().drawStringWithShadow(LABEL_TITLE_MML, posX, posY, 0xD3D3D3);
 
-        /** draw the instrument list */
+        /* draw the instrument list */
         posX = 10;
         posY = 20;
         getFontRenderer().drawStringWithShadow(LABEL_INSTRUMENTS, posX, posY, 0xD3D3D3);
@@ -257,12 +255,12 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         listBoxInstruments.drawScreen(mouseX, mouseY, partialTicks);
         listBoxMMLError.drawScreen(mouseX, mouseY, partialTicks);
 
-        /** draw the GuiTextField */
+        /* draw the GuiTextField */
         textMMLTitle.drawTextBox();
         textMMLPaste.drawTextBox();
         labelStatus.drawTextBox();
 
-        /** draw helpers */
+        /* draw helpers */
         if (textMMLTitle.getText().isEmpty())
         {
             int helperWidth = getFontRenderer().getStringWidth(HELPER_ENTER_TITLE);
@@ -293,27 +291,26 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         if (this.helperTextCounter % 20 == 0) 
         {
 //            helperState = helperTextColor <= LO && !helperState ? !helperState : helperTextColor >= HI && helperState ? !helperState : helperState;
-            helperState = helperTextColor <= LO && !helperState ? !helperState : helperState;
-            helperState = helperTextColor >= HI && helperState ? !helperState : helperState;
+            helperState = ((helperTextColor <= LO) && !helperState) != helperState;
+            helperState = ((helperTextColor >= HI) && helperState) != helperState;
         }
         helperTextColor = (short) (helperState ? Math.min(HI, ++helperTextColor) : Math.max(LO, --helperTextColor));
         int color = helperTextColor;
         color &= 0xFF;
-        int RGB = ((color << 16) + (color << 8) + -color);
-        return RGB;
+        return (color << 16) + (color << 8) + -color;
     }
 
     @Override
     protected void actionPerformed(GuiButton guibutton)
     {
-        /** if button is disabled ignore click */
+        /* if button is disabled ignore click */
         if (!guibutton.enabled) return;
 
-        /** id 0 = okay; 1 = cancel; 2 = play; 3 = stop */
+        /* id 0 = okay; 1 = cancel; 2 = play; 3 = stop */
         switch (guibutton.id)
         {
         case 0:
-            /** Done / OKAY - Save MML */
+            /* Done / OKAY - Save MML */
             String musictext = textMMLPaste.getTextToParse().trim();
             String musictitle = textMMLTitle.getText().trim();
             mmlStop();
@@ -322,13 +319,13 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
             break;
 
         case 1:
-            /** Cancelled - remove the GUI */
+            /* Cancelled - remove the GUI */
             mmlStop();
             closeGui();
             break;
 
         case 2:
-            /** Play MML */
+            /* Play MML */
             if (this.selectedInst < 0)
             {
                 this.selectedInst = 0;
@@ -339,7 +336,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
             break;
 
         case 3:
-            /** Stop playing MML */
+            /* Stop playing MML */
             mmlStop();
             break;
             
@@ -357,7 +354,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         mc.setIngameFocus();
     }
     
-    /**
+    /*
      * Fired when a key is typed. This is the equivalent of
      * KeyListener.keyTyped(KeyEvent e).
      * 
@@ -366,7 +363,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     @Override
     protected void keyTyped(char c, int i) throws IOException
     {
-        /** add char to GuiTextField */
+        /* add char to GuiTextField */
         textMMLTitle.textboxKeyTyped(c, i);
         textMMLPaste.textboxKeyTyped(c, i);
         if (i == Keyboard.KEY_TAB)
@@ -383,15 +380,9 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         }
         parseMML(textMMLPaste.getText());
         updateState();
-        /** perform click event on ok button when Enter is pressed */
-        if (c == '\n' || c == '\r')
-        {
-            /** Better to eat than close and save prematurely */
-            // actionPerformed((GuiButton) buttonList.get(btn_okay.id));
-        }
         if (i == Keyboard.KEY_ESCAPE)
         {
-            actionPerformed((GuiButton) buttonList.get(buttonCancel.id));
+            actionPerformed(buttonList.get(buttonCancel.id));
         }
         super.keyTyped(c, i);
     }
@@ -402,7 +393,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         int mouseX = Mouse.getEventX() * this.width / this.mc.displayWidth;
         int mouseY = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
 
-        /**
+        /*
          * A hack is a hack is a hack - Disabling mouse handling on other
          * controls. In this case to ensure a particular control keeps focus
          * while clicking on the error list.
@@ -413,7 +404,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         listBoxMMLError.handleMouseInput(mouseX, mouseY);
     }
 
-    /**
+    /*
      * Called when the mouse is clicked.
      * 
      * @throws IOException
@@ -427,7 +418,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         updateState();
     }
 
-    protected void sendMMLTextToServer(String titleIn, String mmlIn)
+    private void sendMMLTextToServer(String titleIn, String mmlIn)
     {
         PacketDispatcher.sendToServer(new MusicTextMessage(titleIn, mmlIn));
     }
@@ -435,7 +426,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     private class NullInstrument extends Instrument
     {
 
-        protected NullInstrument(Soundbank soundbank, Patch patch, String name, Class<?> dataClass)
+        private NullInstrument(Soundbank soundbank, Patch patch, String name, Class<?> dataClass)
         {
             super(soundbank, patch, name, dataClass);
         }
@@ -458,11 +449,10 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         /* empty class */
     }
     
-    /** Load Default General MIDI instruments */
+    /* Load Default General MIDI instruments */
     private void initInstrumentCache()
     {
         Soundbank soundBank;
-        Instrument[] inst;
         instrumentCache.clear();
         if (midiUnavailable)
         {
@@ -471,20 +461,13 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         {
             soundBank = MIDISystemUtil.getMXTuneSoundBank();
             if (soundBank != null)
-            {
-                inst = soundBank.getInstruments();
-                for (Instrument i : inst)
-                {
-                    instrumentCache.add(i);
-                }
-            } else
-            {
+                Collections.addAll(instrumentCache, soundBank.getInstruments());
+            else
                 instrumentCache.add(getNullInstrument());
-            }
         }
     }
     
-    /** MML Parsing */
+    /* MML Parsing */
     private void parseMML(String mml)
     {
         try
@@ -494,9 +477,9 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         {
             ModLogger.error(e);
         }
-        is = new java.io.ByteArrayInputStream(mmlBuf);
+        InputStream is = new java.io.ByteArrayInputStream(mmlBuf);
 
-        /** ANTLR4 MML Parser BEGIN */
+        /* ANTLR4 MML Parser BEGIN */
         ANTLRInputStream input = null;
 
         try
@@ -514,72 +497,56 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         parser.setBuildParseTree(true);
         parseErrorCache.clear();
         parser.test();
-        for (ParseErrorEntry e : parseErrorListener.getParseErrorEntries())
-        {
-            parseErrorCache.add(e);
-        }
+        parseErrorCache.addAll(parseErrorListener.getParseErrorEntries());
     }
 
     public static class ParseErrorListener extends BaseErrorListener implements IParseErrorEntries
     {
 
-        private ArrayList<ParseErrorEntry> parseErrorList = new ArrayList<ParseErrorEntry>();
+        private ArrayList<ParseErrorEntry> parseErrorList = new ArrayList<>();
 
         @Override
         public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e)
         {
             List<String> stack = ((Parser) recognizer).getRuleInvocationStack();
             Collections.reverse(stack);
-            parseErrorList.add(new ParseErrorEntry(stack, (Token) offendingSymbol, line, charPositionInLine, msg, e));
+            parseErrorList.add(new ParseErrorEntry(line, charPositionInLine, msg, e));
         }
 
         @Override
         public ArrayList<ParseErrorEntry> getParseErrorEntries()
         {
-            /** copy the records out then clear the local list */
-            ArrayList<ParseErrorEntry> temp = new ArrayList<ParseErrorEntry>();
-            for (ParseErrorEntry e : parseErrorList)
-            {
-                temp.add(e);
-            }
+            /* copy the records out then clear the local list */
+            ArrayList<ParseErrorEntry> temp = new ArrayList<>(parseErrorList);
             parseErrorList.clear();
             return temp;
         }
     }
 
+    @SuppressWarnings("unused")
     public interface IParseErrorEntries
     {
-        public List<ParseErrorEntry> getParseErrorEntries();
+        List<ParseErrorEntry> getParseErrorEntries();
     }
 
     public static class ParseErrorEntry
     {
-        private List<String> ruleStack;
-        private Token offendingToken;
         private int line;
         private int charPositionInLine;
         private String msg;
         private RecognitionException e;
 
-        public ParseErrorEntry(List<String> ruleStack, Token offendingToken, int line, int charPositionInLine, String msg, RecognitionException e)
+        ParseErrorEntry(int line, int charPositionInLine, String msg, RecognitionException e)
         {
-            this.ruleStack = ruleStack;
-            this.offendingToken = offendingToken;
             this.line = line;
             this.charPositionInLine = charPositionInLine;
             this.msg = msg;
             this.e = e;
         }
 
-        public List<String> getRuleStack() {return ruleStack;}
-
-        public Object getOffendingToken() {return offendingToken;}
-
         public int getLine() {return line;}
 
-        public int getCharPositionInLine() {return charPositionInLine;}
-
-        public String getMsg() {return msg;}
+        int getCharPositionInLine() {return charPositionInLine;}
 
         public RecognitionException getE() {return e;}
     }
@@ -589,25 +556,22 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         private GuiMusicPaperParse parent;
         private final ArrayList<ParseErrorEntry> parseErrorCache;
 
-        public GuiParserErrorList(GuiMusicPaperParse parent, ArrayList<ParseErrorEntry> parseErrorCache, int left, int top, int listWidth, int listHeight, int slotHeight)
+        GuiParserErrorList(GuiMusicPaperParse parent, ArrayList<ParseErrorEntry> parseErrorCache, int left, int top, int listWidth, int listHeight, int slotHeight)
         {
             super(parent.getMinecraftInstance(), listWidth, listHeight, top, top + listHeight, left, slotHeight, parent.width, parent.height);
             this.parent = parent;
             this.parseErrorCache = parseErrorCache;
         }
 
-        public boolean isHovering()
+        boolean isHovering()
         {
-            boolean isHovering = mouseX >= left && mouseX <= left + listWidth && mouseY >= top && mouseY <= bottom && getSize() > 0;
-            return isHovering;
+            return mouseX >= left && mouseX <= left + listWidth && mouseY >= top && mouseY <= bottom && getSize() > 0;
         }
 
         int selectedIndex(int s) {return selectedIndex = s;}
 
         @Override
         protected int getSize() {return parseErrorCache.size();}
-
-        ArrayList<ParseErrorEntry> getErrors() {return parseErrorCache;}
 
         @Override
         protected void elementClicked(int index, boolean doubleClick) {this.parent.selectErrorIndex(index);}
@@ -636,12 +600,12 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         }
     }
 
-    /**
+    /*
      * element was clicked
      * 
      * @throws InterruptedException
      */
-    public void selectErrorIndex(int index)
+    private void selectErrorIndex(int index)
     {
         this.selectedError = index;
         this.selectedErrorEntry = (index >= 0 && index <= parseErrorCache.size()) ? parseErrorCache.get(selectedError) : null;
@@ -653,14 +617,14 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         updateState();
     }
 
-    public boolean errorIndexSelected(int index) {return index == selectedError;}
+    private boolean errorIndexSelected(int index) {return index == selectedError;}
 
     public static class GuiInstruments extends GuiScrollingList
     {
         private GuiMusicPaperParse parent;
         private ArrayList<Instrument> inst;
 
-        public GuiInstruments(GuiMusicPaperParse parent, ArrayList<Instrument> inst, int listWidth, int slotHeight)
+        GuiInstruments(GuiMusicPaperParse parent, ArrayList<Instrument> inst, int listWidth, int slotHeight)
         {
             super(parent.getMinecraftInstance(), listWidth, parent.height - 32 - 60 + 4, 32, parent.height - 60 + 4, 10, slotHeight, parent.width, parent.height);
             this.parent = parent;
@@ -697,13 +661,13 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
             Instrument ins = inst.get(slotIdx);
 
             String s = font.trimStringToWidth(I18n.format(ins.getName()), listWidth - 10);
-            /** light Blue */
+            /* light Blue */
             font.drawStringWithShadow(s, (float)this.left + 3, slotTop, 0xADD8E6);
         }
     }
 
-    /** element was clicked */
-    public void selectInstIndex(int index)
+    /* element was clicked */
+    private void selectInstIndex(int index)
     {
         if (index == this.selectedInst)
             return;
@@ -712,11 +676,11 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         updateState();
     }
 
-    public boolean instIndexSelected(int index) {return index == selectedInst;}
+    private boolean instIndexSelected(int index) {return index == selectedInst;}
 
-    public Minecraft getMinecraftInstance() {return mc;}
+    private Minecraft getMinecraftInstance() {return mc;}
 
-    public FontRenderer getFontRenderer() {return mc.fontRenderer;}
+    private FontRenderer getFontRenderer() {return mc.fontRenderer;}
 
     /** Table Flip!
      * Because of the apparent different interpretations of MIDI and
@@ -756,7 +720,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         ModLogger.debug("GuiMusicPaperParse.mmlPlay(): %s", mml.substring(0, mml.length() >= 25 ? 25 : mml.length()));
         
         if (midiUnavailable) return false;
-        byte[] mmlBuf = null;
+        byte[] mmlBuf;
         InputStream is;
         boolean midiException = false;
 
@@ -770,9 +734,9 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         }
         is = new java.io.ByteArrayInputStream(mmlBuf);
 
-        /** ANTLR4 MML Parser BEGIN */
+        /* ANTLR4 MML Parser BEGIN */
         MMLToMIDI mmlTrans = new MMLToMIDI();
-        ANTLRInputStream input = null;
+        ANTLRInputStream input;
 
         try
         {
@@ -791,11 +755,11 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
 
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(mmlTrans, tree);
-        /** ANTLR4 MML Parser END */
+        /* ANTLR4 MML Parser END */
 
         try
         {
-            /** Using the default sequencer and synthesizer */
+            /* Using the Gervill synthesizer and sequencer */
             synthesizer = (com.sun.media.sound.AudioSynthesizer) MidiSystem.getSynthesizer();
             if (synthesizer != null && !synthesizer.isOpen())
             {
@@ -838,14 +802,14 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     public void meta(MetaMessage event)
     {
         if (event.getType() == 47)
-        { /** end of stream */
+        { /* end of stream */
             ModLogger.debug("MetaMessage EOS event received");
             mmlStop();
             this.updateButtonState();
         }
     }
 
-    public void mmlStop()
+    private void mmlStop()
     {
         if (sequencer != null && sequencer.isOpen())
         {
