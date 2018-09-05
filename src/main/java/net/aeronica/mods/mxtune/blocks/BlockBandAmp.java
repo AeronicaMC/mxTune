@@ -27,8 +27,6 @@ import java.util.Random;
 
 public class BlockBandAmp extends BlockHorizontal
 {
-    private static final AxisAlignedBB BAND_AMP_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.125D, 1.0D);
-
     public BlockBandAmp()
     {
         super(Material.WOOD);
@@ -36,13 +34,6 @@ public class BlockBandAmp extends BlockHorizontal
         this.setHardness(0.0F);
         this.setSoundType(SoundType.WOOD);
         this.disableStats();
-    }
-
-    @Deprecated
-    @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-    {
-        return BAND_AMP_AABB;
     }
 
     /**
@@ -148,11 +139,11 @@ public class BlockBandAmp extends BlockHorizontal
         return new TileBandAmp(state.getValue(FACING));
     }
 
-    @Deprecated
-    @Override
-    public boolean isFullCube(IBlockState state) { return false; }
-
-    @Deprecated
-    @Override
-    public boolean isOpaqueCube(IBlockState state) { return false; }
+//    @Deprecated
+//    @Override
+//    public boolean isFullCube(IBlockState state) { return false; }
+//
+//    @Deprecated
+//    @Override
+//    public boolean isOpaqueCube(IBlockState state) { return false; }
 }

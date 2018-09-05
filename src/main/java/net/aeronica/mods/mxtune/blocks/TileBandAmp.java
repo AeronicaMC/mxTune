@@ -1,6 +1,5 @@
 package net.aeronica.mods.mxtune.blocks;
 
-import com.mojang.realmsclient.gui.ChatFormatting;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -37,7 +36,7 @@ public class TileBandAmp extends TileInstrument
 
     public void setPowered(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
-        ModLogger.info("Powered %s: %s", blockIn.getLocalizedName(), !getPreviousRedStoneState());
+        ModLogger.info("Powered facing: %s, name: %s", facing.getName(),  blockIn.getBlockState().getBlock().getLocalizedName());
     }
 
     /**
