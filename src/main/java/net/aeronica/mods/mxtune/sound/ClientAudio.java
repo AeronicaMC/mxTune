@@ -292,9 +292,12 @@ public class ClientAudio
     
     public static void stop(Integer playID)
     {
-        AudioData audioData = playIDAudioData.get(playID);
-        if (audioData != null && sndSystem != null && audioData.getUuid() != null)
-            sndSystem.fadeOut(audioData.getUuid(), null, 100);
+        synchronized (SoundSystemConfig.THREAD_SYNC)
+        {
+            AudioData audioData = playIDAudioData.get(playID);
+            if (audioData != null && sndSystem != null && audioData.getUuid() != null)
+                sndSystem.fadeOut(audioData.getUuid(), null, 100);
+        }
     }
     
     private static class ThreadedPlay implements Runnable
