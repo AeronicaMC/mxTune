@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright {2016-2017} Paul Boese aka Aeronica
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -53,6 +53,7 @@ import javax.sound.sampled.AudioInputStream;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL;
+import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.ALC10;
 import org.lwjgl.openal.ALC11;
 
@@ -85,37 +86,32 @@ import paulscode.sound.SoundSystem;
 import paulscode.sound.SoundSystemConfig;
 import paulscode.sound.SoundSystemException;
 
-import java.util.Map;
-
 @SideOnly(Side.CLIENT)
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ClientAudio
 {
 
-    static SoundHandler handler;
-    static SoundManager sndManager;
-    static SoundSystem sndSystem;
-    static MusicTicker musicTicker;
-    
-    static final int THREAD_POOL_SIZE = 4;
-    static final AudioFormat audioFormat3D;
-    static final AudioFormat audioFormatStereo;
-    static ConcurrentLinkedQueue<Integer> playIDQueue01;
-    static ConcurrentLinkedQueue<Integer> playIDQueue02;
-    static ConcurrentLinkedQueue<Integer> playIDQueue03;
-    static ConcurrentHashMap<Integer, AudioData> playIDAudioData;
-    
-    static ExecutorService executorService = null;
-    static ThreadFactory threadFactory = null; 
-    
-    static int count = 0;
-    static boolean vanillaMusicPaused = false;
-    
-    static final int MAX_STREAM_CHANNELS = 16;
-    static final int SOUND_QUEUE_SLACK = 6;
-    static int normalChannelCount = 0;
-    static int streamChannelCount = 0;
-    
+    private static SoundHandler handler;
+    private static SoundSystem sndSystem;
+    private static MusicTicker musicTicker;
+
+    private static final int THREAD_POOL_SIZE = 4;
+    private static final AudioFormat audioFormat3D;
+    private static final AudioFormat audioFormatStereo;
+    private static ConcurrentLinkedQueue<Integer> playIDQueue01;
+    private static ConcurrentLinkedQueue<Integer> playIDQueue02;
+    private static ConcurrentLinkedQueue<Integer> playIDQueue03;
+    private static ConcurrentHashMap<Integer, AudioData> playIDAudioData;
+
+    private static ExecutorService executorService = null;
+    private static ThreadFactory threadFactory = null;
+
+    private static int counter = 0;
+    private static boolean vanillaMusicPaused = false;
+
+    private static final int MAX_STREAM_CHANNELS = 16;
+    private static final int DESIRED_STREAM_CHANNELS = 8;
+
     static {
         sndSystem = null;
         /* Used to track which player/groups queued up music to be played by PlayID */
@@ -140,22 +136,22 @@ public class ClientAudio
                     .setDaemon(true)
                     .setPriority(Thread.NORM_PRIORITY)
                     .build();
-            executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE, (java.util.concurrent.ThreadFactory) threadFactory);
+            executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE, threadFactory);
         }
 
     }
     
     public enum Status
     {
-        WAITING, READY, ERROR;
+        WAITING, READY, ERROR
     }
     
-    public static synchronized boolean addPlayIDQueue(int playID) 
+    private static synchronized void addPlayIDQueue(int playID)
     {
-        return playIDQueue01.add(playID) && playIDQueue02.add(playID) && playIDQueue03.add(playID);
+        if (playIDQueue01.add(playID) && playIDQueue02.add(playID)) {playIDQueue03.add(playID);}
     }
     
-    public static Integer pollPlayIDQueue01()
+    private static Integer pollPlayIDQueue01()
     {
         return playIDQueue01.poll();
     }
@@ -165,7 +161,7 @@ public class ClientAudio
         return playIDQueue01.peek();
     }
 
-    public static Integer pollPlayIDQueue02()
+    static Integer pollPlayIDQueue02()
     {
         return playIDQueue02.poll();
     }
@@ -175,17 +171,17 @@ public class ClientAudio
         return playIDQueue02.peek();
     }
 
-    public static Integer pollPlayIDQueue03()
+    private static Integer pollPlayIDQueue03()
     {
         return playIDQueue03.poll();
     }
     
-    public static Integer peekPlayIDQueue03()
+    private static Integer peekPlayIDQueue03()
     {
         return playIDQueue03.peek();
     }
     
-   public static AudioFormat getAudioFormat(Integer playID)
+    static AudioFormat getAudioFormat(Integer playID)
     {
        AudioData audioData = playIDAudioData.get(playID);
        if (audioData == null)
@@ -193,14 +189,14 @@ public class ClientAudio
        return audioData.isClientPlayer() ? audioFormatStereo : audioFormat3D;
     }
     
-    public static synchronized void setPlayIDAudioStream(Integer playID, AudioInputStream audioStream)
+    static synchronized void setPlayIDAudioStream(Integer playID, AudioInputStream audioStream)
     {
         AudioData audioData = playIDAudioData.get(playID);
         if (audioData != null)
             audioData.setAudioStream(audioStream);
     }
     
-    public static synchronized void setUuid(Integer playID, String uuid)
+    private static synchronized void setUuid(Integer playID, String uuid)
     {
         AudioData audioData = playIDAudioData.get(playID);
         if (audioData != null)
@@ -213,7 +209,7 @@ public class ClientAudio
         return audioData.getUuid();
     }
     
-    public static void removePlayIDAudioData(int playID)
+    static void removePlayIDAudioData(int playID)
     {
         if (playIDAudioData.containsKey(playID))
         {
@@ -233,13 +229,13 @@ public class ClientAudio
         }
     }
     
-    public static AudioInputStream getAudioInputStream(int playID)
+    static AudioInputStream getAudioInputStream(int playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
         return audioData != null ? audioData.getAudioStream() : null;
     }
     
-    public static synchronized void setPlayIDAudioDataStatus(Integer playID, Status status)
+    static synchronized void setPlayIDAudioDataStatus(Integer playID, Status status)
     {
         AudioData audioData = playIDAudioData.get(playID);
         if (audioData != null)
@@ -249,30 +245,30 @@ public class ClientAudio
     public static boolean isPlayIDAudioDataWaiting(Integer playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
-        return audioData != null ? audioData.getStatus() == Status.WAITING : false;
+        return audioData != null && audioData.getStatus() == Status.WAITING;
     }
     
-    public static boolean isPlayIDAudioDataError(Integer playID)
+    static boolean isPlayIDAudioDataError(Integer playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
-        return audioData != null ? audioData.getStatus() == Status.ERROR : true;
+        return audioData == null || audioData.getStatus() == Status.ERROR;
     }
     
-    public static boolean isPlayIDAudioDataReady(Integer playID)
+    static boolean isPlayIDAudioDataReady(Integer playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
-        return audioData != null ? audioData.getStatus() == Status.READY : false;
+        return audioData != null && audioData.getStatus() == Status.READY;
     }
     
-    public static boolean hasPlayID(Integer playID)
+    static boolean hasPlayID(Integer playID)
     {
-        return (!playIDAudioData.isEmpty() && playID != null) ? playIDAudioData.containsKey(playID) : false;
+        return (!playIDAudioData.isEmpty() && playID != null) && playIDAudioData.containsKey(playID);
     }
     
-    public static boolean isClientPlayer(Integer playID)
+    private static boolean isClientPlayer(Integer playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
-        return audioData != null ? audioData.isClientPlayer() : false;
+        return audioData != null && audioData.isClientPlayer();
     }
 
     public static synchronized void play(Integer playID, String musicText)
@@ -306,7 +302,7 @@ public class ClientAudio
         private final Integer playID;
         private final String musicText;
 
-        public ThreadedPlay(Integer entityID, String musicText)
+        ThreadedPlay(Integer entityID, String musicText)
         {
             this.playID = entityID;
             this.musicText = musicText;
@@ -371,7 +367,7 @@ public class ClientAudio
                 setVanillaMusicPaused(false);
             }  else if (playIDAudioData.mappingCount() > 0)
             {
-                // don't allow the timer to count down while ClientAudio sessions are playing
+                // don't allow the timer to counter down while ClientAudio sessions are playing
                 setVanillaMusicTimer(Integer.MAX_VALUE);
             }
             // Remove inactive playIDs
@@ -391,7 +387,7 @@ public class ClientAudio
         if (sndSystem == null || sndSystem.randomNumberGenerator == null)
         {
             handler = Minecraft.getMinecraft().getSoundHandler();
-            sndManager = handler.sndManager;
+            SoundManager sndManager = handler.sndManager;
             sndSystem = sndManager.sndSystem;
             musicTicker = Minecraft.getMinecraft().getMusicTicker();
             setVanillaMusicPaused(false);
@@ -402,7 +398,7 @@ public class ClientAudio
     {
         setVanillaMusicPaused(false);
         KeySetView<Integer, AudioData> keys = playIDAudioData.keySet();
-        keys.forEach(k -> stop(k));
+        keys.forEach(ClientAudio::stop);
     }
     
     @SubscribeEvent
@@ -425,9 +421,9 @@ public class ClientAudio
     @SubscribeEvent
     public static void onEvent(ClientTickEvent event)
     {
-        if (event.side == Side.CLIENT && event.phase == TickEvent.Phase.END && count % 40 == 0)
+        if (event.side == Side.CLIENT && event.phase == TickEvent.Phase.END && counter++ % 10 == 0)
         {
-            /* once every 2 seconds */
+            /* once every 1/2 second */
             updateClientAudio();
         }
     }
@@ -491,29 +487,57 @@ public class ClientAudio
      * This section Poached from Dynamic Surroundings
      */
 
+    private static void alErrorCheck() {
+        final int error = AL10.alGetError();
+        if (error != AL10.AL_NO_ERROR)
+            ModLogger.warn("OpenAL error: %d", error);
+    }
+
     private static void configureSound() {
         int totalChannels = -1;
 
         try {
             final boolean create = !AL.isCreated();
             if (create)
+            {
                 AL.create();
+                alErrorCheck();
+            }
+
             final IntBuffer ib = BufferUtils.createIntBuffer(1);
             ALC10.alcGetInteger(AL.getDevice(), ALC11.ALC_MONO_SOURCES, ib);
+            alErrorCheck();
             totalChannels = ib.get(0);
+
             if (create)
                 AL.destroy();
+
         } catch (final Throwable e) {
             ModLogger.error(e);
         }
 
-        normalChannelCount = ModConfig.getNormalSoundChannelCount();
-        streamChannelCount = ModConfig.getStreamingSoundChannelCount();
+        int normalChannelCount = SoundSystemConfig.getNumberNormalChannels();
+        int streamChannelCount = SoundSystemConfig.getNumberStreamingChannels();
 
-        if (ModConfig.getAutoConfigureChannels() && totalChannels > 64) {
+        if (ModConfig.getAutoConfigureChannels() && (totalChannels > 64) && (streamChannelCount < DESIRED_STREAM_CHANNELS))
+        {
             totalChannels = ((totalChannels + 1) * 3) / 4;
-            streamChannelCount = Math.min(totalChannels / 5, MAX_STREAM_CHANNELS);
+            streamChannelCount = Math.min(Math.min(totalChannels / 5, MAX_STREAM_CHANNELS), DESIRED_STREAM_CHANNELS);
             normalChannelCount = totalChannels - streamChannelCount;
+        }
+        else if ((totalChannels != -1) && ((normalChannelCount + streamChannelCount) >= 32))
+        {
+            // Try for at least 6 streaming channels if not using auto configure and we expect default SoundSystemConfig settings
+            while ( streamChannelCount < 6 )
+            {
+                if (normalChannelCount > 24)
+                {
+                    normalChannelCount--;
+                    streamChannelCount++;
+                }
+                else
+                    break;
+            }
         }
 
         ModLogger.info("Sound channels: %d normal, %d streaming (total avail: %s)", normalChannelCount, streamChannelCount,
@@ -521,5 +545,4 @@ public class ClientAudio
         SoundSystemConfig.setNumberNormalChannels(normalChannelCount);
         SoundSystemConfig.setNumberStreamingChannels(streamChannelCount);
     }
-
 }

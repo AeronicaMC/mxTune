@@ -58,16 +58,6 @@ public class ModConfig
             @Name("Automatically configure sound channels")
             @LangKey("config.mxtune:autoConfigureChannels")
             public boolean autoConfigureChannels = true;
-
-            @Config.Name("Number of Normal Sound Channels (manual)")
-            @Config.LangKey("config.mxtune:normalSoundChannelCount")
-            @Config.RangeInt(min=4, max=60)
-            public int normalSoundChannelCount = 24;
-
-            @Name("Number of Streaming Sound Channels (manual)")
-            @LangKey("config.mxtune:streamingSoundChannelCount")
-            @RangeInt(min=4, max=60)
-            public int streamingSoundChannelCount = 8;
         }
         
         public static class Links
@@ -142,10 +132,6 @@ public class ModConfig
     public static boolean hideWelcomeStatusMessage() {return CFG_GENERAL.general.hideWelcomeStatusMessage;}
 
     public static boolean getAutoConfigureChannels() {return CFG_CLIENT.sound.autoConfigureChannels;}
-
-    public static int getNormalSoundChannelCount() {return CFG_CLIENT.sound.normalSoundChannelCount;}
-
-    public static int getStreamingSoundChannelCount() {return CFG_CLIENT.sound.streamingSoundChannelCount;}
 
     public static String getMmlLink() {return CFG_CLIENT.links.site;}
 
