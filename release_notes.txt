@@ -1,3 +1,12 @@
+2018-09-07 mxtune-1.12.1-0.5.0-beta.3
+Changes:
+ * Build against Forge 14.23.4.2759
+ * Update mappings to stable_39
+ * Remove sound channel options for count of normal and steaming channels from configuration
+ * Make SoundSystem auto-configuration more compatible.
+ * Prepare for adding some new features requested features.
+
+----
 2017-08-21 mxtune-1.12.1-0.5.0-beta.2
 Changes:
  * Update to using Forge 14.22.0.2459.
