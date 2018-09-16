@@ -458,13 +458,15 @@ public class BlockPiano extends BlockInstrument2H
      * https://github.com/sinkillerj/ProjectE/blob/MC19/src/main/java/moze_intel
      * /projecte/utils/WorldHelper.java
      */
-    private static void spawnEntityItem(World world, ItemStack stack, BlockPos pos)
+    static void spawnEntityItem(World world, ItemStack stack, BlockPos pos)
     {
         spawnEntityItem(world, stack, pos.getX(), pos.getY(), pos.getZ());
     }
 
-    private static void spawnEntityItem(World world, ItemStack stack, double x, double y, double z)
+    static void spawnEntityItem(World world, ItemStack stack, double x, double y, double z)
     {
+        if (stack.isEmpty()) return;
+
         float f = world.rand.nextFloat() * 0.8F + 0.1F;
         float f1 = world.rand.nextFloat() * 0.8F + 0.1F;
         float f2 = world.rand.nextFloat() * 0.8F + 0.1F;
