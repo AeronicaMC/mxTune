@@ -1,5 +1,7 @@
 package net.aeronica.mods.mxtune.blocks;
 
+import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.gui.GuiBandAmp;
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.block.Block;
@@ -12,6 +14,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -20,10 +23,16 @@ import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 import java.util.Random;
+
+import static net.aeronica.mods.mxtune.blocks.BlockPiano.spawnEntityItem;
 
 public class BlockBandAmp extends BlockHorizontal
 {
@@ -52,16 +61,17 @@ public class BlockBandAmp extends BlockHorizontal
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-        if (!playerIn.capabilities.allowEdit)
+        if (!worldIn.isRemote && playerIn.capabilities.allowEdit)
         {
-            ModLogger.info("onBlockActivated %s, can edit: %s", playerIn.getName(), playerIn.capabilities.allowEdit);
-            return false;
+            if (!playerIn.isSneaking())
+            {
+                // ...
+            } else
+            {
+                playerIn.openGui(MXTuneMain.instance, GuiBandAmp.GUI_ID, worldIn, pos.getX(), pos.getY(), pos.getZ());
+            }
         }
-        else
-        {
-            ModLogger.info("onBlockActivated %s, can edit: %s", playerIn.getName(), playerIn.capabilities.allowEdit);
-            return true;
-        }
+        return true;
     }
 
     /**
@@ -139,6 +149,24 @@ public class BlockBandAmp extends BlockHorizontal
         return new TileBandAmp(state.getValue(FACING));
     }
 
+    public TileBandAmp getTileEntity(IBlockAccess world, BlockPos pos) {
+        return (TileBandAmp) world.getTileEntity(pos);
+    }
+
+    @Override
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
+    {
+        TileBandAmp tile = (TileBandAmp) worldIn.getTileEntity(pos);
+        if (tile != null)
+        {
+            for (int slot = 0; slot < tile.getInventory().getSlots(); slot++)
+            {
+                spawnEntityItem(worldIn, tile.getInventory().getStackInSlot(slot), pos);
+            }
+            tile.invalidate();
+        }
+        super.breakBlock(worldIn, pos, state);
+    }
 //    @Deprecated
 //    @Override
 //    public boolean isFullCube(IBlockState state) { return false; }

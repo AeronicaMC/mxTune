@@ -16,14 +16,14 @@
  */
 package net.aeronica.mods.mxtune.handler;
 
-import net.aeronica.mods.mxtune.gui.GuiGroup;
-import net.aeronica.mods.mxtune.gui.GuiGroupJoin;
-import net.aeronica.mods.mxtune.gui.GuiInstrumentInventory;
-import net.aeronica.mods.mxtune.gui.GuiMusicOptions;
-import net.aeronica.mods.mxtune.gui.GuiMusicPaperParse;
+import net.aeronica.mods.mxtune.blocks.TileBandAmp;
+import net.aeronica.mods.mxtune.gui.*;
+import net.aeronica.mods.mxtune.inventory.ContainerBandAmp;
 import net.aeronica.mods.mxtune.inventory.ContainerInstrument;
 import net.aeronica.mods.mxtune.inventory.InventoryInstrument;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
@@ -39,13 +39,16 @@ public class GUIHandler implements IGuiHandler
     {
         switch (ID)
         {
-        case GuiInstrumentInventory.GUI_ID:
-            /** Use the player's held item to create the inventory */
-            return new ContainerInstrument(playerIn, playerIn.inventory,
-                    new InventoryInstrument(playerIn.getHeldItemMainhand()));
-           
-        default:
-            return null;
+            case GuiInstrumentInventory.GUI_ID:
+                /** Use the player's held item to create the inventory */
+                return new ContainerInstrument(playerIn, playerIn.inventory,
+                                               new InventoryInstrument(playerIn.getHeldItemMainhand()));
+
+            case GuiBandAmp.GUI_ID:
+                return new ContainerBandAmp(playerIn.inventory, (TileBandAmp) worldIn.getTileEntity(new BlockPos(x, y, z)));
+
+            default:
+                return null;
         }
     }
 
@@ -54,21 +57,24 @@ public class GUIHandler implements IGuiHandler
     {
         switch (ID)
         {
-        case GuiMusicPaperParse.GUI_ID:
-            return new GuiMusicPaperParse();
+            case GuiMusicPaperParse.GUI_ID:
+                return new GuiMusicPaperParse();
 
-        case GuiInstrumentInventory.GUI_ID:
-            return new GuiInstrumentInventory((ContainerInstrument) new ContainerInstrument(playerIn, playerIn.inventory,
-                    new InventoryInstrument(playerIn.getHeldItemMainhand())));
-            
-        case GuiGroup.GUI_ID:
-            return new GuiGroup();
+            case GuiInstrumentInventory.GUI_ID:
+                return new GuiInstrumentInventory(new ContainerInstrument(playerIn, playerIn.inventory,
+                                                                          new InventoryInstrument(playerIn.getHeldItemMainhand())));
 
-        case GuiGroupJoin.GUI_ID:
-            return new GuiGroupJoin();
+            case GuiGroup.GUI_ID:
+                return new GuiGroup();
 
-        case GuiMusicOptions.GUI_ID:
-            return new GuiMusicOptions(playerIn);
+            case GuiGroupJoin.GUI_ID:
+                return new GuiGroupJoin();
+
+            case GuiMusicOptions.GUI_ID:
+                return new GuiMusicOptions(playerIn);
+
+            case GuiBandAmp.GUI_ID:
+                return new GuiBandAmp((Container) getServerGuiElement(ID, playerIn, worldIn, x, y, z), playerIn.inventory);
 
         default:
             return null;

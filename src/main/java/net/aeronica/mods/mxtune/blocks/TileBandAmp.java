@@ -10,13 +10,14 @@ import net.minecraft.world.World;
 
 public class TileBandAmp extends TileInstrument
 {
+    public static final int MAX_SLOTS = 8;
     private boolean previousRedStoneState;
 
     public TileBandAmp() { /* NOP */ }
 
     public TileBandAmp(EnumFacing facing)
     {
-        this.inventory =  new StackHandler(8);
+        this.inventory =  new StackHandler(MAX_SLOTS);
         this.facing = facing;
     }
 
