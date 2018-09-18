@@ -8,65 +8,24 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
 public class ContainerBandAmp extends Container
 {
-    private TileBandAmp tile;
+    private TileBandAmp tileBandAmp;
 
     public ContainerBandAmp(InventoryPlayer playerInv, @Nonnull final TileBandAmp tileBandAmp) {
-        tile = tileBandAmp;
+        this.tileBandAmp = tileBandAmp;
         IItemHandler inventory = tileBandAmp.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, tileBandAmp.getFacing());
-        addSlotToContainer(new SlotItemHandler(inventory, 0, 8, 8) {
-            @Override
-            public void onSlotChanged() {
-                tileBandAmp.markDirty();
-            }
-        });
-        addSlotToContainer(new SlotItemHandler(inventory, 1, 8, 26) {
-            @Override
-            public void onSlotChanged() {
-                tileBandAmp.markDirty();
-            }
-        });
-        addSlotToContainer(new SlotItemHandler(inventory, 2, 8, 44) {
-            @Override
-            public void onSlotChanged() {
-                tileBandAmp.markDirty();
-            }
-        });
-        addSlotToContainer(new SlotItemHandler(inventory, 3, 8, 62) {
-            @Override
-            public void onSlotChanged() {
-                tileBandAmp.markDirty();
-            }
-        });
-        addSlotToContainer(new SlotItemHandler(inventory, 4, 88, 8) {
-            @Override
-            public void onSlotChanged() {
-                tileBandAmp.markDirty();
-            }
-        });
-        addSlotToContainer(new SlotItemHandler(inventory, 5, 88, 26) {
-            @Override
-            public void onSlotChanged() {
-                tileBandAmp.markDirty();
-            }
-        });
-        addSlotToContainer(new SlotItemHandler(inventory, 6, 88, 44) {
-            @Override
-            public void onSlotChanged() {
-                tileBandAmp.markDirty();
-            }
-        });
-        addSlotToContainer(new SlotItemHandler(inventory, 7, 88, 62) {
-            @Override
-            public void onSlotChanged() {
-                tileBandAmp.markDirty();
-            }
-        });
+        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 0, 52, 26));
+        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 1, 70, 26));
+        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 2, 88, 26));
+        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 3, 106, 26));
+        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 4, 52, 44));
+        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 5, 70, 44));
+        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 6, 88, 44));
+        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 7, 106, 44));
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 9; j++) {
@@ -119,10 +78,10 @@ public class ContainerBandAmp extends Container
     @Override
     public boolean canInteractWith(EntityPlayer playerIn)
     {
-        if(playerIn.world.getTileEntity(tile.getPos()) != tile) {
+        if(playerIn.world.getTileEntity(tileBandAmp.getPos()) != tileBandAmp) {
             return false;
         } else {
-            return playerIn.getDistanceSq((double) tile.getPos().getX() + 0.5D, (double) tile.getPos().getY() + 0.5D, (double) tile.getPos().getZ() + 0.5D) <= 64.0D;
+            return playerIn.getDistanceSq((double) tileBandAmp.getPos().getX() + 0.5D, (double) tileBandAmp.getPos().getY() + 0.5D, (double) tileBandAmp.getPos().getZ() + 0.5D) <= 64.0D;
         }
     }
 }
