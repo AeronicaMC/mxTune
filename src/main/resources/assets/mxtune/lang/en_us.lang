@@ -1,4 +1,3 @@
-< en_US.lang - English localization file >
 advancements.mxtune:music.root.title=mxTune
 advancements.mxtune:music.root.description=Making Music Starts with Paper
 advancements.mxtune:music.craft_paper.title=Paper and Ink
@@ -61,7 +60,7 @@ item.mxtune:instrument.standard_set.name=Standard Perc. Set
 item.mxtune:instrument.orchestra_set.name=Orchesta Perc. Set
 item.mxtune:instrument.title=Title
 item.mxtune:instrument.help=Shift + right click to insert/remove music
-
+tile.mxtune:band_amp.name=Band Amp
 sf.mxtune.m.lute=M Lute
 sf.mxtune.m.ukulele=M Ukulele
 sf.mxtune.m.mandolin=M Mandolin
