@@ -190,7 +190,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
                         if (!sheetMusic.isEmpty())
                         {
                             NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
-                            if (!contents.isEmpty())
+                            if (contents != null)
                             {
                                 String mml = contents.getString("MML");
                                 mml = mml.replace("MML@", "MML@I" + patch);
