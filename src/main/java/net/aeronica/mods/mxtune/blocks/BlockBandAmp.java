@@ -1,7 +1,5 @@
 package net.aeronica.mods.mxtune.blocks;
 
-import net.aeronica.libs.mml.core.MMLUtil;
-import net.aeronica.libs.mml.core.TestData;
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiBandAmp;
@@ -19,7 +17,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -27,21 +24,16 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 
-import java.util.Iterator;
+import javax.annotation.Nullable;
 import java.util.Random;
-import java.util.Set;
 
 import static net.aeronica.mods.mxtune.blocks.BlockPiano.spawnEntityItem;
 
+@SuppressWarnings("deprecation")
 public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
 {
     public BlockBandAmp()
@@ -157,6 +149,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
         return new TileBandAmp(state.getValue(FACING));
     }
 
+    @Nullable
     public TileBandAmp getTileEntity(IBlockAccess world, BlockPos pos) {
         return (TileBandAmp) world.getTileEntity(pos);
     }
@@ -179,7 +172,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     @Override
     public String getMML(World worldIn, BlockPos blockPos)
     {
-        StringBuilder buildMML = new StringBuilder("");
+        StringBuilder buildMML = new StringBuilder();
         TileEntity te = worldIn.getTileEntity(blockPos);
 
         if (te instanceof TileBandAmp)
@@ -197,7 +190,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
                         if (!sheetMusic.isEmpty())
                         {
                             NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
-                            if (contents != null)
+                            if (!contents.isEmpty())
                             {
                                 String mml = contents.getString("MML");
                                 mml = mml.replace("MML@", "MML@I" + patch);
