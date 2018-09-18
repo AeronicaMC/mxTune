@@ -16,24 +16,22 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
-import net.minecraft.client.audio.ISound;
-import net.minecraft.client.audio.PositionedSound;
-import net.minecraft.client.audio.SoundEventAccessor;
+import net.minecraft.client.audio.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 
 import net.minecraft.client.audio.ISound.AttenuationType;
 
-public class MusicPositioned extends PositionedSound
+public class MusicPositioned extends MovingSound
 {
-
-    
+    Integer playID;
     SoundEventAccessor soundEventAccessor;
     
-    public MusicPositioned(BlockPos pos)
+    public MusicPositioned(Integer playID, BlockPos pos)
     {
         super(ModSoundEvents.PCM_PROXY, SoundCategory.PLAYERS);
+        this.playID = playID;
         this.sound = new PCMSound();
         this.volume = 1F;
         this.pitch = 1F;
@@ -41,22 +39,36 @@ public class MusicPositioned extends PositionedSound
         this.yPosF = (float)pos.getY()+0.5F;
         this.zPosF = (float)pos.getZ()+0.5F;
         this.repeat = false;
+        this.donePlaying = false;
         this.repeatDelay = 0;
         this.attenuationType = AttenuationType.LINEAR;
         this.soundEventAccessor = new SoundEventAccessor(this.sound.getSoundLocation(), "mxtune.subtitle.pcm-proxy");
     }
 
-    public MusicPositioned(ResourceLocation soundId, SoundCategory categoryIn, float volumeIn, float pitchIn, boolean repeatIn, int repeatDelayIn, ISound.AttenuationType attenuationTypeIn, float xIn, float yIn, float zIn)
+    @Override
+    public SoundEventAccessor createAccessor(SoundHandler handler)
     {
-        super(soundId, categoryIn);
-        this.volume = volumeIn;
-        this.pitch = pitchIn;
-        this.xPosF = xIn;
-        this.yPosF = yIn;
-        this.zPosF = zIn;
-        this.repeat = repeatIn;
-        this.repeatDelay = repeatDelayIn;
-        this.attenuationType = attenuationTypeIn;
+        return this.soundEventAccessor;
     }
 
+    @Override
+    public void update()
+    {
+        if (this.playID != null && ClientAudio.hasPlayID(playID))
+        {
+            /* update nothing - just hold the stream open until done */
+        }
+        else
+        {
+            this.setDonePlaying();
+        }
+
+    }
+
+    public void setDonePlaying()
+    {
+        this.repeat = false;
+        this.donePlaying = true;
+        this.repeatDelay = 0;
+    }
 }
