@@ -7,14 +7,7 @@ package net.aeronica.mods.mxtune.network;
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.network.bidirectional.ClientStateDataMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.SendKeyMessage;
-import net.aeronica.mods.mxtune.network.client.JoinGroupMessage;
-import net.aeronica.mods.mxtune.network.client.PlayJamMessage;
-import net.aeronica.mods.mxtune.network.client.PlaySoloMessage;
-import net.aeronica.mods.mxtune.network.client.SendCSDChatMessage;
-import net.aeronica.mods.mxtune.network.client.StopPlayMessage;
-import net.aeronica.mods.mxtune.network.client.SyncGroupMessage;
-import net.aeronica.mods.mxtune.network.client.SyncPlayerMusicOptionsMessage;
-import net.aeronica.mods.mxtune.network.client.SyncStatusMessage;
+import net.aeronica.mods.mxtune.network.client.*;
 import net.aeronica.mods.mxtune.network.server.HudOptionsMessage;
 import net.aeronica.mods.mxtune.network.server.ManageGroupMessage;
 import net.aeronica.mods.mxtune.network.server.MusicOptionsMessage;
@@ -80,6 +73,7 @@ public class PacketDispatcher
         registerMessage(PlaySoloMessage.class);
         registerMessage(SendCSDChatMessage.class);
         registerMessage(StopPlayMessage.class);
+        registerMessage(PlayBlockMusicMessage.class);
 
         /** Packets handled on SERVER */
         registerMessage(ManageGroupMessage.class);

@@ -68,7 +68,6 @@ public class MusicBackground extends MovingSound
         {
             this.setDonePlaying();
         }
-
     }
     
     public void setDonePlaying()

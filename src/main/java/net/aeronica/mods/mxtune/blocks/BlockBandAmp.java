@@ -1,9 +1,14 @@
 package net.aeronica.mods.mxtune.blocks;
 
+import net.aeronica.libs.mml.core.MMLUtil;
+import net.aeronica.libs.mml.core.TestData;
 import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiBandAmp;
 import net.aeronica.mods.mxtune.init.ModItems;
+import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
@@ -16,6 +21,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -30,11 +36,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
+import java.util.Iterator;
 import java.util.Random;
+import java.util.Set;
 
 import static net.aeronica.mods.mxtune.blocks.BlockPiano.spawnEntityItem;
 
-public class BlockBandAmp extends BlockHorizontal
+public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
 {
     public BlockBandAmp()
     {
@@ -65,7 +73,7 @@ public class BlockBandAmp extends BlockHorizontal
         {
             if (!playerIn.isSneaking())
             {
-                // ...
+                PlayManager.playMusic(worldIn, pos);
             } else
             {
                 playerIn.openGui(MXTuneMain.instance, GuiBandAmp.GUI_ID, worldIn, pos.getX(), pos.getY(), pos.getZ());
@@ -167,7 +175,46 @@ public class BlockBandAmp extends BlockHorizontal
         }
         super.breakBlock(worldIn, pos, state);
     }
-//    @Deprecated
+
+    @Override
+    public String getMML(World worldIn, BlockPos blockPos)
+    {
+        StringBuilder buildMML = new StringBuilder("");
+        TileEntity te = worldIn.getTileEntity(blockPos);
+
+        if (te instanceof TileBandAmp)
+        {
+            try
+            {
+                for(int slot = 0; slot < ((TileBandAmp) te).getInventory().getSlots(); slot++)
+                {
+                    ItemStack instrument = ((TileBandAmp) te).getInventory().getStackInSlot(slot);
+                    if (!instrument.isEmpty())
+                    {
+                        ItemInstrument ii = (ItemInstrument) instrument.getItem();
+                        int patch = ii.getPatch(instrument.getMetadata());
+                        ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(instrument);
+                        if (!sheetMusic.isEmpty())
+                        {
+                            NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
+                            if (contents != null)
+                            {
+                                String mml = contents.getString("MML");
+                                mml = mml.replace("MML@", "MML@I" + patch);
+                                buildMML.append(slot).append("=").append(mml).append("|");
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e)
+            {
+                ModLogger.error(e);
+            }
+        }
+        return buildMML.toString();
+    }
+
+    //    @Deprecated
 //    @Override
 //    public boolean isFullCube(IBlockState state) { return false; }
 //

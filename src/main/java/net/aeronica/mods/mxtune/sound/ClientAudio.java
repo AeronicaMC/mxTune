@@ -39,26 +39,7 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
-import java.io.IOException;
-import java.nio.IntBuffer;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentHashMap.KeySetView;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-
-import org.lwjgl.BufferUtils;
-import org.lwjgl.openal.AL;
-import org.lwjgl.openal.AL10;
-import org.lwjgl.openal.ALC10;
-import org.lwjgl.openal.ALC11;
-
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.GROUPS;
@@ -71,6 +52,7 @@ import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.audio.SoundManager;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.PlayStreamingSourceEvent;
 import net.minecraftforge.client.event.sound.SoundSetupEvent;
@@ -82,9 +64,21 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.openal.AL;
+import org.lwjgl.openal.AL10;
+import org.lwjgl.openal.ALC10;
+import org.lwjgl.openal.ALC11;
 import paulscode.sound.SoundSystem;
 import paulscode.sound.SoundSystemConfig;
 import paulscode.sound.SoundSystemException;
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import java.io.IOException;
+import java.nio.IntBuffer;
+import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap.KeySetView;
 
 @SideOnly(Side.CLIENT)
 @Mod.EventBusSubscriber(Side.CLIENT)
@@ -208,7 +202,13 @@ public class ClientAudio
         AudioData audioData = playIDAudioData.get(playID);       
         return audioData.getUuid();
     }
-    
+
+    public static BlockPos getBlockPos(Integer playID)
+    {
+        AudioData audioData = playIDAudioData.get(playID);
+        return audioData.getBlockPos();
+    }
+
     static void removePlayIDAudioData(int playID)
     {
         if (playIDAudioData.containsKey(playID))
@@ -277,13 +277,26 @@ public class ClientAudio
         if(ClientCSDMonitor.canMXTunesPlay())
         {
             addPlayIDQueue(playID);
-            playIDAudioData.putIfAbsent(playID, new AudioData(playID, musicText, GROUPS.isClientPlaying(playID)));        
+            playIDAudioData.putIfAbsent(playID, new AudioData(playID, null, GROUPS.isClientPlaying(playID)));
             executorService.execute(new ThreadedPlay(playID, musicText));
             MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MusicMoving());
             stopVanillaMusic();
         }
     }
-    
+
+    public static synchronized void play(Integer playID, BlockPos pos, String musicText)
+    {
+        startThreadFactory();
+        if(ClientCSDMonitor.canMXTunesPlay())
+        {
+            addPlayIDQueue(playID);
+            playIDAudioData.putIfAbsent(playID, new AudioData(playID, pos, false));
+            executorService.execute(new ThreadedPlay(playID, musicText));
+            MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MusicMoving());
+            stopVanillaMusic();
+        }
+    }
+
     private static void notify(Integer playID)
     {
         if (playID != null)
@@ -461,12 +474,18 @@ public class ClientAudio
                      */
                     e.setResultSound(new MusicBackground(playID));
                 }
-                else
+                else if (ClientAudio.getBlockPos(playID) == null)
                 {
                     /*
                      * Moving music source for hand held or worn instruments. 
                      */
                     e.setResultSound(new MusicMoving(playID));
+                }
+                else
+                {
+                    e.setResultSound(new MusicPositioned(playID, ClientAudio.getBlockPos(playID)));
+                    ModLogger.info("PlaySoundEvent MusicPositioned playID: %d, pos: %s, isPlayer: %s",
+                                   playID, ClientAudio.getBlockPos(playID), ClientAudio.isClientPlayer(playID));
                 }
             }
         }

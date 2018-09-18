@@ -23,14 +23,13 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 
+import net.aeronica.mods.mxtune.blocks.IMusicPlayer;
 import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
+import net.aeronica.mods.mxtune.inventory.IMusic;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
-import net.aeronica.mods.mxtune.network.client.PlayJamMessage;
-import net.aeronica.mods.mxtune.network.client.PlaySoloMessage;
-import net.aeronica.mods.mxtune.network.client.StopPlayMessage;
-import net.aeronica.mods.mxtune.network.client.SyncStatusMessage;
+import net.aeronica.mods.mxtune.network.client.*;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
@@ -40,6 +39,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 /**
@@ -96,7 +96,34 @@ public enum PlayManager
     {
         return playMusic(playerIn, pos, true);
     }
-    
+
+    /**
+     * For playing music from a block, e.g. Band Amp.
+     * @param worldIn
+     * @param pos position of block instrument
+     * @return a unique play id
+     */
+    public static Integer playMusic(World worldIn, BlockPos pos)
+    {
+        Integer playID = null;
+        IMusicPlayer musicPlayer;
+        ModLogger.info("Bonk!");
+        if (worldIn.getBlockState(pos).getBlock() instanceof IMusicPlayer)
+        {
+            musicPlayer = (IMusicPlayer) worldIn.getBlockState(pos).getBlock();
+            String mml = musicPlayer.getMML(worldIn, pos);
+            if (mml.contains("MML"))
+            {
+                playID = getNextPlayID();
+                activePlayIDs.add(playID);
+                syncStatus();
+                PlayBlockMusicMessage playBlockMusicMessage = new PlayBlockMusicMessage(playID, pos, mml);
+                PacketDispatcher.sendToAllAround(playBlockMusicMessage, worldIn.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), ModConfig.getListenerRange());
+            }
+        }
+        return playID;
+    }
+
     /**
      * For playing music
      * @param playerIn
