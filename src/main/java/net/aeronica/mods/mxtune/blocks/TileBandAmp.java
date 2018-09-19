@@ -12,6 +12,7 @@ public class TileBandAmp extends TileInstrument
 {
     public static final int MAX_SLOTS = 8;
     private boolean previousRedStoneState;
+    private Integer playID;
 
     public TileBandAmp() { /* NOP */ }
 
@@ -19,6 +20,18 @@ public class TileBandAmp extends TileInstrument
     {
         this.inventory =  new StackHandler(MAX_SLOTS);
         this.facing = facing;
+        this.playID = -1;
+    }
+
+    public Integer getPlayID()
+    {
+        return playID;
+    }
+
+    public void setPlayID(Integer playID)
+    {
+        this.playID = playID;
+        markDirty();
     }
 
     @Override
@@ -26,12 +39,14 @@ public class TileBandAmp extends TileInstrument
     {
         super.readFromNBT(tag);
         previousRedStoneState = tag.getBoolean("powered");
+        playID = tag.getInteger("play_id");
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound tag)
     {
         tag.setBoolean("powered", this.previousRedStoneState);
+        tag.setInteger("play_id", this.playID);
         return super.writeToNBT(tag);
     }
 

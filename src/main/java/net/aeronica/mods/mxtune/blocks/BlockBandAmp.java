@@ -4,9 +4,6 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiBandAmp;
 import net.aeronica.mods.mxtune.init.ModItems;
-import net.aeronica.mods.mxtune.items.ItemInstrument;
-import net.aeronica.mods.mxtune.util.ModLogger;
-import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
@@ -18,7 +15,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -63,13 +59,32 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     {
         if (!worldIn.isRemote && playerIn.capabilities.allowEdit)
         {
+
+
             if (!playerIn.isSneaking())
             {
-                PlayManager.playMusic(worldIn, pos);
-            } else
+                canPlayOrStopMusic(worldIn, pos);
+            }
+            else if (playerIn.isSneaking())
             {
                 playerIn.openGui(MXTuneMain.instance, GuiBandAmp.GUI_ID, worldIn, pos.getX(), pos.getY(), pos.getZ());
             }
+        }
+        return true;
+    }
+
+    private boolean canPlayOrStopMusic(World worldIn, BlockPos pos)
+    {
+        TileBandAmp tileBandAmp = this.getTE(worldIn, pos);
+        if (tileBandAmp != null)
+        {
+            if (PlayManager.isActivePlayID(tileBandAmp.getPlayID()))
+            {
+                PlayManager.stopPlayID(tileBandAmp.getPlayID());
+                tileBandAmp.setPlayID(-1);
+                return false;
+            }
+            tileBandAmp.setPlayID(PlayManager.playMusic(worldIn, pos));
         }
         return true;
     }
@@ -90,8 +105,10 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
             if (tileBandAmp.getPreviousRedStoneState() != powered)
             {
                 if (powered)
+                {
+                    canPlayOrStopMusic(worldIn, pos);
                     tileBandAmp.setPowered(state, worldIn, pos, blockIn, fromPos);
-
+                }
                 tileBandAmp.setPreviousRedStoneState(powered);
             }
         }
@@ -168,46 +185,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
         }
         super.breakBlock(worldIn, pos, state);
     }
-
-    @Override
-    public String getMML(World worldIn, BlockPos blockPos)
-    {
-        StringBuilder buildMML = new StringBuilder();
-        TileEntity te = worldIn.getTileEntity(blockPos);
-
-        if (te instanceof TileBandAmp)
-        {
-            try
-            {
-                for(int slot = 0; slot < ((TileBandAmp) te).getInventory().getSlots(); slot++)
-                {
-                    ItemStack instrument = ((TileBandAmp) te).getInventory().getStackInSlot(slot);
-                    if (!instrument.isEmpty())
-                    {
-                        ItemInstrument ii = (ItemInstrument) instrument.getItem();
-                        int patch = ii.getPatch(instrument.getMetadata());
-                        ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(instrument);
-                        if (!sheetMusic.isEmpty())
-                        {
-                            NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
-                            if (contents != null)
-                            {
-                                String mml = contents.getString("MML");
-                                mml = mml.replace("MML@", "MML@I" + patch);
-                                buildMML.append(slot).append("=").append(mml).append("|");
-                            }
-                        }
-                    }
-                }
-            } catch (Exception e)
-            {
-                ModLogger.error(e);
-            }
-        }
-        return buildMML.toString();
-    }
-
-    //    @Deprecated
+//    @Deprecated
 //    @Override
 //    public boolean isFullCube(IBlockState state) { return false; }
 //
