@@ -123,7 +123,12 @@
 				"textures": {
 					"layer0": "mxtune:items/orchestra_set"
 				}
-			}					
+			},
+			"piano": {
+				"textures": {
+					"layer0": "mxtune:items/piano"
+				}
+			}
 		}
 	}
 }

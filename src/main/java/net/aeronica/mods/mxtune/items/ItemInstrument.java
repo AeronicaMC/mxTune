@@ -16,12 +16,6 @@
  */
 package net.aeronica.mods.mxtune.items;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.annotation.Nullable;
-
 import net.aeronica.libs.mml.core.MMLUtil;
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.advancements.ModCriteriaTriggers;
@@ -50,6 +44,11 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Paul Boese a.k.a Aeronica
@@ -246,6 +245,7 @@ public class ItemInstrument extends Item implements IInstrument
         HARPSICHORD_COUPLED(22, "harpsichord_coupled", MMLUtil.preset2PackedPreset(16, 7)),
         STANDARD_SET(23, "standard_set", MMLUtil.preset2PackedPreset(128, 0)),
         ORCHESTRA_SET(24, "orchestra_set", MMLUtil.preset2PackedPreset(128, 48)),
+        PIANO(25, "piano", 21),
         ;
 
         @Override

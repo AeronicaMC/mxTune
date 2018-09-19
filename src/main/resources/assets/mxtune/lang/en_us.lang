@@ -58,6 +58,7 @@ item.mxtune:instrument.harpsichord.name=Harpsichord
 item.mxtune:instrument.harpsichord_coupled.name=Harpsichord Coupled
 item.mxtune:instrument.standard_set.name=Standard Perc. Set
 item.mxtune:instrument.orchestra_set.name=Orchesta Perc. Set
+item.mxtune:instrument.piano.name=Piano
 item.mxtune:instrument.title=Title
 item.mxtune:instrument.help=Shift + right click to insert/remove music
 tile.mxtune:band_amp.name=Band Amp

@@ -1,4 +1,3 @@
-< ko_KR.lang - Korean localization file >
 advancements.mxtune:music.root.title=mxTune
 advancements.mxtune:music.root.description=Making Music Starts with Paper
 advancements.mxtune:music.craft_paper.title=It's Black
@@ -59,6 +58,7 @@ item.mxtune:instrument.harpsichord.name=하프시코드
 item.mxtune:instrument.harpsichord_coupled.name=하프시코드 커플
 item.mxtune:instrument.standard_set.name=표준 타악기 세트
 item.mxtune:instrument.orchestra_set.name=오케스트라 타악기 세트
+item.mxtune:instrument.piano.name=피아노
 item.mxtune:instrument.title=표제
 item.mxtune:instrument.help=Shift + 오른쪽 클릭으로 음악 삽입 / 제거
 tile.mxtune:band_amp.name=밴드 앰프
