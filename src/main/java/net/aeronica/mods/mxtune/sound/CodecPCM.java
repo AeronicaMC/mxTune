@@ -1,5 +1,15 @@
 package net.aeronica.mods.mxtune.sound;
 
+import net.minecraft.client.Minecraft;
+import paulscode.sound.ICodec;
+import paulscode.sound.SoundBuffer;
+import paulscode.sound.SoundSystemConfig;
+import paulscode.sound.SoundSystemLogger;
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -7,16 +17,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 import java.util.Random;
-
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.UnsupportedAudioFileException;
-
-import paulscode.sound.ICodec;
-import paulscode.sound.SoundBuffer;
-import paulscode.sound.SoundSystemConfig;
-import paulscode.sound.SoundSystemLogger;
 
 public class CodecPCM implements ICodec {
 	/**
@@ -210,7 +210,7 @@ public class CodecPCM implements ICodec {
 		        outputBuffer = appendByteArrays(outputBuffer, zeroBuffer, SAMPLE_SIZE);
 		        if (zeroBufferCount++ > 64) 
 		        {
-		            errorMessage("MML to PCM audio prcessiong took too long. Aborting!");
+		            errorMessage("MML to PCM audio processing took too long. Aborting!");
 		            endOfStream(SET, true);
 		            return null;
 		        }
@@ -285,32 +285,31 @@ public class CodecPCM implements ICodec {
 	}
 
 	@Override
-    public void cleanup()
-    {
-	    message("cleanup");
-	    if (audioInputStream != null)
-	        try
-	    {
-	            audioInputStream.close();
-	    } catch (IOException e)
-	    {
-	        printStackTrace(e);
-	    }
-	    audioInputStream = null;
+	public void cleanup()
+	{
+		message("cleanup");
+		if (audioInputStream != null)
+			try
+			{
+				audioInputStream.close();
+			} catch (IOException e)
+			{
+				printStackTrace(e);
+			}
+		audioInputStream = null;
 
-	    if( dummyInputStream != null )
-	        try
-	    {
-	            dummyInputStream.close();
-	    }
-	    catch( Exception e )
-	    {
-	        printStackTrace(e);
-	    }
-	    dummyInputStream = null;
-	    
-	    ClientAudio.removePlayIDAudioData(playID);
-    }
+		if (dummyInputStream != null)
+			try
+			{
+				dummyInputStream.close();
+			} catch (Exception e)
+			{
+				printStackTrace(e);
+			}
+		dummyInputStream = null;
+
+		Minecraft.getMinecraft().addScheduledTask(() -> ClientAudio.removePlayIDAudioData(playID));
+	}
 
 	@Override
 	public AudioFormat getAudioFormat() {

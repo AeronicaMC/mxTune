@@ -84,7 +84,6 @@ import java.util.concurrent.ConcurrentHashMap.KeySetView;
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ClientAudio
 {
-
     private static SoundHandler handler;
     private static SoundSystem sndSystem;
     private static MusicTicker musicTicker;
@@ -132,7 +131,6 @@ public class ClientAudio
                     .build();
             executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE, threadFactory);
         }
-
     }
     
     public enum Status
