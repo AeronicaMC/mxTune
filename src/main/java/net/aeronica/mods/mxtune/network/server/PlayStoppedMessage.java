@@ -16,38 +16,54 @@
  */
 package net.aeronica.mods.mxtune.network.server;
 
-import java.io.IOException;
-
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
+import java.io.IOException;
+
 public class PlayStoppedMessage extends AbstractServerMessage<PlayStoppedMessage>
 {
 
-    int playID;
+    private int playID;
+    private boolean isBlockEntity;
     
     public PlayStoppedMessage() {/* Required by the PacketDispacher */}
     
-    public PlayStoppedMessage(int playID) {this.playID = playID;}
-    
+    public PlayStoppedMessage(int playID)
+    {
+        this.playID = playID;
+        this.isBlockEntity = false;
+    }
+
+    public PlayStoppedMessage(int playID, boolean isBlockEntity)
+    {
+        this.playID = playID;
+        this.isBlockEntity = isBlockEntity;
+    }
+
     protected void read(PacketBuffer buffer) throws IOException
     {
         playID = buffer.readInt();
+        isBlockEntity = buffer.readBoolean();
     }
 
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
         buffer.writeInt(playID);
+        buffer.writeBoolean(isBlockEntity);
     }
 
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        PlayManager.playingEnded(player, playID);
+        if (isBlockEntity)
+            PlayManager.stopPlayID(playID);
+        else
+            PlayManager.playingEnded(player, playID);
     }
 
 }

@@ -48,6 +48,7 @@ import net.aeronica.mods.mxtune.network.server.PlayStoppedMessage;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.audio.SoundManager;
@@ -135,7 +136,7 @@ public class ClientAudio
     
     public enum Status
     {
-        WAITING, READY, ERROR
+        WAITING, READY, ERROR, DONE
     }
     
     private static synchronized void addPlayIDQueue(int playID)
@@ -201,28 +202,46 @@ public class ClientAudio
         return audioData.getUuid();
     }
 
+    private static synchronized void setiSound(Integer playID, ISound iSound)
+    {
+        AudioData audioData = playIDAudioData.get(playID);
+        if (audioData != null)
+            audioData.setiSound(iSound);
+    }
+
+    public static ISound getiSound(Integer playID)
+    {
+        AudioData audioData = playIDAudioData.get(playID);
+        return audioData.getiSound();
+    }
+
     public static BlockPos getBlockPos(Integer playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
         return audioData.getBlockPos();
     }
 
-    static void removePlayIDAudioData(int playID)
+    static void removePlayIDAudioData(Integer playID)
     {
         if (playIDAudioData.containsKey(playID))
         {
             AudioData audioData = playIDAudioData.get(playID);
-            if (audioData.isClientPlayer())
+            if (audioData != null)
             {
-                notify(playID);
-                try
-                {
-                    audioData.getAudioStream().close();
-                } catch (IOException e)
-                {
-                    ModLogger.error(e);
-                }
+                if (audioData.isClientPlayer())
+                    notify(playID);
+                else if (!audioData.isClientPlayer() && audioData.getBlockPos() != null)
+                    notify(playID, true);
             }
+
+            try
+            {
+                audioData.getAudioStream().close();
+            } catch (IOException e)
+            {
+                ModLogger.error(e);
+            }
+
             playIDAudioData.remove(playID);
         }
     }
@@ -300,7 +319,13 @@ public class ClientAudio
         if (playID != null)
             PacketDispatcher.sendToServer(new PlayStoppedMessage(playID));
     }
-    
+
+    private static void notify(Integer playID, boolean isBlockEntity)
+    {
+        if (playID != null)
+            PacketDispatcher.sendToServer(new PlayStoppedMessage(playID, isBlockEntity));
+    }
+
     public static void stop(Integer playID)
     {
         synchronized (SoundSystemConfig.THREAD_SYNC)
@@ -374,7 +399,22 @@ public class ClientAudio
     private static void updateClientAudio()
     {
         if (sndSystem != null && playIDAudioData != null)
-        { 
+        {
+            for (ConcurrentHashMap.Entry<Integer, AudioData> entry : playIDAudioData.entrySet())
+            {
+                AudioData audioData = entry.getValue();
+                if ((audioData.getStatus().equals(Status.ERROR) || audioData.getStatus().equals(Status.DONE)) &&
+                        !handler.isSoundPlaying(audioData.getiSound()))
+                {
+                    playIDAudioData.remove(entry.getKey());
+                    if (audioData.isClientPlayer())
+                        notify(entry.getValue().getPlayID());
+                    else if (!audioData.isClientPlayer() && audioData.getBlockPos() != null)
+                        notify(entry.getValue().getPlayID(), true);
+
+                    ModLogger.info("updateClientAudio: Status:Error or Done!");
+                }
+            }
             if(isVanillaMusicPaused() && playIDAudioData.mappingCount() == 0)
             {
                 resumeVanillaMusic();
@@ -391,6 +431,7 @@ public class ClientAudio
                 {
                     stop(entry.getKey());
                     playIDAudioData.remove(entry.getKey());
+                    ModLogger.info("updateClientAudio: Active playID removed");
                 }
             }
         }
@@ -494,13 +535,17 @@ public class ClientAudio
      * mxTune sound event.
      */
     @SubscribeEvent
-    public void PlayStreamingSourceEvent(PlayStreamingSourceEvent e)
+    public static void PlayStreamingSourceEvent(PlayStreamingSourceEvent e)
     {
         if (e.getSound().getSoundLocation().equals(ModSoundEvents.PCM_PROXY.getSoundName())) {
             if (ClientAudio.peekPlayIDQueue03() != null)
-                ClientAudio.setUuid(ClientAudio.pollPlayIDQueue03(), e.getUuid());
+            {
+                Integer playID = ClientAudio.pollPlayIDQueue03();
+                ClientAudio.setUuid(playID, e.getUuid());
+                ClientAudio.setiSound(playID, e.getSound());
+                ModLogger.info("ClientAudio PlayStreamingSourceEvent: uuid: %s, ISound: %s", e.getUuid(), e.getSound());
+            }
         }
-        ModLogger.info("ClientAudio PlayStreamingSourceEvent: uuid: %s, ISound: %s", e.getUuid(), e.getSound());
     }
 
     /*

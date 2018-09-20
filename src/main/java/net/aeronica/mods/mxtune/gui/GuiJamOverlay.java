@@ -16,14 +16,6 @@
  */
 package net.aeronica.mods.mxtune.gui;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import org.lwjgl.opengl.GL11;
-
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
@@ -54,6 +46,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
+import org.lwjgl.opengl.GL11;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class GuiJamOverlay extends Gui
 {
@@ -559,10 +558,10 @@ public class GuiJamOverlay extends Gui
     
     /**
      * Copied from the vanilla Gui class, but removed the GlStateManager blend enable/disable method calls.
-     * @param left
-     * @param top
-     * @param right
-     * @param bottom
+     * @param leftIn
+     * @param topIn
+     * @param rightIn
+     * @param bottomIn
      * @param color
      */
     public static void drawRect(int leftIn, int topIn, int rightIn, int bottomIn, int color)

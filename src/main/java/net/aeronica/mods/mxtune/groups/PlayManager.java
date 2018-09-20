@@ -16,18 +16,11 @@
  */
 package net.aeronica.mods.mxtune.groups;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.collect.Sets;
-
 import net.aeronica.mods.mxtune.blocks.IMusicPlayer;
 import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
-import net.aeronica.mods.mxtune.inventory.IMusic;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.*;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
@@ -41,6 +34,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The SERVER side class for managing playing
@@ -244,11 +242,11 @@ public enum PlayManager
         return isPlayerPlaying(entityLivingIn.getEntityId());
     }
     
-    public static boolean isActivePlayID(Integer playID) { return activePlayIDs != null ? activePlayIDs.contains(playID) : false; }
+    public static boolean isActivePlayID(Integer playID) { return activePlayIDs != null && activePlayIDs.contains(playID); }
     
     public static boolean hasPlayID(Integer playID)
     {
-        return (membersPlayID != null && !membersPlayID.isEmpty()) ? membersPlayID.containsValue(playID) : false;
+        return (membersPlayID != null && !membersPlayID.isEmpty()) && membersPlayID.containsValue(playID);
     }
     
     public static Set<Integer> getMembersByPlayID(Integer playID) 

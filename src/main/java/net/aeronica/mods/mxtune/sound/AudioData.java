@@ -15,10 +15,11 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
-import javax.sound.sampled.AudioInputStream;
-
 import net.aeronica.mods.mxtune.sound.ClientAudio.Status;
+import net.minecraft.client.audio.ISound;
 import net.minecraft.util.math.BlockPos;
+
+import javax.sound.sampled.AudioInputStream;
 
 public class AudioData
 {
@@ -27,6 +28,7 @@ public class AudioData
     private final boolean isClientPlayer;
     private AudioInputStream audioStream;
     private String uuid;
+    private ISound iSound;
     private Status status;
     
     public AudioData(Integer entityID, BlockPos blockPos, boolean isClientPlayer)
@@ -80,5 +82,15 @@ public class AudioData
     public void setUuid(String uuid)
     {
         this.uuid = uuid;
+    }
+
+    public ISound getiSound()
+    {
+        return iSound;
+    }
+
+    public void setiSound(ISound iSound)
+    {
+        this.iSound = iSound;
     }
 }

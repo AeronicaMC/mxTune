@@ -19,17 +19,17 @@ import java.nio.ShortBuffer;
 import java.util.Random;
 
 public class CodecPCM implements ICodec {
-	/**
-	 * Used to return a current value from one of the synchronized
-	 * boolean-interface methods.
-	 */
-	private static final boolean GET = false;
+    /**
+     * Used to return a current value from one of the synchronized
+     * boolean-interface methods.
+     */
+    private static final boolean GET = false;
 
-	/**
-	 * Used to set the value in one of the synchronized boolean-interface
-	 * methods.
-	 */
-	private static final boolean SET = true;
+    /**
+     * Used to set the value in one of the synchronized boolean-interface
+     * methods.
+     */
+    private static final boolean SET = true;
 
 	/**
 	 * Used when a parameter for one of the synchronized boolean-interface
@@ -61,24 +61,24 @@ public class CodecPCM implements ICodec {
 	/**
 	 * The audio stream from the synthesizer
 	 */
-    AudioInputStream audioInputStream = null;
+    private AudioInputStream audioInputStream = null;
 
     /**
      * A dummy stream just to open a handle to the proxy sound file.
      */
-    AudioInputStream dummyInputStream = null;
+    private AudioInputStream dummyInputStream = null;
 
     public static final int SAMPLE_SIZE = 10240 * 4;
     
-    byte[] noiseBuffer = new byte[SAMPLE_SIZE];
-    byte[] zeroBuffer = new byte[SAMPLE_SIZE];
+    private byte[] noiseBuffer = new byte[SAMPLE_SIZE];
+    private byte[] zeroBuffer = new byte[SAMPLE_SIZE];
     
-    boolean hasStream = false;
-    int zeroBufferCount = 0;
+    private boolean hasStream = false;
+    private int zeroBufferCount = 0;
     
-    Random randInt;
+    private Random randInt;
 	
-    Integer playID = null;
+    private Integer playID = null;
     
 	/**
 	 * Processes status messages, warnings, and error messages.
@@ -200,9 +200,11 @@ public class CodecPCM implements ICodec {
             bufferSize = audioInputStream.read(readBuffer);
             if (bufferSize > 0)
                 outputBuffer = appendByteArrays(outputBuffer, readBuffer, bufferSize);
+
             if (bufferSize == -1)
                 {
                     endOfStream(SET, true);
+					ClientAudio.setPlayIDAudioDataStatus(playID, ClientAudio.Status.DONE);
                     return null;
                 }
 		    } else
