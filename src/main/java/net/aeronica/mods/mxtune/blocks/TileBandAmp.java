@@ -23,6 +23,15 @@ public class TileBandAmp extends TileInstrument
         this.playID = -1;
     }
 
+    /*
+     Needed when block states can change
+     */
+    @Override
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState)
+    {
+        return oldState.getBlock() != newState.getBlock();
+    }
+
     public Integer getPlayID()
     {
         return playID;

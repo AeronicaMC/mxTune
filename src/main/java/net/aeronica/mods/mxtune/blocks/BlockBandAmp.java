@@ -9,6 +9,7 @@ import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -21,10 +22,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
 import java.util.Random;
 
 import static net.aeronica.mods.mxtune.blocks.BlockPiano.spawnEntityItem;
@@ -32,13 +31,21 @@ import static net.aeronica.mods.mxtune.blocks.BlockPiano.spawnEntityItem;
 @SuppressWarnings("deprecation")
 public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
 {
+    public static final PropertyBool PLAYING = PropertyBool.create("playing");
+
     public BlockBandAmp()
     {
         super(Material.WOOD);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(PLAYING, Boolean.valueOf(false)));
         this.setHardness(0.0F);
         this.setSoundType(SoundType.WOOD);
         this.disableStats();
+    }
+
+    @Override
+    public int tickRate(World worldIn)
+    {
+        return 10;
     }
 
     /**
@@ -61,7 +68,9 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
         {
             if (!playerIn.isSneaking())
             {
-                canPlayOrStopMusic(worldIn, pos);
+                boolean isPlaying = canPlayOrStopMusic(worldIn, pos, state, false);
+                setPlayingState(worldIn, pos, state, isPlaying);
+                worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
             }
             else if (playerIn.isSneaking())
             {
@@ -71,7 +80,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
         return true;
     }
 
-    private boolean canPlayOrStopMusic(World worldIn, BlockPos pos)
+    private boolean canPlayOrStopMusic(World worldIn, BlockPos pos, IBlockState state, Boolean stop)
     {
         TileBandAmp tileBandAmp = this.getTE(worldIn, pos);
         if (tileBandAmp != null)
@@ -82,9 +91,29 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
                 tileBandAmp.setPlayID(-1);
                 return false;
             }
-            tileBandAmp.setPlayID(PlayManager.playMusic(worldIn, pos));
+            if (!stop)
+            {
+                Integer playID = PlayManager.playMusic(worldIn, pos);
+                tileBandAmp.setPlayID(playID);
+            }
         }
         return true;
+    }
+
+    @Override
+    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
+    {
+        if (!worldIn.isRemote)
+        {
+            if (state.getValue(PLAYING).booleanValue())
+            {
+                TileBandAmp tileBandAmp = this.getTE(worldIn, pos);
+                if (!PlayManager.isActivePlayID(tileBandAmp.getPlayID()))
+                    setPlayingState(worldIn, pos, state, false);
+                else
+                    worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
+            }
+        }
     }
 
     /**
@@ -104,12 +133,19 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
             {
                 if (powered)
                 {
-                    canPlayOrStopMusic(worldIn, pos);
+                    boolean isPlaying = canPlayOrStopMusic(worldIn, pos, state, false);
+                    setPlayingState(worldIn, pos, state, isPlaying);
                     tileBandAmp.setPowered(state, worldIn, pos, blockIn, fromPos);
                 }
                 tileBandAmp.setPreviousRedStoneState(powered);
             }
         }
+    }
+
+    private void setPlayingState(World worldIn, BlockPos posIn, IBlockState state, boolean playing)
+    {
+        worldIn.setBlockState(posIn, worldIn.getBlockState(posIn).withProperty(PLAYING, Boolean.valueOf(playing)), 3);
+        worldIn.markBlockRangeForRenderUpdate(posIn, posIn);
     }
 
     @Deprecated
@@ -129,31 +165,42 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     @Override
     protected BlockStateContainer createBlockState()
     {
-        return new BlockStateContainer(this, new IProperty[] {FACING});
+        return new BlockStateContainer(this, new IProperty[] {FACING, PLAYING});
     }
 
     @Deprecated
     @Override
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
-        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
+        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(PLAYING, Boolean.valueOf(false));
     }
 
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
     {
-        this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
+        this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(PLAYING, Boolean.valueOf(false));
     }
 
     @Deprecated
     @Override
     public IBlockState getStateFromMeta(int meta)
     {
-        return this.getDefaultState().withProperty(FACING, EnumFacing.byHorizontalIndex(meta));
+        EnumFacing enumfacing = EnumFacing.byHorizontalIndex(meta & 3);
+        return this.getDefaultState().withProperty(FACING, enumfacing).withProperty(PLAYING, Boolean.valueOf((meta & 8) > 0));
     }
 
     @Override
-    public int getMetaFromState(IBlockState state) { return state.getValue(FACING).getHorizontalIndex(); }
+    public int getMetaFromState(IBlockState state)
+    {
+        int i = 0;
+        i = i | ((EnumFacing) state.getValue(FACING)).getHorizontalIndex();
+
+        if (state.getValue(PLAYING).booleanValue())
+        {
+            i |= 8;
+        }
+        return i;
+    }
 
     @Override
     public boolean hasTileEntity(IBlockState state) { return true; }
@@ -164,14 +211,12 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
         return new TileBandAmp(state.getValue(FACING));
     }
 
-    @Nullable
-    public TileBandAmp getTileEntity(IBlockAccess world, BlockPos pos) {
-        return (TileBandAmp) world.getTileEntity(pos);
-    }
-
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
     {
+        canPlayOrStopMusic(worldIn, pos, state, true);
+        //setPlayingState(worldIn, pos, state, false);
+
         TileBandAmp tile = (TileBandAmp) worldIn.getTileEntity(pos);
         if (tile != null)
         {
