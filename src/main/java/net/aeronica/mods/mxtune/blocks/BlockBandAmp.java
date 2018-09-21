@@ -39,6 +39,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(PLAYING, Boolean.valueOf(false)));
         this.setHardness(0.0F);
         this.setSoundType(SoundType.WOOD);
+        this.setCreativeTab(MXTuneMain.TAB_MUSIC);
         this.disableStats();
     }
 
