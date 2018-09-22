@@ -29,12 +29,12 @@ public interface IMusicPlayer
         {
             for (int slot = 0; slot < ((TileBandAmp) te).getInventory().getSlots(); slot++)
             {
-                ItemStack instrument = ((TileBandAmp) te).getInventory().getStackInSlot(slot);
-                if (!instrument.isEmpty())
+                ItemStack stackInSlot = ((TileBandAmp) te).getInventory().getStackInSlot(slot);
+                if (!stackInSlot.isEmpty() && stackInSlot.getItem() instanceof ItemInstrument)
                 {
-                    ItemInstrument ii = (ItemInstrument) instrument.getItem();
-                    int patch = ii.getPatch(instrument.getMetadata());
-                    ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(instrument);
+                    ItemInstrument ii = (ItemInstrument) stackInSlot.getItem();
+                    int patch = ii.getPatch(stackInSlot.getMetadata());
+                    ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(stackInSlot);
                     if (!sheetMusic.isEmpty())
                     {
                         NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
