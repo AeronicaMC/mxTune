@@ -1,23 +1,16 @@
 package net.aeronica.libs.mml.core;
 
+import javax.sound.midi.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MetaMessage;
-import javax.sound.midi.MidiEvent;
-import javax.sound.midi.Patch;
-import javax.sound.midi.Sequence;
-import javax.sound.midi.ShortMessage;
-import javax.sound.midi.Track;
-
 public class MMLToMIDI extends MMLTransformBase
 {
     private static final int MASTER_TEMPO = 120;
     private static final double PPQ = 480.0;
-    private static final int TICKS_OFFSET = (int) (PPQ);
+    private static final int TICKS_OFFSET = 10;
     private Sequence sequence;
     private HashSet<Integer> packedPresets = new HashSet<Integer>();
 
@@ -128,8 +121,8 @@ public class MMLToMIDI extends MMLTransformBase
                      * Create a fake note to extend the play time so decaying
                      * audio does not cutoff suddenly
                      **/
-                    tracks[0].add(createNoteOnEvent(ch, 1, 0, mmo.getlongestPartTicks() + ticksOffset + 480));
-                    tracks[0].add(createNoteOffEvent(ch, 1, 0, mmo.getlongestPartTicks() + ticksOffset + 480 + 480));
+                    tracks[0].add(createNoteOnEvent(ch, 1, 0, mmo.getlongestPartTicks() + ticksOffset + 400));
+                    tracks[0].add(createNoteOffEvent(ch, 1, 0, mmo.getlongestPartTicks() + ticksOffset + 800));
                     break;
                 }
                 default:
