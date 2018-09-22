@@ -476,9 +476,9 @@ public class ClientAudio
     @SubscribeEvent
     public static void onEvent(ClientTickEvent event)
     {
-        if (event.side == Side.CLIENT && event.phase == TickEvent.Phase.END && counter++ % 10 == 0)
+        if (event.side == Side.CLIENT && event.phase == TickEvent.Phase.END && counter++ % 5 == 0)
         {
-            /* once every 1/2 second */
+            /* once every 1/4 second */
             updateClientAudio();
         }
     }

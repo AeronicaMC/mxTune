@@ -46,7 +46,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     @Override
     public int tickRate(World worldIn)
     {
-        return 10;
+        return 5;
     }
 
     /**
