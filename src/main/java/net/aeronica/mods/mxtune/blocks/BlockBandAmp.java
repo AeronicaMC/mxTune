@@ -12,18 +12,24 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Enchantments;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorldNameable;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.Random;
 
 import static net.aeronica.mods.mxtune.blocks.BlockPiano.spawnEntityItem;
@@ -37,16 +43,16 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     {
         super(Material.WOOD);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(PLAYING, Boolean.valueOf(false)));
-        this.setHardness(0.0F);
         this.setSoundType(SoundType.WOOD);
-        this.setCreativeTab(MXTuneMain.TAB_MUSIC);
+        this.setHardness(0.8F);
         this.disableStats();
+        this.setCreativeTab(MXTuneMain.TAB_MUSIC);
     }
 
     @Override
     public int tickRate(World worldIn)
     {
-        return 5;
+        return 10;
     }
 
     /**
@@ -65,15 +71,15 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-        if (!worldIn.isRemote && playerIn.capabilities.allowEdit)
+        if (!worldIn.isRemote)
         {
-            if (!playerIn.isSneaking())
+            if (playerIn.isSneaking())
             {
                 boolean isPlaying = canPlayOrStopMusic(worldIn, pos, state, false);
                 setPlayingState(worldIn, pos, state, isPlaying);
                 worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
             }
-            else if (playerIn.isSneaking())
+            else if (!playerIn.isSneaking() && playerIn.capabilities.allowEdit)
             {
                 playerIn.openGui(MXTuneMain.instance, GuiBandAmp.GUI_ID, worldIn, pos.getX(), pos.getY(), pos.getZ());
             }
@@ -137,6 +143,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
                     boolean isPlaying = canPlayOrStopMusic(worldIn, pos, state, false);
                     setPlayingState(worldIn, pos, state, isPlaying);
                     tileBandAmp.setPowered(state, worldIn, pos, blockIn, fromPos);
+                    worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
                 }
                 tileBandAmp.setPreviousRedStoneState(powered);
             }
@@ -180,6 +187,13 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
     {
         this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(PLAYING, Boolean.valueOf(false));
+
+        if (stack.hasDisplayName())
+        {
+            TileBandAmp tileBandAmp = getTE(worldIn, pos);
+            if (tileBandAmp != null)
+                tileBandAmp.setCustomInventoryName(stack.getDisplayName());
+        }
     }
 
     @Deprecated
@@ -228,6 +242,41 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
             tile.invalidate();
         }
         super.breakBlock(worldIn, pos, state);
+    }
+
+    /**
+     * Spawns the block's drops in the world. By the time this is called the Block has possibly been set to air via
+     * Block.removedByPlayer
+     */
+    @Override
+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack)
+    {
+        if (te instanceof IWorldNameable && ((IWorldNameable)te).hasCustomName())
+        {
+            player.addStat(StatList.getBlockStats(this));
+            player.addExhaustion(0.005F);
+
+            if (worldIn.isRemote)
+            {
+                return;
+            }
+
+            int i = EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, stack);
+            Item item = this.getItemDropped(state, worldIn.rand, i);
+
+            if (item == Items.AIR)
+            {
+                return;
+            }
+
+            ItemStack itemstack = new ItemStack(item, this.quantityDropped(worldIn.rand));
+            itemstack.setStackDisplayName(((IWorldNameable)te).getName());
+            spawnAsEntity(worldIn, pos, itemstack);
+        }
+        else
+        {
+            super.harvestBlock(worldIn, player, pos, state, (TileEntity)null, stack);
+        }
     }
 //    @Deprecated
 //    @Override

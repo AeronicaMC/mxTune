@@ -9,6 +9,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+
 public interface IMusicPlayer
 {
     /**
@@ -18,6 +20,7 @@ public interface IMusicPlayer
      * @return
      */
     @SuppressWarnings("unchecked")
+    @Nullable
     default public <T extends TileInstrument> T getTE(World worldIn, BlockPos pos) {return (T) worldIn.getTileEntity(pos);}
 
     default String getMML(World worldIn, BlockPos blockPos)
@@ -25,6 +28,7 @@ public interface IMusicPlayer
         StringBuilder buildMML = new StringBuilder();
         TileEntity te = getTE(worldIn, blockPos);
 
+        if (te != null)
         try
         {
             for (int slot = 0; slot < ((TileBandAmp) te).getInventory().getSlots(); slot++)

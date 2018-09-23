@@ -16,10 +16,7 @@
  */
 package net.aeronica.mods.mxtune.blocks;
 
-import org.lwjgl.opengl.GL11;
-
 import com.google.common.base.Function;
-
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.init.IReBakeModel;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
@@ -42,6 +39,7 @@ import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.model.TRSRTransformation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
 public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implements IReBakeModel

@@ -78,10 +78,11 @@ public class ContainerBandAmp extends Container
     @Override
     public boolean canInteractWith(EntityPlayer playerIn)
     {
-        if(playerIn.world.getTileEntity(tileBandAmp.getPos()) != tileBandAmp) {
-            return false;
-        } else {
-            return playerIn.getDistanceSq((double) tileBandAmp.getPos().getX() + 0.5D, (double) tileBandAmp.getPos().getY() + 0.5D, (double) tileBandAmp.getPos().getZ() + 0.5D) <= 64.0D;
-        }
+        return this.tileBandAmp.isUsableByPlayer(playerIn);
+    }
+
+    public TileBandAmp getTileBandAmp()
+    {
+        return tileBandAmp;
     }
 }

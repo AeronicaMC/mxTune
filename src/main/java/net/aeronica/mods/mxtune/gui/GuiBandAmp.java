@@ -1,7 +1,7 @@
 package net.aeronica.mods.mxtune.gui;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
-import net.aeronica.mods.mxtune.init.ModBlocks;
+import net.aeronica.mods.mxtune.blocks.TileBandAmp;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
@@ -14,17 +14,19 @@ public class GuiBandAmp extends GuiContainer
     private static final ResourceLocation BG_TEXTURE = new ResourceLocation(MXTuneMain.MODID, "textures/gui/band_amp.png");
     private InventoryPlayer inventoryPlayer;
     public static final int GUI_ID = 9;
+    private TileBandAmp tileBandAmp;
 
-    public GuiBandAmp(Container container, InventoryPlayer inventoryPlayer)
+    public GuiBandAmp(Container container, InventoryPlayer inventoryPlayer, TileBandAmp tileBandAmp)
     {
         super(container);
         this.inventoryPlayer = inventoryPlayer;
+        this.tileBandAmp = tileBandAmp;
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        String name = I18n.format(ModBlocks.BAND_AMP.getTranslationKey() + ".name");
+        String name = I18n.format(tileBandAmp.getName());
         fontRenderer.drawString(name, xSize / 2 - fontRenderer.getStringWidth(name) / 2, 6, 0x404040);
         fontRenderer.drawString(inventoryPlayer.getDisplayName().getUnformattedText(), 8, ySize - 94, 0x404040);
     }

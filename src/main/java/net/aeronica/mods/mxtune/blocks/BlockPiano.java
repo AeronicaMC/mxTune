@@ -16,13 +16,7 @@
  */
 package net.aeronica.mods.mxtune.blocks;
 
-import java.util.List;
-import java.util.Random;
-
-import javax.annotation.Nullable;
-
 import com.google.common.collect.Lists;
-
 import net.aeronica.mods.mxtune.advancements.ModCriteriaTriggers;
 import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
 import net.aeronica.mods.mxtune.groups.PlayManager;
@@ -31,6 +25,8 @@ import net.aeronica.mods.mxtune.inventory.IMusic;
 import net.aeronica.mods.mxtune.status.ServerCSDManager;
 import net.aeronica.mods.mxtune.util.PlacedInstrumentUtil;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockHorizontal;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -45,13 +41,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -59,7 +49,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockPiano extends BlockInstrument2H
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Random;
+
+public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
 {
     public static final PropertyEnum<BlockPiano.EnumPartType> PART = PropertyEnum.<BlockPiano.EnumPartType> create("part", BlockPiano.EnumPartType.class);
     public static final PropertyBool OCCUPIED = PropertyBool.create("occupied");
@@ -73,6 +67,10 @@ public class BlockPiano extends BlockInstrument2H
     {
         super(Material.WOOD);
         setDefaultState(this.blockState.getBaseState().withProperty(PART, BlockPiano.EnumPartType.LEFT).withProperty(OCCUPIED, Boolean.valueOf(false)));
+        this.setSoundType(SoundType.WOOD);
+        this.setHardness(0.8F);
+        this.disableStats();
+
     }
 
     @Override
