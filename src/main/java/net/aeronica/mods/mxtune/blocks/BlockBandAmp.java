@@ -19,7 +19,6 @@ import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -115,7 +114,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
             if (state.getValue(PLAYING).booleanValue())
             {
                 TileBandAmp tileBandAmp = this.getTE(worldIn, pos);
-                if (!PlayManager.isActivePlayID(tileBandAmp.getPlayID()))
+                if (tileBandAmp != null && !PlayManager.isActivePlayID(tileBandAmp.getPlayID()))
                     setPlayingState(worldIn, pos, state, false);
                 else
                     worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
@@ -253,7 +252,6 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     {
         if (te instanceof IWorldNameable && ((IWorldNameable)te).hasCustomName())
         {
-            player.addStat(StatList.getBlockStats(this));
             player.addExhaustion(0.005F);
 
             if (worldIn.isRemote)
@@ -275,7 +273,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
         }
         else
         {
-            super.harvestBlock(worldIn, player, pos, state, (TileEntity)null, stack);
+            super.harvestBlock(worldIn, player, pos, state, null, stack);
         }
     }
 //    @Deprecated
