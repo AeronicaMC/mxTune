@@ -61,7 +61,7 @@ public enum EnumRelativeSide
         else
         {
             index = facing.getHorizontalIndex() * 4 + side.getHorizontalIndex();
-            enumRelativeSide = ENUM_RELATIVE_SIDES[index];
+            enumRelativeSide = ENUM_RELATIVE_SIDES[Math.abs(index % ENUM_RELATIVE_SIDES.length)];
         }
         ModLogger.info("getRelativeSide index: %d, location: %s", index, enumRelativeSide);
         return enumRelativeSide;
