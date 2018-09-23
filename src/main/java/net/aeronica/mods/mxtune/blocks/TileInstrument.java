@@ -31,7 +31,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 public class TileInstrument extends TileEntity
 {
-    protected ItemStackHandler inventory = new StackHandler(1);
+    protected ItemStackHandler inventory;
     protected EnumFacing facing = EnumFacing.NORTH;
 
     public TileInstrument() {}
@@ -44,15 +44,12 @@ public class TileInstrument extends TileEntity
     public void readFromNBT(NBTTagCompound tag)
     {
         super.readFromNBT(tag);
-        inventory = new StackHandler(1); // ItemStackHandler
-        inventory.deserializeNBT(tag);
         facing = EnumFacing.byIndex(tag.getInteger("facing"));
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound tag)
     {
-        tag.merge(inventory.serializeNBT());
         tag.setInteger("facing", facing.getIndex());
         return super.writeToNBT(tag);
     }
@@ -109,51 +106,10 @@ public class TileInstrument extends TileEntity
     }
 
     @Override
-    public boolean hasCapability(Capability<?> cap, EnumFacing side)
-    {
-        return cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(cap, side);
-    }
-
-    @Override
     public <T> T getCapability(Capability<T> cap, EnumFacing side)
     {
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) { return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(inventory); }
         return super.getCapability(cap, side);
-    }
-
-    public void syncToClient()
-    {
-        markDirty();
-        if (world != null)
-        {
-            if (!world.isRemote && !this.isInvalid())
-            {
-                IBlockState state = world.getBlockState(getPos());
-                /**
-                 * Sets the block state at a given location. Flag 1 will cause a
-                 * block update. Flag 2 will send the change to clients (you
-                 * almost always want this). Flag 4 prevents the block from
-                 * being re-rendered, if this is a client world. Flags can be
-                 * added together.
-                 */
-                world.notifyBlockUpdate(getPos(), state, state, 3);
-            }
-        }
-    }
-
-    class StackHandler extends ItemStackHandler
-    {
-        protected StackHandler(int size) {super(size);}
-
-        @Override
-        protected void onLoad()
-        {
-            super.onLoad();
-            syncToClient();
-        }
-
-        @Override
-        public void onContentsChanged(int slot) {syncToClient();}
     }
     
     public IItemHandlerModifiable getInventory() {return inventory;}

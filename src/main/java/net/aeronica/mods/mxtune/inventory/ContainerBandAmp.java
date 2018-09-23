@@ -17,7 +17,7 @@ public class ContainerBandAmp extends Container
 
     public ContainerBandAmp(InventoryPlayer playerInv, @Nonnull final TileBandAmp tileBandAmp) {
         this.tileBandAmp = tileBandAmp;
-        IItemHandler inventory = tileBandAmp.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, tileBandAmp.getFacing());
+        IItemHandler inventory = tileBandAmp.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
         addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 0, 52, 26));
         addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 1, 70, 26));
         addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 2, 88, 26));

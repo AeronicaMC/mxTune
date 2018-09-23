@@ -16,12 +16,69 @@
  */
 package net.aeronica.mods.mxtune.blocks;
 
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.items.ItemStackHandler;
 
 public class TilePiano extends TileInstrument
 {
 
     public TilePiano() {}
 
-    public TilePiano(EnumFacing facing) {this.facing = facing;}
+    public TilePiano(EnumFacing facing)
+    {
+        this.inventory = new StackHandler(1);
+        this.facing = facing;
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound tag)
+    {
+        super.readFromNBT(tag);
+        inventory = new StackHandler(1);
+        inventory.deserializeNBT(tag);
+    }
+
+    @Override
+    public NBTTagCompound writeToNBT(NBTTagCompound tag)
+    {
+        tag.merge(inventory.serializeNBT());
+        return super.writeToNBT(tag);
+    }
+
+    public void syncToClient()
+    {
+        markDirty();
+        if (world != null)
+        {
+            if (!world.isRemote && !this.isInvalid())
+            {
+                IBlockState state = world.getBlockState(getPos());
+                /**
+                 * Sets the block state at a given location. Flag 1 will cause a
+                 * block update. Flag 2 will send the change to clients (you
+                 * almost always want this). Flag 4 prevents the block from
+                 * being re-rendered, if this is a client world. Flags can be
+                 * added together.
+                 */
+                world.notifyBlockUpdate(getPos(), state, state, 3);
+            }
+        }
+    }
+
+    class StackHandler extends ItemStackHandler
+    {
+        protected StackHandler(int size) {super(size);}
+
+        @Override
+        protected void onLoad()
+        {
+            super.onLoad();
+            syncToClient();
+        }
+
+        @Override
+        public void onContentsChanged(int slot) {syncToClient();}
+    }
 }
