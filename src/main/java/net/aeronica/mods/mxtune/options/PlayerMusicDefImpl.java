@@ -16,9 +16,6 @@
  */
 package net.aeronica.mods.mxtune.options;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.SyncPlayerMusicOptionsMessage;
 import net.minecraft.entity.EntityLivingBase;
@@ -26,6 +23,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PlayerMusicDefImpl implements IPlayerMusicOptions
 {

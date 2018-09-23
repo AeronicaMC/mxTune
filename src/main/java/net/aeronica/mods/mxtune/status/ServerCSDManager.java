@@ -16,14 +16,14 @@
  */
 package net.aeronica.mods.mxtune.status;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.ClientStateDataMessage;
 import net.aeronica.mods.mxtune.network.client.SendCSDChatMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * ServerStateManager<p>

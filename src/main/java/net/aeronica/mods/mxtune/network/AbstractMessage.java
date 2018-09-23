@@ -4,8 +4,6 @@
  */
 package net.aeronica.mods.mxtune.network;
 
-import java.io.IOException;
-
 import io.netty.buffer.ByteBuf;
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,6 +14,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
+
+import java.io.IOException;
 
 /**
  * Creating an abstract message class similar to {@link Packet} allows us to

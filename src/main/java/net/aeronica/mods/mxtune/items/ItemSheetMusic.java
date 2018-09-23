@@ -15,10 +15,6 @@
  */
 package net.aeronica.mods.mxtune.items;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import net.aeronica.mods.mxtune.inventory.IMusic;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
@@ -27,6 +23,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class ItemSheetMusic extends Item implements IMusic
 {

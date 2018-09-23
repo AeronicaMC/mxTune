@@ -16,13 +16,13 @@
  */
 package net.aeronica.mods.mxtune.network.server;
 
-import java.io.IOException;
-
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
+
+import java.io.IOException;
 
 public class HudOptionsMessage extends AbstractServerMessage<HudOptionsMessage>
 {

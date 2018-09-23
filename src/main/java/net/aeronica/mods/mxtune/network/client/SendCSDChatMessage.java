@@ -16,8 +16,6 @@
  */
 package net.aeronica.mods.mxtune.network.client;
 
-import java.io.IOException;
-
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.ClientStateDataMessage;
 import net.aeronica.mods.mxtune.status.CSDChatStatus;
@@ -25,6 +23,8 @@ import net.aeronica.mods.mxtune.status.ClientStateData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
+
+import java.io.IOException;
 
 public class SendCSDChatMessage extends AbstractClientMessage<SendCSDChatMessage>
 {

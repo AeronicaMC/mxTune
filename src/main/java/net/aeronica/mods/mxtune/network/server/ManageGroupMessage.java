@@ -16,14 +16,14 @@
  */
 package net.aeronica.mods.mxtune.network.server;
 
-import java.io.IOException;
-
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
+
+import java.io.IOException;
 
 public class ManageGroupMessage extends AbstractServerMessage<ManageGroupMessage>
 {

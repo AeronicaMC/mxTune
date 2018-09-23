@@ -1,18 +1,16 @@
 package net.aeronica.libs.mml.core;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTreeProperty;
-
 import net.aeronica.libs.mml.core.MMLParser.AnoteContext;
 import net.aeronica.libs.mml.core.MMLParser.BandContext;
 import net.aeronica.libs.mml.core.MMLParser.InstContext;
 import net.aeronica.libs.mml.core.MMLParser.LenContext;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTreeProperty;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Transforms MML into a set of data structures that can be used to generate

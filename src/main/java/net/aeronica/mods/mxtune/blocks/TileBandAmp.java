@@ -81,7 +81,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
 
     public void setPowered(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
-        Vec3i vec3i = pos.subtract(fromPos);
+        Vec3i vec3i = fromPos.subtract(pos);
         ModLogger.info("TileBandAmp: Powered facing: %s by %s", EnumFacing.getFacingFromVector(vec3i.getX(), vec3i.getY(), vec3i.getZ()), blockIn.getBlockState().getBlock().getLocalizedName());
     }
 

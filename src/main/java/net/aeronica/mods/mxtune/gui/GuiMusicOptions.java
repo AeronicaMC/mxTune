@@ -16,16 +16,8 @@
  */
 package net.aeronica.mods.mxtune.gui;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
-import org.lwjgl.input.Keyboard;
-
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
-
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.MusicOptionsMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
@@ -46,6 +38,12 @@ import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.GuiScrollingList;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
+import org.lwjgl.input.Keyboard;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public class GuiMusicOptions extends GuiScreen
 {

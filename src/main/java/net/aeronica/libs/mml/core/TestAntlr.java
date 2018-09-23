@@ -1,14 +1,14 @@
 package net.aeronica.libs.mml.core;
 
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 
 public class TestAntlr
 {

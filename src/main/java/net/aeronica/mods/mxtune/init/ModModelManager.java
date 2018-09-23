@@ -40,7 +40,6 @@
  */
 package net.aeronica.mods.mxtune.init;
 
-import net.aeronica.mods.mxtune.blocks.BlockBandAmp;
 import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.blocks.RendererPiano;
 import net.aeronica.mods.mxtune.blocks.TilePiano;

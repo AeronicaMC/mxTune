@@ -1,9 +1,5 @@
 package net.aeronica.mods.mxtune.gui;
 
-import java.io.IOException;
-
-import org.lwjgl.opengl.GL11;
-
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.inventory.ContainerInstrument;
 import net.minecraft.client.Minecraft;
@@ -11,7 +7,10 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 import scala.Char;
+
+import java.io.IOException;
 
 public class GuiInstrumentInventory extends GuiContainer {
 	public static final int GUI_ID = 1;

@@ -1,12 +1,6 @@
 package net.aeronica.libs.mml.core;
 
-import javax.sound.midi.MetaEventListener;
-import javax.sound.midi.MetaMessage;
-import javax.sound.midi.MidiSystem;
-import javax.sound.midi.Sequence;
-import javax.sound.midi.Sequencer;
-import javax.sound.midi.Synthesizer;
-import javax.sound.midi.Transmitter;
+import javax.sound.midi.*;
 
 public class PlayMIDI implements MetaEventListener
 {

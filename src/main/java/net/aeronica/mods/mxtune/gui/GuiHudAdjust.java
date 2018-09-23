@@ -16,12 +16,6 @@
  */
 package net.aeronica.mods.mxtune.gui;
 
-import java.awt.Color;
-import java.io.IOException;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.HudOptionsMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
@@ -34,6 +28,11 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
+import java.awt.*;
+import java.io.IOException;
 
 public class GuiHudAdjust extends GuiScreen
 {

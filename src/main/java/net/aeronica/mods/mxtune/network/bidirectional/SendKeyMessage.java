@@ -16,8 +16,6 @@
  */
 package net.aeronica.mods.mxtune.network.bidirectional;
 
-import java.io.IOException;
-
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.gui.GuiGroup;
 import net.aeronica.mods.mxtune.gui.GuiMusicOptions;
@@ -28,6 +26,8 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
+
+import java.io.IOException;
 
 public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
 {

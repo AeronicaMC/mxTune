@@ -16,10 +16,6 @@
  */
 package net.aeronica.mods.mxtune.items;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.gui.GuiMusicPaperParse;
 import net.aeronica.mods.mxtune.inventory.IMusic;
@@ -39,6 +35,9 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class ItemMusicPaper extends Item implements IMusic
 {

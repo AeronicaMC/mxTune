@@ -36,14 +36,14 @@
  */
 package net.aeronica.mods.mxtune.util;
 
-import java.util.List;
-
 import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 public enum PlacedInstrumentUtil
 {    

@@ -16,12 +16,6 @@
  */
 package net.aeronica.mods.mxtune.gui;
 
-import java.util.Iterator;
-import java.util.Set;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
@@ -34,6 +28,11 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+
+import java.util.Iterator;
+import java.util.Set;
 
 public class GuiGroupJoin extends GuiScreen
 {

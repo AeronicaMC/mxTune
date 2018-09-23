@@ -16,13 +16,13 @@
  */
 package net.aeronica.mods.mxtune.options;
 
-import java.util.List;
-
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IStringSerializable;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
+
+import java.util.List;
 
 public class MusicOptionsUtil
 {

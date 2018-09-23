@@ -16,12 +16,7 @@
  */
 package net.aeronica.mods.mxtune.groups;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
 import com.google.common.collect.Sets;
-
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.JoinGroupMessage;
@@ -48,6 +43,10 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.relauncher.Side;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 // Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
 // UUID does not work on the client.

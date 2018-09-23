@@ -19,8 +19,6 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.minecraft.client.audio.Sound;
 import net.minecraft.util.ResourceLocation;
 
-import net.minecraft.client.audio.Sound.Type;
-
 public class PCMSound extends Sound
 {
     

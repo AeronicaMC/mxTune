@@ -16,9 +16,9 @@
  */
 package net.aeronica.mods.mxtune.options;
 
-import java.util.List;
-
 import net.minecraft.entity.player.EntityPlayer;
+
+import java.util.List;
 
 public interface IPlayerMusicOptions
 {   

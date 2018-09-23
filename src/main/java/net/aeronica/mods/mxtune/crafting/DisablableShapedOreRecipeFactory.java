@@ -15,10 +15,7 @@
  */
 package net.aeronica.mods.mxtune.crafting;
 
-import javax.annotation.Nonnull;
-
 import com.google.gson.JsonObject;
-
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
@@ -29,6 +26,8 @@ import net.minecraftforge.common.crafting.CraftingHelper.ShapedPrimer;
 import net.minecraftforge.common.crafting.IRecipeFactory;
 import net.minecraftforge.common.crafting.JsonContext;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+
+import javax.annotation.Nonnull;
 
 /**
  * Disableable Shaped Ore Recipe

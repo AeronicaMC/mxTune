@@ -21,28 +21,15 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
+import com.sun.media.sound.AudioSynthesizer;
+import net.aeronica.mods.mxtune.util.MIDISystemUtil;
+
+import javax.sound.midi.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MetaMessage;
-import javax.sound.midi.MidiDevice;
-import javax.sound.midi.MidiEvent;
-import javax.sound.midi.MidiMessage;
-import javax.sound.midi.MidiSystem;
-import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.Receiver;
-import javax.sound.midi.Sequence;
-import javax.sound.midi.Soundbank;
-import javax.sound.midi.Synthesizer;
-import javax.sound.midi.Track;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-
-import com.sun.media.sound.AudioSynthesizer;
-
-import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 
 /*
  * user: Paul Boese aka Aeronica

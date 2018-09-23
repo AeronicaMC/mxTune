@@ -16,11 +16,10 @@
  */
 package net.aeronica.mods.mxtune.gui;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.math.MathHelper;
+import org.lwjgl.opengl.GL11;
 
 public class GuiSliderMX extends GuiButton
 {
