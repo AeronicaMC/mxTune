@@ -12,8 +12,8 @@ public enum EnumRelativeSide
     BOTTOM(5, "bottom"),
     ERROR(6, "error");
 
-    private int index;
-    private String name;
+    int index;
+    String name;
 
     EnumRelativeSide(int index, String name)
     {
@@ -50,7 +50,6 @@ public enum EnumRelativeSide
     public static EnumRelativeSide getRelativeSide(EnumFacing side, EnumFacing facing)
     {
         EnumRelativeSide enumRelativeSide;
-        int index = -1;
 
         if (side == null || facing == null)
             enumRelativeSide = ERROR;
@@ -60,10 +59,9 @@ public enum EnumRelativeSide
             enumRelativeSide = BOTTOM;
         else
         {
-            index = facing.getHorizontalIndex() * 4 + side.getHorizontalIndex();
+            int index = facing.getHorizontalIndex() * 4 + side.getHorizontalIndex();
             enumRelativeSide = ENUM_RELATIVE_SIDES[Math.abs(index % ENUM_RELATIVE_SIDES.length)];
         }
-        ModLogger.info("getRelativeSide index: %d, location: %s", index, enumRelativeSide);
         return enumRelativeSide;
     }
 }
