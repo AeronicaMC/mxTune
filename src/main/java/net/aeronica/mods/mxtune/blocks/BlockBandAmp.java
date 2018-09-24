@@ -6,6 +6,7 @@ import net.aeronica.mods.mxtune.gui.GuiBandAmp;
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
+import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -130,11 +131,11 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
         boolean powered = worldIn.isBlockPowered(pos);
-        TileEntity te = worldIn.getTileEntity(pos);
+        TileBandAmp tileBandAmp = getTE(worldIn, pos);//worldIn.getTileEntity(pos);
 
-        if (te instanceof TileBandAmp)
+        if ((tileBandAmp != null) && !(blockIn instanceof BlockBandAmp) && !(blockIn instanceof BlockRedstoneWire) &&
+                !(worldIn.getBlockState(fromPos).getBlock() instanceof BlockBandAmp))
         {
-            TileBandAmp tileBandAmp = (TileBandAmp) te;
             if (tileBandAmp.getPreviousRedStoneState() != powered)
             {
                 if (powered)
@@ -151,7 +152,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
 
     private void setPlayingState(World worldIn, BlockPos posIn, IBlockState state, boolean playing)
     {
-        worldIn.setBlockState(posIn, worldIn.getBlockState(posIn).withProperty(PLAYING, Boolean.valueOf(playing)), 3);
+        worldIn.setBlockState(posIn, worldIn.getBlockState(posIn).withProperty(PLAYING, Boolean.valueOf(playing)), 1|2);
         worldIn.markBlockRangeForRenderUpdate(posIn, posIn);
     }
 
