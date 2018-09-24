@@ -31,9 +31,9 @@ public interface IMusicPlayer
         if (te != null)
         try
         {
-            for (int slot = 0; slot < ((TileBandAmp) te).getInventory().getSlots(); slot++)
+            for (int slot = 0; slot < ((TileInstrument) te).getInventory().getSlots(); slot++)
             {
-                ItemStack stackInSlot = ((TileBandAmp) te).getInventory().getStackInSlot(slot);
+                ItemStack stackInSlot = ((TileInstrument) te).getInventory().getStackInSlot(slot);
                 if (!stackInSlot.isEmpty() && stackInSlot.getItem() instanceof ItemInstrument)
                 {
                     ItemInstrument ii = (ItemInstrument) stackInSlot.getItem();

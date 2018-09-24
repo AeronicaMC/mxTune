@@ -105,7 +105,7 @@ public enum PlayManager
     {
         Integer playID = null;
         IMusicPlayer musicPlayer;
-        ModLogger.info("Bonk!");
+        ModLogger.info("playMusic block: %s", pos);
         if (worldIn.getBlockState(pos).getBlock() instanceof IMusicPlayer)
         {
             musicPlayer = (IMusicPlayer) worldIn.getBlockState(pos).getBlock();
