@@ -22,7 +22,6 @@ import net.aeronica.mods.mxtune.gui.GuiBandAmp;
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
-import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -128,10 +127,10 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     {
         if (!worldIn.isRemote)
         {
-            if (state.getValue(PLAYING).booleanValue())
+            TileBandAmp tileBandAmp = this.getTE(worldIn, pos);
+            if (tileBandAmp != null && state.getValue(PLAYING).booleanValue())
             {
-                TileBandAmp tileBandAmp = this.getTE(worldIn, pos);
-                if (tileBandAmp != null && !PlayManager.isActivePlayID(tileBandAmp.getPlayID()))
+                if (!PlayManager.isActivePlayID(tileBandAmp.getPlayID()))
                     setPlayingState(worldIn, pos, state, false);
                 else
                     worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
@@ -147,10 +146,9 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
         boolean powered = worldIn.isBlockPowered(pos);
-        TileBandAmp tileBandAmp = getTE(worldIn, pos);//worldIn.getTileEntity(pos);
+        TileBandAmp tileBandAmp = getTE(worldIn, pos);
 
-        if ((tileBandAmp != null) && !(blockIn instanceof BlockBandAmp) && !(blockIn instanceof BlockRedstoneWire) &&
-                !(worldIn.getBlockState(fromPos).getBlock() instanceof BlockBandAmp))
+        if ((tileBandAmp != null))
         {
             if (tileBandAmp.getPreviousRedStoneState() != powered)
             {
@@ -168,8 +166,12 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
 
     private void setPlayingState(World worldIn, BlockPos posIn, IBlockState state, boolean playing)
     {
-        worldIn.setBlockState(posIn, worldIn.getBlockState(posIn).withProperty(PLAYING, Boolean.valueOf(playing)), 1|2);
-        worldIn.markBlockRangeForRenderUpdate(posIn, posIn);
+        Boolean currentPlayingState = state.getValue(PLAYING);
+        if (!currentPlayingState.equals(playing))
+        {
+            worldIn.setBlockState(posIn, worldIn.getBlockState(posIn).withProperty(PLAYING, Boolean.valueOf(playing)), 2);
+            worldIn.markBlockRangeForRenderUpdate(posIn, posIn);
+        }
     }
 
     @Deprecated
