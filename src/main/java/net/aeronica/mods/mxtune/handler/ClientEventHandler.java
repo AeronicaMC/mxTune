@@ -18,13 +18,17 @@ package net.aeronica.mods.mxtune.handler;
 
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.init.IReBakeModel;
+import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.init.ModModelManager;
 import net.aeronica.mods.mxtune.render.PlacardRenderer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -61,4 +65,12 @@ public class ClientEventHandler
         ModModelManager.getTESRRenderers().stream().filter(p -> p instanceof IReBakeModel).forEach(p -> ((IReBakeModel)p).reBakeModel());
     }
 
+    @SubscribeEvent
+    public static void onEvent(ItemTooltipEvent event)
+    {
+        if (event.getItemStack().getItem().equals(ModItems.ITEM_BAND_AMP))
+        {
+            event.getToolTip().add(TextFormatting.GREEN + I18n.format("tile.mxtune:band_amp.help"));
+        }
+    }
 }
