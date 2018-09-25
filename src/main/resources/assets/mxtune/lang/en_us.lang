@@ -62,6 +62,7 @@ item.mxtune:instrument.piano.name=Piano
 item.mxtune:instrument.title=Title
 item.mxtune:instrument.help=Shift + right click to insert/remove music
 tile.mxtune:band_amp.name=Band Amp
+tile.mxtune:band_amp.help=Once placed in the world, right click to open inventory. Add up to 8 instruments loaded with sheet music. Activate using a button, or sneak + right click.
 sf.mxtune.m.lute=M Lute
 sf.mxtune.m.ukulele=M Ukulele
 sf.mxtune.m.mandolin=M Mandolin

@@ -90,7 +90,12 @@ public class GUIHandler implements IGuiHandler
         }
     }
 
-    private boolean isLocked(EntityPlayer playerIn, World worldIn, int x, int y, int z)
+    public static boolean isLocked(EntityPlayer playerIn, World worldIn, BlockPos pos)
+    {
+        return isLocked(playerIn, worldIn, pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    public static boolean isLocked(EntityPlayer playerIn, World worldIn, int x, int y, int z)
     {
         TileEntity tileEntity = worldIn.getTileEntity(new BlockPos(x, y, z));
         boolean isLocked = false;
@@ -101,7 +106,7 @@ public class GUIHandler implements IGuiHandler
             if (lockableContainer.isLocked() && !playerIn.canOpen(lockableContainer.getLockCode()) && !playerIn.isSpectator())
             {
                 playerIn.sendStatusMessage(new TextComponentTranslation("container.isLocked", new Object[] {new TextComponentTranslation(lockableContainer.getName())}), true);
-                playerIn.getEntityWorld().playSound(null, new BlockPos(x, y, z), SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.BLOCKS, 1F, 1F);
+                playerIn.getEntityWorld().playSound(null, new BlockPos(x, y, z), SoundEvents.UI_TOAST_IN, SoundCategory.BLOCKS, 1F, 1F);
                 isLocked = true;
             }
         }

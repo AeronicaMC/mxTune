@@ -19,6 +19,7 @@ package net.aeronica.mods.mxtune.blocks;
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiBandAmp;
+import net.aeronica.mods.mxtune.handler.GUIHandler;
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
@@ -59,7 +60,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
         super(Material.WOOD);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(PLAYING, Boolean.valueOf(false)));
         this.setSoundType(SoundType.WOOD);
-        this.setHardness(0.8F);
+        this.setHardness(2.0F);
         this.disableStats();
         this.setCreativeTab(MXTuneMain.TAB_MUSIC);
     }
@@ -88,7 +89,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     {
         if (!worldIn.isRemote)
         {
-            if (playerIn.isSneaking())
+            if (playerIn.isSneaking() || GUIHandler.getInstance().isLocked(playerIn, worldIn, pos))
             {
                 boolean isPlaying = canPlayOrStopMusic(worldIn, pos, state, false);
                 setPlayingState(worldIn, pos, state, isPlaying);
@@ -166,8 +167,8 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
 
     private void setPlayingState(World worldIn, BlockPos posIn, IBlockState state, boolean playing)
     {
-        Boolean currentPlayingState = state.getValue(PLAYING);
-        if (!currentPlayingState.equals(playing))
+        boolean currentPlayingState = state.getValue(PLAYING).booleanValue();
+        if (currentPlayingState != playing)
         {
             worldIn.setBlockState(posIn, worldIn.getBlockState(posIn).withProperty(PLAYING, Boolean.valueOf(playing)), 2);
             worldIn.markBlockRangeForRenderUpdate(posIn, posIn);
@@ -248,7 +249,6 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
     {
         canPlayOrStopMusic(worldIn, pos, state, true);
-        //setPlayingState(worldIn, pos, state, false);
 
         TileBandAmp tile = (TileBandAmp) worldIn.getTileEntity(pos);
         if (tile != null)
