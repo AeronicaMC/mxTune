@@ -78,7 +78,7 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
     {
         BlockPos pos = posIn;
         IBlockState state = stateIn;
-        if (!worldIn.isRemote && !playerIn.isSpectator())
+        if (!worldIn.isRemote)
         {
             /* SERVER SIDE */
             if (state.getValue(PART) == BlockPiano.EnumPartType.RIGHT)
