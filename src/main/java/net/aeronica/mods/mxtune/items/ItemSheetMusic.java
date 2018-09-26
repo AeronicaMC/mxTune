@@ -44,8 +44,6 @@ public class ItemSheetMusic extends Item implements IMusic
     @Override
     public void addInformation(ItemStack stackIn, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
     {
-        if (stackIn.isEmpty()) return;
-        /** Display the contents of the sheet music. */
         if (stackIn.hasTagCompound())
         {
             NBTTagCompound contents = stackIn.getTagCompound();
