@@ -2,13 +2,5 @@
     "parent": "item/generated",
     "textures": {
         "layer0": "mxtune:items/music_paper"
-    },
-    "overrides": [
-        {
-            "predicate": {
-                "written": 1
-            },
-            "model": "mxtune:item/sheet_music_old"
-        }
-    ]
+    }
 }

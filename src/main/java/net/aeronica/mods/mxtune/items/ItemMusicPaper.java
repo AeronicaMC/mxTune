@@ -1,13 +1,13 @@
 /**
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,41 +18,26 @@ package net.aeronica.mods.mxtune.items;
 
 import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.gui.GuiMusicPaperParse;
-import net.aeronica.mods.mxtune.inventory.IMusic;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ItemMusicPaper extends Item implements IMusic
+public class ItemMusicPaper extends Item
 {
     public ItemMusicPaper()
     {
         this.setMaxStackSize(16);
         this.setCreativeTab(MXTuneMain.TAB_MUSIC);
-        this.addPropertyOverride(new ResourceLocation("written"), new IItemPropertyGetter()
-        {
-            @SideOnly(Side.CLIENT)
-            public float apply(ItemStack stack, World worldIn, EntityLivingBase entityIn)
-            {
-                return !stack.isEmpty() && isItemMusicPaper(stack) && stack.hasDisplayName() ? 1.0F : 0.0F;
-            }
-        });
     }
 
     @Override
@@ -60,37 +45,14 @@ public class ItemMusicPaper extends Item implements IMusic
     {
         if (worldIn.isRemote)
         {
-            /** Client side */
-            ItemStack itemStackIn = playerIn.getHeldItem(handIn);
-            if (!itemStackIn.hasDisplayName() && handIn.equals(EnumHand.MAIN_HAND) && !itemStackIn.isEmpty())
-            {
-                playerIn.openGui(MXTuneMain.instance, GuiMusicPaperParse.GUI_ID, worldIn, (int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ);
-            }
+            playerIn.openGui(MXTuneMain.instance, GuiMusicPaperParse.GUI_ID, worldIn, (int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ);
         }
-        playerIn.setActiveHand(EnumHand.MAIN_HAND);
+        playerIn.setActiveHand(handIn);
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
-    }
-
-    ItemStack getHeldItemStack(EntityPlayer player)
-    {
-        if (this.isItemMusicPaper(player.getHeldItem(EnumHand.OFF_HAND)))
-        {
-            return player.getHeldItem(EnumHand.OFF_HAND);
-        } else if (this.isItemMusicPaper(player.getHeldItem(EnumHand.MAIN_HAND)))
-        {
-            return player.getHeldItem(EnumHand.MAIN_HAND);
-        } else
-            return null;
     }
 
     @Override
     public boolean getShareTag() {return true;}
-
-    /** Check of the item stack we are holding is the type we are interested in */
-    protected boolean isItemMusicPaper(ItemStack stack)
-    {
-        return !stack.isEmpty() && stack.getItem() instanceof ItemMusicPaper;
-    }
 
     /**
      * NOTE: If you want to open your gui on right click and your ItemStore, you
@@ -101,44 +63,8 @@ public class ItemMusicPaper extends Item implements IMusic
     public int getMaxItemUseDuration(ItemStack itemstack) {return 1;}
 
     @Override
-    public boolean hasMML(ItemStack itemStackIn)
-    {
-        if (!itemStackIn.isEmpty())
-        {
-            if (itemStackIn.hasTagCompound())
-            {
-                NBTTagCompound contents = itemStackIn.getTagCompound();
-                if (contents.hasKey("MusicBook"))
-                {
-                    NBTTagCompound mml = contents.getCompoundTag("MusicBook");
-                    return mml.getString("MML").contains("MML@");
-                }
-            }
-        }
-        return false;
-    }
-
-    @Override
     public void addInformation(ItemStack stackIn, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn)
     {
-        /** Display the contents of the sheet music. */
-        if (stackIn.hasTagCompound())
-        {
-            NBTTagCompound contents = stackIn.getTagCompound();
-            if (contents.hasKey("MusicBook"))
-            {
-                NBTTagCompound mml = contents.getCompoundTag("MusicBook");
-                if (mml.getString("MML").contains("MML@"))
-                {
-                    tooltip.add(TextFormatting.RED + "The old Sheet Music Item has been Depricated!");
-                    tooltip.add(TextFormatting.RED + "Please convert to the New Sheet Music Item using the " + TextFormatting.YELLOW + "\'Sheet Music Converter\'");
-                    tooltip.add(TextFormatting.RED + "Enclosed MML: ");
-                    tooltip.add(TextFormatting.RED + mml.getString("MML").substring(0, mml.getString("MML").length() > 25 ? 25 : mml.getString("MML").length()));
-                }
-            }
-        } else
-        {
-            tooltip.add(TextFormatting.RESET + I18n.format("item.mxtune:music_paper.help"));
-        }
+        tooltip.add(TextFormatting.RESET + I18n.format("item.mxtune:music_paper.help"));
     }
 }
