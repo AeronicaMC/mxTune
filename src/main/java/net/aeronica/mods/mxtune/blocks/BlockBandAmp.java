@@ -87,7 +87,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-        if (!worldIn.isRemote)
+        if (!worldIn.isRemote && !playerIn.isSpectator())
         {
             if (playerIn.isSneaking() || GUIHandler.getInstance().isLocked(playerIn, worldIn, pos))
             {
