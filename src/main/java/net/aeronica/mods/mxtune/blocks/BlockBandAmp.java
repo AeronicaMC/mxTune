@@ -89,7 +89,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     {
         if (!worldIn.isRemote)
         {
-            if (playerIn.isSneaking() || GUIHandler.getInstance().isLocked(playerIn, worldIn, pos))
+            if (playerIn.isSneaking() || GUIHandler.isLocked(playerIn, worldIn, pos))
             {
                 boolean isPlaying = canPlayOrStopMusic(worldIn, pos, state, false);
                 setPlayingState(worldIn, pos, state, isPlaying);
