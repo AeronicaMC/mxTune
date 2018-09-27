@@ -264,7 +264,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
 
     /**
      * Spawns the block's drops in the world. By the time this is called the Block has possibly been set to air via
-     * Block.removedByPlayer
+     * Block.removedByPlayer. If the te has a custom name the returned itemBlock will receive the custom name.
      */
     @Override
     public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack)
