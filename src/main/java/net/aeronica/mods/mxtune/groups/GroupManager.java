@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -31,17 +31,14 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.HashSet;
@@ -50,7 +47,6 @@ import java.util.Set;
 
 // Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
 // UUID does not work on the client.
-@Mod.EventBusSubscriber
 public class GroupManager
 {
     
@@ -331,10 +327,10 @@ public class GroupManager
     /**
      * Search all groups for the memberID.
      * 
-     * @param memberID
+     * @param memberID member to search for
      * @return true if the memberID is found.
      */
-    protected static boolean groupsHaveMember(int memberID)
+    private static boolean groupsHaveMember(int memberID)
     {
         if (groups != null && !groups.isEmpty())
         {
@@ -398,8 +394,8 @@ public class GroupManager
     }
 
     private static int interactFlag = 0;
-    /** Forge and FML Event Handling */
-    /**
+    /* Forge and FML Event Handling */
+    /*
      * TODO: Add a yes/no gui to ask user if that want to join. Indicate if a
      * party is full, or if it requires a password.
      * @param event
@@ -462,9 +458,6 @@ public class GroupManager
         }
     }
 
-    // @SubscribeEvent
-    public void onLivingAttackEvent(LivingAttackEvent event) {}
-
     /** FML Gaming Events */
     @SubscribeEvent
     public void onJoinWorld(EntityJoinWorldEvent event)
@@ -487,9 +480,6 @@ public class GroupManager
     {
         removeMember(event.player.getEntityId());
     }
-
-    // @SubscribeEvent
-    public void onPlayerRespawnEvent(PlayerRespawnEvent event) {}
 
     @SubscribeEvent
     public void onPlayerChangedDimensionEvent(PlayerChangedDimensionEvent event)
