@@ -232,16 +232,16 @@ public class ClientAudio
                     notify(playID);
                 else if (!audioData.isClientPlayer() && audioData.getBlockPos() != null)
                     notify(playID, true);
-            }
 
-            try
-            {
-                audioData.getAudioStream().close();
-            } catch (IOException e)
-            {
-                ModLogger.error(e);
+                try
+                {
+                    if (audioData.getAudioStream() != null)
+                        audioData.getAudioStream().close();
+                } catch (IOException e)
+                {
+                    ModLogger.error(e);
+                }
             }
-
             playIDAudioData.remove(playID);
         }
     }
@@ -400,21 +400,7 @@ public class ClientAudio
     {
         if (sndSystem != null && playIDAudioData != null)
         {
-            for (ConcurrentHashMap.Entry<Integer, AudioData> entry : playIDAudioData.entrySet())
-            {
-                AudioData audioData = entry.getValue();
-                if ((audioData.getStatus().equals(Status.ERROR) || audioData.getStatus().equals(Status.DONE)) &&
-                        !handler.isSoundPlaying(audioData.getiSound()))
-                {
-                    playIDAudioData.remove(entry.getKey());
-                    if (audioData.isClientPlayer())
-                        notify(entry.getValue().getPlayID());
-                    else if (!audioData.isClientPlayer() && audioData.getBlockPos() != null)
-                        notify(entry.getValue().getPlayID(), true);
-
-                    ModLogger.info("updateClientAudio: Status:Error or Done!");
-                }
-            }
+            audioStatusNotificationProcessing();
             if(isVanillaMusicPaused() && playIDAudioData.mappingCount() == 0)
             {
                 resumeVanillaMusic();
@@ -433,6 +419,25 @@ public class ClientAudio
                     playIDAudioData.remove(entry.getKey());
                     ModLogger.info("updateClientAudio: Active playID removed");
                 }
+            }
+        }
+    }
+
+    private static void audioStatusNotificationProcessing()
+    {
+        for (ConcurrentHashMap.Entry<Integer, AudioData> entry : playIDAudioData.entrySet())
+        {
+            AudioData audioData = entry.getValue();
+            if ((audioData.getStatus().equals(Status.ERROR) || audioData.getStatus().equals(Status.DONE)) &&
+                    !handler.isSoundPlaying(audioData.getiSound()))
+            {
+                playIDAudioData.remove(entry.getKey());
+                if (audioData.isClientPlayer())
+                    notify(entry.getValue().getPlayID());
+                else if (!audioData.isClientPlayer() && audioData.getBlockPos() != null)
+                    notify(entry.getValue().getPlayID(), true);
+
+                ModLogger.info("updateClientAudio: Status:Error or Done!");
             }
         }
     }
@@ -537,21 +542,19 @@ public class ClientAudio
     @SubscribeEvent
     public static void PlayStreamingSourceEvent(PlayStreamingSourceEvent e)
     {
-        if (e.getSound().getSoundLocation().equals(ModSoundEvents.PCM_PROXY.getSoundName())) {
-            if (ClientAudio.peekPlayIDQueue03() != null)
-            {
-                Integer playID = ClientAudio.pollPlayIDQueue03();
-                ClientAudio.setUuid(playID, e.getUuid());
-                ClientAudio.setiSound(playID, e.getSound());
-                ModLogger.info("ClientAudio PlayStreamingSourceEvent: uuid: %s, ISound: %s", e.getUuid(), e.getSound());
-            }
+        if (e.getSound().getSoundLocation().equals(ModSoundEvents.PCM_PROXY.getSoundName()) &&
+                ClientAudio.peekPlayIDQueue03() != null)
+        {
+            Integer playID = ClientAudio.pollPlayIDQueue03();
+            ClientAudio.setUuid(playID, e.getUuid());
+            ClientAudio.setiSound(playID, e.getSound());
+            ModLogger.info("ClientAudio PlayStreamingSourceEvent: uuid: %s, ISound: %s", e.getUuid(), e.getSound());
         }
     }
 
     /*
      * This section Poached from Dynamic Surroundings
      */
-
     private static void alErrorCheck() {
         final int error = AL10.alGetError();
         if (error != AL10.AL_NO_ERROR)

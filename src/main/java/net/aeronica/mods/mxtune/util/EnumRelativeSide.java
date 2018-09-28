@@ -48,7 +48,7 @@ public enum EnumRelativeSide
         return this.name;
     }
 
-    public static final EnumRelativeSide[] ENUM_RELATIVE_SIDES = new EnumRelativeSide[]{
+    private static final EnumRelativeSide[] ENUM_RELATIVE_SIDES = new EnumRelativeSide[]{
             FRONT, LEFT, BACK, RIGHT,
             RIGHT, FRONT, LEFT, BACK,
             BACK, RIGHT, FRONT, LEFT,
