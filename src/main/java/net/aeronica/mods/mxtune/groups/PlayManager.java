@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -36,28 +36,24 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-/**
+/*
  * The SERVER side class for managing playing
  * FIXME: Refactor this class along with GROUPS and GroupManager and the associated packet messages
  * @author Paul Boese aka Aeronica
  *
  */
-public enum PlayManager
+public class PlayManager
 {
+    private static final Map<Integer, String> membersMML = new HashMap<>();
+    private static final HashMap<Integer, Integer> membersQueuedStatus = new HashMap<>();
+    private static final HashMap<Integer, Integer> membersPlayID = new HashMap<>();
+    private static final Set<Integer> activePlayIDs = Sets.newHashSet();
+    private static int uniquePlayID = 1;
     
-    INSTANCE;
-
-    static Map<Integer, String> membersMML = new HashMap<>();
-    static HashMap<Integer, Integer> membersQueuedStatus = new HashMap<>();
-    static HashMap<Integer, Integer> membersPlayID = new HashMap<>();
-    static Set<Integer> activePlayIDs = Sets.newHashSet();
-    static int uniquePlayID = 1;
-    
-    /**
+    /*
      * Play ID's 1 to Integer.MAX, -1 for invalid, 0 for initialization only, null if not set.
      * @return a unique positive play id
      */
@@ -76,7 +72,7 @@ public enum PlayManager
 
     /**
      * For playing music from an Item
-     * @param playerIn
+     * @param playerIn who is playing
      * @return a unique play id
      */
     public static Integer playMusic(EntityPlayer playerIn)
@@ -86,7 +82,7 @@ public enum PlayManager
  
     /**
      * For playing music from a block/placed instrument 
-     * @param playerIn
+     * @param playerIn who is playing
      * @param pos position of block instrument
      * @return a unique play id
      */
@@ -97,7 +93,7 @@ public enum PlayManager
 
     /**
      * For playing music from a block, e.g. Band Amp.
-     * @param worldIn
+     * @param worldIn the world of course
      * @param pos position of block instrument
      * @return a unique play id
      */
@@ -124,7 +120,7 @@ public enum PlayManager
 
     /**
      * For playing music
-     * @param playerIn
+     * @param playerIn who is playing
      * @param pos position of block instrument
      * @param isPlaced true is this is a block instrument
      * @return a unique play id or null if unable to play
@@ -136,8 +132,12 @@ public enum PlayManager
         ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(pos, playerIn, isPlaced);
         if (!sheetMusic.isEmpty())
         {
-            NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
-            if (contents != null)
+            NBTTagCompound contents = null;
+            if (sheetMusic.getTagCompound() != null)
+            {
+                contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
+            }
+            if (contents != null && !contents.isEmpty())
             {
                 Integer playerID = playerIn.getEntityId();
                 String title = sheetMusic.getDisplayName();
@@ -149,15 +149,16 @@ public enum PlayManager
 
                 if (GroupManager.getMembersGroupID(playerID) == null)
                 {
-                    /** Solo Play */
+                    /* Solo Play */
                     ModLogger.debug("playMusic playSolo");
                     return playSolo(playerIn, mml, playerID);
-                } else
+                }
+                else
                 {
-                    /** Jam Play */
+                    /* Jam Play */
                     ModLogger.debug("playMusic queueJam");
                     return queueJam(playerIn, mml, playerID);
-                }                
+                }
             }
         }
         return null;
@@ -167,7 +168,7 @@ public enum PlayManager
     {
         Integer playID = getNextPlayID();
         queue(playID, playerID, mml);
-        String musicText = getMML(playID);
+        String musicText = getMappedMML(playID);
         activePlayIDs.add(playID);
         syncStatus();
         PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playID, musicText);
@@ -178,13 +179,13 @@ public enum PlayManager
     private static Integer queueJam(EntityPlayer playerIn, String mml, Integer playerID)
     {
         Integer groupsPlayID = getGroupsPlayID(playerID);
-        /** Queue members parts */
+        /* Queue members parts */
         queue(groupsPlayID, playerID, mml);
         syncStatus();
-        /** Only send the groups MML when the leader starts the JAM */
+        /* Only send the groups MML when the leader starts the JAM */
         if (GroupManager.isLeader(playerID))
         {
-            String musicText = getMML(groupsPlayID);
+            String musicText = getMappedMML(groupsPlayID);
             Vec3d pos = getMedianPos(groupsPlayID);
             activePlayIDs.add(groupsPlayID);
             syncStatus();
@@ -199,81 +200,73 @@ public enum PlayManager
      * Reset the groups PlayID to null.
      * It's only needed for queuing the MML parts and should be used when the leader kicks off the session.
      * 
-     * @param membersID
+     * @param membersID of some group
      */
     private static void resetGroupsPlayID(Integer membersID)
     {
-        GroupManager.Group g = GroupManager.getMembersGroup(membersID);
-        if (g!=null)
-            g.playID = null;
+        GroupManager.Group membersGroup = GroupManager.getMembersGroup(membersID);
+        if (membersGroup!=null)
+            membersGroup.playID = null;
     }
     
     /**
      * Generate a new PlayID if this is the first member to queue, or return the existing one.
      * This assumes the member is already been validated as a member of the group
      * 
-     * @param membersID
+     * @param membersID of some group
      * @return a unique playID or null if something went wrong
      */
     private static Integer getGroupsPlayID(Integer membersID)
     {
-        GroupManager.Group g = GroupManager.getMembersGroup(membersID);
+        GroupManager.Group membersGroup = GroupManager.getMembersGroup(membersID);
         Integer playID = null;
-        if (g!=null)
-            if (g.playID == null)
-                playID = g.playID = getNextPlayID();
+        if (membersGroup!=null)
+            if (membersGroup.playID == null)
+                playID = membersGroup.playID = getNextPlayID();
             else
-                playID = g.playID;
+                playID = membersGroup.playID;
         return playID;
     }
 
-    public static Integer getPlayersPlayID(Integer entityID)
+    private static Integer getPlayersPlayID(Integer entityID)
     {
-        return (membersPlayID != null && !membersPlayID.isEmpty()) ? membersPlayID.get(entityID) : null;
+        return (entityID != null) ? membersPlayID.get(entityID) : null;
     }
     
-    public static boolean isPlayerPlaying(Integer entityID)
+    private static boolean isPlayerPlaying(Integer entityID)
     {
-        return (membersPlayID != null && !membersPlayID.isEmpty()) ? membersPlayID.containsKey(entityID) : false;
+        return entityID != null && membersPlayID.containsKey(entityID);
     }
     
     public static  <T extends EntityLivingBase> boolean isPlayerPlaying(T entityLivingIn)
     {
         return isPlayerPlaying(entityLivingIn.getEntityId());
     }
-    
-    public static boolean isActivePlayID(Integer playID) { return activePlayIDs != null && activePlayIDs.contains(playID); }
+
+    public static boolean isActivePlayID(Integer playID) { return playID != null && activePlayIDs.contains(playID); }
     
     public static boolean hasPlayID(Integer playID)
     {
-        return (membersPlayID != null && !membersPlayID.isEmpty()) && membersPlayID.containsValue(playID);
+        return playID != null && membersPlayID.containsValue(playID);
     }
     
-    public static Set<Integer> getMembersByPlayID(Integer playID) 
+    private static Set<Integer> getMembersByPlayID(Integer playID)
     {
         Set<Integer> members = Sets.newHashSet();
-        if (membersPlayID != null)
-        {
-            for(Integer someMember: membersPlayID.keySet())
-            {
-                if(membersPlayID.get(someMember).equals(playID))
-                {
+        if (playID != null)
+            for (Integer someMember : membersPlayID.keySet())
+                if (membersPlayID.get(someMember).equals(playID))
                     members.add(someMember);
-                }
-            }
-        }
+
         return members;
     }
     
     public static <T extends EntityLivingBase> void playingEnded(T entityLivingIn, Integer playID)
     {
         if (isPlayerPlaying(entityLivingIn)){
-            if (membersPlayID != null) membersPlayID.remove(entityLivingIn.getEntityId());
-            if (membersQueuedStatus != null && membersQueuedStatus.containsKey(entityLivingIn.getEntityId()))
-            {
-                membersQueuedStatus.remove(entityLivingIn.getEntityId());
-            }
-            dequeuePlayID(playID);
+            membersPlayID.remove(entityLivingIn.getEntityId());
+            membersQueuedStatus.remove(entityLivingIn.getEntityId());
+            removeActivePlayID(playID);
             syncStatus();
         }
     }
@@ -283,7 +276,7 @@ public enum PlayManager
         stopPlayingPlayer(entityLivingIn.getEntityId());
     }
     
-    public static void stopPlayingPlayer(Integer entityID)
+    private static void stopPlayingPlayer(Integer entityID)
     {
         if (isPlayerPlaying(entityID))
         {
@@ -296,21 +289,18 @@ public enum PlayManager
         Set<Integer> memberSet = getMembersByPlayID(playID);
         for(Integer member: memberSet)
         {
-            if (membersPlayID != null && membersPlayID.containsKey(member))
+            if (membersPlayID.containsKey(member))
             {
                 membersPlayID.remove(member, playID);
             }
-            if (membersQueuedStatus != null && membersQueuedStatus.containsKey(member))
-            {
-                membersQueuedStatus.remove(member);
-            }
+            membersQueuedStatus.remove(member);
         }
         PacketDispatcher.sendToAll(new StopPlayMessage(playID));
-        dequeuePlayID(playID);
+        removeActivePlayID(playID);
         syncStatus();        
     }
     
-    private static void dequeuePlayID(Integer playID) {if (activePlayIDs != null) activePlayIDs.remove(playID);}
+    private static void removeActivePlayID(Integer playID) {if (playID != null && !activePlayIDs.isEmpty()) activePlayIDs.remove(playID);}
     
     private static int getPackedPreset(BlockPos pos, EntityPlayer playerIn, boolean isPlaced)
     {
@@ -332,11 +322,11 @@ public enum PlayManager
     
     private static void syncStatus()
     {
-        /** server side */
+        /* server side */
         GROUPS.setClientPlayStatuses(GROUPS.serializeIntIntMap(membersQueuedStatus));
         GROUPS.setPlayIDMembers(GROUPS.serializeIntIntMap(membersPlayID));
         GROUPS.setActivePlayIDs(GROUPS.serializeIntegerSet(activePlayIDs));
-        /** client side */
+        /* client side */
         PacketDispatcher.sendToAll(new SyncStatusMessage(GROUPS.serializeIntIntMap(membersQueuedStatus), GROUPS.serializeIntIntMap(membersPlayID), GROUPS.serializeIntegerSet(activePlayIDs)));
     }
 
@@ -357,23 +347,20 @@ public enum PlayManager
      * Returns a string in Map ready format. e.g.
      * "playerId1=MML@...;|playerId2=MML@...|playerId3=MML@..."
      * 
-     * @param playID
+     * @param playID play ID to map
      * @return string in Map ready format.
      */
-    private static String getMML(Integer playID)
+    private static String getMappedMML(Integer playID)
     {
-        StringBuilder buildMML = new StringBuilder("");
+        StringBuilder buildMappedMML = new StringBuilder();
         try
         {
             Set<Integer> keys = membersPlayID.keySet();
-            Iterator<Integer> it = keys.iterator();
-            while (it.hasNext())
+            for (Integer member : keys)
             {
-                Integer member = (Integer) it.next();
-                Integer memberPlayID = membersPlayID.get(member);
-                if (memberPlayID.equals(playID))
+                if (membersPlayID.get(member).equals(playID))
                 {
-                    buildMML.append(member).append("=").append(membersMML.get(member)).append("|");
+                    buildMappedMML.append(member).append("=").append(membersMML.get(member)).append("|");
                     membersMML.remove(member);
                     setPlaying(member);
                 }
@@ -382,15 +369,14 @@ public enum PlayManager
         {
             ModLogger.error(e);
         }
-        return buildMML.toString();
+        return buildMappedMML.toString();
     }
 
     /**
-     * 
-     * @param playID
-     * @return Vec3d
+     * @param playID entity id of the player
+     * @return Vec3d median position for the player
      */
-    public static Vec3d getMedianPos(int playID)
+    private static Vec3d getMedianPos(int playID)
     {
         double x, y, z;
         x = y = z = 0;
@@ -420,25 +406,22 @@ public enum PlayManager
      * Called by server tick once every two seconds to calculate the distance between
      * group members and to stop the playID if the distance exceeds stopDistane.
      * 
-     * @param stopDistance
+     * @param stopDistance exceeding the stop distance stops the music
      */
     public static void testStopDistance(double stopDistance)
     {
-        if (activePlayIDs != null && !activePlayIDs.isEmpty())
+        for (Integer playID : activePlayIDs)
         {
-            for(Integer playID: activePlayIDs)
+            if (getMembersByPlayID(playID) != null && !getMembersByPlayID(playID).isEmpty())
             {
-                if (getMembersByPlayID(playID) != null && !getMembersByPlayID(playID).isEmpty())
+                for (Integer memberA : getMembersByPlayID(playID))
                 {
-                    for (Integer memberA: getMembersByPlayID(playID))
+                    for (Integer memberB : getMembersByPlayID(playID))
                     {
-                        for (Integer memberB:  getMembersByPlayID(playID) )
+                        if (!memberA.equals(memberB))
                         {
-                            if (memberA != memberB)
-                            {
-                                double distance = getMemberVector(memberA).distanceTo(getMemberVector(memberB));
-                               if (distance > stopDistance) PlayManager.stopPlayID(playID);
-                            }
+                            double distance = getMemberVector(memberA).distanceTo(getMemberVector(memberB));
+                            if (distance > stopDistance) PlayManager.stopPlayID(playID);
                         }
                     }
                 }
@@ -458,30 +441,26 @@ public enum PlayManager
     }
     
     /**
-     * Used by the GroupMananger to purge unused/aborted Jam data
-     * 
-     * @param memberID
+     * Used by the GroupManager to purge unused/aborted Jam data
+     *
+     * @param memberID to be purged
      */
-    public static void dequeueMember(Integer memberID)
+    static void purgeMember(Integer memberID)
     {
-        Integer playID =  getPlayersPlayID(memberID);
-        if (activePlayIDs != null && (membersPlayID != null && !membersPlayID.isEmpty() && membersPlayID.containsKey(memberID)))
+        Integer playID = getPlayersPlayID(memberID);
+        if (memberID != null)
         {
-            activePlayIDs.remove(membersPlayID.get(memberID));
-        }
-        if (membersMML != null && !membersMML.isEmpty() && membersMML.containsKey(memberID))
-        {
+            if (membersPlayID.containsKey(memberID))
+                activePlayIDs.remove(membersPlayID.get(memberID));
+
             membersMML.remove(memberID);
-        }
-        if (membersPlayID != null && !membersPlayID.isEmpty() && membersPlayID.containsKey(memberID))
-        {
             membersPlayID.remove(memberID);
-        }
-        if (membersQueuedStatus != null && !membersQueuedStatus.isEmpty() && membersQueuedStatus.containsKey(memberID))
-        {
-            membersQueuedStatus.remove(memberID);
-            stopPlayID(playID);
+
+            if (membersQueuedStatus.containsKey(memberID))
+            {
+                membersQueuedStatus.remove(memberID);
+                stopPlayID(playID);
+            }
         }
     }
-    
 }

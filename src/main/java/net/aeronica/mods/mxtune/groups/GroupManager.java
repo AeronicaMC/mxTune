@@ -184,7 +184,7 @@ public class GroupManager
     public static void removeMember(int memberID)
     {
         log("removeMember " + memberID);
-        PlayManager.dequeueMember(memberID);
+        PlayManager.purgeMember(memberID);
         if (!groups.isEmpty())
         {
             Group theGroup;
