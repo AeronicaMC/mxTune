@@ -16,64 +16,54 @@
  */
 package net.aeronica.mods.mxtune.proxy;
 
+import net.aeronica.mods.mxtune.groups.GroupManager;
+import net.aeronica.mods.mxtune.handler.CommonEventHandler;
+import net.aeronica.mods.mxtune.init.ModEntities;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.server.FMLServerHandler;
 
-public class ServerProxy extends CommonProxy
+public class ServerProxy
 {
+    public void preInit() {}
+
+    public void init() {}
     
-    @Override
-    public void preInit(FMLPreInitializationEvent event) {}
+    public void postInit() {}
 
-    @Override
-    public void init(FMLInitializationEvent event) {}
+    public void initEntities() {ModEntities.init();}
 
-    @Override
-    public void postInit(FMLPostInitializationEvent event) {}
-
-    @Override
     public Side getPhysicalSide() {return Side.SERVER;}
 
-    @Override
     public Side getEffectiveSide() {return getPhysicalSide();}
 
-    @Override
     public EntityPlayer getClientPlayer() {return null;}
 
-    @Override
-    public Minecraft getMinecraft() {return Minecraft.getMinecraft();}
+    public Minecraft getMinecraft() {return null;}
 
-    @Override
     public World getClientWorld() {return null;}
 
-    @Override
-    public World getWorldByDimensionId(int dimension)
-    {
-        return FMLServerHandler.instance().getServer().getWorld(dimension);
-    }
-
-    @Override
     public void spawnMusicParticles(EntityPlayer player)
     {
     }
-
-    @Override
+    
     public void registerEventHandlers()
     {
-        super.registerEventHandlers();
+        MinecraftForge.EVENT_BUS.register(CommonEventHandler.INSTANCE);
+        MinecraftForge.EVENT_BUS.register(GroupManager.INSTANCE);
     }
 
-    @Override
-    public void replacePlayerModel() {}
-    
-    @Override
+    public void registerKeyBindings() {}
+
+    public void initMML() {}
+
+    public void registerHUD() {}
+
     public boolean playerIsInCreativeMode(EntityPlayer player)
     {
         if (player instanceof EntityPlayerMP)
@@ -83,4 +73,8 @@ public class ServerProxy extends CommonProxy
         }
         return false;
     }
+
+    public EntityPlayer getPlayerEntity(MessageContext ctx) {return ctx.getServerHandler().player;}
+
+    public IThreadListener getThreadFromContext(MessageContext ctx) {return ctx.getServerHandler().player.getServer();}
 }

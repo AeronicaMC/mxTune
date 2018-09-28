@@ -21,7 +21,7 @@ import net.aeronica.mods.mxtune.blocks.TileIdFixer;
 import net.aeronica.mods.mxtune.handler.GUIHandler;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.options.PlayerMusicOptionsCapability;
-import net.aeronica.mods.mxtune.proxy.IProxy;
+import net.aeronica.mods.mxtune.proxy.ServerProxy;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.MusicTab;
 import net.minecraft.creativetab.CreativeTabs;
@@ -54,7 +54,7 @@ public class MXTuneMain
     public static MXTuneMain instance;
 
     @SidedProxy(clientSide = "net.aeronica.mods.mxtune.proxy.ClientProxy", serverSide = "net.aeronica.mods.mxtune.proxy.ServerProxy")
-    public static IProxy proxy;
+    public static ServerProxy proxy;
 
     public static final CreativeTabs TAB_MUSIC = new MusicTab(CreativeTabs.getNextID(), MODNAME);
     
@@ -65,16 +65,15 @@ public class MXTuneMain
         ModCriteriaTriggers.init();
         PlayerMusicOptionsCapability.register();
         PacketDispatcher.registerPackets();
-        proxy.preInit(event);
+        proxy.preInit();
         proxy.registerEventHandlers();
         proxy.initEntities();
-        proxy.registerRenderers();
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event)
     {
-        proxy.init(event);
+        proxy.init();
         proxy.registerKeyBindings();
         proxy.initMML();
 
@@ -87,22 +86,21 @@ public class MXTuneMain
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event)
     {
-        proxy.postInit(event);
-        proxy.replacePlayerModel();
+        proxy.postInit();
         proxy.registerHUD();
     }
 
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
-        System.out.printf("*** [mxTune] Invalid fingerprint detected! ***\n");
+        System.out.print("*** [mxTune] Invalid fingerprint detected! ***\n\r");
     }
     
     /**
      * Prepend the name with the mod ID, suitable for ResourceLocations such as
      * textures.
      * 
-     * @param name
-     * @return eg "xyzmodid:xyzblockname"
+     * @param name resource name
+     * @return eg "xyzmodid:xyzblockname" domain:resource
      */
     public static String prependModID(String name)
     {

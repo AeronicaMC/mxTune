@@ -20,16 +20,13 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
-@Mod.EventBusSubscriber
 public class CommonEventHandler
 {
-    
     public static final CommonEventHandler INSTANCE = new CommonEventHandler();
     private CommonEventHandler() {}
     
@@ -52,5 +49,4 @@ public class CommonEventHandler
             PlayManager.testStopDistance(ModConfig.getGroupPlayAbortDistance());
         }
     }
-    
 }

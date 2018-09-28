@@ -21,45 +21,33 @@ import net.aeronica.mods.mxtune.handler.KeyHandler;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.IThreadListener;
-import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.client.config.GuiEditArray;
-import net.minecraftforge.fml.client.config.GuiEditArrayEntries;
-import net.minecraftforge.fml.client.config.IConfigElement;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 
-public class ClientProxy extends CommonProxy
+public class ClientProxy extends ServerProxy
 {
     
     @Override
-    public void preInit(FMLPreInitializationEvent event)
-    {
-        super.preInit(event);
-    }
+    public void preInit() {}
 
     @Override
-    public void init(FMLInitializationEvent event)
-    {
-        super.init(event);
-        
-    }
+    public void init() {}
 
     @Override
-    public void postInit(FMLPostInitializationEvent event)
+    public void postInit() {}
+
+    @Override
+    public void initEntities()
     {
-        super.postInit(event);
-        
+        super.initEntities();
     }
-    
+
     @Override
     public Side getPhysicalSide() {return Side.CLIENT;}
 
@@ -73,40 +61,13 @@ public class ClientProxy extends CommonProxy
     public EntityPlayer getClientPlayer() {return Minecraft.getMinecraft().player;}
 
     @Override
-    public World getClientWorld() {return Minecraft.getMinecraft().world;}
+    public WorldClient getClientWorld() {return Minecraft.getMinecraft().world;}
 
     @Override
     public void spawnMusicParticles(EntityPlayer player) {}
 
     @Override
-    public void initEntities()
-    {
-        super.initEntities();
-    }
-
-    @Override
-    public World getWorldByDimensionId(int dimension)
-    {
-        Side effectiveSide = FMLCommonHandler.instance().getEffectiveSide();
-        if (effectiveSide == Side.SERVER)
-        {
-            return FMLClientHandler.instance().getServer().getWorld(dimension);
-        } else
-        {
-            return getClientWorld();
-        }
-    }
-
-    @Override
-    public void registerEventHandlers()
-    {
-        super.registerEventHandlers();
-    }
-
-    @Override
-    public void registerRenderers()
-    {
-    }
+    public void registerEventHandlers() {super.registerEventHandlers();}
 
     @Override
     public void registerKeyBindings()
@@ -126,12 +87,6 @@ public class ClientProxy extends CommonProxy
         MinecraftForge.EVENT_BUS.register(GuiJamOverlay.getInstance());
     }
 
-    @Override
-    public void replacePlayerModel()
-    {
-        // ModelPlayerCustomized.replaceOldModel();
-    }
-    
     @Override
     public boolean playerIsInCreativeMode(EntityPlayer player)
     {
@@ -160,22 +115,4 @@ public class ClientProxy extends CommonProxy
     {
         return (ctx.side.isClient() ? this.getMinecraft() : super.getThreadFromContext(ctx));
     }
-
-    public static class EnabledRecipeEntry extends GuiEditArrayEntries.StringEntry
-    {
-
-        public EnabledRecipeEntry(GuiEditArray owningScreen, GuiEditArrayEntries owningEntryList, IConfigElement configElement, Object value)
-        {
-            super(owningScreen, owningEntryList, configElement, value);
-        }
-        
-        @Override
-        public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partial)
-        {
-//            Boolean OK = Arrays.asList(ModConfig.receipeDefaults).contains(textFieldValue.getText());
-//            textFieldValue.setTextColor((int) (OK ? 0x00FF00 : 0xFF0000));
-//            super.drawEntry(slotIndex, x, y, listWidth, slotHeight, mouseX, mouseY, isSelected, partial);
-        }
-    }
-    
 }
