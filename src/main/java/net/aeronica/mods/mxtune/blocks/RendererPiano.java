@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -41,18 +41,18 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
+import java.util.Objects;
+
 @SideOnly(Side.CLIENT)
 public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implements IReBakeModel
 {
-    double xMusicOffset = 0D, zMusicOffset = 0D;
-    EnumFacing facing = EnumFacing.NORTH;
-    double xRackOffset = 0D, zRackOffset = 0D;
-    double xBenchOffset = 0D, zBenchOffset = 0D;
+    private double xMusicOffset = 0D, zMusicOffset = 0D;
+    private EnumFacing facing = EnumFacing.NORTH;
+    private double xRackOffset = 0D, zRackOffset = 0D;
+    private double xBenchOffset = 0D, zBenchOffset = 0D;
     /** Ordering index for D-U-N-S-W-E */
-    float face[] = {0, 0, 90, 270, 180, 0, 0, 0};
-    private IModel rackModel;
+    private float face[] = {0, 0, 90, 270, 180, 0, 0, 0};
     private IBakedModel bakedRackModel;
-    private IModel benchModel;
     private IBakedModel bakedBenchModel;
 
     @Override
@@ -64,9 +64,10 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
     
     private IBakedModel getRackBakedModel()
     {
-        /** Since we cannot bake in preInit() we do lazy baking of the model as soon as we need it for rendering */
+        /* Since we cannot bake in preInit() we do lazy baking of the model as soon as we need it for rendering */
         if (bakedRackModel == null)
         {
+            IModel rackModel;
             try
             {
                 rackModel = ModelLoaderRegistry.getModel(new ResourceLocation(MXTuneMain.MODID, "block/piano_rack"));
@@ -74,14 +75,9 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
             {
                 throw new MXTuneRuntimeException(e);
             }
-            bakedRackModel = rackModel.bake(TRSRTransformation.identity(), DefaultVertexFormats.BLOCK, new Function<ResourceLocation, TextureAtlasSprite>()
-            {
-                @Override
-                public TextureAtlasSprite apply(ResourceLocation location)
-                {
-                    return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString());
-                }
-            });
+            bakedRackModel = rackModel.bake(TRSRTransformation.identity(), DefaultVertexFormats.BLOCK,
+                                            (Function<ResourceLocation, TextureAtlasSprite>) location -> Minecraft.getMinecraft()
+                        .getTextureMapBlocks().getAtlasSprite(Objects.requireNonNull(location).toString()));
         }
         return bakedRackModel;
     }
@@ -90,6 +86,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
     {
         if (bakedBenchModel == null)
         {
+            IModel benchModel;
             try
             {
                 benchModel = ModelLoaderRegistry.getModel(new ResourceLocation(MXTuneMain.MODID, "block/piano_bench"));
@@ -97,14 +94,9 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
             {
                 throw new MXTuneRuntimeException(e);
             }
-            bakedBenchModel = benchModel.bake(TRSRTransformation.identity(), DefaultVertexFormats.BLOCK, new Function<ResourceLocation, TextureAtlasSprite>()
-            {
-                @Override
-                public TextureAtlasSprite apply(ResourceLocation location)
-                {
-                    return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString());
-                }
-            });
+            bakedBenchModel = benchModel.bake(TRSRTransformation.identity(), DefaultVertexFormats.BLOCK,
+                                              (Function<ResourceLocation, TextureAtlasSprite>) location -> Minecraft.getMinecraft()
+                       .getTextureMapBlocks().getAtlasSprite(Objects.requireNonNull(location).toString()));
         }
         return bakedBenchModel;
     }
@@ -112,17 +104,17 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
     @Override
     public void render(TilePiano te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
     {
-        /** Translations for the sheet music, music rack and bench */
+        /* Translations for the sheet music, music rack and bench */
         facing = te.getFacing();
         if (facing.equals(EnumFacing.NORTH))
         {
-            /** Sheet Music (Item) translations */
+            /* Sheet Music (Item) translations */
             xMusicOffset = 0.0D;
             zMusicOffset = -0.5D;
-            /** Rack (Block) translations */
+            /* Rack (Block) translations */
             xRackOffset = 0.5D;
             zRackOffset = 0D;
-            /** Bench (Block) translations */
+            /* Bench (Block) translations */
             xBenchOffset = 1.375D;
             zBenchOffset = 0D;
         } else if (facing.equals(EnumFacing.SOUTH))
@@ -155,7 +147,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
         GlStateManager.pushAttrib();
         GlStateManager.pushMatrix();
 
-        /** Translate to the location of our tile entity */
+        /* Translate to the location of our tile entity */
         GlStateManager.disableRescaleNormal();
 
         GlStateManager.pushMatrix();
@@ -194,7 +186,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
         }
 
         World world = te.getWorld();
-        /** Translate back to local view coordinates so that we can do the actual rendering here */
+        /* Translate back to local view coordinates so that we can do the actual rendering here */
         GlStateManager.translate(-te.getPos().getX() - .5, -te.getPos().getY(), -te.getPos().getZ() - .5);
 
         Tessellator tessellator = Tessellator.getInstance();
@@ -224,7 +216,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
         }
 
         World world = te.getWorld();
-        /** Translate back to local view coordinates so that we can do the actual rendering here */
+        /* Translate back to local view coordinates so that we can do the actual rendering here */
         GlStateManager.translate(-te.getPos().getX() - .5, -te.getPos().getY(), -te.getPos().getZ() - .5);
 
         Tessellator tessellator = Tessellator.getInstance();
@@ -247,7 +239,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
             GlStateManager.enableLighting();
             GlStateManager.pushMatrix();
 
-            /** Translate to the center of the block and .9 points higher */
+            /* Translate to the center of the block and .9 points higher */
             GlStateManager.translate(.5, 0, .5);
             GlStateManager.rotate(face[facing.getIndex()], 0, 1, 0);
             GlStateManager.scale(.4f, .4f, .4f);
@@ -257,5 +249,4 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
             GlStateManager.popMatrix();
         }
     }
-
 }

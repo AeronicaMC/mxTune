@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese aka Aeronica
  *
@@ -30,7 +30,7 @@ public class PlayStoppedMessage extends AbstractServerMessage<PlayStoppedMessage
     private int playID;
     private boolean isBlockEntity;
     
-    public PlayStoppedMessage() {/* Required by the PacketDispacher */}
+    public PlayStoppedMessage() {/* Required by the PacketDispatcher */}
     
     public PlayStoppedMessage(int playID)
     {

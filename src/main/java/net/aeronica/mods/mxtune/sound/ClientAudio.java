@@ -119,7 +119,7 @@ public class ClientAudio
         playIDAudioData = new ConcurrentHashMap<>();      
     }
 
-    private ClientAudio() { /* Nothing to do */ }
+    private ClientAudio() { /* NOP */ }
        
     private static void startThreadFactory()
     {
@@ -148,20 +148,10 @@ public class ClientAudio
     {
         return playIDQueue01.poll();
     }
-    
-    public static Integer peekPlayIDQueue01()
-    {
-        return playIDQueue01.peek();
-    }
 
     static Integer pollPlayIDQueue02()
     {
         return playIDQueue02.poll();
-    }
-    
-    public static Integer peekPlayIDQueue02()
-    {
-        return playIDQueue02.peek();
     }
 
     private static Integer pollPlayIDQueue03()
@@ -195,27 +185,15 @@ public class ClientAudio
         if (audioData != null)
             audioData.setUuid(uuid);
     }
-    
-    public static String getUuid(Integer playID)
-    {
-        AudioData audioData = playIDAudioData.get(playID);       
-        return audioData.getUuid();
-    }
 
-    private static synchronized void setiSound(Integer playID, ISound iSound)
+    private static synchronized void setISound(Integer playID, ISound iSound)
     {
         AudioData audioData = playIDAudioData.get(playID);
         if (audioData != null)
             audioData.setiSound(iSound);
     }
 
-    public static ISound getiSound(Integer playID)
-    {
-        AudioData audioData = playIDAudioData.get(playID);
-        return audioData.getiSound();
-    }
-
-    public static BlockPos getBlockPos(Integer playID)
+    private static BlockPos getBlockPos(Integer playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
         return audioData.getBlockPos();
@@ -229,9 +207,9 @@ public class ClientAudio
             if (audioData != null)
             {
                 if (audioData.isClientPlayer())
-                    notify(playID);
+                    notifyLivingEntity(playID);
                 else if (!audioData.isClientPlayer() && audioData.getBlockPos() != null)
-                    notify(playID, true);
+                    notifyBlockEntity(playID);
 
                 try
                 {
@@ -257,12 +235,6 @@ public class ClientAudio
         AudioData audioData = playIDAudioData.get(playID);
         if (audioData != null)
             audioData.setStatus(status);
-    }
-    
-    public static boolean isPlayIDAudioDataWaiting(Integer playID)
-    {
-        AudioData audioData = playIDAudioData.get(playID);
-        return audioData != null && audioData.getStatus() == Status.WAITING;
     }
     
     static boolean isPlayIDAudioDataError(Integer playID)
@@ -314,16 +286,16 @@ public class ClientAudio
         }
     }
 
-    private static void notify(Integer playID)
+    private static void notifyLivingEntity(Integer playID)
     {
         if (playID != null)
             PacketDispatcher.sendToServer(new PlayStoppedMessage(playID));
     }
 
-    private static void notify(Integer playID, boolean isBlockEntity)
+    private static void notifyBlockEntity(Integer playID)
     {
         if (playID != null)
-            PacketDispatcher.sendToServer(new PlayStoppedMessage(playID, isBlockEntity));
+            PacketDispatcher.sendToServer(new PlayStoppedMessage(playID, true));
     }
 
     public static void stop(Integer playID)
@@ -433,9 +405,9 @@ public class ClientAudio
             {
                 playIDAudioData.remove(entry.getKey());
                 if (audioData.isClientPlayer())
-                    notify(entry.getValue().getPlayID());
+                    notifyLivingEntity(entry.getValue().getPlayID());
                 else if (!audioData.isClientPlayer() && audioData.getBlockPos() != null)
-                    notify(entry.getValue().getPlayID(), true);
+                    notifyBlockEntity(entry.getValue().getPlayID());
 
                 ModLogger.info("updateClientAudio: Status:Error or Done!");
             }
@@ -547,7 +519,7 @@ public class ClientAudio
         {
             Integer playID = ClientAudio.pollPlayIDQueue03();
             ClientAudio.setUuid(playID, e.getUuid());
-            ClientAudio.setiSound(playID, e.getSound());
+            ClientAudio.setISound(playID, e.getSound());
             ModLogger.info("ClientAudio PlayStreamingSourceEvent: uuid: %s, ISound: %s", e.getUuid(), e.getSound());
         }
     }
