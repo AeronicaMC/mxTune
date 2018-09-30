@@ -107,7 +107,7 @@ public class GuiGroupJoin extends GuiScreen
         drawGuiBackground();
 
         /** draw "TITLE" at the top right */
-        String title = I18n.format("mxtune.gui.GuiGroupJoin.title", new Object[0]);
+        String title = I18n.format("mxtune.gui.GuiGroupJoin.title");
         int posX = guiLeft + xSize - fontRenderer.getStringWidth(title) - 12;
         int posY = guiTop + 12;
         fontRenderer.getStringWidth(title);

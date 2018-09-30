@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import scala.Char;
@@ -62,7 +63,7 @@ public class GuiInstrumentInventory extends GuiContainer {
 	 */
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		if (mc.player.getHeldItemMainhand() == null)
+		if (mc.player.getHeldItemMainhand().equals(ItemStack.EMPTY))
 			return;
 		String s = mc.player.getHeldItemMainhand().getDisplayName();
 		this.fontRenderer.drawString(s, this.xSize / 2 - this.fontRenderer.getStringWidth(s) / 2, 12, 4210752);
