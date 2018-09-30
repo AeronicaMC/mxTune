@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese aka Aeronica
  *
@@ -31,15 +31,15 @@ import javax.sound.midi.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("restriction")
 @SideOnly(Side.CLIENT)
 public enum MIDISystemUtil
 {
-
     ;
-    private static MidiDevice.Info[] midiDeviceInfo = null;
+    private static final String NO_SOUND_BANK = I18n.format("mxtune.msu.no_sound_bank_loaded");
     private static MidiDevice.Info bestSynthInfo = null;
     private static Synthesizer bestSynth = null;
     private static Soundbank mxTuneSoundBank = null;
@@ -47,29 +47,36 @@ public enum MIDISystemUtil
     private static boolean soundBankAvailable = false;
     private static boolean midiAvailable = false;
     private static int timesToWarn = 10;
-    private static List<TextComponentString> chatStatus = new ArrayList<>();
+    private static final List<TextComponentString> chatStatus = new ArrayList<>();
     private static final ResourceLocation SOUND_FONT = new ResourceLocation(MXTuneMain.MODID, "synth/mxtune.sf2");
+    private static final List<Instrument> instrumentCache = new ArrayList<>();
 
     public static void mxTuneInit()
     {
-        midiDeviceInfo = MidiSystem.getMidiDeviceInfo();
+        MidiDevice.Info[] midiDeviceInfo = MidiSystem.getMidiDeviceInfo();
         List<MidiDevice.Info> synthInfos = new ArrayList<>();
         MidiDevice device = null;
         int maxPolyphony = 0;
         Synthesizer testSynth = null;
         chatStatus.clear();
-           
-        for (int i = 0; i < midiDeviceInfo.length; i++) {
-            try {
-                device = MidiSystem.getMidiDevice(midiDeviceInfo[i]);
-            } catch (MidiUnavailableException e) {
+
+        for (MidiDevice.Info aMidiDeviceInfo : midiDeviceInfo)
+        {
+            try
+            {
+                device = MidiSystem.getMidiDevice(aMidiDeviceInfo);
+            } catch (MidiUnavailableException e)
+            {
                 ModLogger.error(e);
                 midiAvailable = false;
-            } finally {
-                device.close();
+            } finally
+            {
+                if (device != null)
+                    device.close();
             }
-            if (device instanceof AudioSynthesizer) {
-                synthInfos.add(midiDeviceInfo[i]);
+            if (device instanceof AudioSynthesizer)
+            {
+                synthInfos.add(aMidiDeviceInfo);
                 synthAvailable = true;
             }
         }
@@ -89,7 +96,7 @@ public enum MIDISystemUtil
             }
             finally
             {
-                if (synthAvailable)
+                if (synthAvailable && testSynth != null)
                 {
                     if (testSynth.getMaxPolyphony() > maxPolyphony)
                     {
@@ -98,7 +105,8 @@ public enum MIDISystemUtil
                         bestSynth =  testSynth;
                     }
                 }
-                testSynth.close();
+                if (testSynth != null)
+                    testSynth.close();
             }
         }
         if (bestSynth != null && synthAvailable)
@@ -115,11 +123,8 @@ public enum MIDISystemUtil
             {
                 Instrument[] inst = mxTuneSoundBank.getInstruments();
 
-                /** This is workaround for a java.sound.midi system bug */
-                if (mxTuneSoundBank.getName().isEmpty())
-                    soundBankAvailable = false;
-                else
-                    soundBankAvailable = true;
+                /* This is workaround for a java.sound.midi system bug */
+                soundBankAvailable = !mxTuneSoundBank.getName().isEmpty();
                 ModLogger.info("--- " + (mxTuneSoundBank.getName().isEmpty()? "*No Name*" : mxTuneSoundBank.getName() ) + " ---");
                 ModLogger.info("Number of instruments: " + inst.length);
                 for (Instrument i: inst) ModLogger.info("(%5d, %3d) %s", i.getPatch().getBank(), i.getPatch().getProgram(), i.getName());
@@ -148,6 +153,7 @@ public enum MIDISystemUtil
 
             midiAvailable = false;
         }
+        initInstrumentCache();
     }
     
     private static void addStatus(TextComponentString status)
@@ -166,7 +172,7 @@ public enum MIDISystemUtil
     
     public static void onPlayerLoggedInModStatus(EntityPlayer playerIn)
     {
-        if (ModConfig.hideWelcomeStatusMessage() == false)
+        if (!ModConfig.hideWelcomeStatusMessage())
             for (TextComponentString tcs: chatStatus) {playerIn.sendMessage(tcs);}
     }
     
@@ -181,5 +187,44 @@ public enum MIDISystemUtil
     {
         return mxTuneSoundBank;
     }
-    
+
+    private static NullInstrument getNullInstrument()
+    {
+        return new NullInstrument(null, new Patch(0, 0), NO_SOUND_BANK, NullClass.class);
+    }
+
+    private class NullClass
+    {
+        /* empty class */
+    }
+
+    /* Load MIDI instruments */
+    private static void initInstrumentCache()
+    {
+        if (midiUnavailable() || mxTuneSoundBank == null)
+            instrumentCache.add(getNullInstrument());
+        else
+            Collections.addAll(instrumentCache, mxTuneSoundBank.getInstruments());
+    }
+
+    public static List<Instrument> getInstrumentCacheCopy()
+    {
+        return new ArrayList<>(instrumentCache);
+    }
+
+    // A hack is hack is a hack
+    // TODO: revisit the Packed Preset concept and implementation
+    public static String getPatchNameKey(Patch patch)
+    {
+        String nameKey = "";
+        for (Instrument inst : instrumentCache)
+        {
+            if (inst.toString().contains("Drumkit:") && (inst.getPatch().getProgram() == patch.getProgram()))
+                return inst.getName();
+            else
+            if (((inst.getPatch().getBank() / 128) == patch.getBank()) && (inst.getPatch().getProgram() == patch.getProgram()))
+                return inst.getName();
+        }
+        return nameKey;
+    }
 }

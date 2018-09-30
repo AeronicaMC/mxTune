@@ -28,11 +28,11 @@ advancements.mxtune:music.play_all_string_inst.title=Twisting a Peg and Crossing
 advancements.mxtune:music.play_all_string_inst.description=Play All the Strings
 advancements.mxtune:music.play_all_wind_inst.title=Hyperventilated on the Edge
 advancements.mxtune:music.play_all_wind_inst.description=Played All the Pipes
-item.mxtune:block_piano.name=스피넷 피아노
-item.mxtune:item_musicpaper.name=악보 용지
-item.mxtune:item_musicpaper.help=MML을 입력하려면 마우스 오른쪽 버튼을 클릭하십시오
-item.mxtune:item_sheetmusic.name="음악 악보" - Should never be seen unless the Name is removed.
-item.mxtune:item_sheetmusic.help=오류 : MML을 찾을 수 없습니다!
+item.mxtune:spinet_piano.name=스피넷 피아노
+item.mxtune:music_paper.name=악보 용지
+item.mxtune:music_paper.help=MML을 입력하려면 마우스 오른쪽 버튼을 클릭하십시오
+item.mxtune:sheet_music.name="음악 악보" - Should never be seen unless the Name is removed.
+item.mxtune:sheet_music.help=오류 : MML을 찾을 수 없습니다!
 item.mxtune:instrument.lute.name=류트
 item.mxtune:instrument.ukulele.name=우쿨렐레
 item.mxtune:instrument.mandolin.name=만돌린
@@ -88,19 +88,15 @@ sf.mxtune.g.trumpet=트럼펫
 sf.mxtune.g.recorder=리코더
 sf.mxtune.p.stdset=표준 타악기 세트
 sf.mxtune.p.orchset=오케스트라 타악기 세트
-
 mxtune.instrumentInventory.empty=음악 악보가 없음
-
 soundCategory.mxtune=mxTune
 mxtune.subtitle.pcm-proxy=음악 소리
-
 config.mxtune:ctgy.general.tooltip=mxTune General Settings
 config.mxtune:ctgy.general=mxTune General
 config.mxtune:ctgy.client.tooltip=mxTune Client Settings
 config.mxtune:ctgy.client=mxTune Client
 config.mxtune:ctgy.recipes.tooltip=mxTune Recipe Settings
 config.mxtune:ctgy.recipes=mxTune Recipe
-
 config.mxtune:generalConfig=General Settings
 config.mxtune:generalConfig.tooltip=General Settings
 config.mxtune:listenerRange=Listener Range
@@ -119,15 +115,11 @@ config.mxtune:mmlLink=MML Site Link
 config.mxtune:mmlLink.tooltip=Enter a valid URL. Please test the URL thoroughly. If it is not a valid link it will appear RED in the MML 간단 편집기 dialog.
 config.mxtune:enabledRecipes=Enabled Recipes
 config.mxtune:enabledRecipes.tooltip=Remove a recipe to disable it. Alternately append _off. *** Requires MC Restart - Cannot be changed while IN-WORLD ***
-
 mxtune.key.openParty=열린 그룹
 mxtune.key.openMusicOptions=음악 옵션
-
 mxtune.gui.button.play=연주
 mxtune.gui.button.stop=중지
-
 mxtune.gui.GuiGroupJoin.title=그룹에 참가하실래요?
-
 mxtune.gui.musicOptions.title=mxTune Music Options
 mxtune.gui.musicOptions.label.whitelist=화이트리스트
 mxtune.gui.musicOptions.label.players=참가자
@@ -139,27 +131,21 @@ mxtune.gui.musicOptions.muteOption.blacklist=블랙리스트 침묵
 mxtune.gui.musicOptions.muteOption.whitelist=화이트리스트 허용
 mxtune.gui.musicOptions.muteOption.all=모두 침묵
 mxtune.gui.musicOptions.adjHud=HUD 위치
-
 mxtune.gui.hudAdjust.title=HUD 위치
 mxtune.gui.hudAdjust.size=HUD 크기
-
 mxtune.gui.musicPaperParse.title=MML 간단 편집기
-mxtune.gui.musicPaperParse.noSoundbank=사운드뱅크가 없음
 mxtune.gui.musicPaperParse.enterTitle=제목 입력!
 mxtune.gui.musicPaperParse.enterMML=MML을 클립 보드 형식으로 붙여 넣으십시오!
 mxtune.gui.musicPaperParse.labelInstruments=악기들
 mxtune.gui.musicPaperParse.labelTitleMML=제목 / MML@:
-
 mxtune.chat.msu.midiAvailable=음악을 연주할 준비가 되었습니다.
 mxtune.chat.msu.midiNotAvailable=미디 시스템 실패! 음악을 연주할 수 없어요!
 mxtune.chat.msu.suggestion.01=JVM 옵션의 메모리를 늘려보거나 다른 모드를 줄여서 용량을 확보해 보세요.
 mxtune.chat.msu.suggestion.02=사운드 폰트가 용량이 크다면 작은 것을 사용해 보세요.
-
+mxtune.msu.no_sound_bank_loaded=사운드뱅크가 없음
 mxtune.chat.gm.noJoinGroupWhenMuteAll=[모두 침묵] 상태라서 그룹에 참가할 수 없습니다.
 mxtune.chat.gm.noJoinGroupWhenPlayerIsMuted=%s 그룹이 침묵 상태라서 참가할 수 없습니다.
 mxtune.chat.gm.noSleepInJam=JAM 중에는 잘 수 없습니다.
-
 mxtune.chat.musicAndSound.masterVolumeOff=메인 볼륨이 꺼져 있어요! 연주 불가능!
 mxtune.chat.musicAndSound.playersVolumeOff=사용자 볼륨이 꺼져 있어요! 연주 불가능!
-
 entity.Villager.mxtune:musician=음악가

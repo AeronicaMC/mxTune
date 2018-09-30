@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright {2016} Paul Boese aka Aeronica
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,9 @@ import net.aeronica.libs.mml.core.MMLToMIDI;
 import net.aeronica.libs.mml.core.MMLUtil;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.sound.ClientAudio.Status;
+import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.minecraft.client.resources.I18n;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -34,31 +36,23 @@ import javax.sound.sampled.AudioInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 public class MML2PCM
 {
-    private byte[] mmlBuf = null;
-    private InputStream is;
-    private Map<Integer, String> playerMML = new HashMap<Integer, String>();
-    private Map<Integer, Integer> playerChannel = new HashMap<Integer, Integer>();
-
     /**
      * Solo play format "<playerName|groupID>=mml@...;"
      * 
      * Jam play format inserts with a space between each player=MML sequence
      * "<playername1>=MML@...abcd; <playername2>=MML@...efgh; <playername2>=MML@...efgh;"
      * 
-     * @param playID
-     * @param musicText
+     * @param playID the unique id of the play session
+     * @param musicText MML in mapped format
      * @return false if errors
      */
     public boolean process(int playID, String musicText)
     {
-        this.playerMML = GROUPS.deserializeIntStrMap(musicText);
+        Map<Integer, String> playerMML = GROUPS.deserializeIntStrMap(musicText);
         if (playerMML == null)
         {
             ModLogger.error("MML2PCM playerMML is null! Check for an issue with NBT, networking, threads. PlayID", playID, musicText);
@@ -67,20 +61,14 @@ public class MML2PCM
             ClientAudio.setPlayIDAudioDataStatus(playID, Status.ERROR);
             return false;
         }
-        /**
-         * Map players to channels and append all the players MML
-         */
-        Set<Integer> keys = playerMML.keySet();
-        Iterator<Integer> it = keys.iterator();
-        Integer ch = 0;
+
+        /* Append all the MML */
         StringBuilder mml = new StringBuilder();
-        while (it.hasNext())
-        {
-            Integer playerID = it.next();
-            playerChannel.put(playerID, ch);
-            ch++;
+        for (Integer playerID: playerMML.keySet())
             mml.append(playerMML.get(playerID));
-        }
+
+        /* US_ASCII characters only! */
+        byte[] mmlBuf;
         try
         {
             mmlBuf = mml.toString().getBytes("US-ASCII");
@@ -90,11 +78,11 @@ public class MML2PCM
             ClientAudio.setPlayIDAudioDataStatus(playID, Status.ERROR);
             return false;
         }
-        is = new java.io.ByteArrayInputStream(mmlBuf);
+        InputStream is = new java.io.ByteArrayInputStream(mmlBuf);
 
-        /** ANTLR4 MML Parser BEGIN */
+        /* ANTLR4 MML Parser BEGIN */
         MMLToMIDI mmlTrans = new MMLToMIDI();
-        ANTLRInputStream input = null;
+        ANTLRInputStream input;
 
         try
         {
@@ -108,19 +96,20 @@ public class MML2PCM
         MMLLexer lexer = new MMLLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         MMLParser parser = new MMLParser(tokens);
-        // parser.removeErrorListeners();
-        // parser.addErrorListener(new UnderlineListener());
         parser.setBuildParseTree(true);
         ParseTree tree = parser.band();
 
         ParseTreeWalker walker = new ParseTreeWalker();
         walker.walk(mmlTrans, tree);
-        /** ANTLR4 MML Parser END */
+        /* ANTLR4 MML Parser END */
 
+        /* Log used programs */
         for (int packedPreset: mmlTrans.getPackedPresets())
         {
             Patch patchPreset = MMLUtil.packetPreset2Patch(packedPreset);
-            ModLogger.info("MML2PCM preset: bank: %d, program %d", patchPreset.getBank(), patchPreset.getProgram());       
+            String name = I18n.format(MIDISystemUtil.getPatchNameKey(patchPreset));
+            ModLogger.info("MML2PCM preset: bank: %3d, program %3d, name %s", patchPreset.getBank(),
+                           patchPreset.getProgram(), name);
         }
       
         try
@@ -132,6 +121,7 @@ public class MML2PCM
         {
             ModLogger.error(e);
             ClientAudio.setPlayIDAudioDataStatus(playID, Status.ERROR);
+            ModLogger.error("MML2PCM process: MidiUnavailableException | InvalidMidiDataException | IOException", e);
             return false;
         }
         ClientAudio.setPlayIDAudioDataStatus(playID, Status.READY);

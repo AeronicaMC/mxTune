@@ -89,19 +89,15 @@ sf.mxtune.g.trumpet=Trumpet
 sf.mxtune.g.recorder=Recorder
 sf.mxtune.p.stdset=Standard Set
 sf.mxtune.p.orchset=Orchestra Set
-
 mxtune.instrumentInventory.empty=No Sheet Music Found
-
 soundCategory.mxtune=mxTune
 mxtune.subtitle.pcm-proxy=Music Plays
-
 config.mxtune:ctgy.general.tooltip=mxTune General Settings
 config.mxtune:ctgy.general=mxTune General
 config.mxtune:ctgy.client.tooltip=mxTune Client Settings
 config.mxtune:ctgy.client=mxTune Client
 config.mxtune:ctgy.recipes.tooltip=mxTune Recipe Settings
 config.mxtune:ctgy.recipes=mxTune Recipe
-
 config.mxtune:generalConfig=General Settings
 config.mxtune:generalConfig.tooltip=General Settings
 config.mxtune:listenerRange=Listener Range
@@ -120,15 +116,11 @@ config.mxtune:mmlLink=MML Site Link
 config.mxtune:mmlLink.tooltip=Enter a valid URL. Please test the URL thoroughly. If it is not a valid link it will appear RED in the MML Simple Editor dialog.
 config.mxtune:enabledRecipes=Enabled Recipes
 config.mxtune:enabledRecipes.tooltip=Remove a recipe to disable it. Alternately append _off. *** Requires MC Restart - Cannot be changed while IN-WORLD ***
-
 mxtune.key.openParty=Open Party
 mxtune.key.openMusicOptions=Music Options
-
 mxtune.gui.button.play=Play
 mxtune.gui.button.stop=Stop
-
 mxtune.gui.GuiGroupJoin.title=Join this Group?
-
 mxtune.gui.musicOptions.title=mxTune Music Options
 mxtune.gui.musicOptions.label.whitelist=Whitelist
 mxtune.gui.musicOptions.label.players=Players
@@ -140,27 +132,22 @@ mxtune.gui.musicOptions.muteOption.blacklist=Mute Blacklist
 mxtune.gui.musicOptions.muteOption.whitelist=Allow Whitelist
 mxtune.gui.musicOptions.muteOption.all=Mute All
 mxtune.gui.musicOptions.adjHud=HUD Position
-
 mxtune.gui.hudAdjust.title=Adjust mxTune HUD
 mxtune.gui.hudAdjust.size=HUD Size
-
 mxtune.gui.musicPaperParse.title=MML Simple Editor
 mxtune.gui.musicPaperParse.noSoundbank=No Soundbank loaded
 mxtune.gui.musicPaperParse.enterTitle=Enter a Title!
 mxtune.gui.musicPaperParse.enterMML=Paste MML in clipboard format!
 mxtune.gui.musicPaperParse.labelInstruments=Instruments
 mxtune.gui.musicPaperParse.labelTitleMML=Title / MML@:
-
 mxtune.chat.msu.midiAvailable=Ready to play music.
 mxtune.chat.msu.midiNotAvailable=MIDI subsystem failure! Unable to play music!
 mxtune.chat.msu.suggestion.01=Increase memory, change JVM options and/or reduce the number of mods used.
 mxtune.chat.msu.suggestion.02=If using a large sound font, try a smaller one.
-
+mxtune.msu.no_sound_bank_loaded=No Soundbank loaded
 mxtune.chat.gm.noJoinGroupWhenMuteAll=You can't join a group because [Mute All] is enabled.
 mxtune.chat.gm.noJoinGroupWhenPlayerIsMuted=You can't join %s's group because they are muted.
 mxtune.chat.gm.noSleepInJam=You can't sleep while in a JAM.
-
 mxtune.chat.musicAndSound.masterVolumeOff=The Master Volume is OFF! Can't Play!
 mxtune.chat.musicAndSound.playersVolumeOff=The Players Volume is OFF! Can't Play!
-
 entity.Villager.mxtune:musician=Musician
