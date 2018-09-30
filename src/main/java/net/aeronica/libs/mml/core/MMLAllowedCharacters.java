@@ -29,7 +29,6 @@ public class MMLAllowedCharacters
             if (character == ca[i]) return true;
         }
         return false;
-        // return character != 167 && character >= 32 && character != 127;
     }
 
     /** Filter string by only keeping those characters for which isAllowedCharacter() returns true. */

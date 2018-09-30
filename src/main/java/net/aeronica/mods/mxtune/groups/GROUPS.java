@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -37,12 +37,12 @@ public class GROUPS
     public static final int MEMBER_ADD = 2;
     public static final int MEMBER_REMOVE =3;
     public static final int MEMBER_PROMOTE = 4;
-    public static final int QUEUED = 5;
-    public static final int PLAYING = 6;
+    static final int QUEUED = 5;
+    static final int PLAYING = 6;
 
     public static final int MAX_MEMBERS = 8;
 
-    /** Server side, Client side is sync'd with packets */
+    /* Server side, Client side is sync'd with packets */
     /* GroupManager */
     private static Map<Integer, Integer> clientGroups;
     private static Map<Integer, Integer> clientMembers;
@@ -76,7 +76,7 @@ public class GROUPS
             Set<Integer> members = Sets.newHashSet();
             for (Integer group: groupsMembers.keySet())
             {
-                if(groupID == group)
+                if(groupID.intValue() == group)
                     members.addAll(groupsMembers.get(group));
             }       
             return members;
@@ -198,8 +198,8 @@ public class GROUPS
      * Called by client tick once every two seconds to calculate the distance between
      * group members in relation to a maximum after which the server will stop any music the
      * group is performing.
-     * 
-     * @param stopDistance
+     *
+     * @param playerIn get the scaled distance for this player
      * #return 0-1D, where 1 represents the critical stop.
      */
     public static double getGroupMembersScaledDistance(EntityPlayer playerIn)
@@ -214,7 +214,7 @@ public class GROUPS
             {
                 for (Integer memberB:  members )
                 {
-                    if (memberA != memberB)
+                    if (memberA.intValue() != memberB)
                     {
                         double playerDistance = getMemberVector(memberA).distanceTo(getMemberVector(memberB));
                         if (playerDistance > maxDistance) maxDistance = playerDistance;
@@ -244,16 +244,16 @@ public class GROUPS
     public static boolean isClientPlaying(Integer playID)
     {
         Set<Integer> members = GROUPS.getMembersByPlayID(playID);
-        return ((members!=null) && !members.isEmpty()) ? members.contains(MXTuneMain.proxy.getClientPlayer().getEntityId()) : false;
+        return ((members != null) && !members.isEmpty()) && members.contains(MXTuneMain.proxy.getClientPlayer().getEntityId());
     }
     
     public static boolean playerHasPlayID(Integer entityID, Integer playID)
     {
         Set<Integer> members = GROUPS.getMembersByPlayID(playID);
-        return (members != null && !members.isEmpty()) ? members.contains(entityID) : false;
+        return (members != null && !members.isEmpty()) && members.contains(entityID);
     }
     
-    public static boolean isPlayIDPlaying(Integer playID) { return activePlayIDs != null ? activePlayIDs.contains(playID) : false; }
+    public static boolean isPlayIDPlaying(Integer playID) { return activePlayIDs != null && activePlayIDs.contains(playID); }
 
     public static void setClientPlayStatuses(String clientPlayStatuses)
     {
@@ -298,7 +298,7 @@ public class GROUPS
         try
         {
             Map<String, String> inStringString =  (Map<String, String>) Splitter.on('|').omitEmptyStrings().withKeyValueSeparator("=").split(mapIntString);
-            Map<Integer, Integer> outIntInt = new HashMap<Integer, Integer>();
+            Map<Integer, Integer> outIntInt = new HashMap<>();
             for (Map.Entry<String,String> entry: inStringString.entrySet())
             {
                 outIntInt.put(Integer.valueOf(entry.getKey()), Integer.valueOf(entry.getValue()));
@@ -333,7 +333,7 @@ public class GROUPS
     /**
      * This was created specifically to make the groupsMembers ListMultimap
      * without duplicating network traffic to send a complementary structure.
-     * @param hashTableString
+     * @param hashTableString string to deserialize
      * @return a ListMultimap where the keys and values have been swapped.
      */
     public static ListMultimap<Integer, Integer> deserializeIntIntListMultimapSwapped(String hashTableString)
@@ -379,10 +379,8 @@ public class GROUPS
         try
         {
             Set<Integer> keys = mapIntStr.keySet();
-            Iterator<Integer> it = keys.iterator();
-            while (it.hasNext())
+            for (Integer integer : keys)
             {
-                Integer integer = (Integer) it.next();
                 serializedIntStrMap.append(integer).append("=").append(mapIntStr.get(integer)).append("|");
             }
         } catch (Exception e)
@@ -416,10 +414,8 @@ public class GROUPS
         StringBuilder serializedSet = new StringBuilder();
         try
         {
-            Iterator<Integer> it = setIntegers.iterator();
-            while (it.hasNext())
+            for (Integer integer : setIntegers)
             {
-                Integer integer = (Integer) it.next();
                 serializedSet.append(integer).append(",");
             }
         } catch (Exception e)
@@ -428,5 +424,4 @@ public class GROUPS
         }
         return serializedSet.toString();        
     }
-    
 }

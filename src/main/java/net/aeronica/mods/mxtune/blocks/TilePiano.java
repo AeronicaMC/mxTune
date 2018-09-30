@@ -23,8 +23,8 @@ import net.minecraftforge.items.ItemStackHandler;
 
 public class TilePiano extends TileInstrument
 {
-
-    public TilePiano() {}
+    @SuppressWarnings("unused")
+    public TilePiano() {/* Needed for vanilla processing */}
 
     public TilePiano(EnumFacing facing)
     {
@@ -55,7 +55,7 @@ public class TilePiano extends TileInstrument
             if (!world.isRemote && !this.isInvalid())
             {
                 IBlockState state = world.getBlockState(getPos());
-                /**
+                /*
                  * Sets the block state at a given location. Flag 1 will cause a
                  * block update. Flag 2 will send the change to clients (you
                  * almost always want this). Flag 4 prevents the block from

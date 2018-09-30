@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -51,11 +51,11 @@ import net.minecraft.world.World;
 public class EntitySittableBlock extends Entity
 {
 
-    static final DataParameter<Boolean> SHOULD_SIT = EntityDataManager.<Boolean> createKey(EntitySittableBlock.class, DataSerializers.BOOLEAN);
-    static final DataParameter<BlockPos> BLOCK_POS = EntityDataManager.<BlockPos> createKey(EntitySittableBlock.class, DataSerializers.BLOCK_POS);
-    BlockPos blockPos;
-    float yaw;
-    Integer playID = null;
+    private static final DataParameter<Boolean> SHOULD_SIT = EntityDataManager.<Boolean> createKey(EntitySittableBlock.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<BlockPos> BLOCK_POS = EntityDataManager.<BlockPos> createKey(EntitySittableBlock.class, DataSerializers.BLOCK_POS);
+    private BlockPos blockPos;
+    private float yaw;
+    private Integer playID = null;
     
     public EntitySittableBlock(World world)
     {
@@ -101,12 +101,12 @@ public class EntitySittableBlock extends Entity
     {
         this(world);
         this.blockPos = posIn;
-        setPostionConsideringRotation(posIn.getX() + 0.5D, posIn.getY() + y0ffset, posIn.getZ() + 0.5D, rotation, rotationOffset);
+        setPositionConsideringRotation(posIn.getX() + 0.5D, posIn.getY() + y0ffset, posIn.getZ() + 0.5D, rotation, rotationOffset);
         this.dataManager.set(SHOULD_SIT, Boolean.valueOf(true));
         this.dataManager.set(BLOCK_POS, posIn);
     }
 
-    private void setPostionConsideringRotation(double xIn, double yIn, double zIn, int rotationIn, double rotationOffsetIn)
+    private void setPositionConsideringRotation(double xIn, double yIn, double zIn, int rotationIn, double rotationOffsetIn)
     {
         double x = xIn;
         double y = yIn;

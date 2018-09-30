@@ -28,6 +28,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
@@ -35,6 +38,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class TileBandAmp extends TileInstrument implements IModLockableContainer
 {
@@ -136,14 +140,14 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     }
 
     @Override
-    public boolean hasCapability(Capability<?> cap, EnumFacing side)
+    public boolean hasCapability(Capability<?> cap, @Nullable EnumFacing side)
     {
         EnumRelativeSide enumRelativeSide = EnumRelativeSide.getRelativeSide(side, getFacing());
         return ((enumRelativeSide != EnumRelativeSide.FRONT) && (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)) || super.hasCapability(cap, side);
     }
 
     @Override
-    public <T> T getCapability(Capability<T> cap, EnumFacing side)
+    public <T> T getCapability(Capability<T> cap, @Nullable EnumFacing side)
     {
         EnumRelativeSide enumRelativeSide = EnumRelativeSide.getRelativeSide(side, getFacing());
         if ((enumRelativeSide != EnumRelativeSide.FRONT) && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
@@ -164,6 +168,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     public void setLockCode(LockCode code)
     {
         this.code = code;
+        markDirty();
     }
 
     @Override
@@ -190,6 +195,12 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     public void setCustomInventoryName(String customInventoryName)
     {
         this.bandAmpCustomName = customInventoryName;
+    }
+
+    @Override
+    public ITextComponent getDisplayName()
+    {
+        return this.hasCustomName() ? new TextComponentString(this.getName()) : new TextComponentTranslation(this.getName());
     }
 
     public boolean isUsableByPlayer(EntityPlayer player)

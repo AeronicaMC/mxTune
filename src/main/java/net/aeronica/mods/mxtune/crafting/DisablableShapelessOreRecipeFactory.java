@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright {2017} Paul Boese aka Aeronica
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,13 +30,12 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 import javax.annotation.Nonnull;
 
 /**
- * Disableable Shapeless Ore Recipe
+ * Disablable Shapeless Ore Recipe
  * @author Aeronica
  *
  */
 public class DisablableShapelessOreRecipeFactory implements IRecipeFactory
 {
-
     @Override
     public IRecipe parse(JsonContext context, JsonObject json)
     {
@@ -56,7 +55,7 @@ public class DisablableShapelessOreRecipeFactory implements IRecipeFactory
 
         @Override
         @Nonnull
-        public ItemStack getCraftingResult(InventoryCrafting var1)
+        public ItemStack getCraftingResult(@Nonnull InventoryCrafting var1)
         {
             return ModConfig.isRecipeEnabled(this.output) ? this.output.copy() : ItemStack.EMPTY;
         }
@@ -67,5 +66,4 @@ public class DisablableShapelessOreRecipeFactory implements IRecipeFactory
             return ModConfig.isRecipeHidden(this.output);
         }
     }
-    
 }

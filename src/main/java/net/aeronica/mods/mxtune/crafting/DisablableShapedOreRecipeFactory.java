@@ -36,7 +36,6 @@ import javax.annotation.Nonnull;
  */
 public class DisablableShapedOreRecipeFactory implements IRecipeFactory
 {
-
     @Override
     public IRecipe parse(JsonContext context, JsonObject json)
     {
@@ -70,5 +69,4 @@ public class DisablableShapedOreRecipeFactory implements IRecipeFactory
             return ModConfig.isRecipeHidden(this.output.copy());
         }                
     }
-
 }

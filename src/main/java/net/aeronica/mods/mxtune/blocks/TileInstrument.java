@@ -29,6 +29,8 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
+import javax.annotation.Nullable;
+
 public class TileInstrument extends TileEntity
 {
     protected ItemStackHandler inventory;
@@ -106,7 +108,7 @@ public class TileInstrument extends TileEntity
     }
 
     @Override
-    public <T> T getCapability(Capability<T> cap, EnumFacing side)
+    public <T> T getCapability(Capability<T> cap, @Nullable EnumFacing side)
     {
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) { return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(inventory); }
         return super.getCapability(cap, side);

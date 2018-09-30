@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class TileIdFixer implements IFixableData
 {
-    private static final Map<String, String> OLD_TO_NEW_ID_MAP = Maps.<String, String> newHashMap();
+    private static final Map<String, String> OLD_TO_NEW_ID_MAP = Maps.newHashMap();
     static
     {
         OLD_TO_NEW_ID_MAP.put("minecraft:tile_piano", "mxtune:tile_piano");

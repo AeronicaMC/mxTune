@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese aka Aeronica
  *
@@ -31,7 +31,6 @@ import java.util.Map;
 
 public class ModConfig
 {
-    
     private ModConfig() { /* NOP */ }
 
     /** Client Configuration Settings */
@@ -96,7 +95,7 @@ public class ModConfig
         @Name("Toggles")
         @Comment({"mxTune Recipes", "Requires a Server Restart if Changed!", "B:<name>=(true|false)"})
         @RequiresMcRestart
-        public static Map<String, Boolean> recipeToggles;
+        static Map<String, Boolean> recipeToggles;
 
         private static final String[] modItemRecipeNames = {
                 "music_paper", "spinet_piano",
@@ -112,9 +111,9 @@ public class ModConfig
         static
         {
             recipeToggles = Maps.newHashMap();
-            for (int i = 0; i < modItemRecipeNames.length; i++)
+            for (String modItemRecipeName : modItemRecipeNames)
             {
-                recipeToggles.put(modItemRecipeNames[i], true);
+                recipeToggles.put(modItemRecipeName, true);
             }
         }
     }
@@ -131,7 +130,7 @@ public class ModConfig
 
     /**
      * Will only allow this mods recipes to be disabled
-     * @param stackIn
+     * @param stackIn stack to be tested
      * @return recipe state
      */
     public static boolean isRecipeEnabled(ItemStack stackIn)
@@ -139,7 +138,7 @@ public class ModConfig
         // strip off "item." and "instrument." to get the raw item name without domain and item base names
         String itemName = stackIn.getTranslationKey().replaceFirst("item\\." + MXTuneMain.MODID + ":", "");
         itemName = itemName.replaceFirst("instrument\\.", "");
-        boolean enableState = CFG_RECIPE.recipeToggles.containsKey(itemName) ? CFG_RECIPE.recipeToggles.get(itemName) && !itemName.contains(":"): true;
+        boolean enableState = !CFG_RECIPE.recipeToggles.containsKey(itemName) || CFG_RECIPE.recipeToggles.get(itemName) && !itemName.contains(":");
         ModLogger.debug("Recipe Enabled? %s %s", itemName, enableState);
         return enableState;
     }
@@ -162,5 +161,4 @@ public class ModConfig
             }
         }
     }
-
 }
