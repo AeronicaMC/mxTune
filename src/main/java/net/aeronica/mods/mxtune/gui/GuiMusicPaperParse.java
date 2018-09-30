@@ -642,7 +642,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         Instrument inst = instrumentCache.get(selectedInst);
         
         /* Table Flip! */
-        boolean isPercussionSet = (inst.getName().contains("stdset") || inst.getName().contains("orchset"));
+        boolean isPercussionSet = inst.toString().contains("Drumkit:");
         /* A SoundFont 2.04 preset allows 128 banks 0-127) plus the percussion
          * set for 129 sets! OwO However when you get a patch from an
          * Instrument from a loaded soundfont you will find the bank value
