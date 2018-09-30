@@ -43,7 +43,7 @@ public class GuiMMLBox extends Gui
     private final FontRenderer fontRendererInstance;
     public final int xPosition;
     public final int yPosition;
-    /** Keep track of the displayed lines, cursor and selection highlighting */
+    /* Keep track of the displayed lines, cursor and selection highlighting */
     private int topTextBox;
     private int fontHeight;
     private int displayLineStartIdx;
@@ -52,10 +52,10 @@ public class GuiMMLBox extends Gui
     private List<String> lines;
     private HashMap<Integer, Integer> lineWidths;
     private boolean loadingLists;
-    /** The width of this text field. */
+    /* The width of this text field. */
     public final int width;
     public final int height;
-    /** Has the current text being edited on the textbox. */
+    /* Has the current text being edited on the textbox. */
     private String text;
     private int maxStringLength = 32;
     private int cursorCounter;
@@ -457,12 +457,6 @@ public class GuiMMLBox extends Gui
                 }
 
                 return true;
-//            case Keyboard.KEY_SPACE:
-//                /**
-//                 * Eat Spaces! NOT Allowed in well formed MML. TODO: Remove this
-//                 * once a proper Allowed MML filter is implemented
-//                 */
-//                return true;
             case Keyboard.KEY_HOME:
 
                 if (GuiScreen.isShiftKeyDown())
@@ -775,11 +769,10 @@ public class GuiMMLBox extends Gui
      */
     public void drawTextBox()
     {
-        // this.enableBackgroundDrawing = true; //this.cursorCounter / 6 % 2 == 0;
         if (this.getVisible())
         {
-            this.loadingLists = true; // TODO: normally true here, but I need
-                                      // decide if this is really needed.
+            this.loadingLists = true;
+
             if (this.getEnableBackgroundDrawing())
             {
                 drawRect(this.xPosition - 1, this.yPosition - 1, this.xPosition + this.width + 1, this.yPosition + this.height + 1, -6250336);
@@ -799,18 +792,18 @@ public class GuiMMLBox extends Gui
             int numDisplayLines = totalBufferLines;
             int charCount;
 
-            /** Handle any vertical scroll requests */
+            /* Handle any vertical scroll requests */
             if (scrollAmount != 0)
             {
                 displayLineStartIdx += scrollAmount;
                 scrollAmount = 0;
             }
 
-            /**
+            /*
              * we want to maintain a scrolling view and keep the cursorPostition
              * within the view
              */
-            /** so display line wise that's between 0 and maxLines */
+            /* so display line wise that's between 0 and maxLines */
             getLineFromPosition(displayLineStartIdx, this.getSelectionEnd());
 
             if (displayLineStartIdx > totalBufferLines - maxDisplayLines) displayLineStartIdx = totalBufferLines - maxDisplayLines;
@@ -848,14 +841,14 @@ public class GuiMMLBox extends Gui
                 // sLen:"+sLine.length()+", cursorInLine:"+cursorInLine+",
                 // cursorPos:"+cursorPos+", selectEnd:"+selectEnd);
 
-                /** Draw the line before the cursor */
+                /* Draw the line before the cursor */
                 if (!sLine.isEmpty())
                 {
                     String s1 = cursorInLine ? sLine.substring(0, cursorPos) : sLine;
                     j1 = this.fontRendererInstance.drawStringWithShadow(s1, (float) xBackDraw, (float) yBackDraw, statusColor);
                 }
 
-                /** Determine cursor type */
+                /* Determine cursor type */
                 boolean isLineCursor = this.cursorPosition < this.text.length() || this.text.length() >= this.getMaxStringLength();
                 int k1 = j1;
 
@@ -868,13 +861,13 @@ public class GuiMMLBox extends Gui
                     --j1;
                 }
 
-                /** Draw the rest of the line after the cursor */
+                /* Draw the rest of the line after the cursor */
                 if (!sLine.isEmpty() && cursorInLine && cursorPos < sLine.length())
                 {
                    j1 = this.fontRendererInstance.drawStringWithShadow(sLine.substring(cursorPos), (float) j1, (float) yBackDraw, statusColor);
                 }
 
-                /** Draw the cursor */
+                /* Draw the cursor */
                 if (cursorBlink && cursorInLine)
                 {
                     if (isLineCursor)
@@ -886,7 +879,7 @@ public class GuiMMLBox extends Gui
                     }
                 }
 
-                /** Draw the selection */
+                /* Draw the selection */
                 if (selectEnd != cursorPos)
                 {
                     int l1 = xBackDraw + this.fontRendererInstance.getStringWidth(sLine.substring(0, selectEnd));
@@ -961,8 +954,7 @@ public class GuiMMLBox extends Gui
     }
 
     /**
-     * returns the maximum number of character that can be contained in this
-     * textbox
+     * returns the maximum number of character that can be contained in this text box
      */
     public int getMaxStringLength()
     {

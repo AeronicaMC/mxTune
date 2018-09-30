@@ -21,7 +21,6 @@ public class MMLAllowedCharacters
 
     private static final String mmlCharacters = "abcdefgABCDEFGrR<>+#-.,&0123456789nNotvOTVlLM@;";
 
-    /** TODO: might be worthwhile to try a short circuit && approach like the original, but this is okay for now. */
     public static boolean isAllowedCharacter(char character)
     {
         char[] ca = mmlCharacters.toCharArray();
