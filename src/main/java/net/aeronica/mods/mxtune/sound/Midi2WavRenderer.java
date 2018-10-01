@@ -36,47 +36,45 @@ import java.util.Map;
  * removed the JFugue specific pattern signature methods
  */
 @SuppressWarnings("restriction")
-public class Midi2WavRenderer
+public class Midi2WavRenderer implements Receiver
 {
-    
     public Midi2WavRenderer() throws MidiUnavailableException, InvalidMidiDataException, IOException
     {
-        // Nothing to do
+        /* The Constructor of course */
     }
 
     /**
      * Creates a PCM stream based on the Sequence, patches and audio format, using the default soundbank.
      * Note: This uses the mxTune soundfont only
      *  
-     * @param sequence
-     * @param patches
-     * @paran format
-     * @param outputStream
-     * @throws MidiUnavailableException
-     * @throws InvalidMidiDataException
-     * @throws IOException
+     * @param sequence the MIDI sequence to be rendered
+     * @param format the audio format for rendering
+     * @throws MidiUnavailableException potential exception
+     * @throws InvalidMidiDataException potential exception
+     * @throws IOException potential exception
+     * @return the AudioInputStream
      */
-    public AudioInputStream createPCMStream(Sequence sequence, AudioFormat format) throws MidiUnavailableException, InvalidMidiDataException, IOException
+    AudioInputStream createPCMStream(Sequence sequence, AudioFormat format) throws MidiUnavailableException, InvalidMidiDataException, IOException
     {    
-        Soundbank soundbank = MIDISystemUtil.getMXTuneSoundBank();               
-        AudioSynthesizer aSynth = findAudioSynthesizer();
-        if (aSynth == null) {
+        Soundbank mxTuneSoundBank = MIDISystemUtil.getMXTuneSoundBank();
+        AudioSynthesizer audioSynthesizer = findAudioSynthesizer();
+        if (audioSynthesizer == null) {
             throw new Midi2WavRendererRuntimeException("No AudioSynthesizer was found!");
         }
         
         Map<String, Object> p = new HashMap<String, Object>();
         p.put("interpolation", "sinc");
         p.put("max polyphony", "1024");
-        AudioInputStream outputStream = aSynth.openStream(format, p);
+        AudioInputStream outputStream = audioSynthesizer.openStream(format, p);
 
-        Soundbank defsbk = aSynth.getDefaultSoundbank();
-        if (defsbk != null)
-            aSynth.unloadAllInstruments(defsbk);
+        Soundbank defaultSoundbank = audioSynthesizer.getDefaultSoundbank();
+        if (defaultSoundbank != null)
+            audioSynthesizer.unloadAllInstruments(defaultSoundbank);
         
-        aSynth.loadAllInstruments(soundbank);
+        audioSynthesizer.loadAllInstruments(mxTuneSoundBank);
 
         // Play Sequence into AudioSynthesizer Receiver.
-        Receiver receiver = aSynth.getReceiver();
+        Receiver receiver = audioSynthesizer.getReceiver();
         double total = send(sequence, receiver);
 
         // Calculate how long the WAVE file needs to be.
@@ -87,11 +85,10 @@ public class Midi2WavRenderer
         return outputStream;
     }
 
-
     /**
      * Find available AudioSynthesizer.
      */
-    public static AudioSynthesizer findAudioSynthesizer() throws MidiUnavailableException 
+    private AudioSynthesizer findAudioSynthesizer() throws MidiUnavailableException
     {
         // First check if default synthesizer is AudioSynthesizer.
         Synthesizer synth = MidiSystem.getSynthesizer();
@@ -101,9 +98,11 @@ public class Midi2WavRenderer
 
         // If default synthesizer is not AudioSynthesizer, check others.
         MidiDevice.Info[] midiDeviceInfo = MidiSystem.getMidiDeviceInfo();
-        for (int i = 0; i < midiDeviceInfo.length; i++) {
-            MidiDevice dev = MidiSystem.getMidiDevice(midiDeviceInfo[i]);
-            if (dev instanceof AudioSynthesizer) {
+        for (MidiDevice.Info aMidiDeviceInfo : midiDeviceInfo)
+        {
+            MidiDevice dev = MidiSystem.getMidiDevice(aMidiDeviceInfo);
+            if (dev instanceof AudioSynthesizer)
+            {
                 return (AudioSynthesizer) dev;
             }
         }
@@ -112,47 +111,60 @@ public class Midi2WavRenderer
         return null;
     }
 
+    public double getSequenceInSeconds(Sequence sequence)
+    {
+        return send(sequence, this);
+    }
+
+    @Override
+    public void send(MidiMessage message, long timeStamp) {/* NOP */}
+
+    @Override
+    public void close() {/* NOP */}
+
     /**
      * Send entry MIDI Sequence into Receiver using timestamps.
      */
-    public double send(Sequence seq, Receiver recv) 
+    private double send(Sequence seq, Receiver recv)
     {
-        float divtype = seq.getDivisionType();
+        if (seq == null) return 0D;
+
+        float divisionType = seq.getDivisionType();
         Track[] tracks = seq.getTracks();
-        int[] trackspos = new int[tracks.length];
+        int[] tracksPos = new int[tracks.length];
         int mpq = 500000;
-        int seqres = seq.getResolution();
-        long lasttick = 0;
-        long curtime = 0;
+        int seqResolution = seq.getResolution();
+        long lastTick = 0;
+        long currentTime = 0;
         while (true) {
-            MidiEvent selevent = null;
-            int seltrack = -1;
+            MidiEvent selectedEvent = null;
+            int selectedTrack = -1;
             for (int i = 0; i < tracks.length; i++) {
-                int trackpos = trackspos[i];
+                int trackPos = tracksPos[i];
                 Track track = tracks[i];
-                if (trackpos < track.size()) {
-                    MidiEvent event = track.get(trackpos);
-                    if (selevent == null
-                            || event.getTick() < selevent.getTick()) {
-                        selevent = event;
-                        seltrack = i;
+                if (trackPos < track.size()) {
+                    MidiEvent event = track.get(trackPos);
+                    if (selectedEvent == null
+                            || event.getTick() < selectedEvent.getTick()) {
+                        selectedEvent = event;
+                        selectedTrack = i;
                     }
                 }
             }
-            if (seltrack == -1)
+            if (selectedTrack == -1)
                 break;
-            trackspos[seltrack]++;
-            if (selevent == null)
+            tracksPos[selectedTrack]++;
+            if (selectedEvent == null)
                 throw new Midi2WavRendererRuntimeException("Null MidiEvent in \'send\' method: " +seq);
-            long tick = selevent.getTick();
-            if ((int)divtype == (int)Sequence.PPQ)
-                curtime += ((tick - lasttick) * mpq) / seqres;
+            long tick = selectedEvent.getTick();
+            if ((int)divisionType == (int)Sequence.PPQ)
+                currentTime += ((tick - lastTick) * mpq) / seqResolution;
             else
-                curtime = (long) ((tick * 1000000.0 * divtype) / seqres);
-            lasttick = tick;
-            MidiMessage msg = selevent.getMessage();
+                currentTime = (long) ((tick * 1000000.0 * divisionType) / seqResolution);
+            lastTick = tick;
+            MidiMessage msg = selectedEvent.getMessage();
             if (msg instanceof MetaMessage) {
-                if ((int)divtype == (int)Sequence.PPQ)
+                if ((int)divisionType == (int)Sequence.PPQ)
                     if (((MetaMessage) msg).getType() == 0x51) {
                         byte[] data = ((MetaMessage) msg).getData();
                         mpq = ((data[0] & 0xff) << 16)
@@ -160,10 +172,9 @@ public class Midi2WavRenderer
                     }
             } else {
                 if (recv != null)
-                    recv.send(msg, curtime);
+                    recv.send(msg, currentTime);
             }
         }
-        return curtime / 1000000.0;
+        return currentTime / 1000000.0;
     }
-
 }

@@ -775,5 +775,4 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
         this.isPlaying = false;
     }
-
 }

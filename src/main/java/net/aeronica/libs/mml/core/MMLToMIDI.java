@@ -12,7 +12,7 @@ public class MMLToMIDI extends MMLTransformBase
     private static final double PPQ = 480.0;
     private static final int TICKS_OFFSET = 10;
     private Sequence sequence;
-    private HashSet<Integer> packedPresets = new HashSet<Integer>();
+    private HashSet<Integer> packedPresets = new HashSet<>();
 
     public MMLToMIDI() {}
 
@@ -20,16 +20,14 @@ public class MMLToMIDI extends MMLTransformBase
     public long durationTicks(int mmlNoteLength, boolean dottedLEN)
     {
         double dot = dottedLEN ? 15.0d : 10.0d;
-        return (long) (((4.0d / (double) mmlNoteLength) * ((double) dot) / 10.0d) * (double) PPQ);
+        return (long) (((4.0d / (double) mmlNoteLength) * dot / 10.0d) * PPQ);
     }
 
     public Sequence getSequence() {return sequence;}
     
     public List<Integer> getPackedPresets()
     {
-        List<Integer> packedPresetList = new ArrayList<Integer>();
-        packedPresetList.addAll(packedPresets);
-        return packedPresetList;
+        return new ArrayList<>(packedPresets);
     }
 
     @Override
@@ -83,8 +81,8 @@ public class MMLToMIDI extends MMLTransformBase
                         /* Convert the preset bank to the Bank Select bank */
                         bank = bank << 7;
                     }
-                    tracks[tk].add(createBankSelectEventMSB(ch, bank, mmo.getStartingTicks() + ticksOffset-2));
-                    tracks[tk].add(createBankSelectEventLSB(ch, bank, mmo.getStartingTicks() + ticksOffset-1));
+                    tracks[tk].add(createBankSelectEventMSB(ch, bank, mmo.getStartingTicks() + ticksOffset-2L));
+                    tracks[tk].add(createBankSelectEventLSB(ch, bank, mmo.getStartingTicks() + ticksOffset-1L));
                     tracks[tk].add(createProgramChangeEvent(ch, programPreset, mmo.getStartingTicks() + ticksOffset));
                     packedPresets.add(mmo.getInstrument());
                     break;
@@ -112,17 +110,17 @@ public class MMLToMIDI extends MMLTransformBase
                     if (tk > 23) tk = 23;
                     ch++;
                     if (ch > 15) ch = 15;
-                    tracks[tk].add(createMsg(192, ch, 0, 100, 0l));
+                    tracks[tk].add(createMsg(192, ch, 0, 100, 0L));
                     break;
                 }
                 case DONE:
                 {
-                    /**
+                    /*
                      * Create a fake note to extend the play time so decaying
                      * audio does not cutoff suddenly
                      **/
-                    tracks[0].add(createNoteOnEvent(ch, 1, 0, mmo.getlongestPartTicks() + ticksOffset + 400));
-                    tracks[0].add(createNoteOffEvent(ch, 1, 0, mmo.getlongestPartTicks() + ticksOffset + 800));
+                    tracks[0].add(createNoteOnEvent(ch, 1, 0, mmo.getlongestPartTicks() + ticksOffset + 200));
+                    tracks[0].add(createNoteOffEvent(ch, 1, 0, mmo.getlongestPartTicks() + ticksOffset + 400));
                     break;
                 }
                 default:
@@ -135,9 +133,9 @@ public class MMLToMIDI extends MMLTransformBase
         }
     }
     
-    protected MidiEvent createMsg(int mComd, int mChan, int mDat1, int mDat2, long mTime)
+    private MidiEvent createMsg(int mComd, int mChan, int mDat1, int mDat2, long mTime)
     {
-        /**
+        /*
          * NoteOn = 144, Channel, Key, Velocity, Time-stamp NoteOn = 128,
          * Channel, Key, Velocity, Time-stamp Patch = 192, Channel, Patch, 0,
          * Time-stamp
@@ -155,45 +153,40 @@ public class MMLToMIDI extends MMLTransformBase
         return mEve;
     }
 
-    protected MidiEvent createProgramChangeEvent(int channel, int value, long tick) throws InvalidMidiDataException
+    private MidiEvent createProgramChangeEvent(int channel, int value, long tick) throws InvalidMidiDataException
     {
         ShortMessage msg = new ShortMessage();
         msg.setMessage(0xC0 + channel, value, 0);
-        MidiEvent evt = new MidiEvent(msg, tick);
-        return evt;
+        return new MidiEvent(msg, tick);
     }
 
-    protected MidiEvent createBankSelectEventMSB(int channel, int value, long tick) throws InvalidMidiDataException
+    private MidiEvent createBankSelectEventMSB(int channel, int value, long tick) throws InvalidMidiDataException
     {
         ShortMessage msg = new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, 0, value >> 7);
-        MidiEvent evt = new MidiEvent(msg, tick);
-        return evt;
+        return new MidiEvent(msg, tick);
     }
     
-    protected MidiEvent createBankSelectEventLSB(int channel, int value, long tick) throws InvalidMidiDataException
+    private MidiEvent createBankSelectEventLSB(int channel, int value, long tick) throws InvalidMidiDataException
     {
         ShortMessage msg = new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, 32, value & 0x7F);
-        MidiEvent evt = new MidiEvent(msg, tick);
-        return evt;
+        return new MidiEvent(msg, tick);
     }
     
-    protected MidiEvent createNoteOnEvent(int channel, int pitch, int velocity, long tick) throws InvalidMidiDataException
+    private MidiEvent createNoteOnEvent(int channel, int pitch, int velocity, long tick) throws InvalidMidiDataException
     {
         ShortMessage msg = new ShortMessage();
         msg.setMessage(0x90 + channel, pitch, velocity);
-        MidiEvent evt = new MidiEvent(msg, tick);
-        return evt;
+        return new MidiEvent(msg, tick);
     }
 
-    protected MidiEvent createNoteOffEvent(int channel, int pitch, int velocity, long tick) throws InvalidMidiDataException
+    private MidiEvent createNoteOffEvent(int channel, int pitch, int velocity, long tick) throws InvalidMidiDataException
     {
         ShortMessage msg = new ShortMessage();
         msg.setMessage(0x80 + channel, pitch, velocity);
-        MidiEvent evt = new MidiEvent(msg, tick);
-        return evt;
+        return new MidiEvent(msg, tick);
     }
 
-    protected MidiEvent createTempoMetaEvent(int tempo, long tick) throws InvalidMidiDataException
+    private MidiEvent createTempoMetaEvent(int tempo, long tick) throws InvalidMidiDataException
     {
         MetaMessage msg = new MetaMessage();
         byte[] data = ByteBuffer.allocate(4).putInt(1000000 * 60 / tempo).array();
@@ -201,16 +194,14 @@ public class MMLToMIDI extends MMLTransformBase
         data[1] = data[2];
         data[2] = data[3];
         msg.setMessage(0x51, data, 3);
-        MidiEvent evt = new MidiEvent(msg, tick);
-        return evt;
+        return new MidiEvent(msg, tick);
     }
 
-    protected MidiEvent createTextMetaEvent(String text, long tick) throws InvalidMidiDataException
+    private MidiEvent createTextMetaEvent(String text, long tick) throws InvalidMidiDataException
     {
         MetaMessage msg = new MetaMessage();
         byte[] data = text.getBytes();
         msg.setMessage(0x01, data, data.length);
-        MidiEvent evt = new MidiEvent(msg, tick);
-        return evt;
+        return new MidiEvent(msg, tick);
     }
 }
