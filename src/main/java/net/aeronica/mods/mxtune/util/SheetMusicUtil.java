@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -34,10 +34,10 @@ public enum SheetMusicUtil
     public static String getMusicTitle(ItemStack stackIn)
     {
         ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(stackIn);
-        if (!sheetMusic.isEmpty())
+        if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
         {
             NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
-            if (contents != null)
+            if (!contents.isEmpty())
             {
                 return sheetMusic.getDisplayName();
             }
@@ -65,17 +65,17 @@ public enum SheetMusicUtil
     
     public static ItemStack getSheetMusic(ItemStack stackIn)
     {
-        if (!stackIn.isEmpty() && stackIn.hasTagCompound() && stackIn.getItem() instanceof IInstrument)
+        if (!stackIn.isEmpty() && stackIn.getTagCompound() != null && (stackIn.getItem() instanceof IInstrument))
         {
             NBTTagList items = stackIn.getTagCompound().getTagList("ItemInventory", Constants.NBT.TAG_COMPOUND);
             if (items.tagCount() == 1)
             {
                 NBTTagCompound item = items.getCompoundTagAt(0);
                 ItemStack sheetMusicOld = new ItemStack(item);
-                if (!sheetMusicOld.isEmpty() && sheetMusicOld.getItem() instanceof IMusic)
+                if (!sheetMusicOld.isEmpty() && sheetMusicOld.getTagCompound() != null && (sheetMusicOld.getItem() instanceof IMusic))
                 {
                     NBTTagCompound contents = (NBTTagCompound) sheetMusicOld.getTagCompound().getTag("MusicBook");
-                    if (contents != null)
+                    if (!contents.isEmpty())
                     {
                         return sheetMusicOld;
                     }
@@ -83,5 +83,17 @@ public enum SheetMusicUtil
             }
         }
         return ItemStack.EMPTY;
+    }
+
+    public static void writeSheetMusic(ItemStack sheetMusic, String musicTitle, String mml)
+    {
+        NBTTagCompound compound = sheetMusic.getTagCompound();
+        if (compound != null && sheetMusic.getItem() instanceof IMusic)
+        {
+            sheetMusic.setStackDisplayName(musicTitle);
+            NBTTagCompound contents = new NBTTagCompound();
+            contents.setString("MML", mml);
+            compound.setTag("MusicBook", contents);
+        }
     }
 }

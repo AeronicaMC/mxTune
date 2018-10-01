@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -18,9 +18,9 @@ package net.aeronica.mods.mxtune.network.server;
 
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
+import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
@@ -29,10 +29,10 @@ import java.io.IOException;
 
 public class MusicTextMessage extends AbstractServerMessage<MusicTextMessage>
 {
-    String musicTitle;
-    String musicText;
+    private String musicTitle;
+    private String musicText;
 
-    public MusicTextMessage() {/* Required by the PacketDispacher */}
+    public MusicTextMessage() {/* Required by the PacketDispatcher */}
 
     public MusicTextMessage(String musicTitle, String musicText)
     {
@@ -60,24 +60,15 @@ public class MusicTextMessage extends AbstractServerMessage<MusicTextMessage>
         if (side.isClient()) return;
         String mml = musicText.trim().toUpperCase();
 
-        if (player.getHeldItemMainhand() != null)
+        if (!player.getHeldItemMainhand().isEmpty())
         {
             ItemStack sheetMusic = new ItemStack(ModItems.ITEM_SHEET_MUSIC);
+            SheetMusicUtil.writeSheetMusic(sheetMusic, musicTitle, mml);
 
-            sheetMusic.setStackDisplayName(musicTitle);
-            NBTTagCompound compound = sheetMusic.getTagCompound();
-            if (compound != null)
-            {
-                NBTTagCompound contents = new NBTTagCompound();
-                contents.setString("MML", mml);
-                compound.setTag("MusicBook", contents);
-            }
             player.inventory.decrStackSize(player.inventory.currentItem, 1);
-        
             if (!player.inventory.addItemStackToInventory(sheetMusic.copy()))
-            {
                 player.dropItem(sheetMusic, false, false);
-            }
+
             player.inventoryContainer.detectAndSendChanges();
         }
     }

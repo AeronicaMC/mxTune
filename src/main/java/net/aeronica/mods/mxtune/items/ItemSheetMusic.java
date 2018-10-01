@@ -47,7 +47,7 @@ public class ItemSheetMusic extends Item implements IMusic
         if (stackIn.hasTagCompound())
         {
             NBTTagCompound contents = stackIn.getTagCompound();
-            if (contents.hasKey("MusicBook"))
+            if (contents != null && contents.hasKey("MusicBook"))
             {
                 NBTTagCompound mml = contents.getCompoundTag("MusicBook");
                 if (mml.getString("MML").contains("MML@"))
