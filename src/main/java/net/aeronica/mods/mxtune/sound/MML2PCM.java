@@ -48,6 +48,7 @@ public class MML2PCM
      */
     public boolean process(int playID, String musicText)
     {
+        // TODO: Too many steps here. Make a method to deserialize and append the mml then check for null/empty
         Map<Integer, String> playerMML = GROUPS.deserializeIntStrMap(musicText);
         if (playerMML == null)
         {
@@ -60,8 +61,8 @@ public class MML2PCM
 
         /* Append all the MML */
         StringBuilder mml = new StringBuilder();
-        for (Integer playerID: playerMML.keySet())
-            mml.append(playerMML.get(playerID));
+        for (Map.Entry<Integer, String> integerStringMap: playerMML.entrySet())
+            mml.append(integerStringMap.getValue());
 
         MMLParser parser =  MMLParserFactory.getMMLParser(mml.toString());
         if (parser == null)
