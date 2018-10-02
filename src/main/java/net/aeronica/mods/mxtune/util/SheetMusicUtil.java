@@ -28,6 +28,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
 
+import javax.annotation.Nonnull;
+
 public enum SheetMusicUtil
 {
     ;
@@ -85,12 +87,12 @@ public enum SheetMusicUtil
         return ItemStack.EMPTY;
     }
 
-    public static void writeSheetMusic(ItemStack sheetMusic, String musicTitle, String mml)
+    public static void writeSheetMusic(ItemStack sheetMusic, @Nonnull String musicTitle, @Nonnull String mml)
     {
+        sheetMusic.setStackDisplayName(musicTitle);
         NBTTagCompound compound = sheetMusic.getTagCompound();
         if (compound != null && sheetMusic.getItem() instanceof IMusic)
         {
-            sheetMusic.setStackDisplayName(musicTitle);
             NBTTagCompound contents = new NBTTagCompound();
             contents.setString("MML", mml);
             compound.setTag("MusicBook", contents);
