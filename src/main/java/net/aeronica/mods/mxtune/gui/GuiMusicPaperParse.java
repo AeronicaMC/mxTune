@@ -16,10 +16,7 @@
  */
 package net.aeronica.mods.mxtune.gui;
 
-import net.aeronica.libs.mml.core.MMLParser;
-import net.aeronica.libs.mml.core.MMLParserFactory;
-import net.aeronica.libs.mml.core.MMLToMIDI;
-import net.aeronica.libs.mml.core.MMLUtil;
+import net.aeronica.libs.mml.core.*;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.MusicTextMessage;
@@ -31,10 +28,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.GuiScrollingList;
-import org.antlr.v4.runtime.BaseErrorListener;
-import org.antlr.v4.runtime.Parser;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.lwjgl.input.Keyboard;
@@ -43,7 +36,6 @@ import org.lwjgl.input.Mouse;
 import javax.sound.midi.*;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
@@ -423,58 +415,6 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         parseErrorCache.addAll(parseErrorListener.getParseErrorEntries());
     }
 
-    public static class ParseErrorListener extends BaseErrorListener implements IParseErrorEntries
-    {
-
-        private ArrayList<ParseErrorEntry> parseErrorList = new ArrayList<>();
-
-        @Override
-        public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e)
-        {
-            List<String> stack = ((Parser) recognizer).getRuleInvocationStack();
-            Collections.reverse(stack);
-            parseErrorList.add(new ParseErrorEntry(line, charPositionInLine, msg, e));
-        }
-
-        @Override
-        public ArrayList<ParseErrorEntry> getParseErrorEntries()
-        {
-            /* copy the records out then clear the local list */
-            ArrayList<ParseErrorEntry> temp = new ArrayList<>(parseErrorList);
-            parseErrorList.clear();
-            return temp;
-        }
-    }
-
-    @SuppressWarnings("unused")
-    public interface IParseErrorEntries
-    {
-        List<ParseErrorEntry> getParseErrorEntries();
-    }
-
-    public static class ParseErrorEntry
-    {
-        private int line;
-        private int charPositionInLine;
-        private String msg;
-        private RecognitionException e;
-
-        ParseErrorEntry(int line, int charPositionInLine, String msg, RecognitionException e)
-        {
-            this.line = line;
-            this.charPositionInLine = charPositionInLine;
-            this.msg = msg;
-            this.e = e;
-        }
-
-        @SuppressWarnings("unused")
-        public int getLine() {return line;}
-
-        int getCharPositionInLine() {return charPositionInLine;}
-
-        public RecognitionException getE() {return e;}
-    }
-
     public static class GuiParserErrorList extends GuiScrollingList
     {
         private GuiMusicPaperParse parent;
@@ -519,7 +459,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
             FontRenderer font = this.parent.getFontRenderer();
             ParseErrorEntry pe = parseErrorCache.get(idx);
             String charAt = String.format("%04d", pe.getCharPositionInLine());
-            String s = font.trimStringToWidth(charAt + ": " + pe.msg, listWidth - 10);
+            String s = font.trimStringToWidth(charAt + ": " + pe.getMsg(), listWidth - 10);
             font.drawString(s, this.left + 3, top, 0xFF2222);
         }
     }
@@ -535,7 +475,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         this.selectedErrorEntry = (index >= 0 && index <= parseErrorCache.size()) ? parseErrorCache.get(selectedError) : null;
         if (this.selectedErrorEntry != null)
         {
-            this.textMMLPaste.setCursorPosition(this.selectedErrorEntry.charPositionInLine);
+            this.textMMLPaste.setCursorPosition(this.selectedErrorEntry.getCharPositionInLine());
             this.textMMLPaste.setFocused(true);
         }
         updateState();
