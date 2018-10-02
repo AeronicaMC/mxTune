@@ -57,7 +57,12 @@ public class MusicTextMessage extends AbstractServerMessage<MusicTextMessage>
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        if (side.isClient()) return;
+        if (side.isServer())
+            processServer(player, side);
+    }
+
+    private void processServer(EntityPlayer player, Side side)
+    {
         String mml = musicText.trim().toUpperCase();
 
         if (!player.getHeldItemMainhand().isEmpty())
