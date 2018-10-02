@@ -26,6 +26,7 @@ import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -264,7 +265,8 @@ public class GROUPS
     {
         return membersPlayID;
     }
-    
+
+    @Nullable
     public static Integer getSoloMemberByPlayID(Integer playID)
     {
         for(Integer someMember: GROUPS.membersPlayID.keySet())
@@ -293,6 +295,7 @@ public class GROUPS
     }
     
     /* Serialization and deserialization methods */
+    @Nullable
     public static Map<Integer, Integer> deserializeIntIntMap(String mapIntString)
     {       
         try
@@ -336,6 +339,7 @@ public class GROUPS
      * @param hashTableString string to deserialize
      * @return a ListMultimap where the keys and values have been swapped.
      */
+    @Nullable
     public static ListMultimap<Integer, Integer> deserializeIntIntListMultimapSwapped(String hashTableString)
     {
         try
@@ -354,7 +358,8 @@ public class GROUPS
         }
 
     }
-    
+
+    @Nullable
     public static Map<Integer, String> deserializeIntStrMap(String mapIntString)
     {       
         try
@@ -389,7 +394,8 @@ public class GROUPS
         }
         return serializedIntStrMap.toString();
     }
-            
+
+    @Nullable
     public static Set<Integer> deserializeIntegerSet(String setIntString)
     {
         Iterable<String> inString = Splitter.on(',').omitEmptyStrings().split(setIntString);
