@@ -1,21 +1,27 @@
 package net.aeronica.libs.mml.core;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.sound.midi.Patch;
 
+@SuppressWarnings("unused")
 public enum MMLUtil
 {
     ;
-    /** int[0] is not used. Used to reorder ASCII letters to musical notes taking into account accidentals. That is ABCDEFG to CDEFGAB */
-    private static final int[] doerayme = {50, 9, 11, 0, 2, 4, 5, 7};
+    static final Logger MML_LOGGER = LogManager.getLogger("MML Core");
+
+    /* int[0] is not used. Used to reorder ASCII letters to musical notes taking into account accidentals. That is ABCDEFG to CDEFGAB */
+    private static final int[] DOE_RE_MI = {50, 9, 11, 0, 2, 4, 5, 7};
 
     public static int getMIDINote(int rawNote, int mmlOctave)
     {
-        /** Convert ASCII UPPER CASE Note value to integer: A=1, G=7 */
+        /* Convert ASCII UPPER CASE Note value to integer: A=1, G=7 */
         int doreNote = rawNote - 64;
-        /** Get start of the MML Octave */
+        /* Get start of the MML Octave */
         int octave = (mmlOctave * 12) + 12;
-        /** combine the octave and reordered note to get the MIDI note value */
-        return octave + doerayme[doreNote];
+        /* combine the octave and reordered note to get the MIDI note value */
+        return octave + DOE_RE_MI[doreNote];
     }
 
     public static int getMIDINote(int rawNote, int mmlOctave, boolean rest)
@@ -41,14 +47,13 @@ public enum MMLUtil
      * @param packedPatchIn the packed bank and program represented as a single integer
      * @return javax.sound.midi.Patch
      */
-    public static Patch packetPreset2Patch(int packedPatchIn)
+    public static Patch packedPreset2Patch(int packedPatchIn)
     {
-        int packedPatch = packedPatchIn;
-        int program = packedPatch & 0x7F;
+        int program = packedPatchIn & 0x7F;
         int bank = 0;
-        if (packedPatch > 0x7F)
+        if (packedPatchIn > 0x7F)
         {
-            bank = (packedPatch & 0x1FFF80) >>> 7;
+            bank = (packedPatchIn & 0x1FFF80) >>> 7;
         }
         return new Patch(bank, program);
     }
@@ -64,8 +69,7 @@ public enum MMLUtil
     {
         int bank = bankIn < 128 ? bankIn : 128; 
         int patch = programIn & 0x7F;
-        int out = (bank << 7) + patch;
-        return out;
+        return (bank << 7) + patch;
     }
     
     /**

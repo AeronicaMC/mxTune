@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import static net.aeronica.libs.mml.core.MMLUtil.*;
+
 public class MMLToMIDI extends MMLTransformBase
 {
     private static final int MASTER_TEMPO = 120;
@@ -47,10 +49,9 @@ public class MMLToMIDI extends MMLTransformBase
             }
             Track[] tracks = sequence.getTracks();
 
-            for (int i = 0; i < mmlObject.size(); i++)
+            for (MObject mmo: mmlObject)
             {
                 /* ref: enum Type {INST_BEGIN, TEMPO, INST, PART, NOTE, REST, INST_END, DONE}; */
-                MObject mmo = getMObject(i);
                 switch (mmo.getType())
                 {
                 case INST_BEGIN:
@@ -67,7 +68,7 @@ public class MMLToMIDI extends MMLTransformBase
                 }
                 case INST:
                 {
-                    Patch preset = MMLUtil.packetPreset2Patch(mmo.getInstrument());
+                    Patch preset = packedPreset2Patch(mmo.getInstrument());
                     int bank =  preset.getBank();
                     int programPreset = preset.getProgram();
                     /* Detect a percussion set */
@@ -95,8 +96,8 @@ public class MMLToMIDI extends MMLTransformBase
                 }
                 case NOTE:
                 {
-                    tracks[tk].add(createNoteOnEvent(ch, MMLUtil.smartClampMIDI(mmo.getMidiNote()), mmo.getNoteVolume(), mmo.getStartingTicks() + ticksOffset));
-                    tracks[tk].add(createNoteOffEvent(ch, MMLUtil.smartClampMIDI(mmo.getMidiNote()), mmo.getNoteVolume(), mmo.getStartingTicks() + mmo.getLengthTicks() + ticksOffset - 1));
+                    tracks[tk].add(createNoteOnEvent(ch, smartClampMIDI(mmo.getMidiNote()), mmo.getNoteVolume(), mmo.getStartingTicks() + ticksOffset));
+                    tracks[tk].add(createNoteOffEvent(ch, smartClampMIDI(mmo.getMidiNote()), mmo.getNoteVolume(), mmo.getStartingTicks() + mmo.getLengthTicks() + ticksOffset - 1));
                     if (mmo.getText() != null)
                     {
                         String text = "{\"Note\": \"{Track\":" + tk + ", \"Text\":\"" + mmo.getText() + "\"}}";
@@ -118,18 +119,18 @@ public class MMLToMIDI extends MMLTransformBase
                     /*
                      * Create a fake note to extend the play time so decaying
                      * audio does not cutoff suddenly
-                     **/
+                     */
                     tracks[0].add(createNoteOnEvent(ch, 1, 0, mmo.getlongestPartTicks() + ticksOffset + 200));
                     tracks[0].add(createNoteOffEvent(ch, 1, 0, mmo.getlongestPartTicks() + ticksOffset + 400));
                     break;
                 }
                 default:
-                    System.err.println("MMLToMIDI#processMObjects Impossible?! An undefined enum?");
+                    MML_LOGGER.debug("MMLToMIDI#processMObjects Impossible?! An undefined enum?");
                 }
             }
-        } catch (Exception ex)
+        } catch (Exception e)
         {
-            System.out.println("MMLToMIDI#processMObjects failed: " + ex);
+            MML_LOGGER.error("MMLToMIDI#processMObjects failed: ", e);
         }
     }
     

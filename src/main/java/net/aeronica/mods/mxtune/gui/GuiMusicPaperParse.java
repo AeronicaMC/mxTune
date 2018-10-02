@@ -16,8 +16,8 @@
  */
 package net.aeronica.mods.mxtune.gui;
 
-import net.aeronica.libs.mml.core.MMLLexer;
 import net.aeronica.libs.mml.core.MMLParser;
+import net.aeronica.libs.mml.core.MMLParserFactory;
 import net.aeronica.libs.mml.core.MMLToMIDI;
 import net.aeronica.libs.mml.core.MMLUtil;
 import net.aeronica.mods.mxtune.config.ModConfig;
@@ -31,7 +31,10 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.GuiScrollingList;
-import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.BaseErrorListener;
+import org.antlr.v4.runtime.Parser;
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.lwjgl.input.Keyboard;
@@ -39,8 +42,6 @@ import org.lwjgl.input.Mouse;
 
 import javax.sound.midi.*;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -71,7 +72,6 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     private boolean helperState;
 
     /* MML Parser */
-    private static byte[] mmlBuf = null;
     private ParseErrorListener parseErrorListener = null;
     private ArrayList<ParseErrorEntry> parseErrorCache;
     private ParseErrorEntry selectedErrorEntry;
@@ -293,10 +293,10 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         {
         case 0:
             /* Done / OKAY - Save MML */
-            String musictext = textMMLPaste.getTextToParse().trim();
-            String musictitle = textMMLTitle.getText().trim();
+            String musicText = textMMLPaste.getTextToParse().trim();
+            String musicTitle = textMMLTitle.getText().trim();
             mmlStop();
-            sendMMLTextToServer(musictitle, musictext);
+            sendMMLTextToServer(musicTitle, musicText);
             closeGui();
             break;
 
@@ -408,28 +408,13 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     /* MML Parsing */
     private void parseMML(String mml)
     {
-        try
+        MMLParser parser = MMLParserFactory.getMMLParser(mml);
+        if (parser == null)
         {
-            mmlBuf = mml.getBytes("US-ASCII");
-        } catch (UnsupportedEncodingException e)
-        {
-            ModLogger.error(e);
+            parseErrorCache.clear();
+            parseErrorCache.add(new ParseErrorEntry(0,0, "MMLParserFactory.getMMLParser(mml) is null", null));
+            return;
         }
-        InputStream is = new java.io.ByteArrayInputStream(mmlBuf);
-
-        /* ANTLR4 MML Parser BEGIN */
-        ANTLRInputStream input = null;
-
-        try
-        {
-            input = new ANTLRInputStream(is);
-        } catch (IOException e)
-        {
-            ModLogger.error(e);
-        }
-        MMLLexer lexer = new MMLLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        MMLParser parser = new MMLParser(tokens);
         parser.removeErrorListeners();
         parser.addErrorListener(parseErrorListener);
         parser.setBuildParseTree(true);
@@ -659,39 +644,18 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         ModLogger.debug("GuiMusicPaperParse.mmlPlay(): %s", mml.substring(0, mml.length() >= 25 ? 25 : mml.length()));
         
         if (midiUnavailable) return false;
-        byte[] mmlBuf;
-        InputStream is;
-
-        try
+        MMLParser parser = MMLParserFactory.getMMLParser(mml);
+        if (parser == null)
         {
-            mmlBuf = mml.getBytes("US-ASCII");
-        } catch (UnsupportedEncodingException e)
-        {
-            ModLogger.error(e);
-            return false;
+            ModLogger.debug("MMLParserFactory.getMMLParser(mml) is null in %s", this.getClass().getSimpleName());
+            return true;
         }
-        is = new java.io.ByteArrayInputStream(mmlBuf);
-
-        /* ANTLR4 MML Parser BEGIN */
-        MMLToMIDI mmlTrans = new MMLToMIDI();
-        ANTLRInputStream input;
-
-        try
-        {
-            input = new ANTLRInputStream(is);
-        } catch (IOException e)
-        {
-            ModLogger.error(e);
-            return false;
-        }
-        MMLLexer lexer = new MMLLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        MMLParser parser = new MMLParser(tokens);
         parser.removeErrorListeners();
         parser.setBuildParseTree(true);
         ParseTree tree = parser.band();
 
         ParseTreeWalker walker = new ParseTreeWalker();
+        MMLToMIDI mmlTrans = new MMLToMIDI();
         walker.walk(mmlTrans, tree);
         /* ANTLR4 MML Parser END */
 

@@ -15,8 +15,8 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
-import net.aeronica.libs.mml.core.MMLLexer;
 import net.aeronica.libs.mml.core.MMLParser;
+import net.aeronica.libs.mml.core.MMLParserFactory;
 import net.aeronica.libs.mml.core.MMLToMIDI;
 import net.aeronica.libs.mml.core.MMLUtil;
 import net.aeronica.mods.mxtune.groups.GROUPS;
@@ -24,8 +24,6 @@ import net.aeronica.mods.mxtune.sound.ClientAudio.Status;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.resources.I18n;
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
@@ -34,8 +32,6 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Patch;
 import javax.sound.sampled.AudioInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 public class MML2PCM
@@ -67,46 +63,25 @@ public class MML2PCM
         for (Integer playerID: playerMML.keySet())
             mml.append(playerMML.get(playerID));
 
-        /* US_ASCII characters only! */
-        byte[] mmlBuf;
-        try
+        MMLParser parser =  MMLParserFactory.getMMLParser(mml.toString());
+        if (parser == null)
         {
-            mmlBuf = mml.toString().getBytes("US-ASCII");
-        } catch (UnsupportedEncodingException e)
-        {
-            ModLogger.error(e);
+            ModLogger.debug("MMLParserFactory.getMMLParser() is null in %s", this.getClass().getSimpleName());
             ClientAudio.setPlayIDAudioDataStatus(playID, Status.ERROR);
             return false;
         }
-        InputStream is = new java.io.ByteArrayInputStream(mmlBuf);
-
-        /* ANTLR4 MML Parser BEGIN */
-        MMLToMIDI mmlTrans = new MMLToMIDI();
-        ANTLRInputStream input;
-
-        try
-        {
-            input = new ANTLRInputStream(is);
-        } catch (IOException e)
-        {
-            ModLogger.error(e);
-            ClientAudio.setPlayIDAudioDataStatus(playID, Status.ERROR);
-            return false;
-        }
-        MMLLexer lexer = new MMLLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        MMLParser parser = new MMLParser(tokens);
         parser.setBuildParseTree(true);
         ParseTree tree = parser.band();
 
         ParseTreeWalker walker = new ParseTreeWalker();
+        MMLToMIDI mmlTrans = new MMLToMIDI();
         walker.walk(mmlTrans, tree);
         /* ANTLR4 MML Parser END */
 
         /* Log used programs */
         for (int packedPreset: mmlTrans.getPackedPresets())
         {
-            Patch patchPreset = MMLUtil.packetPreset2Patch(packedPreset);
+            Patch patchPreset = MMLUtil.packedPreset2Patch(packedPreset);
             String name = I18n.format(MIDISystemUtil.getPatchNameKey(patchPreset));
             ModLogger.info("MML2PCM preset: bank: %3d, program %3d, name %s", patchPreset.getBank(),
                            patchPreset.getProgram(), name);
@@ -127,5 +102,4 @@ public class MML2PCM
         ClientAudio.setPlayIDAudioDataStatus(playID, Status.READY);
         return true;
     }
-
 }
