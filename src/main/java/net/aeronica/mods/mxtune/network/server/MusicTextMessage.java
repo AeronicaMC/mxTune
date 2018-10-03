@@ -20,8 +20,10 @@ import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -68,11 +70,18 @@ public class MusicTextMessage extends AbstractServerMessage<MusicTextMessage>
         if (!player.getHeldItemMainhand().isEmpty())
         {
             ItemStack sheetMusic = new ItemStack(ModItems.ITEM_SHEET_MUSIC);
-            SheetMusicUtil.writeSheetMusic(sheetMusic, musicTitle, mml);
 
-            player.inventory.decrStackSize(player.inventory.currentItem, 1);
-            if (!player.inventory.addItemStackToInventory(sheetMusic.copy()))
-                player.dropItem(sheetMusic, false, false);
+            if (SheetMusicUtil.writeSheetMusic(sheetMusic, musicTitle, mml))
+            {
+                player.inventory.decrStackSize(player.inventory.currentItem, 1);
+                if (!player.inventory.addItemStackToInventory(sheetMusic.copy()))
+                    player.dropItem(sheetMusic, false, false);
+            }
+            else
+            {
+                player.sendStatusMessage(new TextComponentTranslation("mxtune.status.mml_server_side_validation_failure"), false);
+                player.playSound(SoundEvents.BLOCK_GRASS_BREAK, 1F, 1F);
+            }
 
             player.inventoryContainer.detectAndSendChanges();
         }

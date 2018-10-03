@@ -150,4 +150,5 @@ mxtune.chat.gm.noJoinGroupWhenPlayerIsMuted=You can't join %s's group because th
 mxtune.chat.gm.noSleepInJam=You can't sleep while in a JAM.
 mxtune.chat.musicAndSound.masterVolumeOff=The Master Volume is OFF! Can't Play!
 mxtune.chat.musicAndSound.playersVolumeOff=The Players Volume is OFF! Can't Play!
+mxtune.status.mml_server_side_validation_failure=MML server sided validation failure! Please review the log files.
 entity.Villager.mxtune:musician=Musician

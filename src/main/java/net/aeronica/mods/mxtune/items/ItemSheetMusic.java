@@ -16,6 +16,7 @@
 package net.aeronica.mods.mxtune.items;
 
 import net.aeronica.mods.mxtune.inventory.IMusic;
+import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
@@ -53,7 +54,9 @@ public class ItemSheetMusic extends Item implements IMusic
                 if (mml.getString("MML").contains("MML@"))
                     tooltip.add(TextFormatting.GREEN + mml.getString("MML").substring(0, mml.getString("MML").length() > 25 ? 25 : mml.getString("MML").length()));
                 else
-                    tooltip.add(TextFormatting.RED + I18n.format("item.mxtune:sheet_music.help")); 
+                    tooltip.add(TextFormatting.RED + I18n.format("item.mxtune:sheet_music.help"));
+
+                tooltip.add(TextFormatting.YELLOW + SheetMusicUtil.formatDuration(mml.getInteger("duration_seconds")));
             }
         }
     }
