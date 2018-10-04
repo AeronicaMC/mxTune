@@ -48,15 +48,15 @@ public class ItemSheetMusic extends Item implements IMusic
         if (stackIn.hasTagCompound())
         {
             NBTTagCompound contents = stackIn.getTagCompound();
-            if (contents != null && contents.hasKey("MusicBook"))
+            if (contents != null && contents.hasKey("SheetMusic"))
             {
-                NBTTagCompound mml = contents.getCompoundTag("MusicBook");
+                NBTTagCompound mml = contents.getCompoundTag("SheetMusic");
                 if (mml.getString("MML").contains("MML@"))
                     tooltip.add(TextFormatting.GREEN + mml.getString("MML").substring(0, mml.getString("MML").length() > 25 ? 25 : mml.getString("MML").length()));
                 else
                     tooltip.add(TextFormatting.RED + I18n.format("item.mxtune:sheet_music.help"));
 
-                tooltip.add(TextFormatting.YELLOW + SheetMusicUtil.formatDuration(mml.getInteger("duration_seconds")));
+                tooltip.add(TextFormatting.YELLOW + SheetMusicUtil.formatDuration(mml.getInteger("Duration")));
             }
         }
     }

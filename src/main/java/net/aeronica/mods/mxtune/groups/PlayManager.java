@@ -135,7 +135,7 @@ public class PlayManager
             NBTTagCompound contents = null;
             if (sheetMusic.getTagCompound() != null)
             {
-                contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
+                contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("SheetMusic");
             }
             if (contents != null && !contents.isEmpty())
             {

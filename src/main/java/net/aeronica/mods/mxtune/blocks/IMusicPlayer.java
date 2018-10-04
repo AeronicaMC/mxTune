@@ -57,7 +57,7 @@ public interface IMusicPlayer
                     ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(stackInSlot);
                     if (!sheetMusic.isEmpty())
                     {
-                        NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
+                        NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("SheetMusic");
                         if (contents != null)
                         {
                             String mml = contents.getString("MML");

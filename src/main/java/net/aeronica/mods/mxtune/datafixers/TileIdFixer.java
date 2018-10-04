@@ -1,4 +1,4 @@
-package net.aeronica.mods.mxtune.blocks;
+package net.aeronica.mods.mxtune.datafixers;
 
 import com.google.common.collect.Maps;
 import net.aeronica.mods.mxtune.MXTuneMain;

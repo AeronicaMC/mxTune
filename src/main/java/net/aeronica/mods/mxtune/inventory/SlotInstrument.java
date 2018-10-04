@@ -19,7 +19,7 @@ public class SlotInstrument extends Slot
     {
         
         return !stack.isEmpty() && ((stack.getItem() instanceof ItemSheetMusic) || (stack.getItem() instanceof ItemMusicPaper))
-                && stack.hasTagCompound() && stack.getTagCompound().hasKey("MusicBook") ? true : false;
+                && stack.hasTagCompound() && stack.getTagCompound().hasKey("SheetMusic") ? true : false;
     }
 
     @Override

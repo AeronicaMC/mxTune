@@ -333,7 +333,7 @@ public class GuiJamOverlay extends Gui
     {
         if (!sheetMusic.isEmpty())
         {
-            NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
+            NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("SheetMusic");
             if (contents != null)
             {
                 return sheetMusic.getDisplayName();

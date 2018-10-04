@@ -49,7 +49,7 @@ public enum SheetMusicUtil
         ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(stackIn);
         if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
         {
-            NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("MusicBook");
+            NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("SheetMusic");
             if (!contents.isEmpty())
             {
                 return sheetMusic.getDisplayName();
@@ -87,8 +87,8 @@ public enum SheetMusicUtil
                 ItemStack sheetMusicOld = new ItemStack(item);
                 if (!sheetMusicOld.isEmpty() && sheetMusicOld.getTagCompound() != null && (sheetMusicOld.getItem() instanceof IMusic))
                 {
-                    NBTTagCompound contents = (NBTTagCompound) sheetMusicOld.getTagCompound().getTag("MusicBook");
-                    if (!contents.isEmpty())
+                    NBTTagCompound contents = (NBTTagCompound) sheetMusicOld.getTagCompound().getTag("SheetMusic");
+                    if (contents != null)
                     {
                         return sheetMusicOld;
                     }
@@ -107,8 +107,8 @@ public enum SheetMusicUtil
         {
             NBTTagCompound contents = new NBTTagCompound();
             contents.setString("MML", mml);
-            contents.setInteger("duration_seconds", validTime.b);
-            compound.setTag("MusicBook", contents);
+            contents.setInteger("duration", validTime.b);
+            compound.setTag("SheetMusic", contents);
             return true;
         }
         return false;
