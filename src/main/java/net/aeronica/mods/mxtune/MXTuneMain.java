@@ -56,7 +56,7 @@ public class MXTuneMain
     public static final String VERSION = "{@VERSION}";
     static final String DEPENDENTS = "required-after:forge@[1.12.2-14.23.4.2705,)";
     static final String UPDATE = "https://gist.githubusercontent.com/Aeronica/dbc2619e0011d5bdbe7a162d0c6aa82b/raw/update.json";
-    public static final int MXTUNE_DATA_FIXER_VERSION = 21;
+    public static final int MXTUNE_DATA_FIXER_VERSION = 2;
     
     @Mod.Instance(MOD_ID)
     public static MXTuneMain instance;
