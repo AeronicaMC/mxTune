@@ -31,7 +31,7 @@ public class MusicTab extends CreativeTabs
     @SideOnly(Side.CLIENT)
     public String getTranslationKey()
     {
-        return MXTuneMain.MODNAME;
+        return MXTuneMain.MOD_NAME;
     }
 
     @Override

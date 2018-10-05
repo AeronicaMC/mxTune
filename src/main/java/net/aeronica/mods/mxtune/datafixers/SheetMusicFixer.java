@@ -26,7 +26,6 @@ public class SheetMusicFixer implements IFixableData
             NBTTagCompound tag = compound.getCompoundTag("tag");
             if (tag.hasKey("MusicBook", Constants.NBT.TAG_COMPOUND))
             {
-                ModLogger.info("SheetMusicFixer change tag \"MusicBook\" ...");
                 NBTTagCompound musicBook = tag.getCompoundTag("MusicBook");
                 String mml = musicBook.getString("MML");
 
@@ -38,7 +37,7 @@ public class SheetMusicFixer implements IFixableData
                 tag.setTag("SheetMusic", sheetMusic);
 
                 tag.removeTag("MusicBook");
-                ModLogger.info("... SheetMusicFixer to \"SheetMusic\" Valid MML: %s, Duration: %s", validTime.a, SheetMusicUtil.formatDuration(validTime.b));
+                ModLogger.info("SheetMusicFixer changed  \"MusicBook\" to \"SheetMusic\" Valid MML: %s, Duration: %s", validTime.a, SheetMusicUtil.formatDuration(validTime.b));
             }
         }
         return compound;

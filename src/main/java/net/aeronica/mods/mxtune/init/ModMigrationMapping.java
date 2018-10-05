@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright {2016} Paul Boese aka Aeronica
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,7 +34,7 @@ public class ModMigrationMapping
         public static void missingBlockMapping(RegistryEvent.MissingMappings<Block> event)
         {
             for (RegistryEvent.MissingMappings.Mapping<Block> mapping : event.getMappings()) {
-                if(mapping.key.equals(new ResourceLocation(MXTuneMain.prependModID("block_piano")))) {
+                if(mapping.key.equals(new ResourceLocation(MXTuneMain.MOD_ID, "block_piano"))) {
                     mapping.remap(ModBlocks.SPINET_PIANO);
                 }
             }
@@ -44,15 +44,15 @@ public class ModMigrationMapping
         public static void missingItemMapping(RegistryEvent.MissingMappings<Item> event)
         {
             for (RegistryEvent.MissingMappings.Mapping<Item> missing : event.getMappings()) {
-                if (missing.key.getNamespace().equals(MXTuneMain.MODID) && missing.key.getPath().equals("block_piano")) {
+                if (missing.key.getNamespace().equals(MXTuneMain.MOD_ID) && missing.key.getPath().equals("block_piano")) {
                     missing.remap(ModItems.ITEM_SPINET_PIANO);
-                } else if(missing.key.getNamespace().equals(MXTuneMain.MODID) && missing.key.getPath().equals("item_inst")){
+                } else if(missing.key.getNamespace().equals(MXTuneMain.MOD_ID) && missing.key.getPath().equals("item_inst")){
                     missing.remap(ModItems.ITEM_INSTRUMENT);
-                } else if(missing.key.getNamespace().equals(MXTuneMain.MODID) && missing.key.getPath().equals("item_musicpaper")){
+                } else if(missing.key.getNamespace().equals(MXTuneMain.MOD_ID) && missing.key.getPath().equals("item_musicpaper")){
                     missing.remap(ModItems.ITEM_MUSIC_PAPER);
-                } else if(missing.key.getNamespace().equals(MXTuneMain.MODID) && missing.key.getPath().equals("item_sheetmusic")){
+                } else if(missing.key.getNamespace().equals(MXTuneMain.MOD_ID) && missing.key.getPath().equals("item_sheetmusic")){
                     missing.remap(ModItems.ITEM_SHEET_MUSIC);
-                } else if(missing.key.getNamespace().equals(MXTuneMain.MODID) && missing.key.getPath().equals("item_converter")){
+                } else if(missing.key.getNamespace().equals(MXTuneMain.MOD_ID) && missing.key.getPath().equals("item_converter")){
                     missing.ignore();
                 }
             }            

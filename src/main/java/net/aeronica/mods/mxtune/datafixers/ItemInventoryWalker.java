@@ -23,7 +23,7 @@ public class ItemInventoryWalker implements IDataWalker
             {
                 NBTTagCompound itemInventory = compound.getCompoundTag("tag");
                 DataFixesManager.processInventory(fixer, itemInventory, version, "ItemInventory");
-                ModLogger.debug("ItemInventoryWalker Walked inventory {} of ItemInstrument {}, containing {} items", "ItemInventory", compound.getString("id"), itemInventory.getInteger("Size"));
+                ModLogger.info("ItemInventoryWalker Walked inventory %s of ItemInstrument %s, containing %d items", "ItemInventory", compound.getString("id"), itemInventory.getInteger("Size"));
             }
         }
         return compound;

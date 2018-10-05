@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -43,27 +43,28 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
-@Mod(modid = MXTuneMain.MODID, name = MXTuneMain.MODNAME, version = MXTuneMain.VERSION,
+@Mod(modid = MXTuneMain.MOD_ID, name = MXTuneMain.MOD_NAME, version = MXTuneMain.VERSION,
      acceptedMinecraftVersions = "[1.12,1.13)",
-     dependencies = MXTuneMain.DEPS, updateJSON = MXTuneMain.UPDATE,
+     dependencies = MXTuneMain.DEPENDENTS, updateJSON = MXTuneMain.UPDATE,
      certificateFingerprint = "999640c365a8443393a1a21df2c0ede9488400e9")
 
+@SuppressWarnings("deprecation")
 public class MXTuneMain
 {
-    public static final String MODID = "mxtune";
-    public static final String MODNAME = "mxTune";
+    public static final String MOD_ID = "mxtune";
+    public static final String MOD_NAME = "mxTune";
     public static final String VERSION = "{@VERSION}";
-    public static final String DEPS = "required-after:forge@[1.12.2-14.23.4.2705,)";
-    public static final String UPDATE = "https://gist.githubusercontent.com/Aeronica/dbc2619e0011d5bdbe7a162d0c6aa82b/raw/update.json";
+    static final String DEPENDENTS = "required-after:forge@[1.12.2-14.23.4.2705,)";
+    static final String UPDATE = "https://gist.githubusercontent.com/Aeronica/dbc2619e0011d5bdbe7a162d0c6aa82b/raw/update.json";
     public static final int MXTUNE_DATA_FIXER_VERSION = 21;
     
-    @Mod.Instance(MODID)
+    @Mod.Instance(MOD_ID)
     public static MXTuneMain instance;
 
     @SidedProxy(clientSide = "net.aeronica.mods.mxtune.proxy.ClientProxy", serverSide = "net.aeronica.mods.mxtune.proxy.ServerProxy")
     public static ServerProxy proxy;
 
-    public static final CreativeTabs TAB_MUSIC = new MusicTab(CreativeTabs.getNextID(), MODNAME);
+    public static final CreativeTabs TAB_MUSIC = new MusicTab(CreativeTabs.getNextID(), MOD_NAME);
     
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
@@ -87,7 +88,7 @@ public class MXTuneMain
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, GUIHandler.getInstance());
 
         CompoundDataFixer fixer = FMLCommonHandler.instance().getDataFixer();
-        ModFixs modFixer = fixer.init(MXTuneMain.MODID, MXTUNE_DATA_FIXER_VERSION);
+        ModFixs modFixer = fixer.init(MXTuneMain.MOD_ID, MXTUNE_DATA_FIXER_VERSION);
         modFixer.registerFix(FixTypes.BLOCK_ENTITY, new TileIdFixer());
         modFixer.registerFix(FixTypes.ITEM_INSTANCE, new SheetMusicFixer());
 
@@ -98,8 +99,6 @@ public class MXTuneMain
 
         // Fix SheetMusItemStackHandler, ItemInstrument, ItemSheetMusic
         fixer.registerWalker(FixTypes.BLOCK_ENTITY, new CapInventoryWalker(TileBandAmp.class));
-
-
     }
 
     @Mod.EventHandler
@@ -111,18 +110,6 @@ public class MXTuneMain
 
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
-        System.out.print("*** [mxTune] Invalid fingerprint detected! ***\n\r");
-    }
-    
-    /**
-     * Prepend the name with the mod ID, suitable for ResourceLocations such as
-     * textures.
-     * 
-     * @param name resource name
-     * @return eg "xyzmodid:xyzblockname" domain:resource
-     */
-    public static String prependModID(String name)
-    {
-        return MODID + ":" + name;
+        System.out.println("*** [mxTune] Invalid fingerprint detected! ***");
     }
 }

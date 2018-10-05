@@ -61,7 +61,7 @@ public class PlayerMusicOptionsCapability
         {
             if (event.getObject() instanceof EntityPlayer)
             {
-                event.addCapability(new ResourceLocation(MXTuneMain.MODID, "IPlayerMusicOptions"), new ICapabilitySerializable<NBTTagCompound>()
+                event.addCapability(new ResourceLocation(MXTuneMain.MOD_ID, "IPlayerMusicOptions"), new ICapabilitySerializable<NBTTagCompound>()
                 {
                     final IPlayerMusicOptions optionsInst = MUSIC_OPTIONS.getDefaultInstance();
 

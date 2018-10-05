@@ -48,7 +48,7 @@ import java.util.Set;
 public class PlayInstrumentTrigger implements ICriterionTrigger<PlayInstrumentTrigger.Instance>
 {
 
-    private static final ResourceLocation ID = new ResourceLocation(MXTuneMain.MODID, "play_instrument");
+    private static final ResourceLocation ID = new ResourceLocation(MXTuneMain.MOD_ID, "play_instrument");
     private final Map<PlayerAdvancements, Listeners> listeners = new HashMap<>();
 
     static class Instance extends AbstractCriterionInstance

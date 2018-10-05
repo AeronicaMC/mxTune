@@ -86,6 +86,6 @@ public class ModBlocks
     }
 
     private static void registerTileEntity(Class<? extends TileEntity> tileEntityClass, String name) {
-        GameRegistry.registerTileEntity(tileEntityClass, new ResourceLocation(MXTuneMain.MODID, name));
+        GameRegistry.registerTileEntity(tileEntityClass, new ResourceLocation(MXTuneMain.MOD_ID, name));
     }
 }

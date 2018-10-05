@@ -70,7 +70,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
             IModel rackModel;
             try
             {
-                rackModel = ModelLoaderRegistry.getModel(new ResourceLocation(MXTuneMain.MODID, "block/piano_rack"));
+                rackModel = ModelLoaderRegistry.getModel(new ResourceLocation(MXTuneMain.MOD_ID, "block/piano_rack"));
             } catch (Exception e)
             {
                 throw new MXTuneRuntimeException(e);
@@ -89,7 +89,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
             IModel benchModel;
             try
             {
-                benchModel = ModelLoaderRegistry.getModel(new ResourceLocation(MXTuneMain.MODID, "block/piano_bench"));
+                benchModel = ModelLoaderRegistry.getModel(new ResourceLocation(MXTuneMain.MOD_ID, "block/piano_bench"));
             } catch (Exception e)
             {
                 throw new MXTuneRuntimeException(e);

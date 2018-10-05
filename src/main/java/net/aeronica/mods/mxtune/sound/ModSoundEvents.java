@@ -23,7 +23,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
-@ObjectHolder(MXTuneMain.MODID)
+@ObjectHolder(MXTuneMain.MOD_ID)
 public class ModSoundEvents {
     
     @ObjectHolder("pcm-proxy")
@@ -33,15 +33,15 @@ public class ModSoundEvents {
      * Register a {@link SoundEvent}.
      * 
      * @author Choonster
-     * @param soundName The SoundEvent's name without the [MODID] prefix
+     * @param soundName The SoundEvent's name without the [MOD_ID] prefix
      * @return The SoundEvent
      */
     private static SoundEvent registerSound(String soundName) {
-        final ResourceLocation soundID = new ResourceLocation(MXTuneMain.MODID, soundName);
+        final ResourceLocation soundID = new ResourceLocation(MXTuneMain.MOD_ID, soundName);
         return new SoundEvent(soundID).setRegistryName(soundID);
     }
 
-    @Mod.EventBusSubscriber(modid = MXTuneMain.MODID)
+    @Mod.EventBusSubscriber(modid = MXTuneMain.MOD_ID)
     public static class RegistrationHandler {
         @SubscribeEvent
         public static void registerSoundEvents(final RegistryEvent.Register<SoundEvent> event) {

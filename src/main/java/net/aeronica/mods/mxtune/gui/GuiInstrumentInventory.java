@@ -16,11 +16,11 @@ import java.io.IOException;
 public class GuiInstrumentInventory extends GuiContainer {
 	public static final int GUI_ID = 1;
 
-	private FontRenderer fontRenderer = null;
-	int theInvItemSlot;
+	private FontRenderer fontRenderer;
+	private int theInvItemSlot;
 
 	private static final ResourceLocation inventoryTexture = new ResourceLocation(
-			MXTuneMain.prependModID("textures/gui/instrument_inventory.png"));
+			MXTuneMain.MOD_ID, "textures/gui/instrument_inventory.png");
 
 	public GuiInstrumentInventory(ContainerInstrument containerInstrument) {
 		super(containerInstrument);
@@ -77,9 +77,8 @@ public class GuiInstrumentInventory extends GuiContainer {
 		drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
 	}
 
-	/*
+	/**
 	 * Don't allow the held instrument to be moved from it's slot.
-	 * 
 	 */
 	@Override
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {

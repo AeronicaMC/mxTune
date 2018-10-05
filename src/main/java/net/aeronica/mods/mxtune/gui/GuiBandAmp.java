@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class GuiBandAmp extends GuiContainer
 {
-    private static final ResourceLocation BG_TEXTURE = new ResourceLocation(MXTuneMain.MODID, "textures/gui/band_amp.png");
+    private static final ResourceLocation BG_TEXTURE = new ResourceLocation(MXTuneMain.MOD_ID, "textures/gui/band_amp.png");
     private InventoryPlayer inventoryPlayer;
     public static final int GUI_ID = 9;
     private TileBandAmp tileBandAmp;

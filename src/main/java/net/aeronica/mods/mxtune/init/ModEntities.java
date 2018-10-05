@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese aka Aeronica
  *
@@ -28,7 +28,8 @@ public enum ModEntities
     protected static int entityID = 0;
     
     private static int getEntityID() {return entityID++;}
-    
+
+    // TODO: rename "MountableBLock" to "mountable_block" using a data fixer
     public static void init()
     {
         registerModEntity(EntitySittableBlock.class, "MountableBlock", 80, 1, false);
@@ -36,6 +37,6 @@ public enum ModEntities
     
     private static void registerModEntity(Class<? extends Entity> entityClass, String name, int trackingRange, int updateFrequency, boolean sendsVelocityUpdates)
     {
-        EntityRegistry.registerModEntity(new ResourceLocation(MXTuneMain.prependModID(name)), entityClass, name, getEntityID(), MXTuneMain.instance, trackingRange, updateFrequency, sendsVelocityUpdates);
+        EntityRegistry.registerModEntity(new ResourceLocation(MXTuneMain.MOD_ID, name), entityClass, name, getEntityID(), MXTuneMain.instance, trackingRange, updateFrequency, sendsVelocityUpdates);
     }
 }

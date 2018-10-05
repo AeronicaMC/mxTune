@@ -84,13 +84,13 @@ public enum SheetMusicUtil
             if (items.tagCount() == 1)
             {
                 NBTTagCompound item = items.getCompoundTagAt(0);
-                ItemStack sheetMusicOld = new ItemStack(item);
-                if (!sheetMusicOld.isEmpty() && sheetMusicOld.getTagCompound() != null && (sheetMusicOld.getItem() instanceof IMusic))
+                ItemStack sheetMusic = new ItemStack(item);
+                if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null && (sheetMusic.getItem() instanceof IMusic))
                 {
-                    NBTTagCompound contents = (NBTTagCompound) sheetMusicOld.getTagCompound().getTag("SheetMusic");
+                    NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("SheetMusic");
                     if (contents != null)
                     {
-                        return sheetMusicOld;
+                        return sheetMusic;
                     }
                 }
             }

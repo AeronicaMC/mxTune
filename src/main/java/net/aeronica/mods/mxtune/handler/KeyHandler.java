@@ -54,8 +54,8 @@ public class KeyHandler
     private static class KeyHandlerHolder {private static final KeyHandler INSTANCE = new KeyHandler();}
     public static KeyHandler getInstance() {return KeyHandlerHolder.INSTANCE;}
     
-    private KeyBinding key_openPartyGUI = new KeyBinding("mxtune.key.openParty", Keyboard.KEY_J, MXTuneMain.MODID);
-    private KeyBinding key_openMusicOptionsGUI = new KeyBinding("mxtune.key.openMusicOptions", Keyboard.KEY_P, MXTuneMain.MODID);
+    private KeyBinding key_openPartyGUI = new KeyBinding("mxtune.key.openParty", Keyboard.KEY_J, MXTuneMain.MOD_ID);
+    private KeyBinding key_openMusicOptionsGUI = new KeyBinding("mxtune.key.openMusicOptions", Keyboard.KEY_P, MXTuneMain.MOD_ID);
 
     private KeyHandler()
     {

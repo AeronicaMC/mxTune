@@ -8,7 +8,7 @@ import org.apache.logging.log4j.MarkerManager;
 
 public class ModLogger
 {
-    private static final Marker MOD_MARKER = MarkerManager.getMarker(MXTuneMain.MODID);
+    private static final Marker MOD_MARKER = MarkerManager.getMarker(MXTuneMain.MOD_ID);
     private static Logger logger;
 
     public static void setLogger(Logger logger)

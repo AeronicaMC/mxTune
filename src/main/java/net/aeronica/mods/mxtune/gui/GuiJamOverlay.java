@@ -57,18 +57,18 @@ import java.util.Set;
 public class GuiJamOverlay extends Gui
 {
     private static final String INSTRUMENT_INVENTORY_EMPTY = "["+I18n.format("mxtune.instrumentInventory.empty")+"]";
-    private static final ResourceLocation TEXTURE_STATUS = new ResourceLocation(MXTuneMain.prependModID("textures/gui/status_widgets.png"));
-    public static final int HOTBAR_CLEARANCE = 40;
+    private static final ResourceLocation TEXTURE_STATUS = new ResourceLocation(MXTuneMain.MOD_ID, "textures/gui/status_widgets.png");
+    static final int HOT_BAR_CLEARANCE = 40;
     private static final int WIDGET_WIDTH = 256;
     private static final int WIDGET_HEIGHT = 104;
 
-    private static final int PLAC_ICON_SIZE = 24;
-    private static final int PLAC_ICON_BASE_U_OFFSET = 54;
-    private static final int PLAC_ICON_BASE_V_OFFSET = 200;
-    private static final int PLAC_ICONS_PER_ROW = 8;
+    private static final int PLACARD_ICON_SIZE = 24;
+    private static final int PLACARD_ICON_BASE_U_OFFSET = 54;
+    private static final int PLACARD_ICON_BASE_V_OFFSET = 200;
+    private static final int PLACARD_ICONS_PER_ROW = 8;
 
-    private Minecraft mc = null;
-    private FontRenderer fontRenderer = null;
+    private Minecraft mc;
+    private FontRenderer fontRenderer;
     
     private static class GuiJamOverlayHolder {private static final GuiJamOverlay INSTANCE = new GuiJamOverlay();}
     public static GuiJamOverlay getInstance() {return GuiJamOverlayHolder.INSTANCE;}
@@ -81,8 +81,8 @@ public class GuiJamOverlay extends Gui
 
     private static int hudTimer = 0;
     private static int count = 0;
-    private static final int HUDTIME = 5; /* seconds */
-    private static void hudTimerReset() {hudTimer = HUDTIME;}
+    private static final int HUD_TIME = 5; /* seconds */
+    private static void hudTimerReset() {hudTimer = HUD_TIME;}
     
     @SuppressWarnings("static-access")
     @SubscribeEvent
@@ -107,14 +107,11 @@ public class GuiJamOverlay extends Gui
         else return (!MusicOptionsUtil.isHudDisabled(playerIn) && (hudTimer > 0));
     }
     
-    private boolean inGuiHudAdjust() {return (mc.currentScreen != null && mc.currentScreen instanceof GuiHudAdjust);}
-    
-    private static HudData hudData = null;
+    private boolean inGuiHudAdjust() {return (mc.currentScreen instanceof GuiHudAdjust);}
 //    private static int lastWidth = 0;
 //    private static int lastHeight = 0;
     private static boolean riding;
     private static ItemStack lastItemStack = ItemStack.EMPTY;
-    private static ItemStack sheetMusic;
     private static ItemStack itemStack;
     private static float partialTicks;
     
@@ -132,19 +129,20 @@ public class GuiJamOverlay extends Gui
         EntityPlayerSP player = this.mc.player;
  
         int width = event.getResolution().getScaledWidth();
-        int height = event.getResolution().getScaledHeight() - HOTBAR_CLEARANCE;
+        int height = event.getResolution().getScaledHeight() - HOT_BAR_CLEARANCE;
         partialTicks = event.getPartialTicks();
 //        if (hudData == null || inGuiHudAdjust() || lastWidth != width || lastHeight != height)
 //        {
-            hudData = HudDataFactory.calcHudPositions((inGuiHudAdjust() ? MusicOptionsUtil.getAdjustPositionHud() : MusicOptionsUtil.getPositionHUD(player)), width, height);
+        HudData hudData = HudDataFactory.calcHudPositions((inGuiHudAdjust() ? MusicOptionsUtil.getAdjustPositionHud() : MusicOptionsUtil.getPositionHUD(player)), width, height);
 //            lastWidth = width; lastHeight = height;
 //        }
-                
+
+        ItemStack sheetMusic;
         if(PlacedInstrumentUtil.isRiding(player))
         {
             BlockPos pos = PlacedInstrumentUtil.getRiddenBlock(player);
             sheetMusic = SheetMusicUtil.getSheetMusic(pos, player, true);
-            if (isRidingFlag()==false) hudTimerReset();
+            if (!isRidingFlag()) hudTimerReset();
             setRidingFlag(true);
         } else 
         {
@@ -171,7 +169,7 @@ public class GuiJamOverlay extends Gui
         Tuple<Integer, Integer> notePos;
         Integer playStatus;
            
-        public GroupData(Integer memberID, String memberName, Integer memberNameWidth, Tuple<Integer, Integer> notePos, Integer playStatus)
+        GroupData(Integer memberID, String memberName, Integer memberNameWidth, Tuple<Integer, Integer> notePos, Integer playStatus)
         {
             super();
             this.memberID = memberID;
@@ -197,7 +195,7 @@ public class GuiJamOverlay extends Gui
         {
             this.notePos = notePos;
         }
-        public String getMemberName()
+        String getMemberName()
         {
             return memberName;
         }
@@ -231,20 +229,20 @@ public class GuiJamOverlay extends Gui
         {
             groupID = GROUPS.getMembersGroupID(playerIn.getEntityId());
             
-            /** Only draw if player is a member of a group */
+            /* Only draw if player is a member of a group */
             if (groupID != null)
             {
-                /** Always add the leader at the HEAD of the list */
+                /* Always add the leader at the HEAD of the list */
                 memberID = GROUPS.getLeaderOfGroup(groupID);
                 memberName = playerIn.getEntityWorld().getEntityByID(memberID).getDisplayName().getUnformattedText();
                 memberNameWidth = fontRenderer.getStringWidth(memberName);
                 playStatus = GROUPS.getIndex(memberID);     
-                notePos = new Tuple<Integer, Integer>( notePosMembers[index][0],  notePosMembers[index][1]);
+                notePos = new Tuple<>(notePosMembers[index][0], notePosMembers[index][1]);
                 memberData = new GroupData(memberID, memberName, memberNameWidth, notePos, playStatus);
                 groupData.add(memberData);
                 index++;
 
-                /** Add the remaining members taking care to not add the leader a 2nd time. */
+                /* Add the remaining members taking care to not add the leader a 2nd time. */
                 Set<Integer> set = GROUPS.getClientMembers().keySet();
                 for (Iterator<Integer> im = set.iterator(); im.hasNext();)
                 {
@@ -254,7 +252,7 @@ public class GuiJamOverlay extends Gui
                         memberName = playerIn.getEntityWorld().getEntityByID(memberID).getDisplayName().getUnformattedText();
                         memberNameWidth = fontRenderer.getStringWidth(memberName);
                         playStatus = GROUPS.getIndex(memberID);     
-                        notePos = new Tuple<Integer, Integer>( notePosMembers[index][0],  notePosMembers[index][1]);
+                        notePos = new Tuple<>(notePosMembers[index][0], notePosMembers[index][1]);
                         memberData = new GroupData(memberID, memberName, memberNameWidth, notePos, playStatus);
                         groupData.add(memberData);
                         index++;
@@ -317,7 +315,6 @@ public class GuiJamOverlay extends Gui
             qY = hd.quadY(maxHeight, 160, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
-        
     }
 
     private String getMusicTitle(ItemStack stackIn)
@@ -329,9 +326,9 @@ public class GuiJamOverlay extends Gui
             return sheetMusicTitle;
     }
     
-    public static String getMusicTitleRaw(ItemStack sheetMusic)
+    private static String getMusicTitleRaw(ItemStack sheetMusic)
     {
-        if (!sheetMusic.isEmpty())
+        if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
         {
             NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("SheetMusic");
             if (contents != null)
@@ -393,20 +390,18 @@ public class GuiJamOverlay extends Gui
     @SuppressWarnings("static-access")
     private void renderMini(HudData hd, EntityPlayer playerIn)
     {
-        int maxWidth = PLAC_ICON_SIZE;
-        int maxHeight = PLAC_ICON_SIZE;
 
         GL11.glPushMatrix();
         GL11.glTranslatef(hd.getPosX(), hd.getPosY(), 0F);
 
         /* draw the status icon */
-        int iconX = hd.quadX(maxWidth, 0, 2, PLAC_ICON_SIZE);
-        int iconY = hd.quadY(maxHeight, 0, 2, PLAC_ICON_SIZE);
+        int iconX = hd.quadX(PLACARD_ICON_SIZE, 0, 2, PLACARD_ICON_SIZE);
+        int iconY = hd.quadY(PLACARD_ICON_SIZE, 0, 2, PLACARD_ICON_SIZE);
         int index = GROUPS.getIndex(playerIn.getEntityId());
         setTexture(TEXTURE_STATUS);
-        this.drawTexturedModalRect(iconX, iconY, PLAC_ICON_BASE_U_OFFSET + index %
-                PLAC_ICONS_PER_ROW * PLAC_ICON_SIZE, PLAC_ICON_BASE_V_OFFSET + index /
-                PLAC_ICONS_PER_ROW * PLAC_ICON_SIZE, PLAC_ICON_SIZE, PLAC_ICON_SIZE);
+        this.drawTexturedModalRect(iconX, iconY, PLACARD_ICON_BASE_U_OFFSET + index %
+                PLACARD_ICONS_PER_ROW * PLACARD_ICON_SIZE, PLACARD_ICON_BASE_V_OFFSET + index /
+                PLACARD_ICONS_PER_ROW * PLACARD_ICON_SIZE, PLACARD_ICON_SIZE, PLACARD_ICON_SIZE);
 
         /* draw the group member distance bar */
         double dist = GROUPS.getGroupMembersScaledDistance(playerIn);
@@ -431,9 +426,8 @@ public class GuiJamOverlay extends Gui
     private static Integer[][] notePosMembers = { {45,23},{140,31},{45,39},{140,47},{45,55},{140,63},{45,71},{140,79} };
     /**
      * Maps play status to a note symbol on a texture.
-     *
      */
-    public static enum NOTATION
+    public enum NOTATION
     {
         MEMBER_REST(0, 96, 104),
         MEMBER_QUEUED(1, 144, 104),
@@ -462,28 +456,26 @@ public class GuiJamOverlay extends Gui
         private final int x, y;
         private static final NOTATION[] META_LOOKUP = new NOTATION[values().length];
 
-        private NOTATION(int metaIn, int xIn, int yIn) {this.meta = metaIn; this.x=xIn; y=yIn;}
+        NOTATION(int metaIn, int xIn, int yIn) {this.meta = metaIn; this.x=xIn; y=yIn;}
 
         static {for (NOTATION value : values()) {META_LOOKUP[value.getMetadata()] = value;}}
     }
     
     private void drawWidget(EntityPlayer playerIn, int posX, int posY, String musicTitle)
     {
-        int left = posX;
-        int top = posY;
         NOTATION eNOTATION;
         /* draw the widget background */
-        drawTexturedModalRect(left, top, 0, 0, WIDGET_WIDTH, WIDGET_HEIGHT);
+        drawTexturedModalRect(posX, posY, 0, 0, WIDGET_WIDTH, WIDGET_HEIGHT);
         
         /* alto clef */
-        drawTexturedModalRect(left+14+4, top+23, 0, 136, 28, 64);
+        drawTexturedModalRect(posX +14+4, posY +23, 0, 136, 28, 64);
         
         /* draw the notes/rests for members */
         List<GroupData> groupData = processGroup(playerIn);
  
         if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
         {
-            /** Only draw if player is a member of a group */
+            /* Only draw if player is a member of a group */
             if (GROUPS.getMembersGroupID(playerIn.getEntityId()) != null)
             {
                 for (GroupData gd: groupData)
@@ -492,8 +484,8 @@ public class GuiJamOverlay extends Gui
                     eNOTATION = NOTATION.byMetadata(status);
                     int nX = eNOTATION.getX();
                     int nY = eNOTATION.getY();
-                    int x = left + gd.notePos.getFirst();
-                    int y = top + gd.notePos.getSecond(); 
+                    int x = posX + gd.notePos.getFirst();
+                    int y = posY + gd.notePos.getSecond();
                     drawTexturedModalRect(x, y, nX, nY, 24, 16);
                 }
             }
@@ -504,8 +496,8 @@ public class GuiJamOverlay extends Gui
                 eNOTATION = NOTATION.byMetadata(status);
                 int nX = eNOTATION.getX();
                 int nY = eNOTATION.getY();
-                int x = left + notePosMembers[0][0];
-                int y = top + notePosMembers[0][1]; 
+                int x = posX + notePosMembers[0][0];
+                int y = posY + notePosMembers[0][1];
                 drawTexturedModalRect(x, y, nX, nY, 24, 16);
             }
         }
@@ -513,14 +505,14 @@ public class GuiJamOverlay extends Gui
         /* draw the names solo player/members */
         if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
         {
-            /** Only draw if player is a member of a group */
+            /* Only draw if player is a member of a group */
             if (GROUPS.getMembersGroupID(playerIn.getEntityId()) != null)
             {
                 int oddEven = 1;
                 for (GroupData gd: groupData)
                 {
-                    int x = left + gd.notePos.getFirst() +28;
-                    int y = top + gd.notePos.getSecond() + 4; 
+                    int x = posX + gd.notePos.getFirst() +28;
+                    int y = posY + gd.notePos.getSecond() + 4;
                     int textWidth = fontRenderer.getStringWidth(TextFormatting.BOLD +marquee(gd.getMemberName(), 10));
                     if (oddEven++ % 2 == 0) drawRect(x-2, y-2, x+textWidth+2, y+10, 0xC89558 + (208 << 24));
                     fontRenderer.drawString(TextFormatting.BOLD + marquee(gd.getMemberName(), 10), x, y, 0x543722);
@@ -530,8 +522,8 @@ public class GuiJamOverlay extends Gui
             {
                 /* draw the name of the solo player */
                 GROUPS.getIndex(playerIn.getEntityId());
-                int x = left + notePosMembers[0][0] + 28;
-                int y = top + notePosMembers[0][1] + 4;
+                int x = posX + notePosMembers[0][0] + 28;
+                int y = posY + notePosMembers[0][1] + 4;
                 String name = (playerIn.getDisplayName().getUnformattedText());
                 fontRenderer.drawString(TextFormatting.BOLD + marquee(name, 10), x, y, 0x543722);
             }
@@ -539,8 +531,8 @@ public class GuiJamOverlay extends Gui
         
         /* draw the music title */
         int musicTitleWidth = fontRenderer.getStringWidth(TextFormatting.BOLD + marquee(musicTitle, TITLE_DISPLAY_WIDTH));
-        int musicTitlePosX = left + (WIDGET_WIDTH/2 - musicTitleWidth/2);
-        int musicTitlePosY = top + 10;
+        int musicTitlePosX = posX + (WIDGET_WIDTH/2 - musicTitleWidth/2);
+        int musicTitlePosY = posY + 10;
         fontRenderer.drawString(TextFormatting.BOLD + marquee(musicTitle, TITLE_DISPLAY_WIDTH), musicTitlePosX, musicTitlePosY, 0x543722);
         
         /* draw the group member distance bar */
@@ -550,7 +542,7 @@ public class GuiJamOverlay extends Gui
             Color color = new Color(127,255,0);
             @SuppressWarnings("static-access")
             int colorRGB = color.HSBtoRGB((float)((1.0D-dist)*0.5D), 1F, 1F);
-            drawRect(left+237, top+24 + 62 - (int)(62*dist), left+240, top+87, colorRGB + (144 << 24));
+            drawRect(posX +237, posY +24 + 62 - (int)(62*dist), posX +240, posY +87, colorRGB + (144 << 24));
         }
     }
     
@@ -558,11 +550,6 @@ public class GuiJamOverlay extends Gui
     
     /**
      * Copied from the vanilla Gui class, but removed the GlStateManager blend enable/disable method calls.
-     * @param leftIn
-     * @param topIn
-     * @param rightIn
-     * @param bottomIn
-     * @param color
      */
     public static void drawRect(int leftIn, int topIn, int rightIn, int bottomIn, int color)
     {

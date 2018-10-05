@@ -40,6 +40,6 @@ public class PCMSound extends Sound
     @Override
     public ResourceLocation getSoundAsOggLocation()
     {
-        return new ResourceLocation(MXTuneMain.MODID, "music/" + getSoundLocation().getPath() + ".nul");
+        return new ResourceLocation(MXTuneMain.MOD_ID, "music/" + getSoundLocation().getPath() + ".nul");
     }
 }

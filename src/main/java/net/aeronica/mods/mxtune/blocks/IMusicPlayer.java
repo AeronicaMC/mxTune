@@ -29,12 +29,6 @@ import javax.annotation.Nullable;
 
 public interface IMusicPlayer
 {
-    /**
-     * Get the TE associated with the block
-     * @param worldIn
-     * @param pos
-     * @return
-     */
     @SuppressWarnings("unchecked")
     @Nullable
     default public <T extends TileInstrument> T getTE(World worldIn, BlockPos pos) {return (T) worldIn.getTileEntity(pos);}
@@ -55,7 +49,7 @@ public interface IMusicPlayer
                     ItemInstrument ii = (ItemInstrument) stackInSlot.getItem();
                     int patch = ii.getPatch(stackInSlot.getMetadata());
                     ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(stackInSlot);
-                    if (!sheetMusic.isEmpty())
+                    if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
                     {
                         NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("SheetMusic");
                         if (contents != null)

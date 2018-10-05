@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -43,23 +43,23 @@ public class GuiGroup extends GuiScreen
     private Minecraft mc;
     private FontRenderer fontRenderer = null;
 
-    private static final ResourceLocation guiTexture = new ResourceLocation(MXTuneMain.prependModID("textures/gui/manage_group.png"));
+    private static final ResourceLocation guiTexture = new ResourceLocation(MXTuneMain.MOD_ID, "textures/gui/manage_group.png");
 
     /** The X size of the group window in pixels. */
-    protected int xSize = 239;
+    private int xSize = 239;
 
     /** The Y size of the group window in pixels. */
-    protected int ySize = 164;
+    private int ySize = 164;
 
     /**
      * Starting X position for the Gui. Inconsistent use for Gui backgrounds.
      */
-    protected int guiLeft;
+    private int guiLeft;
 
     /**
      * Starting Y position for the Gui. Inconsistent use for Gui backgrounds.
      */
-    protected int guiTop;
+    private int guiTop;
 
     private String TITLE = "Jam Session";
 
@@ -83,12 +83,12 @@ public class GuiGroup extends GuiScreen
 
         buttonList.clear();
 
-        /** create button for group creation and disable it initially */
+        /* create button for group creation and disable it initially */
         int posX = guiLeft + 169;
         int posY = guiTop + 92;
         btn_create = new GuiButton(0, posX, posY, 60, 20, "Create");
 
-        /** create button for leave and disable it initially */
+        /* create button for leave and disable it initially */
         posX = guiLeft + 169;
         posY = guiTop + 112;
         btn_leave = new GuiButton(1, posX, posY, 60, 20, "Leave");
@@ -97,7 +97,7 @@ public class GuiGroup extends GuiScreen
         posY = guiTop + 132;
         btn_cancel = new GuiButton(2, posX, posY, 60, 20, "Cancel");
 
-        /** create member buttons for delete and promote */
+        /* create member buttons for delete and promote */
         initMembersButtons();
         
         buttonList.add(btn_create);
@@ -119,17 +119,17 @@ public class GuiGroup extends GuiScreen
         drawDefaultBackground();
         drawGuiBackground();
 
-        /** draw "TITLE" at the top right */
+        /* draw "TITLE" at the top right */
         int posX = guiLeft + xSize - fontRenderer.getStringWidth(TITLE) - 12;
         int posY = guiTop + 12;
         fontRenderer.getStringWidth(TITLE);
         fontRenderer.drawString(TITLE, posX, posY, 0x000000);
 
         drawMembers();
-        /** Create and Leave buttons should always reflect group membership */
+        /* Create and Leave buttons should always reflect group membership */
         btn_create.enabled = !(btn_leave.enabled = GROUPS.getMembersGroupID(player.getEntityId()) != null);
 
-        /** draw the things in the controlList (buttons) */
+        /* draw the things in the controlList (buttons) */
         super.drawScreen(i, j, f);
     }
 
@@ -140,7 +140,7 @@ public class GuiGroup extends GuiScreen
         int did = 10;
         int pid = 100;
 
-        list_btn_members = new ArrayList<MemberButtons>();
+        list_btn_members = new ArrayList<>();
 
         for (int i = 0; i < GROUPS.MAX_MEMBERS; i++)
         {
@@ -148,7 +148,6 @@ public class GuiGroup extends GuiScreen
             posY += 10;
             did++;
             pid++;
-
         }
     }
 
@@ -229,7 +228,7 @@ public class GuiGroup extends GuiScreen
     @Override
     protected void actionPerformed(GuiButton guibutton)
     {
-        /** if button is disabled ignore click */
+        /* if button is disabled ignore click */
         if (!guibutton.enabled) { return; }
 
         if (guibutton.id >= 10 && guibutton.id < 100)
@@ -245,23 +244,23 @@ public class GuiGroup extends GuiScreen
             return;
         }
 
-        /** id 0 = create; 1 = leave; id 2 = cancel; 10-99 delete; 100+ promote; */
+        /* id 0 = create; 1 = leave; id 2 = cancel; 10-99 delete; 100+ promote; */
         switch (guibutton.id)
         {
         case 0:
-            /** Create Group */
+            /* Create Group */
             sendRequest(GROUPS.GROUP_ADD, "", player.getDisplayName().getUnformattedText());
             ModLogger.debug("+++ Gui Create Group: " + GROUPS.GROUP_ADD);
             break;
 
         case 1:
-            /** Leave Group */
+            /* Leave Group */
             sendRequest(GROUPS.MEMBER_REMOVE, "", player.getDisplayName().getUnformattedText());
             ModLogger.debug("+++ Gui Leave Group: " + GROUPS.MEMBER_REMOVE);
             break;
 
         case 2:
-            /** Cancel remove the GUI */
+            /* Cancel remove the GUI */
         default:
         }
         mc.displayGuiScreen(null);
@@ -269,14 +268,14 @@ public class GuiGroup extends GuiScreen
     }
 
     /** Gets the image for the background and renders it in the middle of the screen. */
-    protected void drawGuiBackground()
+    private void drawGuiBackground()
     {
         GL11.glColor4f(1F, 1F, 1F, 1F);
         mc.renderEngine.bindTexture(guiTexture);
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 
-    protected void sendRequest(int operation, String leaderName, String memberName)
+    private void sendRequest(int operation, String leaderName, String memberName)
     {
         Integer groupID = null;
         Integer memberID = player.getEntityWorld().getPlayerEntityByName(memberName).getEntityId();
@@ -291,17 +290,17 @@ public class GuiGroup extends GuiScreen
     }
 
     /** Yes I know hard coding those button sizes is uncool - internationally recognized icons instead ?*/
-    protected MemberButtons memberButtons(int did, int pid, int xpos, int ypos)
+    private MemberButtons memberButtons(int did, int pid, int xpos, int ypos)
     {
-        MemberButtons btns_member = new MemberButtons();
-        btns_member.btn_delete = new GuiButton(did, xpos, ypos, 10, 10, "D");
-        btns_member.btn_delete.visible = false;
-        btns_member.btn_delete.enabled = false;
-        btns_member.btn_promote = new GuiButton(pid, xpos + 10, ypos, 10, 10, "L");
-        btns_member.btn_promote.visible = false;
-        btns_member.btn_promote.enabled = false;
-        buttonList.add(btns_member.btn_delete);
-        buttonList.add(btns_member.btn_promote);
-        return btns_member;
+        MemberButtons buttons = new MemberButtons();
+        buttons.btn_delete = new GuiButton(did, xpos, ypos, 10, 10, "D");
+        buttons.btn_delete.visible = false;
+        buttons.btn_delete.enabled = false;
+        buttons.btn_promote = new GuiButton(pid, xpos + 10, ypos, 10, 10, "L");
+        buttons.btn_promote.visible = false;
+        buttons.btn_promote.enabled = false;
+        buttonList.add(buttons.btn_delete);
+        buttonList.add(buttons.btn_promote);
+        return buttons;
     }
 }

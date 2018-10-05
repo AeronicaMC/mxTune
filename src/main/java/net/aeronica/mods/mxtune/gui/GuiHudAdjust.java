@@ -141,7 +141,7 @@ public class GuiHudAdjust extends GuiScreen
 
     private void drawHudPositions()
     {
-        int height = this.height-GuiJamOverlay.HOTBAR_CLEARANCE;
+        int height = this.height-GuiJamOverlay.HOT_BAR_CLEARANCE;
         for (int i = 0; i < 8; i++)
         {
             HudData hd = HudDataFactory.calcHudPositions(i, width, height);
@@ -158,7 +158,7 @@ public class GuiHudAdjust extends GuiScreen
 
     private int mouseOverHudPos(HudData hd, int pos)
     {
-        int height = this.height-GuiJamOverlay.HOTBAR_CLEARANCE;
+        int height = this.height-GuiJamOverlay.HOT_BAR_CLEARANCE;
         if (
                 ((hd.isDisplayLeft() ? hd.getPosX() : hd.getPosX() - (width/5)) < mouseX) &&
                 ((hd.isDisplayLeft() ? hd.getPosX() + (width/5) : (width)) > mouseX) &&

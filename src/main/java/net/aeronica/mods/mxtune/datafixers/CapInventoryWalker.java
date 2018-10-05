@@ -34,7 +34,7 @@ public class CapInventoryWalker implements IDataWalker
         if (ids.contains(new ResourceLocation(te.getString("id"))))
         {
             DataFixesManager.processInventory(fixer, te, version, "Items");
-            ModLogger.debug("CapInventoryWalker Walked inventory of TE {}, containing {} items", te.getString("id"), te.getInteger("Size"));
+            ModLogger.info("CapInventoryWalker Walked inventory of TE %s, containing %d items", te.getString("id"), te.getInteger("Size"));
         }
 
         return te;

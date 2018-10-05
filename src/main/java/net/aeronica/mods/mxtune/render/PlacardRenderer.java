@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -28,14 +28,14 @@ import net.minecraft.util.ResourceLocation;
 public class PlacardRenderer
 {
     
-    static final int PLAC_ICON_SIZE = 24;
-    static final int PLAC_ICON_BASE_U_OFFSET = 54;
-    static final int PLAC_ICON_BASE_V_OFFSET = 200;
-    static final int PLAC_ICONS_PER_ROW = 8;
-    static final int PLAC_TEXTURE_SIZE = 256;
-    static final ResourceLocation placardTextures = new ResourceLocation(MXTuneMain.prependModID("textures/gui/status_widgets.png"));
-    static final double PLACARD_RANGE = 32.0d;
-    int index = 0;
+    private static final int PLACARD_ICON_SIZE = 24;
+    private static final int PLACARD_ICON_BASE_U_OFFSET = 54;
+    private static final int PLACARD_ICON_BASE_V_OFFSET = 200;
+    private static final int PLACARD_ICONS_PER_ROW = 8;
+    private static final int PLACARD_TEXTURE_SIZE = 256;
+    private static final ResourceLocation placardTextures = new ResourceLocation(MXTuneMain.MOD_ID, "textures/gui/status_widgets.png");
+    private static final double PLACARD_RANGE = 32.0d;
+    private int index = 0;
 
     private PlacardRenderer() {}
 
@@ -58,10 +58,10 @@ public class PlacardRenderer
         {
             double placardHeight = event.getEntity().isSneaking() ? 0.22d : 0.35d;
 
-            double f2 = (double) (PLAC_ICON_BASE_U_OFFSET + index % PLAC_ICONS_PER_ROW * PLAC_ICON_SIZE) / PLAC_TEXTURE_SIZE;
-            double f3 = (double) (PLAC_ICON_BASE_U_OFFSET + index % PLAC_ICONS_PER_ROW * PLAC_ICON_SIZE + PLAC_ICON_SIZE) / PLAC_TEXTURE_SIZE;
-            double f4 = (double) (PLAC_ICON_BASE_V_OFFSET + index / PLAC_ICONS_PER_ROW * PLAC_ICON_SIZE) / PLAC_TEXTURE_SIZE;
-            double f5 = (double) (PLAC_ICON_BASE_V_OFFSET + index / PLAC_ICONS_PER_ROW * PLAC_ICON_SIZE + PLAC_ICON_SIZE) / PLAC_TEXTURE_SIZE;
+            double f2 = (double) (PLACARD_ICON_BASE_U_OFFSET + index % PLACARD_ICONS_PER_ROW * PLACARD_ICON_SIZE) / PLACARD_TEXTURE_SIZE;
+            double f3 = (double) (PLACARD_ICON_BASE_U_OFFSET + index % PLACARD_ICONS_PER_ROW * PLACARD_ICON_SIZE + PLACARD_ICON_SIZE) / PLACARD_TEXTURE_SIZE;
+            double f4 = (double) (PLACARD_ICON_BASE_V_OFFSET + index / PLACARD_ICONS_PER_ROW * PLACARD_ICON_SIZE) / PLACARD_TEXTURE_SIZE;
+            double f5 = (double) (PLACARD_ICON_BASE_V_OFFSET + index / PLACARD_ICONS_PER_ROW * PLACARD_ICON_SIZE + PLACARD_ICON_SIZE) / PLACARD_TEXTURE_SIZE;
 
             GlStateManager.pushMatrix();
             GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
