@@ -17,7 +17,6 @@
 package net.aeronica.mods.mxtune;
 
 import net.aeronica.mods.mxtune.advancements.ModCriteriaTriggers;
-import net.aeronica.mods.mxtune.blocks.TileBandAmp;
 import net.aeronica.mods.mxtune.blocks.TilePiano;
 import net.aeronica.mods.mxtune.datafixers.CapInventoryWalker;
 import net.aeronica.mods.mxtune.datafixers.ItemInventoryWalker;
@@ -44,7 +43,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 @Mod(modid = MXTuneMain.MOD_ID, name = MXTuneMain.MOD_NAME, version = MXTuneMain.VERSION,
-     acceptedMinecraftVersions = "[1.12,1.13)",
+     acceptedMinecraftVersions = "[1.12.2,1.13)",
      dependencies = MXTuneMain.DEPENDENTS, updateJSON = MXTuneMain.UPDATE,
      certificateFingerprint = "999640c365a8443393a1a21df2c0ede9488400e9")
 
@@ -54,7 +53,7 @@ public class MXTuneMain
     public static final String MOD_ID = "mxtune";
     public static final String MOD_NAME = "mxTune";
     public static final String VERSION = "{@VERSION}";
-    static final String DEPENDENTS = "required-after:forge@[1.12.2-14.23.4.2705,)";
+    static final String DEPENDENTS = "required-after:forge@[1.12.2-14.23.5.2768,)";
     static final String UPDATE = "https://gist.githubusercontent.com/Aeronica/dbc2619e0011d5bdbe7a162d0c6aa82b/raw/update.json";
     public static final int MXTUNE_DATA_FIXER_VERSION = 2;
     
@@ -98,7 +97,7 @@ public class MXTuneMain
         fixer.registerWalker(FixTypes.ITEM_INSTANCE, new ItemInventoryWalker());
 
         // Fix SheetMusItemStackHandler, ItemInstrument, ItemSheetMusic
-        fixer.registerWalker(FixTypes.BLOCK_ENTITY, new CapInventoryWalker(TileBandAmp.class));
+        fixer.registerWalker(FixTypes.BLOCK_ENTITY, new CapInventoryWalker());
     }
 
     @Mod.EventHandler
