@@ -34,6 +34,7 @@ import net.minecraft.util.datafix.walkers.ItemStackDataLists;
 import net.minecraftforge.common.util.CompoundDataFixer;
 import net.minecraftforge.common.util.ModFixs;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
@@ -101,6 +102,6 @@ public class MXTune
 
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
-        System.out.println("*** [mxTune] Invalid fingerprint detected! ***");
+        FMLLog.warning("*** [mxTune] Invalid fingerprint detected! ***");
     }
 }
