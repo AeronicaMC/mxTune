@@ -5,6 +5,7 @@ import net.aeronica.mods.mxtune.MXTuneMain;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.datafix.IFixableData;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 public class TileIdFixer implements IFixableData
@@ -20,8 +21,9 @@ public class TileIdFixer implements IFixableData
         return MXTuneMain.MXTUNE_DATA_FIXER_VERSION;
     }
 
+    @Nullable
     @Override
-    public NBTTagCompound fixTagCompound(NBTTagCompound compound)
+    public NBTTagCompound fixTagCompound(@SuppressWarnings("NullableProblems") NBTTagCompound compound)
     {
         String s = OLD_TO_NEW_ID_MAP.get(compound.getString("id"));
         if (s != null)

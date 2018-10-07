@@ -7,22 +7,39 @@ import net.minecraft.util.datafix.IDataFixer;
 import net.minecraft.util.datafix.IDataWalker;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CapInventoryWalker implements IDataWalker
 {
+    private static final List<String> INVENTORY_KEY_MADNESS = new ArrayList<>();
+    static {
+        // vanilla chest, forge capabilities
+        INVENTORY_KEY_MADNESS.add("Items");
+        // Thermal Expansion Strongbox
+        INVENTORY_KEY_MADNESS.add("Inventory");
+    }
     public CapInventoryWalker() {/* NOP */}
 
     @Nonnull
     @Override
-    public NBTTagCompound process(@Nonnull IDataFixer fixer, @Nonnull NBTTagCompound te, int version)
+    public NBTTagCompound process(@Nonnull IDataFixer fixer, @SuppressWarnings("NullableProblems") NBTTagCompound te, int version)
     {
-        if (te.hasKey("Items") || te.hasKey("items") || te.hasKey("Inventory"))
-        {
-            DataFixesManager.processInventory(fixer, te, version, "Items");
-            DataFixesManager.processInventory(fixer, te, version, "items");
-            DataFixesManager.processInventory(fixer, te, version, "Inventory");
-            ModLogger.info("CapInventoryWalker Walked inventory of TE %s", te.getString("id"));
-        }
+            if (te.hasKey("items"))
+            {
+                // primal_chest
+                NBTTagCompound primal_chest = te.getCompoundTag("items");
+                DataFixesManager.processInventory(fixer, primal_chest, version, "Items");
+                ModLogger.info("CapInventoryWalker Walked inventory of TE %s using tag %s", te.getString("id"), "Items");
+            } else
+            {
+                for (String key : INVENTORY_KEY_MADNESS)
+                    if (te.hasKey(key))
+                    {
+                        DataFixesManager.processInventory(fixer, te, version, key);
+                        ModLogger.info("CapInventoryWalker Walked inventory of TE %s using tag %s", te.getString("id"), key);
+                    }
+            }
 
         return te;
     }

@@ -95,7 +95,6 @@ public class MXTuneMain
         fixer.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TilePiano.class, "Items"));
         // Fix SheetMusic in ItemInstrument ItemInventory slot
         fixer.registerWalker(FixTypes.ITEM_INSTANCE, new ItemInventoryWalker());
-
         // Fix SheetMusItemStackHandler, ItemInstrument, ItemSheetMusic
         fixer.registerWalker(FixTypes.BLOCK_ENTITY, new CapInventoryWalker());
     }
