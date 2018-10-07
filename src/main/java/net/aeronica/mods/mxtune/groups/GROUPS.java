@@ -20,7 +20,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Sets;
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
@@ -177,7 +177,7 @@ public class GROUPS
         Vec3d pos;
         for(int member: getMembersByPlayID(playID))
         {   
-            EntityPlayer player = (EntityPlayer)  MXTuneMain.proxy.getClientPlayer().getEntityWorld().getEntityByID(member);
+            EntityPlayer player = (EntityPlayer)  MXTune.proxy.getClientPlayer().getEntityWorld().getEntityByID(member);
             if(player == null)
                 continue;
             x = x + player.getPositionVector().x;
@@ -234,7 +234,7 @@ public class GROUPS
     private static Vec3d getMemberVector(Integer entityID)
     {
         Vec3d v3d;
-        EntityPlayer player = (EntityPlayer) MXTuneMain.proxy.getClientPlayer().getEntityWorld().getEntityByID(entityID);
+        EntityPlayer player = (EntityPlayer) MXTune.proxy.getClientPlayer().getEntityWorld().getEntityByID(entityID);
         if (player != null)
             v3d = new Vec3d(player.posX, player.prevPosY, player.posZ);
         else
@@ -245,7 +245,7 @@ public class GROUPS
     public static boolean isClientPlaying(Integer playID)
     {
         Set<Integer> members = GROUPS.getMembersByPlayID(playID);
-        return ((members != null) && !members.isEmpty()) && members.contains(MXTuneMain.proxy.getClientPlayer().getEntityId());
+        return ((members != null) && !members.isEmpty()) && members.contains(MXTune.proxy.getClientPlayer().getEntityId());
     }
     
     public static boolean playerHasPlayID(Integer entityID, Integer playID)

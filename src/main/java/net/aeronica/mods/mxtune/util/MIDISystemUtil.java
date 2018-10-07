@@ -17,7 +17,8 @@
 package net.aeronica.mods.mxtune.util;
 
 import com.sun.media.sound.AudioSynthesizer;
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.MXTune;
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
@@ -48,7 +49,7 @@ public enum MIDISystemUtil
     private static boolean midiAvailable = false;
     private static int timesToWarn = 10;
     private static final List<TextComponentString> chatStatus = new ArrayList<>();
-    private static final ResourceLocation SOUND_FONT = new ResourceLocation(MXTuneMain.MOD_ID, "synth/mxtune.sf2");
+    private static final ResourceLocation SOUND_FONT = new ResourceLocation(Reference.MOD_ID, "synth/mxtune.sf2");
     private static final List<Instrument> instrumentCache = new ArrayList<>();
 
     public static void mxTuneInit()
@@ -140,16 +141,16 @@ public enum MIDISystemUtil
             ModLogger.info("MaxPolyphony: " + bestSynth.getMaxPolyphony() + ", MaxReceivers: " + ((bestSynth.getMaxReceivers() == -1) ? "Unlimited" : bestSynth.getMaxReceivers()));
             ModLogger.info("Synthsizer Available: ?         " + synthAvailable);
             ModLogger.info("Default Sound Bank Available: ? " + soundBankAvailable);
-            addStatus(new TextComponentString("[" + MXTuneMain.MOD_NAME + "] " + TextFormatting.GREEN +I18n.format("mxtune.chat.msu.midiAvailable")));
+            addStatus(new TextComponentString("[" + Reference.MOD_NAME + "] " + TextFormatting.GREEN +I18n.format("mxtune.chat.msu.midiAvailable")));
             midiAvailable = true;
         } else
         {
             ModLogger.error("WARNING - Default Synthesizer available? : " + synthAvailable);
             ModLogger.error("WARNING - Default Sound Bank available?  : " + soundBankAvailable);
             ModLogger.error("WARNING - MIDI System is missing resources! mxTune cannot function properly!");
-            addStatus(new TextComponentString("[" + MXTuneMain.MOD_NAME + "] " + TextFormatting.RED +I18n.format("mxtune.chat.msu.midiNotAvailable")));
-            addStatus(new TextComponentString("[" + MXTuneMain.MOD_NAME + "] " + TextFormatting.YELLOW +I18n.format("mxtune.chat.msu.suggestion.01")));
-            addStatus(new TextComponentString("[" + MXTuneMain.MOD_NAME + "] " + TextFormatting.YELLOW +I18n.format("mxtune.chat.msu.suggestion.02")));
+            addStatus(new TextComponentString("[" + Reference.MOD_NAME + "] " + TextFormatting.RED +I18n.format("mxtune.chat.msu.midiNotAvailable")));
+            addStatus(new TextComponentString("[" + Reference.MOD_NAME + "] " + TextFormatting.YELLOW +I18n.format("mxtune.chat.msu.suggestion.01")));
+            addStatus(new TextComponentString("[" + Reference.MOD_NAME + "] " + TextFormatting.YELLOW +I18n.format("mxtune.chat.msu.suggestion.02")));
 
             midiAvailable = false;
         }
@@ -178,7 +179,7 @@ public enum MIDISystemUtil
     
     private static URL getMXTuneSoundBankURL()
     {
-        URL file = MXTuneMain.class.getResource("/assets/" + SOUND_FONT.getNamespace() + "/" + SOUND_FONT.getPath());
+        URL file = MXTune.class.getResource("/assets/" + SOUND_FONT.getNamespace() + "/" + SOUND_FONT.getPath());
         ModLogger.debug("Sound font path: %s", file);
         return file;
     }

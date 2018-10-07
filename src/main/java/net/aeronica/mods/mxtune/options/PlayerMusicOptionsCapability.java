@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.options;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.Reference;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -61,7 +61,7 @@ public class PlayerMusicOptionsCapability
         {
             if (event.getObject() instanceof EntityPlayer)
             {
-                event.addCapability(new ResourceLocation(MXTuneMain.MOD_ID, "IPlayerMusicOptions"), new ICapabilitySerializable<NBTTagCompound>()
+                event.addCapability(new ResourceLocation(Reference.MOD_ID, "IPlayerMusicOptions"), new ICapabilitySerializable<NBTTagCompound>()
                 {
                     final IPlayerMusicOptions optionsInst = MUSIC_OPTIONS.getDefaultInstance();
 

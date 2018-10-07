@@ -17,7 +17,7 @@
 package net.aeronica.mods.mxtune.config;
 
 import com.google.common.collect.Maps;
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Config;
@@ -34,7 +34,7 @@ public class ModConfig
     private ModConfig() { /* NOP */ }
 
     /** Client Configuration Settings */
-    @Config(modid = MXTuneMain.MOD_ID, name = MXTuneMain.MOD_ID + "/" +MXTuneMain.MOD_ID + "_client", category="client")
+    @Config(modid = Reference.MOD_ID, name = Reference.MOD_ID + "/" + Reference.MOD_ID + "_client", category="client")
     @LangKey("config.mxtune:ctgy.client")
     public static class CFG_CLIENT
     {   
@@ -61,7 +61,7 @@ public class ModConfig
         }
     }
     
-    @Config(modid=MXTuneMain.MOD_ID, name = MXTuneMain.MOD_ID + "/" +MXTuneMain.MOD_ID + "_general", category="general")
+    @Config(modid= Reference.MOD_ID, name = Reference.MOD_ID + "/" + Reference.MOD_ID + "_general", category="general")
     @LangKey("config.mxtune:ctgy.general")
     public static class CFG_GENERAL
     {
@@ -88,7 +88,7 @@ public class ModConfig
         }
     }
     
-    @Config(modid = MXTuneMain.MOD_ID, name = MXTuneMain.MOD_ID + "/" +MXTuneMain.MOD_ID + "_recipes", type = Type.INSTANCE, category="recipe")
+    @Config(modid = Reference.MOD_ID, name = Reference.MOD_ID + "/" + Reference.MOD_ID + "_recipes", type = Type.INSTANCE, category="recipe")
     @LangKey("config.mxtune:ctgy.recipes")
     public static class CFG_RECIPE
     { 
@@ -136,7 +136,7 @@ public class ModConfig
     public static boolean isRecipeEnabled(ItemStack stackIn)
     {
         // strip off "item." and "instrument." to get the raw item name without domain and item base names
-        String itemName = stackIn.getTranslationKey().replaceFirst("item\\." + MXTuneMain.MOD_ID + ":", "");
+        String itemName = stackIn.getTranslationKey().replaceFirst("item\\." + Reference.MOD_ID + ":", "");
         itemName = itemName.replaceFirst("instrument\\.", "");
         boolean enableState = !CFG_RECIPE.recipeToggles.containsKey(itemName) || CFG_RECIPE.recipeToggles.get(itemName) && !itemName.contains(":");
         ModLogger.debug("Recipe Enabled? %s %s", itemName, enableState);
@@ -155,9 +155,9 @@ public class ModConfig
         public static void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event)
         {
             ModLogger.info("On ConfigChanged: %s", event.getModID());
-            if(event.getModID().equals(MXTuneMain.MOD_ID))
+            if(event.getModID().equals(Reference.MOD_ID))
             {
-                ConfigManager.sync(MXTuneMain.MOD_ID, Config.Type.INSTANCE);
+                ConfigManager.sync(Reference.MOD_ID, Config.Type.INSTANCE);
             }
         }
     }

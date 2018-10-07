@@ -40,7 +40,7 @@
 package net.aeronica.mods.mxtune.sound;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
@@ -268,7 +268,7 @@ public class ClientAudio
             addPlayIDQueue(playID);
             playIDAudioData.putIfAbsent(playID, new AudioData(playID, null, GROUPS.isClientPlaying(playID)));
             executorService.execute(new ThreadedPlay(playID, musicText));
-            MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MusicMoving());
+            MXTune.proxy.getMinecraft().getSoundHandler().playSound(new MusicMoving());
             stopVanillaMusic();
         }
     }
@@ -281,7 +281,7 @@ public class ClientAudio
             addPlayIDQueue(playID);
             playIDAudioData.putIfAbsent(playID, new AudioData(playID, pos, false));
             executorService.execute(new ThreadedPlay(playID, musicText));
-            MXTuneMain.proxy.getMinecraft().getSoundHandler().playSound(new MusicMoving());
+            MXTune.proxy.getMinecraft().getSoundHandler().playSound(new MusicMoving());
             stopVanillaMusic();
         }
     }
@@ -436,7 +436,7 @@ public class ClientAudio
     @SubscribeEvent
     public static void onJoinWorld(EntityJoinWorldEvent event)
     {
-        if (event.getEntity() instanceof EntityPlayerSP && event.getEntity().getEntityId() == MXTuneMain.proxy.getClientPlayer().getEntityId())
+        if (event.getEntity() instanceof EntityPlayerSP && event.getEntity().getEntityId() == MXTune.proxy.getClientPlayer().getEntityId())
         {
             cleanup();
             ModLogger.info("ClientAudio EntityJoinWorldEvent: %s", event.getEntity().getName());

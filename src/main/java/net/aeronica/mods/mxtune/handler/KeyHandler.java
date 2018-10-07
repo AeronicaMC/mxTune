@@ -39,7 +39,7 @@
  */
 package net.aeronica.mods.mxtune.handler;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.SendKeyMessage;
 import net.minecraft.client.Minecraft;
@@ -54,8 +54,8 @@ public class KeyHandler
     private static class KeyHandlerHolder {private static final KeyHandler INSTANCE = new KeyHandler();}
     public static KeyHandler getInstance() {return KeyHandlerHolder.INSTANCE;}
     
-    private KeyBinding key_openPartyGUI = new KeyBinding("mxtune.key.openParty", Keyboard.KEY_J, MXTuneMain.MOD_ID);
-    private KeyBinding key_openMusicOptionsGUI = new KeyBinding("mxtune.key.openMusicOptions", Keyboard.KEY_P, MXTuneMain.MOD_ID);
+    private KeyBinding key_openPartyGUI = new KeyBinding("mxtune.key.openParty", Keyboard.KEY_J, Reference.MOD_ID);
+    private KeyBinding key_openMusicOptionsGUI = new KeyBinding("mxtune.key.openMusicOptions", Keyboard.KEY_P, Reference.MOD_ID);
 
     private KeyHandler()
     {

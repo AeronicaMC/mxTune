@@ -16,7 +16,8 @@
  */
 package net.aeronica.mods.mxtune.init;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.MXTune;
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
@@ -37,6 +38,6 @@ public enum ModEntities
     
     private static void registerModEntity(Class<? extends Entity> entityClass, String name, int trackingRange, int updateFrequency, boolean sendsVelocityUpdates)
     {
-        EntityRegistry.registerModEntity(new ResourceLocation(MXTuneMain.MOD_ID, name), entityClass, name, getEntityID(), MXTuneMain.instance, trackingRange, updateFrequency, sendsVelocityUpdates);
+        EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID, name), entityClass, name, getEntityID(), MXTune.instance, trackingRange, updateFrequency, sendsVelocityUpdates);
     }
 }

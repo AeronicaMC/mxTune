@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.blocks;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiBandAmp;
 import net.aeronica.mods.mxtune.handler.GUIHandler;
@@ -62,7 +62,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
         this.setSoundType(SoundType.WOOD);
         this.setHardness(2.0F);
         this.disableStats();
-        this.setCreativeTab(MXTuneMain.TAB_MUSIC);
+        this.setCreativeTab(MXTune.TAB_MUSIC);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
             }
             else if (!playerIn.isSneaking() && playerIn.capabilities.allowEdit)
             {
-                playerIn.openGui(MXTuneMain.instance, GuiBandAmp.GUI_ID, worldIn, pos.getX(), pos.getY(), pos.getZ());
+                playerIn.openGui(MXTune.instance, GuiBandAmp.GUI_ID, worldIn, pos.getX(), pos.getY(), pos.getZ());
             }
         }
         return true;

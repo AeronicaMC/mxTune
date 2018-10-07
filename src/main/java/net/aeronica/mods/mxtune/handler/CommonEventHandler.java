@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.handler;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
@@ -36,7 +36,7 @@ public class CommonEventHandler
     @SubscribeEvent
     public void onEvent(PlayerContainerEvent.Open event)
     {
-        if(MXTuneMain.proxy.getEffectiveSide() == Side.SERVER)
+        if(MXTune.proxy.getEffectiveSide() == Side.SERVER)
             PlayManager.stopPlayingPlayer(event.getEntityLiving());
     }
     

@@ -1,7 +1,7 @@
 package net.aeronica.mods.mxtune.datafixers;
 
 import com.google.common.collect.Maps;
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.Reference;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.datafix.IFixableData;
 
@@ -18,7 +18,7 @@ public class TileIdFixer implements IFixableData
     @Override
     public int getFixVersion()
     {
-        return MXTuneMain.MXTUNE_DATA_FIXER_VERSION;
+        return Reference.MXTUNE_DATA_FIXER_VERSION;
     }
 
     @Nullable

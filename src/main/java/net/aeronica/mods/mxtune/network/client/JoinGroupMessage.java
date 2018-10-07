@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.network.client;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.gui.GuiGroupJoin;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.minecraft.entity.player.EntityPlayer;
@@ -48,6 +48,6 @@ public class JoinGroupMessage extends AbstractClientMessage<JoinGroupMessage>
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        player.openGui(MXTuneMain.instance, GuiGroupJoin.GUI_ID, player.getEntityWorld(), (int) player.posX, (int) player.posY, (int) player.posZ);
+        player.openGui(MXTune.instance, GuiGroupJoin.GUI_ID, player.getEntityWorld(), (int) player.posX, (int) player.posY, (int) player.posZ);
     }
 }

@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.util;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -31,7 +31,7 @@ public class MusicTab extends CreativeTabs
     @SideOnly(Side.CLIENT)
     public String getTranslationKey()
     {
-        return MXTuneMain.MOD_NAME;
+        return Reference.MOD_NAME;
     }
 
     @Override

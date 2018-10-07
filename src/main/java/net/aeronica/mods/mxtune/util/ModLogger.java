@@ -1,6 +1,6 @@
 package net.aeronica.mods.mxtune.util;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.Reference;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
@@ -8,7 +8,7 @@ import org.apache.logging.log4j.MarkerManager;
 
 public class ModLogger
 {
-    private static final Marker MOD_MARKER = MarkerManager.getMarker(MXTuneMain.MOD_ID);
+    private static final Marker MOD_MARKER = MarkerManager.getMarker(Reference.MOD_ID);
     private static Logger logger;
 
     public static void setLogger(Logger logger)

@@ -4,7 +4,7 @@
  */
 package net.aeronica.mods.mxtune.network;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.network.bidirectional.ClientStateDataMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.SendKeyMessage;
 import net.aeronica.mods.mxtune.network.client.*;
@@ -51,7 +51,7 @@ public class PacketDispatcher
      * packets. Since I will be adding wrapper methods, this field is private,
      * but you should make it public if you plan on using it directly.
      */
-    private static final SimpleNetworkWrapper dispatcher = NetworkRegistry.INSTANCE.newSimpleChannel(MXTuneMain.MOD_ID);
+    private static final SimpleNetworkWrapper dispatcher = NetworkRegistry.INSTANCE.newSimpleChannel(Reference.MOD_ID);
 
     /**
      * Call this during pre-init or loading and register all of your packets

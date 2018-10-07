@@ -17,7 +17,7 @@
 package net.aeronica.mods.mxtune.items;
 
 import net.aeronica.libs.mml.core.MMLUtil;
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.advancements.ModCriteriaTriggers;
 import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
 import net.aeronica.mods.mxtune.groups.PlayManager;
@@ -61,7 +61,7 @@ public class ItemInstrument extends Item implements IInstrument
         setHasSubtypes(true);
         setMaxStackSize(1);
         setMaxDamage(0);
-        setCreativeTab(MXTuneMain.TAB_MUSIC);
+        setCreativeTab(MXTune.TAB_MUSIC);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class ItemInstrument extends Item implements IInstrument
             /** Server Side - Open the instrument inventory GuiInstInvAdjustRotations */
             if (playerIn.isSneaking() && handIn.equals(EnumHand.MAIN_HAND))
             {
-                playerIn.openGui(MXTuneMain.instance, GuiInstrumentInventory.GUI_ID, worldIn, 0,0,0);
+                playerIn.openGui(MXTune.instance, GuiInstrumentInventory.GUI_ID, worldIn, 0, 0, 0);
             }
             if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && handIn.equals(EnumHand.MAIN_HAND))
             {

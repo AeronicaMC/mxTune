@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.render;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.Reference;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -33,7 +33,7 @@ public class PlacardRenderer
     private static final int PLACARD_ICON_BASE_V_OFFSET = 200;
     private static final int PLACARD_ICONS_PER_ROW = 8;
     private static final int PLACARD_TEXTURE_SIZE = 256;
-    private static final ResourceLocation placardTextures = new ResourceLocation(MXTuneMain.MOD_ID, "textures/gui/status_widgets.png");
+    private static final ResourceLocation placardTextures = new ResourceLocation(Reference.MOD_ID, "textures/gui/status_widgets.png");
     private static final double PLACARD_RANGE = 32.0d;
     private int index = 0;
 

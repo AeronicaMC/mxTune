@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.items;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.init.ModBlocks;
 import net.minecraft.block.Block;
@@ -38,7 +38,7 @@ public class ItemPiano extends Item
     public ItemPiano()
     {
         setMaxStackSize(1);
-        setCreativeTab(MXTuneMain.TAB_MUSIC);
+        setCreativeTab(MXTune.TAB_MUSIC);
     }
 
     /** Called when a Block is right-clicked with this Item */

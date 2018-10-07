@@ -15,7 +15,7 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.Reference;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.event.RegistryEvent;
@@ -23,7 +23,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
-@ObjectHolder(MXTuneMain.MOD_ID)
+@ObjectHolder(Reference.MOD_ID)
 public class ModSoundEvents {
     
     @ObjectHolder("pcm-proxy")
@@ -37,11 +37,11 @@ public class ModSoundEvents {
      * @return The SoundEvent
      */
     private static SoundEvent registerSound(String soundName) {
-        final ResourceLocation soundID = new ResourceLocation(MXTuneMain.MOD_ID, soundName);
+        final ResourceLocation soundID = new ResourceLocation(Reference.MOD_ID, soundName);
         return new SoundEvent(soundID).setRegistryName(soundID);
     }
 
-    @Mod.EventBusSubscriber(modid = MXTuneMain.MOD_ID)
+    @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
     public static class RegistrationHandler {
         @SubscribeEvent
         public static void registerSoundEvents(final RegistryEvent.Register<SoundEvent> event) {

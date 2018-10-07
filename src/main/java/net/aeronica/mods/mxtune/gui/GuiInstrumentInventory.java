@@ -1,6 +1,6 @@
 package net.aeronica.mods.mxtune.gui;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.inventory.ContainerInstrument;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -20,7 +20,7 @@ public class GuiInstrumentInventory extends GuiContainer {
 	private int theInvItemSlot;
 
 	private static final ResourceLocation inventoryTexture = new ResourceLocation(
-			MXTuneMain.MOD_ID, "textures/gui/instrument_inventory.png");
+            Reference.MOD_ID, "textures/gui/instrument_inventory.png");
 
 	public GuiInstrumentInventory(ContainerInstrument containerInstrument) {
 		super(containerInstrument);

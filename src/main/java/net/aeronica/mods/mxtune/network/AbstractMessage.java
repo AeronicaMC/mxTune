@@ -5,7 +5,7 @@
 package net.aeronica.mods.mxtune.network;
 
 import io.netty.buffer.ByteBuf;
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.MXTune;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -124,7 +124,7 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
             checkThreadAndEnqueue(msg, ctx);
         } else
         {
-            msg.process(MXTuneMain.proxy.getPlayerEntity(ctx), ctx.side);
+            msg.process(MXTune.proxy.getPlayerEntity(ctx), ctx.side);
         }
         return null;
     }
@@ -134,7 +134,7 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
      */
     private static final <T extends AbstractMessage<T>> void checkThreadAndEnqueue(final AbstractMessage<T> msg, final MessageContext ctx)
     {
-        IThreadListener thread = MXTuneMain.proxy.getThreadFromContext(ctx);
+        IThreadListener thread = MXTune.proxy.getThreadFromContext(ctx);
         /**
          * pretty much copied straight from vanilla code, see
          * {@link PacketThreadUtil#checkThreadAndEnqueue}
@@ -143,7 +143,7 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
         {
             public void run()
             {
-                msg.process(MXTuneMain.proxy.getPlayerEntity(ctx), ctx.side);
+                msg.process(MXTune.proxy.getPlayerEntity(ctx), ctx.side);
             }
         });
     }

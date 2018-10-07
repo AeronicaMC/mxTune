@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.items;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.gui.GuiMusicPaperParse;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
@@ -37,7 +37,7 @@ public class ItemMusicPaper extends Item
     public ItemMusicPaper()
     {
         this.setMaxStackSize(16);
-        this.setCreativeTab(MXTuneMain.TAB_MUSIC);
+        this.setCreativeTab(MXTune.TAB_MUSIC);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class ItemMusicPaper extends Item
     {
         if (worldIn.isRemote)
         {
-            playerIn.openGui(MXTuneMain.instance, GuiMusicPaperParse.GUI_ID, worldIn, (int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ);
+            playerIn.openGui(MXTune.instance, GuiMusicPaperParse.GUI_ID, worldIn, (int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ);
         }
         playerIn.setActiveHand(handIn);
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));

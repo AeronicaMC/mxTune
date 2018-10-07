@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.gui;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
@@ -57,7 +57,7 @@ import java.util.Set;
 public class GuiJamOverlay extends Gui
 {
     private static final String INSTRUMENT_INVENTORY_EMPTY = "["+I18n.format("mxtune.instrumentInventory.empty")+"]";
-    private static final ResourceLocation TEXTURE_STATUS = new ResourceLocation(MXTuneMain.MOD_ID, "textures/gui/status_widgets.png");
+    private static final ResourceLocation TEXTURE_STATUS = new ResourceLocation(Reference.MOD_ID, "textures/gui/status_widgets.png");
     static final int HOT_BAR_CLEARANCE = 40;
     private static final int WIDGET_WIDTH = 256;
     private static final int WIDGET_HEIGHT = 104;

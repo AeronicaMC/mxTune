@@ -17,7 +17,7 @@
 package net.aeronica.mods.mxtune.groups;
 
 import com.google.common.collect.Sets;
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.JoinGroupMessage;
 import net.aeronica.mods.mxtune.network.client.SyncGroupMessage;
@@ -430,7 +430,7 @@ public class GroupManager
     @SubscribeEvent
     public void onPlayerLoggedInEvent(PlayerLoggedInEvent event)
     {
-        if(MXTuneMain.proxy.getEffectiveSide() == Side.SERVER)
+        if(MXTune.proxy.getEffectiveSide() == Side.SERVER)
             ServerCSDManager.queryClient(event.player);
     } 
     

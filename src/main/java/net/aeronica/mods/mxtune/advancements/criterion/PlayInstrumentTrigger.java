@@ -27,7 +27,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.Reference;
 import net.minecraft.advancements.ICriterionTrigger;
 import net.minecraft.advancements.PlayerAdvancements;
 import net.minecraft.advancements.critereon.AbstractCriterionInstance;
@@ -48,7 +48,7 @@ import java.util.Set;
 public class PlayInstrumentTrigger implements ICriterionTrigger<PlayInstrumentTrigger.Instance>
 {
 
-    private static final ResourceLocation ID = new ResourceLocation(MXTuneMain.MOD_ID, "play_instrument");
+    private static final ResourceLocation ID = new ResourceLocation(Reference.MOD_ID, "play_instrument");
     private final Map<PlayerAdvancements, Listeners> listeners = new HashMap<>();
 
     static class Instance extends AbstractCriterionInstance

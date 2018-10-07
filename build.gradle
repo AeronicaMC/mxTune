@@ -47,7 +47,7 @@ minecraft {
     runDir = "${config.runDir}"
 	mappings = "${config.forgeMappings}"
     
-    replaceIn "net/aeronica/mods/mxtune/MXTuneMain.java"
+    replaceIn "net/aeronica/mods/mxtune/Reference.java"
     replace "{@VERSION}", project.version
 }
 

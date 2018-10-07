@@ -1,6 +1,6 @@
 package net.aeronica.mods.mxtune.datafixers;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,7 +15,7 @@ public class SheetMusicFixer implements IFixableData
     @Override
     public int getFixVersion()
     {
-        return MXTuneMain.MXTUNE_DATA_FIXER_VERSION;
+        return Reference.MXTUNE_DATA_FIXER_VERSION;
     }
 
     @Nonnull

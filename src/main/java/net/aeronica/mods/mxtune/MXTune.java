@@ -42,28 +42,21 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
-@Mod(modid = MXTuneMain.MOD_ID, name = MXTuneMain.MOD_NAME, version = MXTuneMain.VERSION,
-     acceptedMinecraftVersions = "[1.12.2,1.13)",
-     dependencies = MXTuneMain.DEPENDENTS, updateJSON = MXTuneMain.UPDATE,
-     certificateFingerprint = "999640c365a8443393a1a21df2c0ede9488400e9")
+@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION,
+     acceptedMinecraftVersions = Reference.ACCEPTED_MINECRAFT_VERSIONS,
+     dependencies = Reference.DEPENDENTS, updateJSON = Reference.UPDATE,
+     certificateFingerprint = Reference.CERTIFICATE_FINGERPRINT)
 
 @SuppressWarnings("deprecation")
-public class MXTuneMain
+public class MXTune
 {
-    public static final String MOD_ID = "mxtune";
-    public static final String MOD_NAME = "mxTune";
-    public static final String VERSION = "{@VERSION}";
-    static final String DEPENDENTS = "required-after:forge@[1.12.2-14.23.5.2768,)";
-    static final String UPDATE = "https://gist.githubusercontent.com/Aeronica/dbc2619e0011d5bdbe7a162d0c6aa82b/raw/update.json";
-    public static final int MXTUNE_DATA_FIXER_VERSION = 2;
-    
-    @Mod.Instance(MOD_ID)
-    public static MXTuneMain instance;
+    @Mod.Instance(Reference.MOD_ID)
+    public static MXTune instance;
 
     @SidedProxy(clientSide = "net.aeronica.mods.mxtune.proxy.ClientProxy", serverSide = "net.aeronica.mods.mxtune.proxy.ServerProxy")
     public static ServerProxy proxy;
 
-    public static final CreativeTabs TAB_MUSIC = new MusicTab(CreativeTabs.getNextID(), MOD_NAME);
+    public static final CreativeTabs TAB_MUSIC = new MusicTab(CreativeTabs.getNextID(), Reference.MOD_NAME);
     
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
@@ -87,7 +80,7 @@ public class MXTuneMain
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, GUIHandler.getInstance());
 
         CompoundDataFixer fixer = FMLCommonHandler.instance().getDataFixer();
-        ModFixs modFixer = fixer.init(MXTuneMain.MOD_ID, MXTUNE_DATA_FIXER_VERSION);
+        ModFixs modFixer = fixer.init(Reference.MOD_ID, Reference.MXTUNE_DATA_FIXER_VERSION);
         modFixer.registerFix(FixTypes.BLOCK_ENTITY, new TileIdFixer());
         modFixer.registerFix(FixTypes.ITEM_INSTANCE, new SheetMusicFixer());
 

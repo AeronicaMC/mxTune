@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.gui;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.ManageGroupMessage;
@@ -43,7 +43,7 @@ public class GuiGroup extends GuiScreen
     private Minecraft mc;
     private FontRenderer fontRenderer = null;
 
-    private static final ResourceLocation guiTexture = new ResourceLocation(MXTuneMain.MOD_ID, "textures/gui/manage_group.png");
+    private static final ResourceLocation guiTexture = new ResourceLocation(Reference.MOD_ID, "textures/gui/manage_group.png");
 
     /** The X size of the group window in pixels. */
     private int xSize = 239;

@@ -1,6 +1,6 @@
 package net.aeronica.mods.mxtune.gui;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.blocks.TileBandAmp;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class GuiBandAmp extends GuiContainer
 {
-    private static final ResourceLocation BG_TEXTURE = new ResourceLocation(MXTuneMain.MOD_ID, "textures/gui/band_amp.png");
+    private static final ResourceLocation BG_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/band_amp.png");
     private InventoryPlayer inventoryPlayer;
     public static final int GUI_ID = 9;
     private TileBandAmp tileBandAmp;

@@ -1,6 +1,6 @@
 package net.aeronica.mods.mxtune.init;
 
-import net.aeronica.mods.mxtune.MXTuneMain;
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.blocks.BlockBandAmp;
 import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.blocks.TileBandAmp;
@@ -86,6 +86,6 @@ public class ModBlocks
     }
 
     private static void registerTileEntity(Class<? extends TileEntity> tileEntityClass, String name) {
-        GameRegistry.registerTileEntity(tileEntityClass, new ResourceLocation(MXTuneMain.MOD_ID, name));
+        GameRegistry.registerTileEntity(tileEntityClass, new ResourceLocation(Reference.MOD_ID, name));
     }
 }
