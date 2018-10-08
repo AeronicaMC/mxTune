@@ -28,7 +28,7 @@ public class TilePiano extends TileInstrument
 
     public TilePiano(EnumFacing facing)
     {
-        this.inventory = new StackHandler(1);
+        this.inventory = new SheetMusicStackHandler(1);
         this.facing = facing;
     }
 
@@ -36,7 +36,7 @@ public class TilePiano extends TileInstrument
     public void readFromNBT(NBTTagCompound tag)
     {
         super.readFromNBT(tag);
-        inventory = new StackHandler(1);
+        inventory = new SheetMusicStackHandler(1);
         inventory.deserializeNBT(tag);
     }
 
@@ -67,9 +67,9 @@ public class TilePiano extends TileInstrument
         }
     }
 
-    class StackHandler extends ItemStackHandler
+    class SheetMusicStackHandler extends ItemStackHandler
     {
-        protected StackHandler(int size) {super(size);}
+        private SheetMusicStackHandler(int size) {super(size);}
 
         @Override
         protected void onLoad()
@@ -77,8 +77,5 @@ public class TilePiano extends TileInstrument
             super.onLoad();
             syncToClient();
         }
-
-        @Override
-        public void onContentsChanged(int slot) {syncToClient();}
     }
 }

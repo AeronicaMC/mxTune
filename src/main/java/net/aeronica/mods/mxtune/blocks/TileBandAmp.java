@@ -52,7 +52,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
 
     public TileBandAmp(EnumFacing facing)
     {
-        this.inventory =  new StackHandler(MAX_SLOTS);
+        this.inventory =  new InstrumentStackHandler(MAX_SLOTS);
         this.facing = facing;
         this.playID = -1;
     }
@@ -71,7 +71,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     public void readFromNBT(NBTTagCompound tag)
     {
         super.readFromNBT(tag);
-        inventory = new StackHandler(MAX_SLOTS);
+        inventory = new InstrumentStackHandler(MAX_SLOTS);
         inventory.deserializeNBT(tag);
         previousRedStoneState = tag.getBoolean("powered");
         this.code = LockCode.fromNBT(tag);
@@ -124,9 +124,9 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         markDirty();
     }
 
-    class StackHandler extends ItemStackHandler
+    class InstrumentStackHandler extends ItemStackHandler
     {
-        protected StackHandler(int size) {super(size);}
+        protected InstrumentStackHandler(int size) {super(size);}
 
         @Nonnull
         @Override

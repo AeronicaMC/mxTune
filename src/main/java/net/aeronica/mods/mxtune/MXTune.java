@@ -18,9 +18,9 @@ package net.aeronica.mods.mxtune;
 
 import net.aeronica.mods.mxtune.advancements.ModCriteriaTriggers;
 import net.aeronica.mods.mxtune.blocks.TilePiano;
-import net.aeronica.mods.mxtune.datafixers.CapInventoryWalker;
 import net.aeronica.mods.mxtune.datafixers.ItemInventoryWalker;
 import net.aeronica.mods.mxtune.datafixers.SheetMusicFixer;
+import net.aeronica.mods.mxtune.datafixers.TileEntityInventoryWalker;
 import net.aeronica.mods.mxtune.datafixers.TileIdFixer;
 import net.aeronica.mods.mxtune.handler.GUIHandler;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
@@ -90,7 +90,7 @@ public class MXTune
         // Fix SheetMusic in ItemInstrument ItemInventory slot
         fixer.registerWalker(FixTypes.ITEM_INSTANCE, new ItemInventoryWalker());
         // Fix SheetMusItemStackHandler, ItemInstrument, ItemSheetMusic
-        fixer.registerWalker(FixTypes.BLOCK_ENTITY, new CapInventoryWalker());
+        fixer.registerWalker(FixTypes.BLOCK_ENTITY, new TileEntityInventoryWalker());
     }
 
     @Mod.EventHandler

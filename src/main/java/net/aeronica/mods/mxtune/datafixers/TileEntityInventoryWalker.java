@@ -10,16 +10,16 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CapInventoryWalker implements IDataWalker
+public class TileEntityInventoryWalker implements IDataWalker
 {
     private static final List<String> INVENTORY_KEY_MADNESS = new ArrayList<>();
     static {
-        // vanilla chest, forge capabilities
+        // vanilla chest, forge item stack handler
         INVENTORY_KEY_MADNESS.add("Items");
         // Thermal Expansion Strongbox
         INVENTORY_KEY_MADNESS.add("Inventory");
     }
-    public CapInventoryWalker() {/* NOP */}
+    public TileEntityInventoryWalker() {/* NOP */}
 
     @Nonnull
     @Override
