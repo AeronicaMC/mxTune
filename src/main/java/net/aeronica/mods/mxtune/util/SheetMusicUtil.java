@@ -77,17 +77,17 @@ public enum SheetMusicUtil
     
     public static ItemStack getSheetMusic(ItemStack stackIn)
     {
-        if (!stackIn.isEmpty() && stackIn.getTagCompound() != null && (stackIn.getItem() instanceof IInstrument))
+        if ((stackIn.getItem() instanceof IInstrument) && stackIn.getTagCompound() != null)
         {
             NBTTagList items = stackIn.getTagCompound().getTagList("ItemInventory", Constants.NBT.TAG_COMPOUND);
             if (items.tagCount() == 1)
             {
                 NBTTagCompound item = items.getCompoundTagAt(0);
                 ItemStack sheetMusic = new ItemStack(item);
-                if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null && (sheetMusic.getItem() instanceof IMusic))
+                if (sheetMusic.getItem() instanceof IMusic && sheetMusic.getTagCompound() != null)
                 {
                     NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("SheetMusic");
-                    if (contents != null)
+                    if (contents.hasKey("MML"))
                     {
                         return sheetMusic;
                     }
@@ -129,7 +129,7 @@ public enum SheetMusicUtil
         if (parser == null)
         {
             ModLogger.debug("MMLParserFactory.getMMLParser() is null in %s", SheetMusicUtil.class.getSimpleName());
-            return new ValidDuration(false, 0);
+            return ValidDuration.INVALID;
         }
         parser.removeErrorListeners();
         parser.addErrorListener(parseErrorListener);
@@ -147,7 +147,7 @@ public enum SheetMusicUtil
             } catch (MidiUnavailableException | InvalidMidiDataException | IOException e)
             {
                 ModLogger.info("ValidateMML Error: %s in %s", e, SheetMusicUtil.class.getSimpleName());
-                return new ValidDuration(false, 0);
+                return ValidDuration.INVALID;
             }
         }
         ModLogger.info("ValidateMML: valid: %s, length: %d", parseErrorListener.getParseErrorEntries().isEmpty(), seconds);

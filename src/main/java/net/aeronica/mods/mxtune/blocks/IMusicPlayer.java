@@ -31,7 +31,7 @@ public interface IMusicPlayer
 {
     @SuppressWarnings("unchecked")
     @Nullable
-    default public <T extends TileInstrument> T getTE(World worldIn, BlockPos pos) {return (T) worldIn.getTileEntity(pos);}
+    default <T extends TileInstrument> T getTE(World worldIn, BlockPos pos) {return (T) worldIn.getTileEntity(pos);}
 
     default String getMML(World worldIn, BlockPos blockPos)
     {
@@ -52,7 +52,7 @@ public interface IMusicPlayer
                     if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
                     {
                         NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("SheetMusic");
-                        if (contents != null)
+                        if (contents.hasKey("MML"))
                         {
                             String mml = contents.getString("MML");
                             mml = mml.replace("MML@", "MML@I" + patch);
