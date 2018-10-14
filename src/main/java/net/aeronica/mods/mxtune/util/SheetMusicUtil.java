@@ -30,7 +30,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -102,12 +101,12 @@ public enum SheetMusicUtil
     {
         sheetMusic.setStackDisplayName(musicTitle);
         NBTTagCompound compound = sheetMusic.getTagCompound();
-        Tuple<Boolean, Integer> validTime = validateMML(mml);
-        if (compound != null && (sheetMusic.getItem() instanceof IMusic) && validTime.getFirst() && validTime.getSecond() > 0)
+        ValidDuration validDuration = validateMML(mml);
+        if (compound != null && (sheetMusic.getItem() instanceof IMusic) && validDuration.isValidMML() && validDuration.getDuration() > 0)
         {
             NBTTagCompound contents = new NBTTagCompound();
             contents.setString("MML", mml);
-            contents.setInteger("Duration", validTime.getSecond());
+            contents.setInteger("Duration", validDuration.getDuration());
             compound.setTag("SheetMusic", contents);
             return true;
         }
@@ -118,10 +117,10 @@ public enum SheetMusicUtil
      * Validate the supplied MML and return it's length in seconds.
      *
      * @param mml to be validated and its duration in seconds calculated.
-     * @return a Tuple with 'a' set true for valid MML else false, and 'b' the length of the tune in seconds<B></B>
+     * @return a ValidDuration with 'isValidMML' set true for valid MML else false, and 'getDuration' the length of the tune in seconds<B></B>
      * for valid MML, else 0D.
      */
-    public static Tuple<Boolean, Integer> validateMML(@Nonnull String mml)
+    public static ValidDuration validateMML(@Nonnull String mml)
     {
         ParseErrorListener parseErrorListener = new ParseErrorListener();
         int seconds = 0;
@@ -130,7 +129,7 @@ public enum SheetMusicUtil
         if (parser == null)
         {
             ModLogger.debug("MMLParserFactory.getMMLParser() is null in %s", SheetMusicUtil.class.getSimpleName());
-            return new Tuple<>(false, 0);
+            return new ValidDuration(false, 0);
         }
         parser.removeErrorListeners();
         parser.addErrorListener(parseErrorListener);
@@ -148,11 +147,11 @@ public enum SheetMusicUtil
             } catch (MidiUnavailableException | InvalidMidiDataException | IOException e)
             {
                 ModLogger.info("ValidateMML Error: %s in %s", e, SheetMusicUtil.class.getSimpleName());
-                return new Tuple<>(false, 0);
+                return new ValidDuration(false, 0);
             }
         }
         ModLogger.info("ValidateMML: valid: %s, length: %d", parseErrorListener.getParseErrorEntries().isEmpty(), seconds);
-        return new Tuple<>(parseErrorListener.getParseErrorEntries().isEmpty(), seconds);
+        return new ValidDuration(parseErrorListener.getParseErrorEntries().isEmpty(), seconds);
     }
 
     public static String formatDuration(int seconds)
