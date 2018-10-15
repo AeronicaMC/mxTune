@@ -118,7 +118,7 @@ public enum SheetMusicUtil
      *
      * @param mml to be validated and its duration in seconds calculated.
      * @return a ValidDuration with 'isValidMML' set true for valid MML else false, and 'getDuration' the length of the tune in seconds<B></B>
-     * for valid MML, else 0D.
+     * for valid MML, else 0.
      */
     public static ValidDuration validateMML(@Nonnull String mml)
     {
