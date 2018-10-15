@@ -213,7 +213,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             // Serialize data object to a byte array
             ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
             ObjectOutputStream out = new ObjectOutputStream(bos) ;
-            out.writeObject(playerListIn);
+            out.writeObject((Serializable)playerListIn);
             out.close();
 
             // Get the bytes of the serialized object
