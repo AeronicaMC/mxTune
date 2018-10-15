@@ -17,6 +17,7 @@
 package net.aeronica.mods.mxtune.options;
 
 import net.aeronica.mods.mxtune.Reference;
+import net.aeronica.mods.mxtune.util.Util;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -44,9 +45,8 @@ import java.util.concurrent.Callable;
 
 public class PlayerMusicOptionsCapability
 {
-    
     @CapabilityInject(IPlayerMusicOptions.class)
-    private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = null;
+    private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = Util.nonNullInjected();
     
     public static void register()
     {
@@ -112,7 +112,7 @@ public class PlayerMusicOptionsCapability
         {
             if (event.getEntity() instanceof EntityPlayerMP)
             {
-                IPlayerMusicOptions inst = ((EntityPlayerMP) event.getEntity()).getCapability(MUSIC_OPTIONS, null);
+                IPlayerMusicOptions inst = event.getEntity().getCapability(MUSIC_OPTIONS, null);
                 inst.syncAll((EntityPlayer) event.getEntity());
             }
         }
@@ -131,7 +131,7 @@ public class PlayerMusicOptionsCapability
         @Override
         public IPlayerMusicOptions call() throws Exception
         {
-            return new PlayerMusicDefImpl(null);
+            return new PlayerMusicDefImpl();
         }
     }
 

@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -18,7 +18,7 @@ package net.aeronica.mods.mxtune.options;
 
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.SyncPlayerMusicOptionsMessage;
-import net.minecraft.entity.EntityLivingBase;
+import net.aeronica.mods.mxtune.util.Util;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.common.capabilities.Capability;
@@ -26,53 +26,30 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class PlayerMusicDefImpl implements IPlayerMusicOptions
 {
     @CapabilityInject(IPlayerMusicOptions.class)
-    private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = null;
+    private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = Util.nonNullInjected();
     
     /** Music Options*/
     private int muteOption;
     /** HUD Options */
-    private boolean disableHud =  false;
+    private boolean disableHud;
     private int positionHud;
-    private float sizeHud = 0.5F;
+    private float sizeHud;
     /** Strings for passing parameters from server to client: for a GUI for example */
-    private String sParam1, sParam2, sParam3;
+    private String sParam1;
+    private String sParam2;
+    private String sParam3;
     private List<PlayerLists> whiteList, blackList;
 
-    public PlayerMusicDefImpl()
+    PlayerMusicDefImpl()
     {
-        this.muteOption = 0;
-        this.disableHud = false;
-        this.positionHud = 0;
         this.sizeHud = 0.5F;
-        this.sParam1 = this.sParam2 = this.sParam3 = "";
-        this.whiteList = new ArrayList<PlayerLists>();
-        this.blackList = new ArrayList<PlayerLists>();
-    }
-    
-    public PlayerMusicDefImpl(EntityLivingBase entity)
-    {
-        this.muteOption = 0;
-        this.disableHud = false;
-        this.positionHud = 0;
-        this.sizeHud = 0.5F;
-        this.sParam1 = this.sParam2 = this.sParam3 = "";
-        this.whiteList = new ArrayList<PlayerLists>();
-        this.blackList = new ArrayList<PlayerLists>();
-    }
-
-    @Override
-    public void clearAll(EntityPlayer playerIn)
-    {
-        this.muteOption = 0;
-        this.disableHud = false;
-        this.positionHud = 0;
-        this.sizeHud = 0.5F;
-        this.sParam1 = this.sParam2 = this.sParam3 = "";
-        this.syncAll(playerIn);
+        this.whiteList = new ArrayList<>();
+        this.blackList = new ArrayList<>();
     }
 
     @Override
@@ -107,7 +84,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
         this.sParam1 = sParam1;
         this.sParam2 = sParam2;
         this.sParam3 = sParam3;
-        this.sync(playerIn, SYNC_SPARAMS);
+        this.sync(playerIn, SYNC_S_PARAMS);
     }
 
     @Override
@@ -143,7 +120,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     public void setWhiteList(EntityPlayer playerIn, List<PlayerLists> list) {this.whiteList = list; sync(playerIn, SYNC_WHITE_LIST);}
 
     @Override
-    public List<PlayerLists> getWhiteList() {return new ArrayList<PlayerLists>(this.whiteList);}
+    public List<PlayerLists> getWhiteList() {return new ArrayList<>(this.whiteList);}
 
     @Override
     public void setBlackList(EntityPlayer playerIn, List<PlayerLists> list) {this.blackList = list; sync(playerIn, SYNC_BLACK_LIST);}
@@ -152,12 +129,12 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     public void setBlackList(List<PlayerLists> list) {this.blackList = list;}
 
     @Override
-    public List<PlayerLists> getBlackList() {return new ArrayList<PlayerLists>(this.blackList);}
+    public List<PlayerLists> getBlackList() {return new ArrayList<>(this.blackList);}
 
     public static final byte SYNC_ALL = 0;
     public static final byte SYNC_DISPLAY_HUD = 1;
     public static final byte SYNC_MUTE_OPTION = 2;
-    public static final byte SYNC_SPARAMS = 3;
+    public static final byte SYNC_S_PARAMS = 3;
     public static final byte SYNC_WHITE_LIST = 4;
     public static final byte SYNC_BLACK_LIST = 5;    
     
@@ -167,7 +144,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     {
         if (playerIn != null && !playerIn.getEntityWorld().isRemote)
         {
-            PacketDispatcher.sendTo(new SyncPlayerMusicOptionsMessage(playerIn.getCapability(MUSIC_OPTIONS, null), propertyID), (EntityPlayerMP) playerIn);
+            PacketDispatcher.sendTo(new SyncPlayerMusicOptionsMessage(playerIn.getCapability(Objects.requireNonNull(MUSIC_OPTIONS), null), propertyID), (EntityPlayerMP) playerIn);
         }
     }
 }

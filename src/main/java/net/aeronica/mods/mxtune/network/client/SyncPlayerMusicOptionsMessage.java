@@ -21,6 +21,7 @@ import net.aeronica.mods.mxtune.options.IPlayerMusicOptions;
 import net.aeronica.mods.mxtune.options.PlayerLists;
 import net.aeronica.mods.mxtune.options.PlayerMusicDefImpl;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.util.Util;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
@@ -37,19 +38,19 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
 {
 
     @CapabilityInject(IPlayerMusicOptions.class)
-    private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = null;
+    private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = Util.nonNullInjected();
 
-    byte propertyID;
-    NBTTagCompound data;
-    boolean disableHud;
-    int positionHud;
-    float sizeHud;
-    int muteOption;
-    String sParam1;
-    String sParam2;
-    String sParam3;
-    List<PlayerLists> blackList;
-    List<PlayerLists> whiteList;
+    private byte propertyID;
+    private NBTTagCompound data;
+    private boolean disableHud;
+    private int positionHud;
+    private float sizeHud;
+    private int muteOption;
+    private String sParam1;
+    private String sParam2;
+    private String sParam3;
+    private List<PlayerLists> blackList;
+    private List<PlayerLists> whiteList;
 
     private byte[] byteBuffer = null;
     
@@ -75,7 +76,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             this.muteOption = inst.getMuteOption();
             break;
             
-        case PlayerMusicDefImpl.SYNC_SPARAMS:
+        case PlayerMusicDefImpl.SYNC_S_PARAMS:
             this.sParam1 = inst.getSParam1();
             this.sParam2 = inst.getSParam2();
             this.sParam3 = inst.getSParam3();
@@ -110,7 +111,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
            this. muteOption = buffer.readInt();
             break;
-        case PlayerMusicDefImpl.SYNC_SPARAMS:
+        case PlayerMusicDefImpl.SYNC_S_PARAMS:
             this.sParam1 = ByteBufUtils.readUTF8String(buffer);
             this.sParam2 = ByteBufUtils.readUTF8String(buffer);
             this.sParam3 = ByteBufUtils.readUTF8String(buffer);
@@ -142,7 +143,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
             buffer.writeInt(this.muteOption);
             break;
-        case PlayerMusicDefImpl.SYNC_SPARAMS:
+        case PlayerMusicDefImpl.SYNC_S_PARAMS:
             ByteBufUtils.writeUTF8String(buffer, this.sParam1);
             ByteBufUtils.writeUTF8String(buffer, this.sParam2);
             ByteBufUtils.writeUTF8String(buffer, this.sParam3);
@@ -160,33 +161,36 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        final IPlayerMusicOptions instance = player.getCapability(MUSIC_OPTIONS, null);
-        switch (this.propertyID)
+        if (player.hasCapability(MUSIC_OPTIONS, null))
         {
-        case PlayerMusicDefImpl.SYNC_ALL:
-            MUSIC_OPTIONS.readNBT(instance, null, this.data);
-            break;
-        case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
-            instance.setHudOptions(disableHud, positionHud, sizeHud);
-            break;
-        case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
-            instance.setMuteOption(this.muteOption);
-            break;
-        case PlayerMusicDefImpl.SYNC_SPARAMS:
-            instance.setSParams(this.sParam1, this.sParam2, this.sParam3);
-            break;
-        case PlayerMusicDefImpl.SYNC_WHITE_LIST:
-            instance.setWhiteList(this.whiteList);
-            break;                
-        case PlayerMusicDefImpl.SYNC_BLACK_LIST:
-            instance.setBlackList(this.blackList);
-            break;
-        default:
+            final IPlayerMusicOptions instance = player.getCapability(MUSIC_OPTIONS, null);
+            switch (this.propertyID)
+            {
+                case PlayerMusicDefImpl.SYNC_ALL:
+                    MUSIC_OPTIONS.readNBT(instance, null, this.data);
+                    break;
+                case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
+                    instance.setHudOptions(disableHud, positionHud, sizeHud);
+                    break;
+                case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
+                    instance.setMuteOption(this.muteOption);
+                    break;
+                case PlayerMusicDefImpl.SYNC_S_PARAMS:
+                    instance.setSParams(this.sParam1, this.sParam2, this.sParam3);
+                    break;
+                case PlayerMusicDefImpl.SYNC_WHITE_LIST:
+                    instance.setWhiteList(this.whiteList);
+                    break;
+                case PlayerMusicDefImpl.SYNC_BLACK_LIST:
+                    instance.setBlackList(this.blackList);
+                    break;
+                default:
+            }
         }
     }
 
     @SuppressWarnings("unchecked")
-    protected List<PlayerLists> readPlayerList(PacketBuffer buffer) throws IOException
+    private List<PlayerLists> readPlayerList(PacketBuffer buffer) throws IOException
     {
         List<PlayerLists> playerList = Collections.emptyList();
         try{
@@ -203,13 +207,13 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         return playerList;
     }
 
-    protected void writePlayerList(PacketBuffer buffer, List<PlayerLists> playerListIn) throws IOException
+    private void writePlayerList(PacketBuffer buffer, List<PlayerLists> playerListIn) throws IOException
     {
         try{
             // Serialize data object to a byte array
             ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
             ObjectOutputStream out = new ObjectOutputStream(bos) ;
-            out.writeObject((Serializable) playerListIn);
+            out.writeObject(playerListIn);
             out.close();
 
             // Get the bytes of the serialized object
