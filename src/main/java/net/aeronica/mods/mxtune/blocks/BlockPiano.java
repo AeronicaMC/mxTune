@@ -20,6 +20,7 @@ import com.google.common.collect.Lists;
 import net.aeronica.mods.mxtune.advancements.ModCriteriaTriggers;
 import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
 import net.aeronica.mods.mxtune.groups.PlayManager;
+import net.aeronica.mods.mxtune.gui.GuiJamOverlay;
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.inventory.IMusic;
 import net.aeronica.mods.mxtune.status.ServerCSDManager;
@@ -55,7 +56,7 @@ import java.util.Random;
 
 public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
 {
-    public static final PropertyEnum<BlockPiano.EnumPartType> PART = PropertyEnum.<BlockPiano.EnumPartType> create("part", BlockPiano.EnumPartType.class);
+    public static final PropertyEnum<BlockPiano.EnumPartType> PART = PropertyEnum.create("part", BlockPiano.EnumPartType.class);
     public static final PropertyBool OCCUPIED = PropertyBool.create("occupied");
     private static final AxisAlignedBB PIANO_BODY_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
     private static final AxisAlignedBB MUSIC_RACK_AABB_NW = new AxisAlignedBB(0.0D, 1.0D, 0.0D, 0.5D, 1.5D, 0.5D);
@@ -76,18 +77,20 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos posIn, IBlockState stateIn, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
     {
-        BlockPos pos = posIn;
+        BlockPos pos = new BlockPos(posIn);
         IBlockState state = stateIn;
+
+        if (state.getValue(PART) == BlockPiano.EnumPartType.RIGHT)
+        {
+            pos = pos.offset(state.getValue(FACING).getOpposite());
+            state = worldIn.getBlockState(pos);
+            if (state.getBlock() != this)
+                return true;
+        }
+
         if (!worldIn.isRemote)
         {
-            /* SERVER SIDE */
-            if (state.getValue(PART) == BlockPiano.EnumPartType.RIGHT)
-            {
-                pos = pos.offset((EnumFacing) state.getValue(FACING).getOpposite());
-                state = worldIn.getBlockState(pos);
-                if (state.getBlock() != this)
-                    return true;
-            }
+            /// SERVER SIDE
             TilePiano tile = getTE(worldIn, pos);
             if (tile.isInvalid())
                 return true;
@@ -148,6 +151,11 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
                     ServerCSDManager.sendErrorViaChat(playerIn);
             }
 
+        }  else
+        {
+            // CLIENT SIDE
+            if ((playerIn.getRidingEntity() instanceof EntitySittableBlock) && ((EntitySittableBlock) playerIn.getRidingEntity()).getBlockPos().equals(pos))
+                GuiJamOverlay.hudTimerReset();
         }
         return true;
     }
@@ -225,7 +233,7 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
     @Override
     public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, Entity entityIn, boolean p_185477_7_)
     {
-        List<AxisAlignedBB> list = Lists.<AxisAlignedBB> newArrayList();
+        List<AxisAlignedBB> list = Lists.newArrayList();
         list.add(PIANO_BODY_AABB);
         if (state.getValue(PART) == BlockPiano.EnumPartType.LEFT)
         {
@@ -399,7 +407,7 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
         {
             i |= 8;
 
-            if (((Boolean) state.getValue(OCCUPIED)).booleanValue())
+            if (state.getValue(OCCUPIED).booleanValue())
             {
                 i |= 4;
             }

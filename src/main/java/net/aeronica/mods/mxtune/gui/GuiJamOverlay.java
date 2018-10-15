@@ -82,7 +82,7 @@ public class GuiJamOverlay extends Gui
     private static int hudTimer = 0;
     private static int count = 0;
     private static final int HUD_TIME = 5; /* seconds */
-    private static void hudTimerReset() {hudTimer = HUD_TIME;}
+    public static void hudTimerReset() {hudTimer = HUD_TIME;}
     
     @SuppressWarnings("static-access")
     @SubscribeEvent

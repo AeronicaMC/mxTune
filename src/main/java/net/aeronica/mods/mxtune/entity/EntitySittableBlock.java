@@ -51,11 +51,12 @@ import net.minecraft.world.World;
 public class EntitySittableBlock extends Entity
 {
 
-    private static final DataParameter<Boolean> SHOULD_SIT = EntityDataManager.<Boolean> createKey(EntitySittableBlock.class, DataSerializers.BOOLEAN);
-    private static final DataParameter<BlockPos> BLOCK_POS = EntityDataManager.<BlockPos> createKey(EntitySittableBlock.class, DataSerializers.BLOCK_POS);
+    private static final DataParameter<Boolean> SHOULD_SIT = EntityDataManager.createKey(EntitySittableBlock.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<BlockPos> BLOCK_POS = EntityDataManager.createKey(EntitySittableBlock.class, DataSerializers.BLOCK_POS);
+    private static final DataParameter<Integer> PLAY_ID = EntityDataManager.createKey(EntitySittableBlock.class, DataSerializers.VARINT);
+
     private BlockPos blockPos;
     private float yaw;
-    private Integer playID = null;
     
     public EntitySittableBlock(World world)
     {
@@ -142,7 +143,7 @@ public class EntitySittableBlock extends Entity
         {
             this.setDead();
             world.updateComparatorOutputLevel(getPosition(), world.getBlockState(getPosition()).getBlock());
-            if (playID != null) PlayManager.stopPlayID(playID);
+            PlayManager.stopPlayID(dataManager.get(PLAY_ID));
         }
     }
 
@@ -151,6 +152,7 @@ public class EntitySittableBlock extends Entity
     {
         this.dataManager.register(SHOULD_SIT, Boolean.valueOf(true));
         this.dataManager.register(BLOCK_POS, blockPos);
+        this.dataManager.register(PLAY_ID, Integer.valueOf(-1));
     }
 
     @Override
@@ -168,12 +170,12 @@ public class EntitySittableBlock extends Entity
     
     public void setPlayID(Integer playID)
     {
-        this.playID = playID;
+        dataManager.set(PLAY_ID, playID);
     }
 
     public Integer getPlayID()
     {
-        return playID;
+        return dataManager.get(PLAY_ID);
     }
 
     public BlockPos getBlockPos()
