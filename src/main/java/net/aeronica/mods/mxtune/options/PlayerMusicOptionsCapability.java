@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -38,6 +38,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -66,14 +67,14 @@ public class PlayerMusicOptionsCapability
                     final IPlayerMusicOptions optionsInst = MUSIC_OPTIONS.getDefaultInstance();
 
                     @Override
-                    public boolean hasCapability(Capability<?> capability, EnumFacing facing)
+                    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
                     {
                         return capability == MUSIC_OPTIONS;
                     }
 
                     @SuppressWarnings("unchecked")
                     @Override
-                    public <T> T getCapability(Capability<T> capability, EnumFacing facing)
+                    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
                     {
                         return capability == MUSIC_OPTIONS ? (T) optionsInst : null;
                     }
@@ -99,11 +100,14 @@ public class PlayerMusicOptionsCapability
                 EntityPlayer player = event.getEntityPlayer();
                 IPlayerMusicOptions dead = event.getOriginal().getCapability(MUSIC_OPTIONS, null);
                 IPlayerMusicOptions live = event.getEntityPlayer().getCapability(MUSIC_OPTIONS, null);
-                live.setSParams(player, dead.getSParam1(), dead.getSParam2(), dead.getSParam3());
-                live.setHudOptions(player, dead.isHudDisabled(), dead.getPositionHud(), dead.getSizeHud());
-                live.setMuteOption(player, dead.getMuteOption());
-                live.setBlackList(player, dead.getBlackList());
-                live.setWhiteList(player, dead.getWhiteList());               
+                if (live != null && dead != null)
+                {
+                    live.setSParams(player, dead.getSParam1(), dead.getSParam2(), dead.getSParam3());
+                    live.setHudOptions(player, dead.isHudDisabled(), dead.getPositionHud(), dead.getSizeHud());
+                    live.setMuteOption(player, dead.getMuteOption());
+                    live.setBlackList(player, dead.getBlackList());
+                    live.setWhiteList(player, dead.getWhiteList());
+                }
             }
         }
 
@@ -113,7 +117,8 @@ public class PlayerMusicOptionsCapability
             if (event.getEntity() instanceof EntityPlayerMP)
             {
                 IPlayerMusicOptions inst = event.getEntity().getCapability(MUSIC_OPTIONS, null);
-                inst.syncAll((EntityPlayer) event.getEntity());
+                if (inst != null)
+                    inst.syncAll((EntityPlayer) event.getEntity());
             }
         }
         
@@ -121,7 +126,8 @@ public class PlayerMusicOptionsCapability
         public void onPlayerLoggedInEvent(PlayerLoggedInEvent event)
         {
             IPlayerMusicOptions inst = event.player.getCapability(MUSIC_OPTIONS, null);
-            inst.syncAll(event.player);
+            if (inst != null)
+                inst.syncAll(event.player);
         }
 
     }
@@ -182,7 +188,7 @@ public class PlayerMusicOptionsCapability
             {
                 NBTTagList listBlack = properties.getTagList("listBlack", Constants.NBT.TAG_COMPOUND);
                 int count = listBlack.tagCount();
-                List<PlayerLists> blackList = new ArrayList<PlayerLists>();
+                List<PlayerLists> blackList = new ArrayList<>();
                 for (int i = 0; i < count; i++)
                 {
                     NBTTagCompound entry = listBlack.getCompoundTagAt(i);
@@ -192,13 +198,13 @@ public class PlayerMusicOptionsCapability
                     plist.setOnline(false);
                     blackList.add(plist);
                 }
-                instance.setBlackList((List<PlayerLists>) blackList);
+                instance.setBlackList(blackList);
             }
             if (properties.hasKey("listWhite", Constants.NBT.TAG_LIST))
             {
                 NBTTagList listWhite = properties.getTagList("listWhite", Constants.NBT.TAG_COMPOUND);
                 int count = listWhite.tagCount();
-                List<PlayerLists> whiteList = new ArrayList<PlayerLists>();
+                List<PlayerLists> whiteList = new ArrayList<>();
                 for (int i = 0; i < count; i++)
                 {
                     NBTTagCompound entry = listWhite.getCompoundTagAt(i);
@@ -208,7 +214,7 @@ public class PlayerMusicOptionsCapability
                     plist.setOnline(false);
                     whiteList.add(plist);
                 }
-                instance.setWhiteList((List<PlayerLists>) whiteList);
+                instance.setWhiteList(whiteList);
             }
         }
     }

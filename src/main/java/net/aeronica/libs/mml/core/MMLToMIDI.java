@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static net.aeronica.libs.mml.core.MMLUtil.*;
 
@@ -14,9 +15,9 @@ public class MMLToMIDI extends MMLTransformBase
     private static final double PPQ = 480.0;
     private static final int TICKS_OFFSET = 10;
     private Sequence sequence;
-    private HashSet<Integer> packedPresets = new HashSet<>();
+    private Set<Integer> packedPresets = new HashSet<>();
 
-    public MMLToMIDI() {}
+    public MMLToMIDI() {/* NOP */}
 
     @Override
     public long durationTicks(int mmlNoteLength, boolean dottedLEN)

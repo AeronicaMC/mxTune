@@ -53,7 +53,7 @@ import static net.aeronica.mods.mxtune.blocks.BlockPiano.spawnEntityItem;
 @SuppressWarnings("deprecation")
 public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
 {
-    public static final PropertyBool PLAYING = PropertyBool.create("playing");
+    private static final PropertyBool PLAYING = PropertyBool.create("playing");
 
     public BlockBandAmp()
     {
@@ -91,7 +91,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
         {
             if (playerIn.isSneaking() || GUIHandler.isLocked(playerIn, worldIn, pos))
             {
-                boolean isPlaying = canPlayOrStopMusic(worldIn, pos, state, false);
+                boolean isPlaying = canPlayOrStopMusic(worldIn, pos, false);
                 setPlayingState(worldIn, pos, state, isPlaying);
                 worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
             }
@@ -103,7 +103,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
         return true;
     }
 
-    private boolean canPlayOrStopMusic(World worldIn, BlockPos pos, IBlockState state, Boolean stop)
+    private boolean canPlayOrStopMusic(World worldIn, BlockPos pos, Boolean stop)
     {
         TileBandAmp tileBandAmp = this.getTE(worldIn, pos);
         if (tileBandAmp != null)
@@ -155,9 +155,9 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
             {
                 if (powered)
                 {
-                    boolean isPlaying = canPlayOrStopMusic(worldIn, pos, state, false);
+                    boolean isPlaying = canPlayOrStopMusic(worldIn, pos, false);
                     setPlayingState(worldIn, pos, state, isPlaying);
-                    tileBandAmp.setPowered(state, worldIn, pos, blockIn, fromPos);
+                    tileBandAmp.setPowered(pos, blockIn, fromPos);
                     worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
                 }
                 tileBandAmp.setPreviousRedStoneState(powered);
@@ -248,7 +248,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
     {
-        canPlayOrStopMusic(worldIn, pos, state, true);
+        canPlayOrStopMusic(worldIn, pos, true);
 
         TileBandAmp tile = (TileBandAmp) worldIn.getTileEntity(pos);
         if (tile != null)
@@ -295,11 +295,4 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
             super.harvestBlock(worldIn, player, pos, state, null, stack);
         }
     }
-//    @Deprecated
-//    @Override
-//    public boolean isFullCube(IBlockState state) { return false; }
-//
-//    @Deprecated
-//    @Override
-//    public boolean isOpaqueCube(IBlockState state) { return false; }
 }

@@ -4,12 +4,13 @@ import javax.sound.midi.*;
 
 public class PlayMIDI implements MetaEventListener
 {
-    static Sequencer sequencer = null;
-    static Synthesizer synthesizer = null;
+    private Sequencer sequencer;
+    private Synthesizer synthesizer;
 
-    /**
-     * TEMPO = 81 End of Track = 47
-     */
+    PlayMIDI() {/* NOP */}
+
+     // TEMPO = 81 End of Track = 47
+    @Override
     public void meta(MetaMessage event)
     {
         if (event.getType() == 47)
@@ -17,13 +18,13 @@ public class PlayMIDI implements MetaEventListener
             sequencer.stop();
             sequencer.setMicrosecondPosition(0L);
             sequencer.removeMetaEventListener(this);
-            System.out.println("MetaMessage EOS event");
+            MMLUtil.MML_LOGGER.info("MetaMessage EOS event");
             try
             {
                 Thread.sleep(250);
             } catch (InterruptedException e)
             {
-                TestAntlr.logger.error(e);
+                MMLUtil.MML_LOGGER.error(e);
                 Thread.currentThread().interrupt();
             } finally {
                 if (sequencer != null && sequencer.isOpen()) sequencer.close();
@@ -33,44 +34,35 @@ public class PlayMIDI implements MetaEventListener
         if (event.getType() == 81)
         {
             int tempo = decodeTempo(event);
-            System.out.println("{\"Tempo\": " + tempo + "}");
+            MMLUtil.MML_LOGGER.info("{\"Tempo\": " + tempo + "}");
         }
         if (event.getType() == 1)
         {
             String text = decodeText(event);
-            System.out.println(text);
+            MMLUtil.MML_LOGGER.info(text);
         }
 
     }
 
-    public int decodeTempo(MetaMessage event)
+    private int decodeTempo(MetaMessage event)
     {
-        // byte[] abMessage = event.getMessage();
         byte[] abData = event.getData();
-        // int nDataLength = event.getLength();
-        // String strMessage = null;
+        // tempo in microseconds per beat
+        int nTempo = ((abData[0] & 0xFF) << 16) | ((abData[1] & 0xFF) << 8) | (abData[2] & 0xFF);
 
-        int nTempo = ((abData[0] & 0xFF) << 16) | ((abData[1] & 0xFF) << 8) | (abData[2] & 0xFF); // tempo
-                                                                                                  // in
-                                                                                                  // microseconds
-                                                                                                  // per
-                                                                                                  // beat
         float bpm = convertTempo(nTempo);
         // truncate it to 2 digits after dot
-        bpm = (float) (Math.round(bpm * 100.0f) / 100.0f);
-        // strMessage = "Set Tempo: "+bpm+" bpm";
-        return (int) bpm;
+        return (int) (Math.round(bpm * 100.0f) / 100.0f);
     }
 
-    public String decodeText(MetaMessage event)
+    private String decodeText(MetaMessage event)
     {
         byte[] abData = event.getData();
         return new String(abData);
     }
 
-    // convert from microseconds per quarter note to beats per minute and vice
-    // versa
-    private static float convertTempo(float valueIn)
+    // convert from microseconds per quarter note to beats per minute and vice versa
+    private float convertTempo(float valueIn)
     {
         float value = valueIn;
         if (value <= 0)
@@ -80,7 +72,7 @@ public class PlayMIDI implements MetaEventListener
         return 60000000.0f / value;
     }
 
-    public boolean mmlPlay(Sequence sequence)
+    void mmlPlay(Sequence sequence)
     {
         try
         {
@@ -89,7 +81,7 @@ public class PlayMIDI implements MetaEventListener
 
             sequencer = MidiSystem.getSequencer();
             sequencer.addMetaEventListener(this);
-            sequencer.setMicrosecondPosition(0l);
+            sequencer.setMicrosecondPosition(0L);
             sequencer.setTempoInBPM((float) 120);
 
             sequencer.open();
@@ -98,7 +90,6 @@ public class PlayMIDI implements MetaEventListener
                 t.setReceiver(synthesizer.getReceiver());
             }
 
-            // sequencer.getTransmitter().setReceiver(synthesizer.getReceiver());
             sequencer.setSequence(sequence);
             sequencer.start();
 
@@ -106,8 +97,7 @@ public class PlayMIDI implements MetaEventListener
         {
             if (sequencer != null && sequencer.isOpen()) sequencer.close();
             if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
-            TestAntlr.logger.error(e);
-        } 
-        return true;
+            MMLUtil.MML_LOGGER.error(e);
+        }
     }
 }

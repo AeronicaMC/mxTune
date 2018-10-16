@@ -39,9 +39,10 @@ public enum TestData {
     MML17(17, "test", "MML@L4 C&C&O5<C&C&C&C,L4E&E&E&E&E&E,L4G&G&G&G&G&G;");
 
 	private int index;
-	private String name, mml;
+	private String name;
+	private String mml;
 
-	private TestData(int index, String name, String mml) {
+	TestData(int index, String name, String mml) {
 		this.index = index;
 		this.name = name;
 		this.mml = mml;
@@ -61,7 +62,7 @@ public enum TestData {
 	}
 
 	private static void initMapping() {
-		codeToMMLMapping = new HashMap<Integer, TestData>();
+		codeToMMLMapping = new HashMap<>();
 		for (TestData s : values()) {
 			codeToMMLMapping.put(s.index, s);
 		}
@@ -77,13 +78,7 @@ public enum TestData {
 
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder();
-		sb.append("MMLData");
-		sb.append("{index=").append(index);
-		sb.append(", name'").append(name);
-		sb.append("', mml='").append(mml).append('\'');
-		sb.append('}');
-		return sb.toString();
+		return "MMLData" + "{index=" + index + ", name'" + name + "', mml='" + mml + '\'' + '}';
 	}
 
 	public static void main(String[] args) {

@@ -47,7 +47,6 @@ import java.util.Set;
  */
 public class PlayInstrumentTrigger implements ICriterionTrigger<PlayInstrumentTrigger.Instance>
 {
-
     private static final ResourceLocation ID = new ResourceLocation(Reference.MOD_ID, "play_instrument");
     private final Map<PlayerAdvancements, Listeners> listeners = new HashMap<>();
 
@@ -119,7 +118,7 @@ public class PlayInstrumentTrigger implements ICriterionTrigger<PlayInstrumentTr
     static class Listeners
     {
         private final PlayerAdvancements playerAdvancements;
-        private final Set<Listener<Instance>> listeners = new HashSet<>();
+        private final Set<Listener<Instance>> listenerSet = new HashSet<>();
 
         public Listeners(PlayerAdvancements playerAdvancements)
         {
@@ -128,26 +127,25 @@ public class PlayInstrumentTrigger implements ICriterionTrigger<PlayInstrumentTr
 
         public boolean isEmpty()
         {
-            return listeners.isEmpty();
+            return listenerSet.isEmpty();
         }
 
         public void add(Listener<Instance> listener)
         {
-            listeners.add(listener);
+            listenerSet.add(listener);
         }
 
         public void remove(Listener<Instance> listener)
         {
-            listeners.remove(listener);
+            listenerSet.remove(listener);
         }
 
         public void trigger(String instrumentName)
         {
-            listeners.stream()
+            listenerSet.stream()
                 .filter(listener -> listener.getCriterionInstance().test(instrumentName))
                 .collect(ImmutableList.toImmutableList()) //Need this intermediate list to avoid ConcurrentModificationException
                 .forEach(listener -> listener.grantCriterion(playerAdvancements));
         }
     }
-    
 }

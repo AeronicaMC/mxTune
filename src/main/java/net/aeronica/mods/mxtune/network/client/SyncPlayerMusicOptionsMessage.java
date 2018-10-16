@@ -36,7 +36,6 @@ import java.util.List;
 
 public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPlayerMusicOptionsMessage>
 {
-
     @CapabilityInject(IPlayerMusicOptions.class)
     private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = Util.nonNullInjected();
 
@@ -53,8 +52,8 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     private List<PlayerLists> whiteList;
 
     private byte[] byteBuffer = null;
-    
-    public SyncPlayerMusicOptionsMessage() {/* Required by the PacketDispacher */}
+
+    public SyncPlayerMusicOptionsMessage() {/* Required by the PacketDispatcher */}
 
     public SyncPlayerMusicOptionsMessage(IPlayerMusicOptions inst, byte propertyID)
     {
@@ -164,28 +163,29 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         if (player.hasCapability(MUSIC_OPTIONS, null))
         {
             final IPlayerMusicOptions instance = player.getCapability(MUSIC_OPTIONS, null);
-            switch (this.propertyID)
-            {
-                case PlayerMusicDefImpl.SYNC_ALL:
-                    MUSIC_OPTIONS.readNBT(instance, null, this.data);
-                    break;
-                case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
-                    instance.setHudOptions(disableHud, positionHud, sizeHud);
-                    break;
-                case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
-                    instance.setMuteOption(this.muteOption);
-                    break;
-                case PlayerMusicDefImpl.SYNC_S_PARAMS:
-                    instance.setSParams(this.sParam1, this.sParam2, this.sParam3);
-                    break;
-                case PlayerMusicDefImpl.SYNC_WHITE_LIST:
-                    instance.setWhiteList(this.whiteList);
-                    break;
-                case PlayerMusicDefImpl.SYNC_BLACK_LIST:
-                    instance.setBlackList(this.blackList);
-                    break;
-                default:
-            }
+            if (instance != null)
+                switch (this.propertyID)
+                {
+                    case PlayerMusicDefImpl.SYNC_ALL:
+                        MUSIC_OPTIONS.readNBT(instance, null, this.data);
+                        break;
+                    case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
+                        instance.setHudOptions(disableHud, positionHud, sizeHud);
+                        break;
+                    case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
+                        instance.setMuteOption(this.muteOption);
+                        break;
+                    case PlayerMusicDefImpl.SYNC_S_PARAMS:
+                        instance.setSParams(this.sParam1, this.sParam2, this.sParam3);
+                        break;
+                    case PlayerMusicDefImpl.SYNC_WHITE_LIST:
+                        instance.setWhiteList(this.whiteList);
+                        break;
+                    case PlayerMusicDefImpl.SYNC_BLACK_LIST:
+                        instance.setBlackList(this.blackList);
+                        break;
+                    default:
+                }
         }
     }
 
@@ -223,5 +223,4 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             ModLogger.error(e);
         }
     }
-
 }

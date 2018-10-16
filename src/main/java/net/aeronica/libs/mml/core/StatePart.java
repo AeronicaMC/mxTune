@@ -52,27 +52,27 @@ public class StatePart
      * You can <<<< an octave to 0, but you can't
      * set octave to 0 via the octave command: o0
      */
-    public void downOctave() {this.octave = getMinMax(0, 8, this.octave - 1);}
+    void downOctave() {this.octave = getMinMax(0, 8, this.octave - 1);}
 
-    public void upOctave() {this.octave = getMinMax(1, 8, this.octave + 1);}
+    void upOctave() {this.octave = getMinMax(1, 8, this.octave + 1);}
 
-    public int getMMLLength() {return mmlLength;}
+    int getMMLLength() {return mmlLength;}
 
-    public boolean isDotted() {return dotted;}
+    boolean isDotted() {return dotted;}
 
-    public void setMMLLength(int mmlLength, boolean dotted)
+    void setMMLLength(int mmlLength, boolean dotted)
     {
         this.mmlLength = getMinMax(1, 64, mmlLength);
         this.dotted = dotted;
     }
 
-    public void accumulateTicks(long n) {this.runningTicks = this.runningTicks + n;}
+    void accumulateTicks(long n) {this.runningTicks = this.runningTicks + n;}
 
-    public long getRunningTicks() {return runningTicks;}
+    long getRunningTicks() {return runningTicks;}
 
-    public boolean isTied() {return tied;}
+    boolean isTied() {return tied;}
 
-    public void setTied(boolean tied) {this.tied = tied;}
+    void setTied(boolean tied) {this.tied = tied;}
 
-    private int getMinMax(int min, int max, int value) {return (int) Math.max(Math.min(max, value), min);}
+    private int getMinMax(int min, int max, int value) {return Math.max(Math.min(max, value), min);}
 }

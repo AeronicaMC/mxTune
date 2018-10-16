@@ -33,6 +33,7 @@ import net.minecraft.advancements.CriteriaTriggers;
  */
 public class ModCriteriaTriggers
 {
+    private ModCriteriaTriggers() {/* NOP */}
 
     public static final PlayInstrumentTrigger PLAY_INSTRUMENT = new PlayInstrumentTrigger();
 
@@ -40,5 +41,4 @@ public class ModCriteriaTriggers
     {
         CriteriaTriggers.register(PLAY_INSTRUMENT);
     }
-
 }

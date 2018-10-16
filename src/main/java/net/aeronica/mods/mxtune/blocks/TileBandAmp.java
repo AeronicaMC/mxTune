@@ -21,7 +21,6 @@ import net.aeronica.mods.mxtune.util.EnumRelativeSide;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.world.IModLockableContainer;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -32,7 +31,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.LockCode;
-import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -42,7 +40,7 @@ import javax.annotation.Nullable;
 
 public class TileBandAmp extends TileInstrument implements IModLockableContainer
 {
-    public static final int MAX_SLOTS = 8;
+    private static final int MAX_SLOTS = 8;
     private boolean previousRedStoneState;
     private Integer playID = -1;
     private LockCode code = LockCode.EMPTY_CODE;
@@ -99,7 +97,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         return super.writeToNBT(tag);
     }
 
-    public void setPowered(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
+    void setPowered(BlockPos pos, Block blockIn, BlockPos fromPos)
     {
         Vec3i vec3i = pos.subtract(fromPos);
         ModLogger.info("TileBandAmp: Powered from %s's %s face",
@@ -110,7 +108,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     /**
      * @return the previousRedStoneState
      */
-    public boolean getPreviousRedStoneState()
+    boolean getPreviousRedStoneState()
     {
         return previousRedStoneState;
     }
@@ -118,7 +116,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     /**
      * @param previousRedStoneState the previousRedStoneState to set
      */
-    public void setPreviousRedStoneState(boolean previousRedStoneState)
+    void setPreviousRedStoneState(boolean previousRedStoneState)
     {
         this.previousRedStoneState = previousRedStoneState;
         markDirty();
@@ -126,7 +124,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
 
     class InstrumentStackHandler extends ItemStackHandler
     {
-        protected InstrumentStackHandler(int size) {super(size);}
+        InstrumentStackHandler(int size) {super(size);}
 
         @Nonnull
         @Override
@@ -192,7 +190,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         return this.bandAmpCustomName != null && !this.bandAmpCustomName.isEmpty();
     }
 
-    public void setCustomInventoryName(String customInventoryName)
+    void setCustomInventoryName(String customInventoryName)
     {
         this.bandAmpCustomName = customInventoryName;
     }

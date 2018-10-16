@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese aka Aeronica
  *
@@ -23,16 +23,16 @@ public interface IPlacedInstrument
 {
     /**
      * Get the TE associated with the block
-     * @param worldIn
-     * @param pos
-     * @return
+     * @param worldIn a world instance
+     * @param pos position of the TE
+     * @return instance of the TE
      */
     @SuppressWarnings("unchecked")
-    default public <T extends TileInstrument> T getTE(World worldIn, BlockPos pos) {return (T) worldIn.getTileEntity(pos);}
+    default <T extends TileInstrument> T getTE(World worldIn, BlockPos pos) {return (T) worldIn.getTileEntity(pos);}
     
     /**
      * Get the patch for this placed instrument
      * @return GM 1 Patch in the range of 1-127
      */
-    public int getPatch();
+    int getPatch();
 }

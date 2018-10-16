@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ParseErrorListener extends BaseErrorListener implements IParseErrorEntries
 {
-    private ArrayList<ParseErrorEntry> parseErrorList = new ArrayList<>();
+    private List<ParseErrorEntry> parseErrorList = new ArrayList<>();
 
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e)
@@ -22,10 +22,10 @@ public class ParseErrorListener extends BaseErrorListener implements IParseError
     }
 
     @Override
-    public ArrayList<ParseErrorEntry> getParseErrorEntries()
+    public List<ParseErrorEntry> getParseErrorEntries()
     {
-        /* copy the records out then clear the local list */
-        ArrayList<ParseErrorEntry> parseErrorEntries = new ArrayList<>(parseErrorList);
+        /// copy the records out then clear the local list
+        List<ParseErrorEntry> parseErrorEntries = new ArrayList<>(parseErrorList);
         parseErrorList.clear();
         return parseErrorEntries;
     }

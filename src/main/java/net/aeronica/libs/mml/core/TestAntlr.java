@@ -4,17 +4,14 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
 public class TestAntlr
 {
-    private static String mmlString = TestData.MML6.getMML();
+    private static String mmlString = TestData.MML10.getMML();
     private static byte[] mmlBuf = null;
-    public static final Logger logger = LogManager.getLogger();
 
     public static InputStream init()
     {
@@ -23,7 +20,7 @@ public class TestAntlr
             mmlBuf = mmlString.getBytes("US-ASCII");
         } catch (UnsupportedEncodingException e)
         {
-            logger.error(e);
+            MMLUtil.MML_LOGGER.error(e);
         }
         return new java.io.ByteArrayInputStream(mmlBuf);
     }
