@@ -16,17 +16,19 @@
  */
 package net.aeronica.mods.mxtune.util;
 
+import javax.annotation.Nullable;
 import javax.sound.midi.Instrument;
 import javax.sound.midi.Patch;
 import javax.sound.midi.Soundbank;
 
 public class NullInstrument extends Instrument
 {
-    NullInstrument(Soundbank soundbank, Patch patch, String name, Class<?> dataClass)
+    NullInstrument(@Nullable Soundbank soundbank, Patch patch, String name, Class<?> dataClass)
     {
         super(soundbank, patch, name, dataClass);
     }
 
+    @Nullable
     @Override
     public Object getData()
     {
