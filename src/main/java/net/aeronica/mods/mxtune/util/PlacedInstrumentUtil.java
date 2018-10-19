@@ -43,6 +43,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public enum PlacedInstrumentUtil
@@ -59,7 +60,7 @@ public enum PlacedInstrumentUtil
 
     public static boolean standOnBlock(World worldIn, BlockPos posIn, EntityPlayer playerIn)
     {
-        if (!checkForExistingEntity(worldIn, posIn, playerIn))
+        if (canPlaceEntity(worldIn, posIn, playerIn))
         {
             BlockPos underFoot = blockUnderFoot(playerIn);
             /* Standing on Fluids or Air is not allowed */
@@ -75,7 +76,7 @@ public enum PlacedInstrumentUtil
 
     public static boolean sitOnBlock(World worldIn, BlockPos posIn, EntityPlayer playerIn, double yOffset)
     {
-        if (!checkForExistingEntity(worldIn, posIn, playerIn))
+        if (canPlaceEntity(worldIn, posIn, playerIn))
         {
             EntitySittableBlock nemb = new EntitySittableBlock(worldIn, posIn, yOffset, true);
             worldIn.spawnEntity(nemb);
@@ -86,7 +87,7 @@ public enum PlacedInstrumentUtil
 
     public static boolean sitOnBlock(World worldIn, BlockPos posIn, EntityPlayer playerIn, double xOffset, double yOffset, double zOffset)
     {
-        if (!checkForExistingEntity(worldIn, posIn, playerIn))
+        if (canPlaceEntity(worldIn, posIn, playerIn))
         {
             EntitySittableBlock nemb = new EntitySittableBlock(worldIn, posIn, xOffset, yOffset, zOffset);
             worldIn.spawnEntity(nemb);
@@ -97,7 +98,7 @@ public enum PlacedInstrumentUtil
 
     public static boolean sitOnBlock(World worldIn, BlockPos posIn, EntityPlayer playerIn, double xOffset, double yOffset, double zOffset, float yaw)
     {
-        if (!checkForExistingEntity(worldIn, posIn, playerIn))
+        if (canPlaceEntity(worldIn, posIn, playerIn))
         {
             EntitySittableBlock nemb = new EntitySittableBlock(worldIn, posIn, xOffset, yOffset, zOffset, yaw);
             worldIn.spawnEntity(nemb);
@@ -108,7 +109,7 @@ public enum PlacedInstrumentUtil
 
     public static boolean sitOnBlockWithRotationOffset(World worldIn, BlockPos posIn, EntityPlayer playerIn, double yOffset, int metadata, double offset)
     {
-        if (!checkForExistingEntity(worldIn, posIn, playerIn))
+        if (canPlaceEntity(worldIn, posIn, playerIn))
         {
             EntitySittableBlock nemb = new EntitySittableBlock(worldIn, posIn, yOffset, metadata, offset);
             worldIn.spawnEntity(nemb);
@@ -117,7 +118,7 @@ public enum PlacedInstrumentUtil
         return true;
     }
 
-    public static boolean checkForExistingEntity(World par1World, BlockPos posIn, EntityPlayer playerIn)
+    public static boolean canPlaceEntity(World par1World, BlockPos posIn, EntityPlayer playerIn)
     {
         int x = posIn.getX();
         int y = posIn.getY();
@@ -127,10 +128,10 @@ public enum PlacedInstrumentUtil
         {
             if (mount.getMountedPosition().equals(posIn))
             {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     public static boolean isPlayerSitting(World worldIn, EntityPlayer playerIn, BlockPos posIn)
@@ -162,12 +163,12 @@ public enum PlacedInstrumentUtil
     }
 
     /**
-     * @param playerIn
+     * @param playerIn the player of interest
      * @return true if playerIn is riding a placed instrument
      */
-    public static boolean isRiding(EntityPlayer playerIn)
+    public static boolean isRiding(@Nullable EntityPlayer playerIn)
     {
-        return (playerIn !=null) && !playerIn.isDead && playerIn.isRiding() && (playerIn.getRidingEntity() instanceof EntitySittableBlock);
+        return (playerIn !=null) && !playerIn.isDead && (playerIn.getRidingEntity() instanceof EntitySittableBlock);
     }
     
     public static BlockPos getRiddenBlock(EntityPlayer playerIn)
