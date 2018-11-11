@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese aka Aeronica
  *
