@@ -1,0 +1,19 @@
+{
+  "result": {
+    "item": "mxtune:band_amp"
+  },
+  "pattern": [
+    "FFF",
+    "FRF",
+    "FFF"
+  ],
+  "type": "mxtune:disablable_ore_shaped",
+  "key": {
+    "F": {
+      "item": "minecraft:item_frame"
+    },
+    "R": {
+      "item": "#DUSTREDSTONE"
+    }
+  }
+}

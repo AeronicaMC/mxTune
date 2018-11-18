@@ -95,15 +95,16 @@ public class ModConfig
         @Name("Toggles")
         @Comment({"mxTune Recipes", "Requires a Server Restart if Changed!", "B:<name>=(true|false)"})
         @RequiresMcRestart
-        static Map<String, Boolean> recipeToggles;
+        public static Map<String, Boolean> recipeToggles;
 
         private static final String[] modItemRecipeNames = {
-                "music_paper", "spinet_piano",
-                "bass_drum", "cello", "chalumeau", "cymbels",
-                "electric_guitar", "flute", "hand_chimes","harp",
-                "harpsichord", "harpsichord_coupled", "lute", "lyre",
-                "mandolin", "orchestra_set", "recorder", "roncadora",
-                "snare_drum", "standard_set", "trumpet", "tuba",
+                "band_amp", "bass_drum",
+                "cello", "chalumeau",
+                "cymbels", "electric_guitar", "flute", "hand_chimes",
+                "harp", "harpsichord", "harpsichord_coupled", "lute",
+                "lyre", "mandolin", "music_paper", "orchestra_set",
+                "piano", "recorder", "roncadora", "snare_drum",
+                "spinet_piano", "standard_set", "trumpet", "tuba",
                 "tuned_flute", "tuned_whistle", "ukulele",
                 "violin", "whistle"
         };
@@ -135,10 +136,10 @@ public class ModConfig
      */
     public static boolean isRecipeEnabled(ItemStack stackIn)
     {
-        // strip off "item." and "instrument." to get the raw item name without domain and item base names
-        String itemName = stackIn.getTranslationKey().replaceFirst("item\\." + Reference.MOD_ID + ":", "");
+        // strip off "item." or "tile." and "instrument." to get the raw item name without domain and item base names
+        String itemName = stackIn.getTranslationKey().replaceFirst("(item\\.|tile\\.)" + Reference.MOD_ID + "\\:", "");
         itemName = itemName.replaceFirst("instrument\\.", "");
-        boolean enableState = !CFG_RECIPE.recipeToggles.containsKey(itemName) || CFG_RECIPE.recipeToggles.get(itemName) && !itemName.contains(":");
+        boolean enableState = !CFG_RECIPE.recipeToggles.containsKey(itemName) || (CFG_RECIPE.recipeToggles.get(itemName) && !itemName.contains(":"));
         ModLogger.debug("Recipe Enabled? %s %s", itemName, enableState);
         return enableState;
     }
