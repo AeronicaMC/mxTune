@@ -33,6 +33,19 @@ buildProperties.withReader {
     ext.config = new ConfigSlurper().parse properties
 }
 
+repositories {
+    maven {
+        // location of the maven that hosts JEI files
+        name = "Progwml6 maven"
+        url = "http://dvs1.progwml6.com/files/maven"
+    }
+    maven {
+        // location of a maven mirror for JEI files, as a fallback
+        name = "ModMaven"
+        url = "modmaven.k-4u.nl"
+    }
+}
+
 version = "${config.modVersionMajor}.${config.modVersionMinor}.${config.modVersionRev}-${config.versionType}.${config.typeVersion}"
 group = "net.aeronica.mods.mxtune"
 archivesBaseName = "mxtune-${config.minecraftVersion}"
@@ -53,11 +66,17 @@ minecraft {
 
 dependencies {
 	shadow "org.antlr:antlr4-runtime:4.5.2-1" // use ANTLR version 4
+    // compile against the JEI API but do not include it at runtime
+    deobfProvided "mezz.jei:jei_${config.minecraftVersion}:${config.jeiVersion}:api"
+    // at runtime, use the full JEI jar
+    runtime "mezz.jei:jei_${config.minecraftVersion}:${config.jeiVersion}"
 }
 
 shadowJar {
+    // only include compile time dependencies
+    configurations = [project.configurations.compile]
 	archiveName = tasks.jar.archiveName
-	relocate 'org.antlr.v4.runtime', 'net.aeronica.shadowedlibs.org.antlr.v4.runtime' 
+	relocate 'org.antlr.v4.runtime', 'net.aeronica.shadowedlibs.org.antlr.v4.runtime'
 }
 
 reobfJar {
@@ -65,17 +84,20 @@ reobfJar {
 }
 reobfJar.dependsOn shadowJar
 
+//jar {
+//    configurations.shadow.each { dep ->
+//        from(project.zipTree(dep)){
+//            exclude 'META-INF', 'META-INF/**'
+//        }
+//	}
+//}
 jar {
     configurations.shadow.each { dep ->
         from(project.zipTree(dep)){
             exclude 'META-INF', 'META-INF/**'
         }
-	}
-}
-jar {
-        
+    }
     manifest {
-	
 	    attributes 'FMLAT': 'mxtune_at.cfg'
 	}
 }
