@@ -84,13 +84,6 @@ reobfJar {
 }
 reobfJar.dependsOn shadowJar
 
-//jar {
-//    configurations.shadow.each { dep ->
-//        from(project.zipTree(dep)){
-//            exclude 'META-INF', 'META-INF/**'
-//        }
-//	}
-//}
 jar {
     configurations.shadow.each { dep ->
         from(project.zipTree(dep)){
