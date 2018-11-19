@@ -260,29 +260,45 @@ public class ClientAudio
         return audioData != null && audioData.isClientPlayer();
     }
 
+    /**
+     * For players.
+     * @param playID unique submission identifier.
+     * @param musicText MML string
+     */
     public static synchronized void play(Integer playID, String musicText)
     {
-        startThreadFactory();
-        if(ClientCSDMonitor.canMXTunesPlay())
-        {
-            addPlayIDQueue(playID);
-            playIDAudioData.putIfAbsent(playID, new AudioData(playID, null, GROUPS.isClientPlaying(playID)));
-            executorService.execute(new ThreadedPlay(playID, musicText));
-            MXTune.proxy.getMinecraft().getSoundHandler().playSound(new MusicMoving());
-            stopVanillaMusic();
-        }
+        play(playID, null, musicText,  GROUPS.isClientPlaying(playID));
     }
 
+    /**
+     * For TileEntities placed in the world.
+     * @param playID unique submission identifier.
+     * @param pos block position in the world
+     * @param musicText MML string
+     */
     public static synchronized void play(Integer playID, BlockPos pos, String musicText)
     {
+        play(playID, pos, musicText, false);
+    }
+
+    private static void play(Integer playID, BlockPos pos, String musicText, boolean isClient)
+    {
         startThreadFactory();
-        if(ClientCSDMonitor.canMXTunesPlay())
+        if(ClientCSDMonitor.canMXTunesPlay() && playID != null)
         {
             addPlayIDQueue(playID);
-            playIDAudioData.putIfAbsent(playID, new AudioData(playID, pos, false));
+            AudioData result = playIDAudioData.putIfAbsent(playID, new AudioData(playID, pos, isClient));
+            if (result != null)
+            {
+                ModLogger.warn("ClientAudio#play: playID: %s has already been submitted", playID);
+                return;
+            }
             executorService.execute(new ThreadedPlay(playID, musicText));
             MXTune.proxy.getMinecraft().getSoundHandler().playSound(new MusicMoving());
             stopVanillaMusic();
+        } else
+        {
+            ModLogger.warn("ClientAudio#play(Integer playID, BlockPos pos, String musicText): playID is null!");
         }
     }
 
@@ -434,7 +450,7 @@ public class ClientAudio
     }
     
     @SubscribeEvent
-    public static void onJoinWorld(EntityJoinWorldEvent event)
+    public static void event(EntityJoinWorldEvent event)
     {
         if (event.getEntity() instanceof EntityPlayerSP && event.getEntity().getEntityId() == MXTune.proxy.getClientPlayer().getEntityId())
         {
@@ -444,14 +460,14 @@ public class ClientAudio
     }
 
     @SubscribeEvent
-    public static void onPlayerRespawnEvent(PlayerRespawnEvent event)
+    public static void event(PlayerRespawnEvent event)
     {
         cleanup();
         ModLogger.info("ClientAudio PlayerRespawnEvent: %s", event.player.getName());
     }
 
     @SubscribeEvent
-    public static void onEvent(ClientTickEvent event)
+    public static void event(ClientTickEvent event)
     {
         if (event.side == Side.CLIENT && event.phase == TickEvent.Phase.END && counter++ % 5 == 0)
         {
@@ -461,7 +477,7 @@ public class ClientAudio
     }
     
     @SubscribeEvent
-    public static void soundSetupEvent(SoundSetupEvent event) throws SoundSystemException
+    public static void event(SoundSetupEvent event) throws SoundSystemException
     {
         SoundSystemConfig.setCodec("nul", CodecPCM.class);
         ModLogger.info("Sound Setup Event %s", event);
@@ -469,7 +485,7 @@ public class ClientAudio
     }
     
     @SubscribeEvent
-    public static void PlaySoundEvent(PlaySoundEvent e)
+    public static void event(PlaySoundEvent e)
     {
         init();
         /* Testing for a the PCM_PROXY sound. For playing MML though the MML->PCM ClientAudio chain */
@@ -512,7 +528,7 @@ public class ClientAudio
      * mxTune sound event.
      */
     @SubscribeEvent
-    public static void PlayStreamingSourceEvent(PlayStreamingSourceEvent e)
+    public static void event(PlayStreamingSourceEvent e)
     {
         if (e.getSound().getSoundLocation().equals(ModSoundEvents.PCM_PROXY.getSoundName()) &&
                 ClientAudio.peekPlayIDQueue03() != null)
