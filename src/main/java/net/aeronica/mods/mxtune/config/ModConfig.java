@@ -36,8 +36,10 @@ public class ModConfig
     /** Client Configuration Settings */
     @Config(modid = Reference.MOD_ID, name = Reference.MOD_ID + "/" + Reference.MOD_ID + "_client", category="client")
     @LangKey("config.mxtune:ctgy.client")
-    public static class CFG_CLIENT
-    {   
+    public static class ConfigClient
+    {
+        private ConfigClient() {/* NOP */}
+
         @Comment("Sound Channel Configuration")
         @LangKey("config.mxtune:soundChannelConfig")
         public static final Sound sound = new Sound();
@@ -63,9 +65,10 @@ public class ModConfig
     
     @Config(modid= Reference.MOD_ID, name = Reference.MOD_ID + "/" + Reference.MOD_ID + "_general", category="general")
     @LangKey("config.mxtune:ctgy.general")
-    public static class CFG_GENERAL
+    public static class ConfigGeneral
     {
-        
+        private ConfigGeneral() {/* NOP */}
+
         @Comment("General Configuration")
         @LangKey("config.mxtune:generalConfig")
         public static final General general = new General();
@@ -90,8 +93,10 @@ public class ModConfig
     
     @Config(modid = Reference.MOD_ID, name = Reference.MOD_ID + "/" + Reference.MOD_ID + "_recipes", type = Type.INSTANCE, category="recipe")
     @LangKey("config.mxtune:ctgy.recipes")
-    public static class CFG_RECIPE
-    { 
+    public static class ConfigRecipes
+    {
+        private ConfigRecipes() {/* NOP */}
+
         @Name("Toggles")
         @Comment({"mxTune Recipes", "Requires a Server Restart if Changed!", "B:<name>=(true|false)"})
         @RequiresMcRestart
@@ -119,15 +124,15 @@ public class ModConfig
         }
     }
     
-    public static float getListenerRange() {return (float)CFG_GENERAL.general.listenerRange;}
+    public static float getListenerRange() {return (float)ConfigGeneral.general.listenerRange;}
 
-    public static float getGroupPlayAbortDistance() {return (float)CFG_GENERAL.general.groupPlayAbortDistance;}
+    public static float getGroupPlayAbortDistance() {return (float)ConfigGeneral.general.groupPlayAbortDistance;}
 
-    public static boolean hideWelcomeStatusMessage() {return CFG_GENERAL.general.hideWelcomeStatusMessage;}
+    public static boolean hideWelcomeStatusMessage() {return ConfigGeneral.general.hideWelcomeStatusMessage;}
 
-    public static boolean getAutoConfigureChannels() {return CFG_CLIENT.sound.autoConfigureChannels;}
+    public static boolean getAutoConfigureChannels() {return ConfigClient.sound.autoConfigureChannels;}
 
-    public static String getMmlLink() {return CFG_CLIENT.links.site;}
+    public static String getMmlLink() {return ConfigClient.links.site;}
 
     /**
      * Will only allow this mods recipes to be disabled
@@ -139,7 +144,7 @@ public class ModConfig
         // strip off "item." or "tile." and "instrument." to get the raw item name without domain and item base names
         String itemName = stackIn.getTranslationKey().replaceFirst("(item\\.|tile\\.)" + Reference.MOD_ID + "\\:", "");
         itemName = itemName.replaceFirst("instrument\\.", "");
-        boolean enableState = !CFG_RECIPE.recipeToggles.containsKey(itemName) || (CFG_RECIPE.recipeToggles.get(itemName) && !itemName.contains(":"));
+        boolean enableState = !ConfigRecipes.recipeToggles.containsKey(itemName) || (ConfigRecipes.recipeToggles.get(itemName) && !itemName.contains(":"));
         ModLogger.debug("Recipe Enabled? %s %s", itemName, enableState);
         return enableState;
     }
@@ -150,7 +155,9 @@ public class ModConfig
     }
     
     @Mod.EventBusSubscriber
-    public static class RegistrationHandler {
+    public static class RegistrationHandler
+    {
+        private RegistrationHandler() {/* NOP */}
 
         @SubscribeEvent
         public static void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event)
