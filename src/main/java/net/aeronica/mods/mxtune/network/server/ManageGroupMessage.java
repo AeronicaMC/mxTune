@@ -27,11 +27,11 @@ import java.io.IOException;
 
 public class ManageGroupMessage extends AbstractServerMessage<ManageGroupMessage>
 {
-    int operation;
-    Integer groupID;
-    Integer memberID;
+    private int operation;
+    private Integer groupID;
+    private Integer memberID;
 
-    public ManageGroupMessage() {/* Required by the PacketDispacher */}
+    public ManageGroupMessage() {/* Required by the PacketDispatcher */}
 
     public ManageGroupMessage(int operation, Integer groupID, Integer memberName)
     {

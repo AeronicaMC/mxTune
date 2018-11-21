@@ -1,6 +1,6 @@
 /*
  * Aeronica's mxTune MOD
- * Copyright {2016} Paul Boese a.k.a. Aeronica
+ * Copyright {2018} Paul Boese a.k.a. Aeronica
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,13 +92,8 @@ public class ContainerBandAmp extends Container
     }
 
     @Override
-    public boolean canInteractWith(EntityPlayer playerIn)
+    public boolean canInteractWith(@Nonnull EntityPlayer playerIn)
     {
         return this.tileBandAmp.isUsableByPlayer(playerIn);
-    }
-
-    public TileBandAmp getTileBandAmp()
-    {
-        return tileBandAmp;
     }
 }

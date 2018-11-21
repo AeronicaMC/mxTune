@@ -28,7 +28,7 @@ public class SlotBandAmp extends SlotItemHandler
 {
     private TileBandAmp tileBandAmp;
 
-    public SlotBandAmp(IItemHandler itemHandler, TileBandAmp tileBandAmp, int index, int xPosition, int yPosition)
+    SlotBandAmp(IItemHandler itemHandler, TileBandAmp tileBandAmp, int index, int xPosition, int yPosition)
     {
         super(itemHandler, index, xPosition, yPosition);
         this.tileBandAmp = tileBandAmp;
