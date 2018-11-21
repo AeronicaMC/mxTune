@@ -21,10 +21,9 @@ import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.ManageGroupMessage;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
@@ -32,50 +31,29 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 public class GuiGroup extends GuiScreen
 {
     public static final int GUI_ID = 2;
-
-    private Minecraft mc;
-    private FontRenderer fontRenderer = null;
-
     private static final ResourceLocation guiTexture = new ResourceLocation(Reference.MOD_ID, "textures/gui/manage_group.png");
-
-    /** The X size of the group window in pixels. */
     private int xSize = 239;
-
-    /** The Y size of the group window in pixels. */
     private int ySize = 164;
-
-    /**
-     * Starting X position for the Gui. Inconsistent use for Gui backgrounds.
-     */
     private int guiLeft;
-
-    /**
-     * Starting Y position for the Gui. Inconsistent use for Gui backgrounds.
-     */
     private int guiTop;
 
-    private String TITLE = "Jam Session";
-
-    private GuiButton btn_create, btn_leave, btn_cancel;
+    private GuiButton btn_create;
+    private GuiButton btn_leave;
     private List<MemberButtons> list_btn_members;
 
     private EntityPlayer player;
 
-    /** Initializes the GUI elements. */
     @Override
     public void initGui()
     {
         Keyboard.enableRepeatEvents(false);
 
-        this.mc = Minecraft.getMinecraft();
-        this.fontRenderer = mc.fontRenderer;
         this.player = mc.player;
 
         this.guiLeft = (this.width - this.xSize) / 2;
@@ -95,7 +73,7 @@ public class GuiGroup extends GuiScreen
 
         posX = guiLeft + 169;
         posY = guiTop + 132;
-        btn_cancel = new GuiButton(2, posX, posY, 60, 20, "Cancel");
+        GuiButton btn_cancel = new GuiButton(2, posX, posY, 60, 20, "Cancel");
 
         /* create member buttons for delete and promote */
         initMembersButtons();
@@ -105,14 +83,12 @@ public class GuiGroup extends GuiScreen
         buttonList.add(btn_cancel);
     }
 
-    /** Called when the screen is unloaded. Used to disable keyboard repeat events, etc */
     @Override
     public void onGuiClosed() {}
 
     @Override
     public boolean doesGuiPauseGame() {return false;}
 
-    /** Draws the screen and all the components in it. */
     @Override
     public void drawScreen(int i, int j, float f)
     {
@@ -120,10 +96,11 @@ public class GuiGroup extends GuiScreen
         drawGuiBackground();
 
         /* draw "TITLE" at the top right */
-        int posX = guiLeft + xSize - fontRenderer.getStringWidth(TITLE) - 12;
+        String TITLE = I18n.format("mxtune.gui.GuiGroup.title");
+        int posX = guiLeft + xSize - this.fontRenderer.getStringWidth(TITLE) - 12;
         int posY = guiTop + 12;
-        fontRenderer.getStringWidth(TITLE);
-        fontRenderer.drawString(TITLE, posX, posY, 0x000000);
+        this.fontRenderer.getStringWidth(TITLE);
+        this.fontRenderer.drawString(TITLE, posX, posY, 0x000000);
 
         drawMembers();
         /* Create and Leave buttons should always reflect group membership */
@@ -163,19 +140,19 @@ public class GuiGroup extends GuiScreen
         }
     }
 
-    private String getMemberButton(int buttonID)
+    private Integer getMemberButton(int buttonID)
     {
         MemberButtons mb;
-        String memberName = "UnFound_UnFound_Unfound";
+        Integer memberId = -1;
         for (int i = 0; i < GROUPS.MAX_MEMBERS; i++)
         {
             mb = list_btn_members.get(i);
             if (mb.btn_delete.id == buttonID || mb.btn_promote.id == buttonID)
             {
-                memberName = mb.memberName;
+                memberId = mb.memberId;
             }
         }
-        return memberName;
+        return memberId;
     }
 
     private void drawMembers()
@@ -183,45 +160,51 @@ public class GuiGroup extends GuiScreen
         int posX = guiLeft + 12;
         int posY = guiTop + 12;
         Integer groupID;
-        Integer memberID;
         String leaderName;
         String memberName;
         int i = 0;
 
         clearMembersButtons();
 
-        if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
+        try
         {
-            groupID = GROUPS.getMembersGroupID(player.getEntityId());
-            if (groupID != null)
+            if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
             {
-                /** Always put the leader at the TOP of the list */
-                leaderName = player.getEntityWorld().getEntityByID(GROUPS.getLeaderOfGroup(groupID)).getDisplayName().getUnformattedText();
-                fontRenderer.drawStringWithShadow(TextFormatting.YELLOW + leaderName, posX, posY, 16777215);
-                posY += 10;
-                /** Display the remaining members taking care to not print the leader a 2nd time. */
-                Set<Integer> set = GROUPS.getClientMembers().keySet();
-                for (Iterator<Integer> im = set.iterator(); im.hasNext();)
+                groupID = GROUPS.getMembersGroupID(player.getEntityId());
+                Integer leaderID = GROUPS.getLeaderOfGroup(groupID);
+                if (groupID != null && leaderID !=null)
                 {
-                    memberID = im.next();
-                    if (groupID.equals(GROUPS.getMembersGroupID(memberID)) && !memberID.equals(GROUPS.getLeaderOfGroup(groupID)))
+                    /* Always put the leader at the TOP of the list */
+                    leaderName = this.mc.world.getEntityByID(leaderID).getDisplayName().getUnformattedText();
+                    this.fontRenderer.drawStringWithShadow(TextFormatting.YELLOW + leaderName, posX, posY, 16777215);
+                    posY += 10;
+                    /* Display the remaining members taking care to not print the leader a 2nd time. */
+                    Set<Integer> members = GROUPS.getClientMembers().keySet();
+                    for (Integer memberId : members)
                     {
-                        memberName = player.getEntityWorld().getEntityByID(memberID).getDisplayName().getUnformattedText();
-                        fontRenderer.drawStringWithShadow(memberName, posX, posY, 16777215);
-                        list_btn_members.get(i).memberName = memberName;
-                        /** Only Leaders get to remove and promote other members! */
-                        if (player.getEntityId() == (GROUPS.getLeaderOfGroup(groupID)))
+                        if (groupID.equals(GROUPS.getMembersGroupID(memberId)) && !memberId.equals(leaderID))
                         {
-                            list_btn_members.get(i).btn_delete.enabled = true;
-                            list_btn_members.get(i).btn_delete.visible = true;
-                            list_btn_members.get(i).btn_promote.enabled = true;
-                            list_btn_members.get(i).btn_promote.visible = true;
+                            memberName = this.mc.world.getEntityByID(memberId).getDisplayName().getUnformattedText();
+                            this.fontRenderer.drawStringWithShadow(memberName, posX, posY, 16777215);
+                            list_btn_members.get(i).memberName = memberName;
+                            list_btn_members.get(i).memberId = memberId;
+                            /* Only Leaders get to remove and promote other members! */
+                            if (player.getEntityId() == (leaderID))
+                            {
+                                list_btn_members.get(i).btn_delete.enabled = true;
+                                list_btn_members.get(i).btn_delete.visible = true;
+                                list_btn_members.get(i).btn_promote.enabled = true;
+                                list_btn_members.get(i).btn_promote.visible = true;
+                            }
+                            posY += 10;
+                            i++;
                         }
-                        posY += 10;
-                        i++;
                     }
                 }
             }
+        } catch(NullPointerException e)
+        {
+            ModLogger.error("GuiGroup#drawMembers: Oops %s", e);
         }
     }
 
@@ -233,13 +216,13 @@ public class GuiGroup extends GuiScreen
 
         if (guibutton.id >= 10 && guibutton.id < 100)
         {
-            sendRequest(GROUPS.MEMBER_REMOVE, "", getMemberButton(guibutton.id));
+            sendRequest(GROUPS.MEMBER_REMOVE, getMemberButton(guibutton.id));
             ModLogger.debug("+++ Gui Remove Member: " + GROUPS.MEMBER_REMOVE);
             return;
         }
         if (guibutton.id >= 100)
         {
-            sendRequest(GROUPS.MEMBER_PROMOTE, "", getMemberButton(guibutton.id));
+            sendRequest(GROUPS.MEMBER_PROMOTE, getMemberButton(guibutton.id));
             ModLogger.debug("+++ Gui Promote Member: " + GROUPS.MEMBER_PROMOTE);
             return;
         }
@@ -249,13 +232,13 @@ public class GuiGroup extends GuiScreen
         {
         case 0:
             /* Create Group */
-            sendRequest(GROUPS.GROUP_ADD, "", player.getDisplayName().getUnformattedText());
+            sendRequest(GROUPS.GROUP_ADD, player.getEntityId());
             ModLogger.debug("+++ Gui Create Group: " + GROUPS.GROUP_ADD);
             break;
 
         case 1:
             /* Leave Group */
-            sendRequest(GROUPS.MEMBER_REMOVE, "", player.getDisplayName().getUnformattedText());
+            sendRequest(GROUPS.MEMBER_REMOVE, player.getEntityId());
             ModLogger.debug("+++ Gui Leave Group: " + GROUPS.MEMBER_REMOVE);
             break;
 
@@ -267,7 +250,7 @@ public class GuiGroup extends GuiScreen
         mc.setIngameFocus();
     }
 
-    /** Gets the image for the background and renders it in the middle of the screen. */
+    /* Gets the image for the background and renders it in the middle of the screen. */
     private void drawGuiBackground()
     {
         GL11.glColor4f(1F, 1F, 1F, 1F);
@@ -275,11 +258,9 @@ public class GuiGroup extends GuiScreen
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 
-    private void sendRequest(int operation, String leaderName, String memberName)
+    private void sendRequest(int operation, Integer memberId)
     {
-        Integer groupID = null;
-        Integer memberID = player.getEntityWorld().getPlayerEntityByName(memberName).getEntityId();
-        PacketDispatcher.sendToServer(new ManageGroupMessage(operation, groupID, memberID));
+        PacketDispatcher.sendToServer(new ManageGroupMessage(operation, null, memberId));
     }
 
     protected class MemberButtons
@@ -287,9 +268,9 @@ public class GuiGroup extends GuiScreen
         GuiButton btn_delete;
         GuiButton btn_promote;
         String memberName;
+        Integer memberId;
     }
 
-    /** Yes I know hard coding those button sizes is uncool - internationally recognized icons instead ?*/
     private MemberButtons memberButtons(int did, int pid, int xpos, int ypos)
     {
         MemberButtons buttons = new MemberButtons();

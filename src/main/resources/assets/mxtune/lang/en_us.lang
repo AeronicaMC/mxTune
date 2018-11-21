@@ -124,6 +124,7 @@ mxtune.key.openParty=Open Party
 mxtune.key.openMusicOptions=Music Options
 mxtune.gui.button.play=Play
 mxtune.gui.button.stop=Stop
+mxtune.gui.GuiGroup.title=Jam Session
 mxtune.gui.GuiGroupJoin.title=Join this Group?
 mxtune.gui.musicOptions.title=mxTune Music Options
 mxtune.gui.musicOptions.label.whitelist=Whitelist

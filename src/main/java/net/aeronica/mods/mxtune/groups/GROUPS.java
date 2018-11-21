@@ -28,7 +28,6 @@ import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -53,13 +52,14 @@ public class GROUPS
     private static Map<Integer, Integer> membersPlayID;
     private static Set<Integer> activePlayIDs;
 
-
     /* GroupManager Client Status Methods */
+    @Nullable
     public static Integer getLeaderOfGroup(Integer integer)
     {
         return GROUPS.clientGroups != null ? GROUPS.clientGroups.get(integer) : null;
     }
 
+    @Nullable
     public static Integer getMembersGroupLeader(Integer memberID){
         return getLeaderOfGroup(getMembersGroupID(memberID));
     }
@@ -69,7 +69,7 @@ public class GROUPS
         return GROUPS.clientMembers != null ? GROUPS.clientMembers.get(memberID) : null;
     }
 
-    public static Set<Integer> getPlayersGroupMembers(EntityPlayer playerIn)
+    private static Set<Integer> getPlayersGroupMembers(EntityPlayer playerIn)
     {
         Integer groupID = GROUPS.getMembersGroupID(playerIn.getEntityId());
         if(groupID != null)
@@ -153,7 +153,7 @@ public class GROUPS
     }
 
      /* PlayManager Client Status Methods */
-    public static Set<Integer> getMembersByPlayID(Integer playID) 
+    private static Set<Integer> getMembersByPlayID(Integer playID)
     {
         Set<Integer> members = Sets.newHashSet();
         if (membersPlayID != null)
@@ -227,9 +227,10 @@ public class GROUPS
         return distance;
     }
 
-    private static double scaleBetween(double unscaledNum, double minAllowed, double maxAllowed, double min, double max) {
+    private static double scaleBetween(double unscaledNum, double minAllowed, double maxAllowed, double min, double max)
+    {
         return (maxAllowed - minAllowed) * (unscaledNum - min) / (max - min) + minAllowed;
-      }
+    }
     
     private static Vec3d getMemberVector(Integer entityID)
     {
@@ -296,7 +297,7 @@ public class GROUPS
     
     /* Serialization and deserialization methods */
     @Nullable
-    public static Map<Integer, Integer> deserializeIntIntMap(String mapIntString)
+    static Map<Integer, Integer> deserializeIntIntMap(String mapIntString)
     {       
         try
         {
@@ -314,16 +315,15 @@ public class GROUPS
         }
     }
 
-    public static String serializeIntIntMap(HashMap<Integer, Integer> mapIntInt)
+    @SuppressWarnings("unused")
+    static String serializeIntIntMap(HashMap<Integer, Integer> mapIntInt)
     {
         StringBuilder serializedIntIntMap = new StringBuilder();
         try
         {
             Set<Integer> keys = mapIntInt.keySet();
-            Iterator<Integer> it = keys.iterator();
-            while (it.hasNext())
+            for (Integer integer : keys)
             {
-                Integer integer = (Integer) it.next();
                 serializedIntIntMap.append(integer).append("=").append(mapIntInt.get(integer)).append("|");
             }
         } catch (Exception e)
@@ -340,11 +340,11 @@ public class GROUPS
      * @return a ListMultimap where the keys and values have been swapped.
      */
     @Nullable
-    public static ListMultimap<Integer, Integer> deserializeIntIntListMultimapSwapped(String hashTableString)
+    static ListMultimap<Integer, Integer> deserializeIntIntListMultimapSwapped(String hashTableString)
     {
         try
         {
-            Map<String, String> inStringString =  (Map<String, String>) Splitter.on('|').omitEmptyStrings().withKeyValueSeparator("=").split(hashTableString);
+            Map<String, String> inStringString = Splitter.on('|').omitEmptyStrings().withKeyValueSeparator("=").split(hashTableString);
             ListMultimap<Integer, Integer> outListMultimapIntInt = ArrayListMultimap.create();
             for (Map.Entry<String,String> entry: inStringString.entrySet())
             {
@@ -359,13 +359,14 @@ public class GROUPS
 
     }
 
+    @SuppressWarnings("unused")
     @Nullable
     public static Map<Integer, String> deserializeIntStrMap(String mapIntString)
     {       
         try
         {
-            Map<String, String> inStringString =  (Map<String, String>) Splitter.on('|').omitEmptyStrings().withKeyValueSeparator("=").split(mapIntString);
-            Map<Integer, String> outIntString = new HashMap<Integer, String>();
+            Map<String, String> inStringString = Splitter.on('|').omitEmptyStrings().withKeyValueSeparator("=").split(mapIntString);
+            Map<Integer, String> outIntString = new HashMap<>();
             for (Map.Entry<String,String> entry: inStringString.entrySet())
             {
                 outIntString.put(Integer.valueOf(entry.getKey()), entry.getValue());
@@ -377,8 +378,9 @@ public class GROUPS
             return null;
         }
     }
-    
-    public static String serializeIntStrMap(HashMap<Integer, String> mapIntStr)
+
+    @SuppressWarnings("unused")
+    static String serializeIntStrMap(HashMap<Integer, String> mapIntStr)
     {
         StringBuilder serializedIntStrMap = new StringBuilder();
         try
@@ -396,7 +398,7 @@ public class GROUPS
     }
 
     @Nullable
-    public static Set<Integer> deserializeIntegerSet(String setIntString)
+    static Set<Integer> deserializeIntegerSet(String setIntString)
     {
         Iterable<String> inString = Splitter.on(',').omitEmptyStrings().split(setIntString);
         Set<Integer> deserializedSet = null;
@@ -415,7 +417,7 @@ public class GROUPS
         return deserializedSet;
     }
 
-    public static String serializeIntegerSet(Set<Integer> setIntegers)
+    static String serializeIntegerSet(Set<Integer> setIntegers)
     {
         StringBuilder serializedSet = new StringBuilder();
         try
