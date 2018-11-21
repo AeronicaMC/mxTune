@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune Mod
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  * Updated for 1.9+, added additional constructors for more control over
@@ -46,9 +46,9 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public enum PlacedInstrumentUtil
+public class PlacedInstrumentUtil
 {    
-    ;
+    private PlacedInstrumentUtil() {/* NOP */}
     /** Gets a Block position under a players feet. works on blocks, half slabs, carpets. */
     private static BlockPos blockUnderFoot(EntityPlayer playerIn)
     {
@@ -58,67 +58,71 @@ public enum PlacedInstrumentUtil
         return new BlockPos(x, y, z);
     }
 
+    @SuppressWarnings("unused")
     public static boolean standOnBlock(World worldIn, BlockPos posIn, EntityPlayer playerIn)
     {
-        if (canPlaceEntity(worldIn, posIn, playerIn))
+        if (canPlaceEntity(worldIn, posIn))
         {
             BlockPos underFoot = blockUnderFoot(playerIn);
             /* Standing on Fluids or Air is not allowed */
             if ((worldIn.getBlockState(underFoot).getBlock() instanceof BlockLiquid) || worldIn.isAirBlock(underFoot))
                 return false;
-            double blockheight = worldIn.getBlockState(underFoot).getBoundingBox(null, underFoot).maxY;
-            EntitySittableBlock nemb = new EntitySittableBlock(worldIn, underFoot, blockheight + 6 * 0.0625F, false);
-            worldIn.spawnEntity(nemb);
-            playerIn.startRiding(nemb, true);
+            double blockHeight = worldIn.getBlockState(underFoot).getBoundingBox(Util.nonNullInjected(), underFoot).maxY;
+            EntitySittableBlock sittableBlock = new EntitySittableBlock(worldIn, underFoot, blockHeight + 6 * 0.0625F, false);
+            worldIn.spawnEntity(sittableBlock);
+            playerIn.startRiding(sittableBlock, true);
         }
         return true;
     }
 
+    @SuppressWarnings("unused")
     public static boolean sitOnBlock(World worldIn, BlockPos posIn, EntityPlayer playerIn, double yOffset)
     {
-        if (canPlaceEntity(worldIn, posIn, playerIn))
+        if (canPlaceEntity(worldIn, posIn))
         {
-            EntitySittableBlock nemb = new EntitySittableBlock(worldIn, posIn, yOffset, true);
-            worldIn.spawnEntity(nemb);
-            playerIn.startRiding(nemb, true);
+            EntitySittableBlock sittableBlock = new EntitySittableBlock(worldIn, posIn, yOffset, true);
+            worldIn.spawnEntity(sittableBlock);
+            playerIn.startRiding(sittableBlock, true);
         }
         return true;
     }
 
+    @SuppressWarnings("unused")
     public static boolean sitOnBlock(World worldIn, BlockPos posIn, EntityPlayer playerIn, double xOffset, double yOffset, double zOffset)
     {
-        if (canPlaceEntity(worldIn, posIn, playerIn))
+        if (canPlaceEntity(worldIn, posIn))
         {
-            EntitySittableBlock nemb = new EntitySittableBlock(worldIn, posIn, xOffset, yOffset, zOffset);
-            worldIn.spawnEntity(nemb);
-            playerIn.startRiding(nemb, true);
+            EntitySittableBlock sittableBlock = new EntitySittableBlock(worldIn, posIn, xOffset, yOffset, zOffset);
+            worldIn.spawnEntity(sittableBlock);
+            playerIn.startRiding(sittableBlock, true);
         }
         return true;
     }
 
     public static boolean sitOnBlock(World worldIn, BlockPos posIn, EntityPlayer playerIn, double xOffset, double yOffset, double zOffset, float yaw)
     {
-        if (canPlaceEntity(worldIn, posIn, playerIn))
+        if (canPlaceEntity(worldIn, posIn))
         {
-            EntitySittableBlock nemb = new EntitySittableBlock(worldIn, posIn, xOffset, yOffset, zOffset, yaw);
-            worldIn.spawnEntity(nemb);
-            playerIn.startRiding(nemb, true);
+            EntitySittableBlock sittableBlock = new EntitySittableBlock(worldIn, posIn, xOffset, yOffset, zOffset, yaw);
+            worldIn.spawnEntity(sittableBlock);
+            playerIn.startRiding(sittableBlock, true);
         }
         return true;
     }
 
+    @SuppressWarnings("unused")
     public static boolean sitOnBlockWithRotationOffset(World worldIn, BlockPos posIn, EntityPlayer playerIn, double yOffset, int metadata, double offset)
     {
-        if (canPlaceEntity(worldIn, posIn, playerIn))
+        if (canPlaceEntity(worldIn, posIn))
         {
-            EntitySittableBlock nemb = new EntitySittableBlock(worldIn, posIn, yOffset, metadata, offset);
-            worldIn.spawnEntity(nemb);
-            playerIn.startRiding(nemb);
+            EntitySittableBlock sittableBlock = new EntitySittableBlock(worldIn, posIn, yOffset, metadata, offset);
+            worldIn.spawnEntity(sittableBlock);
+            playerIn.startRiding(sittableBlock);
         }
         return true;
     }
 
-    public static boolean canPlaceEntity(World par1World, BlockPos posIn, EntityPlayer playerIn)
+    private static boolean canPlaceEntity(World par1World, BlockPos posIn)
     {
         int x = posIn.getX();
         int y = posIn.getY();
@@ -156,7 +160,7 @@ public enum PlacedInstrumentUtil
         return isSomeoneSitting(world, pos.getX(), pos.getY(), pos.getZ());
     }
     
-    public static boolean isSomeoneSitting(World world, double x, double y, double z)
+    private static boolean isSomeoneSitting(World world, double x, double y, double z)
     {
         List<EntitySittableBlock> listEMB = world.getEntitiesWithinAABB(EntitySittableBlock.class, new AxisAlignedBB(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D).grow(0.5D, 0.5D, 0.5D));
         return !listEMB.isEmpty();
@@ -175,5 +179,4 @@ public enum PlacedInstrumentUtil
     {
         return isRiding(playerIn) ? ((EntitySittableBlock)playerIn.getRidingEntity()).getBlockPos() : BlockPos.ORIGIN;
     }
-    
 }
