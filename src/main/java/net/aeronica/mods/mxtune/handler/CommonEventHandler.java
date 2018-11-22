@@ -17,9 +17,14 @@
 package net.aeronica.mods.mxtune.handler;
 
 import net.aeronica.mods.mxtune.MXTune;
+import net.aeronica.mods.mxtune.blocks.IMusicPlayer;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.PlayManager;
+import net.aeronica.mods.mxtune.world.IModLockableContainer;
+import net.aeronica.mods.mxtune.world.LockableHelper;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
@@ -47,6 +52,22 @@ public class CommonEventHandler
         /* Fired once every two seconds */
         if (event.side == Side.SERVER && event.phase == TickEvent.Phase.END && (count++ % 40 == 0)) {
             PlayManager.testStopDistance(ModConfig.getGroupPlayAbortDistance());
+        }
+    }
+
+    @SubscribeEvent
+    public void onEvent(BlockEvent.BreakEvent event)
+    {
+        if(event.getWorld().isRemote) return;
+        if(event.getState().getBlock() instanceof IMusicPlayer)
+        {
+            boolean isCreativeMode = event.getPlayer() != null && event.getPlayer().capabilities.isCreativeMode;
+            TileEntity tileEntity = event.getWorld().getTileEntity(event.getPos());
+            if(tileEntity instanceof IModLockableContainer)
+            {
+                if (LockableHelper.isLocked(event.getPlayer(), tileEntity.getWorld(), event.getPos()) && !isCreativeMode)
+                    event.setCanceled(true);
+            }
         }
     }
 }

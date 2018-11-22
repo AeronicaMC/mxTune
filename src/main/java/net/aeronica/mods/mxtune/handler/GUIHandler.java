@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -21,14 +21,10 @@ import net.aeronica.mods.mxtune.gui.*;
 import net.aeronica.mods.mxtune.inventory.ContainerBandAmp;
 import net.aeronica.mods.mxtune.inventory.ContainerInstrument;
 import net.aeronica.mods.mxtune.inventory.InventoryInstrument;
-import net.aeronica.mods.mxtune.world.IModLockableContainer;
+import net.aeronica.mods.mxtune.world.LockableHelper;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.Container;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
@@ -45,13 +41,13 @@ public class GUIHandler implements IGuiHandler
         switch (ID)
         {
             case GuiInstrumentInventory.GUI_ID:
-                /** Use the player's held item to create the inventory */
+                // Use the player's held item to create the inventory
                 return new ContainerInstrument(playerIn, playerIn.inventory,
                                                new InventoryInstrument(playerIn.getHeldItemMainhand()));
 
             case GuiBandAmp.GUI_ID:
-                if (!isLocked(playerIn, worldIn, x, y, z))
-                    return new ContainerBandAmp(playerIn.inventory, (TileBandAmp) worldIn.getTileEntity(new BlockPos(x, y, z)));
+                if (!LockableHelper.isLocked(playerIn, worldIn, x, y, z))
+                    return new ContainerBandAmp(playerIn.inventory, worldIn, x, y, z);
                 else
                     return null;
 
@@ -88,28 +84,5 @@ public class GUIHandler implements IGuiHandler
         default:
             return null;
         }
-    }
-
-    public static boolean isLocked(EntityPlayer playerIn, World worldIn, BlockPos pos)
-    {
-        return isLocked(playerIn, worldIn, pos.getX(), pos.getY(), pos.getZ());
-    }
-
-    public static boolean isLocked(EntityPlayer playerIn, World worldIn, int x, int y, int z)
-    {
-        TileEntity tileEntity = worldIn.getTileEntity(new BlockPos(x, y, z));
-        boolean isLocked = false;
-        if (tileEntity instanceof IModLockableContainer)
-        {
-            IModLockableContainer lockableContainer = (IModLockableContainer) tileEntity;
-
-            if (lockableContainer.isLocked() && !playerIn.canOpen(lockableContainer.getLockCode()) && !playerIn.isSpectator())
-            {
-                playerIn.sendStatusMessage(new TextComponentTranslation("container.isLocked", new Object[] {new TextComponentTranslation(lockableContainer.getName())}), true);
-                playerIn.getEntityWorld().playSound(null, new BlockPos(x, y, z), SoundEvents.UI_TOAST_IN, SoundCategory.BLOCKS, 1F, 1F);
-                isLocked = true;
-            }
-        }
-        return isLocked;
     }
 }

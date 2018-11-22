@@ -19,8 +19,8 @@ package net.aeronica.mods.mxtune.blocks;
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiBandAmp;
-import net.aeronica.mods.mxtune.handler.GUIHandler;
 import net.aeronica.mods.mxtune.init.ModItems;
+import net.aeronica.mods.mxtune.world.LockableHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
@@ -43,6 +43,7 @@ import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldNameable;
+import net.minecraft.world.LockCode;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -89,7 +90,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     {
         if (!worldIn.isRemote)
         {
-            if (playerIn.isSneaking() || GUIHandler.isLocked(playerIn, worldIn, pos))
+            if (playerIn.isSneaking() || LockableHelper.isLocked(playerIn, worldIn, pos))
             {
                 boolean isPlaying = canPlayOrStopMusic(worldIn, pos, false);
                 setPlayingState(worldIn, pos, state, isPlaying);
@@ -207,10 +208,12 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     {
         this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(PLAYING, Boolean.valueOf(false));
 
-        if (stack.hasDisplayName())
-        {
-            TileBandAmp tileBandAmp = getTE(worldIn, pos);
-            if (tileBandAmp != null)
+        TileBandAmp tileBandAmp = getTE(worldIn, pos);
+        if (tileBandAmp != null) {
+            LockCode lockCode = new LockCode(placer.getPersistentID().toString());
+            tileBandAmp.setLockCode(lockCode);
+
+            if (stack.hasDisplayName())
                 tileBandAmp.setCustomInventoryName(stack.getDisplayName());
         }
     }
