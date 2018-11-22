@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -91,7 +91,7 @@ public class ItemInstrument extends Item implements IInstrument
         ItemStack itemStackIn = playerIn.getHeldItem(handIn);
         if (!worldIn.isRemote)
         {
-            /** Server Side - Open the instrument inventory GuiInstInvAdjustRotations */
+            // Server Side - Open the instrument inventory GuiInstInvAdjustRotations
             if (playerIn.isSneaking() && handIn.equals(EnumHand.MAIN_HAND))
             {
                 playerIn.openGui(MXTune.instance, GuiInstrumentInventory.GUI_ID, worldIn, 0, 0, 0);
@@ -117,7 +117,7 @@ public class ItemInstrument extends Item implements IInstrument
         // return EnumActionResult.SUCCESS to activate on AIR only
         // return EnumActionResult.FAIL to activate unconditionally and skip vanilla processing
         // return EnumActionResult.PASS to activate on AIR, or let Vanilla process
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemStackIn);
+        return new ActionResult<>(EnumActionResult.SUCCESS, itemStackIn);
     }
 
     /**
@@ -267,7 +267,7 @@ public class ItemInstrument extends Item implements IInstrument
         private final int patch;
         private static final EnumType[] META_LOOKUP = new EnumType[values().length];
 
-        private EnumType(int metaIn, String nameIn, int patchIn)
+        EnumType(int metaIn, String nameIn, int patchIn)
         {
             this.meta = metaIn;
             this.name = nameIn;
