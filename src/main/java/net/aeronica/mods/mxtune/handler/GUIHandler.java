@@ -20,7 +20,6 @@ import net.aeronica.mods.mxtune.blocks.TileBandAmp;
 import net.aeronica.mods.mxtune.gui.*;
 import net.aeronica.mods.mxtune.inventory.ContainerBandAmp;
 import net.aeronica.mods.mxtune.inventory.ContainerInstrument;
-import net.aeronica.mods.mxtune.inventory.InventoryInstrument;
 import net.aeronica.mods.mxtune.world.LockableHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -42,8 +41,7 @@ public class GUIHandler implements IGuiHandler
         {
             case GuiInstrumentInventory.GUI_ID:
                 // Use the player's held item to create the inventory
-                return new ContainerInstrument(playerIn, playerIn.inventory,
-                                               new InventoryInstrument(playerIn.getHeldItemMainhand()));
+                return new ContainerInstrument(playerIn);
 
             case GuiBandAmp.GUI_ID:
                 if (!LockableHelper.isLocked(playerIn, worldIn, x, y, z))
@@ -65,8 +63,7 @@ public class GUIHandler implements IGuiHandler
                 return new GuiMusicPaperParse();
 
             case GuiInstrumentInventory.GUI_ID:
-                return new GuiInstrumentInventory(new ContainerInstrument(playerIn, playerIn.inventory,
-                                                                          new InventoryInstrument(playerIn.getHeldItemMainhand())));
+                return new GuiInstrumentInventory(new ContainerInstrument(playerIn));
 
             case GuiGroup.GUI_ID:
                 return new GuiGroup();

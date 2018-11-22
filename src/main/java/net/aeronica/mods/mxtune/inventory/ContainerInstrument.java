@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese aka Aeronica
  *
@@ -23,34 +23,36 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nonnull;
+
 public class ContainerInstrument extends Container
 {
-    /** The Item Inventory for this Container */
-    public final InventoryInstrument invInst;
-
-    public ContainerInstrument(EntityPlayer player, InventoryPlayer inventoryIn, InventoryInstrument inventoryInst)
+    public ContainerInstrument(EntityPlayer playerIn)
     {
-        invInst = inventoryInst;
+        // The Item Inventory for this Container
+        InventoryInstrument inventoryInstrument = new InventoryInstrument(playerIn.getHeldItemMainhand());
+        InventoryPlayer inventoryPlayer = playerIn.inventory;
 
-        /** ItemInventory */
-        addSlotToContainer(new SlotInstrument(invInst, 0, 12, 8 + 2 * 18));
+        // ItemInventory
+        addSlotToContainer(new SlotInstrument(inventoryInstrument, 0, 12, 8 + 2 * 18));
 
         int slotIndex = -1;
         //Player Hotbar
         for (int i = 0; i < 9; i++)
         {
-            this.addSlotToContainer(new SlotHotBar(inventoryIn, ++slotIndex, 18 * i + 12, 142));
+            this.addSlotToContainer(new SlotHotBar(inventoryPlayer, ++slotIndex, 18 * i + 12, 142));
         }
         //Player Inventory
         for (int i = 0; i < 3; i++)
         {
             for (int j = 0; j < 9; j++)
             {
-                this.addSlotToContainer(new Slot(inventoryIn, ++slotIndex, 18 * j + 12, 18 * i + 84));
+                this.addSlotToContainer(new Slot(inventoryPlayer, ++slotIndex, 18 * j + 12, 18 * i + 84));
             }
         }
     }
 
+    @Nonnull
     @Override
     public ItemStack transferStackInSlot(EntityPlayer player, int slotIndex)
     {
@@ -90,7 +92,7 @@ public class ContainerInstrument extends Container
     }
     
     @Override
-    public boolean canInteractWith(EntityPlayer player) {return true;} 
+    public boolean canInteractWith(@Nonnull EntityPlayer player) {return true;}
     
     @Override
     public void onContainerClosed(EntityPlayer player) {super.onContainerClosed(player);}
