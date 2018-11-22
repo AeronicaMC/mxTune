@@ -22,6 +22,8 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
@@ -31,8 +33,8 @@ public class ContainerBandAmp extends Container
 {
     private TileBandAmp tileBandAmp;
 
-    public ContainerBandAmp(InventoryPlayer playerInv, @Nonnull final TileBandAmp tileBandAmp) {
-        this.tileBandAmp = tileBandAmp;
+    public ContainerBandAmp(InventoryPlayer playerInv, World worldIn, int x, int y, int z) {
+        this.tileBandAmp = (TileBandAmp) worldIn.getTileEntity(new BlockPos(x, y, z));
         IItemHandler inventory = tileBandAmp.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
         addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 0, 52, 26));
         addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 1, 70, 26));
