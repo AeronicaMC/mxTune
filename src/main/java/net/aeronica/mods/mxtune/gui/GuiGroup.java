@@ -73,14 +73,14 @@ public class GuiGroup extends GuiScreen
 
         posX = guiLeft + 169;
         posY = guiTop + 132;
-        GuiButton btn_cancel = new GuiButton(2, posX, posY, 60, 20, "Cancel");
+        GuiButton btnCancel = new GuiButton(2, posX, posY, 60, 20, "Cancel");
 
         /* create member buttons for delete and promote */
         initMembersButtons();
         
         buttonList.add(btnCreate);
         buttonList.add(btnLeave);
-        buttonList.add(btn_cancel);
+        buttonList.add(btnCancel);
     }
 
     @Override
@@ -96,11 +96,11 @@ public class GuiGroup extends GuiScreen
         drawGuiBackground();
 
         /* draw "TITLE" at the top right */
-        String TITLE = I18n.format("mxtune.gui.GuiGroup.title");
-        int posX = guiLeft + xSize - this.fontRenderer.getStringWidth(TITLE) - 12;
+        String title = I18n.format("mxtune.gui.GuiGroup.title");
+        int posX = guiLeft + xSize - this.fontRenderer.getStringWidth(title) - 12;
         int posY = guiTop + 12;
-        this.fontRenderer.getStringWidth(TITLE);
-        this.fontRenderer.drawString(TITLE, posX, posY, 0x000000);
+        this.fontRenderer.getStringWidth(title);
+        this.fontRenderer.drawString(title, posX, posY, 0x000000);
 
         drawMembers();
         /* Create and Leave buttons should always reflect group membership */

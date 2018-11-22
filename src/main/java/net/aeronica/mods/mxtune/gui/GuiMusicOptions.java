@@ -135,7 +135,8 @@ public class GuiMusicOptions extends GuiScreen
         x = listBoxWhite.getRight() - whiteListWidth - 2;
         buttonWidth = 225;
         buttonMuteOption = new GuiButtonExt(0, x, y, buttonWidth, 20, (MusicOptionsUtil.EnumMuteOptions.byMetadata(muteOption).toString()));
-        GuiButtonExt buttonAdjHud = new GuiButtonExt(4, x, y += 22, buttonWidth, 20, BUTTON_ADJ_HUD);
+        y += 22;
+        GuiButtonExt buttonAdjHud = new GuiButtonExt(4, x, y, buttonWidth, 20, BUTTON_ADJ_HUD);
         
         this.buttonList.add(buttonWhiteToPlayers);
         this.buttonList.add(buttonPlayersToWhite);
@@ -211,7 +212,7 @@ public class GuiMusicOptions extends GuiScreen
     }
 
     @Override
-    protected void actionPerformed(GuiButton guibutton) throws IOException
+    protected void actionPerformed(GuiButton guibutton)
     {
         PlayerLists t;
         /* if button is disabled ignore click */
