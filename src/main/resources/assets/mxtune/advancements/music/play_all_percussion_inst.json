@@ -58,6 +58,12 @@
             "conditions": {
                 "instrument": "spinet_piano"
             }
-        } 
+        },
+        "play_piano_in_hand": {
+            "trigger": "mxtune:play_instrument",
+            "conditions": {
+                "instrument": "piano"
+            }
+        }
     }   
 }
