@@ -17,17 +17,22 @@
 package net.aeronica.mods.mxtune.inventory;
 
 import net.aeronica.mods.mxtune.blocks.TileBandAmp;
+import net.aeronica.mods.mxtune.items.ItemInstrument;
+import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
 public class ContainerBandAmp extends Container
 {
@@ -54,6 +59,7 @@ public class ContainerBandAmp extends Container
         for (int k = 0; k < 9; k++) {
             addSlotToContainer(new Slot(playerInv, k, 8 + k * 18, 142));
         }
+        //setDuration();
     }
 
     @Nonnull
@@ -97,5 +103,43 @@ public class ContainerBandAmp extends Container
     public boolean canInteractWith(@Nonnull EntityPlayer playerIn)
     {
         return this.tileBandAmp.isUsableByPlayer(playerIn);
+    }
+
+    @Override
+    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player)
+    {
+        ItemStack stack = super.slotClick(slotId, dragType, clickTypeIn, player);
+        setDuration();
+        return stack;
+    }
+
+    private void setDuration()
+    {
+        int dur = (getDuration(this.inventorySlots));
+        this.tileBandAmp.setDuration(dur);
+    }
+
+    private static int getDuration(List<Slot> inventory)
+    {
+        int duration = 0;
+
+        for (Slot slot: inventory)
+        {
+            ItemStack stackInSlot = slot.getStack();
+            if((slot instanceof SlotBandAmp) && (stackInSlot.getItem() instanceof ItemInstrument))
+            {
+                ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(stackInSlot);
+                if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
+                {
+                    NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("SheetMusic");
+                    if (contents.hasKey("MML"))
+                    {
+                        int durationSheet = contents.getInteger("Duration");
+                        if (durationSheet > duration) duration = durationSheet;
+                    }
+                }
+            }
+        }
+        return duration;
     }
 }

@@ -61,11 +61,11 @@ public class CommonEventHandler
         if(event.getWorld().isRemote) return;
         if(event.getState().getBlock() instanceof IMusicPlayer)
         {
-            boolean isCreativeMode = event.getPlayer() != null && event.getPlayer().capabilities.isCreativeMode;
             TileEntity tileEntity = event.getWorld().getTileEntity(event.getPos());
             if(tileEntity instanceof IModLockableContainer)
             {
-                if (LockableHelper.isLocked(event.getPlayer(), tileEntity.getWorld(), event.getPos()) && !isCreativeMode)
+                boolean isCreativeMode = event.getPlayer() != null && event.getPlayer().capabilities.isCreativeMode;
+                if (LockableHelper.isBreakable(event.getPlayer(), tileEntity.getWorld(), event.getPos()) && !isCreativeMode)
                     event.setCanceled(true);
             }
         }

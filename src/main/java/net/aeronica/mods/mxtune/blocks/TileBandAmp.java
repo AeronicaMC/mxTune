@@ -20,6 +20,7 @@ import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.aeronica.mods.mxtune.util.EnumRelativeSide;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.world.IModLockableContainer;
+import net.aeronica.mods.mxtune.world.OwnerUUID;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -40,11 +41,13 @@ import javax.annotation.Nullable;
 
 public class TileBandAmp extends TileInstrument implements IModLockableContainer
 {
-    private static final int MAX_SLOTS = 8;
+    public static final int MAX_SLOTS = 8;
     private boolean previousRedStoneState;
     private Integer playID = -1;
     private LockCode code = LockCode.EMPTY_CODE;
+    private OwnerUUID ownerUUID = OwnerUUID.EMPTY_UUID;
     private String bandAmpCustomName;
+    private int duration = 0;
 
     public TileBandAmp() { /* NOP */ }
 
@@ -71,8 +74,10 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         super.readFromNBT(tag);
         inventory = new InstrumentStackHandler(MAX_SLOTS);
         inventory.deserializeNBT(tag);
+        duration = tag.getInteger("Duration");
         previousRedStoneState = tag.getBoolean("powered");
         this.code = LockCode.fromNBT(tag);
+        this.ownerUUID = OwnerUUID.fromNBT(tag);
 
         if (tag.hasKey("CustomName", 8))
         {
@@ -85,16 +90,32 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     {
         tag.merge(inventory.serializeNBT());
         tag.setBoolean("powered", this.previousRedStoneState);
+        tag.setInteger("Duration", duration);
 
         if (this.code != null)
         {
             this.code.toNBT(tag);
+        }
+        if (this.ownerUUID != null)
+        {
+            this.ownerUUID.toNBT(tag);
         }
         if (this.hasCustomName())
         {
             tag.setString("CustomName", this.bandAmpCustomName);
         }
         return super.writeToNBT(tag);
+    }
+
+    public int getDuration()
+    {
+        return this.duration;
+    }
+
+    public void setDuration(int duration)
+    {
+            this.duration = duration;
+            markDirty();
     }
 
     void setPowered(BlockPos pos, Block blockIn, BlockPos fromPos)
@@ -170,14 +191,27 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     }
 
     @Override
-    public LockCode getLockCode()
+    public LockCode getLockCode() { return this.code; }
+
+    @Override
+    public boolean isOwner()
     {
-        return this.code;
+        return this.ownerUUID != null && !this.ownerUUID.isEmpty();
     }
+
+    @Override
+    public void setOwner(OwnerUUID ownerUUID)
+    {
+        this.ownerUUID = ownerUUID;
+        markDirty();
+    }
+
+    @Override
+    public OwnerUUID getOwner() { return ownerUUID; }
 
     /*
      Nameable
-     */
+    */
     @Override
     public String getName()
     {

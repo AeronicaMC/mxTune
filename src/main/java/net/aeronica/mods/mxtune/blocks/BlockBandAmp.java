@@ -21,6 +21,7 @@ import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiBandAmp;
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.world.LockableHelper;
+import net.aeronica.mods.mxtune.world.OwnerUUID;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
@@ -43,7 +44,6 @@ import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldNameable;
-import net.minecraft.world.LockCode;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -210,8 +210,8 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
 
         TileBandAmp tileBandAmp = getTE(worldIn, pos);
         if (tileBandAmp != null) {
-            LockCode lockCode = new LockCode(placer.getPersistentID().toString());
-            tileBandAmp.setLockCode(lockCode);
+            OwnerUUID ownerUUID = new OwnerUUID(placer.getPersistentID().toString());
+            tileBandAmp.setOwner(ownerUUID);
 
             if (stack.hasDisplayName())
                 tileBandAmp.setCustomInventoryName(stack.getDisplayName());

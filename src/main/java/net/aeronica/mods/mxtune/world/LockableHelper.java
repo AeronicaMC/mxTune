@@ -30,4 +30,26 @@ public class LockableHelper
     {
         return lockableContainer.isLocked() && !playerIn.getUniqueID().toString().equals(lockableContainer.getLockCode().getLock()) && !playerIn.isSpectator();
     }
+
+    public static boolean isBreakable(EntityPlayer playerIn, World worldIn, BlockPos pos)
+    {
+        return isBreakable(playerIn, worldIn, pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    public static boolean isBreakable(EntityPlayer playerIn, World worldIn, int x, int y, int z)
+    {
+        TileEntity tileEntity = worldIn.getTileEntity(new BlockPos(x, y, z));
+        boolean isBreakable = false;
+        if (tileEntity instanceof IModLockableContainer)
+        {
+            IModLockableContainer lockableContainer = (IModLockableContainer) tileEntity;
+            isBreakable = canBreak(playerIn, lockableContainer);
+        }
+        return isBreakable;
+    }
+
+    private static boolean canBreak(EntityPlayer playerIn, IModLockableContainer lockableContainer)
+    {
+        return lockableContainer.isOwner() && !playerIn.getUniqueID().toString().equals(lockableContainer.getOwner().getUUID()) && !playerIn.isSpectator();
+    }
 }

@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.gui;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.blocks.TileBandAmp;
+import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
@@ -43,7 +44,10 @@ public class GuiBandAmp extends GuiContainer
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
         String name = I18n.format(tileBandAmp.getName());
-        fontRenderer.drawString(name, xSize / 2 - fontRenderer.getStringWidth(name) / 2, 6, 0x404040);
+        fontRenderer.drawString(name, 8, 6, 0x404040);
+        String duration = SheetMusicUtil.formatDuration(tileBandAmp.getDuration());
+        int durationLength = fontRenderer.getStringWidth(duration) + 8;
+        fontRenderer.drawString(duration, xSize - durationLength, 6, 0x404040);
         fontRenderer.drawString(inventoryPlayer.getDisplayName().getUnformattedText(), 8, ySize - 94, 0x404040);
     }
 
