@@ -24,21 +24,22 @@ import javax.annotation.concurrent.Immutable;
 public class OwnerUUID
 {
     public static final OwnerUUID EMPTY_UUID = new OwnerUUID("");
-    private final String ownerUUID;
+    private static final String UUID_KEY = "OwnerUUID";
+    private final String uuid;
 
-    public OwnerUUID(String ownerUUID) { this.ownerUUID = ownerUUID; }
+    public OwnerUUID(String uuid) { this.uuid = uuid; }
 
-    public boolean isEmpty() { return this.ownerUUID == null || this.ownerUUID.isEmpty(); }
+    public boolean isEmpty() { return this.uuid == null || this.uuid.isEmpty(); }
 
-    public String getUUID() { return this.ownerUUID; }
+    public String getUUID() { return this.uuid; }
 
-    public void toNBT(NBTTagCompound nbt) { nbt.setString("OwnerUUID", this.ownerUUID); }
+    public void toNBT(NBTTagCompound nbt) { nbt.setString(UUID_KEY, this.uuid); }
 
     public static OwnerUUID fromNBT(NBTTagCompound nbt)
     {
-        if (nbt.hasKey("OwnerUUID", 8))
+        if (nbt.hasKey(UUID_KEY, 8))
         {
-            String s = nbt.getString("OwnerUUID");
+            String s = nbt.getString(UUID_KEY);
             return new OwnerUUID(s);
         }
         else
