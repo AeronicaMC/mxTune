@@ -68,6 +68,8 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         this.playID = playID;
     }
 
+    private boolean isPlaying() { return (this.playID != null) && (this.playID > 0); }
+
     @Override
     public void readFromNBT(NBTTagCompound tag)
     {
@@ -151,7 +153,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate)
         {
-            if (stack.getItem() instanceof ItemInstrument)
+            if ((stack.getItem() instanceof ItemInstrument))
                 return super.insertItem(slot, stack, simulate);
             else
                 return stack;
@@ -162,14 +164,14 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     public boolean hasCapability(Capability<?> cap, @Nullable EnumFacing side)
     {
         EnumRelativeSide enumRelativeSide = EnumRelativeSide.getRelativeSide(side, getFacing());
-        return ((enumRelativeSide != EnumRelativeSide.FRONT) && (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)) || super.hasCapability(cap, side);
+        return (((enumRelativeSide == EnumRelativeSide.TOP) && !isPlaying()) || ((enumRelativeSide == EnumRelativeSide.BOTTOM) && isPlaying()) && (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)) || super.hasCapability(cap, side);
     }
 
     @Override
     public <T> T getCapability(Capability<T> cap, @Nullable EnumFacing side)
     {
         EnumRelativeSide enumRelativeSide = EnumRelativeSide.getRelativeSide(side, getFacing());
-        if ((enumRelativeSide != EnumRelativeSide.FRONT) && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        if ((((enumRelativeSide == EnumRelativeSide.TOP) && !isPlaying()) || ((enumRelativeSide == EnumRelativeSide.BOTTOM) && isPlaying())) && (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY))
             return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(inventory);
         return super.getCapability(cap, side);
     }
