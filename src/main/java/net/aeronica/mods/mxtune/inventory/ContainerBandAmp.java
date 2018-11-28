@@ -122,22 +122,26 @@ public class ContainerBandAmp extends Container
     private static int getDuration(List<Slot> inventory)
     {
         int duration = 0;
-
         for (Slot slot: inventory)
         {
             ItemStack stackInSlot = slot.getStack();
             if((slot instanceof SlotBandAmp) && (stackInSlot.getItem() instanceof ItemInstrument))
+               duration = getDuration(stackInSlot, duration);
+        }
+        return duration;
+    }
+
+    private static int getDuration(ItemStack itemStack, int durationIn)
+    {
+        int duration = durationIn;
+        ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(itemStack);
+        if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
+        {
+            NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("SheetMusic");
+            if (contents.hasKey("MML"))
             {
-                ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(stackInSlot);
-                if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
-                {
-                    NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("SheetMusic");
-                    if (contents.hasKey("MML"))
-                    {
-                        int durationSheet = contents.getInteger("Duration");
-                        if (durationSheet > duration) duration = durationSheet;
-                    }
-                }
+                int durationSheet = contents.getInteger("Duration");
+                if (durationSheet > duration) duration = durationSheet;
             }
         }
         return duration;
