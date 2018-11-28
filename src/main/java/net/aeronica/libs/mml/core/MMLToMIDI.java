@@ -52,7 +52,7 @@ public class MMLToMIDI extends MMLTransformBase
 
             for (MObject mmo: mmlObject)
             {
-                /* ref: enum Type {INST_BEGIN, TEMPO, INST, PART, NOTE, REST, INST_END, DONE}; */
+                // ref: INST_BEGIN, TEMPO, INST, PART, NOTE, REST, INST_END, DONE}
                 switch (mmo.getType())
                 {
                 case INST_BEGIN:

@@ -59,7 +59,6 @@ public class ContainerBandAmp extends Container
         for (int k = 0; k < 9; k++) {
             addSlotToContainer(new Slot(playerInv, k, 8 + k * 18, 142));
         }
-        //setDuration();
     }
 
     @Nonnull

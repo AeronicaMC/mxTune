@@ -19,11 +19,12 @@ public class MMLAllowedCharacters
     // WS : [ \t\r\n]+ -> skip ; // toss out whitespace
     // JUNK : [\u0000-~] -> skip ; // anything leftover
 
-    private static final String mmlCharacters = "abcdefgABCDEFGrR<>+#-.,&0123456789nNotvOTVlLM@;";
+    private static final String MML_CHARACTERS = "abcdefgABCDEFGrR<>+#-.,&0123456789nNotvOTVlLM@;";
+    private MMLAllowedCharacters() {/* NOP */}
 
     public static boolean isAllowedCharacter(char character)
     {
-        char[] ca = mmlCharacters.toCharArray();
+        char[] ca = MML_CHARACTERS.toCharArray();
         for (int i = 0; i < ca.length; i++)
         {
             if (character == ca[i]) return true;

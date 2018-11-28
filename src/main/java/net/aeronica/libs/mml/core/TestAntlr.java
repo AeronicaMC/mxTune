@@ -6,28 +6,21 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 public class TestAntlr
 {
-    private static String mmlString = TestData.MML10.getMML();
-    private static byte[] mmlBuf = null;
+    private static String mmlString = TestData.MML0.getMML();
 
     public static InputStream init()
     {
-        try
-        {
-            mmlBuf = mmlString.getBytes("US-ASCII");
-        } catch (UnsupportedEncodingException e)
-        {
-            MMLUtil.MML_LOGGER.error(e);
-        }
+        byte[] mmlBuf = mmlString.getBytes(StandardCharsets.US_ASCII);
         return new java.io.ByteArrayInputStream(mmlBuf);
     }
 
     public static void main(String[] args) throws Exception
     {
-        System.out.println("Test Begin\n");
+        MMLUtil.MML_LOGGER.info("Test Begin\n");
         InputStream is = init();
         PlayMIDI player = new PlayMIDI();
         MMLToMIDI mmlTrans = new MMLToMIDI();
@@ -55,6 +48,6 @@ public class TestAntlr
 //        MidiSystem.write(mmlTrans.getSequence(),1,f);
 
 
-        System.out.println("\n\nTest End");
+        MMLUtil.MML_LOGGER.info("\n\nTest End");
     }
 }
