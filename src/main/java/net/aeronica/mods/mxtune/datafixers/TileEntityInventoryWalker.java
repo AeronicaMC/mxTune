@@ -28,8 +28,8 @@ public class TileEntityInventoryWalker implements IDataWalker
             if (te.hasKey("items"))
             {
                 // primal_chest
-                NBTTagCompound primal_chest = te.getCompoundTag("items");
-                DataFixesManager.processInventory(fixer, primal_chest, version, "Items");
+                NBTTagCompound primalChest = te.getCompoundTag("items");
+                DataFixesManager.processInventory(fixer, primalChest, version, "Items");
                 ModLogger.info("TileEntityInventoryWalker Walked inventory of TE %s using tag %s", te.getString("id"), "Items");
             } else
             {
