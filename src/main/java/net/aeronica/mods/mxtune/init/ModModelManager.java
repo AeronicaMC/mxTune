@@ -40,6 +40,7 @@
  */
 package net.aeronica.mods.mxtune.init;
 
+import net.aeronica.mods.mxtune.blocks.BlockBandAmp;
 import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.blocks.RendererPiano;
 import net.aeronica.mods.mxtune.blocks.TilePiano;
@@ -87,6 +88,12 @@ public class ModModelManager
                                                  new IProperty[]
                                                          {
                                                                  BlockPiano.OCCUPIED
+                                                         }).build());
+        ModelLoader.setCustomStateMapper(ModBlocks.BAND_AMP,
+                                         new StateMap.Builder().ignore(
+                                                 new IProperty[]
+                                                         {
+                                                                 BlockBandAmp.POWERED
                                                          }).build());
         registerItemModel(ModBlocks.SPINET_PIANO);
     }
