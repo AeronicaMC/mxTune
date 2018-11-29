@@ -44,6 +44,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     public static final int MAX_SLOTS = 8;
     private boolean previousRedStoneState;
     private Integer playID = -1;
+    private boolean output = false;
     private LockCode code = LockCode.EMPTY_CODE;
     private OwnerUUID ownerUUID = OwnerUUID.EMPTY_UUID;
     private String bandAmpCustomName;
@@ -58,17 +59,15 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         this.playID = -1;
     }
 
-    public Integer getPlayID()
-    {
-        return playID;
-    }
+    public Integer getPlayID() { return playID; }
 
-    public void setPlayID(Integer playID)
-    {
-        this.playID = playID;
-    }
+    public void setPlayID(Integer playID) { this.playID = playID; }
 
     private boolean isPlaying() { return (this.playID != null) && (this.playID > 0); }
+
+    public boolean isOutput() { return output; }
+
+    public void setOutput(boolean output) { this.output = output; }
 
     @Override
     public void readFromNBT(NBTTagCompound tag)
