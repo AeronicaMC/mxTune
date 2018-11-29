@@ -154,7 +154,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
         // is powered from the back
-        boolean powered = worldIn.isSidePowered(pos.offset(state.getValue(FACING).getOpposite()), (EnumFacing) state.getValue(FACING).getOpposite());
+        boolean powered = worldIn.isSidePowered(pos.offset(state.getValue(FACING).getOpposite()), state.getValue(FACING).getOpposite());
         TileEntity tileEntity = worldIn.getTileEntity(pos);
 
         if (tileEntity instanceof TileBandAmp)
