@@ -110,9 +110,10 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
 
     private boolean canPlayOrStopMusic(World worldIn, BlockPos pos, Boolean stop)
     {
-        TileBandAmp tileBandAmp = this.getTE(worldIn, pos);
-        if (tileBandAmp != null)
+        TileEntity tileEntity = worldIn.getTileEntity(pos);
+        if (tileEntity instanceof TileBandAmp)
         {
+            TileBandAmp tileBandAmp = (TileBandAmp) tileEntity;
             if (PlayManager.isActivePlayID(tileBandAmp.getPlayID()))
             {
                 PlayManager.stopPlayID(tileBandAmp.getPlayID());
@@ -133,9 +134,10 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     {
         if (!worldIn.isRemote)
         {
-            TileBandAmp tileBandAmp = this.getTE(worldIn, pos);
-            if (tileBandAmp != null && state.getValue(PLAYING).booleanValue())
+            TileEntity tileEntity = worldIn.getTileEntity(pos);
+            if ((tileEntity instanceof TileBandAmp) && state.getValue(PLAYING))
             {
+                TileBandAmp tileBandAmp = (TileBandAmp) tileEntity;
                 if (!PlayManager.isActivePlayID(tileBandAmp.getPlayID()))
                     setPlayingState(worldIn, pos, state, false);
                 else
@@ -176,7 +178,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
 
     private void setPlayingState(World worldIn, BlockPos posIn, IBlockState state, boolean playing)
     {
-        boolean currentPlayingState = state.getValue(PLAYING).booleanValue();
+        boolean currentPlayingState = state.getValue(PLAYING);
         if (currentPlayingState != playing)
         {
             worldIn.setBlockState(posIn, worldIn.getBlockState(posIn).withProperty(PLAYING, Boolean.valueOf(playing)), 2);
@@ -216,8 +218,9 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     {
         this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(PLAYING, Boolean.valueOf(false)).withProperty(POWERED, Boolean.valueOf(false));
 
-        TileBandAmp tileBandAmp = getTE(worldIn, pos);
-        if (tileBandAmp != null) {
+        TileEntity tileEntity = worldIn.getTileEntity(pos);
+        if (tileEntity instanceof TileBandAmp) {
+            TileBandAmp tileBandAmp = (TileBandAmp) tileEntity;
             OwnerUUID ownerUUID = new OwnerUUID(placer.getPersistentID().toString());
             tileBandAmp.setOwner(ownerUUID);
 
@@ -238,9 +241,9 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     public int getMetaFromState(IBlockState state)
     {
         int i = 0;
-        i = i | ((EnumFacing) state.getValue(FACING)).getHorizontalIndex();
-        if (state.getValue(POWERED).booleanValue()) i |= 4;
-        if (state.getValue(PLAYING).booleanValue()) i |= 8;
+        i = i | state.getValue(FACING).getHorizontalIndex();
+        if (state.getValue(POWERED)) i |= 4;
+        if (state.getValue(PLAYING)) i |= 8;
         return i;
     }
 
@@ -257,15 +260,16 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
     {
         canPlayOrStopMusic(worldIn, pos, true);
+        TileEntity tileEntity = worldIn.getTileEntity(pos);
 
-        TileBandAmp tile = (TileBandAmp) worldIn.getTileEntity(pos);
-        if (tile != null)
+        if (tileEntity instanceof TileBandAmp)
         {
-            for (int slot = 0; slot < tile.getInventory().getSlots(); slot++)
+            TileBandAmp tileBandAmp = (TileBandAmp) tileEntity;
+            for (int slot = 0; slot < tileBandAmp.getInventory().getSlots(); slot++)
             {
-                spawnEntityItem(worldIn, tile.getInventory().getStackInSlot(slot), pos);
+                spawnEntityItem(worldIn, tileBandAmp.getInventory().getStackInSlot(slot), pos);
             }
-            tile.invalidate();
+            tileBandAmp.invalidate();
         }
         super.breakBlock(worldIn, pos, state);
     }
@@ -307,15 +311,20 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     @Override
     public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
     {
-        EnumRelativeSide enumRelativeSide = EnumRelativeSide.getRelativeSide(face, (EnumFacing) state.getValue(FACING));
-        return enumRelativeSide == EnumRelativeSide.LEFT || enumRelativeSide == EnumRelativeSide.RIGHT ? BlockFaceShape.UNDEFINED : BlockFaceShape.SOLID;
+        EnumRelativeSide relativeSide = EnumRelativeSide.getRelativeSide(face, state.getValue(FACING));
+        return relativeSide == EnumRelativeSide.LEFT || relativeSide == EnumRelativeSide.RIGHT ? BlockFaceShape.UNDEFINED : BlockFaceShape.SOLID;
     }
 
     @Override
     public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, @Nullable EnumFacing side)
     {
-        EnumRelativeSide relativeSide = EnumRelativeSide.getRelativeSide(side.getOpposite(), (EnumFacing) state.getValue(FACING));
-        return relativeSide == EnumRelativeSide.BACK || relativeSide == EnumRelativeSide.LEFT || relativeSide == EnumRelativeSide.RIGHT;
+        boolean canConnect = false;
+        if (side != null)
+        {
+            EnumRelativeSide relativeSide = EnumRelativeSide.getRelativeSide(side.getOpposite(), state.getValue(FACING));
+            canConnect =  relativeSide == EnumRelativeSide.BACK || relativeSide == EnumRelativeSide.LEFT || relativeSide == EnumRelativeSide.RIGHT;
+        }
+        return canConnect;
     }
 
     @Override
@@ -327,8 +336,8 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     @Override
     public int getWeakPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
     {
-        EnumRelativeSide relativeSide = EnumRelativeSide.getRelativeSide(side.getOpposite(), (EnumFacing) blockState.getValue(FACING));
-        return blockState.getValue(POWERED).booleanValue() && (relativeSide == EnumRelativeSide.LEFT || relativeSide == EnumRelativeSide.RIGHT) ? 15 : 0;
+        EnumRelativeSide relativeSide = EnumRelativeSide.getRelativeSide(side.getOpposite(), blockState.getValue(FACING));
+        return blockState.getValue(POWERED) && (relativeSide == EnumRelativeSide.LEFT || relativeSide == EnumRelativeSide.RIGHT) ? 15 : 0;
     }
 
     @Override
