@@ -180,7 +180,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
                 {
                     boolean isPlaying = canPlayOrStopMusic(worldIn, pos, false);
                     setPlayingState(worldIn, pos, state, isPlaying);
-                    tileBandAmp.logInputPower(pos, blockIn, fromPos);
+//                    tileBandAmp.logInputPower(pos, blockIn, fromPos);
                     worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
                 }
                 tileBandAmp.setPreviousInputState(inSidePowered);
