@@ -135,15 +135,27 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
         if (!worldIn.isRemote)
         {
             TileEntity tileEntity = worldIn.getTileEntity(pos);
-            if ((tileEntity instanceof TileBandAmp) && state.getValue(PLAYING))
+            if ((tileEntity instanceof TileBandAmp))
             {
                 TileBandAmp tileBandAmp = (TileBandAmp) tileEntity;
-                if (!PlayManager.isActivePlayID(tileBandAmp.getPlayID()))
-                    setPlayingState(worldIn, pos, state, false);
-                else
-                    worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
+                if (state.getValue(PLAYING))
+                {
+                    if (!PlayManager.isActivePlayID(tileBandAmp.getPlayID()))
+                        setPlayingState(worldIn, pos, state, false);
 
-                // TODO: handle output pulse on stop play. use Active Play ID to falling edge trigger
+                    worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
+                } else
+                {
+                    // Pulse the output power state once when playing stops
+                    if(!state.getValue(POWERED))
+                    {
+                        setOutputPowerState(worldIn, pos, state, true);
+                        worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
+                    } else if (state.getValue(POWERED))
+                    {
+                        setOutputPowerState(worldIn, pos, state, false);
+                    }
+                }
             }
         }
     }
@@ -155,23 +167,23 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     @Override
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
-        // is powered from the back
-        boolean powered = worldIn.isSidePowered(pos.offset(state.getValue(FACING).getOpposite()), state.getValue(FACING).getOpposite());
+        // get redstone input from the back side
+        boolean inSidePowered = worldIn.isSidePowered(pos.offset(state.getValue(FACING).getOpposite()), state.getValue(FACING).getOpposite());
         TileEntity tileEntity = worldIn.getTileEntity(pos);
 
         if (tileEntity instanceof TileBandAmp)
         {
             TileBandAmp tileBandAmp = (TileBandAmp) tileEntity;
-            if ((tileBandAmp.getPreviousRedStoneState() != powered))
+            if ((tileBandAmp.getPreviousInputState() != inSidePowered))
             {
-                if (powered)
+                if (inSidePowered)
                 {
                     boolean isPlaying = canPlayOrStopMusic(worldIn, pos, false);
                     setPlayingState(worldIn, pos, state, isPlaying);
-                    tileBandAmp.setPowered(pos, blockIn, fromPos);
+                    tileBandAmp.logInputPower(pos, blockIn, fromPos);
                     worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
                 }
-                tileBandAmp.setPreviousRedStoneState(powered);
+                tileBandAmp.setPreviousInputState(inSidePowered);
             }
         }
     }
@@ -182,6 +194,16 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
         if (currentPlayingState != playing)
         {
             worldIn.setBlockState(posIn, worldIn.getBlockState(posIn).withProperty(PLAYING, Boolean.valueOf(playing)), 2);
+            worldIn.markBlockRangeForRenderUpdate(posIn, posIn);
+        }
+    }
+
+    private void setOutputPowerState(World worldIn, BlockPos posIn, IBlockState state, boolean outputPowerState)
+    {
+        boolean currentOutputPowerState = state.getValue(POWERED);
+        if (currentOutputPowerState != outputPowerState)
+        {
+            worldIn.setBlockState(posIn, worldIn.getBlockState(posIn).withProperty(POWERED, Boolean.valueOf(outputPowerState)), 3);
             worldIn.markBlockRangeForRenderUpdate(posIn, posIn);
         }
     }
@@ -271,6 +293,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
             }
             tileBandAmp.invalidate();
         }
+        worldIn.notifyNeighborsOfStateChange(pos, this, false);
         super.breakBlock(worldIn, pos, state);
     }
 

@@ -41,10 +41,9 @@ import javax.annotation.Nullable;
 
 public class TileBandAmp extends TileInstrument implements IModLockableContainer
 {
-    public static final int MAX_SLOTS = 8;
-    private boolean previousRedStoneState;
+    private static final int MAX_SLOTS = 8;
+    private boolean previousInputPowerState;
     private Integer playID = -1;
-    private boolean output = false;
     private LockCode code = LockCode.EMPTY_CODE;
     private OwnerUUID ownerUUID = OwnerUUID.EMPTY_UUID;
     private String bandAmpCustomName;
@@ -65,10 +64,6 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
 
     private boolean isPlaying() { return (this.playID != null) && (this.playID > 0); }
 
-    public boolean isOutput() { return output; }
-
-    public void setOutput(boolean output) { this.output = output; }
-
     @Override
     public void readFromNBT(NBTTagCompound tag)
     {
@@ -76,7 +71,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         inventory = new InstrumentStackHandler(MAX_SLOTS);
         inventory.deserializeNBT(tag);
         duration = tag.getInteger("Duration");
-        previousRedStoneState = tag.getBoolean("powered");
+        previousInputPowerState = tag.getBoolean("powered");
         this.code = LockCode.fromNBT(tag);
         this.ownerUUID = OwnerUUID.fromNBT(tag);
 
@@ -90,7 +85,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     public NBTTagCompound writeToNBT(NBTTagCompound tag)
     {
         tag.merge(inventory.serializeNBT());
-        tag.setBoolean("powered", this.previousRedStoneState);
+        tag.setBoolean("powered", this.previousInputPowerState);
         tag.setInteger("Duration", duration);
 
         if (this.code != null)
@@ -119,7 +114,8 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
             markDirty();
     }
 
-    void setPowered(BlockPos pos, Block blockIn, BlockPos fromPos)
+    /** This does nothing but log the side that's powered */
+    void logInputPower(BlockPos pos, Block blockIn, BlockPos fromPos)
     {
         Vec3i vec3i = pos.subtract(fromPos);
         ModLogger.info("TileBandAmp: Powered from %s's %s face",
@@ -128,19 +124,19 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     }
 
     /**
-     * @return the previousRedStoneState
+     * @return the previousInputPowerState
      */
-    boolean getPreviousRedStoneState()
+    boolean getPreviousInputState()
     {
-        return previousRedStoneState;
+        return previousInputPowerState;
     }
 
     /**
-     * @param previousRedStoneState the previousRedStoneState to set
+     * @param previousRedStoneState the previousInputPowerState to set
      */
-    void setPreviousRedStoneState(boolean previousRedStoneState)
+    void setPreviousInputState(boolean previousRedStoneState)
     {
-        this.previousRedStoneState = previousRedStoneState;
+        this.previousInputPowerState = previousRedStoneState;
         markDirty();
     }
 
