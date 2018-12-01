@@ -43,12 +43,12 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
 {
     private static final int MAX_SLOTS = 8;
     private boolean previousInputPowerState;
-    private Integer playID = -1;
+    private Integer playID;
     private int lastPlayID;
     private LockCode code = LockCode.EMPTY_CODE;
     private OwnerUUID ownerUUID = OwnerUUID.EMPTY_UUID;
     private String bandAmpCustomName;
-    private int duration = 0;
+    private int duration;
 
     public TileBandAmp() { /* NOP */ }
 
@@ -63,7 +63,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     public void onLoad()
     {
         clearLastPlayID();
-        setPlayID(null);
+        setPlayID(-1);
     }
 
     public Integer getPlayID() { return playID; }
@@ -88,12 +88,12 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         inventory.deserializeNBT(tag);
         duration = tag.getInteger("Duration");
         previousInputPowerState = tag.getBoolean("powered");
-        this.code = LockCode.fromNBT(tag);
-        this.ownerUUID = OwnerUUID.fromNBT(tag);
+        code = LockCode.fromNBT(tag);
+        ownerUUID = OwnerUUID.fromNBT(tag);
 
         if (tag.hasKey("CustomName", 8))
         {
-            this.bandAmpCustomName = tag.getString("CustomName");
+            bandAmpCustomName = tag.getString("CustomName");
         }
     }
 
@@ -101,20 +101,20 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     public NBTTagCompound writeToNBT(NBTTagCompound tag)
     {
         tag.merge(inventory.serializeNBT());
-        tag.setBoolean("powered", this.previousInputPowerState);
+        tag.setBoolean("powered", previousInputPowerState);
         tag.setInteger("Duration", duration);
 
-        if (this.code != null)
+        if (code != null)
         {
-            this.code.toNBT(tag);
+            code.toNBT(tag);
         }
-        if (this.ownerUUID != null)
+        if (ownerUUID != null)
         {
-            this.ownerUUID.toNBT(tag);
+            ownerUUID.toNBT(tag);
         }
-        if (this.hasCustomName())
+        if (hasCustomName())
         {
-            tag.setString("CustomName", this.bandAmpCustomName);
+            tag.setString("CustomName", bandAmpCustomName);
         }
         return super.writeToNBT(tag);
     }
