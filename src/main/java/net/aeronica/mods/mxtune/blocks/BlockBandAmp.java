@@ -27,7 +27,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
@@ -63,7 +62,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     public BlockBandAmp()
     {
         super(Material.WOOD);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(PLAYING, Boolean.valueOf(false)).withProperty(POWERED, Boolean.valueOf(false)));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(PLAYING, Boolean.FALSE).withProperty(POWERED, Boolean.FALSE));
         this.setSoundType(SoundType.WOOD);
         this.setHardness(2.0F);
         this.disableStats();
@@ -152,9 +151,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
                         setOutputPowerState(worldIn, pos, state, true);
                         worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
                     } else if (state.getValue(POWERED))
-                    {
                         setOutputPowerState(worldIn, pos, state, false);
-                    }
                 }
             }
         }
@@ -163,7 +160,6 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     /**
      * React to a redstone powered neighbor block
      */
-    @Deprecated
     @Override
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
@@ -180,7 +176,6 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
                 {
                     boolean isPlaying = canPlayOrStopMusic(worldIn, pos, false);
                     setPlayingState(worldIn, pos, state, isPlaying);
-//                    tileBandAmp.logInputPower(pos, blockIn, fromPos);
                     worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
                 }
                 tileBandAmp.setPreviousInputState(inSidePowered);
@@ -193,7 +188,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
         boolean currentPlayingState = state.getValue(PLAYING);
         if (currentPlayingState != playing)
         {
-            worldIn.setBlockState(posIn, worldIn.getBlockState(posIn).withProperty(PLAYING, Boolean.valueOf(playing)), 2);
+            worldIn.setBlockState(posIn, worldIn.getBlockState(posIn).withProperty(PLAYING, playing), 2);
             worldIn.markBlockRangeForRenderUpdate(posIn, posIn);
         }
     }
@@ -203,42 +198,39 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
         boolean currentOutputPowerState = state.getValue(POWERED);
         if (currentOutputPowerState != outputPowerState)
         {
-            worldIn.setBlockState(posIn, worldIn.getBlockState(posIn).withProperty(POWERED, Boolean.valueOf(outputPowerState)), 3);
+            worldIn.setBlockState(posIn, worldIn.getBlockState(posIn).withProperty(POWERED, outputPowerState), 3);
             worldIn.markBlockRangeForRenderUpdate(posIn, posIn);
         }
     }
 
-    @Deprecated
     @Override
     public IBlockState withRotation(IBlockState state, Rotation rot)
     {
-        return state.withProperty(FACING, rot.rotate((EnumFacing) state.getValue(FACING)));
+        return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
     }
 
-    @Deprecated
     @Override
     public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
     {
-        return state.withRotation(mirrorIn.toRotation((EnumFacing) state.getValue(FACING)));
+        return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
     }
 
     @Override
     protected BlockStateContainer createBlockState()
     {
-        return new BlockStateContainer(this, new IProperty[] {FACING, PLAYING, POWERED});
+        return new BlockStateContainer(this, FACING, PLAYING, POWERED);
     }
 
-    @Deprecated
     @Override
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
-        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(PLAYING, Boolean.valueOf(false)).withProperty(POWERED, Boolean.valueOf(false));
+        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(PLAYING, Boolean.FALSE).withProperty(POWERED, Boolean.FALSE);
     }
 
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
     {
-        this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(PLAYING, Boolean.valueOf(false)).withProperty(POWERED, Boolean.valueOf(false));
+        this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(PLAYING, Boolean.FALSE).withProperty(POWERED, Boolean.FALSE);
 
         TileEntity tileEntity = worldIn.getTileEntity(pos);
         if (tileEntity instanceof TileBandAmp) {
@@ -251,12 +243,11 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
         }
     }
 
-    @Deprecated
     @Override
     public IBlockState getStateFromMeta(int meta)
     {
         EnumFacing enumfacing = EnumFacing.byHorizontalIndex(meta & 3);
-        return this.getDefaultState().withProperty(FACING, enumfacing).withProperty(PLAYING, Boolean.valueOf((meta & 8) > 0)).withProperty(POWERED, Boolean.valueOf((meta & 4) > 0));
+        return this.getDefaultState().withProperty(FACING, enumfacing).withProperty(PLAYING, (meta & 8) > 0).withProperty(POWERED, (meta & 4) > 0);
     }
 
     @Override
