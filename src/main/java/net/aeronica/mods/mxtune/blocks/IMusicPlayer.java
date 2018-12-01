@@ -25,46 +25,43 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
-
 public interface IMusicPlayer
 {
-    @SuppressWarnings("unchecked")
-    @Nullable
-    default <T extends TileInstrument> T getTE(World worldIn, BlockPos pos) {return (T) worldIn.getTileEntity(pos);}
-
     default String getMML(World worldIn, BlockPos blockPos)
     {
         StringBuilder buildMML = new StringBuilder();
-        TileEntity te = getTE(worldIn, blockPos);
+        TileEntity tileEntity = worldIn.getTileEntity(blockPos);
 
-        if (te != null)
-        try
+        if (tileEntity instanceof TileInstrument)
         {
-            for (int slot = 0; slot < ((TileInstrument) te).getInventory().getSlots(); slot++)
+            TileInstrument tileInstrument = (TileInstrument) tileEntity;
+            try
             {
-                ItemStack stackInSlot = ((TileInstrument) te).getInventory().getStackInSlot(slot);
-                if (!stackInSlot.isEmpty() && stackInSlot.getItem() instanceof ItemInstrument)
+                for (int slot = 0; slot < tileInstrument.getInventory().getSlots(); slot++)
                 {
-                    ItemInstrument ii = (ItemInstrument) stackInSlot.getItem();
-                    int patch = ii.getPatch(stackInSlot.getMetadata());
-                    ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(stackInSlot);
-                    if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
+                    ItemStack stackInSlot = tileInstrument.getInventory().getStackInSlot(slot);
+                    if (!stackInSlot.isEmpty() && stackInSlot.getItem() instanceof ItemInstrument)
                     {
-                        NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("SheetMusic");
-                        if (contents.hasKey("MML"))
+                        ItemInstrument instrument = (ItemInstrument) stackInSlot.getItem();
+                        int patch = instrument.getPatch(stackInSlot.getMetadata());
+                        ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(stackInSlot);
+                        if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
                         {
-                            String mml = contents.getString("MML");
-                            mml = mml.replace("MML@", "MML@I" + patch);
-                            buildMML.append(slot).append("=").append(mml).append("|");
+                            NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("SheetMusic");
+                            if (contents.hasKey("MML"))
+                            {
+                                String mml = contents.getString("MML");
+                                mml = mml.replace("MML@", "MML@I" + patch);
+                                buildMML.append(slot).append("=").append(mml).append("|");
+                            }
                         }
                     }
                 }
+            } catch (Exception e)
+            {
+                ModLogger.error(e);
             }
-        } catch (Exception e)
-        {
-            ModLogger.error(e);
-        }
+         }
         return buildMML.toString();
     }
 }
