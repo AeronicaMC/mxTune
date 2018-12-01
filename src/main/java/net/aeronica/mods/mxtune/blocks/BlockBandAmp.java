@@ -144,17 +144,21 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
 
                     worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
                 } else
-                {
-                    // Pulse the output power state once when playing stops
-                    if(!state.getValue(POWERED))
-                    {
-                        setOutputPowerState(worldIn, pos, state, true);
-                        worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
-                    } else if (state.getValue(POWERED))
-                        setOutputPowerState(worldIn, pos, state, false);
-                }
+                    onePulseOutputState(worldIn, pos, state, tileBandAmp);
             }
         }
+    }
+
+    /** Pulse the output power state once when playing stops and only for a valid playID. i.e. playID > 0 */
+    private void onePulseOutputState(World worldIn, BlockPos pos, IBlockState state, TileBandAmp tileBandAmp)
+    {
+        if(!state.getValue(POWERED) && tileBandAmp.lastPlayIDSuccess())
+        {
+            setOutputPowerState(worldIn, pos, state, true);
+            worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
+            tileBandAmp.clearLastPlayID();
+        } else if (state.getValue(POWERED))
+            setOutputPowerState(worldIn, pos, state, false);
     }
 
     /**
