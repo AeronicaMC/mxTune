@@ -112,6 +112,13 @@ public class ContainerBandAmp extends Container
         return stack;
     }
 
+    @Override
+    public void detectAndSendChanges()
+    {
+        setDuration();
+        super.detectAndSendChanges();
+    }
+
     private void setDuration()
     {
         int dur = (getDuration(this.inventorySlots));
