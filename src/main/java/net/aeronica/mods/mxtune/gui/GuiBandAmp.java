@@ -18,12 +18,16 @@ package net.aeronica.mods.mxtune.gui;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.blocks.TileBandAmp;
+import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 public class GuiBandAmp extends GuiContainer
@@ -32,17 +36,20 @@ public class GuiBandAmp extends GuiContainer
     private InventoryPlayer inventoryPlayer;
     public static final int GUI_ID = 9;
     private TileBandAmp tileBandAmp;
+    private ItemStack stackBandAmp;
 
     public GuiBandAmp(Container container, InventoryPlayer inventoryPlayer, TileBandAmp tileBandAmp)
     {
         super(container);
         this.inventoryPlayer = inventoryPlayer;
         this.tileBandAmp = tileBandAmp;
+        stackBandAmp = new ItemStack(ModItems.ITEM_BAND_AMP);
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
+        drawBandAmp();
         String name = I18n.format(tileBandAmp.getName());
         fontRenderer.drawString(name, 8, 6, 0x404040);
         String duration = SheetMusicUtil.formatDuration(tileBandAmp.getDuration());
@@ -67,5 +74,26 @@ public class GuiBandAmp extends GuiContainer
         this.drawDefaultBackground();
         super.drawScreen(mouseX, mouseY, partialTicks);
         this.renderHoveredToolTip(mouseX, mouseY);
+    }
+
+    private void drawBandAmp()
+    {
+        RenderHelper.enableGUIStandardItemLighting();
+        GlStateManager.pushMatrix();
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.enableRescaleNormal();
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+
+        GlStateManager.enableLighting();
+        GlStateManager.enableDepth();
+        this.itemRender.renderItemAndEffectIntoGUI(this.mc.player, stackBandAmp, 18, 35);
+        GlStateManager.disableLighting();
+        GlStateManager.disableDepth();
+
+        GlStateManager.popMatrix();
+        GlStateManager.enableLighting();
+        GlStateManager.enableDepth();
+        RenderHelper.enableStandardItemLighting();
     }
 }
