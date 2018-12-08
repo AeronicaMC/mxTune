@@ -87,7 +87,8 @@ public class GuiBandAmp extends GuiContainer
 
         GlStateManager.enableLighting();
         GlStateManager.enableDepth();
-        this.itemRender.renderItemAndEffectIntoGUI(this.mc.player, stackBandAmp, 18, 35);
+        GlStateManager.scale(2,2,1);
+        this.itemRender.renderItemAndEffectIntoGUI(stackBandAmp, 5, 13);
         GlStateManager.disableLighting();
         GlStateManager.disableDepth();
 
