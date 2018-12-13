@@ -84,7 +84,7 @@ public class GuiBandAmp extends GuiContainer
     private void updateButtonStatus()
     {
         boolean lockState = this.tileBandAmp.isLocked();
-        if (prevLockState != lockState || true)
+        if (prevLockState != lockState)
         {
             this.lockButton.setLocked(lockState);
             this.prevLockState = lockState;

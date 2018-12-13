@@ -128,6 +128,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     {
             this.duration = duration;
             markDirty();
+            syncClient();
     }
 
     /** This does nothing but log the side that's powered */
@@ -163,6 +164,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
             world.notifyBlockUpdate(getPos(), world.getBlockState(pos), world.getBlockState(pos), 2);
         }
     }
+
     class InstrumentStackHandler extends ItemStackHandler
     {
         InstrumentStackHandler(int size) {super(size);}
