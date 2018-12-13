@@ -26,9 +26,16 @@ public class LockableHelper
         return isLocked;
     }
 
+    public static boolean canLock(EntityPlayer playerIn, IModLockableContainer lockableContainer)
+    {
+        OwnerUUID ownerUUID = new OwnerUUID(playerIn.getPersistentID().toString());
+        return (lockableContainer.isOwner(ownerUUID)) && !playerIn.isSpectator();
+    }
+
     private static boolean canOpen(EntityPlayer playerIn, IModLockableContainer lockableContainer)
     {
-        return lockableContainer.isLocked() && !playerIn.getUniqueID().toString().equals(lockableContainer.getLockCode().getLock()) && !playerIn.isSpectator();
+        OwnerUUID ownerUUID = new OwnerUUID(playerIn.getPersistentID().toString());
+        return  lockableContainer.isLocked() && !(lockableContainer.isOwner(ownerUUID)) && !playerIn.isSpectator();
     }
 
     public static boolean isBreakable(EntityPlayer playerIn, World worldIn, BlockPos pos)

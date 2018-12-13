@@ -75,7 +75,6 @@ public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAm
                     else
                         tileBandAmp.setLockCode(LockCode.EMPTY_CODE);
 
-                    tileBandAmp.markDirty();
                     ModLogger.info("  lockCode  %s", tileBandAmp.getLockCode().getLock());
                     ModLogger.info("  ownerCode %s", tileBandAmp.getOwner().getUUID());
                 }

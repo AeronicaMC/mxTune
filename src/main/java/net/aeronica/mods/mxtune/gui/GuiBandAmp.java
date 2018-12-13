@@ -22,6 +22,7 @@ import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.BandAmpMessage;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
+import net.aeronica.mods.mxtune.world.LockableHelper;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiLockIconButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -61,6 +62,7 @@ public class GuiBandAmp extends GuiContainer
         this.lockButton =  new GuiLockIconButton(100, guiLeft + 7, guiTop + 24);
         this.buttonList.add(this.lockButton);
         this.lockButton.setLocked(tileBandAmp.isLocked());
+        this.lockButton.enabled = LockableHelper.canLock(mc.player, tileBandAmp);
         this.prevLockState = this.lockButton.isLocked();
     }
 
