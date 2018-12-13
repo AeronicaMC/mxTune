@@ -19,7 +19,11 @@ package net.aeronica.mods.mxtune.gui;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.blocks.TileBandAmp;
 import net.aeronica.mods.mxtune.init.ModItems;
+import net.aeronica.mods.mxtune.network.PacketDispatcher;
+import net.aeronica.mods.mxtune.network.server.BandAmpMessage;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiLockIconButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -30,6 +34,8 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
+import java.io.IOException;
+
 public class GuiBandAmp extends GuiContainer
 {
     private static final ResourceLocation BG_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/band_amp.png");
@@ -37,6 +43,8 @@ public class GuiBandAmp extends GuiContainer
     public static final int GUI_ID = 9;
     private TileBandAmp tileBandAmp;
     private ItemStack stackBandAmp;
+    private GuiLockIconButton lockButton;
+    private boolean prevLockState;
 
     public GuiBandAmp(Container container, InventoryPlayer inventoryPlayer, TileBandAmp tileBandAmp)
     {
@@ -47,9 +55,50 @@ public class GuiBandAmp extends GuiContainer
     }
 
     @Override
+    public void initGui()
+    {
+        super.initGui();
+        this.lockButton =  new GuiLockIconButton(100, guiLeft + 7, guiTop + 24);
+        this.buttonList.add(this.lockButton);
+        this.lockButton.setLocked(tileBandAmp.isLocked());
+        this.prevLockState = this.lockButton.isLocked();
+    }
+
+    @Override
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+        switch(button.id)
+        {
+            case 100:
+                // toggle lock status of the band amp if possible. i.e. only the owner can.
+                Boolean invertLock = !lockButton.isLocked();
+                lockButton.setLocked(invertLock);
+                sendButtonChanges();
+                break;
+            default:
+        }
+    }
+
+    private void updateButtonStatus()
+    {
+        boolean lockState = this.tileBandAmp.isLocked();
+        if (prevLockState != lockState || true)
+        {
+            this.lockButton.setLocked(lockState);
+            this.prevLockState = lockState;
+        }
+    }
+
+    private void sendButtonChanges()
+    {
+        PacketDispatcher.sendToServer(new BandAmpMessage(tileBandAmp.getPos(), lockButton.isLocked()));
+    }
+
+    @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        drawBandAmp();
+        //drawBandAmp();
+        updateButtonStatus();
         String name = I18n.format(tileBandAmp.getName());
         fontRenderer.drawString(name, 8, 6, 0x404040);
         String duration = SheetMusicUtil.formatDuration(tileBandAmp.getDuration());

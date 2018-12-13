@@ -156,6 +156,13 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         markDirty();
     }
 
+    private void syncClient()
+    {
+        if(world != null && !world.isRemote)
+        {
+            world.notifyBlockUpdate(getPos(), world.getBlockState(pos), world.getBlockState(pos), 2);
+        }
+    }
     class InstrumentStackHandler extends ItemStackHandler
     {
         InstrumentStackHandler(int size) {super(size);}
@@ -201,15 +208,16 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     {
         this.code = code;
         markDirty();
+        syncClient();
     }
 
     @Override
     public LockCode getLockCode() { return this.code; }
 
     @Override
-    public boolean isOwner()
+    public boolean isOwner(OwnerUUID ownerUUID)
     {
-        return this.ownerUUID != null && !this.ownerUUID.isEmpty();
+        return this.ownerUUID != null && this.ownerUUID.equals(ownerUUID);
     }
 
     @Override

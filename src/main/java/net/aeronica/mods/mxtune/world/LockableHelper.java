@@ -50,6 +50,7 @@ public class LockableHelper
 
     private static boolean canBreak(EntityPlayer playerIn, IModLockableContainer lockableContainer)
     {
-        return lockableContainer.isOwner() && !playerIn.getUniqueID().toString().equals(lockableContainer.getOwner().getUUID()) && !playerIn.isSpectator();
+        OwnerUUID ownerUUID = new OwnerUUID(playerIn.getPersistentID().toString());
+        return !(lockableContainer.isOwner(ownerUUID)) && !playerIn.isSpectator();
     }
 }

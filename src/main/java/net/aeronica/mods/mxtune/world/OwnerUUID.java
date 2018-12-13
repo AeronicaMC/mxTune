@@ -47,4 +47,10 @@ public class OwnerUUID
             return EMPTY_UUID;
         }
     }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return (obj instanceof OwnerUUID) && (this.uuid.equalsIgnoreCase(((OwnerUUID) obj).getUUID()));
+    }
 }

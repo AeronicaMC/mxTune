@@ -27,7 +27,7 @@ public interface IModLockableContainer extends IWorldNameable
 
     LockCode getLockCode();
 
-    boolean isOwner();
+    boolean isOwner(OwnerUUID ownerUUID);
 
     void setOwner(OwnerUUID ownerUUID);
 

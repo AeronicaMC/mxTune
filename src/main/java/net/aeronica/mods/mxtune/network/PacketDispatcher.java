@@ -1,4 +1,4 @@
-/**
+/*
  * This network code is from coolAlias's github repository
  * https://github.com/coolAlias/Tutorial-Demo
  */
@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
-/**
+/*
  * 
  * This class will house the SimpleNetworkWrapper instance, which I will name
  * 'dispatcher', as well as give us a logical place from which to register our
@@ -40,13 +40,13 @@ import net.minecraftforge.fml.relauncher.Side;
  */
 public class PacketDispatcher
 {
-    /**
+    /*
      * a simple counter will allow us to get rid of 'magic' numbers used during
      * packet registration
      */
     private static byte packetId = 0;
 
-    /**
+    /*
      * The SimpleNetworkWrapper instance is used both to register and send
      * packets. Since I will be adding wrapper methods, this field is private,
      * but you should make it public if you plan on using it directly.
@@ -59,7 +59,7 @@ public class PacketDispatcher
      */
     public static final void registerPackets()
     {
-        /** Packets handled on CLIENT */
+        // Packets handled on CLIENT
         registerMessage(JoinGroupMessage.class);
         registerMessage(PlayJamMessage.class);
         registerMessage(PlaySoloMessage.class);
@@ -71,14 +71,15 @@ public class PacketDispatcher
         registerMessage(StopPlayMessage.class);
         registerMessage(PlayBlockMusicMessage.class);
 
-        /** Packets handled on SERVER */
+        // Packets handled on SERVER
         registerMessage(ManageGroupMessage.class);
         registerMessage(MusicOptionsMessage.class);
         registerMessage(MusicTextMessage.class);
         registerMessage(HudOptionsMessage.class);
         registerMessage(PlayStoppedMessage.class);
+        registerMessage(BandAmpMessage.class);
 
-        /**
+        /*
          * If you don't want to make a 'registerMessage' method, you can do it
          * directly:
          */
@@ -87,7 +88,7 @@ public class PacketDispatcher
         // PacketDispatcher.dispatcher.registerMessage(OpenGuiMessage.class,
         // OpenGuiMessage.class, packetId++, Side.SERVER);
 
-        /** Bidirectional packets: */
+        // Bidirectional packets:
         registerMessage(SendKeyMessage.class);
         registerMessage(ClientStateDataMessage.class);
     }
@@ -97,16 +98,16 @@ public class PacketDispatcher
      */
     private static final <T extends AbstractMessage<T> & IMessageHandler<T, IMessage>> void registerMessage(Class<T> clazz)
     {
-        /**
+        /*
          * We can tell by the message class which side to register it on by
          * using #isAssignableFrom (google it)
          */
 
-        /**
+        /*
          * Also, one can see the convenience of using a static counter
          * 'packetId' to keep track of the current index, rather than
          * hard-coding them all, plus it's one less parameter to pass.
-         **/
+         */
         if (AbstractMessage.AbstractClientMessage.class.isAssignableFrom(clazz))
         {
             PacketDispatcher.dispatcher.registerMessage(clazz, clazz, packetId++, Side.CLIENT);
@@ -115,7 +116,7 @@ public class PacketDispatcher
             PacketDispatcher.dispatcher.registerMessage(clazz, clazz, packetId++, Side.SERVER);
         } else
         {
-            /**
+            /*
              * hopefully you didn't forget to extend the right class, or you
              * will get registered on both sides
              */
