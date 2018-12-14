@@ -17,27 +17,42 @@
 package net.aeronica.mods.mxtune.world;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.concurrent.Immutable;
+import java.util.UUID;
 
 @Immutable
 public class OwnerUUID
 {
-    public static final OwnerUUID EMPTY_UUID = new OwnerUUID("");
+    public static final OwnerUUID EMPTY_UUID = new OwnerUUID(0L, 0L);
     private static final String UUID_KEY = "OwnerUUID";
-    private final String uuid;
+    private final UUID uuid;
 
-    public OwnerUUID(String uuid) { this.uuid = uuid; }
+    public OwnerUUID(String uuidString)
+    {
+        this.uuid = UUID.fromString(uuidString);
+    }
 
-    public boolean isEmpty() { return this.uuid == null || this.uuid.isEmpty(); }
+    public OwnerUUID(UUID uuid)
+    {
+        this.uuid = uuid;
+    }
 
-    public String getUUID() { return this.uuid; }
+    private OwnerUUID(long msb, long lsb)
+    {
+        this.uuid = new UUID(msb, lsb);
+    }
 
-    public void toNBT(NBTTagCompound nbt) { nbt.setString(UUID_KEY, this.uuid); }
+    public boolean isEmpty() { return this.uuid == null || this.uuid.equals(EMPTY_UUID); }
+
+    public UUID getUUID() { return this.uuid; }
+
+    public void toNBT(NBTTagCompound nbt) { nbt.setString(UUID_KEY, this.uuid.toString()); }
 
     public static OwnerUUID fromNBT(NBTTagCompound nbt)
     {
-        if (nbt.hasKey(UUID_KEY, 8))
+        if (nbt.hasKey(UUID_KEY, Constants.NBT.TAG_STRING))
         {
             String s = nbt.getString(UUID_KEY);
             return new OwnerUUID(s);
@@ -51,6 +66,12 @@ public class OwnerUUID
     @Override
     public boolean equals(Object obj)
     {
-        return (obj instanceof OwnerUUID) && (this.uuid.equalsIgnoreCase(((OwnerUUID) obj).getUUID()));
+        return (obj instanceof OwnerUUID) && (this.uuid.compareTo(((OwnerUUID) obj).uuid) == 0);
+    }
+
+    @Override
+    public String toString()
+    {
+        return this.uuid.toString();
     }
 }

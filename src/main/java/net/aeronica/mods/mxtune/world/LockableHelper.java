@@ -28,13 +28,13 @@ public class LockableHelper
 
     public static boolean canLock(EntityPlayer playerIn, IModLockableContainer lockableContainer)
     {
-        OwnerUUID ownerUUID = new OwnerUUID(playerIn.getPersistentID().toString());
+        OwnerUUID ownerUUID = new OwnerUUID(playerIn.getPersistentID());
         return (lockableContainer.isOwner(ownerUUID)) && !playerIn.isSpectator();
     }
 
     private static boolean canOpen(EntityPlayer playerIn, IModLockableContainer lockableContainer)
     {
-        OwnerUUID ownerUUID = new OwnerUUID(playerIn.getPersistentID().toString());
+        OwnerUUID ownerUUID = new OwnerUUID(playerIn.getPersistentID());
         return  lockableContainer.isLocked() && !(lockableContainer.isOwner(ownerUUID)) && !playerIn.isSpectator();
     }
 
@@ -57,7 +57,7 @@ public class LockableHelper
 
     private static boolean canBreak(EntityPlayer playerIn, IModLockableContainer lockableContainer)
     {
-        OwnerUUID ownerUUID = new OwnerUUID(playerIn.getPersistentID().toString());
+        OwnerUUID ownerUUID = new OwnerUUID(playerIn.getPersistentID());
         return !(lockableContainer.isOwner(ownerUUID)) && !playerIn.isSpectator();
     }
 }

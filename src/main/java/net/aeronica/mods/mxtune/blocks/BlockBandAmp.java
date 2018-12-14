@@ -239,7 +239,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
         TileEntity tileEntity = worldIn.getTileEntity(pos);
         if (tileEntity instanceof TileBandAmp) {
             TileBandAmp tileBandAmp = (TileBandAmp) tileEntity;
-            OwnerUUID ownerUUID = new OwnerUUID(placer.getPersistentID().toString());
+            OwnerUUID ownerUUID = new OwnerUUID(placer.getPersistentID());
             tileBandAmp.setOwner(ownerUUID);
 
             if (stack.hasDisplayName())

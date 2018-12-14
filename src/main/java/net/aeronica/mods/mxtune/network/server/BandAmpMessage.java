@@ -16,9 +16,9 @@
  */
 package net.aeronica.mods.mxtune.network.server;
 
-import net.aeronica.mods.mxtune.blocks.TileBandAmp;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.world.IModLockableContainer;
 import net.aeronica.mods.mxtune.world.OwnerUUID;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
@@ -29,54 +29,56 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAmpMessage>
 {
-    private boolean lockBandAmp;
-    private BlockPos bandAmpPosition;
+    private boolean lockContainer;
+    private BlockPos pos;
 
     @SuppressWarnings("unused")
     public BandAmpMessage() {/* NOP */}
 
-    public BandAmpMessage(BlockPos bandAmpPosition, boolean lockBandAmp)
+    public BandAmpMessage(BlockPos pos, boolean lockContainer)
     {
-        this.bandAmpPosition = bandAmpPosition;
-        this.lockBandAmp = lockBandAmp;
+        this.pos = pos;
+        this.lockContainer = lockContainer;
     }
 
     @Override
     protected void read(PacketBuffer buffer)
     {
-        bandAmpPosition = buffer.readBlockPos();
-        lockBandAmp = buffer.readBoolean();
+        pos = buffer.readBlockPos();
+        lockContainer = buffer.readBoolean();
     }
 
     @Override
     protected void write(PacketBuffer buffer)
     {
-        buffer.writeBlockPos(bandAmpPosition);
-        buffer.writeBoolean(lockBandAmp);
+        buffer.writeBlockPos(pos);
+        buffer.writeBoolean(lockContainer);
     }
 
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        ModLogger.info("BandAmpMessage, %s, %s", bandAmpPosition, lockBandAmp);
-        if(player.world.isBlockLoaded(bandAmpPosition))
+        ModLogger.info("BandAmpMessage, %s, %s", pos, lockContainer);
+        if(player.world.isBlockLoaded(pos))
         {
-            TileEntity tileEntity = player.world.getTileEntity(bandAmpPosition);
-            if(tileEntity instanceof TileBandAmp)
+            TileEntity tileEntity = player.world.getTileEntity(pos);
+            if(tileEntity instanceof IModLockableContainer)
             {
-                TileBandAmp tileBandAmp = (TileBandAmp) tileEntity;
-                OwnerUUID ownerUUID = new OwnerUUID(player.getPersistentID().toString());
+                IModLockableContainer lockableContainer = (IModLockableContainer) tileEntity;
+                OwnerUUID ownerUUID = new OwnerUUID(player.getPersistentID());
 
-                if(tileBandAmp.isOwner(ownerUUID))
+                if(lockableContainer.isOwner(ownerUUID))
                 {
-                    LockCode lockCode = new LockCode(ownerUUID.getUUID());
-                    if(lockBandAmp)
-                        tileBandAmp.setLockCode(lockCode);
+                    if(lockContainer)
+                    {
+                        LockCode lockCode = new LockCode(ownerUUID.toString());
+                        lockableContainer.setLockCode(lockCode);
+                    }
                     else
-                        tileBandAmp.setLockCode(LockCode.EMPTY_CODE);
+                        lockableContainer.setLockCode(LockCode.EMPTY_CODE);
 
-                    ModLogger.info("  lockCode  %s", tileBandAmp.getLockCode().getLock());
-                    ModLogger.info("  ownerCode %s", tileBandAmp.getOwner().getUUID());
+                    ModLogger.info("  lockCode  %s", lockableContainer.getLockCode().getLock());
+                    ModLogger.info("  ownerCode %s", lockableContainer.getOwner());
                 }
             }
         }
