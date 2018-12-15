@@ -64,12 +64,6 @@ public class OwnerUUID
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        return (obj instanceof OwnerUUID) && (this.uuid.compareTo(((OwnerUUID) obj).uuid) == 0);
-    }
-
-    @Override
     public String toString()
     {
         return this.uuid.toString();
