@@ -35,8 +35,6 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-import java.io.IOException;
-
 public class GuiBandAmp extends GuiContainer
 {
     private static final ResourceLocation BG_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/band_amp.png");
@@ -67,7 +65,7 @@ public class GuiBandAmp extends GuiContainer
     }
 
     @Override
-    protected void actionPerformed(GuiButton button) throws IOException
+    protected void actionPerformed(GuiButton button)
     {
         switch(button.id)
         {

@@ -44,7 +44,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     private static final int MAX_SLOTS = 8;
     private boolean previousInputPowerState;
     private Integer playID;
-    private int lastPlayID;
+    private Integer lastPlayID;
     private LockCode code = LockCode.EMPTY_CODE;
     private OwnerUUID ownerUUID = OwnerUUID.EMPTY_UUID;
     private String bandAmpCustomName;
@@ -68,9 +68,9 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
 
     public Integer getPlayID() { return playID; }
 
-    public void setPlayID(Integer playID)
+    public void setPlayID(@Nullable Integer playID)
     {
-        this.playID = playID != null ? playID : -1;
+        this.playID = playID;
         if (isPlaying()) this.lastPlayID = this.playID;
     }
 

@@ -29,7 +29,7 @@ public class OwnerUUID
     private static final String UUID_KEY = "OwnerUUID";
     private final UUID uuid;
 
-    public OwnerUUID(String uuidString)
+    private OwnerUUID(String uuidString)
     {
         this.uuid = UUID.fromString(uuidString);
     }
@@ -44,7 +44,7 @@ public class OwnerUUID
         this.uuid = new UUID(msb, lsb);
     }
 
-    public boolean isEmpty() { return this.uuid == null || this.uuid.equals(EMPTY_UUID); }
+    public boolean isEmpty() { return this.uuid == null || EMPTY_UUID.uuid.equals(this.uuid); }
 
     public UUID getUUID() { return this.uuid; }
 

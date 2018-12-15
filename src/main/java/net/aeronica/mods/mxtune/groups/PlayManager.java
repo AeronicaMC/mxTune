@@ -35,6 +35,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -86,6 +87,7 @@ public class PlayManager
      * @param pos position of block instrument
      * @return a unique play id
      */
+    @Nullable
     public static Integer playMusic(EntityPlayer playerIn, BlockPos pos)
     {
         return playMusic(playerIn, pos, true);
@@ -97,6 +99,7 @@ public class PlayManager
      * @param pos position of block instrument
      * @return a unique play id
      */
+    @Nullable
     public static Integer playMusic(World worldIn, BlockPos pos)
     {
         Integer playID = null;
@@ -125,6 +128,7 @@ public class PlayManager
      * @param isPlaced true is this is a block instrument
      * @return a unique play id or null if unable to play
      */
+    @Nullable
     public static Integer playMusic(EntityPlayer playerIn, BlockPos pos, boolean isPlaced)
     {
         if (MusicOptionsUtil.isMuteAll(playerIn))
@@ -175,7 +179,8 @@ public class PlayManager
         PacketDispatcher.sendToAllAround(packetPlaySolo, playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, ModConfig.getListenerRange());
         return playID;
     }
-    
+
+    @Nullable
     private static Integer queueJam(EntityPlayer playerIn, String mml, Integer playerID)
     {
         Integer groupsPlayID = getGroupsPlayID(playerID);
@@ -216,6 +221,7 @@ public class PlayManager
      * @param membersID of some group
      * @return a unique playID or null if something went wrong
      */
+    @Nullable
     private static Integer getGroupsPlayID(Integer membersID)
     {
         GroupManager.Group membersGroup = GroupManager.getMembersGroup(membersID);
@@ -228,6 +234,7 @@ public class PlayManager
         return playID;
     }
 
+    @Nullable
     private static Integer getPlayersPlayID(Integer entityID)
     {
         return (entityID != null) ? membersPlayID.get(entityID) : null;
@@ -243,14 +250,14 @@ public class PlayManager
         return isPlayerPlaying(entityLivingIn.getEntityId());
     }
 
-    public static boolean isActivePlayID(Integer playID) { return playID != null && activePlayIDs.contains(playID); }
+    public static boolean isActivePlayID(@Nullable Integer playID) { return playID != null && activePlayIDs.contains(playID); }
     
-    public static boolean hasPlayID(Integer playID)
+    public static boolean hasPlayID(@Nullable Integer playID)
     {
         return playID != null && membersPlayID.containsValue(playID);
     }
     
-    private static Set<Integer> getMembersByPlayID(Integer playID)
+    private static Set<Integer> getMembersByPlayID(@Nullable Integer playID)
     {
         Set<Integer> members = Sets.newHashSet();
         if (playID != null)
@@ -261,7 +268,7 @@ public class PlayManager
         return members;
     }
     
-    public static <T extends EntityLivingBase> void playingEnded(T entityLivingIn, Integer playID)
+    public static <T extends EntityLivingBase> void playingEnded(T entityLivingIn, @Nullable Integer playID)
     {
         if (isPlayerPlaying(entityLivingIn)){
             membersPlayID.remove(entityLivingIn.getEntityId());
@@ -284,7 +291,7 @@ public class PlayManager
         }
     }
 
-    public static void stopPlayID(Integer playID)
+    public static void stopPlayID(@Nullable Integer playID)
     {
         Set<Integer> memberSet = getMembersByPlayID(playID);
         for(Integer member: memberSet)
@@ -376,7 +383,7 @@ public class PlayManager
      * @param playID entity id of the player
      * @return Vec3d median position for the player
      */
-    private static Vec3d getMedianPos(int playID)
+    private static Vec3d getMedianPos(@Nullable Integer playID)
     {
         double x, y, z;
         x = y = z = 0;

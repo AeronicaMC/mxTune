@@ -22,25 +22,30 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.io.IOException;
-
 public class StopPlayMessage extends AbstractClientMessage<StopPlayMessage>
 {
 
-    int playID;
+    private int playID;
 
-    public StopPlayMessage() {/* Required by the PacketDispacher */}
+    @SuppressWarnings("unused")
+    public StopPlayMessage() {/* Required by the PacketDispatcher */}
 
-    public StopPlayMessage(int playID) {this.playID = playID;}
+    public StopPlayMessage(Integer playID)
+    {
+        if(playID != null)
+            this.playID = playID;
+        else
+            this.playID = -1;
+    }
 
     @Override
-    protected void read(PacketBuffer buffer) throws IOException
+    protected void read(PacketBuffer buffer)
     {
         playID = buffer.readInt();
     }
 
     @Override
-    protected void write(PacketBuffer buffer) throws IOException
+    protected void write(PacketBuffer buffer)
     {
         buffer.writeInt(playID);
     }
