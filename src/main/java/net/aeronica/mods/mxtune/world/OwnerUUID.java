@@ -44,11 +44,11 @@ public class OwnerUUID
         this.uuid = new UUID(msb, lsb);
     }
 
-    public boolean isEmpty() { return this.uuid == null || EMPTY_UUID.uuid.equals(this.uuid); }
+    public boolean isEmpty() { return this.uuid == null || EMPTY_UUID.uuid.equals(uuid); }
 
     public UUID getUUID() { return this.uuid; }
 
-    public void toNBT(NBTTagCompound nbt) { nbt.setString(UUID_KEY, this.uuid.toString()); }
+    public void toNBT(NBTTagCompound nbt) { nbt.setString(UUID_KEY, uuid.toString()); }
 
     public static OwnerUUID fromNBT(NBTTagCompound nbt)
     {
@@ -66,6 +66,23 @@ public class OwnerUUID
     @Override
     public String toString()
     {
-        return this.uuid.toString();
+        return uuid.toString();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        long hilo = uuid.getMostSignificantBits() ^ uuid.getLeastSignificantBits();
+        return ((int)(hilo >> 32)) ^ (int) hilo;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if ((null == obj) || (obj.getClass() != OwnerUUID.class))
+            return false;
+        UUID id = ((OwnerUUID)obj).getUUID();
+        return (uuid.getMostSignificantBits() == id.getMostSignificantBits() &&
+                        uuid.getLeastSignificantBits() == id.getLeastSignificantBits());
     }
 }
