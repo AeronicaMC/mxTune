@@ -35,14 +35,17 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
+import static net.aeronica.mods.mxtune.gui.GuiRedstoneButton.ArrowFaces;
+
 public class GuiBandAmp extends GuiContainer
 {
-    private static final ResourceLocation BG_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/band_amp.png");
+    static final ResourceLocation BG_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/band_amp.png");
     private InventoryPlayer inventoryPlayer;
     public static final int GUI_ID = 9;
     private TileBandAmp tileBandAmp;
     private ItemStack stackBandAmp;
     private GuiLockIconButton lockButton;
+    private GuiRedstoneButton rearInputButton;
     private boolean prevLockState;
 
     public GuiBandAmp(Container container, InventoryPlayer inventoryPlayer, TileBandAmp tileBandAmp)
@@ -57,11 +60,17 @@ public class GuiBandAmp extends GuiContainer
     public void initGui()
     {
         super.initGui();
-        this.lockButton =  new GuiLockIconButton(100, guiLeft + 7, guiTop + 24);
+        boolean isEnabled = LockableHelper.canLock(mc.player, tileBandAmp);
+        this.lockButton =  new GuiLockIconButton(100, guiLeft + 7, guiTop + 25);
         this.buttonList.add(this.lockButton);
         this.lockButton.setLocked(tileBandAmp.isLocked());
-        this.lockButton.enabled = LockableHelper.canLock(mc.player, tileBandAmp);
+        this.lockButton.enabled = isEnabled;
         this.prevLockState = this.lockButton.isLocked();
+
+        this.rearInputButton = new GuiRedstoneButton(101, guiLeft + 149, guiTop + 25, ArrowFaces.UP);
+        this.buttonList.add(this.rearInputButton);
+        this.rearInputButton.setSignalEnabled(true);
+        this.rearInputButton.enabled = isEnabled;
     }
 
     @Override
@@ -71,9 +80,13 @@ public class GuiBandAmp extends GuiContainer
         {
             case 100:
                 // toggle lock status of the band amp if possible. i.e. only the owner can.
-                Boolean invertLock = !lockButton.isLocked();
+                boolean invertLock = !lockButton.isLocked();
                 lockButton.setLocked(invertLock);
                 sendButtonChanges();
+                break;
+            case 101:
+                boolean invertInput = !rearInputButton.isSignalEnabled();
+                rearInputButton.setSignalEnabled(invertInput);
                 break;
             default:
         }
