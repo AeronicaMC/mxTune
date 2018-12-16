@@ -73,7 +73,7 @@ public class OwnerUUID
     public int hashCode()
     {
         long hilo = uuid.getMostSignificantBits() ^ uuid.getLeastSignificantBits();
-        return ((int)(hilo >> 32)) ^ (int) hilo;
+        return ((int) (hilo >> 32)) ^ (int) hilo;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class OwnerUUID
     {
         if ((null == obj) || (obj.getClass() != OwnerUUID.class))
             return false;
-        UUID id = ((OwnerUUID)obj).getUUID();
+        UUID id = ((OwnerUUID) obj).getUUID();
         return (uuid.getMostSignificantBits() == id.getMostSignificantBits() &&
                         uuid.getLeastSignificantBits() == id.getLeastSignificantBits());
     }
