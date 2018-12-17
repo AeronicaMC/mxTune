@@ -28,6 +28,7 @@ import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -44,9 +45,11 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.IWorldNameable;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -58,14 +61,16 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
 {
     private static final PropertyBool PLAYING = PropertyBool.create("playing");
     public static final PropertyBool POWERED = PropertyBool.create("powered");
+    public static final PropertyInteger UPDATE_COUNT = PropertyInteger.create("update_count", 0, 15);
 
     public BlockBandAmp()
     {
         super(Material.WOOD);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(PLAYING, Boolean.FALSE).withProperty(POWERED, Boolean.FALSE));
+        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(PLAYING, Boolean.FALSE).withProperty(POWERED, Boolean.FALSE).withProperty(UPDATE_COUNT, 0));
         this.setSoundType(SoundType.WOOD);
         this.setHardness(2.0F);
         this.disableStats();
+        this.needsRandomTick = true;
         this.setCreativeTab(MXTune.TAB_MUSIC);
     }
 
@@ -149,6 +154,18 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
         }
     }
 
+    @Override
+    public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
+    {
+        TileEntity tileEntity = worldIn.getTileEntity(pos);
+
+        if (tileEntity instanceof TileBandAmp)
+        {
+            TileBandAmp tileBandAmp = (TileBandAmp) tileEntity;
+            tileBandAmp.clientSideNotify();
+        }
+    }
+
     /** Pulse the output power state once when playing stops and only for a valid playID. i.e. playID > 0 */
     private void onePulseOutputState(World worldIn, BlockPos pos, IBlockState state, TileBandAmp tileBandAmp)
     {
@@ -174,7 +191,8 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
         if (tileEntity instanceof TileBandAmp)
         {
             TileBandAmp tileBandAmp = (TileBandAmp) tileEntity;
-            if ((tileBandAmp.getPreviousInputState() != inSidePowered))
+            boolean inputEnabled = tileBandAmp.isRearRedstoneInputEnabled();
+            if ((tileBandAmp.getPreviousInputState() != inSidePowered) && inputEnabled)
             {
                 if (inSidePowered)
                 {
@@ -222,13 +240,13 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     @Override
     protected BlockStateContainer createBlockState()
     {
-        return new BlockStateContainer(this, FACING, PLAYING, POWERED);
+        return new BlockStateContainer(this, FACING, PLAYING, POWERED, UPDATE_COUNT);
     }
 
     @Override
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
-        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(PLAYING, Boolean.FALSE).withProperty(POWERED, Boolean.FALSE);
+        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(PLAYING, Boolean.FALSE).withProperty(POWERED, Boolean.FALSE).withProperty(UPDATE_COUNT, 0);
     }
 
     @Override
@@ -245,6 +263,20 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
             if (stack.hasDisplayName())
                 tileBandAmp.setCustomInventoryName(stack.getDisplayName());
         }
+    }
+
+    @Override
+    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
+    {
+        TileEntity tileEntity = worldIn instanceof ChunkCache ? ((ChunkCache)worldIn).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK) : worldIn.getTileEntity(pos);
+
+        int count = Integer.MIN_VALUE;
+        if(tileEntity instanceof TileBandAmp)
+        {
+            TileBandAmp tileBandAmp = (TileBandAmp) tileEntity;
+            count = tileBandAmp.getUpdateCount();
+        }
+        return super.getActualState(state, worldIn, pos).withProperty(UPDATE_COUNT, count);
     }
 
     @Override
@@ -339,8 +371,16 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
         boolean canConnect = false;
         if (side != null)
         {
-            EnumRelativeSide relativeSide = EnumRelativeSide.getRelativeSide(side.getOpposite(), state.getValue(FACING));
-            canConnect =  relativeSide == EnumRelativeSide.BACK || relativeSide == EnumRelativeSide.LEFT || relativeSide == EnumRelativeSide.RIGHT;
+            TileEntity tileEntity = world.getTileEntity(pos);
+            if(tileEntity instanceof TileBandAmp)
+            {
+                TileBandAmp tileBandAmp = (TileBandAmp) tileEntity;
+                EnumRelativeSide relativeSide = EnumRelativeSide.getRelativeSide(side.getOpposite(), state.getValue(FACING));
+                boolean canConnectBack = tileBandAmp.isRearRedstoneInputEnabled() && relativeSide == EnumRelativeSide.BACK;
+                boolean canConnectLeft = tileBandAmp.isLeftRedstoneOutputEnabled() && relativeSide == EnumRelativeSide.LEFT;
+                boolean canConnectRight = tileBandAmp.isRightRedstoneOutputEnabled() && relativeSide == EnumRelativeSide.RIGHT;
+                canConnect = canConnectBack || canConnectLeft || canConnectRight;
+            }
         }
         return canConnect;
     }
@@ -354,8 +394,17 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     @Override
     public int getWeakPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
     {
-        EnumRelativeSide relativeSide = EnumRelativeSide.getRelativeSide(side.getOpposite(), blockState.getValue(FACING));
-        return blockState.getValue(POWERED) && (relativeSide == EnumRelativeSide.LEFT || relativeSide == EnumRelativeSide.RIGHT) ? 15 : 0;
+        int weakPower = 0;
+        TileEntity tileEntity = blockAccess.getTileEntity(pos);
+        if(tileEntity instanceof TileBandAmp)
+        {
+            TileBandAmp tileBandAmp = (TileBandAmp) tileEntity;
+            EnumRelativeSide relativeSide = EnumRelativeSide.getRelativeSide(side.getOpposite(), blockState.getValue(FACING));
+            boolean canConnectLeft = tileBandAmp.isLeftRedstoneOutputEnabled() && relativeSide == EnumRelativeSide.LEFT;
+            boolean canConnectRight = tileBandAmp.isRightRedstoneOutputEnabled() && relativeSide == EnumRelativeSide.RIGHT;
+            weakPower = blockState.getValue(POWERED) && (canConnectLeft || canConnectRight) ? 15 : 0;
+        }
+        return weakPower;
     }
 
     @Override

@@ -46,7 +46,12 @@ public class GuiBandAmp extends GuiContainer
     private ItemStack stackBandAmp;
     private GuiLockIconButton lockButton;
     private GuiRedstoneButton rearInputButton;
+    private GuiRedstoneButton leftOutputButton;
+    private GuiRedstoneButton rightOutputButton;
     private boolean prevLockState;
+    private boolean prevRearInputButtonState;
+    private boolean prevLeftOutputBottonState;
+    private boolean prevRightOutputButtonState;
 
     public GuiBandAmp(Container container, InventoryPlayer inventoryPlayer, TileBandAmp tileBandAmp)
     {
@@ -61,38 +66,83 @@ public class GuiBandAmp extends GuiContainer
     {
         super.initGui();
         boolean isEnabled = LockableHelper.canLock(mc.player, tileBandAmp);
-        this.lockButton =  new GuiLockIconButton(100, guiLeft + 7, guiTop + 25);
-        this.buttonList.add(this.lockButton);
-        this.lockButton.setLocked(tileBandAmp.isLocked());
-        this.lockButton.enabled = isEnabled;
-        this.prevLockState = this.lockButton.isLocked();
+        lockButton =  new GuiLockIconButton(100, guiLeft + 7, guiTop + 25);
+        buttonList.add(lockButton);
+        lockButton.setLocked(tileBandAmp.isLocked());
+        lockButton.enabled = isEnabled;
+        prevLockState = lockButton.isLocked();
 
-        this.rearInputButton = new GuiRedstoneButton(101, guiLeft + 149, guiTop + 25, ArrowFaces.UP);
-        this.buttonList.add(this.rearInputButton);
-        this.rearInputButton.setSignalEnabled(true);
-        this.rearInputButton.enabled = isEnabled;
+        rearInputButton = new GuiRedstoneButton(101, guiLeft + 139, guiTop + 25, ArrowFaces.DOWN);
+        buttonList.add(rearInputButton);
+        rearInputButton.setSignalEnabled(tileBandAmp.isRearRedstoneInputEnabled());
+        rearInputButton.enabled = isEnabled;
+        prevRearInputButtonState = rearInputButton.isSignalEnabled();
+
+        leftOutputButton = new GuiRedstoneButton(102, guiLeft + 129, guiTop + 45, ArrowFaces.LEFT);
+        buttonList.add(leftOutputButton);
+        leftOutputButton.setSignalEnabled(tileBandAmp.isLeftRedstoneOutputEnabled());
+        leftOutputButton.enabled = isEnabled;
+        prevLeftOutputBottonState = leftOutputButton.isSignalEnabled();
+
+        rightOutputButton = new GuiRedstoneButton(103, guiLeft + 149, guiTop + 45, ArrowFaces.RIGHT);
+        buttonList.add(rightOutputButton);
+        rightOutputButton.setSignalEnabled(tileBandAmp.isRightRedstoneOutputEnabled());
+        rightOutputButton.enabled = isEnabled;
+        prevRightOutputButtonState = rightOutputButton.isSignalEnabled();
+
+    }
+
+    @Override
+    public void onGuiClosed()
+    {
+        super.onGuiClosed();
+        sendButtonChanges();
     }
 
     @Override
     protected void actionPerformed(GuiButton button)
     {
-        switch(button.id)
+        toggleLockButton(lockButton, button);
+        toggleRedstoneButton(rearInputButton, button);
+        toggleRedstoneButton(leftOutputButton, button);
+        toggleRedstoneButton(rightOutputButton, button);
+    }
+
+    private void toggleLockButton(GuiLockIconButton lockIconButton, GuiButton buttonClicked)
+    {
+        if (buttonClicked.id == lockIconButton.id)
         {
-            case 100:
-                // toggle lock status of the band amp if possible. i.e. only the owner can.
-                boolean invertLock = !lockButton.isLocked();
-                lockButton.setLocked(invertLock);
-                sendButtonChanges();
-                break;
-            case 101:
-                boolean invertInput = !rearInputButton.isSignalEnabled();
-                rearInputButton.setSignalEnabled(invertInput);
-                break;
-            default:
+            boolean invertButton = !lockIconButton.isLocked();
+            lockIconButton.setLocked(invertButton);
+            sendButtonChanges();
+        }
+    }
+
+    private void toggleRedstoneButton(GuiRedstoneButton guiRedstoneButton, GuiButton buttonClicked)
+    {
+        if (buttonClicked.id == guiRedstoneButton.id)
+        {
+            boolean invertButton = !guiRedstoneButton.isSignalEnabled();
+            guiRedstoneButton.setSignalEnabled(invertButton);
+            sendButtonChanges();
         }
     }
 
     private void updateButtonStatus()
+    {
+        updateLockButtonStatus();
+
+        boolean state = tileBandAmp.isRearRedstoneInputEnabled();
+        prevRearInputButtonState = updateButtonStatus(rearInputButton, state, prevRearInputButtonState);
+
+        state = tileBandAmp.isLeftRedstoneOutputEnabled();
+        prevLeftOutputBottonState = updateButtonStatus(leftOutputButton, state, prevLeftOutputBottonState);
+
+        state = tileBandAmp.isRightRedstoneOutputEnabled();
+        prevRightOutputButtonState = updateButtonStatus(rightOutputButton, state, prevRightOutputButtonState);
+    }
+
+    private void updateLockButtonStatus()
     {
         boolean lockState = this.tileBandAmp.isLocked();
         if (prevLockState != lockState)
@@ -102,9 +152,24 @@ public class GuiBandAmp extends GuiContainer
         }
     }
 
+    private boolean updateButtonStatus(GuiRedstoneButton button, boolean buttonState, boolean prevState)
+    {
+        if (prevState != buttonState)
+        {
+            button.setSignalEnabled(buttonState);
+            return buttonState;
+        }
+        else
+            return prevState;
+    }
+
     private void sendButtonChanges()
     {
-        PacketDispatcher.sendToServer(new BandAmpMessage(tileBandAmp.getPos(), lockButton.isLocked()));
+        PacketDispatcher.sendToServer(new BandAmpMessage(
+                tileBandAmp.getPos(), lockButton.isLocked(),
+                rearInputButton.isSignalEnabled(),
+                leftOutputButton.isSignalEnabled(),
+                rightOutputButton.isSignalEnabled()));
     }
 
     @Override
@@ -138,6 +203,7 @@ public class GuiBandAmp extends GuiContainer
         this.renderHoveredToolTip(mouseX, mouseY);
     }
 
+    @SuppressWarnings("unused")
     private void drawBandAmp()
     {
         RenderHelper.enableGUIStandardItemLighting();

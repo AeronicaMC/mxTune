@@ -49,6 +49,10 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     private OwnerUUID ownerUUID = OwnerUUID.EMPTY_UUID;
     private String bandAmpCustomName;
     private int duration;
+    private boolean rearRedstoneInputEnabled = true;
+    private boolean leftRedstoneOutputEnabled = true;
+    private boolean rightRedstoneOutputEnabled = true;
+    private int updateCount;
 
     public TileBandAmp() { /* NOP */ }
 
@@ -74,9 +78,9 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         if (isPlaying()) this.lastPlayID = this.playID;
     }
 
-    public boolean lastPlayIDSuccess() { return this.lastPlayID > 0; }
+    boolean lastPlayIDSuccess() { return this.lastPlayID > 0; }
 
-    public void clearLastPlayID() { this.lastPlayID = -1; }
+    void clearLastPlayID() { this.lastPlayID = -1; }
 
     private boolean isPlaying() { return (this.playID != null) && (this.playID > 0); }
 
@@ -90,6 +94,10 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         previousInputPowerState = tag.getBoolean("powered");
         code = LockCode.fromNBT(tag);
         ownerUUID = OwnerUUID.fromNBT(tag);
+        rearRedstoneInputEnabled = tag.getBoolean("rearRedstoneInputEnabled");
+        leftRedstoneOutputEnabled = tag.getBoolean("leftRedstoneOutputEnabled");
+        rightRedstoneOutputEnabled = tag.getBoolean("rightRedstoneOutputEnabled");
+        updateCount = tag.getInteger("updateCount");
 
         if (tag.hasKey("CustomName", 8))
         {
@@ -103,6 +111,10 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         tag.merge(inventory.serializeNBT());
         tag.setBoolean("powered", previousInputPowerState);
         tag.setInteger("Duration", duration);
+        tag.setBoolean("rearRedstoneInputEnabled", rearRedstoneInputEnabled);
+        tag.setBoolean("leftRedstoneOutputEnabled", leftRedstoneOutputEnabled);
+        tag.setBoolean("rightRedstoneOutputEnabled", rightRedstoneOutputEnabled);
+        tag.setInteger("updateCount", updateCount);
 
         if (code != null)
         {
@@ -126,12 +138,15 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
 
     public void setDuration(int duration)
     {
+        if(this.duration != duration)
+        {
             this.duration = duration;
-            markDirty();
-            syncClient();
+            markDirtySyncClient();
+        }
     }
 
     /** This does nothing but log the side that's powered */
+    @SuppressWarnings("unused")
     void logInputPower(BlockPos pos, Block blockIn, BlockPos fromPos)
     {
         Vec3i vec3i = pos.subtract(fromPos);
@@ -157,11 +172,107 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         markDirty();
     }
 
+    public boolean isRearRedstoneInputEnabled()
+    {
+        return rearRedstoneInputEnabled;
+    }
+
+    public void setRearRedstoneInputEnabled(boolean rearRedstoneInputEnabled)
+    {
+        if(this.rearRedstoneInputEnabled != rearRedstoneInputEnabled)
+        {
+            this.rearRedstoneInputEnabled = rearRedstoneInputEnabled;
+            markDirtySyncClient();
+        }
+    }
+
+    public boolean isLeftRedstoneOutputEnabled()
+    {
+        return leftRedstoneOutputEnabled;
+    }
+
+    public void setLeftRedstoneOutputEnabled(boolean leftRedstoneOutputEnabled)
+    {
+        if(this.leftRedstoneOutputEnabled != leftRedstoneOutputEnabled)
+        {
+            this.leftRedstoneOutputEnabled = leftRedstoneOutputEnabled;
+            markDirtySyncClient();
+        }
+    }
+
+    public boolean isRightRedstoneOutputEnabled()
+    {
+        return rightRedstoneOutputEnabled;
+    }
+
+    public void setRightRedstoneOutputEnabled(boolean rightRedstoneOutputEnabled)
+    {
+        if(this.rightRedstoneOutputEnabled != rightRedstoneOutputEnabled)
+        {
+            this.rightRedstoneOutputEnabled = rightRedstoneOutputEnabled;
+            markDirtySyncClient();
+        }
+    }
+
+    public int getUpdateCount()
+    {
+        return updateCount;
+    }
+
+    public void setUpdateCount(int updateCount)
+    {
+        this.updateCount = updateCount;
+    }
+
+    public void incrementCount()
+    {
+        updateCount = ((++updateCount) %16);
+
+        if (world != null && !world.isRemote)
+        {
+            int count = world.getBlockState(pos).getValue(BlockBandAmp.UPDATE_COUNT);
+            ModLogger.info("TileBandAmp updateCount: %d, UPDATE_COUNT: %d", updateCount, count);
+            if(updateCount != count)
+            {
+                world.setBlockState(pos, world.getBlockState(pos).withProperty(BlockBandAmp.UPDATE_COUNT, updateCount), 3);
+                world.markBlockRangeForRenderUpdate(pos, pos);
+            }
+        }
+    }
+
     private void syncClient()
     {
-        if(world != null && !world.isRemote)
+        if (world != null && !world.isRemote)
         {
             world.notifyBlockUpdate(getPos(), world.getBlockState(pos), world.getBlockState(pos), 2);
+            world.scheduleBlockUpdate(pos, this.getBlockType(),0,0);
+            incrementCount();
+        }
+    }
+
+    private void markDirtySyncClient()
+    {
+        markDirty();
+        syncClient();
+    }
+
+    void clientSideNotify()
+    {
+        if(world.isRemote)
+        {
+
+            int count = world.getBlockState(pos).getValue(BlockBandAmp.UPDATE_COUNT);
+            if(updateCount != count)
+            {
+                world.markBlockRangeForRenderUpdate(pos, pos);
+                world.notifyBlockUpdate(getPos(), world.getBlockState(pos), world.getBlockState(pos), 1);
+                world.scheduleBlockUpdate(pos, this.getBlockType(),0,0);
+
+                ModLogger.info("TileBandAmp updateCount: %d, UPDATE_COUNT: %d", updateCount, count);
+                world.setBlockState(pos, world.getBlockState(pos).withProperty(BlockBandAmp.UPDATE_COUNT, updateCount), 1);
+                world.markBlockRangeForRenderUpdate(pos, pos);
+            }
+            markDirty();
         }
     }
 
@@ -208,9 +319,12 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     @Override
     public void setLockCode(LockCode code)
     {
-        this.code = code;
-        markDirty();
-        syncClient();
+        if(!this.code.getLock().equals(code.getLock()))
+        {
+            this.code = code;
+            markDirty();
+            syncClient();
+        }
     }
 
     @Override

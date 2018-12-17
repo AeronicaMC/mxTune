@@ -85,15 +85,16 @@ public class ModModelManager
     {
         ModelLoader.setCustomStateMapper(ModBlocks.SPINET_PIANO,
                                          new StateMap.Builder().ignore(
-                                                 new IProperty[]
+                                                 (IProperty[]) new IProperty[]
                                                          {
                                                                  BlockPiano.OCCUPIED
                                                          }).build());
         ModelLoader.setCustomStateMapper(ModBlocks.BAND_AMP,
                                          new StateMap.Builder().ignore(
-                                                 new IProperty[]
+                                                 (IProperty[]) new IProperty[]
                                                          {
-                                                                 BlockBandAmp.POWERED
+                                                                 BlockBandAmp.POWERED,
+                                                                 BlockBandAmp.UPDATE_COUNT
                                                          }).build());
         registerItemModel(ModBlocks.SPINET_PIANO);
     }

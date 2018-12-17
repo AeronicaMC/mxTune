@@ -16,8 +16,8 @@
  */
 package net.aeronica.mods.mxtune.network.server;
 
+import net.aeronica.mods.mxtune.blocks.TileBandAmp;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.world.IModLockableContainer;
 import net.aeronica.mods.mxtune.world.OwnerUUID;
 import net.minecraft.entity.player.EntityPlayer;
@@ -31,14 +31,20 @@ public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAm
 {
     private boolean lockContainer;
     private BlockPos pos;
+    private boolean rearRedstoneInputEnabled;
+    private boolean leftRedstoneOutputEnabled;
+    private boolean rightRedstoneOutputEnabled;
 
     @SuppressWarnings("unused")
     public BandAmpMessage() {/* NOP */}
 
-    public BandAmpMessage(BlockPos pos, boolean lockContainer)
+    public BandAmpMessage(BlockPos pos, boolean lockContainer, boolean rearRedstoneInputEnabled, boolean leftRedstoneOutputEnabled, boolean rightRedstoneOutputEnabled)
     {
         this.pos = pos;
         this.lockContainer = lockContainer;
+        this.rearRedstoneInputEnabled = rearRedstoneInputEnabled;
+        this.leftRedstoneOutputEnabled = leftRedstoneOutputEnabled;
+        this.rightRedstoneOutputEnabled = rightRedstoneOutputEnabled;
     }
 
     @Override
@@ -46,6 +52,9 @@ public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAm
     {
         pos = buffer.readBlockPos();
         lockContainer = buffer.readBoolean();
+        rearRedstoneInputEnabled = buffer.readBoolean();
+        leftRedstoneOutputEnabled = buffer.readBoolean();
+        rightRedstoneOutputEnabled = buffer.readBoolean();
     }
 
     @Override
@@ -53,34 +62,50 @@ public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAm
     {
         buffer.writeBlockPos(pos);
         buffer.writeBoolean(lockContainer);
+        buffer.writeBoolean(rearRedstoneInputEnabled);
+        buffer.writeBoolean(leftRedstoneOutputEnabled);
+        buffer.writeBoolean(rightRedstoneOutputEnabled);
     }
 
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        ModLogger.info("BandAmpMessage, %s, %s", pos, lockContainer);
         if(player.world.isBlockLoaded(pos))
         {
             TileEntity tileEntity = player.world.getTileEntity(pos);
-            if(tileEntity instanceof IModLockableContainer)
+            processLockButton(player, tileEntity);
+            processRedstoneButtons(tileEntity);
+        }
+    }
+
+    private void processLockButton(EntityPlayer player, TileEntity tileEntity)
+    {
+        if(tileEntity instanceof IModLockableContainer)
+        {
+            IModLockableContainer lockableContainer = (IModLockableContainer) tileEntity;
+            OwnerUUID ownerUUID = new OwnerUUID(player.getPersistentID());
+
+            if(lockableContainer.isOwner(ownerUUID))
             {
-                IModLockableContainer lockableContainer = (IModLockableContainer) tileEntity;
-                OwnerUUID ownerUUID = new OwnerUUID(player.getPersistentID());
-
-                if(lockableContainer.isOwner(ownerUUID))
+                if(lockContainer)
                 {
-                    if(lockContainer)
-                    {
-                        LockCode lockCode = new LockCode(ownerUUID.toString());
-                        lockableContainer.setLockCode(lockCode);
-                    }
-                    else
-                        lockableContainer.setLockCode(LockCode.EMPTY_CODE);
-
-                    ModLogger.info("  lockCode  %s", lockableContainer.getLockCode().getLock());
-                    ModLogger.info("  ownerCode %s", lockableContainer.getOwner());
+                    LockCode lockCode = new LockCode(ownerUUID.toString());
+                    lockableContainer.setLockCode(lockCode);
                 }
+                else
+                    lockableContainer.setLockCode(LockCode.EMPTY_CODE);
             }
+        }
+    }
+
+    private void processRedstoneButtons(TileEntity tileEntity)
+    {
+        if(tileEntity instanceof TileBandAmp)
+        {
+            TileBandAmp tileBandAmp = (TileBandAmp) tileEntity;
+            tileBandAmp.setRearRedstoneInputEnabled(rearRedstoneInputEnabled);
+            tileBandAmp.setLeftRedstoneOutputEnabled(leftRedstoneOutputEnabled);
+            tileBandAmp.setRightRedstoneOutputEnabled(rightRedstoneOutputEnabled);
         }
     }
 }
