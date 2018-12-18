@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright {2016} Paul Boese aka Aeronica
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,16 +26,18 @@ public class AudioData
     private final Integer playID;
     private final BlockPos blockPos;
     private final boolean isClientPlayer;
+    private final SoundRange soundRange;
     private AudioInputStream audioStream;
     private String uuid;
     private ISound iSound;
     private Status status;
     
-    public AudioData(Integer entityID, BlockPos blockPos, boolean isClientPlayer)
+    AudioData(Integer entityID, BlockPos blockPos, boolean isClientPlayer, SoundRange soundRange)
     {
         this.playID = entityID;
         this.blockPos = blockPos;
         this.isClientPlayer = isClientPlayer;
+        this.soundRange = soundRange;
         this.status = Status.WAITING;
     }
 
@@ -54,22 +56,24 @@ public class AudioData
         return playID;
     }
     
-    public BlockPos getBlockPos()
+    BlockPos getBlockPos()
     {
         return blockPos;
     }
     
-    public boolean isClientPlayer()
+    boolean isClientPlayer()
     {
         return isClientPlayer;
     }
+
+    SoundRange getSoundRange() { return soundRange; }
     
-    public AudioInputStream getAudioStream()
+    AudioInputStream getAudioStream()
     {
         return audioStream;
     }
 
-    public void setAudioStream(AudioInputStream audioStream)
+    void setAudioStream(AudioInputStream audioStream)
     {
         this.audioStream = audioStream;
     }
@@ -84,12 +88,12 @@ public class AudioData
         this.uuid = uuid;
     }
 
-    public ISound getiSound()
+    ISound getISound()
     {
         return iSound;
     }
 
-    public void setiSound(ISound iSound)
+    void setISound(ISound iSound)
     {
         this.iSound = iSound;
     }

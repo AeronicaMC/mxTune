@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
+import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
@@ -32,15 +33,17 @@ public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicM
     private Integer playID;
     private BlockPos blockPos;
     private String musicText;
+    private SoundRange soundRange;
 
     @SuppressWarnings("unused")
     public PlayBlockMusicMessage() {/* Required by the PacketDispatcher */}
 
-    public PlayBlockMusicMessage(Integer playID, BlockPos blockPos, String musicText)
+    public PlayBlockMusicMessage(Integer playID, BlockPos blockPos, String musicText, SoundRange soundRange)
     {
         this.playID = playID;
         this.blockPos = blockPos;
         this.musicText = musicText;
+        this.soundRange = soundRange;
     }
     
     @Override
@@ -49,6 +52,7 @@ public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicM
         playID = buffer.readInt();
         blockPos = buffer.readBlockPos();
         musicText = ByteBufUtils.readUTF8String(buffer);
+        soundRange = buffer.readEnumValue(SoundRange.class);
     }
 
     @Override
@@ -57,6 +61,7 @@ public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicM
         buffer.writeInt(playID);
         buffer.writeBlockPos(blockPos);
         ByteBufUtils.writeUTF8String(buffer, musicText);
+        buffer.writeEnumValue(soundRange);
     }
 
     @Override
@@ -64,9 +69,10 @@ public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicM
     {
         if (!midiUnavailableWarn(player))
         {
-            ModLogger.info("musicText: " + musicText.substring(0, (musicText.length() >= 25 ? 25 : musicText.length())));
-            ModLogger.info("playID:    " + playID);
-            ClientAudio.play(playID, blockPos, musicText);
+            ModLogger.info("musicText:  " + musicText.substring(0, (musicText.length() >= 25 ? 25 : musicText.length())));
+            ModLogger.info("playID:     " + playID);
+            ModLogger.info("SoundRance: " + soundRange);
+            ClientAudio.play(playID, blockPos, musicText, soundRange);
         }
     }
 }

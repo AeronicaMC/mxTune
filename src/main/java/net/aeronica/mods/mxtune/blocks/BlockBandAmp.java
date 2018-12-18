@@ -20,6 +20,7 @@ import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiBandAmp;
 import net.aeronica.mods.mxtune.init.ModItems;
+import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.util.EnumRelativeSide;
 import net.aeronica.mods.mxtune.world.LockableHelper;
 import net.aeronica.mods.mxtune.world.OwnerUUID;
@@ -126,7 +127,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
             }
             if (!stop)
             {
-                Integer playID = PlayManager.playMusic(worldIn, pos);
+                Integer playID = PlayManager.playMusic(worldIn, pos, SoundRange.FAR);
                 tileBandAmp.setPlayID(playID);
             }
         }
@@ -157,6 +158,8 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     @Override
     public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
     {
+        if(!worldIn.isBlockLoaded(pos)) return;
+
         TileEntity tileEntity = worldIn.getTileEntity(pos);
 
         if (tileEntity instanceof TileBandAmp)
@@ -252,7 +255,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     @Override
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
     {
-        this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(PLAYING, Boolean.FALSE).withProperty(POWERED, Boolean.FALSE);
+        this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(PLAYING, Boolean.FALSE).withProperty(POWERED, Boolean.FALSE).withProperty(UPDATE_COUNT, 0);
 
         TileEntity tileEntity = worldIn.getTileEntity(pos);
         if (tileEntity instanceof TileBandAmp) {

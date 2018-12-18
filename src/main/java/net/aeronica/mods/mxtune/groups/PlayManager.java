@@ -24,6 +24,7 @@ import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.*;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
+import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.entity.EntityLivingBase;
@@ -97,10 +98,11 @@ public class PlayManager
      * For playing music from a block, e.g. Band Amp.
      * @param worldIn the world of course
      * @param pos position of block instrument
+     * @param soundRange
      * @return a unique play id
      */
     @Nullable
-    public static Integer playMusic(World worldIn, BlockPos pos)
+    public static Integer playMusic(World worldIn, BlockPos pos, SoundRange soundRange)
     {
         Integer playID = null;
         IMusicPlayer musicPlayer;
@@ -114,7 +116,7 @@ public class PlayManager
                 playID = getNextPlayID();
                 activePlayIDs.add(playID);
                 syncStatus();
-                PlayBlockMusicMessage playBlockMusicMessage = new PlayBlockMusicMessage(playID, pos, mml);
+                PlayBlockMusicMessage playBlockMusicMessage = new PlayBlockMusicMessage(playID, pos, mml, soundRange);
                 PacketDispatcher.sendToAllAround(playBlockMusicMessage, worldIn.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), ModConfig.getListenerRange());
             }
         }

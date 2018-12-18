@@ -190,13 +190,19 @@ public class ClientAudio
     {
         AudioData audioData = playIDAudioData.get(playID);
         if (audioData != null)
-            audioData.setiSound(iSound);
+            audioData.setISound(iSound);
     }
 
     private static BlockPos getBlockPos(Integer playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
         return audioData.getBlockPos();
+    }
+
+    private static SoundRange getSoundRange(Integer playID)
+    {
+        AudioData audioData = playIDAudioData.get(playID);
+        return audioData.getSoundRange();
     }
 
     static void removePlayIDAudioData(Integer playID)
@@ -267,7 +273,7 @@ public class ClientAudio
      */
     public static synchronized void play(Integer playID, String musicText)
     {
-        play(playID, null, musicText,  GROUPS.isClientPlaying(playID));
+        play(playID, null, musicText, GROUPS.isClientPlaying(playID), SoundRange.NEAR);
     }
 
     /**
@@ -275,19 +281,20 @@ public class ClientAudio
      * @param playID unique submission identifier.
      * @param pos block position in the world
      * @param musicText MML string
+     * @param soundRange defines the attenuation: NEAR, MEDIUM, FAR or 1X, 2X and 3X respectively
      */
-    public static synchronized void play(Integer playID, BlockPos pos, String musicText)
+    public static synchronized void play(Integer playID, BlockPos pos, String musicText, SoundRange soundRange)
     {
-        play(playID, pos, musicText, false);
+        play(playID, pos, musicText, false, soundRange);
     }
 
-    private static void play(Integer playID, BlockPos pos, String musicText, boolean isClient)
+    private static void play(Integer playID, BlockPos pos, String musicText, boolean isClient, SoundRange soundRange)
     {
         startThreadFactory();
         if(ClientCSDMonitor.canMXTunesPlay() && playID != null)
         {
             addPlayIDQueue(playID);
-            AudioData result = playIDAudioData.putIfAbsent(playID, new AudioData(playID, pos, isClient));
+            AudioData result = playIDAudioData.putIfAbsent(playID, new AudioData(playID, pos, isClient, soundRange));
             if (result != null)
             {
                 ModLogger.warn("ClientAudio#play: playID: %s has already been submitted", playID);
@@ -417,7 +424,7 @@ public class ClientAudio
         {
             AudioData audioData = entry.getValue();
             if ((audioData.getStatus().equals(Status.ERROR) || audioData.getStatus().equals(Status.DONE)) &&
-                    !handler.isSoundPlaying(audioData.getiSound()))
+                    !handler.isSoundPlaying(audioData.getISound()))
             {
                 playIDAudioData.remove(entry.getKey());
                 if (audioData.isClientPlayer())
@@ -491,16 +498,16 @@ public class ClientAudio
         /* Testing for a the PCM_PROXY sound. For playing MML though the MML->PCM ClientAudio chain */
         if (e.getSound().getSoundLocation().equals(ModSoundEvents.PCM_PROXY.getSoundName()))
         {
-            Integer playID = ClientAudio.pollPlayIDQueue01();
+            Integer playID = pollPlayIDQueue01();
             if (playID != null)
             {
-                if (ClientAudio.isClientPlayer(playID))
+                if (isClientPlayer(playID))
                 {
                     // ** ThePlayer [this client] **
                     // hears their own music without any 3D distance effects applied.
                     e.setResultSound(new MusicBackground(playID));
                 }
-                else if (ClientAudio.getBlockPos(playID) == null)
+                else if (getBlockPos(playID) == null)
                 {
                     // ** The MUSIC the OTHER players are playing **
                     // Moving music source for hand held or worn instruments
@@ -511,9 +518,9 @@ public class ClientAudio
                 else
                 {
                     // ** Musical Machines - Juke Boxes, Band Amp, Yet-to-be-announced stuff... **
-                    e.setResultSound(new MusicPositioned(playID, ClientAudio.getBlockPos(playID), SoundRange.NEAR));
+                    e.setResultSound(new MusicPositioned(playID, getBlockPos(playID), getSoundRange(playID)));
                     ModLogger.info("PlaySoundEvent MusicPositioned playID: %d, pos: %s, isPlayer: %s",
-                                   playID, ClientAudio.getBlockPos(playID), ClientAudio.isClientPlayer(playID));
+                                   playID, getBlockPos(playID), isClientPlayer(playID));
                 }
             }
         }
