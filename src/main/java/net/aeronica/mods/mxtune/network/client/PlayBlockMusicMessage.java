@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -25,8 +25,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.io.IOException;
-
 import static net.aeronica.mods.mxtune.util.MIDISystemUtil.midiUnavailableWarn;
 
 public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicMessage>
@@ -35,7 +33,8 @@ public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicM
     private BlockPos blockPos;
     private String musicText;
 
-    public PlayBlockMusicMessage() {/* Required by the PacketDispacher */}
+    @SuppressWarnings("unused")
+    public PlayBlockMusicMessage() {/* Required by the PacketDispatcher */}
 
     public PlayBlockMusicMessage(Integer playID, BlockPos blockPos, String musicText)
     {
@@ -45,7 +44,7 @@ public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicM
     }
     
     @Override
-    protected void read(PacketBuffer buffer) throws IOException
+    protected void read(PacketBuffer buffer)
     {
         playID = buffer.readInt();
         blockPos = buffer.readBlockPos();
@@ -53,7 +52,7 @@ public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicM
     }
 
     @Override
-    protected void write(PacketBuffer buffer) throws IOException
+    protected void write(PacketBuffer buffer)
     {
         buffer.writeInt(playID);
         buffer.writeBlockPos(blockPos);
