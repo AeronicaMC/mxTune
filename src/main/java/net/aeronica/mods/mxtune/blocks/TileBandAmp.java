@@ -261,7 +261,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         if(world.isRemote)
         {
 
-            int count = world.getBlockState(pos).getValue(BlockBandAmp.UPDATE_COUNT);
+            int count = world.getBlockState(pos).getActualState(world, pos).getValue(BlockBandAmp.UPDATE_COUNT);
             if(updateCount != count)
             {
                 world.markBlockRangeForRenderUpdate(pos, pos);
