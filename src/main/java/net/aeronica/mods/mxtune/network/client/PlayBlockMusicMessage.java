@@ -71,7 +71,7 @@ public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicM
         {
             ModLogger.info("musicText:  " + musicText.substring(0, (musicText.length() >= 25 ? 25 : musicText.length())));
             ModLogger.info("playID:     " + playID);
-            ModLogger.info("SoundRance: " + soundRange);
+            ModLogger.info("SoundRange: " + soundRange);
             ClientAudio.play(playID, blockPos, musicText, soundRange);
         }
     }
