@@ -27,12 +27,12 @@ public class MusicPositioned extends MovingSound
     Integer playID;
     SoundEventAccessor soundEventAccessor;
     
-    public MusicPositioned(Integer playID, BlockPos pos)
+    public MusicPositioned(Integer playID, BlockPos pos, SoundRange soundRange)
     {
         super(ModSoundEvents.PCM_PROXY, SoundCategory.PLAYERS);
         this.playID = playID;
         this.sound = new PCMSound();
-        this.volume = 1F;
+        this.volume = soundRange.getRange();
         this.pitch = 1F;
         this.xPosF = (float)pos.getX()+0.5F;
         this.yPosF = (float)pos.getY()+0.5F;

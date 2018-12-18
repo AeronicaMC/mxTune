@@ -491,31 +491,27 @@ public class ClientAudio
         /* Testing for a the PCM_PROXY sound. For playing MML though the MML->PCM ClientAudio chain */
         if (e.getSound().getSoundLocation().equals(ModSoundEvents.PCM_PROXY.getSoundName()))
         {
-            Integer playID;
-            if ((playID = ClientAudio.pollPlayIDQueue01()) != null)
+            Integer playID = ClientAudio.pollPlayIDQueue01();
+            if (playID != null)
             {
                 if (ClientAudio.isClientPlayer(playID))
                 {
-                    /*
-                     * ThePlayer(s) hear their own music without any 3D distance
-                     * effects applied. Not using the built-in background music
-                     * feature here because it's managed by vanilla and might interrupt
-                     * the players music. Doing this also eliminates a pulsing effect
-                     * that occurs when the player moves and 3D sound system updates
-                     * the sound position.
-                     */
+                    // ** ThePlayer [this client] **
+                    // hears their own music without any 3D distance effects applied.
                     e.setResultSound(new MusicBackground(playID));
                 }
                 else if (ClientAudio.getBlockPos(playID) == null)
                 {
-                    /*
-                     * Moving music source for hand held or worn instruments. 
-                     */
+                    // ** The MUSIC the OTHER players are playing **
+                    // Moving music source for hand held or worn instruments
+                    // The Spinet Piano although a placed instrument still needs a player to sit on it is
+                    // included here.
                     e.setResultSound(new MusicMoving(playID));
                 }
                 else
                 {
-                    e.setResultSound(new MusicPositioned(playID, ClientAudio.getBlockPos(playID)));
+                    // ** Musical Machines - Juke Boxes, Band Amp, Yet-to-be-announced stuff... **
+                    e.setResultSound(new MusicPositioned(playID, ClientAudio.getBlockPos(playID), SoundRange.NEAR));
                     ModLogger.info("PlaySoundEvent MusicPositioned playID: %d, pos: %s, isPlayer: %s",
                                    playID, ClientAudio.getBlockPos(playID), ClientAudio.isClientPlayer(playID));
                 }
