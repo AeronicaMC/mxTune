@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese aka Aeronica
  *
@@ -24,8 +24,8 @@ import net.minecraft.util.math.BlockPos;
 
 public class MusicPositioned extends MovingSound
 {
-    Integer playID;
-    SoundEventAccessor soundEventAccessor;
+    private Integer playID;
+    private SoundEventAccessor soundEventAccessor;
     
     public MusicPositioned(Integer playID, BlockPos pos, SoundRange soundRange)
     {
@@ -53,18 +53,14 @@ public class MusicPositioned extends MovingSound
     @Override
     public void update()
     {
-        if (this.playID != null && ClientAudio.hasPlayID(playID))
-        {
-            /* update nothing - just hold the stream open until done */
-        }
-        else
+        // update nothing - just hold the stream open until done
+        if ((this.playID == null) || !ClientAudio.hasPlayID(playID))
         {
             this.setDonePlaying();
         }
-
     }
 
-    public void setDonePlaying()
+    private void setDonePlaying()
     {
         this.repeat = false;
         this.donePlaying = true;

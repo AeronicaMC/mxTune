@@ -239,7 +239,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         this.updateCount = updateCount;
     }
 
-    public void incrementCount()
+    private void incrementCount()
     {
         updateCount = ((++updateCount) %16);
 
@@ -271,6 +271,11 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         syncClient();
     }
 
+    /**
+     * Intended to be called from your Block#randomDisplayTick method.
+     * Useful for ensuing Redstone Dust connects/disconnects from your block when it's side(s) connection
+     * properties are changed. Relies on seeing a change in the UPDATE_COUNT property
+     */
     void clientSideNotify()
     {
         if(world.isRemote)
