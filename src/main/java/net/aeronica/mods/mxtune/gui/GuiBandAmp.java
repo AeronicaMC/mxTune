@@ -21,6 +21,7 @@ import net.aeronica.mods.mxtune.blocks.TileBandAmp;
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.BandAmpMessage;
+import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.aeronica.mods.mxtune.world.LockableHelper;
 import net.minecraft.client.gui.GuiButton;
@@ -48,10 +49,13 @@ public class GuiBandAmp extends GuiContainer
     private GuiRedstoneButton rearInputButton;
     private GuiRedstoneButton leftOutputButton;
     private GuiRedstoneButton rightOutputButton;
+    private GuiButton soundRangeButton;
     private boolean prevLockState;
     private boolean prevRearInputButtonState;
-    private boolean prevLeftOutputBottonState;
+    private boolean prevLeftOutputButtonState;
     private boolean prevRightOutputButtonState;
+    private SoundRange soundRange;
+    private SoundRange prevSoundRange;
 
     public GuiBandAmp(Container container, InventoryPlayer inventoryPlayer, TileBandAmp tileBandAmp)
     {
@@ -66,6 +70,9 @@ public class GuiBandAmp extends GuiContainer
     {
         super.initGui();
         boolean isEnabled = LockableHelper.canLock(mc.player, tileBandAmp);
+        soundRange = tileBandAmp.getSoundRange();
+        prevSoundRange = soundRange;
+
         lockButton =  new GuiLockIconButton(100, guiLeft + 7, guiTop + 25);
         buttonList.add(lockButton);
         lockButton.setLocked(tileBandAmp.isLocked());
@@ -82,7 +89,7 @@ public class GuiBandAmp extends GuiContainer
         buttonList.add(leftOutputButton);
         leftOutputButton.setSignalEnabled(tileBandAmp.isLeftRedstoneOutputEnabled());
         leftOutputButton.enabled = isEnabled;
-        prevLeftOutputBottonState = leftOutputButton.isSignalEnabled();
+        prevLeftOutputButtonState = leftOutputButton.isSignalEnabled();
 
         rightOutputButton = new GuiRedstoneButton(103, guiLeft + 149, guiTop + 45, ArrowFaces.RIGHT);
         buttonList.add(rightOutputButton);
@@ -90,6 +97,9 @@ public class GuiBandAmp extends GuiContainer
         rightOutputButton.enabled = isEnabled;
         prevRightOutputButtonState = rightOutputButton.isSignalEnabled();
 
+        soundRangeButton = new GuiButton(104, guiLeft +7 , guiTop + 45, 20, 20, I18n.format(soundRange.getLanguageKey()));
+        buttonList.add(soundRangeButton);
+        soundRangeButton.enabled = isEnabled;
     }
 
     @Override
@@ -106,6 +116,7 @@ public class GuiBandAmp extends GuiContainer
         toggleRedstoneButton(rearInputButton, button);
         toggleRedstoneButton(leftOutputButton, button);
         toggleRedstoneButton(rightOutputButton, button);
+        nextRangeButton(soundRangeButton, button);
     }
 
     private void toggleLockButton(GuiLockIconButton lockIconButton, GuiButton buttonClicked)
@@ -128,6 +139,16 @@ public class GuiBandAmp extends GuiContainer
         }
     }
 
+    private void nextRangeButton(GuiButton guiRangeButton, GuiButton buttonClicked)
+    {
+        if(buttonClicked.id == guiRangeButton.id)
+        {
+            soundRange = SoundRange.nextRange(soundRange);
+            guiRangeButton.displayString = I18n.format(soundRange.getLanguageKey());
+            sendButtonChanges();
+        }
+    }
+
     private void updateButtonStatus()
     {
         updateLockButtonStatus();
@@ -136,10 +157,12 @@ public class GuiBandAmp extends GuiContainer
         prevRearInputButtonState = updateButtonStatus(rearInputButton, state, prevRearInputButtonState);
 
         state = tileBandAmp.isLeftRedstoneOutputEnabled();
-        prevLeftOutputBottonState = updateButtonStatus(leftOutputButton, state, prevLeftOutputBottonState);
+        prevLeftOutputButtonState = updateButtonStatus(leftOutputButton, state, prevLeftOutputButtonState);
 
         state = tileBandAmp.isRightRedstoneOutputEnabled();
         prevRightOutputButtonState = updateButtonStatus(rightOutputButton, state, prevRightOutputButtonState);
+
+        updateSoundRangeButton();
     }
 
     private void updateLockButtonStatus()
@@ -149,6 +172,16 @@ public class GuiBandAmp extends GuiContainer
         {
             this.lockButton.setLocked(lockState);
             this.prevLockState = lockState;
+        }
+    }
+
+    private void updateSoundRangeButton()
+    {
+        soundRange = tileBandAmp.getSoundRange();
+        if(prevSoundRange != soundRange)
+        {
+            soundRangeButton.displayString = I18n.format(soundRange.getLanguageKey());
+            prevSoundRange = soundRange;
         }
     }
 
@@ -169,7 +202,7 @@ public class GuiBandAmp extends GuiContainer
                 tileBandAmp.getPos(), lockButton.isLocked(),
                 rearInputButton.isSignalEnabled(),
                 leftOutputButton.isSignalEnabled(),
-                rightOutputButton.isSignalEnabled()));
+                rightOutputButton.isSignalEnabled(), soundRange));
     }
 
     @Override

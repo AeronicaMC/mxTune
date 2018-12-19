@@ -20,7 +20,6 @@ import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiBandAmp;
 import net.aeronica.mods.mxtune.init.ModItems;
-import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.util.EnumRelativeSide;
 import net.aeronica.mods.mxtune.world.LockableHelper;
 import net.aeronica.mods.mxtune.world.OwnerUUID;
@@ -127,7 +126,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
             }
             if (!stop)
             {
-                Integer playID = PlayManager.playMusic(worldIn, pos, SoundRange.FAR);
+                Integer playID = PlayManager.playMusic(worldIn, pos, tileBandAmp.getSoundRange());
                 tileBandAmp.setPlayID(playID);
             }
         }

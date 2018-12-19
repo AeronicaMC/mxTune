@@ -134,7 +134,7 @@ public class GuiMusicOptions extends GuiScreen
         y = height - 100 + 4 + 5;
         x = listBoxWhite.getRight() - whiteListWidth - 2;
         buttonWidth = 225;
-        buttonMuteOption = new GuiButtonExt(0, x, y, buttonWidth, 20, (MusicOptionsUtil.EnumMuteOptions.byMetadata(muteOption).toString()));
+        buttonMuteOption = new GuiButtonExt(0, x, y, buttonWidth, 20, (MusicOptionsUtil.EnumMuteOptions.byIndex(muteOption).toString()));
         y += 22;
         GuiButtonExt buttonAdjHud = new GuiButtonExt(4, x, y, buttonWidth, 20, BUTTON_ADJ_HUD);
         
@@ -218,13 +218,12 @@ public class GuiMusicOptions extends GuiScreen
         /* if button is disabled ignore click */
         if (!guibutton.enabled) return;
 
-        /* id 0 = okay; 1 = cancel; 2 = play; 3 = stop */
         switch (guibutton.id)
         {
         case 0:
             /* Increment Mute Option */
             this.muteOption = ((++this.muteOption) % MusicOptionsUtil.EnumMuteOptions.values().length);
-            buttonMuteOption.displayString = MusicOptionsUtil.EnumMuteOptions.byMetadata(muteOption).toString();
+            buttonMuteOption.displayString = MusicOptionsUtil.EnumMuteOptions.byIndex(muteOption).toString();
           break;
 
         case 1:

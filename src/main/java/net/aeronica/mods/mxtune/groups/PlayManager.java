@@ -98,7 +98,7 @@ public class PlayManager
      * For playing music from a block, e.g. Band Amp.
      * @param worldIn the world of course
      * @param pos position of block instrument
-     * @param soundRange
+     * @param soundRange defines the attenuation: NEAR, MEDIUM, FAR or 1X, 2X and 3X respectively
      * @return a unique play id
      */
     @Nullable

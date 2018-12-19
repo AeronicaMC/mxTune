@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.network.server;
 
 import net.aeronica.mods.mxtune.blocks.TileBandAmp;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
+import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.world.IModLockableContainer;
 import net.aeronica.mods.mxtune.world.OwnerUUID;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,17 +35,19 @@ public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAm
     private boolean rearRedstoneInputEnabled;
     private boolean leftRedstoneOutputEnabled;
     private boolean rightRedstoneOutputEnabled;
+    private SoundRange soundRange;
 
     @SuppressWarnings("unused")
     public BandAmpMessage() {/* NOP */}
 
-    public BandAmpMessage(BlockPos pos, boolean lockContainer, boolean rearRedstoneInputEnabled, boolean leftRedstoneOutputEnabled, boolean rightRedstoneOutputEnabled)
+    public BandAmpMessage(BlockPos pos, boolean lockContainer, boolean rearRedstoneInputEnabled, boolean leftRedstoneOutputEnabled, boolean rightRedstoneOutputEnabled, SoundRange soundRange)
     {
         this.pos = pos;
         this.lockContainer = lockContainer;
         this.rearRedstoneInputEnabled = rearRedstoneInputEnabled;
         this.leftRedstoneOutputEnabled = leftRedstoneOutputEnabled;
         this.rightRedstoneOutputEnabled = rightRedstoneOutputEnabled;
+        this.soundRange = soundRange;
     }
 
     @Override
@@ -55,6 +58,7 @@ public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAm
         rearRedstoneInputEnabled = buffer.readBoolean();
         leftRedstoneOutputEnabled = buffer.readBoolean();
         rightRedstoneOutputEnabled = buffer.readBoolean();
+        soundRange = buffer.readEnumValue(SoundRange.class);
     }
 
     @Override
@@ -65,6 +69,7 @@ public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAm
         buffer.writeBoolean(rearRedstoneInputEnabled);
         buffer.writeBoolean(leftRedstoneOutputEnabled);
         buffer.writeBoolean(rightRedstoneOutputEnabled);
+        buffer.writeEnumValue(soundRange);
     }
 
     @Override
@@ -106,6 +111,7 @@ public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAm
             tileBandAmp.setRearRedstoneInputEnabled(rearRedstoneInputEnabled);
             tileBandAmp.setLeftRedstoneOutputEnabled(leftRedstoneOutputEnabled);
             tileBandAmp.setRightRedstoneOutputEnabled(rightRedstoneOutputEnabled);
+            tileBandAmp.setSoundRange(soundRange);
         }
     }
 }

@@ -17,6 +17,7 @@
 package net.aeronica.mods.mxtune.blocks;
 
 import net.aeronica.mods.mxtune.items.ItemInstrument;
+import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.util.EnumRelativeSide;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.world.IModLockableContainer;
@@ -47,6 +48,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     private Integer lastPlayID;
     private LockCode code = LockCode.EMPTY_CODE;
     private OwnerUUID ownerUUID = OwnerUUID.EMPTY_UUID;
+    private SoundRange soundRange = SoundRange.NEAR;
     private String bandAmpCustomName;
     private int duration;
     private boolean rearRedstoneInputEnabled = true;
@@ -98,6 +100,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         leftRedstoneOutputEnabled = tag.getBoolean("leftRedstoneOutputEnabled");
         rightRedstoneOutputEnabled = tag.getBoolean("rightRedstoneOutputEnabled");
         updateCount = tag.getInteger("updateCount");
+        soundRange = SoundRange.fromNBT(tag);
 
         if (tag.hasKey("CustomName", 8))
         {
@@ -115,6 +118,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         tag.setBoolean("leftRedstoneOutputEnabled", leftRedstoneOutputEnabled);
         tag.setBoolean("rightRedstoneOutputEnabled", rightRedstoneOutputEnabled);
         tag.setInteger("updateCount", updateCount);
+        soundRange.toNBT(tag);
 
         if (code != null)
         {
@@ -212,6 +216,17 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
             this.rightRedstoneOutputEnabled = rightRedstoneOutputEnabled;
             markDirtySyncClient();
         }
+    }
+
+    public SoundRange getSoundRange()
+    {
+        return soundRange;
+    }
+
+    public void setSoundRange(SoundRange soundRange)
+    {
+        this.soundRange = soundRange;
+        markDirtySyncClient();
     }
 
     public int getUpdateCount()

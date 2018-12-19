@@ -58,7 +58,7 @@ public class MusicOptionsUtil
     
     public static boolean isMuteAll(EntityPlayer playerIn)
     {
-        return getImpl(playerIn).getMuteOption() == MusicOptionsUtil.EnumMuteOptions.ALL.getMetadata();
+        return getImpl(playerIn).getMuteOption() == MusicOptionsUtil.EnumMuteOptions.ALL.getIndex();
     }
 
     public static void setMuteOption(EntityPlayer playerIn, int muteOptionIn)
@@ -68,7 +68,7 @@ public class MusicOptionsUtil
 
     private static MusicOptionsUtil.EnumMuteOptions getMuteOptionEnum(EntityPlayer playerIn)
     {
-        return MusicOptionsUtil.EnumMuteOptions.byMetadata(getImpl(playerIn).getMuteOption());
+        return MusicOptionsUtil.EnumMuteOptions.byIndex(getImpl(playerIn).getMuteOption());
     }
     
     public static int getMuteOption(EntityPlayer playerIn)
@@ -212,34 +212,34 @@ public class MusicOptionsUtil
         WHITELIST(3, "mxtune.gui.musicOptions.muteOption.whitelist"),
         ALL(4, "mxtune.gui.musicOptions.muteOption.all");
 
-        private final int meta;
+        private final int index;
         private final String translateKey;
-        private static final EnumMuteOptions[] META_LOOKUP = new EnumMuteOptions[values().length];
+        private static final EnumMuteOptions[] INDEX_LOOKUP = new EnumMuteOptions[values().length];
 
-        EnumMuteOptions(int meta, String translateKey)
+        EnumMuteOptions(int index, String translateKey)
         {
-            this.meta = meta;
+            this.index = index;
             this.translateKey = translateKey;
         }
         
-        public int getMetadata() {return this.meta;}
+        public int getIndex() {return this.index;}
         
         static
         {
             for (EnumMuteOptions value : values())
             {
-                META_LOOKUP[value.getMetadata()] = value;
+                INDEX_LOOKUP[value.getIndex()] = value;
             }
         }
 
-        public static EnumMuteOptions byMetadata(int metaIn)
+        public static EnumMuteOptions byIndex(int indexIn)
         {
-            int meta = metaIn;
-            if (meta < 0 || meta >= META_LOOKUP.length)
+            int index = indexIn;
+            if (index < 0 || index >= INDEX_LOOKUP.length)
             {
-                meta = 0;
+                index = 0;
             }
-            return META_LOOKUP[meta];
+            return INDEX_LOOKUP[index];
         }
         
         @Override
