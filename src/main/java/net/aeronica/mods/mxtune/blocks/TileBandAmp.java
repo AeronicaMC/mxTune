@@ -119,14 +119,11 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         tag.setBoolean("rightRedstoneOutputEnabled", rightRedstoneOutputEnabled);
         tag.setInteger("updateCount", updateCount);
         soundRange.toNBT(tag);
+        ownerUUID.toNBT(tag);
 
         if (code != null)
         {
             code.toNBT(tag);
-        }
-        if (ownerUUID != null)
-        {
-            ownerUUID.toNBT(tag);
         }
         if (hasCustomName())
         {

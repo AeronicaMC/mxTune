@@ -26,13 +26,9 @@ import java.util.UUID;
 public class OwnerUUID
 {
     public static final OwnerUUID EMPTY_UUID = new OwnerUUID(0L, 0L);
-    private static final String UUID_KEY = "OwnerUUID";
+    private static final String OWNER_UUID_KEY_MSB = "OwnerUUIDKeyMSB";
+    private static final String OWNER_UUID_KEY_LSB = "OwnerUUIDKeyLSB";
     private final UUID uuid;
-
-    private OwnerUUID(String uuidString)
-    {
-        this.uuid = UUID.fromString(uuidString);
-    }
 
     public OwnerUUID(UUID uuid)
     {
@@ -48,14 +44,19 @@ public class OwnerUUID
 
     public UUID getUUID() { return this.uuid; }
 
-    public void toNBT(NBTTagCompound nbt) { nbt.setString(UUID_KEY, uuid.toString()); }
+    public void toNBT(NBTTagCompound nbt)
+    {
+        nbt.setLong(OWNER_UUID_KEY_MSB, uuid.getMostSignificantBits());
+        nbt.setLong(OWNER_UUID_KEY_LSB, uuid.getLeastSignificantBits());
+    }
 
     public static OwnerUUID fromNBT(NBTTagCompound nbt)
     {
-        if (nbt.hasKey(UUID_KEY, Constants.NBT.TAG_STRING))
+        if (nbt.hasKey(OWNER_UUID_KEY_MSB, Constants.NBT.TAG_LONG) && nbt.hasKey(OWNER_UUID_KEY_LSB, Constants.NBT.TAG_LONG))
         {
-            String s = nbt.getString(UUID_KEY);
-            return new OwnerUUID(s);
+            long msb = nbt.getLong(OWNER_UUID_KEY_MSB);
+            long lsb = nbt.getLong(OWNER_UUID_KEY_LSB);
+            return new OwnerUUID(msb, lsb);
         }
         else
         {
@@ -72,8 +73,8 @@ public class OwnerUUID
     @Override
     public int hashCode()
     {
-        long hilo = uuid.getMostSignificantBits() ^ uuid.getLeastSignificantBits();
-        return ((int) (hilo >> 32)) ^ (int) hilo;
+        long highLow = uuid.getMostSignificantBits() ^ uuid.getLeastSignificantBits();
+        return ((int) (highLow >> 32)) ^ (int) highLow;
     }
 
     @Override
