@@ -169,7 +169,7 @@ public class ClientAudio
        AudioData audioData = playIDAudioData.get(playID);
        if (audioData == null)
            return null;
-       return audioData.isClientPlayer() ? audioFormatStereo : audioFormat3D;
+       return (audioData.isClientPlayer() || (audioData.getSoundRange() == SoundRange.INFINITY)) ? audioFormatStereo : audioFormat3D;
     }
     
     static synchronized void setPlayIDAudioStream(Integer playID, AudioInputStream audioStream)

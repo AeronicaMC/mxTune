@@ -40,7 +40,7 @@ public class MusicPositioned extends MovingSound
         this.repeat = false;
         this.donePlaying = false;
         this.repeatDelay = 0;
-        this.attenuationType = AttenuationType.LINEAR;
+        this.attenuationType = soundRange.getAttenuationType();
         this.soundEventAccessor = new SoundEventAccessor(this.sound.getSoundLocation(), "mxtune.subtitle.pcm-proxy");
     }
 
