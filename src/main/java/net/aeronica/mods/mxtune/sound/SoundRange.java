@@ -10,7 +10,7 @@ public enum SoundRange
     NEAR(1F, "mxtune.sound_range.near", true),
     MEDIUM(2F, "mxtune.sound_range.medium", true),
     FAR(3F, "mxtune.sound_range.far", true),
-    INFINITY(3F, "mxtune.sound_range.infinity", false);
+    INFINITY(1F, "mxtune.sound_range.infinity", false);
 
     public static final int LENGTH = SoundRange.values().length;
     public static final String SOUND_RANGE_KEY = "soundRange";

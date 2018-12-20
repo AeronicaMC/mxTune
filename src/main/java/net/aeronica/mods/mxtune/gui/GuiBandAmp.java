@@ -73,7 +73,7 @@ public class GuiBandAmp extends GuiContainer
         soundRange = tileBandAmp.getSoundRange();
         prevSoundRange = soundRange;
 
-        lockButton =  new GuiLockIconButton(100, guiLeft + 7, guiTop + 25);
+        lockButton =  new GuiLockIconButton(100, guiLeft + 16, guiTop + 25);
         buttonList.add(lockButton);
         lockButton.setLocked(tileBandAmp.isLocked());
         lockButton.enabled = isEnabled;
@@ -97,7 +97,7 @@ public class GuiBandAmp extends GuiContainer
         rightOutputButton.enabled = isEnabled;
         prevRightOutputButtonState = rightOutputButton.isSignalEnabled();
 
-        soundRangeButton = new GuiButton(104, guiLeft +7 , guiTop + 45, 20, 20, I18n.format(soundRange.getLanguageKey()));
+        soundRangeButton = new GuiButton(104, guiLeft +6 , guiTop + 45, 40, 20, I18n.format(soundRange.getLanguageKey()));
         buttonList.add(soundRangeButton);
         soundRangeButton.enabled = isEnabled;
     }
