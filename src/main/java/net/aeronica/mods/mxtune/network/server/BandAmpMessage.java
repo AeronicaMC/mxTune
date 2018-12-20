@@ -94,7 +94,7 @@ public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAm
             {
                 if(lockContainer)
                 {
-                    LockCode lockCode = new LockCode(ownerUUID.toString());
+                    LockCode lockCode = new LockCode("Locked by Owner");
                     lockableContainer.setLockCode(lockCode);
                 }
                 else
