@@ -7,10 +7,10 @@ import net.minecraftforge.common.util.Constants;
 @SuppressWarnings("unused")
 public enum SoundRange
 {
-    NEAR(1F, "mxtune.sound_range.near", true),
-    MEDIUM(2F, "mxtune.sound_range.medium", true),
-    FAR(3F, "mxtune.sound_range.far", true),
-    INFINITY(1F, "mxtune.sound_range.infinity", false);
+    NEAR(1F, "mxtune.sound_range.near", true),              // 16 Blocks, linear attenuation, point source
+    MEDIUM(2F, "mxtune.sound_range.medium", true),          // 32 Blocks, linear attenuation, point source
+    FAR(4F, "mxtune.sound_range.far", true),                // 64 Blocks, linear attenuation, point source (Junk Box)
+    INFINITY(1F, "mxtune.sound_range.infinity", false);     // Background music, no attenuation, non-directional
 
     public static final int LENGTH = SoundRange.values().length;
     public static final String SOUND_RANGE_KEY = "soundRange";
