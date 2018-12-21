@@ -35,6 +35,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 
 import static net.aeronica.mods.mxtune.gui.GuiRedstoneButton.ArrowFaces;
 
@@ -80,12 +81,17 @@ public class GuiBandAmp extends GuiContainer
         prevLockState = lockButton.isLocked();
 
         rearInputButton = new GuiRedstoneButton(101, guiLeft + 139, guiTop + 25, ArrowFaces.DOWN);
+        rearInputButton.addHooverText("Rear Redstone Input toggle");
+        rearInputButton.addHooverText(TextFormatting.GREEN + "Enable or Disable Redstone input from the Back side" + TextFormatting.RESET);
         buttonList.add(rearInputButton);
         rearInputButton.setSignalEnabled(tileBandAmp.isRearRedstoneInputEnabled());
         rearInputButton.enabled = isEnabled;
         prevRearInputButtonState = rearInputButton.isSignalEnabled();
 
         leftOutputButton = new GuiRedstoneButton(102, guiLeft + 129, guiTop + 45, ArrowFaces.LEFT);
+        leftOutputButton.addHooverText("Left Redstone Output toggle");
+        leftOutputButton.addHooverText(TextFormatting.GREEN + "Enable or Disable Redstone Output from the Left side");
+        leftOutputButton.addHooverText(TextFormatting.YELLOW + "Outputs a single 10 tick pulse at the end of a song" + TextFormatting.RESET);
         buttonList.add(leftOutputButton);
         leftOutputButton.setSignalEnabled(tileBandAmp.isLeftRedstoneOutputEnabled());
         leftOutputButton.enabled = isEnabled;
@@ -234,6 +240,7 @@ public class GuiBandAmp extends GuiContainer
         this.drawDefaultBackground();
         super.drawScreen(mouseX, mouseY, partialTicks);
         this.renderHoveredToolTip(mouseX, mouseY);
+        drawHooveringButtonHelp(mouseX, mouseY);
     }
 
     @SuppressWarnings("unused")
@@ -257,5 +264,19 @@ public class GuiBandAmp extends GuiContainer
         GlStateManager.enableLighting();
         GlStateManager.enableDepth();
         RenderHelper.enableStandardItemLighting();
+    }
+
+    private void drawHooveringButtonHelp(int mouseX, int mouseY)
+    {
+        for(GuiButton b : buttonList)
+        {
+            if(isMouseOverButton(b, mouseX, mouseY))
+                this.drawHoveringText(((GuiButtonHooverText)b).getHooverTexts(), mouseX, mouseY);
+        }
+    }
+
+    private <T extends GuiButton> boolean isMouseOverButton( T button, int mouseX, int mouseY)
+    {
+        return (button instanceof GuiButtonHooverText) && this.isPointInRegion(button.x - guiLeft, button.y - guiTop, button.width, button.height, mouseX, mouseY);
     }
 }

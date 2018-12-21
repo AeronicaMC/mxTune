@@ -1,7 +1,6 @@
 package net.aeronica.mods.mxtune.gui;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -9,7 +8,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nonnull;
 
 @SideOnly(Side.CLIENT)
-public class GuiRedstoneButton extends GuiButton
+public class GuiRedstoneButton extends GuiButtonHooverText
 {
     private boolean signalEnabled;
     private ArrowFaces direction;
