@@ -16,6 +16,7 @@
  */
 package net.aeronica.mods.mxtune.world;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.IWorldNameable;
 import net.minecraft.world.LockCode;
 
@@ -28,6 +29,8 @@ public interface IModLockableContainer extends IWorldNameable
     LockCode getLockCode();
 
     boolean isOwner(OwnerUUID ownerUUID);
+
+    boolean isOwner(EntityPlayer entityPlayer);
 
     void setOwner(OwnerUUID ownerUUID);
 
