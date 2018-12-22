@@ -55,6 +55,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     private boolean leftRedstoneOutputEnabled = true;
     private boolean rightRedstoneOutputEnabled = true;
     private int updateCount;
+    private int prevUpdateCount;
 
     public TileBandAmp() { /* NOP */ }
 
@@ -242,13 +243,13 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
 
         if (world != null && !world.isRemote)
         {
-            int count = world.getBlockState(pos).getValue(BlockBandAmp.UPDATE_COUNT);
-            ModLogger.info("TileBandAmp updateCount: %d, UPDATE_COUNT: %d", updateCount, count);
-            if(updateCount != count)
-            {
-                world.setBlockState(pos, world.getBlockState(pos).withProperty(BlockBandAmp.UPDATE_COUNT, updateCount), 3);
-                world.markBlockRangeForRenderUpdate(pos, pos);
-            }
+            // TODO: Remove unused
+            //int count = world.getBlockState(pos).getValue(BlockBandAmp.UPDATE_COUNT);
+            //int count = world.getBlockState(pos).getActualState(world, pos).getValue(BlockBandAmp.UPDATE_COUNT);
+            ModLogger.info("TileBandAmp updateCount: %d", updateCount);
+
+            //world.setBlockState(pos, world.getBlockState(pos).withProperty(BlockBandAmp.UPDATE_COUNT, updateCount), 3);
+            world.markBlockRangeForRenderUpdate(pos, pos);
         }
     }
 
@@ -279,7 +280,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         {
 
             int count = world.getBlockState(pos).getActualState(world, pos).getValue(BlockBandAmp.UPDATE_COUNT);
-            if(updateCount != count)
+            if(prevUpdateCount != count)
             {
                 world.markBlockRangeForRenderUpdate(pos, pos);
                 world.notifyBlockUpdate(getPos(), world.getBlockState(pos), world.getBlockState(pos), 1);
@@ -288,6 +289,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
                 ModLogger.info("TileBandAmp updateCount: %d, UPDATE_COUNT: %d", updateCount, count);
                 world.setBlockState(pos, world.getBlockState(pos).withProperty(BlockBandAmp.UPDATE_COUNT, updateCount), 1);
                 world.markBlockRangeForRenderUpdate(pos, pos);
+                prevUpdateCount = count;
             }
             markDirty();
         }

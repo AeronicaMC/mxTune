@@ -272,7 +272,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     {
         TileEntity tileEntity = worldIn instanceof ChunkCache ? ((ChunkCache)worldIn).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK) : worldIn.getTileEntity(pos);
 
-        int count = Integer.MIN_VALUE;
+        int count = 0;
         if(tileEntity instanceof TileBandAmp)
         {
             TileBandAmp tileBandAmp = (TileBandAmp) tileEntity;
