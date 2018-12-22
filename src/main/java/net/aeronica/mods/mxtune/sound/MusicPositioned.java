@@ -22,11 +22,15 @@ import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 
+/**
+ * Implements ISound<br></br>
+ * For musical machines placed in the world
+ */
 public class MusicPositioned extends MovingSound
 {
     private Integer playID;
     private SoundEventAccessor soundEventAccessor;
-    
+
     public MusicPositioned(Integer playID, BlockPos pos, SoundRange soundRange)
     {
         super(ModSoundEvents.PCM_PROXY, SoundCategory.RECORDS);

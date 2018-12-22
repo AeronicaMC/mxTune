@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright {2016} Paul Boese aka Aeronica
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,14 +19,22 @@ import net.aeronica.mods.mxtune.Reference;
 import net.minecraft.client.audio.Sound;
 import net.minecraft.util.ResourceLocation;
 
+/**
+ * <p>This class associates a fake sound file with the PCM codec and is an in-memory representation of a sounds.json entry.
+ * In this case there is one file in the path:</p>
+ * <code>
+ * &nbsp;&nbsp;&nbsp;&nbsp;assets/mxtune/music/pcm-proxy.nul
+ * </code>
+ * <p></p>
+ * <p>The Forge SoundSetupEvent is when the association is made:</p>
+ * <code>
+ * &nbsp;&nbsp;&nbsp;&nbsp;SoundSystemConfig.setCodec("nul", CodecPCM.class);
+ * </code>
+ * <p></p>
+ * <p>Using this technique we can specify the sound codec of our choice and fake out the vanilla SoundHandler.</p>
+ */
 public class PCMSound extends Sound
 {
-    
-    /**
-     * This will associate a sound with the PCM codec.
-     * This is an in memory representation of a sounds.json entry
-     * 
-     */
     public PCMSound()
     {
         super("pcm-proxy", 1F, 1F, 0, Type.SOUND_EVENT, true);

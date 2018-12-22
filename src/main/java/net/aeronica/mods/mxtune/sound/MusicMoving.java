@@ -29,7 +29,10 @@ public class MusicMoving extends MovingSound
     Integer playID;
     SoundEventAccessor soundEventAccessor;
 
-    /** This is used to fake out the vanilla SoundHandler. From this point we will force the system to use the sound codec of our choice */
+    /**
+     * Implements ISound<br></br>
+     * For musical machines carried or used in the world
+     */
     public MusicMoving(Integer playID)
     {
         super(ModSoundEvents.PCM_PROXY, SoundCategory.PLAYERS);

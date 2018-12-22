@@ -36,7 +36,7 @@ public class MusicBackground extends MovingSound
         super(ModSoundEvents.PCM_PROXY, SoundCategory.PLAYERS);
         this.playID = playID;
         this.sound = new PCMSound();
-        this.volume = 0.70F;
+        this.volume = 1F;
         this.pitch = 1F;
         this.xPosF = 0;
         this.yPosF = 0;
