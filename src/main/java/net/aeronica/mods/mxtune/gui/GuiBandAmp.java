@@ -25,7 +25,6 @@ import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.aeronica.mods.mxtune.world.LockableHelper;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiLockIconButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -36,9 +35,12 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import static net.aeronica.mods.mxtune.gui.GuiRedstoneButton.ArrowFaces;
 
+@SideOnly(Side.CLIENT)
 public class GuiBandAmp extends GuiContainer
 {
     static final ResourceLocation BG_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/band_amp.png");
@@ -46,11 +48,11 @@ public class GuiBandAmp extends GuiContainer
     public static final int GUI_ID = 9;
     private TileBandAmp tileBandAmp;
     private ItemStack stackBandAmp;
-    private GuiLockIconButton lockButton;
+    private GuiLockButton lockButton;
     private GuiRedstoneButton rearInputButton;
     private GuiRedstoneButton leftOutputButton;
     private GuiRedstoneButton rightOutputButton;
-    private GuiButton soundRangeButton;
+    private GuiButtonHooverText soundRangeButton;
     private boolean prevLockState;
     private boolean prevRearInputButtonState;
     private boolean prevLeftOutputButtonState;
@@ -74,36 +76,49 @@ public class GuiBandAmp extends GuiContainer
         soundRange = tileBandAmp.getSoundRange();
         prevSoundRange = soundRange;
 
-        lockButton =  new GuiLockIconButton(100, guiLeft + 16, guiTop + 25);
+        lockButton =  new GuiLockButton(100, guiLeft + 16, guiTop + 25);
+        lockButton.addHooverText(I18n.format("mxtune.gui.bandAmp.lockButton.help01"));
+        lockButton.addHooverText(TextFormatting.GREEN + I18n.format("mxtune.gui.bandAmp.lockButton.help02"));
+        lockButton.addHooverText(TextFormatting.YELLOW + I18n.format("mxtune.gui.bandAmp.lockButton.help03"));
         buttonList.add(lockButton);
         lockButton.setLocked(tileBandAmp.isLocked());
         lockButton.enabled = isEnabled;
         prevLockState = lockButton.isLocked();
 
         rearInputButton = new GuiRedstoneButton(101, guiLeft + 139, guiTop + 25, ArrowFaces.DOWN);
-        rearInputButton.addHooverText("Rear Redstone Input toggle");
-        rearInputButton.addHooverText(TextFormatting.GREEN + "Enable or Disable Redstone input from the Back side" + TextFormatting.RESET);
+        rearInputButton.addHooverText(I18n.format("mxtune.gui.bandAmp.rearInputButton.help01"));
+        rearInputButton.addHooverText(TextFormatting.GREEN + I18n.format("mxtune.gui.bandAmp.rearInputButton.help02"));
+        rearInputButton.addHooverText(TextFormatting.YELLOW + I18n.format("mxtune.gui.bandAmp.rearInputButton.help03"));
         buttonList.add(rearInputButton);
         rearInputButton.setSignalEnabled(tileBandAmp.isRearRedstoneInputEnabled());
         rearInputButton.enabled = isEnabled;
+
         prevRearInputButtonState = rearInputButton.isSignalEnabled();
 
         leftOutputButton = new GuiRedstoneButton(102, guiLeft + 129, guiTop + 45, ArrowFaces.LEFT);
-        leftOutputButton.addHooverText("Left Redstone Output toggle");
-        leftOutputButton.addHooverText(TextFormatting.GREEN + "Enable or Disable Redstone Output from the Left side");
-        leftOutputButton.addHooverText(TextFormatting.YELLOW + "Outputs a single 10 tick pulse at the end of a song" + TextFormatting.RESET);
+        leftOutputButton.addHooverText(I18n.format("mxtune.gui.bandAmp.leftOutputButton.help01"));
+        leftOutputButton.addHooverText(TextFormatting.GREEN + I18n.format("mxtune.gui.bandAmp.leftOutputButton.help02"));
+        leftOutputButton.addHooverText(TextFormatting.YELLOW + I18n.format("mxtune.gui.bandAmp.leftOutputButton.help03"));
         buttonList.add(leftOutputButton);
         leftOutputButton.setSignalEnabled(tileBandAmp.isLeftRedstoneOutputEnabled());
         leftOutputButton.enabled = isEnabled;
         prevLeftOutputButtonState = leftOutputButton.isSignalEnabled();
 
         rightOutputButton = new GuiRedstoneButton(103, guiLeft + 149, guiTop + 45, ArrowFaces.RIGHT);
+        rightOutputButton.addHooverText(I18n.format("mxtune.gui.bandAmp.rightOutputButton.help01"));
+        rightOutputButton.addHooverText(TextFormatting.GREEN + I18n.format("mxtune.gui.bandAmp.rightOutputButton.help02"));
+        rightOutputButton.addHooverText(TextFormatting.YELLOW + I18n.format("mxtune.gui.bandAmp.rightOutputButton.help03"));
         buttonList.add(rightOutputButton);
         rightOutputButton.setSignalEnabled(tileBandAmp.isRightRedstoneOutputEnabled());
         rightOutputButton.enabled = isEnabled;
         prevRightOutputButtonState = rightOutputButton.isSignalEnabled();
 
-        soundRangeButton = new GuiButton(104, guiLeft +6 , guiTop + 45, 40, 20, I18n.format(soundRange.getLanguageKey()));
+        soundRangeButton = new GuiButtonHooverText(104, guiLeft +6 , guiTop + 45, 40, 20, "");
+        soundRangeButton.displayString = I18n.format(soundRange.getLanguageKey());
+        soundRangeButton.addHooverText(I18n.format("mxtune.gui.bandAmp.soundRangeButton.help01"));
+        soundRangeButton.addHooverText(TextFormatting.GREEN + I18n.format("mxtune.gui.bandAmp.soundRangeButton.help02"));
+        soundRangeButton.addHooverText(TextFormatting.YELLOW + I18n.format("mxtune.gui.bandAmp.soundRangeButton.help03"));
+
         buttonList.add(soundRangeButton);
         soundRangeButton.enabled = isEnabled;
     }
@@ -125,7 +140,7 @@ public class GuiBandAmp extends GuiContainer
         nextRangeButton(soundRangeButton, button);
     }
 
-    private void toggleLockButton(GuiLockIconButton lockIconButton, GuiButton buttonClicked)
+    private void toggleLockButton(GuiLockButton lockIconButton, GuiButton buttonClicked)
     {
         if (buttonClicked.id == lockIconButton.id)
         {
@@ -157,17 +172,39 @@ public class GuiBandAmp extends GuiContainer
 
     private void updateButtonStatus()
     {
-        updateLockButtonStatus();
+        boolean isOwnerManaged = LockableHelper.canLock(mc.player, tileBandAmp);
+        String ownerText = isOwnerManaged ? "" : I18n.format("mxtune.gui.button.ownerManaged");
 
+        updateLockButtonStatus();
         boolean state = tileBandAmp.isRearRedstoneInputEnabled();
+
+        lockButton.setStatusText(TextFormatting.AQUA + (prevLockState
+                                                        ? I18n.format("mxtune.gui.bandAmp.lockButton.locked")
+                                                        : I18n.format("mxtune.gui.bandAmp.lockButton.unLocked")
+                                                        + ownerText));
+
         prevRearInputButtonState = updateButtonStatus(rearInputButton, state, prevRearInputButtonState);
+        rearInputButton.setStatusText(TextFormatting.AQUA + (rearInputButton.isSignalEnabled()
+                                              ? I18n.format("mxtune.gui.bandAmp.rearInputButton.enabled")
+                                              : I18n.format("mxtune.gui.bandAmp.rearInputButton.disabled"))
+                                              + ownerText);
 
         state = tileBandAmp.isLeftRedstoneOutputEnabled();
         prevLeftOutputButtonState = updateButtonStatus(leftOutputButton, state, prevLeftOutputButtonState);
+        leftOutputButton.setStatusText(TextFormatting.AQUA + (leftOutputButton.isSignalEnabled()
+                                               ? I18n.format("mxtune.gui.bandAmp.leftOutputButton.enabled")
+                                               : I18n.format("mxtune.gui.bandAmp.leftOutputButton.disabled"))
+                                               + ownerText);
 
         state = tileBandAmp.isRightRedstoneOutputEnabled();
         prevRightOutputButtonState = updateButtonStatus(rightOutputButton, state, prevRightOutputButtonState);
+        rightOutputButton.setStatusText(TextFormatting.AQUA + (rightOutputButton.isSignalEnabled()
+                                                ? I18n.format("mxtune.gui.bandAmp.rightOutputButton.enabled")
+                                                : I18n.format("mxtune.gui.bandAmp.rightOutputButton.disabled"))
+                                                + ownerText);
 
+        soundRangeButton.setStatusText(TextFormatting.AQUA + soundRangeButton.displayString
+                                                + ownerText);
         updateSoundRangeButton();
     }
 
@@ -269,10 +306,8 @@ public class GuiBandAmp extends GuiContainer
     private void drawHooveringButtonHelp(int mouseX, int mouseY)
     {
         for(GuiButton b : buttonList)
-        {
-            if(isMouseOverButton(b, mouseX, mouseY))
-                this.drawHoveringText(((GuiButtonHooverText)b).getHooverTexts(), mouseX, mouseY);
-        }
+            if (isMouseOverButton(b, mouseX, mouseY))
+                this.drawHoveringText(((GuiButtonHooverText) b).getHooverTexts(), mouseX, mouseY);
     }
 
     private <T extends GuiButton> boolean isMouseOverButton( T button, int mouseX, int mouseY)

@@ -40,6 +40,7 @@ public class ContainerBandAmp extends Container
 
     public ContainerBandAmp(InventoryPlayer playerInv, World worldIn, int x, int y, int z) {
         this.tileBandAmp = (TileBandAmp) worldIn.getTileEntity(new BlockPos(x, y, z));
+
         IItemHandler inventory = tileBandAmp.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
         addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 0, 52, 26));
         addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 1, 70, 26));
@@ -65,7 +66,11 @@ public class ContainerBandAmp extends Container
     @Override
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
     {
+
         ItemStack itemstack = ItemStack.EMPTY;
+        // *** only allow owners to manage instruments ***
+        if (!tileBandAmp.isOwner(playerIn)) return itemstack;
+
         Slot slot = inventorySlots.get(index);
 
         if (slot != null && slot.getHasStack()) {
@@ -107,7 +112,11 @@ public class ContainerBandAmp extends Container
     @Override
     public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player)
     {
-        ItemStack stack = super.slotClick(slotId, dragType, clickTypeIn, player);
+        // *** only allow owners to manage instruments ***
+        ItemStack stack = ItemStack.EMPTY;
+        if (tileBandAmp.isOwner(player) || slotId >= tileBandAmp.MAX_SLOTS)
+            stack = super.slotClick(slotId, dragType, clickTypeIn, player);
+
         setDuration();
         return stack;
     }

@@ -42,7 +42,7 @@ import javax.annotation.Nullable;
 
 public class TileBandAmp extends TileInstrument implements IModLockableContainer
 {
-    private static final int MAX_SLOTS = 8;
+    public static final int MAX_SLOTS = 8;
     private boolean previousInputPowerState;
     private Integer playID;
     private Integer lastPlayID;
@@ -354,6 +354,12 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     }
 
     @Override
+    public boolean isOwner(EntityPlayer entityPlayer)
+    {
+        return ownerUUID.getUUID().equals(entityPlayer.getPersistentID());
+    }
+
+    @Override
     public void setOwner(OwnerUUID ownerUUID)
     {
         this.ownerUUID = ownerUUID;
@@ -389,6 +395,10 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         return this.hasCustomName() ? new TextComponentString(this.getName()) : new TextComponentTranslation(this.getName());
     }
 
+    /**
+     * @param player to be evaluated
+     * @return true only for the owner of the TE
+     */
     public boolean isUsableByPlayer(EntityPlayer player)
     {
         if (this.world.getTileEntity(this.pos) != this)

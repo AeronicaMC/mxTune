@@ -37,7 +37,7 @@ public class SlotBandAmp extends SlotItemHandler
     @Override
     public boolean isItemValid(@Nonnull ItemStack stack)
     {
-        return super.isItemValid(stack) && stack.getItem() instanceof ItemInstrument;
+        return super.isItemValid(stack) && (stack.getItem() instanceof ItemInstrument);
     }
 
     @Override
