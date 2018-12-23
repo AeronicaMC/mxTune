@@ -1,5 +1,6 @@
 package net.aeronica.mods.mxtune.sound;
 
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.Constants;
@@ -51,15 +52,18 @@ public enum SoundRange
 
     public static SoundRange fromNBT(NBTTagCompound nbt)
     {
+        SoundRange soundRange = NORMAL;
         if (nbt.hasKey(SOUND_RANGE_KEY, Constants.NBT.TAG_STRING))
         {
             String s = nbt.getString(SOUND_RANGE_KEY);
-            return SoundRange.valueOf(s);
+            try
+            {
+                soundRange = valueOf(s);
+            } catch (EnumConstantNotPresentException e)
+            {
+                ModLogger.error("SoundRange#fromNBT Enum Constant Not Present Exception %s", e);
+            }
         }
-        else
-        {
-            return SoundRange.NORMAL;
-        }
+        return soundRange;
     }
-
 }
