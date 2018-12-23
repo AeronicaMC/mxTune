@@ -37,7 +37,7 @@ public class PCMSound extends Sound
 {
     public PCMSound()
     {
-        super("pcm-proxy", 1F, 1F, 0, Type.SOUND_EVENT, true);
+        super(Reference.MOD_ID + ":pcm-proxy", 1F, 1F, 0, Type.SOUND_EVENT, true);
     }
 
     public PCMSound(String nameIn, float volumeIn, float pitchIn, int weightIn, Type typeIn, boolean isStreaming)
