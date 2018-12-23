@@ -54,17 +54,18 @@ public class GROUPS
 
     /* GroupManager Client Status Methods */
     @Nullable
-    public static Integer getLeaderOfGroup(Integer integer)
+    public static Integer getLeaderOfGroup(@Nullable Integer integer)
     {
         return GROUPS.clientGroups != null ? GROUPS.clientGroups.get(integer) : null;
     }
 
-    @Nullable
-    public static Integer getMembersGroupLeader(Integer memberID){
-        return getLeaderOfGroup(getMembersGroupID(memberID));
+    public static int getMembersGroupLeader(@Nullable Integer memberID){
+        Integer leaderId = getLeaderOfGroup(getMembersGroupID(memberID));
+        return leaderId != null ? leaderId : -1;
     }
-    
-    public static Integer getMembersGroupID(Integer memberID)
+
+    @Nullable
+    public static Integer getMembersGroupID(@Nullable Integer memberID)
     {
         return GROUPS.clientMembers != null ? GROUPS.clientMembers.get(memberID) : null;
     }
