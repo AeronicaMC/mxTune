@@ -9,10 +9,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SuppressWarnings("unused")
 public enum SoundRange
 {
-    NEAR(2F, "mxtune.sound_range.near", true),              // 16 Blocks, linear attenuation, point source
-    MEDIUM(3F, "mxtune.sound_range.medium", true),          // 32 Blocks, linear attenuation, point source
-    FAR(4F, "mxtune.sound_range.far", true),                // 64 Blocks, linear attenuation, point source (Junk Box)
-    INFINITY(2F, "mxtune.sound_range.infinity", false);     // Background music, no attenuation, non-directional
+    NEAR(2F, "mxtune.sound_range.normal", true),              // 32 Blocks, linear attenuation, point source
+    INFINITY(1F, "mxtune.sound_range.infinity", false);     // Background music, no attenuation, non-directional
 
     public static final int LENGTH = SoundRange.values().length;
     public static final String SOUND_RANGE_KEY = "soundRange";
