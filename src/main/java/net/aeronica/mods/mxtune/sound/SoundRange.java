@@ -9,7 +9,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SuppressWarnings("unused")
 public enum SoundRange
 {
-    NEAR(2F, "mxtune.sound_range.normal", true),              // 32 Blocks, linear attenuation, point source
+    NORMAL(2F, "mxtune.sound_range.normal", true),              // 32 Blocks, linear attenuation, point source
     INFINITY(1F, "mxtune.sound_range.infinity", false);     // Background music, no attenuation, non-directional
 
     public static final int LENGTH = SoundRange.values().length;
@@ -58,7 +58,7 @@ public enum SoundRange
         }
         else
         {
-            return SoundRange.NEAR;
+            return SoundRange.NORMAL;
         }
     }
 

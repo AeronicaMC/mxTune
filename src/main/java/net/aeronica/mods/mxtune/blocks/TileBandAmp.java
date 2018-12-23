@@ -48,7 +48,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     private Integer lastPlayID;
     private LockCode code = LockCode.EMPTY_CODE;
     private OwnerUUID ownerUUID = OwnerUUID.EMPTY_UUID;
-    private SoundRange soundRange = SoundRange.NEAR;
+    private SoundRange soundRange = SoundRange.NORMAL;
     private String bandAmpCustomName;
     private int duration;
     private boolean rearRedstoneInputEnabled = true;

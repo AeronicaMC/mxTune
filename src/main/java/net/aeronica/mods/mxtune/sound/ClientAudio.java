@@ -273,7 +273,7 @@ public class ClientAudio
      */
     public static synchronized void play(Integer playID, String musicText)
     {
-        play(playID, null, musicText, GROUPS.isClientPlaying(playID), SoundRange.NEAR);
+        play(playID, null, musicText, GROUPS.isClientPlaying(playID), SoundRange.NORMAL);
     }
 
     /**
@@ -281,7 +281,7 @@ public class ClientAudio
      * @param playID unique submission identifier.
      * @param pos block position in the world
      * @param musicText MML string
-     * @param soundRange defines the attenuation: NEAR, MEDIUM, FAR or 1X, 2X and 3X respectively
+     * @param soundRange defines the attenuation: NORMAL or INFINITY respectively
      */
     public static synchronized void play(Integer playID, BlockPos pos, String musicText, SoundRange soundRange)
     {
