@@ -48,6 +48,8 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+
 public class EntitySittableBlock extends Entity
 {
 
@@ -65,7 +67,7 @@ public class EntitySittableBlock extends Entity
         this.noClip = true;
         this.height = 0.0001F;
         this.width = 0.0001F;
-        this.dataManager.set(SHOULD_SIT, Boolean.valueOf(true));
+        this.dataManager.set(SHOULD_SIT, Boolean.TRUE);
         this.dataManager.set(BLOCK_POS,blockPos);
     }
 
@@ -75,7 +77,7 @@ public class EntitySittableBlock extends Entity
         this(world);
         this.blockPos = posIn;
         setPosition(posIn.getX() + 0.5D, posIn.getY() + y0ffset, posIn.getZ() + 0.5D);
-        this.dataManager.set(SHOULD_SIT, Boolean.valueOf(shouldRiderSit));
+        this.dataManager.set(SHOULD_SIT, shouldRiderSit);
         this.dataManager.set(BLOCK_POS, posIn);
     }
 
@@ -84,7 +86,7 @@ public class EntitySittableBlock extends Entity
         this(world);
         this.blockPos = posIn;
         setPosition(posIn.getX() + xOffset, posIn.getY() + yOffset, posIn.getZ() + zOffset);
-        this.dataManager.set(SHOULD_SIT, Boolean.valueOf(true));
+        this.dataManager.set(SHOULD_SIT, Boolean.TRUE);
         this.dataManager.set(BLOCK_POS, posIn);
     }
 
@@ -94,7 +96,7 @@ public class EntitySittableBlock extends Entity
         this.blockPos = posIn;
         this.yaw = yaw;
         this.setPositionAndRotation(posIn.getX() + xOffset, posIn.getY() + yOffset, posIn.getZ() + zOffset, yaw, 0);
-        this.dataManager.set(SHOULD_SIT, Boolean.valueOf(true));
+        this.dataManager.set(SHOULD_SIT, Boolean.TRUE);
         this.dataManager.set(BLOCK_POS, posIn);
     }
 
@@ -103,14 +105,13 @@ public class EntitySittableBlock extends Entity
         this(world);
         this.blockPos = posIn;
         setPositionConsideringRotation(posIn.getX() + 0.5D, posIn.getY() + y0ffset, posIn.getZ() + 0.5D, rotation, rotationOffset);
-        this.dataManager.set(SHOULD_SIT, Boolean.valueOf(true));
+        this.dataManager.set(SHOULD_SIT, Boolean.TRUE);
         this.dataManager.set(BLOCK_POS, posIn);
     }
 
     private void setPositionConsideringRotation(double xIn, double yIn, double zIn, int rotationIn, double rotationOffsetIn)
     {
         double x = xIn;
-        double y = yIn;
         double z = zIn;
         switch (rotationIn)
         {
@@ -127,7 +128,7 @@ public class EntitySittableBlock extends Entity
             x += rotationOffsetIn;
             break;
         }
-        setPosition(x, y, z);
+        setPosition(x, yIn, z);
     }
 
     @Override
@@ -150,9 +151,9 @@ public class EntitySittableBlock extends Entity
     @Override
     protected void entityInit()
     {
-        this.dataManager.register(SHOULD_SIT, Boolean.valueOf(true));
+        this.dataManager.register(SHOULD_SIT, Boolean.TRUE);
         this.dataManager.register(BLOCK_POS, blockPos);
-        this.dataManager.register(PLAY_ID, Integer.valueOf(-1));
+        this.dataManager.register(PLAY_ID, -1);
     }
 
     @Override
@@ -162,15 +163,17 @@ public class EntitySittableBlock extends Entity
     public void writeEntityToNBT(NBTTagCompound nbttagcompound) {}
 
     @Override
-    public boolean shouldRiderSit() {return ((Boolean) this.dataManager.get(SHOULD_SIT)).booleanValue();}
+    public boolean shouldRiderSit() {return this.dataManager.get(SHOULD_SIT);}
 
     public BlockPos getMountedPosition() {return blockPos;}
 
+    @SuppressWarnings("unused")
     public float getYaw() {return yaw;}
     
-    public void setPlayID(Integer playID)
+    public void setPlayID(@Nullable Integer playID)
     {
-        dataManager.set(PLAY_ID, playID);
+        int id = playID != null ? playID : -1;
+        dataManager.set(PLAY_ID, id);
     }
 
     public Integer getPlayID()
