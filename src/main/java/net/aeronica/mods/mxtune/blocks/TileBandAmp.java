@@ -243,12 +243,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
 
         if (world != null && !world.isRemote)
         {
-            // TODO: Remove unused
-            //int count = world.getBlockState(pos).getValue(BlockBandAmp.UPDATE_COUNT);
-            //int count = world.getBlockState(pos).getActualState(world, pos).getValue(BlockBandAmp.UPDATE_COUNT);
             ModLogger.info("TileBandAmp updateCount: %d", updateCount);
-
-            //world.setBlockState(pos, world.getBlockState(pos).withProperty(BlockBandAmp.UPDATE_COUNT, updateCount), 3);
             world.markBlockRangeForRenderUpdate(pos, pos);
         }
     }
@@ -278,14 +273,9 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     {
         if(world.isRemote)
         {
-
-            int count = world.getBlockState(pos).getActualState(world, pos).getValue(BlockBandAmp.UPDATE_COUNT);
+            int count = updateCount; //= world.getBlockState(pos).getActualState(world, pos).getValue(BlockBandAmp.UPDATE_COUNT);
             if(prevUpdateCount != count)
             {
-                world.markBlockRangeForRenderUpdate(pos, pos);
-                world.notifyBlockUpdate(getPos(), world.getBlockState(pos), world.getBlockState(pos), 1);
-                world.scheduleBlockUpdate(pos, this.getBlockType(),0,0);
-
                 ModLogger.info("TileBandAmp updateCount: %d, UPDATE_COUNT: %d", updateCount, count);
                 world.setBlockState(pos, world.getBlockState(pos).withProperty(BlockBandAmp.UPDATE_COUNT, updateCount), 1);
                 world.markBlockRangeForRenderUpdate(pos, pos);
