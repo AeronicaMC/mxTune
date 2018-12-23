@@ -90,7 +90,7 @@ public class CodecPCM implements ICodec {
         randInt = new java.util.Random(System.currentTimeMillis());
         nextBuffer(SAMPLE_SIZE);
 	}
-	
+
     private void nextBuffer(int sampleSize)
     {
         for (int i=0;i<sampleSize; i+=2){
@@ -197,26 +197,27 @@ public class CodecPCM implements ICodec {
         {	
 		    if (hasStream && audioInputStream != null)
 		    {
-            bufferSize = audioInputStream.read(readBuffer);
-            if (bufferSize > 0)
-                outputBuffer = appendByteArrays(outputBuffer, readBuffer, bufferSize);
+				bufferSize = audioInputStream.read(readBuffer);
+				if (bufferSize > 0)
+					outputBuffer = appendByteArrays(outputBuffer, readBuffer, bufferSize);
 
-            if (bufferSize == -1)
-                {
-                    endOfStream(SET, true);
+				if (bufferSize == -1)
+				{
+					endOfStream(SET, true);
 					ClientAudio.setPlayIDAudioDataStatus(playID, ClientAudio.Status.DONE);
-                    return null;
-                }
-		    } else
-		    {
-		        outputBuffer = appendByteArrays(outputBuffer, zeroBuffer, SAMPLE_SIZE);
-		        if (zeroBufferCount++ > 64) 
-		        {
-		            errorMessage("MML to PCM audio processing took too long. Aborting!");
-		            endOfStream(SET, true);
-		            return null;
-		        }
-		    }
+					return null;
+				}
+			}
+			else
+			{
+				outputBuffer = appendByteArrays(outputBuffer, zeroBuffer, SAMPLE_SIZE);
+				if (zeroBufferCount++ > 64)
+				{
+					errorMessage("MML to PCM audio processing took too long. Aborting!");
+					endOfStream(SET, true);
+					return null;
+				}
+			}
         } catch (IOException e)
         {
             printStackTrace(e);
@@ -505,5 +506,4 @@ public class CodecPCM implements ICodec {
 	{
 	    logger.message("[mxtune]: CodecPCM " + message, 1);
 	}
-	
 }
