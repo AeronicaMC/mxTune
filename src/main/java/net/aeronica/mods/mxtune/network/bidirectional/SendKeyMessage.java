@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -27,24 +27,23 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.io.IOException;
-
 public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
 {
-    String keyBindingDesc;
+    private String keyBindingDesc;
 
-    public SendKeyMessage() {/* Required by the PacketDispacher */}
+    @SuppressWarnings("unused")
+    public SendKeyMessage() {/* Required by the PacketDispatcher */}
 
     public SendKeyMessage(String kb) {this.keyBindingDesc = kb;}
 
     @Override
-    protected void read(PacketBuffer buffer) throws IOException
+    protected void read(PacketBuffer buffer)
     {
         this.keyBindingDesc = ByteBufUtils.readUTF8String(buffer);
     }
 
     @Override
-    protected void write(PacketBuffer buffer) throws IOException
+    protected void write(PacketBuffer buffer)
     {
         ByteBufUtils.writeUTF8String(buffer, this.keyBindingDesc);
     }
@@ -52,7 +51,6 @@ public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        /** Since this packet is handled differently, we need to check side */
         if (side.isServer())
         {
             handleServerSide(player);
@@ -62,7 +60,7 @@ public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
         }
     }
 
-    public void handleClientSide(EntityPlayer playerSP)
+    private void handleClientSide(EntityPlayer playerSP)
     {
         if ("mxtune.key.openParty".equalsIgnoreCase(this.keyBindingDesc))
         {
@@ -74,9 +72,8 @@ public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
         }
     }
 
-    public void handleServerSide(EntityPlayer playerMP)
+    private void handleServerSide(EntityPlayer playerMP)
     {
         PacketDispatcher.sendTo(new SendKeyMessage(this.keyBindingDesc), (EntityPlayerMP) playerMP);
     }
-
 }

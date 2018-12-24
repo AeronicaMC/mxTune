@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese aka Aeronica
  *
@@ -22,16 +22,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.io.IOException;
-
 public class HudOptionsMessage extends AbstractServerMessage<HudOptionsMessage>
 {
+    private int positionHud;
+    private boolean disableHud;
+    private float sizeHud;
 
-    int positionHud;
-    boolean disableHud;
-    float sizeHud;
-    
-    public HudOptionsMessage() {/* Required by the PacketDispacher */}
+    @SuppressWarnings("unused")
+    public HudOptionsMessage() {/* Required by the PacketDispatcher */}
     
     public HudOptionsMessage(int positionHud, boolean disableHud, float sizeHud)
     {
@@ -41,7 +39,7 @@ public class HudOptionsMessage extends AbstractServerMessage<HudOptionsMessage>
     }
     
     @Override
-    protected void read(PacketBuffer buffer) throws IOException
+    protected void read(PacketBuffer buffer)
     {
         positionHud = buffer.readInt();
         disableHud = buffer.readBoolean();
@@ -49,7 +47,7 @@ public class HudOptionsMessage extends AbstractServerMessage<HudOptionsMessage>
     }
 
     @Override
-    protected void write(PacketBuffer buffer) throws IOException
+    protected void write(PacketBuffer buffer)
     {
         buffer.writeInt(positionHud);
         buffer.writeBoolean(disableHud);
@@ -61,5 +59,4 @@ public class HudOptionsMessage extends AbstractServerMessage<HudOptionsMessage>
     {
         MusicOptionsUtil.setHudOptions(player, disableHud, positionHud, sizeHud);
     }
-
 }

@@ -22,14 +22,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.io.IOException;
-
 public class PlayStoppedMessage extends AbstractServerMessage<PlayStoppedMessage>
 {
-
     private int playID;
     private boolean isBlockEntity;
-    
+
+    @SuppressWarnings("unused")
     public PlayStoppedMessage() {/* Required by the PacketDispatcher */}
     
     public PlayStoppedMessage(int playID)
@@ -44,14 +42,14 @@ public class PlayStoppedMessage extends AbstractServerMessage<PlayStoppedMessage
         this.isBlockEntity = isBlockEntity;
     }
 
-    protected void read(PacketBuffer buffer) throws IOException
+    protected void read(PacketBuffer buffer)
     {
         playID = buffer.readInt();
         isBlockEntity = buffer.readBoolean();
     }
 
     @Override
-    protected void write(PacketBuffer buffer) throws IOException
+    protected void write(PacketBuffer buffer)
     {
         buffer.writeInt(playID);
         buffer.writeBoolean(isBlockEntity);
@@ -65,5 +63,4 @@ public class PlayStoppedMessage extends AbstractServerMessage<PlayStoppedMessage
         else
             PlayManager.playingEnded(player, playID);
     }
-
 }

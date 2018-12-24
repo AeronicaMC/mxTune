@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -23,14 +23,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.io.IOException;
-
 public class ManageGroupMessage extends AbstractServerMessage<ManageGroupMessage>
 {
     private int operation;
     private Integer groupID;
     private Integer memberID;
 
+    @SuppressWarnings("unused")
     public ManageGroupMessage() {/* Required by the PacketDispatcher */}
 
     public ManageGroupMessage(int operation, Integer groupID, Integer memberName)
@@ -41,7 +40,7 @@ public class ManageGroupMessage extends AbstractServerMessage<ManageGroupMessage
     }
 
     @Override
-    protected void read(PacketBuffer buffer) throws IOException
+    protected void read(PacketBuffer buffer)
     {
         operation = buffer.readInt();
         groupID = buffer.readInt();
@@ -49,7 +48,7 @@ public class ManageGroupMessage extends AbstractServerMessage<ManageGroupMessage
     }
 
     @Override
-    protected void write(PacketBuffer buffer) throws IOException
+    protected void write(PacketBuffer buffer)
     {
         if (groupID == null) groupID = -1;
         buffer.writeInt(operation);

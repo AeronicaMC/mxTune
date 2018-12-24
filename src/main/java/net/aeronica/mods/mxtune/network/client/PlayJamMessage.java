@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -16,27 +16,26 @@
  */
 package net.aeronica.mods.mxtune.network.client;
 
-import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
-import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
-import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.io.IOException;
+import static net.aeronica.mods.mxtune.groups.GROUPS.getMembersGroupLeader;
+import static net.aeronica.mods.mxtune.options.MusicOptionsUtil.playerNotMuted;
+import static net.aeronica.mods.mxtune.util.MIDISystemUtil.midiUnavailableWarn;
 
 public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
 {
+    private Integer leaderID;
+    private Integer playID;
+    private String jamMML;
 
-    Integer leaderID;
-    Integer playID;
-    String jamMML;
-    
-    public PlayJamMessage() {/* Required by the PacketDispacher */}
+    @SuppressWarnings("unused")
+    public PlayJamMessage() {/* Required by the PacketDispatcher */}
 
     public PlayJamMessage(Integer leaderID, Integer playID, String jamMML)
     {
@@ -46,7 +45,7 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
     }
     
     @Override
-    protected void read(PacketBuffer buffer) throws IOException
+    protected void read(PacketBuffer buffer)
     {
         leaderID = buffer.readInt();
         playID = buffer.readInt();
@@ -54,7 +53,7 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
     }
 
     @Override
-    protected void write(PacketBuffer buffer) throws IOException
+    protected void write(PacketBuffer buffer)
     {
         buffer.writeInt(leaderID);
         buffer.writeInt(playID);
@@ -65,9 +64,9 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
     public void process(EntityPlayer player, Side side)
     {
         ModLogger.debug("PlayJamMessage#process");
-        if (MIDISystemUtil.midiUnavailableWarn(player) == false)
+        if (!midiUnavailableWarn(player))
         {
-            if (!MusicOptionsUtil.isPlayerMuted(player, (EntityPlayer) player.getEntityWorld().getEntityByID(GROUPS.getMembersGroupLeader(leaderID))))
+            if (playerNotMuted(player, (EntityPlayer) player.getEntityWorld().getEntityByID(getMembersGroupLeader(leaderID))))
             {
                 ModLogger.debug("musicText:  " + jamMML.substring(0, (jamMML.length() >= 25 ? 25 : jamMML.length())));
                 ModLogger.debug("playID:     " + playID);
@@ -75,5 +74,4 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
             }
         }
     }
-
 }

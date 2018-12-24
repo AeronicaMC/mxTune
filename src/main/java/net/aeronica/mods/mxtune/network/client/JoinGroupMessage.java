@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -23,27 +23,20 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.io.IOException;
-
 public class JoinGroupMessage extends AbstractClientMessage<JoinGroupMessage>
 {
-    int groupID;
+    private int groupID;
 
-    public JoinGroupMessage() {/* Required by the PacketDispacher */}
+    @SuppressWarnings("unused")
+    public JoinGroupMessage() { /* Required by the PacketDispatcher */ }
 
-    public JoinGroupMessage(Integer groupID) {this.groupID = groupID;}
-
-    @Override
-    protected void read(PacketBuffer buffer) throws IOException
-    {
-        groupID = buffer.readInt();
-    }
+    public JoinGroupMessage( Integer groupID) {this.groupID = groupID; }
 
     @Override
-    protected void write(PacketBuffer buffer) throws IOException
-    {
-        buffer.writeInt(groupID);
-    }
+    protected void read(PacketBuffer buffer) { groupID = buffer.readInt(); }
+
+    @Override
+    protected void write(PacketBuffer buffer) { buffer.writeInt(groupID); }
 
     @Override
     public void process(EntityPlayer player, Side side)

@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -16,26 +16,26 @@
  */
 package net.aeronica.mods.mxtune.network.client;
 
-import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
-import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
-import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.io.IOException;
+import static net.aeronica.mods.mxtune.groups.GROUPS.getSoloMemberByPlayID;
+import static net.aeronica.mods.mxtune.options.MusicOptionsUtil.playerNotMuted;
+import static net.aeronica.mods.mxtune.util.MIDISystemUtil.midiUnavailableWarn;
 
 public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
 {
 
-    Integer playID;
-    String musicText;
+    private Integer playID;
+    private String musicText;
 
-    public PlaySoloMessage() {/* Required by the PacketDispacher */}
+    @SuppressWarnings("unused")
+    public PlaySoloMessage() {/* Required by the PacketDispatcher */}
     
     public PlaySoloMessage(Integer playID, String musicText)
     {
@@ -44,14 +44,14 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
     }
     
     @Override
-    protected void read(PacketBuffer buffer) throws IOException
+    protected void read(PacketBuffer buffer)
     {
         playID = buffer.readInt();
         musicText = ByteBufUtils.readUTF8String(buffer);
     }
 
     @Override
-    protected void write(PacketBuffer buffer) throws IOException
+    protected void write(PacketBuffer buffer)
     {
         buffer.writeInt(playID);
         ByteBufUtils.writeUTF8String(buffer, musicText);
@@ -60,11 +60,11 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        if (MIDISystemUtil.midiUnavailableWarn(player) == false)
+        if (!midiUnavailableWarn(player))
         {
             /* This is messy, but we want to ensure we return a valid player entity ID */
-            Integer otherEntityID = GROUPS.getSoloMemberByPlayID(playID) == null ? player.getEntityId() : GROUPS.getSoloMemberByPlayID(playID);
-            if (!MusicOptionsUtil.isPlayerMuted(player, (EntityPlayer) (player.getEntityWorld().getEntityByID(otherEntityID))))
+            Integer otherEntityID = getSoloMemberByPlayID(playID) == null ? player.getEntityId() : getSoloMemberByPlayID(playID);
+            if (playerNotMuted(player, (EntityPlayer) (player.getEntityWorld().getEntityByID(otherEntityID))))
             {
                 ModLogger.info("musicText: " + musicText.substring(0, (musicText.length() >= 25 ? 25 : musicText.length())));
                 ModLogger.info("playID:    " + playID);

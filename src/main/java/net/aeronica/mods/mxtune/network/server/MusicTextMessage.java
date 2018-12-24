@@ -28,13 +28,12 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.io.IOException;
-
 public class MusicTextMessage extends AbstractServerMessage<MusicTextMessage>
 {
     private String musicTitle;
     private String musicText;
 
+    @SuppressWarnings("unused")
     public MusicTextMessage() {/* Required by the PacketDispatcher */}
 
     public MusicTextMessage(String musicTitle, String musicText)
@@ -44,14 +43,14 @@ public class MusicTextMessage extends AbstractServerMessage<MusicTextMessage>
     }
 
     @Override
-    protected void read(PacketBuffer buffer) throws IOException
+    protected void read(PacketBuffer buffer)
     {
         musicTitle = ByteBufUtils.readUTF8String(buffer);
         musicText = ByteBufUtils.readUTF8String(buffer);
     }
 
     @Override
-    protected void write(PacketBuffer buffer) throws IOException
+    protected void write(PacketBuffer buffer)
     {
         ByteBufUtils.writeUTF8String(buffer, musicTitle);
         ByteBufUtils.writeUTF8String(buffer, musicText);
@@ -61,17 +60,16 @@ public class MusicTextMessage extends AbstractServerMessage<MusicTextMessage>
     public void process(EntityPlayer player, Side side)
     {
         if (side.isServer())
-            processServer(player, side);
+            processServer(player);
     }
 
-    private void processServer(EntityPlayer player, Side side)
+    private void processServer(EntityPlayer player)
     {
-        String mml = musicText.trim().toUpperCase();
+        String mml = musicText.trim();
 
         if (!player.getHeldItemMainhand().isEmpty())
         {
             ItemStack sheetMusic = new ItemStack(ModItems.ITEM_SHEET_MUSIC);
-
             if (SheetMusicUtil.writeSheetMusic(sheetMusic, musicTitle, mml))
             {
                 player.inventory.decrStackSize(player.inventory.currentItem, 1);
@@ -83,7 +81,6 @@ public class MusicTextMessage extends AbstractServerMessage<MusicTextMessage>
                 player.sendStatusMessage(new TextComponentTranslation("mxtune.status.mml_server_side_validation_failure"), false);
                 player.world.playSound(null, player.getPosition(), SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.BLOCKS, 1F, 1F);
             }
-
             player.inventoryContainer.detectAndSendChanges();
         }
     }

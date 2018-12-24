@@ -16,15 +16,18 @@
  */
 package net.aeronica.mods.mxtune.network.client;
 
+import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.sound.SoundRange;
+import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import static net.aeronica.mods.mxtune.util.MIDISystemUtil.midiUnavailableWarn;
 
@@ -67,12 +70,21 @@ public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicM
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        if (!midiUnavailableWarn(player))
+        if (side.isClient())
+            handleClient(player);
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void handleClient(EntityPlayer player)
+    {
+        if (!midiUnavailableWarn(player) && ClientCSDMonitor.canMXTunesPlay())
         {
             ModLogger.info("musicText:  " + musicText.substring(0, (musicText.length() >= 25 ? 25 : musicText.length())));
             ModLogger.info("playID:     " + playID);
             ModLogger.info("SoundRange: " + soundRange);
             ClientAudio.play(playID, blockPos, musicText, soundRange);
         }
+        else if (!ModConfig.hideWelcomeStatusMessage())
+            ClientCSDMonitor.sendErrorViaChat(player);
     }
 }

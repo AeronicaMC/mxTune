@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -23,16 +23,14 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.io.IOException;
-
 public class SyncStatusMessage extends AbstractClientMessage<SyncStatusMessage>
 {
+    private String clientPlayStatuses;
+    private String playIDMembers;
+    private String activePlayIDs;
 
-    String clientPlayStatuses;
-    String playIDMembers;
-    String activePlayIDs;
-
-    public SyncStatusMessage() {/* Required by the PacketDispacher */}
+    @SuppressWarnings("unused")
+    public SyncStatusMessage() {/* Required by the PacketDispatcher */}
 
     public SyncStatusMessage(String clientPlayStatuses, String playIDMembers, String activePlayIDs)
     {
@@ -42,7 +40,7 @@ public class SyncStatusMessage extends AbstractClientMessage<SyncStatusMessage>
     }
 
     @Override
-    protected void read(PacketBuffer buffer) throws IOException
+    protected void read(PacketBuffer buffer)
     {
         clientPlayStatuses = ByteBufUtils.readUTF8String(buffer);
         playIDMembers = ByteBufUtils.readUTF8String(buffer);
@@ -50,7 +48,7 @@ public class SyncStatusMessage extends AbstractClientMessage<SyncStatusMessage>
     }
 
     @Override
-    protected void write(PacketBuffer buffer) throws IOException
+    protected void write(PacketBuffer buffer)
     {
         ByteBufUtils.writeUTF8String(buffer, clientPlayStatuses);
         ByteBufUtils.writeUTF8String(buffer, playIDMembers);
@@ -64,5 +62,4 @@ public class SyncStatusMessage extends AbstractClientMessage<SyncStatusMessage>
         GROUPS.setPlayIDMembers(playIDMembers);
         GROUPS.setActivePlayIDs(activePlayIDs);
     }
-
 }
