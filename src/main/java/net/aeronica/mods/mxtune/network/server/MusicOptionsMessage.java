@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese aka Aeronica
  *
@@ -31,13 +31,14 @@ import java.util.List;
 public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessage>
 {
     
-    int muteOption;
-    List<PlayerLists> blackList;
-    List<PlayerLists> whiteList;
-    byte[] byteBuffer = null;
-    boolean canProcess = true;
-    
-    public MusicOptionsMessage() {/* Required by the PacketDispacher */}
+    private int muteOption;
+    private List<PlayerLists> blackList;
+    private List<PlayerLists> whiteList;
+    private byte[] byteBuffer = null;
+    private boolean canProcess = true;
+
+    @SuppressWarnings("unused")
+    public MusicOptionsMessage() {/* Required by the PacketDispatcher */}
     
     public MusicOptionsMessage(int muteOption, List<PlayerLists> blackList, List<PlayerLists> whiteList)
     {
@@ -48,21 +49,21 @@ public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessa
     
     @SuppressWarnings("unchecked")
     @Override
-    protected void read(PacketBuffer buffer) throws IOException
+    protected void read(PacketBuffer buffer)
     {
         this.muteOption = buffer.readInt();
         try {
             // Deserialize data object from a byte array
             byteBuffer = buffer.readByteArray();
             ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
-            ObjectInputStream in = new ObjectInputStream(bis) ;
+            ObjectInputStream in = new ObjectInputStream(bis);
             whiteList =  (ArrayList<PlayerLists>) in.readObject();
             in.close();
 
             // Deserialize data object from a byte array
             byteBuffer = buffer.readByteArray();
-            bis = new ByteArrayInputStream(byteBuffer) ;
-            in = new ObjectInputStream(bis) ;
+            bis = new ByteArrayInputStream(byteBuffer);
+            in = new ObjectInputStream(bis);
             blackList =  (ArrayList<PlayerLists>) in.readObject();
             in.close();
         } catch (ClassNotFoundException | IOException e)
@@ -74,13 +75,14 @@ public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessa
     }
 
     @Override
-    protected void write(PacketBuffer buffer) throws IOException
+    @SuppressWarnings("all")
+    protected void write(PacketBuffer buffer)
     {
         buffer.writeInt(this.muteOption);
         try {
             // Serialize data object to a byte array
-            ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
-            ObjectOutputStream out = new ObjectOutputStream(bos) ;
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream out = new ObjectOutputStream(bos);
             out.writeObject((Serializable) whiteList);
             out.close();
 
@@ -89,8 +91,8 @@ public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessa
             buffer.writeByteArray(byteBuffer);
 
             // Serialize data object to a byte array
-            bos = new ByteArrayOutputStream() ;
-            out = new ObjectOutputStream(bos) ;
+            bos = new ByteArrayOutputStream();
+            out = new ObjectOutputStream(bos);
             out.writeObject((Serializable) blackList);
             out.close();
 

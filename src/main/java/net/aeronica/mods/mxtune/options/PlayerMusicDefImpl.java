@@ -16,23 +16,11 @@
  */
 package net.aeronica.mods.mxtune.options;
 
-import net.aeronica.mods.mxtune.network.PacketDispatcher;
-import net.aeronica.mods.mxtune.network.client.SyncPlayerMusicOptionsMessage;
-import net.aeronica.mods.mxtune.util.Util;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class PlayerMusicDefImpl implements IPlayerMusicOptions
 {
-    @CapabilityInject(IPlayerMusicOptions.class)
-    private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = Util.nonNullInjected();
-    
     /** Music Options*/
     private int muteOption;
     /** HUD Options */
@@ -53,15 +41,6 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     }
 
     @Override
-    public void setHudOptions(EntityPlayer playerIn, boolean disableHud, int positionHud, float sizeHud)
-    {
-        this.disableHud = disableHud;
-        this.positionHud = positionHud;
-        this.sizeHud = sizeHud;
-        this.sync(playerIn, SYNC_DISPLAY_HUD); 
-    }
-
-    @Override
     public void setHudOptions(boolean disableHud, int positionHud, float sizeHud)
     {
         this.disableHud = disableHud;
@@ -77,15 +56,6 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
 
     @Override
     public float getSizeHud() {return this.sizeHud;}
-
-    @Override
-    public void setSParams(EntityPlayer playerIn, String sParam1, String sParam2, String sParam3)
-    {
-        this.sParam1 = sParam1;
-        this.sParam2 = sParam2;
-        this.sParam3 = sParam3;
-        this.sync(playerIn, SYNC_S_PARAMS);
-    }
 
     @Override
     public void setSParams(String sParam1, String sParam2, String sParam3)
@@ -105,9 +75,6 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     public String getSParam3() {return sParam3;}
 
     @Override
-    public void setMuteOption(EntityPlayer playerIn, int muteOptionIn) {this.muteOption = muteOptionIn; sync(playerIn, SYNC_MUTE_OPTION);}
-
-    @Override
     public void setMuteOption(int muteOptionIn) {this.muteOption = muteOptionIn;}
 
     @Override
@@ -117,34 +84,11 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     public void setWhiteList(List<PlayerLists> list) {this.whiteList = list;}
 
     @Override
-    public void setWhiteList(EntityPlayer playerIn, List<PlayerLists> list) {this.whiteList = list; sync(playerIn, SYNC_WHITE_LIST);}
-
-    @Override
     public List<PlayerLists> getWhiteList() {return new ArrayList<>(this.whiteList);}
-
-    @Override
-    public void setBlackList(EntityPlayer playerIn, List<PlayerLists> list) {this.blackList = list; sync(playerIn, SYNC_BLACK_LIST);}
 
     @Override
     public void setBlackList(List<PlayerLists> list) {this.blackList = list;}
 
     @Override
     public List<PlayerLists> getBlackList() {return new ArrayList<>(this.blackList);}
-
-    public static final byte SYNC_ALL = 0;
-    public static final byte SYNC_DISPLAY_HUD = 1;
-    public static final byte SYNC_MUTE_OPTION = 2;
-    public static final byte SYNC_S_PARAMS = 3;
-    public static final byte SYNC_WHITE_LIST = 4;
-    public static final byte SYNC_BLACK_LIST = 5;    
-    
-    public void syncAll(EntityPlayer playerIn) {sync(playerIn, SYNC_ALL);}
-    
-    public void sync(EntityPlayer playerIn, byte propertyID)
-    {
-        if (playerIn != null && !playerIn.getEntityWorld().isRemote)
-        {
-            PacketDispatcher.sendTo(new SyncPlayerMusicOptionsMessage(playerIn.getCapability(Objects.requireNonNull(MUSIC_OPTIONS), null), propertyID), (EntityPlayerMP) playerIn);
-        }
-    }
 }

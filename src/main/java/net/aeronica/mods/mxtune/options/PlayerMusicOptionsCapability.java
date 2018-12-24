@@ -79,6 +79,7 @@ public class PlayerMusicOptionsCapability
                         return capability == MUSIC_OPTIONS ? (T) optionsInst : null;
                     }
 
+                    @Nullable
                     public NBTTagCompound serializeNBT()
                     {
                         return (NBTTagCompound) MUSIC_OPTIONS.getStorage().writeNBT(MUSIC_OPTIONS, optionsInst, null);
@@ -97,16 +98,15 @@ public class PlayerMusicOptionsCapability
         {
             if(event.isWasDeath())
             {
-                EntityPlayer player = event.getEntityPlayer();
                 IPlayerMusicOptions dead = event.getOriginal().getCapability(MUSIC_OPTIONS, null);
                 IPlayerMusicOptions live = event.getEntityPlayer().getCapability(MUSIC_OPTIONS, null);
                 if (live != null && dead != null)
                 {
-                    live.setSParams(player, dead.getSParam1(), dead.getSParam2(), dead.getSParam3());
-                    live.setHudOptions(player, dead.isHudDisabled(), dead.getPositionHud(), dead.getSizeHud());
-                    live.setMuteOption(player, dead.getMuteOption());
-                    live.setBlackList(player, dead.getBlackList());
-                    live.setWhiteList(player, dead.getWhiteList());
+                    live.setSParams(dead.getSParam1(), dead.getSParam2(), dead.getSParam3());
+                    live.setHudOptions(dead.isHudDisabled(), dead.getPositionHud(), dead.getSizeHud());
+                    live.setMuteOption(dead.getMuteOption());
+                    live.setBlackList(dead.getBlackList());
+                    live.setWhiteList(dead.getWhiteList());
                 }
             }
         }
@@ -118,7 +118,7 @@ public class PlayerMusicOptionsCapability
             {
                 IPlayerMusicOptions inst = event.getEntity().getCapability(MUSIC_OPTIONS, null);
                 if (inst != null)
-                    inst.syncAll((EntityPlayer) event.getEntity());
+                    MusicOptionsUtil.syncAll((EntityPlayer) event.getEntity());
             }
         }
         
@@ -127,15 +127,14 @@ public class PlayerMusicOptionsCapability
         {
             IPlayerMusicOptions inst = event.player.getCapability(MUSIC_OPTIONS, null);
             if (inst != null)
-                inst.syncAll(event.player);
+                MusicOptionsUtil.syncAll(event.player);
         }
-
     }
 
     private static class Factory implements Callable<IPlayerMusicOptions>
     {
         @Override
-        public IPlayerMusicOptions call() throws Exception
+        public IPlayerMusicOptions call()
         {
             return new PlayerMusicDefImpl();
         }

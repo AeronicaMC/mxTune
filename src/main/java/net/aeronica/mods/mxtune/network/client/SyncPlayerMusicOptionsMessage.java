@@ -18,8 +18,8 @@ package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.options.IPlayerMusicOptions;
+import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.options.PlayerLists;
-import net.aeronica.mods.mxtune.options.PlayerMusicDefImpl;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.Util;
 import net.minecraft.entity.player.EntityPlayer;
@@ -53,6 +53,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
 
     private byte[] byteBuffer = null;
 
+    @SuppressWarnings("unused")
     public SyncPlayerMusicOptionsMessage() {/* Required by the PacketDispatcher */}
 
     public SyncPlayerMusicOptionsMessage(IPlayerMusicOptions inst, byte propertyID)
@@ -60,32 +61,32 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         this.propertyID = propertyID;
         switch (propertyID)
         {
-        case PlayerMusicDefImpl.SYNC_ALL:
+        case MusicOptionsUtil.SYNC_ALL:
             this.data = new NBTTagCompound();
             this.data = (NBTTagCompound) MUSIC_OPTIONS.writeNBT(inst, null);
             break;
 
-        case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
+        case MusicOptionsUtil.SYNC_DISPLAY_HUD:
             this.disableHud = inst.isHudDisabled();
             this.positionHud = inst.getPositionHud();
             this.sizeHud = inst.getSizeHud();
             break;
             
-        case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
+        case MusicOptionsUtil.SYNC_MUTE_OPTION:
             this.muteOption = inst.getMuteOption();
             break;
             
-        case PlayerMusicDefImpl.SYNC_S_PARAMS:
+        case MusicOptionsUtil.SYNC_S_PARAMS:
             this.sParam1 = inst.getSParam1();
             this.sParam2 = inst.getSParam2();
             this.sParam3 = inst.getSParam3();
             break;
 
-        case PlayerMusicDefImpl.SYNC_WHITE_LIST:
+        case MusicOptionsUtil.SYNC_WHITE_LIST:
             this.whiteList = inst.getWhiteList();
             break;
             
-        case PlayerMusicDefImpl.SYNC_BLACK_LIST:
+        case MusicOptionsUtil.SYNC_BLACK_LIST:
             this.blackList = inst.getBlackList();
             break;
 
@@ -99,26 +100,26 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         propertyID = buffer.readByte();
         switch (propertyID)
         {
-        case PlayerMusicDefImpl.SYNC_ALL:
+        case MusicOptionsUtil.SYNC_ALL:
             this.data = buffer.readCompoundTag();
             break;
-        case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
+        case MusicOptionsUtil.SYNC_DISPLAY_HUD:
             this.disableHud = buffer.readBoolean();
             this.positionHud = buffer.readInt();
             this.sizeHud = buffer.readFloat();
             break;
-        case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
+        case MusicOptionsUtil.SYNC_MUTE_OPTION:
            this. muteOption = buffer.readInt();
             break;
-        case PlayerMusicDefImpl.SYNC_S_PARAMS:
+        case MusicOptionsUtil.SYNC_S_PARAMS:
             this.sParam1 = ByteBufUtils.readUTF8String(buffer);
             this.sParam2 = ByteBufUtils.readUTF8String(buffer);
             this.sParam3 = ByteBufUtils.readUTF8String(buffer);
             break;
-        case PlayerMusicDefImpl.SYNC_WHITE_LIST:
+        case MusicOptionsUtil.SYNC_WHITE_LIST:
             this.whiteList = readPlayerList(buffer);
             break;            
-        case PlayerMusicDefImpl.SYNC_BLACK_LIST:
+        case MusicOptionsUtil.SYNC_BLACK_LIST:
             this.blackList = readPlayerList(buffer);
             break;
         default:        
@@ -126,31 +127,31 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     }
 
     @Override
-    protected void write(PacketBuffer buffer) throws IOException
+    protected void write(PacketBuffer buffer)
     {
         buffer.writeByte(this.propertyID);
         switch (this.propertyID)
         {
-        case PlayerMusicDefImpl.SYNC_ALL:
+        case MusicOptionsUtil.SYNC_ALL:
             buffer.writeCompoundTag(this.data);
             break;
-        case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
+        case MusicOptionsUtil.SYNC_DISPLAY_HUD:
             buffer.writeBoolean(this.disableHud);
             buffer.writeInt(this.positionHud);
             buffer.writeFloat(this.sizeHud);
             break;
-        case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
+        case MusicOptionsUtil.SYNC_MUTE_OPTION:
             buffer.writeInt(this.muteOption);
             break;
-        case PlayerMusicDefImpl.SYNC_S_PARAMS:
+        case MusicOptionsUtil.SYNC_S_PARAMS:
             ByteBufUtils.writeUTF8String(buffer, this.sParam1);
             ByteBufUtils.writeUTF8String(buffer, this.sParam2);
             ByteBufUtils.writeUTF8String(buffer, this.sParam3);
             break;
-        case PlayerMusicDefImpl.SYNC_WHITE_LIST:
+        case MusicOptionsUtil.SYNC_WHITE_LIST:
             writePlayerList(buffer, this.whiteList);
             break;            
-        case PlayerMusicDefImpl.SYNC_BLACK_LIST:
+        case MusicOptionsUtil.SYNC_BLACK_LIST:
             writePlayerList(buffer, this.blackList);
             break;
         default:
@@ -166,22 +167,22 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             if (instance != null)
                 switch (this.propertyID)
                 {
-                    case PlayerMusicDefImpl.SYNC_ALL:
+                    case MusicOptionsUtil.SYNC_ALL:
                         MUSIC_OPTIONS.readNBT(instance, null, this.data);
                         break;
-                    case PlayerMusicDefImpl.SYNC_DISPLAY_HUD:
+                    case MusicOptionsUtil.SYNC_DISPLAY_HUD:
                         instance.setHudOptions(disableHud, positionHud, sizeHud);
                         break;
-                    case PlayerMusicDefImpl.SYNC_MUTE_OPTION:
+                    case MusicOptionsUtil.SYNC_MUTE_OPTION:
                         instance.setMuteOption(this.muteOption);
                         break;
-                    case PlayerMusicDefImpl.SYNC_S_PARAMS:
+                    case MusicOptionsUtil.SYNC_S_PARAMS:
                         instance.setSParams(this.sParam1, this.sParam2, this.sParam3);
                         break;
-                    case PlayerMusicDefImpl.SYNC_WHITE_LIST:
+                    case MusicOptionsUtil.SYNC_WHITE_LIST:
                         instance.setWhiteList(this.whiteList);
                         break;
-                    case PlayerMusicDefImpl.SYNC_BLACK_LIST:
+                    case MusicOptionsUtil.SYNC_BLACK_LIST:
                         instance.setBlackList(this.blackList);
                         break;
                     default:
@@ -190,7 +191,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     }
 
     @SuppressWarnings("unchecked")
-    private List<PlayerLists> readPlayerList(PacketBuffer buffer) throws IOException
+    private List<PlayerLists> readPlayerList(PacketBuffer buffer)
     {
         List<PlayerLists> playerList = Collections.emptyList();
         try{
@@ -207,7 +208,8 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         return playerList;
     }
 
-    private void writePlayerList(PacketBuffer buffer, List<PlayerLists> playerListIn) throws IOException
+    @SuppressWarnings("all")
+    private void writePlayerList(PacketBuffer buffer, List<PlayerLists> playerListIn)
     {
         try{
             // Serialize data object to a byte array

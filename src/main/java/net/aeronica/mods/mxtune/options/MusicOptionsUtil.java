@@ -16,9 +16,12 @@
  */
 package net.aeronica.mods.mxtune.options;
 
+import net.aeronica.mods.mxtune.network.PacketDispatcher;
+import net.aeronica.mods.mxtune.network.client.SyncPlayerMusicOptionsMessage;
 import net.aeronica.mods.mxtune.util.Util;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.IStringSerializable;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -30,6 +33,12 @@ import java.util.Objects;
 @SuppressWarnings("ConstantConditions")
 public class MusicOptionsUtil
 {
+    public static final byte SYNC_ALL = 0;
+    public static final byte SYNC_DISPLAY_HUD = 1;
+    public static final byte SYNC_MUTE_OPTION = 2;
+    public static final byte SYNC_S_PARAMS = 3;
+    public static final byte SYNC_WHITE_LIST = 4;
+    public static final byte SYNC_BLACK_LIST = 5;
 
     @CapabilityInject(IPlayerMusicOptions.class)
     private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = Util.nonNullInjected();
@@ -38,7 +47,8 @@ public class MusicOptionsUtil
     
     public static void setHudOptions(EntityPlayer playerIn, boolean disableHud, int positionHud, float sizeHud)
     {
-        getImpl(playerIn).setHudOptions(playerIn, disableHud, positionHud, sizeHud);
+        getImpl(playerIn).setHudOptions(disableHud, positionHud, sizeHud);
+        sync(playerIn, SYNC_DISPLAY_HUD);
     }
 
     public static boolean isHudDisabled(EntityPlayer playerIn)
@@ -63,7 +73,8 @@ public class MusicOptionsUtil
 
     public static void setMuteOption(EntityPlayer playerIn, int muteOptionIn)
     {
-        getImpl(playerIn).setMuteOption(playerIn, muteOptionIn);
+        getImpl(playerIn).setMuteOption(muteOptionIn);
+        sync(playerIn, SYNC_MUTE_OPTION);
     }
 
     private static MusicOptionsUtil.EnumMuteOptions getMuteOptionEnum(EntityPlayer playerIn)
@@ -78,7 +89,8 @@ public class MusicOptionsUtil
     
     public static void setSParams(EntityPlayer playerIn, String sParam1, String sParam2, String sParam3)
     {
-        getImpl(playerIn).setSParams(playerIn, sParam1, sParam2, sParam3);
+        getImpl(playerIn).setSParams(sParam1, sParam2, sParam3);
+        sync(playerIn, SYNC_S_PARAMS);
     }
     
     public static String getSParam1(EntityPlayer playerIn)
@@ -86,11 +98,13 @@ public class MusicOptionsUtil
         return getImpl(playerIn).getSParam1();
     }
 
+    @SuppressWarnings("unused")
     public static String getSParam2(EntityPlayer playerIn)
     {
         return getImpl(playerIn).getSParam2();
     }
 
+    @SuppressWarnings("unused")
     public static String getSParam3(EntityPlayer playerIn)
     {
         return getImpl(playerIn).getSParam3();
@@ -98,7 +112,8 @@ public class MusicOptionsUtil
     
     public static void setBlackList(EntityPlayer playerIn, List<PlayerLists> blackList)
     {
-        getImpl(playerIn).setBlackList(playerIn, blackList);
+        getImpl(playerIn).setBlackList(blackList);
+        sync(playerIn, SYNC_BLACK_LIST);
     }
 
     public static List<PlayerLists> getBlackList(EntityPlayer playerIn)
@@ -108,7 +123,8 @@ public class MusicOptionsUtil
     
     public static void setWhiteList(EntityPlayer playerIn, List<PlayerLists> whiteList)
     {
-        getImpl(playerIn).setWhiteList(playerIn, whiteList);
+        getImpl(playerIn).setWhiteList(whiteList);
+        sync(playerIn, SYNC_WHITE_LIST);
     }
 
     public static List<PlayerLists> getWhiteList(EntityPlayer playerIn)
@@ -145,7 +161,7 @@ public class MusicOptionsUtil
      * @param otherPlayer is the other person muted
      * @return true if muted
      */
-    public static boolean isPlayerMuted(EntityPlayer playerIn, EntityPlayer otherPlayer)
+    public static boolean playerNotMuted(@Nullable EntityPlayer playerIn, @Nullable EntityPlayer otherPlayer)
     {
         boolean result = false;
         if (playerIn != null && otherPlayer != null)
@@ -155,55 +171,36 @@ public class MusicOptionsUtil
             case OFF:
                 break;
             case ALL:
-                result = true; break;
+                result = true;
+                break;
             case OTHERS:
-                result = !playerIn.equals(otherPlayer); break;
+                result = !playerIn.equals(otherPlayer);
+                break;
             case WHITELIST:
-            {
-                if (!playerIn.equals(otherPlayer))
-                {
-                    boolean flag = true;
-                    for (PlayerLists w : getWhiteList(playerIn))
-                    {
-                        if (w.getUuid().equals(otherPlayer.getUniqueID()))
-                        {
-                            flag = false;
-                            break;
-                        }
-                    }
-                    result = flag;
-                } else
-                {
-                    result = false;
-                }
+                result = !isPlayerInList(playerIn, otherPlayer, getWhiteList(playerIn));
                 break;
-            }
             case BLACKLIST:
-            {
-                if (!playerIn.equals(otherPlayer))
-                {
-                    boolean flag = false;
-                    for (PlayerLists w : getBlackList(playerIn))
-                    {
-                        if (w.getUuid().equals(otherPlayer.getUniqueID()))
-                        {
-                            flag = true;
-                            break;
-                        }
-                    }
-                    result = flag;
-                } else
-                {
-                    result = false;
-                }
+                result = isPlayerInList(playerIn, otherPlayer, getBlackList(playerIn));
                 break;
-            }
             default:
             }
         }
-        return result;
+        return !result;
     }
-    
+
+    private static boolean isPlayerInList(EntityPlayer playerIn, EntityPlayer otherPlayer, List<PlayerLists> playerList)
+    {
+        boolean inList = false;
+        if (!playerIn.equals(otherPlayer))
+            for (PlayerLists w : playerList)
+                if (w.getUuid().equals(otherPlayer.getUniqueID()))
+                {
+                    inList = true;
+                    break;
+                }
+        return inList;
+    }
+
     public enum EnumMuteOptions implements IStringSerializable
     {
         OFF(0, "mxtune.gui.musicOptions.muteOption.off"),
@@ -248,5 +245,29 @@ public class MusicOptionsUtil
         @Override
         public String getName() {return this.translateKey;}        
     }
-    
+
+    /**
+     * Sync all properties for the specified player to the client.
+     *
+     * @param playerIn synchronize this players music options
+     */
+    static void syncAll(EntityPlayer playerIn)
+    {
+        sync(playerIn, SYNC_ALL);
+    }
+
+    /**
+     * Sync the specified property ID for the specified player
+     * to the client.
+     *
+     * @param playerIn synchronize this players music options
+     * @param propertyID to synchronize
+     */
+    public static void sync(EntityPlayer playerIn, byte propertyID)
+    {
+        if (playerIn != null && !playerIn.getEntityWorld().isRemote)
+        {
+            PacketDispatcher.sendTo(new SyncPlayerMusicOptionsMessage(playerIn.getCapability(Objects.requireNonNull(MUSIC_OPTIONS), null), propertyID), (EntityPlayerMP) playerIn);
+        }
+    }
 }

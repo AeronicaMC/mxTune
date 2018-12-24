@@ -21,7 +21,6 @@ import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.JoinGroupMessage;
 import net.aeronica.mods.mxtune.network.client.SyncGroupMessage;
-import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.status.ServerCSDManager;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
@@ -44,6 +43,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
+import static net.aeronica.mods.mxtune.options.MusicOptionsUtil.*;
 
 // Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
 // UUID does not work on the client.
@@ -375,11 +376,11 @@ public class GroupManager
                 Group targetGroup = getMembersGroup(playerTarget.getEntityId());
                 if (targetGroup != null && targetGroup.leaderEntityID.equals(playerTarget.getEntityId()) /* && initatorGroup == null */)
                 {
-                    if (!MusicOptionsUtil.isMuteAll(playerInitiator))
+                    if (!isMuteAll(playerInitiator))
                     {
-                        if (!MusicOptionsUtil.isPlayerMuted(playerInitiator, playerTarget))
+                        if (playerNotMuted(playerInitiator, playerTarget))
                         {
-                            MusicOptionsUtil.setSParams(playerInitiator, targetGroup.groupID.toString(), "", "");
+                            setSParams(playerInitiator, targetGroup.groupID.toString(), "", "");
                             PacketDispatcher.sendTo(new JoinGroupMessage(targetGroup.groupID), (EntityPlayerMP) playerInitiator);
                         } else
                         {

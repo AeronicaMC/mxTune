@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese a.k.a. Aeronica
  *
@@ -23,15 +23,13 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.io.IOException;
-
 public class SyncGroupMessage extends AbstractClientMessage<SyncGroupMessage>
 {
+    private String groups;
+    private String members;
 
-    String groups;
-    String members;
-
-    public SyncGroupMessage() {/* Required by the PacketDispacher */}
+    @SuppressWarnings("unused")
+    public SyncGroupMessage() {/* Required by the PacketDispatcher */}
 
     public SyncGroupMessage(String groups, String members)
     {
@@ -40,14 +38,14 @@ public class SyncGroupMessage extends AbstractClientMessage<SyncGroupMessage>
     }
 
     @Override
-    protected void read(PacketBuffer buffer) throws IOException
+    protected void read(PacketBuffer buffer)
     {
         this.groups = ByteBufUtils.readUTF8String(buffer);
         this.members = ByteBufUtils.readUTF8String(buffer);
     }
 
     @Override
-    protected void write(PacketBuffer buffer) throws IOException
+    protected void write(PacketBuffer buffer)
     {
         ByteBufUtils.writeUTF8String(buffer, groups);
         ByteBufUtils.writeUTF8String(buffer, members);
@@ -60,5 +58,4 @@ public class SyncGroupMessage extends AbstractClientMessage<SyncGroupMessage>
         GROUPS.setClientMembers(members);
         GROUPS.setGroupsMembers(members);
     }
-
 }
