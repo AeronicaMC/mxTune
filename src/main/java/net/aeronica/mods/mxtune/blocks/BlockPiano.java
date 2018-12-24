@@ -50,8 +50,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 @SuppressWarnings("deprecation")
@@ -269,11 +271,11 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
         }
     }
 
-    protected static void addCollisionBoxToList(BlockPos pos, AxisAlignedBB aaBBIn, List<AxisAlignedBB> listAABB, @Nullable AxisAlignedBB addedAABB)
+    protected static void addCollisionBoxToList(@Nonnull BlockPos pos, AxisAlignedBB aaBBIn, List<AxisAlignedBB> listAABB, @Nullable AxisAlignedBB addedAABB)
     {
         if (addedAABB != NULL_AABB)
         {
-            AxisAlignedBB axisalignedbb = addedAABB.offset(pos);
+            AxisAlignedBB axisalignedbb = Objects.requireNonNull(addedAABB).offset(pos);
 
             if (aaBBIn.intersects(axisalignedbb))
             {
