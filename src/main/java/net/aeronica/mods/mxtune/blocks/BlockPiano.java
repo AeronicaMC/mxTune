@@ -326,8 +326,8 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
     }
 
     // Get the Item that this Block should drop when harvested.
-    @SuppressWarnings("NullableProblems")
     @Nullable
+    @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return state.getValue(PART) == BlockPiano.EnumPartType.RIGHT ? null : ModItems.ITEM_SPINET_PIANO;

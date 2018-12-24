@@ -55,37 +55,37 @@ public class GuiLockButton extends GuiButtonHooverText
             mc.getTextureManager().bindTexture(GuiButton.BUTTON_TEXTURES);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             boolean flag = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
-            GuiLockButton.Icon guiLockButton$icon;
+            GuiLockButton.Icon guiLockButtonIcon;
 
             if (this.locked)
             {
                 if (!this.enabled)
                 {
-                    guiLockButton$icon = GuiLockButton.Icon.LOCKED_DISABLED;
+                    guiLockButtonIcon = GuiLockButton.Icon.LOCKED_DISABLED;
                 }
                 else if (flag)
                 {
-                    guiLockButton$icon = GuiLockButton.Icon.LOCKED_HOVER;
+                    guiLockButtonIcon = GuiLockButton.Icon.LOCKED_HOVER;
                 }
                 else
                 {
-                    guiLockButton$icon = GuiLockButton.Icon.LOCKED;
+                    guiLockButtonIcon = GuiLockButton.Icon.LOCKED;
                 }
             }
             else if (!this.enabled)
             {
-                guiLockButton$icon = GuiLockButton.Icon.UNLOCKED_DISABLED;
+                guiLockButtonIcon = GuiLockButton.Icon.UNLOCKED_DISABLED;
             }
             else if (flag)
             {
-                guiLockButton$icon = GuiLockButton.Icon.UNLOCKED_HOVER;
+                guiLockButtonIcon = GuiLockButton.Icon.UNLOCKED_HOVER;
             }
             else
             {
-                guiLockButton$icon = GuiLockButton.Icon.UNLOCKED;
+                guiLockButtonIcon = GuiLockButton.Icon.UNLOCKED;
             }
 
-            this.drawTexturedModalRect(this.x, this.y, guiLockButton$icon.getX(), guiLockButton$icon.getY(), this.width, this.height);
+            this.drawTexturedModalRect(this.x, this.y, guiLockButtonIcon.getX(), guiLockButtonIcon.getY(), this.width, this.height);
         }
     }
 

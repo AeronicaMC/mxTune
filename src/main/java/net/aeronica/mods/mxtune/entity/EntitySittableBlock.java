@@ -115,18 +115,19 @@ public class EntitySittableBlock extends Entity
         double z = zIn;
         switch (rotationIn)
         {
-        case 2:
-            z += rotationOffsetIn;
-            break;
-        case 0:
-            z -= rotationOffsetIn;
-            break;
-        case 3:
-            x -= rotationOffsetIn;
-            break;
-        case 1:
-            x += rotationOffsetIn;
-            break;
+            case 2:
+                z += rotationOffsetIn;
+                break;
+            case 0:
+                z -= rotationOffsetIn;
+                break;
+            case 3:
+                x -= rotationOffsetIn;
+                break;
+            case 1:
+                x += rotationOffsetIn;
+                break;
+            default:
         }
         setPosition(x, yIn, z);
     }
@@ -157,10 +158,10 @@ public class EntitySittableBlock extends Entity
     }
 
     @Override
-    public void readEntityFromNBT(NBTTagCompound nbttagcompound) {}
+    public void readEntityFromNBT(NBTTagCompound nbttagcompound) { /* NOP */ }
 
     @Override
-    public void writeEntityToNBT(NBTTagCompound nbttagcompound) {}
+    public void writeEntityToNBT(NBTTagCompound nbttagcompound) { /* NOP */ }
 
     @Override
     public boolean shouldRiderSit() {return this.dataManager.get(SHOULD_SIT);}

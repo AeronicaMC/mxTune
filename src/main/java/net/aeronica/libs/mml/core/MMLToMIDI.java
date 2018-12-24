@@ -35,8 +35,8 @@ public class MMLToMIDI extends MMLTransformBase
     @Override
     public void processMObjects(List<MObject> mmlObject)
     {
-        int ch = 0;
-        int tk = 0;
+        int channel = 0;
+        int track = 0;
         long ticksOffset = TICKS_OFFSET;
         int currentTempo;
 
@@ -63,52 +63,26 @@ public class MMLToMIDI extends MMLTransformBase
                     break;
 
                 case INST:
-                    Patch preset = packedPreset2Patch(mmo.getInstrument());
-                    int bank =  preset.getBank();
-                    int programPreset = preset.getProgram();
-                    /* Detect a percussion set */
-                    if (bank == 128)
-                    {
-                        /* Set Bank Select for Rhythm Channel MSB 0x78, LSB 0x00  - 14 bits only */
-                        bank = 0x7800 >>> 1;
-                    }
-                    else
-                    {
-                        /* Convert the preset bank to the Bank Select bank */
-                        bank = bank << 7;
-                    }
-                    tracks[tk].add(createBankSelectEventMSB(ch, bank, mmo.getStartingTicks() + ticksOffset-2L));
-                    tracks[tk].add(createBankSelectEventLSB(ch, bank, mmo.getStartingTicks() + ticksOffset-1L));
-                    tracks[tk].add(createProgramChangeEvent(ch, programPreset, mmo.getStartingTicks() + ticksOffset));
-                    packedPresets.add(mmo.getInstrument());
+                    addInstrument(mmo, tracks[track], channel, ticksOffset);
                     break;
 
                 case PART:
-                    tk++;
-                    if (tk > 23) tk = 23;
+                    track++;
+                    if (track > 23) track = 23;
                     break;
 
                 case NOTE:
-                    tracks[tk].add(createNoteOnEvent(ch, smartClampMIDI(mmo.getMidiNote()), mmo.getNoteVolume(), mmo.getStartingTicks() + ticksOffset));
-                    tracks[tk].add(createNoteOffEvent(ch, smartClampMIDI(mmo.getMidiNote()), mmo.getNoteVolume(), mmo.getStartingTicks() + mmo.getLengthTicks() + ticksOffset - 1));
-                    if (mmo.getText() != null)
-                    {
-                        String text = "{\"Note\": {\"Midi\":" + String.format("%d", mmo.getMidiNote()) + ", \"Track\":" + tk + ", \"Text\":\"" + mmo.getText() + "\"}}";
-                        tracks[0].add(createTextMetaEvent(text, mmo.getStartingTicks() + ticksOffset));
-                    }
+                    addNote(mmo, tracks, track, channel, ticksOffset);
                     break;
 
                 case INST_END:
-                    tk++;
-                    if (tk > 23) tk = 23;
-                    ch++;
-                    if (ch > 15) ch = 15;
+                    track++;
+                    if (track > 23) track = 23;
+                    channel++;
+                    if (channel > 15) channel = 15;
                     break;
 
                 case DONE:
-                    // Create a fake note to extend the play time so decaying audio does not cutoff suddenly
-                    tracks[0].add(createNoteOnEvent(ch, 1, 0, mmo.getlongestPartTicks() + ticksOffset + 200));
-                    tracks[0].add(createNoteOffEvent(ch, 1, 0, mmo.getlongestPartTicks() + ticksOffset + 400));
                     break;
 
                 default:
@@ -119,6 +93,34 @@ public class MMLToMIDI extends MMLTransformBase
         {
             MML_LOGGER.error("MMLToMIDI#processMObjects failed: {}", e);
         }
+    }
+
+    private void addInstrument(MObject mmo, Track track, int ch, long ticksOffset) throws InvalidMidiDataException
+    {
+        Patch preset = packedPreset2Patch(mmo.getInstrument());
+        int bank =  preset.getBank();
+        int programPreset = preset.getProgram();
+        /* Detect a percussion set */
+        if (bank == 128)
+        {
+            /* Set Bank Select for Rhythm Channel MSB 0x78, LSB 0x00  - 14 bits only */
+            bank = 0x7800 >>> 1;
+        }
+        else
+        {
+            /* Convert the preset bank to the Bank Select bank */
+            bank = bank << 7;
+        }
+        track.add(createBankSelectEventMSB(ch, bank, mmo.getStartingTicks() + ticksOffset-2L));
+        track.add(createBankSelectEventLSB(ch, bank, mmo.getStartingTicks() + ticksOffset-1L));
+        track.add(createProgramChangeEvent(ch, programPreset, mmo.getStartingTicks() + ticksOffset));
+        packedPresets.add(mmo.getInstrument());
+    }
+
+    private void addNote(MObject mmo, Track[] tracks, int track, int channel, long ticksOffset) throws InvalidMidiDataException
+    {
+        tracks[track].add(createNoteOnEvent(channel, smartClampMIDI(mmo.getMidiNote()), mmo.getNoteVolume(), mmo.getStartingTicks() + ticksOffset));
+        tracks[track].add(createNoteOffEvent(channel, smartClampMIDI(mmo.getMidiNote()), mmo.getNoteVolume(), mmo.getStartingTicks() + mmo.getLengthTicks() + ticksOffset - 1));
     }
 
     private MidiEvent createProgramChangeEvent(int channel, int value, long tick) throws InvalidMidiDataException
@@ -165,6 +167,7 @@ public class MMLToMIDI extends MMLTransformBase
         return new MidiEvent(msg, tick);
     }
 
+    @SuppressWarnings("unused")
     private MidiEvent createTextMetaEvent(String text, long tick) throws InvalidMidiDataException
     {
         MetaMessage msg = new MetaMessage();

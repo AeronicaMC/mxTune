@@ -192,7 +192,7 @@ public class PlayManager
         if (GroupManager.isLeader(playerID))
         {
             String musicText = getMappedMML(groupsPlayID);
-            Vec3d pos = getMedianPos(groupsPlayID);
+            Vec3d pos = GROUPS.getMedianPos(groupsPlayID);
             activePlayIDs.add(groupsPlayID);
             syncStatus();
             resetGroupsPlayID(playerID);
@@ -378,36 +378,6 @@ public class PlayManager
             ModLogger.error(e);
         }
         return buildMappedMML.toString();
-    }
-
-    /**
-     * @param playID entity id of the player
-     * @return Vec3d median position for the player
-     */
-    private static Vec3d getMedianPos(@Nullable Integer playID)
-    {
-        double x, y, z;
-        x = y = z = 0;
-        int count = 0;
-        Vec3d pos;
-        for(int member: getMembersByPlayID(playID))
-        {   
-            EntityPlayer player = (EntityPlayer) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getEntityByID(member);
-            if(player == null)
-                continue;
-            x = x + player.getPositionVector().x;
-            y = y + player.getPositionVector().y;
-            z = z + player.getPositionVector().z;
-            count++;
-        }            
-
-        if (count == 0)
-            return Vec3d.ZERO;
-        x/=count;
-        y/=count;
-        z/=count;
-        pos = new Vec3d(x,y,z);
-        return pos;
     }
 
     /**

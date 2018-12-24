@@ -61,6 +61,12 @@ public class ClientProxy extends ServerProxy
     public EntityPlayer getClientPlayer() {return Minecraft.getMinecraft().player;}
 
     @Override
+    public EntityPlayer getPlayerByEntityID(int entityID)
+    {
+        return (EntityPlayer)  getClientPlayer().getEntityWorld().getEntityByID(entityID);
+    }
+
+    @Override
     public WorldClient getClientWorld() {return Minecraft.getMinecraft().world;}
 
     @Override

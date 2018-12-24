@@ -25,6 +25,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -43,6 +44,11 @@ public class ServerProxy
     public Side getEffectiveSide() {return getPhysicalSide();}
 
     public EntityPlayer getClientPlayer() {return null;}
+
+    public EntityPlayer getPlayerByEntityID(int entityID)
+    {
+        return (EntityPlayer) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getEntityByID(entityID);
+    }
 
     public Minecraft getMinecraft() {return null;}
 

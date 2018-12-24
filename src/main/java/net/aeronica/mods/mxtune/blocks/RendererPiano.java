@@ -46,12 +46,15 @@ import java.util.Objects;
 @SideOnly(Side.CLIENT)
 public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implements IReBakeModel
 {
-    private double xMusicOffset = 0D, zMusicOffset = 0D;
+    private double xMusicOffset = 0D;
+    private double zMusicOffset = 0D;
     private EnumFacing facing = EnumFacing.NORTH;
-    private double xRackOffset = 0D, zRackOffset = 0D;
-    private double xBenchOffset = 0D, zBenchOffset = 0D;
+    private double xRackOffset = 0D;
+    private double zRackOffset = 0D;
+    private double xBenchOffset = 0D;
+    private double zBenchOffset = 0D;
     /** Ordering index for D-U-N-S-W-E */
-    private float face[] = {0, 0, 90, 270, 180, 0, 0, 0};
+    private float[] face = {0, 0, 90, 270, 180, 0, 0, 0};
     private IBakedModel bakedRackModel;
     private IBakedModel bakedBenchModel;
 
@@ -173,29 +176,13 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
     private void renderRack(TileInstrument te)
     {
         GlStateManager.pushMatrix();
-
-        GlStateManager.rotate(face[facing.getIndex()] - 90, 0, 1, 0);
-        RenderHelper.disableStandardItemLighting();
-        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-        if (Minecraft.isAmbientOcclusionEnabled())
-        {
-            GlStateManager.shadeModel(GL11.GL_SMOOTH);
-        } else
-        {
-            GlStateManager.shadeModel(GL11.GL_FLAT);
-        }
-
+        renderCommon(te);
         World world = te.getWorld();
-        /* Translate back to local view coordinates so that we can do the actual rendering here */
-        GlStateManager.translate(-te.getPos().getX() - .5, -te.getPos().getY(), -te.getPos().getZ() - .5);
-
         Tessellator tessellator = Tessellator.getInstance();
         tessellator.getBuffer().begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-
         Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelRenderer().renderModel(world, getRackBakedModel(), world.getBlockState(te.getPos()), te.getPos(),
                 Tessellator.getInstance().getBuffer(), true);
         tessellator.draw();
-
         RenderHelper.enableStandardItemLighting();
         GlStateManager.popMatrix();
     }
@@ -203,31 +190,28 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
     private void renderBench(TileInstrument te)
     {
         GlStateManager.pushMatrix();
+        renderCommon(te);
+        Tessellator tessellator = Tessellator.getInstance();
+        tessellator.getBuffer().begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+        World world = te.getWorld();
+        Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelRenderer().renderModel(world, getBenchBakedModel(), world.getBlockState(te.getPos()), te.getPos(),
+                Tessellator.getInstance().getBuffer(), true);
+        tessellator.draw();
+        RenderHelper.enableStandardItemLighting();
+        GlStateManager.popMatrix();
+    }
 
+    private void renderCommon(TileInstrument te)
+    {
         GlStateManager.rotate(face[facing.getIndex()] - 90, 0, 1, 0);
         RenderHelper.disableStandardItemLighting();
         this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         if (Minecraft.isAmbientOcclusionEnabled())
-        {
             GlStateManager.shadeModel(GL11.GL_SMOOTH);
-        } else
-        {
+        else
             GlStateManager.shadeModel(GL11.GL_FLAT);
-        }
-
-        World world = te.getWorld();
         /* Translate back to local view coordinates so that we can do the actual rendering here */
         GlStateManager.translate(-te.getPos().getX() - .5, -te.getPos().getY(), -te.getPos().getZ() - .5);
-
-        Tessellator tessellator = Tessellator.getInstance();
-        tessellator.getBuffer().begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-
-        Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelRenderer().renderModel(world, getBenchBakedModel(), world.getBlockState(te.getPos()), te.getPos(),
-                Tessellator.getInstance().getBuffer(), true);
-        tessellator.draw();
-
-        RenderHelper.enableStandardItemLighting();
-        GlStateManager.popMatrix();
     }
 
     private void renderSheetMusic(TileInstrument te)

@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese aka Aeronica
  *
@@ -24,9 +24,9 @@ import net.minecraftforge.items.ItemStackHandler;
 public class TilePiano extends TileInstrument
 {
     @SuppressWarnings("unused")
-    public TilePiano() {/* Needed for vanilla processing */}
+    public TilePiano() {/* NOP */}
 
-    public TilePiano(EnumFacing facing)
+    TilePiano(EnumFacing facing)
     {
         this.inventory = new SheetMusicStackHandler(1);
         this.facing = facing;
@@ -47,23 +47,20 @@ public class TilePiano extends TileInstrument
         return super.writeToNBT(tag);
     }
 
-    public void syncToClient()
+    void syncToClient()
     {
         markDirty();
-        if (world != null)
+        if (world != null && !world.isRemote && !this.isInvalid())
         {
-            if (!world.isRemote && !this.isInvalid())
-            {
-                IBlockState state = world.getBlockState(getPos());
-                /*
-                 * Sets the block state at a given location. Flag 1 will cause a
-                 * block update. Flag 2 will send the change to clients (you
-                 * almost always want this). Flag 4 prevents the block from
-                 * being re-rendered, if this is a client world. Flags can be
-                 * added together.
-                 */
-                world.notifyBlockUpdate(getPos(), state, state, 3);
-            }
+            IBlockState state = world.getBlockState(getPos());
+            /*
+             * Sets the block state at a given location. Flag 1 will cause a
+             * block update. Flag 2 will send the change to clients (you
+             * almost always want this). Flag 4 prevents the block from
+             * being re-rendered, if this is a client world. Flags can be
+             * added together.
+             */
+            world.notifyBlockUpdate(getPos(), state, state, 3);
         }
     }
 

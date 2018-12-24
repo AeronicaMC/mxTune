@@ -27,6 +27,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -51,6 +52,8 @@ public class GROUPS
     private static Map<Integer, Integer> membersQueuedStatus;
     private static Map<Integer, Integer> membersPlayID;
     private static Set<Integer> activePlayIDs;
+
+    private GROUPS() { /* NOP */ }
 
     /* GroupManager Client Status Methods */
     @Nullable
@@ -83,7 +86,7 @@ public class GROUPS
             }       
             return members;
         }
-        return null;
+        return Collections.EMPTY_SET;
     }
     
     private static boolean isLeader(Integer memberID)
@@ -172,13 +175,15 @@ public class GROUPS
     
     public static Vec3d getMedianPos(int playID)
     {
-        double x, y, z;
+        double x;
+        double y;
+        double z;
         x = y = z = 0;
         int count = 0;
         Vec3d pos;
         for(int member: getMembersByPlayID(playID))
         {   
-            EntityPlayer player = (EntityPlayer)  MXTune.proxy.getClientPlayer().getEntityWorld().getEntityByID(member);
+            EntityPlayer player = MXTune.proxy.getPlayerByEntityID(member);
             if(player == null)
                 continue;
             x = x + player.getPositionVector().x;

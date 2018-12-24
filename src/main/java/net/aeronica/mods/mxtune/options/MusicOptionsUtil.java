@@ -26,7 +26,6 @@ import net.minecraft.util.IStringSerializable;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
@@ -264,9 +263,9 @@ public class MusicOptionsUtil
      * @param playerIn synchronize this players music options
      * @param propertyID to synchronize
      */
-    public static void sync(@Nonnull EntityPlayer playerIn, byte propertyID)
+    public static void sync(EntityPlayer playerIn, byte propertyID)
     {
-        if (playerIn != null && !playerIn.getEntityWorld().isRemote)
+        if (!playerIn.getEntityWorld().isRemote)
         {
             PacketDispatcher.sendTo(new SyncPlayerMusicOptionsMessage(playerIn.getCapability(Objects.requireNonNull(MUSIC_OPTIONS), null), propertyID), (EntityPlayerMP) playerIn);
         }
