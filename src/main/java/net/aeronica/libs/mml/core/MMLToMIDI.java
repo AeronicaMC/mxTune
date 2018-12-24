@@ -103,7 +103,6 @@ public class MMLToMIDI extends MMLTransformBase
                     if (tk > 23) tk = 23;
                     ch++;
                     if (ch > 15) ch = 15;
-                    tracks[tk].add(createProgramChangeEvent(ch, 0, 0L));
                     break;
 
                 case DONE:
