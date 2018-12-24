@@ -103,7 +103,7 @@ public class MMLToMIDI extends MMLTransformBase
                     if (tk > 23) tk = 23;
                     ch++;
                     if (ch > 15) ch = 15;
-                    tracks[tk].add(createMsg(192, ch, 0, 100, 0L));
+                    tracks[tk].add(createProgramChangeEvent(ch, 0, 0L));
                     break;
 
                 case DONE:
@@ -116,36 +116,16 @@ public class MMLToMIDI extends MMLTransformBase
                     MML_LOGGER.debug("MMLToMIDI#processMObjects Impossible?! An undefined enum?");
                 }
             }
-        } catch (Exception e)
+        } catch (InvalidMidiDataException e)
         {
-            MML_LOGGER.error("MMLToMIDI#processMObjects failed: ", e);
+            MML_LOGGER.error("MMLToMIDI#processMObjects failed: {}", e);
         }
-    }
-    
-    private MidiEvent createMsg(int mComd, int mChan, int mDat1, int mDat2, long mTime)
-    {
-        /*
-         * NoteOn = 144, Channel, Key, Velocity, Time-stamp
-         * NoteOn = 128, Channel, Key, Velocity, Time-stamp
-         * Patch = 192, Channel, Patch, 0, Time-stamp
-         */
-        ShortMessage smLocal = new ShortMessage();
-        MidiEvent mEve = new MidiEvent(smLocal, 1);
-        try
-        {
-            smLocal = new ShortMessage(mComd, mChan, mDat1, mDat2);
-            mEve = new MidiEvent(smLocal, mTime);
-        } catch (Exception ex)
-        {
-            MML_LOGGER.error("MMLToMIDI#createMsg failed: " + ex);
-        }
-        return mEve;
     }
 
     private MidiEvent createProgramChangeEvent(int channel, int value, long tick) throws InvalidMidiDataException
     {
         ShortMessage msg = new ShortMessage();
-        msg.setMessage(0xC0 + channel, value, 0);
+        msg.setMessage(ShortMessage.PROGRAM_CHANGE, channel, value, 0);
         return new MidiEvent(msg, tick);
     }
 
@@ -164,14 +144,14 @@ public class MMLToMIDI extends MMLTransformBase
     private MidiEvent createNoteOnEvent(int channel, int pitch, int velocity, long tick) throws InvalidMidiDataException
     {
         ShortMessage msg = new ShortMessage();
-        msg.setMessage(0x90 + channel, pitch, velocity);
+        msg.setMessage(ShortMessage.NOTE_ON, channel, pitch, velocity);
         return new MidiEvent(msg, tick);
     }
 
     private MidiEvent createNoteOffEvent(int channel, int pitch, int velocity, long tick) throws InvalidMidiDataException
     {
         ShortMessage msg = new ShortMessage();
-        msg.setMessage(0x80 + channel, pitch, velocity);
+        msg.setMessage(ShortMessage.NOTE_OFF, channel, pitch, velocity);
         return new MidiEvent(msg, tick);
     }
 
