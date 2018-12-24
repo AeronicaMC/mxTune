@@ -147,5 +147,5 @@ mxtune.chat.gm.noJoinGroupWhenMuteAll=[모두 침묵] 상태라서 그룹에 참
 mxtune.chat.gm.noJoinGroupWhenPlayerIsMuted=%s 그룹이 침묵 상태라서 참가할 수 없습니다.
 mxtune.chat.gm.noSleepInJam=JAM 중에는 잘 수 없습니다.
 mxtune.chat.musicAndSound.masterVolumeOff=메인 볼륨이 꺼져 있어요! 연주 불가능!
-mxtune.chat.musicAndSound.playersVolumeOff=사용자 볼륨이 꺼져 있어요! 연주 불가능!
+mxtune.chat.musicAndSound.recordVolumeOff=주크 박스 / 노트 블록 볼륨이 꺼졌습니다! 놀지 마!
 entity.Villager.mxtune:musician=음악가
