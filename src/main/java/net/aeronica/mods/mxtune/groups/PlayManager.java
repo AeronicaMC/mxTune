@@ -77,6 +77,7 @@ public class PlayManager
      * @param playerIn who is playing
      * @return a unique play id
      */
+    @Nullable
     public static Integer playMusic(EntityPlayer playerIn)
     {
         return playMusic(playerIn, null, false);
@@ -180,8 +181,7 @@ public class PlayManager
         PacketDispatcher.sendToAllAround(packetPlaySolo, playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, ModConfig.getListenerRange());
         return playID;
     }
-
-    @Nullable
+    
     private static Integer queueJam(EntityPlayer playerIn, String mml, Integer playerID)
     {
         Integer groupsPlayID = getGroupsPlayID(playerID);

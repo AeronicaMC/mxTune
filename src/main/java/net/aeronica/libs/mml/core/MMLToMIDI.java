@@ -11,7 +11,6 @@ import static net.aeronica.libs.mml.core.MMLUtil.*;
 
 public class MMLToMIDI extends MMLTransformBase
 {
-    private static final int MASTER_TEMPO = 120;
     private static final double PPQ = 480.0;
     private static final int TICKS_OFFSET = 10;
     private Sequence sequence;
@@ -126,9 +125,9 @@ public class MMLToMIDI extends MMLTransformBase
     private MidiEvent createMsg(int mComd, int mChan, int mDat1, int mDat2, long mTime)
     {
         /*
-         * NoteOn = 144, Channel, Key, Velocity, Time-stamp NoteOn = 128,
-         * Channel, Key, Velocity, Time-stamp Patch = 192, Channel, Patch, 0,
-         * Time-stamp
+         * NoteOn = 144, Channel, Key, Velocity, Time-stamp
+         * NoteOn = 128, Channel, Key, Velocity, Time-stamp
+         * Patch = 192, Channel, Patch, 0, Time-stamp
          */
         ShortMessage smLocal = new ShortMessage();
         MidiEvent mEve = new MidiEvent(smLocal, 1);

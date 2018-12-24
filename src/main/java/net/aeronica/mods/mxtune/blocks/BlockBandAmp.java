@@ -86,9 +86,6 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) { return ModItems.ITEM_BAND_AMP; }
 
-    @Override
-    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state) { return new ItemStack(ModItems.ITEM_BAND_AMP); }
-
     /**
      * Called when the block is right clicked by a player.
      */

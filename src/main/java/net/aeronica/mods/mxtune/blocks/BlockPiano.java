@@ -30,7 +30,6 @@ import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
@@ -409,7 +408,7 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
     @Override
     protected BlockStateContainer createBlockState()
     {
-        return new BlockStateContainer(this, new IProperty[] {FACING, PART, OCCUPIED});
+        return new BlockStateContainer(this, FACING, PART, OCCUPIED);
     }
 
     public enum EnumPartType implements IStringSerializable

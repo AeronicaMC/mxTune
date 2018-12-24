@@ -72,11 +72,11 @@ public class EntitySittableBlock extends Entity
     }
 
     /** Allow riding standing up if shouldRiderSit is false */
-    public EntitySittableBlock(World world, BlockPos posIn, double y0ffset, boolean shouldRiderSit)
+    public EntitySittableBlock(World world, BlockPos posIn, double yOffset, boolean shouldRiderSit)
     {
         this(world);
         this.blockPos = posIn;
-        setPosition(posIn.getX() + 0.5D, posIn.getY() + y0ffset, posIn.getZ() + 0.5D);
+        setPosition(posIn.getX() + 0.5D, posIn.getY() + yOffset, posIn.getZ() + 0.5D);
         this.dataManager.set(SHOULD_SIT, shouldRiderSit);
         this.dataManager.set(BLOCK_POS, posIn);
     }
@@ -100,11 +100,11 @@ public class EntitySittableBlock extends Entity
         this.dataManager.set(BLOCK_POS, posIn);
     }
 
-    public EntitySittableBlock(World world, BlockPos posIn, double y0ffset, int rotation, double rotationOffset)
+    public EntitySittableBlock(World world, BlockPos posIn, double yOffset, int rotation, double rotationOffset)
     {
         this(world);
         this.blockPos = posIn;
-        setPositionConsideringRotation(posIn.getX() + 0.5D, posIn.getY() + y0ffset, posIn.getZ() + 0.5D, rotation, rotationOffset);
+        setPositionConsideringRotation(posIn.getX() + 0.5D, posIn.getY() + yOffset, posIn.getZ() + 0.5D, rotation, rotationOffset);
         this.dataManager.set(SHOULD_SIT, Boolean.TRUE);
         this.dataManager.set(BLOCK_POS, posIn);
     }
