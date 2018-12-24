@@ -29,7 +29,7 @@ public class GuiLockButton extends GuiButtonHooverText
 {
     private boolean locked;
 
-    public GuiLockButton(int buttonId, int x, int y)
+    GuiLockButton(int buttonId, int x, int y)
     {
         super(buttonId, x, y, 20, 20, "");
     }

@@ -54,6 +54,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
+@SuppressWarnings("deprecation")
 public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
 {
     public static final PropertyEnum<BlockPiano.EnumPartType> PART = PropertyEnum.create("part", BlockPiano.EnumPartType.class);
@@ -67,7 +68,7 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
     public BlockPiano()
     {
         super(Material.WOOD);
-        setDefaultState(this.blockState.getBaseState().withProperty(PART, BlockPiano.EnumPartType.LEFT).withProperty(OCCUPIED, Boolean.valueOf(false)));
+        setDefaultState(this.blockState.getBaseState().withProperty(PART, BlockPiano.EnumPartType.LEFT).withProperty(OCCUPIED, Boolean.FALSE));
         this.setSoundType(SoundType.WOOD);
         this.setHardness(0.8F);
         this.disableStats();
@@ -196,16 +197,13 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
     }
 
     @Override
-    @Deprecated
     public boolean isFullCube(IBlockState state) {return false;}
 
     // Used to determine ambient occlusion and culling when rebuilding chunks for render
     @Override
-    @Deprecated
     public boolean isOpaqueCube(IBlockState state) {return false;}
 
     // Called when a neighboring block changes.
-    @Deprecated
     @Override
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
@@ -229,9 +227,8 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
         }
     }
 
-    @Deprecated
     @Override
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, Entity entityIn, boolean p_185477_7_)
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean p_185477_7_)
     {
         List<AxisAlignedBB> list = Lists.newArrayList();
         list.add(PIANO_BODY_AABB);
@@ -272,8 +269,7 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
         }
     }
 
-    @Deprecated
-    protected static void addCollisionBoxToList(BlockPos pos, AxisAlignedBB aaBBIn, List<AxisAlignedBB> listAABB, AxisAlignedBB addedAABB)
+    protected static void addCollisionBoxToList(BlockPos pos, AxisAlignedBB aaBBIn, List<AxisAlignedBB> listAABB, @Nullable AxisAlignedBB addedAABB)
     {
         if (addedAABB != NULL_AABB)
         {
@@ -286,11 +282,9 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
         }
     }
 
-    @Deprecated
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {return PIANO_BODY_AABB;}
 
-    @Deprecated
     @Override
     public EnumPushReaction getPushReaction(IBlockState state) {return EnumPushReaction.DESTROY;}
 
@@ -298,7 +292,6 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
     @Override
     public BlockRenderLayer getRenderLayer() {return BlockRenderLayer.CUTOUT;}
 
-    @Deprecated
     @Override
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
@@ -310,7 +303,7 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
     {
         if (player.capabilities.isCreativeMode && state.getValue(PART) == BlockPiano.EnumPartType.RIGHT)
         {
-            BlockPos blockpos = pos.offset(((EnumFacing) state.getValue(FACING)).getOpposite());
+            BlockPos blockpos = pos.offset(state.getValue(FACING).getOpposite());
 
             if (worldIn.getBlockState(blockpos).getBlock() == this)
             {
@@ -350,12 +343,11 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
     }
 
     // Convert the given metadata into a BlockState for this Block
-    @Deprecated
     @Override
     public IBlockState getStateFromMeta(int meta)
     {
         EnumFacing enumfacing = EnumFacing.byHorizontalIndex(meta);
-        return (meta & 8) > 0 ? this.getDefaultState().withProperty(PART, BlockPiano.EnumPartType.RIGHT).withProperty(FACING, enumfacing).withProperty(OCCUPIED, Boolean.valueOf((meta & 4) > 0))
+        return (meta & 8) > 0 ? this.getDefaultState().withProperty(PART, BlockPiano.EnumPartType.RIGHT).withProperty(FACING, enumfacing).withProperty(OCCUPIED, (meta & 4) > 0)
                 : this.getDefaultState().withProperty(PART, BlockPiano.EnumPartType.LEFT).withProperty(FACING, enumfacing);
     }
 
@@ -364,14 +356,13 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
      * applies properties not visible in the metadata, such as fence
      * connections.
      */
-    @Deprecated
     @Override
     public IBlockState getActualState(IBlockState stateIn, IBlockAccess worldIn, BlockPos pos)
     {
         IBlockState stateOut = stateIn;
         if (stateIn.getValue(PART) == BlockPiano.EnumPartType.LEFT)
         {
-            IBlockState iblockstate = worldIn.getBlockState(pos.offset((EnumFacing) stateIn.getValue(FACING)));
+            IBlockState iblockstate = worldIn.getBlockState(pos.offset(stateIn.getValue(FACING)));
 
             if (iblockstate.getBlock() == this)
             {
@@ -382,15 +373,13 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
     }
 
     //Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed blockstate.
-    @Deprecated
     @Override
     public IBlockState withRotation(IBlockState state, Rotation rot)
     {
-        return state.withProperty(FACING, rot.rotate((EnumFacing) state.getValue(FACING)));
+        return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
     }
 
     // Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed blockstate.
-    @Deprecated
     @Override
     public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
     {
@@ -407,7 +396,7 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
         {
             i |= 8;
 
-            if (state.getValue(OCCUPIED).booleanValue())
+            if (state.getValue(OCCUPIED))
             {
                 i |= 4;
             }
@@ -428,7 +417,7 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
 
         private final String name;
 
-        private EnumPartType(String name) {this.name = name;}
+        EnumPartType(String name) {this.name = name;}
 
         @Override
         public String toString() {return this.name;}
@@ -439,7 +428,6 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
 
     /* TileEntity stuff */
 
-    @Deprecated
     @Override
     public EnumBlockRenderType getRenderType(IBlockState state)
     {

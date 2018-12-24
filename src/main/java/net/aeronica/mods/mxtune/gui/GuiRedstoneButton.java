@@ -13,18 +13,18 @@ public class GuiRedstoneButton extends GuiButtonHooverText
     private boolean signalEnabled;
     private ArrowFaces direction;
 
-    public GuiRedstoneButton(int buttonId, int x, int y, ArrowFaces direction)
+    GuiRedstoneButton(int buttonId, int x, int y, ArrowFaces direction)
     {
         super(buttonId, x, y, 20, 20, "");
         this.direction = direction;
     }
 
-    public boolean isSignalEnabled()
+    boolean isSignalEnabled()
     {
         return this.signalEnabled;
     }
 
-    public void setSignalEnabled(boolean signalEnabledIn)
+    void setSignalEnabled(boolean signalEnabledIn)
     {
         this.signalEnabled = signalEnabledIn;
     }
@@ -40,37 +40,37 @@ public class GuiRedstoneButton extends GuiButtonHooverText
             mc.getTextureManager().bindTexture(GuiBandAmp.BG_TEXTURE);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             boolean flag = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
-            GuiRedstoneButton.Icon guiRedstoneButton$icon;
+            GuiRedstoneButton.Icon guiRedstoneButtonIcon;
 
             if (this.signalEnabled)
             {
                 if (!this.enabled)
                 {
-                    guiRedstoneButton$icon = GuiRedstoneButton.Icon.SIGNAL_ENABLED_DISABLED;
+                    guiRedstoneButtonIcon = GuiRedstoneButton.Icon.SIGNAL_ENABLED_DISABLED;
                 }
                 else if (flag)
                 {
-                    guiRedstoneButton$icon = GuiRedstoneButton.Icon.SIGNAL_ENABLED_HOVER;
+                    guiRedstoneButtonIcon = GuiRedstoneButton.Icon.SIGNAL_ENABLED_HOVER;
                 }
                 else
                 {
-                    guiRedstoneButton$icon = GuiRedstoneButton.Icon.SIGNAL_ENABLED;
+                    guiRedstoneButtonIcon = GuiRedstoneButton.Icon.SIGNAL_ENABLED;
                 }
             }
             else if (!this.enabled)
             {
-                guiRedstoneButton$icon = GuiRedstoneButton.Icon.SIGNAL_DISABLED_DISABLED;
+                guiRedstoneButtonIcon = GuiRedstoneButton.Icon.SIGNAL_DISABLED_DISABLED;
             }
             else if (flag)
             {
-                guiRedstoneButton$icon = GuiRedstoneButton.Icon.SIGNAL_DISABLED_HOVER;
+                guiRedstoneButtonIcon = GuiRedstoneButton.Icon.SIGNAL_DISABLED_HOVER;
             }
             else
             {
-                guiRedstoneButton$icon = GuiRedstoneButton.Icon.SIGNAL_DISABLED_UNLOCKED;
+                guiRedstoneButtonIcon = GuiRedstoneButton.Icon.SIGNAL_DISABLED_UNLOCKED;
             }
 
-            this.drawTexturedModalRect(this.x, this.y, guiRedstoneButton$icon.getX() + direction.getXOffset(), guiRedstoneButton$icon.getY(), this.width, this.height);
+            this.drawTexturedModalRect(this.x, this.y, guiRedstoneButtonIcon.getX() + direction.getXOffset(), guiRedstoneButtonIcon.getY(), this.width, this.height);
         }
     }
 

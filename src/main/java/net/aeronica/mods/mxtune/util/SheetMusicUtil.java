@@ -124,11 +124,14 @@ public enum SheetMusicUtil
     {
         ParseErrorListener parseErrorListener = new ParseErrorListener();
         int seconds = 0;
-
-        MMLParser parser =  MMLParserFactory.getMMLParser(mml);
-        if (parser == null)
+        MMLParser parser;
+        try
         {
-            ModLogger.debug("MMLParserFactory.getMMLParser() is null in %s", SheetMusicUtil.class.getSimpleName());
+             parser = MMLParserFactory.getMMLParser(mml);
+        }
+        catch (IOException e)
+        {
+            ModLogger.debug("MMLParserFactory.getMMLParser() IOException in %s, Error: %s", SheetMusicUtil.class.getSimpleName(), e);
             return ValidDuration.INVALID;
         }
         parser.removeErrorListeners();

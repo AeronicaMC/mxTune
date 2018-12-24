@@ -22,6 +22,7 @@ import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.MusicTextMessage;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.Tessellator;
@@ -400,9 +401,15 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     /* MML Parsing */
     private void parseMML(String mml)
     {
-        MMLParser parser = MMLParserFactory.getMMLParser(mml);
-        if (parser == null)
+        MMLParser parser;
+
+        try
         {
+            parser = MMLParserFactory.getMMLParser(mml);
+        }
+        catch (IOException e)
+        {
+            ModLogger.debug("MMLParserFactory.getMMLParser() IOException in %s, Error: %s", SheetMusicUtil.class.getSimpleName(), e);
             parseErrorCache.clear();
             parseErrorCache.add(new ParseErrorEntry(0,0, "MMLParserFactory.getMMLParser(mml) is null", null));
             return;
@@ -584,10 +591,14 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         ModLogger.debug("GuiMusicPaperParse.mmlPlay(): %s", mml.substring(0, mml.length() >= 25 ? 25 : mml.length()));
         
         if (midiUnavailable) return false;
-        MMLParser parser = MMLParserFactory.getMMLParser(mml);
-        if (parser == null)
+        MMLParser parser;
+        try
         {
-            ModLogger.debug("MMLParserFactory.getMMLParser(mml) is null in %s", this.getClass().getSimpleName());
+            parser = MMLParserFactory.getMMLParser(mml);
+        }
+        catch (IOException e)
+        {
+            ModLogger.debug("MMLParserFactory.getMMLParser() IOException in %s, Error: %s", SheetMusicUtil.class.getSimpleName(), e);
             return true;
         }
         parser.removeErrorListeners();

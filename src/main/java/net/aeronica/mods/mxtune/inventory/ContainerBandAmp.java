@@ -109,12 +109,13 @@ public class ContainerBandAmp extends Container
         return this.tileBandAmp.isUsableByPlayer(playerIn);
     }
 
+    @Nonnull
     @Override
     public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player)
     {
         // *** only allow owners to manage instruments ***
         ItemStack stack = ItemStack.EMPTY;
-        if (tileBandAmp.isOwner(player) || slotId >= tileBandAmp.MAX_SLOTS)
+        if (tileBandAmp.isOwner(player) || slotId >= TileBandAmp.MAX_SLOTS)
             stack = super.slotClick(slotId, dragType, clickTypeIn, player);
 
         setDuration();

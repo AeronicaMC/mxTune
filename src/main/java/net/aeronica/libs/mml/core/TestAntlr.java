@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 
 public class TestAntlr
 {
-    private static String mmlString = TestData.MML0.getMML();
+    private static String mmlString = TestData.MML4.getMML();
 
     public static InputStream init()
     {

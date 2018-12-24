@@ -231,12 +231,9 @@ public class GuiBandAmp extends GuiContainer
     private boolean updateButtonStatus(GuiRedstoneButton button, boolean buttonState, boolean prevState)
     {
         if (prevState != buttonState)
-        {
             button.setSignalEnabled(buttonState);
-            return buttonState;
-        }
-        else
-            return prevState;
+
+        return buttonState;
     }
 
     private void sendButtonChanges()
@@ -251,7 +248,6 @@ public class GuiBandAmp extends GuiContainer
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        //drawBandAmp();
         updateButtonStatus();
         String name = I18n.format(tileBandAmp.getName());
         fontRenderer.drawString(name, 8, 6, 0x404040);

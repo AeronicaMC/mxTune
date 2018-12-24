@@ -23,6 +23,7 @@ import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.sound.ClientAudio.Status;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.client.resources.I18n;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
@@ -64,10 +65,14 @@ public class MML2PCM
         for (Map.Entry<Integer, String> integerStringMap: playerMML.entrySet())
             mml.append(integerStringMap.getValue());
 
-        MMLParser parser =  MMLParserFactory.getMMLParser(mml.toString());
-        if (parser == null)
+        MMLParser parser;
+        try
         {
-            ModLogger.debug("MMLParserFactory.getMMLParser() is null in %s", this.getClass().getSimpleName());
+            parser = MMLParserFactory.getMMLParser(mml.toString());
+        }
+        catch (IOException e)
+        {
+            ModLogger.debug("MMLParserFactory.getMMLParser() IOException in %s, Error: %s", SheetMusicUtil.class.getSimpleName(), e);
             ClientAudio.setPlayIDAudioDataStatus(playID, Status.ERROR);
             return false;
         }

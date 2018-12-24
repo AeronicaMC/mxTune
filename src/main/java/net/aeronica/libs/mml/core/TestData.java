@@ -4,6 +4,8 @@ package net.aeronica.libs.mml.core;
 import java.util.HashMap;
 import java.util.Map;
 
+import static net.aeronica.libs.mml.core.MMLUtil.MML_LOGGER;
+
 public enum TestData {
     MML0(0, "Mario", "MML@v13r4>e32r16.d+32r16.d16c16r8.<<g8r4r16>>e16r8.d16c32r16.e16r4.c16.d32e8e8d8c8e8f8g8a8r8c8c8<a8g8>c16c16r4<f8g8a8b16r8.>>g32r16.g32r8.r32<e16r8.d16c32r16.e16r4.c16.d32e8e8d8c8a8g8>c8<e16d32r16.c8.c8d8e8c16c16r4f8e8c8d8r16>g32r8r32<g32r4r16.a8b8>c8<b32r8r32g8r8.f8r8g16f16r8e8f8f+8g8r8a8b8>c8<b32r8r32g8r8.>d+8d8r8c8r2<e16r8.d16c32r16.e16r4.c16.d32e8e8d8c8e8f8g8a8r8c8c8<a8g8>c16c16r4<f8g8a8b16r8.>>g32r16.g32r8.r32<e16r8.d16c32r16.e16r4.c16.d32e8e8d8c8a8g8>c8<e16d32r16.c8.c8d8e8c16c16r4f8e8c8d8r16>g32r8r32<g32r4r16.a8b8>c8<b32r8r32g8r8.f8r8g16f16r8e8f8f+8g8r8a8b8>c8<b32r8r32g8r8.>d+8d8r8c8,v10r1r4.e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8d8e8f8f+8r2r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8d8e8f8f+8r2r8c8r8c8r8c8r8c8r8a8r8a8<e8f8f+8g8f8>c8<f8>c8<e8>c8<e8>c8<g+8>d+8<g+8>d+8g32r32g32r32f32r16.e32r16.d32r8.r32e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8d8e8f8f+8r2r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8d8e8f8f+8r2r8c8r8c8r8c8r8c8r8a8r8a8<e8f8f+8g8f8>c8<f8>c8<e8>c8<e8>c8<g+8>d+8<g+8>d+8g32r32g32r32f32r16.e32r16.d32r16.c2.,v10r1o2g8.&g32r32>c8r16.<g32>c8r8c8r8c8r8c8r8c8r8c8r8a8r8f8r8f8r8e8r8e8r8d8e8f8f+8r2c8r16.<g32>c8r8c8r8c8r8c8r8c8r8c8r8a8r8f8r8f8r8e8r8e8r8d8e8f8f+8r2f8r8f8r8e8r8e8r8d8r8d8r8e8f8f+8g8r1r1c8r16.<g32>c8r8c8r8c8r8c8r8c8r8c8r8a8r8f8r8f8r8e8r8e8r8d8e8f8f+8r2c8r16.<g32>c8r8c8r8c8r8c8r8c8r8c8r8a8r8f8r8f8r8e8r8e8r8d8e8f8f+8r2f8r8f8r8e8r8e8r8d8r8d8r8e8f8f+8g8;"),
 	MML1(1, "Fruits Basket duet", "MML@I74t69r1v13>b2l8.agf+8e1b4.a16g16agf+e1l16r<bbb>cdd8.cc8c-c8r8<aaab>cd8.c<b8ab8r4b>ef+g8.f+e8a8.g4gf+ed&d2r4c-cdd8.cc8c-c8r8.<aab>cd8.c<b8ab8r4b>ef+g8.f+e8.a8g4&gf+ef+&f+4rbbbbggeecc<ba>cf+araaaaf+f+dd<aaaagb>gr8ggg8f+f+8.eed+8b+b8.a8a8gg8f+e4.rbbbbggeec<ba8>cf+araaaaf+f+d8c-da8gf+g&g4r8>d8c8<ba8g8.g8f+g&g1r4dd+ff8.d+d+8dd+8r4cdd+f8.d+d8cd8r4dgaa+8.ag8b+8.a+4&a+agf&f2r4dd+ff8.d+d+8dd+8r4cdd+f8.d+d8cd8r4dgaa+8.ag8b+8.a1g1r2.rbbbbggeecc<ba>cf+araaaaf+f+dd<aaaagb>gr8ggg8f+f+8.eed+8b+b8.a8a8gg8f+e4.rbbbbggeec<ba8>cf+araaaaf+f+d8c-da8gf+g&g4r8>d8c8<ba8g8.g8f+g&g1r4c-cdd8.cc8c-c8r4<ab>cd8.c<b8ab8r4b>ef+g8.f+e8a8.g4&gf+ed&d2r4c-cdd8.cc8c-c8r4<ab>cd8.c<b8ab8r4b>ef+g8.f+e8a8.g2f+2g1&g1r8br8.f+r8.gr8.dr8.er8.<ar8.br8.>dr8.br8.f+r8.gr8.dr8.er8.<ar8.br8.gr8.>br8.f+r8.gr8.dr8.er8.<ar8.br8.>d,v11r1g2l2.f+rg2f+l1rrrrrl16>degg8.ee8de8.l1.rrrrrrrrrl2rr.r8.v10fg4.l16agf4.>c4.cdd+8d4c4<a+2l1b+grl2.b>e4d<g4a2f+2g2g+2b>e4da4g1gr8l16c-cd1l8d<ab>cc4<bag2gef+gb4.l16b+ba4.b>cd1l8d<ab>cc4af+g2.rl16f+ed2.r<c<bag1.&g4&gv8c<bag2,l64g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g;"+ 
@@ -82,7 +84,7 @@ public enum TestData {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(TestData.MML5);
-		System.out.println(TestData.getMML(6));
+		MML_LOGGER.info(TestData.MML5);
+		MML_LOGGER.info(TestData.getMML(6));
 	}
 }

@@ -39,7 +39,7 @@ public class MMLToMIDI extends MMLTransformBase
         int ch = 0;
         int tk = 0;
         long ticksOffset = TICKS_OFFSET;
-        int currentTempo = MASTER_TEMPO;
+        int currentTempo;
 
         try
         {
@@ -52,23 +52,18 @@ public class MMLToMIDI extends MMLTransformBase
 
             for (MObject mmo: mmlObject)
             {
-                // ref: INST_BEGIN, TEMPO, INST, PART, NOTE, REST, INST_END, DONE}
                 switch (mmo.getType())
                 {
                 case INST_BEGIN:
                 case REST:
-                {                    
-                    /* Nothing to do in this implementation */
                     break;
-                }
+
                 case TEMPO:
-                {
                     currentTempo = mmo.getTempo();
                     tracks[0].add(createTempoMetaEvent(currentTempo, mmo.getStartingTicks() + ticksOffset));
                     break;
-                }
+
                 case INST:
-                {
                     Patch preset = packedPreset2Patch(mmo.getInstrument());
                     int bank =  preset.getBank();
                     int programPreset = preset.getProgram();
@@ -88,43 +83,36 @@ public class MMLToMIDI extends MMLTransformBase
                     tracks[tk].add(createProgramChangeEvent(ch, programPreset, mmo.getStartingTicks() + ticksOffset));
                     packedPresets.add(mmo.getInstrument());
                     break;
-                }
+
                 case PART:
-                {
                     tk++;
                     if (tk > 23) tk = 23;
                     break;
-                }
+
                 case NOTE:
-                {
                     tracks[tk].add(createNoteOnEvent(ch, smartClampMIDI(mmo.getMidiNote()), mmo.getNoteVolume(), mmo.getStartingTicks() + ticksOffset));
                     tracks[tk].add(createNoteOffEvent(ch, smartClampMIDI(mmo.getMidiNote()), mmo.getNoteVolume(), mmo.getStartingTicks() + mmo.getLengthTicks() + ticksOffset - 1));
                     if (mmo.getText() != null)
                     {
-                        String text = "{\"Note\": \"{Track\":" + tk + ", \"Text\":\"" + mmo.getText() + "\"}}";
+                        String text = "{\"Note\": {\"Midi\":" + String.format("%d", mmo.getMidiNote()) + ", \"Track\":" + tk + ", \"Text\":\"" + mmo.getText() + "\"}}";
                         tracks[0].add(createTextMetaEvent(text, mmo.getStartingTicks() + ticksOffset));
                     }
                     break;
-                }
+
                 case INST_END:
-                {
                     tk++;
                     if (tk > 23) tk = 23;
                     ch++;
                     if (ch > 15) ch = 15;
                     tracks[tk].add(createMsg(192, ch, 0, 100, 0L));
                     break;
-                }
+
                 case DONE:
-                {
-                    /*
-                     * Create a fake note to extend the play time so decaying
-                     * audio does not cutoff suddenly
-                     */
+                    // Create a fake note to extend the play time so decaying audio does not cutoff suddenly
                     tracks[0].add(createNoteOnEvent(ch, 1, 0, mmo.getlongestPartTicks() + ticksOffset + 200));
                     tracks[0].add(createNoteOffEvent(ch, 1, 0, mmo.getlongestPartTicks() + ticksOffset + 400));
                     break;
-                }
+
                 default:
                     MML_LOGGER.debug("MMLToMIDI#processMObjects Impossible?! An undefined enum?");
                 }
@@ -150,7 +138,7 @@ public class MMLToMIDI extends MMLTransformBase
             mEve = new MidiEvent(smLocal, mTime);
         } catch (Exception ex)
         {
-            System.out.println("MMLToMIDI#createMsg failed: " + ex);
+            MML_LOGGER.error("MMLToMIDI#createMsg failed: " + ex);
         }
         return mEve;
     }

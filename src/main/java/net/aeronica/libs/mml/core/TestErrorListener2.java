@@ -2,10 +2,17 @@ package net.aeronica.libs.mml.core;
 
 import org.antlr.v4.runtime.*;
 
-public class TestE_Listener2
+import static net.aeronica.libs.mml.core.MMLUtil.MML_LOGGER;
+
+public class TestErrorListener2
 {
+    private TestErrorListener2() { /* NOP */ }
+
     public static class UnderlineListener extends BaseErrorListener
     {
+        private UnderlineListener() { /* NOP */ }
+
+        @Override
         public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e)
         {
             System.err.println("line " + line + ":" + charPositionInLine + " " + msg);
@@ -13,13 +20,13 @@ public class TestE_Listener2
         }
 
         @SuppressWarnings("rawtypes")
-        protected void underlineError(Recognizer recognizer, Token offendingToken, int line, int charPositionInLine)
+        void underlineError(Recognizer recognizer, Token offendingToken, int line, int charPositionInLine)
         {
             CommonTokenStream tokens = (CommonTokenStream) recognizer.getInputStream();
             String input = tokens.getTokenSource().getInputStream().toString();
             String[] lines = input.split("\n");
             String errorLine = lines[line - 1];
-            System.err.println(errorLine);
+            MML_LOGGER.error(errorLine);
             for (int i = 0; i < charPositionInLine; i++)
                 System.err.print(" ");
             int start = offendingToken.getStartIndex();

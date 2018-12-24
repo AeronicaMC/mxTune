@@ -10,10 +10,14 @@ import java.awt.*;
 import java.util.Collections;
 import java.util.List;
 
-public class TestE_Dialog
+public class TestErrorDialog
 {
+    private TestErrorDialog() { /*NOP */ }
+
     public static class DialogListener extends BaseErrorListener
     {
+        private DialogListener() { /* NOP */ }
+
         @Override
         public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e)
         {
@@ -34,12 +38,13 @@ public class TestE_Dialog
             dialog.setVisible(true);
         }
     }
-    // public static void main(String[] args) throws Exception {
-    // ANTLRInputStream input = new ANTLRInputStream(System.in);
-    // SimpleLexer lexer = new SimpleLexer(input);
-    // CommonTokenStream tokens = new CommonTokenStream(lexer);
-    // SimpleParser parser = new SimpleParser(tokens);
-    // parser.addErrorListener(new DialogListener());
-    // parser.prog();
-    // }
+//     public static void main(String[] args) throws Exception {
+//     ANTLRInputStream input = new ANTLRInputStream(System.in);
+//     SimpleLexer lexer = new SimpleLexer(input);
+//     CommonTokenStream tokens = new CommonTokenStream(lexer);
+//     SimpleParser parser = new SimpleParser(tokens);
+//     parser.addErrorListener(new DialogListener());
+//     parser.prog();
+//     }
 }
+
