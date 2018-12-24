@@ -43,6 +43,13 @@ import javax.annotation.Nullable;
 public class TileBandAmp extends TileInstrument implements IModLockableContainer
 {
     public static final int MAX_SLOTS = 8;
+    private static final String KEY_CUSTOM_NAME = "CustomName";
+    private static final String KEY_DURATION = "Duration";
+    private static final String KEY_POWERED = "powered";
+    private static final String KEY_LEFT_RS_OUTPUT_ENABLED = "leftRedstoneOutputEnabled";
+    private static final String KEY_REAR_RS_INPUT_ENABLED = "rearRedstoneInputEnabled";
+    private static final String KEY_RIGHT_RS_OUTPUT_ENABLED = "rightRedstoneOutputEnabled";
+    private static final String KEY_UPDATE_COUNT = "updateCount";
     private boolean previousInputPowerState;
     private Integer playID;
     private Integer lastPlayID;
@@ -93,19 +100,19 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         super.readFromNBT(tag);
         inventory = new InstrumentStackHandler(MAX_SLOTS);
         inventory.deserializeNBT(tag);
-        duration = tag.getInteger("Duration");
-        previousInputPowerState = tag.getBoolean("powered");
+        duration = tag.getInteger(KEY_DURATION);
+        previousInputPowerState = tag.getBoolean(KEY_POWERED);
         code = LockCode.fromNBT(tag);
         ownerUUID = OwnerUUID.fromNBT(tag);
-        rearRedstoneInputEnabled = tag.getBoolean("rearRedstoneInputEnabled");
-        leftRedstoneOutputEnabled = tag.getBoolean("leftRedstoneOutputEnabled");
-        rightRedstoneOutputEnabled = tag.getBoolean("rightRedstoneOutputEnabled");
-        updateCount = tag.getInteger("updateCount");
+        rearRedstoneInputEnabled = tag.getBoolean(KEY_REAR_RS_INPUT_ENABLED);
+        leftRedstoneOutputEnabled = tag.getBoolean(KEY_LEFT_RS_OUTPUT_ENABLED);
+        rightRedstoneOutputEnabled = tag.getBoolean(KEY_RIGHT_RS_OUTPUT_ENABLED);
+        updateCount = tag.getInteger(KEY_UPDATE_COUNT);
         soundRange = SoundRange.fromNBT(tag);
 
-        if (tag.hasKey("CustomName", 8))
+        if (tag.hasKey(KEY_CUSTOM_NAME, 8))
         {
-            bandAmpCustomName = tag.getString("CustomName");
+            bandAmpCustomName = tag.getString(KEY_CUSTOM_NAME);
         }
     }
 
@@ -113,12 +120,12 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     public NBTTagCompound writeToNBT(NBTTagCompound tag)
     {
         tag.merge(inventory.serializeNBT());
-        tag.setBoolean("powered", previousInputPowerState);
-        tag.setInteger("Duration", duration);
-        tag.setBoolean("rearRedstoneInputEnabled", rearRedstoneInputEnabled);
-        tag.setBoolean("leftRedstoneOutputEnabled", leftRedstoneOutputEnabled);
-        tag.setBoolean("rightRedstoneOutputEnabled", rightRedstoneOutputEnabled);
-        tag.setInteger("updateCount", updateCount);
+        tag.setBoolean(KEY_POWERED, previousInputPowerState);
+        tag.setInteger(KEY_DURATION, duration);
+        tag.setBoolean(KEY_REAR_RS_INPUT_ENABLED, rearRedstoneInputEnabled);
+        tag.setBoolean(KEY_LEFT_RS_OUTPUT_ENABLED, leftRedstoneOutputEnabled);
+        tag.setBoolean(KEY_RIGHT_RS_OUTPUT_ENABLED, rightRedstoneOutputEnabled);
+        tag.setInteger(KEY_UPDATE_COUNT, updateCount);
         soundRange.toNBT(tag);
         ownerUUID.toNBT(tag);
 
@@ -128,7 +135,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         }
         if (hasCustomName())
         {
-            tag.setString("CustomName", bandAmpCustomName);
+            tag.setString(KEY_CUSTOM_NAME, bandAmpCustomName);
         }
         return super.writeToNBT(tag);
     }
@@ -223,8 +230,11 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
 
     public void setSoundRange(SoundRange soundRange)
     {
-        this.soundRange = soundRange;
-        markDirtySyncClient();
+        if(this.soundRange != soundRange)
+        {
+            this.soundRange = soundRange;
+            markDirtySyncClient();
+        }
     }
 
     public int getUpdateCount()
@@ -243,7 +253,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
 
         if (world != null && !world.isRemote)
         {
-            ModLogger.info("TileBandAmp updateCount: %d", updateCount);
+            ModLogger.info("TileBandAmp: %s, SEND updateCount: %02d", getPos(), updateCount);
             world.markBlockRangeForRenderUpdate(pos, pos);
         }
     }
@@ -253,6 +263,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         if (world != null && !world.isRemote)
         {
             incrementCount();
+            world.setBlockState(pos, world.getBlockState(pos).withProperty(BlockBandAmp.UPDATE_COUNT, updateCount), 2);
             world.notifyBlockUpdate(getPos(), world.getBlockState(pos), world.getBlockState(pos), 2);
             world.scheduleBlockUpdate(pos, this.getBlockType(),0,0);
         }
@@ -260,8 +271,8 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
 
     private void markDirtySyncClient()
     {
-        markDirty();
         syncClient();
+        markDirty();
     }
 
     /**
@@ -276,12 +287,11 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
             int count = world.getBlockState(pos).getActualState(world, pos).getValue(BlockBandAmp.UPDATE_COUNT);
             if(prevUpdateCount != updateCount)
             {
-                ModLogger.info("TileBandAmp updateCount: %d, UPDATE_COUNT: %d", updateCount, count);
+                ModLogger.info("TileBandAmp: %s, RECV updateCount: %02d, UPDATE_COUNT: %02d",this.getPos(), updateCount, count);
                 world.setBlockState(pos, world.getBlockState(pos).withProperty(BlockBandAmp.UPDATE_COUNT, updateCount), 1);
                 world.markBlockRangeForRenderUpdate(pos, pos);
                 prevUpdateCount = updateCount;
             }
-            markDirty();
         }
     }
 
@@ -331,8 +341,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         if(!this.code.getLock().equals(code.getLock()))
         {
             this.code = code;
-            markDirty();
-            syncClient();
+            markDirtySyncClient();
         }
     }
 
