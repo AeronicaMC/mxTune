@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese aka Aeronica
  *
@@ -20,7 +20,6 @@ import java.io.Serializable;
 
 public class ClientStateData implements Serializable
 {
-
     /**
      * Serialized ClientStateData
      */
@@ -28,7 +27,14 @@ public class ClientStateData implements Serializable
     private final boolean midiAvailable;
     private final boolean masterVolumeOn;
     private final boolean mxtuneVolumeOn;
-    
+
+    public ClientStateData()
+    {
+        this.midiAvailable = false;
+        this.masterVolumeOn = false;
+        this.mxtuneVolumeOn = false;
+    }
+
     public ClientStateData(boolean midiAvailable, boolean masterVolumeOn, boolean mxtuneVolumeOn)
     {
         this.midiAvailable = midiAvailable;
@@ -42,9 +48,9 @@ public class ClientStateData implements Serializable
 
     public boolean isMxtuneVolumeOn() {return mxtuneVolumeOn;}
     
-    public boolean isEqual(ClientStateData csd)
+    boolean isEqual(ClientStateData csd)
     {
-        return csd != null ? this.midiAvailable == csd.midiAvailable && this.masterVolumeOn == csd.masterVolumeOn && this.mxtuneVolumeOn == csd.mxtuneVolumeOn : false;
+        return csd != null && (this.midiAvailable == csd.midiAvailable && this.masterVolumeOn == csd.masterVolumeOn && this.mxtuneVolumeOn == csd.mxtuneVolumeOn);
     }
     
     public boolean isGood() {return this.midiAvailable && this.masterVolumeOn && this.mxtuneVolumeOn;}
@@ -54,5 +60,5 @@ public class ClientStateData implements Serializable
     {
         return "{midiAvailable="+midiAvailable+", isMasterVolumeOn="+masterVolumeOn+", mxtuneVolumeOn="+mxtuneVolumeOn+"}";
     }
-    
 }
+

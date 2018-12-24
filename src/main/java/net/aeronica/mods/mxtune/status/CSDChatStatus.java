@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese aka Aeronica
  *
@@ -24,9 +24,8 @@ import net.minecraft.util.text.TextFormatting;
 
 public class CSDChatStatus
 {
-    
-    ClientStateData csd;
-    EntityPlayer playerIn;
+    private ClientStateData csd;
+    private EntityPlayer playerIn;
     public CSDChatStatus(EntityPlayer playerIn, ClientStateData csd)
     {
         this.csd = csd;
@@ -36,12 +35,11 @@ public class CSDChatStatus
     
     private void process()
     {
-        if(csd.isMidiAvailable()==false)
+        if(!csd.isMidiAvailable())
             playerIn.sendMessage(new TextComponentString("[" + Reference.MOD_NAME + "] " + TextFormatting.RED +I18n.format("mxtune.chat.msu.midiNotAvailable")));
-        if(csd.isMasterVolumeOn()==false)
+        if(!csd.isMasterVolumeOn())
             playerIn.sendMessage(new TextComponentString("[" + Reference.MOD_NAME + "] " + TextFormatting.YELLOW +I18n.format("mxtune.chat.musicAndSound.masterVolumeOff")));
-        if(csd.isMxtuneVolumeOn()==false)
-            playerIn.sendMessage(new TextComponentString("[" + Reference.MOD_NAME + "] " + TextFormatting.YELLOW +I18n.format("mxtune.chat.musicAndSound.playersVolumeOff")));
+        if(!csd.isMxtuneVolumeOn())
+            playerIn.sendMessage(new TextComponentString("[" + Reference.MOD_NAME + "] " + TextFormatting.YELLOW +I18n.format("mxtune.chat.musicAndSound.recordVolumeOff")));
     }
-    
 }

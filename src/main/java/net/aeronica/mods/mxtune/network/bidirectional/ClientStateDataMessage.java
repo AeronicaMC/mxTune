@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese aka Aeronica
  *
@@ -21,30 +21,29 @@ import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.status.ClientStateData;
 import net.aeronica.mods.mxtune.status.ServerCSDManager;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.io.*;
-
 public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessage>
 {
+    private ClientStateData csd = new ClientStateData();
 
-    ClientStateData csd;
+    public ClientStateDataMessage() { /* Required by the PacketDispatcher */ }
     
-    public ClientStateDataMessage() {/* Required by the PacketDispacher */}
-    
-    public ClientStateDataMessage(ClientStateData csd) { this.csd = csd;}
+    public ClientStateDataMessage(ClientStateData csd)
+    {
+        this.csd = csd;
+    }
     
     @Override
-    protected void read(PacketBuffer buffer) throws IOException
+    protected void read(PacketBuffer buffer)
     {
         this.csd = readCSD(buffer);
     }
 
     @Override
-    protected void write(PacketBuffer buffer) throws IOException
+    protected void write(PacketBuffer buffer)
     {
         writeCSD(buffer, csd);
     }
@@ -61,48 +60,26 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
         }
     }
 
-    public void handleClientSide(EntityPlayer playerIn)
+    private void handleClientSide(EntityPlayer playerIn)
     {
         ClientCSDMonitor.collectAndSend();
         MIDISystemUtil.onPlayerLoggedInModStatus(playerIn);
     }
 
-    public void handleServerSide(EntityPlayer playerIn)
+    private void handleServerSide(EntityPlayer playerIn)
     {
         ServerCSDManager.updateState(playerIn, csd);
     }
 
-    public static ClientStateData readCSD(PacketBuffer buffer) throws IOException
+    public static ClientStateData readCSD(PacketBuffer buffer)
     {
-        // Deserialize data object from a byte array
-        ClientStateData csd = null;
-        byte[] byteBuffer = buffer.readByteArray();
-
-        ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
-        ObjectInputStream in = new ObjectInputStream(bis) ;
-        try
-        {
-            csd = (ClientStateData) in.readObject();
-        } catch (ClassNotFoundException e)
-        {
-            ModLogger.error(e);
-        }
-        in.close(); 
-        return csd;
+        return new ClientStateData(buffer.readBoolean(), buffer.readBoolean(), buffer.readBoolean());
     }
     
-    public static void writeCSD(PacketBuffer buffer, ClientStateData csd) throws IOException
+    public static void writeCSD(PacketBuffer buffer, ClientStateData csd)
     {
-        // Serialize data object to a byte array
-        byte[] byteBuffer;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
-        ObjectOutputStream out = new ObjectOutputStream(bos) ;
-        out.writeObject(csd);
-        out.close();
-
-        // Get the bytes of the serialized object
-        byteBuffer = bos.toByteArray();
-        buffer.writeByteArray(byteBuffer);
+        buffer.writeBoolean(csd.isMidiAvailable());
+        buffer.writeBoolean(csd.isMasterVolumeOn());
+        buffer.writeBoolean(csd.isMxtuneVolumeOn());
     }
-
 }

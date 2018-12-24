@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese aka Aeronica
  *
@@ -36,13 +36,12 @@ import java.util.Map;
  */
 public class ServerCSDManager
 {
-
-    private static Map<Integer, ClientStateData> clientState = new HashMap<Integer, ClientStateData>();
+    private static Map<Integer, ClientStateData> clientState = new HashMap<>();
     
     /**
      * <p>Asks the client for a copy of the current ClientStateData.
      * Typically done when the client logs into the server.</p>
-     * @param playerIn
+     * @param playerIn to be queried
      */
     public static void queryClient(EntityPlayer playerIn)
     {
@@ -52,8 +51,8 @@ public class ServerCSDManager
     
     /**
      * Adds/Updates the ClientStateData received from the client.
-     * @param playerIn
-     * @param csd
+     * @param playerIn the client
+     * @param csd clint state data from client
      */
     public static void updateState(EntityPlayer playerIn, ClientStateData csd)
     {
@@ -69,12 +68,12 @@ public class ServerCSDManager
      * the on/off state of MASTER and MXTUNE volume settings.
      * A failure of a single test fails all.</p>
      * 
-     * @param playerIn
+     * @param playerID player to check
      * @return A failure of a single test fails all.
      */
-    public static boolean canMXTunesPlay(Integer playerID)
+    private static boolean canMXTunesPlay(Integer playerID)
     {
-        return (clientState.containsKey(playerID)) ? clientState.get(playerID).isGood() : false;
+        return (clientState.containsKey(playerID)) && clientState.get(playerID).isGood();
     }
     
     /**
@@ -82,7 +81,7 @@ public class ServerCSDManager
      * the on/off state of MASTER and MXTUNE volume settings.
      * A failure of a single test fails all.</p>
      * 
-     * @param playerIn
+     * @param playerIn can this client play?
      * @return A failure of a single test fails all.
      */
     public static boolean canMXTunesPlay(EntityPlayer playerIn)
@@ -92,7 +91,7 @@ public class ServerCSDManager
 
     /**
      * <p>Sends the server side version of ClientStateData to the client to be displayed in chat.</p>
-     * @param playerIn
+     * @param playerIn to be informed
      */
     public static void sendErrorViaChat(EntityPlayer playerIn)
     {
@@ -103,7 +102,6 @@ public class ServerCSDManager
             PacketDispatcher.sendTo(message, (EntityPlayerMP) playerIn);
         }
     }
-
 }
 
 

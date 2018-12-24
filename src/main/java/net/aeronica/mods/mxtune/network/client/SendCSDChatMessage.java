@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese aka Aeronica
  *
@@ -24,25 +24,24 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.io.IOException;
-
 public class SendCSDChatMessage extends AbstractClientMessage<SendCSDChatMessage>
 {
 
-    ClientStateData csd;
-    
-    public SendCSDChatMessage() {/* Required by the PacketDispacher */}
+    private ClientStateData csd;
+
+    @SuppressWarnings("unused")
+    public SendCSDChatMessage() {/* Required by the PacketDispatcher */}
     
     public SendCSDChatMessage(ClientStateData csd) {this.csd = csd;}
     
     @Override
-    protected void read(PacketBuffer buffer) throws IOException
+    protected void read(PacketBuffer buffer)
     {
         this.csd = ClientStateDataMessage.readCSD(buffer);
     }
 
     @Override
-    protected void write(PacketBuffer buffer) throws IOException
+    protected void write(PacketBuffer buffer)
     {
         ClientStateDataMessage.writeCSD(buffer, this.csd);
     }

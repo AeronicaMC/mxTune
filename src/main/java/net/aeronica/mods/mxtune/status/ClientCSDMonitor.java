@@ -1,4 +1,4 @@
-/**
+/*
  * Aeronica's mxTune MOD
  * Copyright {2016} Paul Boese aka Aeronica
  *
@@ -58,9 +58,9 @@ public class ClientCSDMonitor
     private static ClientStateData snapShot()
     {
         return new ClientStateData(
-                MIDISystemUtil.midiUnavailable()==false,
+                !MIDISystemUtil.midiUnavailable(),
                 gameSettings.getSoundLevel(SoundCategory.MASTER)>0F,
-                gameSettings.getSoundLevel(SoundCategory.PLAYERS)>0F);
+                gameSettings.getSoundLevel(SoundCategory.RECORDS)>0F);
     }
     
     /*
@@ -103,7 +103,7 @@ public class ClientCSDMonitor
     
     /**
      * A Client side version to send the current status to the players chat.
-     * @param playerIn
+     * @param playerIn to whom it concerns
      */
     public static void sendErrorViaChat(EntityPlayer playerIn)
     {
