@@ -86,7 +86,7 @@ public class GROUPS
             }       
             return members;
         }
-        return Collections.EMPTY_SET;
+        return Collections.emptySet();
     }
     
     private static boolean isLeader(Integer memberID)
