@@ -299,12 +299,11 @@ public class GROUPS
     }
     
     /* Serialization and deserialization methods */
-    @Nullable
-    static Map<Integer, Integer> deserializeIntIntMap(String mapIntString)
+    private static Map<Integer, Integer> deserializeIntIntMap(String mapIntString)
     {       
         try
         {
-            Map<String, String> inStringString =  (Map<String, String>) Splitter.on('|').omitEmptyStrings().withKeyValueSeparator("=").split(mapIntString);
+            Map<String, String> inStringString = Splitter.on('|').omitEmptyStrings().withKeyValueSeparator("=").split(mapIntString);
             Map<Integer, Integer> outIntInt = new HashMap<>();
             for (Map.Entry<String,String> entry: inStringString.entrySet())
             {
@@ -314,7 +313,7 @@ public class GROUPS
         } catch (IllegalArgumentException e)
         {
             ModLogger.error(e);
-            return null;
+            return Collections.emptyMap();
         }
     }
 
@@ -342,8 +341,7 @@ public class GROUPS
      * @param hashTableString string to deserialize
      * @return a ListMultimap where the keys and values have been swapped.
      */
-    @Nullable
-    static ListMultimap<Integer, Integer> deserializeIntIntListMultimapSwapped(String hashTableString)
+    private static ListMultimap<Integer, Integer> deserializeIntIntListMultimapSwapped(String hashTableString)
     {
         try
         {
@@ -357,13 +355,11 @@ public class GROUPS
         } catch (IllegalArgumentException e)
         {
             ModLogger.error(e);
-            return null;
+            return ArrayListMultimap.create();
         }
-
     }
 
     @SuppressWarnings("unused")
-    @Nullable
     public static Map<Integer, String> deserializeIntStrMap(String mapIntString)
     {       
         try
@@ -378,7 +374,7 @@ public class GROUPS
         } catch (IllegalArgumentException e)
         {
             ModLogger.error(e);
-            return null;
+            return Collections.emptyMap();
         }
     }
 
@@ -400,11 +396,10 @@ public class GROUPS
         return serializedIntStrMap.toString();
     }
 
-    @Nullable
-    static Set<Integer> deserializeIntegerSet(String setIntString)
+    private static Set<Integer> deserializeIntegerSet(String setIntString)
     {
         Iterable<String> inString = Splitter.on(',').omitEmptyStrings().split(setIntString);
-        Set<Integer> deserializedSet = null;
+        Set<Integer> deserializedSet = Collections.emptySet();
         try
         {
             deserializedSet =  Sets.newHashSet();
