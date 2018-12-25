@@ -215,21 +215,16 @@ public class GROUPS
         double abortDistance = ModConfig.getGroupPlayAbortDistance();
         double distance = 0D;
         double maxDistance = 0D;
-        if (members != null && !members.isEmpty())
-        {  
-            for (Integer memberA: members)
-            {
-                for (Integer memberB:  members )
-                {
+        if (!members.isEmpty())
+            for (Integer memberA : members)
+                for (Integer memberB : members)
                     if (memberA.intValue() != memberB)
                     {
                         double playerDistance = getMemberVector(memberA).distanceTo(getMemberVector(memberB));
                         if (playerDistance > maxDistance) maxDistance = playerDistance;
                         distance = Math.min(1.0D, scaleBetween(maxDistance, 0, 1D, 0D, abortDistance));
                     }
-                }
-            }
-        }
+
         return distance;
     }
 
@@ -254,13 +249,15 @@ public class GROUPS
         Set<Integer> members = GROUPS.getMembersByPlayID(playID);
         return ((members != null) && !members.isEmpty()) && members.contains(MXTune.proxy.getClientPlayer().getEntityId());
     }
-    
+
+    @SuppressWarnings("unused")
     public static boolean playerHasPlayID(Integer entityID, Integer playID)
     {
         Set<Integer> members = GROUPS.getMembersByPlayID(playID);
         return (members != null && !members.isEmpty()) && members.contains(entityID);
     }
-    
+
+    @SuppressWarnings("unused")
     public static boolean isPlayIDPlaying(Integer playID) { return activePlayIDs != null && activePlayIDs.contains(playID); }
 
     public static void setClientPlayStatuses(String clientPlayStatuses)
