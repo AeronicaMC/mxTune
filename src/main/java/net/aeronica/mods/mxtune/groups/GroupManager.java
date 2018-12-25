@@ -113,7 +113,7 @@ public class GroupManager
             groups.add(theGroup);
             sync();
         } else
-            log("----- Can't create a group if you are a member of a group.");
+            log("Can't create a group if you are a member of a group.");
     }
 
     /**
@@ -122,38 +122,39 @@ public class GroupManager
      */
     public static void addMember(int groupID, int memberID)
     {
-        if (!groups.isEmpty())
+        if (groups.isEmpty())
         {
-            Group g = getGroup(groupID);
+            log("No group exists!");
+            return;
+        }
+        Group g = getGroup(groupID);
 
-            /* Grab instance of the other player */
-            EntityPlayer playerInitiator = getEntityPlayer(memberID);
-
-            log("addMember " + groupID + " : " + memberID);
-            if ((g != null) && isNotGroupMember(memberID))
+        /* Grab instance of the other player */
+        EntityPlayer playerInitiator = getEntityPlayer(memberID);
+        if ((g != null) && isNotGroupMember(memberID))
+        {
+            /* Grab instance of the leader */
+            EntityPlayer playerTarget = getEntityPlayer(g.leaderEntityID);
+            if (g.members.size() < GROUPS.MAX_MEMBERS)
             {
-                /* Grab instance of the leader */
-                EntityPlayer playerTarget = getEntityPlayer(g.leaderEntityID);
-                if (g.members.size() < GROUPS.MAX_MEMBERS)
-                {
-                    g.addMember(new Member(memberID));
-                    sync();
-
-                    playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.you_joined_players_group", playerTarget.getDisplayName().getFormattedText()));
-                    playerTarget.sendMessage(new TextComponentTranslation( "mxtune.chat.groupManager.player_joined_the_group", playerInitiator.getDisplayName().getFormattedText()));
-                } else
-                {
-                    log("----- Can't join. Too many members.");
-                    playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.cannot_join_too_many", playerTarget.getDisplayName().getFormattedText()));
-                    playerTarget.sendMessage(new TextComponentTranslation( "mxtune.chat.groupManager.player_cannot_join_too_many", playerInitiator.getDisplayName().getFormattedText()));
-                }
-            } else
-            {
-                log("----- Can't join a group if you are a member of a group.");
-                playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.cannot_join_if_group_member"));
+                g.addMember(new Member(memberID));
+                sync();
+                log("addMember " + groupID + " : " + memberID);
+                playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.you_joined_players_group", playerTarget.getDisplayName().getFormattedText()));
+                playerTarget.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.player_joined_the_group", playerInitiator.getDisplayName().getFormattedText()));
             }
-        } else
-            log("----- No group exists!");
+            else
+            {
+                log("Can't join. Too many members.");
+                playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.cannot_join_too_many", playerTarget.getDisplayName().getFormattedText()));
+                playerTarget.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.player_cannot_join_too_many", playerInitiator.getDisplayName().getFormattedText()));
+            }
+        }
+        else
+        {
+            log("Can't join a group if you are a member of a group.");
+            playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.cannot_join_if_group_member"));
+        }
     }
 
     /**
@@ -168,7 +169,7 @@ public class GroupManager
         PlayManager.purgeMember(memberID);
         if (isNotGroupMember(memberID))
         {
-            log("----- " + memberID + " is not a member of a group.");
+            log("" + memberID + " is not a member of a group.");
             return;
         }
 
@@ -178,7 +179,7 @@ public class GroupManager
                 {
                     /* This is not the leader so simply remove the member. */
                     theGroup.getMembers().remove(theMember);
-                    log("----- removed " + memberID);
+                    log("removed " + memberID);
                     sync();
                 }
                 else
@@ -186,7 +187,7 @@ public class GroupManager
                     /* This is the leader of the group and if we are the last or only member then we will remove the group. */
                     if (theGroup.members.size() == 1)
                     {
-                        log("----- " + theMember.memberID + " is the last member so remove the group");
+                        log("" + theMember.memberID + " is the last member so remove the group");
                         theGroup.members.clear();
                         groups.remove(theGroup);
                         sync();
@@ -203,7 +204,7 @@ public class GroupManager
                     {
                         theMember = remainingMembers.next();
                         theGroup.leaderEntityID = theMember.getMemberID();
-                        log("----- " + theMember.getMemberID() + " is promoted to the group leader");
+                        log("" + theMember.getMemberID() + " is promoted to the group leader");
                         sync();
                         return;
                     }
@@ -430,5 +431,5 @@ public class GroupManager
     private static void debug(String strMessage) {ModLogger.debug(strMessage);}
 
     @SuppressWarnings("unused")
-    private static void log(String strMessage) {ModLogger.info(strMessage);}
+    private static void log(String strMessage) {ModLogger.info("----- " + strMessage);}
 }
