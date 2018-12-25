@@ -105,7 +105,7 @@ public class GroupManager
     {
         log("addGroup " + creatorID);
 
-        if (getGroup(creatorID) == null && isNotGroupMember(creatorID))
+        if (isNotGroupMember(creatorID))
         {
             Group theGroup = new Group(getNextGroupID(), creatorID);
             Member theMember = new Member(creatorID);
@@ -281,19 +281,19 @@ public class GroupManager
      * Search all groups for the memberID.
      * 
      * @param memberID member to search for
-     * @return true if the memberID is found.
+     * @return true if the memberID is not found.
      */
     private static boolean isNotGroupMember(Integer memberID)
     {
-        boolean hasMember = false;
+        boolean notMember = false;
         for (Group theGroup : groups)
         {
             for (Member theMember : theGroup.getMembers())
             {
-                if (theMember.getMemberID().equals(memberID)) hasMember = true;
+                if (theMember.getMemberID().equals(memberID)) notMember = true;
             }
         }
-        return !hasMember;
+        return !notMember;
     }
 
     @SuppressWarnings("unused")
