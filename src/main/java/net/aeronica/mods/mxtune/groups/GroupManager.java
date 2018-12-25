@@ -73,7 +73,7 @@ public class GroupManager
             this.members = new HashSet<>(GROUPS.MAX_MEMBERS);
         }
 
-        public HashSet<Member> getMembers() { return members; }
+        public Set<Member> getMembers() { return members; }
 
         void addMember(Member member) { members.add(member); }
 
@@ -144,13 +144,13 @@ public class GroupManager
                 } else
                 {
                     log("----- Can't join. Too many members.");
-                    playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.you_cannot_join_too_many", playerTarget.getDisplayName().getFormattedText()));
+                    playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.cannot_join_too_many", playerTarget.getDisplayName().getFormattedText()));
                     playerTarget.sendMessage(new TextComponentTranslation( "mxtune.chat.groupManager.player_cannot_join_too_many", playerInitiator.getDisplayName().getFormattedText()));
                 }
             } else
             {
                 log("----- Can't join a group if you are a member of a group.");
-                playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.you_cannot_join_if_group_member"));
+                playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.cannot_join_if_group_member"));
             }
         } else
             log("----- No group exists!");
@@ -166,56 +166,48 @@ public class GroupManager
     {
         log("removeMember " + memberID);
         PlayManager.purgeMember(memberID);
-        if (!groups.isEmpty())
+        if (isNotGroupMember(memberID))
         {
-            Group theGroup;
-            Member theMember;
-            Iterator<Group> ig = groups.iterator();
-            while (ig.hasNext())
-            {
-                theGroup = ig.next();
-                Iterator<Member> im = theGroup.members.iterator();
-                while (im.hasNext())
-                {
-                    theMember = im.next();
-                    if (theMember.getMemberID().equals(memberID))
-                    {
+            log("----- " + memberID + " is not a member of a group.");
+            return;
+        }
 
-                        if (!theGroup.leaderEntityID.equals(memberID))
-                        {
-                            /* This is not the leader so simply remove the member. */
-                            im.remove();
-                            log("----- removed " + memberID);
-                            sync();
-                        } else
-                        {
-                            /* This is the leader of the group and if we are the last or only member then we will remove the group. */
-                            if (theGroup.members.size() == 1)
-                            {
-                                log("----- " + theMember.memberID + " is the last member so remove the group");
-                                theGroup.members.clear();
-                                ig.remove();
-                                sync();
-                                return;
-                            }
-                            /* Remove the leader */
-                            im.remove();
-                            sync();
-                            /* Promote the next member of the group to leader. */
-                            Iterator<Member> ix = theGroup.members.iterator();
-                            if (ix.hasNext())
-                            {
-                                theMember = ix.next();
-                                theGroup.leaderEntityID = theMember.getMemberID();
-                                log("----- " + theMember.getMemberID() + " is promoted to the group leader");
-                                sync();
-                            }
-                        }
+        for (Group theGroup : groups)
+            for (Member theMember : theGroup.getMembers())
+                if ((theMember.getMemberID() == memberID) && (theGroup.leaderEntityID != memberID))
+                {
+                    /* This is not the leader so simply remove the member. */
+                    theGroup.getMembers().remove(theMember);
+                    log("----- removed " + memberID);
+                    sync();
+                }
+                else
+                {
+                    /* This is the leader of the group and if we are the last or only member then we will remove the group. */
+                    if (theGroup.members.size() == 1)
+                    {
+                        log("----- " + theMember.memberID + " is the last member so remove the group");
+                        theGroup.members.clear();
+                        groups.remove(theGroup);
+                        sync();
+                        return;
+                    }
+
+                    /* Remove the leader */
+                    theGroup.getMembers().remove(theMember);
+                    sync();
+
+                    /* Promote the next member of the group to leader. */
+                    Iterator<Member> remainingMembers = theGroup.getMembers().iterator();
+                    if (remainingMembers.hasNext())
+                    {
+                        theMember = remainingMembers.next();
+                        theGroup.leaderEntityID = theMember.getMemberID();
+                        log("----- " + theMember.getMemberID() + " is promoted to the group leader");
+                        sync();
+                        return;
                     }
                 }
-            }
-        } else
-            log("----- " + memberID + " is not a member of a group.");
     }
 
     static boolean isLeader(Integer entityID)
@@ -333,7 +325,7 @@ public class GroupManager
         PacketDispatcher.sendToAll(new SyncGroupMessage(buildGroups.toString(), buildMembers.toString()));
     }
 
-    private static int interactFlag = 0;
+
     /* Forge and FML Event Handling */
     /*
      * TODO: Add a yes/no gui to ask user if that want to join. Indicate if a
@@ -343,16 +335,16 @@ public class GroupManager
     @SubscribeEvent
     public void onEntityInteractEvent(EntityInteract event)
     {
-        if (event.getTarget() != null && event.getTarget() instanceof EntityPlayer && event.getEntityLiving() instanceof EntityPlayer)
+        if (event.getTarget() instanceof EntityPlayer && event.getEntityLiving() instanceof EntityPlayer)
         {
             EntityPlayer playerInitiator = event.getEntityPlayer();
             EntityPlayer playerTarget = (EntityPlayer) event.getTarget();
 
             ModLogger.debug(playerInitiator.getDisplayName().getUnformattedText() + " pokes " + playerTarget.getDisplayName().getUnformattedText());
-            if ((event.getSide() == Side.SERVER) && (interactFlag++ % 2) == 0)
+            if (event.getSide().isServer())
             {
                 Group targetGroup = getMembersGroup(playerTarget.getEntityId());
-                if (targetGroup != null && targetGroup.leaderEntityID.equals(playerTarget.getEntityId()) /* && initiatorGroup == null */)
+                if ((targetGroup != null) && targetGroup.leaderEntityID.equals(playerTarget.getEntityId()) && isNotGroupMember(playerInitiator.getEntityId()))
                 {
                     if (!isMuteAll(playerInitiator))
                     {
@@ -370,7 +362,10 @@ public class GroupManager
                         // MuteALL is true so playerInitiator can't join
                         playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.gm.noJoinGroupWhenMuteAll"));
                     }
-                }
+                } else if (!isLeader(playerTarget.getEntityId()) && isNotGroupMember(playerInitiator.getEntityId()))
+                    playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.player_not_leader", playerTarget.getDisplayName().getUnformattedText()));
+                else
+                    playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.cannot_join_if_group_member"));
             }
         }
     }
@@ -432,8 +427,8 @@ public class GroupManager
 
     // for debugging
     @SuppressWarnings("unused")
-    private static void debug(String strMessage) {/*ModLogger.debug(strMessage);*/}
+    private static void debug(String strMessage) {ModLogger.debug(strMessage);}
 
     @SuppressWarnings("unused")
-    private static void log(String strMessage) {/*ModLogger.logInfo(strMessage);*/}
+    private static void log(String strMessage) {ModLogger.info(strMessage);}
 }
