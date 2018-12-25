@@ -212,7 +212,7 @@ public class PlayManager
     {
         GroupManager.Group membersGroup = GroupManager.getMembersGroup(membersID);
         if (membersGroup!=null)
-            membersGroup.playID = null;
+            membersGroup.setPlayID(null);
     }
     
     /**
@@ -228,10 +228,13 @@ public class PlayManager
         GroupManager.Group membersGroup = GroupManager.getMembersGroup(membersID);
         Integer playID = null;
         if (membersGroup!=null)
-            if (membersGroup.playID == null)
-                playID = membersGroup.playID = getNextPlayID();
+            if (membersGroup.getPlayID() == null)
+            {
+                playID = getNextPlayID();
+                membersGroup.setPlayID(playID);
+            }
             else
-                playID = membersGroup.playID;
+                playID = membersGroup.getPlayID();
         return playID;
     }
 

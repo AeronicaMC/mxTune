@@ -16,7 +16,6 @@
  */
 package net.aeronica.mods.mxtune.groups;
 
-import com.google.common.collect.Sets;
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.JoinGroupMessage;
@@ -26,14 +25,11 @@ import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
@@ -46,57 +42,56 @@ import java.util.Set;
 
 import static net.aeronica.mods.mxtune.options.MusicOptionsUtil.*;
 
-// Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
-// UUID does not work on the client.
 public class GroupManager
 {
     public static final GroupManager INSTANCE = new GroupManager();
     private static Integer groupID = 1;
-    
+
     private GroupManager() {}
 
-    /*
-     * The guts of the GroupManager - After looking over this weeks later I can
-     * see I made some bad decisions, but I'll live with it for now. It's called
-     * fail fast! Learn from your mistake and move on.
-     *
-     * 2018-Sep-27 Thanks for IntelliJ cleaning this up took little time.
-     *
-     * 2016-Oct-21 Converted the whole shibang from String Player Names to Integer
-     * Entity IDs. That simplified usage a bit. 
-     * 
-     * Sync'd to the Client side using the GROUPS.class and
-     * the associated networking classes.
-     */
     private static class Member
     {
-        Integer memberEntityID;
+        private final Integer memberID;
+        Member(Integer memberID)
+        {
+            this.memberID = memberID;
+        }
+
+        Integer getMemberID() { return memberID; }
     }
 
     public static class Group
     {
-        Integer groupID;
-        Integer playID;
-        Integer leaderEntityID;
-        HashSet<Member> members;
-    }
-
-    private static final HashSet<Group> groups = new HashSet<>(1, 0.3f);
-
-    public static Set<Integer> getGroups()
-    {
-        Set<Integer> setGroups = Sets.newHashSet();
-        if (groups != null && !groups.isEmpty())
+        private Integer groupID;
+        private Integer playID;
+        private Integer leaderEntityID;
+        private HashSet<Member> members;
+        public Group(Integer groupID, Integer leaderEntityID)
         {
-            for (Group theGroup : groups)
-            {
-                setGroups.add(theGroup.groupID);
-            }
+            this.groupID = groupID;
+            this.leaderEntityID = leaderEntityID;
+            this.members = new HashSet<>(GROUPS.MAX_MEMBERS);
         }
-        return setGroups;
+
+        public HashSet<Member> getMembers() { return members; }
+
+        void addMember(Member member) { members.add(member); }
+
+        public Integer getPlayID() { return playID; }
+
+        public void setPlayID(Integer playID) { this.playID = playID; }
     }
+
+    private static final Set<Group> groups = new HashSet<>(1, 0.3f);
     
-    private static Integer getNextGroupID() {return (groupID == Integer.MAX_VALUE) ? groupID=1 : groupID++;}
+    private static Integer getNextGroupID()
+    {
+        groupID++;
+        if (groupID == Integer.MAX_VALUE)
+            groupID = 1;
+
+        return groupID;
+    }
     
     /**
      * Any player can be a leader or in a group. A player who makes a group is
@@ -110,36 +105,24 @@ public class GroupManager
     {
         log("addGroup " + creatorID);
 
-        if (getGroup(creatorID) == null && !groupsHaveMember(creatorID))
+        if (getGroup(creatorID) == null && isNotGroupMember(creatorID))
         {
-            Group theGroup = new Group();
-
-            theGroup.groupID = getNextGroupID();
-            theGroup.playID = null;
-            
-            theGroup.leaderEntityID = creatorID;
-
-            Member theMember = new Member();
-            theMember.memberEntityID = creatorID;
-
-            theGroup.members = new HashSet<Member>(GROUPS.MAX_MEMBERS);
-            theGroup.members.add(theMember);
-
+            Group theGroup = new Group(getNextGroupID(), creatorID);
+            Member theMember = new Member(creatorID);
+            theGroup.addMember(theMember);
             groups.add(theGroup);
             sync();
         } else
             log("----- Can't create a group if you are a member of a group.");
     }
-    
+
     /**
-     * addMember TODO: setup language file keys
-     * 
      * @param groupID target group
      * @param memberID member to add
      */
     public static void addMember(int groupID, int memberID)
     {
-        if (groups != null && !groups.isEmpty())
+        if (!groups.isEmpty())
         {
             Group g = getGroup(groupID);
 
@@ -147,29 +130,27 @@ public class GroupManager
             EntityPlayer playerInitiator = getEntityPlayer(memberID);
 
             log("addMember " + groupID + " : " + memberID);
-            if ((g != null) && !groupsHaveMember(memberID))
+            if ((g != null) && isNotGroupMember(memberID))
             {
                 /* Grab instance of the leader */
                 EntityPlayer playerTarget = getEntityPlayer(g.leaderEntityID);
                 if (g.members.size() < GROUPS.MAX_MEMBERS)
                 {
-                    Member m = new Member();
-                    m.memberEntityID = memberID;
-                    g.members.add(m);
+                    g.addMember(new Member(memberID));
                     sync();
 
-                    playerInitiator.sendMessage(new TextComponentString("You Joined " + playerTarget.getDisplayName().getFormattedText() + "'s group"));
-                    playerTarget.sendMessage(new TextComponentString(playerInitiator.getDisplayName().getFormattedText() + " joined the group"));
+                    playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.you_joined_players_group", playerTarget.getDisplayName().getFormattedText()));
+                    playerTarget.sendMessage(new TextComponentTranslation( "mxtune.chat.groupManager.player_joined_the_group", playerInitiator.getDisplayName().getFormattedText()));
                 } else
                 {
                     log("----- Can't join. Too many members.");
-                    playerInitiator.sendMessage(new TextComponentString("You can't join " + playerTarget.getDisplayName().getFormattedText() + "'s group. Too many members."));
-                    playerTarget.sendMessage(new TextComponentString(playerInitiator.getDisplayName().getFormattedText() + " can't join group. Too many members."));
+                    playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.you_cannot_join_too_many", playerTarget.getDisplayName().getFormattedText()));
+                    playerTarget.sendMessage(new TextComponentTranslation( "mxtune.chat.groupManager.player_cannot_join_too_many", playerInitiator.getDisplayName().getFormattedText()));
                 }
             } else
             {
                 log("----- Can't join a group if you are a member of a group.");
-                playerInitiator.sendMessage(new TextComponentString("You can't join a group if you are a member of a group."));
+                playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.you_cannot_join_if_group_member"));
             }
         } else
             log("----- No group exists!");
@@ -180,7 +161,6 @@ public class GroupManager
      * group or removing the group entirely.
      * 
      * @param memberID to be removed
-     * @return the group of the member or null.
      */
     public static void removeMember(int memberID)
     {
@@ -197,8 +177,8 @@ public class GroupManager
                 Iterator<Member> im = theGroup.members.iterator();
                 while (im.hasNext())
                 {
-                    theMember = (Member) im.next();
-                    if (theMember.memberEntityID.equals(memberID))
+                    theMember = im.next();
+                    if (theMember.getMemberID().equals(memberID))
                     {
 
                         if (!theGroup.leaderEntityID.equals(memberID))
@@ -212,9 +192,8 @@ public class GroupManager
                             /* This is the leader of the group and if we are the last or only member then we will remove the group. */
                             if (theGroup.members.size() == 1)
                             {
-                                log("----- " + theMember.memberEntityID + " is the last member so remove the group");
+                                log("----- " + theMember.memberID + " is the last member so remove the group");
                                 theGroup.members.clear();
-                                theGroup.members = null;
                                 ig.remove();
                                 sync();
                                 return;
@@ -226,9 +205,9 @@ public class GroupManager
                             Iterator<Member> ix = theGroup.members.iterator();
                             if (ix.hasNext())
                             {
-                                theMember = (Member) ix.next();
-                                theGroup.leaderEntityID = theMember.memberEntityID;
-                                log("----- " + theMember.memberEntityID + " is promoted to the group leader");
+                                theMember = ix.next();
+                                theGroup.leaderEntityID = theMember.getMemberID();
+                                log("----- " + theMember.getMemberID() + " is promoted to the group leader");
                                 sync();
                             }
                         }
@@ -239,7 +218,7 @@ public class GroupManager
             log("----- " + memberID + " is not a member of a group.");
     }
 
-    public static boolean isLeader(int entityID)
+    static boolean isLeader(Integer entityID)
     {
         Group g = getMembersGroup(entityID);
         return (g != null) && g.leaderEntityID.equals(entityID);
@@ -251,7 +230,7 @@ public class GroupManager
      * 
      * @param memberID the new leader
      */
-    public static void setLeader(int memberID)
+    public static void setLeader(Integer memberID)
     {
         Group g = getMembersGroup(memberID);
         if (g != null)
@@ -261,7 +240,7 @@ public class GroupManager
         }
     }
 
-    public static Integer getMembersGroupID(int memberID)
+    static Integer getMembersGroupID(int memberID)
     {
         Group group = getMembersGroup(memberID);
         return group == null ? null : group.groupID;
@@ -273,7 +252,7 @@ public class GroupManager
      * @param creatorID member in question
      * @return the group or null.
      */
-    private static Group getGroup(int creatorID)
+    private static Group getGroup(Integer creatorID)
     {
         for (Group theGroup : groups)
         {
@@ -286,13 +265,13 @@ public class GroupManager
      * @param memberID search all groups for thia member.
      * @return the Group if found or null.
      */
-    public static Group getMembersGroup(int memberID)
+    static Group getMembersGroup(Integer memberID)
     {
         for (Group theGroup : groups)
         {
             for (Member theMember : theGroup.members)
             {
-                if (theMember.memberEntityID.equals(memberID)) return theGroup;
+                if (theMember.getMemberID().equals(memberID)) return theGroup;
             }
         }
         return null;
@@ -304,28 +283,29 @@ public class GroupManager
      * @param memberID member to search for
      * @return true if the memberID is found.
      */
-    private static boolean groupsHaveMember(int memberID)
+    private static boolean isNotGroupMember(Integer memberID)
     {
         boolean hasMember = false;
         for (Group theGroup : groups)
         {
-            for (Member theMember : theGroup.members)
+            for (Member theMember : theGroup.getMembers())
             {
-                if (theMember.memberEntityID.equals(memberID)) hasMember = true;
+                if (theMember.getMemberID().equals(memberID)) hasMember = true;
             }
         }
-        return hasMember;
+        return !hasMember;
     }
 
+    @SuppressWarnings("unused")
     public static void dump()
     {
         for (Group theGroup : groups)
         {
             debug("Group: " + theGroup.groupID);
             debug("  Leader: " + theGroup.leaderEntityID);
-            for (Member theMember : theGroup.members)
+            for (Member theMember : theGroup.getMembers())
             {
-                debug("    member: " + theMember.memberEntityID);
+                debug("    member: " + theMember.getMemberID());
             }
         }
     }
@@ -340,10 +320,10 @@ public class GroupManager
             debug("Group: " + theGroup.groupID);
             debug("  Leader: " + theGroup.leaderEntityID);
             buildGroups.append(theGroup.groupID).append("=").append(theGroup.leaderEntityID).append("|");
-            for (Member theMember : theGroup.members)
+            for (Member theMember : theGroup.getMembers())
             {
-                debug("    member: " + theMember.memberEntityID);
-                buildMembers.append(theMember.memberEntityID).append("=").append(theGroup.groupID).append("|");
+                debug("    member: " + theMember.getMemberID());
+                buildMembers.append(theMember.getMemberID()).append("=").append(theGroup.groupID).append("|");
             }
         }
         /* sync server */
@@ -365,16 +345,14 @@ public class GroupManager
     {
         if (event.getTarget() != null && event.getTarget() instanceof EntityPlayer && event.getEntityLiving() instanceof EntityPlayer)
         {
-            EntityPlayer playerInitiator = (EntityPlayer) event.getEntityPlayer();
+            EntityPlayer playerInitiator = event.getEntityPlayer();
             EntityPlayer playerTarget = (EntityPlayer) event.getTarget();
 
             ModLogger.debug(playerInitiator.getDisplayName().getUnformattedText() + " pokes " + playerTarget.getDisplayName().getUnformattedText());
-
             if ((event.getSide() == Side.SERVER) && (interactFlag++ % 2) == 0)
             {
-                
                 Group targetGroup = getMembersGroup(playerTarget.getEntityId());
-                if (targetGroup != null && targetGroup.leaderEntityID.equals(playerTarget.getEntityId()) /* && initatorGroup == null */)
+                if (targetGroup != null && targetGroup.leaderEntityID.equals(playerTarget.getEntityId()) /* && initiatorGroup == null */)
                 {
                     if (!isMuteAll(playerInitiator))
                     {
@@ -384,12 +362,12 @@ public class GroupManager
                             PacketDispatcher.sendTo(new JoinGroupMessage(targetGroup.groupID), (EntityPlayerMP) playerInitiator);
                         } else
                         {
-                            /* target fails the mute options check */
-                            playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.gm.noJoinGroupWhenPlayerIsMuted", new Object[] {playerTarget.getDisplayName().getUnformattedText()}));
+                            // target fails the mute options check
+                            playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.gm.noJoinGroupWhenPlayerIsMuted", playerTarget.getDisplayName().getUnformattedText()));
                         }
                     } else
                     {
-                        /* MuteALL is true so playerInitator can't join */
+                        // MuteALL is true so playerInitiator can't join
                         playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.gm.noJoinGroupWhenMuteAll"));
                     }
                 }
@@ -447,13 +425,15 @@ public class GroupManager
         removeMember(event.player.getEntityId());
     }
 
+    private static EntityPlayer getEntityPlayer(Integer entityID)
+    {
+        return MXTune.proxy.getPlayerByEntityID(entityID);
+    }
+
+    // for debugging
+    @SuppressWarnings("unused")
     private static void debug(String strMessage) {/*ModLogger.debug(strMessage);*/}
 
+    @SuppressWarnings("unused")
     private static void log(String strMessage) {/*ModLogger.logInfo(strMessage);*/}
-
-    private static EntityPlayer getEntityPlayer(Integer leaderEntityID)
-    {
-        MinecraftServer world = FMLCommonHandler.instance().getMinecraftServerInstance();
-        return (EntityPlayer) world.getServer().getEntityWorld().getEntityByID(leaderEntityID);
-    }
 }
