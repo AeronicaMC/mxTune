@@ -25,6 +25,7 @@ import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -103,7 +104,7 @@ public class GroupManager
      */
     public static void addGroup(int creatorID)
     {
-        log("addGroup " + creatorID);
+        debug("addGroup " + creatorID);
 
         if (isNotGroupMember(creatorID))
         {
@@ -113,7 +114,7 @@ public class GroupManager
             groups.add(theGroup);
             sync();
         } else
-            log("Can't create a group if you are a member of a group.");
+            debug("Can't create a group if you are a member of a group.");
     }
 
     /**
@@ -124,7 +125,7 @@ public class GroupManager
     {
         if (groups.isEmpty())
         {
-            log("No group exists!");
+            debug("No group exists!");
             return;
         }
         Group g = getGroup(groupID);
@@ -139,20 +140,20 @@ public class GroupManager
             {
                 g.addMember(new Member(memberID));
                 sync();
-                log("addMember " + groupID + " : " + memberID);
+                debug("addMember " + groupID + " : " + memberID);
                 playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.you_joined_players_group", playerTarget.getDisplayName().getFormattedText()));
                 playerTarget.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.player_joined_the_group", playerInitiator.getDisplayName().getFormattedText()));
             }
             else
             {
-                log("Can't join. Too many members.");
+                debug("Can't join. Too many members.");
                 playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.cannot_join_too_many", playerTarget.getDisplayName().getFormattedText()));
                 playerTarget.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.player_cannot_join_too_many", playerInitiator.getDisplayName().getFormattedText()));
             }
         }
         else
         {
-            log("Can't join a group if you are a member of a group.");
+            debug("Can't join a group if you are a member of a group.");
             playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.cannot_join_if_group_member"));
         }
     }
@@ -165,11 +166,11 @@ public class GroupManager
      */
     public static void removeMember(int memberID)
     {
-        log("removeMember " + memberID);
+        debug("removeMember " + memberID);
         PlayManager.purgeMember(memberID);
         if (isNotGroupMember(memberID))
         {
-            log("" + memberID + " is not a member of a group.");
+            debug("" + memberID + " is not a member of a group.");
             return;
         }
 
@@ -179,7 +180,7 @@ public class GroupManager
                 {
                     /* This is not the leader so simply remove the member. */
                     theGroup.getMembers().remove(theMember);
-                    log("removed " + memberID);
+                    debug("removed " + memberID);
                     sync();
                 }
                 else
@@ -187,7 +188,7 @@ public class GroupManager
                     /* This is the leader of the group and if we are the last or only member then we will remove the group. */
                     if (theGroup.members.size() == 1)
                     {
-                        log("" + theMember.memberID + " is the last member so remove the group");
+                        debug("" + theMember.memberID + " is the last member so remove the group");
                         theGroup.members.clear();
                         groups.remove(theGroup);
                         sync();
@@ -204,7 +205,7 @@ public class GroupManager
                     {
                         theMember = remainingMembers.next();
                         theGroup.leaderEntityID = theMember.getMemberID();
-                        log("" + theMember.getMemberID() + " is promoted to the group leader");
+                        debug("" + theMember.getMemberID() + " is promoted to the group leader");
                         sync();
                         return;
                     }
@@ -328,47 +329,50 @@ public class GroupManager
 
 
     /* Forge and FML Event Handling */
-    /*
-     * TODO: Add a yes/no gui to ask user if that want to join. Indicate if a
-     * party is full, or if it requires a password.
-     * @param event
-     */
+
+    // TODO: Add a yes/no gui to ask target user for approval -OR- Tell initiator party is full, or to provide a password.
     @SubscribeEvent
     public void onEntityInteractEvent(EntityInteract event)
     {
-        if (event.getTarget() instanceof EntityPlayer && event.getEntityLiving() instanceof EntityPlayer)
+        if ((event.getTarget() instanceof EntityPlayer) && (event.getEntityLiving() instanceof EntityPlayer) && (event.getEntityPlayer().getActiveHand() == EnumHand.MAIN_HAND))
         {
             EntityPlayer playerInitiator = event.getEntityPlayer();
             EntityPlayer playerTarget = (EntityPlayer) event.getTarget();
 
-            ModLogger.debug(playerInitiator.getDisplayName().getUnformattedText() + " pokes " + playerTarget.getDisplayName().getUnformattedText());
-            if (event.getSide().isServer())
+            debug(playerInitiator.getDisplayName().getUnformattedText() + " pokes " + playerTarget.getDisplayName().getUnformattedText());
+            Group targetGroup = getMembersGroup(playerTarget.getEntityId());
+            if ((targetGroup != null) && targetGroup.leaderEntityID.equals(playerTarget.getEntityId())
+                    && isNotGroupMember(playerInitiator.getEntityId()))
             {
-                Group targetGroup = getMembersGroup(playerTarget.getEntityId());
-                if ((targetGroup != null) && targetGroup.leaderEntityID.equals(playerTarget.getEntityId()) && isNotGroupMember(playerInitiator.getEntityId()))
-                {
-                    if (!isMuteAll(playerInitiator))
-                    {
-                        if (playerNotMuted(playerInitiator, playerTarget))
-                        {
-                            setSParams(playerInitiator, targetGroup.groupID.toString(), "", "");
-                            PacketDispatcher.sendTo(new JoinGroupMessage(targetGroup.groupID), (EntityPlayerMP) playerInitiator);
-                        } else
-                        {
-                            // target fails the mute options check
-                            playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.gm.noJoinGroupWhenPlayerIsMuted", playerTarget.getDisplayName().getUnformattedText()));
-                        }
-                    } else
-                    {
-                        // MuteALL is true so playerInitiator can't join
-                        playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.gm.noJoinGroupWhenMuteAll"));
-                    }
-                } else if (!isLeader(playerTarget.getEntityId()) && isNotGroupMember(playerInitiator.getEntityId()))
-                    playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.player_not_leader", playerTarget.getDisplayName().getUnformattedText()));
-                else
-                    playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.cannot_join_if_group_member"));
+                if (!notMuted(playerInitiator, playerTarget)) return;
+                setSParams(playerInitiator, targetGroup.groupID.toString(), "", "");
+                PacketDispatcher.sendTo(new JoinGroupMessage(targetGroup.groupID), (EntityPlayerMP) playerInitiator);
+            }
+            else if (!isLeader(playerTarget.getEntityId()) && isNotGroupMember(playerInitiator.getEntityId()))
+                playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.player_not_leader", playerTarget.getDisplayName().getUnformattedText()));
+            else
+                playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.cannot_join_if_group_member"));
+        }
+    }
+
+    private boolean notMuted(EntityPlayer playerInitiator, EntityPlayer playerTarget)
+    {
+        boolean noMute = true;
+        if (isMuteAll(playerInitiator))
+        {
+            // MuteALL is true so playerInitiator can't join
+            playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.gm.noJoinGroupWhenMuteAll"));
+            noMute = false;
+        } else
+        {
+            if (!playerNotMuted(playerInitiator, playerTarget))
+            {
+                // target fails the mute options check
+                playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.gm.noJoinGroupWhenPlayerIsMuted", playerTarget.getDisplayName().getUnformattedText()));
+                noMute = false;
             }
         }
+        return noMute;
     }
 
     @SubscribeEvent
@@ -428,8 +432,5 @@ public class GroupManager
 
     // for debugging
     @SuppressWarnings("unused")
-    private static void debug(String strMessage) {ModLogger.debug(strMessage);}
-
-    @SuppressWarnings("unused")
-    private static void log(String strMessage) {ModLogger.info("----- " + strMessage);}
+    private static void debug(String strMessage, Object ... data) {ModLogger.info("----- " + strMessage, data);}
 }
