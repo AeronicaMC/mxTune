@@ -170,34 +170,36 @@ public class GroupManager
         PlayManager.purgeMember(memberID);
         if (isNotGroupMember(memberID))
         {
-            debug("" + memberID + " is not a member of a group.");
+            debug(memberID + " is not a member of a group.");
             return;
         }
 
         for (Group theGroup : groups)
             for (Member theMember : theGroup.getMembers())
+            {
                 if ((theMember.getMemberID() == memberID) && (theGroup.leaderEntityID != memberID))
                 {
                     /* This is not the leader so simply remove the member. */
                     theGroup.getMembers().remove(theMember);
                     debug("removed " + memberID);
                     sync();
+                    return;
                 }
-                else
-                {
-                    /* This is the leader of the group and if we are the last or only member then we will remove the group. */
-                    if (theGroup.members.size() == 1)
-                    {
-                        debug("" + theMember.memberID + " is the last member so remove the group");
-                        theGroup.members.clear();
-                        groups.remove(theGroup);
-                        sync();
-                        return;
-                    }
 
-                    /* Remove the leader */
-                    theGroup.getMembers().remove(theMember);
+                /* This is the leader of the group and if we are the last or only member then we will remove the group. */
+                if ((theMember.getMemberID() == memberID) && theGroup.members.size() == 1)
+                {
+                    debug(theMember.memberID + " is the last member so remove the group");
+                    theGroup.members.clear();
+                    groups.remove(theGroup);
                     sync();
+                    return;
+                }
+
+                // Remove the leader
+                if ((theMember.getMemberID() == memberID) && (theGroup.leaderEntityID == memberID))
+                {
+                    theGroup.getMembers().remove(theMember);
 
                     /* Promote the next member of the group to leader. */
                     Iterator<Member> remainingMembers = theGroup.getMembers().iterator();
@@ -210,6 +212,7 @@ public class GroupManager
                         return;
                     }
                 }
+            }
     }
 
     static boolean isLeader(Integer entityID)
@@ -219,9 +222,7 @@ public class GroupManager
     }
     
     /**
-     * setLeader A rather unsafe way to change the leader of the group, but this
-     * will do for now
-     * 
+     * setLeader
      * @param memberID the new leader
      */
     public static void setLeader(Integer memberID)
