@@ -41,12 +41,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-/*
- * The SERVER side class for managing playing
- * FIXME: Refactor this class along with GROUPS and GroupManager and the associated packet messages
- * @author Paul Boese aka Aeronica
- *
- */
 public class PlayManager
 {
     private static final Map<Integer, String> membersMML = new HashMap<>();
@@ -54,7 +48,9 @@ public class PlayManager
     private static final HashMap<Integer, Integer> membersPlayID = new HashMap<>();
     private static final Set<Integer> activePlayIDs = Sets.newHashSet();
     private static int uniquePlayID = 1;
-    
+
+    private PlayManager() { /* NOP */ }
+
     /*
      * Play ID's 1 to Integer.MAX, -1 for invalid, 0 for initialization only, null if not set.
      * @return a unique positive play id
