@@ -47,7 +47,11 @@ public class ModConfig
         @Comment("Internet Resources")
         @LangKey("config.mxtune:internetResouces")
         public static final Links links = new Links();
-        
+
+        @Config.LangKey("config.mxtune.player_name_in_window_title")
+        @Config.Comment("Player name in window title. Updates on logon and/or changing dimension.")
+        public static PLAYER_NAME_IN_WINDOW_TITLE player_name_in_window_title = PLAYER_NAME_IN_WINDOW_TITLE.DISABLED;
+
         public static class Sound
         {
             @Name("Automatically configure sound channels")
@@ -60,6 +64,20 @@ public class ModConfig
             @Name("Site Links")
             @LangKey("config.mxtune:mmlLink")
             public String site = "https://mabibeats.com/";
+        }
+
+        public enum PLAYER_NAME_IN_WINDOW_TITLE
+        {
+            @Config.LangKey("config.mxtune.player_name_in_title.disabled")
+            DISABLED("config.mxtune.player_name_in_title.disabled"),
+            @Config.LangKey("config.mxtune.player_name_in_title.enabled")
+            ENABLED("config.mxtune.player_name_in_title.enabled");
+
+            private String translateKey;
+
+            PLAYER_NAME_IN_WINDOW_TITLE(String translateKeyIn) {this.translateKey = translateKeyIn;}
+
+            public String toString() {return this.translateKey;}
         }
     }
     

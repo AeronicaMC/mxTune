@@ -16,22 +16,26 @@
  */
 package net.aeronica.mods.mxtune.handler;
 
+import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.init.IReBakeModel;
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.init.ModModelManager;
 import net.aeronica.mods.mxtune.render.PlacardRenderer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
+import org.lwjgl.opengl.Display;
 
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ClientEventHandler
@@ -71,6 +75,21 @@ public class ClientEventHandler
         if (event.getItemStack().getItem().equals(ModItems.ITEM_BAND_AMP))
         {
             event.getToolTip().add(TextFormatting.GREEN + I18n.format("tile.mxtune:band_amp.help"));
+        }
+    }
+
+    /*
+     * OBS likes unique window titles. Update on logon and/or changing dimension
+     */
+    @SubscribeEvent
+    public static void onEvent(EntityJoinWorldEvent event)
+    {
+        if ((event.getEntity() instanceof EntityPlayerSP))
+        {
+            if (ModConfig.ConfigClient.player_name_in_window_title == ModConfig.ConfigClient.PLAYER_NAME_IN_WINDOW_TITLE.ENABLED)
+                Display.setTitle(String.format("Minecraft 1.12.2 %s", event.getEntity().getName()));
+            else
+                Display.setTitle("Minecraft 1.12.2");
         }
     }
 }
