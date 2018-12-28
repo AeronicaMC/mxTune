@@ -32,6 +32,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class GuiGroup extends GuiScreen
@@ -160,34 +161,28 @@ public class GuiGroup extends GuiScreen
         Integer groupID;
 
         clearMembersButtons();
-        try
+        if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
         {
-            if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
+            groupID = GROUPS.getMembersGroupID(player.getEntityId());
+            Integer leaderID = GROUPS.getLeaderOfGroup(groupID);
+            if (groupID != null && leaderID != null)
             {
-                groupID = GROUPS.getMembersGroupID(player.getEntityId());
-                Integer leaderID = GROUPS.getLeaderOfGroup(groupID);
-                if (groupID != null && leaderID !=null)
-                {
-                    // Always put the leader at the TOP of the list
-                    drawLeader(leaderID, posX, posY);
-                    posY += 10;
-                    // Display the remaining members taking care to not print the leader a 2nd time
-                    drawMembers(groupID, leaderID, posX, posY);
-                }
+                // Always put the leader at the TOP of the list
+                drawLeader(leaderID, posX, posY);
+                posY += 10;
+                // Display the remaining members taking care to not print the leader a 2nd time
+                drawMembers(groupID, leaderID, posX, posY);
             }
-        } catch(NullPointerException e)
-        {
-            ModLogger.error("GuiGroup#drawMembers: Oops %s", e);
         }
     }
 
-    private void drawLeader(Integer leaderID, int posX, int posY) throws NullPointerException
+    private void drawLeader(Integer leaderID, int posX, int posY)
     {
-        String leaderName = this.mc.world.getEntityByID(leaderID).getName();
+        String leaderName = Objects.requireNonNull(this.mc.world.getEntityByID(leaderID)).getName();
         this.fontRenderer.drawStringWithShadow(TextFormatting.YELLOW + leaderName, posX, posY, 16777215);
     }
 
-    private void drawMembers(Integer groupID, Integer leaderID, int posX, int posYIn) throws NullPointerException
+    private void drawMembers(Integer groupID, Integer leaderID, int posX, int posYIn)
     {
         int i = 0;
         int posY = posYIn;
@@ -196,7 +191,7 @@ public class GuiGroup extends GuiScreen
         {
             if (groupID.equals(GROUPS.getMembersGroupID(memberId)) && !memberId.equals(leaderID))
             {
-                String memberName = this.mc.world.getEntityByID(memberId).getName();
+                String memberName = Objects.requireNonNull(this.mc.world.getEntityByID(memberId)).getName();
                 this.fontRenderer.drawStringWithShadow(memberName, posX, posY, 16777215);
                 memberButtons.get(i).memberName = memberName;
                 memberButtons.get(i).memberId = memberId;
