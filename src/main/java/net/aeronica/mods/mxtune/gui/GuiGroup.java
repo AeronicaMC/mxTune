@@ -84,9 +84,6 @@ public class GuiGroup extends GuiScreen
     }
 
     @Override
-    public void onGuiClosed() {}
-
-    @Override
     public boolean doesGuiPauseGame() {return false;}
 
     @Override
@@ -102,7 +99,7 @@ public class GuiGroup extends GuiScreen
         this.fontRenderer.getStringWidth(title);
         this.fontRenderer.drawString(title, posX, posY, 0x000000);
 
-        drawMembers();
+        drawGroupMembers();
         /* Create and Leave buttons should always reflect group membership */
         btnLeave.enabled = GROUPS.getMembersGroupID(player.getEntityId()) != null;
         btnCreate.enabled = !btnLeave.enabled;
@@ -134,21 +131,21 @@ public class GuiGroup extends GuiScreen
         for (int i = 0; i < GROUPS.MAX_MEMBERS; i++)
         {
             memberButtons.get(i).memberName = "";
-            memberButtons.get(i).btn_delete.enabled = false;
-            memberButtons.get(i).btn_delete.visible = false;
-            memberButtons.get(i).btn_promote.enabled = false;
-            memberButtons.get(i).btn_promote.visible = false;
+            memberButtons.get(i).buttonRemove.enabled = false;
+            memberButtons.get(i).buttonRemove.visible = false;
+            memberButtons.get(i).buttonPromote.enabled = false;
+            memberButtons.get(i).buttonPromote.visible = false;
         }
     }
 
-    private Integer getMemberButton(int buttonID)
+    private Integer getMemberByButtonID(int buttonID)
     {
         MemberButtons mb;
         Integer memberId = -1;
         for (int i = 0; i < GROUPS.MAX_MEMBERS; i++)
         {
             mb = memberButtons.get(i);
-            if (mb.btn_delete.id == buttonID || mb.btn_promote.id == buttonID)
+            if (mb.buttonRemove.id == buttonID || mb.buttonPromote.id == buttonID)
             {
                 memberId = mb.memberId;
             }
@@ -156,17 +153,13 @@ public class GuiGroup extends GuiScreen
         return memberId;
     }
 
-    private void drawMembers()
+    private void drawGroupMembers()
     {
         int posX = guiLeft + 12;
         int posY = guiTop + 12;
         Integer groupID;
-        String leaderName;
-        String memberName;
-        int i = 0;
 
         clearMembersButtons();
-
         try
         {
             if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
@@ -175,32 +168,11 @@ public class GuiGroup extends GuiScreen
                 Integer leaderID = GROUPS.getLeaderOfGroup(groupID);
                 if (groupID != null && leaderID !=null)
                 {
-                    /* Always put the leader at the TOP of the list */
-                    leaderName = this.mc.world.getEntityByID(leaderID).getDisplayName().getUnformattedText();
-                    this.fontRenderer.drawStringWithShadow(TextFormatting.YELLOW + leaderName, posX, posY, 16777215);
+                    // Always put the leader at the TOP of the list
+                    drawLeader(leaderID, posX, posY);
                     posY += 10;
-                    /* Display the remaining members taking care to not print the leader a 2nd time. */
-                    Set<Integer> members = GROUPS.getClientMembers().keySet();
-                    for (Integer memberId : members)
-                    {
-                        if (groupID.equals(GROUPS.getMembersGroupID(memberId)) && !memberId.equals(leaderID))
-                        {
-                            memberName = this.mc.world.getEntityByID(memberId).getDisplayName().getUnformattedText();
-                            this.fontRenderer.drawStringWithShadow(memberName, posX, posY, 16777215);
-                            memberButtons.get(i).memberName = memberName;
-                            memberButtons.get(i).memberId = memberId;
-                            /* Only Leaders get to remove and promote other members! */
-                            if (player.getEntityId() == (leaderID))
-                            {
-                                memberButtons.get(i).btn_delete.enabled = true;
-                                memberButtons.get(i).btn_delete.visible = true;
-                                memberButtons.get(i).btn_promote.enabled = true;
-                                memberButtons.get(i).btn_promote.visible = true;
-                            }
-                            posY += 10;
-                            i++;
-                        }
-                    }
+                    // Display the remaining members taking care to not print the leader a 2nd time
+                    drawMembers(groupID, leaderID, posX, posY);
                 }
             }
         } catch(NullPointerException e)
@@ -209,26 +181,59 @@ public class GuiGroup extends GuiScreen
         }
     }
 
+    private void drawLeader(Integer leaderID, int posX, int posY) throws NullPointerException
+    {
+        String leaderName = this.mc.world.getEntityByID(leaderID).getName();
+        this.fontRenderer.drawStringWithShadow(TextFormatting.YELLOW + leaderName, posX, posY, 16777215);
+    }
+
+    private void drawMembers(Integer groupID, Integer leaderID, int posX, int posYIn) throws NullPointerException
+    {
+        int i = 0;
+        int posY = posYIn;
+        Set<Integer> members = GROUPS.getClientMembers().keySet();
+        for (Integer memberId : members)
+        {
+            if (groupID.equals(GROUPS.getMembersGroupID(memberId)) && !memberId.equals(leaderID))
+            {
+                String memberName = this.mc.world.getEntityByID(memberId).getName();
+                this.fontRenderer.drawStringWithShadow(memberName, posX, posY, 16777215);
+                memberButtons.get(i).memberName = memberName;
+                memberButtons.get(i).memberId = memberId;
+                /* Only Leaders get to remove and promote other members! */
+                if (player.getEntityId() == (leaderID))
+                {
+                    memberButtons.get(i).buttonRemove.enabled = true;
+                    memberButtons.get(i).buttonRemove.visible = true;
+                    memberButtons.get(i).buttonPromote.enabled = true;
+                    memberButtons.get(i).buttonPromote.visible = true;
+                }
+                posY += 10;
+                i++;
+            }
+        }
+    }
+
     @Override
     protected void actionPerformed(GuiButton guibutton)
     {
-        /* if button is disabled ignore click */
+        // if button is disabled ignore click
         if (!guibutton.enabled) { return; }
 
+        // 10-99 delete; 100+ promote
         if (guibutton.id >= 10 && guibutton.id < 100)
         {
-            sendRequest(GROUPS.MEMBER_REMOVE, getMemberButton(guibutton.id));
+            sendRequest(GROUPS.MEMBER_REMOVE, getMemberByButtonID(guibutton.id));
             ModLogger.debug("+++ Gui Remove Member: " + GROUPS.MEMBER_REMOVE);
             return;
         }
         if (guibutton.id >= 100)
         {
-            sendRequest(GROUPS.MEMBER_PROMOTE, getMemberButton(guibutton.id));
+            sendRequest(GROUPS.MEMBER_PROMOTE, getMemberByButtonID(guibutton.id));
             ModLogger.debug("+++ Gui Promote Member: " + GROUPS.MEMBER_PROMOTE);
             return;
         }
 
-        /* id 0 = create; 1 = leave; id 2 = cancel; 10-99 delete; 100+ promote; */
         switch (guibutton.id)
         {
         case 0:
@@ -266,23 +271,23 @@ public class GuiGroup extends GuiScreen
 
     protected class MemberButtons
     {
-        GuiButton btn_delete;
-        GuiButton btn_promote;
+        GuiButton buttonRemove;
+        GuiButton buttonPromote;
         String memberName;
         Integer memberId;
     }
 
-    private MemberButtons memberButtons(int did, int pid, int xpos, int ypos)
+    private MemberButtons memberButtons(int deleteId, int promoteId, int xPosition, int yPosition)
     {
         MemberButtons buttons = new MemberButtons();
-        buttons.btn_delete = new GuiButton(did, xpos, ypos, 10, 10, "D");
-        buttons.btn_delete.visible = false;
-        buttons.btn_delete.enabled = false;
-        buttons.btn_promote = new GuiButton(pid, xpos + 10, ypos, 10, 10, "L");
-        buttons.btn_promote.visible = false;
-        buttons.btn_promote.enabled = false;
-        buttonList.add(buttons.btn_delete);
-        buttonList.add(buttons.btn_promote);
+        buttons.buttonRemove = new GuiButton(deleteId, xPosition, yPosition, 10, 10, "D");
+        buttons.buttonRemove.visible = false;
+        buttons.buttonRemove.enabled = false;
+        buttons.buttonPromote = new GuiButton(promoteId, xPosition + 10, yPosition, 10, 10, "L");
+        buttons.buttonPromote.visible = false;
+        buttons.buttonPromote.enabled = false;
+        buttonList.add(buttons.buttonRemove);
+        buttonList.add(buttons.buttonPromote);
         return buttons;
     }
 }
