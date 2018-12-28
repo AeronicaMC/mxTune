@@ -173,7 +173,7 @@ public enum MIDISystemUtil
     
     public static void onPlayerLoggedInModStatus(EntityPlayer playerIn)
     {
-        if (!ModConfig.hideWelcomeStatusMessage())
+        if (ModConfig.showWelcomeStatusMessage())
             for (TextComponentString tcs: chatStatus) {playerIn.sendMessage(tcs);}
     }
     

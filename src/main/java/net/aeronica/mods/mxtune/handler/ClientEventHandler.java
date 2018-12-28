@@ -86,7 +86,7 @@ public class ClientEventHandler
     {
         if ((event.getEntity() instanceof EntityPlayerSP))
         {
-            if (ModConfig.ConfigClient.player_name_in_window_title == ModConfig.ConfigClient.PLAYER_NAME_IN_WINDOW_TITLE.ENABLED)
+            if (ModConfig.ConfigClient.windowTitle.showPlayerName)
                 Display.setTitle(String.format("Minecraft 1.12.2 %s", event.getEntity().getName()));
             else
                 Display.setTitle("Minecraft 1.12.2");

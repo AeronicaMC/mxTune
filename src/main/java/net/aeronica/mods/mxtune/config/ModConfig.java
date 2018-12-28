@@ -35,86 +35,80 @@ public class ModConfig
 
     /** Client Configuration Settings */
     @Config(modid = Reference.MOD_ID, name = Reference.MOD_ID + "/" + Reference.MOD_ID + "_client", category="client")
-    @LangKey("config.mxtune:ctgy.client")
+    @LangKey("config.mxtune.category.client")
     public static class ConfigClient
     {
         private ConfigClient() {/* NOP */}
 
+        @LangKey("config.mxtune.autoConfigureChannels")
         @Comment("Sound Channel Configuration")
-        @LangKey("config.mxtune:soundChannelConfig")
         public static final Sound sound = new Sound();
-        
+
+        @LangKey("config.mxtune.mmlLink")
         @Comment("Internet Resources")
-        @LangKey("config.mxtune:internetResouces")
         public static final Links links = new Links();
 
-        @Config.LangKey("config.mxtune.player_name_in_window_title")
-        @Config.Comment("Player name in window title. Updates on logon and/or changing dimension.")
-        public static PLAYER_NAME_IN_WINDOW_TITLE player_name_in_window_title = PLAYER_NAME_IN_WINDOW_TITLE.DISABLED;
+        @Config.LangKey("config.mxtune.playerNameInWindowTitle")
+        @Config.Comment("Show player name in window title. Updates on logon and/or changing dimension.")
+        public static final WindowTitle windowTitle = new WindowTitle();
 
         public static class Sound
         {
             @Name("Automatically configure sound channels")
-            @LangKey("config.mxtune:autoConfigureChannels")
+            @LangKey("config.mxtune.autoConfigureChannels")
             public boolean autoConfigureChannels = true;
         }
         
         public static class Links
         {
             @Name("Site Links")
-            @LangKey("config.mxtune:mmlLink")
+            @LangKey("config.mxtune.mmlLink")
             public String site = "https://mabibeats.com/";
         }
 
-        public enum PLAYER_NAME_IN_WINDOW_TITLE
+        public static class WindowTitle
         {
-            @Config.LangKey("config.mxtune.player_name_in_title.disabled")
-            DISABLED("config.mxtune.player_name_in_title.disabled"),
-            @Config.LangKey("config.mxtune.player_name_in_title.enabled")
-            ENABLED("config.mxtune.player_name_in_title.enabled");
-
-            private String translateKey;
-
-            PLAYER_NAME_IN_WINDOW_TITLE(String translateKeyIn) {this.translateKey = translateKeyIn;}
-
-            public String toString() {return this.translateKey;}
+            @Name("Show player name in window title")
+            @Config.LangKey("config.mxtune.playerNameInWindowTitle")
+            public boolean showPlayerName = false;
         }
     }
     
     @Config(modid= Reference.MOD_ID, name = Reference.MOD_ID + "/" + Reference.MOD_ID + "_general", category="general")
-    @LangKey("config.mxtune:ctgy.general")
+    @LangKey("config.mxtune.category.general")
     public static class ConfigGeneral
     {
         private ConfigGeneral() {/* NOP */}
 
         @Comment("General Configuration")
-        @LangKey("config.mxtune:generalConfig")
+        @LangKey("config.mxtune.generalConfig")
         public static final General general = new General();
         
         public static class General
         {
-            @Name("Disable Welcome Status Message")
-            @LangKey("config.mxtune:hideWelcomeStatusMessage")   
-            public boolean hideWelcomeStatusMessage = false;
+            @Name("Show Welcome Status Message")
+            @LangKey("config.mxtune.showWelcomeStatusMessage")
+            public boolean showWelcomeStatusMessage = false;
             
             @Name("Listener Range")
-            @LangKey("config.mxtune:listenerRange")
+            @LangKey("config.mxtune.listenerRange")
             @RangeInt(min=10, max=64)
             public int listenerRange = 64;
 
             @Name("Group Play Abort Distance")
-            @LangKey("config.mxtune:groupPlayAbortDistance")
+            @LangKey("config.mxtune.groupPlayAbortDistance")
             @RangeInt(min=10, max=24)    
             public int groupPlayAbortDistance = 10;
         }
     }
     
     @Config(modid = Reference.MOD_ID, name = Reference.MOD_ID + "/" + Reference.MOD_ID + "_recipes", type = Type.INSTANCE, category="recipe")
-    @LangKey("config.mxtune:ctgy.recipes")
+    @LangKey("config.mxtune.category.recipes")
     public static class ConfigRecipes
     {
         private ConfigRecipes() {/* NOP */}
 
+        @LangKey("config.mxtune.enabledRecipes")
         @Name("Toggles")
         @Comment({"mxTune Recipes", "Requires a Server Restart if Changed!", "B:<name>=(true|false)"})
         @RequiresMcRestart
@@ -146,7 +140,7 @@ public class ModConfig
 
     public static float getGroupPlayAbortDistance() {return (float)ConfigGeneral.general.groupPlayAbortDistance;}
 
-    public static boolean hideWelcomeStatusMessage() {return ConfigGeneral.general.hideWelcomeStatusMessage;}
+    public static boolean showWelcomeStatusMessage() {return ConfigGeneral.general.showWelcomeStatusMessage;}
 
     public static boolean getAutoConfigureChannels() {return ConfigClient.sound.autoConfigureChannels;}
 
@@ -160,8 +154,8 @@ public class ModConfig
     public static boolean isRecipeEnabled(ItemStack stackIn)
     {
         // strip off "item." or "tile." and "instrument." to get the raw item name without domain and item base names
-        String itemName = stackIn.getTranslationKey().replaceFirst("(item\\.|tile\\.)" + Reference.MOD_ID + "\\:", "");
-        itemName = itemName.replaceFirst("instrument\\.", "");
+        String itemName = stackIn.getTranslationKey().replaceFirst("(item.|tile.)" + Reference.MOD_ID + ":", "");
+        itemName = itemName.replaceFirst("instrument.", "");
         boolean enableState = !ConfigRecipes.recipeToggles.containsKey(itemName) || (ConfigRecipes.recipeToggles.get(itemName) && !itemName.contains(":"));
         ModLogger.debug("Recipe Enabled? %s %s", itemName, enableState);
         return enableState;

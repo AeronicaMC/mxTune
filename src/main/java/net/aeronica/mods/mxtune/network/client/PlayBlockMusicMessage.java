@@ -84,7 +84,7 @@ public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicM
             ModLogger.info("SoundRange: " + soundRange);
             ClientAudio.play(playID, blockPos, musicText, soundRange);
         }
-        else if (!ModConfig.hideWelcomeStatusMessage())
+        else if (ModConfig.showWelcomeStatusMessage())
             ClientCSDMonitor.sendErrorViaChat(player);
     }
 }
