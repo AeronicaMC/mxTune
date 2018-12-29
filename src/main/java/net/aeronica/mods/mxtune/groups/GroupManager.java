@@ -109,7 +109,7 @@ public class GroupManager
             {
                 Member member =new Member(memberID, getEntityPlayer(memberID).getName());
                 g.addMember(member);
-                debug("addMember: groupID: " + groupID + ", memberID " + member.getMemberID() + ", memberName: " + member.getMemberName() + " -----");
+                debug("addMember: groupID: " + groupID + ", memberID " + member.getMemberID() + ", memberName: " + member.getMemberName());
                 sync();
                 playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.you_joined_players_group", playerTarget.getDisplayName()));
                 playerTarget.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.player_joined_the_group", playerInitiator.getDisplayName()));
@@ -147,14 +147,11 @@ public class GroupManager
         for (Group theGroup : groups)
             for (Member theMember : theGroup.getMembers())
             {
-                if (tryRemoveMember(theGroup, theMember, memberID))
+                if (
+                        tryRemoveMember(theGroup, theMember, memberID) ||
+                        tryRemoveGroupIfLast(theGroup, theMember, memberID) ||
+                        tryRemoveLeaderPromoteNext(theGroup, theMember, memberID))
                     return;
-                else
-                    if(tryRemoveGroupIfLast(theGroup, theMember, memberID))
-                        return;
-                else
-                    if (tryRemoveLeaderPromoteNext(theGroup, theMember, memberID))
-                        return;
             }
     }
 
@@ -166,7 +163,7 @@ public class GroupManager
         {
             /* This is not the leader so simply remove the member. */
             theGroup.getMembers().remove(theMember);
-            debug( "  memberName: " + theMember.getMemberName() + " from groupID: " + theGroup.getGroupID() + " -----");
+            debug( "  memberName: " + theMember.getMemberName() + " from groupID: " + theGroup.getGroupID());
             sync();
             result = true;
         }
@@ -179,7 +176,7 @@ public class GroupManager
         /* This is the leader of the group and if we are the last or only member then we will remove the group. */
         if (theMember.getMemberID().equals(memberID) && (theGroup.getMembers().size() == 1))
         {
-            debug( "  memberName: " + theMember.getMemberName() + " is the last member so remove groupID: " + theGroup.getGroupID() + " -----");
+            debug( "  memberName: " + theMember.getMemberName() + " is the last member so remove groupID: " + theGroup.getGroupID());
             theGroup.getMembers().clear();
             groups.remove(theGroup);
             sync();
@@ -202,7 +199,7 @@ public class GroupManager
             {
                 theMember = remainingMembers.next();
                 theGroup.setLeaderEntityID(theMember.getMemberID());
-                debug( theMember.getMemberName() + " [" +theMember.getMemberID() + "] is promoted to leader of groupID: " + theGroup.getGroupID() + " -----");
+                debug( theMember.getMemberName() + " [" +theMember.getMemberID() + "] is promoted to leader of groupID: " + theGroup.getGroupID());
                 sync();
                 result = true;
             }
@@ -227,7 +224,7 @@ public class GroupManager
         if (g != null)
         {
             g.setLeaderEntityID(memberID);
-            debug("  GroupID: " + g.getGroupID() + ", leaderName: " + getEntityPlayer(memberID).getName() + " -----");
+            debug("  GroupID: " + g.getGroupID() + ", leaderName: " + getEntityPlayer(memberID).getName());
             sync();
         }
     }
