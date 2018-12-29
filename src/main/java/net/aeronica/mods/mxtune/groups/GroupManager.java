@@ -73,7 +73,6 @@ public class GroupManager
     public static void addGroup(int creatorID)
     {
         debug("Add Group -----");
-        debug("addGroup " + creatorID);
 
         if (isNotGroupMember(creatorID))
         {
@@ -81,6 +80,7 @@ public class GroupManager
             Member theMember = new Member(creatorID, getEntityPlayer(creatorID).getName());
             theGroup.addMember(theMember);
             groups.add(theGroup);
+            debug("  addGroup groupID: " + theGroup.getGroupID()+ ", leaderName: " + theMember.getMemberName() + ", [" + theMember.getMemberID() + "]");
             sync();
         } else
             debug("Can't create a group if you are a member of a group.");
@@ -109,7 +109,7 @@ public class GroupManager
             {
                 Member member =new Member(memberID, getEntityPlayer(memberID).getName());
                 g.addMember(member);
-                debug("addMember: groupID: %d, memberID %d, memberName: %s -----", groupID, member.getMemberName());
+                debug("addMember: groupID: " + groupID + ", memberID " + member.getMemberID() + ", memberName: " + member.getMemberName() + " -----");
                 sync();
                 playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.you_joined_players_group", playerTarget.getDisplayName()));
                 playerTarget.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.player_joined_the_group", playerInitiator.getDisplayName()));
@@ -166,7 +166,7 @@ public class GroupManager
         {
             /* This is not the leader so simply remove the member. */
             theGroup.getMembers().remove(theMember);
-            debug("removed " + memberID);
+            debug( "  memberName: " + theMember.getMemberName() + " from groupID: " + theGroup.getGroupID() + " -----");
             sync();
             result = true;
         }
@@ -179,7 +179,7 @@ public class GroupManager
         /* This is the leader of the group and if we are the last or only member then we will remove the group. */
         if (theMember.getMemberID().equals(memberID) && (theGroup.getMembers().size() == 1))
         {
-            debug( "memberID: %d, memberName: %s is the last member so remove the group -----", theMember.getMemberID(), theMember.getMemberID());
+            debug( "  memberName: " + theMember.getMemberName() + " is the last member so remove groupID: " + theGroup.getGroupID() + " -----");
             theGroup.getMembers().clear();
             groups.remove(theGroup);
             sync();
@@ -202,7 +202,7 @@ public class GroupManager
             {
                 theMember = remainingMembers.next();
                 theGroup.setLeaderEntityID(theMember.getMemberID());
-                debug( "%s [%d] is promoted to leader of groupID %d -----",theMember.getMemberName(), theMember.getMemberID(), theGroup.getGroupID());
+                debug( theMember.getMemberName() + " [" +theMember.getMemberID() + "] is promoted to leader of groupID: " + theGroup.getGroupID() + " -----");
                 sync();
                 result = true;
             }
@@ -222,10 +222,12 @@ public class GroupManager
      */
     public static void setLeader(Integer memberID)
     {
+        debug("setLeader: " + memberID);
         Group g = getMembersGroup(memberID);
         if (g != null)
         {
             g.setLeaderEntityID(memberID);
+            debug("  GroupID: " + g.getGroupID() + ", leaderName: " + getEntityPlayer(memberID).getName() + " -----");
             sync();
         }
     }
@@ -432,5 +434,5 @@ public class GroupManager
 
     // for debugging
     @SuppressWarnings("unused")
-    private static void debug(String strMessage, Object ... data) {ModLogger.info("----- " + strMessage, data);}
+    private static void debug(String message) { ModLogger.info("----- " + message); }
 }
