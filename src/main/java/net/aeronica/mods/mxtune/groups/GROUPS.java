@@ -45,21 +45,21 @@ public class GROUPS
 
     /* Server side, Client side is sync'd with packets */
     /* GroupManager */
-    private static Map<Integer, Integer> clientGroups;
-    private static Map<Integer, Integer> clientMembers;
-    private static ListMultimap<Integer, Integer> groupsMembers;
+    private static Map<Integer, Integer> clientGroups = Collections.emptyMap();
+    private static Map<Integer, Integer> clientMembers = Collections.emptyMap();
+    private static ListMultimap<Integer, Integer> groupsMembers = ArrayListMultimap.create();
     /* PlayManager */
-    private static Map<Integer, Integer> membersQueuedStatus;
-    private static Map<Integer, Integer> membersPlayID;
-    private static Set<Integer> activePlayIDs;
+    private static Map<Integer, Integer> membersQueuedStatus = Collections.emptyMap();
+    private static Map<Integer, Integer> membersPlayID = Collections.emptyMap();
+    private static Set<Integer> activePlayIDs = Collections.emptySet();
 
     private GROUPS() { /* NOP */ }
 
     /* GroupManager Client Status Methods */
     @Nullable
-    public static Integer getLeaderOfGroup(@Nullable Integer integer)
+    public static Integer getLeaderOfGroup(Integer leaderID)
     {
-        return GROUPS.clientGroups != null ? GROUPS.clientGroups.get(integer) : null;
+        return GROUPS.clientGroups.get(leaderID);
     }
 
     public static int getMembersGroupLeader(@Nullable Integer memberID){
@@ -70,7 +70,7 @@ public class GROUPS
     @Nullable
     public static Integer getMembersGroupID(@Nullable Integer memberID)
     {
-        return GROUPS.clientMembers != null ? GROUPS.clientMembers.get(memberID) : null;
+        return GROUPS.clientMembers.get(memberID);
     }
 
     private static Set<Integer> getPlayersGroupMembers(EntityPlayer playerIn)
@@ -215,24 +215,17 @@ public class GROUPS
         double abortDistance = ModConfig.getGroupPlayAbortDistance();
         double distance = 0D;
         double maxDistance = 0D;
-        if (!members.isEmpty())
-            for (Integer memberA : members)
-                for (Integer memberB : members)
-                    if (memberA.intValue() != memberB)
-                    {
-                        double playerDistance = getMemberVector(memberA).distanceTo(getMemberVector(memberB));
-                        if (playerDistance > maxDistance) maxDistance = playerDistance;
-                        distance = Math.min(1.0D, scaleBetween(maxDistance, 0, 1D, 0D, abortDistance));
-                    }
-
+        for (Integer memberA : members)
+            for (Integer memberB : members)
+                if (memberA.intValue() != memberB)
+                {
+                    double playerDistance = getMemberVector(memberA).distanceTo(getMemberVector(memberB));
+                    if (playerDistance > maxDistance) maxDistance = playerDistance;
+                    distance = Math.min(1.0D, (maxDistance / abortDistance));
+                }
         return distance;
     }
 
-    private static double scaleBetween(double unscaledNum, double minAllowed, double maxAllowed, double min, double max)
-    {
-        return (maxAllowed - minAllowed) * (unscaledNum - min) / (max - min) + minAllowed;
-    }
-    
     private static Vec3d getMemberVector(Integer entityID)
     {
         Vec3d v3d;
@@ -415,6 +408,7 @@ public class GROUPS
         return deserializedSet;
     }
 
+    @SuppressWarnings("all")
     static String serializeIntegerSet(Set<Integer> setIntegers)
     {
         StringBuilder serializedSet = new StringBuilder();
