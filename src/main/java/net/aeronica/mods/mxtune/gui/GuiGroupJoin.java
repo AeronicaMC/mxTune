@@ -1,18 +1,18 @@
 /*
  * Aeronica's mxTune MOD
- * Copyright {2016} Paul Boese a.k.a. Aeronica
+ * Copyright 2018, Paul Boese a.k.a. Aeronica
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
 package net.aeronica.mods.mxtune.gui;
 
@@ -21,24 +21,24 @@ import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.ManageGroupMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import java.util.Objects;
 import java.util.Set;
+
+import static net.aeronica.mods.mxtune.groups.GROUPS.MEMBER_ADD;
+import static net.aeronica.mods.mxtune.groups.GROUPS.getLeaderOfGroup;
 
 public class GuiGroupJoin extends GuiScreen
 {
     public static final int GUI_ID = 5;
-
-    private Minecraft mc;
-    private FontRenderer fontRenderer = null;
 
     private static final ResourceLocation guiTexture = new ResourceLocation(Reference.MOD_ID, "textures/gui/manage_group.png");
 
@@ -62,8 +62,6 @@ public class GuiGroupJoin extends GuiScreen
     {
         Keyboard.enableRepeatEvents(false);
 
-        this.mc = Minecraft.getMinecraft();
-        this.fontRenderer = mc.fontRenderer;
         this.player = mc.player;
 
         this.guiLeft = (this.width - this.xSize) / 2;
@@ -73,14 +71,14 @@ public class GuiGroupJoin extends GuiScreen
 
         int posX = guiLeft + 169;
         int posY = guiTop + 92;
-        GuiButton btn_yes = new GuiButton(0, posX, posY, 60, 20, I18n.format("gui.yes"));
+        GuiButton buttonYes = new GuiButton(0, posX, posY, 60, 20, I18n.format("gui.yes"));
 
         posX = guiLeft + 169;
         posY = guiTop + 112;
-        GuiButton btn_no = new GuiButton(1, posX, posY, 60, 20, I18n.format("gui.no"));
+        GuiButton buttonNo = new GuiButton(1, posX, posY, 60, 20, I18n.format("gui.no"));
         
-        buttonList.add(btn_yes);
-        buttonList.add(btn_no);
+        buttonList.add(buttonYes);
+        buttonList.add(buttonNo);
 
         // This is a back door way to pass parameters to the GUI.
         this.groupID = Integer.valueOf(MusicOptionsUtil.getSParam1(player));
@@ -105,44 +103,43 @@ public class GuiGroupJoin extends GuiScreen
         fontRenderer.getStringWidth(title);
         fontRenderer.drawString(title, posX, posY, 0x000000);
 
-        drawMembers();
+        drawGroupMembers();
         super.drawScreen(i, j, f);
     }
 
-    private void drawMembers()
+    private void drawGroupMembers()
     {
         int posX = guiLeft + 12;
         int posY = guiTop + 12;
-        Integer memberID;
-        String memberName;
-        String leaderName;
 
-        if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
+        if ((GROUPS.getClientGroups() != null) || ((GROUPS.getClientMembers() != null) && (groupID != null)))
         {
-            if (groupID != null)
-            {
                 // Always put the leader at the TOP of the list
-                leaderName = player.getEntityWorld().getEntityByID(GROUPS.getLeaderOfGroup(groupID)).getDisplayName().getUnformattedText();
-                fontRenderer.drawStringWithShadow(leaderName, posX, posY, 16777215);
+                drawLeader(posX, posY);
                 posY += 10;
-                // display the remaining members taking care to not print the leader a 2nd time.
-                Set<Integer> set = GROUPS.getClientMembers().keySet();
-                for (Integer aSet : set)
-                {
-                    memberID = aSet;
-                    if (groupID.equals(GROUPS.getMembersGroupID(memberID)) && !memberID.equals(GROUPS.getLeaderOfGroup(groupID)))
-                    {
-                        memberName = player.getEntityWorld().getEntityByID(memberID).getDisplayName().getUnformattedText();
-                        fontRenderer.drawStringWithShadow(memberName, posX, posY, 16777215);
+                // Display the remaining members taking care to not print the leader a 2nd time
+                drawMembers(posX, posY);
+        }
+    }
 
-                        // Only Leaders get to remove and promote other members!
-                        if (player.getEntityId() == (GROUPS.getLeaderOfGroup(groupID)))
-                        {
-                            // GuiGroup enable/disable and visibility setup for buttons here
-                        }
-                        posY += 10;
-                    }
-                }
+    @SuppressWarnings("ConstantConditions")
+    private void drawLeader(int posX, int posY)
+    {
+        String leaderName = Objects.requireNonNull(player.getEntityWorld().getEntityByID(getLeaderOfGroup(groupID))).getName();
+        this.fontRenderer.drawStringWithShadow(TextFormatting.YELLOW + leaderName, posX, posY, 16777215);
+    }
+
+    private void drawMembers(int posX, int posYIn)
+    {
+        int posY = posYIn;
+        Set<Integer> members = GROUPS.getClientMembers().keySet();
+        for (Integer memberID : members)
+        {
+            if (groupID.equals(GROUPS.getMembersGroupID(memberID)) && !memberID.equals(GROUPS.getLeaderOfGroup(groupID)))
+            {
+                String memberName = Objects.requireNonNull(this.mc.world.getEntityByID(memberID)).getName();
+                this.fontRenderer.drawStringWithShadow(memberName, posX, posY, 16777215);
+                posY += 10;
             }
         }
     }
@@ -184,6 +181,6 @@ public class GuiGroupJoin extends GuiScreen
 
     private void sendRequest(Integer groupID, Integer memberID)
     {
-        PacketDispatcher.sendToServer(new ManageGroupMessage(GROUPS.MEMBER_ADD, groupID, memberID));
+        PacketDispatcher.sendToServer(new ManageGroupMessage(MEMBER_ADD, groupID, memberID));
     }
 }
