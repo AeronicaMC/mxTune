@@ -1,23 +1,22 @@
-/**
+/*
  * Aeronica's mxTune MOD
- * Copyright {2016} Paul Boese a.k.a. Aeronica
+ * Copyright 2018, Paul Boese a.k.a. Aeronica
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
 package net.aeronica.mods.mxtune.handler;
 
 import net.aeronica.mods.mxtune.config.ModConfig;
-import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.init.IReBakeModel;
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.init.ModModelManager;
@@ -37,30 +36,33 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.opengl.Display;
 
+import static net.aeronica.mods.mxtune.groups.GROUPS.getClientMembers;
+import static net.aeronica.mods.mxtune.groups.GROUPS.getIndex;
+
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ClientEventHandler
 {
-    
-    static Minecraft mc = Minecraft.getMinecraft();
-    static PlacardRenderer placardRenderer = PlacardRenderer.getInstance();
+    private static Minecraft mc = Minecraft.getMinecraft();
+    private static PlacardRenderer placardRenderer = PlacardRenderer.getInstance();
 
     private ClientEventHandler() {}
 
-    /** Render Placards */
+    // Render Placards
     @SubscribeEvent
     public static void onRenderPlayerEvent(RenderLivingEvent.Specials.Post<EntityLivingBase> event)
     {
-        if (event.getEntity() instanceof EntityPlayer && !event.getEntity().isInvisible() && !mc.gameSettings.showDebugInfo && !mc.gameSettings.hideGUI)
-        {
-            if (
-                    GROUPS.getClientMembers() != null /* (mc.thePlayer.equals(player)) */
-                    && GROUPS.getClientMembers().containsKey(event.getEntity().getEntityId()) &&
-                    !(mc.gameSettings.thirdPersonView == 0 && mc.player.equals(event.getEntity())))
+        if (
+                (event.getEntity() instanceof EntityPlayer) &&
+                !event.getEntity().isInvisible() &&
+                !mc.gameSettings.showDebugInfo &&
+                !mc.gameSettings.hideGUI &&
+                getClientMembers().containsKey(event.getEntity().getEntityId()) &&
+                !(mc.gameSettings.thirdPersonView == 0 && mc.player.equals(event.getEntity())))
             {
-                placardRenderer.setPlacard(GROUPS.getIndex(event.getEntity().getEntityId()));
+                placardRenderer.setPlacard(getIndex(event.getEntity().getEntityId()));
                 placardRenderer.doRender(event);
             }
-        }
+
     } 
     
     @SubscribeEvent
@@ -78,9 +80,7 @@ public class ClientEventHandler
         }
     }
 
-    /*
-     * OBS likes unique window titles. Update on logon and/or changing dimension
-     */
+    // OBS likes unique window titles. Update on logon and/or changing dimension
     @SubscribeEvent
     public static void onEvent(EntityJoinWorldEvent event)
     {
