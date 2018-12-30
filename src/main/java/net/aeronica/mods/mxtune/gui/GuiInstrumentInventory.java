@@ -16,8 +16,8 @@ import java.io.IOException;
 public class GuiInstrumentInventory extends GuiContainer {
 	public static final int GUI_ID = 1;
     private static final ResourceLocation inventoryTexture = new ResourceLocation(Reference.MOD_ID, "textures/gui/instrument_inventory.png");
-    private String BUTTON_MUSIC_OPTIONS = I18n.format("mxtune.key.openMusicOptions");
-    private String BUTTON_ADJ_HUD = I18n.format("mxtune.gui.musicOptions.adjHud");
+    private static final String BUTTON_MUSIC_OPTIONS = I18n.format("mxtune.key.openMusicOptions");
+    private static final String BUTTON_ADJ_HUD = I18n.format("mxtune.gui.musicOptions.adjHud");
 
 	private int theInvItemSlot;
 

@@ -1,18 +1,18 @@
-/**
+/*
  * Aeronica's mxTune MOD
- * Copyright {2016} Paul Boese aka Aeronica
+ * Copyright 2018, Paul Boese a.k.a. Aeronica
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
 package net.aeronica.mods.mxtune.gui;
 
@@ -22,30 +22,32 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.ForgeHooks;
 
+import javax.annotation.Nonnull;
+
 public class GuiLink extends GuiButton
 {
-
-    protected final AlignText alignText;
+    private final AlignText alignText;
 
     public enum AlignText
     {
-        Left, Center, Right;
+        LEFT, CENTER, RIGHT
     }
 
-    public GuiLink(int buttonId, int x, int y, String buttonText, AlignText alignText)
+    GuiLink(int buttonId, int x, int y, String buttonText, AlignText alignText)
     {
         super(buttonId, x, y, 200, 20, buttonText);
         this.alignText = alignText;
     }
-    
+
+    @SuppressWarnings("unused")
     public GuiLink(int buttonId, int x, int y, String buttonText)
     {
         super(buttonId, x, y, 200, 20, buttonText);
-        this.alignText = AlignText.Left;
+        this.alignText = AlignText.LEFT;
     } 
     
     @Override
-    public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks)
+    public void drawButton(@Nonnull Minecraft mc, int mouseX, int mouseY, float partialTicks)
     {
         if (this.visible)
         {
@@ -55,13 +57,13 @@ public class GuiLink extends GuiButton
             int alignX = this.x;
             switch (this.alignText)
             {
-            case Right:
+            case RIGHT:
                 alignX = this.x - stringWidth;
                 break;
-            case Center:
+            case CENTER:
                 alignX = this.x - stringWidth + stringWidth / 2;
                 break;
-            case Left:
+            case LEFT:
                 break;
             default:
             }
@@ -77,11 +79,11 @@ public class GuiLink extends GuiButton
         ITextComponent formattedLink = ForgeHooks.newChatWithLinks(this.displayString, false);
         int stringWidth = fontrenderer.getStringWidth(formattedLink.getFormattedText());
         int stringHeight = fontrenderer.FONT_HEIGHT;
-        if (this.alignText.equals(AlignText.Left))
+        if (this.alignText.equals(AlignText.LEFT))
             result =  this.enabled && this.visible && mouseX >= this.x && mouseX < this.x + stringWidth && mouseY >= this.y && mouseY < this.y + stringHeight;
-        else if (this.alignText.equals(AlignText.Center))
+        else if (this.alignText.equals(AlignText.CENTER))
             result =  this.enabled && this.visible && mouseX >= this.x - stringWidth / 2 && mouseX < this.x + stringWidth / 2 && mouseY >= this.y && mouseY < this.y + stringHeight;
-        else if (this.alignText.equals(AlignText.Right))
+        else if (this.alignText.equals(AlignText.RIGHT))
             result =  this.enabled && this.visible && mouseX >= this.x - stringWidth && mouseX < this.x && mouseY >= this.y && mouseY < this.y + stringHeight;
             
         return result;
@@ -91,9 +93,8 @@ public class GuiLink extends GuiButton
      * Call this method from the parent class that extends GuiScreen e.g. "this.handleComponentClick(mmlLink.getLinkComponent());"
      * @return ITextComponent for the URL string
      */
-    public ITextComponent getLinkComponent()
+    ITextComponent getLinkComponent()
     {
         return ForgeHooks.newChatWithLinks(this.displayString, false);
     }
-    
 }
