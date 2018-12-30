@@ -40,6 +40,7 @@ import net.minecraftforge.fml.client.GuiScrollingList;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import org.lwjgl.input.Keyboard;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -48,6 +49,7 @@ import java.util.List;
 public class GuiMusicOptions extends GuiScreen
 {
     public static final int GUI_ID = 8;
+    private GuiScreen guiScreenOld;
     private String TITLE = I18n.format("mxtune.gui.musicOptions.title");
     private String LABEL_WHITELIST = I18n.format("mxtune.gui.musicOptions.label.whitelist");
     private String LABEL_PLAYERS  = I18n.format("mxtune.gui.musicOptions.label.players");
@@ -89,10 +91,11 @@ public class GuiMusicOptions extends GuiScreen
     private int cachedSelectedWhiteIndex = -1;
     private int cachedSelectedBlackIndex = -1;
 
-    public GuiMusicOptions()
+    public GuiMusicOptions(@Nullable GuiScreen guiScreenIn)
     {
         this.mc = Minecraft.getMinecraft();
         player = mc.player;
+        this.guiScreenOld = guiScreenIn;
         muteOption = MusicOptionsUtil.getMuteOption(player);
         midiUnavailable = MIDISystemUtil.midiUnavailable();
         initPlayerList();
@@ -112,7 +115,6 @@ public class GuiMusicOptions extends GuiScreen
     {
         this.buttonList.clear();
         playerListWidth = whiteListWidth = blackListWidth = getFontRenderer().getStringWidth("MWMWMWMWMWMWMWMW") + 10 + 12;
-        Keyboard.enableRepeatEvents(true);
         
         int y = (height - 100) / 2;
         int x = (width - (playerListWidth + whiteListWidth + blackListWidth + 24 + 24)) / 2;
@@ -207,8 +209,6 @@ public class GuiMusicOptions extends GuiScreen
     protected void actionPerformed(GuiButton guibutton)
     {
         PlayerLists t;
-        /* if button is disabled ignore click */
-        if (!guibutton.enabled) return;
 
         switch (guibutton.id)
         {
@@ -224,11 +224,11 @@ public class GuiMusicOptions extends GuiScreen
         case 3:
             /* done */
             sendOptionsToServer(this.muteOption);
-            cleanup();
+            mc.displayGuiScreen(guiScreenOld);
             break;
         case 2:
             /* cancel */
-            cleanup();
+            mc.displayGuiScreen(guiScreenOld);
             break;
         case 4:
             /* Adjust HUD */
@@ -265,12 +265,6 @@ public class GuiMusicOptions extends GuiScreen
         sortLists();
         updateState();
     }
-
-    private void cleanup()
-    {
-        mc.displayGuiScreen(null);
-        mc.setIngameFocus();
-    }
     
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException
@@ -278,7 +272,8 @@ public class GuiMusicOptions extends GuiScreen
         /* capture the ESC key do we close cleanly */
         if (keyCode == Keyboard.KEY_ESCAPE)
         {
-            this.actionPerformed(buttonList.get(buttonCancel.id));
+            this.actionPerformed(buttonCancel);
+            return;
         }
         updateState();
         super.keyTyped(typedChar, keyCode);
@@ -288,12 +283,6 @@ public class GuiMusicOptions extends GuiScreen
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
         super.mouseClicked(mouseX, mouseY, mouseButton);
-    }
-    
-    @Override
-    public void onGuiClosed()
-    {
-        Keyboard.enableRepeatEvents(false);
     }
 
     private Minecraft getMinecraftInstance() {return mc;}
