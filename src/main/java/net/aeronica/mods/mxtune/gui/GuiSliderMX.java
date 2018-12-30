@@ -1,18 +1,18 @@
-/**
+/*
  * Aeronica's mxTune MOD
- * Copyright {2016} Paul Boese a.k.a. Aeronica
+ * Copyright 2018, Paul Boese a.k.a. Aeronica
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
 package net.aeronica.mods.mxtune.gui;
 
@@ -31,7 +31,7 @@ public class GuiSliderMX extends GuiButton
     private final float valueMin;
     private final float valueMax;
 
-    public GuiSliderMX(int id, int posX, int posY, int width, int height, String name, float value, float valueMin, float valueMax, float valueStep)
+    GuiSliderMX(int id, int posX, int posY, int width, int height, String name, float value, float valueMin, float valueMax, float valueStep)
     {
         super(id, posX, posY, width, height, "");
         this.width = width;
@@ -91,7 +91,7 @@ public class GuiSliderMX extends GuiButton
             }
 
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            /** Draws a textured rectangle at the stored z-value. Args: x, y, u, v, width, height */
+            // Draws a textured rectangle at the stored z-value. Args: x, y, u, v, width, height
             this.drawTexturedModalRect(this.x + (int) (this.sliderValue * (float) (this.width - 8)), this.y, 0, 66, 4, this.height);
             this.drawTexturedModalRect(this.x + (int) (this.sliderValue * (float) (this.width - 8)) + 4, this.y, 196, 66, 4, this.height);
         }
@@ -125,7 +125,7 @@ public class GuiSliderMX extends GuiButton
         }
     }
 
-    /** Fired when the mouse button is released. Equivalent of MouseListener.mouseReleased(MouseEvent e). */
+    // Fired when the mouse button is released. Equivalent of MouseListener.mouseReleased(MouseEvent e).
     @Override
     public void mouseReleased(int mouseX, int mouseY) {this.dragging = false;}
 
@@ -134,7 +134,7 @@ public class GuiSliderMX extends GuiButton
         return MathHelper.clamp((this.snapToStepClamp(param) - this.valueMin) / (this.valueMax - this.valueMin), 0.0F, 1.0F);
     }
 
-    public float denormalizeValue(float param)
+    private float denormalizeValue(float param)
     {
         return this.snapToStepClamp(this.valueMin + (this.valueMax - this.valueMin) * MathHelper.clamp(param, 0.0F, 1.0F));
     }
