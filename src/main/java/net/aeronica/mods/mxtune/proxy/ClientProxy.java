@@ -1,18 +1,18 @@
-/**
+/*
  * Aeronica's mxTune MOD
- * Copyright {2016} Paul Boese a.k.a. Aeronica
+ * Copyright 2018, Paul Boese a.k.a. Aeronica
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
 package net.aeronica.mods.mxtune.proxy;
 
@@ -34,31 +34,28 @@ public class ClientProxy extends ServerProxy
 {
     
     @Override
-    public void preInit() {}
+    public void preInit() { /*  NOP */ }
 
     @Override
-    public void init() {}
+    public void init() { /*  NOP */ }
 
     @Override
-    public void postInit() {}
+    public void postInit() { /*  NOP */ }
 
     @Override
-    public void initEntities()
-    {
-        super.initEntities();
-    }
+    public void initEntities() { super.initEntities(); }
 
     @Override
-    public Side getPhysicalSide() {return Side.CLIENT;}
+    public Side getPhysicalSide() { return Side.CLIENT; }
 
     @Override
-    public Side getEffectiveSide() {return FMLCommonHandler.instance().getEffectiveSide();}
+    public Side getEffectiveSide() { return FMLCommonHandler.instance().getEffectiveSide(); }
 
     @Override
-    public Minecraft getMinecraft() {return Minecraft.getMinecraft();}
+    public Minecraft getMinecraft() { return Minecraft.getMinecraft() ;}
 
     @Override
-    public EntityPlayer getClientPlayer() {return Minecraft.getMinecraft().player;}
+    public EntityPlayer getClientPlayer() { return Minecraft.getMinecraft().player; }
 
     @Override
     public EntityPlayer getPlayerByEntityID(int entityID)
@@ -67,13 +64,13 @@ public class ClientProxy extends ServerProxy
     }
 
     @Override
-    public WorldClient getClientWorld() {return Minecraft.getMinecraft().world;}
+    public WorldClient getClientWorld() { return Minecraft.getMinecraft().world; }
 
     @Override
-    public void spawnMusicParticles(EntityPlayer player) {}
+    public void spawnMusicParticles(EntityPlayer player) { /* Future */ }
 
     @Override
-    public void registerEventHandlers() {super.registerEventHandlers();}
+    public void registerEventHandlers() { super.registerEventHandlers(); }
 
     @Override
     public void registerKeyBindings()
@@ -82,16 +79,10 @@ public class ClientProxy extends ServerProxy
     }
 
     @Override
-    public void initMML()
-    {
-        MIDISystemUtil.mxTuneInit();
-    }
+    public void initMML() { MIDISystemUtil.mxTuneInit(); }
 
     @Override
-    public void registerHUD()
-    {
-        MinecraftForge.EVENT_BUS.register(GuiJamOverlay.getInstance());
-    }
+    public void registerHUD() { MinecraftForge.EVENT_BUS.register(GuiJamOverlay.getInstance()); }
 
     @Override
     public boolean playerIsInCreativeMode(EntityPlayer player)
