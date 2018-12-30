@@ -89,10 +89,10 @@ public class GuiMusicOptions extends GuiScreen
     private int cachedSelectedWhiteIndex = -1;
     private int cachedSelectedBlackIndex = -1;
 
-    public GuiMusicOptions(EntityPlayer playerIn)
+    public GuiMusicOptions()
     {
-        this.player = playerIn;
         this.mc = Minecraft.getMinecraft();
+        player = mc.player;
         muteOption = MusicOptionsUtil.getMuteOption(player);
         midiUnavailable = MIDISystemUtil.midiUnavailable();
         initPlayerList();
@@ -233,7 +233,7 @@ public class GuiMusicOptions extends GuiScreen
         case 4:
             /* Adjust HUD */
             sendOptionsToServer(this.muteOption);
-            this.mc.displayGuiScreen(new GuiHudAdjust());
+            this.mc.displayGuiScreen(new GuiHudAdjust(this));
             break;
         case 11:
             if (this.selectedWhiteIndex == -1 || this.selectedWhiteIndex > this.whiteList.size()) break;

@@ -46,7 +46,14 @@ public class GuiSliderMX extends GuiButton
         this.displayString = getSliderText();
     }
 
-    public float getValue() {return this.value;}
+    public float getValue() {return value;}
+
+    public void setValue(float value)
+    {
+        this.value = value;
+        this.sliderValue = this.normalizeValue(value);
+        this.displayString = getSliderText();
+    }
 
     public int getHeight() {return this.height;}
 
