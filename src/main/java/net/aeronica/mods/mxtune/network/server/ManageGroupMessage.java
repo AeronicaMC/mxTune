@@ -1,18 +1,18 @@
 /*
  * Aeronica's mxTune MOD
- * Copyright {2016} Paul Boese a.k.a. Aeronica
+ * Copyright 2018, Paul Boese a.k.a. Aeronica
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
 package net.aeronica.mods.mxtune.network.server;
 
@@ -32,6 +32,11 @@ public class ManageGroupMessage extends AbstractServerMessage<ManageGroupMessage
     @SuppressWarnings("unused")
     public ManageGroupMessage() {/* Required by the PacketDispatcher */}
 
+    // TODO: Queue the group/member information server side, and only send a true/false or cmd/index as appropriate.
+    // Store in the MusicOptions capability. The management commands will need to be rethought and
+    // actions based on server side state. Client should only send action requests with owner validation.
+    // i.e. only the leader can make those changes. The GroupManger does some validation already but it needs to be
+    // reviewed.
     public ManageGroupMessage(int operation, Integer groupID, Integer memberName)
     {
         this.operation = operation;

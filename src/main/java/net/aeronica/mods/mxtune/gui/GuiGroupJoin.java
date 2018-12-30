@@ -16,6 +16,7 @@
  */
 package net.aeronica.mods.mxtune.gui;
 
+import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
@@ -30,7 +31,6 @@ import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import java.util.Objects;
 import java.util.Set;
 
 import static net.aeronica.mods.mxtune.groups.GROUPS.MEMBER_ADD;
@@ -125,7 +125,7 @@ public class GuiGroupJoin extends GuiScreen
     @SuppressWarnings("ConstantConditions")
     private void drawLeader(int posX, int posY)
     {
-        String leaderName = Objects.requireNonNull(player.getEntityWorld().getEntityByID(getLeaderOfGroup(groupID))).getName();
+        String leaderName = MXTune.proxy.getPlayerByEntityID(getLeaderOfGroup(groupID)).getName();
         this.fontRenderer.drawStringWithShadow(TextFormatting.YELLOW + leaderName, posX, posY, 16777215);
     }
 
@@ -137,7 +137,7 @@ public class GuiGroupJoin extends GuiScreen
         {
             if (groupID.equals(GROUPS.getMembersGroupID(memberID)) && !memberID.equals(GROUPS.getLeaderOfGroup(groupID)))
             {
-                String memberName = Objects.requireNonNull(this.mc.world.getEntityByID(memberID)).getName();
+                String memberName = MXTune.proxy.getPlayerByEntityID(memberID).getName();
                 this.fontRenderer.drawStringWithShadow(memberName, posX, posY, 16777215);
                 posY += 10;
             }
@@ -147,8 +147,6 @@ public class GuiGroupJoin extends GuiScreen
     @Override
     protected void actionPerformed(GuiButton guibutton)
     {
-
-        /* id 0 = yes; 1 = no; */
         switch (guibutton.id)
         {
         case 2:
@@ -179,6 +177,9 @@ public class GuiGroupJoin extends GuiScreen
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 
+    // TODO: Queue the group information server side, and only send a true/false packet to accept/decline.
+    // Store in the MusicOptions capability. The other management commands will need to be rethought and
+    // actions based on server side state with perhaps only button indexes sent
     private void sendRequest(Integer groupID, Integer memberID)
     {
         PacketDispatcher.sendToServer(new ManageGroupMessage(MEMBER_ADD, groupID, memberID));
