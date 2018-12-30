@@ -101,7 +101,6 @@ public class GuiMusicOptions extends GuiScreen
     @Override
     public void updateScreen()
     {
-        updateGuiElments();
         selectedPlayerIndex = this.listBoxPlayers.selectedIndex(playerList.indexOf(selectedPlayerList));
         selectedWhiteIndex = this.listBoxWhite.selectedIndex(whiteList.indexOf(selectedWhiteList));
         selectedBlackIndex = this.listBoxBlack.selectedIndex(blackList.indexOf(selectedBlackList));
@@ -158,7 +157,6 @@ public class GuiMusicOptions extends GuiScreen
         this.listBoxPlayers.elementClicked(this.cachedSelectedPlayerIndex, false);
         this.listBoxWhite.elementClicked(this.cachedSelectedWhiteIndex, false);
         this.listBoxBlack.elementClicked(this.cachedSelectedBlackIndex, false);
-        updateButtonState();
     }
     
     private void updateState()
@@ -166,15 +164,9 @@ public class GuiMusicOptions extends GuiScreen
         this.cachedSelectedPlayerIndex = this.selectedPlayerIndex;
         this.cachedSelectedWhiteIndex = this.selectedWhiteIndex;
         this.cachedSelectedBlackIndex = this.selectedBlackIndex;
-        updateButtonState();
         this.isStateCached = true;
     }
-    
-    private void updateButtonState()
-    {
-       /* unused */ 
-    }
-    
+
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
@@ -228,7 +220,6 @@ public class GuiMusicOptions extends GuiScreen
 
         case 1:
             /* Volume */
-            updateGuiElments();
             break;
         case 3:
             /* done */
@@ -279,11 +270,6 @@ public class GuiMusicOptions extends GuiScreen
     {
         mc.displayGuiScreen(null);
         mc.setIngameFocus();
-    }
-    
-    private void updateGuiElments()
-    {
-        /* unused */
     }
     
     @Override
