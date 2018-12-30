@@ -1,3 +1,19 @@
+/*
+ * Aeronica's mxTune MOD
+ * Copyright 2018, Paul Boese a.k.a. Aeronica
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
 package net.aeronica.mods.mxtune.init;
 
 import net.aeronica.mods.mxtune.Reference;
@@ -17,20 +33,20 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
-@SuppressWarnings("unused")
 public class ModBlocks
 {
-    public static final BlockPiano SPINET_PIANO = registerBlock(new BlockPiano(), "spinet_piano");
-    public static final BlockBandAmp BAND_AMP = registerBlock(new BlockBandAmp(), "band_amp");
+    public static final BlockPiano SPINET_PIANO = RegistrationHandler.registerBlock(new BlockPiano(), "spinet_piano");
+    static final BlockBandAmp BAND_AMP = RegistrationHandler.registerBlock(new BlockBandAmp(), "band_amp");
 
     private ModBlocks() {}
     
     @Mod.EventBusSubscriber
     public static class RegistrationHandler {
-        protected static final Set<Item> ITEM_BLOCKS = new HashSet<>();
-        private RegistrationHandler() {}
+        private static final Set<Item> ITEM_BLOCKS = new HashSet<>();
+        private RegistrationHandler() { /* NOP */ }
         
         /**
          * Register this mod's {@link Block}s.
@@ -68,24 +84,25 @@ public class ModBlocks
             
             registerTileEntities();
         }
-    }
-    
-    private static void registerTileEntities() {
-        registerTileEntity(TilePiano.class, "tile_piano");
-        registerTileEntity(TileBandAmp.class, "tile_band_amp");
-    }
 
-    private static <T extends Block> T registerBlock(T block, String name) {
-        block.setRegistryName(name.toLowerCase());
-        block.setTranslationKey(block.getRegistryName().toString());
-        return block;
-    }
+        private static void registerTileEntities() {
+            registerTileEntity(TilePiano.class, "tile_piano");
+            registerTileEntity(TileBandAmp.class, "tile_band_amp");
+        }
 
-    private static <T extends Block> T registerBlock(T block) {
-        return registerBlock(block, block.getClass().getSimpleName());
-    }
+        private static void registerTileEntity(Class<? extends TileEntity> tileEntityClass, String name) {
+            GameRegistry.registerTileEntity(tileEntityClass, new ResourceLocation(Reference.MOD_ID, name));
+        }
 
-    private static void registerTileEntity(Class<? extends TileEntity> tileEntityClass, String name) {
-        GameRegistry.registerTileEntity(tileEntityClass, new ResourceLocation(Reference.MOD_ID, name));
+        private static <T extends Block> T registerBlock(T block, String name) {
+            block.setRegistryName(name.toLowerCase());
+            block.setTranslationKey(Objects.requireNonNull(block.getRegistryName()).toString());
+            return block;
+        }
+
+        @SuppressWarnings("unused")
+        private static <T extends Block> T registerBlock(T block) {
+            return registerBlock(block, block.getClass().getSimpleName());
+        }
     }
 }

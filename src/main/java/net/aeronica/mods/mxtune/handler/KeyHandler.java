@@ -1,41 +1,18 @@
-/**
+/*
  * Aeronica's mxTune MOD
- * Copyright {2016} Paul Boese a.k.a. Aeronica
+ * Copyright 2018, Paul Boese a.k.a. Aeronica
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * ********************************************************************
- * Changes for Aeronica's mxTune MOD:
- * Changed to accommodate my own key bindings and packets
- * ********************************************************************
- * 
- * Combustible Lemon Launcher
- * Copyright (C) 2014-2016  Phil Julian (aka iBuilder99)
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @author Phil Julian (aka iBuilder99)
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
 package net.aeronica.mods.mxtune.handler;
 
@@ -54,26 +31,26 @@ public class KeyHandler
     private static class KeyHandlerHolder {private static final KeyHandler INSTANCE = new KeyHandler();}
     public static KeyHandler getInstance() {return KeyHandlerHolder.INSTANCE;}
     
-    private KeyBinding key_openPartyGUI = new KeyBinding("mxtune.key.openParty", Keyboard.KEY_J, Reference.MOD_ID);
-    private KeyBinding key_openMusicOptionsGUI = new KeyBinding("mxtune.key.openMusicOptions", Keyboard.KEY_P, Reference.MOD_ID);
+    private KeyBinding keyOpenPartyGUI = new KeyBinding("mxtune.key.openParty", Keyboard.KEY_J, Reference.MOD_ID);
+    private KeyBinding keyOpenMusicOptionsGUI = new KeyBinding("mxtune.key.openMusicOptions", Keyboard.KEY_P, Reference.MOD_ID);
 
     private KeyHandler()
     {
-        ClientRegistry.registerKeyBinding(key_openPartyGUI);
-        ClientRegistry.registerKeyBinding(key_openMusicOptionsGUI);
+        ClientRegistry.registerKeyBinding(keyOpenPartyGUI);
+        ClientRegistry.registerKeyBinding(keyOpenMusicOptionsGUI);
         Minecraft.getMinecraft().gameSettings.loadOptions();
     }
 
     @SubscribeEvent
     public void tick(KeyInputEvent event)
     {
-        if (key_openPartyGUI.isPressed())
+        if (keyOpenPartyGUI.isPressed())
         {
-            PacketDispatcher.sendToServer(new SendKeyMessage(key_openPartyGUI.getKeyDescription()));
+            PacketDispatcher.sendToServer(new SendKeyMessage(keyOpenPartyGUI.getKeyDescription()));
         }
-        if (key_openMusicOptionsGUI.isPressed())
+        if (keyOpenMusicOptionsGUI.isPressed())
         {
-            PacketDispatcher.sendToServer(new SendKeyMessage(key_openMusicOptionsGUI.getKeyDescription()));
+            PacketDispatcher.sendToServer(new SendKeyMessage(keyOpenMusicOptionsGUI.getKeyDescription()));
         }
     }
 }

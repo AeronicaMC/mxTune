@@ -1,18 +1,18 @@
 /*
  * Aeronica's mxTune MOD
- * Copyright {2016} Paul Boese a.k.a. Aeronica
+ * Copyright 2018, Paul Boese a.k.a. Aeronica
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
 package net.aeronica.mods.mxtune.handler;
 
@@ -35,9 +35,9 @@ public class GUIHandler implements IGuiHandler
     public static GUIHandler getInstance() {return GUIHandlerHolder.INSTANCE;}
 
     @Override
-    public Object getServerGuiElement(int ID, EntityPlayer playerIn, World worldIn, int x, int y, int z)
+    public Object getServerGuiElement(int guiID, EntityPlayer playerIn, World worldIn, int x, int y, int z)
     {
-        switch (ID)
+        switch (guiID)
         {
             case GuiInstrumentInventory.GUI_ID:
                 // Use the player's held item to create the inventory
@@ -55,9 +55,9 @@ public class GUIHandler implements IGuiHandler
     }
 
     @Override
-    public Object getClientGuiElement(int ID, EntityPlayer playerIn, World worldIn, int x, int y, int z)
+    public Object getClientGuiElement(int guiID, EntityPlayer playerIn, World worldIn, int x, int y, int z)
     {
-        switch (ID)
+        switch (guiID)
         {
             case GuiMusicPaperParse.GUI_ID:
                 return new GuiMusicPaperParse();
@@ -75,7 +75,7 @@ public class GUIHandler implements IGuiHandler
                 return new GuiMusicOptions(null);
 
             case GuiBandAmp.GUI_ID:
-                return new GuiBandAmp((Container) getServerGuiElement(ID, playerIn, worldIn, x, y, z), playerIn.inventory,
+                return new GuiBandAmp((Container) getServerGuiElement(guiID, playerIn, worldIn, x, y, z), playerIn.inventory,
                                       (TileBandAmp) worldIn.getTileEntity(new BlockPos(x, y, z)));
 
         default:
