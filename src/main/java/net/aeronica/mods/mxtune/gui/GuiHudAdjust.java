@@ -38,7 +38,6 @@ import java.io.IOException;
 
 public class GuiHudAdjust extends GuiScreen
 {
-
     private static final String TITLE = I18n.format("mxtune.gui.hudAdjust.title");
     private static final String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
     private GuiScreen guiScreenOld;
@@ -102,6 +101,12 @@ public class GuiHudAdjust extends GuiScreen
         this.isStateCached = true;
     }
 
+    private void cleanup()
+    {
+        MusicOptionsUtil.setAdjustPositionHud(MusicOptionsUtil.getPositionHUD(playerIn));
+        MusicOptionsUtil.setAdjustSizeHud(MusicOptionsUtil.getSizeHud(playerIn));
+    }
+
     @Override
     protected void actionPerformed(GuiButton button) throws IOException
     {
@@ -117,7 +122,7 @@ public class GuiHudAdjust extends GuiScreen
                     mc.displayGuiScreen(guiScreenOld);
                     break;
                 case 1: /* cancel */
-                    onGuiClosed();
+                    cleanup();
                     mc.displayGuiScreen(guiScreenOld);
                     break;
                 default:
@@ -133,7 +138,7 @@ public class GuiHudAdjust extends GuiScreen
         // capture the ESC key so we close cleanly
         if (keyCode == Keyboard.KEY_ESCAPE)
         {
-            this.actionPerformed(buttonList.get(buttonCancel.id));
+            this.actionPerformed(buttonCancel);
             return;
         }
         updateState();
@@ -229,9 +234,5 @@ public class GuiHudAdjust extends GuiScreen
     public boolean doesGuiPauseGame() {return false;}
 
     @Override
-    public void onGuiClosed()
-    {
-        MusicOptionsUtil.setAdjustPositionHud(MusicOptionsUtil.getPositionHUD(playerIn));
-        MusicOptionsUtil.setAdjustSizeHud(MusicOptionsUtil.getSizeHud(playerIn));
-    }
+    public void onGuiClosed() { cleanup(); }
 }

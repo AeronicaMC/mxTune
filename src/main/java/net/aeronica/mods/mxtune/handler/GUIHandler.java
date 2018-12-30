@@ -72,7 +72,7 @@ public class GUIHandler implements IGuiHandler
                 return new GuiGroupJoin();
 
             case GuiMusicOptions.GUI_ID:
-                return new GuiMusicOptions();
+                return new GuiMusicOptions(null);
 
             case GuiBandAmp.GUI_ID:
                 return new GuiBandAmp((Container) getServerGuiElement(ID, playerIn, worldIn, x, y, z), playerIn.inventory,
