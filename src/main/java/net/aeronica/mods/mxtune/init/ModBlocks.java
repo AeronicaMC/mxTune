@@ -33,6 +33,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
@@ -95,7 +96,7 @@ public class ModBlocks
         }
 
         private static <T extends Block> T registerBlock(T block, String name) {
-            block.setRegistryName(name.toLowerCase());
+            block.setRegistryName(name.toLowerCase(Locale.US));
             block.setTranslationKey(Objects.requireNonNull(block.getRegistryName()).toString());
             return block;
         }

@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 @SuppressWarnings("unused")
@@ -52,7 +53,7 @@ public class ModItems
     }
         
     private static <T extends Item> T registerItem(T item, String name) {
-        item.setRegistryName(name.toLowerCase());
+        item.setRegistryName(name.toLowerCase(Locale.US));
         item.setTranslationKey(item.getRegistryName().toString());
         return item;
     }

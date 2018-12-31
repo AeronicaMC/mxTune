@@ -47,7 +47,7 @@ import static net.aeronica.mods.mxtune.options.MusicOptionsUtil.*;
 public class GroupManager
 {
     public static final GroupManager INSTANCE = new GroupManager();
-    private static Integer groupID = 1;
+    private static Integer groupID = 0;
 
     private GroupManager() {}
 
@@ -57,7 +57,7 @@ public class GroupManager
     {
         groupID++;
         if (groupID == Integer.MAX_VALUE)
-            groupID = 1;
+            groupID = 0;
 
         return groupID;
     }

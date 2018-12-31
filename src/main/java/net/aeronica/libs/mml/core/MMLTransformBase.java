@@ -11,6 +11,7 @@ import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Transforms MML into a set of data structures that can be used to generate
@@ -256,7 +257,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
         boolean dot = partState.isDotted();
         boolean tied = partState.isTied();
 
-        int rawNote = ctx.NOTE().getText().toUpperCase().charAt(0);
+        int rawNote = ctx.NOTE().getText().toUpperCase(Locale.US).charAt(0);
         int midiNote = MMLUtil.getMIDINote(rawNote, partState.getOctave());
         if (ctx.ACC() != null)
         {
@@ -375,7 +376,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
     {
         if (ctx.INT() == null)
             return;
-        char c = ctx.CMD().getText().toUpperCase().charAt(0);
+        char c = ctx.CMD().getText().toUpperCase(Locale.US).charAt(0);
         int value = Integer.parseInt(ctx.INT().getText());
         switch (c)
         {
