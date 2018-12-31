@@ -30,10 +30,9 @@ public enum ModEntities
     
     private static int getEntityID() {return entityID++;}
 
-    // TODO: rename "MountableBLock" to "mountable_block" using a data fixer
     public static void init()
     {
-        registerModEntity(EntitySittableBlock.class, "MountableBlock", 80, 1, false);
+        registerModEntity(EntitySittableBlock.class, "mountableblock", 80, 1, false);
     }
     
     private static void registerModEntity(Class<? extends Entity> entityClass, String name, int trackingRange, int updateFrequency, boolean sendsVelocityUpdates)
