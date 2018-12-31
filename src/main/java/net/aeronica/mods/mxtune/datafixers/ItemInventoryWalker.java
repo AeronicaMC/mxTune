@@ -25,6 +25,8 @@ import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nonnull;
 
+import static net.aeronica.mods.mxtune.util.SheetMusicUtil.ITEM_INVENTORY;
+
 public class ItemInventoryWalker implements IDataWalker
 {
     public ItemInventoryWalker() {/* NOP */}
@@ -36,7 +38,7 @@ public class ItemInventoryWalker implements IDataWalker
         if ("mxtune:instrument".equalsIgnoreCase(compound.getString("id")) && (compound.hasKey("tag", Constants.NBT.TAG_COMPOUND)))
         {
             NBTTagCompound itemInventory = compound.getCompoundTag("tag");
-            DataFixesManager.processInventory(fixer, itemInventory, version, "ItemInventory");
+            DataFixesManager.processInventory(fixer, itemInventory, version, ITEM_INVENTORY);
             ModLogger.info("ItemInventoryWalker Walked inventory %s of ItemInstrument %s, containing %d items", "ItemInventory", compound.getString("id"), itemInventory.getInteger("Size"));
         }
         return compound;

@@ -6,9 +6,13 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
+import java.util.Objects;
+
+import static net.aeronica.mods.mxtune.util.SheetMusicUtil.KEY_SHEET_MUSIC;
+
 public class SlotInstrument extends Slot
 {
-    public SlotInstrument(IInventory inventory, int slotIndex, int xPos, int yPos)
+    SlotInstrument(IInventory inventory, int slotIndex, int xPos, int yPos)
     {
         super(inventory, slotIndex, xPos, yPos);
     }
@@ -19,12 +23,9 @@ public class SlotInstrument extends Slot
     {
         
         return !stack.isEmpty() && ((stack.getItem() instanceof ItemSheetMusic) || (stack.getItem() instanceof ItemMusicPaper))
-                && stack.hasTagCompound() && stack.getTagCompound().hasKey("SheetMusic") ? true : false;
+                && stack.hasTagCompound() && Objects.requireNonNull(stack.getTagCompound()).hasKey(KEY_SHEET_MUSIC);
     }
 
     @Override
-    public int getSlotStackLimit()
-    {
-        return 1;
-    }
+    public int getSlotStackLimit() { return 1; }
 }

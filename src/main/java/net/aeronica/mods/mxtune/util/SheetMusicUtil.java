@@ -1,18 +1,18 @@
 /*
  * Aeronica's mxTune MOD
- * Copyright {2016} Paul Boese a.k.a. Aeronica
+ * Copyright 2018, Paul Boese a.k.a. Aeronica
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
 package net.aeronica.mods.mxtune.util;
 
@@ -43,12 +43,18 @@ import java.io.IOException;
 public enum SheetMusicUtil
 {
     ;
+
+    public static final String KEY_SHEET_MUSIC = "SheetMusic";
+    public static final String KEY_DURATION = "Duration";
+    public static final String KEY_MML = "MML";
+    public static final String ITEM_INVENTORY = "ItemInventory";
+
     public static String getMusicTitle(ItemStack stackIn)
     {
         ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(stackIn);
         if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
         {
-            NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("SheetMusic");
+            NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
             if (!contents.isEmpty())
             {
                 return sheetMusic.getDisplayName();
@@ -79,15 +85,15 @@ public enum SheetMusicUtil
     {
         if ((stackIn.getItem() instanceof IInstrument) && stackIn.getTagCompound() != null)
         {
-            NBTTagList items = stackIn.getTagCompound().getTagList("ItemInventory", Constants.NBT.TAG_COMPOUND);
+            NBTTagList items = stackIn.getTagCompound().getTagList(ITEM_INVENTORY, Constants.NBT.TAG_COMPOUND);
             if (items.tagCount() == 1)
             {
                 NBTTagCompound item = items.getCompoundTagAt(0);
                 ItemStack sheetMusic = new ItemStack(item);
                 if (sheetMusic.getItem() instanceof IMusic && sheetMusic.getTagCompound() != null)
                 {
-                    NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("SheetMusic");
-                    if (contents.hasKey("MML"))
+                    NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
+                    if (contents.hasKey(KEY_MML))
                     {
                         return sheetMusic;
                     }
@@ -105,9 +111,9 @@ public enum SheetMusicUtil
         if (compound != null && (sheetMusic.getItem() instanceof IMusic) && validDuration.isValidMML() && validDuration.getDuration() > 0)
         {
             NBTTagCompound contents = new NBTTagCompound();
-            contents.setString("MML", mml);
-            contents.setInteger("Duration", validDuration.getDuration());
-            compound.setTag("SheetMusic", contents);
+            contents.setString(KEY_MML, mml);
+            contents.setInteger(KEY_DURATION, validDuration.getDuration());
+            compound.setTag(KEY_SHEET_MUSIC, contents);
             return true;
         }
         return false;

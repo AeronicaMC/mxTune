@@ -27,7 +27,6 @@ import net.aeronica.mods.mxtune.network.client.*;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -41,6 +40,8 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import static net.aeronica.mods.mxtune.util.SheetMusicUtil.*;
 
 public class PlayManager
 {
@@ -108,7 +109,7 @@ public class PlayManager
         {
             musicPlayer = (IMusicPlayer) worldIn.getBlockState(pos).getBlock();
             String mml = musicPlayer.getMML(worldIn, pos);
-            if (mml.contains("MML"))
+            if (mml.contains(KEY_MML))
             {
                 playID = getNextPlayID();
                 activePlayIDs.add(playID);
@@ -132,19 +133,19 @@ public class PlayManager
     {
         if (MusicOptionsUtil.isMuteAll(playerIn))
             return null;
-        ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(pos, playerIn, isPlaced);
+        ItemStack sheetMusic = getSheetMusic(pos, playerIn, isPlaced);
         if (!sheetMusic.isEmpty())
         {
             NBTTagCompound contents = null;
             if (sheetMusic.getTagCompound() != null)
             {
-                contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("SheetMusic");
+                contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
             }
             if (contents != null && !contents.isEmpty())
             {
                 Integer playerID = playerIn.getEntityId();
                 String title = sheetMusic.getDisplayName();
-                String mml = contents.getString("MML");
+                String mml = contents.getString(KEY_MML);
 
                 mml = mml.replace("MML@", "MML@I" + getPackedPreset(pos, playerIn, isPlaced));
                 ModLogger.debug("MML Title: " + title);

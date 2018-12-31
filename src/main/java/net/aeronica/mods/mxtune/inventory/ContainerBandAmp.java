@@ -18,7 +18,6 @@ package net.aeronica.mods.mxtune.inventory;
 
 import net.aeronica.mods.mxtune.blocks.TileBandAmp;
 import net.aeronica.mods.mxtune.items.ItemInstrument;
-import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ClickType;
@@ -33,6 +32,9 @@ import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Objects;
+
+import static net.aeronica.mods.mxtune.util.SheetMusicUtil.*;
 
 public class ContainerBandAmp extends Container
 {
@@ -41,7 +43,7 @@ public class ContainerBandAmp extends Container
     public ContainerBandAmp(InventoryPlayer playerInv, World worldIn, int x, int y, int z) {
         this.tileBandAmp = (TileBandAmp) worldIn.getTileEntity(new BlockPos(x, y, z));
 
-        IItemHandler inventory = tileBandAmp.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+        IItemHandler inventory = Objects.requireNonNull(tileBandAmp).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
         addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 0, 52, 26));
         addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 1, 70, 26));
         addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 2, 88, 26));
@@ -67,40 +69,40 @@ public class ContainerBandAmp extends Container
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
     {
 
-        ItemStack itemstack = ItemStack.EMPTY;
+        ItemStack itemStackCopy = ItemStack.EMPTY;
         // *** only allow owners to manage instruments ***
-        if (!tileBandAmp.isOwner(playerIn)) return itemstack;
+        if (!tileBandAmp.isOwner(playerIn)) return itemStackCopy;
 
         Slot slot = inventorySlots.get(index);
 
         if (slot != null && slot.getHasStack()) {
-            ItemStack itemstack1 = slot.getStack();
-            itemstack = itemstack1.copy();
+            ItemStack itemStackSlot = slot.getStack();
+            itemStackCopy = itemStackSlot.copy();
 
             int containerSlots = inventorySlots.size() - playerIn.inventory.mainInventory.size();
 
             if (index < containerSlots) {
-                if (!this.mergeItemStack(itemstack1, containerSlots, inventorySlots.size(), true)) {
+                if (!this.mergeItemStack(itemStackSlot, containerSlots, inventorySlots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.mergeItemStack(itemstack1, 0, containerSlots, false)) {
+            } else if (!this.mergeItemStack(itemStackSlot, 0, containerSlots, false)) {
                 return ItemStack.EMPTY;
             }
 
-            if (itemstack1.getCount() == 0) {
+            if (itemStackSlot.getCount() == 0) {
                 slot.putStack(ItemStack.EMPTY);
             } else {
                 slot.onSlotChanged();
             }
 
-            if (itemstack1.getCount() == itemstack.getCount()) {
+            if (itemStackSlot.getCount() == itemStackCopy.getCount()) {
                 return ItemStack.EMPTY;
             }
 
-            slot.onTake(playerIn, itemstack1);
+            slot.onTake(playerIn, itemStackSlot);
         }
 
-        return itemstack;
+        return itemStackCopy;
     }
 
     @Override
@@ -150,13 +152,13 @@ public class ContainerBandAmp extends Container
     private static int getDuration(ItemStack itemStack, int durationIn)
     {
         int duration = durationIn;
-        ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(itemStack);
+        ItemStack sheetMusic = getSheetMusic(itemStack);
         if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
         {
-            NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("SheetMusic");
-            if (contents.hasKey("MML"))
+            NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
+            if (contents.hasKey(KEY_MML))
             {
-                int durationSheet = contents.getInteger("Duration");
+                int durationSheet = contents.getInteger(KEY_DURATION);
                 if (durationSheet > duration) duration = durationSheet;
             }
         }

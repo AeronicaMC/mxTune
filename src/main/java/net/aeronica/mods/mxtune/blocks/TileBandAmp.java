@@ -40,11 +40,12 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import static net.aeronica.mods.mxtune.util.SheetMusicUtil.KEY_DURATION;
+
 public class TileBandAmp extends TileInstrument implements IModLockableContainer
 {
     public static final int MAX_SLOTS = 8;
     private static final String KEY_CUSTOM_NAME = "CustomName";
-    private static final String KEY_DURATION = "Duration";
     private static final String KEY_POWERED = "powered";
     private static final String KEY_LEFT_RS_OUTPUT_ENABLED = "leftRedstoneOutputEnabled";
     private static final String KEY_REAR_RS_INPUT_ENABLED = "rearRedstoneInputEnabled";

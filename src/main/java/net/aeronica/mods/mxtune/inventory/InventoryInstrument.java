@@ -28,6 +28,8 @@ import net.minecraft.util.text.ITextComponent;
 
 import java.util.Objects;
 
+import static net.aeronica.mods.mxtune.util.SheetMusicUtil.ITEM_INVENTORY;
+
 public class InventoryInstrument implements IInventory
 {
 	private static final String NAME = "container.mxtune.instrument";
@@ -128,7 +130,7 @@ public class InventoryInstrument implements IInventory
     private void readFromNBT(NBTTagCompound compound)
     {
 		// Gets the custom taglist we wrote to this compound, if any
-		NBTTagList items = compound.getTagList("ItemInventory", 10);
+		NBTTagList items = compound.getTagList(ITEM_INVENTORY, 10);
 
 		for (int i = 0; i < items.tagCount(); ++i)
 		{
@@ -165,7 +167,7 @@ public class InventoryInstrument implements IInventory
 			}
 		}
 		// Add the TagList to the ItemStack's Tag Compound with the name "ItemInventory"
-		compound.setTag("ItemInventory", items);
+		compound.setTag(ITEM_INVENTORY, items);
 	}
 
 	@Override

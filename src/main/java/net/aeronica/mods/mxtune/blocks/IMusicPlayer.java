@@ -18,12 +18,13 @@ package net.aeronica.mods.mxtune.blocks;
 
 import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import static net.aeronica.mods.mxtune.util.SheetMusicUtil.*;
 
 public interface IMusicPlayer
 {
@@ -44,13 +45,13 @@ public interface IMusicPlayer
                     {
                         ItemInstrument instrument = (ItemInstrument) stackInSlot.getItem();
                         int patch = instrument.getPatch(stackInSlot.getMetadata());
-                        ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(stackInSlot);
+                        ItemStack sheetMusic = getSheetMusic(stackInSlot);
                         if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
                         {
-                            NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("SheetMusic");
-                            if (contents.hasKey("MML"))
+                            NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
+                            if (contents.hasKey(KEY_MML))
                             {
-                                String mml = contents.getString("MML");
+                                String mml = contents.getString(KEY_MML);
                                 mml = mml.replace("MML@", "MML@I" + patch);
                                 buildMML.append(slot).append("=").append(mml).append("|");
                             }

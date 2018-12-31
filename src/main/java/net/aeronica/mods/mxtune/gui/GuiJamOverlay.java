@@ -1,28 +1,28 @@
-/**
+/*
  * Aeronica's mxTune MOD
- * Copyright {2016} Paul Boese a.k.a. Aeronica
+ * Copyright 2018, Paul Boese a.k.a. Aeronica
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
 package net.aeronica.mods.mxtune.gui;
 
+import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.util.PlacedInstrumentUtil;
-import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
@@ -34,7 +34,6 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
@@ -50,9 +49,10 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import static net.aeronica.mods.mxtune.util.SheetMusicUtil.getSheetMusic;
 
 public class GuiJamOverlay extends Gui
 {
@@ -141,13 +141,13 @@ public class GuiJamOverlay extends Gui
         if(PlacedInstrumentUtil.isRiding(player))
         {
             BlockPos pos = PlacedInstrumentUtil.getRiddenBlock(player);
-            sheetMusic = SheetMusicUtil.getSheetMusic(pos, player, true);
+            sheetMusic = getSheetMusic(pos, player, true);
             if (!isRidingFlag()) hudTimerReset();
             setRidingFlag(true);
         } else 
         {
             itemStack = player.getHeldItemMainhand();
-            sheetMusic = SheetMusicUtil.getSheetMusic(itemStack);
+            sheetMusic = getSheetMusic(itemStack);
             setRidingFlag(false);
         }
         
@@ -161,7 +161,8 @@ public class GuiJamOverlay extends Gui
         } else lastItemStack = itemStack;
     }
 
-    protected class GroupData
+    @SuppressWarnings("unused")
+    private class GroupData
     {
         Integer memberID;
         String memberName;
@@ -215,48 +216,44 @@ public class GuiJamOverlay extends Gui
     
     private List<GroupData> processGroup(EntityPlayer playerIn)
     {
-        ArrayList<GroupData> groupData = new ArrayList<GroupData>();
+        List<GroupData> groupData = new ArrayList<>();
         int index = 0;
         Integer memberNameWidth;
         Tuple<Integer, Integer> notePos;
         Integer playStatus;
         Integer groupID;
-        Integer memberID;
+        Integer leaderID;
         String memberName;
         GroupData memberData;
-        
-        if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
-        {
-            groupID = GROUPS.getMembersGroupID(playerIn.getEntityId());
-            
-            /* Only draw if player is a member of a group */
-            if (groupID != null)
-            {
-                /* Always add the leader at the HEAD of the list */
-                memberID = GROUPS.getLeaderOfGroup(groupID);
-                memberName = playerIn.getEntityWorld().getEntityByID(memberID).getDisplayName().getUnformattedText();
-                memberNameWidth = fontRenderer.getStringWidth(memberName);
-                playStatus = GROUPS.getIndex(memberID);     
-                notePos = new Tuple<>(notePosMembers[index][0], notePosMembers[index][1]);
-                memberData = new GroupData(memberID, memberName, memberNameWidth, notePos, playStatus);
-                groupData.add(memberData);
-                index++;
 
-                /* Add the remaining members taking care to not add the leader a 2nd time. */
-                Set<Integer> set = GROUPS.getClientMembers().keySet();
-                for (Iterator<Integer> im = set.iterator(); im.hasNext();)
+        groupID = GROUPS.getMembersGroupID(playerIn.getEntityId());
+        // Only draw if player is a member of a group
+        if (groupID != null)
+        {
+            /* Always add the leader at the HEAD of the list */
+            leaderID = GROUPS.getLeaderOfGroup(groupID);
+            //noinspection ConstantConditions
+            memberName = MXTune.proxy.getPlayerByEntityID(leaderID).getName();
+            memberNameWidth = fontRenderer.getStringWidth(memberName);
+            playStatus = GROUPS.getIndex(leaderID);
+            notePos = new Tuple<>(notePosMembers[index][0], notePosMembers[index][1]);
+            memberData = new GroupData(leaderID, memberName, memberNameWidth, notePos, playStatus);
+            groupData.add(memberData);
+            index++;
+
+            /* Add the remaining members taking care to not add the leader a 2nd time. */
+            Set<Integer> set = GROUPS.getClientMembers().keySet();
+            for (Integer memberID : set)
+            {
+                if (groupID.equals(GROUPS.getMembersGroupID(memberID)) && !memberID.equals(GROUPS.getLeaderOfGroup(groupID)))
                 {
-                    memberID = im.next();
-                    if (groupID.equals(GROUPS.getMembersGroupID(memberID)) && !memberID.equals(GROUPS.getLeaderOfGroup(groupID)))
-                    {
-                        memberName = playerIn.getEntityWorld().getEntityByID(memberID).getDisplayName().getUnformattedText();
-                        memberNameWidth = fontRenderer.getStringWidth(memberName);
-                        playStatus = GROUPS.getIndex(memberID);     
-                        notePos = new Tuple<>(notePosMembers[index][0], notePosMembers[index][1]);
-                        memberData = new GroupData(memberID, memberName, memberNameWidth, notePos, playStatus);
-                        groupData.add(memberData);
-                        index++;
-                    }
+                    memberName = MXTune.proxy.getPlayerByEntityID(memberID).getName();
+                    memberNameWidth = fontRenderer.getStringWidth(memberName);
+                    playStatus = GROUPS.getIndex(memberID);
+                    notePos = new Tuple<>(notePosMembers[index][0], notePosMembers[index][1]);
+                    memberData = new GroupData(memberID, memberName, memberNameWidth, notePos, playStatus);
+                    groupData.add(memberData);
+                    index++;
                 }
             }
         }
@@ -329,17 +326,12 @@ public class GuiJamOverlay extends Gui
     private static String getMusicTitleRaw(ItemStack sheetMusic)
     {
         if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
-        {
-            NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag("SheetMusic");
-            if (contents != null)
-            {
-                return sheetMusic.getDisplayName();
-            }
-        }
+            return sheetMusic.getDisplayName();
+
         return "";
     }
 
-    private static int TITLE_DISPLAY_WIDTH = 30;
+    private static final int TITLE_DISPLAY_WIDTH = 30;
     private static int marqueePos = 0;
     private static int getMarqueePos() {return marqueePos;}
 
@@ -409,6 +401,7 @@ public class GuiJamOverlay extends Gui
         {
             Color color = new Color(127,255,0);
             int colorRGB = color.HSBtoRGB((float)((1.0D-dist)*0.5D), 1F, 1F);
+            //noinspection NumericOverflow
             drawRect(iconX+4, iconY+20, iconX+4 + (int)(15*dist), iconY+22, colorRGB + (208 << 24));
         }
 //        drawDebug(hd, maxWidth, maxHeight);
@@ -514,7 +507,8 @@ public class GuiJamOverlay extends Gui
                     int x = posX + gd.notePos.getFirst() +28;
                     int y = posY + gd.notePos.getSecond() + 4;
                     int textWidth = fontRenderer.getStringWidth(TextFormatting.BOLD +marquee(gd.getMemberName(), 10));
-                    if (oddEven++ % 2 == 0) drawRect(x-2, y-2, x+textWidth+2, y+10, 0xC89558 + (208 << 24));
+                    if (oddEven++ % 2 == 0) //noinspection NumericOverflow
+                        drawRect(x-2, y-2, x+textWidth+2, y+10, 0xC89558 + (208 << 24));
                     fontRenderer.drawString(TextFormatting.BOLD + marquee(gd.getMemberName(), 10), x, y, 0x543722);
                 }
             }
@@ -542,6 +536,7 @@ public class GuiJamOverlay extends Gui
             Color color = new Color(127,255,0);
             @SuppressWarnings("static-access")
             int colorRGB = color.HSBtoRGB((float)((1.0D-dist)*0.5D), 1F, 1F);
+            //noinspection NumericOverflow
             drawRect(posX +237, posY +24 + 62 - (int)(62*dist), posX +240, posY +87, colorRGB + (144 << 24));
         }
     }
