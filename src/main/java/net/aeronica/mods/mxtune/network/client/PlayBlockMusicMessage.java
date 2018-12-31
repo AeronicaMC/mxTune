@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
+import net.aeronica.mods.mxtune.network.server.StringHelper;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
@@ -36,6 +37,7 @@ public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicM
     private BlockPos blockPos;
     private String musicText;
     private SoundRange soundRange;
+    private StringHelper stringHelper = new StringHelper();
 
     @SuppressWarnings("unused")
     public PlayBlockMusicMessage() {/* Required by the PacketDispatcher */}
@@ -53,10 +55,7 @@ public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicM
     {
         playID = buffer.readInt();
         blockPos = buffer.readBlockPos();
-        // simplistic handling of large string
-        String mtFirst = buffer.readString(32768);
-        String mtSecond = buffer.readString(32768);
-        musicText = mtFirst + mtSecond;
+        musicText = stringHelper.readLongString(buffer);
         soundRange = buffer.readEnumValue(SoundRange.class);
     }
 
@@ -65,16 +64,7 @@ public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicM
     {
         buffer.writeInt(playID);
         buffer.writeBlockPos(blockPos);
-        // TODO: Simplistic handling of large string. Make intelligent to handle strings up to 100K (10 parts at 10K per part).
-        // To handle large multipart tunes like Maple Story 2 MML the system will need to deal with large strings.
-        int len01 = musicText.length() /2;
-        String mtFirst = musicText.substring(0, len01);
-        String mtSecond = musicText.substring(len01, musicText.length());
-        String test = mtFirst + mtSecond;
-        ModLogger.info("Lengths: musicText: %d, 1/2: %d, mtFirst: %d, mtSecond: %d: tot: %d, matches: %s",
-                       musicText.length(), len01, mtFirst.length(), mtSecond.length(), mtFirst.length() + mtSecond.length(), musicText.equals(test));
-        buffer.writeString(mtFirst);
-        buffer.writeString(mtSecond);
+        stringHelper.writeLongString(buffer, musicText);
         buffer.writeEnumValue(soundRange);
     }
 
