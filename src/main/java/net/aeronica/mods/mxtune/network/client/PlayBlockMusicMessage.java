@@ -18,7 +18,7 @@ package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
-import net.aeronica.mods.mxtune.network.server.StringHelper;
+import net.aeronica.mods.mxtune.network.server.NetworkStringHelper;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
@@ -37,7 +37,7 @@ public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicM
     private BlockPos blockPos;
     private String musicText;
     private SoundRange soundRange;
-    private StringHelper stringHelper = new StringHelper();
+    private NetworkStringHelper stringHelper = new NetworkStringHelper();
 
     @SuppressWarnings("unused")
     public PlayBlockMusicMessage() {/* Required by the PacketDispatcher */}
@@ -80,7 +80,7 @@ public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicM
     {
         if (!midiUnavailableWarn(player) && ClientCSDMonitor.canMXTunesPlay())
         {
-            ModLogger.info("musicText:  " + musicText.substring(0, (musicText.length() >= 25 ? 25 : musicText.length())));
+            ModLogger.info("musicText:  " + musicText.substring(0, Math.min(25, musicText.length())));
             ModLogger.info("playID:     " + playID);
             ModLogger.info("SoundRange: " + soundRange);
             ClientAudio.play(playID, blockPos, musicText, soundRange);

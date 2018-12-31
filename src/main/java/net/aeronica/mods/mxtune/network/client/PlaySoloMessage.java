@@ -17,11 +17,11 @@
 package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
+import net.aeronica.mods.mxtune.network.server.NetworkStringHelper;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 
 import static net.aeronica.mods.mxtune.groups.GROUPS.getSoloMemberByPlayID;
@@ -33,6 +33,7 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
 
     private Integer playID;
     private String musicText;
+    private NetworkStringHelper stringHelper = new NetworkStringHelper();
 
     @SuppressWarnings("unused")
     public PlaySoloMessage() {/* Required by the PacketDispatcher */}
@@ -47,14 +48,14 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
     protected void read(PacketBuffer buffer)
     {
         playID = buffer.readInt();
-        musicText = ByteBufUtils.readUTF8String(buffer);
+        musicText = stringHelper.readLongString(buffer);
     }
 
     @Override
     protected void write(PacketBuffer buffer)
     {
         buffer.writeInt(playID);
-        ByteBufUtils.writeUTF8String(buffer, musicText);
+        stringHelper.writeLongString(buffer, musicText);
     }
 
     @Override

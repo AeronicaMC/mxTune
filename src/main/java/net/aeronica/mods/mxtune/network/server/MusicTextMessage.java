@@ -32,6 +32,7 @@ public class MusicTextMessage extends AbstractServerMessage<MusicTextMessage>
 {
     private String musicTitle;
     private String musicText;
+    private NetworkStringHelper stringHelper = new NetworkStringHelper();
 
     @SuppressWarnings("unused")
     public MusicTextMessage() {/* Required by the PacketDispatcher */}
@@ -46,14 +47,14 @@ public class MusicTextMessage extends AbstractServerMessage<MusicTextMessage>
     protected void read(PacketBuffer buffer)
     {
         musicTitle = ByteBufUtils.readUTF8String(buffer);
-        musicText = ByteBufUtils.readUTF8String(buffer);
+        musicText = stringHelper.readLongString(buffer);
     }
 
     @Override
     protected void write(PacketBuffer buffer)
     {
         ByteBufUtils.writeUTF8String(buffer, musicTitle);
-        ByteBufUtils.writeUTF8String(buffer, musicText);
+        stringHelper.writeLongString(buffer, musicText);
     }
 
     @Override

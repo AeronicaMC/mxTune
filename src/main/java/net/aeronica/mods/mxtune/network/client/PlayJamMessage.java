@@ -17,11 +17,11 @@
 package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
+import net.aeronica.mods.mxtune.network.server.NetworkStringHelper;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 
 import static net.aeronica.mods.mxtune.groups.GROUPS.getMembersGroupLeader;
@@ -33,6 +33,7 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
     private Integer leaderID;
     private Integer playID;
     private String jamMML;
+    private NetworkStringHelper stringHelper = new NetworkStringHelper();
 
     @SuppressWarnings("unused")
     public PlayJamMessage() {/* Required by the PacketDispatcher */}
@@ -49,7 +50,7 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
     {
         leaderID = buffer.readInt();
         playID = buffer.readInt();
-        jamMML = ByteBufUtils.readUTF8String(buffer);
+        jamMML = stringHelper.readLongString(buffer);
     }
 
     @Override
@@ -57,7 +58,7 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
     {
         buffer.writeInt(leaderID);
         buffer.writeInt(playID);
-        ByteBufUtils.writeUTF8String(buffer, jamMML);
+        stringHelper.writeLongString(buffer, jamMML);
     }
 
     @Override
@@ -68,7 +69,7 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
             EntityPlayer otherPlayer = (EntityPlayer) player.getEntityWorld().getEntityByID(getMembersGroupLeader(leaderID));
             if (playerNotMuted(player, otherPlayer))
             {
-                ModLogger.debug("musicText:  " + jamMML.substring(0, (jamMML.length() >= 25 ? 25 : jamMML.length())));
+                ModLogger.debug("musicText:  " + jamMML.substring(0, Math.min(25, jamMML.length())));
                 ModLogger.debug("playID:     " + playID);
                 ClientAudio.play(playID, jamMML);
             }

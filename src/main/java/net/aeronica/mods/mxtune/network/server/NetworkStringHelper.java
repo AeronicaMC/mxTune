@@ -19,12 +19,12 @@ package net.aeronica.mods.mxtune.network.server;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.network.PacketBuffer;
 
-public class StringHelper
+public class NetworkStringHelper
 {
     private static final int MAX_STRING_BUFFER = 16384;
     private static final String EMPTY_STRING = "";
 
-    public StringHelper() { /* NOP */ }
+    public NetworkStringHelper() { /* NOP */ }
 
     public void writeLongString(PacketBuffer buffer, String stringIn)
     {
