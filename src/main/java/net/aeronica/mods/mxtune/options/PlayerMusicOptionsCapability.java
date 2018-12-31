@@ -1,18 +1,18 @@
 /*
  * Aeronica's mxTune MOD
- * Copyright {2016} Paul Boese a.k.a. Aeronica
+ * Copyright 2018, Paul Boese a.k.a. Aeronica
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
 package net.aeronica.mods.mxtune.options;
 
@@ -48,7 +48,9 @@ public class PlayerMusicOptionsCapability
 {
     @CapabilityInject(IPlayerMusicOptions.class)
     private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = Util.nonNullInjected();
-    
+
+    private PlayerMusicOptionsCapability() { /* NOP */ }
+
     public static void register()
     {
         CapabilityManager.INSTANCE.register(IPlayerMusicOptions.class, new Storage(), new Factory());
@@ -94,7 +96,7 @@ public class PlayerMusicOptionsCapability
         }
 
         @SubscribeEvent
-        public void OnPlayerClone(PlayerEvent.Clone event)
+        public void onPlayerClone(PlayerEvent.Clone event)
         {
             if(event.isWasDeath())
             {
@@ -142,35 +144,48 @@ public class PlayerMusicOptionsCapability
 
     public static class Storage implements Capability.IStorage<IPlayerMusicOptions>
     {
+        static final String KEY_DISABLE_HUD = "disableHud";
+        static final String KEY_POSITION_HUD = "positionHud";
+        static final String KEY_SIZE_HUD = "sizeHud";
+        static final String KEY_MUTE_OPTION = "muteOption";
+        static final String KEY_S_PARAM_1 = "sParam1";
+        static final String KEY_S_PARAM_2 = "sParam2";
+        static final String KEY_S_PARAM_3 = "sParam3";
+        static final String KEY_LIST_BLACK = "listBlack";
+        static final String KEY_LIST_WHITE = "listWhite";
+        static final String KEY_UUID_LEAST = "UUIDLeast";
+        static final String KEY_UUID_MOST = "UUIDMost";
+        static final String KEY_PLAYER_NAME = "playerName";
+
         @Override
         public NBTBase writeNBT(Capability<IPlayerMusicOptions> capability, IPlayerMusicOptions instance, EnumFacing side)
         {
             NBTTagCompound properties = new NBTTagCompound();
-            properties.setBoolean("disableHud", instance.isHudDisabled());
-            properties.setInteger("positionHud", instance.getPositionHud());
-            properties.setFloat("sizeHud", instance.getSizeHud());
-            properties.setInteger("muteOption", instance.getMuteOption());
-            properties.setString("sParam1", instance.getSParam1());
-            properties.setString("sParam2", instance.getSParam2());
-            properties.setString("sParam3", instance.getSParam3());
+            properties.setBoolean(KEY_DISABLE_HUD, instance.isHudDisabled());
+            properties.setInteger(KEY_POSITION_HUD, instance.getPositionHud());
+            properties.setFloat(KEY_SIZE_HUD, instance.getSizeHud());
+            properties.setInteger(KEY_MUTE_OPTION, instance.getMuteOption());
+            properties.setString(KEY_S_PARAM_1, instance.getSParam1());
+            properties.setString(KEY_S_PARAM_2, instance.getSParam2());
+            properties.setString(KEY_S_PARAM_3, instance.getSParam3());
             NBTTagList listBlack = new NBTTagList();
-            properties.setTag("listBlack", listBlack);
+            properties.setTag(KEY_LIST_BLACK, listBlack);
             for (int i=0; i<instance.getBlackList().size(); i++)
             {
                 NBTTagCompound entry = new NBTTagCompound();
-                entry.setLong("UUIDLeast", instance.getBlackList().get(i).getUuid().getLeastSignificantBits());
-                entry.setLong("UUIDMost", instance.getBlackList().get(i).getUuid().getMostSignificantBits());
-                entry.setString("playerName", instance.getBlackList().get(i).getPlayerName());
+                entry.setLong(KEY_UUID_LEAST, instance.getBlackList().get(i).getUuid().getLeastSignificantBits());
+                entry.setLong(KEY_UUID_MOST, instance.getBlackList().get(i).getUuid().getMostSignificantBits());
+                entry.setString(KEY_PLAYER_NAME, instance.getBlackList().get(i).getPlayerName());
                 listBlack.appendTag(entry);
             }
             NBTTagList listWhite = new NBTTagList();
-            properties.setTag("listWhite", listWhite);
+            properties.setTag(KEY_LIST_WHITE, listWhite);
             for (int i=0; i<instance.getWhiteList().size(); i++)
             {
                 NBTTagCompound entry = new NBTTagCompound();
-                entry.setLong("UUIDLeast", instance.getWhiteList().get(i).getUuid().getLeastSignificantBits());
-                entry.setLong("UUIDMost", instance.getWhiteList().get(i).getUuid().getMostSignificantBits());
-                entry.setString("playerName", instance.getWhiteList().get(i).getPlayerName());
+                entry.setLong(KEY_UUID_LEAST, instance.getWhiteList().get(i).getUuid().getLeastSignificantBits());
+                entry.setLong(KEY_UUID_MOST, instance.getWhiteList().get(i).getUuid().getMostSignificantBits());
+                entry.setString(KEY_PLAYER_NAME, instance.getWhiteList().get(i).getPlayerName());
                 listWhite.appendTag(entry);
             }   
             return properties;
@@ -180,36 +195,36 @@ public class PlayerMusicOptionsCapability
         public void readNBT(Capability<IPlayerMusicOptions> capability, IPlayerMusicOptions instance, EnumFacing side, NBTBase nbt)
         {
             NBTTagCompound properties = (NBTTagCompound) nbt;
-            instance.setHudOptions(properties.getBoolean("disableHud"), properties.getInteger("positionHud"), properties.getFloat("sizeHud"));
-            instance.setMuteOption(properties.getInteger("muteOption"));
-            instance.setSParams(properties.getString("sParam1"), properties.getString("sParam2"), properties.getString("sParam3"));
-            if (properties.hasKey("listBlack", Constants.NBT.TAG_LIST))
+            instance.setHudOptions(properties.getBoolean(KEY_DISABLE_HUD), properties.getInteger(KEY_POSITION_HUD), properties.getFloat(KEY_SIZE_HUD));
+            instance.setMuteOption(properties.getInteger(KEY_MUTE_OPTION));
+            instance.setSParams(properties.getString(KEY_S_PARAM_1), properties.getString(KEY_S_PARAM_2), properties.getString(KEY_S_PARAM_3));
+            if (properties.hasKey(KEY_LIST_BLACK, Constants.NBT.TAG_LIST))
             {
-                NBTTagList listBlack = properties.getTagList("listBlack", Constants.NBT.TAG_COMPOUND);
+                NBTTagList listBlack = properties.getTagList(KEY_LIST_BLACK, Constants.NBT.TAG_COMPOUND);
                 int count = listBlack.tagCount();
                 List<PlayerLists> blackList = new ArrayList<>();
                 for (int i = 0; i < count; i++)
                 {
                     NBTTagCompound entry = listBlack.getCompoundTagAt(i);
                     PlayerLists plist = new PlayerLists();
-                    plist.setPlayerName(entry.getString("playerName"));
-                    plist.setUuid(new UUID(entry.getLong("UUIDMost"), entry.getLong("UUIDLeast")));
+                    plist.setPlayerName(entry.getString(KEY_PLAYER_NAME));
+                    plist.setUuid(new UUID(entry.getLong(KEY_UUID_MOST), entry.getLong(KEY_UUID_LEAST)));
                     plist.setOnline(false);
                     blackList.add(plist);
                 }
                 instance.setBlackList(blackList);
             }
-            if (properties.hasKey("listWhite", Constants.NBT.TAG_LIST))
+            if (properties.hasKey(KEY_LIST_WHITE, Constants.NBT.TAG_LIST))
             {
-                NBTTagList listWhite = properties.getTagList("listWhite", Constants.NBT.TAG_COMPOUND);
+                NBTTagList listWhite = properties.getTagList(KEY_LIST_WHITE, Constants.NBT.TAG_COMPOUND);
                 int count = listWhite.tagCount();
                 List<PlayerLists> whiteList = new ArrayList<>();
                 for (int i = 0; i < count; i++)
                 {
                     NBTTagCompound entry = listWhite.getCompoundTagAt(i);
                     PlayerLists plist = new PlayerLists();
-                    plist.setPlayerName(entry.getString("playerName"));
-                    plist.setUuid(new UUID(entry.getLong("UUIDMost"), entry.getLong("UUIDLeast")));
+                    plist.setPlayerName(entry.getString(KEY_PLAYER_NAME));
+                    plist.setUuid(new UUID(entry.getLong(KEY_UUID_MOST), entry.getLong(KEY_UUID_LEAST)));
                     plist.setOnline(false);
                     whiteList.add(plist);
                 }

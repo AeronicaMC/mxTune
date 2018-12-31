@@ -1,4 +1,4 @@
-/**
+/*
  * This network code is from coolAlias's github repository
  * https://github.com/coolAlias/Tutorial-Demo
  */
@@ -135,7 +135,7 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
     private static final <T extends AbstractMessage<T>> void checkThreadAndEnqueue(final AbstractMessage<T> msg, final MessageContext ctx)
     {
         IThreadListener thread = MXTune.proxy.getThreadFromContext(ctx);
-        /**
+        /*
          * pretty much copied straight from vanilla code, see
          * {@link PacketThreadUtil#checkThreadAndEnqueue}
          */

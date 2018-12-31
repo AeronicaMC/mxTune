@@ -1,18 +1,18 @@
 /*
  * Aeronica's mxTune MOD
- * Copyright {2016} Paul Boese a.k.a. Aeronica
+ * Copyright 2018, Paul Boese a.k.a. Aeronica
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
 package net.aeronica.mods.mxtune.options;
 
@@ -31,7 +31,8 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     private String sParam1;
     private String sParam2;
     private String sParam3;
-    private List<PlayerLists> whiteList, blackList;
+    private List<PlayerLists> whiteList;
+    private List<PlayerLists> blackList;
 
     PlayerMusicDefImpl()
     {
@@ -55,13 +56,13 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     }
 
     @Override
-    public boolean isHudDisabled() {return this.disableHud;}
+    public boolean isHudDisabled() { return this.disableHud; }
 
     @Override
-    public int getPositionHud() {return this.positionHud;}
+    public int getPositionHud() { return this.positionHud; }
 
     @Override
-    public float getSizeHud() {return this.sizeHud;}
+    public float getSizeHud() { return this.sizeHud; }
 
     @Override
     public void setSParams(String sParam1, String sParam2, String sParam3)
@@ -72,29 +73,29 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     }
     
     @Override
-    public String getSParam1() {return sParam1;}
+    public String getSParam1() { return sParam1; }
 
     @Override
-    public String getSParam2() {return sParam2;}
+    public String getSParam2() { return sParam2; }
 
     @Override
-    public String getSParam3() {return sParam3;}
+    public String getSParam3() { return sParam3; }
 
     @Override
-    public void setMuteOption(int muteOptionIn) {this.muteOption = muteOptionIn;}
+    public void setMuteOption(int muteOptionIn) { this.muteOption = muteOptionIn; }
 
     @Override
-    public int getMuteOption() {return muteOption;}
+    public int getMuteOption() { return muteOption; }
     
     @Override
-    public void setWhiteList(List<PlayerLists> list) {this.whiteList = list;}
+    public void setWhiteList(List<PlayerLists> list) { this.whiteList = list; }
 
     @Override
-    public List<PlayerLists> getWhiteList() {return new ArrayList<>(this.whiteList);}
+    public List<PlayerLists> getWhiteList() { return new ArrayList<>(this.whiteList); }
 
     @Override
-    public void setBlackList(List<PlayerLists> list) {this.blackList = list;}
+    public void setBlackList(List<PlayerLists> list) { this.blackList = list; }
 
     @Override
-    public List<PlayerLists> getBlackList() {return new ArrayList<>(this.blackList);}
+    public List<PlayerLists> getBlackList() { return new ArrayList<>(this.blackList); }
 }

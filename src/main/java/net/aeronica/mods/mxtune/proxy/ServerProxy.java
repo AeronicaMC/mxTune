@@ -38,7 +38,7 @@ public class ServerProxy
 
     public void initEntities() { ModEntities.init(); }
 
-    public Side getPhysicalSide()  {return Side.SERVER ;}
+    public Side getPhysicalSide()  { return Side.SERVER ;}
 
     public Side getEffectiveSide() { return getPhysicalSide(); }
 
