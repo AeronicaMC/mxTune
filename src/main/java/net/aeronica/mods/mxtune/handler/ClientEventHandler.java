@@ -68,7 +68,7 @@ public class ClientEventHandler
     @SubscribeEvent
     public static void textureRestitchEvent(TextureStitchEvent.Post e)
     {
-        ModModelManager.getTESRRenderers().stream().filter(p -> p instanceof IReBakeModel).forEach(p -> ((IReBakeModel)p).reBakeModel());
+        ModModelManager.getTESRRenderer().stream().filter(p -> p instanceof IReBakeModel).forEach(p -> ((IReBakeModel)p).reBakeModel());
     }
 
     @SubscribeEvent

@@ -1,43 +1,41 @@
-/**
+/*
  * Aeronica's mxTune MOD
- * Copyright {2016} Paul Boese a.k.a. Aeronica
+ * Copyright 2018, Paul Boese a.k.a. Aeronica
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * 
- * ============================================================================
- * 
- * The MIT License (MIT)
- *
- * Test Mod 3 - Copyright (c) 2015-2016 Choonster
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
+
+//The MIT License (MIT)
+//
+//        Test Mod 3 - Copyright (c) 2015-2017 Choonster
+//
+//        Permission is hereby granted, free of charge, to any person obtaining a copy
+//        of this software and associated documentation files (the "Software"), to deal
+//        in the Software without restriction, including without limitation the rights
+//        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//        copies of the Software, and to permit persons to whom the Software is
+//        furnished to do so, subject to the following conditions:
+//
+//        The above copyright notice and this permission notice shall be included in all
+//        copies or substantial portions of the Software.
+//
+//        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//        SOFTWARE.
 package net.aeronica.mods.mxtune.init;
 
 import net.aeronica.mods.mxtune.blocks.BlockBandAmp;
@@ -63,25 +61,24 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @SuppressWarnings("unused")
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ModModelManager
 {
     public static final ModModelManager INSTANCE =  new ModModelManager();
-    private ModModelManager() {}
+    private ModModelManager() { /* NOP */ }
     
     @SubscribeEvent
-    public static void registerAllModels(ModelRegistryEvent event) {
-        INSTANCE.registerTileRenderers();
+    public static void registerAllModels(ModelRegistryEvent event)
+    {
+        INSTANCE.registerTileRenderer();
         INSTANCE.registerBlockModels();
         INSTANCE.registerItemModels();
     }
     
-    private void registerBlockModels()
+    private void registerBlockModels( /* NOP */ )
     {
         ModelLoader.setCustomStateMapper(ModBlocks.SPINET_PIANO,
                                          new StateMap.Builder().ignore(
@@ -99,14 +96,15 @@ public class ModModelManager
         registerItemModel(ModBlocks.SPINET_PIANO);
     }
     
-    public void registerTileRenderers() {
+    private void registerTileRenderer() {
         registerTESR(TilePiano.class, new RendererPiano());
     }
 
     /**
      * Register this mod's {@link Item} models.
      */
-    private void registerItemModels() {
+    private void registerItemModels()
+    {
         // Register variant Item models
         registerVariantItemModels(ModItems.ITEM_INSTRUMENT, "instrument", ItemInstrument.EnumType.values());
 
@@ -114,16 +112,17 @@ public class ModModelManager
         ModItems.RegistrationHandler.ITEMS.stream().filter(item -> !itemsRegistered.contains(item)).forEach(this::registerItemModel);
     }
     
-    private static ArrayList<Object> tesrRenderers = new ArrayList<Object>();
+    private static List<Object> tesrRenderer = new ArrayList<>();
     
-    public static ArrayList<Object> getTESRRenderers() {return tesrRenderers;}
+    public static List<Object> getTESRRenderer() {return tesrRenderer;}
     
-    public <T extends TileEntity> void registerTESR(Class<T> tile, TileEntitySpecialRenderer<T> renderer) {
+    private <T extends TileEntity> void registerTESR(Class<T> tile, TileEntitySpecialRenderer<T> renderer)
+    {
         ClientRegistry.bindTileEntitySpecialRenderer(tile, renderer);
-        tesrRenderers.add(renderer);
+        tesrRenderer.add(renderer);
     }
 
-    public <T extends Block> void registerItemModel(T block)
+    private <T extends Block> void registerItemModel(T block)
     {
         registerItemModel(Item.REGISTRY.getObject(block.getRegistryName()));
     }
@@ -140,8 +139,9 @@ public class ModModelManager
      *
      * @param item The Item
      */
-    private void registerItemModel(Item item) {
-        registerItemModel(item, item.getRegistryName().toString());
+    private void registerItemModel(Item item)
+    {
+        registerItemModel(item, Objects.requireNonNull(item.getRegistryName()).toString());
     }
 
     /**
@@ -152,7 +152,8 @@ public class ModModelManager
      * @param item          The Item
      * @param modelLocation The model location
      */
-    private void registerItemModel(Item item, String modelLocation) {
+    private void registerItemModel(Item item, String modelLocation)
+    {
         final ModelResourceLocation fullModelLocation = new ModelResourceLocation(modelLocation, "inventory");
         registerItemModel(item, fullModelLocation);
     }
@@ -165,7 +166,8 @@ public class ModModelManager
      * @param item              The Item
      * @param fullModelLocation The full model location
      */
-    private void registerItemModel(Item item, ModelResourceLocation fullModelLocation) {
+    private void registerItemModel(Item item, ModelResourceLocation fullModelLocation)
+    {
         ModelBakery.registerItemVariants(item, fullModelLocation); // Ensure the custom model is loaded and prevent the default model from being loaded
         registerItemModel(item, MeshDefinitionFix.create(stack -> fullModelLocation));
     }
@@ -176,7 +178,8 @@ public class ModModelManager
      * @param item           The Item
      * @param meshDefinition The ItemMeshDefinition
      */
-    private void registerItemModel(Item item, ItemMeshDefinition meshDefinition) {
+    private void registerItemModel(Item item, ItemMeshDefinition meshDefinition)
+    {
         itemsRegistered.add(item);
         ModelLoader.setCustomMeshDefinition(item, meshDefinition);
     }
@@ -192,7 +195,8 @@ public class ModModelManager
      * @param values      The values
      * @param <T>         The value type
      */
-    private <T extends IVariant> void registerItemModelsWithSubtypes(Item item, T[] values) {
+    private <T extends IVariant> void registerItemModelsWithSubtypes(Item item, T[] values)
+    {
         for (T value : values) {
             registerItemModelForMetaAndType(item, value.getMeta(), value.getName());
         }
@@ -207,8 +211,9 @@ public class ModModelManager
      * @param metadata The metadata
      * @param type  The type
      */
-    private void registerItemModelForMetaAndType(Item item, int metadata, String type) {
-        registerItemModelForMeta(item, metadata, new ModelResourceLocation(new ResourceLocation(item.getRegistryName().toString() + "_" + type), "inventory"));
+    private void registerItemModelForMetaAndType(Item item, int metadata, String type)
+    {
+        registerItemModelForMeta(item, metadata, new ModelResourceLocation(new ResourceLocation(Objects.requireNonNull(item.getRegistryName()).toString() + "_" + type), "inventory"));
     }
 
     
@@ -224,7 +229,8 @@ public class ModModelManager
      * @param values      The values
      * @param <T>         The value type
      */
-    private <T extends IVariant> void registerVariantItemModels(Item item, String variantName, T[] values) {
+    private <T extends IVariant> void registerVariantItemModels(Item item, String variantName, T[] values)
+    {
         for (T value : values) {
             registerItemModelForMeta(item, value.getMeta(), variantName + "=" + value.getName());
         }
@@ -239,7 +245,8 @@ public class ModModelManager
      * @param metadata The metadata
      * @param variant  The variant
      */
-    private void registerItemModelForMeta(Item item, int metadata, String variant) {
+    private void registerItemModelForMeta(Item item, int metadata, String variant)
+    {
         registerItemModelForMeta(item, metadata, new ModelResourceLocation(item.getRegistryName(), variant));
     }
 
@@ -252,7 +259,8 @@ public class ModModelManager
      * @param metadata              The metadata
      * @param modelResourceLocation The full model location
      */
-    private void registerItemModelForMeta(Item item, int metadata, ModelResourceLocation modelResourceLocation) {
+    private void registerItemModelForMeta(Item item, int metadata, ModelResourceLocation modelResourceLocation)
+    {
         itemsRegistered.add(item);
         ModelLoader.setCustomModelResourceLocation(item, metadata, modelResourceLocation);
     }

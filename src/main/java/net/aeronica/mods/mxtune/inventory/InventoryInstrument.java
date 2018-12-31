@@ -1,5 +1,22 @@
+/*
+ * Aeronica's mxTune MOD
+ * Copyright 2018, Paul Boese a.k.a. Aeronica
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
 package net.aeronica.mods.mxtune.inventory;
 
+import net.aeronica.mods.mxtune.util.Util;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
@@ -9,38 +26,43 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 
-public class InventoryInstrument implements IInventory {
-	private static final String name = "container.mxtune.instrument";
+import java.util.Objects;
+
+public class InventoryInstrument implements IInventory
+{
+	private static final String NAME = "container.mxtune.instrument";
 
 	/** Provides NBT Tag Compound to reference */
 	private final ItemStack stack;
 
 	/** Defining your inventory size this way is handy */
-	public static final int INV_SIZE = 1;
+	private static final int INV_SIZE = 1;
 
 	/** Inventory's size must be same as number of slots you add to the Container class */
-	private final NonNullList<ItemStack> inventory = NonNullList.<ItemStack>withSize(INV_SIZE, ItemStack.EMPTY);
+	private final NonNullList<ItemStack> inventory = NonNullList.withSize(INV_SIZE, ItemStack.EMPTY);
 
 	/**
-	 * @param itemstack
+	 * @param itemStack
 	 *            - the ItemStack to which this inventory belongs
 	 */
-	public InventoryInstrument(ItemStack itemstack) {
-		this.stack = itemstack;
+	InventoryInstrument(ItemStack itemStack)
+    {
+		this.stack = itemStack;
 		// Create a new NBT Tag Compound if one doesn't already exist, or you will crash
-		if (!this.stack.hasTagCompound()) {
+		if (!this.stack.hasTagCompound())
+		{
 			this.stack.setTagCompound(new NBTTagCompound());
 		}
 
 		// Read the inventory contents from NBT
-		readFromNBT(this.stack.getTagCompound());
+		readFromNBT(Objects.requireNonNull(this.stack.getTagCompound()));
 	}
 
 	@Override
-	public int getSizeInventory() {return inventory.size();}
+	public int getSizeInventory() { return inventory.size(); }
 
 	@Override
-	public ItemStack getStackInSlot(int slot) {return inventory.get(slot);}
+	public ItemStack getStackInSlot(int slot) { return inventory.get(slot); }
 
 	@Override	
 	public ItemStack decrStackSize(int index, int count)
@@ -56,9 +78,11 @@ public class InventoryInstrument implements IInventory {
 	}
 
 	@Override
-	public void setInventorySlotContents(int slot, ItemStack itemstack) {
+	public void setInventorySlotContents(int slot, ItemStack itemstack)
+    {
 		inventory.set(slot, itemstack);
-		if (!itemstack.isEmpty() && itemstack.getCount() > this.getInventoryStackLimit()) {
+		if (!itemstack.isEmpty() && itemstack.getCount() > this.getInventoryStackLimit())
+		{
 			itemstack.setCount(this.getInventoryStackLimit());
 		}
 		// Don't forget this line or your inventory will not be saved!
@@ -74,13 +98,15 @@ public class InventoryInstrument implements IInventory {
 	 * things in your inventory without ever opening a Gui, if you want.
 	 */
 	@Override
-	public void markDirty() {
-		for (int i = 0; i < this.getSizeInventory(); ++i) {
+	public void markDirty()
+    {
+		for (int i = 0; i < this.getSizeInventory(); ++i)
+		{
 			if (!this.getStackInSlot(i).isEmpty() && this.getStackInSlot(i).getCount() == 0)
 				this.setInventorySlotContents(i, ItemStack.EMPTY);
 		}
 		// This line here does the work:
-		this.writeToNBT(this.stack.getTagCompound());
+		this.writeToNBT(Objects.requireNonNull(this.stack.getTagCompound()));
 	}
 
 	/**
@@ -88,7 +114,8 @@ public class InventoryInstrument implements IInventory {
 	 * inventory even when this returns false
 	 */
 	@Override
-	public boolean isItemValidForSlot(int slot, ItemStack itemstack) {
+	public boolean isItemValidForSlot(int slot, ItemStack itemstack)
+    {
 		// Don't want to be able to store the inventory item within itself
 		// Bad things will happen, like losing your inventory
 		// Actually, this needs a custom Slot to work
@@ -98,12 +125,14 @@ public class InventoryInstrument implements IInventory {
 	/**
 	 * A custom method to read our inventory from an ItemStack's NBT compound
 	 */
-	public void readFromNBT(NBTTagCompound compound) {
+    private void readFromNBT(NBTTagCompound compound)
+    {
 		// Gets the custom taglist we wrote to this compound, if any
 		NBTTagList items = compound.getTagList("ItemInventory", 10);
 
-		for (int i = 0; i < items.tagCount(); ++i) {
-			NBTTagCompound item = (NBTTagCompound) items.getCompoundTagAt(i);
+		for (int i = 0; i < items.tagCount(); ++i)
+		{
+			NBTTagCompound item = items.getCompoundTagAt(i);
 			int slot = item.getInteger("Slot");
 
 			// Just double-checking that the saved slot index is within our inventory array bounds
@@ -116,11 +145,13 @@ public class InventoryInstrument implements IInventory {
 	/**
 	 * A custom method to write our inventory to an ItemStack's NBT compound
 	 */
-	public void writeToNBT(NBTTagCompound compound) {
+    private void writeToNBT(NBTTagCompound compound)
+    {
 		// Create a new NBT Tag List to store ItemStacks as NBT Tags
 		NBTTagList items = new NBTTagList();
 
-		for (int i = 0; i < getSizeInventory(); ++i) {
+		for (int i = 0; i < getSizeInventory(); ++i)
+		{
 			// Only write stacks that contain items
 			if (!getStackInSlot(i).isEmpty()) {
 				// Make a new NBT Tag Compound to write the ItemStack and slot index to
@@ -138,39 +169,38 @@ public class InventoryInstrument implements IInventory {
 	}
 
 	@Override
-	public String getName() {return name;}
+	public String getName() {return NAME;}
 
 	@Override
-	public boolean hasCustomName() {return false;}
+	public boolean hasCustomName() { return false; }
 
 	@Override
-	public ITextComponent getDisplayName() {return null;}
+	public ITextComponent getDisplayName() { return Util.nonNullInjected(); }
 
 	@Override
-	public ItemStack removeStackFromSlot(int index) {return decrStackSize(index, stack.getCount());}
+	public ItemStack removeStackFromSlot(int index) { return decrStackSize(index, stack.getCount()); }
 
 	@Override
-	public void openInventory(EntityPlayer player) {}
+	public void openInventory(EntityPlayer player) { /* NOP */ }
 
 	@Override
-	public void closeInventory(EntityPlayer player) {}
+	public void closeInventory(EntityPlayer player) { /* NOP */ }
 
 	@Override
-	public int getField(int id) {return 0;}
+	public int getField(int id)  { return 0; }
 
 	@Override
-	public void setField(int id, int value) {}
+	public void setField(int id, int value) { /* NOP */ }
 
 	@Override
-	public int getFieldCount() {return 0;}
+	public int getFieldCount()  { return 0; }
 
 	@Override
-	public void clear() {}
+	public void clear() { /* NOP */ }
 
     @Override
-    public boolean isEmpty() {return false;}
+    public boolean isEmpty() { return false; }
 
     @Override
-    public boolean isUsableByPlayer(EntityPlayer player) {return false;}
-    
+    public boolean isUsableByPlayer(EntityPlayer player)  {return false; }
 }
