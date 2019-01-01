@@ -1,18 +1,18 @@
-/**
+/*
  * Aeronica's mxTune MOD
- * Copyright {2016} Paul Boese aka Aeronica
+ * Copyright 2018, Paul Boese a.k.a. Aeronica
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
 package net.aeronica.mods.mxtune.sound;
 
@@ -23,17 +23,17 @@ import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.Vec3d;
 
-public class MusicMoving extends MovingSound
+public class MovingMusic extends MovingSound
 {
 
-    Integer playID;
-    SoundEventAccessor soundEventAccessor;
+    private Integer playID;
+    private SoundEventAccessor soundEventAccessor;
 
     /**
      * Implements ISound<br></br>
      * For musical machines carried or used in the world
      */
-    public MusicMoving(Integer playID)
+    MovingMusic(Integer playID)
     {
         super(ModSoundEvents.PCM_PROXY, SoundCategory.RECORDS);
         this.playID = playID;
@@ -52,7 +52,7 @@ public class MusicMoving extends MovingSound
     }
     
     /** This is used as the key for our PlaySoundEvent handler */
-    public MusicMoving()
+    MovingMusic()
     {
         super(ModSoundEvents.PCM_PROXY, SoundCategory.getByName("mxtune"));
     }
@@ -80,7 +80,7 @@ public class MusicMoving extends MovingSound
 
     }
     
-    public void setDonePlaying()
+    private void setDonePlaying()
     {
         this.repeat = false;
         this.donePlaying = true;

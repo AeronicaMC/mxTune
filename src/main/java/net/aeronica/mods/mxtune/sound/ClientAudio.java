@@ -301,7 +301,7 @@ public class ClientAudio
                 return;
             }
             executorService.execute(new ThreadedPlay(playID, musicText));
-            MXTune.proxy.getMinecraft().getSoundHandler().playSound(new MusicMoving());
+            MXTune.proxy.getMinecraft().getSoundHandler().playSound(new MovingMusic());
             stopVanillaMusic();
         } else
         {
@@ -513,7 +513,7 @@ public class ClientAudio
                     // Moving music source for hand held or worn instruments
                     // The Spinet Piano although a placed instrument still needs a player to sit on it is
                     // included here.
-                    e.setResultSound(new MusicMoving(playID));
+                    e.setResultSound(new MovingMusic(playID));
                 }
                 else
                 {

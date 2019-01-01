@@ -21,6 +21,8 @@ package net.aeronica.mods.mxtune.util;
  */
 public class Util
 {
+    private Util() { /* NOP */ }
+
     /**
      * Forge really likes annotation magic. This makes static analysis tools shut up.
      */

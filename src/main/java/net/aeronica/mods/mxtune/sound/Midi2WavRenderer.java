@@ -62,7 +62,7 @@ public class Midi2WavRenderer implements Receiver
             throw new Midi2WavRendererRuntimeException("No AudioSynthesizer was found!");
         }
         
-        Map<String, Object> p = new HashMap<String, Object>();
+        Map<String, Object> p = new HashMap<>();
         p.put("interpolation", "sinc");
         p.put("max polyphony", "1024");
         AudioInputStream outputStream = audioSynthesizer.openStream(format, p);
@@ -77,7 +77,7 @@ public class Midi2WavRenderer implements Receiver
         Receiver receiver = audioSynthesizer.getReceiver();
         double total = send(sequence, receiver);
 
-        // Calculate how long the WAVE file needs to be.
+        // Calculate how long the WAVE file needs to be and add a 4 seconds to account for sustained notes
         long len = (long) (outputStream.getFormat().getFrameRate() * (total + 4));
         outputStream = new AudioInputStream(outputStream, outputStream.getFormat(), len);
 

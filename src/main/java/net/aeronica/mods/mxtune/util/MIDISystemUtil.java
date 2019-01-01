@@ -1,18 +1,18 @@
 /*
  * Aeronica's mxTune MOD
- * Copyright {2016} Paul Boese aka Aeronica
+ * Copyright 2018, Paul Boese a.k.a. Aeronica
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
 package net.aeronica.mods.mxtune.util;
 
@@ -97,15 +97,12 @@ public enum MIDISystemUtil
             }
             finally
             {
-                if (synthAvailable && testSynth != null)
-                {
-                    if (testSynth.getMaxPolyphony() > maxPolyphony)
+                if (synthAvailable && (testSynth != null) && (testSynth.getMaxPolyphony() > maxPolyphony))
                     {
                         maxPolyphony = testSynth.getMaxPolyphony();
                         bestSynthInfo = info;
                         bestSynth =  testSynth;
                     }
-                }
                 if (testSynth != null)
                     testSynth.close();
             }
@@ -157,12 +154,9 @@ public enum MIDISystemUtil
         initInstrumentCache();
     }
     
-    private static void addStatus(TextComponentString status)
-    {
-        chatStatus.add(status);
-    }
+    private static void addStatus(TextComponentString status) { chatStatus.add(status); }
     
-    public static boolean midiUnavailable() {return !midiAvailable;}
+    public static boolean midiUnavailable() { return !midiAvailable; }
     
     public static boolean midiUnavailableWarn(EntityPlayer playerIn)
     {
@@ -174,7 +168,8 @@ public enum MIDISystemUtil
     public static void onPlayerLoggedInModStatus(EntityPlayer playerIn)
     {
         if (ModConfig.showWelcomeStatusMessage())
-            for (TextComponentString tcs: chatStatus) {playerIn.sendMessage(tcs);}
+            for (TextComponentString tcs: chatStatus)
+                playerIn.sendMessage(tcs);
     }
     
     private static URL getMXTuneSoundBankURL()
@@ -184,19 +179,21 @@ public enum MIDISystemUtil
         return file;
     }
     
-    public static Soundbank getMXTuneSoundBank()
-    {
-        return mxTuneSoundBank;
-    }
+    public static Soundbank getMXTuneSoundBank() { return mxTuneSoundBank; }
 
     private static NullInstrument getNullInstrument()
     {
         return new NullInstrument(null, new Patch(0, 0), NO_SOUND_BANK, NullClass.class);
     }
 
+    @SuppressWarnings("unused")
     private class NullClass
     {
-        /* empty class */
+        private int someInt;
+        NullClass() { someInt = 0; }
+        NullClass(int someInt) { this.someInt = someInt; }
+
+        public int getSomeInt() { return someInt; }
     }
 
     /* Load MIDI instruments */
@@ -208,10 +205,7 @@ public enum MIDISystemUtil
             Collections.addAll(instrumentCache, mxTuneSoundBank.getInstruments());
     }
 
-    public static List<Instrument> getInstrumentCacheCopy()
-    {
-        return new ArrayList<>(instrumentCache);
-    }
+    public static List<Instrument> getInstrumentCacheCopy() { return new ArrayList<>(instrumentCache); }
 
     // A hack is hack is a hack
     // TODO: revisit the Packed Preset concept and implementation
@@ -220,11 +214,9 @@ public enum MIDISystemUtil
         String nameKey = "";
         for (Instrument inst : instrumentCache)
         {
-            if (inst.toString().contains("Drumkit:") && (inst.getPatch().getProgram() == patch.getProgram()))
-                return inst.getName();
-            else
-            if (((inst.getPatch().getBank() / 128) == patch.getBank()) && (inst.getPatch().getProgram() == patch.getProgram()))
-                return inst.getName();
+            if (inst.toString().contains("Drumkit:") && (inst.getPatch().getProgram() == patch.getProgram()) ||
+            ((inst.getPatch().getBank() / 128) == patch.getBank()) && (inst.getPatch().getProgram() == patch.getProgram()))
+                nameKey =  inst.getName();
         }
         return nameKey;
     }
