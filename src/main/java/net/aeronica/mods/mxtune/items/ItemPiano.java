@@ -80,16 +80,16 @@ public class ItemPiano extends Item
                 /* Disallow placing blocks on water or other unstable blocks */
                 if (flag2 && flag3 && worldIn.getBlockState(pos.down()).isFullCube() && worldIn.getBlockState(blockpos.down()).isFullCube())
                 {
-                    IBlockState iblockstate1 = ModBlocks.SPINET_PIANO.getDefaultState().withProperty(BlockPiano.OCCUPIED, Boolean.valueOf(false)).withProperty(BlockPiano.FACING, enumfacing)
+                    IBlockState iBlockState01 = ModBlocks.SPINET_PIANO.getDefaultState().withProperty(BlockPiano.OCCUPIED, Boolean.FALSE).withProperty(BlockPiano.FACING, enumfacing)
                             .withProperty(BlockPiano.PART, BlockPiano.EnumPartType.LEFT);
 
-                    if (worldIn.setBlockState(pos, iblockstate1, 11))
+                    if (worldIn.setBlockState(pos, iBlockState01, 11))
                     {
-                        IBlockState iblockstate2 = iblockstate1.withProperty(BlockPiano.PART, BlockPiano.EnumPartType.RIGHT);
-                        worldIn.setBlockState(blockpos, iblockstate2, 11);
+                        IBlockState iBlockState02 = iBlockState01.withProperty(BlockPiano.PART, BlockPiano.EnumPartType.RIGHT);
+                        worldIn.setBlockState(blockpos, iBlockState02, 11);
                     }
 
-                    SoundType soundtype = iblockstate1.getBlock().getSoundType();
+                    SoundType soundtype = iBlockState01.getBlock().getSoundType();
                     worldIn.playSound(null, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
                     stack.setCount(stack.getCount()-1);
                     return EnumActionResult.SUCCESS;

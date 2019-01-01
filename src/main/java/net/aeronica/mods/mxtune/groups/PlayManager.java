@@ -18,6 +18,7 @@
 package net.aeronica.mods.mxtune.groups;
 
 import com.google.common.collect.Sets;
+import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.blocks.IMusicPlayer;
 import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
 import net.aeronica.mods.mxtune.config.ModConfig;
@@ -34,7 +35,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -180,6 +180,7 @@ public class PlayManager
         return playID;
     }
     
+    @SuppressWarnings("ConstantConditions")
     private static Integer queueJam(EntityPlayer playerIn, String mml, Integer playerID)
     {
         Integer groupsPlayID = getGroupsPlayID(playerID);
@@ -309,7 +310,11 @@ public class PlayManager
         syncStatus();        
     }
     
-    private static void removeActivePlayID(Integer playID) {if (playID != null && !activePlayIDs.isEmpty()) activePlayIDs.remove(playID);}
+    private static void removeActivePlayID(Integer playID)
+    {
+        if ((playID != null) && activePlayIDs.isEmpty())
+            activePlayIDs.remove(playID);
+    }
     
     private static int getPackedPreset(BlockPos pos, EntityPlayer playerIn, boolean isPlaced)
     {
@@ -389,9 +394,11 @@ public class PlayManager
      */
     public static void testStopDistance(double stopDistance)
     {
+        if (!GroupManager.hasActiveGroups()) return;
+
         for (Integer playID : activePlayIDs)
         {
-            if (getMembersByPlayID(playID) != null && !getMembersByPlayID(playID).isEmpty())
+            if (!getMembersByPlayID(playID).isEmpty())
             {
                 for (Integer memberA : getMembersByPlayID(playID))
                 {
@@ -411,7 +418,7 @@ public class PlayManager
     private static Vec3d getMemberVector(Integer entityID)
     {
         Vec3d v3d;
-        EntityPlayer player = (EntityPlayer) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getEntityByID(entityID);
+        EntityPlayer player = MXTune.proxy.getPlayerByEntityID(entityID);
         if (player != null)
             v3d = new Vec3d(player.posX, player.prevPosY, player.posZ);
         else

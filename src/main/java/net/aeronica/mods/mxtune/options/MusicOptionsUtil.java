@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.options;
 
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.SyncPlayerMusicOptionsMessage;
+import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.Util;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
@@ -139,7 +140,7 @@ public class MusicOptionsUtil
         if (player.hasCapability(Objects.requireNonNull(MUSIC_OPTIONS), null))
             bardActionImpl =  player.getCapability(MUSIC_OPTIONS, null);
         else
-            throw new RuntimeException("IBardAction capability is null");
+            throw new MXTuneRuntimeException("IBardAction capability is null");
         return bardActionImpl;
     }
 

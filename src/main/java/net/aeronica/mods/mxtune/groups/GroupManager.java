@@ -61,7 +61,9 @@ public class GroupManager
 
         return groupID;
     }
-    
+
+    static boolean hasActiveGroups() { return !groups.isEmpty(); }
+
     /**
      * Any player can be a leader or in a group. A player who makes a group is
      * the leader of the group. A player in a group can't join another group.
