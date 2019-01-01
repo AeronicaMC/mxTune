@@ -1,5 +1,6 @@
 package net.aeronica.mods.mxtune.sound;
 
+import net.aeronica.mods.mxtune.util.Util;
 import net.minecraft.client.Minecraft;
 import paulscode.sound.ICodec;
 import paulscode.sound.SoundBuffer;
@@ -68,7 +69,7 @@ public class CodecPCM implements ICodec {
      */
     private AudioInputStream dummyInputStream = null;
 
-    public static final int SAMPLE_SIZE = 10240 * 4;
+    private static final int SAMPLE_SIZE = 10240 * 4;
     
     private byte[] noiseBuffer = new byte[SAMPLE_SIZE];
     private byte[] zeroBuffer = new byte[SAMPLE_SIZE];
@@ -88,12 +89,12 @@ public class CodecPCM implements ICodec {
 	public CodecPCM() {
 		logger = SoundSystemConfig.getLogger();
         randInt = new java.util.Random(System.currentTimeMillis());
-        nextBuffer(SAMPLE_SIZE);
+        nextBuffer();
 	}
 
-    private void nextBuffer(int sampleSize)
+    private void nextBuffer()
     {
-        for (int i=0;i<sampleSize; i+=2){
+        for (int i=0;i<SAMPLE_SIZE; i+=2){
             int x = (short) (randInt.nextInt()/3)*2;
             noiseBuffer[i] = (byte) x;
             noiseBuffer[i+1]= (byte) (x >> 8);
@@ -123,9 +124,10 @@ public class CodecPCM implements ICodec {
         initialized(SET, false);
         if (playID == null)
         {
-            if ((playID = ClientAudio.pollPlayIDQueue02()) == null )
+            playID = ClientAudio.pollPlayIDQueue02();
+            if (playID == null)
             {
-                errorMessage("playID not initialized: " + playID);
+                errorMessage("playID not initialized");
                 return false;
             } else
             {                
@@ -169,7 +171,8 @@ public class CodecPCM implements ICodec {
 	}
 
 	@Override
-	public SoundBuffer read() {
+	public SoundBuffer read()
+    {
 		if (!initialized) {
 			errorMessage("Not initialized in 'read'");
 			return null;
@@ -180,7 +183,7 @@ public class CodecPCM implements ICodec {
 		}
 		if (ClientAudio.isPlayIDAudioDataError(playID))
 		{
-		    errorMessage("Audio Data Error in 'read'");
+		    //errorMessage("Audio Data Error in 'read'");
 		    return null;
 		}
 		if (!hasStream && ClientAudio.isPlayIDAudioDataReady(playID))
@@ -189,10 +192,10 @@ public class CodecPCM implements ICodec {
 		    message("Waiting buffer count: " + zeroBufferCount);
 		    hasStream = true;
 		}
-        int bufferSize = 0;
+        int bufferSize;
         byte[] readBuffer = new byte[SoundSystemConfig.getStreamingBufferSize()];
-		byte[] outputBuffer = null;
-		nextBuffer(SAMPLE_SIZE);
+		byte[] outputBuffer = Util.nonNullInjected();
+		nextBuffer();
 		try
         {	
 		    if (hasStream && audioInputStream != null)
@@ -229,9 +232,15 @@ public class CodecPCM implements ICodec {
 		return new SoundBuffer(outputBuffer, myAudioFormat);
 	}
 
-	/** load the entire buffer at once */
+	/** Load the entire buffer at once.
+     *
+     * Note: The audio data is cached and if found the sound
+     * system will not call this again unless the sound is
+     * invalidated.
+     * */
 	@Override
-	public SoundBuffer readAll() {
+	public SoundBuffer readAll()
+    {
 		if (!initialized) {
 			errorMessage("Not initialized in 'readAll'");
 			return null;
@@ -240,43 +249,17 @@ public class CodecPCM implements ICodec {
 			errorMessage("Audio Format null in method 'readAll'");
 			return null;
 		}
-        if (endOfStream() || ClientAudio.isPlayIDAudioDataError(playID))
-            return null;     
-        int bufferSize = 0;
+        if (endOfStream())
+            return null;
+
         byte[] outputBuffer = null;
-        byte[] readBuffer = new byte[SAMPLE_SIZE];
-        while (bufferSize != -1)
+
+        for (int i = 0; i < 25; i++)
         {
-            if (endOfStream() || ClientAudio.isPlayIDAudioDataError(playID))
-                return null;
-            if (!hasStream && ClientAudio.isPlayIDAudioDataReady(playID))
-            {
-                audioInputStream = ClientAudio.getAudioInputStream(playID);
-                hasStream = true;
-            }
-            try
-            {
-                if (hasStream && audioInputStream != null)
-                {
-                    bufferSize = audioInputStream.read(readBuffer);
-                    if (bufferSize > 0) outputBuffer = appendByteArrays(outputBuffer, readBuffer, bufferSize);
-                } else
-                {
-                    nextBuffer(SAMPLE_SIZE);
-                    outputBuffer = appendByteArrays(outputBuffer, noiseBuffer, SAMPLE_SIZE);
-                    message("  zeroBufferCount: " + ++zeroBufferCount);
-                    if (zeroBufferCount > 64) 
-                    {
-                        errorMessage("MML to PCM audio prcessiong took too long. Aborting!");
-                        endOfStream(SET, true);
-                        return null;
-                    }
-                }
-            } catch (IOException e)
-            {
-                printStackTrace(e);
-            }
+            nextBuffer();
+            outputBuffer = appendByteArrays(outputBuffer, noiseBuffer, SAMPLE_SIZE);
         }
+        errorMessage("ReadAll NOT Supported! Always use stream = true. You have been warned.");
         if (!reverseBytes && outputBuffer != null)
             reverseBytes(outputBuffer, 0, outputBuffer.length);
         return new SoundBuffer(outputBuffer, myAudioFormat);
@@ -375,6 +358,7 @@ public class CodecPCM implements ICodec {
 	 * @param buffer
 	 *            Array containing audio data.
 	 */
+	@SuppressWarnings("unused")
 	public static void reverseBytes(byte[] buffer) {
 		reverseBytes(buffer, 0, buffer.length);
 	}
@@ -390,7 +374,8 @@ public class CodecPCM implements ICodec {
 	 * @param size
 	 *            number of bytes to reverse-order.
 	 */
-	public static void reverseBytes(byte[] buffer, int offset, int size) {
+	@SuppressWarnings("all")
+	private static void reverseBytes(byte[] buffer, int offset, int size) {
 
 		byte b;
 		for (int i = offset; i < (offset + size); i += 2) {
@@ -461,22 +446,17 @@ public class CodecPCM implements ICodec {
 			newArray = new byte[length];
 			// fill the new array with the contents of arrayTwo:
 			System.arraycopy(arrayTwo, 0, newArray, 0, length);
-			arrayTwo = null;
 		} else if (arrayTwo == null) {
 			// create the new array, same length as arrayOne:
 			newArray = new byte[arrayOne.length];
 			// fill the new array with the contents of arrayOne:
 			System.arraycopy(arrayOne, 0, newArray, 0, arrayOne.length);
-			arrayOne = null;
 		} else {
-			// create the new array large enough to hold both
-			// arrays:
+			// create the new array large enough to hold both arrays:
 			newArray = new byte[arrayOne.length + length];
 			System.arraycopy(arrayOne, 0, newArray, 0, arrayOne.length);
 			// fill the new array with the contents of both arrays:
 			System.arraycopy(arrayTwo, 0, newArray, arrayOne.length, length);
-			arrayOne = null;
-			arrayTwo = null;
 		}
 
 		return newArray;

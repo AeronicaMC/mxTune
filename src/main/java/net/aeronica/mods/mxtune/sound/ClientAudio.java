@@ -1,17 +1,18 @@
 /*
- * Copyright {2016-2017} Paul Boese aka Aeronica
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Aeronica's mxTune MOD
+ * Copyright 2019, Paul Boese a.k.a. Aeronica
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
 /*
  * Portions of This file are part of Dynamic Surroundings, licensed under
@@ -85,6 +86,7 @@ import java.util.concurrent.ConcurrentHashMap.KeySetView;
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ClientAudio
 {
+    public static final Object THREAD_SYNC = new Object();
     private static SoundHandler handler;
     private static SoundSystem sndSystem;
     private static MusicTicker musicTicker;
@@ -174,9 +176,12 @@ public class ClientAudio
     
     static synchronized void setPlayIDAudioStream(Integer playID, AudioInputStream audioStream)
     {
-        AudioData audioData = playIDAudioData.get(playID);
-        if (audioData != null)
-            audioData.setAudioStream(audioStream);
+        synchronized (THREAD_SYNC)
+        {
+            AudioData audioData = playIDAudioData.get(playID);
+            if (audioData != null)
+                audioData.setAudioStream(audioStream);
+        }
     }
     
     private static synchronized void setUuid(Integer playID, String uuid)
@@ -207,26 +212,32 @@ public class ClientAudio
 
     static void removePlayIDAudioData(Integer playID)
     {
-        if (playIDAudioData.containsKey(playID))
+        synchronized (THREAD_SYNC)
         {
-            AudioData audioData = playIDAudioData.get(playID);
-            if (audioData != null)
+            if (playIDAudioData.containsKey(playID))
             {
-                if (audioData.isClientPlayer())
-                    notifyLivingEntity(playID);
-                else if (!audioData.isClientPlayer() && audioData.getBlockPos() != null)
-                    notifyBlockEntity(playID);
+                AudioData audioData = playIDAudioData.get(playID);
+                if (audioData != null)
+                {
+                    if (audioData.isClientPlayer())
+                        notifyLivingEntity(playID);
+                    else if (!audioData.isClientPlayer() && audioData.getBlockPos() != null)
+                        notifyBlockEntity(playID);
 
-                try
-                {
-                    if (audioData.getAudioStream() != null)
-                        audioData.getAudioStream().close();
-                } catch (IOException e)
-                {
-                    ModLogger.error(e);
+                    try
+                    {
+                        if (audioData.getAudioStream() != null)
+                            audioData.getAudioStream().close();
+                    } catch (IOException e)
+                    {
+                        ModLogger.error(e);
+                    }
                 }
+                playIDQueue01.remove(playID);
+                playIDQueue02.remove(playID);
+                playIDQueue03.remove(playID);
+                playIDAudioData.remove(playID);
             }
-            playIDAudioData.remove(playID);
         }
     }
     
@@ -238,9 +249,12 @@ public class ClientAudio
     
     static synchronized void setPlayIDAudioDataStatus(Integer playID, Status status)
     {
-        AudioData audioData = playIDAudioData.get(playID);
-        if (audioData != null)
-            audioData.setStatus(status);
+        synchronized (THREAD_SYNC)
+        {
+            AudioData audioData = playIDAudioData.get(playID);
+            if (audioData != null)
+                audioData.setStatus(status);
+        }
     }
     
     static boolean isPlayIDAudioDataError(Integer playID)
