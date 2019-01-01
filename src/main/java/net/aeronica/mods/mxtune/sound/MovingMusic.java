@@ -54,7 +54,7 @@ public class MovingMusic extends MovingSound
     /** This is used as the key for our PlaySoundEvent handler */
     MovingMusic()
     {
-        super(ModSoundEvents.PCM_PROXY, SoundCategory.getByName("mxtune"));
+        super(ModSoundEvents.PCM_PROXY, SoundCategory.RECORDS);
     }
     
     @Override
