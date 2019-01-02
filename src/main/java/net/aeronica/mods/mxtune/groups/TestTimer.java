@@ -26,20 +26,17 @@ import java.util.TimerTask;
 /**
  * Experimental: Schedule removal of the playID after a specified duration in seconds.
  */
-public class TestTimer
+class TestTimer
 {
     private TestTimer() { /* NOP */ }
 
-    public static void scheduleStop(String message, int playID, int duration)
+    static void scheduleStop(String message, int playID, int duration)
     {
-
         TimerTask task = new TimerTask() {
             @Override
             public void run()
             {
-                MXTune.proxy.addScheduledTask(() -> {
-                    stop(message, playID);
-                });
+                MXTune.proxy.addScheduledTask(() -> stop(message, playID));
             }
         };
         Timer timer = new Timer("Timer");
