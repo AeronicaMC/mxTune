@@ -375,7 +375,7 @@ public class GuiJamOverlay extends Gui
 
         setTexture(TEXTURE_STATUS);
         drawWidget(playerIn, iconX, iconY, musicTitle);
-//        drawDebug(hd, maxWidth, maxHeight);
+        drawDebug(hd, maxWidth, maxHeight);
         GL11.glPopMatrix();
     }
     
@@ -404,7 +404,9 @@ public class GuiJamOverlay extends Gui
             //noinspection NumericOverflow
             drawRect(iconX+4, iconY+20, iconX+4 + (int)(15*dist), iconY+22, colorRGB + (208 << 24));
         }
-//        drawDebug(hd, maxWidth, maxHeight);
+        int maxWidth = 256;
+        int maxHeight = 128;
+        drawDebug(hd, maxWidth, maxHeight);
 
         GL11.glPopMatrix();
     }

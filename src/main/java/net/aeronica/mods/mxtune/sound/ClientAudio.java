@@ -44,8 +44,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.groups.GROUPS;
-import net.aeronica.mods.mxtune.network.PacketDispatcher;
-import net.aeronica.mods.mxtune.network.server.PlayStoppedMessage;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
@@ -210,34 +208,32 @@ public class ClientAudio
         return audioData.getSoundRange();
     }
 
+    // TODO: Review. Currently servers to remove a failed play. But does it really. The SoundSystem does not seem to call cleanup reliably.
     static void removePlayIDAudioData(Integer playID)
     {
-        synchronized (THREAD_SYNC)
+        if (playIDAudioData.containsKey(playID))
         {
-            if (playIDAudioData.containsKey(playID))
+            AudioData audioData = playIDAudioData.get(playID);
+            if (audioData != null)
             {
-                AudioData audioData = playIDAudioData.get(playID);
-                if (audioData != null)
-                {
-                    if (audioData.isClientPlayer())
-                        notifyLivingEntity(playID);
-                    else if (!audioData.isClientPlayer() && audioData.getBlockPos() != null)
-                        notifyBlockEntity(playID);
+                if (audioData.isClientPlayer()) { /*NOP */ }
+                    // notifyLivingEntity(playID); TODO: REMOVE
+                else if (!audioData.isClientPlayer() && audioData.getBlockPos() != null) { /*NOP */ }
+                    // notifyBlockEntity(playID); TODO: REMOVE
 
-                    try
-                    {
-                        if (audioData.getAudioStream() != null)
-                            audioData.getAudioStream().close();
-                    } catch (IOException e)
-                    {
-                        ModLogger.error(e);
-                    }
+                try
+                {
+                    if (audioData.getAudioStream() != null)
+                        audioData.getAudioStream().close();
+                } catch (IOException e)
+                {
+                    ModLogger.error(e);
                 }
-                playIDQueue01.remove(playID);
-                playIDQueue02.remove(playID);
-                playIDQueue03.remove(playID);
-                playIDAudioData.remove(playID);
             }
+            playIDQueue01.remove(playID);
+            playIDQueue02.remove(playID);
+            playIDQueue03.remove(playID);
+            playIDAudioData.remove(playID);
         }
     }
     
@@ -323,17 +319,19 @@ public class ClientAudio
         }
     }
 
-    private static void notifyLivingEntity(Integer playID)
-    {
-        if (playID != null)
-            PacketDispatcher.sendToServer(new PlayStoppedMessage(playID));
-    }
+    // TODO: Remove this once the new server side Duration manager is completed.
+//    private static void notifyLivingEntity(Integer playID)
+//    {
+//        if (playID != null)
+//            PacketDispatcher.sendToServer(new PlayStoppedMessage(playID));
+//    }
 
-    private static void notifyBlockEntity(Integer playID)
-    {
-        if (playID != null)
-            PacketDispatcher.sendToServer(new PlayStoppedMessage(playID, true));
-    }
+    // TODO: Remove this once the new server side Duration manager is completed.
+//    private static void notifyBlockEntity(Integer playID)
+//    {
+//        if (playID != null)
+//            PacketDispatcher.sendToServer(new PlayStoppedMessage(playID, true));
+//    }
 
     public static void stop(Integer playID)
     {
@@ -365,7 +363,7 @@ public class ClientAudio
     }
 
     // Copied from vanilla 1.11.2 MusicTicker class
-    private static void stopMusic()
+    private static void stopVanillaMusicTicker()
     {
         if (musicTicker.currentMusic != null)
         {
@@ -379,7 +377,7 @@ public class ClientAudio
     {
         ModLogger.info("ClientAudio stopVanillaMusic - PAUSED on %d active sessions.", playIDAudioData.mappingCount());
         setVanillaMusicPaused(true);
-        stopMusic();
+        stopVanillaMusicTicker();
         setVanillaMusicTimer(Integer.MAX_VALUE);
     }
 
@@ -424,7 +422,7 @@ public class ClientAudio
             {
                 if (!GROUPS.getActivePlayIDs().contains(entry.getKey()))
                 {
-                    stop(entry.getKey());
+                    stop(entry.getKey()); // TODO: the stop() tells vanilla sound system to stop using fade for 100ms. we should queue removal of the playID until completed.
                     playIDAudioData.remove(entry.getKey());
                     ModLogger.info("updateClientAudio: Active playID removed");
                 }
@@ -432,6 +430,8 @@ public class ClientAudio
         }
     }
 
+    // TODO: Review and refactor this once the new server side Duration manager is completed.
+    // block and player notification disabled for now.
     private static void audioStatusNotificationProcessing()
     {
         for (ConcurrentHashMap.Entry<Integer, AudioData> entry : playIDAudioData.entrySet())
@@ -441,10 +441,10 @@ public class ClientAudio
                     !handler.isSoundPlaying(audioData.getISound()))
             {
                 playIDAudioData.remove(entry.getKey());
-                if (audioData.isClientPlayer())
-                    notifyLivingEntity(entry.getValue().getPlayID());
-                else if (!audioData.isClientPlayer() && audioData.getBlockPos() != null)
-                    notifyBlockEntity(entry.getValue().getPlayID());
+                if (audioData.isClientPlayer()) { /* NOP */ }
+                    // notifyLivingEntity(entry.getValue().getPlayID()); TODO: REMOVE
+                else if (!audioData.isClientPlayer() && audioData.getBlockPos() != null) { /* NOP */ }
+                    //notifyBlockEntity(entry.getValue().getPlayID()); TODO: REMOVE
 
                 ModLogger.info("updateClientAudio: Status:Error or Done!");
             }

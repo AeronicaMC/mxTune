@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
+import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
@@ -58,8 +59,11 @@ public class SyncStatusMessage extends AbstractClientMessage<SyncStatusMessage>
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        GROUPS.setClientPlayStatuses(clientPlayStatuses);
-        GROUPS.setPlayIDMembers(playIDMembers);
-        GROUPS.setActivePlayIDs(activePlayIDs);
+        synchronized (ClientAudio.THREAD_SYNC)
+        {
+            GROUPS.setClientPlayStatuses(clientPlayStatuses);
+            GROUPS.setPlayIDMembers(playIDMembers);
+            GROUPS.setActivePlayIDs(activePlayIDs);
+        }
     }
 }

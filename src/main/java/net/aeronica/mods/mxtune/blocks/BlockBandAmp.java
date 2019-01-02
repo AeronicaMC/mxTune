@@ -122,7 +122,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
             }
             if (!stop)
             {
-                Integer playID = PlayManager.playMusic(worldIn, pos, tileBandAmp.getSoundRange());
+                Integer playID = PlayManager.playMusic(worldIn, pos);
                 tileBandAmp.setPlayID(playID);
             }
         }

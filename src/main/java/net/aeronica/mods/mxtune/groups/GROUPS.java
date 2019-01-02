@@ -51,7 +51,7 @@ public class GROUPS
     /* PlayManager */
     private static Map<Integer, Integer> membersQueuedStatus = Collections.emptyMap();
     private static Map<Integer, Integer> membersPlayID = Collections.emptyMap();
-    private static Set<Integer> activePlayIDs = Collections.emptySet();
+    private static Set<Integer> activePlayIDs = Collections.emptySortedSet();
 
     private GROUPS() { /* NOP */ }
 

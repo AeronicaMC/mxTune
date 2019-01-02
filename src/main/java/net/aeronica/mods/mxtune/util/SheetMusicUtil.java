@@ -20,16 +20,19 @@ import net.aeronica.libs.mml.core.MMLParser;
 import net.aeronica.libs.mml.core.MMLParserFactory;
 import net.aeronica.libs.mml.core.MMLToMIDI;
 import net.aeronica.libs.mml.core.ParseErrorListener;
+import net.aeronica.mods.mxtune.blocks.IMusicPlayer;
 import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
 import net.aeronica.mods.mxtune.blocks.TileInstrument;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.inventory.IMusic;
+import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.aeronica.mods.mxtune.sound.Midi2WavRenderer;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -172,5 +175,42 @@ public enum SheetMusicUtil
                 (absSeconds % 3600) / 60,
                 absSeconds % 60);
         return seconds < 0 ? "-" + positive : positive;
+    }
+
+    public static String getInventoryInstrumentBlockMML(TileEntity tileEntity)
+    {
+        StringBuilder buildMML = new StringBuilder();
+
+        if (tileEntity instanceof IMusicPlayer)
+        {
+            IMusicPlayer musicPlayer =(IMusicPlayer) tileEntity;
+            try
+            {
+                for (int slot = 0; slot < musicPlayer.getInventory().getSlots(); slot++)
+                {
+                    ItemStack stackInSlot = musicPlayer.getInventory().getStackInSlot(slot);
+                    if (!stackInSlot.isEmpty() && stackInSlot.getItem() instanceof ItemInstrument)
+                    {
+                        ItemInstrument instrument = (ItemInstrument) stackInSlot.getItem();
+                        int patch = instrument.getPatch(stackInSlot.getMetadata());
+                        ItemStack sheetMusic = getSheetMusic(stackInSlot);
+                        if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
+                        {
+                            NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
+                            if (contents.hasKey(KEY_MML))
+                            {
+                                String mml = contents.getString(KEY_MML);
+                                mml = mml.replace("MML@", "MML@I" + patch);
+                                buildMML.append(slot).append("=").append(mml).append("|");
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e)
+            {
+                ModLogger.error(e);
+            }
+        }
+        return buildMML.toString();
     }
 }

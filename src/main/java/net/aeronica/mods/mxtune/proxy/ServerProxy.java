@@ -16,6 +16,7 @@
  */
 package net.aeronica.mods.mxtune.proxy;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.init.ModEntities;
 import net.minecraft.client.Minecraft;
@@ -35,6 +36,11 @@ public class ServerProxy
     public void init() { /*  NOP */ }
     
     public void postInit() { /*  NOP */ }
+
+    public ListenableFuture<Object> addScheduledTask(Runnable runnableToSchedule)
+    {
+        return FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(runnableToSchedule);
+    }
 
     public void initEntities() { ModEntities.init(); }
 

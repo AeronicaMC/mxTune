@@ -16,53 +16,16 @@
  */
 package net.aeronica.mods.mxtune.blocks;
 
-import net.aeronica.mods.mxtune.items.ItemInstrument;
-import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
-import static net.aeronica.mods.mxtune.util.SheetMusicUtil.*;
+import net.aeronica.mods.mxtune.sound.SoundRange;
+import net.minecraftforge.items.IItemHandlerModifiable;
 
 public interface IMusicPlayer
 {
-    default String getMML(World worldIn, BlockPos blockPos)
-    {
-        StringBuilder buildMML = new StringBuilder();
-        TileEntity tileEntity = worldIn.getTileEntity(blockPos);
+    default String getMML() { /* implement in TE */  return ""; }
 
-        if (tileEntity instanceof TileInstrument)
-        {
-            TileInstrument tileInstrument = (TileInstrument) tileEntity;
-            try
-            {
-                for (int slot = 0; slot < tileInstrument.getInventory().getSlots(); slot++)
-                {
-                    ItemStack stackInSlot = tileInstrument.getInventory().getStackInSlot(slot);
-                    if (!stackInSlot.isEmpty() && stackInSlot.getItem() instanceof ItemInstrument)
-                    {
-                        ItemInstrument instrument = (ItemInstrument) stackInSlot.getItem();
-                        int patch = instrument.getPatch(stackInSlot.getMetadata());
-                        ItemStack sheetMusic = getSheetMusic(stackInSlot);
-                        if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
-                        {
-                            NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
-                            if (contents.hasKey(KEY_MML))
-                            {
-                                String mml = contents.getString(KEY_MML);
-                                mml = mml.replace("MML@", "MML@I" + patch);
-                                buildMML.append(slot).append("=").append(mml).append("|");
-                            }
-                        }
-                    }
-                }
-            } catch (Exception e)
-            {
-                ModLogger.error(e);
-            }
-         }
-        return buildMML.toString();
-    }
+    default int getDuration() { /* implement in TE */ return 0; }
+
+    default SoundRange getSoundRange() { /* implement in TE */ return SoundRange.NORMAL; }
+
+    default IItemHandlerModifiable getInventory() { /* implement in TE */  return null; }
 }

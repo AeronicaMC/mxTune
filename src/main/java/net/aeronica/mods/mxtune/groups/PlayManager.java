@@ -24,9 +24,11 @@ import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
-import net.aeronica.mods.mxtune.network.client.*;
+import net.aeronica.mods.mxtune.network.client.PlayBlockMusicMessage;
+import net.aeronica.mods.mxtune.network.client.PlayJamMessage;
+import net.aeronica.mods.mxtune.network.client.PlaySoloMessage;
+import net.aeronica.mods.mxtune.network.client.SyncStatusMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
-import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -97,24 +99,27 @@ public class PlayManager
      * For playing music from a block, e.g. Band Amp.
      * @param worldIn the world of course
      * @param pos position of block instrument
-     * @param soundRange defines the attenuation: NORMAL or INFINITY respectively
      * @return a unique play id
      */
     @Nullable
-    public static Integer playMusic(World worldIn, BlockPos pos, SoundRange soundRange)
+    public static Integer playMusic(World worldIn, BlockPos pos)
     {
         Integer playID = null;
         IMusicPlayer musicPlayer;
         if (worldIn.getBlockState(pos).getBlock() instanceof IMusicPlayer)
         {
-            musicPlayer = (IMusicPlayer) worldIn.getBlockState(pos).getBlock();
-            String mml = musicPlayer.getMML(worldIn, pos);
+            musicPlayer = (IMusicPlayer) worldIn.getTileEntity(pos);
+            String mml = musicPlayer.getMML();
             if (mml.contains(KEY_MML))
             {
                 playID = getNextPlayID();
                 activePlayIDs.add(playID);
                 syncStatus();
-                PlayBlockMusicMessage playBlockMusicMessage = new PlayBlockMusicMessage(playID, pos, mml, soundRange);
+
+                // TODO: Refactor Duration Timeout
+                TestTimer.scheduleStop(String.format("Title \"%s\" has ended.", mml.substring(0, Math.min(25, mml.length()))), playID, musicPlayer.getDuration());
+
+                PlayBlockMusicMessage playBlockMusicMessage = new PlayBlockMusicMessage(playID, pos, mml, musicPlayer.getSoundRange());
                 PacketDispatcher.sendToAllAround(playBlockMusicMessage, worldIn.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), ModConfig.getListenerRange());
             }
         }
@@ -146,32 +151,38 @@ public class PlayManager
                 Integer playerID = playerIn.getEntityId();
                 String title = sheetMusic.getDisplayName();
                 String mml = contents.getString(KEY_MML);
+                int duration = contents.getInteger(KEY_DURATION);
 
                 mml = mml.replace("MML@", "MML@I" + getPackedPreset(pos, playerIn, isPlaced));
                 ModLogger.debug("MML Title: " + title);
-                ModLogger.debug("MML Sub25: " + mml.substring(0, mml.length() >= 25 ? 25 : mml.length()));
+                ModLogger.debug("MML Sub25: " + mml.substring(0, Math.min(25, mml.length())));
+
 
                 if (GroupManager.getMembersGroupID(playerID) == null)
                 {
                     /* Solo Play */
                     ModLogger.debug("playMusic playSolo");
-                    return playSolo(playerIn, mml, playerID);
+                    return playSolo(playerIn, mml, title, duration, playerID);
                 }
                 else
                 {
                     /* Jam Play */
                     ModLogger.debug("playMusic queueJam");
-                    return queueJam(playerIn, mml, playerID);
+                    return queueJam(playerIn, mml, title, duration, playerID);
                 }
             }
         }
         return null;
     }
 
-    private static Integer playSolo(EntityPlayer playerIn, String mml, Integer playerID)
+    private static Integer playSolo(EntityPlayer playerIn, String mml, String title, int duration, Integer playerID)
     {
         Integer playID = getNextPlayID();
         queue(playID, playerID, mml);
+
+        // TODO: Refactor Duration Timeout
+        TestTimer.scheduleStop(String.format("Title \"%s\" has ended.", title), playID, duration);
+
         String musicText = getMappedMML(playID);
         activePlayIDs.add(playID);
         syncStatus();
@@ -181,7 +192,7 @@ public class PlayManager
     }
     
     @SuppressWarnings("ConstantConditions")
-    private static Integer queueJam(EntityPlayer playerIn, String mml, Integer playerID)
+    private static Integer queueJam(EntityPlayer playerIn, String mml, String title, int duration, Integer playerID)
     {
         Integer groupsPlayID = getGroupsPlayID(playerID);
         /* Queue members parts */
@@ -190,6 +201,9 @@ public class PlayManager
         /* Only send the groups MML when the leader starts the JAM */
         if (GroupManager.isLeader(playerID))
         {
+            // TODO: Refactor Duration Timeout
+            TestTimer.scheduleStop(String.format("Title \"%s\" has ended.", title), groupsPlayID, duration);
+
             String musicText = getMappedMML(groupsPlayID);
             Vec3d pos = GROUPS.getMedianPos(groupsPlayID);
             activePlayIDs.add(groupsPlayID);
@@ -305,15 +319,18 @@ public class PlayManager
             }
             membersQueuedStatus.remove(member);
         }
-        PacketDispatcher.sendToAll(new StopPlayMessage(playID));
         removeActivePlayID(playID);
-        syncStatus();        
+        // TODO: We need to eliminate this.
+        // Active playID's are managed in activePlayID which is sync's to the client on any change.
+        // The client should act on it's own copy only and should never request a stop based on it's own state.
+        //PacketDispatcher.sendToAll(new StopPlayMessage(playID));
     }
     
-    private static void removeActivePlayID(Integer playID)
+    static void removeActivePlayID(Integer playID)
     {
-        if ((playID != null) && activePlayIDs.isEmpty())
+        if ((playID != null) && !activePlayIDs.isEmpty())
             activePlayIDs.remove(playID);
+        syncStatus();
     }
     
     private static int getPackedPreset(BlockPos pos, EntityPlayer playerIn, boolean isPlaced)

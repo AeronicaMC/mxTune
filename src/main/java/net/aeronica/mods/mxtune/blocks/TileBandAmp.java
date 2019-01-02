@@ -20,6 +20,7 @@ import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.util.EnumRelativeSide;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.aeronica.mods.mxtune.world.IModLockableContainer;
 import net.aeronica.mods.mxtune.world.OwnerUUID;
 import net.minecraft.block.Block;
@@ -42,7 +43,7 @@ import javax.annotation.Nullable;
 
 import static net.aeronica.mods.mxtune.util.SheetMusicUtil.KEY_DURATION;
 
-public class TileBandAmp extends TileInstrument implements IModLockableContainer
+public class TileBandAmp extends TileInstrument implements IModLockableContainer, IMusicPlayer
 {
     public static final int MAX_SLOTS = 8;
     private static final String KEY_CUSTOM_NAME = "CustomName";
@@ -141,6 +142,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         return super.writeToNBT(tag);
     }
 
+    @Override
     public int getDuration()
     {
         return this.duration;
@@ -153,6 +155,27 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
             this.duration = duration;
             markDirtySyncClient();
         }
+    }
+
+    @Override
+    public SoundRange getSoundRange()
+    {
+        return soundRange;
+    }
+
+    public void setSoundRange(SoundRange soundRange)
+    {
+        if(this.soundRange != soundRange)
+        {
+            this.soundRange = soundRange;
+            markDirtySyncClient();
+        }
+    }
+
+    @Override
+    public String getMML()
+    {
+        return SheetMusicUtil.getInventoryInstrumentBlockMML(this);
     }
 
     /** This does nothing but log the side that's powered */
@@ -220,20 +243,6 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         if(this.rightRedstoneOutputEnabled != rightRedstoneOutputEnabled)
         {
             this.rightRedstoneOutputEnabled = rightRedstoneOutputEnabled;
-            markDirtySyncClient();
-        }
-    }
-
-    public SoundRange getSoundRange()
-    {
-        return soundRange;
-    }
-
-    public void setSoundRange(SoundRange soundRange)
-    {
-        if(this.soundRange != soundRange)
-        {
-            this.soundRange = soundRange;
             markDirtySyncClient();
         }
     }
