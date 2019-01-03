@@ -161,20 +161,20 @@ public class PlayManager
                 {
                     /* Solo Play */
                     ModLogger.debug("playMusic playSolo");
-                    return playSolo(playerIn, mml, title, duration, playerID);
+                    return playSolo(playerIn, mml, duration, playerID);
                 }
                 else
                 {
                     /* Jam Play */
                     ModLogger.debug("playMusic queueJam");
-                    return queueJam(playerIn, mml, title, duration, playerID);
+                    return queueJam(playerIn, mml, duration, playerID);
                 }
             }
         }
         return null;
     }
 
-    private static Integer playSolo(EntityPlayer playerIn, String mml, String title, int duration, Integer playerID)
+    private static Integer playSolo(EntityPlayer playerIn, String mml, int duration, Integer playerID)
     {
         Integer playID = getNextPlayID();
         queue(playID, playerID, mml);
@@ -190,14 +190,14 @@ public class PlayManager
     }
     
     @SuppressWarnings("ConstantConditions")
-    private static Integer queueJam(EntityPlayer playerIn, String mml, String title, int duration, Integer membersID)
+    private static Integer queueJam(EntityPlayer playerIn, String mml, int duration, Integer membersID)
     {
         Integer groupsPlayID = getGroupsPlayID(membersID);
         /* Queue members parts */
         queue(groupsPlayID, membersID, mml);
         syncStatus();
 
-        GroupManager.inputMembersPartDuration(membersID, duration);
+        GroupManager.setMembersPartDuration(membersID, duration);
         /* Only send the groups MML when the leader starts the JAM */
         if (GroupManager.isLeader(membersID))
         {

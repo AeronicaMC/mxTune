@@ -281,18 +281,18 @@ public class GroupManager
         return !notMember;
     }
 
-    static void inputMembersPartDuration(Integer membersID, int duration)
+    static void setMembersPartDuration(Integer membersID, int duration)
     {
         Group group = getMembersGroup(membersID);
         if (!group.isEmpty())
-            group.inputPartDuration(duration);
+            group.setPartDuration(duration);
     }
 
     static int getGroupDuration(Integer membersID)
     {
         Group group = getMembersGroup(membersID);
         if (!group.isEmpty())
-            return group.getLongestDuration();
+            return group.getMaxDuration();
         else
         {
             ModLogger.error("%s %s", GroupManager.class.getSimpleName(),

@@ -26,7 +26,7 @@ public class Group
     public static final Group EMPTY = new Group();
     private Integer groupID;
     private Integer playID;
-    private int longestDuration;
+    private int maxDuration;
     private Integer leaderEntityID;
     private Set<Member> members;
 
@@ -38,7 +38,7 @@ public class Group
         this.groupID = groupID;
         this.leaderEntityID = leaderEntityID;
         this.members = new HashSet<>(GroupHelper.MAX_MEMBERS);
-        this.longestDuration = 0;
+        this.maxDuration = 0;
     }
 
     public Integer getGroupID() { return groupID; }
@@ -58,9 +58,9 @@ public class Group
 
     public void setPlayID(Integer playID) { this.playID = playID; }
 
-    void inputPartDuration(int duration) { if (duration > longestDuration) longestDuration = duration; }
+    void setPartDuration(int duration) { if (duration > maxDuration) maxDuration = duration; }
 
-    int getLongestDuration() { return longestDuration; }
+    int getMaxDuration() { return maxDuration; }
 
     boolean isEmpty() { return this == EMPTY; }
 }
