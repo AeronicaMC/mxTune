@@ -223,7 +223,7 @@ public class PlayManager
     private static void resetGroupsPlayID(Integer membersID)
     {
         Group membersGroup = GroupManager.getMembersGroup(membersID);
-        if (membersGroup!=null)
+        if (!membersGroup.isEmpty())
             membersGroup.setPlayID(null);
     }
     
@@ -239,7 +239,7 @@ public class PlayManager
     {
         Group membersGroup = GroupManager.getMembersGroup(membersID);
         Integer playID = null;
-        if (membersGroup!=null)
+        if (!membersGroup.isEmpty())
             if (membersGroup.getPlayID() == null)
             {
                 playID = getNextPlayID();
