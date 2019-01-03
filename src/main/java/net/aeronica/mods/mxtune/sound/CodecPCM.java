@@ -1,7 +1,6 @@
 package net.aeronica.mods.mxtune.sound;
 
 import net.aeronica.mods.mxtune.util.Util;
-import net.minecraft.client.Minecraft;
 import paulscode.sound.ICodec;
 import paulscode.sound.SoundBuffer;
 import paulscode.sound.SoundSystemConfig;
@@ -293,8 +292,6 @@ public class CodecPCM implements ICodec {
 				printStackTrace(e);
 			}
 		dummyInputStream = null;
-
-		Minecraft.getMinecraft().addScheduledTask(() -> ClientAudio.removePlayIDAudioData(playID));
 	}
 
 	@Override

@@ -77,8 +77,11 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import java.io.IOException;
 import java.nio.IntBuffer;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.*;
-import java.util.concurrent.ConcurrentHashMap.KeySetView;
 
 @SideOnly(Side.CLIENT)
 @Mod.EventBusSubscriber(Side.CLIENT)
@@ -90,34 +93,26 @@ public class ClientAudio
     private static MusicTicker musicTicker;
 
     private static final int THREAD_POOL_SIZE = 4;
-    private static final AudioFormat audioFormat3D;
-    private static final AudioFormat audioFormatStereo;
-    private static ConcurrentLinkedQueue<Integer> playIDQueue01;
-    private static ConcurrentLinkedQueue<Integer> playIDQueue02;
-    private static ConcurrentLinkedQueue<Integer> playIDQueue03;
-    private static ConcurrentHashMap<Integer, AudioData> playIDAudioData;
+    /* PCM Signed Monaural little endian */
+    private static final AudioFormat audioFormat3D = new AudioFormat(48000, 16, 1, true, false);
+    /* PCM Signed Stereo little endian */
+    private static final AudioFormat audioFormatStereo = new AudioFormat(48000, 16, 2, true, false);
+    /* Used to track which player/groups queued up music to be played by PlayID */
+    private static Queue<Integer> playIDQueue01 = new ConcurrentLinkedQueue<>(); // Polled in ClientAudio#PlaySoundEvent
+    private static Queue<Integer> playIDQueue02 = new ConcurrentLinkedQueue<>(); // Polled in CodecPCM
+    private static Queue<Integer> playIDQueue03 = new ConcurrentLinkedQueue<>(); // Polled in ClientAudio#playStreamingSourceEvent
+    private static Map<Integer, AudioData> playIDAudioData = new ConcurrentHashMap<>();
 
     private static ExecutorService executorService = null;
     private static ThreadFactory threadFactory = null;
 
     private static int counter = 0;
+    private static Queue<Integer> delayedAudioDataRemovalQueue = new ConcurrentLinkedDeque<>();
+
     private static boolean vanillaMusicPaused = false;
 
     private static final int MAX_STREAM_CHANNELS = 16;
     private static final int DESIRED_STREAM_CHANNELS = 8;
-
-    static {
-        sndSystem = null;
-        /* Used to track which player/groups queued up music to be played by PlayID */
-        playIDQueue01 = new ConcurrentLinkedQueue<>(); // Polled in ClientAudio#PlaySoundEvent
-        playIDQueue02 = new ConcurrentLinkedQueue<>(); // Polled in CodecPCM
-        playIDQueue03 = new ConcurrentLinkedQueue<>(); // Polled in ClientAudio#playStreamingSourceEvent
-        /* PCM Signed Monaural little endian */
-        audioFormat3D = new AudioFormat(48000, 16, 1, true, false);
-        /* PCM Signed Stereo little endian */        
-        audioFormatStereo = new AudioFormat(48000, 16, 2, true, false);
-        playIDAudioData = new ConcurrentHashMap<>();      
-    }
 
     private ClientAudio() { /* NOP */ }
        
@@ -208,7 +203,7 @@ public class ClientAudio
         return audioData.getSoundRange();
     }
 
-    // TODO: Review. Currently servers to remove a failed play. But does it really. The SoundSystem does not seem to call cleanup reliably.
+    // TODO: Review. Currently servers to remove a failed play. But does it? The SoundSystem does not seem to call cleanup reliably.
     static void removePlayIDAudioData(Integer playID)
     {
         if (playIDAudioData.containsKey(playID))
@@ -319,20 +314,6 @@ public class ClientAudio
         }
     }
 
-    // TODO: Remove this once the new server side Duration manager is completed.
-//    private static void notifyLivingEntity(Integer playID)
-//    {
-//        if (playID != null)
-//            PacketDispatcher.sendToServer(new PlayStoppedMessage(playID));
-//    }
-
-    // TODO: Remove this once the new server side Duration manager is completed.
-//    private static void notifyBlockEntity(Integer playID)
-//    {
-//        if (playID != null)
-//            PacketDispatcher.sendToServer(new PlayStoppedMessage(playID, true));
-//    }
-
     public static void stop(Integer playID)
     {
         synchronized (SoundSystemConfig.THREAD_SYNC)
@@ -375,7 +356,7 @@ public class ClientAudio
     
     private static void stopVanillaMusic()
     {
-        ModLogger.info("ClientAudio stopVanillaMusic - PAUSED on %d active sessions.", playIDAudioData.mappingCount());
+        ModLogger.info("ClientAudio stopVanillaMusic - PAUSED on %d active sessions.", playIDAudioData.size());
         setVanillaMusicPaused(true);
         stopVanillaMusicTicker();
         setVanillaMusicTimer(Integer.MAX_VALUE);
@@ -407,48 +388,45 @@ public class ClientAudio
     {
         if (sndSystem != null && playIDAudioData != null)
         {
-            audioStatusNotificationProcessing();
-            if(isVanillaMusicPaused() && playIDAudioData.mappingCount() == 0)
+            if(isVanillaMusicPaused() && playIDAudioData.isEmpty())
             {
                 resumeVanillaMusic();
                 setVanillaMusicPaused(false);
-            }  else if (playIDAudioData.mappingCount() > 0)
+            }  else if (playIDAudioData.size() > 0)
             {
                 // don't allow the timer to counter down while ClientAudio sessions are playing
                 setVanillaMusicTimer(Integer.MAX_VALUE);
             }
             // Remove inactive playIDs
-            for (ConcurrentHashMap.Entry<Integer, AudioData> entry : playIDAudioData.entrySet())
+            removeQueuedAudioData();
+            for (Map.Entry<Integer, AudioData> entry : playIDAudioData.entrySet())
             {
                 if (!GROUPS.getActivePlayIDs().contains(entry.getKey()))
                 {
-                    stop(entry.getKey()); // TODO: the stop() tells vanilla sound system to stop using fade for 100ms. we should queue removal of the playID until completed.
-                    playIDAudioData.remove(entry.getKey());
-                    ModLogger.info("updateClientAudio: Active playID removed");
+                    // Stopping playing audio takes 100 milliseconds. e.g. SoundSystem fadeOut(<source>, <delay in ms>)
+                    // To prevent audio clicks/pops we have the wait at least that amount of time
+                    // before removing the AudioData instance for this playID.
+                    // Therefore the removal is queued for 250 milliseconds.
+                    // e.g. the client tick setup to trigger once every 1/4 second.
+                    stop(entry.getKey());
+                    queueAudioDataRemoval(entry.getKey());
+                    ModLogger.info("updateClientAudio: AudioData for playID queued for removal");
                 }
             }
         }
     }
 
-    // TODO: Review and refactor this once the new server side Duration manager is completed.
-    // block and player notification disabled for now.
-    private static void audioStatusNotificationProcessing()
+    private static void removeQueuedAudioData()
     {
-        for (ConcurrentHashMap.Entry<Integer, AudioData> entry : playIDAudioData.entrySet())
-        {
-            AudioData audioData = entry.getValue();
-            if ((audioData.getStatus().equals(Status.ERROR) || audioData.getStatus().equals(Status.DONE)) &&
-                    !handler.isSoundPlaying(audioData.getISound()))
-            {
-                playIDAudioData.remove(entry.getKey());
-                if (audioData.isClientPlayer()) { /* NOP */ }
-                    // notifyLivingEntity(entry.getValue().getPlayID()); TODO: REMOVE
-                else if (!audioData.isClientPlayer() && audioData.getBlockPos() != null) { /* NOP */ }
-                    //notifyBlockEntity(entry.getValue().getPlayID()); TODO: REMOVE
+        while (!delayedAudioDataRemovalQueue.isEmpty())
+            if (delayedAudioDataRemovalQueue.peek() != null)
+                playIDAudioData.remove(Objects.requireNonNull(delayedAudioDataRemovalQueue.poll()));
+    }
 
-                ModLogger.info("updateClientAudio: Status:Error or Done!");
-            }
-        }
+    private static void queueAudioDataRemoval(Integer playID)
+    {
+        if (playID != null)
+            delayedAudioDataRemovalQueue.add(playID);
     }
 
     private static void init()
@@ -466,7 +444,7 @@ public class ClientAudio
     private static void cleanup()   
     {
         setVanillaMusicPaused(false);
-        KeySetView<Integer, AudioData> keys = playIDAudioData.keySet();
+        Set<Integer> keys = playIDAudioData.keySet();
         keys.forEach(ClientAudio::stop);
     }
     

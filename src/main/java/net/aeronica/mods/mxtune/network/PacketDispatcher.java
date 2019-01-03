@@ -68,7 +68,6 @@ public class PacketDispatcher
         registerMessage(SyncStatusMessage.class);
         registerMessage(PlaySoloMessage.class);
         registerMessage(SendCSDChatMessage.class);
-        registerMessage(StopPlayMessage.class);
         registerMessage(PlayBlockMusicMessage.class);
 
         // Packets handled on SERVER
@@ -76,7 +75,6 @@ public class PacketDispatcher
         registerMessage(MusicOptionsMessage.class);
         registerMessage(MusicTextMessage.class);
         registerMessage(HudOptionsMessage.class);
-        registerMessage(PlayStoppedMessage.class);
         registerMessage(BandAmpMessage.class);
 
         /*
