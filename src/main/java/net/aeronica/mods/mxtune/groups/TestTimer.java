@@ -23,6 +23,8 @@ import net.aeronica.mods.mxtune.util.ModLogger;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static net.aeronica.mods.mxtune.util.SheetMusicUtil.formatDuration;
+
 /**
  * Experimental: Schedule removal of the playID after a specified duration in seconds.
  */
@@ -36,7 +38,7 @@ class TestTimer
             @Override
             public void run()
             {
-                MXTune.proxy.addScheduledTask(() -> stop(message, playID));
+                MXTune.proxy.addScheduledTask(() -> stop(message, playID, duration));
             }
         };
         Timer timer = new Timer("Timer");
@@ -44,9 +46,13 @@ class TestTimer
         timer.schedule(task, delay);
     }
 
-    private static void stop(String message, int playID)
+    private static void stop(String messageIn, int playIDIn, int durationIn)
     {
-        ModLogger.info("...Beep! A scheduled stop arrived for playID: %d, \"%s\"", playID, message);
+        String messaage = messageIn;
+        int playID = playIDIn;
+        int duration = durationIn;
+
+        ModLogger.info("...Beep! A scheduled stop arrived for playID: %d with a duration of %s, \'%s\'", playID, formatDuration(duration), messaage);
         PlayManager.stopPlayID(playID);
     }
 }

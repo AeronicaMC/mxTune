@@ -99,18 +99,18 @@ public class GroupManager
             debug("No group exists!");
             return;
         }
-        Group g = getGroup(groupID);
+        Group group = getGroup(groupID);
 
         /* Grab instance of the other player */
         EntityPlayer playerInitiator = getEntityPlayer(memberID);
-        if ((g != null) && isNotGroupMember(memberID))
+        if (!group.isEmpty() && isNotGroupMember(memberID))
         {
             /* Grab instance of the leader */
-            EntityPlayer playerTarget = getEntityPlayer(g.getLeaderEntityID());
-            if (g.getMembers().size() < GROUPS.MAX_MEMBERS)
+            EntityPlayer playerTarget = getEntityPlayer(group.getLeaderEntityID());
+            if (group.getMembers().size() < GROUPS.MAX_MEMBERS)
             {
                 Member member =new Member(memberID, getEntityPlayer(memberID).getName());
-                g.addMember(member);
+                group.addMember(member);
                 debug("addMember: groupID: " + groupID + ", memberID " + member.getMemberID() + ", memberName: " + member.getMemberName());
                 sync();
                 playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.you_joined_players_group", playerTarget.getDisplayName()));
@@ -211,8 +211,8 @@ public class GroupManager
 
     static boolean isLeader(Integer entityID)
     {
-        Group g = getMembersGroup(entityID);
-        return (g != null) && g.getLeaderEntityID().equals(entityID);
+        Group group = getMembersGroup(entityID);
+        return !group.isEmpty() && group.getLeaderEntityID().equals(entityID);
     }
     
     /**
@@ -222,11 +222,11 @@ public class GroupManager
     public static void setLeader(Integer memberID)
     {
         debug("setLeader: " + memberID);
-        Group g = getMembersGroup(memberID);
-        if (g != null)
+        Group group = getMembersGroup(memberID);
+        if (!group.isEmpty())
         {
-            g.setLeaderEntityID(memberID);
-            debug("  GroupID: " + g.getGroupID() + ", leaderName: " + getEntityPlayer(memberID).getName());
+            group.setLeaderEntityID(memberID);
+            debug("  GroupID: " + group.getGroupID() + ", leaderName: " + getEntityPlayer(memberID).getName());
             sync();
         }
     }
@@ -234,22 +234,22 @@ public class GroupManager
     static Integer getMembersGroupID(int memberID)
     {
         Group group = getMembersGroup(memberID);
-        return group == null ? null : group.getGroupID();
+        return group.isEmpty() ? null : group.getGroupID();
     }
 
     /**
      * Searches all groups and returns the group or null.
-     * 
-     * @param creatorID member in question
+     *
+     * @param groupID member in question
      * @return the group or null.
      */
-    private static Group getGroup(Integer creatorID)
+    private static Group getGroup(Integer groupID)
     {
         for (Group theGroup : groups)
         {
-            if (theGroup.getGroupID().equals(creatorID)) return theGroup;
+            if (theGroup.getGroupID().equals(groupID)) return theGroup;
         }
-        return null;
+        return Group.EMPTY;
     }
 
     /**
@@ -259,13 +259,10 @@ public class GroupManager
     static Group getMembersGroup(Integer memberID)
     {
         for (Group theGroup : groups)
-        {
             for (Member theMember : theGroup.getMembers())
-            {
                 if (theMember.getMemberID().equals(memberID)) return theGroup;
-            }
-        }
-        return null;
+
+        return Group.EMPTY;
     }
 
     /**
@@ -278,13 +275,30 @@ public class GroupManager
     {
         boolean notMember = false;
         for (Group theGroup : groups)
-        {
             for (Member theMember : theGroup.getMembers())
-            {
                 if (theMember.getMemberID().equals(memberID)) notMember = true;
-            }
-        }
+
         return !notMember;
+    }
+
+    static void inputMembersPartDuration(Integer membersID, int duration)
+    {
+        Group group = getMembersGroup(membersID);
+        if (!group.isEmpty())
+            group.inputPartDuration(duration);
+    }
+
+    static int getGroupDuration(Integer membersID)
+    {
+        Group group = getMembersGroup(membersID);
+        if (!group.isEmpty())
+            return group.getLongestDuration();
+        else
+        {
+            ModLogger.error("%s %s", GroupManager.class.getSimpleName(),
+                            "#getGroupDuration was passed an invalid memberID which resulted in a null groupID which caused this method to return a duration value of ZERO.");
+            return 0;
+        }
     }
 
     @SuppressWarnings("unused")
@@ -378,7 +392,7 @@ public class GroupManager
     public void onPlayerSleepInBedEvent(PlayerSleepInBedEvent event)
     {
         Group group = getMembersGroup(event.getEntityPlayer().getEntityId());
-        if (group != null)
+        if (!group.isEmpty())
         {
             event.setResult(SleepResult.NOT_POSSIBLE_NOW);
             event.getEntityPlayer().sendMessage(new TextComponentTranslation("mxtune.chat.gm.noSleepInJam"));

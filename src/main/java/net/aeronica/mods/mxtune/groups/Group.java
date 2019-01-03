@@ -17,30 +17,38 @@
 
 package net.aeronica.mods.mxtune.groups;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 public class Group
 {
+    public static final Group EMPTY = new Group();
     private Integer groupID;
     private Integer playID;
+    private int longestDuration;
     private Integer leaderEntityID;
-    private HashSet<Member> members;
+    private Set<Member> members;
+
+    // The EMPTY group
+    private Group() { this.members = Collections.unmodifiableSet(Collections.emptySet()); }
+
     public Group(Integer groupID, Integer leaderEntityID)
     {
         this.groupID = groupID;
         this.leaderEntityID = leaderEntityID;
         this.members = new HashSet<>(GROUPS.MAX_MEMBERS);
+        this.longestDuration = 0;
     }
 
     public Integer getGroupID() { return groupID; }
 
-    public void setLeaderEntityID(Integer leaderEntityID)
+    void setLeaderEntityID(Integer leaderEntityID)
     {
         this.leaderEntityID = leaderEntityID;
     }
 
-    public Integer getLeaderEntityID() { return leaderEntityID; }
+    Integer getLeaderEntityID() { return leaderEntityID; }
 
     Set<Member> getMembers() { return members; }
 
@@ -49,4 +57,10 @@ public class Group
     public Integer getPlayID() { return playID; }
 
     public void setPlayID(Integer playID) { this.playID = playID; }
+
+    void inputPartDuration(int duration) { if (duration > longestDuration) longestDuration = duration; }
+
+    int getLongestDuration() { return longestDuration; }
+
+    boolean isEmpty() { return this == EMPTY; }
 }

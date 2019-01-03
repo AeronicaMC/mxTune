@@ -192,24 +192,26 @@ public class PlayManager
     }
     
     @SuppressWarnings("ConstantConditions")
-    private static Integer queueJam(EntityPlayer playerIn, String mml, String title, int duration, Integer playerID)
+    private static Integer queueJam(EntityPlayer playerIn, String mml, String title, int duration, Integer membersID)
     {
-        Integer groupsPlayID = getGroupsPlayID(playerID);
+        Integer groupsPlayID = getGroupsPlayID(membersID);
         /* Queue members parts */
-        queue(groupsPlayID, playerID, mml);
+        queue(groupsPlayID, membersID, mml);
         syncStatus();
+
+        GroupManager.inputMembersPartDuration(membersID, duration);
         /* Only send the groups MML when the leader starts the JAM */
-        if (GroupManager.isLeader(playerID))
+        if (GroupManager.isLeader(membersID))
         {
             // TODO: Refactor Duration Timeout
-            TestTimer.scheduleStop(String.format("Title \"%s\" has ended.", title), groupsPlayID, duration);
+            TestTimer.scheduleStop(String.format("Title \"%s\" has ended.", title), groupsPlayID, GroupManager.getGroupDuration(membersID));
 
             String musicText = getMappedMML(groupsPlayID);
             Vec3d pos = GROUPS.getMedianPos(groupsPlayID);
             activePlayIDs.add(groupsPlayID);
             syncStatus();
-            resetGroupsPlayID(playerID);
-            PlayJamMessage playJamMessage = new PlayJamMessage(playerID, groupsPlayID, musicText);
+            resetGroupsPlayID(membersID);
+            PlayJamMessage playJamMessage = new PlayJamMessage(membersID, groupsPlayID, musicText);
             PacketDispatcher.sendToAllAround(playJamMessage, playerIn.dimension, pos.x, pos.y, pos.z, ModConfig.getListenerRange());
         }
         return groupsPlayID;
