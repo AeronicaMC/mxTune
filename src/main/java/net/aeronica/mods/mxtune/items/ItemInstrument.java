@@ -213,9 +213,9 @@ public class ItemInstrument extends Item implements IInstrument
     }
 
     @Override
-    public int getPatch(int meta)
+    public int getPatch(ItemStack itemStack)
     {
-        return EnumType.byMetadata(meta).getPatch();
+        return EnumType.byMetadata(this.getMetadata(itemStack)).getPatch();
     }
 
     public enum EnumType implements IVariant

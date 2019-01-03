@@ -46,7 +46,6 @@ import java.io.IOException;
 public enum SheetMusicUtil
 {
     ;
-
     public static final String KEY_SHEET_MUSIC = "SheetMusic";
     public static final String KEY_DURATION = "Duration";
     public static final String KEY_MML = "MML";
@@ -177,6 +176,12 @@ public enum SheetMusicUtil
         return seconds < 0 ? "-" + positive : positive;
     }
 
+    /**
+     * Reads an inventory of instruments containing sheet music and returns MML text ready for parsing.
+     * The MML text is concatenated into MML JAM format with instrument patch ids inserted into each part.
+     * @param tileEntity instance of IMusicPlayer
+     * @return MML text ready for parsing
+     */
     public static String getInventoryInstrumentBlockMML(TileEntity tileEntity)
     {
         StringBuilder buildMML = new StringBuilder();
@@ -192,7 +197,7 @@ public enum SheetMusicUtil
                     if (!stackInSlot.isEmpty() && stackInSlot.getItem() instanceof ItemInstrument)
                     {
                         ItemInstrument instrument = (ItemInstrument) stackInSlot.getItem();
-                        int patch = instrument.getPatch(stackInSlot.getMetadata());
+                        int patch = instrument.getPatch(stackInSlot);
                         ItemStack sheetMusic = getSheetMusic(stackInSlot);
                         if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
                         {

@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.network.client;
 
-import net.aeronica.mods.mxtune.groups.GROUPS;
+import net.aeronica.mods.mxtune.groups.GroupHelper;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.minecraft.entity.player.EntityPlayer;
@@ -61,9 +61,9 @@ public class SyncStatusMessage extends AbstractClientMessage<SyncStatusMessage>
     {
         synchronized (ClientAudio.THREAD_SYNC)
         {
-            GROUPS.setClientPlayStatuses(clientPlayStatuses);
-            GROUPS.setPlayIDMembers(playIDMembers);
-            GROUPS.setActivePlayIDs(activePlayIDs);
+            GroupHelper.setClientPlayStatuses(clientPlayStatuses);
+            GroupHelper.setPlayIDMembers(playIDMembers);
+            GroupHelper.setActivePlayIDs(activePlayIDs);
         }
     }
 }

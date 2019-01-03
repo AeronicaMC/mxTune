@@ -31,7 +31,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class GROUPS
+public class GroupHelper
 {
     public static final int GROUP_ADD = 1;
     public static final int MEMBER_ADD = 2;
@@ -52,13 +52,13 @@ public class GROUPS
     private static Map<Integer, Integer> membersPlayID = Collections.emptyMap();
     private static Set<Integer> activePlayIDs = new HashSet<>();
 
-    private GROUPS() { /* NOP */ }
+    private GroupHelper() { /* NOP */ }
 
     /* GroupManager Client Status Methods */
     @Nullable
     public static Integer getLeaderOfGroup(Integer leaderID)
     {
-        return GROUPS.clientGroups.get(leaderID);
+        return GroupHelper.clientGroups.get(leaderID);
     }
 
     public static int getMembersGroupLeader(@Nullable Integer memberID){
@@ -69,12 +69,12 @@ public class GROUPS
     @Nullable
     public static Integer getMembersGroupID(@Nullable Integer memberID)
     {
-        return GROUPS.clientMembers.get(memberID);
+        return GroupHelper.clientMembers.get(memberID);
     }
 
     private static Set<Integer> getPlayersGroupMembers(EntityPlayer playerIn)
     {
-        Integer groupID = GROUPS.getMembersGroupID(playerIn.getEntityId());
+        Integer groupID = GroupHelper.getMembersGroupID(playerIn.getEntityId());
         if(groupID != null)
         {
             Set<Integer> members = Sets.newHashSet();
@@ -95,27 +95,27 @@ public class GROUPS
 
     public static Map<Integer, Integer> getClientMembers()
     {
-        return GROUPS.clientMembers;
+        return GroupHelper.clientMembers;
     }
     
     public static void setClientMembers(String members)
     {
-        GROUPS.clientMembers = deserializeIntIntMap(members);
+        GroupHelper.clientMembers = deserializeIntIntMap(members);
     }
     
     public static Map<Integer, Integer> getClientGroups()
     {
-        return GROUPS.clientGroups;
+        return GroupHelper.clientGroups;
     }
     
     public static void setClientGroups(String groups)
     {
-        GROUPS.clientGroups = deserializeIntIntMap(groups);
+        GroupHelper.clientGroups = deserializeIntIntMap(groups);
     }
     
     public static void setGroupsMembers(String members)
     {
-        GROUPS.groupsMembers = deserializeIntIntListMultimapSwapped(members);
+        GroupHelper.groupsMembers = deserializeIntIntListMultimapSwapped(members);
     }
 
     // This is a workaround to force the playID into the active list on the client side presuming a network order
@@ -144,9 +144,9 @@ public class GROUPS
     public static int getIndex(Integer playerID)
     {
         int result = 0;
-        if (GROUPS.membersQueuedStatus != null && GROUPS.membersQueuedStatus.containsKey(playerID))
+        if (GroupHelper.membersQueuedStatus != null && GroupHelper.membersQueuedStatus.containsKey(playerID))
         {
-            switch (GROUPS.membersQueuedStatus.get(playerID))
+            switch (GroupHelper.membersQueuedStatus.get(playerID))
             {
             case QUEUED:
                 result = 1;
@@ -157,7 +157,7 @@ public class GROUPS
             default:
             }
         }
-        return result + (GROUPS.isLeader(playerID) ? 8 : 0);
+        return result + (GroupHelper.isLeader(playerID) ? 8 : 0);
     }
     
     public static Map<Integer, Integer> getClientPlayStatuses()
@@ -171,9 +171,9 @@ public class GROUPS
         Set<Integer> members = Sets.newHashSet();
         if (membersPlayID != null)
         {
-            for(Integer someMember: GROUPS.membersPlayID.keySet())
+            for(Integer someMember: GroupHelper.membersPlayID.keySet())
             {
-                if(GROUPS.membersPlayID.get(someMember).equals(playID))
+                if(GroupHelper.membersPlayID.get(someMember).equals(playID))
                 {
                     members.add(someMember);
                 }
@@ -248,14 +248,14 @@ public class GROUPS
     
     public static boolean isClientPlaying(Integer playID)
     {
-        Set<Integer> members = GROUPS.getMembersByPlayID(playID);
+        Set<Integer> members = GroupHelper.getMembersByPlayID(playID);
         return ((members != null) && !members.isEmpty()) && members.contains(MXTune.proxy.getClientPlayer().getEntityId());
     }
 
     @SuppressWarnings("unused")
     public static boolean playerHasPlayID(Integer entityID, Integer playID)
     {
-        Set<Integer> members = GROUPS.getMembersByPlayID(playID);
+        Set<Integer> members = GroupHelper.getMembersByPlayID(playID);
         return (members != null && !members.isEmpty()) && members.contains(entityID);
     }
 
@@ -264,7 +264,7 @@ public class GROUPS
 
     public static void setClientPlayStatuses(String clientPlayStatuses)
     {
-        GROUPS.membersQueuedStatus = deserializeIntIntMap(clientPlayStatuses);
+        GroupHelper.membersQueuedStatus = deserializeIntIntMap(clientPlayStatuses);
     }
         
     public static Map<Integer, Integer> getPlayIDMembers()
@@ -275,9 +275,9 @@ public class GROUPS
     @Nullable
     public static Integer getSoloMemberByPlayID(Integer playID)
     {
-        for(Integer someMember: GROUPS.membersPlayID.keySet())
+        for(Integer someMember: GroupHelper.membersPlayID.keySet())
         {
-            if(GROUPS.membersPlayID.get(someMember).equals(playID))
+            if(GroupHelper.membersPlayID.get(someMember).equals(playID))
             {
                 return someMember;
             }
@@ -287,7 +287,7 @@ public class GROUPS
     
     public static void setPlayIDMembers(String playIDMembers)
     {
-        GROUPS.membersPlayID = deserializeIntIntMap(playIDMembers);
+        GroupHelper.membersPlayID = deserializeIntIntMap(playIDMembers);
     }
 
     public static Set<Integer> getActivePlayIDs()

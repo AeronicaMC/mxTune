@@ -18,7 +18,7 @@ package net.aeronica.mods.mxtune.gui;
 
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.Reference;
-import net.aeronica.mods.mxtune.groups.GROUPS;
+import net.aeronica.mods.mxtune.groups.GroupHelper;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.ManageGroupMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
@@ -33,8 +33,8 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.Set;
 
-import static net.aeronica.mods.mxtune.groups.GROUPS.MEMBER_ADD;
-import static net.aeronica.mods.mxtune.groups.GROUPS.getLeaderOfGroup;
+import static net.aeronica.mods.mxtune.groups.GroupHelper.MEMBER_ADD;
+import static net.aeronica.mods.mxtune.groups.GroupHelper.getLeaderOfGroup;
 
 public class GuiGroupJoin extends GuiScreen
 {
@@ -112,7 +112,7 @@ public class GuiGroupJoin extends GuiScreen
         int posX = guiLeft + 12;
         int posY = guiTop + 12;
 
-        if ((GROUPS.getClientGroups() != null) || ((GROUPS.getClientMembers() != null) && (groupID != null)))
+        if ((GroupHelper.getClientGroups() != null) || ((GroupHelper.getClientMembers() != null) && (groupID != null)))
         {
                 // Always put the leader at the TOP of the list
                 drawLeader(posX, posY);
@@ -132,10 +132,10 @@ public class GuiGroupJoin extends GuiScreen
     private void drawMembers(int posX, int posYIn)
     {
         int posY = posYIn;
-        Set<Integer> members = GROUPS.getClientMembers().keySet();
+        Set<Integer> members = GroupHelper.getClientMembers().keySet();
         for (Integer memberID : members)
         {
-            if (groupID.equals(GROUPS.getMembersGroupID(memberID)) && !memberID.equals(GROUPS.getLeaderOfGroup(groupID)))
+            if (groupID.equals(GroupHelper.getMembersGroupID(memberID)) && !memberID.equals(GroupHelper.getLeaderOfGroup(groupID)))
             {
                 String memberName = MXTune.proxy.getPlayerByEntityID(memberID).getName();
                 this.fontRenderer.drawStringWithShadow(memberName, posX, posY, 16777215);

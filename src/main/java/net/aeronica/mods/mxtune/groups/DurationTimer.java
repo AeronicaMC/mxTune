@@ -26,19 +26,21 @@ import java.util.TimerTask;
 import static net.aeronica.mods.mxtune.util.SheetMusicUtil.formatDuration;
 
 /**
- * Experimental: Schedule removal of the playID after a specified duration in seconds.
+ * Schedule removal of the playID after a specified duration in seconds.
+ * This is a simple implementation with no management options, such as removing tasks.
+ * It may be friendlier to remove all the tasks on server shutdown.
  */
-class TestTimer
+class DurationTimer
 {
-    private TestTimer() { /* NOP */ }
+    private DurationTimer() { /* NOP */ }
 
-    static void scheduleStop(String message, int playID, int duration)
+    static void scheduleStop(int playID, int duration)
     {
         TimerTask task = new TimerTask() {
             @Override
             public void run()
             {
-                MXTune.proxy.addScheduledTask(() -> stop(message, playID, duration));
+                MXTune.proxy.addScheduledTask(() -> stop(playID, duration));
             }
         };
         Timer timer = new Timer("Timer");
@@ -46,13 +48,9 @@ class TestTimer
         timer.schedule(task, delay);
     }
 
-    private static void stop(String messageIn, int playIDIn, int durationIn)
+    private static void stop(int playID, int duration)
     {
-        String messaage = messageIn;
-        int playID = playIDIn;
-        int duration = durationIn;
-
-        ModLogger.info("...Beep! A scheduled stop arrived for playID: %d with a duration of %s, \'%s\'", playID, formatDuration(duration), messaage);
+        ModLogger.debug("A scheduled stop was sent for playID: %d that had a duration of %s", playID, formatDuration(duration));
         PlayManager.stopPlayID(playID);
     }
 }

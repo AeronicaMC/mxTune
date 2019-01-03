@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.network.client;
 
-import net.aeronica.mods.mxtune.groups.GROUPS;
+import net.aeronica.mods.mxtune.groups.GroupHelper;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.network.server.NetworkStringHelper;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
@@ -25,7 +25,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
-import static net.aeronica.mods.mxtune.groups.GROUPS.getSoloMemberByPlayID;
+import static net.aeronica.mods.mxtune.groups.GroupHelper.getSoloMemberByPlayID;
 import static net.aeronica.mods.mxtune.options.MusicOptionsUtil.playerNotMuted;
 import static net.aeronica.mods.mxtune.util.MIDISystemUtil.midiUnavailableWarn;
 
@@ -70,7 +70,7 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
             {
                 ModLogger.info("musicText: " + musicText.substring(0, (musicText.length() >= 25 ? 25 : musicText.length())));
                 ModLogger.info("playID:    " + playID);
-                GROUPS.addActivePlayID(playID);
+                GroupHelper.addActivePlayID(playID);
                 ClientAudio.play(playID, musicText);
             }
         }

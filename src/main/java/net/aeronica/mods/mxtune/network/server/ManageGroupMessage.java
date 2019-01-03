@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.network.server;
 
-import net.aeronica.mods.mxtune.groups.GROUPS;
+import net.aeronica.mods.mxtune.groups.GroupHelper;
 import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
 import net.minecraft.entity.player.EntityPlayer;
@@ -66,16 +66,16 @@ public class ManageGroupMessage extends AbstractServerMessage<ManageGroupMessage
     {
         switch (operation)
         {
-        case GROUPS.GROUP_ADD:
+        case GroupHelper.GROUP_ADD:
             GroupManager.addGroup(memberID);
             break;
-        case GROUPS.MEMBER_ADD:
+        case GroupHelper.MEMBER_ADD:
             GroupManager.addMember(groupID, memberID);
             break;
-        case GROUPS.MEMBER_REMOVE:
+        case GroupHelper.MEMBER_REMOVE:
             GroupManager.removeMember(memberID);
             break;
-        case GROUPS.MEMBER_PROMOTE:
+        case GroupHelper.MEMBER_PROMOTE:
             GroupManager.setLeader(memberID);
             break;
         default:

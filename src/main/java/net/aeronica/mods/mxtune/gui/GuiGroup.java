@@ -17,7 +17,7 @@
 package net.aeronica.mods.mxtune.gui;
 
 import net.aeronica.mods.mxtune.Reference;
-import net.aeronica.mods.mxtune.groups.GROUPS;
+import net.aeronica.mods.mxtune.groups.GroupHelper;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.ManageGroupMessage;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -102,7 +102,7 @@ public class GuiGroup extends GuiScreen
 
         drawGroupMembers();
         /* Create and Leave buttons should always reflect group membership */
-        btnLeave.enabled = GROUPS.getMembersGroupID(player.getEntityId()) != null;
+        btnLeave.enabled = GroupHelper.getMembersGroupID(player.getEntityId()) != null;
         btnCreate.enabled = !btnLeave.enabled;
 
         /* draw the things in the controlList (buttons) */
@@ -118,7 +118,7 @@ public class GuiGroup extends GuiScreen
 
         memberButtons = new ArrayList<>();
 
-        for (int i = 0; i < GROUPS.MAX_MEMBERS; i++)
+        for (int i = 0; i < GroupHelper.MAX_MEMBERS; i++)
         {
             memberButtons.add(i, memberButtons(did, pid, posX, posY));
             posY += 10;
@@ -129,7 +129,7 @@ public class GuiGroup extends GuiScreen
 
     private void clearMembersButtons()
     {
-        for (int i = 0; i < GROUPS.MAX_MEMBERS; i++)
+        for (int i = 0; i < GroupHelper.MAX_MEMBERS; i++)
         {
             memberButtons.get(i).memberName = "";
             memberButtons.get(i).buttonRemove.enabled = false;
@@ -143,7 +143,7 @@ public class GuiGroup extends GuiScreen
     {
         MemberButtons mb;
         Integer memberId = -1;
-        for (int i = 0; i < GROUPS.MAX_MEMBERS; i++)
+        for (int i = 0; i < GroupHelper.MAX_MEMBERS; i++)
         {
             mb = memberButtons.get(i);
             if (mb.buttonRemove.id == buttonID || mb.buttonPromote.id == buttonID)
@@ -161,10 +161,10 @@ public class GuiGroup extends GuiScreen
         Integer groupID;
 
         clearMembersButtons();
-        if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
+        if (GroupHelper.getClientGroups() != null || GroupHelper.getClientMembers() != null)
         {
-            groupID = GROUPS.getMembersGroupID(player.getEntityId());
-            Integer leaderID = GROUPS.getLeaderOfGroup(groupID);
+            groupID = GroupHelper.getMembersGroupID(player.getEntityId());
+            Integer leaderID = GroupHelper.getLeaderOfGroup(groupID);
             if (groupID != null && leaderID != null)
             {
                 // Always put the leader at the TOP of the list
@@ -186,10 +186,10 @@ public class GuiGroup extends GuiScreen
     {
         int i = 0;
         int posY = posYIn;
-        Set<Integer> members = GROUPS.getClientMembers().keySet();
+        Set<Integer> members = GroupHelper.getClientMembers().keySet();
         for (Integer memberId : members)
         {
-            if (groupID.equals(GROUPS.getMembersGroupID(memberId)) && !memberId.equals(leaderID))
+            if (groupID.equals(GroupHelper.getMembersGroupID(memberId)) && !memberId.equals(leaderID))
             {
                 String memberName = Objects.requireNonNull(this.mc.world.getEntityByID(memberId)).getName();
                 this.fontRenderer.drawStringWithShadow(memberName, posX, posY, 16777215);
@@ -218,14 +218,14 @@ public class GuiGroup extends GuiScreen
         // 10-99 delete; 100+ promote
         if (guibutton.id >= 10 && guibutton.id < 100)
         {
-            sendRequest(GROUPS.MEMBER_REMOVE, getMemberByButtonID(guibutton.id));
-            ModLogger.debug("+++ Gui Remove Member: " + GROUPS.MEMBER_REMOVE);
+            sendRequest(GroupHelper.MEMBER_REMOVE, getMemberByButtonID(guibutton.id));
+            ModLogger.debug("+++ Gui Remove Member: " + GroupHelper.MEMBER_REMOVE);
             return;
         }
         if (guibutton.id >= 100)
         {
-            sendRequest(GROUPS.MEMBER_PROMOTE, getMemberByButtonID(guibutton.id));
-            ModLogger.debug("+++ Gui Promote Member: " + GROUPS.MEMBER_PROMOTE);
+            sendRequest(GroupHelper.MEMBER_PROMOTE, getMemberByButtonID(guibutton.id));
+            ModLogger.debug("+++ Gui Promote Member: " + GroupHelper.MEMBER_PROMOTE);
             return;
         }
 
@@ -233,14 +233,14 @@ public class GuiGroup extends GuiScreen
         {
         case 0:
             /* Create Group */
-            sendRequest(GROUPS.GROUP_ADD, player.getEntityId());
-            ModLogger.debug("+++ Gui Create Group: " + GROUPS.GROUP_ADD);
+            sendRequest(GroupHelper.GROUP_ADD, player.getEntityId());
+            ModLogger.debug("+++ Gui Create Group: " + GroupHelper.GROUP_ADD);
             break;
 
         case 1:
             /* Leave Group */
-            sendRequest(GROUPS.MEMBER_REMOVE, player.getEntityId());
-            ModLogger.debug("+++ Gui Leave Group: " + GROUPS.MEMBER_REMOVE);
+            sendRequest(GroupHelper.MEMBER_REMOVE, player.getEntityId());
+            ModLogger.debug("+++ Gui Leave Group: " + GroupHelper.MEMBER_REMOVE);
             break;
 
         case 2:

@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
-import net.aeronica.mods.mxtune.groups.GROUPS;
+import net.aeronica.mods.mxtune.groups.GroupHelper;
 import net.minecraft.client.audio.MovingSound;
 import net.minecraft.client.audio.SoundEventAccessor;
 import net.minecraft.client.audio.SoundHandler;
@@ -43,7 +43,7 @@ public class MovingMusic extends MovingSound
         this.repeat = false;
         this.repeatDelay = 0;
         this.donePlaying = false;
-        Vec3d pos = GROUPS.getMedianPos(playID);
+        Vec3d pos = GroupHelper.getMedianPos(playID);
         this.xPosF = (float) pos.x;
         this.yPosF = (float) pos.y;
         this.zPosF = (float) pos.z;
@@ -68,7 +68,7 @@ public class MovingMusic extends MovingSound
     {
         if (this.playID != null && ClientAudio.hasPlayID(playID))
         {
-            Vec3d pos = GROUPS.getMedianPos(playID);
+            Vec3d pos = GroupHelper.getMedianPos(playID);
             this.xPosF = (float) pos.x;
             this.yPosF = (float) pos.y;
             this.zPosF = (float) pos.z; 

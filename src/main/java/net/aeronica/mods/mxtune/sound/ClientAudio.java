@@ -43,7 +43,7 @@ package net.aeronica.mods.mxtune.sound;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.config.ModConfig;
-import net.aeronica.mods.mxtune.groups.GROUPS;
+import net.aeronica.mods.mxtune.groups.GroupHelper;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
@@ -75,7 +75,6 @@ import paulscode.sound.SoundSystemException;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
-import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.Map;
 import java.util.Objects;
@@ -203,35 +202,6 @@ public class ClientAudio
         return audioData.getSoundRange();
     }
 
-    // TODO: Review. Currently servers to remove a failed play. But does it? The SoundSystem does not seem to call cleanup reliably.
-    static void removePlayIDAudioData(Integer playID)
-    {
-        if (playIDAudioData.containsKey(playID))
-        {
-            AudioData audioData = playIDAudioData.get(playID);
-            if (audioData != null)
-            {
-                if (audioData.isClientPlayer()) { /*NOP */ }
-                    // notifyLivingEntity(playID); TODO: REMOVE
-                else if (!audioData.isClientPlayer() && audioData.getBlockPos() != null) { /*NOP */ }
-                    // notifyBlockEntity(playID); TODO: REMOVE
-
-                try
-                {
-                    if (audioData.getAudioStream() != null)
-                        audioData.getAudioStream().close();
-                } catch (IOException e)
-                {
-                    ModLogger.error(e);
-                }
-            }
-            playIDQueue01.remove(playID);
-            playIDQueue02.remove(playID);
-            playIDQueue03.remove(playID);
-            playIDAudioData.remove(playID);
-        }
-    }
-    
     static AudioInputStream getAudioInputStream(int playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
@@ -278,7 +248,7 @@ public class ClientAudio
      */
     public static synchronized void play(Integer playID, String musicText)
     {
-        play(playID, null, musicText, GROUPS.isClientPlaying(playID), SoundRange.NORMAL);
+        play(playID, null, musicText, GroupHelper.isClientPlaying(playID), SoundRange.NORMAL);
     }
 
     /**
@@ -401,7 +371,7 @@ public class ClientAudio
             removeQueuedAudioData();
             for (Map.Entry<Integer, AudioData> entry : playIDAudioData.entrySet())
             {
-                if (!GROUPS.getActivePlayIDs().contains(entry.getKey()))
+                if (!GroupHelper.getActivePlayIDs().contains(entry.getKey()))
                 {
                     // Stopping playing audio takes 100 milliseconds. e.g. SoundSystem fadeOut(<source>, <delay in ms>)
                     // To prevent audio clicks/pops we have the wait at least that amount of time

@@ -107,7 +107,7 @@ public class GroupManager
         {
             /* Grab instance of the leader */
             EntityPlayer playerTarget = getEntityPlayer(group.getLeaderEntityID());
-            if (group.getMembers().size() < GROUPS.MAX_MEMBERS)
+            if (group.getMembers().size() < GroupHelper.MAX_MEMBERS)
             {
                 Member member =new Member(memberID, getEntityPlayer(memberID).getName());
                 group.addMember(member);
@@ -334,8 +334,8 @@ public class GroupManager
             }
         }
         /* sync server */
-        GROUPS.setClientGroups(buildGroups.toString());
-        GROUPS.setClientMembers(buildMembers.toString());
+        GroupHelper.setClientGroups(buildGroups.toString());
+        GroupHelper.setClientMembers(buildMembers.toString());
         /* sync to clients */
         PacketDispatcher.sendToAll(new SyncGroupMessage(buildGroups.toString(), buildMembers.toString()));
     }
@@ -447,5 +447,5 @@ public class GroupManager
 
     // for debugging
     @SuppressWarnings("unused")
-    private static void debug(String message) { ModLogger.info("----- " + message); }
+    private static void debug(String message) { ModLogger.debug("----- " + message); }
 }

@@ -37,7 +37,7 @@ public class Group
     {
         this.groupID = groupID;
         this.leaderEntityID = leaderEntityID;
-        this.members = new HashSet<>(GROUPS.MAX_MEMBERS);
+        this.members = new HashSet<>(GroupHelper.MAX_MEMBERS);
         this.longestDuration = 0;
     }
 

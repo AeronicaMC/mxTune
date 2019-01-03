@@ -68,9 +68,9 @@ public class PlayManager
         return uniquePlayID;
     }
 
-    private static void setPlaying(Integer playerID) {membersQueuedStatus.put(playerID, GROUPS.PLAYING);}
+    private static void setPlaying(Integer playerID) {membersQueuedStatus.put(playerID, GroupHelper.PLAYING);}
 
-    private static void setQueued(Integer playerID) {membersQueuedStatus.put(playerID, GROUPS.QUEUED);}
+    private static void setQueued(Integer playerID) {membersQueuedStatus.put(playerID, GroupHelper.QUEUED);}
 
     /**
      * For playing music from an Item
@@ -116,8 +116,7 @@ public class PlayManager
                 activePlayIDs.add(playID);
                 syncStatus();
 
-                // TODO: Refactor Duration Timeout
-                TestTimer.scheduleStop(String.format("Title \"%s\" has ended.", mml.substring(0, Math.min(25, mml.length()))), playID, musicPlayer.getDuration());
+                DurationTimer.scheduleStop(playID, musicPlayer.getDuration());
 
                 PlayBlockMusicMessage playBlockMusicMessage = new PlayBlockMusicMessage(playID, pos, mml, musicPlayer.getSoundRange());
                 PacketDispatcher.sendToAllAround(playBlockMusicMessage, worldIn.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), ModConfig.getListenerRange());
@@ -180,8 +179,7 @@ public class PlayManager
         Integer playID = getNextPlayID();
         queue(playID, playerID, mml);
 
-        // TODO: Refactor Duration Timeout
-        TestTimer.scheduleStop(String.format("Title \"%s\" has ended.", title), playID, duration);
+        DurationTimer.scheduleStop(playID, duration);
 
         String musicText = getMappedMML(playID);
         activePlayIDs.add(playID);
@@ -203,11 +201,10 @@ public class PlayManager
         /* Only send the groups MML when the leader starts the JAM */
         if (GroupManager.isLeader(membersID))
         {
-            // TODO: Refactor Duration Timeout
-            TestTimer.scheduleStop(String.format("Title \"%s\" has ended.", title), groupsPlayID, GroupManager.getGroupDuration(membersID));
+            DurationTimer.scheduleStop(groupsPlayID, GroupManager.getGroupDuration(membersID));
 
             String musicText = getMappedMML(groupsPlayID);
-            Vec3d pos = GROUPS.getMedianPos(groupsPlayID);
+            Vec3d pos = GroupHelper.getMedianPos(groupsPlayID);
             activePlayIDs.add(groupsPlayID);
             syncStatus();
             resetGroupsPlayID(membersID);
@@ -286,16 +283,6 @@ public class PlayManager
 
         return members;
     }
-    
-    public static <T extends EntityLivingBase> void playingEnded(T entityLivingIn, @Nullable Integer playID)
-    {
-        if (isPlayerPlaying(entityLivingIn)){
-            membersPlayID.remove(entityLivingIn.getEntityId());
-            membersQueuedStatus.remove(entityLivingIn.getEntityId());
-            removeActivePlayID(playID);
-            syncStatus();
-        }
-    }
         
     public static <T extends EntityLivingBase> void stopPlayingPlayer(T entityLivingIn)
     {
@@ -322,13 +309,9 @@ public class PlayManager
             membersQueuedStatus.remove(member);
         }
         removeActivePlayID(playID);
-        // TODO: We need to eliminate this.
-        // Active playID's are managed in activePlayID which is sync's to the client on any change.
-        // The client should act on it's own copy only and should never request a stop based on it's own state.
-        //PacketDispatcher.sendToAll(new StopPlayMessage(playID));
     }
     
-    static void removeActivePlayID(Integer playID)
+    private static void removeActivePlayID(Integer playID)
     {
         if ((playID != null) && !activePlayIDs.isEmpty())
             activePlayIDs.remove(playID);
@@ -348,7 +331,7 @@ public class PlayManager
         } else
         {
             IInstrument inst = (IInstrument) playerIn.getHeldItemMainhand().getItem();
-            packedPreset =  inst.getPatch(playerIn.getHeldItemMainhand().getMetadata());
+            packedPreset =  inst.getPatch(playerIn.getHeldItemMainhand());
         }
         return packedPreset;
     }
@@ -356,11 +339,11 @@ public class PlayManager
     private static void syncStatus()
     {
         /* server side */
-        GROUPS.setClientPlayStatuses(GROUPS.serializeIntIntMap(membersQueuedStatus));
-        GROUPS.setPlayIDMembers(GROUPS.serializeIntIntMap(membersPlayID));
-        GROUPS.setActivePlayIDs(GROUPS.serializeIntegerSet(activePlayIDs));
+        GroupHelper.setClientPlayStatuses(GroupHelper.serializeIntIntMap(membersQueuedStatus));
+        GroupHelper.setPlayIDMembers(GroupHelper.serializeIntIntMap(membersPlayID));
+        GroupHelper.setActivePlayIDs(GroupHelper.serializeIntegerSet(activePlayIDs));
         /* client side */
-        PacketDispatcher.sendToAll(new SyncStatusMessage(GROUPS.serializeIntIntMap(membersQueuedStatus), GROUPS.serializeIntIntMap(membersPlayID), GROUPS.serializeIntegerSet(activePlayIDs)));
+        PacketDispatcher.sendToAll(new SyncStatusMessage(GroupHelper.serializeIntIntMap(membersQueuedStatus), GroupHelper.serializeIntIntMap(membersPlayID), GroupHelper.serializeIntegerSet(activePlayIDs)));
     }
 
     private static void queue(Integer playID, Integer memberID, String mml)

@@ -18,7 +18,7 @@ package net.aeronica.mods.mxtune.gui;
 
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.Reference;
-import net.aeronica.mods.mxtune.groups.GROUPS;
+import net.aeronica.mods.mxtune.groups.GroupHelper;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
@@ -226,30 +226,30 @@ public class GuiJamOverlay extends Gui
         String memberName;
         GroupData memberData;
 
-        groupID = GROUPS.getMembersGroupID(playerIn.getEntityId());
+        groupID = GroupHelper.getMembersGroupID(playerIn.getEntityId());
         // Only draw if player is a member of a group
         if (groupID != null)
         {
             /* Always add the leader at the HEAD of the list */
-            leaderID = GROUPS.getLeaderOfGroup(groupID);
+            leaderID = GroupHelper.getLeaderOfGroup(groupID);
             //noinspection ConstantConditions
             memberName = MXTune.proxy.getPlayerByEntityID(leaderID).getName();
             memberNameWidth = fontRenderer.getStringWidth(memberName);
-            playStatus = GROUPS.getIndex(leaderID);
+            playStatus = GroupHelper.getIndex(leaderID);
             notePos = new Tuple<>(notePosMembers[index][0], notePosMembers[index][1]);
             memberData = new GroupData(leaderID, memberName, memberNameWidth, notePos, playStatus);
             groupData.add(memberData);
             index++;
 
             /* Add the remaining members taking care to not add the leader a 2nd time. */
-            Set<Integer> set = GROUPS.getClientMembers().keySet();
+            Set<Integer> set = GroupHelper.getClientMembers().keySet();
             for (Integer memberID : set)
             {
-                if (groupID.equals(GROUPS.getMembersGroupID(memberID)) && !memberID.equals(GROUPS.getLeaderOfGroup(groupID)))
+                if (groupID.equals(GroupHelper.getMembersGroupID(memberID)) && !memberID.equals(GroupHelper.getLeaderOfGroup(groupID)))
                 {
                     memberName = MXTune.proxy.getPlayerByEntityID(memberID).getName();
                     memberNameWidth = fontRenderer.getStringWidth(memberName);
-                    playStatus = GROUPS.getIndex(memberID);
+                    playStatus = GroupHelper.getIndex(memberID);
                     notePos = new Tuple<>(notePosMembers[index][0], notePosMembers[index][1]);
                     memberData = new GroupData(memberID, memberName, memberNameWidth, notePos, playStatus);
                     groupData.add(memberData);
@@ -264,49 +264,49 @@ public class GuiJamOverlay extends Gui
     private void drawDebug(HudData hd, int maxWidth, int maxHeight)
     {
         int statusWidth, qX, qY;
-        if (GROUPS.getClientPlayStatuses() != null && !GROUPS.getClientPlayStatuses().isEmpty())
+        if (GroupHelper.getClientPlayStatuses() != null && !GroupHelper.getClientPlayStatuses().isEmpty())
         {
-            String status = "Play Status:    " + GROUPS.getClientPlayStatuses().toString();
+            String status = "Play Status:    " + GroupHelper.getClientPlayStatuses().toString();
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
             qY = hd.quadY(maxHeight, 110, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
-        if (GROUPS.getPlayIDMembers() != null && !GROUPS.getPlayIDMembers().isEmpty())
+        if (GroupHelper.getPlayIDMembers() != null && !GroupHelper.getPlayIDMembers().isEmpty())
         {
-            String status = "PlayID Members: " + GROUPS.getPlayIDMembers().toString();
+            String status = "PlayID Members: " + GroupHelper.getPlayIDMembers().toString();
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
             qY = hd.quadY(maxHeight, 120, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
-        if (GROUPS.getActivePlayIDs() != null && !GROUPS.getActivePlayIDs().isEmpty())
+        if (GroupHelper.getActivePlayIDs() != null && !GroupHelper.getActivePlayIDs().isEmpty())
         {
-            String status = "ActivePlayIDs:  " + GROUPS.getActivePlayIDs().toString();
+            String status = "ActivePlayIDs:  " + GroupHelper.getActivePlayIDs().toString();
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
             qY = hd.quadY(maxHeight, 130, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
-        if (GROUPS.getActivePlayIDs() != null && !GROUPS.getActivePlayIDs().isEmpty())
+        if (GroupHelper.getActivePlayIDs() != null && !GroupHelper.getActivePlayIDs().isEmpty())
         {
-            String status = "GROUPS.index:   " + GROUPS.getIndex(mc.player.getEntityId());
+            String status = "GroupHelper.index:   " + GroupHelper.getIndex(mc.player.getEntityId());
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
             qY = hd.quadY(maxHeight, 140, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
-        if (GROUPS.getGroupsMembers() != null && !GROUPS.getGroupsMembers().isEmpty())
+        if (GroupHelper.getGroupsMembers() != null && !GroupHelper.getGroupsMembers().isEmpty())
         {
-            String status = "GroupsMembers:  " + GROUPS.getGroupsMembers();
+            String status = "GroupsMembers:  " + GroupHelper.getGroupsMembers();
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
             qY = hd.quadY(maxHeight, 150, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
-        if (GROUPS.getGroupsMembers() != null && !GROUPS.getGroupsMembers().isEmpty())
+        if (GroupHelper.getGroupsMembers() != null && !GroupHelper.getGroupsMembers().isEmpty())
         {
-            String status = String.format("Group Distance: %-1.2f", GROUPS.getGroupMembersScaledDistance(mc.player));
+            String status = String.format("Group Distance: %-1.2f", GroupHelper.getGroupMembersScaledDistance(mc.player));
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
             qY = hd.quadY(maxHeight, 160, 4, 10);
@@ -389,14 +389,14 @@ public class GuiJamOverlay extends Gui
         /* draw the status icon */
         int iconX = hd.quadX(PLACARD_ICON_SIZE, 0, 2, PLACARD_ICON_SIZE);
         int iconY = hd.quadY(PLACARD_ICON_SIZE, 0, 2, PLACARD_ICON_SIZE);
-        int index = GROUPS.getIndex(playerIn.getEntityId());
+        int index = GroupHelper.getIndex(playerIn.getEntityId());
         setTexture(TEXTURE_STATUS);
         this.drawTexturedModalRect(iconX, iconY, PLACARD_ICON_BASE_U_OFFSET + index %
                 PLACARD_ICONS_PER_ROW * PLACARD_ICON_SIZE, PLACARD_ICON_BASE_V_OFFSET + index /
                 PLACARD_ICONS_PER_ROW * PLACARD_ICON_SIZE, PLACARD_ICON_SIZE, PLACARD_ICON_SIZE);
 
         /* draw the group member distance bar */
-        double dist = GROUPS.getGroupMembersScaledDistance(playerIn);
+        double dist = GroupHelper.getGroupMembersScaledDistance(playerIn);
         if (dist > 0D)
         {
             Color color = new Color(127,255,0);
@@ -468,14 +468,14 @@ public class GuiJamOverlay extends Gui
         /* draw the notes/rests for members */
         List<GroupData> groupData = processGroup(playerIn);
  
-        if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
+        if (GroupHelper.getClientGroups() != null || GroupHelper.getClientMembers() != null)
         {
             /* Only draw if player is a member of a group */
-            if (GROUPS.getMembersGroupID(playerIn.getEntityId()) != null)
+            if (GroupHelper.getMembersGroupID(playerIn.getEntityId()) != null)
             {
                 for (GroupData gd: groupData)
                 {
-                    int status = GROUPS.getIndex(gd.memberID);
+                    int status = GroupHelper.getIndex(gd.memberID);
                     eNOTATION = NOTATION.byMetadata(status);
                     int nX = eNOTATION.getX();
                     int nY = eNOTATION.getY();
@@ -487,7 +487,7 @@ public class GuiJamOverlay extends Gui
             else
             {
                 /* draw whole note/rest for the solo player */
-                int status = GROUPS.getIndex(playerIn.getEntityId());
+                int status = GroupHelper.getIndex(playerIn.getEntityId());
                 eNOTATION = NOTATION.byMetadata(status);
                 int nX = eNOTATION.getX();
                 int nY = eNOTATION.getY();
@@ -498,10 +498,10 @@ public class GuiJamOverlay extends Gui
         }
         
         /* draw the names solo player/members */
-        if (GROUPS.getClientGroups() != null || GROUPS.getClientMembers() != null)
+        if (GroupHelper.getClientGroups() != null || GroupHelper.getClientMembers() != null)
         {
             /* Only draw if player is a member of a group */
-            if (GROUPS.getMembersGroupID(playerIn.getEntityId()) != null)
+            if (GroupHelper.getMembersGroupID(playerIn.getEntityId()) != null)
             {
                 int oddEven = 1;
                 for (GroupData gd: groupData)
@@ -517,7 +517,7 @@ public class GuiJamOverlay extends Gui
             else
             {
                 /* draw the name of the solo player */
-                GROUPS.getIndex(playerIn.getEntityId());
+                GroupHelper.getIndex(playerIn.getEntityId());
                 int x = posX + notePosMembers[0][0] + 28;
                 int y = posY + notePosMembers[0][1] + 4;
                 String name = (playerIn.getDisplayName().getUnformattedText());
@@ -532,7 +532,7 @@ public class GuiJamOverlay extends Gui
         fontRenderer.drawString(TextFormatting.BOLD + marquee(musicTitle, TITLE_DISPLAY_WIDTH), musicTitlePosX, musicTitlePosY, 0x543722);
         
         /* draw the group member distance bar */
-        double dist = GROUPS.getGroupMembersScaledDistance(playerIn);
+        double dist = GroupHelper.getGroupMembersScaledDistance(playerIn);
         if (dist > 0D)
         {
             Color color = new Color(127,255,0);

@@ -36,8 +36,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.opengl.Display;
 
-import static net.aeronica.mods.mxtune.groups.GROUPS.getClientMembers;
-import static net.aeronica.mods.mxtune.groups.GROUPS.getIndex;
+import static net.aeronica.mods.mxtune.groups.GroupHelper.getClientMembers;
+import static net.aeronica.mods.mxtune.groups.GroupHelper.getIndex;
 
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ClientEventHandler

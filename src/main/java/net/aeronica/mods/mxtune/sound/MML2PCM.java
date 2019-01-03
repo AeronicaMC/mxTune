@@ -20,7 +20,7 @@ import net.aeronica.libs.mml.core.MMLParser;
 import net.aeronica.libs.mml.core.MMLParserFactory;
 import net.aeronica.libs.mml.core.MMLToMIDI;
 import net.aeronica.libs.mml.core.MMLUtil;
-import net.aeronica.mods.mxtune.groups.GROUPS;
+import net.aeronica.mods.mxtune.groups.GroupHelper;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
@@ -53,7 +53,7 @@ public class MML2PCM
     public boolean process(int playID, String jamFormatMMLIn)
     {
         // Deserialize JAM Formatted MML
-        Map<Integer, String> jamFormatMMLMap = GROUPS.deserializeIntStrMap(jamFormatMMLIn);
+        Map<Integer, String> jamFormatMMLMap = GroupHelper.deserializeIntStrMap(jamFormatMMLIn);
         if (jamFormatMMLMap.isEmpty())
         {
             ModLogger.error("MML2PCM jamFormatMMLMap is null! Check for an issue with NBT, networking, threads. PlayID: %s", playID);
