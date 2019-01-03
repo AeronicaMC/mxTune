@@ -20,15 +20,11 @@ package net.aeronica.mods.mxtune.groups;
 public class Member
 {
     private final Integer memberID;
-    private final String memberName;
 
-    Member(Integer memberID, String memberName)
+    Member(Integer memberID)
     {
         this.memberID = memberID;
-        this.memberName = memberName;
     }
 
     Integer getMemberID() { return memberID; }
-
-    String getMemberName() { return memberName; }
 }
