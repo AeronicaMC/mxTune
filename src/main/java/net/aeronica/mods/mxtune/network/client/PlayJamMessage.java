@@ -16,6 +16,7 @@
  */
 package net.aeronica.mods.mxtune.network.client;
 
+import net.aeronica.mods.mxtune.groups.GROUPS;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.network.server.NetworkStringHelper;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
@@ -71,6 +72,7 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
             {
                 ModLogger.debug("musicText:  " + jamMML.substring(0, Math.min(25, jamMML.length())));
                 ModLogger.debug("playID:     " + playID);
+                GROUPS.addActivePlayID(playID);
                 ClientAudio.play(playID, jamMML);
             }
         }

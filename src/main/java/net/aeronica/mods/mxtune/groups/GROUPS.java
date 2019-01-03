@@ -25,12 +25,11 @@ import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class GROUPS
 {
@@ -41,7 +40,7 @@ public class GROUPS
     static final int QUEUED = 5;
     static final int PLAYING = 6;
 
-    public static final int MAX_MEMBERS = 8;
+    public static final int MAX_MEMBERS = 10;
 
     /* Server side, Client side is sync'd with packets */
     /* GroupManager */
@@ -51,7 +50,7 @@ public class GROUPS
     /* PlayManager */
     private static Map<Integer, Integer> membersQueuedStatus = Collections.emptyMap();
     private static Map<Integer, Integer> membersPlayID = Collections.emptyMap();
-    private static Set<Integer> activePlayIDs = Collections.emptySortedSet();
+    private static Set<Integer> activePlayIDs = new HashSet<>();
 
     private GROUPS() { /* NOP */ }
 
@@ -118,7 +117,17 @@ public class GROUPS
     {
         GROUPS.groupsMembers = deserializeIntIntListMultimapSwapped(members);
     }
-    
+
+    // This is a workaround to force the playID into the active list on the client side presuming a network order
+    // incident occurred and the playID is either not present, AND/OR a race condition, or threading issue made it not
+    // available.
+    @SideOnly(Side.CLIENT)
+    public static void addActivePlayID(Integer playID)
+    {
+        if (playID != null)
+            activePlayIDs.add(playID);
+    }
+
     public static ListMultimap<Integer, Integer> getGroupsMembers()
     {
         return groupsMembers;
@@ -286,9 +295,19 @@ public class GROUPS
         return activePlayIDs;
     }
 
+    /**
+     * Update the active play IDs without replacing the collection instance.
+     * @param setIntString serialized set
+     */
     public static void setActivePlayIDs(String setIntString)
     {
-        activePlayIDs = deserializeIntegerSet(setIntString);
+        Set<Integer> receivedSet = deserializeIntegerSet(setIntString);
+
+        activePlayIDs.addAll(receivedSet);
+
+        for (Integer integer : activePlayIDs)
+            if (!receivedSet.contains(integer))
+                activePlayIDs.remove(integer);
     }
     
     /* Serialization and deserialization methods */
@@ -392,10 +411,9 @@ public class GROUPS
     private static Set<Integer> deserializeIntegerSet(String setIntString)
     {
         Iterable<String> inString = Splitter.on(',').omitEmptyStrings().split(setIntString);
-        Set<Integer> deserializedSet = Collections.emptySet();
+        Set<Integer> deserializedSet = new HashSet<>();
         try
         {
-            deserializedSet =  Sets.newHashSet();
             for (String id: inString)
             {
                 if (id != null && !id.isEmpty())
