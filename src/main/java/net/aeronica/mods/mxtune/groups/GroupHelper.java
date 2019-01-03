@@ -30,6 +30,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 public class GroupHelper
 {
@@ -49,8 +50,8 @@ public class GroupHelper
     private static ListMultimap<Integer, Integer> groupsMembers = ArrayListMultimap.create();
     /* PlayManager */
     private static Map<Integer, Integer> membersQueuedStatus = Collections.emptyMap();
-    private static Map<Integer, Integer> membersPlayID = Collections.emptyMap();
-    private static Set<Integer> activePlayIDs = new HashSet<>();
+    private static Map<Integer, Integer> membersPlayID = Collections.emptyMap();;
+    private static Set<Integer> activePlayIDs = new ConcurrentSkipListSet<>();
 
     private GroupHelper() { /* NOP */ }
 
