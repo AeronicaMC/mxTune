@@ -181,7 +181,14 @@ public class GroupHelper
         }
         return members;
     }
-    
+
+    /**
+     * Returns the median position of a group or player by playID.
+     * Client side only until fixed. Probably need to take into account the dimension.
+     *
+     * @param playID for solo or JAM
+     * @return the median position for a group, or the position of a solo player
+     */
     public static Vec3d getMedianPos(int playID)
     {
         double x;
@@ -191,7 +198,8 @@ public class GroupHelper
         int count = 0;
         Vec3d pos;
         for(int member: getMembersByPlayID(playID))
-        {   
+        {
+            // FIXME: Does not work in from server side reliably. Probably need to take into account the dimension.
             EntityPlayer player = MXTune.proxy.getPlayerByEntityID(member);
             if(player == null)
                 continue;

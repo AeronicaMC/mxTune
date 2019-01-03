@@ -204,12 +204,12 @@ public class PlayManager
             DurationTimer.scheduleStop(groupsPlayID, GroupManager.getGroupDuration(membersID));
 
             String musicText = getMappedMML(groupsPlayID);
-            Vec3d pos = GroupHelper.getMedianPos(groupsPlayID);
+            BlockPos pos = playerIn.getPosition();
             activePlayIDs.add(groupsPlayID);
             syncStatus();
             resetGroupsPlayID(membersID);
             PlayJamMessage playJamMessage = new PlayJamMessage(membersID, groupsPlayID, musicText);
-            PacketDispatcher.sendToAllAround(playJamMessage, playerIn.dimension, pos.x, pos.y, pos.z, ModConfig.getListenerRange());
+            PacketDispatcher.sendToAllAround(playJamMessage, playerIn.dimension, pos.getX(), pos.getY(), pos.getZ(), ModConfig.getListenerRange());
         }
         return groupsPlayID;
     }
