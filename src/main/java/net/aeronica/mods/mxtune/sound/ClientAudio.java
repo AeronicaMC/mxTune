@@ -79,7 +79,6 @@ import java.nio.IntBuffer;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.*;
 
 @SideOnly(Side.CLIENT)
@@ -353,16 +352,16 @@ public class ClientAudio
     {
         return vanillaMusicPaused;
     }
-    
+
     private static void updateClientAudio()
     {
-        if (sndSystem != null && playIDAudioData != null)
+        if (sndSystem != null)
         {
-            if(isVanillaMusicPaused() && playIDAudioData.isEmpty())
+            if(isVanillaMusicPaused() && playIDAudioData.isEmpty() )
             {
                 resumeVanillaMusic();
                 setVanillaMusicPaused(false);
-            }  else if (playIDAudioData.size() > 0)
+            } else if (!playIDAudioData.isEmpty())
             {
                 // don't allow the timer to counter down while ClientAudio sessions are playing
                 setVanillaMusicTimer(Integer.MAX_VALUE);
@@ -414,14 +413,13 @@ public class ClientAudio
     private static void cleanup()   
     {
         setVanillaMusicPaused(false);
-        Set<Integer> keys = playIDAudioData.keySet();
-        keys.forEach(ClientAudio::stop);
+        playIDAudioData.keySet().forEach(ClientAudio::queueAudioDataRemoval);
     }
     
     @SubscribeEvent
     public static void event(EntityJoinWorldEvent event)
     {
-        if (event.getEntity() instanceof EntityPlayerSP && event.getEntity().getEntityId() == MXTune.proxy.getClientPlayer().getEntityId())
+        if (event.getEntity() instanceof EntityPlayerSP)
         {
             cleanup();
             ModLogger.info("ClientAudio EntityJoinWorldEvent: %s", event.getEntity().getName());

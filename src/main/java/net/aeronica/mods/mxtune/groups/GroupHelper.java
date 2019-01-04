@@ -50,7 +50,7 @@ public class GroupHelper
     private static ListMultimap<Integer, Integer> groupsMembers = ArrayListMultimap.create();
     /* PlayManager */
     private static Map<Integer, Integer> membersQueuedStatus = Collections.emptyMap();
-    private static Map<Integer, Integer> membersPlayID = Collections.emptyMap();;
+    private static Map<Integer, Integer> membersPlayID = Collections.emptyMap();
     private static Set<Integer> activePlayIDs = new ConcurrentSkipListSet<>();
 
     private GroupHelper() { /* NOP */ }
