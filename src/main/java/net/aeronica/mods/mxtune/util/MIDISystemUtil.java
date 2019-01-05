@@ -211,13 +211,13 @@ public enum MIDISystemUtil
     // TODO: revisit the Packed Preset concept and implementation
     public static String getPatchNameKey(Patch patch)
     {
-        String nameKey = "";
         for (Instrument inst : instrumentCache)
         {
-            if (inst.toString().contains("Drumkit:") && (inst.getPatch().getProgram() == patch.getProgram()) ||
-            ((inst.getPatch().getBank() / 128) == patch.getBank()) && (inst.getPatch().getProgram() == patch.getProgram()))
-                nameKey =  inst.getName();
+            if (inst.toString().contains("Drumkit:") && ((inst.getPatch().getProgram() == patch.getProgram())))
+                return inst.getName();
+            else if (((inst.getPatch().getBank()) / 128  == patch.getBank()) && (inst.getPatch().getProgram() == patch.getProgram()))
+                return inst.getName();
         }
-        return nameKey;
+        return "--- Error ---";
     }
 }
