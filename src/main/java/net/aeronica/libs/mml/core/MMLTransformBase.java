@@ -92,10 +92,10 @@ public abstract class MMLTransformBase extends MMLBaseListener
      * }</blockquote></blockquote><br>
      * . . .<br>
      * </blockquote> }</blockquote><br>
-     * 
-     * @param mObject
+     *
+     * @param mObjects
      */
-    public abstract void processMObjects(List<MObject> mObject);
+    public abstract void processMObjects(List<MObject> mObjects);
 
     @Override
     public void enterInst(InstContext ctx)

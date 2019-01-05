@@ -13,6 +13,8 @@ public class MMLToMIDI extends MMLTransformBase
 {
     private static final double PPQ = 480.0;
     private static final int TICKS_OFFSET = 10;
+    // 10 players with 10 parts each =  100 parts. No problem :D
+    private static final int MAX_TRACKS = 100;
     private Sequence sequence;
     private Set<Integer> packedPresets = new HashSet<>();
 
@@ -33,26 +35,26 @@ public class MMLToMIDI extends MMLTransformBase
     }
 
     @Override
-    public void processMObjects(List<MObject> mmlObject)
+    public void processMObjects(List<MObject> mmlObjects)
     {
         int channel = 0;
         int track = 0;
         long ticksOffset = TICKS_OFFSET;
         int currentTempo;
 
-        NoteVolumeCompressor volumeCompressor = new NoteVolumeCompressor(mmlObject);
-        List<MObject> volumeCompressedObjects = volumeCompressor.processVolumes();
+//        NoteVolumeCompressor volumeCompressor = new NoteVolumeCompressor(mmlObject);
+//        List<MObject> volumeCompressedObjects = volumeCompressor.processVolumes();
 
         try
         {
             sequence = new Sequence(Sequence.PPQ, (int) PPQ);
-            for (int i = 0; i < 24; i++)
+            for (int i = 0; i < MAX_TRACKS; i++)
             {
                 sequence.createTrack();
             }
             Track[] tracks = sequence.getTracks();
 
-            for (MObject mmo: volumeCompressedObjects)
+            for (MObject mmo: mmlObjects)
             {
                 switch (mmo.getType())
                 {
@@ -80,7 +82,7 @@ public class MMLToMIDI extends MMLTransformBase
 
                 case INST_END:
                     track++;
-                    if (track > 23) track = 23;
+                    if (track > MAX_TRACKS) track = MAX_TRACKS;
                     channel++;
                     if (channel > 15) channel = 15;
                     break;
