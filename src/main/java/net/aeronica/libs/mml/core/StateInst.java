@@ -5,6 +5,9 @@ public class StateInst
     private int tempo;
     private int instrument;
     private long longestPart;
+    private int minVolume = 127;
+    private int maxVolume = 0;
+    private boolean volumeArcheAge = false;
 
     StateInst()
     {
@@ -54,4 +57,23 @@ public class StateInst
     }
 
     private int getMinMax(int min, int max, int value) {return Math.max(Math.min(max, value), min);}
+
+    void collectVolume(int volumeIn)
+    {
+        int volume = getMinMax(0, 127, volumeIn);
+        if (volume > 15)
+            volumeArcheAge = true;
+        this.minVolume = Math.min(this.minVolume, volume);
+        this.maxVolume = Math.max(this.maxVolume, volume);
+    }
+
+    int getMinVolume()
+    {
+        return volumeArcheAge ? minVolume : minVolume * 127 / 15;
+    }
+
+    int getMaxVolume()
+    {
+        return volumeArcheAge ? maxVolume : maxVolume * 127 / 15;
+    }
 }

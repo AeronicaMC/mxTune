@@ -93,7 +93,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
      * . . .<br>
      * </blockquote> }</blockquote><br>
      * 
-     * @param mObjects
+     * @param mObject
      */
     public abstract void processMObjects(List<MObject> mObject);
 
@@ -123,7 +123,10 @@ public abstract class MMLTransformBase extends MMLBaseListener
     @Override
     public void exitBand(BandContext ctx)
     {
-        addMObject(new MObject.MObjectBuilder(MObject.Type.DONE).longestPartTicks(instState.getLongestDurationTicks()).build());
+        addMObject(new MObject.MObjectBuilder(MObject.Type.DONE).longestPartTicks(instState.getLongestDurationTicks())
+                           .minVolume(instState.getMinVolume())
+                           .maxVolume(instState.getMaxVolume())
+                           .build());
         processMObjects(mObject);
     }
 
@@ -403,6 +406,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
             break;
         case 'V':
             partState.setVolume(value);
+            instState.collectVolume(value);
             break;
         default:
             // NOP

@@ -16,6 +16,8 @@ public class MObject
     private final long lengthTicks;
     private final int volume;
     private final int tempo;
+    private final int minVolume;
+    private final int maxVolume;
     
     public MObject(MObjectBuilder builder)
     {
@@ -29,6 +31,8 @@ public class MObject
         this.lengthTicks = builder.lengthTicks;
         this.volume = builder.volume;
         this.tempo = builder.tempo;
+        this.minVolume = builder.minVolume;
+        this.maxVolume = builder.maxVolume;
     }
 
     public Type getType() {return type;}
@@ -41,6 +45,8 @@ public class MObject
     public String getText() {return text;}
     public long getLengthTicks() {return lengthTicks;}
     public int getTempo() {return tempo;}
+    public int getMinVolume() {return minVolume;}
+    public int getMaxVolume() {return maxVolume;}
     
     public static class MObjectBuilder
     {
@@ -54,6 +60,8 @@ public class MObject
         private long lengthTicks;
         private int volume;
         private int tempo;
+        private int minVolume;
+        private int maxVolume;
         
         public MObjectBuilder(Type type)
         {
@@ -104,7 +112,16 @@ public class MObject
             this.tempo = tempo;
             return this;
         }
-       
+        public  MObjectBuilder minVolume(int minVolume)
+        {
+            this.minVolume = minVolume;
+            return this;
+        }
+        public  MObjectBuilder maxVolume(int maxVolume)
+        {
+            this.maxVolume = maxVolume;
+            return this;
+        }
         public MObject build() {
             MObject mObject = new MObject(this);
             validateMObject(mObject);
