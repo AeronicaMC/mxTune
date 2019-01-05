@@ -55,6 +55,7 @@ public class NoteVolumeCompressor
     }
 
     private int scaleBetween(int unscaledNum, int minAllowed, int maxAllowed, int min, int max) {
+        if (unscaledNum < 9) return 0;
         if ((max - min) == 0)
         {
             return clamp(unscaledNum, minAllowed, maxAllowed);
@@ -66,7 +67,7 @@ public class NoteVolumeCompressor
 
     private int computeCompression(int volumeIn)
     {
-        int newVolume = clamp(scaleBetween(volumeIn, 84, 127, minVolume, maxVolume), 0, 127);
+        int newVolume = clamp(scaleBetween(volumeIn, 48, 127, minVolume, maxVolume), 0, 127);
         return newVolume;
     }
 
