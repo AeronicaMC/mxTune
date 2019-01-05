@@ -17,7 +17,6 @@
 
 package net.aeronica.mods.mxtune.groups;
 
-import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.util.ModLogger;
 
 import java.util.Timer;
@@ -36,11 +35,12 @@ class DurationTimer
 
     static void scheduleStop(int playID, int duration)
     {
-        TimerTask task = new TimerTask() {
+        TimerTask task;
+        task = new TimerTask() {
             @Override
             public void run()
             {
-                MXTune.proxy.addScheduledTask(() -> stop(playID, duration));
+                stop(playID, duration);
             }
         };
         Timer timer = new Timer("Timer");
