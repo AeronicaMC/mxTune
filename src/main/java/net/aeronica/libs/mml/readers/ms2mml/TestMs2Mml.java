@@ -24,10 +24,7 @@ import org.apache.logging.log4j.Logger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -39,7 +36,7 @@ public class TestMs2Mml
 
     private static Logger LOGGER = LogManager.getLogger();
 
-    static void test(InputStream is) throws JAXBException
+    static void viewMs2Mml(InputStream is) throws JAXBException
     {
         JAXBContext jaxbContext = JAXBContext.newInstance("net.aeronica.libs.mml.readers.ms2mml");
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
@@ -56,16 +53,17 @@ public class TestMs2Mml
 
     static FileInputStream getFile(String path)
     {
-        FileInputStream reader = null;
-        LOGGER.info("File: {}", path.substring(path.lastIndexOf("\\")+1));
+        FileInputStream is = null;
+        File initialFile = new File(path);
+        LOGGER.info("---- File: {}", initialFile.getName().substring(initialFile.getName().lastIndexOf("\\")+1));
         try
         {
-            reader = new FileInputStream(path);
+            is = new FileInputStream(initialFile);
         } catch (FileNotFoundException e)
         {
-            e.printStackTrace();
+            LOGGER.error(e);
         }
-        return reader;
+        return is;
     }
 
     static void viewZipFileContents(String path)
@@ -75,7 +73,7 @@ public class TestMs2Mml
             //File temp = File.createTempFile("blah", "tmp");
 
             Enumeration<? extends ZipEntry> entries = file.entries();
-            LOGGER.info("Zip File: {}", file.getName().substring(file.getName().lastIndexOf("\\")+1));
+            LOGGER.info("---- Zip File: {}", file.getName().substring(file.getName().lastIndexOf("\\")+1));
             while(entries.hasMoreElements())
             {
                 ZipEntry entry = entries.nextElement();
@@ -85,7 +83,7 @@ public class TestMs2Mml
                 {
                     LOGGER.info("File: {}, size: {}", entry.getName(), entry.getSize());
                     InputStream is = file.getInputStream(entry);
-                    test(is);
+                    viewMs2Mml(is);
                 }
             }
             //temp.delete();
@@ -93,13 +91,14 @@ public class TestMs2Mml
         {
             LOGGER.error(e);
         }
-        LOGGER.info("----");
     }
 
     public static void main(String[] args) throws Exception
     {
-        test(getFile("E:\\Users\\Paul\\Downloads\\darling-in-the-franxx-ed5-escape-r2518.ms2mml"));
+        viewMs2Mml(getFile("E:\\Users\\Paul\\Downloads\\darling-in-the-franxx-ed5-escape-r2518.ms2mml"));
         viewZipFileContents("E:\\Users\\Paul\\Downloads\\undertale-megalovania-r48.zip");
         viewZipFileContents("E:\\Users\\Paul\\Downloads\\kingdom-hearts-3-dont-think-twice-chikai-kyle-landry-version.zip");
+        viewMs2Mml(getFile("E:\\Users\\Paul\\Downloads\\killerblood-run-lads-run-r8.ms2mml"));
+        viewZipFileContents("E:\\Users\\Paul\\Downloads\\tokyo-ghoul-unravel-r11.zip");
     }
 }
