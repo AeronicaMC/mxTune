@@ -5,8 +5,12 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
+import javax.xml.bind.JAXBException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+
+import static net.aeronica.libs.mml.readers.ms2mml.TestMs2Mml.getFile;
+import static net.aeronica.libs.mml.readers.ms2mml.TestMs2Mml.viewMs2Mml;
 
 public class TestAntlr
 {
@@ -14,7 +18,16 @@ public class TestAntlr
 
     public static InputStream init()
     {
-        byte[] mmlBuf = mmlString.getBytes(StandardCharsets.US_ASCII);
+        byte[] mmlBuf = new byte[0];
+        try
+        {
+            mmlBuf = viewMs2Mml(getFile("E:\\Users\\Paul\\Downloads\\darling-in-the-franxx-ed5-escape-r2518.ms2mml")).getBytes(StandardCharsets.US_ASCII);
+            //mmlBuf = viewMs2Mml(getFile("E:\\Users\\Paul\\Downloads\\killerblood-run-lads-run-r8.ms2mml")).getBytes(StandardCharsets.US_ASCII);
+        } catch (JAXBException e)
+        {
+            e.printStackTrace();
+        }
+        //mmlBuf = mmlString.getBytes(StandardCharsets.US_ASCII);
         return new java.io.ByteArrayInputStream(mmlBuf);
     }
 

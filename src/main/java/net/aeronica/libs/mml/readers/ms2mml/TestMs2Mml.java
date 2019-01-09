@@ -32,26 +32,32 @@ import java.util.zip.ZipFile;
 
 public class TestMs2Mml
 {
-
-
     private static Logger LOGGER = LogManager.getLogger();
 
-    static void viewMs2Mml(InputStream is) throws JAXBException
+    public static String viewMs2Mml(InputStream is) throws JAXBException
     {
         JAXBContext jaxbContext = JAXBContext.newInstance("net.aeronica.libs.mml.readers.ms2mml");
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         Ms2 ms2 = (Ms2) unmarshaller.unmarshal(is);
 
+        StringBuilder builder =  new StringBuilder("MML@");
+        builder.append(MMLAllowedCharacters.filterAllowedCharacters(ms2.melody));
         LOGGER.info("Melody {}", MMLAllowedCharacters.filterAllowedCharacters(ms2.melody));
         if (ms2.chord != null)
             for (Ms2.Chord chord : ms2.chord)
             {
-                LOGGER.info("Chord {}: {}", chord.index, MMLAllowedCharacters.filterAllowedCharacters(chord.value));
+                String chordValue = MMLAllowedCharacters.filterAllowedCharacters(chord.value);
+                if((chordValue.equals("")))
+                    continue;
+                builder.append(",");
+                builder.append(chordValue);
+                LOGGER.info("Chord {}: {}", chord.index, chordValue);
             }
+            builder.append(";");
+        return builder.toString();
     }
-
-
-    static FileInputStream getFile(String path)
+    
+    public static FileInputStream getFile(String path)
     {
         FileInputStream is = null;
         File initialFile = new File(path);
@@ -66,7 +72,7 @@ public class TestMs2Mml
         return is;
     }
 
-    static void viewZipFileContents(String path)
+    public static void viewZipFileContents(String path)
     {
         try (ZipFile file = new ZipFile(path))
         {
@@ -79,6 +85,7 @@ public class TestMs2Mml
                 ZipEntry entry = entries.nextElement();
                 if (entry.isDirectory())
                 {
+                    // Directory
                 } else
                 {
                     LOGGER.info("File: {}, size: {}", entry.getName(), entry.getSize());
