@@ -72,8 +72,9 @@ public class TestMs2Mml
         return is;
     }
 
-    public static void viewZipFileContents(String path)
+    public static String viewZipFileContents(String path)
     {
+        StringBuilder builder = new StringBuilder();
         try (ZipFile file = new ZipFile(path))
         {
             //File temp = File.createTempFile("blah", "tmp");
@@ -90,7 +91,7 @@ public class TestMs2Mml
                 {
                     LOGGER.info("File: {}, size: {}", entry.getName(), entry.getSize());
                     InputStream is = file.getInputStream(entry);
-                    viewMs2Mml(is);
+                    builder.append(viewMs2Mml(is));
                 }
             }
             //temp.delete();
@@ -98,6 +99,7 @@ public class TestMs2Mml
         {
             LOGGER.error(e);
         }
+        return builder.toString();
     }
 
     public static void main(String[] args) throws Exception

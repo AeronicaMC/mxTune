@@ -9,8 +9,7 @@ import javax.xml.bind.JAXBException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import static net.aeronica.libs.mml.readers.ms2mml.TestMs2Mml.getFile;
-import static net.aeronica.libs.mml.readers.ms2mml.TestMs2Mml.viewMs2Mml;
+import static net.aeronica.libs.mml.readers.ms2mml.TestMs2Mml.*;
 
 public class TestAntlr
 {
@@ -22,6 +21,7 @@ public class TestAntlr
         try
         {
             mmlBuf = viewMs2Mml(getFile("E:\\Users\\Paul\\Downloads\\darling-in-the-franxx-ed5-escape-r2518.ms2mml")).getBytes(StandardCharsets.US_ASCII);
+            mmlBuf = viewZipFileContents("E:\\Users\\Paul\\Downloads\\tokyo-ghoul-unravel-r11.zip").getBytes(StandardCharsets.US_ASCII);
             //mmlBuf = viewMs2Mml(getFile("E:\\Users\\Paul\\Downloads\\killerblood-run-lads-run-r8.ms2mml")).getBytes(StandardCharsets.US_ASCII);
         } catch (JAXBException e)
         {
