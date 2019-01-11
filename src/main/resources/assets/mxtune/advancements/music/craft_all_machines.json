@@ -2,7 +2,7 @@
     "display":
     {
         "icon": {
-            "item": "mxtune:band_amp"
+            "item": "mxtune:place_holder"
         },
         "title": {
             "translate": "advancements.mxtune:music.craft_all_machines.title"
@@ -23,7 +23,8 @@
             "conditions": {
                 "items": [
                     {
-                        "item": "mxtune:band_amp"
+                        "item": "mxtune:band_amp",
+                        "item": "mxtune:place_holder"
                     }
                 ]
             }

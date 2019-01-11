@@ -32,5 +32,6 @@ public class MxtuneJEIPlugin implements IModPlugin
         IIngredientBlacklist ingredientBlacklist = registry.getJeiHelpers().getIngredientBlacklist();
         // Visual items only, not for recipes
         ingredientBlacklist.addIngredientToBlacklist(new ItemStack(ModItems.ITEM_SHEET_MUSIC));
+        ingredientBlacklist.addIngredientToBlacklist(new ItemStack(ModItems.ITEM_PLACE_HOLDER));
     }
 }

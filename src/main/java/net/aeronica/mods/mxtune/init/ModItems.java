@@ -62,6 +62,7 @@ public class ModItems
     public static final ItemSheetMusic ITEM_SHEET_MUSIC = registerItem(new ItemSheetMusic(), "sheet_music");
     public static final ItemPiano ITEM_SPINET_PIANO = registerItem(new ItemPiano(), "spinet_piano");
     public static final ItemBlock ITEM_BAND_AMP = (ItemBlock) registerItem((new ItemBlock(ModBlocks.BAND_AMP).setCreativeTab(MXTune.TAB_MUSIC)), "band_amp");
+    public static final Item ITEM_PLACE_HOLDER = registerItem(new Item(), "place_holder");
 
     private ModItems() { /* NOP */ }
 
@@ -85,6 +86,7 @@ public class ModItems
                     ITEM_SHEET_MUSIC,
                     ITEM_SPINET_PIANO,
                     ITEM_BAND_AMP,
+                    ITEM_PLACE_HOLDER,
             };
 
             final IForgeRegistry<Item> registry = event.getRegistry();
