@@ -18,13 +18,17 @@ package net.aeronica.mods.mxtune.network.server;
 
 import net.aeronica.mods.mxtune.blocks.TileBandAmp;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
+import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.world.IModLockableContainer;
 import net.aeronica.mods.mxtune.world.OwnerUUID;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.LockCode;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -79,7 +83,7 @@ public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAm
         {
             TileEntity tileEntity = player.world.getTileEntity(pos);
             processLockButton(player, tileEntity);
-            processRedstoneButtons(tileEntity);
+            processButtons(player, tileEntity);
         }
     }
 
@@ -103,15 +107,24 @@ public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAm
         }
     }
 
-    private void processRedstoneButtons(TileEntity tileEntity)
+    private void processButtons(EntityPlayer entityPlayer, TileEntity tileEntity)
     {
-        if(tileEntity instanceof TileBandAmp)
+        // Process updates only for the owner
+        if(tileEntity instanceof TileBandAmp && ((TileBandAmp) tileEntity).getOwner().getUUID().equals(entityPlayer.getPersistentID()))
         {
             TileBandAmp tileBandAmp = (TileBandAmp) tileEntity;
             tileBandAmp.setRearRedstoneInputEnabled(rearRedstoneInputEnabled);
             tileBandAmp.setLeftRedstoneOutputEnabled(leftRedstoneOutputEnabled);
             tileBandAmp.setRightRedstoneOutputEnabled(rightRedstoneOutputEnabled);
-            tileBandAmp.setSoundRange(soundRange);
+            if (soundRange == SoundRange.INFINITY && !MusicOptionsUtil.isSoundRangeInfinityAllowed(entityPlayer))
+            {
+                tileBandAmp.setSoundRange(SoundRange.NORMAL);
+                entityPlayer.sendMessage(new TextComponentTranslation("mxtune.gui.bandAmp.soundRangeInfinityNotAllowed"));
+                entityPlayer.world.playSound(null, entityPlayer.getPosition(), SoundEvents.BLOCK_NOTE_PLING, SoundCategory.PLAYERS, 1F, 1F);
+            }
+            else {
+                tileBandAmp.setSoundRange(soundRange);
+            }
         }
     }
 }

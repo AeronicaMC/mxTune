@@ -165,7 +165,6 @@ public class GuiBandAmp extends GuiContainer
         if(buttonClicked.id == guiRangeButton.id)
         {
             soundRange = SoundRange.nextRange(soundRange);
-            guiRangeButton.displayString = I18n.format(soundRange.getLanguageKey());
             sendButtonChanges();
         }
     }

@@ -133,6 +133,10 @@ public class MusicOptionsUtil
         return getImpl(playerIn).getWhiteList();
     }
 
+    public static boolean isSoundRangeInfinityAllowed(EntityPlayer playerIn) { return getImpl(playerIn).isSoundRangeInfinityRangeAllowed(); }
+
+    public static void setSoundRangeInfinityAllowed(EntityPlayer playerIn, boolean isAllowed) { getImpl(playerIn).setSoundRangeInfinityAllowed(isAllowed); }
+
     @Nullable
     private static IPlayerMusicOptions getImpl(EntityPlayer player)
     {

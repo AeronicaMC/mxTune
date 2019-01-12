@@ -55,4 +55,8 @@ public interface IPlayerMusicOptions
     void setBlackList(List<PlayerLists> list);
     
     List<PlayerLists> getBlackList();
+
+    void setSoundRangeInfinityAllowed(boolean isAllowed);
+
+    boolean isSoundRangeInfinityRangeAllowed();
 }

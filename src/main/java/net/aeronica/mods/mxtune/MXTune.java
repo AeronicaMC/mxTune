@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune;
 
 import net.aeronica.mods.mxtune.advancements.ModCriteriaTriggers;
 import net.aeronica.mods.mxtune.blocks.TilePiano;
+import net.aeronica.mods.mxtune.cmds.CommandSoundRange;
 import net.aeronica.mods.mxtune.datafixers.ItemInventoryWalker;
 import net.aeronica.mods.mxtune.datafixers.SheetMusicFixer;
 import net.aeronica.mods.mxtune.datafixers.TileEntityInventoryWalker;
@@ -37,10 +38,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION,
@@ -103,5 +101,11 @@ public class MXTune
     @Mod.EventHandler
     public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
         FMLLog.warning("*** [mxTune] Invalid fingerprint detected! ***");
+    }
+
+    @Mod.EventHandler
+    public void onEvent(FMLServerStartingEvent event)
+    {
+        event.registerServerCommand(new CommandSoundRange());
     }
 }

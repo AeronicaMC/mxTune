@@ -156,6 +156,7 @@ public class PlayerMusicOptionsCapability
         static final String KEY_UUID_LEAST = "UUIDLeast";
         static final String KEY_UUID_MOST = "UUIDMost";
         static final String KEY_PLAYER_NAME = "playerName";
+        static final String KEY_SOUND_RANGE_INFINITY_ALLOWED = "soundRangeInfinityAllowed";
 
         @Override
         public NBTBase writeNBT(Capability<IPlayerMusicOptions> capability, IPlayerMusicOptions instance, EnumFacing side)
@@ -168,6 +169,7 @@ public class PlayerMusicOptionsCapability
             properties.setString(KEY_S_PARAM_1, instance.getSParam1());
             properties.setString(KEY_S_PARAM_2, instance.getSParam2());
             properties.setString(KEY_S_PARAM_3, instance.getSParam3());
+            properties.setBoolean(KEY_SOUND_RANGE_INFINITY_ALLOWED, instance.isSoundRangeInfinityRangeAllowed());
             NBTTagList listBlack = new NBTTagList();
             properties.setTag(KEY_LIST_BLACK, listBlack);
             for (int i=0; i<instance.getBlackList().size(); i++)
@@ -198,6 +200,7 @@ public class PlayerMusicOptionsCapability
             instance.setHudOptions(properties.getBoolean(KEY_DISABLE_HUD), properties.getInteger(KEY_POSITION_HUD), properties.getFloat(KEY_SIZE_HUD));
             instance.setMuteOption(properties.getInteger(KEY_MUTE_OPTION));
             instance.setSParams(properties.getString(KEY_S_PARAM_1), properties.getString(KEY_S_PARAM_2), properties.getString(KEY_S_PARAM_3));
+            instance.setSoundRangeInfinityAllowed(properties.getBoolean(KEY_SOUND_RANGE_INFINITY_ALLOWED));
             if (properties.hasKey(KEY_LIST_BLACK, Constants.NBT.TAG_LIST))
             {
                 NBTTagList listBlack = properties.getTagList(KEY_LIST_BLACK, Constants.NBT.TAG_COMPOUND);
