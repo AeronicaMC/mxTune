@@ -74,7 +74,6 @@ import paulscode.sound.SoundSystemConfig;
 import paulscode.sound.SoundSystemException;
 
 import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
 import java.nio.IntBuffer;
 import java.util.Map;
 import java.util.Objects;
@@ -156,22 +155,12 @@ public class ClientAudio
     {
         return playIDQueue03.peek();
     }
-    
-    static AudioFormat getAudioFormat(Integer playID)
-    {
-       AudioData audioData = playIDAudioData.get(playID);
-       if (audioData == null)
-           return null;
-       return (audioData.isClientPlayer() || (audioData.getSoundRange() == SoundRange.INFINITY)) ? audioFormatStereo : audioFormat3D;
-    }
-    
-    static synchronized void setPlayIDAudioStream(Integer playID, AudioInputStream audioStream)
+
+    static AudioData getAudioData(Integer playID)
     {
         synchronized (THREAD_SYNC)
         {
-            AudioData audioData = playIDAudioData.get(playID);
-            if (audioData != null)
-                audioData.setAudioStream(audioStream);
+            return playIDAudioData.get(playID);
         }
     }
     
@@ -199,34 +188,6 @@ public class ClientAudio
     {
         AudioData audioData = playIDAudioData.get(playID);
         return audioData.getSoundRange();
-    }
-
-    static AudioInputStream getAudioInputStream(int playID)
-    {
-        AudioData audioData = playIDAudioData.get(playID);
-        return audioData != null ? audioData.getAudioStream() : null;
-    }
-    
-    static synchronized void setPlayIDAudioDataStatus(Integer playID, Status status)
-    {
-        synchronized (THREAD_SYNC)
-        {
-            AudioData audioData = playIDAudioData.get(playID);
-            if (audioData != null)
-                audioData.setStatus(status);
-        }
-    }
-    
-    static boolean isPlayIDAudioDataError(Integer playID)
-    {
-        AudioData audioData = playIDAudioData.get(playID);
-        return audioData == null || audioData.getStatus() == Status.ERROR;
-    }
-    
-    static boolean isPlayIDAudioDataReady(Integer playID)
-    {
-        AudioData audioData = playIDAudioData.get(playID);
-        return audioData != null && audioData.getStatus() == Status.READY;
     }
     
     static boolean hasPlayID(Integer playID)
@@ -262,19 +223,31 @@ public class ClientAudio
         play(playID, pos, musicText, false, soundRange);
     }
 
+    // Determine if audio is 3D spacial or background
+    // Players playing solo, or in JAMS hear their own audio without 3D effects or falloff.
+    // Musical Automata that have SoundRange.INFINITY will play for all clients without 3D effects or falloff.
+    private static void setAudioFormat(AudioData audioData)
+    {
+        if (audioData.isClientPlayer() || (audioData.getSoundRange() == SoundRange.INFINITY))
+            audioData.setAudioFormat(audioFormatStereo);
+        else audioData.setAudioFormat(audioFormat3D);
+    }
+
     private static void play(Integer playID, BlockPos pos, String musicText, boolean isClient, SoundRange soundRange)
     {
         startThreadFactory();
         if(ClientCSDMonitor.canMXTunesPlay() && playID != null)
         {
             addPlayIDQueue(playID);
-            AudioData result = playIDAudioData.putIfAbsent(playID, new AudioData(playID, pos, isClient, soundRange));
+            AudioData audioData = new AudioData(playID, pos, isClient, soundRange);
+            setAudioFormat(audioData);
+            AudioData result = playIDAudioData.putIfAbsent(playID, audioData);
             if (result != null)
             {
                 ModLogger.warn("ClientAudio#play: playID: %s has already been submitted", playID);
                 return;
             }
-            executorService.execute(new ThreadedPlay(playID, musicText));
+            executorService.execute(new ThreadedPlay(audioData, musicText));
             MXTune.proxy.getMinecraft().getSoundHandler().playSound(new MovingMusic());
             stopVanillaMusic();
         } else
@@ -295,20 +268,20 @@ public class ClientAudio
     
     private static class ThreadedPlay implements Runnable
     {
-        private final Integer playID;
+        private final AudioData audioData;
         private final String musicText;
 
-        ThreadedPlay(Integer entityID, String musicText)
+        ThreadedPlay(AudioData audioData, String musicText)
         {
-            this.playID = entityID;
+            this.audioData = audioData;
             this.musicText = musicText;
         }
 
         @Override
         public void run()
         {
-            MML2PCM p = new MML2PCM();
-            p.process(playID, musicText);
+            MML2PCM mml2PCM = new MML2PCM(audioData, musicText);
+            mml2PCM.process();
         }
     }
 

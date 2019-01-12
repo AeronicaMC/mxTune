@@ -20,6 +20,7 @@ import net.aeronica.mods.mxtune.sound.ClientAudio.Status;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.util.math.BlockPos;
 
+import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 
 public class AudioData
@@ -29,6 +30,7 @@ public class AudioData
     private final boolean isClientPlayer;
     private final SoundRange soundRange;
     private AudioInputStream audioStream;
+    private AudioFormat audioFormat;
     private String uuid;
     private ISound iSound;
     private Status status;
@@ -40,6 +42,16 @@ public class AudioData
         this.isClientPlayer = isClientPlayer;
         this.soundRange = soundRange;
         this.status = Status.WAITING;
+    }
+
+    public AudioFormat getAudioFormat()
+    {
+        return audioFormat;
+    }
+
+    public void setAudioFormat(AudioFormat audioFormat)
+    {
+        this.audioFormat = audioFormat;
     }
 
     public Status getStatus()

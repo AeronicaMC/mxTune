@@ -96,6 +96,7 @@ public class CodecPCM implements ICodec
     private Random randInt;
 
     private Integer playID = null;
+    private AudioData audioData = null;
 
     /**
      * Processes status messages, warnings, and error messages.
@@ -150,7 +151,8 @@ public class CodecPCM implements ICodec
             }
             else
             {
-                myAudioFormat = ClientAudio.getAudioFormat(playID);
+                audioData = ClientAudio.getAudioData(playID);
+                myAudioFormat = audioData.getAudioFormat();
             }
         }
 
@@ -190,14 +192,14 @@ public class CodecPCM implements ICodec
 	@Override
     public SoundBuffer read()
     {
-        if (!initialized || (myAudioFormat == null) || ClientAudio.isPlayIDAudioDataError(playID))
+        if (!initialized || (myAudioFormat == null) || (audioData == null) || (audioData.getStatus() == ClientAudio.Status.ERROR))
         {
             errorMessage("Not initialized in 'read'");
             return null;
         }
-        if (!hasStream && ClientAudio.isPlayIDAudioDataReady(playID))
+        if (!hasStream && (audioData.getStatus() == ClientAudio.Status.READY))
         {
-            audioInputStream = ClientAudio.getAudioInputStream(playID);
+            audioInputStream = audioData.getAudioStream();
             message("Waiting buffer count: " + zeroBufferCount);
             hasStream = true;
         }
@@ -216,7 +218,7 @@ public class CodecPCM implements ICodec
                 if (bufferSize == -1)
                 {
                     endOfStream(SET, true);
-                    ClientAudio.setPlayIDAudioDataStatus(playID, ClientAudio.Status.DONE);
+                    audioData.setStatus(ClientAudio.Status.DONE);
                     return null;
                 }
             }
@@ -255,7 +257,7 @@ public class CodecPCM implements ICodec
             errorMessage("Not initialized in 'readAll'");
             return null;
         }
-        if (myAudioFormat == null)
+        if ((myAudioFormat == null) || (audioData == null) || (audioData.getStatus() == ClientAudio.Status.ERROR))
         {
             errorMessage("Audio Format null in method 'readAll'");
             return null;

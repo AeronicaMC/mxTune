@@ -40,25 +40,31 @@ import static net.aeronica.mods.mxtune.sound.ClientAudio.Status.READY;
 
 public class MML2PCM
 {
+    private AudioData audioData;
+    String jamFormatMML;
+
+    MML2PCM(AudioData audioData, String jamFormatMML)
+    {
+        this.audioData = audioData;
+        this.jamFormatMML = jamFormatMML;
+    }
     /**
      * Solo play format "<playerName|groupID>=mml@...;"
      * 
      * Jam play format inserts with a space between each player=MML sequence
      * "<playername1>=MML@...abcd; <playername2>=MML@...efgh; <playername2>=MML@...efgh;"
      * 
-     * @param playID the unique id of the play session
-     * @param jamFormatMMLIn MML in mapped format
      * @return false if errors
      */
-    public boolean process(int playID, String jamFormatMMLIn)
+    public boolean process()
     {
         // Deserialize JAM Formatted MML
-        Map<Integer, String> jamFormatMMLMap = GroupHelper.deserializeIntStrMap(jamFormatMMLIn);
+        Map<Integer, String> jamFormatMMLMap = GroupHelper.deserializeIntStrMap(jamFormatMML);
         if (jamFormatMMLMap.isEmpty())
         {
-            ModLogger.error("MML2PCM jamFormatMMLMap is null! Check for an issue with NBT, networking, threads. PlayID: %s", playID);
-            ModLogger.error("MML2PCM PlayID: %d", playID);
-            ClientAudio.setPlayIDAudioDataStatus(playID, ERROR);
+            ModLogger.error("MML2PCM jamFormatMMLMap is null! Check for an issue with NBT, networking, threads. PlayID: %s", audioData);
+            ModLogger.error("MML2PCM PlayID: %d", audioData);
+            audioData.setStatus(ERROR);
             return false;
         }
 
@@ -75,7 +81,7 @@ public class MML2PCM
         catch (IOException e)
         {
             ModLogger.debug("MMLParserFactory.getMMLParser() IOException in %s, Error: %s", SheetMusicUtil.class.getSimpleName(), e);
-            ClientAudio.setPlayIDAudioDataStatus(playID, ERROR);
+            audioData.setStatus(ERROR);
             return false;
         }
         mmlParser.setBuildParseTree(true);
@@ -99,16 +105,16 @@ public class MML2PCM
         try
         {
             Midi2WavRenderer mw = new Midi2WavRenderer();
-            AudioInputStream pcmStream = mw.createPCMStream(mmlToMIDI.getSequence(), ClientAudio.getAudioFormat(playID));
-            ClientAudio.setPlayIDAudioStream(playID, pcmStream);
+            AudioInputStream pcmStream = mw.createPCMStream(mmlToMIDI.getSequence(), audioData.getAudioFormat());
+            audioData.setAudioStream(pcmStream);
         } catch (MidiUnavailableException | InvalidMidiDataException | IOException e)
         {
             ModLogger.error(e);
-            ClientAudio.setPlayIDAudioDataStatus(playID, ERROR);
+            audioData.setStatus(ERROR);
             ModLogger.error("MIDI to PCM process: MidiUnavailableException | InvalidMidiDataException | IOException", e);
             return false;
         }
-        ClientAudio.setPlayIDAudioDataStatus(playID, READY);
+        audioData.setStatus(READY);
         return true;
     }
 }
