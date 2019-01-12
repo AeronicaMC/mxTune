@@ -231,12 +231,6 @@ public class GroupManager
         }
     }
 
-    static Integer getMembersGroupID(int memberID)
-    {
-        Group group = getMembersGroup(memberID);
-        return group.isEmpty() ? null : group.getGroupID();
-    }
-
     /**
      * Searches all groups and returns the group or null.
      *

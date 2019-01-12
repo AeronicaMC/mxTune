@@ -157,7 +157,7 @@ public class PlayManager
                 ModLogger.debug("MML Sub25: " + mml.substring(0, Math.min(25, mml.length())));
 
 
-                if (GroupManager.getMembersGroupID(playerID) == null)
+                if (GroupManager.getMembersGroup(playerID).isEmpty())
                 {
                     /* Solo Play */
                     ModLogger.debug("playMusic playSolo");
