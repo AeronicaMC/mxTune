@@ -68,7 +68,7 @@ public class Ms2 {
 
     @XmlElement(required = true)
     protected String melody;
-    protected List<Ms2 .Chord> chord;
+    protected List<Ms2.Chord> chord;
 
     /**
      * Gets the value of the melody property.
@@ -112,13 +112,13 @@ public class Ms2 {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Ms2 .Chord }
+     * {@link Ms2.Chord }
      * 
      * 
      */
-    public List<Ms2 .Chord> getChord() {
+    public List<Ms2.Chord> getChord() {
         if (chord == null) {
-            chord = new ArrayList<Ms2 .Chord>();
+            chord = new ArrayList<Ms2.Chord>();
         }
         return this.chord;
     }

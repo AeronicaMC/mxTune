@@ -45,11 +45,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Ms2 .Chord }
+     * Create an instance of {@link Ms2.Chord }
      * 
      */
-    public Ms2 .Chord createMs2Chord() {
-        return new Ms2 .Chord();
+    public Ms2.Chord createMs2Chord() {
+        return new Ms2.Chord();
     }
 
 }
