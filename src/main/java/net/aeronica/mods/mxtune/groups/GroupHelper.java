@@ -41,7 +41,7 @@ public class GroupHelper
     static final int QUEUED = 5;
     static final int PLAYING = 6;
 
-    public static final int MAX_MEMBERS = 10;
+    public static final int MAX_MEMBERS = 8;
 
     /* Server side, Client side is sync'd with packets */
     /* GroupManager */
