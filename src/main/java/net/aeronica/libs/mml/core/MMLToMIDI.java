@@ -13,8 +13,10 @@ public class MMLToMIDI extends MMLTransformBase
 {
     private static final double PPQ = 480.0;
     private static final int TICKS_OFFSET = 10;
-    // 10 players with 10 parts each =  100 parts. No problem :D
-    private static final int MAX_TRACKS = 100;
+    // 8 players with 10 parts each = 80 parts.
+    // 12 slots with 10 parts each = 120 parts.
+    // No problem :D, but will make it 160 because we can!
+    private static final int MAX_TRACKS = 160;
     private Sequence sequence;
     private Set<Integer> packedPresets = new HashSet<>();
 
