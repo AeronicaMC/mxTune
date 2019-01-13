@@ -141,7 +141,10 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
                 if (state.getValue(PLAYING))
                 {
                     if (!PlayManager.isActivePlayID(tileBandAmp.getPlayID()))
+                    {
                         setPlayingState(worldIn, pos, state, false);
+                        tileBandAmp.setPlayID(-1);
+                    }
 
                     worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
                 } else
