@@ -35,11 +35,8 @@ import static net.aeronica.mods.mxtune.util.Util.audiblePingPlayer;
 
 public class CommandSoundRange extends CommandBase
 {
-    @Override
-    public boolean checkPermission(MinecraftServer server, ICommandSender sender)
-    {
-        return super.checkPermission(server, sender);
-    }
+    public static final String TRUE = "true";
+    public static final String FALSE = "false";
 
     @Override
     public int getRequiredPermissionLevel() { return 2; }
@@ -70,14 +67,14 @@ public class CommandSoundRange extends CommandBase
         switch (args.length)
         {
             case 1:
-                sender.sendMessage((new TextComponentString(playerName)).appendText(": soundRangeInfinityAllowed = ").appendText(MusicOptionsUtil.isSoundRangeInfinityAllowed(entityPlayer) ? "true" : "false"));
+                sender.sendMessage((new TextComponentString(playerName)).appendText(": soundRangeInfinityAllowed = ").appendText(MusicOptionsUtil.isSoundRangeInfinityAllowed(entityPlayer) ? TRUE : FALSE));
                 break;
 
             case 2:
                 String option = buildString(args, 1);
-                if ("true".equals(option))
+                if (TRUE.equals(option))
                     setAndNotifySoundRangeInfinityAllowed(sender, entityPlayer, playerName, true);
-                else if ("false".equals(option))
+                else if (FALSE.equals(option))
                     setAndNotifySoundRangeInfinityAllowed(sender, entityPlayer, playerName, false);
                 break;
 
@@ -88,10 +85,10 @@ public class CommandSoundRange extends CommandBase
     private void setAndNotifySoundRangeInfinityAllowed(ICommandSender sender, EntityPlayer entityPlayer, String playerName, boolean isAllowed)
     {
         MusicOptionsUtil.setSoundRangeInfinityAllowed(entityPlayer, isAllowed);
-        sender.sendMessage((new TextComponentString(playerName)).appendText(": soundRangeInfinityAllowed = ").appendText(MusicOptionsUtil.isSoundRangeInfinityAllowed(entityPlayer) ? "true" : "false"));
+        sender.sendMessage((new TextComponentString(playerName)).appendText(": soundRangeInfinityAllowed = ").appendText(MusicOptionsUtil.isSoundRangeInfinityAllowed(entityPlayer) ? TRUE : FALSE));
         if (!sender.getName().equals(playerName))
         {
-            entityPlayer.sendMessage(new TextComponentString(sender.getName()).appendText(" set soundRangeInfinityAllowed = ").appendText(isAllowed ? "true" : "false"));
+            entityPlayer.sendMessage(new TextComponentString(sender.getName()).appendText(" set soundRangeInfinityAllowed = ").appendText(isAllowed ? TRUE : FALSE));
             audiblePingPlayer(entityPlayer, SoundEvents.BLOCK_NOTE_PLING);
         }
     }
@@ -105,7 +102,7 @@ public class CommandSoundRange extends CommandBase
         if (args.length == 1)
             return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
         else if (args.length == 2)
-            return getListOfStringsMatchingLastWord(args, "true", "false");
+            return getListOfStringsMatchingLastWord(args, TRUE, FALSE);
 
         return Collections.emptyList();
     }
