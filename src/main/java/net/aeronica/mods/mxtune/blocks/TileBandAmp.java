@@ -323,17 +323,31 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     @Override
     public boolean hasCapability(Capability<?> cap, @Nullable EnumFacing side)
     {
-        EnumRelativeSide enumRelativeSide = EnumRelativeSide.getRelativeSide(side, getFacing());
-        return (((enumRelativeSide == EnumRelativeSide.TOP) && !isPlaying()) || ((enumRelativeSide == EnumRelativeSide.BOTTOM) && isPlaying()) && (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)) || super.hasCapability(cap, side);
+        return (isSidedInventoryAccessible(side) && (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)) || super.hasCapability(cap, side);
     }
 
     @Override
     public <T> T getCapability(Capability<T> cap, @Nullable EnumFacing side)
     {
-        EnumRelativeSide enumRelativeSide = EnumRelativeSide.getRelativeSide(side, getFacing());
-        if ((((enumRelativeSide == EnumRelativeSide.TOP) && !isPlaying()) || ((enumRelativeSide == EnumRelativeSide.BOTTOM) && isPlaying())) && (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY))
+        if (isSidedInventoryAccessible(side) && (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY))
             return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(inventory);
         return super.getCapability(cap, side);
+    }
+
+    /**
+     * <p>No access if locked</p>
+     * <p>When unlocked:</p>
+     * <ul>
+     *     <li>Not playing: Instruments can be loaded from the top</li>
+     *     <li>Playing: Instruments can be removed from the bottom</li>
+     * </ul>
+     * @param side of the inventory to be evaluated
+     * @return result
+     */
+    private boolean isSidedInventoryAccessible(@Nullable EnumFacing side)
+    {
+        EnumRelativeSide enumRelativeSide = EnumRelativeSide.getRelativeSide(side, getFacing());
+        return ((((enumRelativeSide == EnumRelativeSide.TOP) && !isPlaying()) || ((enumRelativeSide == EnumRelativeSide.BOTTOM) && isPlaying())) && !isLocked());
     }
 
     /*
