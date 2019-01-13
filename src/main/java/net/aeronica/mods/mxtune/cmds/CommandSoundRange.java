@@ -66,9 +66,6 @@ public class CommandSoundRange extends CommandBase
 
         switch (args.length)
         {
-            case 0:
-                throw new WrongUsageException("commands.mxtune.soundRangeInfinityAllowed.usage");
-
             case 1:
                 sender.sendMessage((new TextComponentString(playerName)).appendText(": soundRangeInfinityAllowed = ").appendText(MusicOptionsUtil.isSoundRangeInfinityAllowed(entityPlayer) ? "true" : "false"));
                 break;
@@ -82,6 +79,7 @@ public class CommandSoundRange extends CommandBase
                 break;
 
             default:
+                throw new WrongUsageException("commands.mxtune.soundRangeInfinityAllowed.usage");
         }
     }
 
