@@ -69,6 +69,7 @@ public class PacketDispatcher
         registerMessage(PlaySoloMessage.class);
         registerMessage(SendCSDChatMessage.class);
         registerMessage(PlayBlockMusicMessage.class);
+        registerMessage(AudiblePingPlayerMessage.class);
 
         // Packets handled on SERVER
         registerMessage(ManageGroupMessage.class);

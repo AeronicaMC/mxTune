@@ -22,6 +22,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
@@ -30,12 +31,14 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
+import static net.aeronica.mods.mxtune.util.Util.audiblePingPlayer;
+
 public class CommandSoundRange extends CommandBase
 {
     @Override
     public boolean checkPermission(MinecraftServer server, ICommandSender sender)
     {
-        return server.isSinglePlayer() || super.checkPermission(server, sender);
+        return super.checkPermission(server, sender);
     }
 
     @Override
@@ -53,16 +56,16 @@ public class CommandSoundRange extends CommandBase
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
-        String playerName = "";
-        EntityPlayer entityPlayer = null;
+        String playerName;
+        EntityPlayer entityPlayer;
 
-        if (args.length > 0)
+        if (args.length == 0 || args.length > 2)
+            throw new WrongUsageException("commands.mxtune.soundRangeInfinityAllowed.usage");
+        else
         {
             entityPlayer = getPlayer(server, sender, args[0]);
             playerName = args[0];
         }
-
-        if (entityPlayer == null) return;
 
         switch (args.length)
         {
@@ -73,13 +76,23 @@ public class CommandSoundRange extends CommandBase
             case 2:
                 String option = buildString(args, 1);
                 if ("true".equals(option))
-                    MusicOptionsUtil.setSoundRangeInfinityAllowed(entityPlayer, true);
+                    setAndNotifySoundRangeInfinityAllowed(sender, entityPlayer, playerName, true);
                 else if ("false".equals(option))
-                    MusicOptionsUtil.setSoundRangeInfinityAllowed(entityPlayer, false);
+                    setAndNotifySoundRangeInfinityAllowed(sender, entityPlayer, playerName, false);
                 break;
 
             default:
-                throw new WrongUsageException("commands.mxtune.soundRangeInfinityAllowed.usage");
+        }
+    }
+
+    private void setAndNotifySoundRangeInfinityAllowed(ICommandSender sender, EntityPlayer entityPlayer, String playerName, boolean isAllowed)
+    {
+        MusicOptionsUtil.setSoundRangeInfinityAllowed(entityPlayer, isAllowed);
+        sender.sendMessage((new TextComponentString(playerName)).appendText(": soundRangeInfinityAllowed = ").appendText(MusicOptionsUtil.isSoundRangeInfinityAllowed(entityPlayer) ? "true" : "false"));
+        if (!sender.getName().equals(playerName))
+        {
+            entityPlayer.sendMessage(new TextComponentString(sender.getName()).appendText(" set soundRangeInfinityAllowed = ").appendText(isAllowed ? "true" : "false"));
+            audiblePingPlayer(entityPlayer, SoundEvents.BLOCK_NOTE_PLING);
         }
     }
 

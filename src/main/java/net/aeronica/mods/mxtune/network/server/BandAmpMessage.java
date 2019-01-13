@@ -26,11 +26,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.LockCode;
 import net.minecraftforge.fml.relauncher.Side;
+
+import static net.aeronica.mods.mxtune.util.Util.audiblePingPlayer;
 
 public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAmpMessage>
 {
@@ -120,7 +121,7 @@ public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAm
             {
                 tileBandAmp.setSoundRange(SoundRange.NORMAL);
                 entityPlayer.sendMessage(new TextComponentTranslation("mxtune.gui.bandAmp.soundRangeInfinityNotAllowed"));
-                entityPlayer.world.playSound(null, entityPlayer.getPosition(), SoundEvents.BLOCK_NOTE_PLING, SoundCategory.PLAYERS, 1F, 1F);
+                audiblePingPlayer(entityPlayer, SoundEvents.BLOCK_NOTE_PLING);
             }
             else {
                 tileBandAmp.setSoundRange(soundRange);
