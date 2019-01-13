@@ -1,18 +1,18 @@
 /*
  * Aeronica's mxTune MOD
- * Copyright {2016} Paul Boese a.k.a. Aeronica
+ * Copyright 2019, Paul Boese a.k.a. Aeronica
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
 package net.aeronica.mods.mxtune.datafixers;
 
@@ -31,7 +31,6 @@ public class TileEntityInventoryWalker implements IDataWalker
     private static final List<String> INVENTORY_KEY_MADNESS = new ArrayList<>();
     private static final String KEY_INVENTORY = "Inventory";
     private static final String KEY_ITEMS = "Items";
-    private static final String KEY_PRIMAL_ITEMS = "items";
     private static final String KEY_ID = "id";
 
     static
@@ -48,22 +47,12 @@ public class TileEntityInventoryWalker implements IDataWalker
     @Override
     public NBTTagCompound process(@Nonnull IDataFixer fixer, @SuppressWarnings("NullableProblems") NBTTagCompound te, int version)
     {
-        if (te.hasKey(KEY_PRIMAL_ITEMS))
-        {
-            // primal_chest
-            NBTTagCompound primalChest = te.getCompoundTag(KEY_PRIMAL_ITEMS);
-            DataFixesManager.processInventory(fixer, primalChest, version, KEY_ITEMS);
-            ModLogger.info("TileEntityInventoryWalker Walked inventory of TE %s using tag %s", te.getString(KEY_ID), KEY_ITEMS);
-        }
-        else
-        {
-            for (String key : INVENTORY_KEY_MADNESS)
-                if (te.hasKey(key))
-                {
-                    DataFixesManager.processInventory(fixer, te, version, key);
-                    ModLogger.info("TileEntityInventoryWalker Walked inventory of TE %s using tag %s", te.getString(KEY_ID), key);
-                }
-        }
+        for (String key : INVENTORY_KEY_MADNESS)
+            if (te.hasKey(key))
+            {
+                DataFixesManager.processInventory(fixer, te, version, key);
+                ModLogger.info("TileEntityInventoryWalker Walked inventory of TE %s using tag %s", te.getString(KEY_ID), key);
+            }
         return te;
     }
 }
