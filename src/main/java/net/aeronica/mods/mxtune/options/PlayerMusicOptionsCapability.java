@@ -109,6 +109,7 @@ public class PlayerMusicOptionsCapability
                     live.setMuteOption(dead.getMuteOption());
                     live.setBlackList(dead.getBlackList());
                     live.setWhiteList(dead.getWhiteList());
+                    live.setSoundRangeInfinityAllowed(dead.isSoundRangeInfinityRangeAllowed());
                 }
             }
         }
