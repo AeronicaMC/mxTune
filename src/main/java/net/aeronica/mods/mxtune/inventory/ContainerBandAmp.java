@@ -44,14 +44,18 @@ public class ContainerBandAmp extends Container
         this.tileBandAmp = (TileBandAmp) worldIn.getTileEntity(new BlockPos(x, y, z));
 
         IItemHandler inventory = Objects.requireNonNull(tileBandAmp).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 0, 52, 26));
-        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 1, 70, 26));
-        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 2, 88, 26));
-        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 3, 106, 26));
-        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 4, 52, 44));
-        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 5, 70, 44));
-        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 6, 88, 44));
-        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 7, 106, 44));
+        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 0, 52, 17));
+        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 1, 70, 17));
+        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 2, 88, 17));
+        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 3, 106, 17));
+        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 4, 52, 35));
+        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 5, 70, 35));
+        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 6, 88, 35));
+        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 7, 106, 35));
+        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 8, 52, 53));
+        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 9, 70, 53));
+        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 10, 88, 53));
+        addSlotToContainer(new SlotBandAmp(inventory, this.tileBandAmp, 11, 106, 53));
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 9; j++) {

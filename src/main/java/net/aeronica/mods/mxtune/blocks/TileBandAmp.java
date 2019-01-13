@@ -1,18 +1,18 @@
 /*
  * Aeronica's mxTune MOD
- * Copyright {2016} Paul Boese a.k.a. Aeronica
+ * Copyright 2019, Paul Boese a.k.a. Aeronica
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
 package net.aeronica.mods.mxtune.blocks;
 
@@ -45,7 +45,7 @@ import static net.aeronica.mods.mxtune.util.SheetMusicUtil.KEY_DURATION;
 
 public class TileBandAmp extends TileInstrument implements IModLockableContainer, IMusicPlayer
 {
-    public static final int MAX_SLOTS = 8;
+    public static final int MAX_SLOTS = 12;
     private static final String KEY_CUSTOM_NAME = "CustomName";
     private static final String KEY_POWERED = "powered";
     private static final String KEY_LEFT_RS_OUTPUT_ENABLED = "leftRedstoneOutputEnabled";
@@ -247,19 +247,14 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         }
     }
 
-    public int getUpdateCount()
+    int getUpdateCount()
     {
         return updateCount;
     }
 
-    public void setUpdateCount(int updateCount)
-    {
-        this.updateCount = updateCount;
-    }
-
     private void incrementCount()
     {
-        updateCount = ((++updateCount) %16);
+        updateCount = (++updateCount %16);
 
         if (world != null && !world.isRemote)
         {
