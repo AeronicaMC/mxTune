@@ -197,6 +197,7 @@ public class CodecPCM implements ICodec
             errorMessage("Not initialized in 'read'");
             return null;
         }
+        notifyOnInputStreamAvailable();
 
         int bufferSize;
         byte[] readBuffer = new byte[SoundSystemConfig.getStreamingBufferSize()];
@@ -245,13 +246,18 @@ public class CodecPCM implements ICodec
             errorMessage("Not initialized in 'read'");
             return true;
         }
+
+        return false;
+    }
+
+    private void notifyOnInputStreamAvailable()
+    {
         if (!hasStream && (audioData.getStatus() == ClientAudio.Status.READY))
         {
             audioInputStream = audioData.getAudioStream();
             message("Waiting buffer count: " + zeroBufferCount);
             hasStream = true;
         }
-        return false;
     }
 
 	/** Load the entire buffer at once.
