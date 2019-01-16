@@ -208,14 +208,13 @@ public enum MIDISystemUtil
     public static List<Instrument> getInstrumentCacheCopy() { return new ArrayList<>(instrumentCache); }
 
     // A hack is hack is a hack
-    // TODO: revisit the Packed Preset concept and implementation
+    // Probably due to my poor understanding of the SoundFont2 specification
     public static String getPatchNameKey(Patch patch)
     {
         for (Instrument inst : instrumentCache)
         {
-            if (inst.toString().contains("Drumkit:") && ((inst.getPatch().getProgram() == patch.getProgram())))
-                return inst.getName();
-            else if (((inst.getPatch().getBank()) / 128  == patch.getBank()) && (inst.getPatch().getProgram() == patch.getProgram()))
+            if (inst.toString().contains("Drumkit:") && inst.getPatch().getProgram() == patch.getProgram() ||
+                ((inst.getPatch().getBank()) / 128  == patch.getBank()) && (inst.getPatch().getProgram() == patch.getProgram()))
                 return inst.getName();
         }
         return "--- Error ---";
