@@ -240,7 +240,7 @@ public class CodecPCM implements ICodec
 
 	private boolean hasInputStreamError()
     {
-        if (!(initialized && !(myAudioFormat == null) && !(audioData == null) && !(audioData.getStatus() == ClientAudio.Status.ERROR)))
+        if (!initialized || myAudioFormat == null || audioData == null || audioData.getStatus() == ClientAudio.Status.ERROR)
         {
             errorMessage("Not initialized in 'read'");
             return true;
