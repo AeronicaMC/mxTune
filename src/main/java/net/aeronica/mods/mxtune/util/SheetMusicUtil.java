@@ -184,36 +184,28 @@ public enum SheetMusicUtil
      */
     public static String getInventoryInstrumentBlockMML(TileEntity tileEntity)
     {
-        StringBuilder buildMML = new StringBuilder();
+        if (!(tileEntity instanceof IMusicPlayer)) return "";
 
-        if (tileEntity instanceof IMusicPlayer)
+        StringBuilder buildMML = new StringBuilder();
+        IMusicPlayer musicPlayer = (IMusicPlayer) tileEntity;
+        for (int slot = 0; slot < musicPlayer.getInventory().getSlots(); slot++)
         {
-            IMusicPlayer musicPlayer =(IMusicPlayer) tileEntity;
-            try
+            ItemStack stackInSlot = musicPlayer.getInventory().getStackInSlot(slot);
+            if (!stackInSlot.isEmpty() && stackInSlot.getItem() instanceof ItemInstrument)
             {
-                for (int slot = 0; slot < musicPlayer.getInventory().getSlots(); slot++)
+                ItemInstrument instrument = (ItemInstrument) stackInSlot.getItem();
+                int patch = instrument.getPatch(stackInSlot);
+                ItemStack sheetMusic = getSheetMusic(stackInSlot);
+                if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
                 {
-                    ItemStack stackInSlot = musicPlayer.getInventory().getStackInSlot(slot);
-                    if (!stackInSlot.isEmpty() && stackInSlot.getItem() instanceof ItemInstrument)
+                    NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
+                    if (contents.hasKey(KEY_MML))
                     {
-                        ItemInstrument instrument = (ItemInstrument) stackInSlot.getItem();
-                        int patch = instrument.getPatch(stackInSlot);
-                        ItemStack sheetMusic = getSheetMusic(stackInSlot);
-                        if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
-                        {
-                            NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
-                            if (contents.hasKey(KEY_MML))
-                            {
-                                String mml = contents.getString(KEY_MML);
-                                mml = mml.replace("MML@", "MML@I" + patch);
-                                buildMML.append(slot).append("=").append(mml).append("|");
-                            }
-                        }
+                        String mml = contents.getString(KEY_MML);
+                        mml = mml.replace("MML@", "MML@I" + patch);
+                        buildMML.append(slot).append("=").append(mml).append("|");
                     }
                 }
-            } catch (Exception e)
-            {
-                ModLogger.error(e);
             }
         }
         return buildMML.toString();
