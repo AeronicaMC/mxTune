@@ -85,7 +85,7 @@ public class CodecPCM implements ICodec
      */
     private AudioInputStream dummyInputStream = null;
 
-    private static final int SAMPLE_SIZE = 10240 * 4;
+    private static final int SAMPLE_SIZE = 11025 * 4;
 
     private byte[] noiseBuffer = new byte[SAMPLE_SIZE];
     private byte[] zeroBuffer = new byte[SAMPLE_SIZE];
@@ -107,10 +107,10 @@ public class CodecPCM implements ICodec
     {
         logger = SoundSystemConfig.getLogger();
         randInt = new java.util.Random(System.currentTimeMillis());
-        nextBuffer();
+        nextNoiseZeroBuffer();
     }
 
-    private void nextBuffer()
+    private void nextNoiseZeroBuffer()
     {
         for (int i = 0; i < SAMPLE_SIZE; i += 2)
         {
@@ -192,24 +192,18 @@ public class CodecPCM implements ICodec
 	@Override
     public SoundBuffer read()
     {
-        if (!initialized || (myAudioFormat == null) || (audioData == null) || (audioData.getStatus() == ClientAudio.Status.ERROR))
+        if (hasInputStreamError())
         {
             errorMessage("Not initialized in 'read'");
             return null;
         }
-        if (!hasStream && (audioData.getStatus() == ClientAudio.Status.READY))
-        {
-            audioInputStream = audioData.getAudioStream();
-            message("Waiting buffer count: " + zeroBufferCount);
-            hasStream = true;
-        }
+
         int bufferSize;
         byte[] readBuffer = new byte[SoundSystemConfig.getStreamingBufferSize()];
         byte[] outputBuffer = Util.nonNullInjected();
-        nextBuffer();
         try
         {
-            if (hasStream && audioInputStream != null)
+            if (hasStream && (audioInputStream != null))
             {
                 bufferSize = audioInputStream.read(readBuffer);
                 if (bufferSize > 0)
@@ -224,6 +218,7 @@ public class CodecPCM implements ICodec
             }
             else
             {
+                nextNoiseZeroBuffer();
                 outputBuffer = appendByteArrays(outputBuffer, zeroBuffer, SAMPLE_SIZE);
                 if (zeroBufferCount++ > 64)
                 {
@@ -242,6 +237,22 @@ public class CodecPCM implements ICodec
             reverseBytes(outputBuffer, 0, outputBuffer.length);
         return new SoundBuffer(outputBuffer, myAudioFormat);
 	}
+
+	private boolean hasInputStreamError()
+    {
+        if (!(initialized && !(myAudioFormat == null) && !(audioData == null) && !(audioData.getStatus() == ClientAudio.Status.ERROR)))
+        {
+            errorMessage("Not initialized in 'read'");
+            return true;
+        }
+        if (!hasStream && (audioData.getStatus() == ClientAudio.Status.READY))
+        {
+            audioInputStream = audioData.getAudioStream();
+            message("Waiting buffer count: " + zeroBufferCount);
+            hasStream = true;
+        }
+        return false;
+    }
 
 	/** Load the entire buffer at once.
      *
@@ -269,7 +280,7 @@ public class CodecPCM implements ICodec
 
         for (int i = 0; i < 25; i++)
         {
-            nextBuffer();
+            nextNoiseZeroBuffer();
             outputBuffer = appendByteArrays(outputBuffer, noiseBuffer, SAMPLE_SIZE);
         }
         errorMessage("ReadAll NOT Supported! Always use stream = true. You have been warned.");

@@ -200,7 +200,6 @@ public class GroupHelper
         Vec3d pos;
         for(int member: getMembersByPlayID(playID))
         {
-            // FIXME: Does not work in from server side reliably. Probably need to take into account the dimension.
             EntityPlayer player = MXTune.proxy.getPlayerByEntityID(member);
             if(player == null)
                 continue;
