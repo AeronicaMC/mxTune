@@ -420,7 +420,8 @@ public class ClientAudio
     public static void event(SoundSetupEvent event) throws SoundSystemException
     {
         SoundSystemConfig.setCodec("nul", CodecPCM.class);
-        ModLogger.info("Sound Setup Event %s", event);
+        ModLogger.info("Sound Setup Event: associate the \"nul\" extension with CodecPCM.");
+        ModLogger.info("Sound Streaming Buffer Size: %d", SoundSystemConfig.getStreamingBufferSize());
         configureSound();
     }
     
