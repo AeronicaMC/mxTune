@@ -29,7 +29,6 @@ import java.util.List;
 public class TileEntityInventoryWalker implements IDataWalker
 {
     private static final List<String> INVENTORY_KEY_MADNESS = new ArrayList<>();
-    private static final String KEY_INVENTORY = "Inventory";
     private static final String KEY_ITEMS = "Items";
     private static final String KEY_ID = "id";
 
@@ -37,8 +36,6 @@ public class TileEntityInventoryWalker implements IDataWalker
     {
         // vanilla chest, forge item stack handler
         INVENTORY_KEY_MADNESS.add(KEY_ITEMS);
-        // Thermal Expansion Strongbox
-        INVENTORY_KEY_MADNESS.add(KEY_INVENTORY);
     }
 
     public TileEntityInventoryWalker() {/* NOP */}
