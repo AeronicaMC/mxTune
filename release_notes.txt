@@ -1,3 +1,56 @@
+2019-01-20 mxtune-1.12.1-0.5.0-beta.4
+Important information for existing worlds:
+   ************************** BEFORE UPDATING TO THIS MXTUNE VERSION IN AN EXISTING WORLD ****************************
+   *** PLACE ALL OF YOUR SHEET MUSIC AND ITEM INSTRUMENTS IN VANILLA CHESTS OR PLAYER INVENTORY.                   ***
+   *** SHEET MUSIC IN PIANOS PLACED IN THE WORLD WILL BE UPDATED.                                                  ***
+   *** FAILURE TO DO DO WILL RESULT IN BROKEN SHEET MUSIC THAT CANNOT BE USED.                                     ***
+   *** THIS ONLY APPLIES WHEN UPDATING MXTUNE TO THIS VERSION FROM THE PREVIOUS VERSIONS IN AN EXISTING WORLD.     ***
+   *******************************************************************************************************************
+
+   The sheet music format changed. Added a song duration field and changed the internal nbt tag name from MusicBook to
+   SheetMusic. Because of this I added a DATA-FIXER to update sheet music. It will only update sheet music to the new
+   format in vanilla chests and player inventory. The sheet music loaded in instruments will also be updated provided
+   they too are in vanilla chests or player inventory.
+
+   ************************** BEFORE UPDATING TO THIS MXTUNE VERSION IN AN EXISTING WORLD ****************************
+   *** PLACE ALL OF YOUR SHEET MUSIC AND ITEM INSTRUMENTS IN VANILLA CHESTS OR PLAYER INVENTORY.                   ***
+   *** SHEET MUSIC IN PIANOS PLACED IN THE WORLD WILL BE UPDATED.                                                  ***
+   *** FAILURE TO DO DO WILL RESULT IN BROKEN SHEET MUSIC THAT CANNOT BE USED.                                     ***
+   *** THIS ONLY APPLIES WHEN UPDATING MXTUNE TO THIS VERSION FROM THE PREVIOUS VERSIONS IN AN EXISTING WORLD.     ***
+   *******************************************************************************************************************
+
+Additions:
+ * New block: Band Amp - Lets you play multi-instrument MML Music.
+   Place the music into the instruments and add them to the Band Amp inventory. It's redstone and hopper friendly.
+   Use these features to automate playing tunes in sequence using mine carts, etc. That's right it's a low tier
+   musical automata. There are 12 slots. Yes you can now play Maple Story 2 MML 10 part, 10 piece JAMS, though you
+   are stuck with current Mabinogi compatible instruments at the moment. The existing Orchestra and Standard
+   percussion sets can be used in place of the MS2 Timpani and Tom Toms respectively.
+   *** This is very much an experimental addition and suggestions are welcome ***
+
+ * Hand held Piano. It's intended to be used in the Band Amp.
+
+Changes:
+ * The sheet music format changed. Added a song duration field (automatically calculated). Allows improved server
+   managed play management.
+ * Add buttons to the hand held instrument inventory GUIs to open the Music Options and HUD placement dialogs.
+ * Starting and stopping instruments is more reliable now. No more clicks and pops when force stopping a play session.
+
+Fixes:
+ * De-Wonkify the Music HUD adjustment screen.
+ * A lot of backend code cleanup and improvements:
+      https://sonarcloud.io/project/activity?id=net.aeronica.mods.mxtune%3AmxTune%3A1.12
+      IntelliJ IDEA Rocks:
+
+Upcoming Additions/Changes:
+ * Add the ability to load MML files from 3MLE and Maple Story 2 ms2mml files from https://musicalnexus.net/
+ * For MAP MAKERS: Per Chunk/Area MML based background music system
+ * Improved advancements
+ * More Musical Automata
+ * A personal MML player - i.e. tune lists, shuffle, etc.
+ * Musical Themed MOBS and recipe changes for instruments that use common and rare drops.
+
+----
 2018-09-07 mxtune-1.12.1-0.5.0-beta.3
 Changes:
  * Build against Forge 14.23.4.2759
