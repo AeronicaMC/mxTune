@@ -1,7 +1,7 @@
-2019-01-20 mxtune-1.12.1-0.5.0-beta.4
+2019-01-20 mxtune-1.12.1-0.6.0-beta.4
 Important information for existing worlds:
    ************************** BEFORE UPDATING TO THIS MXTUNE VERSION IN AN EXISTING WORLD ****************************
-   *** PLACE ALL OF YOUR SHEET MUSIC AND ITEM INSTRUMENTS IN VANILLA CHESTS OR PLAYER INVENTORY.                   ***
+   *** PLACE ALL OF YOUR SHEET MUSIC AND ITEM INSTRUMENTS IN VANILLA CHESTS AND/OR PLAYER INVENTORY.               ***
    *** SHEET MUSIC IN PIANOS PLACED IN THE WORLD WILL BE UPDATED.                                                  ***
    *** FAILURE TO DO DO WILL RESULT IN BROKEN SHEET MUSIC THAT CANNOT BE USED.                                     ***
    *** THIS ONLY APPLIES WHEN UPDATING MXTUNE TO THIS VERSION FROM THE PREVIOUS VERSIONS IN AN EXISTING WORLD.     ***
@@ -13,7 +13,7 @@ Important information for existing worlds:
    they too are in vanilla chests or player inventory.
 
    ************************** BEFORE UPDATING TO THIS MXTUNE VERSION IN AN EXISTING WORLD ****************************
-   *** PLACE ALL OF YOUR SHEET MUSIC AND ITEM INSTRUMENTS IN VANILLA CHESTS OR PLAYER INVENTORY.                   ***
+   *** PLACE ALL OF YOUR SHEET MUSIC AND ITEM INSTRUMENTS IN VANILLA CHESTS AND/OR PLAYER INVENTORY                ***
    *** SHEET MUSIC IN PIANOS PLACED IN THE WORLD WILL BE UPDATED.                                                  ***
    *** FAILURE TO DO DO WILL RESULT IN BROKEN SHEET MUSIC THAT CANNOT BE USED.                                     ***
    *** THIS ONLY APPLIES WHEN UPDATING MXTUNE TO THIS VERSION FROM THE PREVIOUS VERSIONS IN AN EXISTING WORLD.     ***
