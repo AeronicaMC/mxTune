@@ -23,6 +23,7 @@ import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.util.PlacedInstrumentUtil;
+import net.aeronica.mods.mxtune.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
@@ -259,10 +260,11 @@ public class GuiJamOverlay extends Gui
         }
         return groupData;
     }
-        
-    @SuppressWarnings("unused")
+
     private void drawDebug(HudData hd, int maxWidth, int maxHeight)
     {
+        if (!Util.inDev()) return;
+
         int statusWidth, qX, qY;
         if (GroupHelper.getClientPlayStatuses() != null && !GroupHelper.getClientPlayStatuses().isEmpty())
         {

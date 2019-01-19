@@ -5,6 +5,7 @@ import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.AudiblePingPlayerMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.SoundEvent;
 
 public class Util
@@ -42,5 +43,10 @@ public class Util
     public static void audiblePingPlayer(EntityPlayer entityPlayer, SoundEvent soundEvent)
     {
         PacketDispatcher.sendTo(new AudiblePingPlayerMessage(soundEvent), (EntityPlayerMP) entityPlayer);
+    }
+
+    public static Boolean inDev()
+    {
+        return (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
     }
 }
