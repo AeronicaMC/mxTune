@@ -94,12 +94,12 @@ public class ModConfig
             @Name("Listener Range")
             @LangKey("config.mxtune.listenerRange")
             @RangeInt(min=10, max=64)
-            public int listenerRange = 64;
+            public int listenerRange = 48;
 
             @Name("Group Play Abort Distance")
             @LangKey("config.mxtune.groupPlayAbortDistance")
             @RangeInt(min=10, max=24)    
-            public int groupPlayAbortDistance = 10;
+            public int groupPlayAbortDistance = 16;
         }
     }
     
