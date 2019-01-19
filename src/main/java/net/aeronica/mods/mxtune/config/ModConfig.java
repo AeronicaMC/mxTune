@@ -175,7 +175,7 @@ public class ModConfig
         @SubscribeEvent
         public static void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event)
         {
-            ModLogger.info("On ConfigChanged: %s", event.getModID());
+            ModLogger.debug("On ConfigChanged: %s", event.getModID());
             if(event.getModID().equals(Reference.MOD_ID))
             {
                 ConfigManager.sync(Reference.MOD_ID, Config.Type.INSTANCE);

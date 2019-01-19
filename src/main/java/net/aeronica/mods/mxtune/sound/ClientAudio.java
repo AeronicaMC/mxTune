@@ -395,7 +395,7 @@ public class ClientAudio
         if (event.getEntity() instanceof EntityPlayerSP)
         {
             cleanup();
-            ModLogger.info("ClientAudio EntityJoinWorldEvent: %s", event.getEntity().getName());
+            ModLogger.debug("ClientAudio EntityJoinWorldEvent: %s", event.getEntity().getName());
         }
     }
 
@@ -403,7 +403,7 @@ public class ClientAudio
     public static void event(PlayerRespawnEvent event)
     {
         cleanup();
-        ModLogger.info("ClientAudio PlayerRespawnEvent: %s", event.player.getName());
+        ModLogger.debug("ClientAudio PlayerRespawnEvent: %s", event.player.getName());
     }
 
     @SubscribeEvent
@@ -453,7 +453,7 @@ public class ClientAudio
                 {
                     // ** Musical Machines - Juke Boxes, Band Amp, Yet-to-be-announced stuff... **
                     e.setResultSound(new MusicPositioned(playID, getBlockPos(playID), getSoundRange(playID)));
-                    ModLogger.info("PlaySoundEvent MusicPositioned playID: %d, pos: %s, isPlayer: %s",
+                    ModLogger.debug("PlaySoundEvent MusicPositioned playID: %d, pos: %s, isPlayer: %s",
                                    playID, getBlockPos(playID), isClientPlayer(playID));
                 }
             }
@@ -473,7 +473,7 @@ public class ClientAudio
             Integer playID = ClientAudio.pollPlayIDQueue03();
             ClientAudio.setUuid(playID, e.getUuid());
             ClientAudio.setISound(playID, e.getSound());
-            ModLogger.info("ClientAudio PlayStreamingSourceEvent: uuid: %s, ISound: %s", e.getUuid(), e.getSound());
+            ModLogger.debug("ClientAudio PlayStreamingSourceEvent: uuid: %s, ISound: %s", e.getUuid(), e.getSound());
         }
     }
 

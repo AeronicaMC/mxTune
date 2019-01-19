@@ -53,7 +53,7 @@ public class ClientCSDMonitor
     {
         csd = snapShot();
         sendToServer();
-        ModLogger.info("ClientStateMonitor#initialize: " + csd);
+        ModLogger.debug("ClientStateMonitor#initialize: " + csd);
     }
     
     private static ClientStateData snapShot()
@@ -80,19 +80,19 @@ public class ClientCSDMonitor
 
         if (mc.currentScreen instanceof GuiScreenOptionsSounds && !inGui)
         {
-            ModLogger.info("Opened GuiScreenOptionsSounds");
+            ModLogger.debug("Opened GuiScreenOptionsSounds");
             inGui=true;
         }
         else if(!(mc.currentScreen instanceof GuiScreenOptionsSounds) && inGui)
         {
-            ModLogger.info("Closed GuiScreenOptionsSounds");
+            ModLogger.debug("Closed GuiScreenOptionsSounds");
             inGui=false;
             ClientStateData ss = snapShot();
             if(csd!=null && !csd.isEqual(ss)) 
             {
                 csd = ss;
                 sendToServer();
-                ModLogger.info("ClientStateData ***Changed*** Sending to server");
+                ModLogger.debug("ClientStateData ***Changed*** Sending to server");
             }
         }
     }

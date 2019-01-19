@@ -43,12 +43,13 @@ Fixes:
       IntelliJ IDEA Rocks:
 
 Upcoming Additions/Changes:
- * Add the ability to load MML files from 3MLE and Maple Story 2 ms2mml files from https://musicalnexus.net/
+ * Add the ability to load MML files from 3MLE and Maple Story 2 ms2mml files downloaded from https://musicalnexus.net/
+   Please support the folks at the Musical Nexus and don't use an Ad-Blocker on the site.
  * For MAP MAKERS: Per Chunk/Area MML based background music system
  * Improved advancements
  * More Musical Automata
  * A personal MML player - i.e. tune lists, shuffle, etc.
- * Musical Themed MOBS and recipe changes for instruments that use common and rare drops.
+ * Music Themed MOBS and recipe changes for instruments that use common and rare drops.
 
 ----
 2018-09-07 mxtune-1.12.1-0.5.0-beta.3
