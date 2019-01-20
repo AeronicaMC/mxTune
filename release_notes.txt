@@ -1,4 +1,4 @@
-2019-01-20 mxtune-1.12.1-0.6.0-beta.4
+2019-01-19 mxtune-1.12.1-0.6.0-beta.4
 Important information for existing worlds:
    ************************** BEFORE UPDATING TO THIS MXTUNE VERSION IN AN EXISTING WORLD ****************************
    *** PLACE ALL OF YOUR SHEET MUSIC AND ITEM INSTRUMENTS IN VANILLA CHESTS AND/OR PLAYER INVENTORY.               ***
