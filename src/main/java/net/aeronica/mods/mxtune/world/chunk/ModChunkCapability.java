@@ -54,7 +54,7 @@ public class ModChunkCapability
     {
         if (event.getObject() != null)
         {
-            event.addCapability(new ResourceLocation(Reference.MOD_ID, "chunk_data_test"), new ICapabilitySerializable<NBTTagCompound>()
+            event.addCapability(new ResourceLocation(Reference.MOD_ID, "chunk_music"), new ICapabilitySerializable<NBTTagCompound>()
             {
                 IModChunkData instance = MOD_CHUNK_DATA.getDefaultInstance();
 
