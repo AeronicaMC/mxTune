@@ -39,10 +39,7 @@
 package net.aeronica.mods.mxtune.init;
 
 import net.aeronica.mods.mxtune.MXTune;
-import net.aeronica.mods.mxtune.items.ItemInstrument;
-import net.aeronica.mods.mxtune.items.ItemMusicPaper;
-import net.aeronica.mods.mxtune.items.ItemPiano;
-import net.aeronica.mods.mxtune.items.ItemSheetMusic;
+import net.aeronica.mods.mxtune.items.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.event.RegistryEvent;
@@ -63,6 +60,7 @@ public class ModItems
     public static final ItemPiano ITEM_SPINET_PIANO = registerItem(new ItemPiano(), "spinet_piano");
     public static final ItemBlock ITEM_BAND_AMP = (ItemBlock) registerItem((new ItemBlock(ModBlocks.BAND_AMP).setCreativeTab(MXTune.TAB_MUSIC)), "band_amp");
     public static final Item ITEM_PLACE_HOLDER = registerItem(new Item(), "place_holder");
+    public static final ItemStaffOfMusic ITEM_STAFF_OF_MUSIC = registerItem(new ItemStaffOfMusic(), "staff_of_music");
 
     private ModItems() { /* NOP */ }
 
@@ -87,6 +85,7 @@ public class ModItems
                     ITEM_SPINET_PIANO,
                     ITEM_BAND_AMP,
                     ITEM_PLACE_HOLDER,
+                    ITEM_STAFF_OF_MUSIC
             };
 
             final IForgeRegistry<Item> registry = event.getRegistry();
