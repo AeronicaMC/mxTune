@@ -22,17 +22,17 @@ import java.util.Locale;
  */
 public abstract class MMLTransformBase extends MMLBaseListener
 {
-    StateInst instState;
-    StatePart partState;
+    private StateInst instState;
+    private StatePart partState;
     
     /** annotate parse tree for tied note processing */
-    ParseTreeProperty<Integer> midiNotes = new ParseTreeProperty<>();
-    ParseTreeProperty<Long> noteRestLengths = new ParseTreeProperty<>();
-    ParseTreeProperty<Integer> mmlVolumes = new ParseTreeProperty<>();
-    ParseTreeProperty<Long> startTicks = new ParseTreeProperty<>();
+    private ParseTreeProperty<Integer> midiNotes = new ParseTreeProperty<>();
+    private ParseTreeProperty<Long> noteRestLengths = new ParseTreeProperty<>();
+    private ParseTreeProperty<Integer> mmlVolumes = new ParseTreeProperty<>();
+    private ParseTreeProperty<Long> startTicks = new ParseTreeProperty<>();
 
     /** MObject - store the parse results for later conversion to the desired format */
-    List<MObject> mObject = new ArrayList<>();
+    private List<MObject> mObject = new ArrayList<>();
     
     public MMLTransformBase()
     {
@@ -40,19 +40,19 @@ public abstract class MMLTransformBase extends MMLBaseListener
         partState = new StatePart();
     }
     
-    Integer getMidiNote(ParserRuleContext ctx) {return ctx != null ? midiNotes.get(ctx) : null;}
-    void saveMidiNote(ParserRuleContext ctx, int midiNote) {midiNotes.put(ctx, midiNote);}
+    private Integer getMidiNote(ParserRuleContext ctx) {return ctx != null ? midiNotes.get(ctx) : null;}
+    private void saveMidiNote(ParserRuleContext ctx, int midiNote) {midiNotes.put(ctx, midiNote);}
 
-    long getNoteRestLength(ParserRuleContext ctx) {return noteRestLengths.get(ctx);}
-    void saveNoteRestLength(ParserRuleContext ctx, long length) {noteRestLengths.put(ctx, length);}
+    private long getNoteRestLength(ParserRuleContext ctx) {return noteRestLengths.get(ctx);}
+    private void saveNoteRestLength(ParserRuleContext ctx, long length) {noteRestLengths.put(ctx, length);}
 
-    long getStartTicks(ParserRuleContext ctx) {return startTicks.get(ctx);}
-    void saveStartTicks(ParserRuleContext ctx, long length) {startTicks.put(ctx, length);}
+    private long getStartTicks(ParserRuleContext ctx) {return startTicks.get(ctx);}
+    private void saveStartTicks(ParserRuleContext ctx, long length) {startTicks.put(ctx, length);}
 
-    int getMMLVolume(ParserRuleContext ctx) {return mmlVolumes.get(ctx);}
-    void saveMMLVolume(ParserRuleContext ctx, int volume) {mmlVolumes.put(ctx, volume);}
+    private int getMMLVolume(ParserRuleContext ctx) {return mmlVolumes.get(ctx);}
+    private void saveMMLVolume(ParserRuleContext ctx, int volume) {mmlVolumes.put(ctx, volume);}
 
-    void addMObject(MObject mmo) {mObject.add(mmo);}
+    private void addMObject(MObject mmo) {mObject.add(mmo);}
     MObject getMObject(int index) {return mObject.get(index);}
 
     /**
@@ -226,13 +226,8 @@ public abstract class MMLTransformBase extends MMLBaseListener
         } else
         {
             // LAST LONELY RIGHT NOTE
-            if (ctxR == null) try
-            {
-                throw new MMLParseException("MMLTransformBase.exitTied(...): Right note context, ctxR, unexpected null! Tied note count: " + count);
-            } catch (MMLParseException e)
-            {
-                ModLogger.error(e);
-            }
+            if (ctxR == null) return;
+
             tiedNote = new StructTiedNotes();
             tiedNote.startingTicks = getStartTicks(ctxR);
             lengthTicks = getNoteRestLength(ctxR);

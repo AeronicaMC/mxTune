@@ -64,7 +64,7 @@ midi	: MIDI INT  			// match MIDI note
 
 anote   : (note|midi) ;
 
-tied    : anote ((cmd|len|octave|rest)* TIE (cmd|len|octave|rest)* anote)+     // match tied note
+tied    : anote ((cmd|len|octave|rest)* TIE+ (cmd|len|octave|rest)* anote)+     // match tied note
         ;
         
 octave  : OCTAVE ;
