@@ -24,6 +24,7 @@
 package net.aeronica.mods.mxtune.caches;
 
 import net.aeronica.mods.mxtune.Reference;
+import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
@@ -35,14 +36,20 @@ import java.io.IOException;
 
 public class FileHelper
 {
-    private static final String MML_FOLDER = Reference.MOD_ID + "_mml";
-    private static final String CACHE_FOLDER = Reference.MOD_ID + "_cache";
+    private static final String MOD_FOLDER = Reference.MOD_ID;
+    public static final String CLIENT_CACHE_FOLDER = MOD_FOLDER + "/client_cache";
+    public static final String CLIENT_MML_FOLDER = MOD_FOLDER + "/client_mml";
+    public static final String CLIENT_LIB_FOLDER = MOD_FOLDER + "/client_lib";
+    public static final String CLIENT_PLAYLISTS_FOLDER = MOD_FOLDER + "/client_playlists";
+    public static final String CLIENT_SERVER_CACHE_FOLDER = MOD_FOLDER + "/client_server_cache";
+    public static final String SERVER_LIB_FOLDER = MOD_FOLDER + "/server_lib";
+    public static final String SERVER_PLAYLISTS_FOLDER = MOD_FOLDER + "/server_playlists";
 
     private FileHelper() { /* NOP */ }
 
-    public static File getCacheFile(String filename) throws IOException {
+    public static File getCacheFile(String folder, String filename) throws IOException {
         File loc = new File(".");
-        File cacheFile = new File(loc, CACHE_FOLDER + "/" + filename);
+        File cacheFile = new File(loc, folder + "/" + filename);
 
         if(!cacheFile.exists()) {
             cacheFile.getParentFile().mkdirs();
@@ -52,10 +59,10 @@ public class FileHelper
         return cacheFile;
     }
 
-    public NBTTagCompound getNBTTCFromFile(File file)
+    public static NBTTagCompound getCompoundFromFile(File file)
     {
         if (file == null)
-            throw new RuntimeException("Missing cache file!");
+            throw new MXTuneRuntimeException("Missing cache file!");
 
         try
         {
@@ -68,7 +75,7 @@ public class FileHelper
             try
             {
                 CompressedStreamTools.writeCompressed(nbtTagCompound, new FileOutputStream(file));
-                return getNBTTCFromFile(file);
+                return getCompoundFromFile(file);
             } catch (IOException e1)
             {
                 ModLogger.error(e1);
@@ -77,7 +84,7 @@ public class FileHelper
         }
     }
 
-    public static void sendNBTTCToFile(File file, NBTTagCompound tagCompound) {
+    public static void sendCompoundToFile(File file, NBTTagCompound tagCompound) {
         try {
             CompressedStreamTools.writeCompressed(tagCompound, new FileOutputStream(file));
         } catch(IOException e) {
