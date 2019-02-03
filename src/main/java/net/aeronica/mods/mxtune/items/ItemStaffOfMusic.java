@@ -47,6 +47,7 @@ public class ItemStaffOfMusic extends Item
         if (worldIn.isRemote) return new ActionResult<>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
         if (MXTune.proxy.playerIsInCreativeMode(playerIn))
         {
+
             ModLogger.info("Staff of Music usable");
             return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
         }
