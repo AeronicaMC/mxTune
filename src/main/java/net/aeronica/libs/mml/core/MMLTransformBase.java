@@ -243,7 +243,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
                     .startingTicks(tiedNote.startingTicks)
                     .lengthTicks(lengthTicks)
                     .volume(tiedNote.volume)
-                    .text(ctxR != null ? ctxR.getText() : "")
+                    .text(ctxR.getText())
                     .build());
         }
     }
@@ -277,7 +277,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
         }
         if (ctx.INT() != null)
         {
-            mmlDuration = IntFromString(ctx.INT().getText());
+            mmlDuration = intFromString(ctx.INT().getText());
             dot = false;
         }
         if (!ctx.DOT().isEmpty())
@@ -319,7 +319,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
         if (ctx.INT() != null)
         {
             // "n#" format is not played correctly. One octave too low. CF Issue #6. Add 12 to fix.
-            midiNote = IntFromString(ctx.INT().getText()) + 12;
+            midiNote = intFromString(ctx.INT().getText()) + 12;
         }
         long lengthTicks = durationTicks(mmlLength, dot);
 
@@ -336,7 +336,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
 
         partState.accumulateTicks(lengthTicks);
 
-        /** annotate parse tree for tied note processing */
+        // annotate parse tree for tied note processing
         saveStartTicks(ctx.getParent(), startingTicks);
         saveNoteRestLength(ctx.getParent(), lengthTicks);
         saveMidiNote(ctx.getParent(), midiNote);
@@ -351,7 +351,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
         boolean dot = partState.isDotted();
         if (ctx.INT() != null)
         {
-            mmlLength = IntFromString(ctx.INT().getText());
+            mmlLength = intFromString(ctx.INT().getText());
             dot = false;
         }
         if (!ctx.DOT().isEmpty())
@@ -377,7 +377,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
         if (ctx.INT() == null)
             return;
         char c = ctx.CMD().getText().toUpperCase(Locale.US).charAt(0);
-        int value = Integer.parseInt(ctx.INT().getText());
+        int value = intFromString(ctx.INT().getText());
         switch (c)
         {
         case 'I':
@@ -417,7 +417,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
         if (ctx.INT() == null)
             return;
         boolean dotted = false;
-        int value = Integer.parseInt(ctx.INT().getText());
+        int value = intFromString(ctx.INT().getText());
         if (!ctx.DOT().isEmpty())
         {
             dotted = true;
@@ -425,10 +425,12 @@ public abstract class MMLTransformBase extends MMLBaseListener
         partState.setMMLLength(value, dotted);
     }
 
-    private int IntFromString(String s)
+    private int intFromString(String s)
     {
+        String o = s;
         int length = s.length() > 3 ? 3 : s.length();
         s = s.substring(0, length);
-        return Integer.valueOf(s);
+        ModLogger.info("intFromString(): %s, %s", s, o);
+        return Integer.parseInt(s);
     }
 }
