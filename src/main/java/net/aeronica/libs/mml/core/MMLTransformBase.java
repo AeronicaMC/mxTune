@@ -380,35 +380,40 @@ public abstract class MMLTransformBase extends MMLBaseListener
         int value = intFromString(ctx.INT().getText());
         switch (c)
         {
-        case 'I':
-        {
-            instState.setInstrument(value);
-            addMObject(new MObject.MObjectBuilder(MObject.Type.INST)
-                    .instrument(instState.getInstrument())
-                    .startingTicks(partState.getRunningTicks())
-                    .build());
+            case 'I':
+            {
+                instState.setInstrument(value);
+                addMObject(new MObject.MObjectBuilder(MObject.Type.INST)
+                                   .instrument(instState.getInstrument())
+                                   .startingTicks(partState.getRunningTicks())
+                                   .build());
+            }
+            break;
+            case 'O':
+                partState.setOctave(value);
+                break;
+            case 'P':
+                // TODO: Add perform code [1|5] review
+                break;
+            case 'S':
+                // TODO: Add sustain code [0|1]
+                break;
+            case 'T':
+            {
+                instState.setTempo(value);
+                addMObject(new MObject.MObjectBuilder(MObject.Type.TEMPO)
+                                   .tempo(instState.getTempo())
+                                   .startingTicks(partState.getRunningTicks())
+                                   .build());
+            }
+            break;
+            case 'V':
+                partState.setVolume(value);
+                instState.collectVolume(value);
+                break;
+            default:
+                // NOP
         }
-            break;
-        case 'O':
-            partState.setOctave(value);
-            break;
-        case 'T':
-        {
-            instState.setTempo(value);
-            addMObject(new MObject.MObjectBuilder(MObject.Type.TEMPO)
-                    .tempo(instState.getTempo())
-                    .startingTicks(partState.getRunningTicks())
-                    .build());
-        }
-            break;
-        case 'V':
-            partState.setVolume(value);
-            instState.collectVolume(value);
-            break;
-        default:
-            // NOP
-        }
-
     }
 
     @Override
@@ -427,10 +432,8 @@ public abstract class MMLTransformBase extends MMLBaseListener
 
     private int intFromString(String s)
     {
-        String o = s;
         int length = s.length() > 3 ? 3 : s.length();
         s = s.substring(0, length);
-        ModLogger.info("intFromString(): %s, %s", s, o);
         return Integer.parseInt(s);
     }
 }
