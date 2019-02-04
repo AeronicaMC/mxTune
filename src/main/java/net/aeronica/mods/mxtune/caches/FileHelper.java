@@ -53,9 +53,9 @@ public class FileHelper
 
         if(!cacheFile.exists()) {
             if (!cacheFile.getParentFile().mkdirs())
-                ModLogger.debug("mkdirs: folder already exists %s/%s", loc, folder);
+                ModLogger.debug("mkdirs: folder already exists %s", loc.getPath());
             if (!cacheFile.createNewFile())
-                ModLogger.debug("createNewFile: file already exists %s/%s/%s", loc, folder, filename);
+                ModLogger.debug("createNewFile: file already exists %s", cacheFile);
         }
 
         return cacheFile;
