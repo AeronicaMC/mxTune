@@ -68,9 +68,9 @@ public class FileHelper
 
         try
         {
-            NBTTagCompound tagCompound = CompressedStreamTools.readCompressed(new FileInputStream(file));
-            return tagCompound;
-        } catch (IOException e0)
+            return CompressedStreamTools.readCompressed(new FileInputStream(file));
+        }
+        catch (IOException e0)
         {
             NBTTagCompound nbtTagCompound = new NBTTagCompound();
 
