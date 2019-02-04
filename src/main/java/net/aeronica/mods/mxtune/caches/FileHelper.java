@@ -52,8 +52,10 @@ public class FileHelper
         File cacheFile = new File(loc, folder + "/" + filename);
 
         if(!cacheFile.exists()) {
-            cacheFile.getParentFile().mkdirs();
-            cacheFile.createNewFile();
+            if (!cacheFile.getParentFile().mkdirs())
+                ModLogger.debug("mkdirs failed for %s/%s", loc, folder);
+            if (!cacheFile.createNewFile())
+                ModLogger.debug("createNewFile failed for %s/%s/%s", loc, folder, filename);
         }
 
         return cacheFile;
