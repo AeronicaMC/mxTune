@@ -664,7 +664,6 @@ public class GuiMMLBox extends Gui
                     int kk = Math.abs(k);
                     String s = this.fontRendererInstance.trimStringToWidth(this.text.substring(kk), this.getWidth());
                     this.setCursorPosition(this.fontRendererInstance.trimStringToWidth(s, i).length() + kk);
-
                 }
             }
         }

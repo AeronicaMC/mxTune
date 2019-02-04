@@ -265,7 +265,6 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         
         if (this.helperTextCounter % 20 == 0) 
         {
-//            helperState = helperTextColor <= LO && !helperState ? !helperState : helperTextColor >= HI && helperState ? !helperState : helperState;
             helperState = ((helperTextColor <= LO) && !helperState) != helperState;
             helperState = ((helperTextColor >= HI) && helperState) != helperState;
         }
