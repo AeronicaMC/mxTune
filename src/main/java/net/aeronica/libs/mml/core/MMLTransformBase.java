@@ -432,7 +432,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
 
     private int intFromString(String s)
     {
-        int length = s.length() > 3 ? 3 : s.length();
+        int length = s.length() > 8 ? 8 : s.length();
         s = s.substring(0, length);
         return Integer.parseInt(s);
     }
