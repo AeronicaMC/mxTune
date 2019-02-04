@@ -174,6 +174,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
             ctxL = ctx.anote(i - 1);
             ctxR = ctx.anote(i);
 
+            if (ctxL == null || ctxR == null) continue;
             noteLeft = getMidiNote(ctxL);
             noteRight = getMidiNote(ctxR);
 
@@ -275,7 +276,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
         }
         if (ctx.INT() != null)
         {
-            mmlDuration = Integer.valueOf(ctx.INT().getText());
+            mmlDuration = IntFromString(ctx.INT().getText());
             dot = false;
         }
         if (!ctx.DOT().isEmpty())
@@ -317,7 +318,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
         if (ctx.INT() != null)
         {
             // "n#" format is not played correctly. One octave too low. CF Issue #6. Add 12 to fix.
-            midiNote = Integer.valueOf(ctx.INT().getText()) + 12;
+            midiNote = IntFromString(ctx.INT().getText()) + 12;
         }
         long lengthTicks = durationTicks(mmlLength, dot);
 
@@ -349,7 +350,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
         boolean dot = partState.isDotted();
         if (ctx.INT() != null)
         {
-            mmlLength = Integer.valueOf(ctx.INT().getText());
+            mmlLength = IntFromString(ctx.INT().getText());
             dot = false;
         }
         if (!ctx.DOT().isEmpty())
@@ -421,5 +422,12 @@ public abstract class MMLTransformBase extends MMLBaseListener
             dotted = true;
         }
         partState.setMMLLength(value, dotted);
+    }
+
+    private int IntFromString(String s)
+    {
+        int length = s.length() > 3 ? 3 : s.length();
+        s = s.substring(0, length);
+        return Integer.valueOf(s);
     }
 }
