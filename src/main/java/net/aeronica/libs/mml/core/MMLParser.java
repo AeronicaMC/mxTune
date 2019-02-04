@@ -1286,7 +1286,7 @@ public class MMLParser extends Parser {
 				{
 				setState(203);
 				match(CMD);
-				notifyErrorListeners("[octave | tempo | volume] missing value");
+				notifyErrorListeners("[Octave|Perform|Sustain|Tempo|Volume] missing value");
 				}
 				break;
 			}

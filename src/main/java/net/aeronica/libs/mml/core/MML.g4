@@ -70,7 +70,7 @@ tied    : anote ((cmd|len|octave|rest)* TIE+ (cmd|len|octave|rest)* anote)+     
 octave  : OCTAVE ;
          
 cmd		: CMD INT
-        | CMD {notifyErrorListeners("[octave | tempo | volume] missing value");}
+        | CMD {notifyErrorListeners("[Octave|Perform|Sustain|Tempo|Volume] missing value");}
 		;
 
 len     : LEN INT
@@ -83,7 +83,7 @@ part    : PART ;
 end     : END ;
 
 // Lexer rules		
-CMD		: [iotvIOTV] ;          // MML commands Instrument, Octave, Tempo, Volume
+CMD		: [iopstvIOPSTV] ;          // MML commands Instrument, Octave, Perform, Sustain, Tempo, Volume
 LEN     : [lL] ;                // MML Length command
 OCTAVE	: [<>] ;				// Octave down/up
 NOTE	: [a-gA-G] ;			// Notes

@@ -3,7 +3,7 @@ package net.aeronica.libs.mml.core;
 public class MMLAllowedCharacters
 {
     // Lexer rules - US_ASCII
-    // CMD : [iotvIOTV] ; // MML commands Instrument, Octave, Tempo, Volume
+    // CMD : [iopstvIOPSTV] ; // MML commands Instrument, Octave, Perform, Sustain, Tempo, Volume
     // LEN : [lL] ; // MML Length command
     // OCTAVE : [<>] ; // Octave down/up
     // NOTE : [a-gA-G] ; // Notes
@@ -19,7 +19,7 @@ public class MMLAllowedCharacters
     // WS : [ \t\r\n]+ -> skip ; // toss out whitespace
     // JUNK : [\u0000-~] -> skip ; // anything leftover
 
-    private static final String MML_CHARACTERS = "abcdefgABCDEFGrR<>+#-.,&0123456789nNotvOTVlLM@;";
+    private static final String MML_CHARACTERS = "abcdefgABCDEFGrR<>+#-.,&0123456789nNopstvOPSTVlLM@;";
     private MMLAllowedCharacters() {/* NOP */}
 
     public static boolean isAllowedCharacter(char character)
