@@ -50,12 +50,12 @@ public class GuiMusicOptions extends GuiScreen
 {
     public static final int GUI_ID = 8;
     private GuiScreen guiScreenOld;
-    private String TITLE = I18n.format("mxtune.gui.musicOptions.title");
-    private String LABEL_WHITELIST = I18n.format("mxtune.gui.musicOptions.label.whitelist");
-    private String LABEL_PLAYERS  = I18n.format("mxtune.gui.musicOptions.label.players");
-    private String LABEL_BLACKLIST  = I18n.format("mxtune.gui.musicOptions.label.blacklist");
-    private String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
-    private String BUTTON_ADJ_HUD = I18n.format("mxtune.gui.musicOptions.adjHud");
+    private static final String TITLE = I18n.format("mxtune.gui.musicOptions.title");
+    private static final String LABEL_WHITELIST = I18n.format("mxtune.gui.musicOptions.label.whitelist");
+    private static final String LABEL_PLAYERS  = I18n.format("mxtune.gui.musicOptions.label.players");
+    private static final String LABEL_BLACKLIST  = I18n.format("mxtune.gui.musicOptions.label.blacklist");
+    private static final String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
+    private static final String BUTTON_ADJ_HUD = I18n.format("mxtune.gui.musicOptions.adjHud");
 
     private GuiButtonExt buttonMuteOption;
     private GuiButtonExt buttonCancel;
