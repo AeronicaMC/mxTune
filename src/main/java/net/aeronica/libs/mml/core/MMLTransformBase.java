@@ -39,7 +39,8 @@ public abstract class MMLTransformBase extends MMLBaseListener
         instState = new StateInst();
         partState = new StatePart();
     }
-    
+
+    @Nullable
     private Integer getMidiNote(ParserRuleContext ctx) {return ctx != null ? midiNotes.get(ctx) : null;}
     private void saveMidiNote(ParserRuleContext ctx, int midiNote) {midiNotes.put(ctx, midiNote);}
 
@@ -205,7 +206,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
                         .startingTicks(tiedNote.startingTicks)
                         .lengthTicks(lengthTicks)
                         .volume(tiedNote.volume)
-                        .text(ctxL != null ? ctxL.getText() : "")
+                        .text(ctxL.getText())
                         .build());
                 isTied = false;
             }
