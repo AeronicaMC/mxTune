@@ -48,8 +48,8 @@ public class FileHelper
     private FileHelper() { /* NOP */ }
 
     public static File getCacheFile(String folder, String filename) throws IOException {
-        File loc = new File(".");
-        File cacheFile = new File(loc, folder + "/" + filename);
+        File loc = new File(".", folder);
+        File cacheFile = new File(loc, filename);
 
         if(!cacheFile.exists()) {
             if (!cacheFile.getParentFile().mkdirs())
