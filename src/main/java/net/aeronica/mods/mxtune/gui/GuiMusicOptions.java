@@ -1,6 +1,40 @@
 /*
  * Aeronica's mxTune MOD
- * Copyright 2018, Paul Boese a.k.a. Aeronica
+ * Copyright 2019, Paul Boese a.k.a. Aeronica
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
+/*
+ * Aeronica's mxTune MOD
+ * Copyright 2019, Paul Boese a.k.a. Aeronica
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
+/*
+ * Aeronica's mxTune MOD
+ * Copyright 2019, Paul Boese a.k.a. Aeronica
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -114,17 +148,17 @@ public class GuiMusicOptions extends GuiScreen
     public void initGui()
     {
         this.buttonList.clear();
-        playerListWidth = whiteListWidth = blackListWidth = getFontRenderer().getStringWidth("MWMWMWMWMWMWMWMW") + 10 + 12;
+        playerListWidth = whiteListWidth = blackListWidth = mc.fontRenderer.getStringWidth("MWMWMWMWMWMWMWMW") + 10 + 12;
         
         int y = (height - 100) / 2;
         int x = (width - (playerListWidth + whiteListWidth + blackListWidth + 24 + 24)) / 2;
-        listBoxWhite = new GuiWhiteList(this, whiteList, x, whiteListWidth, this.getFontRenderer().FONT_HEIGHT + 2);
+        listBoxWhite = new GuiWhiteList(this, whiteList, x, whiteListWidth, mc.fontRenderer.FONT_HEIGHT + 2);
         GuiButtonExt buttonWhiteToPlayers = new GuiButtonExt(11, listBoxWhite.getRight() + 2, y, 20, 20, ">");
         GuiButtonExt buttonPlayersToWhite = new GuiButtonExt(12, listBoxWhite.getRight() + 2, y + 25, 20, 20, "<");
-        listBoxPlayers = new GuiPlayerList(this, playerList, playerListWidth, this.getFontRenderer().FONT_HEIGHT + 2);
+        listBoxPlayers = new GuiPlayerList(this, playerList, playerListWidth, mc.fontRenderer.FONT_HEIGHT + 2);
         GuiButtonExt buttonPlayersToBlack = new GuiButtonExt(13, listBoxPlayers.getRight() + 2, y, 20, 20, ">");
         GuiButtonExt buttonBlackToPlayers = new GuiButtonExt(14, listBoxPlayers.getRight() + 2, y + 25, 20, 20, "<");
-        listBoxBlack = new GuiBlackList(this, blackList, blackListWidth, this.getFontRenderer().FONT_HEIGHT + 2);
+        listBoxBlack = new GuiBlackList(this, blackList, blackListWidth, mc.fontRenderer.FONT_HEIGHT + 2);
 
         int buttonWidth = 100;
         y = height - 100 + 4 + 5;
@@ -179,24 +213,24 @@ public class GuiMusicOptions extends GuiScreen
         else
             localTITLE = TITLE;
         /* draw "TITLE" at the top/right column middle */
-        int posX = (this.width - getFontRenderer().getStringWidth(localTITLE)) / 2 ;
+        int posX = (this.width - mc.fontRenderer.getStringWidth(localTITLE)) / 2 ;
         int posY = 10;
-        getFontRenderer().drawStringWithShadow(localTITLE, posX, posY, 0xD3D3D3);
+        mc.fontRenderer.drawStringWithShadow(localTITLE, posX, posY, 0xD3D3D3);
         
         /* draw list names - Whitelist */
-        posX = (this.listBoxWhite.getRight() - whiteListWidth / 2) - (getFontRenderer().getStringWidth(LABEL_WHITELIST) / 2);
+        posX = (this.listBoxWhite.getRight() - whiteListWidth / 2) - (mc.fontRenderer.getStringWidth(LABEL_WHITELIST) / 2);
         posY = 20;
-        getFontRenderer().drawStringWithShadow(LABEL_WHITELIST, posX, posY, 0xD3D3D3);
+        mc.fontRenderer.drawStringWithShadow(LABEL_WHITELIST, posX, posY, 0xD3D3D3);
 
         /* Players list */
-        posX = this.listBoxPlayers.getRight() - playerListWidth / 2 - (getFontRenderer().getStringWidth(LABEL_PLAYERS) / 2);
+        posX = this.listBoxPlayers.getRight() - playerListWidth / 2 - (mc.fontRenderer.getStringWidth(LABEL_PLAYERS) / 2);
         posY = 20;
-        getFontRenderer().drawStringWithShadow(LABEL_PLAYERS, posX, posY, 0xD3D3D3);
+        mc.fontRenderer.drawStringWithShadow(LABEL_PLAYERS, posX, posY, 0xD3D3D3);
 
         /* Blacklist */
-        posX = this.listBoxBlack.getRight() - blackListWidth / 2 - (getFontRenderer().getStringWidth(LABEL_BLACKLIST) / 2);
+        posX = this.listBoxBlack.getRight() - blackListWidth / 2 - (mc.fontRenderer.getStringWidth(LABEL_BLACKLIST) / 2);
         posY = 20;
-        getFontRenderer().drawStringWithShadow(LABEL_BLACKLIST, posX, posY, 0xD3D3D3);
+        mc.fontRenderer.drawStringWithShadow(LABEL_BLACKLIST, posX, posY, 0xD3D3D3);
 
         
         listBoxWhite.drawScreen(mouseX, mouseY, partialTicks);
@@ -278,26 +312,13 @@ public class GuiMusicOptions extends GuiScreen
         updateState();
         super.keyTyped(typedChar, keyCode);
     }
-
-    @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
-    {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
-    }
-
-    private Minecraft getMinecraftInstance() {return mc;}
-
-    private FontRenderer getFontRenderer() {return mc.fontRenderer;}
     
     private void sendOptionsToServer(int muteOption)
     {
         PacketDispatcher.sendToServer(new MusicOptionsMessage(muteOption, blackList, whiteList));
     }
-    
 
     /* Lists - Players, Whitelist, Blacklist */
-    // Notes: For saving to disk use UUIDs. For client-server communication use getEntityID. Done.
-    // UUID does not work on the client.
     
     public static class GuiPlayerList extends GuiScrollingList
     {
@@ -306,12 +327,16 @@ public class GuiMusicOptions extends GuiScreen
         
         GuiPlayerList(GuiMusicOptions parent, List<PlayerLists> playerLists,  int listWidth, int slotHeight)
         {
-            super(parent.getMinecraftInstance(), listWidth, parent.height - 32 - 100 + 4, 32, parent.height - 100 + 4, parent.listBoxWhite.getRight()+ 24, slotHeight, parent.width, parent.height);
+            super(parent.mc, listWidth, parent.height - 32 - 100 + 4, 32, parent.height - 100 + 4, parent.listBoxWhite.getRight()+ 24, slotHeight, parent.width, parent.height);
             this.parent = parent;
             this.playerLists = playerLists;
         }
         
-        int selectedIndex(int s) {return selectedIndex = s;}
+        int selectedIndex(int s)
+        {
+            selectedIndex = s;
+            return selectedIndex;
+        }
 
         public int getRight() {return right;}
         
@@ -319,10 +344,15 @@ public class GuiMusicOptions extends GuiScreen
         protected int getSize() {return this.playerLists.size();}
 
         @Override
-        protected void elementClicked(int index, boolean doubleClick) {this.parent.selectPlayerIndex(index);}
+        protected void elementClicked(int index, boolean doubleClick)
+        {
+            if (index == parent.selectedPlayerIndex) return;
+            parent.selectedPlayerIndex = index;
+            parent.selectedPlayerList = (index >= 0 && index <= parent.playerList.size()) ? parent.playerList.get(parent.selectedPlayerIndex) : null;
+        }
 
         @Override
-        protected boolean isSelected(int index) {return this.parent.playerIndexSelected(index);}
+        protected boolean isSelected(int index) {return index == parent.selectedPlayerIndex;}
 
         @Override
         protected void drawBackground()
@@ -337,25 +367,15 @@ public class GuiMusicOptions extends GuiScreen
         @Override
         protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
         {
-            FontRenderer font = this.parent.getFontRenderer();
+            FontRenderer font = parent.mc.fontRenderer;
             String ins = this.playerLists.get(slotIdx).getPlayerName();
 
             String s = font.trimStringToWidth(ins, listWidth - 10);
             /* light Blue */
             font.drawStringWithShadow(s, (float)this.left + 3, slotTop, 0xADD8E6);
-            drawPing(this.parent ,this.left + 3, listWidth - 10, slotTop, this.playerLists.get(slotIdx));
+            drawPing(parent ,this.left + 3, listWidth - 10, slotTop, this.playerLists.get(slotIdx));
         }
     }
-    
-    /* element was clicked */
-    private void selectPlayerIndex(int index)
-    {
-        if (index == this.selectedPlayerIndex) return;
-        this.selectedPlayerIndex = index;
-        this.selectedPlayerList = (index >= 0 && index <= playerList.size()) ? playerList.get(selectedPlayerIndex) : null;
-    }
-
-    private boolean playerIndexSelected(int index) {return index == selectedPlayerIndex;}
 
     /* The White List */
     public static class GuiWhiteList extends GuiScrollingList
@@ -365,12 +385,16 @@ public class GuiMusicOptions extends GuiScreen
         
         GuiWhiteList(GuiMusicOptions parent, List<PlayerLists> whiteLists, int left, int listWidth, int slotHeight)
         {
-            super(parent.getMinecraftInstance(), listWidth, parent.height - 32 - 100 + 4, 32, parent.height - 100 + 4, left, slotHeight, parent.width, parent.height);
+            super(parent.mc, listWidth, parent.height - 32 - 100 + 4, 32, parent.height - 100 + 4, left, slotHeight, parent.width, parent.height);
             this.parent = parent;
             this.whiteLists = whiteLists;
         }
         
-        int selectedIndex(int s) {return selectedIndex = s;}
+        int selectedIndex(int s)
+        {
+            selectedIndex = s;
+            return selectedIndex;
+        }
 
         public int getRight() {return right;}
         
@@ -378,10 +402,15 @@ public class GuiMusicOptions extends GuiScreen
         protected int getSize() {return this.whiteLists.size();}
 
         @Override
-        protected void elementClicked(int index, boolean doubleClick) {this.parent.selectWhiteIndex(index);}
+        protected void elementClicked(int index, boolean doubleClick)
+        {
+            if (index == parent.selectedWhiteIndex) return;
+            parent.selectedWhiteIndex = index;
+            parent.selectedWhiteList = (index >= 0 && index <= parent.whiteList.size()) ? parent.whiteList.get(parent.selectedWhiteIndex) : null;
+        }
 
         @Override
-        protected boolean isSelected(int index) {return this.parent.whiteIndexSelected(index);}
+        protected boolean isSelected(int index) {return index == parent.selectedWhiteIndex;}
 
         @Override
         protected void drawBackground()
@@ -396,25 +425,15 @@ public class GuiMusicOptions extends GuiScreen
         @Override
         protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
         {
-            FontRenderer font = this.parent.getFontRenderer();
+            FontRenderer font = parent.mc.fontRenderer;
             String ins = this.whiteLists.get(slotIdx).getPlayerName();
 
             String s = font.trimStringToWidth(ins, listWidth - 10);
             /* light Blue */
             font.drawStringWithShadow(s, (float)this.left + 3, slotTop, 0xADD8E6);
-            drawPing(this.parent ,this.left + 3, listWidth - 10, slotTop, this.whiteLists.get(slotIdx));
+            drawPing(parent ,this.left + 3, listWidth - 10, slotTop, this.whiteLists.get(slotIdx));
         }
     }
-    
-    /* element was clicked */
-    private void selectWhiteIndex(int index)
-    {
-        if (index == this.selectedWhiteIndex) return;
-        this.selectedWhiteIndex = index;
-        this.selectedWhiteList = (index >= 0 && index <= whiteList.size()) ? whiteList.get(selectedWhiteIndex) : null;
-    }
-
-    private boolean whiteIndexSelected(int index) {return index == selectedWhiteIndex;}
 
     /* The Black List */
     public static class GuiBlackList extends GuiScrollingList
@@ -424,12 +443,16 @@ public class GuiMusicOptions extends GuiScreen
         
         GuiBlackList(GuiMusicOptions parent, List<PlayerLists> blackLists,  int listWidth, int slotHeight)
         {
-            super(parent.getMinecraftInstance(), listWidth, parent.height - 32 - 100 + 4, 32, parent.height - 100 + 4, parent.listBoxPlayers.getRight() + 24, slotHeight, parent.width, parent.height);
+            super(parent.mc, listWidth, parent.height - 32 - 100 + 4, 32, parent.height - 100 + 4, parent.listBoxPlayers.getRight() + 24, slotHeight, parent.width, parent.height);
             this.parent = parent;
             this.blackLists = blackLists;
         }
         
-        int selectedIndex(int s) {return selectedIndex = s;}
+        int selectedIndex(int s)
+        {
+            selectedIndex = s;
+            return selectedIndex;
+        }
 
         public int getRight() {return right;}
         
@@ -437,10 +460,15 @@ public class GuiMusicOptions extends GuiScreen
         protected int getSize() {return this.blackLists.size();}
 
         @Override
-        protected void elementClicked(int index, boolean doubleClick) {this.parent.selectBlackIndex(index);}
+        protected void elementClicked(int index, boolean doubleClick)
+        {
+            if (index == parent.selectedBlackIndex) return;
+            parent.selectedBlackIndex = index;
+            parent.selectedBlackList = (index >= 0 && index <= parent.blackList.size()) ? parent.blackList.get(parent.selectedBlackIndex) : null;
+        }
 
         @Override
-        protected boolean isSelected(int index) {return this.parent.blackIndexSelected(index);}
+        protected boolean isSelected(int index) {return index == parent.selectedBlackIndex;}
 
         @Override
         protected void drawBackground()
@@ -450,35 +478,25 @@ public class GuiMusicOptions extends GuiScreen
         }
 
         @Override
-        protected int getContentHeight() {return (this.getSize()) * slotHeight;}
+        protected int getContentHeight() {return getSize() * slotHeight;}
 
         @Override
         protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
         {
-            FontRenderer font = this.parent.getFontRenderer();
-            String ins = this.blackLists.get(slotIdx).getPlayerName();
+            FontRenderer font = parent.mc.fontRenderer;
+            String ins = blackLists.get(slotIdx).getPlayerName();
 
             String s = font.trimStringToWidth(ins, listWidth - 10);
             /* light Blue */
             font.drawStringWithShadow(s, (float)this.left + 3, slotTop, 0xADD8E6);
-            drawPing(this.parent ,this.left + 3, listWidth - 10, slotTop, this.blackLists.get(slotIdx));
+            drawPing(parent ,left + 3, listWidth - 10, slotTop, blackLists.get(slotIdx));
         }
     }
-    
-    /* element was clicked */
-    private void selectBlackIndex(int index)
-    {
-        if (index == this.selectedBlackIndex) return;
-        this.selectedBlackIndex = index;
-        this.selectedBlackList = (index >= 0 && index <= blackList.size()) ? blackList.get(selectedBlackIndex) : null;
-    }
-
-    private boolean blackIndexSelected(int index) {return index == selectedBlackIndex;}
 
     private static void drawPing(GuiMusicOptions parent, int x, int sWidth, int y, PlayerLists playerInfo)
     {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        parent.getMinecraftInstance().getTextureManager().bindTexture(ICONS);
+        parent.mc.getTextureManager().bindTexture(ICONS);
         int j;
 
         if (playerInfo.isOnline())
@@ -496,14 +514,15 @@ public class GuiMusicOptions extends GuiScreen
     }
     
     static class PlayerComparator implements Comparator<NetworkPlayerInfo>
+    {
+        private PlayerComparator() {}
+
+        @Override
+        public int compare(NetworkPlayerInfo p_compare_1_, NetworkPlayerInfo p_compare_2_)
         {
-            private PlayerComparator() {}
-            @Override
-            public int compare(NetworkPlayerInfo p_compare_1_, NetworkPlayerInfo p_compare_2_)
-            {
-                return ComparisonChain.start().compare(p_compare_1_.getGameProfile().getName(), p_compare_2_.getGameProfile().getName()).result();
-            }
+            return ComparisonChain.start().compare(p_compare_1_.getGameProfile().getName(), p_compare_2_.getGameProfile().getName()).result();
         }
+    }
 
     private static final Ordering<NetworkPlayerInfo> ENTRY_ORDERING = Ordering.from(new GuiMusicOptions.PlayerComparator());
     
@@ -528,7 +547,7 @@ public class GuiMusicOptions extends GuiScreen
         PlayerLists pList;
         if (!(this.mc.isIntegratedServerRunning() && this.mc.player.connection.getPlayerInfoMap().size() <= 1))
         {
-            NetHandlerPlayClient nethandlerplayclient = this.getMinecraftInstance().player.connection;
+            NetHandlerPlayClient nethandlerplayclient = this.mc.player.connection;
             List<NetworkPlayerInfo> list = ENTRY_ORDERING.sortedCopy(nethandlerplayclient.getPlayerInfoMap());
             for (NetworkPlayerInfo networkplayerinfo : list)
             {
