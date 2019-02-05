@@ -14,40 +14,6 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-
-/*
- * Aeronica's mxTune MOD
- * Copyright 2019, Paul Boese a.k.a. Aeronica
- *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
- */
-
-/*
- * Aeronica's mxTune MOD
- * Copyright 2019, Paul Boese a.k.a. Aeronica
- *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
- */
 package net.aeronica.mods.mxtune.gui;
 
 import com.google.common.collect.ComparisonChain;
@@ -93,7 +59,7 @@ public class GuiMusicOptions extends GuiScreen
 
     private GuiButtonExt buttonMuteOption;
     private GuiButtonExt buttonCancel;
-    private GuiPlayerList listBoxPlayers;
+    private GuiNetPlayerList listBoxPlayers;
     private GuiWhiteList listBoxWhite;
     private GuiBlackList listBoxBlack;
 
@@ -102,7 +68,7 @@ public class GuiMusicOptions extends GuiScreen
     private boolean midiUnavailable;
 
     /* PlayerList */
-    private List<PlayerLists> playerList;
+    private List<PlayerLists> netPlayerList;
     private int selectedPlayerIndex = -1;
     private PlayerLists selectedPlayerList = new PlayerLists();
     private int playerListWidth;
@@ -132,13 +98,13 @@ public class GuiMusicOptions extends GuiScreen
         this.guiScreenOld = guiScreenIn;
         muteOption = MusicOptionsUtil.getMuteOption(player);
         midiUnavailable = MIDISystemUtil.midiUnavailable();
-        initPlayerList();
+        initPlayerLists();
     }
     
     @Override
     public void updateScreen()
     {
-        selectedPlayerIndex = this.listBoxPlayers.selectedIndex(playerList.indexOf(selectedPlayerList));
+        selectedPlayerIndex = this.listBoxPlayers.selectedIndex(netPlayerList.indexOf(selectedPlayerList));
         selectedWhiteIndex = this.listBoxWhite.selectedIndex(whiteList.indexOf(selectedWhiteList));
         selectedBlackIndex = this.listBoxBlack.selectedIndex(blackList.indexOf(selectedBlackList));
         super.updateScreen();
@@ -155,7 +121,7 @@ public class GuiMusicOptions extends GuiScreen
         listBoxWhite = new GuiWhiteList(this, whiteList, x, whiteListWidth, mc.fontRenderer.FONT_HEIGHT + 2);
         GuiButtonExt buttonWhiteToPlayers = new GuiButtonExt(11, listBoxWhite.getRight() + 2, y, 20, 20, ">");
         GuiButtonExt buttonPlayersToWhite = new GuiButtonExt(12, listBoxWhite.getRight() + 2, y + 25, 20, 20, "<");
-        listBoxPlayers = new GuiPlayerList(this, playerList, playerListWidth, mc.fontRenderer.FONT_HEIGHT + 2);
+        listBoxPlayers = new GuiNetPlayerList(this, netPlayerList, playerListWidth, mc.fontRenderer.FONT_HEIGHT + 2);
         GuiButtonExt buttonPlayersToBlack = new GuiButtonExt(13, listBoxPlayers.getRight() + 2, y, 20, 20, ">");
         GuiButtonExt buttonBlackToPlayers = new GuiButtonExt(14, listBoxPlayers.getRight() + 2, y + 25, 20, 20, "<");
         listBoxBlack = new GuiBlackList(this, blackList, blackListWidth, mc.fontRenderer.FONT_HEIGHT + 2);
@@ -273,25 +239,25 @@ public class GuiMusicOptions extends GuiScreen
             if (this.selectedWhiteIndex == -1 || this.selectedWhiteIndex > this.whiteList.size()) break;
             t = this.whiteList.get(this.selectedWhiteIndex);
             this.whiteList.remove(this.selectedWhiteIndex);
-            this.playerList.add(t);
+            this.netPlayerList.add(t);
             break;            
         case 12:
-            if (this.selectedPlayerIndex == -1 || this.selectedPlayerIndex > this.playerList.size()) break;
-            t = this.playerList.get(this.selectedPlayerIndex);
-            this.playerList.remove(this.selectedPlayerIndex);
+            if (this.selectedPlayerIndex == -1 || this.selectedPlayerIndex > this.netPlayerList.size()) break;
+            t = this.netPlayerList.get(this.selectedPlayerIndex);
+            this.netPlayerList.remove(this.selectedPlayerIndex);
             this.whiteList.add(t);
             break;
         case 13:
-            if (this.selectedPlayerIndex == -1 || this.selectedPlayerIndex > this.playerList.size()) break;
-            t = this.playerList.get(this.selectedPlayerIndex);
-            this.playerList.remove(this.selectedPlayerIndex);
+            if (this.selectedPlayerIndex == -1 || this.selectedPlayerIndex > this.netPlayerList.size()) break;
+            t = this.netPlayerList.get(this.selectedPlayerIndex);
+            this.netPlayerList.remove(this.selectedPlayerIndex);
             this.blackList.add(t);
             break;
         case 14:
             if (this.selectedBlackIndex == -1 || this.selectedBlackIndex > this.blackList.size()) break;
             t = this.blackList.get(this.selectedBlackIndex);
             this.blackList.remove(this.selectedBlackIndex);
-            this.playerList.add(t);
+            this.netPlayerList.add(t);
             break;            
 
         default:
@@ -320,12 +286,12 @@ public class GuiMusicOptions extends GuiScreen
 
     /* Lists - Players, Whitelist, Blacklist */
     
-    public static class GuiPlayerList extends GuiScrollingList
+    public static class GuiNetPlayerList extends GuiScrollingList
     {
         GuiMusicOptions parent;
         private final List<PlayerLists> playerLists;
         
-        GuiPlayerList(GuiMusicOptions parent, List<PlayerLists> playerLists,  int listWidth, int slotHeight)
+        GuiNetPlayerList(GuiMusicOptions parent, List<PlayerLists> playerLists, int listWidth, int slotHeight)
         {
             super(parent.mc, listWidth, parent.height - 32 - 100 + 4, 32, parent.height - 100 + 4, parent.listBoxWhite.getRight()+ 24, slotHeight, parent.width, parent.height);
             this.parent = parent;
@@ -348,7 +314,7 @@ public class GuiMusicOptions extends GuiScreen
         {
             if (index == parent.selectedPlayerIndex) return;
             parent.selectedPlayerIndex = index;
-            parent.selectedPlayerList = (index >= 0 && index <= parent.playerList.size()) ? parent.playerList.get(parent.selectedPlayerIndex) : null;
+            parent.selectedPlayerList = (index >= 0 && index <= parent.netPlayerList.size()) ? parent.netPlayerList.get(parent.selectedPlayerIndex) : null;
         }
 
         @Override
@@ -518,9 +484,9 @@ public class GuiMusicOptions extends GuiScreen
         private PlayerComparator() {}
 
         @Override
-        public int compare(NetworkPlayerInfo p_compare_1_, NetworkPlayerInfo p_compare_2_)
+        public int compare(NetworkPlayerInfo pCompare1, NetworkPlayerInfo pCompare2)
         {
-            return ComparisonChain.start().compare(p_compare_1_.getGameProfile().getName(), p_compare_2_.getGameProfile().getName()).result();
+            return ComparisonChain.start().compare(pCompare1.getGameProfile().getName(), pCompare2.getGameProfile().getName()).result();
         }
     }
 
@@ -538,9 +504,9 @@ public class GuiMusicOptions extends GuiScreen
     
     private static final Ordering<PlayerLists> LIST_ORDERING = Ordering.from(new GuiMusicOptions.PlayerListsComparator());
     
-    private void initPlayerList()
+    private void initPlayerLists()
     {
-        playerList = new ArrayList<>();
+        netPlayerList = new ArrayList<>();
         whiteList = MusicOptionsUtil.getWhiteList(player);
         blackList = MusicOptionsUtil.getBlackList(player);
         
@@ -555,37 +521,29 @@ public class GuiMusicOptions extends GuiScreen
                 pList.setPlayerName(getPlayerName(networkplayerinfo));
                 pList.setOnline(true);
                 pList.setUuid(networkplayerinfo.getGameProfile().getId());
-                if (!pList.getUuid().equals(player.getUniqueID())) playerList.add(pList);
+                if (!pList.getUuid().equals(player.getUniqueID())) netPlayerList.add(pList);
             }
         }
-        for (PlayerLists bList : blackList)
-        {
-            for (int i=0; i < playerList.size(); i++)
-            {
-                PlayerLists p = playerList.get(i);
-                if (p.getUuid().equals(bList.getUuid()))
-                {
-                    bList.setOnline(true);
-                    bList.setPlayerName(p.getPlayerName());
-                    playerList.remove(i);                    
-                }
-            }
-        }
-        for (PlayerLists wList: whiteList)
-        {
-            for (int i=0; i < playerList.size(); i++)
-            {
-                PlayerLists p = playerList.get(i);
-                if (p.getUuid().equals(wList.getUuid()))
-                {
-                    wList.setOnline(true);
-                    wList.setPlayerName(p.getPlayerName());
-                    playerList.remove(i);                    
-                }
-            }
-        }
-        /* Reorder the lists */
+        initClassifiedPlayerList(netPlayerList, blackList);
+        initClassifiedPlayerList(netPlayerList, whiteList);
         sortLists();
+    }
+
+    private void initClassifiedPlayerList(List<PlayerLists> netPlayers, List<PlayerLists> classifiedPlayers)
+    {
+        for (PlayerLists classifiedPlayer: classifiedPlayers)
+        {
+            for (int i=0; i < netPlayers.size(); i++)
+            {
+                PlayerLists nPlayer = netPlayers.get(i);
+                if (nPlayer.getUuid().equals(classifiedPlayer.getUuid()))
+                {
+                    classifiedPlayer.setOnline(true);
+                    classifiedPlayer.setPlayerName(nPlayer.getPlayerName());
+                    netPlayers.remove(i);
+                }
+            }
+        }
     }
 
     /* A brute force way to keep the lists sorted and not worry about thread safety */
@@ -599,9 +557,9 @@ public class GuiMusicOptions extends GuiScreen
         blackList.clear();
         blackList.addAll(tempBlackList);
 
-        List<PlayerLists> tempPlayerList = LIST_ORDERING.sortedCopy(playerList);
-        playerList.clear();
-        playerList.addAll(tempPlayerList);
+        List<PlayerLists> tempPlayerList = LIST_ORDERING.sortedCopy(netPlayerList);
+        netPlayerList.clear();
+        netPlayerList.addAll(tempPlayerList);
     }
     
     private String getPlayerName(NetworkPlayerInfo networkPlayerInfoIn)
