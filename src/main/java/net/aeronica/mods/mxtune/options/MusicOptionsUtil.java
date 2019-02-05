@@ -111,24 +111,24 @@ public class MusicOptionsUtil
         return getImpl(playerIn).getSParam3();
     }
     
-    public static void setBlackList(EntityPlayer playerIn, List<PlayerLists> blackList)
+    public static void setBlackList(EntityPlayer playerIn, List<ClassifiedPlayer> blackList)
     {
         getImpl(playerIn).setBlackList(blackList);
         sync(playerIn, SYNC_BLACK_LIST);
     }
 
-    public static List<PlayerLists> getBlackList(EntityPlayer playerIn)
+    public static List<ClassifiedPlayer> getBlackList(EntityPlayer playerIn)
     {
         return getImpl(playerIn).getBlackList();
     }
     
-    public static void setWhiteList(EntityPlayer playerIn, List<PlayerLists> whiteList)
+    public static void setWhiteList(EntityPlayer playerIn, List<ClassifiedPlayer> whiteList)
     {
         getImpl(playerIn).setWhiteList(whiteList);
         sync(playerIn, SYNC_WHITE_LIST);
     }
 
-    public static List<PlayerLists> getWhiteList(EntityPlayer playerIn)
+    public static List<ClassifiedPlayer> getWhiteList(EntityPlayer playerIn)
     {
         return getImpl(playerIn).getWhiteList();
     }
@@ -193,11 +193,11 @@ public class MusicOptionsUtil
         return !result;
     }
 
-    private static boolean isPlayerInList(EntityPlayer playerIn, EntityPlayer otherPlayer, List<PlayerLists> playerList)
+    private static boolean isPlayerInList(EntityPlayer playerIn, EntityPlayer otherPlayer, List<ClassifiedPlayer> playerList)
     {
         boolean inList = false;
         if (!playerIn.equals(otherPlayer))
-            for (PlayerLists w : playerList)
+            for (ClassifiedPlayer w : playerList)
                 if (w.getUuid().equals(otherPlayer.getUniqueID()))
                 {
                     inList = true;

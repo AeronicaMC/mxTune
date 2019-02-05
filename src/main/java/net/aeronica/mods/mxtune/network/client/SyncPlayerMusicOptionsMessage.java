@@ -17,9 +17,9 @@
 package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
+import net.aeronica.mods.mxtune.options.ClassifiedPlayer;
 import net.aeronica.mods.mxtune.options.IPlayerMusicOptions;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
-import net.aeronica.mods.mxtune.options.PlayerLists;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.Util;
 import net.minecraft.entity.player.EntityPlayer;
@@ -48,8 +48,8 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     private String sParam1;
     private String sParam2;
     private String sParam3;
-    private List<PlayerLists> blackList;
-    private List<PlayerLists> whiteList;
+    private List<ClassifiedPlayer> blackList;
+    private List<ClassifiedPlayer> whiteList;
 
     private byte[] byteBuffer = null;
 
@@ -191,15 +191,15 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     }
 
     @SuppressWarnings("unchecked")
-    private List<PlayerLists> readPlayerList(PacketBuffer buffer)
+    private List<ClassifiedPlayer> readPlayerList(PacketBuffer buffer)
     {
-        List<PlayerLists> playerList = Collections.emptyList();
+        List<ClassifiedPlayer> playerList = Collections.emptyList();
         try{
             // Deserialize data object from a byte array
             byteBuffer = buffer.readByteArray();
             ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
             ObjectInputStream in = new ObjectInputStream(bis) ;
-            playerList = (List<PlayerLists>) in.readObject();
+            playerList = (List<ClassifiedPlayer>) in.readObject();
             in.close();            
         } catch (ClassNotFoundException | IOException e)
         {
@@ -209,7 +209,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     }
 
     @SuppressWarnings("all")
-    private void writePlayerList(PacketBuffer buffer, List<PlayerLists> playerListIn)
+    private void writePlayerList(PacketBuffer buffer, List<ClassifiedPlayer> playerListIn)
     {
         try{
             // Serialize data object to a byte array

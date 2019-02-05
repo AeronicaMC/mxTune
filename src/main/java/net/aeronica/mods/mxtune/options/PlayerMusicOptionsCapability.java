@@ -206,11 +206,11 @@ public class PlayerMusicOptionsCapability
             {
                 NBTTagList listBlack = properties.getTagList(KEY_LIST_BLACK, Constants.NBT.TAG_COMPOUND);
                 int count = listBlack.tagCount();
-                List<PlayerLists> blackList = new ArrayList<>();
+                List<ClassifiedPlayer> blackList = new ArrayList<>();
                 for (int i = 0; i < count; i++)
                 {
                     NBTTagCompound entry = listBlack.getCompoundTagAt(i);
-                    PlayerLists plist = new PlayerLists();
+                    ClassifiedPlayer plist = new ClassifiedPlayer();
                     plist.setPlayerName(entry.getString(KEY_PLAYER_NAME));
                     plist.setUuid(new UUID(entry.getLong(KEY_UUID_MOST), entry.getLong(KEY_UUID_LEAST)));
                     plist.setOnline(false);
@@ -222,11 +222,11 @@ public class PlayerMusicOptionsCapability
             {
                 NBTTagList listWhite = properties.getTagList(KEY_LIST_WHITE, Constants.NBT.TAG_COMPOUND);
                 int count = listWhite.tagCount();
-                List<PlayerLists> whiteList = new ArrayList<>();
+                List<ClassifiedPlayer> whiteList = new ArrayList<>();
                 for (int i = 0; i < count; i++)
                 {
                     NBTTagCompound entry = listWhite.getCompoundTagAt(i);
-                    PlayerLists plist = new PlayerLists();
+                    ClassifiedPlayer plist = new ClassifiedPlayer();
                     plist.setPlayerName(entry.getString(KEY_PLAYER_NAME));
                     plist.setUuid(new UUID(entry.getLong(KEY_UUID_MOST), entry.getLong(KEY_UUID_LEAST)));
                     plist.setOnline(false);

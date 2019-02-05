@@ -20,8 +20,8 @@ import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.MusicOptionsMessage;
+import net.aeronica.mods.mxtune.options.ClassifiedPlayer;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
-import net.aeronica.mods.mxtune.options.PlayerLists;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -68,21 +68,21 @@ public class GuiMusicOptions extends GuiScreen
     private boolean midiUnavailable;
 
     /* PlayerList */
-    private List<PlayerLists> netPlayerList;
+    private List<ClassifiedPlayer> netPlayerList;
     private int selectedPlayerIndex = -1;
-    private PlayerLists selectedPlayerList = new PlayerLists();
+    private ClassifiedPlayer selectedPlayerList = new ClassifiedPlayer();
     private int playerListWidth;
 
     /* WhiteList */
-    private List<PlayerLists> whiteList;
+    private List<ClassifiedPlayer> whiteList;
     private int selectedWhiteIndex = -1;
-    private PlayerLists selectedWhiteList = new PlayerLists();
+    private ClassifiedPlayer selectedWhiteList = new ClassifiedPlayer();
     private int whiteListWidth;
     
     /* WhiteList */
-    private List<PlayerLists> blackList;
+    private List<ClassifiedPlayer> blackList;
     private int selectedBlackIndex = -1;
-    private PlayerLists selectedBlackList = new PlayerLists();
+    private ClassifiedPlayer selectedBlackList = new ClassifiedPlayer();
     private int blackListWidth;
 
     /* Cached State for when the GUI is resized */
@@ -208,7 +208,7 @@ public class GuiMusicOptions extends GuiScreen
     @Override
     protected void actionPerformed(GuiButton guibutton)
     {
-        PlayerLists t;
+        ClassifiedPlayer t;
 
         switch (guibutton.id)
         {
@@ -289,9 +289,9 @@ public class GuiMusicOptions extends GuiScreen
     public static class GuiNetPlayerList extends GuiScrollingList
     {
         GuiMusicOptions parent;
-        private final List<PlayerLists> playerLists;
+        private final List<ClassifiedPlayer> playerLists;
         
-        GuiNetPlayerList(GuiMusicOptions parent, List<PlayerLists> playerLists, int listWidth, int slotHeight)
+        GuiNetPlayerList(GuiMusicOptions parent, List<ClassifiedPlayer> playerLists, int listWidth, int slotHeight)
         {
             super(parent.mc, listWidth, parent.height - 32 - 100 + 4, 32, parent.height - 100 + 4, parent.listBoxWhite.getRight()+ 24, slotHeight, parent.width, parent.height);
             this.parent = parent;
@@ -347,9 +347,9 @@ public class GuiMusicOptions extends GuiScreen
     public static class GuiWhiteList extends GuiScrollingList
     {
         GuiMusicOptions parent;
-        private final List<PlayerLists> whiteLists;
+        private final List<ClassifiedPlayer> whiteLists;
         
-        GuiWhiteList(GuiMusicOptions parent, List<PlayerLists> whiteLists, int left, int listWidth, int slotHeight)
+        GuiWhiteList(GuiMusicOptions parent, List<ClassifiedPlayer> whiteLists, int left, int listWidth, int slotHeight)
         {
             super(parent.mc, listWidth, parent.height - 32 - 100 + 4, 32, parent.height - 100 + 4, left, slotHeight, parent.width, parent.height);
             this.parent = parent;
@@ -405,9 +405,9 @@ public class GuiMusicOptions extends GuiScreen
     public static class GuiBlackList extends GuiScrollingList
     {
         GuiMusicOptions parent;
-        private final List<PlayerLists> blackLists;
+        private final List<ClassifiedPlayer> blackLists;
         
-        GuiBlackList(GuiMusicOptions parent, List<PlayerLists> blackLists,  int listWidth, int slotHeight)
+        GuiBlackList(GuiMusicOptions parent, List<ClassifiedPlayer> blackLists, int listWidth, int slotHeight)
         {
             super(parent.mc, listWidth, parent.height - 32 - 100 + 4, 32, parent.height - 100 + 4, parent.listBoxPlayers.getRight() + 24, slotHeight, parent.width, parent.height);
             this.parent = parent;
@@ -459,7 +459,7 @@ public class GuiMusicOptions extends GuiScreen
         }
     }
 
-    private static void drawPing(GuiMusicOptions parent, int x, int sWidth, int y, PlayerLists playerInfo)
+    private static void drawPing(GuiMusicOptions parent, int x, int sWidth, int y, ClassifiedPlayer playerInfo)
     {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         parent.mc.getTextureManager().bindTexture(ICONS);
@@ -492,36 +492,35 @@ public class GuiMusicOptions extends GuiScreen
 
     private static final Ordering<NetworkPlayerInfo> ENTRY_ORDERING = Ordering.from(new GuiMusicOptions.PlayerComparator());
     
-    static class PlayerListsComparator implements Comparator<PlayerLists>
+    static class PlayerListsComparator implements Comparator<ClassifiedPlayer>
     {
         private PlayerListsComparator() {}        
         @Override
-        public int compare(PlayerLists o1, PlayerLists o2)
+        public int compare(ClassifiedPlayer o1, ClassifiedPlayer o2)
         {
             return ComparisonChain.start().compareTrueFirst(o1.isOnline(), o2.isOnline()).compare(o1.getPlayerName(), o2.getPlayerName()).result();
         }   
     }
     
-    private static final Ordering<PlayerLists> LIST_ORDERING = Ordering.from(new GuiMusicOptions.PlayerListsComparator());
+    private static final Ordering<ClassifiedPlayer> LIST_ORDERING = Ordering.from(new GuiMusicOptions.PlayerListsComparator());
     
     private void initPlayerLists()
     {
         netPlayerList = new ArrayList<>();
         whiteList = MusicOptionsUtil.getWhiteList(player);
         blackList = MusicOptionsUtil.getBlackList(player);
-        
-        PlayerLists pList;
+
         if (!(this.mc.isIntegratedServerRunning() && this.mc.player.connection.getPlayerInfoMap().size() <= 1))
         {
             NetHandlerPlayClient nethandlerplayclient = this.mc.player.connection;
             List<NetworkPlayerInfo> list = ENTRY_ORDERING.sortedCopy(nethandlerplayclient.getPlayerInfoMap());
             for (NetworkPlayerInfo networkplayerinfo : list)
             {
-                pList = new PlayerLists();
-                pList.setPlayerName(getPlayerName(networkplayerinfo));
-                pList.setOnline(true);
-                pList.setUuid(networkplayerinfo.getGameProfile().getId());
-                if (!pList.getUuid().equals(player.getUniqueID())) netPlayerList.add(pList);
+                ClassifiedPlayer networkPlayer = new ClassifiedPlayer();
+                networkPlayer.setPlayerName(getPlayerName(networkplayerinfo));
+                networkPlayer.setOnline(true);
+                networkPlayer.setUuid(networkplayerinfo.getGameProfile().getId());
+                if (!networkPlayer.getUuid().equals(player.getUniqueID())) netPlayerList.add(networkPlayer);
             }
         }
         initClassifiedPlayerList(netPlayerList, blackList);
@@ -529,13 +528,13 @@ public class GuiMusicOptions extends GuiScreen
         sortLists();
     }
 
-    private void initClassifiedPlayerList(List<PlayerLists> netPlayers, List<PlayerLists> classifiedPlayers)
+    private void initClassifiedPlayerList(List<ClassifiedPlayer> netPlayers, List<ClassifiedPlayer> classifiedPlayers)
     {
-        for (PlayerLists classifiedPlayer: classifiedPlayers)
+        for (ClassifiedPlayer classifiedPlayer: classifiedPlayers)
         {
             for (int i=0; i < netPlayers.size(); i++)
             {
-                PlayerLists nPlayer = netPlayers.get(i);
+                ClassifiedPlayer nPlayer = netPlayers.get(i);
                 if (nPlayer.getUuid().equals(classifiedPlayer.getUuid()))
                 {
                     classifiedPlayer.setOnline(true);
@@ -549,15 +548,15 @@ public class GuiMusicOptions extends GuiScreen
     /* A brute force way to keep the lists sorted and not worry about thread safety */
     private void sortLists()
     {
-        List<PlayerLists> tempWhiteList = LIST_ORDERING.sortedCopy(whiteList);
+        List<ClassifiedPlayer> tempWhiteList = LIST_ORDERING.sortedCopy(whiteList);
         whiteList.clear();
         whiteList.addAll(tempWhiteList);
         
-        List<PlayerLists> tempBlackList = LIST_ORDERING.sortedCopy(blackList);
+        List<ClassifiedPlayer> tempBlackList = LIST_ORDERING.sortedCopy(blackList);
         blackList.clear();
         blackList.addAll(tempBlackList);
 
-        List<PlayerLists> tempPlayerList = LIST_ORDERING.sortedCopy(netPlayerList);
+        List<ClassifiedPlayer> tempPlayerList = LIST_ORDERING.sortedCopy(netPlayerList);
         netPlayerList.clear();
         netPlayerList.addAll(tempPlayerList);
     }

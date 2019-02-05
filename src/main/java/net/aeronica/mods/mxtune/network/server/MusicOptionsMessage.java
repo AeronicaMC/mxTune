@@ -17,8 +17,8 @@
 package net.aeronica.mods.mxtune.network.server;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
+import net.aeronica.mods.mxtune.options.ClassifiedPlayer;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
-import net.aeronica.mods.mxtune.options.PlayerLists;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
@@ -32,15 +32,15 @@ public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessa
 {
     
     private int muteOption;
-    private List<PlayerLists> blackList;
-    private List<PlayerLists> whiteList;
+    private List<ClassifiedPlayer> blackList;
+    private List<ClassifiedPlayer> whiteList;
     private byte[] byteBuffer = null;
     private boolean canProcess = true;
 
     @SuppressWarnings("unused")
     public MusicOptionsMessage() {/* Required by the PacketDispatcher */}
     
-    public MusicOptionsMessage(int muteOption, List<PlayerLists> blackList, List<PlayerLists> whiteList)
+    public MusicOptionsMessage(int muteOption, List<ClassifiedPlayer> blackList, List<ClassifiedPlayer> whiteList)
     {
         this.muteOption = muteOption;
         this.blackList = blackList;
@@ -57,14 +57,14 @@ public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessa
             byteBuffer = buffer.readByteArray();
             ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
             ObjectInputStream in = new ObjectInputStream(bis);
-            whiteList =  (ArrayList<PlayerLists>) in.readObject();
+            whiteList =  (ArrayList<ClassifiedPlayer>) in.readObject();
             in.close();
 
             // Deserialize data object from a byte array
             byteBuffer = buffer.readByteArray();
             bis = new ByteArrayInputStream(byteBuffer);
             in = new ObjectInputStream(bis);
-            blackList =  (ArrayList<PlayerLists>) in.readObject();
+            blackList =  (ArrayList<ClassifiedPlayer>) in.readObject();
             in.close();
         } catch (ClassNotFoundException | IOException e)
         {

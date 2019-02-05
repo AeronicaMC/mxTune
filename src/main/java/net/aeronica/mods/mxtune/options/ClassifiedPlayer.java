@@ -1,6 +1,6 @@
 /*
  * Aeronica's mxTune MOD
- * Copyright 2018, Paul Boese a.k.a. Aeronica
+ * Copyright 2019, Paul Boese a.k.a. Aeronica
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ package net.aeronica.mods.mxtune.options;
 import java.io.Serializable;
 import java.util.UUID;
 
-public class PlayerLists implements Serializable
+public class ClassifiedPlayer implements Serializable
 {
-    /**
-     * Serialized PlayerLists
+    /*
+     * For Serialized ClassifiedPlayer Lists
      */
     private static final long serialVersionUID = -86044260522231311L;
     private String playerName;

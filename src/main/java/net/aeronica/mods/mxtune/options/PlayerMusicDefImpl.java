@@ -31,8 +31,8 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     private String sParam1;
     private String sParam2;
     private String sParam3;
-    private List<PlayerLists> whiteList;
-    private List<PlayerLists> blackList;
+    private List<ClassifiedPlayer> whiteList;
+    private List<ClassifiedPlayer> blackList;
     private boolean soundRangeInfinityAllowed;
 
     PlayerMusicDefImpl()
@@ -90,16 +90,16 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     public int getMuteOption() { return muteOption; }
     
     @Override
-    public void setWhiteList(List<PlayerLists> list) { this.whiteList = list; }
+    public void setWhiteList(List<ClassifiedPlayer> list) { this.whiteList = list; }
 
     @Override
-    public List<PlayerLists> getWhiteList() { return new ArrayList<>(this.whiteList); }
+    public List<ClassifiedPlayer> getWhiteList() { return new ArrayList<>(this.whiteList); }
 
     @Override
-    public void setBlackList(List<PlayerLists> list) { this.blackList = list; }
+    public void setBlackList(List<ClassifiedPlayer> list) { this.blackList = list; }
 
     @Override
-    public List<PlayerLists> getBlackList() { return new ArrayList<>(this.blackList); }
+    public List<ClassifiedPlayer> getBlackList() { return new ArrayList<>(this.blackList); }
 
     @Override
     public void setSoundRangeInfinityAllowed(boolean isAllowed) { this.soundRangeInfinityAllowed = isAllowed; }

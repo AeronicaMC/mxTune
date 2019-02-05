@@ -48,13 +48,13 @@ public interface IPlayerMusicOptions
 
     String getSParam3();
 
-    void setWhiteList(List<PlayerLists> list);
+    void setWhiteList(List<ClassifiedPlayer> list);
     
-    List<PlayerLists> getWhiteList();
+    List<ClassifiedPlayer> getWhiteList();
 
-    void setBlackList(List<PlayerLists> list);
+    void setBlackList(List<ClassifiedPlayer> list);
     
-    List<PlayerLists> getBlackList();
+    List<ClassifiedPlayer> getBlackList();
 
     void setSoundRangeInfinityAllowed(boolean isAllowed);
 
