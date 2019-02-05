@@ -70,19 +70,19 @@ public class GuiMusicOptions extends GuiScreen
     /* PlayerList */
     private List<ClassifiedPlayer> netPlayerList;
     private int selectedPlayerIndex = -1;
-    private ClassifiedPlayer selectedPlayerList = new ClassifiedPlayer();
+    private ClassifiedPlayer selectedNetPlayer = new ClassifiedPlayer();
     private int playerListWidth;
 
     /* WhiteList */
     private List<ClassifiedPlayer> whiteList;
     private int selectedWhiteIndex = -1;
-    private ClassifiedPlayer selectedWhiteList = new ClassifiedPlayer();
+    private ClassifiedPlayer selectedWhitePlayer = new ClassifiedPlayer();
     private int whiteListWidth;
     
     /* WhiteList */
     private List<ClassifiedPlayer> blackList;
     private int selectedBlackIndex = -1;
-    private ClassifiedPlayer selectedBlackList = new ClassifiedPlayer();
+    private ClassifiedPlayer selectedBlackPlayer = new ClassifiedPlayer();
     private int blackListWidth;
 
     /* Cached State for when the GUI is resized */
@@ -104,9 +104,9 @@ public class GuiMusicOptions extends GuiScreen
     @Override
     public void updateScreen()
     {
-        selectedPlayerIndex = this.listBoxPlayers.selectedIndex(netPlayerList.indexOf(selectedPlayerList));
-        selectedWhiteIndex = this.listBoxWhite.selectedIndex(whiteList.indexOf(selectedWhiteList));
-        selectedBlackIndex = this.listBoxBlack.selectedIndex(blackList.indexOf(selectedBlackList));
+        selectedPlayerIndex = this.listBoxPlayers.selectedIndex(netPlayerList.indexOf(selectedNetPlayer));
+        selectedWhiteIndex = this.listBoxWhite.selectedIndex(whiteList.indexOf(selectedWhitePlayer));
+        selectedBlackIndex = this.listBoxBlack.selectedIndex(blackList.indexOf(selectedBlackPlayer));
         super.updateScreen();
     }
 
@@ -208,7 +208,7 @@ public class GuiMusicOptions extends GuiScreen
     @Override
     protected void actionPerformed(GuiButton guibutton)
     {
-        ClassifiedPlayer t;
+        ClassifiedPlayer classifiedPlayerRef;
 
         switch (guibutton.id)
         {
@@ -237,27 +237,27 @@ public class GuiMusicOptions extends GuiScreen
             break;
         case 11:
             if (this.selectedWhiteIndex == -1 || this.selectedWhiteIndex > this.whiteList.size()) break;
-            t = this.whiteList.get(this.selectedWhiteIndex);
+            classifiedPlayerRef = this.whiteList.get(this.selectedWhiteIndex);
             this.whiteList.remove(this.selectedWhiteIndex);
-            this.netPlayerList.add(t);
+            this.netPlayerList.add(classifiedPlayerRef);
             break;            
         case 12:
             if (this.selectedPlayerIndex == -1 || this.selectedPlayerIndex > this.netPlayerList.size()) break;
-            t = this.netPlayerList.get(this.selectedPlayerIndex);
+            classifiedPlayerRef = this.netPlayerList.get(this.selectedPlayerIndex);
             this.netPlayerList.remove(this.selectedPlayerIndex);
-            this.whiteList.add(t);
+            this.whiteList.add(classifiedPlayerRef);
             break;
         case 13:
             if (this.selectedPlayerIndex == -1 || this.selectedPlayerIndex > this.netPlayerList.size()) break;
-            t = this.netPlayerList.get(this.selectedPlayerIndex);
+            classifiedPlayerRef = this.netPlayerList.get(this.selectedPlayerIndex);
             this.netPlayerList.remove(this.selectedPlayerIndex);
-            this.blackList.add(t);
+            this.blackList.add(classifiedPlayerRef);
             break;
         case 14:
             if (this.selectedBlackIndex == -1 || this.selectedBlackIndex > this.blackList.size()) break;
-            t = this.blackList.get(this.selectedBlackIndex);
+            classifiedPlayerRef = this.blackList.get(this.selectedBlackIndex);
             this.blackList.remove(this.selectedBlackIndex);
-            this.netPlayerList.add(t);
+            this.netPlayerList.add(classifiedPlayerRef);
             break;            
 
         default:
@@ -314,7 +314,7 @@ public class GuiMusicOptions extends GuiScreen
         {
             if (index == parent.selectedPlayerIndex) return;
             parent.selectedPlayerIndex = index;
-            parent.selectedPlayerList = (index >= 0 && index <= parent.netPlayerList.size()) ? parent.netPlayerList.get(parent.selectedPlayerIndex) : null;
+            parent.selectedNetPlayer = (index >= 0 && index <= parent.netPlayerList.size()) ? parent.netPlayerList.get(parent.selectedPlayerIndex) : null;
         }
 
         @Override
@@ -372,7 +372,7 @@ public class GuiMusicOptions extends GuiScreen
         {
             if (index == parent.selectedWhiteIndex) return;
             parent.selectedWhiteIndex = index;
-            parent.selectedWhiteList = (index >= 0 && index <= parent.whiteList.size()) ? parent.whiteList.get(parent.selectedWhiteIndex) : null;
+            parent.selectedWhitePlayer = (index >= 0 && index <= parent.whiteList.size()) ? parent.whiteList.get(parent.selectedWhiteIndex) : null;
         }
 
         @Override
@@ -430,7 +430,7 @@ public class GuiMusicOptions extends GuiScreen
         {
             if (index == parent.selectedBlackIndex) return;
             parent.selectedBlackIndex = index;
-            parent.selectedBlackList = (index >= 0 && index <= parent.blackList.size()) ? parent.blackList.get(parent.selectedBlackIndex) : null;
+            parent.selectedBlackPlayer = (index >= 0 && index <= parent.blackList.size()) ? parent.blackList.get(parent.selectedBlackIndex) : null;
         }
 
         @Override
