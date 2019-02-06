@@ -509,10 +509,20 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         protected int getSize() {return instruments.size();}
 
         @Override
-        protected void elementClicked(int index, boolean doubleClick) {this.parent.selectInstIndex(index);}
+        protected void elementClicked(int index, boolean doubleClick)
+        {
+            if (index == parent.selectedInst)
+                return;
+            parent.selectedInst = index;
+            parent.selectedInstID = (index >= 0 && index <= parent.instrumentCache.size()) ? parent.instrumentCache.get(parent.selectedInst) : null;
+            parent.updateState();
+        }
 
         @Override
-        protected boolean isSelected(int index) {return this.parent.instIndexSelected(index);}
+        protected boolean isSelected(int index)
+        {
+            return index == parent.selectedInst;
+        }
 
         @Override
         protected void drawBackground()
@@ -535,18 +545,6 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
             font.drawStringWithShadow(s, (float)this.left + 3, slotTop, 0xADD8E6);
         }
     }
-
-    /* element was clicked */
-    private void selectInstIndex(int index)
-    {
-        if (index == this.selectedInst)
-            return;
-        this.selectedInst = index;
-        this.selectedInstID = (index >= 0 && index <= instrumentCache.size()) ? instrumentCache.get(selectedInst) : null;
-        updateState();
-    }
-
-    private boolean instIndexSelected(int index) {return index == selectedInst;}
 
     private Minecraft getMinecraftInstance() {return mc;}
 
