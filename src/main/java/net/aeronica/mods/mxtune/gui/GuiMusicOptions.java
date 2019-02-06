@@ -67,6 +67,7 @@ public class GuiMusicOptions extends GuiScreen
     private int muteOption;
     private boolean midiUnavailable;
     private int guiListWidth;
+    private int entryHeight;
 
     /* Classified player lists*/
     private List<ClassifiedPlayer> networkPlayers;
@@ -95,17 +96,20 @@ public class GuiMusicOptions extends GuiScreen
     {
         this.buttonList.clear();
         guiListWidth = mc.fontRenderer.getStringWidth("MWMWMWMWMWMWMWMW") + 10 + 12;
+        entryHeight = mc.fontRenderer.FONT_HEIGHT + 2;
         int y = (height - 100) / 2;
         int left = (width - ((guiListWidth * 3) + 24 + 24)) / 2;
-        int slotHeight = mc.fontRenderer.FONT_HEIGHT + 2;
+        int listHeight = height - 32 - 100 + 4;
+        int listTop = 32;
+        int listBottom = height - 100 + 4;
 
-        listBoxWhite = new GuiPlayerList(this, whiteListedPlayers, guiListWidth, height - 32 - 100 + 4, 32, height - 100 + 4, left, slotHeight);
+        listBoxWhite = new GuiPlayerList(this, whiteListedPlayers, guiListWidth, listHeight, listTop, listBottom, left);
         GuiButtonExt buttonWhiteToPlayers = new GuiButtonExt(11, listBoxWhite.getRight() + 2, y, 20, 20, ">");
         GuiButtonExt buttonPlayersToWhite = new GuiButtonExt(12, listBoxWhite.getRight() + 2, y + 25, 20, 20, "<");
-        listBoxPlayers = new GuiPlayerList(this, networkPlayers, guiListWidth, height - 32 - 100 + 4, 32, height - 100 + 4, listBoxWhite.getRight() + 24, slotHeight);
+        listBoxPlayers = new GuiPlayerList(this, networkPlayers, guiListWidth, listHeight, listTop, listBottom, listBoxWhite.getRight() + 24);
         GuiButtonExt buttonPlayersToBlack = new GuiButtonExt(13, listBoxPlayers.getRight() + 2, y, 20, 20, ">");
         GuiButtonExt buttonBlackToPlayers = new GuiButtonExt(14, listBoxPlayers.getRight() + 2, y + 25, 20, 20, "<");
-        listBoxBlack = new GuiPlayerList(this, blackListedPlayers, guiListWidth, height - 32 - 100 + 4, 32, height - 100 + 4, listBoxPlayers.getRight() + 24, slotHeight);
+        listBoxBlack = new GuiPlayerList(this, blackListedPlayers, guiListWidth, listHeight, listTop, listBottom, listBoxPlayers.getRight() + 24);
 
         int buttonWidth = 100;
         y = height - 100 + 4 + 5;
@@ -271,9 +275,9 @@ public class GuiMusicOptions extends GuiScreen
         private FontRenderer fontRenderer;
         private GuiMusicOptions parent;
 
-        GuiPlayerList(GuiMusicOptions parent, List<ClassifiedPlayer> playerListIn, int width, int height, int top, int bottom, int left, int entryHeight)
+        GuiPlayerList(GuiMusicOptions parent, List<ClassifiedPlayer> playerListIn, int width, int height, int top, int bottom, int left)
         {
-            super(parent.mc, width, height, top, bottom, left, entryHeight, parent.width, parent.height);
+            super(parent.mc, width, height, top, bottom, left, parent.entryHeight, parent.width, parent.height);
             fontRenderer = parent.mc.fontRenderer;
             this.parent = parent;
             this.classifiedPlayers = playerListIn;
@@ -281,7 +285,7 @@ public class GuiMusicOptions extends GuiScreen
 
         int getRight() {return right;}
 
-        int getSelectedIndex() {return selectedIndex;}
+        int getSelectedIndex() { return selectedIndex; }
 
         @Override
         protected int getSize()
@@ -290,7 +294,7 @@ public class GuiMusicOptions extends GuiScreen
         }
 
         @Override
-        protected void elementClicked(int index, boolean doubleClick)
+        protected void elementClicked( int index, boolean doubleClick )
         {
             if (index == selectedIndex) return;
             selectedIndex = (index >= 0 && index <= classifiedPlayers.size() ? index : -1);
@@ -310,7 +314,7 @@ public class GuiMusicOptions extends GuiScreen
         }
 
         @Override
-        protected int getContentHeight() {return (this.getSize()) * slotHeight;}
+        protected int getContentHeight() { return (this.getSize()) * slotHeight; }
 
         @Override
         protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
@@ -321,27 +325,18 @@ public class GuiMusicOptions extends GuiScreen
             fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, 0xADD8E6);
             drawPing(parent ,left + 3, listWidth - 10, slotTop, classifiedPlayers.get(slotIdx));
         }
+
+        private static void drawPing(GuiMusicOptions parent, int x, int sWidth, int y, ClassifiedPlayer playerInfo)
+        {
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            parent.mc.getTextureManager().bindTexture(ICONS);
+            int offset = playerInfo.isOnline() ? 0 : 5;
+            parent.zLevel += 100.0F;
+            parent.drawTexturedModalRect(sWidth + x - 11, y, 0, 176 + offset * 8, 10, 8);
+            parent.zLevel -= 100.0F;
+        }
     }
 
-    private static void drawPing(GuiMusicOptions parent, int x, int sWidth, int y, ClassifiedPlayer playerInfo)
-    {
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        parent.mc.getTextureManager().bindTexture(ICONS);
-        int j;
-
-        if (playerInfo.isOnline())
-        {
-            j = 0;
-        }
-        else
-        {
-            j = 5;
-        }
-
-        parent.zLevel += 100.0F;
-        parent.drawTexturedModalRect(sWidth + x - 11, y, 0, 176 + j * 8, 10, 8);
-        parent.zLevel -= 100.0F;
-    }
     
     static class PlayerComparator implements Comparator<NetworkPlayerInfo>
     {
