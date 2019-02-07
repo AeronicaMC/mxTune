@@ -43,6 +43,7 @@ public class GuiMMLBox extends Gui
     private final FontRenderer fontRendererInstance;
     public final int xPosition;
     public final int yPosition;
+    public boolean blockCursor;
     /* Keep track of the displayed lines, cursor and selection highlighting */
     private int topTextBox;
     private int fontHeight;
@@ -872,10 +873,15 @@ public class GuiMMLBox extends Gui
                 {
                     if (isLineCursor)
                     {
-                        Gui.drawRect(k1 - 1, yBackDraw - 1, k1, yBackDraw + 1 + this.fontRendererInstance.FONT_HEIGHT, -3092272);
+                        if (blockCursor)
+                        {
+                            int charWidth = this.fontRendererInstance.getStringWidth(sLine.substring(cursorPos, cursorPos + 1));
+                            this.drawCursorVertical(k1 - 1, yBackDraw - 1, k1 + charWidth, yBackDraw + this.fontRendererInstance.FONT_HEIGHT);
+                        } else
+                            Gui.drawRect(k1 - 1, yBackDraw - 1, k1, yBackDraw + 1 + this.fontRendererInstance.FONT_HEIGHT, -3092272);
                     } else
                     {
-                        this.fontRendererInstance.drawStringWithShadow("\u266b", (float) k1, (float) yBackDraw, statusColor);
+                        this.fontRendererInstance.drawStringWithShadow("_", (float) k1, (float) yBackDraw, statusColor);
                     }
                 }
 
@@ -883,7 +889,7 @@ public class GuiMMLBox extends Gui
                 if (selectEnd != cursorPos)
                 {
                     int l1 = xBackDraw + this.fontRendererInstance.getStringWidth(sLine.substring(0, selectEnd));
-                    this.drawCursorVertical(k1, yBackDraw, l1 - 1, yBackDraw + this.fontRendererInstance.FONT_HEIGHT);
+                    this.drawCursorVertical(k1, yBackDraw, l1-1, yBackDraw + this.fontRendererInstance.FONT_HEIGHT);
                 }
             }
         }
