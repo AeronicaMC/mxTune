@@ -251,14 +251,14 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         {
             int helperWidth = fontRenderer.getStringWidth(HELPER_ENTER_TITLE);
             int fontHeight = fontRenderer.FONT_HEIGHT + 2;
-            fontRenderer.drawString(HELPER_ENTER_TITLE, textMMLTitle.x + textMMLTitle.width / 2 - helperWidth / 2, textMMLTitle.y + fontHeight / 2, HelperTextColor());
+            fontRenderer.drawString(HELPER_ENTER_TITLE, textMMLTitle.x + textMMLTitle.width / 2 - helperWidth / 2, textMMLTitle.y + fontHeight / 2, getHelperTextColor());
         }
         if (textMMLPaste.isEmpty())
         {
             int helperWidth = fontRenderer.getStringWidth(HELPER_ENTER_MML);
             int fontHeight = fontRenderer.FONT_HEIGHT + 2;
             fontRenderer.drawString(HELPER_ENTER_MML, textMMLPaste.xPosition + textMMLPaste.width / 2 - helperWidth / 2, textMMLPaste.yPosition + textMMLPaste.height / 2 - fontHeight / 2,
-                    HelperTextColor());
+                                    getHelperTextColor());
         }
 
         super.drawScreen(mouseX, mouseY, partialTicks);
@@ -269,7 +269,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         ++helperTextCounter;
     }
 
-    private int HelperTextColor()
+    private int getHelperTextColor()
     {
         final int LO = 0x30;
         final int HI = 0xD0;
@@ -454,7 +454,11 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
             return mouseX >= left && mouseX <= left + listWidth && mouseY >= top && mouseY <= bottom && getSize() > 0;
         }
 
-        int selectedIndex(int s) {return selectedIndex = s;}
+        int selectedIndex(int s)
+        {
+            selectedIndex = s;
+            return s;
+        }
 
         @Override
         protected int getSize() {return parseErrorCache.size();}
@@ -509,7 +513,11 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
             this.fontRenderer = parent.mc.fontRenderer;
         }
 
-        int selectedIndex(int s) { return selectedIndex = s; }
+        int selectedIndex(int s)
+        {
+            selectedIndex = s;
+            return s;
+        }
 
         public int getRight() {return right;}
 
@@ -642,11 +650,8 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         }
         finally
         {
-            if (midiException)
-            {
-                if (sequencer != null) 
-                    sequencer.removeMetaEventListener(this);
-            }
+            if (midiException && sequencer != null)
+                sequencer.removeMetaEventListener(this);
         }
         return false;
     }
