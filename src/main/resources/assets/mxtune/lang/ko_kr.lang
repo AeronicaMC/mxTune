@@ -149,6 +149,7 @@ mxtune.gui.musicPaperParse.enterTitle=제목 입력!
 mxtune.gui.musicPaperParse.enterMML=MML을 클립 보드 형식으로 붙여 넣으십시오!
 mxtune.gui.musicPaperParse.labelInstruments=악기들
 mxtune.gui.musicPaperParse.labelTitleMML=제목 / MML@:
+mxtune.gui.musicPaperParse.checkBox.ignoreParseErrors=구문 분석 오류 무시
 mxtune.gui.bandAmp.lockButton.help01=Lock
 mxtune.gui.bandAmp.lockButton.help02=When LOCKED only the owner can open and view the contents. Only the player/owner that placed the block can manange it or destory it. However, the block can be destroyed by explosions which will spill its contents.
 mxtune.gui.bandAmp.lockButton.help03=Activation or right clicking the block will either open the GUI, or initiate playing depending on ownership. Owners must always Shift-Right-Click to play. If LOCKED non-owners can simply Right-Click to play.
