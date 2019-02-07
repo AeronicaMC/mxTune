@@ -207,7 +207,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     {
         /* enable OKAY button when Title Field is greater than 0 chars and passes the MML parsing tests */
         ignoreParseErrors = checkBoxIgnoreParseErrors.isChecked();
-        textMMLPaste.blockCursor = !ignoreParseErrors;
+        textMMLPaste.setBlockCursor(!ignoreParseErrors);
         boolean isOK = (!textMMLPaste.isEmpty()) && (parseErrorCache.isEmpty() || ignoreParseErrors) && !textMMLTitle.getText().isEmpty();
         buttonList.get(buttonOkay.id).enabled = isOK;
         buttonList.get(buttonPlay.id).enabled = !isPlaying && isOK;

@@ -43,7 +43,7 @@ public class GuiMMLBox extends Gui
     private final FontRenderer fontRendererInstance;
     public final int xPosition;
     public final int yPosition;
-    public boolean blockCursor;
+    private boolean blockCursor;
     /* Keep track of the displayed lines, cursor and selection highlighting */
     private int topTextBox;
     private int fontHeight;
@@ -108,6 +108,10 @@ public class GuiMMLBox extends Gui
         this.maxDisplayLines = this.height / fontHeight;
         this.loadingLists = true;
     }
+
+    public boolean isBlockCursor() { return blockCursor; }
+
+    public void setBlockCursor(boolean blockCursor) { this.blockCursor = blockCursor; }
 
     /**
      * Sets the GuiResponder associated with this text box.
