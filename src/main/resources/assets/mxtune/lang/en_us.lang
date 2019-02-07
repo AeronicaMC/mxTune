@@ -151,6 +151,7 @@ mxtune.gui.musicPaperParse.enterTitle=Enter a Title!
 mxtune.gui.musicPaperParse.enterMML=Paste MML in clipboard format!
 mxtune.gui.musicPaperParse.labelInstruments=Instruments
 mxtune.gui.musicPaperParse.labelTitleMML=Title / MML@:
+mxtune.gui.musicPaperParse.checkBox.ignoreParseErrors=Ignore Parse Errors
 mxtune.gui.bandAmp.lockButton.help01=Lock
 mxtune.gui.bandAmp.lockButton.help02=[Unlocked]: Top and Bottom inventory access is enabled. Non-owners can view contents. Start playing by SHIFT RIGHT-CLICK-ing the block.
 mxtune.gui.bandAmp.lockButton.help03=[Locked]: Top and Bottom inventory access is disabled. Non-owners cannot view contents. Non owners can start playing by RIGHT-CLICK-ing the block.
