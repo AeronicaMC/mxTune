@@ -439,7 +439,7 @@ public class ClientAudio
                 {
                     // ** ThePlayer [this client] **
                     // hears their own music without any 3D distance effects applied.
-                    e.setResultSound(new MusicBackground(playID));
+                    e.setResultSound(new MusicClient(playID));
                 }
                 else if (getBlockPos(playID) == null)
                 {

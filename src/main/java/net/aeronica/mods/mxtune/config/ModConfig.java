@@ -32,6 +32,7 @@ import java.util.Map;
 
 public class ModConfig
 {
+    private static boolean isDirty;
     private ModConfig() { /* NOP */ }
 
     /** Client Configuration Settings */
@@ -40,6 +41,10 @@ public class ModConfig
     public static class ConfigClient
     {
         private ConfigClient() {/* NOP */}
+
+        @LangKey("config.mxtune.audioVolumes")
+        @Comment("Audio Volumes")
+        public static final AudioVolumes audioVolumes = new AudioVolumes();
 
         @LangKey("config.mxtune.autoConfigureChannels")
         @Comment("Sound Channel Configuration")
@@ -52,6 +57,15 @@ public class ModConfig
         @Config.LangKey("config.mxtune.playerNameInWindowTitle")
         @Config.Comment("Show player name in window title. Updates on logon and/or changing dimension.")
         public static final WindowTitle windowTitle = new WindowTitle();
+
+        public static class AudioVolumes
+        {
+            @Name("Client Player")
+            @LangKey("config.mxtune.audioVolumes.clientPlayer")
+            @SlidingOption
+            @RangeDouble(min = 0F, max = 1.0F)
+            public float clientPlayer = 0.25F;
+        }
 
         public static class Sound
         {
@@ -143,6 +157,30 @@ public class ModConfig
 
     public static boolean showWelcomeStatusMessage() {return ConfigGeneral.general.showWelcomeStatusMessage;}
 
+    public static float getClientPlayerVolume() {return  ConfigClient.audioVolumes.clientPlayer;}
+
+    public static void setClientPlayerVolume(float volume, boolean sync)
+    {
+        if (ConfigClient.audioVolumes.clientPlayer != volume)
+        {
+            ConfigClient.audioVolumes.clientPlayer = volume;
+            markDirty();
+        }
+    }
+
+    public static void markDirty() { isDirty = true; }
+
+    public static boolean isDirty() { return isDirty; }
+
+    private static void markSaved() { isDirty = false; }
+
+    private static void sync()
+    {
+        if (isDirty())
+            ConfigManager.sync(Reference.MOD_ID, Config.Type.INSTANCE);
+        markSaved();
+    }
+
     public static boolean getAutoConfigureChannels() {return ConfigClient.sound.autoConfigureChannels;}
 
     public static String getMmlLink() {return ConfigClient.links.site;}
@@ -177,9 +215,7 @@ public class ModConfig
         {
             ModLogger.debug("On ConfigChanged: %s", event.getModID());
             if(event.getModID().equals(Reference.MOD_ID))
-            {
-                ConfigManager.sync(Reference.MOD_ID, Config.Type.INSTANCE);
-            }
+                sync();
         }
     }
 }

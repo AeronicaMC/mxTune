@@ -16,6 +16,7 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
+import net.aeronica.mods.mxtune.config.ModConfig;
 import net.minecraft.client.audio.MovingSound;
 import net.minecraft.client.audio.SoundEventAccessor;
 import net.minecraft.client.audio.SoundHandler;
@@ -26,17 +27,17 @@ import net.minecraft.util.SoundCategory;
  * @author Paul Boese a.k.a. Aeronica
  *
  */
-public class MusicBackground extends MovingSound
+public class MusicClient extends MovingSound
 {
     private Integer playID;
     private SoundEventAccessor soundEventAccessor;
     
-    public MusicBackground(Integer playID)
+    public MusicClient(Integer playID)
     {
-        super(ModSoundEvents.PCM_PROXY, SoundCategory.RECORDS);
+        super(ModSoundEvents.PCM_PROXY, SoundCategory.MASTER);
         this.playID = playID;
         this.sound = new PCMSound();
-        this.volume = 2F;
+        this.volume = getModVolume();
         this.pitch = 1F;
         this.xPosF = 0;
         this.yPosF = 0;
@@ -57,7 +58,10 @@ public class MusicBackground extends MovingSound
         // update nothing - just hold the stream open until done
         if ((this.playID == null) || !ClientAudio.hasPlayID(playID))
             this.setDonePlaying();
+        this.volume = getModVolume();
     }
     
     private void setDonePlaying() { this.donePlaying = true; }
+
+    private  float getModVolume() { return 2F * ModConfig.getClientPlayerVolume(); }
 }
