@@ -69,7 +69,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
 
     /* MML Parser */
     private ParseErrorListener parseErrorListener = null;
-    private ArrayList<ParseErrorEntry> parseErrorCache;
+    private List<ParseErrorEntry> parseErrorCache;
     private ParseErrorEntry selectedErrorEntry;
     private int selectedError;
 
@@ -438,10 +438,10 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     public static class GuiParserErrorList extends GuiScrollingList
     {
         private GuiMusicPaperParse parent;
-        private final ArrayList<ParseErrorEntry> parseErrorCache;
+        private final List<ParseErrorEntry> parseErrorCache;
         private FontRenderer fontRenderer;
 
-        GuiParserErrorList(GuiMusicPaperParse parent, ArrayList<ParseErrorEntry> parseErrorCache, int left, int top, int listWidth, int listHeight, int slotHeight)
+        GuiParserErrorList(GuiMusicPaperParse parent, List<ParseErrorEntry> parseErrorCache, int left, int top, int listWidth, int listHeight, int slotHeight)
         {
             super(parent.mc, listWidth, listHeight, top, top + listHeight, left, slotHeight, parent.width, parent.height);
             this.parent = parent;
