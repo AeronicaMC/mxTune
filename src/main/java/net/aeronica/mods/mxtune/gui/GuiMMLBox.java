@@ -877,7 +877,7 @@ public class GuiMMLBox extends Gui
                 {
                     if (isLineCursor)
                     {
-                        if (blockCursor)
+                        if (blockCursor && sLine.length() > cursorPos)
                         {
                             int charWidth = this.fontRendererInstance.getStringWidth(sLine.substring(cursorPos, cursorPos + 1));
                             this.drawCursorVertical(k1 - 1, yBackDraw - 1, k1 + charWidth, yBackDraw + this.fontRendererInstance.FONT_HEIGHT);
