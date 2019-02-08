@@ -159,14 +159,15 @@ public abstract class MMLTransformBase extends MMLBaseListener
 
         boolean isTied = false;
         long lengthTicks = 0;
-        int noteLeft = 0;
+        int noteLeft;
         int noteRight = 0;
         @Nullable
-        AnoteContext ctxL = null;
+        AnoteContext ctxL;
         @Nullable
         AnoteContext ctxR = null;
 
         List<AnoteContext> listAnotes = ctx.anote();
+
         int count = listAnotes.size();
 
         // LEFT
@@ -175,7 +176,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
             ctxL = ctx.anote(i - 1);
             ctxR = ctx.anote(i);
 
-            if (ctxL == null || ctxR == null) continue;
+            if ((ctxL == null) || (ctxR == null)) continue;
             noteLeft = getMidiNote(ctxL);
             noteRight = getMidiNote(ctxR);
 
