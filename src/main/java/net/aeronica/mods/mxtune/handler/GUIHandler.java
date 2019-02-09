@@ -27,6 +27,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
+import static net.aeronica.mods.mxtune.gui.GuiGuid.*;
+
 public class GUIHandler implements IGuiHandler
 {
 
@@ -39,11 +41,11 @@ public class GUIHandler implements IGuiHandler
     {
         switch (guiID)
         {
-            case GuiGuid.GUI_INSTRUMENT_INVENTORY:
+            case GUI_INSTRUMENT_INVENTORY:
                 // Use the player's held item to create the inventory
                 return new ContainerInstrument(playerIn);
 
-            case GuiGuid.GUI_BAND_AMP:
+            case GUI_BAND_AMP:
                 if (!LockableHelper.isLocked(playerIn, worldIn, x, y, z))
                     return new ContainerBandAmp(playerIn.inventory, worldIn, x, y, z);
                 else
@@ -59,22 +61,22 @@ public class GUIHandler implements IGuiHandler
     {
         switch (guiID)
         {
-            case GuiGuid.GUI_MUSIC_PAPER_PARSE:
+            case GUI_MUSIC_PAPER_PARSE:
                 return new GuiMusicPaperParse();
 
-            case GuiGuid.GUI_INSTRUMENT_INVENTORY:
+            case GUI_INSTRUMENT_INVENTORY:
                 return new GuiInstrumentInventory(new ContainerInstrument(playerIn));
 
-            case GuiGuid.GUI_GROUP:
+            case GUI_GROUP:
                 return new GuiGroup();
 
-            case GuiGuid.GUI_GROUP_JOIN:i:
+            case GUI_GROUP_JOIN:
                 return new GuiGroupJoin();
 
-            case GuiGuid.GUI_MUSIC_OPTIONS:
+            case GUI_MUSIC_OPTIONS:
                 return new GuiMusicOptions(null);
 
-            case GuiGuid.GUI_BAND_AMP:
+            case GUI_BAND_AMP:
                 return new GuiBandAmp((Container) getServerGuiElement(guiID, playerIn, worldIn, x, y, z), playerIn.inventory,
                                       (TileBandAmp) worldIn.getTileEntity(new BlockPos(x, y, z)));
 
