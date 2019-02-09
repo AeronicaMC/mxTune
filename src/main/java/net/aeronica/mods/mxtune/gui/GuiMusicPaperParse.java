@@ -42,7 +42,6 @@ import java.util.List;
 
 public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
 {
-    public static final int GUI_ID = 7;
     // Localization Keys
     private static final String TITLE = I18n.format("mxtune.gui.musicPaperParse.title");
     private static final String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");

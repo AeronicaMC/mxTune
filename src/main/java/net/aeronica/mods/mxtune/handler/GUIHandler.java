@@ -39,11 +39,11 @@ public class GUIHandler implements IGuiHandler
     {
         switch (guiID)
         {
-            case GuiInstrumentInventory.GUI_ID:
+            case GuiGuid.GUI_INSTRUMENT_INVENTORY:
                 // Use the player's held item to create the inventory
                 return new ContainerInstrument(playerIn);
 
-            case GuiBandAmp.GUI_ID:
+            case GuiGuid.GUI_BAND_AMP:
                 if (!LockableHelper.isLocked(playerIn, worldIn, x, y, z))
                     return new ContainerBandAmp(playerIn.inventory, worldIn, x, y, z);
                 else
@@ -59,22 +59,22 @@ public class GUIHandler implements IGuiHandler
     {
         switch (guiID)
         {
-            case GuiMusicPaperParse.GUI_ID:
+            case GuiGuid.GUI_MUSIC_PAPER_PARSE:
                 return new GuiMusicPaperParse();
 
-            case GuiInstrumentInventory.GUI_ID:
+            case GuiGuid.GUI_INSTRUMENT_INVENTORY:
                 return new GuiInstrumentInventory(new ContainerInstrument(playerIn));
 
-            case GuiGroup.GUI_ID:
+            case GuiGuid.GUI_GROUP:
                 return new GuiGroup();
 
-            case GuiGroupJoin.GUI_ID:
+            case GuiGuid.GUI_GROUP_JOIN:i:
                 return new GuiGroupJoin();
 
-            case GuiMusicOptions.GUI_ID:
+            case GuiGuid.GUI_MUSIC_OPTIONS:
                 return new GuiMusicOptions(null);
 
-            case GuiBandAmp.GUI_ID:
+            case GuiGuid.GUI_BAND_AMP:
                 return new GuiBandAmp((Container) getServerGuiElement(guiID, playerIn, worldIn, x, y, z), playerIn.inventory,
                                       (TileBandAmp) worldIn.getTileEntity(new BlockPos(x, y, z)));
 

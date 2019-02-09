@@ -38,8 +38,6 @@ import static net.aeronica.mods.mxtune.groups.GroupHelper.getLeaderOfGroup;
 
 public class GuiGroupJoin extends GuiScreen
 {
-    public static final int GUI_ID = 5;
-
     private static final ResourceLocation guiTexture = new ResourceLocation(Reference.MOD_ID, "textures/gui/manage_group.png");
 
     /** The X size of the group window in pixels. */

@@ -17,7 +17,7 @@
 package net.aeronica.mods.mxtune.items;
 
 import net.aeronica.mods.mxtune.MXTune;
-import net.aeronica.mods.mxtune.gui.GuiMusicPaperParse;
+import net.aeronica.mods.mxtune.gui.GuiGuid;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
@@ -45,7 +45,7 @@ public class ItemMusicPaper extends Item
     {
         if (worldIn.isRemote)
         {
-            playerIn.openGui(MXTune.instance, GuiMusicPaperParse.GUI_ID, worldIn, (int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ);
+            playerIn.openGui(MXTune.instance, GuiGuid.GUI_MUSIC_PAPER_PARSE, worldIn, (int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ);
         }
         playerIn.setActiveHand(handIn);
         return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));

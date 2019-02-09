@@ -21,7 +21,7 @@ import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.advancements.ModCriteriaTriggers;
 import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
 import net.aeronica.mods.mxtune.groups.PlayManager;
-import net.aeronica.mods.mxtune.gui.GuiInstrumentInventory;
+import net.aeronica.mods.mxtune.gui.GuiGuid;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.status.ServerCSDManager;
 import net.aeronica.mods.mxtune.util.IVariant;
@@ -94,7 +94,7 @@ public class ItemInstrument extends Item implements IInstrument
             // Server Side - Open the instrument inventory GuiInstInvAdjustRotations
             if (playerIn.isSneaking() && handIn.equals(EnumHand.MAIN_HAND))
             {
-                playerIn.openGui(MXTune.instance, GuiInstrumentInventory.GUI_ID, worldIn, 0, 0, 0);
+                playerIn.openGui(MXTune.instance, GuiGuid.GUI_INSTRUMENT_INVENTORY, worldIn, 0, 0, 0);
             }
             if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && handIn.equals(EnumHand.MAIN_HAND))
             {

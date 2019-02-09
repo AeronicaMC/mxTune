@@ -17,8 +17,7 @@
 package net.aeronica.mods.mxtune.network.bidirectional;
 
 import net.aeronica.mods.mxtune.MXTune;
-import net.aeronica.mods.mxtune.gui.GuiGroup;
-import net.aeronica.mods.mxtune.gui.GuiMusicOptions;
+import net.aeronica.mods.mxtune.gui.GuiGuid;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.minecraft.entity.player.EntityPlayer;
@@ -64,11 +63,11 @@ public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
     {
         if ("mxtune.key.openParty".equalsIgnoreCase(this.keyBindingDesc))
         {
-            playerSP.openGui(MXTune.instance, GuiGroup.GUI_ID, playerSP.getEntityWorld(), 0, 0, 0);
+            playerSP.openGui(MXTune.instance, GuiGuid.GUI_GROUP, playerSP.getEntityWorld(), 0, 0, 0);
         }
         if ("mxtune.key.openMusicOptions".equalsIgnoreCase(this.keyBindingDesc))
         {
-            playerSP.openGui(MXTune.instance, GuiMusicOptions.GUI_ID, playerSP.getEntityWorld(), 0, 0, 0);
+            playerSP.openGui(MXTune.instance, GuiGuid.GUI_MUSIC_OPTIONS, playerSP.getEntityWorld(), 0, 0, 0);
         }
     }
 

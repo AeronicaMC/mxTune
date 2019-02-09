@@ -48,7 +48,6 @@ import java.util.List;
 
 public class GuiMusicOptions extends GuiScreen
 {
-    public static final int GUI_ID = 8;
     private GuiScreen guiScreenOld;
     private static final String TITLE = I18n.format("mxtune.gui.musicOptions.title");
     private static final String LABEL_WHITELIST = I18n.format("mxtune.gui.musicOptions.label.whitelist");

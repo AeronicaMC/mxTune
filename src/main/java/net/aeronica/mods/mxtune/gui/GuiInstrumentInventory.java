@@ -13,15 +13,16 @@ import scala.Char;
 
 import java.io.IOException;
 
-public class GuiInstrumentInventory extends GuiContainer {
-	public static final int GUI_ID = 1;
+public class GuiInstrumentInventory extends GuiContainer
+{
     private static final ResourceLocation inventoryTexture = new ResourceLocation(Reference.MOD_ID, "textures/gui/instrument_inventory.png");
     private static final String BUTTON_MUSIC_OPTIONS = I18n.format("mxtune.key.openMusicOptions");
     private static final String BUTTON_ADJ_HUD = I18n.format("mxtune.gui.musicOptions.adjHud");
 
 	private int theInvItemSlot;
 
-	public GuiInstrumentInventory(ContainerInstrument containerInstrument) {
+	public GuiInstrumentInventory(ContainerInstrument containerInstrument)
+	{
 		super(containerInstrument);
 		this.mc = Minecraft.getMinecraft();
 

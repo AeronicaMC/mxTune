@@ -18,7 +18,7 @@ package net.aeronica.mods.mxtune.blocks;
 
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.groups.PlayManager;
-import net.aeronica.mods.mxtune.gui.GuiBandAmp;
+import net.aeronica.mods.mxtune.gui.GuiGuid;
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.util.EnumRelativeSide;
 import net.aeronica.mods.mxtune.world.LockableHelper;
@@ -102,7 +102,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
             }
             else if (!playerIn.isSneaking() && playerIn.capabilities.allowEdit)
             {
-                playerIn.openGui(MXTune.instance, GuiBandAmp.GUI_ID, worldIn, pos.getX(), pos.getY(), pos.getZ());
+                playerIn.openGui(MXTune.instance, GuiGuid.GUI_BAND_AMP, worldIn, pos.getX(), pos.getY(), pos.getZ());
             }
         }
         return true;

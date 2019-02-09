@@ -45,7 +45,6 @@ public class GuiBandAmp extends GuiContainer
 {
     static final ResourceLocation BG_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/band_amp.png");
     private InventoryPlayer inventoryPlayer;
-    public static final int GUI_ID = 9;
     private TileBandAmp tileBandAmp;
     private ItemStack stackBandAmp;
     private GuiLockButton lockButton;

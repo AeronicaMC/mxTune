@@ -37,7 +37,6 @@ import java.util.Set;
 
 public class GuiGroup extends GuiScreen
 {
-    public static final int GUI_ID = 2;
     private static final ResourceLocation guiTexture = new ResourceLocation(Reference.MOD_ID, "textures/gui/manage_group.png");
     private int xSize = 239;
     private int ySize = 164;
