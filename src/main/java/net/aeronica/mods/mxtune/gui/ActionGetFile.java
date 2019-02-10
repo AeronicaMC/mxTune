@@ -17,13 +17,21 @@
 
 package net.aeronica.mods.mxtune.gui;
 
-public class GuiGuid
+import javax.annotation.Nullable;
+import java.io.File;
+
+public class ActionGetFile implements ISelectorAction
 {
-    public static final int GUI_INSTRUMENT_INVENTORY = 0;
-    public static final int GUI_GROUP = 1;
-    public static final int GUI_GROUP_JOIN = 2;
-    public static final int GUI_MUSIC_PAPER_PARSE = 3;
-    public static final int GUI_MUSIC_OPTIONS = 4;
-    public static final int GUI_BAND_AMP = 5;
-    public static final int GUI_FILE_SELECTOR = 6;
+    public static final ActionGetFile INSTANCE = new ActionGetFile();
+    @Nullable
+    private File file;
+
+    @Override
+    public void select(File fileIn) { file = fileIn; }
+
+    @Nullable
+    String getFileName() { return file != null ? file.getName() : null; }
+
+    @Nullable
+    public File getFile() { return file; }
 }

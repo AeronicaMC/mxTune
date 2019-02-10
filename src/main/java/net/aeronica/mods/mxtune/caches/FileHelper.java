@@ -26,13 +26,11 @@ package net.aeronica.mods.mxtune.caches;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 public class FileHelper
 {
@@ -45,10 +43,46 @@ public class FileHelper
     public static final String SERVER_LIB_FOLDER = MOD_FOLDER + "/server_lib";
     public static final String SERVER_PLAYLISTS_FOLDER = MOD_FOLDER + "/server_playlists";
 
+    public static final FileFilter MML_FILE_FILTER = accept ->
+    {
+        boolean zipped = accept.isFile() && accept.getName().endsWith(".zip");
+        boolean ms2mml = accept.isFile() && accept.getName().endsWith(".ms2mml");
+        boolean mml = accept.isFile() && accept.getName().endsWith(".mml");
+        return zipped || ms2mml || mml;
+    };
+
     private FileHelper() { /* NOP */ }
 
-    public static File getCacheFile(String folder, String filename) throws IOException {
+    private static void fixDirectory(File dir)
+    {
+        if (dir.exists())
+        {
+            if (!dir.isDirectory() && (!dir.delete() || !dir.mkdirs()))
+            {
+                ModLogger.warn("Unable to recreate MML folder, it exists but is not a directory: {}", (Object)dir);
+            }
+        }
+        else if (!dir.mkdirs())
+        {
+            ModLogger.warn("Unable to create MML folder: {}", (Object)dir);
+        }
+    }
+
+    public static void openFolder(String folder) throws IOException
+    {
+        OpenGlHelper.openFile(getDirectory(folder));
+    }
+
+    public static File getDirectory(String folder) throws IOException
+    {
         File loc = new File(".", folder);
+        fixDirectory(loc);
+        return loc;
+    }
+
+    public static File getCacheFile(String folder, String filename) throws IOException
+    {
+        File loc = getDirectory(folder);
         File cacheFile = new File(loc, filename);
 
         if(!cacheFile.exists()) {
@@ -86,8 +120,10 @@ public class FileHelper
         }
     }
 
-    public static void sendCompoundToFile(File file, NBTTagCompound tagCompound) {
-        try {
+    public static void sendCompoundToFile(File file, NBTTagCompound tagCompound)
+    {
+        try
+        {
             CompressedStreamTools.writeCompressed(tagCompound, new FileOutputStream(file));
         } catch(IOException e) {
             ModLogger.error(e);

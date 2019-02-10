@@ -19,6 +19,7 @@ package net.aeronica.mods.mxtune.items;
 
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.caches.FileHelper;
+import net.aeronica.mods.mxtune.gui.GuiGuid;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.world.chunk.ModChunkDataHelper;
 import net.minecraft.client.resources.I18n;
@@ -48,8 +49,12 @@ public class ItemStaffOfMusic extends Item
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
     {
-        if (worldIn.isRemote) return new ActionResult<>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
-        if (MXTune.proxy.playerIsInCreativeMode(playerIn))
+        if (worldIn.isRemote)
+        {
+            playerIn.openGui(MXTune.instance, GuiGuid.GUI_FILE_SELECTOR, worldIn, 0,0,0);
+            return new ActionResult<>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
+        }
+        else if (MXTune.proxy.playerIsInCreativeMode(playerIn))
         {
             try
             {

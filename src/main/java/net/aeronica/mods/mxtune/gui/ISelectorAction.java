@@ -17,13 +17,13 @@
 
 package net.aeronica.mods.mxtune.gui;
 
-public class GuiGuid
-{
-    public static final int GUI_INSTRUMENT_INVENTORY = 0;
-    public static final int GUI_GROUP = 1;
-    public static final int GUI_GROUP_JOIN = 2;
-    public static final int GUI_MUSIC_PAPER_PARSE = 3;
-    public static final int GUI_MUSIC_OPTIONS = 4;
-    public static final int GUI_BAND_AMP = 5;
-    public static final int GUI_FILE_SELECTOR = 6;
-}
+import java.io.File;
+
+/**
+ * <p>Scarfed from MineTunes by Vazkii</p>
+ * <p>https://github.com/Vazkii/MineTunes</p>
+ * <p><a ref="https://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_GB">
+ * Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)</a></p>
+ */
+public interface ISelectorAction
+{ void select(File file);}
