@@ -27,14 +27,15 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.GuiScrollingList;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import scala.actors.threadpool.Arrays;
 
 import javax.annotation.Nullable;
-import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GuiFileSelector extends GuiScreen
 {
@@ -54,7 +55,7 @@ public class GuiFileSelector extends GuiScreen
     private GuiTextField textStatus;
     private GuiButton buttonCancel;
 
-    private List<File> mmlFiles;
+    private List<Path> mmlFiles;
 
     public GuiFileSelector(@Nullable GuiScreen guiScreenParent)
     {
@@ -155,7 +156,7 @@ public class GuiFileSelector extends GuiScreen
         {
             case 0:
                 // Done
-                ActionGetFile.INSTANCE.select(selectedFile());
+                ActionGetPath.INSTANCE.select(selectedFile());
                 mc.displayGuiScreen(guiScreenParent);
                 break;
             case 1:
@@ -176,7 +177,7 @@ public class GuiFileSelector extends GuiScreen
         super.actionPerformed(button);
     }
 
-    private File selectedFile()
+    private Path selectedFile()
     {
         int selectedIndex = guiFileList.getSelectedIndex();
         if (selectedIndex < 0 || selectedIndex > mmlFiles.size() || mmlFiles.isEmpty())
@@ -210,10 +211,10 @@ public class GuiFileSelector extends GuiScreen
 
     private static class GuiFileList extends GuiScrollingList
     {
-        private List<File> mmlFiles;
+        private List<Path> mmlFiles;
         private FontRenderer fontRenderer;
 
-        GuiFileList(GuiFileSelector parent, List<File> mmlFilesIn, int width, int height, int top, int bottom, int left)
+        GuiFileList(GuiFileSelector parent, List<Path> mmlFilesIn, int width, int height, int top, int bottom, int left)
         {
             super(parent.mc, width, height, top, bottom, left, parent.entryHeight, parent.width, parent.height);
             this.mmlFiles = mmlFilesIn;
@@ -253,7 +254,7 @@ public class GuiFileSelector extends GuiScreen
         @Override
         protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
         {
-            String name = mmlFiles.get(slotIdx).getName();
+            String name = (mmlFiles.get(slotIdx).getFileName().toString());
             String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
             fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, 0xADD8E6);
         }
@@ -263,10 +264,12 @@ public class GuiFileSelector extends GuiScreen
     {
         try
         {
-            File clientMmlFolder = FileHelper.getDirectory(FileHelper.CLIENT_MML_FOLDER);
-            mmlFiles = clientMmlFolder != null && clientMmlFolder.isDirectory()
-                       ? Arrays.asList(Objects.requireNonNull(clientMmlFolder.listFiles(FileHelper.MML_FILE_FILTER)))
-                       : Collections.emptyList();
+            Path path = FileHelper.getDirectory(FileHelper.CLIENT_MML_FOLDER);
+            PathMatcher filter = FileHelper.getMMLMatcher(path);
+            Stream<Path> paths = Files.list(path);
+            mmlFiles = paths
+                    .filter(filter::matches)
+                    .collect(Collectors.toList());
         } catch (NullPointerException | IOException e)
         {
             textStatus.setText(e.getMessage());
@@ -276,16 +279,8 @@ public class GuiFileSelector extends GuiScreen
 
     private void openFolder()
     {
-        try
-        {
             FileHelper.openFolder(FileHelper.CLIENT_MML_FOLDER);
             textStatus.setText(I18n.format("mxtune.gui.guiFileSelector.title.openFolderStatus"));
-        }
-        catch (IOException e)
-        {
-            textStatus.setText(e.getMessage());
-            ModLogger.error(e);
-        }
     }
 
     private void refresh()

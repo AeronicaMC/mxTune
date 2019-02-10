@@ -66,6 +66,10 @@ public class ItemStaffOfMusic extends Item
                 tagCompound.setString("chunkString", ModChunkDataHelper.getString(worldIn.getChunk(playerIn.getPosition())));
                 tagCompound.setBoolean("chunkBoolean", ModChunkDataHelper.isFunctional(worldIn.getChunk(playerIn.getPosition())));
                 FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.SERVER_LIB_FOLDER, "some_lib.dat"), tagCompound);
+                NBTTagCompound compound = new NBTTagCompound();
+                compound.setString("nameString", "Awesome Playlist");
+                compound.setInteger("listCount", 20);
+                FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.SERVER_PLAYLISTS_FOLDER, "some_playlist.dat"), compound);
 
             } catch (IOException e)
             {

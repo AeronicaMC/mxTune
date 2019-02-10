@@ -17,7 +17,7 @@
 
 package net.aeronica.mods.mxtune.gui;
 
-import java.io.File;
+import java.nio.file.Path;
 
 /**
  * <p>Scarfed from MineTunes by Vazkii</p>
@@ -26,4 +26,4 @@ import java.io.File;
  * Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)</a></p>
  */
 public interface ISelectorAction
-{ void select(File file);}
+{ void select(Path path);}

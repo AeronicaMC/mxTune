@@ -30,7 +30,13 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
 
 public class FileHelper
 {
@@ -43,75 +49,78 @@ public class FileHelper
     public static final String SERVER_LIB_FOLDER = MOD_FOLDER + "/server_lib";
     public static final String SERVER_PLAYLISTS_FOLDER = MOD_FOLDER + "/server_playlists";
 
-    public static final FileFilter MML_FILE_FILTER = accept ->
-    {
-        boolean zipped = accept.isFile() && accept.getName().endsWith(".zip");
-        boolean ms2mml = accept.isFile() && accept.getName().endsWith(".ms2mml");
-        boolean mml = accept.isFile() && accept.getName().endsWith(".mml");
-        return zipped || ms2mml || mml;
-    };
-
     private FileHelper() { /* NOP */ }
 
-    private static void fixDirectory(File dir)
+    public static PathMatcher getMMLMatcher(Path path)
     {
-        if (dir.exists())
-        {
-            if (!dir.isDirectory() && (!dir.delete() || !dir.mkdirs()))
+        return path.getFileSystem().getPathMatcher("glob:**.{mml,ms2mml,zip}");
+    }
+
+    private static void fixDirectory(Path dir)
+    {
+        if (Files.exists(dir) && !Files.isDirectory(dir))
+            try
             {
-                ModLogger.warn("Unable to recreate MML folder, it exists but is not a directory: {}", (Object)dir);
+                Files.delete(dir);
+                Files.createDirectories(dir);
+            } catch (IOException e)
+            {
+                ModLogger.error(e);
+                ModLogger.warn("Unable to recreate MML folder, it exists but is not a directory: {}", (Object) dir);
             }
-        }
-        else if (!dir.mkdirs())
-        {
-            ModLogger.warn("Unable to create MML folder: {}", (Object)dir);
-        }
+        else
+            try
+            {
+                Files.createDirectories(dir);
+
+            } catch (IOException e)
+            {
+                ModLogger.error(e);
+                ModLogger.warn("Unable to create MML folder: {}", (Object) dir);
+            }
     }
 
-    public static void openFolder(String folder) throws IOException
+    public static void openFolder(String folder)
     {
-        OpenGlHelper.openFile(getDirectory(folder));
+        OpenGlHelper.openFile(getDirectory(folder).toFile());
     }
 
-    public static File getDirectory(String folder) throws IOException
+    public static Path getDirectory(String folder)
     {
-        File loc = new File(".", folder);
+        Path loc = Paths.get(".", folder);
         fixDirectory(loc);
         return loc;
     }
 
-    public static File getCacheFile(String folder, String filename) throws IOException
+    public static Path getCacheFile(String folder, String filename) throws IOException
     {
-        File loc = getDirectory(folder);
-        File cacheFile = new File(loc, filename);
+        Path dir = getDirectory(folder);
+        Path cacheFile = dir.resolve(filename);
 
-        if(!cacheFile.exists()) {
-            if (!cacheFile.getParentFile().mkdirs())
-                ModLogger.debug("mkdirs: folder already exists %s", loc.getPath());
-            if (!cacheFile.createNewFile())
-                ModLogger.debug("createNewFile: file already exists %s", cacheFile);
+        if(!Files.exists(cacheFile))
+        {
+            Files.createDirectories(dir);
+            Files.createFile(cacheFile);
         }
-
         return cacheFile;
     }
 
-    public static NBTTagCompound getCompoundFromFile(File file)
+    public static NBTTagCompound getCompoundFromFile(Path path)
     {
-        if (file == null)
+        if (path == null)
             throw new MXTuneRuntimeException("Missing cache file!");
 
         try
         {
-            return CompressedStreamTools.readCompressed(new FileInputStream(file));
+            return CompressedStreamTools.readCompressed(new FileInputStream(path.toFile()));
         }
         catch (IOException e0)
         {
             NBTTagCompound nbtTagCompound = new NBTTagCompound();
-
             try
             {
-                CompressedStreamTools.writeCompressed(nbtTagCompound, new FileOutputStream(file));
-                return getCompoundFromFile(file);
+                CompressedStreamTools.writeCompressed(nbtTagCompound, new FileOutputStream(path.toFile()));
+                return getCompoundFromFile(path);
             } catch (IOException e1)
             {
                 ModLogger.error(e1);
@@ -120,11 +129,11 @@ public class FileHelper
         }
     }
 
-    public static void sendCompoundToFile(File file, NBTTagCompound tagCompound)
+    public static void sendCompoundToFile(Path path, NBTTagCompound tagCompound)
     {
         try
         {
-            CompressedStreamTools.writeCompressed(tagCompound, new FileOutputStream(file));
+            CompressedStreamTools.writeCompressed(tagCompound, new FileOutputStream(path.toFile()));
         } catch(IOException e) {
             ModLogger.error(e);
         }
