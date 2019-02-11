@@ -31,16 +31,14 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
+@SuppressWarnings("unused")
 public class DirectoryWatcher implements Runnable, Service {
 
     private static final Logger LOGGER = LogManager.getLogger(DirectoryWatcher.class);
@@ -51,12 +49,14 @@ public class DirectoryWatcher implements Runnable, Service {
         ENTRY_DELETE
     }
 
-    private static final Map<WatchEvent.Kind<Path>, Event> EVENT_MAP =
-            new HashMap<WatchEvent.Kind<Path>, Event>() {{
-                put(ENTRY_CREATE, Event.ENTRY_CREATE);
-                put(ENTRY_MODIFY, Event.ENTRY_MODIFY);
-                put(ENTRY_DELETE, Event.ENTRY_DELETE);
-            }};
+    private static final Map<WatchEvent.Kind<Path>, Event> EVENT_MAP;
+    static
+    {
+        EVENT_MAP = new HashMap<>();
+        EVENT_MAP.put(ENTRY_CREATE, Event.ENTRY_CREATE);
+        EVENT_MAP.put(ENTRY_MODIFY, Event.ENTRY_MODIFY);
+        EVENT_MAP.put(ENTRY_DELETE, Event.ENTRY_DELETE);
+    }
 
     private final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
     private Future<?> mWatcherTask;
@@ -79,7 +79,8 @@ public class DirectoryWatcher implements Runnable, Service {
     }
 
     @Override
-    public void start() throws Exception {
+    public void start()
+    {
         mWatcherTask = EXECUTOR.submit(this);
     }
 
@@ -192,9 +193,7 @@ public class DirectoryWatcher implements Runnable, Service {
         }
 
         public Builder addDirectories(Path... dirPaths) {
-            for (Path dirPath : dirPaths) {
-                mWatched.add(dirPath);
-            }
+            Collections.addAll(mWatched, dirPaths);
             return this;
         }
 
