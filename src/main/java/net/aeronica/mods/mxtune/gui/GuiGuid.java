@@ -19,6 +19,7 @@ package net.aeronica.mods.mxtune.gui;
 
 public class GuiGuid
 {
+    private GuiGuid() { /* NOP */ }
     public static final int GUI_INSTRUMENT_INVENTORY = 0;
     public static final int GUI_GROUP = 1;
     public static final int GUI_GROUP_JOIN = 2;

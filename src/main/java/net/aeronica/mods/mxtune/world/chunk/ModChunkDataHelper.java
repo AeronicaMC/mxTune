@@ -17,6 +17,7 @@
 
 package net.aeronica.mods.mxtune.world.chunk;
 
+import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.Util;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
@@ -60,7 +61,7 @@ public class ModChunkDataHelper
         if (chunk.hasCapability(MOD_CHUNK_DATA, null))
             chunkData =  chunk.getCapability(MOD_CHUNK_DATA, null);
         else
-            throw new RuntimeException("IModChunkData capability is null");
+            throw new MXTuneRuntimeException("IModChunkData capability is null");
         return chunkData;
     }
 }

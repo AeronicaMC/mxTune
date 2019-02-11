@@ -58,7 +58,7 @@ public class DirectoryWatcher implements Runnable, Service {
         EVENT_MAP.put(ENTRY_DELETE, Event.ENTRY_DELETE);
     }
 
-    private final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
+    private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
     private Future<?> mWatcherTask;
 
     private final Set<Path> mWatched;
