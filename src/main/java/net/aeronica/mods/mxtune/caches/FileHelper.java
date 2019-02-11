@@ -58,7 +58,7 @@ public class FileHelper
 
     private static void fixDirectory(Path dir)
     {
-        if (Files.exists(dir) && !Files.isDirectory(dir))
+        if (dir.toFile().exists() && !dir.toFile().isDirectory())
             try
             {
                 Files.delete(dir);
@@ -97,7 +97,7 @@ public class FileHelper
         Path dir = getDirectory(folder);
         Path cacheFile = dir.resolve(filename);
 
-        if(!Files.exists(cacheFile))
+        if(!cacheFile.toFile().exists())
         {
             Files.createDirectories(dir);
             Files.createFile(cacheFile);
