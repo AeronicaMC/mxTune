@@ -16,6 +16,7 @@
  */
 package net.aeronica.mods.mxtune.gui;
 
+import net.aeronica.mods.mxtune.caches.DirectoryWatcher;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -30,10 +31,12 @@ import org.lwjgl.input.Mouse;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -56,6 +59,9 @@ public class GuiFileSelector extends GuiScreen
     private GuiButton buttonCancel;
 
     private List<Path> mmlFiles;
+    private boolean watcherStarted = false;
+
+    private DirectoryWatcher watcher;
 
     public GuiFileSelector(@Nullable GuiScreen guiScreenParent)
     {
@@ -63,6 +69,53 @@ public class GuiFileSelector extends GuiScreen
         mc = Minecraft.getMinecraft();
         fontRenderer = mc.fontRenderer;
         midiUnavailable = MIDISystemUtil.midiUnavailable();
+
+        // refresh the file list automatically - might be better to not bother the extension filtering but we'll see
+        DirectoryStream.Filter<Path> filter = entry ->
+                (entry.toString().toLowerCase(Locale.ENGLISH).endsWith(".zip")
+                         || entry.toString().toLowerCase(Locale.ENGLISH).endsWith(".mml")
+                         || entry.toString().toLowerCase(Locale.ENGLISH).endsWith(".ms2mml"));
+        watcher = new DirectoryWatcher.Builder()
+                .addDirectories(FileHelper.getDirectory(FileHelper.CLIENT_MML_FOLDER))
+                .setPreExistingAsCreated(true)
+                .setFilter(filter::accept)
+                .build((event, path) ->
+                       {
+                           switch (event)
+                           {
+                               case ENTRY_CREATE:
+                               case ENTRY_MODIFY:
+                               case ENTRY_DELETE:
+                                   initGui();
+                           }
+                       });
+    }
+
+    @Override
+    public void onGuiClosed()
+    {
+        stopWatcher();
+    }
+
+    private void startWatcher()
+    {
+        if (!watcherStarted)
+            try
+            {
+                watcherStarted = true;
+                watcher.start();
+            }
+            catch (Exception e)
+            {
+                watcherStarted = false;
+                ModLogger.error(e);
+            }
+    }
+
+    private void stopWatcher()
+    {
+        if (watcherStarted)
+            watcher.stop();
     }
 
     @Override
@@ -96,7 +149,8 @@ public class GuiFileSelector extends GuiScreen
         int xCancel = xDone + 75;
         GuiButtonHooverText buttonOpen = new GuiButtonHooverText(2, xOpen, buttonTop, 75, 20, I18n.format("mxtune.gui.guiFileSelector.openFolder"));
         buttonOpen.addHooverText(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiFileSelector.openFolder.help"));
-        GuiButton buttonRefresh = new GuiButton(3, xRefresh, buttonTop, 75, 20, I18n.format("mxtune.gui.guiFileSelector.refresh"));
+        GuiButtonHooverText buttonRefresh = new GuiButtonHooverText(3, xRefresh, buttonTop, 75, 20, I18n.format("mxtune.gui.guiFileSelector.refresh"));
+        buttonRefresh.addHooverText(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiFileSelector.refresh.help"));
         GuiButton buttonOkay = new GuiButton(0, xDone, buttonTop, 75, 20, I18n.format("gui.done"));
         buttonCancel = new GuiButton(1, xCancel, buttonTop, 75, 20, I18n.format("gui.cancel"));
 
@@ -105,6 +159,7 @@ public class GuiFileSelector extends GuiScreen
         buttonList.add(buttonOpen);
         buttonList.add(buttonRefresh);
         reloadState();
+        startWatcher();
     }
 
     private void reloadState()
@@ -133,15 +188,15 @@ public class GuiFileSelector extends GuiScreen
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
         drawDefaultBackground();
-        String localTITLE;
+        String title;
         if (midiUnavailable)
-            localTITLE = TITLE + " - " + TextFormatting.RED + MIDI_NOT_AVAILABLE;
+            title = TITLE + " - " + TextFormatting.RED + MIDI_NOT_AVAILABLE;
         else
-            localTITLE = TITLE;
-        /* draw "TITLE" at the top/right column middle */
-        int posX = (this.width - mc.fontRenderer.getStringWidth(localTITLE)) / 2 ;
+            title = TITLE;
+        /* draw "TITLE" at the top middle */
+        int posX = (this.width - mc.fontRenderer.getStringWidth(title)) / 2 ;
         int posY = 5;
-        mc.fontRenderer.drawStringWithShadow(localTITLE, posX, posY, 0xD3D3D3);
+        mc.fontRenderer.drawStringWithShadow(title, posX, posY, 0xD3D3D3);
 
         guiFileList.drawScreen(mouseX, mouseY, partialTicks);
         textStatus.drawTextBox();
@@ -157,6 +212,7 @@ public class GuiFileSelector extends GuiScreen
             case 0:
                 // Done
                 ActionGetPath.INSTANCE.select(selectedFile());
+                ModLogger.info("GuiFileSelector::select %s", ActionGetPath.INSTANCE.getFileNameString());
                 mc.displayGuiScreen(guiScreenParent);
                 break;
             case 1:
@@ -262,15 +318,15 @@ public class GuiFileSelector extends GuiScreen
 
     private void initFileList()
     {
-        try
+        Path path = FileHelper.getDirectory(FileHelper.CLIENT_MML_FOLDER);
+        PathMatcher filter = FileHelper.getMMLMatcher(path);
+        try (Stream<Path> paths = Files.list(path))
         {
-            Path path = FileHelper.getDirectory(FileHelper.CLIENT_MML_FOLDER);
-            PathMatcher filter = FileHelper.getMMLMatcher(path);
-            Stream<Path> paths = Files.list(path);
             mmlFiles = paths
                     .filter(filter::matches)
                     .collect(Collectors.toList());
-        } catch (NullPointerException | IOException e)
+        }
+        catch (NullPointerException | IOException e)
         {
             textStatus.setText(e.getMessage());
             ModLogger.error(e);
@@ -279,8 +335,7 @@ public class GuiFileSelector extends GuiScreen
 
     private void openFolder()
     {
-            FileHelper.openFolder(FileHelper.CLIENT_MML_FOLDER);
-            textStatus.setText(I18n.format("mxtune.gui.guiFileSelector.title.openFolderStatus"));
+        FileHelper.openFolder(FileHelper.CLIENT_MML_FOLDER);
     }
 
     private void refresh()
