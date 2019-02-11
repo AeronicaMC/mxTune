@@ -36,7 +36,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.List;
-import java.util.Locale;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -57,6 +57,7 @@ public class GuiFileSelector extends GuiScreen
 
     private GuiTextField textStatus;
     private GuiButton buttonCancel;
+    private List<GuiButton> safeButtonList;
 
     private List<Path> mmlFiles;
     private boolean watcherStarted = false;
@@ -72,9 +73,9 @@ public class GuiFileSelector extends GuiScreen
 
         // refresh the file list automatically - might be better to not bother the extension filtering but we'll see
         DirectoryStream.Filter<Path> filter = entry ->
-                (entry.toString().toLowerCase(Locale.ENGLISH).endsWith(".zip")
-                         || entry.toString().toLowerCase(Locale.ENGLISH).endsWith(".mml")
-                         || entry.toString().toLowerCase(Locale.ENGLISH).endsWith(".ms2mml"));
+                (entry.toString().endsWith(".zip")
+                         || entry.toString().endsWith(".mml")
+                         || entry.toString().endsWith(".ms2mml"));
         watcher = new DirectoryWatcher.Builder()
                 .addDirectories(FileHelper.getDirectory(FileHelper.CLIENT_MML_FOLDER))
                 .setPreExistingAsCreated(true)
@@ -158,6 +159,7 @@ public class GuiFileSelector extends GuiScreen
         buttonList.add(buttonCancel);
         buttonList.add(buttonOpen);
         buttonList.add(buttonRefresh);
+        safeButtonList = new CopyOnWriteArrayList<>(buttonList);
         reloadState();
         startWatcher();
     }
@@ -345,7 +347,7 @@ public class GuiFileSelector extends GuiScreen
 
     private void drawHooveringButtonHelp(int mouseX, int mouseY)
     {
-        for(GuiButton b : buttonList)
+        for(GuiButton b : safeButtonList)
             if (isMouseOverButton(b, mouseX, mouseY))
                 this.drawHoveringText(((GuiButtonHooverText) b).getHooverTexts(), mouseX, mouseY);
     }
