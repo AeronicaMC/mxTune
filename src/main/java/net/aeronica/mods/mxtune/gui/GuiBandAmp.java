@@ -27,8 +27,6 @@ import net.aeronica.mods.mxtune.world.LockableHelper;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -271,41 +269,6 @@ public class GuiBandAmp extends GuiContainer
         this.drawDefaultBackground();
         super.drawScreen(mouseX, mouseY, partialTicks);
         this.renderHoveredToolTip(mouseX, mouseY);
-        drawHooveringButtonHelp(mouseX, mouseY);
-    }
-
-    @SuppressWarnings("unused")
-    private void drawBandAmp()
-    {
-        RenderHelper.enableGUIStandardItemLighting();
-        GlStateManager.pushMatrix();
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.enableRescaleNormal();
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-
-        GlStateManager.enableLighting();
-        GlStateManager.enableDepth();
-        GlStateManager.scale(2,2,1);
-        this.itemRender.renderItemAndEffectIntoGUI(stackBandAmp, 5, 13);
-        GlStateManager.disableLighting();
-        GlStateManager.disableDepth();
-
-        GlStateManager.popMatrix();
-        GlStateManager.enableLighting();
-        GlStateManager.enableDepth();
-        RenderHelper.enableStandardItemLighting();
-    }
-
-    private void drawHooveringButtonHelp(int mouseX, int mouseY)
-    {
-        for(GuiButton b : buttonList)
-            if (isMouseOverButton(b, mouseX, mouseY))
-                this.drawHoveringText(((GuiButtonHooverText) b).getHooverTexts(), mouseX, mouseY);
-    }
-
-    private <T extends GuiButton> boolean isMouseOverButton( T button, int mouseX, int mouseY)
-    {
-        return (button instanceof GuiButtonHooverText) && this.isPointInRegion(button.x - guiLeft, button.y - guiTop, button.width, button.height, mouseX, mouseY);
+        HooverHelper.INSTANCE.drawHooveringButtonHelp(this, buttonList, guiLeft, guiTop, mouseX, mouseY);
     }
 }

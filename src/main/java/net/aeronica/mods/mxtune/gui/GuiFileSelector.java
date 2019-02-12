@@ -203,7 +203,7 @@ public class GuiFileSelector extends GuiScreen
         guiFileList.drawScreen(mouseX, mouseY, partialTicks);
         textStatus.drawTextBox();
         super.drawScreen(mouseX, mouseY, partialTicks);
-        drawHooveringButtonHelp(mouseX, mouseY);
+        HooverHelper.INSTANCE.drawHooveringButtonHelp(this, safeButtonList, guiLeft, guiTop, mouseX, mouseY);
     }
 
     @Override
@@ -343,26 +343,5 @@ public class GuiFileSelector extends GuiScreen
     private void refresh()
     {
         initGui();
-    }
-
-    private void drawHooveringButtonHelp(int mouseX, int mouseY)
-    {
-        for(GuiButton b : safeButtonList)
-            if (isMouseOverButton(b, mouseX, mouseY))
-                this.drawHoveringText(((GuiButtonHooverText) b).getHooverTexts(), mouseX, mouseY);
-    }
-
-    private <T extends GuiButton> boolean isMouseOverButton( T button, int mouseX, int mouseY)
-    {
-        return (button instanceof GuiButtonHooverText) && isPointInRegion(button.x - guiLeft, button.y - guiTop, button.width, button.height, mouseX, mouseY);
-    }
-
-    private boolean isPointInRegion(int rectX, int rectY, int rectWidth, int rectHeight, int pointX, int pointY)
-    {
-        int i = this.guiLeft;
-        int j = this.guiTop;
-        pointX = pointX - i;
-        pointY = pointY - j;
-        return pointX >= rectX - 1 && pointX < rectX + rectWidth + 1 && pointY >= rectY - 1 && pointY < rectY + rectHeight + 1;
     }
 }
