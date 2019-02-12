@@ -22,7 +22,7 @@ import net.minecraft.client.gui.GuiScreen;
 
 import java.util.List;
 
-public class HooverHelper
+class HooverHelper
 {
     static final HooverHelper INSTANCE = new HooverHelper(){};
 

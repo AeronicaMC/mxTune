@@ -152,10 +152,10 @@ public class GuiFileSelector extends GuiScreen
         buttonOpen.addHooverText(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiFileSelector.openFolder.help"));
         GuiButtonHooverText buttonRefresh = new GuiButtonHooverText(3, xRefresh, buttonTop, 75, 20, I18n.format("mxtune.gui.guiFileSelector.refresh"));
         buttonRefresh.addHooverText(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiFileSelector.refresh.help"));
-        GuiButton buttonOkay = new GuiButton(0, xDone, buttonTop, 75, 20, I18n.format("gui.done"));
+        GuiButton buttonDone = new GuiButton(0, xDone, buttonTop, 75, 20, I18n.format("gui.done"));
         buttonCancel = new GuiButton(1, xCancel, buttonTop, 75, 20, I18n.format("gui.cancel"));
 
-        buttonList.add(buttonOkay);
+        buttonList.add(buttonDone);
         buttonList.add(buttonCancel);
         buttonList.add(buttonOpen);
         buttonList.add(buttonRefresh);
@@ -213,8 +213,7 @@ public class GuiFileSelector extends GuiScreen
         {
             case 0:
                 // Done
-                ActionGetPath.INSTANCE.select(selectedFile());
-                ModLogger.info("GuiFileSelector::select %s", ActionGetPath.INSTANCE.getFileNameString());
+                ActionGet.INSTANCE.select(selectedFile());
                 mc.displayGuiScreen(guiScreenParent);
                 break;
             case 1:
