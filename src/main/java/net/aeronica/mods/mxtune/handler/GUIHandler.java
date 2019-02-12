@@ -80,8 +80,8 @@ public class GUIHandler implements IGuiHandler
                 return new GuiBandAmp((Container) getServerGuiElement(guiID, playerIn, worldIn, x, y, z), playerIn.inventory,
                                       (TileBandAmp) worldIn.getTileEntity(new BlockPos(x, y, z)));
 
-            case GUI_MUSIC_LOADER:
-                return new GuiMusicLoader(null);
+            case GUI_MUSIC_IMPORTER:
+                return new GuiMusicImporter(null);
 
         default:
             return null;
