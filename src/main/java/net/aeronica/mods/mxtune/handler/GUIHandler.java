@@ -62,7 +62,7 @@ public class GUIHandler implements IGuiHandler
         switch (guiID)
         {
             case GUI_MUSIC_PAPER_PARSE:
-                return new GuiMusicPaperParse();
+                return new GuiMusicPaperParse(null);
 
             case GUI_INSTRUMENT_INVENTORY:
                 return new GuiInstrumentInventory(new ContainerInstrument(playerIn));
@@ -80,8 +80,8 @@ public class GUIHandler implements IGuiHandler
                 return new GuiBandAmp((Container) getServerGuiElement(guiID, playerIn, worldIn, x, y, z), playerIn.inventory,
                                       (TileBandAmp) worldIn.getTileEntity(new BlockPos(x, y, z)));
 
-            case GUI_FILE_SELECTOR:
-                return new GuiFileSelector(null);
+            case GUI_MUSIC_LOADER:
+                return new GuiMusicLoader(null);
 
         default:
             return null;
