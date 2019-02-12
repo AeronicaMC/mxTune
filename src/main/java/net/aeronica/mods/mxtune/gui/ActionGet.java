@@ -20,14 +20,23 @@ package net.aeronica.mods.mxtune.gui;
 import javax.annotation.Nullable;
 import java.nio.file.Path;
 
-public class ActionGetPath implements ISelectorAction
+public class ActionGet implements ISelectorAction
 {
-    public static final ActionGetPath INSTANCE = new ActionGetPath();
+    public static final ActionGet INSTANCE = new ActionGet();
 
     private Path path;
+    private String title;
+    private String mml;
 
     @Override
     public void select(Path path) { this.path = path; }
+
+    @Override
+    public void select(String title, String mml)
+    {
+        this.title = title;
+        this.mml = mml;
+    }
 
     @Nullable
     Path getFileName() { return path != null ? path.getFileName() : null; }
@@ -37,4 +46,10 @@ public class ActionGetPath implements ISelectorAction
 
     @Nullable
     public Path getPath() { return path; }
+
+    @Nullable
+    public String getTitle() { return title; }
+
+    @Nullable
+    public String getMml() { return mml; }
 }

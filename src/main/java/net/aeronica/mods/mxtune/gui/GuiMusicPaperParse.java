@@ -50,6 +50,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     private static final String LABEL_INSTRUMENTS = I18n.format("mxtune.gui.musicPaperParse.labelInstruments");
     private static final String LABEL_TITLE_MML = I18n.format("mxtune.gui.musicPaperParse.labelTitleMML");
 
+    private GuiScreen guiScreenParent;
     private GuiTextField textMMLTitle;
     private GuiMMLBox textMMLPaste;
     private GuiTextField labelStatus;
@@ -93,8 +94,11 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     private int cachedSelectedInst;
     private boolean cachedIgnoreParseErrors;
 
-    public GuiMusicPaperParse()
+    public GuiMusicPaperParse(GuiScreen guiScreenParent)
     {
+        this.guiScreenParent = guiScreenParent;
+        this.mc = Minecraft.getMinecraft();
+        this.fontRenderer = mc.fontRenderer;
         midiUnavailable = MIDISystemUtil.midiUnavailable();
         instrumentCache = MIDISystemUtil.getInstrumentCacheCopy();
     }
@@ -111,9 +115,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
 
     @Override
     public void initGui()
-    {        
-        mc = Minecraft.getMinecraft();
-        fontRenderer = mc.fontRenderer;
+    {
         int entryHeight = fontRenderer.FONT_HEIGHT + 2;
         parseErrorListener = new ParseErrorListener();
         parseErrorCache = new ArrayList<>();
@@ -298,7 +300,10 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
                 String musicText = textMMLPaste.getTextToParse().trim();
                 String musicTitle = textMMLTitle.getText().trim();
                 mmlStop();
-                sendMMLTextToServer(musicTitle, musicText);
+                if (guiScreenParent == null)
+                    sendMMLTextToServer(musicTitle, musicText);
+                else
+                    ActionGet.INSTANCE.select(musicTitle, musicText);
                 closeGui();
                 break;
 
@@ -337,8 +342,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
 
     private void closeGui()
     {
-        mc.displayGuiScreen(null);
-        mc.setIngameFocus();
+        mc.displayGuiScreen(guiScreenParent);
     }
     
     /*

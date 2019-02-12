@@ -26,4 +26,8 @@ import java.nio.file.Path;
  * Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)</a></p>
  */
 public interface ISelectorAction
-{ void select(Path path);}
+{
+    void select(Path path);
+
+    void select(String title, String mml);
+}
