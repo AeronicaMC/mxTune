@@ -66,6 +66,7 @@ public class GuiMusicImporter extends GuiScreen
     private GuiImportList guiImportList;
     private GuiTextField musicTitle;
     private GuiTextField musicAuthor;
+    private GuiTextField musicSource;
     private GuiButton buttonCancel;
     private List<GuiButton> safeButtonList;
 
@@ -87,10 +88,17 @@ public class GuiMusicImporter extends GuiScreen
         int guiListWidth = width - 10;
         entryHeight = mc.fontRenderer.FONT_HEIGHT + 2;
         int left = 5;
-        int listTop = 20;
-        int listHeight = height - 10 - 30 - 30;
+        int titleTop = 20;
+        int authorTop = titleTop + entryHeight;
+        int sourceTop = authorTop + entryHeight;
+        int listTop = sourceTop + entryHeight;
+        int listHeight = height - (entryHeight * 3) - 10 - 30 - 30;
         int listBottom = listTop + listHeight;
         int statusTop = listBottom + 7;
+
+        musicTitle = new GuiTextField(0,fontRenderer, left, titleTop, guiListWidth, entryHeight);
+        musicAuthor = new GuiTextField(1, fontRenderer, left, authorTop, guiListWidth, entryHeight);
+        musicSource = new GuiTextField(2, fontRenderer, left, sourceTop, guiListWidth, entryHeight);
         guiImportList = new GuiImportList(this, musicParts, guiListWidth, listHeight, listTop, listBottom, left);
 
         int buttonTop = height - 25;
@@ -103,11 +111,11 @@ public class GuiMusicImporter extends GuiScreen
         GuiButton buttonFiles = new GuiButton(2, xFiles, buttonTop, 75, 20, I18n.format("mxtune.gui.button.pickFile"));
         GuiButton buttonPaste = new GuiButton(3, xPaste, buttonTop, 75, 20, I18n.format("mxtune.gui.button.pasteMML"));
 
-        safeButtonList = new CopyOnWriteArrayList<>(buttonList);
         buttonList.add(buttonDone);
         buttonList.add(buttonCancel);
         buttonList.add(buttonPaste);
         buttonList.add(buttonFiles);
+        safeButtonList = new CopyOnWriteArrayList<>(buttonList);
         reloadState();
         getSelection();
     }
@@ -127,6 +135,8 @@ public class GuiMusicImporter extends GuiScreen
     @Override
     public void updateScreen()
     {
+        musicTitle.updateCursorCounter();
+        musicAuthor.updateCursorCounter();
         super.updateScreen();
     }
 
@@ -144,6 +154,9 @@ public class GuiMusicImporter extends GuiScreen
         int posY = 5;
         mc.fontRenderer.drawStringWithShadow(guiTitle, posX, posY, 0xD3D3D3);
 
+        musicTitle.drawTextBox();
+        musicAuthor.drawTextBox();
+        musicSource.drawTextBox();
         guiImportList.drawScreen(mouseX, mouseY, partialTicks);
         super.drawScreen(mouseX, mouseY, partialTicks);
         HooverHelper.INSTANCE.drawHooveringButtonHelp(this, safeButtonList, guiLeft, guiTop, mouseX, mouseY);
@@ -196,9 +209,11 @@ public class GuiMusicImporter extends GuiScreen
         {
             case FILE:
                 ModLogger.info("File: %s", ActionGet.INSTANCE.getFileNameString());
+                musicTitle.setText(ActionGet.INSTANCE.getFileNameString());
                 break;
             case PASTE:
                 ModLogger.info("Paste: %s", ActionGet.INSTANCE.getTitle());
+                musicTitle.setText(ActionGet.INSTANCE.getTitle());
                 break;
             case CANCEL:
                 break;
@@ -216,6 +231,31 @@ public class GuiMusicImporter extends GuiScreen
             this.actionPerformed(buttonCancel);
             return;
         }
+        /* add char to GuiTextField */
+        musicTitle.textboxKeyTyped(typedChar, keyCode);
+        musicAuthor.textboxKeyTyped(typedChar, keyCode);
+        musicSource.textboxKeyTyped(typedChar, keyCode);
+        if (keyCode == Keyboard.KEY_TAB)
+        {
+            if (musicTitle.isFocused())
+            {
+                musicAuthor.setFocused(true);
+                musicSource.setFocused(false);
+                musicTitle.setFocused(false);
+            }
+            else if (musicAuthor.isFocused())
+            {
+                musicAuthor.setFocused(false);
+                musicSource.setFocused(true);
+                musicTitle.setFocused(false);
+            }
+            else if (musicSource.isFocused())
+            {
+                musicAuthor.setFocused(false);
+                musicSource.setFocused(false);
+                musicTitle.setFocused(true);
+            }
+        }
         updateState();
         super.keyTyped(typedChar, keyCode);
     }
@@ -228,6 +268,16 @@ public class GuiMusicImporter extends GuiScreen
 
         guiImportList.handleMouseInput(mouseX, mouseY);
         super.handleMouseInput();
+    }
+
+    @Override
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
+    {
+        musicTitle.mouseClicked(mouseX, mouseY, mouseButton);
+        musicAuthor.mouseClicked(mouseX, mouseY, mouseButton);
+        musicSource.mouseClicked(mouseX, mouseY, mouseButton);
+        super.mouseClicked(mouseX, mouseY, mouseButton);
+        updateState();
     }
 
     private static class GuiImportList extends GuiScrollingList
@@ -287,5 +337,13 @@ public class GuiMusicImporter extends GuiScreen
         musicParts.add("Part 01");
         musicParts.add("Part 02");
         musicParts.add("Part 03");
+        musicParts.add("Part 04");
+        musicParts.add("Part 05");
+        musicParts.add("Part 06");
+        musicParts.add("Part 07");
+        musicParts.add("Part 08");
+        musicParts.add("Part 09");
+        musicParts.add("Part 10");
+        musicParts.add("Part 11");
     }
 }
