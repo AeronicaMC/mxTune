@@ -52,4 +52,11 @@ public class ActionGet implements ISelectorAction
 
     @Nullable
     public String getMml() { return mml; }
+
+    enum SELECTOR
+    {
+        FILE,
+        PASTE,
+        CANCEL;
+    }
 }

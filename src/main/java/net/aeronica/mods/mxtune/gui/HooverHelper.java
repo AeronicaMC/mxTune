@@ -33,15 +33,19 @@ class HooverHelper
                 guiScreen.drawHoveringText(((GuiButtonHooverText) b).getHooverTexts(), mouseX, mouseY);
     }
 
-    private <T extends GuiButton> boolean isMouseOverButton( T button, int guiLeft, int guiTop, int mouseX, int mouseY)
+    private <T extends GuiButton> boolean isMouseOverButton(T button, int guiLeft, int guiTop, int mouseX, int mouseY)
     {
-        return (button instanceof GuiButtonHooverText) && this.isPointInRegion(guiLeft, guiTop, button.x - guiLeft, button.y - guiTop, button.width, button.height, mouseX, mouseY);
+        return (button instanceof GuiButtonHooverText) && this.isPointInRegion(button, guiLeft, guiTop, mouseX, mouseY);
     }
 
-    private boolean isPointInRegion(int guiLeft,  int guiTop, int rectX, int rectY, int rectWidth, int rectHeight, int pointX, int pointY)
+    private <T extends GuiButton> boolean isPointInRegion(T button, int guiLeft,  int guiTop, int pointX, int pointY)
     {
         pointX = pointX - guiLeft;
         pointY = pointY - guiTop;
+        int rectX = button.x - guiLeft;
+        int rectY = button.y - guiTop;
+        int rectWidth = button.width;
+        int rectHeight = button.height;
         return pointX >= rectX - 1 && pointX < rectX + rectWidth + 1 && pointY >= rectY - 1 && pointY < rectY + rectHeight + 1;
     }
 }
