@@ -89,7 +89,7 @@ public class ClientAudio
     private static SoundSystem sndSystem;
     private static MusicTicker musicTicker;
 
-    private static final int THREAD_POOL_SIZE = 4;
+    private static final int THREAD_POOL_SIZE = 2;
     /* PCM Signed Monaural little endian */
     private static final AudioFormat audioFormat3D = new AudioFormat(48000, 16, 1, true, false);
     /* PCM Signed Stereo little endian */
