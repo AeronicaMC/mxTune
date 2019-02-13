@@ -19,6 +19,7 @@ package net.aeronica.mods.mxtune.gui;
 
 import javax.annotation.Nullable;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class ActionGet implements ISelectorAction
 {
@@ -26,31 +27,44 @@ public class ActionGet implements ISelectorAction
 
     private Path path;
     private String title;
+    private String author;
+    private String source;
     private String mml;
 
     @Override
     public void select(Path path) { this.path = path; }
 
     @Override
-    public void select(String title, String mml)
+    public void select(String title, String author, String source, String mml)
     {
-        this.title = title;
-        this.mml = mml;
+        this.title = title != null ? title : "";
+        this.author = author != null ? author : "";
+        this.source = source != null ? source : "";
+        this.mml = mml != null ? mml : "";
     }
 
-    @Nullable
-    Path getFileName() { return path != null ? path.getFileName() : null; }
+    void clear()
+    {
+        path = null;
+        title = "";
+        author = "";
+        source = "";
+        mml = "";
+    }
 
-    @Nullable
-    String getFileNameString() { return path != null ? (path.getFileName().toString()) : null; }
+    Path getFileName() { return path != null ? path.getFileName() : Paths.get(""); }
+
+    String getFileNameString() { return path != null ? (path.getFileName().toString()) : ""; }
 
     @Nullable
     public Path getPath() { return path; }
 
-    @Nullable
     public String getTitle() { return title; }
 
-    @Nullable
+    public String getAuthor() { return author; }
+
+    public String getSource() { return source; }
+
     public String getMml() { return mml; }
 
     enum SELECTOR

@@ -303,7 +303,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
                 if (guiScreenParent == null)
                     sendMMLTextToServer(musicTitle, musicText);
                 else
-                    ActionGet.INSTANCE.select(musicTitle, musicText);
+                    ActionGet.INSTANCE.select(musicTitle, null, null, musicText);
                 closeGui();
                 break;
 

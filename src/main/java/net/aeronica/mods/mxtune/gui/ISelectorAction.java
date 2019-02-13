@@ -29,5 +29,5 @@ public interface ISelectorAction
 {
     void select(Path path);
 
-    void select(String title, String mml);
+    void select(String title, String author, String source, String mml);
 }

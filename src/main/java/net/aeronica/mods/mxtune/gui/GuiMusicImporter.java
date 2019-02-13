@@ -47,12 +47,13 @@ import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GuiMusicImporter extends GuiScreen
 {
-    private static final String TITLE = I18n.format("mxtune.gui.guiMusicLoader.title");
+    private static final String TITLE = I18n.format("mxtune.gui.guiMusicImporter.title");
     private static final String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
     private GuiScreen guiScreenParent;
     private int guiLeft;
@@ -67,6 +68,7 @@ public class GuiMusicImporter extends GuiScreen
     private GuiTextField musicTitle;
     private GuiTextField musicAuthor;
     private GuiTextField musicSource;
+    private GuiTextField statusText;
     private GuiButton buttonCancel;
     private List<GuiButton> safeButtonList;
 
@@ -94,12 +96,15 @@ public class GuiMusicImporter extends GuiScreen
         int listTop = sourceTop + entryHeight;
         int listHeight = height - (entryHeight * 3) - 10 - 30 - 30;
         int listBottom = listTop + listHeight;
-        int statusTop = listBottom + 7;
+        int statusTop = listBottom;
 
         musicTitle = new GuiTextField(0,fontRenderer, left, titleTop, guiListWidth, entryHeight);
         musicAuthor = new GuiTextField(1, fontRenderer, left, authorTop, guiListWidth, entryHeight);
         musicSource = new GuiTextField(2, fontRenderer, left, sourceTop, guiListWidth, entryHeight);
         guiImportList = new GuiImportList(this, musicParts, guiListWidth, listHeight, listTop, listBottom, left);
+        statusText = new GuiTextField(3, fontRenderer, left, statusTop, guiListWidth, entryHeight);
+        statusText.setFocused(false);
+        statusText.setEnabled(false);
 
         int buttonTop = height - 25;
         int xFiles = (width /2) - 75 * 2;
@@ -158,6 +163,7 @@ public class GuiMusicImporter extends GuiScreen
         musicAuthor.drawTextBox();
         musicSource.drawTextBox();
         guiImportList.drawScreen(mouseX, mouseY, partialTicks);
+        statusText.drawTextBox();
         super.drawScreen(mouseX, mouseY, partialTicks);
         HooverHelper.INSTANCE.drawHooveringButtonHelp(this, safeButtonList, guiLeft, guiTop, mouseX, mouseY);
     }
@@ -192,14 +198,14 @@ public class GuiMusicImporter extends GuiScreen
     private void getFile()
     {
         selector = ActionGet.SELECTOR.FILE;
-        ActionGet.INSTANCE.select(null);
+        ActionGet.INSTANCE.clear();
         mc.displayGuiScreen(new GuiFileSelector(this));
     }
 
     private void getPaste()
     {
         selector = ActionGet.SELECTOR.PASTE;
-        ActionGet.INSTANCE.select(null, null);
+        ActionGet.INSTANCE.clear();
         mc.displayGuiScreen(new GuiMusicPaperParse(this));
     }
 
@@ -210,10 +216,17 @@ public class GuiMusicImporter extends GuiScreen
             case FILE:
                 ModLogger.info("File: %s", ActionGet.INSTANCE.getFileNameString());
                 musicTitle.setText(ActionGet.INSTANCE.getFileNameString());
+                musicAuthor.setText(ActionGet.INSTANCE.getAuthor());
+                musicSource.setText(ActionGet.INSTANCE.getSource());
                 break;
             case PASTE:
                 ModLogger.info("Paste: %s", ActionGet.INSTANCE.getTitle());
                 musicTitle.setText(ActionGet.INSTANCE.getTitle());
+                musicAuthor.setText(ActionGet.INSTANCE.getAuthor());
+                musicSource.setText(ActionGet.INSTANCE.getSource());
+                musicParts.clear();
+
+                musicParts.addAll(Arrays.asList(ActionGet.INSTANCE.getMml().replaceFirst("MML@|;", "").split(",")));
                 break;
             case CANCEL:
                 break;
