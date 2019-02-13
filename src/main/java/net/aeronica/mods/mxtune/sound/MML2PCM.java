@@ -97,7 +97,7 @@ public class MML2PCM
         {
             Patch patchPreset = MMLUtil.packedPreset2Patch(packedPreset);
             String name = I18n.format(MIDISystemUtil.getPatchNameKey(patchPreset));
-            ModLogger.debug("MML2PCM preset: bank: %3d, program %3d, name %s", patchPreset.getBank(),
+            ModLogger.info("MML2PCM preset: bank: %3d, program %3d, name %s", patchPreset.getBank(),
                            patchPreset.getProgram(), name);
         }
 

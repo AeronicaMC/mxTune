@@ -70,8 +70,8 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
             EntityPlayer otherPlayer = (EntityPlayer) player.getEntityWorld().getEntityByID(getMembersGroupLeader(leaderID));
             if (playerNotMuted(player, otherPlayer))
             {
-                ModLogger.debug("musicText:  " + jamMML.substring(0, Math.min(25, jamMML.length())));
-                ModLogger.debug("playID:     " + playID);
+                ModLogger.info("musicText:  " + jamMML.substring(0, Math.min(25, jamMML.length())));
+                ModLogger.info("playID:     " + playID);
                 GroupHelper.addActivePlayID(playID);
                 ClientAudio.play(playID, jamMML);
             }

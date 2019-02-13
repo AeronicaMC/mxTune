@@ -153,20 +153,20 @@ public class PlayManager
                 int duration = contents.getInteger(KEY_DURATION);
 
                 mml = mml.replace("MML@", "MML@I" + getPackedPreset(pos, playerIn, isPlaced));
-                ModLogger.debug("MML Title: " + title);
-                ModLogger.debug("MML Sub25: " + mml.substring(0, Math.min(25, mml.length())));
+                ModLogger.info("MML Title: " + title);
+                ModLogger.info("MML Sub25: " + mml.substring(0, Math.min(25, mml.length())));
 
 
                 if (GroupManager.getMembersGroup(playerID).isEmpty())
                 {
                     /* Solo Play */
-                    ModLogger.debug("playMusic playSolo");
+                    ModLogger.info("playMusic playSolo");
                     return playSolo(playerIn, mml, duration, playerID);
                 }
                 else
                 {
                     /* Jam Play */
-                    ModLogger.debug("playMusic queueJam");
+                    ModLogger.info("playMusic queueJam");
                     return queueJam(playerIn, mml, duration, playerID);
                 }
             }

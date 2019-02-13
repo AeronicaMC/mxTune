@@ -83,10 +83,10 @@ public enum MIDISystemUtil
         }
         for (MidiDevice.Info info: synthInfos)
         {
-            ModLogger.debug(info.getName());
-            ModLogger.debug(info.getDescription());
-            ModLogger.debug(info.getVendor());
-            ModLogger.debug(info.getVersion());
+            ModLogger.info(info.getName());
+            ModLogger.info(info.getDescription());
+            ModLogger.info(info.getVendor());
+            ModLogger.info(info.getVersion());
             try
             {
                 testSynth = (AudioSynthesizer) MidiSystem.getMidiDevice(info);
@@ -175,7 +175,7 @@ public enum MIDISystemUtil
     private static URL getMXTuneSoundBankURL()
     {
         URL file = MXTune.class.getResource("/assets/" + SOUND_FONT.getNamespace() + "/" + SOUND_FONT.getPath());
-        ModLogger.debug("Sound font path: %s", file);
+        ModLogger.info("Sound font path: %s", file);
         return file;
     }
     

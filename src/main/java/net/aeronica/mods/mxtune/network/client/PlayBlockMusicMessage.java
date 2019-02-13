@@ -81,9 +81,9 @@ public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicM
     {
         if (!midiUnavailableWarn(player) && ClientCSDMonitor.canMXTunesPlay())
         {
-            ModLogger.debug("musicText:  " + musicText.substring(0, Math.min(25, musicText.length())));
-            ModLogger.debug("playID:     " + playID);
-            ModLogger.debug("SoundRange: " + soundRange);
+            ModLogger.info("musicText:  " + musicText.substring(0, Math.min(25, musicText.length())));
+            ModLogger.info("playID:     " + playID);
+            ModLogger.info("SoundRange: " + soundRange);
             GroupHelper.addActivePlayID(playID);
             ClientAudio.play(playID, blockPos, musicText, soundRange);
         }

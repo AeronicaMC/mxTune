@@ -465,7 +465,7 @@ public enum ClientAudio implements IResourceManagerReloadListener
                 {
                     // ** Musical Machines - Juke Boxes, Band Amp, Yet-to-be-announced stuff... **
                     e.setResultSound(new MusicPositioned(playID, getBlockPos(playID), getSoundRange(playID)));
-                    ModLogger.debug("PlaySoundEvent MusicPositioned playID: %d, pos: %s, isPlayer: %s",
+                    ModLogger.info("PlaySoundEvent MusicPositioned playID: %d, pos: %s, isPlayer: %s",
                                    playID, getBlockPos(playID), isClientPlayer(playID));
                 }
             }
@@ -485,7 +485,7 @@ public enum ClientAudio implements IResourceManagerReloadListener
             Integer playID = ClientAudio.pollPlayIDQueue03();
             ClientAudio.setUuid(playID, e.getUuid());
             ClientAudio.setISound(playID, e.getSound());
-            ModLogger.debug("ClientAudio PlayStreamingSourceEvent: uuid: %s, ISound: %s", e.getUuid(), e.getSound());
+            ModLogger.info("ClientAudio PlayStreamingSourceEvent: uuid: %s, ISound: %s", e.getUuid(), e.getSound());
         }
     }
 
