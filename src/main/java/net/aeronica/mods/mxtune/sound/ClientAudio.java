@@ -52,6 +52,8 @@ import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.audio.SoundManager;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.PlayStreamingSourceEvent;
@@ -82,8 +84,9 @@ import java.util.concurrent.*;
 
 @SideOnly(Side.CLIENT)
 @Mod.EventBusSubscriber(Side.CLIENT)
-public class ClientAudio
+public enum ClientAudio implements IResourceManagerReloadListener
 {
+    INSTANCE;
     public static final Object THREAD_SYNC = new Object();
     private static SoundHandler handler;
     private static SoundSystem sndSystem;
@@ -388,7 +391,16 @@ public class ClientAudio
         setVanillaMusicPaused(false);
         playIDAudioData.keySet().forEach(ClientAudio::queueAudioDataRemoval);
     }
-    
+
+    @Override
+    public void onResourceManagerReload(IResourceManager resourceManager)
+    {
+        ModLogger.info("Restarting mxTune");
+        cleanup();
+        configureSound();
+        init();
+    }
+
     @SubscribeEvent
     public static void event(EntityJoinWorldEvent event)
     {

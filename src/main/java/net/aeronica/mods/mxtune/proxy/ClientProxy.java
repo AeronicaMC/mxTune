@@ -19,10 +19,12 @@ package net.aeronica.mods.mxtune.proxy;
 import com.google.common.util.concurrent.ListenableFuture;
 import net.aeronica.mods.mxtune.gui.GuiJamOverlay;
 import net.aeronica.mods.mxtune.handler.KeyHandler;
+import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.IThreadListener;
@@ -86,7 +88,11 @@ public class ClientProxy extends ServerProxy
     }
 
     @Override
-    public void initMML() { MIDISystemUtil.mxTuneInit(); }
+    public void initMML()
+    {
+        MIDISystemUtil.mxTuneInit();
+        ((IReloadableResourceManager) getMinecraft().getResourceManager()).registerReloadListener(ClientAudio.INSTANCE);
+    }
 
     @Override
     public void registerHUD() { MinecraftForge.EVENT_BUS.register(GuiJamOverlay.getInstance()); }
