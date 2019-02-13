@@ -117,7 +117,7 @@ public class PlayManager
                 syncStatus();
 
                 DurationTimer.scheduleStop(playID, musicPlayer.getDuration());
-
+                ModLogger.info("Block/TE MML Sub25: " + mml.substring(0, Math.min(25, mml.length())));
                 PlayBlockMusicMessage playBlockMusicMessage = new PlayBlockMusicMessage(playID, pos, mml, musicPlayer.getSoundRange());
                 PacketDispatcher.sendToAllAround(playBlockMusicMessage, worldIn.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), ModConfig.getListenerRange());
             }
