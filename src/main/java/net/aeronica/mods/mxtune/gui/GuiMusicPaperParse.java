@@ -140,6 +140,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         buttonStop = new GuiButton(3, 10, height - 27, instListWidth, 20, I18n.format("mxtune.gui.button.stop"));
         mmlLink = new GuiLink(4, width - 10 , 20, ModConfig.getMmlLink(), GuiLink.AlignText.RIGHT);
         checkBoxIgnoreParseErrors = new GuiCheckBox(5, listBoxInstruments.getRight() + 5, height - 40, I18n.format("mxtune.gui.musicPaperParse.checkBox.ignoreParseErrors"), ignoreParseErrors);
+        checkBoxIgnoreParseErrors.enabled = false; // Don't allow disabling until the parser tied note processing is updated.
         buttonPlay.enabled = false;
         buttonStop.enabled = false;
         buttonOkay.enabled = false;
