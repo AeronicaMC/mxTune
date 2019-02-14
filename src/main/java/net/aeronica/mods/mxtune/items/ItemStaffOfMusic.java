@@ -71,12 +71,12 @@ public class ItemStaffOfMusic extends Item
 //            {
 //                ModLogger.error(e);
 //            }
-            ModLogger.info("Staff of Music usable");
+            ModLogger.debug("Staff of Music usable");
             return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
         }
         else
         {
-            ModLogger.info("Staff of Music is Only usable in Creative Mode");
+            ModLogger.debug("Staff of Music is Only usable in Creative Mode");
             return new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
         }
     }

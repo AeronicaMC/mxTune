@@ -597,8 +597,8 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         int packedPreset = isPercussionSet ? MMLUtil.preset2PackedPreset(128, program) : MMLUtil.preset2PackedPreset(bank, program);
         
         mml = mml.replace("MML@", "MML@i" + packedPreset);
-        ModLogger.info("GuiMusicPaperParse.mmlPlay() name: %s, bank %05d, program %03d, packed %08d, perc: %s", inst.getName(), bank, program, packedPreset, isPercussionSet);
-        ModLogger.info("GuiMusicPaperParse.mmlPlay(): %s", mml.substring(0, mml.length() >= 25 ? 25 : mml.length()));
+        ModLogger.debug("GuiMusicPaperParse.mmlPlay() name: %s, bank %05d, program %03d, packed %08d, perc: %s", inst.getName(), bank, program, packedPreset, isPercussionSet);
+        ModLogger.debug("GuiMusicPaperParse.mmlPlay(): %s", mml.substring(0, mml.length() >= 25 ? 25 : mml.length()));
         
         if (midiUnavailable) return false;
         MMLParser parser;
@@ -608,7 +608,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         }
         catch (IOException e)
         {
-            ModLogger.info("MMLParserFactory.getMMLParser() IOException in %s, Error: %s", SheetMusicUtil.class.getSimpleName(), e);
+            ModLogger.debug("MMLParserFactory.getMMLParser() IOException in %s, Error: %s", SheetMusicUtil.class.getSimpleName(), e);
             return true;
         }
         parser.removeErrorListeners();

@@ -68,8 +68,8 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
             Integer otherEntityID = getSoloMemberByPlayID(playID) == null ? player.getEntityId() : getSoloMemberByPlayID(playID);
             if (playerNotMuted(player, (EntityPlayer) (player.getEntityWorld().getEntityByID(otherEntityID))))
             {
-                ModLogger.info("musicText: " + musicText.substring(0, (musicText.length() >= 25 ? 25 : musicText.length())));
-                ModLogger.info("playID:    " + playID);
+                ModLogger.debug("musicText: " + musicText.substring(0, (musicText.length() >= 25 ? 25 : musicText.length())));
+                ModLogger.debug("playID:    " + playID);
                 GroupHelper.addActivePlayID(playID);
                 ClientAudio.play(playID, musicText);
             }

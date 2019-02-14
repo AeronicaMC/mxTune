@@ -139,7 +139,7 @@ public enum SheetMusicUtil
         }
         catch (IOException e)
         {
-            ModLogger.info("MMLParserFactory.getMMLParser() IOException in %s, Error: %s", SheetMusicUtil.class.getSimpleName(), e);
+            ModLogger.debug("MMLParserFactory.getMMLParser() IOException in %s, Error: %s", SheetMusicUtil.class.getSimpleName(), e);
             return ValidDuration.INVALID;
         }
         parser.removeErrorListeners();
@@ -157,11 +157,11 @@ public enum SheetMusicUtil
                 seconds = (int) (midi2WavRenderer.getSequenceInSeconds(mmlTrans.getSequence()) + 4);
             } catch (MidiUnavailableException | InvalidMidiDataException | IOException e)
             {
-                ModLogger.info("ValidateMML Error: %s in %s", e, SheetMusicUtil.class.getSimpleName());
+                ModLogger.debug("ValidateMML Error: %s in %s", e, SheetMusicUtil.class.getSimpleName());
                 return ValidDuration.INVALID;
             }
         }
-        ModLogger.info("ValidateMML: valid: %s, length: %d", parseErrorListener.getParseErrorEntries().isEmpty(), seconds);
+        ModLogger.debug("ValidateMML: valid: %s, length: %d", parseErrorListener.getParseErrorEntries().isEmpty(), seconds);
         return new ValidDuration(parseErrorListener.getParseErrorEntries().isEmpty(), seconds);
     }
 

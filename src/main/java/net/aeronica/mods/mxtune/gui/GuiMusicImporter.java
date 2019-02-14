@@ -214,13 +214,13 @@ public class GuiMusicImporter extends GuiScreen
         switch (selector)
         {
             case FILE:
-                ModLogger.info("File: %s", ActionGet.INSTANCE.getFileNameString());
+                ModLogger.debug("File: %s", ActionGet.INSTANCE.getFileNameString());
                 musicTitle.setText(ActionGet.INSTANCE.getFileNameString());
                 musicAuthor.setText(ActionGet.INSTANCE.getAuthor());
                 musicSource.setText(ActionGet.INSTANCE.getSource());
                 break;
             case PASTE:
-                ModLogger.info("Paste: %s", ActionGet.INSTANCE.getTitle());
+                ModLogger.debug("Paste: %s", ActionGet.INSTANCE.getTitle());
                 musicTitle.setText(ActionGet.INSTANCE.getTitle());
                 musicAuthor.setText(ActionGet.INSTANCE.getAuthor());
                 musicSource.setText(ActionGet.INSTANCE.getSource());

@@ -50,7 +50,7 @@ class DurationTimer
 
     private static void stop(int playID, int duration)
     {
-        ModLogger.info("A scheduled stop was sent for playID: %d that had a duration of %s", playID, formatDuration(duration));
+        ModLogger.debug("A scheduled stop was sent for playID: %d that had a duration of %s", playID, formatDuration(duration));
         PlayManager.stopPlayID(playID);
     }
 }
