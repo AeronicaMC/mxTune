@@ -92,12 +92,12 @@ public class GuiMusicImporter extends GuiScreen
         entryHeight = mc.fontRenderer.FONT_HEIGHT + 2;
         int left = 5;
         int titleTop = 20;
-        int authorTop = titleTop + entryHeight;
-        int sourceTop = authorTop + entryHeight;
-        int listTop = sourceTop + entryHeight;
-        int listHeight = height - (entryHeight * 3) - 10 - 30 - 30;
+        int authorTop = titleTop + entryHeight + 5;
+        int sourceTop = authorTop + entryHeight + 5;
+        int listTop = sourceTop + entryHeight + 5;
+        int listHeight = height - (entryHeight * 3) - 15 - 10 - 30 - 30;
         int listBottom = listTop + listHeight;
-        int statusTop = listBottom;
+        int statusTop = listBottom + 5;
 
         musicTitle = new GuiTextField(0,fontRenderer, left, titleTop, guiListWidth, entryHeight);
         musicAuthor = new GuiTextField(1, fontRenderer, left, authorTop, guiListWidth, entryHeight);
@@ -353,7 +353,7 @@ public class GuiMusicImporter extends GuiScreen
 
     private void initImportList()
     {
-        musicParts = new ArrayList();
+        musicParts = new ArrayList<>();
         musicParts.add("Part 01");
         musicParts.add("Part 02");
         musicParts.add("Part 03");
