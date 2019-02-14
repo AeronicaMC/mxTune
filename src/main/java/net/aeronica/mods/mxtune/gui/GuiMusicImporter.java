@@ -84,6 +84,7 @@ public class GuiMusicImporter extends GuiScreen
     public void initGui()
     {
         initImportList();
+        Keyboard.enableRepeatEvents(true);
         buttonList.clear();
         this.guiLeft = 0;
         this.guiTop = 0;
@@ -135,6 +136,12 @@ public class GuiMusicImporter extends GuiScreen
     {
 
         this.isStateCached = true;
+    }
+
+    @Override
+    public void onGuiClosed()
+    {
+        Keyboard.enableRepeatEvents(false);
     }
 
     @Override

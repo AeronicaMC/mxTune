@@ -217,6 +217,13 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     }
 
     @Override
+    public void onGuiClosed()
+    {
+        mmlStop();
+        Keyboard.enableRepeatEvents(false);
+    }
+
+    @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
         drawDefaultBackground();
@@ -305,13 +312,13 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
                     sendMMLTextToServer(musicTitle, musicText);
                 else
                     ActionGet.INSTANCE.select(musicTitle, null, null, musicText);
-                closeGui();
+                mc.displayGuiScreen(guiScreenParent);
                 break;
 
             case 1:
                 /* Cancelled - remove the GUI */
                 mmlStop();
-                closeGui();
+                mc.displayGuiScreen(guiScreenParent);
                 break;
 
             case 2:
@@ -340,11 +347,6 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         }
         updateState();
     }
-
-    private void closeGui()
-    {
-        mc.displayGuiScreen(guiScreenParent);
-    }
     
     /*
      * Fired when a key is typed. This is the equivalent of
@@ -353,12 +355,17 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
      * @throws IOException
      */
     @Override
-    protected void keyTyped(char c, int i) throws IOException
+    protected void keyTyped(char typedChar, int keyCode) throws IOException
     {
+        if (keyCode == Keyboard.KEY_ESCAPE)
+        {
+            this.actionPerformed(buttonCancel);
+            return;
+        }
         /* add char to GuiTextField */
-        textMMLTitle.textboxKeyTyped(c, i);
-        textMMLPaste.textboxKeyTyped(c, i);
-        if (i == Keyboard.KEY_TAB)
+        textMMLTitle.textboxKeyTyped(typedChar, keyCode);
+        textMMLPaste.textboxKeyTyped(typedChar, keyCode);
+        if (keyCode == Keyboard.KEY_TAB)
         {
             if (textMMLTitle.isFocused())
             {
@@ -372,11 +379,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         }
         parseMML(textMMLPaste.getText());
         updateState();
-        if (i == Keyboard.KEY_ESCAPE)
-        {
-            actionPerformed(buttonList.get(buttonCancel.id));
-        }
-        super.keyTyped(c, i);
+        super.keyTyped(typedChar, keyCode);
     }
 
     @Override
