@@ -29,6 +29,7 @@ import net.aeronica.mods.mxtune.options.PlayerMusicOptionsCapability;
 import net.aeronica.mods.mxtune.proxy.ServerProxy;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.MusicTab;
+import net.aeronica.mods.mxtune.world.chunk.ModChunkCapability;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.util.datafix.walkers.ItemStackDataLists;
@@ -62,7 +63,7 @@ public class MXTune
     {
         ModLogger.setLogger(event.getModLog());
         ModCriteriaTriggers.init();
-//        ModChunkCapability.register();
+        ModChunkCapability.register();
         PlayerMusicOptionsCapability.register();
         PacketDispatcher.registerPackets();
         proxy.preInit();
