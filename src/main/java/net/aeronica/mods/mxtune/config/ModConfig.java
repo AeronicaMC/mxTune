@@ -32,7 +32,6 @@ import java.util.Map;
 
 public class ModConfig
 {
-    private static boolean isDirty;
     private ModConfig() { /* NOP */ }
 
     /** Client Configuration Settings */
@@ -168,24 +167,11 @@ public class ModConfig
         if (ConfigClient.audioVolumes.clientPlayer != volume)
         {
             ConfigClient.audioVolumes.clientPlayer = volume;
-            markDirty();
+            RegistrationHandler.sync();
         }
     }
 
     public static boolean moreDebugMessages() { return ConfigGeneral.general.moreDebugMessages; }
-
-    public static void markDirty() { isDirty = true; }
-
-    public static boolean isDirty() { return isDirty; }
-
-    private static void markSaved() { isDirty = false; }
-
-    private static void sync()
-    {
-        if (isDirty())
-            ConfigManager.sync(Reference.MOD_ID, Config.Type.INSTANCE);
-        markSaved();
-    }
 
     public static boolean getAutoConfigureChannels() {return ConfigClient.sound.autoConfigureChannels;}
 
@@ -222,6 +208,10 @@ public class ModConfig
             ModLogger.debug("On ConfigChanged: %s", event.getModID());
             if(event.getModID().equals(Reference.MOD_ID))
                 sync();
+        }
+        static void sync()
+        {
+            ConfigManager.sync(Reference.MOD_ID, Config.Type.INSTANCE);
         }
     }
 }
