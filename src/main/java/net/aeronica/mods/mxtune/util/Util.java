@@ -1,6 +1,7 @@
 package net.aeronica.mods.mxtune.util;
 
 
+import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.AudiblePingPlayerMessage;
 import net.minecraft.entity.player.EntityPlayer;
@@ -47,6 +48,6 @@ public class Util
 
     public static Boolean inDev()
     {
-        return (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
+        return (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment") || ModConfig.moreDebugMessages();
     }
 }

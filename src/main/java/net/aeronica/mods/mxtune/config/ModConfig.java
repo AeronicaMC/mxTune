@@ -114,6 +114,10 @@ public class ModConfig
             @LangKey("config.mxtune.groupPlayAbortDistance")
             @RangeInt(min=10, max=24)    
             public int groupPlayAbortDistance = 16;
+
+            @Name("More Debug Messages")
+            @LangKey("config.mxtune.moreDebugMessages")
+            public boolean moreDebugMessages = false;
         }
     }
     
@@ -167,6 +171,8 @@ public class ModConfig
             markDirty();
         }
     }
+
+    public static boolean moreDebugMessages() { return ConfigGeneral.general.moreDebugMessages; }
 
     public static void markDirty() { isDirty = true; }
 

@@ -58,7 +58,13 @@ public class ModLogger
 
     public static void info(String format, Object... data) {log(Level.INFO, MOD_MARKER, format, data);}
 
-    public static void debug(String format, Object... data) {log(Level.DEBUG, MOD_MARKER, format, data);}
+    public static void debug(String format, Object... data)
+    {
+        if (Util.inDev())
+            log(Level.INFO, MOD_MARKER, format, data);
+        else
+            log(Level.DEBUG, MOD_MARKER, format, data);
+    }
 
     public static void warn(String format, Object... data) {log(Level.WARN, MOD_MARKER, format, data);}
 
