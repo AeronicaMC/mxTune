@@ -123,29 +123,27 @@ public class GuiJamOverlay extends Gui
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public void onRenderExperienceBar(RenderGameOverlayEvent.Post event)
     {
+        if (mc.gameSettings.showDebugInfo) return;
+        ElementType elementType = event.getType();
 
-       if (mc.gameSettings.showDebugInfo) return;
-
-       if (event.isCancelable() || event.getType() != ElementType.EXPERIENCE) { return; }
+        if (event.isCancelable() || (elementType != ElementType.EXPERIENCE && elementType != ElementType.TEXT))
+            return;
         EntityPlayerSP player = this.mc.player;
- 
+
         int width = event.getResolution().getScaledWidth();
         int height = event.getResolution().getScaledHeight() - HOT_BAR_CLEARANCE;
         partialTicks = event.getPartialTicks();
-//        if (hudData == null || inGuiHudAdjust() || lastWidth != width || lastHeight != height)
-//        {
         HudData hudData = HudDataFactory.calcHudPositions((inGuiHudAdjust() ? MusicOptionsUtil.getAdjustPositionHud() : MusicOptionsUtil.getPositionHUD(player)), width, height);
-//            lastWidth = width; lastHeight = height;
-//        }
 
         ItemStack sheetMusic;
-        if(PlacedInstrumentUtil.isRiding(player))
+        if (PlacedInstrumentUtil.isRiding(player))
         {
             BlockPos pos = PlacedInstrumentUtil.getRiddenBlock(player);
             sheetMusic = getSheetMusic(pos, player, true);
             if (!isRidingFlag()) hudTimerReset();
             setRidingFlag(true);
-        } else 
+        }
+        else
         {
             itemStack = player.getHeldItemMainhand();
             sheetMusic = getSheetMusic(itemStack);
@@ -156,9 +154,9 @@ public class GuiJamOverlay extends Gui
         {
             if ((lastItemStack.isEmpty() || (!itemStack.isEmpty() && !itemStack.equals(this.lastItemStack))) && !isRidingFlag()) {hudTimerReset(); lastItemStack = itemStack;}
             if (canRenderHud(player))
-                renderHud(hudData, player, sheetMusic);
+                renderHud(hudData, player, sheetMusic, elementType);
             else
-                renderMini(hudData, player);
+                renderMini(hudData, player, elementType);
         } else lastItemStack = itemStack;
     }
 
@@ -170,7 +168,7 @@ public class GuiJamOverlay extends Gui
         Integer memberNameWidth;
         Tuple<Integer, Integer> notePos;
         Integer playStatus;
-           
+
         GroupData(Integer memberID, String memberName, Integer memberNameWidth, Tuple<Integer, Integer> notePos, Integer playStatus)
         {
             super();
@@ -180,41 +178,48 @@ public class GuiJamOverlay extends Gui
             this.notePos = notePos;
             this.playStatus = playStatus;
         }
-        
+
         public Integer getPlayStatus()
         {
             return playStatus;
         }
+
         public void setPlayStatus(Integer playStatus)
         {
             this.playStatus = playStatus;
         }
+
         public Tuple<Integer, Integer> getNotePos()
         {
             return notePos;
         }
+
         public void setNotePos(Tuple<Integer, Integer> notePos)
         {
             this.notePos = notePos;
         }
+
         String getMemberName()
         {
             return memberName;
         }
+
         public void setMemberName(String memberName)
         {
             this.memberName = memberName;
         }
+
         public Integer getMemberNameWidth()
         {
             return memberNameWidth;
         }
+
         public void setMemberNameWidth(Integer memberNameWidth)
         {
             this.memberNameWidth = memberNameWidth;
         }
     }
-    
+
     private List<GroupData> processGroup(EntityPlayer playerIn)
     {
         List<GroupData> groupData = new ArrayList<>();
@@ -271,7 +276,7 @@ public class GuiJamOverlay extends Gui
             String status = "Play Status:    " + GroupHelper.getClientPlayStatuses().toString();
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
-            qY = hd.quadY(maxHeight, 110, 4, 10);
+            qY = hd.quadY(maxHeight, 50, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
         if (GroupHelper.getPlayIDMembers() != null && !GroupHelper.getPlayIDMembers().isEmpty())
@@ -279,7 +284,7 @@ public class GuiJamOverlay extends Gui
             String status = "PlayID Members: " + GroupHelper.getPlayIDMembers().toString();
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
-            qY = hd.quadY(maxHeight, 120, 4, 10);
+            qY = hd.quadY(maxHeight, 60, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
         if (GroupHelper.getActivePlayIDs() != null && !GroupHelper.getActivePlayIDs().isEmpty())
@@ -287,7 +292,7 @@ public class GuiJamOverlay extends Gui
             String status = "ActivePlayIDs:  " + GroupHelper.getActivePlayIDs().toString();
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
-            qY = hd.quadY(maxHeight, 130, 4, 10);
+            qY = hd.quadY(maxHeight, 70, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
         if (GroupHelper.getActivePlayIDs() != null && !GroupHelper.getActivePlayIDs().isEmpty())
@@ -295,7 +300,7 @@ public class GuiJamOverlay extends Gui
             String status = "GroupHelper.index:   " + GroupHelper.getIndex(mc.player.getEntityId());
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
-            qY = hd.quadY(maxHeight, 140, 4, 10);
+            qY = hd.quadY(maxHeight, 80, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
         if (GroupHelper.getGroupsMembers() != null && !GroupHelper.getGroupsMembers().isEmpty())
@@ -303,7 +308,7 @@ public class GuiJamOverlay extends Gui
             String status = "GroupsMembers:  " + GroupHelper.getGroupsMembers();
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
-            qY = hd.quadY(maxHeight, 150, 4, 10);
+            qY = hd.quadY(maxHeight, 90, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
         if (GroupHelper.getGroupsMembers() != null && !GroupHelper.getGroupsMembers().isEmpty())
@@ -311,7 +316,7 @@ public class GuiJamOverlay extends Gui
             String status = String.format("Group Distance: %-1.2f", GroupHelper.getGroupMembersScaledDistance(mc.player));
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
-            qY = hd.quadY(maxHeight, 160, 4, 10);
+            qY = hd.quadY(maxHeight, 100, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
     }
@@ -360,7 +365,7 @@ public class GuiJamOverlay extends Gui
         return outputBuffer.toString();
     }
     
-    private void renderHud(HudData hd, EntityPlayer playerIn, ItemStack sheetMusic)
+    private void renderHud(HudData hd, EntityPlayer playerIn, ItemStack sheetMusic, ElementType elementType)
     {
         int maxWidth = 256;
         int maxHeight = 128;
@@ -370,60 +375,67 @@ public class GuiJamOverlay extends Gui
         
         GL11.glPushMatrix();
         GL11.glTranslatef(hd.getPosX(), hd.getPosY(), 0F);
-        GL11.glScalef(hudScale, hudScale, hudScale);
+        if (elementType == ElementType.TEXT)
+            drawDebug(hd, maxWidth, maxHeight);
 
+        GL11.glScalef(hudScale, hudScale, hudScale);
         int iconX = hd.quadX(maxWidth, 0, 2, WIDGET_WIDTH);
         int iconY = hd.quadY(maxHeight, 0, 2, WIDGET_HEIGHT);
 
         setTexture(TEXTURE_STATUS);
-        drawWidget(playerIn, iconX, iconY, musicTitle);
-        drawDebug(hd, maxWidth, maxHeight);
+        if (elementType == ElementType.EXPERIENCE)
+            drawWidget(playerIn, iconX, iconY, musicTitle);
         GL11.glPopMatrix();
     }
     
     @SuppressWarnings("static-access")
-    private void renderMini(HudData hd, EntityPlayer playerIn)
+    private void renderMini(HudData hd, EntityPlayer playerIn, ElementType elementType)
     {
 
         GL11.glPushMatrix();
-        GL11.glTranslatef(hd.getPosX(), hd.getPosY(), 0F);
-
-        /* draw the status icon */
-        int iconX = hd.quadX(PLACARD_ICON_SIZE, 0, 2, PLACARD_ICON_SIZE);
-        int iconY = hd.quadY(PLACARD_ICON_SIZE, 0, 2, PLACARD_ICON_SIZE);
-        int index = GroupHelper.getIndex(playerIn.getEntityId());
-        setTexture(TEXTURE_STATUS);
-        this.drawTexturedModalRect(iconX, iconY, PLACARD_ICON_BASE_U_OFFSET + index %
-                PLACARD_ICONS_PER_ROW * PLACARD_ICON_SIZE, PLACARD_ICON_BASE_V_OFFSET + index /
-                PLACARD_ICONS_PER_ROW * PLACARD_ICON_SIZE, PLACARD_ICON_SIZE, PLACARD_ICON_SIZE);
-
-        /* draw the group member distance bar */
-        double dist = GroupHelper.getGroupMembersScaledDistance(playerIn);
-        if (dist > 0D)
-        {
-            Color color = new Color(127,255,0);
-            int colorRGB = color.HSBtoRGB((float)((1.0D-dist)*0.5D), 1F, 1F);
-            //noinspection NumericOverflow
-            drawRect(iconX+4, iconY+20, iconX+4 + (int)(15*dist), iconY+22, colorRGB + (208 << 24));
-        }
         int maxWidth = 256;
         int maxHeight = 128;
-        drawDebug(hd, maxWidth, maxHeight);
+
+        GL11.glTranslatef(hd.getPosX(), hd.getPosY(), 0F);
+        if (elementType == ElementType.TEXT)
+            drawDebug(hd, maxWidth, maxHeight);
+
+        if (elementType == ElementType.EXPERIENCE)
+        {
+            /* draw the status icon */
+            int iconX = hd.quadX(PLACARD_ICON_SIZE, 0, 2, PLACARD_ICON_SIZE);
+            int iconY = hd.quadY(PLACARD_ICON_SIZE, 0, 2, PLACARD_ICON_SIZE);
+            int index = GroupHelper.getIndex(playerIn.getEntityId());
+            setTexture(TEXTURE_STATUS);
+            this.drawTexturedModalRect(iconX, iconY, PLACARD_ICON_BASE_U_OFFSET + index %
+                    PLACARD_ICONS_PER_ROW * PLACARD_ICON_SIZE, PLACARD_ICON_BASE_V_OFFSET + index /
+                    PLACARD_ICONS_PER_ROW * PLACARD_ICON_SIZE, PLACARD_ICON_SIZE, PLACARD_ICON_SIZE);
+
+            /* draw the group member distance bar */
+            double dist = GroupHelper.getGroupMembersScaledDistance(playerIn);
+            if (dist > 0D)
+            {
+                Color color = new Color(127, 255, 0);
+                int colorRGB = color.HSBtoRGB((float) ((1.0D - dist) * 0.5D), 1F, 1F);
+                //noinspection NumericOverflow
+                drawRect(iconX + 4, iconY + 20, iconX + 4 + (int) (15 * dist), iconY + 22, colorRGB + (208 << 24));
+            }
+        }
 
         GL11.glPopMatrix();
     }
     
-    /**
+    /*
      * This is not exactly the ideal way to store positional data for the notation symbols.
-     * TODO: Think about a note factory that calculates the note position and symbols
+     * Think about a note factory that calculates the note position and symbols
      * based on play status and rules of the staff. LOL, seems like alot of work for a
      * status widget.
-     *
      */
     private static Integer[][] notePosMembers = { {45,23},{140,31},{45,39},{140,47},{45,55},{140,63},{45,71},{140,79} };
     /**
      * Maps play status to a note symbol on a texture.
      */
+    @SuppressWarnings("unused")
     public enum NOTATION
     {
         MEMBER_REST(0, 96, 104),
