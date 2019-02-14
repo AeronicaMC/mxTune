@@ -46,8 +46,8 @@ public class Util
         PacketDispatcher.sendTo(new AudiblePingPlayerMessage(soundEvent), (EntityPlayerMP) entityPlayer);
     }
 
-    public static Boolean inDev()
+    public static boolean inDev()
     {
-        return (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment") || ModConfig.moreDebugMessages();
+        return ModConfig.moreDebugMessages() || (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
     }
 }

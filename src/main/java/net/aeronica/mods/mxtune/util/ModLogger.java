@@ -82,7 +82,13 @@ public class ModLogger
      *
      * @param e The raw exception
      */
-    public static <T extends Throwable> void debug(T e) {log(Level.DEBUG, e);}
+    public static <T extends Throwable> void debug(T e)
+    {
+        if (Util.inDev())
+            log(Level.INFO, e);
+        else
+            log(Level.DEBUG, e);
+    }
 
     /**
      * Log a stack trace for &lt;T extends Throwable&gt; {@link Throwable} at log Level.WARN
