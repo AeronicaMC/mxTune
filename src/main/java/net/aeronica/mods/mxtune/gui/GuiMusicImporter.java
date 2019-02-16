@@ -19,11 +19,11 @@ package net.aeronica.mods.mxtune.gui;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.*;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.client.GuiScrollingList;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -45,7 +45,7 @@ public class GuiMusicImporter extends GuiScreen
     private ActionGet.SELECTOR selector = ActionGet.SELECTOR.CANCEL;
 
     private List<String> musicParts;
-    private int entryHeight;
+    int entryHeightImportList;
     private GuiImportList guiImportList;
     private GuiTextField musicTitle;
     private GuiTextField musicAuthor;
@@ -53,6 +53,12 @@ public class GuiMusicImporter extends GuiScreen
     private GuiTextField statusText;
     private GuiButton buttonCancel;
     private List<GuiButton> safeButtonList;
+
+    // Cache across screen resizing
+    private String cacheMusicTitle;
+    private String cacheMusicAuthor;
+    private String cacheMusicSource;
+    private String cacheStatusText;
 
     public GuiMusicImporter(GuiScreen guiScreenParent)
     {
@@ -71,21 +77,21 @@ public class GuiMusicImporter extends GuiScreen
         this.guiLeft = 0;
         this.guiTop = 0;
         int guiListWidth = width - 10;
-        entryHeight = mc.fontRenderer.FONT_HEIGHT + 2;
+        entryHeightImportList = mc.fontRenderer.FONT_HEIGHT + 2;
         int left = 5;
         int titleTop = 20;
-        int authorTop = titleTop + entryHeight + 5;
-        int sourceTop = authorTop + entryHeight + 5;
-        int listTop = sourceTop + entryHeight + 5;
-        int listHeight = height - (entryHeight * 3) - 15 - 10 - 30 - 30;
+        int authorTop = titleTop + entryHeightImportList + 5;
+        int sourceTop = authorTop + entryHeightImportList + 5;
+        int listTop = sourceTop + entryHeightImportList + 5;
+        int listHeight = height - (entryHeightImportList * 3) - 15 - 10 - 30 - 30;
         int listBottom = listTop + listHeight;
         int statusTop = listBottom + 5;
 
-        musicTitle = new GuiTextField(0,fontRenderer, left, titleTop, guiListWidth, entryHeight);
-        musicAuthor = new GuiTextField(1, fontRenderer, left, authorTop, guiListWidth, entryHeight);
-        musicSource = new GuiTextField(2, fontRenderer, left, sourceTop, guiListWidth, entryHeight);
+        musicTitle = new GuiTextField(0, fontRenderer, left, titleTop, guiListWidth, entryHeightImportList);
+        musicAuthor = new GuiTextField(1, fontRenderer, left, authorTop, guiListWidth, entryHeightImportList);
+        musicSource = new GuiTextField(2, fontRenderer, left, sourceTop, guiListWidth, entryHeightImportList);
         guiImportList = new GuiImportList(this, musicParts, guiListWidth, listHeight, listTop, listBottom, left);
-        statusText = new GuiTextField(3, fontRenderer, left, statusTop, guiListWidth, entryHeight);
+        statusText = new GuiTextField(3, fontRenderer, left, statusTop, guiListWidth, entryHeightImportList);
         statusText.setFocused(false);
         statusText.setEnabled(false);
 
@@ -111,13 +117,19 @@ public class GuiMusicImporter extends GuiScreen
     private void reloadState()
     {
         if (!isStateCached) return;
-
+        musicAuthor.setText(cacheMusicAuthor);
+        musicSource.setText(cacheMusicSource);
+        musicTitle.setText(cacheMusicTitle);
+        statusText.setText(cacheStatusText);
     }
 
     private void updateState()
     {
-
-        this.isStateCached = true;
+        cacheMusicAuthor = musicAuthor.getText();
+        cacheMusicSource = musicSource.getText();
+        cacheMusicTitle = musicTitle.getText();
+        cacheStatusText = statusText.getText();
+        isStateCached = true;
     }
 
     @Override
@@ -222,6 +234,7 @@ public class GuiMusicImporter extends GuiScreen
             default:
         }
         selector = ActionGet.SELECTOR.CANCEL;
+        updateState();
     }
 
     @Override
@@ -280,57 +293,6 @@ public class GuiMusicImporter extends GuiScreen
         musicSource.mouseClicked(mouseX, mouseY, mouseButton);
         super.mouseClicked(mouseX, mouseY, mouseButton);
         updateState();
-    }
-
-    private static class GuiImportList extends GuiScrollingList
-    {
-        private List<String> musicParts;
-        private FontRenderer fontRenderer;
-
-        GuiImportList(GuiMusicImporter parent, List<String> musicParts, int width, int height, int top, int bottom, int left)
-        {
-            super(parent.mc, width, height, top, bottom, left, parent.entryHeight, parent.width, parent.height);
-            this.musicParts = musicParts;
-            this.fontRenderer = parent.mc.fontRenderer;
-        }
-
-        int getRight() {return right;}
-
-        int getSelectedIndex() { return selectedIndex; }
-
-        @Override
-        protected int getSize()
-        {
-            return musicParts.size();
-        }
-
-        @Override
-        protected void elementClicked(int index, boolean doubleClick)
-        {
-            if (index == selectedIndex) return;
-            selectedIndex = (index >= 0 && index <= musicParts.size() ? index : -1);
-        }
-
-        @Override
-        protected boolean isSelected(int index)
-        {
-            return index == selectedIndex && selectedIndex >= 0 && selectedIndex <= musicParts.size();
-        }
-
-        @Override
-        protected void drawBackground()
-        {
-            Gui.drawRect(left - 1, top - 1, left + listWidth + 1, top + listHeight + 1, -6250336);
-            Gui.drawRect(left, top, left + listWidth, top + listHeight, -16777216);
-        }
-
-        @Override
-        protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
-        {
-            String name = (musicParts.get(slotIdx));
-            String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
-            fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, 0xADD8E6);
-        }
     }
 
     private void initImportList()
