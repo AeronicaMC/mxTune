@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.gui;
 
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
+import net.aeronica.mods.mxtune.gui.hud.GuiHudAdjust;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.MusicOptionsMessage;
 import net.aeronica.mods.mxtune.options.ClassifiedPlayer;

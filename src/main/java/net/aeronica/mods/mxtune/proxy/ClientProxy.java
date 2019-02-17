@@ -17,7 +17,7 @@
 package net.aeronica.mods.mxtune.proxy;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import net.aeronica.mods.mxtune.gui.GuiJamOverlay;
+import net.aeronica.mods.mxtune.gui.hud.GuiJamOverlay;
 import net.aeronica.mods.mxtune.handler.KeyHandler;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;

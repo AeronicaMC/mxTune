@@ -15,9 +15,8 @@
  *   limitations under the License.
  */
 
-package net.aeronica.mods.mxtune.gui;
+package net.aeronica.mods.mxtune.gui.mml;
 
-import net.aeronica.mods.mxtune.caches.MXTunePart;
 import net.aeronica.mods.mxtune.caches.MXTuneStaff;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -28,15 +27,27 @@ import java.util.List;
 
 public class GuiStaffList extends GuiScrollingList
 {
-    protected List<MXTuneStaff> tuneStaves;
+    private List<MXTuneStaff> tuneStaves;
+
+    public List<MXTuneStaff> getTuneStaves()
+    {
+        return tuneStaves;
+    }
+
+    public void setTuneStaves(List<MXTuneStaff> tuneStaves)
+    {
+        this.tuneStaves = tuneStaves;
+    }
+
     protected FontRenderer fontRenderer;
 
-    public GuiStaffList(GuiMusicImporter parent, MXTunePart tunePart, int width, int height, int top, int bottom, int left)
+    public GuiStaffList(GuiMusicImporter parent, int width, int height, int top, int bottom, int left)
     {
         super(parent.mc, width, height, top, bottom, left, parent.entryHeightImportList, parent.width, parent.height);
         this.fontRenderer = parent.mc.fontRenderer;
-        this.tuneStaves = tunePart.getStaves();
     }
+
+
 
     int getRight() {return right;}
 
@@ -45,7 +56,7 @@ public class GuiStaffList extends GuiScrollingList
     @Override
     protected int getSize()
     {
-        return tuneStaves.size();
+        return tuneStaves != null ? tuneStaves.size() : 0;
     }
 
     @Override
@@ -71,9 +82,12 @@ public class GuiStaffList extends GuiScrollingList
     @Override
     protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
     {
-        MXTuneStaff tuneStaff = (tuneStaves.get(slotIdx));
-        String mml = String.format("%02d: %s", tuneStaff.getStaff(), tuneStaff.getMml().substring(0, Math.min(tuneStaff.getMml().length(), 25)));
-        String trimmedName = fontRenderer.trimStringToWidth(mml, listWidth - 10);
-        fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, 0xADD8E6);
+        if (tuneStaves != null && !tuneStaves.isEmpty() && slotIdx < tuneStaves.size())
+        {
+            MXTuneStaff tuneStaff = (tuneStaves.get(slotIdx));
+            String mml = String.format("%02d: %s", tuneStaff.getStaff(), tuneStaff.getMml().substring(0, Math.min(tuneStaff.getMml().length(), 25)));
+            String trimmedName = fontRenderer.trimStringToWidth(mml, listWidth - 10);
+            fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, 0xADD8E6);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package net.aeronica.mods.mxtune.gui;
 
 import net.aeronica.mods.mxtune.Reference;
+import net.aeronica.mods.mxtune.gui.hud.GuiHudAdjust;
 import net.aeronica.mods.mxtune.inventory.ContainerInstrument;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;

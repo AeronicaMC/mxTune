@@ -14,10 +14,13 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package net.aeronica.mods.mxtune.gui;
+
+package net.aeronica.mods.mxtune.gui.mml;
 
 import net.aeronica.mods.mxtune.caches.DirectoryWatcher;
 import net.aeronica.mods.mxtune.caches.FileHelper;
+import net.aeronica.mods.mxtune.gui.util.GuiButtonHooverText;
+import net.aeronica.mods.mxtune.gui.util.HooverHelper;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;

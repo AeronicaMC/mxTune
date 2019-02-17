@@ -18,6 +18,10 @@ package net.aeronica.mods.mxtune.gui;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.blocks.TileBandAmp;
+import net.aeronica.mods.mxtune.gui.util.GuiButtonHooverText;
+import net.aeronica.mods.mxtune.gui.util.GuiLockButton;
+import net.aeronica.mods.mxtune.gui.util.GuiRedstoneButton;
+import net.aeronica.mods.mxtune.gui.util.HooverHelper;
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.BandAmpMessage;
@@ -36,12 +40,12 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import static net.aeronica.mods.mxtune.gui.GuiRedstoneButton.ArrowFaces;
+import static net.aeronica.mods.mxtune.gui.util.GuiRedstoneButton.ArrowFaces;
 
 @SideOnly(Side.CLIENT)
 public class GuiBandAmp extends GuiContainer
 {
-    static final ResourceLocation BG_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/band_amp.png");
+    public static final ResourceLocation BG_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/band_amp.png");
     private InventoryPlayer inventoryPlayer;
     private TileBandAmp tileBandAmp;
     private ItemStack stackBandAmp;

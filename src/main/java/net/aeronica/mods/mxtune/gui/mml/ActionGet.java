@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-package net.aeronica.mods.mxtune.gui;
+package net.aeronica.mods.mxtune.gui.mml;
 
 import javax.annotation.Nullable;
 import java.nio.file.Path;
@@ -45,7 +45,7 @@ public class ActionGet implements ISelectorAction
         this.instrument = instrument != null ? instrument : "*** Default ***";
     }
 
-    void clear()
+    public void clear()
     {
         path = null;
         title = "";
@@ -54,9 +54,9 @@ public class ActionGet implements ISelectorAction
         mml = "";
     }
 
-    Path getFileName() { return path != null ? path.getFileName() : Paths.get(""); }
+    public Path getFileName() { return path != null ? path.getFileName() : Paths.get(""); }
 
-    String getFileNameString() { return path != null ? (path.getFileName().toString()) : ""; }
+    public String getFileNameString() { return path != null ? (path.getFileName().toString()) : ""; }
 
     @Nullable
     public Path getPath() { return path; }
@@ -71,10 +71,10 @@ public class ActionGet implements ISelectorAction
 
     public String getInstrument() { return instrument; }
 
-    enum SELECTOR
+    public enum SELECTOR
     {
         FILE,
         PASTE,
-        CANCEL;
+        CANCEL
     }
 }

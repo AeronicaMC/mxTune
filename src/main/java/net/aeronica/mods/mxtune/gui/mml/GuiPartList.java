@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-package net.aeronica.mods.mxtune.gui;
+package net.aeronica.mods.mxtune.gui.mml;
 
 import net.aeronica.mods.mxtune.caches.MXTunePart;
 import net.minecraft.client.gui.FontRenderer;
@@ -29,10 +29,12 @@ public class GuiPartList extends GuiScrollingList
 {
     protected List<MXTunePart> tuneParts;
     protected FontRenderer fontRenderer;
+    GuiMusicImporter parent;
 
     public GuiPartList(GuiMusicImporter parent, List<MXTunePart> tuneParts, int width, int height, int top, int bottom, int left)
     {
         super(parent.mc, width, height, top, bottom, left, parent.entryHeightImportList, parent.width, parent.height);
+        this.parent = parent;
         this.fontRenderer = parent.mc.fontRenderer;
         this.tuneParts = tuneParts;
     }
@@ -52,6 +54,7 @@ public class GuiPartList extends GuiScrollingList
     {
         if (index == selectedIndex) return;
         selectedIndex = (index >= 0 && index <= tuneParts.size() ? index : -1);
+        parent.guiStaffList.setTuneStaves(tuneParts.get(selectedIndex).getStaves());
     }
 
     @Override

@@ -1,5 +1,22 @@
 /*
  * Aeronica's mxTune MOD
+ * Copyright 2019, Paul Boese a.k.a. Aeronica
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
+/*
+ * Aeronica's mxTune MOD
  * Copyright 2018, Paul Boese a.k.a. Aeronica
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,9 +31,10 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package net.aeronica.mods.mxtune.gui;
+package net.aeronica.mods.mxtune.gui.hud;
 
 import net.aeronica.mods.mxtune.MXTune;
+import net.aeronica.mods.mxtune.gui.util.GuiSliderMX;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.HudOptionsMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
@@ -57,7 +75,7 @@ public class GuiHudAdjust extends GuiScreen
     private int prevHudPos;
     private float prevHudSize;
 
-    GuiHudAdjust(@Nullable GuiScreen guiScreenIn)
+    public GuiHudAdjust(@Nullable GuiScreen guiScreenIn)
     {
         this.guiScreenOld = guiScreenIn;
         this.mc = MXTune.proxy.getMinecraft();

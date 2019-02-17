@@ -14,7 +14,8 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package net.aeronica.mods.mxtune.gui;
+
+package net.aeronica.mods.mxtune.gui.mml;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;

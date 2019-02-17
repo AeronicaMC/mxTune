@@ -14,11 +14,13 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package net.aeronica.mods.mxtune.gui;
+
+package net.aeronica.mods.mxtune.gui.mml;
 
 import net.aeronica.mods.mxtune.caches.MXTuneFile;
 import net.aeronica.mods.mxtune.caches.MXTunePart;
 import net.aeronica.mods.mxtune.caches.MXTuneStaff;
+import net.aeronica.mods.mxtune.gui.util.HooverHelper;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
@@ -48,9 +50,9 @@ public class GuiMusicImporter extends GuiScreen
 
     private MXTuneFile mxTuneFile = new MXTuneFile();
 
-    int entryHeightImportList;
-    private GuiPartList guiPartList;
-    private GuiStaffList guiStaffList;
+    public int entryHeightImportList;
+    protected GuiPartList guiPartList;
+    protected GuiStaffList guiStaffList;
     private GuiTextField musicTitle;
     private GuiTextField musicAuthor;
     private GuiTextField musicSource;
@@ -95,7 +97,7 @@ public class GuiMusicImporter extends GuiScreen
         musicAuthor = new GuiTextField(1, fontRenderer, left, authorTop, guiTextWidth, entryHeightImportList);
         musicSource = new GuiTextField(2, fontRenderer, left, sourceTop, guiTextWidth, entryHeightImportList);
         guiPartList = new GuiPartList(this, mxTuneFile.getParts(), guiListWidth, listHeight, listTop, listBottom, left);
-        guiStaffList = new GuiStaffList(this, mxTuneFile.getParts().get(0), guiListWidth, listHeight, listTop, listBottom, width - guiListWidth - 5);
+        guiStaffList = new GuiStaffList(this, guiListWidth, listHeight, listTop, listBottom, width - guiListWidth - 5);
         statusText = new GuiTextField(3, fontRenderer, left, statusTop, guiTextWidth, entryHeightImportList);
         statusText.setFocused(false);
         statusText.setEnabled(false);
@@ -218,6 +220,8 @@ public class GuiMusicImporter extends GuiScreen
 
     private void getSelection()
     {
+        List<MXTuneStaff> staves = new ArrayList<>();
+        List<MXTunePart> parts = new ArrayList<>();
         switch (selector)
         {
             case FILE:
@@ -225,6 +229,13 @@ public class GuiMusicImporter extends GuiScreen
                 musicTitle.setText(ActionGet.INSTANCE.getFileNameString());
                 musicAuthor.setText(ActionGet.INSTANCE.getAuthor());
                 musicSource.setText(ActionGet.INSTANCE.getSource());
+                mxTuneFile = new MXTuneFile();
+                mxTuneFile.setTitle(musicTitle.getText());
+                mxTuneFile.setAuthor(musicAuthor.getText());
+                mxTuneFile.setSource(musicSource.getText());
+                guiPartList.tuneParts = mxTuneFile.getParts();
+                guiStaffList.setTuneStaves(staves);
+
                 break;
             case PASTE:
                 ModLogger.debug("Paste: %s", ActionGet.INSTANCE.getTitle());
@@ -234,7 +245,7 @@ public class GuiMusicImporter extends GuiScreen
                 mxTuneFile.setTitle(musicTitle.getText());
                 mxTuneFile.setAuthor(musicAuthor.getText());
                 mxTuneFile.setSource(musicSource.getText());
-                List<MXTuneStaff> staves = new ArrayList<>();
+                staves = new ArrayList<>();
                 int i = 0;
                 for (String mml : ActionGet.INSTANCE.getMml().replaceAll("MML@|;", "").split(","))
                 {

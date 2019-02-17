@@ -1,5 +1,23 @@
-package net.aeronica.mods.mxtune.gui;
+/*
+ * Aeronica's mxTune MOD
+ * Copyright 2019, Paul Boese a.k.a. Aeronica
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
 
+package net.aeronica.mods.mxtune.gui.util;
+
+import net.aeronica.mods.mxtune.gui.GuiBandAmp;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.fml.relauncher.Side;
@@ -13,18 +31,18 @@ public class GuiRedstoneButton extends GuiButtonHooverText
     private boolean signalEnabled;
     private ArrowFaces direction;
 
-    GuiRedstoneButton(int buttonId, int x, int y, ArrowFaces direction)
+    public GuiRedstoneButton(int buttonId, int x, int y, ArrowFaces direction)
     {
         super(buttonId, x, y, 20, 20, "");
         this.direction = direction;
     }
 
-    boolean isSignalEnabled()
+    public boolean isSignalEnabled()
     {
         return this.signalEnabled;
     }
 
-    void setSignalEnabled(boolean signalEnabledIn)
+    public void setSignalEnabled(boolean signalEnabledIn)
     {
         this.signalEnabled = signalEnabledIn;
     }
@@ -75,7 +93,7 @@ public class GuiRedstoneButton extends GuiButtonHooverText
     }
 
     @SideOnly(Side.CLIENT)
-    enum Icon
+    public enum Icon
     {
         SIGNAL_ENABLED(0, 166),
         SIGNAL_ENABLED_HOVER(0, 186),

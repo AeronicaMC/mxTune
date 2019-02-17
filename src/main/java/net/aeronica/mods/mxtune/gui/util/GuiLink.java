@@ -1,6 +1,6 @@
 /*
  * Aeronica's mxTune MOD
- * Copyright 2018, Paul Boese a.k.a. Aeronica
+ * Copyright 2019, Paul Boese a.k.a. Aeronica
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -14,7 +14,8 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package net.aeronica.mods.mxtune.gui;
+
+package net.aeronica.mods.mxtune.gui.util;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -33,7 +34,7 @@ public class GuiLink extends GuiButton
         LEFT, CENTER, RIGHT
     }
 
-    GuiLink(int buttonId, int x, int y, String buttonText, AlignText alignText)
+    public GuiLink(int buttonId, int x, int y, String buttonText, AlignText alignText)
     {
         super(buttonId, x, y, 200, 20, buttonText);
         this.alignText = alignText;
@@ -93,7 +94,7 @@ public class GuiLink extends GuiButton
      * Call this method from the parent class that extends GuiScreen e.g. "this.handleComponentClick(mmlLink.getLinkComponent());"
      * @return ITextComponent for the URL string
      */
-    ITextComponent getLinkComponent()
+    public ITextComponent getLinkComponent()
     {
         return ForgeHooks.newChatWithLinks(this.displayString, false);
     }

@@ -1,5 +1,22 @@
 /*
  * Aeronica's mxTune MOD
+ * Copyright 2019, Paul Boese a.k.a. Aeronica
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
+/*
+ * Aeronica's mxTune MOD
  * Copyright 2018, Paul Boese a.k.a. Aeronica
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +31,7 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package net.aeronica.mods.mxtune.gui;
+package net.aeronica.mods.mxtune.gui.hud;
 
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.Reference;
@@ -59,7 +76,7 @@ public class GuiJamOverlay extends Gui
 {
     private static final String INSTRUMENT_INVENTORY_EMPTY = "["+I18n.format("mxtune.instrumentInventory.empty")+"]";
     private static final ResourceLocation TEXTURE_STATUS = new ResourceLocation(Reference.MOD_ID, "textures/gui/status_widgets.png");
-    static final int HOT_BAR_CLEARANCE = 40;
+    public static final int HOT_BAR_CLEARANCE = 40;
     private static final int WIDGET_WIDTH = 256;
     private static final int WIDGET_HEIGHT = 104;
 

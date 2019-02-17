@@ -15,18 +15,18 @@
  *   limitations under the License.
  */
 
-package net.aeronica.mods.mxtune.gui;
+package net.aeronica.mods.mxtune.gui.util;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 
 import java.util.List;
 
-class HooverHelper
+public class HooverHelper
 {
-    static final HooverHelper INSTANCE = new HooverHelper(){};
+    public static final HooverHelper INSTANCE = new HooverHelper(){};
 
-    <T extends GuiScreen> void drawHooveringButtonHelp(T guiScreen, List<GuiButton> guiButtonList, int guiLeft, int guiTop, int mouseX, int mouseY)
+    public <T extends GuiScreen> void drawHooveringButtonHelp(T guiScreen, List<GuiButton> guiButtonList, int guiLeft, int guiTop, int mouseX, int mouseY)
     {
         for(GuiButton b : guiButtonList)
             if (this.isMouseOverButton(b, guiLeft, guiTop, mouseX, mouseY))

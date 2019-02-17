@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-package net.aeronica.mods.mxtune.gui;
+package net.aeronica.mods.mxtune.gui.mml;
 
 import java.nio.file.Path;
 

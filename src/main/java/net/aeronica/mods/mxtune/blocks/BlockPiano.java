@@ -20,7 +20,7 @@ import com.google.common.collect.Lists;
 import net.aeronica.mods.mxtune.advancements.ModCriteriaTriggers;
 import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
 import net.aeronica.mods.mxtune.groups.PlayManager;
-import net.aeronica.mods.mxtune.gui.GuiJamOverlay;
+import net.aeronica.mods.mxtune.gui.hud.GuiJamOverlay;
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.inventory.IMusic;
 import net.aeronica.mods.mxtune.status.ServerCSDManager;
