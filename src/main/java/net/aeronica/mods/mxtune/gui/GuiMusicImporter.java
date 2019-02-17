@@ -16,6 +16,9 @@
  */
 package net.aeronica.mods.mxtune.gui;
 
+import net.aeronica.mods.mxtune.caches.MXTuneFile;
+import net.aeronica.mods.mxtune.caches.MXTunePart;
+import net.aeronica.mods.mxtune.caches.MXTuneStaff;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
@@ -29,7 +32,6 @@ import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -44,9 +46,11 @@ public class GuiMusicImporter extends GuiScreen
     private boolean midiUnavailable;
     private ActionGet.SELECTOR selector = ActionGet.SELECTOR.CANCEL;
 
-    private List<String> musicParts;
+    private MXTuneFile mxTuneFile = new MXTuneFile();
+
     int entryHeightImportList;
-    private GuiImportList guiImportList;
+    private GuiPartList guiPartList;
+    private GuiStaffList guiStaffList;
     private GuiTextField musicTitle;
     private GuiTextField musicAuthor;
     private GuiTextField musicSource;
@@ -71,12 +75,12 @@ public class GuiMusicImporter extends GuiScreen
     @Override
     public void initGui()
     {
-        initImportList();
         Keyboard.enableRepeatEvents(true);
         buttonList.clear();
         this.guiLeft = 0;
         this.guiTop = 0;
-        int guiListWidth = width - 10;
+        int guiListWidth = (width - 15) / 2;
+        int guiTextWidth = width - 10;
         entryHeightImportList = mc.fontRenderer.FONT_HEIGHT + 2;
         int left = 5;
         int titleTop = 20;
@@ -85,13 +89,14 @@ public class GuiMusicImporter extends GuiScreen
         int listTop = sourceTop + entryHeightImportList + 5;
         int listHeight = height - (entryHeightImportList * 3) - 15 - 10 - 30 - 30;
         int listBottom = listTop + listHeight;
-        int statusTop = listBottom + 5;
+        int statusTop = listBottom + 4;
 
-        musicTitle = new GuiTextField(0, fontRenderer, left, titleTop, guiListWidth, entryHeightImportList);
-        musicAuthor = new GuiTextField(1, fontRenderer, left, authorTop, guiListWidth, entryHeightImportList);
-        musicSource = new GuiTextField(2, fontRenderer, left, sourceTop, guiListWidth, entryHeightImportList);
-        guiImportList = new GuiImportList(this, musicParts, guiListWidth, listHeight, listTop, listBottom, left);
-        statusText = new GuiTextField(3, fontRenderer, left, statusTop, guiListWidth, entryHeightImportList);
+        musicTitle = new GuiTextField(0, fontRenderer, left, titleTop, guiTextWidth, entryHeightImportList);
+        musicAuthor = new GuiTextField(1, fontRenderer, left, authorTop, guiTextWidth, entryHeightImportList);
+        musicSource = new GuiTextField(2, fontRenderer, left, sourceTop, guiTextWidth, entryHeightImportList);
+        guiPartList = new GuiPartList(this, mxTuneFile.getParts(), guiListWidth, listHeight, listTop, listBottom, left);
+        guiStaffList = new GuiStaffList(this, mxTuneFile.getParts().get(0), guiListWidth, listHeight, listTop, listBottom, width - guiListWidth - 5);
+        statusText = new GuiTextField(3, fontRenderer, left, statusTop, guiTextWidth, entryHeightImportList);
         statusText.setFocused(false);
         statusText.setEnabled(false);
 
@@ -163,7 +168,8 @@ public class GuiMusicImporter extends GuiScreen
         musicTitle.drawTextBox();
         musicAuthor.drawTextBox();
         musicSource.drawTextBox();
-        guiImportList.drawScreen(mouseX, mouseY, partialTicks);
+        guiPartList.drawScreen(mouseX, mouseY, partialTicks);
+        guiStaffList.drawScreen(mouseX, mouseY, partialTicks);
         statusText.drawTextBox();
         super.drawScreen(mouseX, mouseY, partialTicks);
         HooverHelper.INSTANCE.drawHooveringButtonHelp(this, safeButtonList, guiLeft, guiTop, mouseX, mouseY);
@@ -225,9 +231,18 @@ public class GuiMusicImporter extends GuiScreen
                 musicTitle.setText(ActionGet.INSTANCE.getTitle());
                 musicAuthor.setText(ActionGet.INSTANCE.getAuthor());
                 musicSource.setText(ActionGet.INSTANCE.getSource());
-                musicParts.clear();
+                mxTuneFile.setTitle(musicTitle.getText());
+                mxTuneFile.setAuthor(musicAuthor.getText());
+                mxTuneFile.setSource(musicSource.getText());
+                List<MXTuneStaff> staves = new ArrayList<>();
+                int i = 0;
+                for (String mml : ActionGet.INSTANCE.getMml().replaceAll("MML@|;", "").split(","))
+                {
+                    staves.add(new MXTuneStaff(i, mml));
+                    i++;
+                }
+                mxTuneFile.getParts().add( new MXTunePart(ActionGet.INSTANCE.getInstrument(), staves));
 
-                musicParts.addAll(Arrays.asList(ActionGet.INSTANCE.getMml().replaceFirst("MML@|;", "").split(",")));
                 break;
             case CANCEL:
                 break;
@@ -281,7 +296,8 @@ public class GuiMusicImporter extends GuiScreen
         int mouseX = Mouse.getEventX() * width / mc.displayWidth;
         int mouseY = height - Mouse.getEventY() * height / mc.displayHeight - 1;
 
-        guiImportList.handleMouseInput(mouseX, mouseY);
+        guiPartList.handleMouseInput(mouseX, mouseY);
+        guiStaffList.handleMouseInput(mouseX, mouseY);
         super.handleMouseInput();
     }
 
@@ -293,21 +309,5 @@ public class GuiMusicImporter extends GuiScreen
         musicSource.mouseClicked(mouseX, mouseY, mouseButton);
         super.mouseClicked(mouseX, mouseY, mouseButton);
         updateState();
-    }
-
-    private void initImportList()
-    {
-        musicParts = new ArrayList<>();
-        musicParts.add("Part 01");
-        musicParts.add("Part 02");
-        musicParts.add("Part 03");
-        musicParts.add("Part 04");
-        musicParts.add("Part 05");
-        musicParts.add("Part 06");
-        musicParts.add("Part 07");
-        musicParts.add("Part 08");
-        musicParts.add("Part 09");
-        musicParts.add("Part 10");
-        musicParts.add("Part 11");
     }
 }

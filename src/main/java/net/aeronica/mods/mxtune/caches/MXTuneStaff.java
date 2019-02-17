@@ -30,12 +30,12 @@ public class MXTuneStaff implements Comparable<MXTuneStaff>
     private boolean wrapOctave;
     private int transpose;
     private final String mml;
-    private String meta;
+    private String meta = "";
 
     public MXTuneStaff(int staff, String mml)
     {
         this.staff = staff;
-        this.mml = mml;
+        this.mml = mml != null ? mml : "";
     }
 
     public MXTuneStaff(int i, NBTTagCompound compound)

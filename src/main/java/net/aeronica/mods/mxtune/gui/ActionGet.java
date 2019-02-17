@@ -30,17 +30,19 @@ public class ActionGet implements ISelectorAction
     private String author;
     private String source;
     private String mml;
+    private String instrument;
 
     @Override
     public void select(Path path) { this.path = path; }
 
     @Override
-    public void select(String title, String author, String source, String mml)
+    public void select(String title, String author, String source, String mml, String instrument)
     {
         this.title = title != null ? title : "";
         this.author = author != null ? author : "";
         this.source = source != null ? source : "";
         this.mml = mml != null ? mml : "";
+        this.instrument = instrument != null ? instrument : "*** Default ***";
     }
 
     void clear()
@@ -66,6 +68,8 @@ public class ActionGet implements ISelectorAction
     public String getSource() { return source; }
 
     public String getMml() { return mml; }
+
+    public String getInstrument() { return instrument; }
 
     enum SELECTOR
     {

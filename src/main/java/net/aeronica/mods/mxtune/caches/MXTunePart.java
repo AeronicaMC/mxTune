@@ -61,7 +61,7 @@ public class MXTunePart implements Comparable<MXTunePart>
         compound.setInteger(TAG_STAFF_COUNT, staves.size());
 
         int i = 0;
-        for (MXTuneStaff staff :staves)
+        for (MXTuneStaff staff : staves)
         {
             NBTTagCompound compoundStaff = new NBTTagCompound();
             staff.writeToNBT(compoundStaff);

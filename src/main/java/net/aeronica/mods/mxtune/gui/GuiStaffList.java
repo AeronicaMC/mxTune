@@ -17,6 +17,8 @@
 
 package net.aeronica.mods.mxtune.gui;
 
+import net.aeronica.mods.mxtune.caches.MXTunePart;
+import net.aeronica.mods.mxtune.caches.MXTuneStaff;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.Tessellator;
@@ -24,16 +26,16 @@ import net.minecraftforge.fml.client.GuiScrollingList;
 
 import java.util.List;
 
-public class GuiImportList extends GuiScrollingList
+public class GuiStaffList extends GuiScrollingList
 {
-    protected List<String> musicParts;
+    protected List<MXTuneStaff> tuneStaves;
     protected FontRenderer fontRenderer;
 
-    public GuiImportList(GuiMusicImporter parent, List<String> musicParts, int width, int height, int top, int bottom, int left)
+    public GuiStaffList(GuiMusicImporter parent, MXTunePart tunePart, int width, int height, int top, int bottom, int left)
     {
         super(parent.mc, width, height, top, bottom, left, parent.entryHeightImportList, parent.width, parent.height);
         this.fontRenderer = parent.mc.fontRenderer;
-        this.musicParts = musicParts;
+        this.tuneStaves = tunePart.getStaves();
     }
 
     int getRight() {return right;}
@@ -43,20 +45,20 @@ public class GuiImportList extends GuiScrollingList
     @Override
     protected int getSize()
     {
-        return musicParts.size();
+        return tuneStaves.size();
     }
 
     @Override
     protected void elementClicked(int index, boolean doubleClick)
     {
         if (index == selectedIndex) return;
-        selectedIndex = (index >= 0 && index <= musicParts.size() ? index : -1);
+        selectedIndex = (index >= 0 && index <= tuneStaves.size() ? index : -1);
     }
 
     @Override
     protected boolean isSelected(int index)
     {
-        return index == selectedIndex && selectedIndex >= 0 && selectedIndex <= musicParts.size();
+        return index == selectedIndex && selectedIndex >= 0 && selectedIndex <= tuneStaves.size();
     }
 
     @Override
@@ -69,8 +71,9 @@ public class GuiImportList extends GuiScrollingList
     @Override
     protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
     {
-        String name = (musicParts.get(slotIdx));
-        String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
+        MXTuneStaff tuneStaff = (tuneStaves.get(slotIdx));
+        String mml = String.format("%02d: %s", tuneStaff.getStaff(), tuneStaff.getMml().substring(0, Math.min(tuneStaff.getMml().length(), 25)));
+        String trimmedName = fontRenderer.trimStringToWidth(mml, listWidth - 10);
         fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, 0xADD8E6);
     }
 }
