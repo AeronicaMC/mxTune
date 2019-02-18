@@ -19,9 +19,7 @@ package net.aeronica.mods.mxtune.caches;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-import javax.annotation.Nonnull;
-
-public class MXTuneStaff implements Comparable<MXTuneStaff>
+public class MXTuneStaff
 {
     private static final String TAG_WRAP_OCTAVE = "wrapOctave";
     private static final String TAG_TRANSPOSE = "transpose";
@@ -67,21 +65,25 @@ public class MXTuneStaff implements Comparable<MXTuneStaff>
         return mml;
     }
 
+    @SuppressWarnings("unused")
     public boolean isWrapOctave()
     {
         return wrapOctave;
     }
 
+    @SuppressWarnings("unused")
     public void setWrapOctave(boolean wrapOctave)
     {
         this.wrapOctave = wrapOctave;
     }
 
+    @SuppressWarnings("unused")
     public int getTranspose()
     {
         return transpose;
     }
 
+    @SuppressWarnings("unused")
     public void setTranspose(int transpose)
     {
         this.transpose = transpose;
@@ -95,23 +97,5 @@ public class MXTuneStaff implements Comparable<MXTuneStaff>
     public void setMeta(String meta)
     {
         this.meta = meta;
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        if (!(obj instanceof MXTuneStaff)) return false;
-        boolean sameStaff = staff == (((MXTuneStaff) obj).staff);
-        boolean sameMML = mml.equals((((MXTuneStaff) obj).mml));
-        boolean sameMeta = meta.equals((((MXTuneStaff) obj).meta));
-        boolean sameTranspose = transpose == (((MXTuneStaff) obj).transpose);
-        boolean sameWrapOctave = wrapOctave == (((MXTuneStaff) obj).wrapOctave);
-        return sameStaff && sameMML && sameMeta && sameTranspose && sameWrapOctave;
-    }
-
-    @Override
-    public int compareTo(@Nonnull MXTuneStaff o)
-    {
-        return o.getStaff() - getStaff();
     }
 }

@@ -19,7 +19,6 @@ package net.aeronica.mods.mxtune.caches;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +26,7 @@ import java.util.List;
 import static net.aeronica.mods.mxtune.caches.Simularity.ModInstrument;
 import static net.aeronica.mods.mxtune.caches.Simularity.getModInstruments;
 
-public class MXTunePart implements Comparable<MXTunePart>
+public class MXTunePart
 {
     private static final String TAG_INSTRUMENT = "instrument";
     private static final String TAG_PACKED_PATCH = "packedPatch";
@@ -144,27 +143,5 @@ public class MXTunePart implements Comparable<MXTunePart>
     public void setPackedPatch(int packedPatch)
     {
         this.packedPatch = packedPatch;
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        if (!(obj instanceof MXTunePart)) return false;
-        boolean sameInstrument = instrument.equals(((MXTunePart) obj).instrument);
-        boolean sameSuggestedInstrument = suggestedInstrument.equals(((MXTunePart) obj).suggestedInstrument);
-        boolean samePackedPatch = packedPatch == (((MXTunePart) obj).packedPatch);
-        boolean sameStavesSize = (staves != null && ((MXTunePart)obj).staves != null) && staves.size() == ((MXTunePart)obj).staves.size();
-        return sameInstrument && sameSuggestedInstrument && samePackedPatch && sameStavesSize;
-    }
-
-    private String getSortingKey()
-    {
-        return instrument.trim();
-    }
-
-    @Override
-    public int compareTo(@Nonnull MXTunePart o)
-    {
-        return getSortingKey().compareTo(o.getSortingKey());
     }
 }
