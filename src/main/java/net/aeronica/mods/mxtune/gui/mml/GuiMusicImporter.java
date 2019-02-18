@@ -113,14 +113,14 @@ public class GuiMusicImporter extends GuiScreen
         int buttonTop = height - 25;
         int xFiles = (width /2) - 75 * 2;
         int xPaste = xFiles + 75;
-        int xDone = xPaste + 75;
-        int xCancel = xDone + 75;
-        GuiButton buttonDone = new GuiButton(0, xDone, buttonTop, 75, 20, I18n.format("gui.done"));
+        int xSaveDone = xPaste + 75;
+        int xCancel = xSaveDone + 75;
+        GuiButton buttonSaveDone = new GuiButton(0, xSaveDone, buttonTop, 75, 20, I18n.format("mxtune.gui.button.saveDone"));
         buttonCancel = new GuiButton(1, xCancel, buttonTop, 75, 20, I18n.format("gui.cancel"));
         GuiButton buttonFiles = new GuiButton(2, xFiles, buttonTop, 75, 20, I18n.format("mxtune.gui.button.pickFile"));
         GuiButton buttonPaste = new GuiButton(3, xPaste, buttonTop, 75, 20, I18n.format("mxtune.gui.button.pasteMML"));
 
-        buttonList.add(buttonDone);
+        buttonList.add(buttonSaveDone);
         buttonList.add(buttonCancel);
         buttonList.add(buttonPaste);
         buttonList.add(buttonFiles);
