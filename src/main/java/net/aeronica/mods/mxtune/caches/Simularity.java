@@ -25,15 +25,36 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 @SideOnly(Side.CLIENT)
 public class Simularity
 {
+    private static final List<ModInstrument> instruments;
+
+    static {
+        List<ModInstrument> inst = new ArrayList<>();
+        for (UglyHack uglyHack : UglyHack.values())
+        {
+            int packedPreset = MMLUtil.preset2PackedPreset(uglyHack.bank, uglyHack.program);
+            inst.add(new ModInstrument(uglyHack.index, uglyHack.bank, uglyHack.program, packedPreset, uglyHack.langKey));
+        }
+        instruments = Collections.unmodifiableList(inst);
+    }
     private Simularity() { /* NOP */ }
     
     private static double compareStrings(String stringA, String stringB)
     {
-        double likeness = StringUtils.getJaroWinklerDistance(stringA, stringB);
-        return likeness;
+        String aString = stringA != null ? stringA :  "@@";
+        String bString = stringA != null ? stringB :  "!!";
+        return StringUtils.getJaroWinklerDistance(aString, bString);
+    }
+
+    public static List<ModInstrument> getModInstruments()
+    {
+        return instruments;
     }
 
     /**
@@ -46,15 +67,15 @@ public class Simularity
         int packedPreset = 0;
         double lastFuzzy = 0;
         String instName = I18n.format("sf.mxtune.m.lute");
-        for (UglyHack uglyHack : UglyHack.values())
+        for (ModInstrument modInstrument : getModInstruments())
         {
-            String name = I18n.format(uglyHack.langKey);
+            String name = I18n.format(modInstrument.langKey);
             double fuzzy = compareStrings(testString, name);
             if (fuzzy > lastFuzzy)
             {
                 lastFuzzy = fuzzy;
                 instName = name;
-                packedPreset = MMLUtil.preset2PackedPreset(uglyHack.bank, uglyHack.program);
+                packedPreset = MMLUtil.preset2PackedPreset(modInstrument.bank, modInstrument.program);
             }
         }
         return new Tuple<>(packedPreset, instName);
@@ -62,13 +83,20 @@ public class Simularity
 
     public static void test()
     {
-        ModLogger.info(" Piano: %s", getPackedPresetFromName("Part1-Piano.out.ms2mml").getFirst());
-        ModLogger.info(" Grand Piano: %s", getPackedPresetFromName("Part1-Grand-Piano.out.ms2mml").getFirst());
-        ModLogger.info(" Guitar Lute: %s", getPackedPresetFromName("Part4-Guitar-Lute.out.ms2mml").getFirst());
-        ModLogger.info(" Cello: %s", getPackedPresetFromName("Part4-Cello.out.ms2mml").getFirst());
-        ModLogger.info(" Lute: %s", getPackedPresetFromName("Part4-Lute.out.ms2mml").getFirst());
-        ModLogger.info(" Standard Set: %s", getPackedPresetFromName("Part7-Standard.out.ms2mml").getFirst());
-        ModLogger.info(" Harpsichord: %s", getPackedPresetFromName("Part7-Harpsichord.out.ms2mml").getFirst());
+        Tuple<Integer, String> tuple = getPackedPresetFromName("Part1-Piano.out.ms2mml");
+        ModLogger.info(" Piano: %s, %s", tuple.getSecond(), tuple.getFirst());
+        tuple = getPackedPresetFromName("Part1-Grand-Piano.out.ms2mml");
+        ModLogger.info(" Grand Piano: %s %d", tuple.getSecond(), tuple.getFirst());
+        tuple = getPackedPresetFromName("Part4-Guitar-Lute.out.ms2mml");
+        ModLogger.info(" Guitar Lute: %s %d", tuple.getSecond(), tuple.getFirst());
+        tuple = getPackedPresetFromName("Part4-Cello.out.ms2mml");
+        ModLogger.info(" Cello: %s %d", tuple.getSecond(), tuple.getFirst());
+        tuple = getPackedPresetFromName("M Cello");
+        ModLogger.info(" M Cello: %s %d", tuple.getSecond(), tuple.getFirst());
+        tuple = getPackedPresetFromName("Part7-Standard.out.ms2mml");
+        ModLogger.info(" Standard Set: %s %d ", tuple.getSecond(), tuple.getFirst());
+        tuple = getPackedPresetFromName("Part7-Harpsichord.out.ms2mml");
+        ModLogger.info(" Harpsichord: %s %d", tuple.getSecond(), tuple.getFirst());
     }
 
     public enum UglyHack
@@ -112,6 +140,49 @@ public class Simularity
             this.bank = bank;
             this.program = program;
             this.langKey = lankKey;
+        }
+    }
+
+    public static class ModInstrument
+    {
+        private int index;
+        private int bank;
+        private int program;
+        private int packedPreset;
+        private String langKey;
+
+        ModInstrument(int index, int bank, int program, int packedPreset, String langKey)
+        {
+            this.index = index;
+            this.bank = bank;
+            this.program = program;
+            this.packedPreset = packedPreset;
+            this.langKey = langKey;
+        }
+
+        public int getIndex()
+        {
+            return index;
+        }
+
+        public int getBank()
+        {
+            return bank;
+        }
+
+        public int getProgram()
+        {
+            return program;
+        }
+
+        public int getPackedPreset()
+        {
+            return packedPreset;
+        }
+
+        public String getLangKey()
+        {
+            return langKey;
         }
     }
 }

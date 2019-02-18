@@ -17,9 +17,15 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.Tuple;
+
 import javax.annotation.Nullable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import static net.aeronica.mods.mxtune.caches.Simularity.getModInstruments;
+import static net.aeronica.mods.mxtune.caches.Simularity.getPackedPresetFromName;
 
 public class ActionGet implements ISelectorAction
 {
@@ -31,9 +37,17 @@ public class ActionGet implements ISelectorAction
     private String source;
     private String mml;
     private String instrument;
+    private String suggestedInstrument;
+    private int packedPatch;
 
     @Override
-    public void select(Path path) { this.path = path; }
+    public void select(Path path)
+    {
+        this.path = path;
+        this.suggestedInstrument = getFileNameString();
+        Tuple<Integer, String> suggested = getPackedPresetFromName(suggestedInstrument);
+        this.instrument = suggested.getSecond();
+    }
 
     @Override
     public void select(String title, String author, String source, String mml, String instrument)
@@ -42,7 +56,10 @@ public class ActionGet implements ISelectorAction
         this.author = author != null ? author : "";
         this.source = source != null ? source : "";
         this.mml = mml != null ? mml : "";
-        this.instrument = instrument != null ? instrument : "*** Default ***";
+        this.instrument = instrument != null ? I18n.format(instrument) : I18n.format(getModInstruments().get(0).getLangKey());
+        Tuple<Integer, String> suggested = getPackedPresetFromName(this.instrument);
+        this.packedPatch = suggested.getFirst();
+        this.suggestedInstrument = I18n.format(suggested.getSecond());
     }
 
     public void clear()
@@ -70,6 +87,10 @@ public class ActionGet implements ISelectorAction
     public String getMml() { return mml; }
 
     public String getInstrument() { return instrument; }
+
+    public String getSuggestedInstrument() { return suggestedInstrument; }
+
+    public int getPackedPatch() { return packedPatch; }
 
     public enum SELECTOR
     {

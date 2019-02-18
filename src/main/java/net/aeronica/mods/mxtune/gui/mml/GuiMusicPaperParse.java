@@ -329,8 +329,10 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
                 if (guiScreenParent == null)
                     sendMMLTextToServer(musicTitle, musicText);
                 else
+                {
                     if (selectedInst < 0 || selectedInst > MIDISystemUtil.getInstrumentCacheCopy().size()) selectedInst = 0;
                     ActionGet.INSTANCE.select(musicTitle, null, null, musicText, MIDISystemUtil.getInstrumentCacheCopy().get(selectedInst).getName());
+                }
                 mc.displayGuiScreen(guiScreenParent);
                 break;
 

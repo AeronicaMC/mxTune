@@ -188,12 +188,7 @@ public class GuiMusicImporter extends GuiScreen
         {
             case 0:
                 // Done
-                NBTTagCompound compound = new NBTTagCompound();
-                mxTuneFile.setTitle(musicTitle.getText().trim().replaceAll(".[^\\.]+$", ""));
-                mxTuneFile.setAuthor(musicAuthor.getText().trim());
-                mxTuneFile.setSource(musicSource.getText().trim());
-                mxTuneFile.writeToNBT(compound);
-                FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.CLIENT_LIB_FOLDER, mxTuneFile.getTitle().trim() + ".dat"), compound);
+                if (!saveFile()) break;
                 mc.displayGuiScreen(guiScreenParent);
                 break;
             case 1:
@@ -213,6 +208,27 @@ public class GuiMusicImporter extends GuiScreen
         }
         updateState();
         super.actionPerformed(button);
+    }
+
+    private boolean saveFile() throws IOException
+    {
+        boolean result = false;
+        String filename = musicTitle.getText().trim();
+        filename = filename.replace(".[^\\.]+$", "");
+        musicTitle.setText(filename);
+        mxTuneFile.setTitle(filename);
+        if (!mxTuneFile.getParts().isEmpty())
+        {
+            mxTuneFile.setAuthor(musicAuthor.getText().trim());
+            mxTuneFile.setSource(musicSource.getText().trim());
+            NBTTagCompound compound = new NBTTagCompound();
+            mxTuneFile.writeToNBT(compound);
+            FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.CLIENT_LIB_FOLDER, filename + ".dat"), compound);
+            result = true;
+        }
+        else
+            statusText.setText("Unable to save! No parts, or title is too short.");
+        return result;
     }
 
     private void getFile()
@@ -251,10 +267,10 @@ public class GuiMusicImporter extends GuiScreen
                 ModLogger.debug("Paste: %s", ActionGet.INSTANCE.getTitle());
                 musicTitle.setText(ActionGet.INSTANCE.getTitle());
                 musicAuthor.setText(ActionGet.INSTANCE.getAuthor());
-                musicSource.setText(ActionGet.INSTANCE.getSource());
-                mxTuneFile.setTitle(musicTitle.getText());
-                mxTuneFile.setAuthor(musicAuthor.getText());
-                mxTuneFile.setSource(musicSource.getText());
+                musicSource.setText(ActionGet.INSTANCE.getAuthor());
+                mxTuneFile.setTitle(ActionGet.INSTANCE.getTitle());
+                mxTuneFile.setAuthor(ActionGet.INSTANCE.getAuthor());
+                mxTuneFile.setSource(ActionGet.INSTANCE.getAuthor());
                 staves = new ArrayList<>();
                 int i = 0;
                 for (String mml : ActionGet.INSTANCE.getMml().replaceAll("MML@|;", "").split(","))
@@ -262,8 +278,7 @@ public class GuiMusicImporter extends GuiScreen
                     staves.add(new MXTuneStaff(i, mml));
                     i++;
                 }
-                MXTunePart part =  new MXTunePart(ActionGet.INSTANCE.getInstrument(), staves);
-                part.setMeta(ActionGet.INSTANCE.getTitle().trim());
+                MXTunePart part = new MXTunePart(ActionGet.INSTANCE.getInstrument(), ActionGet.INSTANCE.getSuggestedInstrument(), ActionGet.INSTANCE.getPackedPatch(), staves);
                 mxTuneFile.getParts().add(part);
                 guiPartList.setTuneParts(mxTuneFile.getParts());
 
