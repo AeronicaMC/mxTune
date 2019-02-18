@@ -338,6 +338,8 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
 
             case 1:
                 /* Cancelled - remove the GUI */
+                if (guiScreenParent != null)
+                    ActionGet.INSTANCE.cancel();
                 mmlStop();
                 mc.displayGuiScreen(guiScreenParent);
                 break;

@@ -39,6 +39,7 @@ public class ActionGet implements ISelectorAction
     private String instrument;
     private String suggestedInstrument;
     private int packedPatch;
+    SELECTOR selector = SELECTOR.CANCEL;
 
     @Override
     public void select(Path path)
@@ -91,6 +92,14 @@ public class ActionGet implements ISelectorAction
     public String getSuggestedInstrument() { return suggestedInstrument; }
 
     public int getPackedPatch() { return packedPatch; }
+
+    public void cancel() { selector = SELECTOR.CANCEL; }
+
+    public void setFile() { selector = SELECTOR.FILE; }
+
+    public void setPaste() { selector = SELECTOR.PASTE; }
+
+    public SELECTOR getSelector() { return selector; }
 
     public enum SELECTOR
     {

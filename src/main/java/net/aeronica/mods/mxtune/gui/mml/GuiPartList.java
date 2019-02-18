@@ -83,8 +83,11 @@ public class GuiPartList extends GuiScrollingList
     @Override
     protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
     {
-        MXTunePart tunePart = (tuneParts.get(slotIdx));
-        String trimmedName = fontRenderer.trimStringToWidth(tunePart.getInstrument(), listWidth - 10);
-        fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, 0xADD8E6);
+        if (tuneParts != null && !tuneParts.isEmpty() && slotIdx < tuneParts.size())
+        {
+            MXTunePart tunePart = (tuneParts.get(slotIdx));
+            String trimmedName = fontRenderer.trimStringToWidth(tunePart.getInstrument(), listWidth - 10);
+            fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, 0xADD8E6);
+        }
     }
 }

@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static net.aeronica.mods.mxtune.caches.Simularity.ModInstrument;
+import static net.aeronica.mods.mxtune.caches.Simularity.getModInstruments;
 
 public class MXTunePart implements Comparable<MXTunePart>
 {
@@ -82,7 +83,7 @@ public class MXTunePart implements Comparable<MXTunePart>
 
     public ModInstrument getModInstrument()
     {
-        return modInstrument;
+        return modInstrument != null ? modInstrument : getModInstruments().get(0);
     }
 
     public void setModInstrument(ModInstrument modInstrument)
@@ -103,7 +104,7 @@ public class MXTunePart implements Comparable<MXTunePart>
 
     public String getInstrument()
     {
-        return instrument;
+        return instrument != null ? instrument : "";
     }
 
     public void setInstrument(String instrument)

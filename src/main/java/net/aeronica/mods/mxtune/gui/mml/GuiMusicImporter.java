@@ -45,7 +45,6 @@ public class GuiMusicImporter extends GuiScreen
     private int guiTop;
     private boolean isStateCached;
     private boolean midiUnavailable;
-    private ActionGet.SELECTOR selector = ActionGet.SELECTOR.CANCEL;
 
     private MXTuneFile mxTuneFile = new MXTuneFile();
 
@@ -64,6 +63,8 @@ public class GuiMusicImporter extends GuiScreen
     private String cacheMusicAuthor;
     private String cacheMusicSource;
     private String cacheStatusText;
+    private int cacheSelectedPart;
+    private int cacheSelectedStave;
 
     public GuiMusicImporter(GuiScreen guiScreenParent)
     {
@@ -103,6 +104,7 @@ public class GuiMusicImporter extends GuiScreen
         guiStaffList = new GuiStaffList(this, guiListWidth, listHeight, listTop, listBottom, width - guiListWidth - 5);
         statusText = new GuiTextField(3, fontRenderer, left, statusTop, guiTextWidth, entryHeightImportList);
         statusText.setMaxStringLength(100);
+        statusText.setTextColor(0xEEEE00);
         statusText.setFocused(false);
         statusText.setEnabled(false);
 
@@ -132,6 +134,9 @@ public class GuiMusicImporter extends GuiScreen
         musicSource.setText(cacheMusicSource);
         musicTitle.setText(cacheMusicTitle);
         statusText.setText(cacheStatusText);
+        guiPartList.setTuneParts(mxTuneFile.getParts());
+        guiPartList.elementClicked(cacheSelectedPart, false);
+        guiStaffList.elementClicked(cacheSelectedStave, false);
     }
 
     private void updateState()
@@ -140,6 +145,8 @@ public class GuiMusicImporter extends GuiScreen
         cacheMusicSource = musicSource.getText();
         cacheMusicTitle = musicTitle.getText();
         cacheStatusText = statusText.getText();
+        cacheSelectedPart = guiPartList.getSelectedIndex();
+        cacheSelectedStave = guiStaffList.getSelectedIndex();
         isStateCached = true;
     }
 
@@ -154,6 +161,7 @@ public class GuiMusicImporter extends GuiScreen
     {
         musicTitle.updateCursorCounter();
         musicAuthor.updateCursorCounter();
+        musicSource.updateCursorCounter();
         super.updateScreen();
     }
 
@@ -233,14 +241,14 @@ public class GuiMusicImporter extends GuiScreen
 
     private void getFile()
     {
-        selector = ActionGet.SELECTOR.FILE;
+        ActionGet.INSTANCE.setFile();
         ActionGet.INSTANCE.clear();
         mc.displayGuiScreen(new GuiFileSelector(this));
     }
 
     private void getPaste()
     {
-        selector = ActionGet.SELECTOR.PASTE;
+        ActionGet.INSTANCE.setPaste();
         ActionGet.INSTANCE.clear();
         mc.displayGuiScreen(new GuiMusicPaperParse(this));
     }
@@ -248,7 +256,7 @@ public class GuiMusicImporter extends GuiScreen
     private void getSelection()
     {
         List<MXTuneStaff> staves = new ArrayList<>();
-        switch (selector)
+        switch (ActionGet.INSTANCE.getSelector())
         {
             case FILE:
                 ModLogger.debug("File: %s", ActionGet.INSTANCE.getFileNameString());
@@ -287,7 +295,7 @@ public class GuiMusicImporter extends GuiScreen
                 break;
             default:
         }
-        selector = ActionGet.SELECTOR.CANCEL;
+        ActionGet.INSTANCE.cancel();
         updateState();
     }
 
