@@ -28,6 +28,13 @@ import java.util.List;
 public class GuiStaffList extends GuiScrollingList
 {
     private List<MXTuneStaff> tuneStaves;
+    protected FontRenderer fontRenderer;
+
+    public GuiStaffList(GuiMusicImporter parent, int width, int height, int top, int bottom, int left)
+    {
+        super(parent.mc, width, height, top, bottom, left, parent.entryHeightImportList, parent.width, parent.height);
+        this.fontRenderer = parent.mc.fontRenderer;
+    }
 
     public List<MXTuneStaff> getTuneStaves()
     {
@@ -38,16 +45,6 @@ public class GuiStaffList extends GuiScrollingList
     {
         this.tuneStaves = tuneStaves;
     }
-
-    protected FontRenderer fontRenderer;
-
-    public GuiStaffList(GuiMusicImporter parent, int width, int height, int top, int bottom, int left)
-    {
-        super(parent.mc, width, height, top, bottom, left, parent.entryHeightImportList, parent.width, parent.height);
-        this.fontRenderer = parent.mc.fontRenderer;
-    }
-
-
 
     int getRight() {return right;}
 

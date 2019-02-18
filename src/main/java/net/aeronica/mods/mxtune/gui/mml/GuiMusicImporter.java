@@ -17,9 +17,7 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
-import net.aeronica.mods.mxtune.caches.MXTuneFile;
-import net.aeronica.mods.mxtune.caches.MXTunePart;
-import net.aeronica.mods.mxtune.caches.MXTuneStaff;
+import net.aeronica.mods.mxtune.caches.*;
 import net.aeronica.mods.mxtune.gui.util.HooverHelper;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -28,6 +26,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -72,6 +71,7 @@ public class GuiMusicImporter extends GuiScreen
         mc = Minecraft.getMinecraft();
         fontRenderer = mc.fontRenderer;
         midiUnavailable = MIDISystemUtil.midiUnavailable();
+        Simularity.test();
     }
 
     @Override
@@ -94,11 +94,15 @@ public class GuiMusicImporter extends GuiScreen
         int statusTop = listBottom + 4;
 
         musicTitle = new GuiTextField(0, fontRenderer, left, titleTop, guiTextWidth, entryHeightImportList);
+        musicTitle.setMaxStringLength(80);
         musicAuthor = new GuiTextField(1, fontRenderer, left, authorTop, guiTextWidth, entryHeightImportList);
+        musicAuthor.setMaxStringLength(80);
         musicSource = new GuiTextField(2, fontRenderer, left, sourceTop, guiTextWidth, entryHeightImportList);
-        guiPartList = new GuiPartList(this, mxTuneFile.getParts(), guiListWidth, listHeight, listTop, listBottom, left);
+        musicSource.setMaxStringLength(160);
+        guiPartList = new GuiPartList(this, guiListWidth, listHeight, listTop, listBottom, left);
         guiStaffList = new GuiStaffList(this, guiListWidth, listHeight, listTop, listBottom, width - guiListWidth - 5);
         statusText = new GuiTextField(3, fontRenderer, left, statusTop, guiTextWidth, entryHeightImportList);
+        statusText.setMaxStringLength(100);
         statusText.setFocused(false);
         statusText.setEnabled(false);
 
@@ -184,10 +188,17 @@ public class GuiMusicImporter extends GuiScreen
         {
             case 0:
                 // Done
+                NBTTagCompound compound = new NBTTagCompound();
+                mxTuneFile.setTitle(musicTitle.getText().trim().replaceAll(".[^\\.]+$", ""));
+                mxTuneFile.setAuthor(musicAuthor.getText().trim());
+                mxTuneFile.setSource(musicSource.getText().trim());
+                mxTuneFile.writeToNBT(compound);
+                FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.CLIENT_LIB_FOLDER, mxTuneFile.getTitle().trim() + ".dat"), compound);
                 mc.displayGuiScreen(guiScreenParent);
                 break;
             case 1:
                 // Cancel
+                ActionGet.INSTANCE.clear();
                 mc.displayGuiScreen(guiScreenParent);
                 break;
             case 2:
@@ -221,7 +232,6 @@ public class GuiMusicImporter extends GuiScreen
     private void getSelection()
     {
         List<MXTuneStaff> staves = new ArrayList<>();
-        List<MXTunePart> parts = new ArrayList<>();
         switch (selector)
         {
             case FILE:
@@ -252,7 +262,10 @@ public class GuiMusicImporter extends GuiScreen
                     staves.add(new MXTuneStaff(i, mml));
                     i++;
                 }
-                mxTuneFile.getParts().add( new MXTunePart(ActionGet.INSTANCE.getInstrument(), staves));
+                MXTunePart part =  new MXTunePart(ActionGet.INSTANCE.getInstrument(), staves);
+                part.setMeta(ActionGet.INSTANCE.getTitle().trim());
+                mxTuneFile.getParts().add(part);
+                guiPartList.setTuneParts(mxTuneFile.getParts());
 
                 break;
             case CANCEL:

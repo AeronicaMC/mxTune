@@ -31,11 +31,21 @@ public class GuiPartList extends GuiScrollingList
     protected FontRenderer fontRenderer;
     GuiMusicImporter parent;
 
-    public GuiPartList(GuiMusicImporter parent, List<MXTunePart> tuneParts, int width, int height, int top, int bottom, int left)
+    public GuiPartList(GuiMusicImporter parent, int width, int height, int top, int bottom, int left)
     {
         super(parent.mc, width, height, top, bottom, left, parent.entryHeightImportList, parent.width, parent.height);
         this.parent = parent;
         this.fontRenderer = parent.mc.fontRenderer;
+        this.tuneParts = tuneParts;
+    }
+
+    public List<MXTunePart> getTuneParts()
+    {
+        return tuneParts;
+    }
+
+    public void setTuneParts(List<MXTunePart> tuneParts)
+    {
         this.tuneParts = tuneParts;
     }
 
@@ -46,7 +56,7 @@ public class GuiPartList extends GuiScrollingList
     @Override
     protected int getSize()
     {
-        return tuneParts.size();
+        return tuneParts != null ? tuneParts.size() : 0;
     }
 
     @Override
