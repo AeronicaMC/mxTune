@@ -19,6 +19,7 @@ package net.aeronica.mods.mxtune.caches;
 
 import net.minecraft.nbt.NBTTagCompound;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,9 +116,18 @@ public class MXTuneFile implements Comparable<MXTuneFile>
         return parts;
     }
 
-    public void setParts(List<MXTunePart> parts)
+    @SuppressWarnings("unused")
+    public void setParts(List<MXTunePart> parts) { this.parts = parts != null ? parts : new ArrayList<>(); }
+
+    @Override
+    public boolean equals(Object obj)
     {
-        this.parts = parts;
+        if (!(obj instanceof  MXTuneFile)) return false;
+        boolean sameTitle = title.equals(((MXTuneFile) obj).title);
+        boolean sameAuthor = author.equals(((MXTuneFile)obj).author);
+        boolean sameSource = source.equals(((MXTuneFile)obj).source);
+        boolean samePartsSize = (parts != null && ((MXTuneFile)obj).parts != null) && parts.size() == ((MXTuneFile)obj).parts.size();
+        return sameTitle && sameAuthor && sameSource && samePartsSize;
     }
 
     private String getSortingKey()
@@ -126,7 +136,7 @@ public class MXTuneFile implements Comparable<MXTuneFile>
     }
 
     @Override
-    public int compareTo(MXTuneFile o)
+    public int compareTo(@Nonnull MXTuneFile o)
     {
         return getSortingKey().compareTo(o.getSortingKey());
     }

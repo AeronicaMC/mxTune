@@ -36,7 +36,6 @@ public class GuiPartList extends GuiScrollingList
         super(parent.mc, width, height, top, bottom, left, parent.entryHeightImportList, parent.width, parent.height);
         this.parent = parent;
         this.fontRenderer = parent.mc.fontRenderer;
-        this.tuneParts = tuneParts;
     }
 
     public List<MXTunePart> getTuneParts()

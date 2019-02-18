@@ -19,6 +19,8 @@ package net.aeronica.mods.mxtune.caches;
 
 import net.minecraft.nbt.NBTTagCompound;
 
+import javax.annotation.Nonnull;
+
 public class MXTuneStaff implements Comparable<MXTuneStaff>
 {
     private static final String TAG_WRAP_OCTAVE = "wrapOctave";
@@ -96,7 +98,19 @@ public class MXTuneStaff implements Comparable<MXTuneStaff>
     }
 
     @Override
-    public int compareTo(MXTuneStaff o)
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof MXTuneStaff)) return false;
+        boolean sameStaff = staff == (((MXTuneStaff) obj).staff);
+        boolean sameMML = mml.equals((((MXTuneStaff) obj).mml));
+        boolean sameMeta = meta.equals((((MXTuneStaff) obj).meta));
+        boolean sameTranspose = transpose == (((MXTuneStaff) obj).transpose);
+        boolean sameWrapOctave = wrapOctave == (((MXTuneStaff) obj).wrapOctave);
+        return sameStaff && sameMML && sameMeta && sameTranspose && sameWrapOctave;
+    }
+
+    @Override
+    public int compareTo(@Nonnull MXTuneStaff o)
     {
         return o.getStaff() - getStaff();
     }

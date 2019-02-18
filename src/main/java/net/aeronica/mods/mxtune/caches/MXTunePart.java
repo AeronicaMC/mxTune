@@ -19,6 +19,7 @@ package net.aeronica.mods.mxtune.caches;
 
 import net.minecraft.nbt.NBTTagCompound;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,23 +37,32 @@ public class MXTunePart implements Comparable<MXTunePart>
 
     private ModInstrument modInstrument;
     private String instrument;
-    private int packerPatch;
+    private int packedPatch;
     private String suggestedInstrument;
     private List<MXTuneStaff> staves;
 
-    public MXTunePart(String instrument, String suggestedInstrument, int packerPatch, List<MXTuneStaff> staves)
+    public MXTunePart()
     {
+        this.modInstrument = getModInstruments().get(0);
+        this.suggestedInstrument = "";
+        this.instrument = "";
+        this.staves = new ArrayList<>();
+    }
+
+    public MXTunePart(String instrument, String suggestedInstrument, int packedPatch, List<MXTuneStaff> staves)
+    {
+        this.modInstrument = getModInstruments().get(0);
         this.suggestedInstrument = suggestedInstrument != null ? suggestedInstrument : "";
-        this.instrument = instrument;
-        this.packerPatch = packerPatch;
-        this.staves = staves != null ? staves : Collections.emptyList();
+        this.instrument = instrument != null ? instrument : "";
+        this.packedPatch = packedPatch;
+        this.staves = staves != null ? staves : new ArrayList<>();
     }
 
     public MXTunePart(NBTTagCompound compound)
     {
         instrument = compound.getString(TAG_INSTRUMENT);
         suggestedInstrument = compound.getString(TAG_SUGGESTED);
-        packerPatch = compound.getInteger(TAG_PACKED_PATCH);
+        packedPatch = compound.getInteger(TAG_PACKED_PATCH);
         int staffCount = compound.getInteger(TAG_STAFF_COUNT);
 
         staves = new ArrayList<>();
@@ -68,7 +78,7 @@ public class MXTunePart implements Comparable<MXTunePart>
         compound.setString(TAG_INSTRUMENT, instrument);
         compound.setString(TAG_SUGGESTED, suggestedInstrument);
         compound.setInteger(TAG_STAFF_COUNT, staves.size());
-        compound.setInteger(TAG_PACKED_PATCH, packerPatch);
+        compound.setInteger(TAG_PACKED_PATCH, packedPatch);
 
         int i = 0;
         for (MXTuneStaff staff : staves)
@@ -81,15 +91,14 @@ public class MXTunePart implements Comparable<MXTunePart>
         }
     }
 
-    public ModInstrument getModInstrument()
-    {
-        return modInstrument != null ? modInstrument : getModInstruments().get(0);
-    }
+    @SuppressWarnings("unused")
+    public ModInstrument getModInstrument() { return modInstrument; }
 
+    @SuppressWarnings("unused")
     public void setModInstrument(ModInstrument modInstrument)
     {
-        this.modInstrument = modInstrument;
-        this.packerPatch = modInstrument != null ? modInstrument.getPackedPreset() : 0;
+        this.modInstrument = modInstrument != null ? modInstrument : getModInstruments().get(0);
+        this.packedPatch = this.modInstrument.getPackedPreset();
     }
 
     public List<MXTuneStaff> getStaves()
@@ -97,6 +106,7 @@ public class MXTunePart implements Comparable<MXTunePart>
         return staves != null ? staves : Collections.emptyList();
     }
 
+    @SuppressWarnings("unused")
     public void setStaves(List<MXTuneStaff> staves)
     {
         this.staves = staves;
@@ -112,25 +122,39 @@ public class MXTunePart implements Comparable<MXTunePart>
         this.instrument = instrument;
     }
 
+    @SuppressWarnings("unused")
     public String getSuggestedInstrument()
     {
         return suggestedInstrument != null ? suggestedInstrument : "";
     }
 
+    @SuppressWarnings("unused")
     public void setSuggestedInstrument(String suggestedInstrument)
     {
         this.suggestedInstrument = suggestedInstrument;
     }
 
-
-    public int getPackerPatch()
+    @SuppressWarnings("unused")
+    public int getPackedPatch()
     {
-        return packerPatch;
+        return packedPatch;
     }
 
-    public void setPackerPatch(int packerPatch)
+    @SuppressWarnings("unused")
+    public void setPackedPatch(int packedPatch)
     {
-        this.packerPatch = packerPatch;
+        this.packedPatch = packedPatch;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof MXTunePart)) return false;
+        boolean sameInstrument = instrument.equals(((MXTunePart) obj).instrument);
+        boolean sameSuggestedInstrument = suggestedInstrument.equals(((MXTunePart) obj).suggestedInstrument);
+        boolean samePackedPatch = packedPatch == (((MXTunePart) obj).packedPatch);
+        boolean sameStavesSize = (staves != null && ((MXTunePart)obj).staves != null) && staves.size() == ((MXTunePart)obj).staves.size();
+        return sameInstrument && sameSuggestedInstrument && samePackedPatch && sameStavesSize;
     }
 
     private String getSortingKey()
@@ -139,7 +163,7 @@ public class MXTunePart implements Comparable<MXTunePart>
     }
 
     @Override
-    public int compareTo(MXTunePart o)
+    public int compareTo(@Nonnull MXTunePart o)
     {
         return getSortingKey().compareTo(o.getSortingKey());
     }

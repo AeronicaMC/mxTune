@@ -53,11 +53,13 @@ import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.audio.SoundManager;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.PlayStreamingSourceEvent;
 import net.minecraftforge.client.event.sound.SoundSetupEvent;
+import net.minecraftforge.client.resource.IResourceType;
+import net.minecraftforge.client.resource.ISelectiveResourceReloadListener;
+import net.minecraftforge.client.resource.VanillaResourceType;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -75,16 +77,18 @@ import paulscode.sound.SoundSystem;
 import paulscode.sound.SoundSystemConfig;
 import paulscode.sound.SoundSystemException;
 
+import javax.annotation.Nonnull;
 import javax.sound.sampled.AudioFormat;
 import java.nio.IntBuffer;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.*;
+import java.util.function.Predicate;
 
 @SideOnly(Side.CLIENT)
 @Mod.EventBusSubscriber(Side.CLIENT)
-public enum ClientAudio implements IResourceManagerReloadListener
+public enum ClientAudio implements ISelectiveResourceReloadListener
 {
     INSTANCE;
     public static final Object THREAD_SYNC = new Object();
@@ -114,8 +118,6 @@ public enum ClientAudio implements IResourceManagerReloadListener
     private static final int MAX_STREAM_CHANNELS = 16;
     private static final int DESIRED_STREAM_CHANNELS = 8;
 
-    private ClientAudio() { /* NOP */ }
-       
     private static void startThreadFactory()
     {
         if (threadFactory == null)
@@ -393,12 +395,15 @@ public enum ClientAudio implements IResourceManagerReloadListener
     }
 
     @Override
-    public void onResourceManagerReload(IResourceManager resourceManager)
+    public void onResourceManagerReload(@Nonnull IResourceManager resourceManager, @Nonnull Predicate<IResourceType> resourcePredicate)
     {
-        ModLogger.info("Restarting mxTune");
-        cleanup();
-        configureSound();
-        init();
+        if (resourcePredicate.test(VanillaResourceType.SOUNDS))
+        {
+            ModLogger.info("Restarting mxTune");
+            cleanup();
+            configureSound();
+            init();
+        }
     }
 
     @SubscribeEvent

@@ -18,7 +18,6 @@
 package net.aeronica.mods.mxtune.caches;
 
 import net.aeronica.libs.mml.core.MMLUtil;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.Tuple;
 import net.minecraftforge.fml.relauncher.Side;
@@ -43,6 +42,7 @@ public class Simularity
         }
         instruments = Collections.unmodifiableList(inst);
     }
+
     private Simularity() { /* NOP */ }
     
     private static double compareStrings(String stringA, String stringB)
@@ -59,8 +59,8 @@ public class Simularity
 
     /**
      * Make the best guess for an instrument name and packed Preset
-     * @param testString Instrument name
-     * @return
+     * @param testString that may contain an instrument name
+     * @return the best matching ModInstruments, or the default
      */
     public static Tuple<Integer, String> getPackedPresetFromName(String testString)
     {
@@ -79,24 +79,6 @@ public class Simularity
             }
         }
         return new Tuple<>(packedPreset, instName);
-    }
-
-    public static void test()
-    {
-        Tuple<Integer, String> tuple = getPackedPresetFromName("Part1-Piano.out.ms2mml");
-        ModLogger.info(" Piano: %s, %s", tuple.getSecond(), tuple.getFirst());
-        tuple = getPackedPresetFromName("Part1-Grand-Piano.out.ms2mml");
-        ModLogger.info(" Grand Piano: %s %d", tuple.getSecond(), tuple.getFirst());
-        tuple = getPackedPresetFromName("Part4-Guitar-Lute.out.ms2mml");
-        ModLogger.info(" Guitar Lute: %s %d", tuple.getSecond(), tuple.getFirst());
-        tuple = getPackedPresetFromName("Part4-Cello.out.ms2mml");
-        ModLogger.info(" Cello: %s %d", tuple.getSecond(), tuple.getFirst());
-        tuple = getPackedPresetFromName("M Cello");
-        ModLogger.info(" M Cello: %s %d", tuple.getSecond(), tuple.getFirst());
-        tuple = getPackedPresetFromName("Part7-Standard.out.ms2mml");
-        ModLogger.info(" Standard Set: %s %d ", tuple.getSecond(), tuple.getFirst());
-        tuple = getPackedPresetFromName("Part7-Harpsichord.out.ms2mml");
-        ModLogger.info(" Harpsichord: %s %d", tuple.getSecond(), tuple.getFirst());
     }
 
     public enum UglyHack

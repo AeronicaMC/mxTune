@@ -17,7 +17,10 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
-import net.aeronica.mods.mxtune.caches.*;
+import net.aeronica.mods.mxtune.caches.FileHelper;
+import net.aeronica.mods.mxtune.caches.MXTuneFile;
+import net.aeronica.mods.mxtune.caches.MXTunePart;
+import net.aeronica.mods.mxtune.caches.MXTuneStaff;
 import net.aeronica.mods.mxtune.gui.util.HooverHelper;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -48,7 +51,7 @@ public class GuiMusicImporter extends GuiScreen
 
     private MXTuneFile mxTuneFile = new MXTuneFile();
 
-    public int entryHeightImportList;
+    protected int entryHeightImportList;
     protected GuiPartList guiPartList;
     protected GuiStaffList guiStaffList;
     private GuiTextField musicTitle;
@@ -72,7 +75,6 @@ public class GuiMusicImporter extends GuiScreen
         mc = Minecraft.getMinecraft();
         fontRenderer = mc.fontRenderer;
         midiUnavailable = MIDISystemUtil.midiUnavailable();
-        Simularity.test();
     }
 
     @Override
