@@ -266,7 +266,6 @@ public class GuiFileSelector extends GuiScreen
     {
         int mouseX = Mouse.getEventX() * width / mc.displayWidth;
         int mouseY = height - Mouse.getEventY() * height / mc.displayHeight - 1;
-
         guiFileList.handleMouseInput(mouseX, mouseY);
         super.handleMouseInput();
     }
@@ -275,10 +274,12 @@ public class GuiFileSelector extends GuiScreen
     {
         private List<Path> mmlFiles;
         private FontRenderer fontRenderer;
+        GuiFileSelector parent;
 
         GuiFileList(GuiFileSelector parent, List<Path> mmlFilesIn, int width, int height, int top, int bottom, int left)
         {
             super(parent.mc, width, height, top, bottom, left, parent.entryHeight, parent.width, parent.height);
+            this.parent = parent;
             this.mmlFiles = mmlFilesIn;
             this.fontRenderer = parent.mc.fontRenderer;
         }
@@ -296,8 +297,16 @@ public class GuiFileSelector extends GuiScreen
         @Override
         protected void elementClicked(int index, boolean doubleClick)
         {
-            if (index == selectedIndex) return;
+            if (index == selectedIndex && !doubleClick) return;
             selectedIndex = (index >= 0 && index <= mmlFiles.size() ? index : -1);
+            if (doubleClick)
+                try
+                {
+                    parent.actionPerformed(parent.buttonList.get(0));
+                } catch (IOException e)
+                {
+                    ModLogger.error(e);
+                }
         }
 
         @Override
