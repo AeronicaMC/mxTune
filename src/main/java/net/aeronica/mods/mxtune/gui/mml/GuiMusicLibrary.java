@@ -54,7 +54,7 @@ public class GuiMusicLibrary extends GuiScreen
 
         private int buttonID;
 
-        private SortType(int buttonID)
+        SortType(int buttonID)
         {
             this.buttonID = buttonID;
         }
@@ -123,7 +123,6 @@ public class GuiMusicLibrary extends GuiScreen
         this.guiLeft = 0;
         this.guiTop = 0;
         int guiListWidth = (width - 15) * 3 / 4 ;
-        int guiTextWidth = width - 10;
         entryHeight = mc.fontRenderer.FONT_HEIGHT + 2;
         int left = 5;
         int titleTop = 20;
@@ -138,16 +137,16 @@ public class GuiMusicLibrary extends GuiScreen
         search.setFocused(true);
         search.setCanLoseFocus(true);
 
-        int buttonMargin = 1;
+        int buttonMargin = 2;
         int width = (guiListWidth / 3);
-        int x = left, y = titleTop;
-        GuiButton normalSort = new GuiButton(SortType.NORMAL.buttonID, x, y, width - buttonMargin, 20, I18n.format("fml.menu.mods.normal"));
+        int x = left;
+        GuiButton normalSort = new GuiButton(SortType.NORMAL.buttonID, x, titleTop, width - buttonMargin, 20, I18n.format("fml.menu.mods.normal"));
         normalSort.enabled = false;
         buttonList.add(normalSort);
         x += width + buttonMargin;
-        buttonList.add(new GuiButton(SortType.A_TO_Z.buttonID, x, y, width - buttonMargin, 20, "A-Z"));
+        buttonList.add(new GuiButton(SortType.A_TO_Z.buttonID, x, titleTop, width - buttonMargin, 20, "A-Z"));
         x += width + buttonMargin;
-        buttonList.add(new GuiButton(SortType.Z_TO_A.buttonID, x, y, width - buttonMargin, 20, "Z-A"));
+        buttonList.add(new GuiButton(SortType.Z_TO_A.buttonID, x, titleTop, width - buttonMargin, 20, "Z-A"));
 
 
         int buttonTop = height - 25;
@@ -204,21 +203,7 @@ public class GuiMusicLibrary extends GuiScreen
     {
         cachedSelectedIndex = guiFileList.getSelectedIndex();
         guiFileList.elementClicked(cachedSelectedIndex, false);
-
-        if (!search.getText().equals(lastSearch))
-        {
-            initFileList();
-            sorted = false;
-        }
-
-        if (!sorted)
-        {
-            initFileList();
-            mmlFiles.sort(sortType);
-            guiFileList.elementClicked(mmlFiles.indexOf(selectedFile), false);
-            cachedSelectedIndex = guiFileList.getSelectedIndex();
-            sorted = true;
-        }
+        searchAndSort();
         super.updateScreen();
     }
 
@@ -335,12 +320,13 @@ public class GuiMusicLibrary extends GuiScreen
         @Override
         protected void elementClicked(int index, boolean doubleClick)
         {
-            if (index == selectedIndex && !doubleClick) return;
             selectedIndex = (index >= 0 && index <= parent.mmlFiles.size() ? index : -1);
 
             if (selectedIndex >= 0 && selectedIndex <= parent.mmlFiles.size())
                 parent.selectedFile = parent.mmlFiles.get(selectedIndex);
 
+            if (index == selectedIndex && !doubleClick)
+                return;
             if (doubleClick && parent.guiScreenParent != null)
                 try
                 {
@@ -377,11 +363,18 @@ public class GuiMusicLibrary extends GuiScreen
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
         search.mouseClicked(mouseX, mouseY, mouseButton);
-        if (mouseButton == 1 && mouseX >= search.x && mouseX < search.x + search.width && mouseY >= search.y && mouseY < search.y + search.height) {
-            search.setText("");
-        }
+        clearOnMouseLeftClicked(search, mouseX, mouseY, mouseButton);
         super.mouseClicked(mouseX, mouseY, mouseButton);
         updateState();
+    }
+
+    private <T extends GuiTextField> void clearOnMouseLeftClicked(T guiTextField, int mouseX, int mouseY, int mouseButton)
+    {
+        if (mouseButton == 1 && mouseX >= guiTextField.x && mouseX < guiTextField.x + guiTextField.width
+                && mouseY >= guiTextField.y && mouseY < guiTextField.y + guiTextField.height)
+        {
+            guiTextField.setText("");
+        }
     }
 
     private void initFileList()
@@ -409,5 +402,22 @@ public class GuiMusicLibrary extends GuiScreen
         }
         mmlFiles = files;
         lastSearch = search.getText();
+    }
+
+    private void searchAndSort()
+    {
+        if (!search.getText().equals(lastSearch))
+        {
+            initFileList();
+            sorted = false;
+        }
+        if (!sorted)
+        {
+            initFileList();
+            mmlFiles.sort(sortType);
+            guiFileList.elementClicked(mmlFiles.indexOf(selectedFile), false);
+            cachedSelectedIndex = guiFileList.getSelectedIndex();
+            sorted = true;
+        }
     }
 }
