@@ -27,4 +27,5 @@ public class GuiGuid
     public static final int GUI_MUSIC_OPTIONS = 4;
     public static final int GUI_BAND_AMP = 5;
     public static final int GUI_MUSIC_IMPORTER = 6;
+    public static final int GUI_MUSIC_LIBRARY = 7;
 }

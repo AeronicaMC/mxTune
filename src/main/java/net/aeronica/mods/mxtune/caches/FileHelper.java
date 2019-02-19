@@ -56,6 +56,11 @@ public class FileHelper
         return path.getFileSystem().getPathMatcher("glob:**.{mml,ms2mml,zip}");
     }
 
+    public static PathMatcher getDatMatcher(Path path)
+    {
+        return path.getFileSystem().getPathMatcher("glob:**.{dat}");
+    }
+
     private static void fixDirectory(Path dir)
     {
         if (dir.toFile().exists() && !dir.toFile().isDirectory())
