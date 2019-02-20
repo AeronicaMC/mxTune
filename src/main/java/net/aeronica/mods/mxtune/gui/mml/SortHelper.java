@@ -73,14 +73,14 @@ class SortHelper
         }
     }
 
-    static void updateSortButtons(SortType sortType, List<GuiButton> buttonList)
+    static void updateSortButtons(@Nullable SortType sortType, List<GuiButton> buttonList)
     {
         for (GuiButton button : buttonList)
         {
             SortType type = SortType.getTypeForButton(button);
             if (type != null && type == sortType)
                 button.enabled = false;
-            else if (type != null && type != sortType)
+            else if (type != null)
                 button.enabled = true;
         }
     }
