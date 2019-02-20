@@ -38,6 +38,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -62,7 +63,7 @@ public class GuiFileSelector extends GuiScreen
     private GuiButton buttonCancel;
     private List<GuiButton> safeButtonList;
 
-    private List<Path> mmlFiles;
+    private List<Path> mmlFiles = new ArrayList<>();
     private boolean watcherStarted = false;
 
     private DirectoryWatcher watcher;
@@ -125,7 +126,6 @@ public class GuiFileSelector extends GuiScreen
     @Override
     public void initGui()
     {
-        initFileList();
         buttonList.clear();
         this.guiLeft = 0;
         this.guiTop = 0;
@@ -138,7 +138,7 @@ public class GuiFileSelector extends GuiScreen
         int statusTop = listBottom + 7;
         int buttonTop = height - 25;
 
-        guiFileList = new GuiFileList(this, mmlFiles, guiListWidth, listHeight, listTop, listBottom, left);
+        guiFileList = new GuiFileList(this, guiListWidth, listHeight, listTop, listBottom, left);
 
         textStatus = new GuiTextField(0, fontRenderer, left, statusTop, guiListWidth, entryHeight + 2);
         textStatus.setFocused(false);
@@ -165,6 +165,7 @@ public class GuiFileSelector extends GuiScreen
         safeButtonList = new CopyOnWriteArrayList<>(buttonList);
         reloadState();
         startWatcher();
+        initFileList();
     }
 
     private void reloadState()
@@ -272,15 +273,13 @@ public class GuiFileSelector extends GuiScreen
 
     private static class GuiFileList extends GuiScrollingList
     {
-        private List<Path> mmlFiles;
         private FontRenderer fontRenderer;
         GuiFileSelector parent;
 
-        GuiFileList(GuiFileSelector parent, List<Path> mmlFilesIn, int width, int height, int top, int bottom, int left)
+        GuiFileList(GuiFileSelector parent, int width, int height, int top, int bottom, int left)
         {
             super(parent.mc, width, height, top, bottom, left, parent.entryHeight, parent.width, parent.height);
             this.parent = parent;
-            this.mmlFiles = mmlFilesIn;
             this.fontRenderer = parent.mc.fontRenderer;
         }
 
@@ -291,14 +290,14 @@ public class GuiFileSelector extends GuiScreen
         @Override
         protected int getSize()
         {
-            return mmlFiles.size();
+            return parent.mmlFiles.size();
         }
 
         @Override
         protected void elementClicked(int index, boolean doubleClick)
         {
             if (index == selectedIndex && !doubleClick) return;
-            selectedIndex = (index >= 0 && index <= mmlFiles.size() ? index : -1);
+            selectedIndex = (index >= 0 && index <= parent.mmlFiles.size() ? index : -1);
             if (doubleClick)
                 try
                 {
@@ -312,7 +311,7 @@ public class GuiFileSelector extends GuiScreen
         @Override
         protected boolean isSelected(int index)
         {
-            return index == selectedIndex && selectedIndex >= 0 && selectedIndex <= mmlFiles.size();
+            return index == selectedIndex && selectedIndex >= 0 && selectedIndex <= parent.mmlFiles.size();
         }
 
         @Override
@@ -325,7 +324,7 @@ public class GuiFileSelector extends GuiScreen
         @Override
         protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
         {
-            String name = (mmlFiles.get(slotIdx).getFileName().toString());
+            String name = (parent.mmlFiles.get(slotIdx).getFileName().toString());
             String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
             fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, 0xADD8E6);
         }
