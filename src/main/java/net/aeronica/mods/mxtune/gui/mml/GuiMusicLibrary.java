@@ -25,64 +25,27 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.StringUtils;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.GuiScrollingList;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static net.aeronica.mods.mxtune.gui.mml.SortHelper.SortType;
+import static net.aeronica.mods.mxtune.gui.mml.SortHelper.updateSortButtons;
+
 public class GuiMusicLibrary extends GuiScreen
 {
-    enum SortType implements Comparator<Path>
-    {
-        NORMAL(24),
-        A_TO_Z(25){ @Override protected int compare(String name1, String name2){ return name1.compareTo(name2); }},
-        Z_TO_A(26){ @Override protected int compare(String name1, String name2){ return name2.compareTo(name1); }};
-
-        private int buttonID;
-
-        SortType(int buttonID)
-        {
-            this.buttonID = buttonID;
-        }
-
-        @Nullable
-        public static GuiMusicLibrary.SortType getTypeForButton(GuiButton button)
-        {
-            for (GuiMusicLibrary.SortType t : values())
-            {
-                if (t.buttonID == button.id)
-                {
-                    return t;
-                }
-            }
-            return null;
-        }
-
-        protected int compare(String name1, String name2){ return 0; }
-
-        @Override
-        public int compare(Path o1, Path o2)
-        {
-            String name1 = StringUtils.stripControlCodes(o1.getFileName().toString()).toLowerCase(Locale.ROOT);
-            String name2 = StringUtils.stripControlCodes(o2.getFileName().toString()).toLowerCase(Locale.ROOT);
-            return compare(name1, name2);
-        }
-    }
-
     private static final String TITLE = I18n.format("mxtune.gui.guiMusicLibrary.title");
     private static final String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
     private GuiScreen guiScreenParent;
@@ -91,7 +54,7 @@ public class GuiMusicLibrary extends GuiScreen
     private boolean isStateCached;
     private boolean midiUnavailable;
 
-    protected int entryHeight;
+    private int entryHeight;
     private Path selectedFile;
     private GuiButton buttonCancel;
     private List<GuiButton> safeButtonList;
@@ -99,6 +62,7 @@ public class GuiMusicLibrary extends GuiScreen
     private List<Path> mmlFiles = new ArrayList<>();
 
     // Sort and Search
+    private GuiLabel searchLabel;
     private GuiTextField search;
     private boolean sorted = false;
     private SortType sortType = SortType.NORMAL;
@@ -132,21 +96,25 @@ public class GuiMusicLibrary extends GuiScreen
         int statusTop = listBottom + 4;
 
         guiFileList = new GuiFileList(this, guiListWidth, listHeight, listTop, listBottom, left);
-
-        search = new GuiTextField(0, fontRenderer, left, statusTop, guiListWidth, entryHeight + 2);
+        String searchLabelText = I18n.format("mxtune.gui.label.search");
+        int searchLabelWidth =  fontRenderer.getStringWidth(searchLabelText) + 4;
+        searchLabel = new GuiLabel(fontRenderer, 0, left, statusTop, searchLabelWidth, entryHeight + 2, 0xFFFFFF );
+        searchLabel.addLine(searchLabelText);
+        searchLabel.visible = true;
+        search = new GuiTextField(0, fontRenderer, left + searchLabelWidth, statusTop, guiListWidth - searchLabelWidth, entryHeight + 2);
         search.setFocused(true);
         search.setCanLoseFocus(true);
 
         int buttonMargin = 2;
         int width = (guiListWidth / 3);
         int x = left;
-        GuiButton normalSort = new GuiButton(SortType.NORMAL.buttonID, x, titleTop, width - buttonMargin, 20, I18n.format("fml.menu.mods.normal"));
+        GuiButton normalSort = new GuiButton(SortType.NORMAL.getButtonID(), x, titleTop, width - buttonMargin, 20, I18n.format("fml.menu.mods.normal"));
         normalSort.enabled = false;
         buttonList.add(normalSort);
         x += width + buttonMargin;
-        buttonList.add(new GuiButton(SortType.A_TO_Z.buttonID, x, titleTop, width - buttonMargin, 20, "A-Z"));
+        buttonList.add(new GuiButton(SortType.A_TO_Z.getButtonID(), x, titleTop, width - buttonMargin, 20, "A-Z"));
         x += width + buttonMargin;
-        buttonList.add(new GuiButton(SortType.Z_TO_A.buttonID, x, titleTop, width - buttonMargin, 20, "Z-A"));
+        buttonList.add(new GuiButton(SortType.Z_TO_A.getButtonID(), x, titleTop, width - buttonMargin, 20, "Z-A"));
 
 
         int buttonTop = height - 25;
@@ -168,7 +136,7 @@ public class GuiMusicLibrary extends GuiScreen
         reloadState();
         sorted = false;
         initFileList();
-        updateSortButtons(sortType);
+        updateSortButtons(sortType, safeButtonList);
     }
 
     private void reloadState()
@@ -186,23 +154,12 @@ public class GuiMusicLibrary extends GuiScreen
         isStateCached = true;
     }
 
-    private void updateSortButtons(SortType sortType)
-    {
-        for (GuiButton button : safeButtonList)
-        {
-            SortType type = SortType.getTypeForButton(button);
-            if (type != null && type == sortType)
-                button.enabled = false;
-            else if (type != null && type != sortType)
-                button.enabled = true;
-        }
-    }
-
     @Override
     public void updateScreen()
     {
         cachedSelectedIndex = guiFileList.getSelectedIndex();
         guiFileList.elementClicked(cachedSelectedIndex, false);
+        search.updateCursorCounter();
         searchAndSort();
         super.updateScreen();
     }
@@ -222,6 +179,7 @@ public class GuiMusicLibrary extends GuiScreen
         mc.fontRenderer.drawStringWithShadow(guiMusicLibTitle, posX, posY, 0xD3D3D3);
 
         guiFileList.drawScreen(mouseX, mouseY, partialTicks);
+        searchLabel.drawLabel(mc, mouseX, mouseY);
         search.drawTextBox();
 
         super.drawScreen(mouseX, mouseY, partialTicks);
@@ -236,14 +194,7 @@ public class GuiMusicLibrary extends GuiScreen
             SortType type = SortType.getTypeForButton(button);
             if (type != null)
             {
-                for (GuiButton b : buttonList)
-                {
-                    if (SortType.getTypeForButton(b) != null)
-                    {
-                        b.enabled = true;
-                    }
-                }
-                button.enabled = false;
+                updateSortButtons(type, buttonList);
                 sorted = false;
                 sortType = type;
                 initFileList();
