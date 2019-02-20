@@ -18,7 +18,7 @@
 package net.aeronica.mods.mxtune.gui.mml;
 
 import net.aeronica.mods.mxtune.caches.FileHelper;
-import net.aeronica.mods.mxtune.gui.util.HooverHelper;
+import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
@@ -43,6 +43,7 @@ import java.util.stream.Stream;
 
 import static net.aeronica.mods.mxtune.gui.mml.SortHelper.SortType;
 import static net.aeronica.mods.mxtune.gui.mml.SortHelper.updateSortButtons;
+import static net.aeronica.mods.mxtune.gui.util.ModGuiUtils.clearOnMouseLeftClicked;
 
 public class GuiMusicLibrary extends GuiScreen
 {
@@ -105,17 +106,16 @@ public class GuiMusicLibrary extends GuiScreen
         search.setFocused(true);
         search.setCanLoseFocus(true);
 
-        int buttonMargin = 2;
-        int width = (guiListWidth / 3);
+        int buttonMargin = 1;
+        int buttonWidth = (guiListWidth / 3);
         int x = left;
-        GuiButton normalSort = new GuiButton(SortType.NORMAL.getButtonID(), x, titleTop, width - buttonMargin, 20, I18n.format("fml.menu.mods.normal"));
+        GuiButton normalSort = new GuiButton(SortType.NORMAL.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, I18n.format("fml.menu.mods.normal"));
         normalSort.enabled = false;
         buttonList.add(normalSort);
-        x += width + buttonMargin;
-        buttonList.add(new GuiButton(SortType.A_TO_Z.getButtonID(), x, titleTop, width - buttonMargin, 20, "A-Z"));
-        x += width + buttonMargin;
-        buttonList.add(new GuiButton(SortType.Z_TO_A.getButtonID(), x, titleTop, width - buttonMargin, 20, "Z-A"));
-
+        x += buttonWidth + buttonMargin;
+        buttonList.add(new GuiButton(SortType.A_TO_Z.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, "A-Z"));
+        x += buttonWidth + buttonMargin;
+        buttonList.add(new GuiButton(SortType.Z_TO_A.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, "Z-A"));
 
         int buttonTop = height - 25;
         int xImport = (this.width /2) - 75 * 2;
@@ -183,7 +183,7 @@ public class GuiMusicLibrary extends GuiScreen
         search.drawTextBox();
 
         super.drawScreen(mouseX, mouseY, partialTicks);
-        HooverHelper.INSTANCE.drawHooveringButtonHelp(this, safeButtonList, guiLeft, guiTop, mouseX, mouseY);
+        ModGuiUtils.INSTANCE.drawHooveringButtonHelp(this, safeButtonList, guiLeft, guiTop, mouseX, mouseY);
     }
 
     @Override
@@ -204,7 +204,7 @@ public class GuiMusicLibrary extends GuiScreen
                 {
                     case 0:
                         // Done
-                        mc.displayGuiScreen(guiScreenParent);
+                        selectDone();
                         break;
                     case 1:
                         // Cancel
@@ -222,6 +222,12 @@ public class GuiMusicLibrary extends GuiScreen
         }
         updateState();
         super.actionPerformed(button);
+    }
+
+    private void selectDone()
+    {
+        // action get file, etc...
+        mc.displayGuiScreen(guiScreenParent);
     }
 
     @Override
@@ -246,6 +252,7 @@ public class GuiMusicLibrary extends GuiScreen
         guiFileList.handleMouseInput(mouseX, mouseY);
         super.handleMouseInput();
     }
+
     private static class GuiFileList extends GuiScrollingList
     {
         private FontRenderer fontRenderer;
@@ -275,17 +282,10 @@ public class GuiMusicLibrary extends GuiScreen
 
             if (selectedIndex >= 0 && selectedIndex <= parent.mmlFiles.size())
                 parent.selectedFile = parent.mmlFiles.get(selectedIndex);
-
             if (index == selectedIndex && !doubleClick)
                 return;
             if (doubleClick && parent.guiScreenParent != null)
-                try
-                {
-                    parent.actionPerformed(parent.buttonList.get(0));
-                } catch (IOException e)
-                {
-                    ModLogger.error(e);
-                }
+                parent.selectDone();
         }
 
         @Override
@@ -319,14 +319,7 @@ public class GuiMusicLibrary extends GuiScreen
         updateState();
     }
 
-    private <T extends GuiTextField> void clearOnMouseLeftClicked(T guiTextField, int mouseX, int mouseY, int mouseButton)
-    {
-        if (mouseButton == 1 && mouseX >= guiTextField.x && mouseX < guiTextField.x + guiTextField.width
-                && mouseY >= guiTextField.y && mouseY < guiTextField.y + guiTextField.height)
-        {
-            guiTextField.setText("");
-        }
-    }
+
 
     private void initFileList()
     {

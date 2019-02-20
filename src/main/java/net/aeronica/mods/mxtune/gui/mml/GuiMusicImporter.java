@@ -21,7 +21,7 @@ import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.caches.MXTuneFile;
 import net.aeronica.mods.mxtune.caches.MXTunePart;
 import net.aeronica.mods.mxtune.caches.MXTuneStaff;
-import net.aeronica.mods.mxtune.gui.util.HooverHelper;
+import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
@@ -188,7 +188,7 @@ public class GuiMusicImporter extends GuiScreen
         guiStaffList.drawScreen(mouseX, mouseY, partialTicks);
         statusText.drawTextBox();
         super.drawScreen(mouseX, mouseY, partialTicks);
-        HooverHelper.INSTANCE.drawHooveringButtonHelp(this, safeButtonList, guiLeft, guiTop, mouseX, mouseY);
+        ModGuiUtils.INSTANCE.drawHooveringButtonHelp(this, safeButtonList, guiLeft, guiTop, mouseX, mouseY);
     }
 
     @Override

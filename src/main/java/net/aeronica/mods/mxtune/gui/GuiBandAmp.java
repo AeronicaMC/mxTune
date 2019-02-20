@@ -22,7 +22,7 @@ import net.aeronica.mods.mxtune.blocks.TileBandAmp;
 import net.aeronica.mods.mxtune.gui.util.GuiButtonHooverText;
 import net.aeronica.mods.mxtune.gui.util.GuiLockButton;
 import net.aeronica.mods.mxtune.gui.util.GuiRedstoneButton;
-import net.aeronica.mods.mxtune.gui.util.HooverHelper;
+import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.BandAmpMessage;
 import net.aeronica.mods.mxtune.sound.SoundRange;
@@ -270,6 +270,6 @@ public class GuiBandAmp extends GuiContainer
         this.drawDefaultBackground();
         super.drawScreen(mouseX, mouseY, partialTicks);
         this.renderHoveredToolTip(mouseX, mouseY);
-        HooverHelper.INSTANCE.drawHooveringButtonHelp(this, buttonList, guiLeft, guiTop, mouseX, mouseY);
+        ModGuiUtils.INSTANCE.drawHooveringButtonHelp(this, buttonList, guiLeft, guiTop, mouseX, mouseY);
     }
 }

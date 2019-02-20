@@ -19,12 +19,13 @@ package net.aeronica.mods.mxtune.gui.util;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
 
 import java.util.List;
 
-public class HooverHelper
+public class ModGuiUtils
 {
-    public static final HooverHelper INSTANCE = new HooverHelper(){};
+    public static final ModGuiUtils INSTANCE = new ModGuiUtils(){};
 
     public <T extends GuiScreen> void drawHooveringButtonHelp(T guiScreen, List<GuiButton> guiButtonList, int guiLeft, int guiTop, int mouseX, int mouseY)
     {
@@ -47,5 +48,14 @@ public class HooverHelper
         int rectWidth = button.width;
         int rectHeight = button.height;
         return pointX >= rectX - 1 && pointX < rectX + rectWidth + 1 && pointY >= rectY - 1 && pointY < rectY + rectHeight + 1;
+    }
+
+    public static <T extends GuiTextField> void clearOnMouseLeftClicked(T guiTextField, int mouseX, int mouseY, int mouseButton)
+    {
+        if (mouseButton == 1 && mouseX >= guiTextField.x && mouseX < guiTextField.x + guiTextField.width
+                && mouseY >= guiTextField.y && mouseY < guiTextField.y + guiTextField.height)
+        {
+            guiTextField.setText("");
+        }
     }
 }
