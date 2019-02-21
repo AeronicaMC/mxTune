@@ -392,6 +392,9 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
     {
         setVanillaMusicPaused(false);
         playIDAudioData.keySet().forEach(ClientAudio::queueAudioDataRemoval);
+        playIDQueue01.clear();
+        playIDQueue02.clear();
+        playIDQueue03.clear();
     }
 
     @Override
