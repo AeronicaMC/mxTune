@@ -51,7 +51,7 @@ public class PlayManager
     private static final HashMap<Integer, Integer> membersQueuedStatus = new HashMap<>();
     private static final HashMap<Integer, Integer> membersPlayID = new HashMap<>();
     private static final Set<Integer> activePlayIDs = Sets.newHashSet();
-    private static int uniquePlayID = 1;
+    private static int uniquePlayID;
 
     private PlayManager() { /* NOP */ }
 
@@ -61,11 +61,16 @@ public class PlayManager
      */
     private static int getNextPlayID()
     {
-        if (uniquePlayID == Integer.MAX_VALUE)
-            uniquePlayID = 1;
-        else
-            uniquePlayID++;
-        return uniquePlayID;
+        // TODO: This is the basis of ranged play ID's for a priority system
+        // range, start
+        // start, end
+        // range = end + 1 - start
+        int startIn = 25000;
+        int endIn = 50000;
+        int start = Math.min(startIn, endIn);
+        int end = Math.max(startIn, endIn) + 1;
+        int range = Math.abs(end - start);
+        return (uniquePlayID++ % range) + start;
     }
 
     private static void setPlaying(Integer playerID) {membersQueuedStatus.put(playerID, GroupHelper.PLAYING);}
