@@ -1,23 +1,27 @@
 /*
- * Copyright {2016} Paul Boese aka Aeronica
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Aeronica's mxTune MOD
+ * Copyright 2019, Paul Boese a.k.a. Aeronica
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
  */
+
 package net.aeronica.mods.mxtune.sound;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.minecraft.client.audio.Sound;
 import net.minecraft.util.ResourceLocation;
+
+import javax.annotation.Nonnull;
 
 /**
  * <p>This class associates a fake sound file with the PCM codec and is an in-memory representation of a sounds.json entry.
@@ -35,16 +39,12 @@ import net.minecraft.util.ResourceLocation;
  */
 public class PCMSound extends Sound
 {
-    public PCMSound()
+    PCMSound()
     {
         super(Reference.MOD_ID + ":pcm-proxy", 1F, 1F, 0, Type.SOUND_EVENT, true);
     }
 
-    public PCMSound(String nameIn, float volumeIn, float pitchIn, int weightIn, Type typeIn, boolean isStreaming)
-    {
-        super(nameIn, volumeIn, pitchIn, weightIn, typeIn, isStreaming);
-    }
-
+    @Nonnull
     @Override
     public ResourceLocation getSoundAsOggLocation()
     {
