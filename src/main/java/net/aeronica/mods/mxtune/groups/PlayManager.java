@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static net.aeronica.mods.mxtune.groups.PlayIdSupplier.PlayType;
 import static net.aeronica.mods.mxtune.util.SheetMusicUtil.*;
 
 public class PlayManager
@@ -56,7 +57,7 @@ public class PlayManager
 
     private static int getNextPlayID()
     {
-        return PlayIdSupplier.PlayType.PLAYERS.get();
+        return PlayType.PLAYERS.get();
     }
 
     private static void setPlaying(Integer playerID) {membersQueuedStatus.put(playerID, GroupHelper.PLAYING);}
@@ -68,8 +69,7 @@ public class PlayManager
      * @param playerIn who is playing
      * @return a unique play id
      */
-    @Nullable
-    public static Integer playMusic(EntityPlayer playerIn)
+    public static int playMusic(EntityPlayer playerIn)
     {
         return playMusic(playerIn, null, false);
     }
@@ -80,8 +80,7 @@ public class PlayManager
      * @param pos position of block instrument
      * @return a unique play id
      */
-    @Nullable
-    public static Integer playMusic(EntityPlayer playerIn, BlockPos pos)
+    public static int playMusic(EntityPlayer playerIn, BlockPos pos)
     {
         return playMusic(playerIn, pos, true);
     }
@@ -92,10 +91,9 @@ public class PlayManager
      * @param pos position of block instrument
      * @return a unique play id
      */
-    @Nullable
-    public static Integer playMusic(World worldIn, BlockPos pos)
+    public static int playMusic(World worldIn, BlockPos pos)
     {
-        Integer playID = null;
+        int playID = PlayType.INVALID;
         IMusicPlayer musicPlayer;
         if (worldIn.getBlockState(pos).getBlock() instanceof IMusicPlayer)
         {
@@ -123,11 +121,10 @@ public class PlayManager
      * @param isPlaced true is this is a block instrument
      * @return a unique play id or null if unable to play
      */
-    @Nullable
-    public static Integer playMusic(EntityPlayer playerIn, BlockPos pos, boolean isPlaced)
+    public static int playMusic(EntityPlayer playerIn, BlockPos pos, boolean isPlaced)
     {
         if (MusicOptionsUtil.isMuteAll(playerIn))
-            return null;
+            return PlayType.INVALID;
         ItemStack sheetMusic = getSheetMusic(pos, playerIn, isPlaced);
         if (!sheetMusic.isEmpty())
         {
@@ -162,12 +159,12 @@ public class PlayManager
                 }
             }
         }
-        return null;
+        return PlayType.INVALID;
     }
 
-    private static Integer playSolo(EntityPlayer playerIn, String mml, int duration, Integer playerID)
+    private static int playSolo(EntityPlayer playerIn, String mml, int duration, Integer playerID)
     {
-        Integer playID = getNextPlayID();
+        int playID = getNextPlayID();
         queue(playID, playerID, mml);
 
         DurationTimer.scheduleStop(playID, duration);
@@ -181,9 +178,9 @@ public class PlayManager
     }
     
     @SuppressWarnings("ConstantConditions")
-    private static Integer queueJam(EntityPlayer playerIn, String mml, int duration, Integer membersID)
+    private static int queueJam(EntityPlayer playerIn, String mml, int duration, Integer membersID)
     {
-        Integer groupsPlayID = getGroupsPlayID(membersID);
+        int groupsPlayID = getGroupsPlayID(membersID);
         /* Queue members parts */
         queue(groupsPlayID, membersID, mml);
         syncStatus();
@@ -215,7 +212,7 @@ public class PlayManager
     {
         Group membersGroup = GroupManager.getMembersGroup(membersID);
         if (!membersGroup.isEmpty())
-            membersGroup.setPlayID(null);
+            membersGroup.setPlayID(PlayType.INVALID);
     }
     
     /**
@@ -225,13 +222,12 @@ public class PlayManager
      * @param membersID of some group
      * @return a unique playID or null if something went wrong
      */
-    @Nullable
-    private static Integer getGroupsPlayID(Integer membersID)
+    private static int getGroupsPlayID(Integer membersID)
     {
         Group membersGroup = GroupManager.getMembersGroup(membersID);
-        Integer playID = null;
+        int playID = PlayType.INVALID;
         if (!membersGroup.isEmpty())
-            if (membersGroup.getPlayID() == null)
+            if (membersGroup.getPlayID() == PlayType.INVALID)
             {
                 playID = getNextPlayID();
                 membersGroup.setPlayID(playID);
@@ -259,15 +255,15 @@ public class PlayManager
 
     public static boolean isActivePlayID(@Nullable Integer playID) { return playID != null && activePlayIDs.contains(playID); }
     
-    public static boolean hasPlayID(@Nullable Integer playID)
+    public static boolean hasPlayID(int playID)
     {
-        return playID != null && membersPlayID.containsValue(playID);
+        return playID != PlayType.INVALID && membersPlayID.containsValue(playID);
     }
     
-    private static Set<Integer> getMembersByPlayID(@Nullable Integer playID)
+    private static Set<Integer> getMembersByPlayID(int playID)
     {
         Set<Integer> members = Sets.newHashSet();
-        if (playID != null)
+        if (playID != PlayType.INVALID)
             for (Integer someMember : membersPlayID.keySet())
                 if (membersPlayID.get(someMember).equals(playID))
                     members.add(someMember);
@@ -288,7 +284,7 @@ public class PlayManager
         }
     }
 
-    public static void stopPlayID(@Nullable Integer playID)
+    public static void stopPlayID(int playID)
     {
         Set<Integer> memberSet = getMembersByPlayID(playID);
         for(Integer member: memberSet)
@@ -302,9 +298,9 @@ public class PlayManager
         removeActivePlayID(playID);
     }
     
-    private static void removeActivePlayID(Integer playID)
+    private static void removeActivePlayID(int playID)
     {
-        if ((playID != null) && !activePlayIDs.isEmpty())
+        if ((playID != PlayType.INVALID) && !activePlayIDs.isEmpty())
             activePlayIDs.remove(playID);
         syncStatus();
     }
@@ -337,7 +333,7 @@ public class PlayManager
         PacketDispatcher.sendToAll(new SyncStatusMessage(GroupHelper.serializeIntIntMap(membersQueuedStatus), GroupHelper.serializeIntIntMap(membersPlayID), GroupHelper.serializeIntegerSet(activePlayIDs)));
     }
 
-    private static void queue(Integer playID, Integer memberID, String mml)
+    private static void queue(int playID, Integer memberID, String mml)
     {
         try
         {
@@ -357,7 +353,7 @@ public class PlayManager
      * @param playID play ID to map
      * @return string in Map ready format.
      */
-    private static String getMappedMML(Integer playID)
+    private static String getMappedMML(int playID)
     {
         StringBuilder buildMappedMML = new StringBuilder();
         try
@@ -389,7 +385,7 @@ public class PlayManager
     {
         if (!GroupManager.hasActiveGroups()) return;
 
-        for (Integer playID : activePlayIDs)
+        for (int playID : activePlayIDs)
         {
             if (!getMembersByPlayID(playID).isEmpty())
             {

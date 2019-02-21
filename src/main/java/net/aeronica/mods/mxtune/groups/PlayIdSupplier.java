@@ -17,6 +17,8 @@
 
 package net.aeronica.mods.mxtune.groups;
 
+import net.aeronica.mods.mxtune.util.ModLogger;
+
 import java.util.function.Supplier;
 
 public class PlayIdSupplier
@@ -34,22 +36,27 @@ public class PlayIdSupplier
         int start;
         int end;
         PlayIdSource playIdSource;
+        PlayType playType;
 
-        private static final PlayIdSource INVALID = new PlayIdSource(-1,-1);
+        private static final PlayIdSource INVALID_ID = new PlayIdSource(-1, -1);
+        public static int INVALID = ((Supplier<Integer>)PlayType.INVALID_ID).get();
 
         PlayType(int start, int end)
         {
             this.start = start;
             this.end = end;
             playIdSource = new PlayIdSource(start, end);
+            this.playType = this;
         }
 
-        protected PlayIdSource next(PlayIdSource playIdSource) { return INVALID; }
+        protected PlayIdSource next(PlayIdSource playIdSource) { return INVALID_ID; }
 
         @Override
         public Integer get()
         {
-            return playIdSource.get();
+            int id = playIdSource.get();
+            ModLogger.debug("Type: %s, start: %d, end: %s, id: %d", playType, start, end, id);
+            return id;
         }
 
     }
