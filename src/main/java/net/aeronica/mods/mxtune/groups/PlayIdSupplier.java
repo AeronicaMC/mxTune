@@ -39,7 +39,7 @@ public class PlayIdSupplier
         PlayType playType;
 
         private static final PlayIdSource INVALID_ID = new PlayIdSource(-1, -1);
-        public static int INVALID = ((Supplier<Integer>)PlayType.INVALID_ID).get();
+        public static final int INVALID = -1;
 
         PlayType(int start, int end)
         {
