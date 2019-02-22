@@ -348,7 +348,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
             removeQueuedAudioData();
             for (Map.Entry<Integer, AudioData> entry : playIDAudioData.entrySet())
             {
-                if (!GroupHelper.getActivePlayIDs().contains(entry.getKey()))
+                if (playIdExpired(entry.getKey()))
                 {
                     // Stopping playing audio takes 100 milliseconds. e.g. SoundSystem fadeOut(<source>, <delay in ms>)
                     // To prevent audio clicks/pops we have the wait at least that amount of time
@@ -361,6 +361,11 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
                 }
             }
         }
+    }
+
+    private static boolean playIdExpired(int playId)
+    {
+        return !GroupHelper.getActivePlayIDs().contains(playId);
     }
 
     private static void removeQueuedAudioData()
