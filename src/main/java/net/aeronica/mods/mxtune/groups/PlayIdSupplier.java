@@ -50,7 +50,7 @@ public class PlayIdSupplier
         }
 
         @Nullable
-        public PlayType getTypeForPlayId(int playId)
+        private PlayType getTypeForPlayId(int playId)
         {
             for (PlayType type : values())
             {
@@ -117,5 +117,10 @@ public class PlayIdSupplier
     public static int compare(PlayType playType1, PlayType playType2)
     {
         return PlayType.EVENT.compare(playType1, playType2);
+    }
+
+    public static PlayType getTypeForPlayId(int playId)
+    {
+        return PlayType.EVENT.getTypeForPlayId(playId);
     }
 }
