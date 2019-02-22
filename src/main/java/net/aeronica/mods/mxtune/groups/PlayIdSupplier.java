@@ -19,15 +19,16 @@ package net.aeronica.mods.mxtune.groups;
 
 import net.aeronica.mods.mxtune.util.ModLogger;
 
+import javax.annotation.Nullable;
+import java.util.Comparator;
 import java.util.function.Supplier;
 
 public class PlayIdSupplier
 {
-
-    public enum PlayType implements Supplier<Integer>
+    public enum PlayType implements Supplier<Integer>, Comparator<PlayType>
     {
         EVENT(500000, 599999) {@Override protected PlayIdSource next(PlayIdSource playIdSource) { return playIdSource;}},
-        PERSONAL(40000, 499999) {@Override protected PlayIdSource next(PlayIdSource playIdSource) { return playIdSource;}},
+        PERSONAL(400000, 499999) {@Override protected PlayIdSource next(PlayIdSource playIdSource) { return playIdSource;}},
         PLAYERS(300000, 399999) {@Override protected PlayIdSource next(PlayIdSource playIdSource) { return playIdSource;}},
         WORLD(200000, 299999) {@Override protected PlayIdSource next(PlayIdSource playIdSource) { return playIdSource;}},
         AREA(100000, 199999) {@Override protected PlayIdSource next(PlayIdSource playIdSource) { return playIdSource;}},
@@ -49,6 +50,17 @@ public class PlayIdSupplier
             this.playType = this;
         }
 
+        @Nullable
+        public PlayType getTypeForPlayId(int playId)
+        {
+            for (PlayType playType : values())
+            {
+                if (playId >= playType.start && playId <= playType.end)
+                    return playType;
+            }
+            return null;
+        }
+
         protected PlayIdSource next(PlayIdSource playIdSource) { return INVALID_ID; }
 
         @Override
@@ -59,6 +71,19 @@ public class PlayIdSupplier
             return id;
         }
 
+        @Nullable
+        Integer compare(int playId1, int playId2)
+        {
+            PlayType p1 = getTypeForPlayId(playId1);
+            PlayType p2 = getTypeForPlayId(playId2);
+            return p1 != null && p2 != null ? compare(p1, p2) : null;
+        }
+
+        @Override
+        public int compare(PlayType o1, PlayType o2)
+        {
+            return o2.compareTo(o1);
+        }
     }
 
     private static class PlayIdSource implements Supplier<Integer>
@@ -82,5 +107,16 @@ public class PlayIdSupplier
         {
             return (counter++ % range) + start;
         }
+    }
+
+    @Nullable
+    public static Integer compare(int playId1, int playId2)
+    {
+        return PlayType.EVENT.compare(playId1, playId2);
+    }
+
+    public static int compare(PlayType playType1, PlayType playType2)
+    {
+        return PlayType.EVENT.compare(playType1, playType2);
     }
 }
