@@ -21,11 +21,11 @@ import net.aeronica.mods.mxtune.util.ModLogger;
 
 import javax.annotation.Nullable;
 import java.util.Comparator;
-import java.util.function.Supplier;
+import java.util.function.IntSupplier;
 
 public class PlayIdSupplier
 {
-    public enum PlayType implements Supplier<Integer>, Comparator<PlayType>
+    public enum PlayType implements IntSupplier, Comparator<PlayType>
     {
         EVENT(500000, 599999) {@Override protected PlayIdSource next(PlayIdSource playIdSource) { return playIdSource;}},
         PERSONAL(400000, 499999) {@Override protected PlayIdSource next(PlayIdSource playIdSource) { return playIdSource;}},
@@ -39,7 +39,6 @@ public class PlayIdSupplier
         PlayIdSource playIdSource;
         PlayType playType;
 
-        private static final PlayIdSource INVALID_ID = new PlayIdSource(-1, -1);
         public static final int INVALID = -1;
 
         PlayType(int start, int end)
@@ -53,20 +52,20 @@ public class PlayIdSupplier
         @Nullable
         public PlayType getTypeForPlayId(int playId)
         {
-            for (PlayType playType : values())
+            for (PlayType type : values())
             {
-                if (playId >= playType.start && playId <= playType.end)
-                    return playType;
+                if (playId >= type.start && playId <= type.end)
+                    return type;
             }
             return null;
         }
 
-        protected PlayIdSource next(PlayIdSource playIdSource) { return INVALID_ID; }
+        protected abstract PlayIdSource next(PlayIdSource playIdSource);
 
         @Override
-        public Integer get()
+        public int getAsInt()
         {
-            int id = playIdSource.get();
+            int id = playIdSource.getAsInt();
             ModLogger.debug("Type: %s, start: %d, end: %s, id: %d", playType, start, end, id);
             return id;
         }
@@ -86,7 +85,7 @@ public class PlayIdSupplier
         }
     }
 
-    private static class PlayIdSource implements Supplier<Integer>
+    private static class PlayIdSource implements IntSupplier
     {
         int start;
         int end;
@@ -103,7 +102,7 @@ public class PlayIdSupplier
 
         // bounded inclusive integer from start to end that rolls over
         @Override
-        public Integer get()
+        public int getAsInt()
         {
             return (counter++ % range) + start;
         }

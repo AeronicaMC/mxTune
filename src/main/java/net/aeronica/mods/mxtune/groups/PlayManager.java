@@ -57,7 +57,7 @@ public class PlayManager
 
     private static int getNextPlayID()
     {
-        return PlayType.PLAYERS.get();
+        return PlayType.PLAYERS.getAsInt();
     }
 
     private static void setPlaying(Integer playerID) {membersQueuedStatus.put(playerID, GroupHelper.PLAYING);}
