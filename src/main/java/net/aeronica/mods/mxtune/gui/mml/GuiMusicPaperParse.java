@@ -605,7 +605,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         int program = inst.getPatch().getProgram();
         int packedPreset = isPercussionSet ? MMLUtil.preset2PackedPreset(128, program) : MMLUtil.preset2PackedPreset(bank, program);
         
-        mml = mml.replace("MML@", "MML@i" + packedPreset);
+        mml = mml.replace("MML@", "0=MML@i" + packedPreset);
         ModLogger.debug("GuiMusicPaperParse.mmlPlay() name: %s, bank %05d, program %03d, packed %08d, perc: %s", inst.getName(), bank, program, packedPreset, isPercussionSet);
         ModLogger.debug("GuiMusicPaperParse.mmlPlay(): %s", mml.substring(0, mml.length() >= 25 ? 25 : mml.length()));
         
