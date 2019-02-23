@@ -70,7 +70,7 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
             {
                 ModLogger.debug("musicText: " + musicText.substring(0, (musicText.length() >= 25 ? 25 : musicText.length())));
                 ModLogger.debug("playID:    " + playID);
-                GroupHelper.addActivePlayID(playID);
+                GroupHelper.addServerManagedActivePlayID(playID);
                 ClientAudio.play(playID, musicText);
             }
         }

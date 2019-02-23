@@ -63,7 +63,7 @@ public class SyncStatusMessage extends AbstractClientMessage<SyncStatusMessage>
         {
             GroupHelper.setClientPlayStatuses(clientPlayStatuses);
             GroupHelper.setPlayIDMembers(playIDMembers);
-            GroupHelper.setActivePlayIDs(activePlayIDs);
+            GroupHelper.setActiveServerManagedPlayIDs(activePlayIDs);
         }
     }
 }

@@ -19,12 +19,15 @@ package net.aeronica.mods.mxtune.gui.mml;
 
 import net.aeronica.libs.mml.core.*;
 import net.aeronica.mods.mxtune.config.ModConfig;
+import net.aeronica.mods.mxtune.groups.GroupHelper;
+import net.aeronica.mods.mxtune.groups.PlayIdSupplier;
 import net.aeronica.mods.mxtune.gui.util.GuiLink;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.MusicTextMessage;
+import net.aeronica.mods.mxtune.sound.ClientAudio;
+import net.aeronica.mods.mxtune.sound.IAudioStatusCallback;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.Tessellator;
@@ -32,17 +35,16 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.GuiScrollingList;
 import net.minecraftforge.fml.client.config.GuiCheckBox;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import javax.sound.midi.*;
+import javax.sound.midi.Instrument;
+import javax.sound.midi.Patch;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
+public class GuiMusicPaperParse extends GuiScreen implements IAudioStatusCallback
 {
     // Localization Keys
     private static final String TITLE = I18n.format("mxtune.gui.musicPaperParse.title");
@@ -76,9 +78,7 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
     private int selectedError;
 
     /* MML Player */
-    private Sequencer sequencer = null;
-    @SuppressWarnings("restriction")
-    private com.sun.media.sound.AudioSynthesizer synthesizer = null;
+    private int playId = PlayIdSupplier.PlayType.INVALID;
     
     /* Instruments */
     private List<Instrument> instrumentCache;
@@ -608,102 +608,29 @@ public class GuiMusicPaperParse extends GuiScreen implements MetaEventListener
         mml = mml.replace("MML@", "0=MML@i" + packedPreset);
         ModLogger.debug("GuiMusicPaperParse.mmlPlay() name: %s, bank %05d, program %03d, packed %08d, perc: %s", inst.getName(), bank, program, packedPreset, isPercussionSet);
         ModLogger.debug("GuiMusicPaperParse.mmlPlay(): %s", mml.substring(0, mml.length() >= 25 ? 25 : mml.length()));
-        
-        if (midiUnavailable) return false;
-        MMLParser parser;
-        try
-        {
-            parser = MMLParserFactory.getMMLParser(mml);
-        }
-        catch (IOException e)
-        {
-            ModLogger.debug("MMLParserFactory.getMMLParser() IOException in %s, Error: %s", SheetMusicUtil.class.getSimpleName(), e);
-            return true;
-        }
-        parser.removeErrorListeners();
-        parser.setBuildParseTree(true);
-        ParseTree tree = parser.band();
 
-        ParseTreeWalker walker = new ParseTreeWalker();
-        MMLToMIDI mmlTrans = new MMLToMIDI();
-        walker.walk(mmlTrans, tree);
-        /* ANTLR4 MML Parser END */
-
-        boolean midiException;
-        midiException = false;
-        try
-        {
-            /* Using the Gervill synthesizer and sequencer */
-            synthesizer = (com.sun.media.sound.AudioSynthesizer) MidiSystem.getSynthesizer();
-            if (synthesizer != null && !synthesizer.isOpen())
-            {
-                synthesizer.open();
-
-                if (!instrumentCache.isEmpty())
-                    synthesizer.loadInstrument(inst);        
-
-                sequencer = MidiSystem.getSequencer(false);
-                sequencer.getTransmitter().setReceiver(synthesizer.getReceiver());
-                sequencer.open();
-                sequencer.addMetaEventListener(this);
-                sequencer.setSequence(mmlTrans.getSequence());
-                sequencer.setTickPosition(0L);
-                sequencer.start();
-            } else
-            {
-                midiException = true;
-            }
-            return !midiException;
-
-        } catch (Exception e)
-        {
-            cleanupMIDI();
-            ModLogger.error(e);
-            midiException = true;
-        }
-        finally
-        {
-            if (midiException && sequencer != null)
-                sequencer.removeMetaEventListener(this);
-        }
-        return false;
+        playId = PlayIdSupplier.PlayType.PERSONAL.getAsInt();
+        ClientAudio.playLocal(playId, mml, this);
+        return true;
     }
 
     @Override
-    public void meta(MetaMessage event)
+    public void statusCallBack(ClientAudio.Status status, int playId)
     {
-        if (event.getType() == 47)
-        { /* end of stream */
-            ModLogger.debug("MetaMessage EOS event received");
-            mmlStop();
-            updateButtonState();
-        }
+        Minecraft.getMinecraft().addScheduledTask(() -> {
+            if (this.playId == playId)
+            {
+                ModLogger.debug("AudioStatus event received: %s, playId: %s", status, playId);
+                mmlStop();
+                updateButtonState();
+            }
+        });
     }
 
     private void mmlStop()
     {
-        if (sequencer != null && sequencer.isOpen())
-        {
-            sequencer.stop();
-            sequencer.setTickPosition(0L);
-            sequencer.removeMetaEventListener(this);
-            try
-            {
-                Thread.sleep(250);
-            } catch (InterruptedException e)
-            {
-                ModLogger.error(e);
-                cleanupMIDI();
-                Thread.currentThread().interrupt();
-            }
-            cleanupMIDI();            
-        }
-    }
-    
-    private void cleanupMIDI()
-    {
-        if (sequencer != null && sequencer.isOpen()) sequencer.close();
-        if (synthesizer != null && synthesizer.isOpen()) synthesizer.close();
+        GroupHelper.removeClientManagedPlayID(playId);
         isPlaying = false;
+        playId = PlayIdSupplier.PlayType.INVALID;
     }
 }

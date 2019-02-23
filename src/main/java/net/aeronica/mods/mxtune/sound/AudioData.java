@@ -36,8 +36,9 @@ public class AudioData
     private ISound iSound;
     private Status status;
     private PlayIdSupplier.PlayType playType;
-    
-    AudioData(Integer playId, BlockPos blockPos, boolean isClientPlayer, SoundRange soundRange)
+    private IAudioStatusCallback callback;
+
+    AudioData(Integer playId, BlockPos blockPos, boolean isClientPlayer, SoundRange soundRange, IAudioStatusCallback callback)
     {
         this.playId = playId;
         this.playType = PlayIdSupplier.getTypeForPlayId(playId);
@@ -45,6 +46,7 @@ public class AudioData
         this.isClientPlayer = isClientPlayer;
         this.soundRange = soundRange;
         this.status = Status.WAITING;
+        this.callback = callback;
     }
 
     public AudioFormat getAudioFormat()
@@ -65,25 +67,30 @@ public class AudioData
     public void setStatus(Status status)
     {
         this.status = status;
+        if ((this.status == Status.DONE || this.status == Status.ERROR) && callback != null)
+        {
+            callback.statusCallBack(this.status, playId);
+            callback = null;
+        }
     }
 
     public Integer getPlayId()
     {
         return playId;
     }
-    
+
     BlockPos getBlockPos()
     {
         return blockPos;
     }
-    
+
     boolean isClientPlayer()
     {
         return isClientPlayer;
     }
 
     SoundRange getSoundRange() { return soundRange; }
-    
+
     AudioInputStream getAudioStream()
     {
         return audioStream;

@@ -328,7 +328,7 @@ public class PlayManager
         /* server side */
         GroupHelper.setClientPlayStatuses(GroupHelper.serializeIntIntMap(membersQueuedStatus));
         GroupHelper.setPlayIDMembers(GroupHelper.serializeIntIntMap(membersPlayID));
-        GroupHelper.setActivePlayIDs(GroupHelper.serializeIntegerSet(activePlayIDs));
+        GroupHelper.setActiveServerManagedPlayIDs(GroupHelper.serializeIntegerSet(activePlayIDs));
         /* client side */
         PacketDispatcher.sendToAll(new SyncStatusMessage(GroupHelper.serializeIntIntMap(membersQueuedStatus), GroupHelper.serializeIntIntMap(membersPlayID), GroupHelper.serializeIntegerSet(activePlayIDs)));
     }

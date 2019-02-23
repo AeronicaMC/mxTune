@@ -72,7 +72,7 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
             {
                 ModLogger.debug("musicText:  " + jamMML.substring(0, Math.min(25, jamMML.length())));
                 ModLogger.debug("playID:     " + playID);
-                GroupHelper.addActivePlayID(playID);
+                GroupHelper.addServerManagedActivePlayID(playID);
                 ClientAudio.play(playID, jamMML);
             }
         }

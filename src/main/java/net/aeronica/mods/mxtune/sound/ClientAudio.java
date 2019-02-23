@@ -211,9 +211,9 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
      * @param playID unique submission identifier.
      * @param musicText MML string
      */
-    public static synchronized void play(Integer playID, String musicText)
+    public static void play(Integer playID, String musicText)
     {
-        play(playID, null, musicText, GroupHelper.isClientPlaying(playID), SoundRange.NORMAL);
+        play(playID, null, musicText, GroupHelper.isClientPlaying(playID), SoundRange.NORMAL, null);
     }
 
     /**
@@ -223,9 +223,15 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
      * @param musicText MML string
      * @param soundRange defines the attenuation: NORMAL or INFINITY respectively
      */
-    public static synchronized void play(Integer playID, BlockPos pos, String musicText, SoundRange soundRange)
+    public static void play(Integer playID, BlockPos pos, String musicText, SoundRange soundRange)
     {
-        play(playID, pos, musicText, false, soundRange);
+        play(playID, pos, musicText, false, soundRange, null);
+    }
+
+    public static void playLocal(int playId, String musicText, IAudioStatusCallback callback)
+    {
+        GroupHelper.addClientManagedActivePlayID(playId);
+        play(playId, Minecraft.getMinecraft().player.getPosition(), musicText, true, SoundRange.INFINITY, callback);
     }
 
     // Determine if audio is 3D spacial or background
@@ -238,13 +244,13 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         else audioData.setAudioFormat(audioFormat3D);
     }
 
-    private static void play(Integer playID, BlockPos pos, String musicText, boolean isClient, SoundRange soundRange)
+    private static void play(Integer playID, BlockPos pos, String musicText, boolean isClient, SoundRange soundRange, IAudioStatusCallback callback)
     {
         startThreadFactory();
         if(ClientCSDMonitor.canMXTunesPlay() && playID != null)
         {
             addPlayIDQueue(playID);
-            AudioData audioData = new AudioData(playID, pos, isClient, soundRange);
+            AudioData audioData = new AudioData(playID, pos, isClient, soundRange, callback);
             setAudioFormat(audioData);
             AudioData result = playIDAudioData.putIfAbsent(playID, audioData);
             if (result != null)
@@ -359,13 +365,18 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
                     queueAudioDataRemoval(entry.getKey());
                     ModLogger.info("updateClientAudio: AudioData for playID queued for removal");
                 }
+                Status status = entry.getValue().getStatus();
+                if (status == Status.DONE || status == Status.ERROR)
+                {
+                    GroupHelper.removeClientManagedPlayID(entry.getKey());
+                }
             }
         }
     }
 
     private static boolean playIdExpired(int playId)
     {
-        return !GroupHelper.getActivePlayIDs().contains(playId);
+        return !GroupHelper.getManagedPlayIDs().contains(playId);
     }
 
     private static void removeQueuedAudioData()
@@ -400,6 +411,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         playIDQueue01.clear();
         playIDQueue02.clear();
         playIDQueue03.clear();
+        GroupHelper.clearClientManagedPlayIDs();
     }
 
     @Override

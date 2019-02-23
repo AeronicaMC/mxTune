@@ -288,15 +288,15 @@ public class GuiJamOverlay extends Gui
             qY = hd.quadY(maxHeight, 60, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
-        if (GroupHelper.getActivePlayIDs() != null && !GroupHelper.getActivePlayIDs().isEmpty())
+        if (GroupHelper.getManagedPlayIDs() != null && !GroupHelper.getManagedPlayIDs().isEmpty())
         {
-            String status = "ActivePlayIDs:  " + GroupHelper.getActivePlayIDs().toString();
+            String status = "ActivePlayIDs:  " + GroupHelper.getManagedPlayIDs().toString();
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
             qY = hd.quadY(maxHeight, 70, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
-        if (GroupHelper.getActivePlayIDs() != null && !GroupHelper.getActivePlayIDs().isEmpty())
+        if (GroupHelper.getManagedPlayIDs() != null && !GroupHelper.getManagedPlayIDs().isEmpty())
         {
             String status = "GroupHelper.index:   " + GroupHelper.getIndex(mc.player.getEntityId());
             statusWidth = fontRenderer.getStringWidth(status);

@@ -84,7 +84,7 @@ public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicM
             ModLogger.debug("musicText:  " + musicText.substring(0, Math.min(25, musicText.length())));
             ModLogger.debug("playID:     " + playID);
             ModLogger.debug("SoundRange: " + soundRange);
-            GroupHelper.addActivePlayID(playID);
+            GroupHelper.addServerManagedActivePlayID(playID);
             ClientAudio.play(playID, blockPos, musicText, soundRange);
         }
         else if (ModConfig.showWelcomeStatusMessage())

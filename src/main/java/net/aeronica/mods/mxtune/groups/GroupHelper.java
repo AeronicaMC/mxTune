@@ -51,7 +51,8 @@ public class GroupHelper
     /* PlayManager */
     private static Map<Integer, Integer> membersQueuedStatus = Collections.emptyMap();
     private static Map<Integer, Integer> membersPlayID = Collections.emptyMap();
-    private static Set<Integer> activePlayIDs = new ConcurrentSkipListSet<>();
+    private static Set<Integer> activeServerManagedPlayIDs = new ConcurrentSkipListSet<>();
+    private static Set<Integer> activeClientManagedPlayIDs = new ConcurrentSkipListSet<>();
 
     private GroupHelper() { /* NOP */ }
 
@@ -123,10 +124,32 @@ public class GroupHelper
     // incident occurred and the playID is either not present, AND/OR a race condition, or threading issue made it not
     // available.
     @SideOnly(Side.CLIENT)
-    public static void addActivePlayID(Integer playID)
+    public static void addServerManagedActivePlayID(int playId)
     {
-        if (playID != null)
-            activePlayIDs.add(playID);
+        if (playId != PlayIdSupplier.PlayType.INVALID)
+            activeServerManagedPlayIDs.add(playId);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static void addClientManagedActivePlayID(int playId)
+    {
+        if (playId != PlayIdSupplier.PlayType.INVALID)
+            activeClientManagedPlayIDs.add(playId);
+    }
+
+    public static void removeClientManagedPlayID(int playId)
+    {
+        activeClientManagedPlayIDs.remove(playId);
+    }
+
+    public static void clearClientManagedPlayIDs()
+    {
+        activeClientManagedPlayIDs.clear();
+    }
+
+    private Set<Integer> getClientManaggedPlayIDs()
+    {
+        return activeClientManagedPlayIDs;
     }
 
     public static ListMultimap<Integer, Integer> getGroupsMembers()
@@ -268,7 +291,7 @@ public class GroupHelper
     }
 
     @SuppressWarnings("unused")
-    public static boolean isPlayIDPlaying(Integer playID) { return activePlayIDs != null && activePlayIDs.contains(playID); }
+    public static boolean isPlayIDPlaying(Integer playID) { return activeServerManagedPlayIDs != null && activeServerManagedPlayIDs.contains(playID); }
 
     public static void setClientPlayStatuses(String clientPlayStatuses)
     {
@@ -298,24 +321,31 @@ public class GroupHelper
         GroupHelper.membersPlayID = deserializeIntIntMap(playIDMembers);
     }
 
-    public static Set<Integer> getActivePlayIDs()
+    public static Set<Integer> getManagedPlayIDs()
     {
-        return activePlayIDs;
+        return mergeSets(activeServerManagedPlayIDs, activeClientManagedPlayIDs);
+    }
+
+    private static<T> Set<T> mergeSets(Set<T> a, Set<T> b)
+    {
+        Set<T> set = new ConcurrentSkipListSet<>(a);
+        set.addAll(b);
+        return set;
     }
 
     /**
      * Update the active play IDs without replacing the collection instance.
      * @param setIntString serialized set
      */
-    public static void setActivePlayIDs(String setIntString)
+    public static void setActiveServerManagedPlayIDs(String setIntString)
     {
         Set<Integer> receivedSet = deserializeIntegerSet(setIntString);
 
-        activePlayIDs.addAll(receivedSet);
+        activeServerManagedPlayIDs.addAll(receivedSet);
 
-        for (Integer integer : activePlayIDs)
+        for (Integer integer : activeServerManagedPlayIDs)
             if (!receivedSet.contains(integer))
-                activePlayIDs.remove(integer);
+                activeServerManagedPlayIDs.remove(integer);
     }
     
     /* Serialization and deserialization methods */
