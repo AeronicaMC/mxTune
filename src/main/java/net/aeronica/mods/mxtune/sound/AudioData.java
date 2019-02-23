@@ -66,11 +66,11 @@ public class AudioData
 
     public void setStatus(Status status)
     {
-        this.status = status;
-        if ((this.status == Status.DONE || this.status == Status.ERROR) && callback != null)
+        if (this.status != status)
         {
-            callback.statusCallBack(this.status, playId);
-            callback = null;
+            this.status = status;
+            if (callback != null)
+                callback.statusCallBack(this.status, playId);
         }
     }
 
