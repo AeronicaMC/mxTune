@@ -137,6 +137,18 @@ public class GroupHelper
             activeClientManagedPlayIDs.add(playId);
     }
 
+    public static Set<Integer> getAllPlayIDs()
+    {
+        return mergeSets(activeServerManagedPlayIDs, activeClientManagedPlayIDs);
+    }
+
+    private static<T> Set<T> mergeSets(Set<T> a, Set<T> b)
+    {
+        Set<T> set = new ConcurrentSkipListSet<>(a);
+        set.addAll(b);
+        return set;
+    }
+
     public static void removeClientManagedPlayID(int playId)
     {
         activeClientManagedPlayIDs.remove(playId);
@@ -150,6 +162,11 @@ public class GroupHelper
     public static Set<Integer> getClientManagedPlayIDs()
     {
         return activeClientManagedPlayIDs;
+    }
+
+    public static Set<Integer> getServerManagedPlayIDS()
+    {
+        return activeServerManagedPlayIDs;
     }
 
     public static ListMultimap<Integer, Integer> getGroupsMembers()
@@ -319,18 +336,6 @@ public class GroupHelper
     public static void setPlayIDMembers(String playIDMembers)
     {
         GroupHelper.membersPlayID = deserializeIntIntMap(playIDMembers);
-    }
-
-    public static Set<Integer> getManagedPlayIDs()
-    {
-        return mergeSets(activeServerManagedPlayIDs, activeClientManagedPlayIDs);
-    }
-
-    private static<T> Set<T> mergeSets(Set<T> a, Set<T> b)
-    {
-        Set<T> set = new ConcurrentSkipListSet<>(a);
-        set.addAll(b);
-        return set;
     }
 
     /**

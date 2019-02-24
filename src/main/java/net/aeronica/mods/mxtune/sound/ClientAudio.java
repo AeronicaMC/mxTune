@@ -381,7 +381,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
 
     private static boolean playIdExpired(int playId)
     {
-        return !GroupHelper.getManagedPlayIDs().contains(playId);
+        return !GroupHelper.getAllPlayIDs().contains(playId);
     }
 
     private static void removeQueuedAudioData()

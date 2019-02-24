@@ -34,15 +34,20 @@ import net.minecraftforge.fml.relauncher.Side;
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.Random;
+import java.util.Set;
+
+import static net.aeronica.mods.mxtune.groups.PlayIdSupplier.PlayType;
+import static net.aeronica.mods.mxtune.groups.PlayIdSupplier.PlayType.AREA;
+import static net.aeronica.mods.mxtune.groups.PlayIdSupplier.PlayType.INVALID;
+import static net.aeronica.mods.mxtune.groups.PlayIdSupplier.getTypeForPlayId;
 
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ClientPlayManager implements IAudioStatusCallback
 {
     private static Minecraft mc = Minecraft.getMinecraft();
     private static WeakReference<Chunk> currentChunkWeakReference;
-    private static int currentPlayId = PlayIdSupplier.PlayType.INVALID;
+    private static int currentPlayId = INVALID;
     private static String songName = "";
-    private static String prevSongName = "";
     private static final Random rand = new Random();
     private static final ClientPlayManager INSTANCE = new ClientPlayManager();
 
@@ -53,6 +58,14 @@ public class ClientPlayManager implements IAudioStatusCallback
     {
         if (!ClientCSDMonitor.canMXTunesPlay() && (event.phase != TickEvent.Phase.START)) return;
         updateChunk();
+    }
+
+    private static void invalidatePlayId()
+    {
+        synchronized (INSTANCE)
+        {
+            currentPlayId = INVALID;
+        }
     }
 
     @Nullable
@@ -69,8 +82,9 @@ public class ClientPlayManager implements IAudioStatusCallback
             currentChunkWeakReference = new WeakReference<>(chunk);
             if ((prevChunkRef != null && currentChunkWeakReference.get() != prevChunkRef.get()) || (prevChunkRef == null && currentChunkWeakReference.get() != null))
                 chunkChange();
-            changeAreaMusic();
+
         }
+        changeAreaMusic();
     }
 
     private static void chunkChange()
@@ -81,15 +95,14 @@ public class ClientPlayManager implements IAudioStatusCallback
         String s = ModChunkDataHelper.getString(chunk);
         boolean b = ModChunkDataHelper.isFunctional(chunk);
         ModLogger.info("----- Enter Chunk %s, functional: %s, string: %s", chunk, b, s);
-        changeAreaMusic();
     }
 
     private static void changeAreaMusic()
     {
-        boolean canPlay = GroupHelper.getManagedPlayIDs().isEmpty() && GroupHelper.getClientManagedPlayIDs().isEmpty();
+        boolean canPlay = GroupHelper.getAllPlayIDs().isEmpty() && GroupHelper.getClientManagedPlayIDs().isEmpty();
         if (canPlay)
         {
-            currentPlayId = PlayIdSupplier.PlayType.AREA.getAsInt();
+            currentPlayId = AREA.getAsInt();
             ClientAudio.playLocal(currentPlayId, randomSong(), INSTANCE);
         }
     }
@@ -108,9 +121,27 @@ public class ClientPlayManager implements IAudioStatusCallback
 
     public static void higherPriority(int playId)
     {
-        PlayIdSupplier.PlayType testType = PlayIdSupplier.getTypeForPlayId(playId);;
-        if (testType.start > PlayIdSupplier.PlayType.AREA.start)
-            GroupHelper.getClientManagedPlayIDs().clear();
+        PlayType testType = getTypeForPlayId(playId);;
+        switch (testType)
+        {
+            case EVENT:
+            case PERSONAL:
+                removePlayTypeBelow(GroupHelper.getServerManagedPlayIDS(), playId);
+            case PLAYERS:
+            case AREA:
+                removePlayTypeBelow(GroupHelper.getClientManagedPlayIDs(), playId);
+            case WORLD:
+        }
+    }
+
+    private static void removePlayTypeBelow(Set<Integer> setOfPlayIDS, int playId)
+    {
+        PlayType playType = getTypeForPlayId(playId);
+        for (int pid : setOfPlayIDS)
+        {
+            if (pid < playType.start)
+                setOfPlayIDS.remove(pid);
+        }
     }
 
     @Override
@@ -118,7 +149,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     {
         if (currentPlayId == playId && (status == Status.ERROR || status == Status.DONE))
         {
-            currentPlayId = PlayIdSupplier.PlayType.INVALID;
+            invalidatePlayId();
             changeAreaMusic();
         }
     }
