@@ -43,7 +43,9 @@ package net.aeronica.mods.mxtune.sound;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.config.ModConfig;
+import net.aeronica.mods.mxtune.groups.ClientPlayManager;
 import net.aeronica.mods.mxtune.groups.GroupHelper;
+import net.aeronica.mods.mxtune.groups.PlayIdSupplier;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
@@ -244,11 +246,12 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         else audioData.setAudioFormat(audioFormat3D);
     }
 
-    private static void play(Integer playID, BlockPos pos, String musicText, boolean isClient, SoundRange soundRange, IAudioStatusCallback callback)
+    private static void play(int playID, BlockPos pos, String musicText, boolean isClient, SoundRange soundRange, IAudioStatusCallback callback)
     {
         startThreadFactory();
-        if(ClientCSDMonitor.canMXTunesPlay() && playID != null)
+        if(ClientCSDMonitor.canMXTunesPlay() && playID != PlayIdSupplier.PlayType.INVALID)
         {
+            ClientPlayManager.higherPriority(playID);
             addPlayIDQueue(playID);
             AudioData audioData = new AudioData(playID, pos, isClient, soundRange, callback);
             setAudioFormat(audioData);
@@ -267,13 +270,15 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         }
     }
 
-    public static void stop(Integer playID)
+    public static void stop(int playId) { stop(playId, 100); }
+
+    public static void stop(int playID, int fadeMilliseconds)
     {
         synchronized (SoundSystemConfig.THREAD_SYNC)
         {
             AudioData audioData = playIDAudioData.get(playID);
             if (audioData != null && sndSystem != null && audioData.getUuid() != null)
-                sndSystem.fadeOut(audioData.getUuid(), null, 100);
+                sndSystem.fadeOut(audioData.getUuid(), null, fadeMilliseconds);
         }
     }
     

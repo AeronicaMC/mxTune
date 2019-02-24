@@ -147,7 +147,7 @@ public class GroupHelper
         activeClientManagedPlayIDs.clear();
     }
 
-    private Set<Integer> getClientManaggedPlayIDs()
+    public static Set<Integer> getClientManagedPlayIDs()
     {
         return activeClientManagedPlayIDs;
     }

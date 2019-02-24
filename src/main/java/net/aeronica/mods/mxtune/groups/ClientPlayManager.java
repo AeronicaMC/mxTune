@@ -53,8 +53,6 @@ public class ClientPlayManager implements IAudioStatusCallback
     {
         if (!ClientCSDMonitor.canMXTunesPlay() && (event.phase != TickEvent.Phase.START)) return;
         updateChunk();
-
-
     }
 
     @Nullable
@@ -69,9 +67,9 @@ public class ClientPlayManager implements IAudioStatusCallback
         {
             WeakReference<Chunk> prevChunkRef = currentChunkWeakReference;
             currentChunkWeakReference = new WeakReference<>(chunk);
-
             if ((prevChunkRef != null && currentChunkWeakReference.get() != prevChunkRef.get()) || (prevChunkRef == null && currentChunkWeakReference.get() != null))
                 chunkChange();
+            changeAreaMusic();
         }
     }
 
@@ -88,7 +86,8 @@ public class ClientPlayManager implements IAudioStatusCallback
 
     private static void changeAreaMusic()
     {
-        if (currentPlayId == PlayIdSupplier.PlayType.INVALID)
+        boolean canPlay = GroupHelper.getManagedPlayIDs().isEmpty() && GroupHelper.getClientManagedPlayIDs().isEmpty();
+        if (canPlay)
         {
             currentPlayId = PlayIdSupplier.PlayType.AREA.getAsInt();
             ClientAudio.playLocal(currentPlayId, randomSong(), INSTANCE);
@@ -99,14 +98,28 @@ public class ClientPlayManager implements IAudioStatusCallback
     {
         TestData testData = TestData.getMML(rand.nextInt(TestData.values().length));
         String title = testData.getTitle();
+            if (title.equals(songName))
+                songName = randomSong();
+
+        title = testData.getTitle();
         ModLogger.info("------- Song title: %s", title);
         return testData.getMML();
+    }
+
+    public static void higherPriority(int playId)
+    {
+        PlayIdSupplier.PlayType testType = PlayIdSupplier.getTypeForPlayId(playId);;
+        if (testType.start > PlayIdSupplier.PlayType.AREA.start)
+            GroupHelper.getClientManagedPlayIDs().clear();
     }
 
     @Override
     public void statusCallBack(Status status, int playId)
     {
         if (currentPlayId == playId && (status == Status.ERROR || status == Status.DONE))
-            currentPlayId = -1;
+        {
+            currentPlayId = PlayIdSupplier.PlayType.INVALID;
+            changeAreaMusic();
+        }
     }
 }
