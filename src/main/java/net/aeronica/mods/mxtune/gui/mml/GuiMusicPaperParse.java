@@ -42,6 +42,7 @@ import javax.sound.midi.Instrument;
 import javax.sound.midi.Patch;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 public class GuiMusicPaperParse extends GuiScreen implements IAudioStatusCallback
@@ -614,11 +615,13 @@ public class GuiMusicPaperParse extends GuiScreen implements IAudioStatusCallbac
         return true;
     }
 
+
     @Override
     public void statusCallBack(ClientAudio.Status status, int playId)
     {
+        final EnumSet<ClientAudio.Status> setStatus = EnumSet.of(ClientAudio.Status.ERROR, ClientAudio.Status.DONE);
         Minecraft.getMinecraft().addScheduledTask(() -> {
-            if (this.playId == playId)
+            if (this.playId == playId && setStatus.contains(status))
             {
                 ModLogger.debug("AudioStatus event received: %s, playId: %s", status, playId);
                 mmlStop();
