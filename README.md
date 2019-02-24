@@ -18,4 +18,4 @@ This mod adds musical instruments that allow you to play music in MML format. Th
 
 *[CurseForge Badges by way2muchnoise](http://cf.way2muchnoise.eu/)*
 
-[Java Profiler](https://www.ej-technologies.com/products/jprofiler/overview.html) [![](https://www.ej-technologies.com/images/product_banners/jprofiler_large.png)](https://www.ej-technologies.com/products/jprofiler/overview.html) provided by [ej-technologies](https://www.ej-technologies.com/)
+[Java Profiler](https://www.ej-technologies.com/products/jprofiler/overview.html) [![](https://www.ej-technologies.com/images/product_banners/jprofiler_large.png)](https://www.ej-technologies.com/products/jprofiler/overview.html) provided by [ej-technologies GmbH](https://www.ej-technologies.com/)
