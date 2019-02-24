@@ -17,31 +17,42 @@
 
 package net.aeronica.mods.mxtune.groups;
 
+import net.aeronica.libs.mml.core.TestData;
+import net.aeronica.mods.mxtune.sound.ClientAudio;
+import net.aeronica.mods.mxtune.sound.ClientAudio.Status;
+import net.aeronica.mods.mxtune.sound.IAudioStatusCallback;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
+import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.world.chunk.ModChunkDataHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
+import java.util.Random;
 
 @Mod.EventBusSubscriber(Side.CLIENT)
-public class ClientPlayManager
+public class ClientPlayManager implements IAudioStatusCallback
 {
     private static Minecraft mc = Minecraft.getMinecraft();
     private static WeakReference<Chunk> currentChunkWeakReference;
-    private static WeakReference<Chunk> previousChunkWeakReference;
+    private static int currentPlayId = PlayIdSupplier.PlayType.INVALID;
+    private static String songName = "";
+    private static String prevSongName = "";
+    private static final Random rand = new Random();
+    private static final ClientPlayManager INSTANCE = new ClientPlayManager();
 
     private ClientPlayManager() { /* NOP */ }
 
+    @SubscribeEvent
     public static void onEvent(TickEvent.ClientTickEvent event)
     {
         if (!ClientCSDMonitor.canMXTunesPlay() && (event.phase != TickEvent.Phase.START)) return;
         updateChunk();
-
-
 
 
     }
@@ -54,10 +65,48 @@ public class ClientPlayManager
         if (mc.world == null || mc.player == null) return;
 
         Chunk chunk = mc.world.getChunk(mc.player.getPosition());
-        if (currentChunkWeakReference.get() != previousChunkWeakReference.get())
+        if (mc.world.isChunkGeneratedAt(chunk.x, chunk.z))
         {
-            previousChunkWeakReference = currentChunkWeakReference;
+            WeakReference<Chunk> prevChunkRef = currentChunkWeakReference;
             currentChunkWeakReference = new WeakReference<>(chunk);
+
+            if ((prevChunkRef != null && currentChunkWeakReference.get() != prevChunkRef.get()) || (prevChunkRef == null && currentChunkWeakReference.get() != null))
+                chunkChange();
         }
+    }
+
+    private static void chunkChange()
+    {
+        Chunk chunk = getChunk();
+        if (chunk == null) return;
+
+        String s = ModChunkDataHelper.getString(chunk);
+        boolean b = ModChunkDataHelper.isFunctional(chunk);
+        ModLogger.info("----- Enter Chunk %s, functional: %s, string: %s", chunk, b, s);
+        changeAreaMusic();
+    }
+
+    private static void changeAreaMusic()
+    {
+        if (currentPlayId == PlayIdSupplier.PlayType.INVALID)
+        {
+            currentPlayId = PlayIdSupplier.PlayType.AREA.getAsInt();
+            ClientAudio.playLocal(currentPlayId, randomSong(), INSTANCE);
+        }
+    }
+
+    private static String randomSong()
+    {
+        TestData testData = TestData.getMML(rand.nextInt(TestData.values().length));
+        String title = testData.getTitle();
+        ModLogger.info("------- Song title: %s", title);
+        return testData.getMML();
+    }
+
+    @Override
+    public void statusCallBack(Status status, int playId)
+    {
+        if (currentPlayId == playId && (status == Status.ERROR || status == Status.DONE))
+            currentPlayId = -1;
     }
 }

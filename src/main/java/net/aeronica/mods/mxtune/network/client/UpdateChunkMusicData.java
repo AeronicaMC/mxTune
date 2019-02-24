@@ -18,7 +18,6 @@ package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.world.chunk.ModChunkDataHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
@@ -66,11 +65,11 @@ public class UpdateChunkMusicData extends AbstractClientMessage<UpdateChunkMusic
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        ModLogger.info("Chunk x: %d, z: %d, functional: %s, string: %s", chunkX, chunkZ, functional, someMusic);
         World world = MXTune.proxy.getClientWorld();
 
         if (world != null && world.isChunkGeneratedAt(chunkX, chunkZ))
         {
+            //ModLogger.info("Chunk x: %d, z: %d, functional: %s, string: %s", chunkX, chunkZ, functional, someMusic);
             Chunk chunk = world.getChunk(chunkX, chunkZ);
             ModChunkDataHelper.setFunctional(chunk, functional);
             ModChunkDataHelper.setString(chunk, someMusic);
