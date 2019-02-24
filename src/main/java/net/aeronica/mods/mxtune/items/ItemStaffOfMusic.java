@@ -70,7 +70,8 @@ public class ItemStaffOfMusic extends Item
                 compound.setString("nameString", "Awesome Playlist");
                 compound.setInteger("listCount", 20);
                 FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.SERVER_PLAYLISTS_FOLDER, "some_playlist.dat"), compound);
-
+                ModChunkDataHelper.setString(worldIn.getChunk(playerIn.getPosition()),"Awesome Playlist");
+                ModChunkDataHelper.setFunctional(worldIn.getChunk(playerIn.getPosition()),true);
             } catch (IOException e)
             {
                 ModLogger.error(e);

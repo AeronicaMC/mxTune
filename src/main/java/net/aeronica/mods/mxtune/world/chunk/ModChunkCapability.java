@@ -18,7 +18,10 @@
 package net.aeronica.mods.mxtune.world.chunk;
 
 import net.aeronica.mods.mxtune.Reference;
+import net.aeronica.mods.mxtune.network.PacketDispatcher;
+import net.aeronica.mods.mxtune.network.client.UpdateChunkMusicData;
 import net.aeronica.mods.mxtune.util.Util;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -29,6 +32,7 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.world.ChunkWatchEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -47,6 +51,19 @@ public class ModChunkCapability
     public static void register()
     {
         CapabilityManager.INSTANCE.register(IModChunkData.class, new Storage(), new Factory());
+    }
+
+    @SubscribeEvent
+    public static void onEvent(final ChunkWatchEvent.Watch event)
+    {
+        final EntityPlayerMP player = event.getPlayer();
+        // TODO: Ask Server for caps
+        final Chunk chunk = event.getChunkInstance();
+        if (chunk == null) return;
+
+        final String test = ModChunkDataHelper.getString(chunk);
+        //ModLogger.info("ChunkCaps side: %s, chunk: %s, String: %s", MXTune.proxy.getEffectiveSide(), chunk.getPos(), test);
+        PacketDispatcher.sendToAllAround(new UpdateChunkMusicData(chunk.getPos().x, chunk.getPos().z, ModChunkDataHelper.isFunctional(chunk), ModChunkDataHelper.getString(chunk)), player, 80);
     }
 
     @SubscribeEvent
