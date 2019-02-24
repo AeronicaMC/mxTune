@@ -17,3 +17,5 @@ This mod adds musical instruments that allow you to play music in MML format. Th
 [![Technical Debt Ratio](https://sonarcloud.io/api/project_badges/measure?project=net.aeronica.mods.mxtune%3AmxTune%3A1.12&metric=sqale_index)](https://sonarcloud.io/dashboard?id=net.aeronica.mods.mxtune%3AmxTune%3A1.12)
 
 *[CurseForge Badges by way2muchnoise](http://cf.way2muchnoise.eu/)*
+
+[Java Profiler](https://www.ej-technologies.com/products/jprofiler/overview.html) [![](https://www.ej-technologies.com/images/product_banners/jprofiler_large.png)](https://www.ej-technologies.com/products/jprofiler/overview.html) provided by [ej-technologies](https://www.ej-technologies.com/)
