@@ -62,8 +62,8 @@ public class MML2PCM
         Map<Integer, String> jamFormatMMLMap = GroupHelper.deserializeIntStrMap(jamFormatMML);
         if (jamFormatMMLMap.isEmpty())
         {
-            ModLogger.error("MML2PCM jamFormatMMLMap is null! Check for an issue with NBT, networking, threads. PlayID: %s", audioData);
-            ModLogger.error("MML2PCM PlayID: %d", audioData);
+            ModLogger.error("MML2PCM jamFormatMMLMap is null! Check for an issue with NBT, networking, threads. PlayID: %s", audioData.getPlayId());
+            ModLogger.error("MML2PCM PlayID: %d", audioData.getPlayId());
             audioData.setStatus(ERROR);
             return false;
         }
