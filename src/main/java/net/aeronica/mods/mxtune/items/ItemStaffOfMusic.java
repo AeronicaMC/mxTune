@@ -31,6 +31,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
@@ -70,8 +71,12 @@ public class ItemStaffOfMusic extends Item
                 compound.setString("nameString", "Awesome Playlist");
                 compound.setInteger("listCount", 20);
                 FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.SERVER_PLAYLISTS_FOLDER, "some_playlist.dat"), compound);
-                ModChunkDataHelper.setString(worldIn.getChunk(playerIn.getPosition()),"Awesome Playlist");
-                ModChunkDataHelper.setFunctional(worldIn.getChunk(playerIn.getPosition()),true);
+
+                BlockPos pos = playerIn.getPosition();
+                ModChunkDataHelper.setString(worldIn.getChunk(pos),"Awesome Playlist");
+                ModChunkDataHelper.setFunctional(worldIn.getChunk(pos),true);
+                ModChunkDataHelper.sync(playerIn, worldIn.getChunk(pos));
+
             } catch (IOException e)
             {
                 ModLogger.error(e);

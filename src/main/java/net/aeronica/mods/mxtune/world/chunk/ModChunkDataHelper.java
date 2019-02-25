@@ -17,8 +17,11 @@
 
 package net.aeronica.mods.mxtune.world.chunk;
 
+import net.aeronica.mods.mxtune.network.PacketDispatcher;
+import net.aeronica.mods.mxtune.network.client.UpdateChunkMusicData;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.Util;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -63,5 +66,10 @@ public class ModChunkDataHelper
         else
             throw new MXTuneRuntimeException("IModChunkData capability is null");
         return chunkData;
+    }
+
+    public static void sync(EntityPlayer entityPlayer, Chunk chunk)
+    {
+        PacketDispatcher.sendToAllAround(new UpdateChunkMusicData(chunk.x, chunk.z, getImpl(chunk).isFunctional(), getImpl(chunk).getString()), entityPlayer, 80);
     }
 }
