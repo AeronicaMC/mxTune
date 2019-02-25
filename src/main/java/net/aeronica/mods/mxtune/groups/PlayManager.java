@@ -169,7 +169,7 @@ public class PlayManager
 
         DurationTimer.scheduleStop(playID, duration);
 
-        String musicText = getMappedMML(playID);
+        String musicText = getGroupMML(playID);
         activePlayIDs.add(playID);
         syncStatus();
         PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playID, musicText);
@@ -191,7 +191,7 @@ public class PlayManager
         {
             DurationTimer.scheduleStop(groupsPlayID, GroupManager.getGroupDuration(membersID));
 
-            String musicText = getMappedMML(groupsPlayID);
+            String musicText = getGroupMML(groupsPlayID);
             BlockPos pos = playerIn.getPosition();
             activePlayIDs.add(groupsPlayID);
             syncStatus();
@@ -347,23 +347,23 @@ public class PlayManager
     }
 
     /**
-     * Returns a string in Map ready format. e.g.
-     * "playerId1=MML@...;|playerId2=MML@...|playerId3=MML@..."
+     * Concatenated MML from all the group members
+     * "MML@...;MML@...;MML@...;"
      * 
-     * @param playID play ID to map
-     * @return string in Map ready format.
+     * @param playId play ID for the group
+     * @return string mmlText ready to parse.
      */
-    private static String getMappedMML(int playID)
+    private static String getGroupMML(int playId)
     {
-        StringBuilder buildMappedMML = new StringBuilder();
+        StringBuilder mmlText = new StringBuilder();
         try
         {
             Set<Integer> keys = membersPlayID.keySet();
             for (Integer member : keys)
             {
-                if (membersPlayID.get(member).equals(playID))
+                if (membersPlayID.get(member).equals(playId))
                 {
-                    buildMappedMML.append(member).append("=").append(membersMML.get(member)).append("|");
+                    mmlText.append(membersMML.get(member));
                     membersMML.remove(member);
                     setPlaying(member);
                 }
@@ -372,7 +372,7 @@ public class PlayManager
         {
             ModLogger.error(e);
         }
-        return buildMappedMML.toString();
+        return mmlText.toString();
     }
 
     /**

@@ -25,6 +25,7 @@ import net.aeronica.mods.mxtune.gui.util.GuiLink;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.MusicTextMessage;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
+import net.aeronica.mods.mxtune.sound.ClientAudio.Status;
 import net.aeronica.mods.mxtune.sound.IAudioStatusCallback;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -42,7 +43,6 @@ import javax.sound.midi.Instrument;
 import javax.sound.midi.Patch;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 
 public class GuiMusicPaperParse extends GuiScreen implements IAudioStatusCallback
@@ -606,7 +606,7 @@ public class GuiMusicPaperParse extends GuiScreen implements IAudioStatusCallbac
         int program = inst.getPatch().getProgram();
         int packedPreset = isPercussionSet ? MMLUtil.preset2PackedPreset(128, program) : MMLUtil.preset2PackedPreset(bank, program);
         
-        mml = mml.replace("MML@", "0=MML@i" + packedPreset);
+        mml = mml.replace("MML@", "MML@i" + packedPreset);
         ModLogger.debug("GuiMusicPaperParse.mmlPlay() name: %s, bank %05d, program %03d, packed %08d, perc: %s", inst.getName(), bank, program, packedPreset, isPercussionSet);
         ModLogger.debug("GuiMusicPaperParse.mmlPlay(): %s", mml.substring(0, mml.length() >= 25 ? 25 : mml.length()));
 
@@ -617,11 +617,10 @@ public class GuiMusicPaperParse extends GuiScreen implements IAudioStatusCallbac
 
 
     @Override
-    public void statusCallBack(ClientAudio.Status status, int playId)
+    public void statusCallBack(Status status, int playId)
     {
-        final EnumSet<ClientAudio.Status> setStatus = EnumSet.of(ClientAudio.Status.ERROR, ClientAudio.Status.DONE);
         Minecraft.getMinecraft().addScheduledTask(() -> {
-            if (this.playId == playId && setStatus.contains(status))
+            if (this.playId == playId && (status == Status.ERROR || status == Status.DONE))
             {
                 ModLogger.debug("AudioStatus event received: %s, playId: %s", status, playId);
                 mmlStop();

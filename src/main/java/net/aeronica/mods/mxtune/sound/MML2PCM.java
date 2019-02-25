@@ -20,7 +20,6 @@ import net.aeronica.libs.mml.core.MMLParser;
 import net.aeronica.libs.mml.core.MMLParserFactory;
 import net.aeronica.libs.mml.core.MMLToMIDI;
 import net.aeronica.libs.mml.core.MMLUtil;
-import net.aeronica.mods.mxtune.groups.GroupHelper;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
@@ -33,7 +32,6 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Patch;
 import javax.sound.sampled.AudioInputStream;
 import java.io.IOException;
-import java.util.Map;
 
 import static net.aeronica.mods.mxtune.sound.ClientAudio.Status.ERROR;
 import static net.aeronica.mods.mxtune.sound.ClientAudio.Status.READY;
@@ -41,42 +39,20 @@ import static net.aeronica.mods.mxtune.sound.ClientAudio.Status.READY;
 public class MML2PCM
 {
     private AudioData audioData;
-    String jamFormatMML;
+    private String mmlText;
 
-    MML2PCM(AudioData audioData, String jamFormatMML)
+    MML2PCM(AudioData audioData, String mmlText)
     {
         this.audioData = audioData;
-        this.jamFormatMML = jamFormatMML;
+        this.mmlText = mmlText;
     }
-    /**
-     * Solo play format "<playerName|groupID>=mml@...;"
-     * 
-     * Jam play format inserts with a space between each player=MML sequence
-     * "<playername1>=MML@...abcd; <playername2>=MML@...efgh; <playername2>=MML@...efgh;"
-     * 
-     * @return false if errors
-     */
+
     public boolean process()
     {
-        // Deserialize JAM Formatted MML
-        Map<Integer, String> jamFormatMMLMap = GroupHelper.deserializeIntStrMap(jamFormatMML);
-        if (jamFormatMMLMap.isEmpty())
-        {
-            ModLogger.error("MML2PCM jamFormatMMLMap is null! Check for an issue with NBT, networking, threads. PlayID: %s", audioData.getPlayId());
-            ModLogger.error("MML2PCM PlayID: %d", audioData.getPlayId());
-            audioData.setStatus(ERROR);
-            return false;
-        }
-
-        // Re-append all the MML without '|' and '=' symbols
-        StringBuilder parseReadyMML = new StringBuilder();
-        for (Map.Entry<Integer, String> integerStringMap: jamFormatMMLMap.entrySet())
-            parseReadyMML.append(integerStringMap.getValue());
-
         MMLParser mmlParser;
         try
         {
-            mmlParser = MMLParserFactory.getMMLParser(parseReadyMML.toString());
+            mmlParser = MMLParserFactory.getMMLParser(mmlText);
         }
         catch (IOException e)
         {

@@ -178,7 +178,7 @@ public enum SheetMusicUtil
 
     /**
      * Reads an inventory of instruments containing sheet music and returns MML text ready for parsing.
-     * The MML text is concatenated into MML JAM format with instrument patch ids inserted into each part.
+     * The MML text is concatenated with instrument patch ids inserted into each part.
      * @param tileEntity instance of IMusicPlayer
      * @return MML text ready for parsing
      */
@@ -203,7 +203,7 @@ public enum SheetMusicUtil
                     {
                         String mml = contents.getString(KEY_MML);
                         mml = mml.replace("MML@", "MML@I" + patch);
-                        buildMML.append(slot).append("=").append(mml).append("|");
+                        buildMML.append(mml);
                     }
                 }
             }
