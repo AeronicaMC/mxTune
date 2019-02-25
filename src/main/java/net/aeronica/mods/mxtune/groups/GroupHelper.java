@@ -34,6 +34,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 public class GroupHelper
 {
+    private static final GroupHelper INSTANCE = new GroupHelper();
     public static final int GROUP_ADD = 1;
     public static final int MEMBER_ADD = 2;
     public static final int MEMBER_REMOVE =3;
@@ -144,14 +145,17 @@ public class GroupHelper
 
     private static<T> Set<T> mergeSets(Set<T> a, Set<T> b)
     {
-        Set<T> set = new ConcurrentSkipListSet<>(a);
+        Set<T> set = new HashSet<>(a);
         set.addAll(b);
-        return set;
+        return Collections.unmodifiableSet(set);
     }
 
     public static void removeClientManagedPlayID(int playId)
     {
-        activeClientManagedPlayIDs.remove(playId);
+        synchronized (INSTANCE)
+        {
+            activeClientManagedPlayIDs.remove(playId);
+        }
     }
 
     public static void clearClientManagedPlayIDs()

@@ -56,7 +56,10 @@ public class AudioData
 
     public void setAudioFormat(AudioFormat audioFormat)
     {
-        this.audioFormat = audioFormat;
+        synchronized (this)
+        {
+            this.audioFormat = audioFormat;
+        }
     }
 
     public Status getStatus()
@@ -66,11 +69,14 @@ public class AudioData
 
     public void setStatus(Status status)
     {
-        if (this.status != status)
+        synchronized (this)
         {
-            this.status = status;
-            if (callback != null)
-                callback.statusCallBack(this.status, playId);
+            if (this.status != status)
+            {
+                this.status = status;
+                if (callback != null)
+                    callback.statusCallBack(this.status, playId);
+            }
         }
     }
 
@@ -98,7 +104,10 @@ public class AudioData
 
     void setAudioStream(AudioInputStream audioStream)
     {
-        this.audioStream = audioStream;
+        synchronized (this)
+        {
+            this.audioStream = audioStream;
+        }
     }
 
     public String getUuid()
@@ -118,7 +127,10 @@ public class AudioData
 
     void setISound(ISound iSound)
     {
-        this.iSound = iSound;
+        synchronized (this)
+        {
+            this.iSound = iSound;
+        }
     }
 
     public PlayIdSupplier.PlayType getPlayType()
