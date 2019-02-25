@@ -415,7 +415,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         playIDQueue01.clear();
         playIDQueue02.clear();
         playIDQueue03.clear();
-        GroupHelper.clearClientManagedPlayIDs();
+        GroupHelper.clearAllManagedPlayIDs();
     }
 
     @Override

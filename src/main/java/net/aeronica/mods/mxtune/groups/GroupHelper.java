@@ -158,9 +158,13 @@ public class GroupHelper
         }
     }
 
-    public static void clearClientManagedPlayIDs()
+    public static void clearAllManagedPlayIDs()
     {
-        activeClientManagedPlayIDs.clear();
+        synchronized (INSTANCE)
+        {
+            activeClientManagedPlayIDs.clear();
+            activeServerManagedPlayIDs.clear();
+        }
     }
 
     public static Set<Integer> getClientManagedPlayIDs()
