@@ -33,8 +33,7 @@ import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import static net.aeronica.mods.mxtune.groups.PlayIdSupplier.PlayType;
 import static net.aeronica.mods.mxtune.groups.PlayIdSupplier.PlayType.AREA;
@@ -44,20 +43,28 @@ import static net.aeronica.mods.mxtune.groups.PlayIdSupplier.getTypeForPlayId;
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ClientPlayManager implements IAudioStatusCallback
 {
+    private static final ClientPlayManager INSTANCE = new ClientPlayManager();
     private static Minecraft mc = Minecraft.getMinecraft();
     private static WeakReference<Chunk> currentChunkWeakReference;
     private static int currentPlayId = INVALID;
-    private static String songName = "";
+
+    // AREA Song Shuffling
     private static final Random rand = new Random();
-    private static final ClientPlayManager INSTANCE = new ClientPlayManager();
+    private static Deque<String> lastSongs  = new ArrayDeque<>();
+    private static final int NUM_LAST_SONGS = 5;
+    private static int failedNewSongs;
+
+    // TODO: Inter-song delay
 
     private ClientPlayManager() { /* NOP */ }
 
     @SubscribeEvent
     public static void onEvent(TickEvent.ClientTickEvent event)
     {
-        if (!ClientCSDMonitor.canMXTunesPlay() && (event.phase != TickEvent.Phase.START)) return;
-        updateChunk();
+        if (ClientCSDMonitor.canMXTunesPlay() && (event.phase == TickEvent.Phase.END))
+        {
+            updateChunk();
+        }
     }
 
     private static void invalidatePlayId()
@@ -66,6 +73,44 @@ public class ClientPlayManager implements IAudioStatusCallback
         {
             currentPlayId = INVALID;
         }
+    }
+
+    private static void trackLastSongs(String song)
+    {
+        int size = lastSongs.size();
+        boolean songInDeque = lastSongs.contains(song);
+        if (!songInDeque && size < NUM_LAST_SONGS)
+        {
+            lastSongs.addLast(song);
+        }
+        else if (!songInDeque)
+        {
+            lastSongs.removeFirst();
+            lastSongs.addLast(song);
+        }
+        Iterator<String> it = lastSongs.iterator();
+        for (int i = 0; i < lastSongs.size(); i++)
+        {
+            ModLogger.info(".......%d title: %s", i, it.next());
+        }
+    }
+
+    private static boolean heardSong(String song)
+    {
+        boolean hasSong =  lastSongs.contains(song);
+        boolean isEmpty = lastSongs.isEmpty();
+        boolean manyFails = failedNewSongs > NUM_LAST_SONGS;
+        if (isEmpty || manyFails)
+        {
+            failedNewSongs = 0;
+            return false;
+        }
+        if (!manyFails && hasSong)
+        {
+            failedNewSongs++;
+            return true;
+        }
+        return false;
     }
 
     @Nullable
@@ -111,10 +156,13 @@ public class ClientPlayManager implements IAudioStatusCallback
     {
         TestData testData = TestData.getMML(rand.nextInt(TestData.values().length));
         String title = testData.getTitle();
-            if (title.equals(songName))
-                songName = randomSong();
+        while (heardSong(title))
+        {
+            testData = TestData.getMML(rand.nextInt(TestData.values().length));
+            title = testData.getTitle();
+        }
 
-        title = testData.getTitle();
+        trackLastSongs(title);
         ModLogger.info("------- Song title: %s", title);
         return testData.getMML();
     }
