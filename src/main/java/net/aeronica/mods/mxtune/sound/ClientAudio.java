@@ -251,7 +251,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         startThreadFactory();
         if(ClientCSDMonitor.canMXTunesPlay() && playID != PlayIdSupplier.PlayType.INVALID)
         {
-            ClientPlayManager.higherPriority(playID);
+            ClientPlayManager.removeLowerPriorityPlayIds(playID);
             addPlayIDQueue(playID);
             AudioData audioData = new AudioData(playID, pos, isClient, soundRange, callback);
             setAudioFormat(audioData);

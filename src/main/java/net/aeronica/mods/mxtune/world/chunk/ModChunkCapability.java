@@ -57,12 +57,9 @@ public class ModChunkCapability
     public static void onEvent(final ChunkWatchEvent.Watch event)
     {
         final EntityPlayerMP player = event.getPlayer();
-        // TODO: Ask Server for caps
         final Chunk chunk = event.getChunkInstance();
         if (chunk == null) return;
-
-        final String test = ModChunkDataHelper.getString(chunk);
-        //ModLogger.info("ChunkCaps side: %s, chunk: %s, String: %s", MXTune.proxy.getEffectiveSide(), chunk.getPos(), test);
+        
         PacketDispatcher.sendToAllAround(new UpdateChunkMusicData(chunk.getPos().x, chunk.getPos().z, ModChunkDataHelper.isFunctional(chunk), ModChunkDataHelper.getString(chunk)), player, 80);
     }
 

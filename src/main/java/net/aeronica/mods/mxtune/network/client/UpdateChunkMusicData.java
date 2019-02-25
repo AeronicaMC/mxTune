@@ -66,14 +66,11 @@ public class UpdateChunkMusicData extends AbstractClientMessage<UpdateChunkMusic
     public void process(EntityPlayer player, Side side)
     {
         World world = MXTune.proxy.getClientWorld();
-
         if (world != null && world.isChunkGeneratedAt(chunkX, chunkZ))
         {
-            //ModLogger.info("Chunk x: %d, z: %d, functional: %s, string: %s", chunkX, chunkZ, functional, someMusic);
             Chunk chunk = world.getChunk(chunkX, chunkZ);
             ModChunkDataHelper.setFunctional(chunk, functional);
             ModChunkDataHelper.setString(chunk, someMusic);
         }
-        // TODO: Cache this in a map?
     }
 }

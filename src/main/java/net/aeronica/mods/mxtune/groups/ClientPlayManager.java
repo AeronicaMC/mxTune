@@ -119,9 +119,9 @@ public class ClientPlayManager implements IAudioStatusCallback
         return testData.getMML();
     }
 
-    public static void higherPriority(int playId)
+    public static void removeLowerPriorityPlayIds(int playId)
     {
-        PlayType testType = getTypeForPlayId(playId);;
+        PlayType testType = getTypeForPlayId(playId);
         switch (testType)
         {
             case EVENT:
@@ -131,6 +131,10 @@ public class ClientPlayManager implements IAudioStatusCallback
             case AREA:
                 removePlayTypeBelow(GroupHelper.getClientManagedPlayIDs(), playId);
             case WORLD:
+                break;
+            default:
+                ModLogger.warn("ClientPlayManager#removeLowerPriorityPlayIds: playId %d out of range!");
+                break;
         }
     }
 
@@ -147,10 +151,12 @@ public class ClientPlayManager implements IAudioStatusCallback
     @Override
     public void statusCallBack(Status status, int playId)
     {
-        if (currentPlayId == playId && (status == Status.ERROR || status == Status.DONE))
-        {
-            invalidatePlayId();
-            changeAreaMusic();
-        }
+        Minecraft.getMinecraft().addScheduledTask(() -> {
+            if (currentPlayId == playId && (status == Status.ERROR || status == Status.DONE))
+            {
+                invalidatePlayId();
+                changeAreaMusic();
+            }
+        });
     }
 }
