@@ -91,7 +91,7 @@ public class ClientPlayManager implements IAudioStatusCallback
         Iterator<String> it = lastSongs.iterator();
         for (int i = 0; i < lastSongs.size(); i++)
         {
-            ModLogger.info(".......%d title: %s", i, it.next());
+            ModLogger.info(".......%d title: %s", i+1, it.next());
         }
     }
 
@@ -105,7 +105,7 @@ public class ClientPlayManager implements IAudioStatusCallback
             failedNewSongs = 0;
             return false;
         }
-        if (!manyFails && hasSong)
+        if (hasSong)
         {
             failedNewSongs++;
             return true;
