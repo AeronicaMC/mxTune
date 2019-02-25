@@ -391,10 +391,9 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
                 playIDAudioData.remove(Objects.requireNonNull(delayedAudioDataRemovalQueue.poll()));
     }
 
-    private static void queueAudioDataRemoval(Integer playID)
+    private static void queueAudioDataRemoval(int playID)
     {
-        if (playID != null)
-            delayedAudioDataRemovalQueue.add(playID);
+        delayedAudioDataRemovalQueue.add(playID);
     }
 
     private static void init()
