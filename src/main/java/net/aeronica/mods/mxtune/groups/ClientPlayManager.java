@@ -139,7 +139,7 @@ public class ClientPlayManager implements IAudioStatusCallback
 
         String s = ModChunkDataHelper.getString(chunk);
         boolean b = ModChunkDataHelper.isFunctional(chunk);
-        ModLogger.info("----- Enter Chunk %s, functional: %s, string: %s", chunk, b, s);
+        ModLogger.info("----- Enter Chunk %s, functional: %s, string: %s", chunk.getPos(), b, s);
     }
 
     private static void changeAreaMusic()
