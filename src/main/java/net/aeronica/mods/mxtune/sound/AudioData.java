@@ -35,8 +35,8 @@ public class AudioData
     private String uuid;
     private ISound iSound;
     private Status status;
-    private PlayIdSupplier.PlayType playType;
-    private IAudioStatusCallback callback;
+    private final PlayIdSupplier.PlayType playType;
+    private final IAudioStatusCallback callback;
 
     AudioData(Integer playId, BlockPos blockPos, boolean isClientPlayer, SoundRange soundRange, IAudioStatusCallback callback)
     {
@@ -49,7 +49,7 @@ public class AudioData
         this.callback = callback;
     }
 
-    public AudioFormat getAudioFormat()
+    public synchronized AudioFormat getAudioFormat()
     {
         return audioFormat;
     }
@@ -62,7 +62,7 @@ public class AudioData
         }
     }
 
-    public Status getStatus()
+    public synchronized Status getStatus()
     {
         return status;
     }
@@ -97,7 +97,7 @@ public class AudioData
 
     SoundRange getSoundRange() { return soundRange; }
 
-    AudioInputStream getAudioStream()
+    synchronized AudioInputStream getAudioStream()
     {
         return audioStream;
     }
@@ -120,7 +120,7 @@ public class AudioData
         this.uuid = uuid;
     }
 
-    ISound getISound()
+    synchronized ISound getISound()
     {
         return iSound;
     }
