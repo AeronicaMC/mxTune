@@ -51,7 +51,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     // AREA Song Shuffling
     private static final Random rand = new Random();
     private static Deque<String> lastSongs  = new ArrayDeque<>();
-    private static final int NUM_LAST_SONGS = 5;
+    private static final int NUM_LAST_SONGS = 10;
     private static int failedNewSongs;
 
     // TODO: Inter-song delay
