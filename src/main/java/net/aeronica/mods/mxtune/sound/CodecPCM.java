@@ -16,6 +16,7 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
+import net.aeronica.mods.mxtune.groups.PlayIdSupplier.PlayType;
 import net.aeronica.mods.mxtune.util.Util;
 import paulscode.sound.ICodec;
 import paulscode.sound.SoundBuffer;
@@ -146,7 +147,7 @@ public class CodecPCM implements ICodec
         if (playID == null)
         {
             playID = pollPlayIDQueue02();
-            if (playID == null)
+            if (playID == null || playID == PlayType.INVALID)
             {
                 errorMessage("playID not initialized");
                 return false;
@@ -173,12 +174,14 @@ public class CodecPCM implements ICodec
         {
             errorMessage("Unsupported audio format in method 'initialize'");
             printStackTrace(uafe);
+            cleanup();
             audioDataSetStatus(Status.ERROR);
             return false;
         } catch (IOException ioe)
         {
             errorMessage("Error setting up audio input stream in method " + "'initialize'");
             printStackTrace(ioe);
+            cleanup();
             audioDataSetStatus(Status.ERROR);
             return false;
         }
@@ -326,7 +329,7 @@ public class CodecPCM implements ICodec
     @Override
     public void cleanup()
     {
-        message("cleanup");
+        message("cleanup failed initialization for playId: " + playID);
         if (audioInputStream != null)
             try
             {
