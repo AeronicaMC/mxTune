@@ -38,7 +38,7 @@ import java.util.Map;
 @SuppressWarnings("restriction")
 public class Midi2WavRenderer implements Receiver
 {
-    public Midi2WavRenderer() throws MidiUnavailableException, InvalidMidiDataException, IOException
+    public Midi2WavRenderer()
     {
         /* The Constructor of course */
     }
@@ -54,7 +54,7 @@ public class Midi2WavRenderer implements Receiver
      * @throws IOException potential exception
      * @return the AudioInputStream
      */
-    AudioInputStream createPCMStream(Sequence sequence, AudioFormat format) throws MidiUnavailableException, InvalidMidiDataException, IOException
+    AudioInputStream createPCMStream(Sequence sequence, AudioFormat format) throws Midi2WavRendererRuntimeException, MidiUnavailableException
     {    
         Soundbank mxTuneSoundBank = MIDISystemUtil.getMXTuneSoundBank();
         AudioSynthesizer audioSynthesizer = findAudioSynthesizer();

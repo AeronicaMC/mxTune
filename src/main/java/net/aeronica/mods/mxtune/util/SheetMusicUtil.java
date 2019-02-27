@@ -27,6 +27,7 @@ import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.inventory.IMusic;
 import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.aeronica.mods.mxtune.sound.Midi2WavRenderer;
+import net.aeronica.mods.mxtune.sound.Midi2WavRendererRuntimeException;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -39,8 +40,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import javax.annotation.Nonnull;
-import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MidiUnavailableException;
 import java.io.IOException;
 
 public enum SheetMusicUtil
@@ -155,7 +154,7 @@ public enum SheetMusicUtil
             {
                 // sequence in seconds plus 4 a second buffer. Same as the MIDI2WaveRenderer class.
                 seconds = (int) (midi2WavRenderer.getSequenceInSeconds(mmlTrans.getSequence()) + 4);
-            } catch (MidiUnavailableException | InvalidMidiDataException | IOException e)
+            } catch (Midi2WavRendererRuntimeException e)
             {
                 ModLogger.debug("ValidateMML Error: %s in %s", e, SheetMusicUtil.class.getSimpleName());
                 return ValidDuration.INVALID;

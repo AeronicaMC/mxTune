@@ -27,7 +27,6 @@ import net.minecraft.client.resources.I18n;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Patch;
 import javax.sound.sampled.AudioInputStream;
@@ -83,11 +82,10 @@ public class MML2PCM
             Midi2WavRenderer mw = new Midi2WavRenderer();
             AudioInputStream pcmStream = mw.createPCMStream(mmlToMIDI.getSequence(), audioData.getAudioFormat());
             audioData.setAudioStream(pcmStream);
-        } catch (MidiUnavailableException | InvalidMidiDataException | IOException e)
+        } catch (Midi2WavRendererRuntimeException | MidiUnavailableException e)
         {
-            ModLogger.error(e);
             audioData.setStatus(ERROR);
-            ModLogger.error("MIDI to PCM process: MidiUnavailableException | InvalidMidiDataException | IOException", e);
+            ModLogger.error("MIDI to PCM process: ", e);
             return false;
         }
         audioData.setStatus(READY);
