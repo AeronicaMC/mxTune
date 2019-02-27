@@ -34,6 +34,8 @@ import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 import java.util.Random;
 
+import static net.aeronica.mods.mxtune.sound.ClientAudio.*;
+
 public class CodecPCM implements ICodec
 {
     /**
@@ -143,7 +145,7 @@ public class CodecPCM implements ICodec
         initialized(SET, false);
         if (playID == null)
         {
-            playID = ClientAudio.pollPlayIDQueue02();
+            playID = pollPlayIDQueue02();
             if (playID == null)
             {
                 errorMessage("playID not initialized");
@@ -151,7 +153,7 @@ public class CodecPCM implements ICodec
             }
             else
             {
-                audioData = ClientAudio.getAudioData(playID);
+                audioData = getAudioData(playID);
                 myAudioFormat = audioData.getAudioFormat();
             }
         }
@@ -160,6 +162,7 @@ public class CodecPCM implements ICodec
         {
             errorMessage("url null in method 'initialize'");
             cleanup();
+            audioDataSetStatus(Status.ERROR);
             return false;
         }
         try
@@ -170,11 +173,13 @@ public class CodecPCM implements ICodec
         {
             errorMessage("Unsupported audio format in method 'initialize'");
             printStackTrace(uafe);
+            audioDataSetStatus(Status.ERROR);
             return false;
         } catch (IOException ioe)
         {
             errorMessage("Error setting up audio input stream in method " + "'initialize'");
             printStackTrace(ioe);
+            audioDataSetStatus(Status.ERROR);
             return false;
         }
 
@@ -213,7 +218,7 @@ public class CodecPCM implements ICodec
                 if (bufferSize == -1)
                 {
                     endOfStream(SET, true);
-                    audioData.setStatus(ClientAudio.Status.DONE);
+                    audioDataSetStatus(Status.DONE);
                     return null;
                 }
             }
@@ -225,6 +230,7 @@ public class CodecPCM implements ICodec
                 {
                     errorMessage("MML to PCM audio processing took too long. Aborting!");
                     endOfStream(SET, true);
+                    audioDataSetStatus(Status.ERROR);
                     return null;
                 }
             }
@@ -232,6 +238,7 @@ public class CodecPCM implements ICodec
         {
             printStackTrace(e);
             endOfStream(SET, true);
+            audioDataSetStatus(Status.ERROR);
             return null;
         }
         if (!reverseBytes && outputBuffer != null)
@@ -241,7 +248,7 @@ public class CodecPCM implements ICodec
 
 	private boolean hasInputStreamError()
     {
-        if (!initialized || myAudioFormat == null || audioData == null || audioData.getStatus() == ClientAudio.Status.ERROR)
+        if (!initialized || myAudioFormat == null || audioData == null || audioData.getStatus() == Status.ERROR)
         {
             errorMessage("Not initialized in 'read'");
             return true;
@@ -252,12 +259,17 @@ public class CodecPCM implements ICodec
 
     private void notifyOnInputStreamAvailable()
     {
-        if (!hasStream && (audioData.getStatus() == ClientAudio.Status.READY))
+        if (!hasStream && (audioData.getStatus() == Status.READY))
         {
             audioInputStream = audioData.getAudioStream();
             message("Waiting buffer count: " + zeroBufferCount);
             hasStream = true;
         }
+    }
+
+    private void audioDataSetStatus(Status status)
+    {
+        if (audioData != null) audioData.setStatus(status);
     }
 
 	/** Load the entire buffer at once.
@@ -274,7 +286,7 @@ public class CodecPCM implements ICodec
             errorMessage("Not initialized in 'readAll'");
             return null;
         }
-        if ((myAudioFormat == null) || (audioData == null) || (audioData.getStatus() == ClientAudio.Status.ERROR))
+        if ((myAudioFormat == null) || (audioData == null) || (audioData.getStatus() == Status.ERROR))
         {
             errorMessage("Audio Format null in method 'readAll'");
             return null;
