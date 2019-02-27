@@ -70,6 +70,6 @@ public class ModChunkDataHelper
 
     public static void sync(EntityPlayer entityPlayer, Chunk chunk)
     {
-        PacketDispatcher.sendToAllAround(new UpdateChunkMusicData(chunk.x, chunk.z, getImpl(chunk).isFunctional(), getImpl(chunk).getString()), entityPlayer, 80);
+        PacketDispatcher.sendToAllAround(new UpdateChunkMusicData(chunk.x, chunk.z, isFunctional(chunk), getString(chunk)), entityPlayer, 80);
     }
 }
