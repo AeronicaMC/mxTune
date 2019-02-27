@@ -263,7 +263,17 @@ public class CodecPCM implements ICodec
         {
             audioInputStream = audioData.getAudioStream();
             message("Waiting buffer count: " + zeroBufferCount);
-            hasStream = true;
+            try
+            {
+                if (audioInputStream != null)
+                    message("Initial audioInputStream bytes available " + audioInputStream.available());
+                hasStream = true;
+            }
+            catch (IOException e)
+            {
+                errorMessage("audioInputStream error");
+                audioDataSetStatus(Status.ERROR);
+            }
         }
     }
 
