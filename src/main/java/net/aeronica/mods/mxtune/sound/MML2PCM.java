@@ -82,7 +82,7 @@ public class MML2PCM
             Midi2WavRenderer mw = new Midi2WavRenderer();
             AudioInputStream pcmStream = mw.createPCMStream(mmlToMIDI.getSequence(), audioData.getAudioFormat());
             audioData.setAudioStream(pcmStream);
-        } catch (Midi2WavRendererRuntimeException | MidiUnavailableException e)
+        } catch (ModMidiException | MidiUnavailableException e)
         {
             audioData.setStatus(ERROR);
             ModLogger.error("MIDI to PCM process: ", e);

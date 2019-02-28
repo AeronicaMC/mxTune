@@ -64,7 +64,7 @@ public class ClientPlayManager implements IAudioStatusCallback
         if (ClientCSDMonitor.canMXTunesPlay() && (event.phase == TickEvent.Phase.END))
         {
             updateChunk();
-            for (int manaagedPlayId : GroupHelper.getServerManagedPlayIDS())
+            for (int manaagedPlayId : GroupHelper.getServerManagedPlayIDs())
             {
                 for (int actitvePlayId : ClientAudio.getActivePlayIDs())
                 {
@@ -181,7 +181,7 @@ public class ClientPlayManager implements IAudioStatusCallback
         {
             case EVENT:
             case PERSONAL:
-                removePlayTypeBelow(GroupHelper.getServerManagedPlayIDS(), playId, testType);
+                removePlayTypeBelow(GroupHelper.getServerManagedPlayIDs(), playId, testType);
             case PLAYERS:
             case AREA:
                 removePlayTypeBelow(ClientAudio.getActivePlayIDs(), playId, testType);

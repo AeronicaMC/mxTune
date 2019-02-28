@@ -118,7 +118,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
     private static final int MAX_STREAM_CHANNELS = 16;
     private static final int DESIRED_STREAM_CHANNELS = 8;
 
-    public synchronized static Set<Integer> getActivePlayIDs()
+    public static synchronized Set<Integer> getActivePlayIDs()
     {
         return Collections.unmodifiableSet(new HashSet<>(playIDAudioData.keySet()));
     }

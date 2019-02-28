@@ -27,7 +27,6 @@ import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import javax.sound.midi.*;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,16 +49,15 @@ public class Midi2WavRenderer implements Receiver
      * @param sequence the MIDI sequence to be rendered
      * @param format the audio format for rendering
      * @throws MidiUnavailableException potential exception
-     * @throws InvalidMidiDataException potential exception
-     * @throws IOException potential exception
+     * @throws ModMidiException potential exception
      * @return the AudioInputStream
      */
-    AudioInputStream createPCMStream(Sequence sequence, AudioFormat format) throws Midi2WavRendererRuntimeException, MidiUnavailableException
+    AudioInputStream createPCMStream(Sequence sequence, AudioFormat format) throws ModMidiException, MidiUnavailableException
     {    
         Soundbank mxTuneSoundBank = MIDISystemUtil.getMXTuneSoundBank();
         AudioSynthesizer audioSynthesizer = findAudioSynthesizer();
         if (audioSynthesizer == null) {
-            throw new Midi2WavRendererRuntimeException("No AudioSynthesizer was found!");
+            throw new ModMidiException("No AudioSynthesizer was found!");
         }
         
         Map<String, Object> p = new HashMap<>();
@@ -111,7 +109,7 @@ public class Midi2WavRenderer implements Receiver
         return null;
     }
 
-    public double getSequenceInSeconds(Sequence sequence)
+    public double getSequenceInSeconds(Sequence sequence) throws ModMidiException
     {
         return send(sequence, this);
     }
@@ -125,7 +123,7 @@ public class Midi2WavRenderer implements Receiver
     /**
      * Send entry MIDI Sequence into Receiver using timestamps.
      */
-    private double send(Sequence seq, Receiver recv)
+    private double send(Sequence seq, Receiver recv) throws ModMidiException
     {
         if (seq == null) return 0D;
 
@@ -155,7 +153,7 @@ public class Midi2WavRenderer implements Receiver
                 break;
             tracksPos[selectedTrack]++;
             if (selectedEvent == null)
-                throw new Midi2WavRendererRuntimeException("Null MidiEvent in \'send\' method: " +seq);
+                throw new ModMidiException("Null MidiEvent in \'send\' method: " +seq);
             long tick = selectedEvent.getTick();
             if ((int)divisionType == (int)Sequence.PPQ)
                 currentTime += ((tick - lastTick) * mpq) / seqResolution;
