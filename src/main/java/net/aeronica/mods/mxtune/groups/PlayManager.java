@@ -24,10 +24,7 @@ import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
-import net.aeronica.mods.mxtune.network.client.PlayBlockMusicMessage;
-import net.aeronica.mods.mxtune.network.client.PlayJamMessage;
-import net.aeronica.mods.mxtune.network.client.PlaySoloMessage;
-import net.aeronica.mods.mxtune.network.client.SyncStatusMessage;
+import net.aeronica.mods.mxtune.network.client.*;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.EntityLivingBase;
@@ -296,6 +293,7 @@ public class PlayManager
             membersQueuedStatus.remove(member);
         }
         removeActivePlayID(playID);
+        PacketDispatcher.sendToAll(new StopPlayIDMessage(playID));
     }
     
     private static void removeActivePlayID(int playID)

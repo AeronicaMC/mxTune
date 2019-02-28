@@ -64,6 +64,13 @@ public class ClientPlayManager implements IAudioStatusCallback
         if (ClientCSDMonitor.canMXTunesPlay() && (event.phase == TickEvent.Phase.END))
         {
             updateChunk();
+            for (int manaagedPlayId : GroupHelper.getServerManagedPlayIDS())
+            {
+                for (int actitvePlayId : ClientAudio.getActivePlayIDs())
+                {
+
+                }
+            }
         }
     }
 
@@ -144,7 +151,7 @@ public class ClientPlayManager implements IAudioStatusCallback
 
     private static void changeAreaMusic()
     {
-        boolean canPlay = GroupHelper.getAllPlayIDs().isEmpty() && GroupHelper.getClientManagedPlayIDs().isEmpty();
+        boolean canPlay = ClientAudio.getActivePlayIDs().isEmpty();
         if (canPlay)
         {
             currentPlayId = AREA.getAsInt();
@@ -174,10 +181,10 @@ public class ClientPlayManager implements IAudioStatusCallback
         {
             case EVENT:
             case PERSONAL:
-                removePlayTypeBelow(GroupHelper.getServerManagedPlayIDS(), playId);
+                removePlayTypeBelow(GroupHelper.getServerManagedPlayIDS(), playId, testType);
             case PLAYERS:
             case AREA:
-                removePlayTypeBelow(GroupHelper.getClientManagedPlayIDs(), playId);
+                removePlayTypeBelow(ClientAudio.getActivePlayIDs(), playId, testType);
             case WORLD:
                 break;
             default:
@@ -186,13 +193,13 @@ public class ClientPlayManager implements IAudioStatusCallback
         }
     }
 
-    private static void removePlayTypeBelow(Set<Integer> setOfPlayIDS, int playId)
+    private static void removePlayTypeBelow(Set<Integer> setOfPlayIDS, int playId, PlayType playTypeIn)
     {
         PlayType playType = getTypeForPlayId(playId);
         for (int pid : setOfPlayIDS)
         {
-            if (pid < playType.start)
-                setOfPlayIDS.remove(pid);
+            if (PlayIdSupplier.compare(playTypeIn, playType) < 0)
+                ClientAudio.queueAudioDataRemoval(pid);
         }
     }
 

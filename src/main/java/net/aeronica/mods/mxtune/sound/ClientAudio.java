@@ -82,9 +82,7 @@ import paulscode.sound.SoundSystemException;
 import javax.annotation.Nonnull;
 import javax.sound.sampled.AudioFormat;
 import java.nio.IntBuffer;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Predicate;
 
@@ -119,6 +117,11 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
 
     private static final int MAX_STREAM_CHANNELS = 16;
     private static final int DESIRED_STREAM_CHANNELS = 8;
+
+    public synchronized static Set<Integer> getActivePlayIDs()
+    {
+        return Collections.unmodifiableSet(new HashSet<>(playIDAudioData.keySet()));
+    }
 
     private static void startThreadFactory()
     {
@@ -232,7 +235,6 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
 
     public static void playLocal(int playId, String musicText, IAudioStatusCallback callback)
     {
-        GroupHelper.addClientManagedActivePlayID(playId);
         play(playId, Minecraft.getMinecraft().player.getPosition(), musicText, true, SoundRange.INFINITY, callback);
     }
 
@@ -359,7 +361,9 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
             removeQueuedAudioData();
             for (Map.Entry<Integer, AudioData> entry : playIDAudioData.entrySet())
             {
-                if (playIdExpired(entry.getKey()))
+                AudioData audioData = entry.getValue();
+                Status status = audioData.getStatus();
+                if (playIdExpired(audioData.getPlayId()) || status == Status.ERROR || status == Status.DONE)
                 {
                     // Stopping playing audio takes 100 milliseconds. e.g. SoundSystem fadeOut(<source>, <delay in ms>)
                     // To prevent audio clicks/pops we have the wait at least that amount of time
@@ -369,11 +373,6 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
                     stop(entry.getKey());
                     queueAudioDataRemoval(entry.getKey());
                     ModLogger.info("updateClientAudio: AudioData for playID queued for removal");
-                }
-                Status status = entry.getValue().getStatus();
-                if (status == Status.DONE || status == Status.ERROR)
-                {
-                    GroupHelper.removeClientManagedPlayID(entry.getKey());
                 }
             }
         }
@@ -391,7 +390,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
                 playIDAudioData.remove(Objects.requireNonNull(delayedAudioDataRemovalQueue.poll()));
     }
 
-    private static void queueAudioDataRemoval(int playID)
+    public static void queueAudioDataRemoval(int playID)
     {
         delayedAudioDataRemovalQueue.add(playID);
     }

@@ -19,7 +19,6 @@ package net.aeronica.mods.mxtune.gui.mml;
 
 import net.aeronica.libs.mml.core.*;
 import net.aeronica.mods.mxtune.config.ModConfig;
-import net.aeronica.mods.mxtune.groups.GroupHelper;
 import net.aeronica.mods.mxtune.groups.PlayIdSupplier;
 import net.aeronica.mods.mxtune.gui.util.GuiLink;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
@@ -631,7 +630,7 @@ public class GuiMusicPaperParse extends GuiScreen implements IAudioStatusCallbac
 
     private void mmlStop()
     {
-        GroupHelper.removeClientManagedPlayID(playId);
+        ClientAudio.queueAudioDataRemoval(playId);
         isPlaying = false;
         playId = PlayIdSupplier.PlayType.INVALID;
     }

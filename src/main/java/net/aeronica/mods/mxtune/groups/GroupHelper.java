@@ -22,6 +22,7 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Sets;
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.config.ModConfig;
+import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;
@@ -53,7 +54,7 @@ public class GroupHelper
     private static Map<Integer, Integer> membersQueuedStatus = Collections.emptyMap();
     private static Map<Integer, Integer> membersPlayID = Collections.emptyMap();
     private static Set<Integer> activeServerManagedPlayIDs = new ConcurrentSkipListSet<>();
-    private static Set<Integer> activeClientManagedPlayIDs = new ConcurrentSkipListSet<>();
+    //private static Set<Integer> activeClientManagedPlayIDs = new ConcurrentSkipListSet<>();
 
     private GroupHelper() { /* NOP */ }
 
@@ -131,16 +132,9 @@ public class GroupHelper
             activeServerManagedPlayIDs.add(playId);
     }
 
-    @SideOnly(Side.CLIENT)
-    public static void addClientManagedActivePlayID(int playId)
-    {
-        if (playId != PlayIdSupplier.PlayType.INVALID)
-            activeClientManagedPlayIDs.add(playId);
-    }
-
     public static Set<Integer> getAllPlayIDs()
     {
-        return mergeSets(activeServerManagedPlayIDs, activeClientManagedPlayIDs);
+        return mergeSets(activeServerManagedPlayIDs, ClientAudio.getActivePlayIDs());
     }
 
     private static<T> Set<T> mergeSets(Set<T> a, Set<T> b)
@@ -154,7 +148,7 @@ public class GroupHelper
     {
         synchronized (INSTANCE)
         {
-            activeClientManagedPlayIDs.remove(playId);
+            ClientAudio.queueAudioDataRemoval(playId);
         }
     }
 
@@ -162,14 +156,8 @@ public class GroupHelper
     {
         synchronized (INSTANCE)
         {
-            activeClientManagedPlayIDs.clear();
             activeServerManagedPlayIDs.clear();
         }
-    }
-
-    public static Set<Integer> getClientManagedPlayIDs()
-    {
-        return activeClientManagedPlayIDs;
     }
 
     public static Set<Integer> getServerManagedPlayIDS()
