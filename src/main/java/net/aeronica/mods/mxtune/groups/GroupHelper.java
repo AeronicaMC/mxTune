@@ -160,7 +160,7 @@ public class GroupHelper
         }
     }
 
-    static Set<Integer> getServerManagedPlayIDs()
+    public static Set<Integer> getServerManagedPlayIDs()
     {
         return activeServerManagedPlayIDs;
     }

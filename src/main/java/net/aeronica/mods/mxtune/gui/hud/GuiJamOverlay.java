@@ -22,6 +22,7 @@ import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.groups.GroupHelper;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
+import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.util.PlacedInstrumentUtil;
 import net.aeronica.mods.mxtune.util.Util;
@@ -290,10 +291,26 @@ public class GuiJamOverlay extends Gui
         }
         if (GroupHelper.getAllPlayIDs() != null && !GroupHelper.getAllPlayIDs().isEmpty())
         {
-            String status = "ActivePlayIDs:  " + GroupHelper.getAllPlayIDs().toString();
+            String status = "All Play IDs:  " + GroupHelper.getAllPlayIDs().toString();
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
             qY = hd.quadY(maxHeight, 70, 4, 10);
+            fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
+        }
+        if (GroupHelper.getServerManagedPlayIDs() != null && !GroupHelper.getServerManagedPlayIDs().isEmpty())
+        {
+            String status = "Server Managed PlayIDs:  " + GroupHelper.getServerManagedPlayIDs().toString();
+            statusWidth = fontRenderer.getStringWidth(status);
+            qX = hd.quadX(maxWidth, 0, 4, statusWidth);
+            qY = hd.quadY(maxHeight, 80, 4, 10);
+            fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
+        }
+        if (ClientAudio.getActivePlayIDs() != null && !ClientAudio.getActivePlayIDs().isEmpty())
+        {
+            String status = "Client Active PlayIDs:  " + ClientAudio.getActivePlayIDs().toString();
+            statusWidth = fontRenderer.getStringWidth(status);
+            qX = hd.quadX(maxWidth, 0, 4, statusWidth);
+            qY = hd.quadY(maxHeight, 90, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
         if (GroupHelper.getAllPlayIDs() != null && !GroupHelper.getAllPlayIDs().isEmpty())
@@ -301,7 +318,7 @@ public class GuiJamOverlay extends Gui
             String status = "GroupHelper.index:   " + GroupHelper.getIndex(mc.player.getEntityId());
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
-            qY = hd.quadY(maxHeight, 80, 4, 10);
+            qY = hd.quadY(maxHeight, 100, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
         if (GroupHelper.getGroupsMembers() != null && !GroupHelper.getGroupsMembers().isEmpty())
@@ -309,7 +326,7 @@ public class GuiJamOverlay extends Gui
             String status = "GroupsMembers:  " + GroupHelper.getGroupsMembers();
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
-            qY = hd.quadY(maxHeight, 90, 4, 10);
+            qY = hd.quadY(maxHeight, 110, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
         if (GroupHelper.getGroupsMembers() != null && !GroupHelper.getGroupsMembers().isEmpty())
@@ -317,7 +334,7 @@ public class GuiJamOverlay extends Gui
             String status = String.format("Group Distance: %-1.2f", GroupHelper.getGroupMembersScaledDistance(mc.player));
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
-            qY = hd.quadY(maxHeight, 100, 4, 10);
+            qY = hd.quadY(maxHeight, 120, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
     }
