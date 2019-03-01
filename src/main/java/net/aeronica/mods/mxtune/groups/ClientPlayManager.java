@@ -54,7 +54,12 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static final int NUM_LAST_SONGS = 10;
     private static int failedNewSongs;
 
-    // TODO: Inter-song delay
+    // Inter-song delay
+    private static final int MAX_DELAY = 600;
+    private static final int MIN_DELAY = 200;
+    private static int delay = MAX_DELAY / 2;
+    private static int counter = 0;
+    private static boolean wait = false;
 
     private ClientPlayManager() { /* NOP */ }
 
@@ -64,13 +69,7 @@ public class ClientPlayManager implements IAudioStatusCallback
         if (ClientCSDMonitor.canMXTunesPlay() && (event.phase == TickEvent.Phase.END))
         {
             updateChunk();
-            for (int manaagedPlayId : GroupHelper.getServerManagedPlayIDs())
-            {
-                for (int actitvePlayId : ClientAudio.getActivePlayIDs())
-                {
-
-                }
-            }
+            counter++;
         }
     }
 
@@ -151,8 +150,7 @@ public class ClientPlayManager implements IAudioStatusCallback
 
     private static void changeAreaMusic()
     {
-        boolean canPlay = ClientAudio.getActivePlayIDs().isEmpty();
-        if (canPlay)
+        if (!waiting())
         {
             currentPlayId = AREA.getAsInt();
             ClientAudio.playLocal(currentPlayId, randomSong(), INSTANCE);
@@ -174,32 +172,48 @@ public class ClientPlayManager implements IAudioStatusCallback
         return testData.getMML();
     }
 
+    private static boolean waiting()
+    {
+        Boolean canPlay = ClientAudio.getActivePlayIDs().isEmpty();
+        if (canPlay && !wait) {
+            startTimer();
+        }
+        if (canPlay && (counter > delay))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private static void startTimer()
+    {
+        counter = 0;
+        wait = true;
+    }
+
+    private static void resetTimer()
+    {
+        delay = rand.nextInt(MAX_DELAY - MIN_DELAY) + MIN_DELAY;
+        ModLogger.debug("resetTimer: new delay = %d", delay);
+        wait = false;
+    }
+
     public static void removeLowerPriorityPlayIds(int playId)
     {
         PlayType testType = getTypeForPlayId(playId);
-        switch (testType)
-        {
-            case EVENT:
-            case PERSONAL:
-                removePlayTypeBelow(GroupHelper.getServerManagedPlayIDs(), playId, testType);
-            case PLAYERS:
-            case AREA:
-                removePlayTypeBelow(ClientAudio.getActivePlayIDs(), playId, testType);
-            case WORLD:
-                break;
-            default:
-                ModLogger.warn("ClientPlayManager#removeLowerPriorityPlayIds: playId %d out of range!");
-                break;
-        }
+        removePlayTypeBelow(ClientAudio.getActivePlayIDs(), playId, testType);
+        resetTimer();
     }
 
     private static void removePlayTypeBelow(Set<Integer> setOfPlayIDS, int playId, PlayType playTypeIn)
     {
-        PlayType playType = getTypeForPlayId(playId);
         for (int pid : setOfPlayIDS)
         {
-            if (PlayIdSupplier.compare(playTypeIn, playType) < 0)
+            PlayType playType = getTypeForPlayId(pid);
+            if (PlayIdSupplier.compare(playTypeIn, playType) > 0)
+            {
                 ClientAudio.queueAudioDataRemoval(pid);
+            }
         }
     }
 
@@ -211,6 +225,7 @@ public class ClientPlayManager implements IAudioStatusCallback
             {
                 invalidatePlayId();
                 changeAreaMusic();
+                resetTimer();
             }
         });
     }

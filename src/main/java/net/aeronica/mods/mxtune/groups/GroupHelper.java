@@ -152,7 +152,7 @@ public class GroupHelper
         }
     }
 
-    public static void clearAllManagedPlayIDs()
+    public static void clearServerManagedPlayIDs()
     {
         synchronized (INSTANCE)
         {

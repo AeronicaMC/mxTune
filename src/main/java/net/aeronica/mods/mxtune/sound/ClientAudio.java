@@ -370,7 +370,6 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
                     // before removing the AudioData instance for this playID.
                     // Therefore the removal is queued for 250 milliseconds.
                     // e.g. the client tick setup to trigger once every 1/4 second.
-                    stop(entry.getKey());
                     queueAudioDataRemoval(entry.getKey());
                     ModLogger.info("updateClientAudio: AudioData for playID queued for removal");
                 }
@@ -390,9 +389,10 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
                 playIDAudioData.remove(Objects.requireNonNull(delayedAudioDataRemovalQueue.poll()));
     }
 
-    public static void queueAudioDataRemoval(int playID)
+    public static void queueAudioDataRemoval(int playId)
     {
-        delayedAudioDataRemovalQueue.add(playID);
+        stop(playId);
+        delayedAudioDataRemovalQueue.add(playId);
     }
 
     private static void init()
@@ -414,7 +414,6 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         playIDQueue01.clear();
         playIDQueue02.clear();
         playIDQueue03.clear();
-        GroupHelper.clearAllManagedPlayIDs();
     }
 
     @Override
