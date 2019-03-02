@@ -29,12 +29,25 @@ import static net.aeronica.mods.mxtune.util.SheetMusicUtil.formatDuration;
  * This is a simple implementation with no management options, such as removing tasks.
  * It may be friendlier to remove all the tasks on server shutdown.
  */
-class DurationTimer
+public class DurationTimer
 {
+    private static Timer timer;
     private DurationTimer() { /* NOP */ }
+
+    public static void start()
+    {
+        timer = new Timer("Timer");
+    }
+
+    public static void shutdown()
+    {
+        timer.purge();
+        timer = null;
+    }
 
     static void scheduleStop(int playID, int duration)
     {
+        if (timer == null) return;
         TimerTask task;
         task = new TimerTask() {
             @Override
@@ -43,13 +56,14 @@ class DurationTimer
                 stop(playID, duration);
             }
         };
-        Timer timer = new Timer("Timer");
+
         long delay = duration * 1000L;
         timer.schedule(task, delay);
     }
 
     private static void stop(int playID, int duration)
     {
+        if (timer == null) return;
         ModLogger.debug("A scheduled stop was sent for playID: %d that had a duration of %s", playID, formatDuration(duration));
         PlayManager.stopPlayID(playID);
     }
