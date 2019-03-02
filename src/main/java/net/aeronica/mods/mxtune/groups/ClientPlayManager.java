@@ -175,14 +175,8 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static boolean waiting()
     {
         Boolean canPlay = ClientAudio.getActivePlayIDs().isEmpty();
-        if (canPlay && !wait) {
-            startTimer();
-        }
-        if (canPlay && (counter > delay))
-        {
-            return false;
-        }
-        return true;
+        if (canPlay && !wait) startTimer();
+        return !canPlay || (counter <= delay);
     }
 
     private static void startTimer()
@@ -194,18 +188,18 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static void resetTimer()
     {
         delay = rand.nextInt(MAX_DELAY - MIN_DELAY) + MIN_DELAY;
-        ModLogger.debug("resetTimer: new delay = %d", delay);
+        ModLogger.debug("resetTimer: new delay %05d seconds", delay/20);
         wait = false;
     }
 
     public static void removeLowerPriorityPlayIds(int playId)
     {
         PlayType testType = getTypeForPlayId(playId);
-        removePlayTypeBelow(ClientAudio.getActivePlayIDs(), playId, testType);
+        removePlayTypeBelow(ClientAudio.getActivePlayIDs(), testType);
         resetTimer();
     }
 
-    private static void removePlayTypeBelow(Set<Integer> setOfPlayIDS, int playId, PlayType playTypeIn)
+    private static void removePlayTypeBelow(Set<Integer> setOfPlayIDS, PlayType playTypeIn)
     {
         for (int pid : setOfPlayIDS)
         {
