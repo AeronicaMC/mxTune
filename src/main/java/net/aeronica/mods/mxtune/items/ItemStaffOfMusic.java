@@ -60,14 +60,14 @@ public class ItemStaffOfMusic extends Item
         {
             try
             {
-                FileHelper.getCompoundFromFile(FileHelper.getCacheFile(FileHelper.SERVER_LIB_FOLDER, "some_lib.dat", Side.SERVER));
+                FileHelper.getCompoundFromFile(FileHelper.getCacheFile(FileHelper.SERVER_MUSIC_FOLDER, "some_lib.dat", Side.SERVER));
                 FileHelper.getCompoundFromFile(FileHelper.getCacheFile(FileHelper.SERVER_PLAYLISTS_FOLDER, "some_playlist.dat", Side.SERVER));
                 NBTTagCompound tagCompound = new NBTTagCompound();
                 tagCompound.setString("testString", "Hello Server World!");
                 tagCompound.setString("chunkChunkPos", worldIn.getChunk(playerIn.getPosition()).getPos().toString());
                 tagCompound.setString("chunkString", ModChunkDataHelper.getString(worldIn.getChunk(playerIn.getPosition())));
                 tagCompound.setBoolean("chunkBoolean", ModChunkDataHelper.isFunctional(worldIn.getChunk(playerIn.getPosition())));
-                FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.SERVER_LIB_FOLDER, "some_lib.dat", Side.SERVER), tagCompound);
+                FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.SERVER_MUSIC_FOLDER, "some_lib.dat", Side.SERVER), tagCompound);
                 NBTTagCompound compound = new NBTTagCompound();
                 compound.setString("nameString", "Awesome Playlist");
                 compound.setInteger("listCount", 20);

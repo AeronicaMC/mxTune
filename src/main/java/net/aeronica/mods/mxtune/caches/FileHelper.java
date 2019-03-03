@@ -46,13 +46,14 @@ import java.nio.file.Paths;
 public class FileHelper
 {
     private static final String MOD_FOLDER = Reference.MOD_ID;
-    public static final String CLIENT_CACHE_FOLDER = MOD_FOLDER + "/client_cache";
-    public static final String CLIENT_MML_FOLDER = MOD_FOLDER + "/client_mml";
-    public static final String CLIENT_LIB_FOLDER = MOD_FOLDER + "/client_lib";
-    public static final String CLIENT_PLAYLISTS_FOLDER = MOD_FOLDER + "/client_playlists";
-    public static final String CLIENT_SERVER_CACHE_FOLDER = MOD_FOLDER + "/client_server_cache";
-    public static final String SERVER_LIB_FOLDER = MOD_FOLDER + "/server_lib";
-    public static final String SERVER_PLAYLISTS_FOLDER = MOD_FOLDER + "/server_playlists";
+    public static final String CLIENT_FOLDER = MOD_FOLDER;
+    public static final String CLIENT_MML_FOLDER = MOD_FOLDER + "/import_folder";
+    public static final String CLIENT_LIB_FOLDER = MOD_FOLDER + "/library";
+    public static final String CLIENT_PLAYLISTS_FOLDER = MOD_FOLDER + "/playlists";
+    public static final String CLIENT_SERVER_CACHE_FOLDER = MOD_FOLDER + "/server_cache";
+    public static final String SERVER_FOLDER = MOD_FOLDER;
+    public static final String SERVER_MUSIC_FOLDER = MOD_FOLDER + "/music";
+    public static final String SERVER_PLAYLISTS_FOLDER = MOD_FOLDER + "/playlists";
 
     private static Path serverWorldFolder;
 
