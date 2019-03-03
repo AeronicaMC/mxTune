@@ -18,6 +18,7 @@
 package net.aeronica.mods.mxtune.caches;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
@@ -30,7 +31,7 @@ import java.util.UUID;
  * {@link "https://stackoverflow.com/questions/10867405/generating-v5-uuid-what-is-name-and-namespace/28776880#28776880"}
  */
 public class UUIDType5 {
-    private static final Charset UTF8 = Charset.forName("UTF-8");
+    private static final Charset UTF8 = StandardCharsets.UTF_8;
     public static final UUID NAMESPACE_DNS = UUID.fromString("6ba7b810-9dad-11d1-80b4-00c04fd430c8");
     public static final UUID NAMESPACE_URL = UUID.fromString("6ba7b811-9dad-11d1-80b4-00c04fd430c8");
     public static final UUID NAMESPACE_OID = UUID.fromString("6ba7b812-9dad-11d1-80b4-00c04fd430c8");
@@ -46,6 +47,8 @@ public class UUIDType5 {
     public static final UUID NAMESPACE_SPARE5 = UUID.fromString("1ee02c2c-3df3-11e9-b210-d663bd873d93");
     public static final UUID NAMESPACE_SPARE6 = UUID.fromString("1ee0300a-3df3-11e9-b210-d663bd873d93");
     public static final UUID NAMESPACE_SPARE7 = UUID.fromString("1ee0317c-3df3-11e9-b210-d663bd873d93");
+
+    private UUIDType5() { /* NOP */ }
 
     public static UUID nameUUIDFromNamespaceAndString(UUID namespace, String name) {
         return nameUUIDFromNamespaceAndBytes(namespace, Objects.requireNonNull(name, "name == null").getBytes(UTF8));
