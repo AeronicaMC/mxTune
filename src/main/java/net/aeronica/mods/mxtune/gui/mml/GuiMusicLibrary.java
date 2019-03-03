@@ -27,6 +27,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.GuiScrollingList;
+import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -323,7 +324,7 @@ public class GuiMusicLibrary extends GuiScreen
 
     private void initFileList()
     {
-        Path path = FileHelper.getDirectory(FileHelper.CLIENT_LIB_FOLDER);
+        Path path = FileHelper.getDirectory(FileHelper.CLIENT_LIB_FOLDER, Side.CLIENT);
         PathMatcher filter = FileHelper.getDatMatcher(path);
         try (Stream<Path> paths = Files.list(path))
         {

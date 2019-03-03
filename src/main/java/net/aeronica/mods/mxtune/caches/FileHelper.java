@@ -29,7 +29,12 @@ import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -48,6 +53,19 @@ public class FileHelper
     public static final String CLIENT_SERVER_CACHE_FOLDER = MOD_FOLDER + "/client_server_cache";
     public static final String SERVER_LIB_FOLDER = MOD_FOLDER + "/server_lib";
     public static final String SERVER_PLAYLISTS_FOLDER = MOD_FOLDER + "/server_playlists";
+
+    private static Path serverWorldFolder;
+
+    /**
+     * Get a the path of the server side 'world' folder
+     */
+    public static void initialize()
+    {
+        // The top level "world" save folder a.k.a. the "Over World"
+        WorldServer worldServer = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(0);
+        File chunkDir = worldServer.getChunkSaveLocation();
+        serverWorldFolder = Paths.get(chunkDir.getPath());
+    }
 
     private FileHelper() { /* NOP */ }
 
@@ -85,21 +103,35 @@ public class FileHelper
             }
     }
 
+    /**
+     * Open an OS folder on the client side.
+     * @param folder of interest
+     */
+    @SideOnly(Side.CLIENT)
     public static void openFolder(String folder)
     {
-        OpenGlHelper.openFile(getDirectory(folder).toFile());
+        OpenGlHelper.openFile(getDirectory(folder, Side.CLIENT).toFile());
     }
 
-    public static Path getDirectory(String folder)
+    /**
+     * getDirectory is side sensitive.
+     * Client side references the game run folder (e.g. .minecraft): "."
+     * Server side references the world save folder (e.g. world):  "<world folder name>"
+     * @param folder folder name
+     * @param side Side.SERVER or Side CLIENT
+     * @return the Path of the folder on the specified side
+     */
+    public static Path getDirectory(String folder, Side side)
     {
-        Path loc = Paths.get(".", folder);
+        String sidedPath = side == Side.SERVER ? serverWorldFolder.toString() : ".";
+        Path loc = Paths.get(sidedPath, folder);
         fixDirectory(loc);
         return loc;
     }
 
-    public static Path getCacheFile(String folder, String filename) throws IOException
+    public static Path getCacheFile(String folder, String filename, Side sideIn) throws IOException
     {
-        Path dir = getDirectory(folder);
+        Path dir = getDirectory(folder, sideIn);
         Path cacheFile = dir.resolve(filename);
 
         if(!cacheFile.toFile().exists())

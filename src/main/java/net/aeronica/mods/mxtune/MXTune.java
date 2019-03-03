@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune;
 
 import net.aeronica.mods.mxtune.advancements.ModCriteriaTriggers;
 import net.aeronica.mods.mxtune.blocks.TilePiano;
+import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.cmds.CommandSoundRange;
 import net.aeronica.mods.mxtune.datafixers.ItemInventoryWalker;
 import net.aeronica.mods.mxtune.datafixers.SheetMusicFixer;
@@ -30,13 +31,10 @@ import net.aeronica.mods.mxtune.options.PlayerMusicOptionsCapability;
 import net.aeronica.mods.mxtune.proxy.ServerProxy;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.MusicTab;
-import net.aeronica.mods.mxtune.world.ModGlobalWorldSaveData;
 import net.aeronica.mods.mxtune.world.chunk.ModChunkCapability;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.util.datafix.walkers.ItemStackDataLists;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.CompoundDataFixer;
 import net.minecraftforge.common.util.ModFixs;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -45,16 +43,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-
-import javax.annotation.Nullable;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import static net.aeronica.mods.mxtune.caches.FileHelper.SERVER_LIB_FOLDER;
-import static net.aeronica.mods.mxtune.world.ModGlobalWorldSaveData.get;
 
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION,
      acceptedMinecraftVersions = Reference.ACCEPTED_MINECRAFT_VERSIONS,
@@ -71,7 +59,6 @@ public class MXTune
     public static ServerProxy proxy;
 
     public static final CreativeTabs TAB_MUSIC = new MusicTab(CreativeTabs.getNextID(), Reference.MOD_NAME);
-    private static ModGlobalWorldSaveData worldSaveData;
     
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
@@ -124,53 +111,20 @@ public class MXTune
     public void onEvent(FMLServerStartingEvent event)
     {
         event.registerServerCommand(new CommandSoundRange());
+        DurationTimer.start();
+        FileHelper.initialize();
     }
 
 
     @Mod.EventHandler
     public void onEvent(FMLServerStartedEvent event)
     {
-        DurationTimer.start();
-        World world = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(0);
-        WorldServer worldServer = (WorldServer) world;
 
-        worldSaveData = get(world);
-        if (worldSaveData != null)
-        {
-            worldSaveData.setName("MxTune World Save Data");
-            worldSaveData.setNumber(35308);
-            worldSaveData.setSomething(true);
-            ModLogger.debug("ModGlobalWorldSaveData server started");
-        }
-
-        // TODO: - move to Server data manager class
-        // The top level "world" folder OR the "Over World"
-        File chunkDir = worldServer.getChunkSaveLocation();
-        Path path = Paths.get(chunkDir.getPath(), SERVER_LIB_FOLDER);
-        try
-        {
-            Files.createDirectories(path);
-        }
-        catch (IOException e)
-        {
-            ModLogger.error(e);
-        }
-        ModLogger.debug("in world folder? %s", path.toString());
     }
 
     @Mod.EventHandler
     public void onEvent(FMLServerStoppingEvent event)
     {
         DurationTimer.shutdown();
-        if (worldSaveData != null)
-        {
-            ModLogger.debug("ModGlobalWorldSaveData server stopping");
-        }
-    }
-
-    @Nullable
-    public static ModGlobalWorldSaveData getWorldSaveData()
-    {
-        return worldSaveData;
     }
 }

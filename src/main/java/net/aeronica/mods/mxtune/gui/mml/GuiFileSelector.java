@@ -29,6 +29,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.GuiScrollingList;
+import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -92,7 +93,7 @@ public class GuiFileSelector extends GuiScreen
                          || entry.toString().endsWith(".mml")
                          || entry.toString().endsWith(".ms2mml"));
         watcher = new DirectoryWatcher.Builder()
-                .addDirectories(FileHelper.getDirectory(FileHelper.CLIENT_MML_FOLDER))
+                .addDirectories(FileHelper.getDirectory(FileHelper.CLIENT_MML_FOLDER, Side.CLIENT))
                 .setPreExistingAsCreated(true)
                 .setFilter(filter::accept)
                 .build((event, path) ->
@@ -390,7 +391,7 @@ public class GuiFileSelector extends GuiScreen
 
     private void initFileList()
     {
-        Path path = FileHelper.getDirectory(FileHelper.CLIENT_MML_FOLDER);
+        Path path = FileHelper.getDirectory(FileHelper.CLIENT_MML_FOLDER, Side.CLIENT);
         PathMatcher filter = FileHelper.getMMLMatcher(path);
         try (Stream<Path> paths = Files.list(path))
         {

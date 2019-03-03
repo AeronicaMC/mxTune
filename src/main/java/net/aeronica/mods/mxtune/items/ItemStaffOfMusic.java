@@ -34,6 +34,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -59,18 +60,18 @@ public class ItemStaffOfMusic extends Item
         {
             try
             {
-                FileHelper.getCompoundFromFile(FileHelper.getCacheFile(FileHelper.SERVER_LIB_FOLDER, "some_lib.dat"));
-                FileHelper.getCompoundFromFile(FileHelper.getCacheFile(FileHelper.SERVER_PLAYLISTS_FOLDER, "some_playlist.dat"));
+                FileHelper.getCompoundFromFile(FileHelper.getCacheFile(FileHelper.SERVER_LIB_FOLDER, "some_lib.dat", Side.SERVER));
+                FileHelper.getCompoundFromFile(FileHelper.getCacheFile(FileHelper.SERVER_PLAYLISTS_FOLDER, "some_playlist.dat", Side.SERVER));
                 NBTTagCompound tagCompound = new NBTTagCompound();
                 tagCompound.setString("testString", "Hello Server World!");
                 tagCompound.setString("chunkChunkPos", worldIn.getChunk(playerIn.getPosition()).getPos().toString());
                 tagCompound.setString("chunkString", ModChunkDataHelper.getString(worldIn.getChunk(playerIn.getPosition())));
                 tagCompound.setBoolean("chunkBoolean", ModChunkDataHelper.isFunctional(worldIn.getChunk(playerIn.getPosition())));
-                FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.SERVER_LIB_FOLDER, "some_lib.dat"), tagCompound);
+                FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.SERVER_LIB_FOLDER, "some_lib.dat", Side.SERVER), tagCompound);
                 NBTTagCompound compound = new NBTTagCompound();
                 compound.setString("nameString", "Awesome Playlist");
                 compound.setInteger("listCount", 20);
-                FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.SERVER_PLAYLISTS_FOLDER, "some_playlist.dat"), compound);
+                FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.SERVER_PLAYLISTS_FOLDER, "some_playlist.dat", Side.SERVER), compound);
 
                 BlockPos pos = playerIn.getPosition();
                 ModChunkDataHelper.setString(worldIn.getChunk(pos),"Awesome Playlist");

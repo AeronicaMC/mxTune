@@ -31,6 +31,7 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -233,7 +234,7 @@ public class GuiMusicImporter extends GuiScreen
             mxTuneFile.setSource(musicSource.getText().trim());
             NBTTagCompound compound = new NBTTagCompound();
             mxTuneFile.writeToNBT(compound);
-            FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.CLIENT_LIB_FOLDER, filename + ".dat"), compound);
+            FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.CLIENT_LIB_FOLDER, filename + ".dat", Side.CLIENT), compound);
             result = true;
         }
         else
