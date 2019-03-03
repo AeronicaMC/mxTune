@@ -279,7 +279,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         synchronized (SoundSystemConfig.THREAD_SYNC)
         {
             AudioData audioData = playIDAudioData.get(playID);
-            if (audioData != null && sndSystem != null && audioData.getUuid() != null)
+            if (sndSystem != null && audioData != null && audioData.getUuid() != null)
                 sndSystem.fadeOut(audioData.getUuid(), null, fadeMilliseconds);
         }
     }
@@ -404,6 +404,8 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
             sndSystem = sndManager.sndSystem;
             musicTicker = Minecraft.getMinecraft().getMusicTicker();
             setVanillaMusicPaused(false);
+            playIDAudioData.clear();
+            ClientPlayManager.resetTimer();
         }
     }
     
@@ -414,6 +416,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         playIDQueue01.clear();
         playIDQueue02.clear();
         playIDQueue03.clear();
+        ClientPlayManager.resetTimer();
     }
 
     @Override
@@ -422,7 +425,6 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         if (resourcePredicate.test(VanillaResourceType.SOUNDS))
         {
             ModLogger.info("Restarting mxTune");
-            cleanup();
             configureSound();
             init();
         }

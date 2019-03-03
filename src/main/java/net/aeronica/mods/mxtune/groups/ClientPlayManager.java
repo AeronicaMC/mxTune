@@ -45,7 +45,7 @@ public class ClientPlayManager implements IAudioStatusCallback
 {
     private static final ClientPlayManager INSTANCE = new ClientPlayManager();
     private static Minecraft mc = Minecraft.getMinecraft();
-    private static WeakReference<Chunk> currentChunkWeakReference;
+    private static WeakReference<Chunk> currentChunkRef;
     private static int currentPlayId = INVALID;
 
     // AREA Song Shuffling
@@ -120,7 +120,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     }
 
     @Nullable
-    private static Chunk getChunk() { return currentChunkWeakReference != null ? currentChunkWeakReference.get() : null; }
+    private static Chunk getChunk(WeakReference<Chunk> chunkRef) { return chunkRef != null ? chunkRef.get() : null; }
 
     private static void updateChunk()
     {
@@ -129,23 +129,31 @@ public class ClientPlayManager implements IAudioStatusCallback
         Chunk chunk = mc.world.getChunk(mc.player.getPosition());
         if (mc.world.isChunkGeneratedAt(chunk.x, chunk.z))
         {
-            WeakReference<Chunk> prevChunkRef = currentChunkWeakReference;
-            currentChunkWeakReference = new WeakReference<>(chunk);
-            if ((prevChunkRef != null && currentChunkWeakReference.get() != prevChunkRef.get()) || (prevChunkRef == null && currentChunkWeakReference.get() != null))
-                chunkChange();
+            WeakReference<Chunk> prevChunkRef = currentChunkRef;
+            currentChunkRef = new WeakReference<>(chunk);
+            if ((prevChunkRef != null && currentChunkRef.get() != prevChunkRef.get()) || (prevChunkRef == null && currentChunkRef.get() != null))
+                chunkChange(currentChunkRef, prevChunkRef);
 
         }
         changeAreaMusic();
     }
 
-    private static void chunkChange()
+    private static void chunkChange(WeakReference<Chunk> current, WeakReference<Chunk> previous)
     {
-        Chunk chunk = getChunk();
-        if (chunk == null) return;
-
-        String s = ModChunkDataHelper.getString(chunk);
-        boolean b = ModChunkDataHelper.isFunctional(chunk);
-        ModLogger.info("----- Enter Chunk %s, functional: %s, string: %s", chunk.getPos(), b, s);
+        Chunk currentChunk = getChunk(current);
+        Chunk prevChunk = getChunk(previous);
+        if (currentChunk != null)
+        {
+            String s = ModChunkDataHelper.getString(currentChunk);
+            boolean b = ModChunkDataHelper.isFunctional(currentChunk);
+            ModLogger.debug("----- Enter Chunk %s, functional: %s, string: %s", currentChunk.getPos(), b, s);
+        }
+        if (prevChunk != null)
+        {
+            String s = ModChunkDataHelper.getString(prevChunk);
+            boolean b = ModChunkDataHelper.isFunctional(prevChunk);
+            ModLogger.debug("----- Exit Chunk %s, functional: %s, string: %s", prevChunk.getPos(), b, s);
+        }
     }
 
     private static void changeAreaMusic()
@@ -185,7 +193,7 @@ public class ClientPlayManager implements IAudioStatusCallback
         wait = true;
     }
 
-    private static void resetTimer()
+    public static void resetTimer()
     {
         delay = rand.nextInt(MAX_DELAY - MIN_DELAY) + MIN_DELAY;
         ModLogger.debug("resetTimer: new delay %05d seconds", delay/20);
