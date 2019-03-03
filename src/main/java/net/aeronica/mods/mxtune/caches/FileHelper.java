@@ -31,6 +31,7 @@ import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -58,7 +59,10 @@ public class FileHelper
     private static Path serverWorldFolder;
 
     /**
-     * Get a the path of the server side 'world' folder
+     * Stores the path of the server side 'world' folder. This changes based on the chosen save folder for SP/LAN
+     * integrated server or the 'level-name' property in the server.properties for dedicated servers.
+     * <p></p>
+     * This needs to be called from the {@link FMLServerStartingEvent}
      */
     public static void initialize()
     {
@@ -90,7 +94,7 @@ public class FileHelper
             } catch (IOException e)
             {
                 ModLogger.error(e);
-                ModLogger.warn("Unable to recreate MML folder, it exists but is not a directory: {}", (Object) dir);
+                ModLogger.warn("Unable to recreate folder, it exists but is not a directory: %s", (Object) dir);
             }
         else
             try
@@ -100,7 +104,7 @@ public class FileHelper
             } catch (IOException e)
             {
                 ModLogger.error(e);
-                ModLogger.warn("Unable to create MML folder: {}", (Object) dir);
+                ModLogger.warn("Unable to create folder: %s", (Object) dir);
             }
     }
 
