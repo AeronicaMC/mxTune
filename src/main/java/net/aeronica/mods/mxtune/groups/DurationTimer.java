@@ -66,7 +66,7 @@ public class DurationTimer
         }
     }
 
-    private synchronized static void stop(int playID, int duration)
+    private static synchronized void stop(int playID, int duration)
     {
         if (timer != null)
         {
