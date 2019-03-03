@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
-import net.aeronica.mods.mxtune.groups.PlayIdSupplier.PlayType;
+import net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType;
 import net.aeronica.mods.mxtune.util.Util;
 import paulscode.sound.ICodec;
 import paulscode.sound.SoundBuffer;

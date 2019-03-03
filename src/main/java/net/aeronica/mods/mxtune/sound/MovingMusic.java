@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
-import net.aeronica.mods.mxtune.groups.GroupHelper;
+import net.aeronica.mods.mxtune.managers.GroupHelper;
 import net.minecraft.client.audio.MovingSound;
 import net.minecraft.client.audio.SoundEventAccessor;
 import net.minecraft.client.audio.SoundHandler;

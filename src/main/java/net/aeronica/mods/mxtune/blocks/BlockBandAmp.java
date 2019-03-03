@@ -17,9 +17,9 @@
 package net.aeronica.mods.mxtune.blocks;
 
 import net.aeronica.mods.mxtune.MXTune;
-import net.aeronica.mods.mxtune.groups.PlayManager;
 import net.aeronica.mods.mxtune.gui.GuiGuid;
 import net.aeronica.mods.mxtune.init.ModItems;
+import net.aeronica.mods.mxtune.managers.PlayManager;
 import net.aeronica.mods.mxtune.util.EnumRelativeSide;
 import net.aeronica.mods.mxtune.world.LockableHelper;
 import net.aeronica.mods.mxtune.world.OwnerUUID;

@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-package net.aeronica.mods.mxtune.groups;
+package net.aeronica.mods.mxtune.managers;
 
 import com.google.common.collect.Sets;
 import net.aeronica.mods.mxtune.MXTune;
@@ -40,7 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static net.aeronica.mods.mxtune.groups.PlayIdSupplier.PlayType;
+import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType;
 import static net.aeronica.mods.mxtune.util.SheetMusicUtil.*;
 
 public class PlayManager

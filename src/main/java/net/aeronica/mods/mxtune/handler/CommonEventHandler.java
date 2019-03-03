@@ -19,7 +19,7 @@ package net.aeronica.mods.mxtune.handler;
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.blocks.IMusicPlayer;
 import net.aeronica.mods.mxtune.config.ModConfig;
-import net.aeronica.mods.mxtune.groups.PlayManager;
+import net.aeronica.mods.mxtune.managers.PlayManager;
 import net.aeronica.mods.mxtune.world.IModLockableContainer;
 import net.aeronica.mods.mxtune.world.LockableHelper;
 import net.minecraft.tileentity.TileEntity;

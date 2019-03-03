@@ -17,8 +17,8 @@
 package net.aeronica.mods.mxtune.proxy;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import net.aeronica.mods.mxtune.groups.GroupManager;
 import net.aeronica.mods.mxtune.init.ModEntities;
+import net.aeronica.mods.mxtune.managers.GroupManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;

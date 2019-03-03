@@ -18,7 +18,7 @@ package net.aeronica.mods.mxtune.gui;
 
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.Reference;
-import net.aeronica.mods.mxtune.groups.GroupHelper;
+import net.aeronica.mods.mxtune.managers.GroupHelper;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.ManageGroupMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
@@ -33,8 +33,8 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.Set;
 
-import static net.aeronica.mods.mxtune.groups.GroupHelper.MEMBER_ADD;
-import static net.aeronica.mods.mxtune.groups.GroupHelper.getLeaderOfGroup;
+import static net.aeronica.mods.mxtune.managers.GroupHelper.MEMBER_ADD;
+import static net.aeronica.mods.mxtune.managers.GroupHelper.getLeaderOfGroup;
 
 public class GuiGroupJoin extends GuiScreen
 {

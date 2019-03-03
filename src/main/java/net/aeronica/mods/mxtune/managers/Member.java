@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-package net.aeronica.mods.mxtune.groups;
+package net.aeronica.mods.mxtune.managers;
 
 public class Member
 {

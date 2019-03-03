@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-package net.aeronica.mods.mxtune.groups;
+package net.aeronica.mods.mxtune.managers;
 
 import net.aeronica.libs.mml.core.TestData;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
@@ -35,10 +35,10 @@ import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.*;
 
-import static net.aeronica.mods.mxtune.groups.PlayIdSupplier.PlayType;
-import static net.aeronica.mods.mxtune.groups.PlayIdSupplier.PlayType.AREA;
-import static net.aeronica.mods.mxtune.groups.PlayIdSupplier.PlayType.INVALID;
-import static net.aeronica.mods.mxtune.groups.PlayIdSupplier.getTypeForPlayId;
+import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType;
+import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType.AREA;
+import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType.INVALID;
+import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.getTypeForPlayId;
 
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ClientPlayManager implements IAudioStatusCallback

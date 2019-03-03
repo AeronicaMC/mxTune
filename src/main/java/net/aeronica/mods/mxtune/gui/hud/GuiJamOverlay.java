@@ -19,8 +19,8 @@ package net.aeronica.mods.mxtune.gui.hud;
 
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.Reference;
-import net.aeronica.mods.mxtune.groups.GroupHelper;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
+import net.aeronica.mods.mxtune.managers.GroupHelper;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;

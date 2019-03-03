@@ -17,7 +17,7 @@
 package net.aeronica.mods.mxtune.gui;
 
 import net.aeronica.mods.mxtune.Reference;
-import net.aeronica.mods.mxtune.groups.GroupHelper;
+import net.aeronica.mods.mxtune.managers.GroupHelper;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.ManageGroupMessage;
 import net.aeronica.mods.mxtune.util.ModLogger;

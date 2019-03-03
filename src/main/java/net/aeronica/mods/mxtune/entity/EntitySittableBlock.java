@@ -40,7 +40,7 @@
  */
 package net.aeronica.mods.mxtune.entity;
 
-import net.aeronica.mods.mxtune.groups.PlayManager;
+import net.aeronica.mods.mxtune.managers.PlayManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;

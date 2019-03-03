@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-package net.aeronica.mods.mxtune.groups;
+package net.aeronica.mods.mxtune.managers;
 
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;

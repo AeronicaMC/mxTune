@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
-import net.aeronica.mods.mxtune.groups.PlayIdSupplier;
+import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
 import net.aeronica.mods.mxtune.sound.ClientAudio.Status;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.util.math.BlockPos;
