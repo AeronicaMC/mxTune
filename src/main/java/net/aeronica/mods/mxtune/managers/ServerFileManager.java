@@ -23,6 +23,8 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ListMultimap;
 import net.aeronica.libs.mml.core.TestData;
 import net.aeronica.mods.mxtune.caches.FileHelper;
+import net.aeronica.mods.mxtune.caches.UUIDType5;
+import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.nbt.NBTTagCompound;
@@ -49,6 +51,7 @@ public class ServerFileManager
     {
         initSongs();
         initPlayLists();
+        dumpAll();
     }
 
     public static void shutDown()
@@ -89,21 +92,49 @@ public class ServerFileManager
 
     private static void initPlayLists()
     {
+        List<Path> playLists = new ArrayList<>();
 
+        Path path = FileHelper.getDirectory(FileHelper.SERVER_PLAYLISTS_FOLDER, Side.SERVER);
+        PathMatcher filter = FileHelper.getDatMatcher(path);
+        try (Stream<Path> paths = Files.list(path))
+        {
+            playLists = paths
+                    .filter(filter::matches)
+                    .collect(Collectors.toList());
+        }
+        catch (NullPointerException | IOException e)
+        {
+            ModLogger.error(e);
+        }
+
+        for (Path playListFile : playLists)
+        {
+            NBTTagCompound compound = FileHelper.getCompoundFromFile(playListFile);
+            if (compound != null)
+            {
+                PlayList playList = new PlayList(compound);
+                String uuidString = playListFile.getFileName().toString().replaceFirst("\\.pat", "");
+                UUID uuidPlayList = UUID.fromString(uuidString);
+                for (UUID songUUID : playList.getSongUUIDs())
+                    playListVsSongs.put(uuidPlayList, songUUID);
+            }
+        }
     }
 
     private static void stuffServer()
     {
+        List<UUID> songUUIDs = new ArrayList<>();
         for (TestData testData : TestData.values())
         {
             Song song = new Song(testData.getTitle(), testData.getMML());
-            NBTTagCompound songCommpound = new NBTTagCompound();
-            song.writeToNBT(songCommpound);
+            songUUIDs.add(song.getUUID());
+            NBTTagCompound songCompound = new NBTTagCompound();
+            song.writeToNBT(songCompound);
             Path path;
             try
             {
                 path = FileHelper.getCacheFile(FileHelper.SERVER_MUSIC_FOLDER, song.getFileName(), Side.SERVER);
-                FileHelper.sendCompoundToFile(path, songCommpound);
+                FileHelper.sendCompoundToFile(path, songCompound);
             }
             catch (IOException e)
             {
@@ -111,12 +142,27 @@ public class ServerFileManager
                 ModLogger.warn("Unable to create folder: %s and/or file: %s", FileHelper.SERVER_MUSIC_FOLDER, song.getFileName());
             }
         }
+
+        String playListName = "Test Playlist";
+        String playListFilename = (UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_LIST, playListName)).toString() + ".pat";
+        try
+        {
+            Path path = FileHelper.getCacheFile(FileHelper.SERVER_PLAYLISTS_FOLDER, playListFilename, Side.SERVER);
+            NBTTagCompound compound = new NBTTagCompound();
+            PlayList playList = new PlayList(playListName, songUUIDs);
+            playList.writeToNBT(compound);
+            FileHelper.sendCompoundToFile(path, compound);
+        }
+        catch (IOException e)
+        {
+            ModLogger.error(e);
+            ModLogger.warn("Unable to create folder: %s and/or file: %s", FileHelper.SERVER_PLAYLISTS_FOLDER, playListFilename);
+        }
     }
 
-    private static void dumpSongs()
+    private static void dumpAll()
     {
-        songUuidVsTitles.forEach((key, value) -> {
-            ModLogger.debug("uuid: %s, title: %s", key.toString(), value);
-        });
+        songUuidVsTitles.forEach((key, value) -> ModLogger.debug("uuid: %s, title: %s", key.toString(), value));
+        playListVsSongs.forEach((key, value) -> ModLogger.debug("playlist: %s, songs: %s", key.toString(), value.toString()));
     }
 }
