@@ -26,6 +26,7 @@ import net.aeronica.mods.mxtune.datafixers.TileEntityInventoryWalker;
 import net.aeronica.mods.mxtune.datafixers.TileIdFixer;
 import net.aeronica.mods.mxtune.handler.GUIHandler;
 import net.aeronica.mods.mxtune.managers.DurationTimer;
+import net.aeronica.mods.mxtune.managers.ServerFileManager;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.options.PlayerMusicOptionsCapability;
 import net.aeronica.mods.mxtune.proxy.ServerProxy;
@@ -113,6 +114,7 @@ public class MXTune
         event.registerServerCommand(new CommandSoundRange());
         DurationTimer.start();
         FileHelper.initialize();
+        ServerFileManager.startUp();
     }
 
 
@@ -126,5 +128,6 @@ public class MXTune
     public void onEvent(FMLServerStoppingEvent event)
     {
         DurationTimer.shutdown();
+        ServerFileManager.shutDown();
     }
 }

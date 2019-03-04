@@ -37,7 +37,7 @@ public class UUIDType5 {
     public static final UUID NAMESPACE_OID = UUID.fromString("6ba7b812-9dad-11d1-80b4-00c04fd430c8");
     public static final UUID NAMESPACE_X500 = UUID.fromString("6ba7b814-9dad-11d1-80b4-00c04fd430c8");
     // mxTune namespaces
-    public static final UUID NAMESPACE_TUNE = UUID.fromString("1ee01f66-3df3-11e9-b210-d663bd873d93");
+    public static final UUID NAMESPACE_SONG = UUID.fromString("1ee01f66-3df3-11e9-b210-d663bd873d93");
     public static final UUID NAMESPACE_LIST = UUID.fromString("1ee02240-3df3-11e9-b210-d663bd873d93");
     public static final UUID NAMESPACE_AREA = UUID.fromString("1ee025e2-3df3-11e9-b210-d663bd873d93");
     public static final UUID NAMESPACE_SPARE1 = UUID.fromString("1ee02754-3df3-11e9-b210-d663bd873d93");
