@@ -113,7 +113,7 @@ public class ServerFileManager
             if (compound != null)
             {
                 PlayList playList = new PlayList(compound);
-                String uuidString = playListFile.getFileName().toString().replaceFirst("\\.pat", "");
+                String uuidString = playListFile.getFileName().toString().replaceAll("\\.dat", "");
                 UUID uuidPlayList = UUID.fromString(uuidString);
                 for (UUID songUUID : playList.getSongUUIDs())
                     playListVsSongs.put(uuidPlayList, songUUID);
