@@ -20,53 +20,52 @@ package net.aeronica.mods.mxtune.managers.records;
 import net.aeronica.mods.mxtune.caches.UUIDType5;
 import net.minecraft.nbt.NBTTagCompound;
 
-import java.util.UUID;
-
-public class Song
+public class Song extends BaseData
 {
     private static final String TAG_TITLE = "title";
     private static final String TAG_MML = "mml";
-    private static final String TAG_UUID_MSB = "uuid_msb";
-    private static final String TAG_UUID_LSB = "uuid_lsb";
     private static final String NULL_TITLE = "--- null title ---";
     private static final String NULL_MML = "@MML;";
 
-    private final UUID uuid;
-    private final String title;
-    private final String mml;
+    private String title;
+    private String mml;
 
     /**
      * NULL song
      */
     public Song()
     {
+        super();
         title = NULL_TITLE;
         mml = NULL_MML;
-        this.uuid = new UUID(0L, 0L);
     }
 
     public Song(String title, String mml)
     {
         this.title = title != null ? title : NULL_TITLE;
         this.mml = mml != null ? mml : NULL_MML;
-        this.uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_SONG, this.mml);
+        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_SONG, this.mml);
     }
 
     public Song(NBTTagCompound compound)
     {
-        title = compound.getString(TAG_TITLE);
-        mml = compound.getString(TAG_MML);
-        long msb = compound.getLong(TAG_UUID_MSB);
-        long lsb = compound.getLong(TAG_UUID_LSB);
-        uuid = new UUID(msb, lsb);
+        this.readFromNBT(compound);
     }
 
+    @Override
+    public void readFromNBT(NBTTagCompound compound)
+    {
+        super.readFromNBT(compound);
+        title = compound.getString(TAG_TITLE);
+        mml = compound.getString(TAG_MML);
+    }
+
+    @Override
     public void writeToNBT(NBTTagCompound compound)
     {
+        super.writeToNBT(compound);
         compound.setString(TAG_TITLE, title);
         compound.setString(TAG_MML, mml);
-        compound.setLong(TAG_UUID_MSB, uuid.getMostSignificantBits());
-        compound.setLong(TAG_UUID_LSB, uuid.getLeastSignificantBits());
     }
 
     public String getTitle()
@@ -77,15 +76,5 @@ public class Song
     public String getMml()
     {
         return mml;
-    }
-
-    public UUID getUUID()
-    {
-        return uuid;
-    }
-
-    public String getFileName()
-    {
-        return uuid.toString() + ".dat";
     }
 }

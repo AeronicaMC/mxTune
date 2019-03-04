@@ -19,50 +19,39 @@ package net.aeronica.mods.mxtune.managers.records;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-public class Area
+import java.util.UUID;
+
+public abstract class BaseData
 {
-    private static final  String TAG_NAME = "name";
-    private static final String TAG_PLAY_LIST = "play_list";
+    static final String TAG_UUID_MSB = "uuid_msb";
+    static final String TAG_UUID_LSB = "uuid_lsb";
+    protected UUID uuid;
 
-    private final String name;
-    private String  playList;
-
-    public Area(String name)
+    BaseData()
     {
-        this.name = name;
-        this.playList = "";
+        uuid = new UUID(0L, 0L);
     }
 
-    private Area(String name, String playList)
+    public void readFromNBT(NBTTagCompound compound)
     {
-        this.name = name;
-        this.playList = playList;
-    }
-
-    public static Area build(NBTTagCompound compound)
-    {
-        String name = compound.getString(TAG_NAME);
-        String playList = compound.getString(TAG_PLAY_LIST);
-        return new Area(name, playList);
+        long msb = compound.getLong(TAG_UUID_MSB);
+        long lsb = compound.getLong(TAG_UUID_LSB);
+        uuid = new UUID(msb, lsb);
     }
 
     public void writeToNBT(NBTTagCompound compound)
     {
-        compound.setString(TAG_NAME, name);
+        compound.setLong(TAG_UUID_MSB, uuid.getMostSignificantBits());
+        compound.setLong(TAG_UUID_LSB, uuid.getLeastSignificantBits());
     }
 
-    public String getName()
+    public UUID getUUID()
     {
-        return name;
+        return uuid;
     }
 
-    public String getPlayList()
+    public String getFileName()
     {
-        return playList;
-    }
-
-    public void setPlayList(String playList)
-    {
-        this.playList = playList;
+        return uuid.toString() + ".dat";
     }
 }

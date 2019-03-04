@@ -17,6 +17,7 @@
 
 package net.aeronica.mods.mxtune.managers.records;
 
+import net.aeronica.mods.mxtune.caches.UUIDType5;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.ArrayList;
@@ -24,12 +25,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-public class PlayList
+public class PlayList extends BaseData
 {
     private static final String TAG_NAME = "name";
     private static final String TAG_SONG_PREFIX = "song";
-    private static final String TAG_UUID_MSB = "uuid_msb";
-    private static final String TAG_UUID_LSB = "uuid_lsb";
     private static final String TAG_SONG_COUNT = "song_count";
 
     private String name;
@@ -37,6 +36,7 @@ public class PlayList
 
     public PlayList()
     {
+        super();
         this.name = "";
         this.songUUIDs = new ArrayList<>();
     }
@@ -45,12 +45,21 @@ public class PlayList
     {
         this.name = name != null ? name : "";
         this.songUUIDs = songUUIDs != null ? songUUIDs : new ArrayList<>();
+        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_LIST, this.name);
     }
 
     public PlayList(NBTTagCompound compound)
     {
+        this.readFromNBT(compound);
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound compound)
+    {
+        super.readFromNBT(compound);
         name = compound.getString(TAG_NAME);
         int songCount = compound.getInteger(TAG_SONG_COUNT);
+
 
         songUUIDs = new ArrayList<>();
         for(int i = 0; i < songCount; i++)
@@ -65,6 +74,7 @@ public class PlayList
 
     public void writeToNBT(NBTTagCompound compound)
     {
+        super.writeToNBT(compound);
         compound.setString(TAG_NAME, name);
         compound.setInteger(TAG_SONG_COUNT, songUUIDs.size());
 
