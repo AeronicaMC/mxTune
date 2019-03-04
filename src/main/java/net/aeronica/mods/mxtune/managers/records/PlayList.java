@@ -72,8 +72,8 @@ public class PlayList
         for (UUID uuid : songUUIDs)
         {
             NBTTagCompound compoundSong = new NBTTagCompound();
-            compound.setLong(TAG_UUID_MSB, uuid.getMostSignificantBits());
-            compound.setLong(TAG_UUID_LSB, uuid.getLeastSignificantBits());
+            compoundSong.setLong(TAG_UUID_MSB, uuid.getMostSignificantBits());
+            compoundSong.setLong(TAG_UUID_LSB, uuid.getLeastSignificantBits());
             compound.setTag(TAG_SONG_PREFIX + i, compoundSong);
             i++;
         }
