@@ -23,7 +23,6 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ListMultimap;
 import net.aeronica.libs.mml.core.TestData;
 import net.aeronica.mods.mxtune.caches.FileHelper;
-import net.aeronica.mods.mxtune.caches.UUIDType5;
 import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -49,6 +48,7 @@ public class ServerFileManager
 
     public static void startUp()
     {
+        // stuff Server goes here when needed
         initSongs();
         initPlayLists();
         dumpAll();
@@ -113,8 +113,7 @@ public class ServerFileManager
             if (compound != null)
             {
                 PlayList playList = new PlayList(compound);
-                String uuidString = playListFile.getFileName().toString().replaceAll("\\.dat", "");
-                UUID uuidPlayList = UUID.fromString(uuidString);
+                UUID uuidPlayList = playList.getUUID();
                 for (UUID songUUID : playList.getSongUUIDs())
                     playListVsSongs.put(uuidPlayList, songUUID);
             }
@@ -123,6 +122,7 @@ public class ServerFileManager
 
     private static void stuffServer()
     {
+        // Create Songs
         List<UUID> songUUIDs = new ArrayList<>();
         for (TestData testData : TestData.values())
         {
@@ -143,26 +143,28 @@ public class ServerFileManager
             }
         }
 
+        // Create a play list
         String playListName = "Test Playlist";
-        String playListFilename = (UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_LIST, playListName)).toString() + ".dat";
+        String playListFileName ="";
         try
         {
-            Path path = FileHelper.getCacheFile(FileHelper.SERVER_PLAYLISTS_FOLDER, playListFilename, Side.SERVER);
             NBTTagCompound compound = new NBTTagCompound();
             PlayList playList = new PlayList(playListName, songUUIDs);
+            playListFileName = playList.getFileName();
+            Path path = FileHelper.getCacheFile(FileHelper.SERVER_PLAYLISTS_FOLDER, playListFileName, Side.SERVER);
             playList.writeToNBT(compound);
             FileHelper.sendCompoundToFile(path, compound);
         }
         catch (IOException e)
         {
             ModLogger.error(e);
-            ModLogger.warn("Unable to create folder: %s and/or file: %s", FileHelper.SERVER_PLAYLISTS_FOLDER, playListFilename);
+            ModLogger.warn("Unable to create folder: %s and/or file: %s", FileHelper.SERVER_PLAYLISTS_FOLDER, playListFileName);
         }
     }
 
     private static void dumpAll()
     {
-        songUuidVsTitles.forEach((key, value) -> ModLogger.debug("uuid: %s, title: %s", key.toString(), value));
-        playListVsSongs.forEach((key, value) -> ModLogger.debug("playlist: %s, songs: %s", key.toString(), value.toString()));
+        songUuidVsTitles.forEach((key, value) -> ModLogger.debug("Song uuid:     %s, title: %s", key.toString(), value));
+        playListVsSongs.forEach((key, value) -> ModLogger.debug( "Playlist uuid: %s,  song: %s", key.toString(), value.toString()));
     }
 }
