@@ -144,7 +144,7 @@ public class ServerFileManager
         }
 
         String playListName = "Test Playlist";
-        String playListFilename = (UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_LIST, playListName)).toString() + ".pat";
+        String playListFilename = (UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_LIST, playListName)).toString() + ".dat";
         try
         {
             Path path = FileHelper.getCacheFile(FileHelper.SERVER_PLAYLISTS_FOLDER, playListFilename, Side.SERVER);
