@@ -28,6 +28,6 @@ public class ClientFileManager
 
     static boolean songAvailable(UUID uuidPlayList)
     {
-        return !Reference.BAD_UUID.equals(uuidPlayList);
+        return !Reference.EMPTY_UUID.equals(uuidPlayList);
     }
 }

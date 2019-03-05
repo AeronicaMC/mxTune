@@ -35,7 +35,7 @@ import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.*;
 
-import static net.aeronica.mods.mxtune.Reference.BAD_UUID;
+import static net.aeronica.mods.mxtune.Reference.EMPTY_UUID;
 import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType;
 import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType.AREA;
 import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType.INVALID;
@@ -48,8 +48,8 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static Minecraft mc = Minecraft.getMinecraft();
     private static WeakReference<Chunk> currentChunkRef;
     private static int currentPlayId = INVALID;
-    private static UUID currentPlayListUUID = BAD_UUID;
-    private static UUID prevPlayListUUID = BAD_UUID;
+    private static UUID currentPlayListUUID = EMPTY_UUID;
+    private static UUID prevPlayListUUID = EMPTY_UUID;
 
     // AREA Song Shuffling
     private static final Random rand = new Random();
