@@ -50,6 +50,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType;
+
 /**
  * @author Paul Boese a.k.a Aeronica
  *
@@ -102,9 +104,9 @@ public class ItemInstrument extends Item implements IInstrument
                 {
                     if (!PlayManager.isPlayerPlaying(playerIn))
                     {
-                        Integer playID = PlayManager.playMusic(playerIn);
-                        itemStackIn.setRepairCost(playID != null ? playID : -1);
-                        if (playID != null)
+                        int playID = PlayManager.playMusic(playerIn);
+                        itemStackIn.setRepairCost(playID);
+                        if (playID != PlayType.INVALID)
                             ModCriteriaTriggers.PLAY_INSTRUMENT.trigger((EntityPlayerMP) playerIn, EnumType.byMetadata(itemStackIn.getMetadata()).getName());
                     }
                 } 
@@ -142,7 +144,7 @@ public class ItemInstrument extends Item implements IInstrument
             if (!isSelected && (PlayManager.hasPlayID(playID)||PlayManager.isActivePlayID(playID)))
             {
                 PlayManager.stopPlayID(playID);
-                stackIn.setRepairCost(-1);
+                stackIn.setRepairCost(PlayType.INVALID);
             }
         }
     }
@@ -161,7 +163,7 @@ public class ItemInstrument extends Item implements IInstrument
             if (PlayManager.hasPlayID(playID)||PlayManager.isActivePlayID(playID))
             {
                 PlayManager.stopPlayID(playID);
-                stackIn.setRepairCost(-1);
+                stackIn.setRepairCost(PlayType.INVALID);
             }
         }
         return super.getEntityLifespan(stackIn, worldIn);
@@ -176,7 +178,7 @@ public class ItemInstrument extends Item implements IInstrument
             if (PlayManager.hasPlayID(playID)||PlayManager.isActivePlayID(playID))
             {
                 PlayManager.stopPlayID(playID);
-                stackIn.setRepairCost(-1);
+                stackIn.setRepairCost(PlayType.INVALID);
             }
         }
         return true;
