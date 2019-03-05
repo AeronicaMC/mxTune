@@ -23,7 +23,8 @@ import java.util.UUID;
 
 public class ClientFileManager
 {
-
+    // TODO: Client side server cache folders must be per server (integrated or dedicated)
+    // This must be done to avoid naming conflicts.
     private ClientFileManager() { /* NOP*/ }
 
     static boolean songAvailable(UUID uuidPlayList)
