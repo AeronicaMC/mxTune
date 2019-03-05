@@ -18,7 +18,6 @@
 package net.aeronica.mods.mxtune.items;
 
 import net.aeronica.mods.mxtune.MXTune;
-import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.gui.GuiGuid;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.world.chunk.ModChunkDataHelper;
@@ -27,17 +26,14 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.util.List;
 
 public class ItemStaffOfMusic extends Item
@@ -58,31 +54,14 @@ public class ItemStaffOfMusic extends Item
         }
         else if (MXTune.proxy.playerIsInCreativeMode(playerIn))
         {
-            try
-            {
-                FileHelper.getCompoundFromFile(FileHelper.getCacheFile(FileHelper.SERVER_MUSIC_FOLDER, "some_lib.dat", Side.SERVER));
-                FileHelper.getCompoundFromFile(FileHelper.getCacheFile(FileHelper.SERVER_PLAYLISTS_FOLDER, "some_playlist.dat", Side.SERVER));
-                NBTTagCompound tagCompound = new NBTTagCompound();
-                tagCompound.setString("testString", "Hello Server World!");
-                tagCompound.setString("chunkChunkPos", worldIn.getChunk(playerIn.getPosition()).getPos().toString());
-                tagCompound.setString("chunkString", ModChunkDataHelper.getString(worldIn.getChunk(playerIn.getPosition())));
-                tagCompound.setBoolean("chunkBoolean", ModChunkDataHelper.isFunctional(worldIn.getChunk(playerIn.getPosition())));
-                FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.SERVER_MUSIC_FOLDER, "some_lib.dat", Side.SERVER), tagCompound);
-                NBTTagCompound compound = new NBTTagCompound();
-                compound.setString("nameString", "Awesome Playlist");
-                compound.setInteger("listCount", 20);
-                FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.SERVER_PLAYLISTS_FOLDER, "some_playlist.dat", Side.SERVER), compound);
+            BlockPos pos = playerIn.getPosition();
+            String playListUuidString = "76dd6de8-e0ec-50fe-b163-ccba769812ec";
+            ModChunkDataHelper.setString(worldIn.getChunk(pos), playListUuidString);
+            ModChunkDataHelper.setFunctional(worldIn.getChunk(pos), true);
+            ModChunkDataHelper.sync(playerIn, worldIn.getChunk(pos));
 
-                BlockPos pos = playerIn.getPosition();
-                ModChunkDataHelper.setString(worldIn.getChunk(pos),"Awesome Playlist");
-                ModChunkDataHelper.setFunctional(worldIn.getChunk(pos),true);
-                ModChunkDataHelper.sync(playerIn, worldIn.getChunk(pos));
-
-            } catch (IOException e)
-            {
-                ModLogger.error(e);
-            }
             ModLogger.debug("Staff of Music usable");
+            ModLogger.debug("PlayList UUID: %s", playListUuidString);
             return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
         }
         else

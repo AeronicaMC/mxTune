@@ -22,6 +22,7 @@ import net.aeronica.mods.mxtune.network.client.UpdateChunkMusicData;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.Util;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -71,5 +72,6 @@ public class ModChunkDataHelper
     public static void sync(EntityPlayer entityPlayer, Chunk chunk)
     {
         PacketDispatcher.sendToAllAround(new UpdateChunkMusicData(chunk.x, chunk.z, isFunctional(chunk), getString(chunk)), entityPlayer, 80);
+        PacketDispatcher.sendTo(new UpdateChunkMusicData(chunk.x, chunk.z, isFunctional(chunk), getString(chunk)), (EntityPlayerMP) entityPlayer);
     }
 }

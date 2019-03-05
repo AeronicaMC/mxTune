@@ -35,6 +35,7 @@ import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.*;
 
+import static net.aeronica.mods.mxtune.Reference.BAD_UUID;
 import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType;
 import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType.AREA;
 import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType.INVALID;
@@ -47,6 +48,8 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static Minecraft mc = Minecraft.getMinecraft();
     private static WeakReference<Chunk> currentChunkRef;
     private static int currentPlayId = INVALID;
+    private static UUID currentPlayListUUID = BAD_UUID;
+    private static UUID prevPlayListUUID = BAD_UUID;
 
     // AREA Song Shuffling
     private static final Random rand = new Random();
@@ -120,7 +123,10 @@ public class ClientPlayManager implements IAudioStatusCallback
     }
 
     @Nullable
-    private static Chunk getChunk(WeakReference<Chunk> chunkRef) { return chunkRef != null ? chunkRef.get() : null; }
+    private static Chunk getChunk(WeakReference<Chunk> chunkRef)
+    {
+        return chunkRef != null ? chunkRef.get() : null;
+    }
 
     private static void updateChunk()
     {
@@ -131,7 +137,9 @@ public class ClientPlayManager implements IAudioStatusCallback
         {
             WeakReference<Chunk> prevChunkRef = currentChunkRef;
             currentChunkRef = new WeakReference<>(chunk);
-            if ((prevChunkRef != null && currentChunkRef.get() != prevChunkRef.get()) || (prevChunkRef == null && currentChunkRef.get() != null))
+            if ((prevChunkRef != null && currentChunkRef.get() != prevChunkRef.get())
+                    || (prevChunkRef == null && currentChunkRef.get() != null)
+                    || !(getUUID(ModChunkDataHelper.getString(currentChunkRef.get())).equals(currentPlayListUUID)))
                 chunkChange(currentChunkRef, prevChunkRef);
 
         }
@@ -144,21 +152,33 @@ public class ClientPlayManager implements IAudioStatusCallback
         Chunk prevChunk = getChunk(previous);
         if (currentChunk != null)
         {
-            String s = ModChunkDataHelper.getString(currentChunk);
+            currentPlayListUUID = getUUID(ModChunkDataHelper.getString(currentChunk));
             boolean b = ModChunkDataHelper.isFunctional(currentChunk);
-            ModLogger.debug("----- Enter Chunk %s, functional: %s, string: %s", currentChunk.getPos(), b, s);
+            ModLogger.debug("----- Enter Chunk %s, functional: %s, uuid: %s", currentChunk.getPos(), b, currentPlayListUUID.toString());
         }
         if (prevChunk != null)
         {
-            String s = ModChunkDataHelper.getString(prevChunk);
+            prevPlayListUUID = getUUID(ModChunkDataHelper.getString(prevChunk));
             boolean b = ModChunkDataHelper.isFunctional(prevChunk);
-            ModLogger.debug("----- Exit Chunk %s, functional: %s, string: %s", prevChunk.getPos(), b, s);
+            ModLogger.debug("----- Exit Chunk %s, functional: %s, uuid: %s", prevChunk.getPos(), b, prevPlayListUUID.toString());
+        }
+    }
+
+    private static UUID getUUID(String uuidString)
+    {
+        try
+        {
+            return UUID.fromString(uuidString);
+        }
+        catch (IllegalArgumentException iao)
+        {
+            return new UUID(0L,0L);
         }
     }
 
     private static void changeAreaMusic()
     {
-        if (!waiting())
+        if (!waiting() && ClientFileManager.songAvailable(currentPlayListUUID))
         {
             currentPlayId = AREA.getAsInt();
             ClientAudio.playLocal(currentPlayId, randomSong(), INSTANCE);

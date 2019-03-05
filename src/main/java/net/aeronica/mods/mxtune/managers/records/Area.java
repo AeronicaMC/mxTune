@@ -17,38 +17,58 @@
 
 package net.aeronica.mods.mxtune.managers.records;
 
+import net.aeronica.mods.mxtune.caches.UUIDType5;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class Area
+import java.util.UUID;
+
+public class Area extends BaseData
 {
     private static final  String TAG_NAME = "name";
     private static final String TAG_PLAY_LIST = "play_list";
 
-    private final String name;
-    private String  playList;
+    private String name;
+    private UUID playList;
 
     public Area(String name)
     {
         this.name = name;
-        this.playList = "";
+        playList = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_LIST, "");
+        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_AREA, this.name);
     }
 
-    private Area(String name, String playList)
+    public Area(String name, UUID playList)
     {
         this.name = name;
         this.playList = playList;
+        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_AREA, this.name);
     }
 
     public static Area build(NBTTagCompound compound)
     {
         String name = compound.getString(TAG_NAME);
-        String playList = compound.getString(TAG_PLAY_LIST);
+        NBTTagCompound compoundPlayList = compound.getCompoundTag(TAG_PLAY_LIST);
+        UUID playList = getUuidFromCompound(compoundPlayList);
         return new Area(name, playList);
     }
 
+    @Override
+    public void readFromNBT(NBTTagCompound compound)
+    {
+        super.readFromNBT(compound);
+        this.name = compound.getString(TAG_NAME);
+        NBTTagCompound compoundPlayList = compound.getCompoundTag(TAG_PLAY_LIST);
+        playList = getUuidFromCompound(compoundPlayList);
+    }
+
+    @Override
     public void writeToNBT(NBTTagCompound compound)
     {
+        super.writeToNBT(compound);
         compound.setString(TAG_NAME, name);
+        NBTTagCompound compoundPlayList = new NBTTagCompound();
+        setUuidToCompound(compoundPlayList, playList);
+        compound.setTag(TAG_PLAY_LIST, compoundPlayList);
     }
 
     public String getName()
@@ -56,12 +76,12 @@ public class Area
         return name;
     }
 
-    public String getPlayList()
+    public UUID getPlayList()
     {
         return playList;
     }
 
-    public void setPlayList(String playList)
+    public void setPlayList(UUID playList)
     {
         this.playList = playList;
     }

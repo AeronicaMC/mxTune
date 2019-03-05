@@ -23,6 +23,8 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ListMultimap;
 import net.aeronica.libs.mml.core.TestData;
 import net.aeronica.mods.mxtune.caches.FileHelper;
+import net.aeronica.mods.mxtune.caches.UUIDType5;
+import net.aeronica.mods.mxtune.managers.records.Area;
 import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -43,14 +45,17 @@ public class ServerFileManager
 {
     private static BiMap<UUID, String> songUuidVsTitles = HashBiMap.create();
     private static ListMultimap<UUID, UUID> playListVsSongs = ArrayListMultimap.create();
+    private static ListMultimap<UUID, UUID> areaVsPlayList = ArrayListMultimap.create();
 
     private ServerFileManager() { /* NOP */ }
 
     public static void startUp()
     {
         // stuff Server goes here when needed
+        stuffServer();
         initSongs();
         initPlayLists();
+        initAreas();
         dumpAll();
     }
 
@@ -58,6 +63,7 @@ public class ServerFileManager
     {
         songUuidVsTitles.clear();
         playListVsSongs.clear();
+        areaVsPlayList.clear();
     }
 
     private static void initSongs()
@@ -120,6 +126,35 @@ public class ServerFileManager
         }
     }
 
+    private static void initAreas()
+    {
+        List<Path> areas = new ArrayList<>();
+
+        Path path = FileHelper.getDirectory(FileHelper.SERVER_AREAS_FOLDER, Side.SERVER);
+        PathMatcher filter = FileHelper.getDatMatcher(path);
+        try (Stream<Path> paths = Files.list(path))
+        {
+            areas = paths
+                    .filter(filter::matches)
+                    .collect(Collectors.toList());
+        }
+        catch (NullPointerException | IOException e)
+        {
+            ModLogger.error(e);
+        }
+
+        for (Path pathArea : areas)
+        {
+            NBTTagCompound compound = FileHelper.getCompoundFromFile(pathArea);
+            if (compound != null)
+            {
+                Area area = Area.build(compound);
+                UUID uuidArea = area.getUUID();
+                    areaVsPlayList.put(uuidArea, area.getPlayList());
+            }
+        }
+    }
+
     private static void stuffServer()
     {
         // Create Songs
@@ -146,10 +181,12 @@ public class ServerFileManager
         // Create a play list
         String playListName = "Test Playlist";
         String playListFileName ="";
+        UUID uuidPlayList = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_LIST, "");
         try
         {
             NBTTagCompound compound = new NBTTagCompound();
             PlayList playList = new PlayList(playListName, songUUIDs);
+            uuidPlayList = playList.getUUID();
             playListFileName = playList.getFileName();
             Path path = FileHelper.getCacheFile(FileHelper.SERVER_PLAYLISTS_FOLDER, playListFileName, Side.SERVER);
             playList.writeToNBT(compound);
@@ -160,11 +197,30 @@ public class ServerFileManager
             ModLogger.error(e);
             ModLogger.warn("Unable to create folder: %s and/or file: %s", FileHelper.SERVER_PLAYLISTS_FOLDER, playListFileName);
         }
+
+        // Create an area
+        String areaName = "Test Area";
+        String areaFileName = "";
+        try
+        {
+            NBTTagCompound compound = new NBTTagCompound();
+            Area area = new Area(areaName, uuidPlayList);
+            areaFileName = area.getFileName();
+            Path path = FileHelper.getCacheFile(FileHelper.SERVER_AREAS_FOLDER, areaFileName, Side.SERVER);
+            area.writeToNBT(compound);
+            FileHelper.sendCompoundToFile(path, compound);
+        }
+        catch(IOException e)
+        {
+            ModLogger.error(e);
+            ModLogger.warn("Unable to create folder: %s and/or file: %s", FileHelper.SERVER_AREAS_FOLDER, areaFileName);
+        }
     }
 
     private static void dumpAll()
     {
-        songUuidVsTitles.forEach((key, value) -> ModLogger.debug("Song uuid:     %s, title: %s", key.toString(), value));
-        playListVsSongs.forEach((key, value) -> ModLogger.debug( "Playlist uuid: %s,  song: %s", key.toString(), value.toString()));
+        songUuidVsTitles.forEach((key, value) -> ModLogger.debug("Song uuid:     %s, title:    %s", key.toString(), value));
+        playListVsSongs.forEach((key, value) -> ModLogger.debug( "Playlist uuid: %s, song:     %s", key.toString(), value.toString()));
+        areaVsPlayList.forEach((key, value) -> ModLogger.debug(  "Area uuid:     %s, playlist: %s", key.toString(), value.toString()));
     }
 }

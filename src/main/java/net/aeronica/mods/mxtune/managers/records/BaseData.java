@@ -23,8 +23,8 @@ import java.util.UUID;
 
 public abstract class BaseData
 {
-    static final String TAG_UUID_MSB = "uuid_msb";
-    static final String TAG_UUID_LSB = "uuid_lsb";
+    private static final String TAG_UUID_MSB = "uuid_msb";
+    private static final String TAG_UUID_LSB = "uuid_lsb";
     protected UUID uuid;
 
     BaseData()
@@ -34,15 +34,12 @@ public abstract class BaseData
 
     public void readFromNBT(NBTTagCompound compound)
     {
-        long msb = compound.getLong(TAG_UUID_MSB);
-        long lsb = compound.getLong(TAG_UUID_LSB);
-        uuid = new UUID(msb, lsb);
+        uuid = getUuidFromCompound(compound);
     }
 
     public void writeToNBT(NBTTagCompound compound)
     {
-        compound.setLong(TAG_UUID_MSB, uuid.getMostSignificantBits());
-        compound.setLong(TAG_UUID_LSB, uuid.getLeastSignificantBits());
+        setUuidToCompound(compound, uuid);
     }
 
     public UUID getUUID()
@@ -53,5 +50,18 @@ public abstract class BaseData
     public String getFileName()
     {
         return uuid.toString() + ".dat";
+    }
+
+    static UUID getUuidFromCompound(NBTTagCompound compound)
+    {
+        long msb = compound.getLong(TAG_UUID_MSB);
+        long lsb = compound.getLong(TAG_UUID_LSB);
+        return new UUID(msb, lsb);
+    }
+
+    static void setUuidToCompound(NBTTagCompound compound, UUID uuid)
+    {
+        compound.setLong(TAG_UUID_MSB, uuid.getMostSignificantBits());
+        compound.setLong(TAG_UUID_LSB, uuid.getLeastSignificantBits());
     }
 }

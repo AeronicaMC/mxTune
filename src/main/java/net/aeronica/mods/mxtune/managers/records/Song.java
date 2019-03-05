@@ -30,10 +30,7 @@ public class Song extends BaseData
     private String title;
     private String mml;
 
-    /**
-     * NULL song
-     */
-    public Song()
+    private Song()
     {
         super();
         title = NULL_TITLE;
@@ -44,7 +41,7 @@ public class Song extends BaseData
     {
         this.title = title != null ? title : NULL_TITLE;
         this.mml = mml != null ? mml : NULL_MML;
-        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_SONG, this.mml);
+        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_SONG, this.title);
     }
 
     public Song(NBTTagCompound compound)

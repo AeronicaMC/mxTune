@@ -60,14 +60,11 @@ public class PlayList extends BaseData
         name = compound.getString(TAG_NAME);
         int songCount = compound.getInteger(TAG_SONG_COUNT);
 
-
         songUUIDs = new ArrayList<>();
         for(int i = 0; i < songCount; i++)
         {
             NBTTagCompound compoundSong = compound.getCompoundTag(TAG_SONG_PREFIX + i);
-            long msb = compoundSong.getLong(TAG_UUID_MSB);
-            long lsb = compoundSong.getLong(TAG_UUID_LSB);
-            UUID uuid = new UUID(msb, lsb);
+            UUID uuid = getUuidFromCompound(compoundSong);
             songUUIDs.add(uuid);
         }
     }
@@ -82,8 +79,7 @@ public class PlayList extends BaseData
         for (UUID uuid : songUUIDs)
         {
             NBTTagCompound compoundSong = new NBTTagCompound();
-            compoundSong.setLong(TAG_UUID_MSB, uuid.getMostSignificantBits());
-            compoundSong.setLong(TAG_UUID_LSB, uuid.getLeastSignificantBits());
+            setUuidToCompound(compoundSong, uuid);
             compound.setTag(TAG_SONG_PREFIX + i, compoundSong);
             i++;
         }
