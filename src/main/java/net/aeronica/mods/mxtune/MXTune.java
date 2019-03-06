@@ -121,7 +121,7 @@ public class MXTune
     @Mod.EventHandler
     public void onEvent(FMLServerStartedEvent event)
     {
-
+        // TODO: Might not be needed, but keep it for now
     }
 
     @Mod.EventHandler
