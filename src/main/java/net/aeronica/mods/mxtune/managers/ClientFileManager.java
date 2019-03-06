@@ -23,12 +23,28 @@ import java.util.UUID;
 
 public class ClientFileManager
 {
-    // TODO: Client side server cache folders must be per server (integrated or dedicated)
-    // This must be done to avoid naming conflicts.
+    // TODO: Client side server cache folders must be per server and player (integrated AND dedicated)
+    // This must be done to avoid potential naming conflicts.
     private ClientFileManager() { /* NOP*/ }
 
+    // Uses Playlist for now. Area will be used comes once I get all the basic mechanics working
+    // This is called every tick so after at least one to two ticks a song should be available
+    // If no local cache files exist then the area/playlist will get DL and cached. On subsequent ticks
+    // the song itself will be chosen and made available
     static boolean songAvailable(UUID uuidPlayList)
     {
+        // META: What to do?
+
+        // Check local cache for area/playlist
+        // if area/playlist not exists
+        //     DL area/playlist and cache to collection and disk (async threaded flush)
+        // else
+        //     choose song based on <Area> settings and <playlist>
+        //     if song not cached
+        //         DL and cache
+        //     else
+        //         get song from cache
+        // queue song for next play and set songAvailable to true.
         return !Reference.EMPTY_UUID.equals(uuidPlayList);
     }
 }
