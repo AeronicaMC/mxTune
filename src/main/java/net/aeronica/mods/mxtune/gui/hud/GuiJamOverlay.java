@@ -337,6 +337,14 @@ public class GuiJamOverlay extends Gui
             qY = hd.quadY(maxHeight, 120, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
+        if (mc.world != null && mc.getCurrentServerData() != null)
+        {
+            String status = String.format("ServerData Name: %s", mc.getCurrentServerData().serverName);
+            statusWidth = fontRenderer.getStringWidth(status);
+            qX = hd.quadX(maxWidth, 0, 4, statusWidth);
+            qY = hd.quadY(maxHeight, 130, 4, 10);
+            fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
+        }
     }
 
     private String getMusicTitle(ItemStack stackIn)
