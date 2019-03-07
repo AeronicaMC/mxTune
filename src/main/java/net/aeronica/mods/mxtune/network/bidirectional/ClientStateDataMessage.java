@@ -16,6 +16,7 @@
  */
 package net.aeronica.mods.mxtune.network.bidirectional;
 
+import net.aeronica.mods.mxtune.managers.ClientFileManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.status.ClientStateData;
@@ -25,12 +26,22 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
+import java.util.UUID;
+
 public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessage>
 {
     private ClientStateData csd = new ClientStateData();
+    private long serverIdUuidMSB = 0;
+    private long serverIdUuidLSB = 0;
 
     public ClientStateDataMessage() { /* Required by the PacketDispatcher */ }
-    
+
+    public ClientStateDataMessage(UUID serverID)
+    {
+        serverIdUuidMSB = serverID.getMostSignificantBits();
+        serverIdUuidLSB = serverID.getLeastSignificantBits();
+    }
+
     public ClientStateDataMessage(ClientStateData csd)
     {
         this.csd = csd;
@@ -40,12 +51,16 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
     protected void read(PacketBuffer buffer)
     {
         this.csd = readCSD(buffer);
+        this.serverIdUuidMSB = buffer.readLong();
+        this.serverIdUuidLSB = buffer.readLong();
     }
 
     @Override
     protected void write(PacketBuffer buffer)
     {
         writeCSD(buffer, csd);
+        buffer.writeLong(serverIdUuidMSB);
+        buffer.writeLong(serverIdUuidLSB);
     }
 
     @Override
@@ -64,6 +79,7 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
     {
         ClientCSDMonitor.collectAndSend();
         MIDISystemUtil.onPlayerLoggedInModStatus(playerIn);
+        ClientFileManager.setCachedServerID(serverIdUuidMSB, serverIdUuidLSB);
     }
 
     private void handleServerSide(EntityPlayer playerIn)

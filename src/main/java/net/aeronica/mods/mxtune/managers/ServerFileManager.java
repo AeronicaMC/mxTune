@@ -25,8 +25,10 @@ import net.aeronica.libs.mml.core.TestData;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.caches.UUIDType5;
 import net.aeronica.mods.mxtune.managers.records.Area;
+import net.aeronica.mods.mxtune.managers.records.BaseData;
 import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.aeronica.mods.mxtune.managers.records.Song;
+import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.relauncher.Side;
@@ -41,8 +43,13 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static net.aeronica.mods.mxtune.caches.FileHelper.SERVER_FOLDER;
+
 public class ServerFileManager
 {
+    private static final String SERVER_ID_FILE = "server_id.dat";
+    private static final String SERVER_ID_FILE_ERROR = "Delete the <world save>/mxtune/server_id.dat file, then try loading the world again.";
+    private static UUID serverID;
     private static BiMap<UUID, String> songUuidVsTitles = HashBiMap.create();
     private static ListMultimap<UUID, UUID> playListVsSongs = ArrayListMultimap.create();
     private static ListMultimap<UUID, UUID> areaVsPlayList = ArrayListMultimap.create();
@@ -52,6 +59,7 @@ public class ServerFileManager
     public static void startUp()
     {
         // stuff Server goes here when needed
+        getOrGenerateServerID();
         stuffServer();
         initSongs();
         initPlayLists();
@@ -64,6 +72,50 @@ public class ServerFileManager
         songUuidVsTitles.clear();
         playListVsSongs.clear();
         areaVsPlayList.clear();
+    }
+
+    private static void getOrGenerateServerID()
+    {
+        boolean fileExists = FileHelper.fileExists(SERVER_FOLDER, SERVER_ID_FILE, Side.SERVER);
+        NBTTagCompound compound;
+        Path serverDatFile;
+        if (fileExists)
+        {
+            try
+            {
+                serverDatFile = FileHelper.getCacheFile(SERVER_FOLDER, SERVER_ID_FILE, Side.SERVER);
+                compound = FileHelper.getCompoundFromFile(serverDatFile);
+                if (compound != null)
+                    serverID = new UUID(compound.getLong(BaseData.TAG_UUID_MSB), compound.getLong(BaseData.TAG_UUID_LSB));
+                else throw new NullPointerException("NBTTagCompound compound is null!");
+            } catch (NullPointerException | IOException e)
+            {
+                ModLogger.error("The %s/%s file could not be read.", SERVER_FOLDER, SERVER_ID_FILE );
+                throw new MXTuneRuntimeException(SERVER_ID_FILE_ERROR, e);
+            }
+        }
+        else
+        {
+            try
+            {
+                serverDatFile = FileHelper.getCacheFile(SERVER_FOLDER, SERVER_ID_FILE, Side.SERVER);
+                serverID = UUID.randomUUID();
+                compound = new NBTTagCompound();
+                compound.setLong(BaseData.TAG_UUID_MSB, serverID.getMostSignificantBits());
+                compound.setLong(BaseData.TAG_UUID_LSB, serverID.getLeastSignificantBits());
+                FileHelper.sendCompoundToFile(serverDatFile, compound);
+            }
+            catch (IOException e)
+            {
+                ModLogger.error("The %s/%s file could not be written.", SERVER_FOLDER, SERVER_ID_FILE );
+                throw new MXTuneRuntimeException(SERVER_ID_FILE_ERROR, e);
+            }
+        }
+    }
+
+    public static UUID getServerID()
+    {
+        return serverID;
     }
 
     private static void initSongs()

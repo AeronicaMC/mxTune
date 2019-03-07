@@ -61,7 +61,7 @@ public class GuiJamOverlay extends Gui
 {
     private static final String INSTRUMENT_INVENTORY_EMPTY = "["+I18n.format("mxtune.instrumentInventory.empty")+"]";
     private static final ResourceLocation TEXTURE_STATUS = new ResourceLocation(Reference.MOD_ID, "textures/gui/status_widgets.png");
-    public static final int HOT_BAR_CLEARANCE = 40;
+    static final int HOT_BAR_CLEARANCE = 40;
     private static final int WIDGET_WIDTH = 256;
     private static final int WIDGET_HEIGHT = 104;
 
@@ -292,7 +292,7 @@ public class GuiJamOverlay extends Gui
             qY = hd.quadY(maxHeight, y+=10, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
-        if (GroupHelper.getAllPlayIDs() != null && !GroupHelper.getAllPlayIDs().isEmpty())
+        if (!GroupHelper.getAllPlayIDs().isEmpty())
         {
             String status = "All Play IDs:  " + GroupHelper.getAllPlayIDs().toString();
             statusWidth = fontRenderer.getStringWidth(status);
@@ -308,7 +308,7 @@ public class GuiJamOverlay extends Gui
             qY = hd.quadY(maxHeight, y+=10, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
-        if (ClientAudio.getActivePlayIDs() != null && !ClientAudio.getActivePlayIDs().isEmpty())
+        if (!ClientAudio.getActivePlayIDs().isEmpty())
         {
             String status = "Client Active PlayIDs:  " + ClientAudio.getActivePlayIDs().toString();
             statusWidth = fontRenderer.getStringWidth(status);
@@ -316,7 +316,7 @@ public class GuiJamOverlay extends Gui
             qY = hd.quadY(maxHeight, y+=10, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
-        if (GroupHelper.getAllPlayIDs() != null && !GroupHelper.getAllPlayIDs().isEmpty())
+        if (!GroupHelper.getAllPlayIDs().isEmpty())
         {
             String status = "GroupHelper.index:   " + GroupHelper.getIndex(mc.player.getEntityId());
             statusWidth = fontRenderer.getStringWidth(status);
@@ -363,15 +363,7 @@ public class GuiJamOverlay extends Gui
             String status = String.format("GameProfile UUID: %s", mc.getConnection().getGameProfile().getId());
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
-            qY = hd.quadY(maxHeight, y+=10, 4, 10);
-            fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
-        }
-        if (mc.world != null && mc.getConnection() != null)
-        {
-            String status = String.format("Lines: %02d", (y+=10)/10 - 5);
-            statusWidth = fontRenderer.getStringWidth(status);
-            qX = hd.quadX(maxWidth, 0, 4, statusWidth);
-            qY = hd.quadY(maxHeight, y, 4, 10);
+            qY = hd.quadY(maxHeight, y+10, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
     }

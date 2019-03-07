@@ -18,14 +18,28 @@
 package net.aeronica.mods.mxtune.managers;
 
 import net.aeronica.mods.mxtune.Reference;
+import net.aeronica.mods.mxtune.util.ModLogger;
 
 import java.util.UUID;
 
 public class ClientFileManager
 {
+    private static UUID cachedServerID;
+
     // TODO: Client side server cache folders must be per server and player (integrated AND dedicated)
     // This must be done to avoid potential naming conflicts.
     private ClientFileManager() { /* NOP*/ }
+
+    public static void setCachedServerID(long msb, long lsb)
+    {
+        cachedServerID = new UUID(msb, lsb);
+        ModLogger.debug("Cached Server ID received: %s", cachedServerID.toString());
+    }
+
+    private static UUID getCachedServerID()
+    {
+        return cachedServerID;
+    }
 
     // Uses Playlist for now. Area will be used comes once I get all the basic mechanics working
     // This is called every tick so after at least one to two ticks a song should be available

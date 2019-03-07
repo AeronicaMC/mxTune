@@ -52,7 +52,7 @@ public class FileHelper
     public static final String CLIENT_LIB_FOLDER = CLIENT_FOLDER + "/library";
     public static final String CLIENT_PLAYLISTS_FOLDER = CLIENT_FOLDER + "/playlists";
     public static final String CLIENT_SERVER_CACHE_FOLDER = CLIENT_FOLDER + "/server_cache";
-    private static final String SERVER_FOLDER = MOD_FOLDER;
+    public static final String SERVER_FOLDER = MOD_FOLDER;
     public static final String SERVER_AREAS_FOLDER = SERVER_FOLDER + "/areas";
     public static final String SERVER_MUSIC_FOLDER = SERVER_FOLDER + "/music";
     public static final String SERVER_PLAYLISTS_FOLDER = SERVER_FOLDER + "/playlists";
@@ -146,6 +146,13 @@ public class FileHelper
             Files.createFile(cacheFile);
         }
         return cacheFile;
+    }
+
+    public static boolean fileExists(String folder, String filename, Side sideIn)
+    {
+        Path dir = getDirectory(folder, sideIn);
+        Path resolve = dir.resolve(filename);
+        return resolve.toFile().exists();
     }
 
     public static NBTTagCompound getCompoundFromFile(Path path)

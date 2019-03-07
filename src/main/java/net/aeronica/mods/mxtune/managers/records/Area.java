@@ -33,15 +33,15 @@ public class Area extends BaseData
     public Area(String name)
     {
         this.name = name;
-        playList = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_LIST, "");
-        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_AREA, this.name);
+        playList = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_LIST, applyServerID(""));
+        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_AREA, applyServerID(this.name));
     }
 
     public Area(String name, UUID playList)
     {
         this.name = name;
         this.playList = playList;
-        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_AREA, this.name);
+        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_AREA, applyServerID(this.name));
     }
 
     public static Area build(NBTTagCompound compound)

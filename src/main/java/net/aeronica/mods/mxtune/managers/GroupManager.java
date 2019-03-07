@@ -28,7 +28,6 @@ import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
@@ -405,19 +404,13 @@ public class GroupManager
 
     /* FML Gaming Events */
     @SubscribeEvent
-    public void onJoinWorld(EntityJoinWorldEvent event)
-    {
-        if ((event.getEntity() instanceof EntityPlayerMP) && !event.getWorld().isRemote)
-        {
-            GroupManager.sync();
-        }
-    }
-    
-    @SubscribeEvent
     public void onPlayerLoggedInEvent(PlayerLoggedInEvent event)
     {
         if(MXTune.proxy.getEffectiveSide() == Side.SERVER)
+        {
+            GroupManager.sync();
             ServerCSDManager.queryClient(event.player);
+        }
     } 
     
     @SubscribeEvent

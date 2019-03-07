@@ -18,30 +18,37 @@
 package net.aeronica.mods.mxtune.managers.records;
 
 import net.aeronica.mods.mxtune.caches.UUIDType5;
+import net.aeronica.mods.mxtune.util.SheetMusicUtil;
+import net.aeronica.mods.mxtune.util.ValidDuration;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class Song extends BaseData
 {
     private static final String TAG_TITLE = "title";
     private static final String TAG_MML = "mml";
+    private static final String TAG_DURATION = "duration";
     private static final String NULL_TITLE = "--- null title ---";
     private static final String NULL_MML = "@MML;";
 
     private String title;
     private String mml;
+    private int duration;
 
     private Song()
     {
         super();
         title = NULL_TITLE;
         mml = NULL_MML;
+        duration = 0;
     }
 
     public Song(String title, String mml)
     {
         this.title = title != null ? title : NULL_TITLE;
         this.mml = mml != null ? mml : NULL_MML;
-        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_SONG, this.title);
+        ValidDuration validDuration = SheetMusicUtil.validateMML(this. mml);
+        this.duration = validDuration.getDuration();
+        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_SONG, applyServerID(this.title));
     }
 
     public Song(NBTTagCompound compound)
@@ -55,6 +62,7 @@ public class Song extends BaseData
         super.readFromNBT(compound);
         title = compound.getString(TAG_TITLE);
         mml = compound.getString(TAG_MML);
+        duration = compound.getInteger(TAG_DURATION);
     }
 
     @Override
@@ -63,6 +71,7 @@ public class Song extends BaseData
         super.writeToNBT(compound);
         compound.setString(TAG_TITLE, title);
         compound.setString(TAG_MML, mml);
+        compound.setInteger(TAG_DURATION, duration);
     }
 
     public String getTitle()
@@ -73,5 +82,10 @@ public class Song extends BaseData
     public String getMml()
     {
         return mml;
+    }
+
+    public int getDuration()
+    {
+        return duration;
     }
 }
