@@ -114,7 +114,7 @@ public class ClientFileManager
     {
         List<Path> files = new ArrayList<>();
         map.clear();
-        Path path = FileHelper.getDirectory(pathAreas.toString(), Side.CLIENT);
+        Path path = FileHelper.getDirectory(loc.toString(), Side.CLIENT);
         PathMatcher filter = FileHelper.getDatMatcher(path);
         try (Stream<Path> paths = Files.list(path))
         {
