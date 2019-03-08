@@ -33,6 +33,7 @@ public class PlayList extends BaseData
 
     private String name;
     private List<UUID> songUUIDs;
+    private int songCount;
 
     public PlayList()
     {
@@ -58,7 +59,7 @@ public class PlayList extends BaseData
     {
         super.readFromNBT(compound);
         name = compound.getString(TAG_NAME);
-        int songCount = compound.getInteger(TAG_SONG_COUNT);
+        songCount = compound.getInteger(TAG_SONG_COUNT);
 
         songUUIDs = new ArrayList<>();
         for(int i = 0; i < songCount; i++)
@@ -105,5 +106,11 @@ public class PlayList extends BaseData
     public void setName(String name)
     {
         this.name = name;
+    }
+
+    @Override
+    public <T extends BaseData> T factory()
+    {
+        return (T) new PlayList();
     }
 }

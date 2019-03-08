@@ -30,9 +30,9 @@ public class Area extends BaseData
     private String name;
     private UUID playList;
 
-    public Area(String name)
+    public Area()
     {
-        this.name = name;
+        this.name = "";
         playList = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_LIST, applyServerID(""));
         uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_AREA, applyServerID(this.name));
     }
@@ -84,5 +84,11 @@ public class Area extends BaseData
     public void setPlayList(UUID playList)
     {
         this.playList = playList;
+    }
+
+    @Override
+    public <T extends BaseData> T factory()
+    {
+        return (T) new Area();
     }
 }

@@ -34,7 +34,7 @@ public class Song extends BaseData
     private String mml;
     private int duration;
 
-    private Song()
+    public Song()
     {
         super();
         title = NULL_TITLE;
@@ -87,5 +87,11 @@ public class Song extends BaseData
     public int getDuration()
     {
         return duration;
+    }
+
+    @Override
+    public <T extends BaseData> T factory()
+    {
+        return (T) new Song();
     }
 }

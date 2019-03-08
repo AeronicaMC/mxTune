@@ -70,4 +70,6 @@ public abstract class BaseData
     {
         return ServerFileManager.getServerID().toString() + stringIn;
     }
+
+    public abstract <T extends BaseData> T factory();
 }

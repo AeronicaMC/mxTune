@@ -19,21 +19,46 @@ package net.aeronica.mods.mxtune.managers;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.caches.FileHelper;
+import net.aeronica.mods.mxtune.managers.records.Area;
+import net.aeronica.mods.mxtune.managers.records.BaseData;
+import net.aeronica.mods.mxtune.managers.records.PlayList;
+import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.relauncher.Side;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ClientFileManager
 {
     private static UUID cachedServerID = Reference.EMPTY_UUID;
     private static Minecraft mc = Minecraft.getMinecraft();
-    private static UUID playerUniqueID;
-    private static Path clientSideCacheDirectory;
+
+    private static final String DIR_AREAS = "areas";
+    private static final String DIR_PLAYLISTS = "playlists";
+    private static final String DIR_MUSIC = "music";
+    private static final String DIR_PCM = "pcm";
+
+    private static Path pathCacheParent;
+    private static Path pathAreas;
+    private static Path pathPlayLists;
+    private static Path pathMusic;
+    private static Path pathPCM;
+
+    private static Map<UUID, Area> areasMap = new Hashtable<>();
+    private static Map<UUID, PlayList> playListsMap = new Hashtable<>();
+    private static Map<UUID, Song> songsMap = new Hashtable<>();
+    private static Map<UUID, Path> pcmMap = new Hashtable<>();
+
 
     // TODO: Client side server cache folders must be per server and player (integrated AND dedicated)
     // This must be done to avoid potential naming conflicts.
@@ -49,33 +74,73 @@ public class ClientFileManager
     {
         cachedServerID = new UUID(msb, lsb);
         ModLogger.debug("Cached Server ID received: %s", cachedServerID.toString());
-        createClientSideCacheDirectory();
+        createClientSideCacheDirectories();
+        mc.addScheduledTask(()-> {
+        loadCache(pathAreas, areasMap, new Area());
+        loadCache(pathPlayLists, playListsMap, new PlayList());
+        loadCache(pathMusic, songsMap, new Song());
+        });
     }
 
     /**
      * <p>Build a unique client side server data cache directory by player and server.</p>
      * e.g. &lt;game folder&gt;/mxtune/server_cache/&lt;player UUID&gt/&lt;server UUID&gt;
      */
-    private static void createClientSideCacheDirectory()
+    private static void createClientSideCacheDirectories()
     {
-        playerUniqueID = mc.player.getUniqueID();
+        UUID playerUniqueID = mc.player.getUniqueID();
         Path clientSidePlayerServerCachePath = Paths.get(FileHelper.CLIENT_SERVER_CACHE_FOLDER, playerUniqueID.toString(), getCachedServerID().toString());
-        clientSideCacheDirectory = FileHelper.getDirectory(clientSidePlayerServerCachePath.toString(), Side.CLIENT);
+        Path pathCacheParent = FileHelper.getDirectory(clientSidePlayerServerCachePath.toString(), Side.CLIENT);
+        pathAreas = getSubDirectory(clientSidePlayerServerCachePath.toString(), DIR_AREAS);
+        pathPlayLists = getSubDirectory(clientSidePlayerServerCachePath.toString(), DIR_PLAYLISTS);
+        pathMusic = getSubDirectory(clientSidePlayerServerCachePath.toString(), DIR_MUSIC);
+        pathPCM = getSubDirectory(clientSidePlayerServerCachePath.toString(), DIR_PCM);
     }
 
-    static UUID getCachedServerID()
+    private static Path getSubDirectory(String parent, String child)
+    {
+        Path join = Paths.get(parent, child);
+        return FileHelper.getDirectory(join.toString(), Side.CLIENT);
+    }
+
+    private static UUID getCachedServerID()
     {
         if (Reference.EMPTY_UUID.equals(cachedServerID))
             throw new MXTuneRuntimeException("EMPTY_UUID detected! Something is seriously wrong.");
         return cachedServerID;
     }
 
-    static Path getClientSideCacheDirectory()
+    private static <T extends BaseData> void loadCache(Path loc, Map<UUID, T> map, T type)
     {
-        return clientSideCacheDirectory;
+        List<Path> files = new ArrayList<>();
+        map.clear();
+        Path path = FileHelper.getDirectory(pathAreas.toString(), Side.CLIENT);
+        PathMatcher filter = FileHelper.getDatMatcher(path);
+        try (Stream<Path> paths = Files.list(path))
+        {
+            files = paths
+                    .filter(filter::matches)
+                    .collect(Collectors.toList());
+        }
+        catch (NullPointerException | IOException e)
+        {
+            ModLogger.error(e);
+        }
+
+        for (Path file : files)
+        {
+            NBTTagCompound compound = FileHelper.getCompoundFromFile(file);
+            if (compound != null)
+            {
+                T data = type.factory();
+                data.readFromNBT(compound);
+                UUID uuid = data.getUUID();
+                map.put(uuid, data);
+            }
+        }
     }
 
-    // Uses Playlist for now. Area will be used comes once I get all the basic mechanics working
+    // Uses Playlist for now. Area will be used once I all the basic mechanics are working
     // This is called every tick so after at least one to two ticks a song should be available
     // If no local cache files exist then the area/playlist will get DL and cached. On subsequent ticks
     // the song itself will be chosen and made available
