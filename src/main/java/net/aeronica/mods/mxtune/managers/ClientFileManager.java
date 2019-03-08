@@ -54,10 +54,10 @@ public class ClientFileManager
     private static Path pathMusic;
     private static Path pathPCM;
 
-    private static Map<UUID, Area> areasMap = new Hashtable<>();
-    private static Map<UUID, PlayList> playListsMap = new Hashtable<>();
-    private static Map<UUID, Song> songsMap = new Hashtable<>();
-    private static Map<UUID, Path> pcmMap = new Hashtable<>();
+    private static Map<UUID, Area> mapAreas = new HashMap<>();
+    private static Map<UUID, PlayList> mapPlayLists = new HashMap<>();
+    private static Map<UUID, Song> mapMusic = new HashMap<>();
+    private static Map<UUID, Path> mapPCM = new HashMap<>();
 
 
     // TODO: Client side server cache folders must be per server and player (integrated AND dedicated)
@@ -75,11 +75,10 @@ public class ClientFileManager
         cachedServerID = new UUID(msb, lsb);
         ModLogger.debug("Cached Server ID received: %s", cachedServerID.toString());
         createClientSideCacheDirectories();
-        mc.addScheduledTask(()-> {
-        loadCache(pathAreas, areasMap, new Area());
-        loadCache(pathPlayLists, playListsMap, new PlayList());
-        loadCache(pathMusic, songsMap, new Song());
-        });
+        loadCache(pathAreas, mapAreas, Area.class);
+        loadCache(pathPlayLists, mapPlayLists, PlayList.class);
+        loadCache(pathMusic, mapMusic, Song.class);
+        ModLogger.debug("Cache loaded");
     }
 
     /**
@@ -110,7 +109,7 @@ public class ClientFileManager
         return cachedServerID;
     }
 
-    private static <T extends BaseData> void loadCache(Path loc, Map<UUID, T> map, T type)
+    private static <T extends BaseData> void loadCache(Path loc, Map<UUID, T> map, Class<T> type)
     {
         List<Path> files = new ArrayList<>();
         map.clear();
@@ -131,12 +130,18 @@ public class ClientFileManager
         {
             NBTTagCompound compound = FileHelper.getCompoundFromFile(file);
             if (compound != null)
-            {
-                T data = type.factory();
-                data.readFromNBT(compound);
-                UUID uuid = data.getUUID();
-                map.put(uuid, data);
-            }
+                try
+                {
+                    T data = type.newInstance();
+                    data.readFromNBT(compound);
+                    UUID uuid = data.getUUID();
+                    map.put(uuid, data);
+                } catch (InstantiationException | IllegalAccessException e)
+                {
+                    ModLogger.error(e);
+                    ModLogger.error("What did you do? What's this thing?: %s", type.getSimpleName());
+                    throw new MXTuneRuntimeException(e);
+                }
         }
     }
 
