@@ -34,7 +34,7 @@ import java.util.UUID;
 
 public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
 {
-    private boolean result = false;
+    private boolean errorResult = false;
     private boolean fileError = false;
     public enum Type {AREA, PLAY_LIST, MUSIC}
     private Type type = Type.AREA;
@@ -43,6 +43,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
     private long dataTypeUuidLSB = 0;
     private UUID dataTypeUuid;
 
+    @SuppressWarnings("unused")
     public GetServerDataMessage() { /* Required by the PacketDispatcher */ }
 
     /**
@@ -63,13 +64,13 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
      * @param type data type
      * @param dataCompound provided data
      */
-    public GetServerDataMessage(UUID uuidType, Type type, NBTTagCompound dataCompound, boolean result)
+    private GetServerDataMessage(UUID uuidType, Type type, NBTTagCompound dataCompound, boolean errorResult)
     {
         this.type = type;
         dataTypeUuidMSB = uuidType.getMostSignificantBits();
         dataTypeUuidLSB = uuidType.getLeastSignificantBits();
         this.dataCompound = dataCompound;
-        this.result = result;
+        this.errorResult = errorResult;
     }
     
     @Override
@@ -79,7 +80,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
         this.dataCompound = buffer.readCompoundTag();
         this.dataTypeUuidMSB = buffer.readLong();
         this.dataTypeUuidLSB = buffer.readLong();
-        this.result = buffer.readBoolean();
+        this.errorResult = buffer.readBoolean();
         dataTypeUuid = new UUID(dataTypeUuidMSB, dataTypeUuidLSB);
     }
 
@@ -90,7 +91,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
         buffer.writeCompoundTag(dataCompound);
         buffer.writeLong(dataTypeUuidMSB);
         buffer.writeLong(dataTypeUuidLSB);
-        buffer.writeBoolean(result);
+        buffer.writeBoolean(errorResult);
     }
 
     @Override
@@ -98,33 +99,40 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
     {
         if (side.isClient())
         {
-            handleClientSide(player);
+            handleClientSide();
         } else
         {
             handleServerSide(player);
         }
     }
 
-    private void handleClientSide(EntityPlayer playerIn)
+    /**
+     * Data received from server. errorResult = true if retrieval failed.
+     */
+    private void handleClientSide()
     {
-        if (result)
+        if (errorResult)
             ModLogger.error(type + " file: " + dataTypeUuid.toString() + ".dat does not exist on the server");
         switch(type)
         {
             case AREA:
-                ClientFileManager.addArea(dataTypeUuid, dataCompound, result);
+                ClientFileManager.addArea(dataTypeUuid, dataCompound, errorResult);
                 break;
             case PLAY_LIST:
-                ClientFileManager.addPlayList(dataTypeUuid, dataCompound, result);
+                ClientFileManager.addPlayList(dataTypeUuid, dataCompound, errorResult);
                 break;
             case MUSIC:
-                ClientFileManager.addMusic(dataTypeUuid, dataCompound, result);
+                ClientFileManager.addMusic(dataTypeUuid, dataCompound, errorResult);
                 break;
 
             default:
         }
     }
 
+    /**
+     * Retrieve requested data and send it to the client.
+     * @param playerIn the client.
+     */
     private void handleServerSide(EntityPlayer playerIn)
     {
         switch(type)
