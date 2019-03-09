@@ -58,9 +58,8 @@ public class ServerFileManager
 
     public static void startUp()
     {
-        // stuff Server goes here when needed
         getOrGenerateServerID();
-        stuffServer();
+        stuffServer(); // stuffServer goes here when needed - test data
         initSongs();
         initPlayLists();
         initAreas();

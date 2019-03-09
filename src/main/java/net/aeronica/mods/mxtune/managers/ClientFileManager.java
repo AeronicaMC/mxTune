@@ -19,10 +19,7 @@ package net.aeronica.mods.mxtune.managers;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.caches.FileHelper;
-import net.aeronica.mods.mxtune.managers.records.Area;
-import net.aeronica.mods.mxtune.managers.records.BaseData;
-import net.aeronica.mods.mxtune.managers.records.PlayList;
-import net.aeronica.mods.mxtune.managers.records.Song;
+import net.aeronica.mods.mxtune.managers.records.*;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.GetServerDataMessage;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
@@ -31,6 +28,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.relauncher.Side;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -60,12 +58,15 @@ public class ClientFileManager
 
     private static Map<UUID, Area> mapAreas = new HashMap<>();
     private static Map<UUID, PlayList> mapPlayLists = new HashMap<>();
-    private static Map<UUID, Song> mapMusic = new HashMap<>();
+    private static Map<UUID, SongProxy> mapMusic = new HashMap<>();
     private static Map<UUID, Path> mapPCM = new HashMap<>();
     private static Set<UUID> badAreas = new HashSet<>();
     private static Set<UUID> badPlayLists = new HashSet<>();
     private static Set<UUID> badMusic = new HashSet<>();
+    private static Deque<UUID> musicQueue = new ArrayDeque<>();
 
+    private static boolean waitPlayList = false;
+    private static boolean waitMusic = false;
 
 
     // TODO: Client side server cache folders must be per server and player (integrated AND dedicated)
@@ -85,7 +86,7 @@ public class ClientFileManager
         createClientSideCacheDirectories();
         loadCache(pathAreas, mapAreas, Area.class);
         loadCache(pathPlayLists, mapPlayLists, PlayList.class);
-        loadCache(pathMusic, mapMusic, Song.class);
+        loadCache(pathMusic, mapMusic, SongProxy.class);
         badAreas.clear();
         badPlayLists.clear();
         badMusic.clear();
@@ -165,6 +166,7 @@ public class ClientFileManager
             ModLogger.error("Unable to write PlayList file: %s to cache folder: %s", uuid.toString() + "dat", pathPlayLists.toString());
             return;
         }
+        waitPlayList = false;
         FileHelper.sendCompoundToFile(path, data);
     }
 
@@ -176,9 +178,9 @@ public class ClientFileManager
             return;
         }
         Path path;
-        Song playList = new Song();
-        playList.readFromNBT(data);
-        mapMusic.put(uuid, playList);
+        SongProxy proxy = new SongProxy();
+        proxy.readFromNBT(data);
+        mapMusic.put(uuid, proxy);
         try
         {
             path = FileHelper.getCacheFile(pathMusic.toString(), uuid.toString() + ".dat", Side.CLIENT);
@@ -189,6 +191,7 @@ public class ClientFileManager
             ModLogger.error("Unable to write Music file: %s to cache folder: %s", uuid.toString() + "dat", pathMusic.toString());
             return;
         }
+        waitMusic = false;
         FileHelper.sendCompoundToFile(path, data);
     }
 
@@ -276,7 +279,7 @@ public class ClientFileManager
         //     else
         //         get song from cache
         // queue song for next play and set songAvailable to true.
-        if (resolvePlayList(playListId) && isNotBadPlayList(playListId))
+        if (resolvePlayList(playListId) && isNotBadPlayList(playListId) && !waitPlayList && !waitMusic)
         {
             return true;
         }
@@ -292,15 +295,76 @@ public class ClientFileManager
     {
         if (mapPlayLists.containsKey(playListId))
         {
-            // W00T! we have a cached play list
-            // get it and choose a song
+            waitPlayList = false;
             return true;
         }
         else
         {
             if (!Reference.EMPTY_UUID.equals(playListId) && isNotBadPlayList(playListId))
+            {
+                waitPlayList = true;
                 PacketDispatcher.sendToServer(new GetServerDataMessage(playListId, Type.PLAY_LIST));
+            }
             return false;
         }
+    }
+
+    private static boolean resolveMusic(UUID musicId)
+    {
+        if (mapMusic.containsKey(musicId))
+        {
+            SongProxy song = mapMusic.get(musicId);
+            waitMusic = false;
+            return true;
+        }
+        else
+        {
+            if (!Reference.EMPTY_UUID.equals(musicId) && isNotBadMusic(musicId))
+            {
+                waitMusic = true;
+                PacketDispatcher.sendToServer(new GetServerDataMessage(musicId, Type.MUSIC));
+            }
+        }
+        return false;
+    }
+
+    @Nullable
+    public PlayList getPlayList(UUID uuid)
+    {
+        if (resolvePlayList(uuid))
+        {
+            return mapPlayLists.get(uuid);
+        }
+        return null;
+    }
+
+    @Nullable
+    private SongProxy getMusic(UUID uuid)
+    {
+        if (resolveMusic(uuid))
+        {
+            return mapMusic.get(uuid);
+        }
+        return null;
+    }
+
+    @Nullable
+    public Song getMusicFromCache(UUID uuid)
+    {
+        if (mapMusic.containsKey(uuid) && isNotBadMusic(uuid))
+        try {
+            Path path = FileHelper.getCacheFile(pathMusic.toString(), uuid.toString() + ".dat", Side.CLIENT);
+            NBTTagCompound compound =  FileHelper.getCompoundFromFile(path);
+            Song song = new Song();
+            song.readFromNBT(compound);
+            return song;
+        }
+        catch (IOException e)
+        {
+            ModLogger.error(e);
+            Path path = Paths.get(pathMusic.toString(), uuid.toString() + ".dat");
+            ModLogger.error("Unable to read file: " + path);
+        }
+        return null;
     }
 }
