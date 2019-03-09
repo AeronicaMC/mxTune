@@ -6,6 +6,7 @@ package net.aeronica.mods.mxtune.network;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.network.bidirectional.ClientStateDataMessage;
+import net.aeronica.mods.mxtune.network.bidirectional.GetServerDataMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.SendKeyMessage;
 import net.aeronica.mods.mxtune.network.client.*;
 import net.aeronica.mods.mxtune.network.server.*;
@@ -92,6 +93,7 @@ public class PacketDispatcher
         // Bidirectional packets:
         registerMessage(SendKeyMessage.class);
         registerMessage(ClientStateDataMessage.class);
+        registerMessage(GetServerDataMessage.class);
     }
 
     /**

@@ -23,6 +23,8 @@ import net.aeronica.mods.mxtune.managers.records.Area;
 import net.aeronica.mods.mxtune.managers.records.BaseData;
 import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.aeronica.mods.mxtune.managers.records.Song;
+import net.aeronica.mods.mxtune.network.PacketDispatcher;
+import net.aeronica.mods.mxtune.network.bidirectional.GetServerDataMessage;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
@@ -37,6 +39,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static net.aeronica.mods.mxtune.network.bidirectional.GetServerDataMessage.Type;
 
 public class ClientFileManager
 {
@@ -58,6 +62,10 @@ public class ClientFileManager
     private static Map<UUID, PlayList> mapPlayLists = new HashMap<>();
     private static Map<UUID, Song> mapMusic = new HashMap<>();
     private static Map<UUID, Path> mapPCM = new HashMap<>();
+    private static Set<UUID> badAreas = new HashSet<>();
+    private static Set<UUID> badPlayLists = new HashSet<>();
+    private static Set<UUID> badMusic = new HashSet<>();
+
 
 
     // TODO: Client side server cache folders must be per server and player (integrated AND dedicated)
@@ -78,6 +86,9 @@ public class ClientFileManager
         loadCache(pathAreas, mapAreas, Area.class);
         loadCache(pathPlayLists, mapPlayLists, PlayList.class);
         loadCache(pathMusic, mapMusic, Song.class);
+        badAreas.clear();
+        badPlayLists.clear();
+        badMusic.clear();
         ModLogger.debug("Cache loaded");
     }
 
@@ -107,6 +118,108 @@ public class ClientFileManager
         if (Reference.EMPTY_UUID.equals(cachedServerID))
             throw new MXTuneRuntimeException("EMPTY_UUID detected! Something is seriously wrong.");
         return cachedServerID;
+    }
+
+    public static void addArea(UUID uuid, NBTTagCompound data, boolean error)
+    {
+        if (error)
+        {
+            addBadArea(uuid);
+            return;
+        }
+        Path path;
+        Area area = new Area();
+        area.readFromNBT(data);
+        mapAreas.put(uuid, area);
+        try
+        {
+            path = FileHelper.getCacheFile(pathAreas.toString(), uuid.toString() + ".dat", Side.CLIENT);
+        }
+        catch (IOException e)
+        {
+            ModLogger.error(e);
+            ModLogger.error("Unable to write Area file: %s to cache folder: %s", uuid.toString() + "dat", pathAreas.toString());
+            return;
+        }
+        FileHelper.sendCompoundToFile(path, data);
+    }
+
+    public static void addPlayList(UUID uuid, NBTTagCompound data, boolean error)
+    {
+        if (error)
+        {
+            addBadPlayList(uuid);
+            return;
+        }
+        Path path;
+        PlayList playList = new PlayList();
+        playList.readFromNBT(data);
+        mapPlayLists.put(uuid, playList);
+        try
+        {
+            path = FileHelper.getCacheFile(pathPlayLists.toString(), uuid.toString() + ".dat", Side.CLIENT);
+        }
+        catch (IOException e)
+        {
+            ModLogger.error(e);
+            ModLogger.error("Unable to write PlayList file: %s to cache folder: %s", uuid.toString() + "dat", pathPlayLists.toString());
+            return;
+        }
+        FileHelper.sendCompoundToFile(path, data);
+    }
+
+    public static void addMusic(UUID uuid, NBTTagCompound data, boolean error)
+    {
+        if (error)
+        {
+            addBadMusic(uuid);
+            return;
+        }
+        Path path;
+        Song playList = new Song();
+        playList.readFromNBT(data);
+        mapMusic.put(uuid, playList);
+        try
+        {
+            path = FileHelper.getCacheFile(pathMusic.toString(), uuid.toString() + ".dat", Side.CLIENT);
+        }
+        catch (IOException e)
+        {
+            ModLogger.error(e);
+            ModLogger.error("Unable to write Music file: %s to cache folder: %s", uuid.toString() + "dat", pathMusic.toString());
+            return;
+        }
+        FileHelper.sendCompoundToFile(path, data);
+    }
+
+    private static void addBadArea(UUID badUuid)
+    {
+        badAreas.add(badUuid);
+    }
+
+    private static void addBadPlayList(UUID badUuid)
+    {
+        badPlayLists.add(badUuid);
+    }
+
+    private static void addBadMusic(UUID badUuid)
+    {
+        badMusic.add(badUuid);
+    }
+
+    private static boolean isNotBadArea(UUID uuid)
+    {
+        return !badAreas.contains(uuid);
+    }
+
+    private static boolean isNotBadPlayList(UUID uuid)
+    {
+        return !badPlayLists.contains(uuid);
+    }
+
+    private static boolean isNotBadMusic(UUID uuid)
+    {
+        return !badMusic.contains(uuid);
     }
 
     private static <T extends BaseData> void loadCache(Path loc, Map<UUID, T> map, Class<T> type)
@@ -149,7 +262,7 @@ public class ClientFileManager
     // This is called every tick so after at least one to two ticks a song should be available
     // If no local cache files exist then the area/playlist will get DL and cached. On subsequent ticks
     // the song itself will be chosen and made available
-    static boolean songAvailable(UUID uuidPlayList)
+    static boolean songAvailable(UUID playListId)
     {
         // META: What to do?
 
@@ -163,6 +276,31 @@ public class ClientFileManager
         //     else
         //         get song from cache
         // queue song for next play and set songAvailable to true.
-        return !Reference.EMPTY_UUID.equals(uuidPlayList);
+        if (resolvePlayList(playListId) && isNotBadPlayList(playListId))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
+        // return !Reference.EMPTY_UUID.equals(playListId);
+    }
+
+    private static boolean resolvePlayList(UUID playListId)
+    {
+        if (mapPlayLists.containsKey(playListId))
+        {
+            // W00T! we have a cached play list
+            // get it and choose a song
+            return true;
+        }
+        else
+        {
+            if (!Reference.EMPTY_UUID.equals(playListId) && isNotBadPlayList(playListId))
+                PacketDispatcher.sendToServer(new GetServerDataMessage(playListId, Type.PLAY_LIST));
+            return false;
+        }
     }
 }
