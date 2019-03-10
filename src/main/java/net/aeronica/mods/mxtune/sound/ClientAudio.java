@@ -280,7 +280,10 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         {
             AudioData audioData = playIDAudioData.get(playID);
             if (sndSystem != null && audioData != null && audioData.getUuid() != null)
+            {
+                audioData.setStatus(Status.DONE);
                 sndSystem.fadeOut(audioData.getUuid(), null, fadeMilliseconds);
+            }
         }
     }
     
@@ -405,7 +408,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
             musicTicker = Minecraft.getMinecraft().getMusicTicker();
             setVanillaMusicPaused(false);
             playIDAudioData.clear();
-            ClientPlayManager.resetTimer();
+            ClientPlayManager.start();
         }
     }
     

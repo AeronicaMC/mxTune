@@ -18,6 +18,8 @@ package net.aeronica.mods.mxtune.network.bidirectional;
 
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.managers.ClientFileManager;
+import net.aeronica.mods.mxtune.managers.ClientPlayManager;
+import net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -42,6 +44,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
     private long dataTypeUuidMSB = 0;
     private long dataTypeUuidLSB = 0;
     private UUID dataTypeUuid;
+    private int playId = PlayType.INVALID;
 
     @SuppressWarnings("unused")
     public GetServerDataMessage() { /* Required by the PacketDispatcher */ }
@@ -59,16 +62,33 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
     }
 
     /**
-     * Server response with data
+     * Client Request for data type using playId which will cause the client to start playing the song after it is
+     * received by the client.
      * @param uuidType data type unique id
      * @param type data type
-     * @param dataCompound provided data
+     * @param playId to use for the song. Only valid for the MUSIC type
      */
-    private GetServerDataMessage(UUID uuidType, Type type, NBTTagCompound dataCompound, boolean errorResult)
+    public GetServerDataMessage(UUID uuidType, Type type, int playId)
     {
         this.type = type;
         dataTypeUuidMSB = uuidType.getMostSignificantBits();
         dataTypeUuidLSB = uuidType.getLeastSignificantBits();
+        this.playId = playId;
+    }
+
+    /**
+     * Server response with data
+     * @param uuidType data type unique id
+     * @param type data type
+     * @param playId to use for the song or the INVALID id (default if not specified in the client request)
+     * @param dataCompound provided data
+     */
+    private GetServerDataMessage(UUID uuidType, Type type, int playId, NBTTagCompound dataCompound, boolean errorResult)
+    {
+        this.type = type;
+        dataTypeUuidMSB = uuidType.getMostSignificantBits();
+        dataTypeUuidLSB = uuidType.getLeastSignificantBits();
+        this.playId = playId;
         this.dataCompound = dataCompound;
         this.errorResult = errorResult;
     }
@@ -81,6 +101,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
         this.dataTypeUuidMSB = buffer.readLong();
         this.dataTypeUuidLSB = buffer.readLong();
         this.errorResult = buffer.readBoolean();
+        this.playId = buffer.readInt();
         dataTypeUuid = new UUID(dataTypeUuidMSB, dataTypeUuidLSB);
     }
 
@@ -92,6 +113,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
         buffer.writeLong(dataTypeUuidMSB);
         buffer.writeLong(dataTypeUuidLSB);
         buffer.writeBoolean(errorResult);
+        buffer.writeInt(playId);
     }
 
     @Override
@@ -123,6 +145,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
                 break;
             case MUSIC:
                 ClientFileManager.addMusic(dataTypeUuid, dataCompound, errorResult);
+                ClientPlayManager.playMusic(dataTypeUuid, playId);
                 break;
 
             default:
@@ -148,7 +171,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
                 break;
             default:
         }
-        PacketDispatcher.sendTo(new GetServerDataMessage(dataTypeUuid, type, dataCompound, fileError), (EntityPlayerMP) playerIn);
+        PacketDispatcher.sendTo(new GetServerDataMessage(dataTypeUuid, type, playId, dataCompound, fileError), (EntityPlayerMP) playerIn);
     }
 
     private NBTTagCompound getDataCompoundFromFile(String folder, UUID dataTypeUuid)

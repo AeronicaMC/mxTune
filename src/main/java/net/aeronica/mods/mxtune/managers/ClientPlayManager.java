@@ -17,12 +17,17 @@
 
 package net.aeronica.mods.mxtune.managers;
 
-import net.aeronica.libs.mml.core.TestData;
+import net.aeronica.mods.mxtune.Reference;
+import net.aeronica.mods.mxtune.managers.records.PlayList;
+import net.aeronica.mods.mxtune.managers.records.Song;
+import net.aeronica.mods.mxtune.network.PacketDispatcher;
+import net.aeronica.mods.mxtune.network.bidirectional.GetServerDataMessage;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.sound.ClientAudio.Status;
 import net.aeronica.mods.mxtune.sound.IAudioStatusCallback;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.aeronica.mods.mxtune.world.chunk.ModChunkDataHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.chunk.Chunk;
@@ -53,7 +58,7 @@ public class ClientPlayManager implements IAudioStatusCallback
 
     // AREA Song Shuffling
     private static final Random rand = new Random();
-    private static Deque<String> lastSongs  = new ArrayDeque<>();
+    private static Deque<UUID> lastSongs  = new ArrayDeque<>();
     private static final int NUM_LAST_SONGS = 10;
     private static int failedNewSongs;
 
@@ -65,6 +70,13 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static boolean wait = false;
 
     private ClientPlayManager() { /* NOP */ }
+
+    public static void start()
+    {
+        ClientPlayManager.resetTimer();
+        ClientPlayManager.invalidatePlayId();
+        lastSongs.clear();
+    }
 
     @SubscribeEvent
     public static void onEvent(TickEvent.ClientTickEvent event)
@@ -84,29 +96,29 @@ public class ClientPlayManager implements IAudioStatusCallback
         }
     }
 
-    private static void trackLastSongs(String song)
+    private static void trackLastSongs(UUID uuidSong)
     {
         int size = lastSongs.size();
-        boolean songInDeque = lastSongs.contains(song);
+        boolean songInDeque = lastSongs.contains(uuidSong);
         if (!songInDeque && size < NUM_LAST_SONGS)
         {
-            lastSongs.addLast(song);
+            lastSongs.addLast(uuidSong);
         }
         else if (!songInDeque)
         {
             lastSongs.removeFirst();
-            lastSongs.addLast(song);
+            lastSongs.addLast(uuidSong);
         }
-        Iterator<String> it = lastSongs.iterator();
+        Iterator<UUID> it = lastSongs.iterator();
         for (int i = 0; i < lastSongs.size(); i++)
         {
-            ModLogger.info(".......%d title: %s", i+1, it.next());
+            ModLogger.info(".......%d uuid: %s", i+1, it.next().toString());
         }
     }
 
-    private static boolean heardSong(String song)
+    private static boolean heardSong(UUID uuidSong)
     {
-        boolean hasSong =  lastSongs.contains(song);
+        boolean hasSong =  lastSongs.contains(uuidSong);
         boolean isEmpty = lastSongs.isEmpty();
         boolean manyFails = failedNewSongs > NUM_LAST_SONGS;
         if (isEmpty || manyFails)
@@ -178,31 +190,66 @@ public class ClientPlayManager implements IAudioStatusCallback
 
     private static void changeAreaMusic()
     {
-        if (!waiting() && ClientFileManager.songAvailable(currentPlayListUUID))
+        if (!waiting() && ClientFileManager.songAvailable(currentPlayListUUID) && currentPlayId == PlayType.INVALID)
         {
             currentPlayId = AREA.getAsInt();
-            ClientAudio.playLocal(currentPlayId, randomSong(), INSTANCE);
+            UUID song = randomSong(currentPlayListUUID);
+            if (!Reference.EMPTY_UUID.equals(song) && !ClientFileManager.hasMusic(song))
+            {
+                PacketDispatcher.sendToServer(new GetServerDataMessage(song, GetServerDataMessage.Type.MUSIC, currentPlayId));
+                ModLogger.debug("ChangeAreaMusic: Get from SERVER!");
+            }
+            else if (!Reference.EMPTY_UUID.equals(song) && ClientFileManager.hasMusic(song))
+            {
+                playMusic(song, currentPlayId);
+                ModLogger.debug("ChangeAreaMusic: Get from CACHE!");
+            }
+            else if (!ClientFileManager.isNotBadMusic(song))
+            {
+                resetTimer();
+                invalidatePlayId();
+            }
         }
     }
 
-    private static String randomSong()
+    public static void playMusic(UUID musicId, int playId)
     {
-        TestData testData = TestData.getMML(rand.nextInt(TestData.values().length));
-        String title = testData.getTitle();
-        while (heardSong(title))
+        if (PlayType.INVALID != playId)
         {
-            testData = TestData.getMML(rand.nextInt(TestData.values().length));
-            title = testData.getTitle();
+            Song song = ClientFileManager.getMusicFromCache(musicId);
+            if (song != null)
+            {
+                currentPlayId = playId;
+                ClientAudio.playLocal(playId, song.getMml(), INSTANCE);
+                ModLogger.debug("AREA duration: %s, title: %s", SheetMusicUtil.formatDuration(song.getDuration()), song.getTitle());
+            }
         }
+    }
 
-        trackLastSongs(title);
-        ModLogger.info("------- Song title: %s", title);
-        return testData.getMML();
+    private static UUID randomSong(UUID uuidPlayList)
+    {
+        PlayList playList = ClientFileManager.getPlayList(uuidPlayList);
+        UUID song;
+        if (playList != null)
+        {
+            List<UUID> songs = playList.getSongUUIDs();
+            int size = songs.size();
+            song = songs.get(rand.nextInt(size));
+            while (heardSong(song))
+            {
+                song = songs.get(rand.nextInt(size));
+            }
+
+        trackLastSongs(song);
+        ModLogger.info("------- Song uuid: %s", song.toString());
+        return song;
+        }
+        return Reference.EMPTY_UUID;
     }
 
     private static boolean waiting()
     {
-        Boolean canPlay = ClientAudio.getActivePlayIDs().isEmpty();
+        Boolean canPlay = ClientAudio.getActivePlayIDs().isEmpty() && !Reference.EMPTY_UUID.equals(currentPlayListUUID) && ClientFileManager.isNotBadPlayList(currentPlayListUUID);
         if (canPlay && !wait) startTimer();
         return !canPlay || (counter <= delay);
     }

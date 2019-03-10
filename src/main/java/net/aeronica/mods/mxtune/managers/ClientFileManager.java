@@ -178,21 +178,32 @@ public class ClientFileManager
             return;
         }
         Path path;
-        SongProxy proxy = new SongProxy();
-        proxy.readFromNBT(data);
-        mapMusic.put(uuid, proxy);
-        try
+        if (!mapMusic.containsKey(uuid))
         {
-            path = FileHelper.getCacheFile(pathMusic.toString(), uuid.toString() + ".dat", Side.CLIENT);
+            SongProxy proxy = new SongProxy();
+            proxy.readFromNBT(data);
+            mapMusic.put(uuid, proxy);
         }
-        catch (IOException e)
+        Boolean fileExists = FileHelper.fileExists(pathMusic.toString(), uuid.toString() + ".dat", Side.CLIENT);
+        if (!fileExists)
         {
-            ModLogger.error(e);
-            ModLogger.error("Unable to write Music file: %s to cache folder: %s", uuid.toString() + "dat", pathMusic.toString());
-            return;
+            try
+            {
+                path = FileHelper.getCacheFile(pathMusic.toString(), uuid.toString() + ".dat", Side.CLIENT);
+            } catch (IOException e)
+            {
+                ModLogger.error(e);
+                ModLogger.error("Unable to write Music file: %s to cache folder: %s", uuid.toString() + "dat", pathMusic.toString());
+                return;
+            }
+            waitMusic = false;
+            FileHelper.sendCompoundToFile(path, data);
         }
-        waitMusic = false;
-        FileHelper.sendCompoundToFile(path, data);
+    }
+
+    public static boolean hasMusic(UUID uuidMusic)
+    {
+        return mapMusic.containsKey(uuidMusic);
     }
 
     private static void addBadArea(UUID badUuid)
@@ -215,12 +226,12 @@ public class ClientFileManager
         return !badAreas.contains(uuid);
     }
 
-    private static boolean isNotBadPlayList(UUID uuid)
+    public static boolean isNotBadPlayList(UUID uuid)
     {
         return !badPlayLists.contains(uuid);
     }
 
-    private static boolean isNotBadMusic(UUID uuid)
+    public static boolean isNotBadMusic(UUID uuid)
     {
         return !badMusic.contains(uuid);
     }
@@ -329,7 +340,7 @@ public class ClientFileManager
     }
 
     @Nullable
-    public PlayList getPlayList(UUID uuid)
+    public static PlayList getPlayList(UUID uuid)
     {
         if (resolvePlayList(uuid))
         {
@@ -339,7 +350,7 @@ public class ClientFileManager
     }
 
     @Nullable
-    private SongProxy getMusic(UUID uuid)
+    public static SongProxy getMusic(UUID uuid)
     {
         if (resolveMusic(uuid))
         {
@@ -349,7 +360,7 @@ public class ClientFileManager
     }
 
     @Nullable
-    public Song getMusicFromCache(UUID uuid)
+    public static Song getMusicFromCache(UUID uuid)
     {
         if (mapMusic.containsKey(uuid) && isNotBadMusic(uuid))
         try {
