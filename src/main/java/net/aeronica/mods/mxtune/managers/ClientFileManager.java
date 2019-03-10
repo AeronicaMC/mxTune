@@ -201,7 +201,7 @@ public class ClientFileManager
         }
     }
 
-    public static boolean hasMusic(UUID uuidMusic)
+    static boolean hasMusic(UUID uuidMusic)
     {
         return mapMusic.containsKey(uuidMusic);
     }
@@ -226,12 +226,12 @@ public class ClientFileManager
         return !badAreas.contains(uuid);
     }
 
-    public static boolean isNotBadPlayList(UUID uuid)
+    static boolean isNotBadPlayList(UUID uuid)
     {
         return !badPlayLists.contains(uuid);
     }
 
-    public static boolean isNotBadMusic(UUID uuid)
+    static boolean isNotBadMusic(UUID uuid)
     {
         return !badMusic.contains(uuid);
     }
@@ -290,16 +290,7 @@ public class ClientFileManager
         //     else
         //         get song from cache
         // queue song for next play and set songAvailable to true.
-        if (resolvePlayList(playListId) && isNotBadPlayList(playListId) && !waitPlayList && !waitMusic)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-
-        // return !Reference.EMPTY_UUID.equals(playListId);
+        return resolvePlayList(playListId) && isNotBadPlayList(playListId) && !waitPlayList && !waitMusic;
     }
 
     private static boolean resolvePlayList(UUID playListId)
@@ -324,7 +315,6 @@ public class ClientFileManager
     {
         if (mapMusic.containsKey(musicId))
         {
-            SongProxy song = mapMusic.get(musicId);
             waitMusic = false;
             return true;
         }
@@ -340,7 +330,7 @@ public class ClientFileManager
     }
 
     @Nullable
-    public static PlayList getPlayList(UUID uuid)
+    static PlayList getPlayList(UUID uuid)
     {
         if (resolvePlayList(uuid))
         {
@@ -360,21 +350,23 @@ public class ClientFileManager
     }
 
     @Nullable
-    public static Song getMusicFromCache(UUID uuid)
+    static Song getMusicFromCache(UUID uuid)
     {
         if (mapMusic.containsKey(uuid) && isNotBadMusic(uuid))
-        try {
-            Path path = FileHelper.getCacheFile(pathMusic.toString(), uuid.toString() + ".dat", Side.CLIENT);
-            NBTTagCompound compound =  FileHelper.getCompoundFromFile(path);
-            Song song = new Song();
-            song.readFromNBT(compound);
-            return song;
-        }
-        catch (IOException e)
         {
-            ModLogger.error(e);
-            Path path = Paths.get(pathMusic.toString(), uuid.toString() + ".dat");
-            ModLogger.error("Unable to read file: " + path);
+            try
+            {
+                Path path = FileHelper.getCacheFile(pathMusic.toString(), uuid.toString() + ".dat", Side.CLIENT);
+                NBTTagCompound compound = FileHelper.getCompoundFromFile(path);
+                Song song = new Song();
+                song.readFromNBT(compound);
+                return song;
+            } catch (IOException e)
+            {
+                ModLogger.error(e);
+                Path path = Paths.get(pathMusic.toString(), uuid.toString() + ".dat");
+                ModLogger.error("Unable to read file: " + path);
+            }
         }
         return null;
     }

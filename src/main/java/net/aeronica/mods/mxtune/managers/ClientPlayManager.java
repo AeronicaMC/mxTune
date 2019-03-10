@@ -54,7 +54,6 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static WeakReference<Chunk> currentChunkRef;
     private static int currentPlayId = INVALID;
     private static UUID currentPlayListUUID = EMPTY_UUID;
-    private static UUID prevPlayListUUID = EMPTY_UUID;
 
     // AREA Song Shuffling
     private static final Random rand = new Random();
@@ -170,7 +169,7 @@ public class ClientPlayManager implements IAudioStatusCallback
         }
         if (prevChunk != null)
         {
-            prevPlayListUUID = getUUID(ModChunkDataHelper.getString(prevChunk));
+            UUID prevPlayListUUID = getUUID(ModChunkDataHelper.getString(prevChunk));
             boolean b = ModChunkDataHelper.isFunctional(prevChunk);
             ModLogger.debug("----- Exit Chunk %s, functional: %s, uuid: %s", prevChunk.getPos(), b, prevPlayListUUID.toString());
         }

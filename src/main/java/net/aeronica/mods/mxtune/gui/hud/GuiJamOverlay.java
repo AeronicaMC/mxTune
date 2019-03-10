@@ -286,84 +286,94 @@ public class GuiJamOverlay extends Gui
         }
         if (GroupHelper.getPlayIDMembers() != null && !GroupHelper.getPlayIDMembers().isEmpty())
         {
+            y+=10;
             String status = "PlayID Members: " + GroupHelper.getPlayIDMembers().toString();
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
-            qY = hd.quadY(maxHeight, y+=10, 4, 10);
+            qY = hd.quadY(maxHeight, y, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
         if (!GroupHelper.getAllPlayIDs().isEmpty())
         {
+            y+=10;
             String status = "All Play IDs:  " + GroupHelper.getAllPlayIDs().toString();
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
-            qY = hd.quadY(maxHeight, y+=10, 4, 10);
+            qY = hd.quadY(maxHeight, y, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
         if (GroupHelper.getServerManagedPlayIDs() != null && !GroupHelper.getServerManagedPlayIDs().isEmpty())
         {
+            y+=10;
             String status = "Server Managed PlayIDs:  " + GroupHelper.getServerManagedPlayIDs().toString();
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
-            qY = hd.quadY(maxHeight, y+=10, 4, 10);
+            qY = hd.quadY(maxHeight, y, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
         if (!ClientAudio.getActivePlayIDs().isEmpty())
         {
+            y+=10;
             String status = "Client Active PlayIDs:  " + ClientAudio.getActivePlayIDs().toString();
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
-            qY = hd.quadY(maxHeight, y+=10, 4, 10);
+            qY = hd.quadY(maxHeight, y, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
         if (!GroupHelper.getAllPlayIDs().isEmpty())
         {
+            y+=10;
             String status = "GroupHelper.index:   " + GroupHelper.getIndex(mc.player.getEntityId());
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
-            qY = hd.quadY(maxHeight, y+=10, 4, 10);
+            qY = hd.quadY(maxHeight, y, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
         if (GroupHelper.getGroupsMembers() != null && !GroupHelper.getGroupsMembers().isEmpty())
         {
+            y+=10;
             String status = "GroupsMembers:  " + GroupHelper.getGroupsMembers();
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
-            qY = hd.quadY(maxHeight, y+=10, 4, 10);
+            qY = hd.quadY(maxHeight, y, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
         if (GroupHelper.getGroupsMembers() != null && !GroupHelper.getGroupsMembers().isEmpty())
         {
+            y+=10;
             String status = String.format("Group Distance: %-1.2f", GroupHelper.getGroupMembersScaledDistance(mc.player));
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
-            qY = hd.quadY(maxHeight, y+=10, 4, 10);
+            qY = hd.quadY(maxHeight, y, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
         // Notes:
         // mc.getCurrentServerData() only works with dedicated servers
         if (mc.world != null && mc.getConnection() != null)
         {
+            y+=10;
             String status = String.format("Remote Address: %s", mc.getConnection().getNetworkManager().getRemoteAddress().toString());
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
-            qY = hd.quadY(maxHeight, y+=10, 4, 10);
+            qY = hd.quadY(maxHeight, y, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
         if (mc.world != null && mc.getConnection() != null)
         {
+            y+=10;
             String status = String.format("GameProfile Name: %s", mc.getConnection().getGameProfile().getName());
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
-            qY = hd.quadY(maxHeight, y+=10, 4, 10);
+            qY = hd.quadY(maxHeight, y, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
         if (mc.world != null && mc.getConnection() != null)
         {
+            y+=10;
             String status = String.format("GameProfile UUID: %s", mc.getConnection().getGameProfile().getId());
             statusWidth = fontRenderer.getStringWidth(status);
             qX = hd.quadX(maxWidth, 0, 4, statusWidth);
-            qY = hd.quadY(maxHeight, y+10, 4, 10);
+            qY = hd.quadY(maxHeight, y, 4, 10);
             fontRenderer.drawStringWithShadow(status, qX, qY, 0xFFFFFF);
         }
     }
