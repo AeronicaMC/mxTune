@@ -44,6 +44,9 @@ repositories {
         name = "ModMaven"
         url = "modmaven.k-4u.nl"
     }
+    flatDir {
+        dirs 'xjars'
+    }
 }
 
 version = "${config.modVersionMajor}.${config.modVersionMinor}.${config.modVersionRev}-${config.versionType}.${config.typeVersion}"
@@ -66,6 +69,7 @@ minecraft {
 
 dependencies {
 	shadow "org.antlr:antlr4-runtime:4.5.2-1" // use ANTLR version 4
+    shadow files ('./xjars/jGui-1.12-1.0.0.jar')
     // compile against the JEI API but do not include it at runtime
     deobfProvided "mezz.jei:jei_${config.minecraftVersion}:${config.jeiVersion}:api"
     // at runtime, use the full JEI jar
@@ -77,6 +81,8 @@ shadowJar {
     configurations = [project.configurations.compile]
 	archiveName = tasks.jar.archiveName
 	relocate 'org.antlr.v4.runtime', 'net.aeronica.shadowedlibs.org.antlr.v4.runtime'
+    relocate 'de.johni0702.minecraft.gui', 'net.aeronica.shadowedlibs.de.johni0702.minecraft.gui'
+    relocate 'assets/jgui', 'assets/mxtune/jgui'
 }
 
 reobfJar {
@@ -149,5 +155,7 @@ task signJar(type: SignJar, dependsOn: reobfJar) {
     outputFile = jar.archivePath
 }
 
-build.dependsOn signJar
+build {
+    dependsOn signJar
+}
 
