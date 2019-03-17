@@ -78,14 +78,17 @@ public abstract class GuiScrollingListMX extends GuiScrollingList
     @Override
     protected void elementClicked(int index, boolean doubleClick)
     {
+        if (index == selectedIndex && !doubleClick) return;
         selectedIndex = (index >= 0 && index <= listRef.size() ? index : -1);
 
         if (selectedIndex >= 0 && selectedIndex <= listRef.size())
+        {
+            if (!doubleClick)
+                selectedClickedCallback(selectedIndex);
+            else
+                selectedDoubleClickedCallback(selectedIndex);
+        }
 
-        if (!doubleClick)
-            selectedClickedCallback(selectedIndex);
-        if (doubleClick && gui != null)
-            selectedDoubleClickedCallback(selectedIndex);
     }
 
     protected abstract void selectedClickedCallback(int selectedIndex);
