@@ -20,15 +20,18 @@ package net.aeronica.mods.mxtune.gui.mml;
 import net.aeronica.mods.mxtune.caches.DirectoryWatcher;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.gui.util.GuiButtonHooverText;
+import net.aeronica.mods.mxtune.gui.util.GuiScrollingListMX;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.*;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiLabel;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.client.GuiScrollingList;
 import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -61,9 +64,8 @@ public class GuiFileSelector extends GuiScreen
     private int cachedSelectedIndex;
     private boolean midiUnavailable;
 
-    private GuiFileList guiFileList;
+    private GuiScrollingListMX guiFileList;
     private Path selectedFile;
-    private int entryHeight;
 
     private GuiLabel searchLabel;
     private GuiTextField search;
@@ -142,7 +144,7 @@ public class GuiFileSelector extends GuiScreen
         this.guiLeft = 0;
         this.guiTop = 0;
         int guiListWidth = width - 10;
-        entryHeight = mc.fontRenderer.FONT_HEIGHT + 2;
+        int entryHeight = mc.fontRenderer.FONT_HEIGHT + 2;
         int left = 5;
         int titleTop = 20;
         int listTop = titleTop + 25;
@@ -150,7 +152,28 @@ public class GuiFileSelector extends GuiScreen
         int listBottom = listTop + listHeight;
         int statusTop = listBottom + 4;
 
-        guiFileList = new GuiFileList(this, guiListWidth, listHeight, listTop, listBottom, left);
+        guiFileList = new GuiScrollingListMX(this, mmlFiles, entryHeight, guiListWidth, listHeight, listTop, listBottom, left)
+        {
+            @Override
+            protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
+            {
+                String name = (mmlFiles.get(slotIdx).getFileName().toString());
+                String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
+                fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, 0xADD8E6);
+            }
+
+            @Override
+            protected void selectedClickedCallback(int selectedIndex)
+            {
+                selectedFile = mmlFiles.get(selectedIndex);
+            }
+
+            @Override
+            protected void selectedDoubleClickedCallback(int selectedIndex)
+            {
+                selectDone();
+            }
+        };
 
         String searchLabelText = I18n.format("mxtune.gui.label.search");
         int searchLabelWidth =  fontRenderer.getStringWidth(searchLabelText) + 4;
@@ -200,7 +223,7 @@ public class GuiFileSelector extends GuiScreen
     {
         if (!isStateCached) return;
         sortType = cachedSortType;
-        guiFileList.elementClicked(cachedSelectedIndex, false);
+        guiFileList.elementClicked(cachedSelectedIndex);
         cachedSelectedIndex = guiFileList.getSelectedIndex();
         search.setText(lastSearch);
     }
@@ -216,7 +239,7 @@ public class GuiFileSelector extends GuiScreen
     public void updateScreen()
     {
         cachedSelectedIndex = guiFileList.getSelectedIndex();
-        guiFileList.elementClicked(cachedSelectedIndex, false);
+        guiFileList.elementClicked(cachedSelectedIndex);
         search.updateCursorCounter();
         searchAndSort();
         super.updateScreen();
@@ -323,63 +346,6 @@ public class GuiFileSelector extends GuiScreen
         super.handleMouseInput();
     }
 
-    private static class GuiFileList extends GuiScrollingList
-    {
-        private FontRenderer fontRenderer;
-        GuiFileSelector parent;
-
-        GuiFileList(GuiFileSelector parent, int width, int height, int top, int bottom, int left)
-        {
-            super(parent.mc, width, height, top, bottom, left, parent.entryHeight, parent.width, parent.height);
-            this.parent = parent;
-            this.fontRenderer = parent.mc.fontRenderer;
-        }
-
-        int getRight() {return right;}
-
-        int getSelectedIndex() { return selectedIndex; }
-
-        @Override
-        protected int getSize()
-        {
-            return parent.mmlFiles.size();
-        }
-
-        @Override
-        protected void elementClicked(int index, boolean doubleClick)
-        {
-            selectedIndex = (index >= 0 && index <= parent.mmlFiles.size() ? index : -1);
-
-            if (selectedIndex >= 0 && selectedIndex <= parent.mmlFiles.size())
-                parent.selectedFile = parent.mmlFiles.get(selectedIndex);
-            if (index == selectedIndex && !doubleClick)
-                return;
-            if (doubleClick && parent.guiScreenParent != null)
-                parent.selectDone();
-        }
-
-        @Override
-        protected boolean isSelected(int index)
-        {
-            return index == selectedIndex && selectedIndex >= 0 && selectedIndex <= parent.mmlFiles.size();
-        }
-
-        @Override
-        protected void drawBackground()
-        {
-            Gui.drawRect(left - 1, top - 1, left + listWidth + 1, top + listHeight + 1, -6250336);
-            Gui.drawRect(left, top, left + listWidth, top + listHeight, -16777216);
-        }
-
-        @Override
-        protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
-        {
-            String name = (parent.mmlFiles.get(slotIdx).getFileName().toString());
-            String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
-            fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, 0xADD8E6);
-        }
-    }
-
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
@@ -412,6 +378,7 @@ public class GuiFileSelector extends GuiScreen
             }
         }
         mmlFiles = files;
+        guiFileList.updateListRef(files);
         lastSearch = search.getText();
     }
 
@@ -436,7 +403,7 @@ public class GuiFileSelector extends GuiScreen
         {
             initFileList();
             mmlFiles.sort(sortType);
-            guiFileList.elementClicked(mmlFiles.indexOf(selectedFile), false);
+            guiFileList.elementClicked(mmlFiles.indexOf(selectedFile));
             cachedSelectedIndex = guiFileList.getSelectedIndex();
             sorted = true;
         }
