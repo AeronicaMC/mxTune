@@ -18,15 +18,18 @@
 package net.aeronica.mods.mxtune.gui.mml;
 
 import net.aeronica.mods.mxtune.caches.FileHelper;
+import net.aeronica.mods.mxtune.gui.util.GuiScrollingListMX;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.*;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiLabel;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.client.GuiScrollingList;
 import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -50,18 +53,18 @@ public class GuiMusicLibrary extends GuiScreen
 {
     private static final String TITLE = I18n.format("mxtune.gui.guiMusicLibrary.title");
     private static final String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
-    private GuiScreen guiScreenParent;
+    GuiScreen guiScreenParent;
     private int guiLeft;
     private int guiTop;
     private boolean isStateCached;
     private boolean midiUnavailable;
 
-    private int entryHeight;
-    private Path selectedFile;
+    int entryHeight;
+    Path selectedFile;
     private GuiButton buttonCancel;
     private List<GuiButton> safeButtonList;
-    private GuiFileList guiFileList;
-    private List<Path> mmlFiles = new ArrayList<>();
+    private GuiScrollingListMX guiLibraryList;
+    List<Path> mmlFiles = new ArrayList<>();
 
     // Sort and Search
     private GuiLabel searchLabel;
@@ -88,7 +91,7 @@ public class GuiMusicLibrary extends GuiScreen
         buttonList.clear();
         this.guiLeft = 0;
         this.guiTop = 0;
-        int guiListWidth = (width - 15) * 3 / 4 ;
+        int guiListWidth = (width - 15) * 2 / 5 ;
         entryHeight = mc.fontRenderer.FONT_HEIGHT + 2;
         int left = 5;
         int titleTop = 20;
@@ -97,7 +100,30 @@ public class GuiMusicLibrary extends GuiScreen
         int listBottom = listTop + listHeight;
         int statusTop = listBottom + 4;
 
-        guiFileList = new GuiFileList(this, guiListWidth, listHeight, listTop, listBottom, left);
+        guiLibraryList = new GuiScrollingListMX(this, mmlFiles, entryHeight, guiListWidth, listHeight, listTop, listBottom, left){
+            @Override
+            protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
+            {
+                String name = (mmlFiles.get(slotIdx).getFileName().toString());
+                String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
+                int color = isSelected(slotIdx) ? 0xFFFF00 : 0xADD8E6;
+                fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, color);
+            }
+
+            @Override
+            protected void selectedClickedCallback(int selectedIndex)
+            {
+                selectedFile = mmlFiles.get(selectedIndex);
+            }
+
+            @Override
+            protected void selectedDoubleClickedCallback(int selectedIndex)
+            {
+                selectedFile = mmlFiles.get(selectedIndex);
+                selectDone();
+            }
+        };
+
         String searchLabelText = I18n.format("mxtune.gui.label.search");
         int searchLabelWidth =  fontRenderer.getStringWidth(searchLabelText) + 4;
         searchLabel = new GuiLabel(fontRenderer, 0, left, statusTop, searchLabelWidth, entryHeight + 2, 0xFFFFFF );
@@ -145,21 +171,21 @@ public class GuiMusicLibrary extends GuiScreen
         if (!isStateCached) return;
         sortType = cachedSortType;
         search.setText(lastSearch);
-        guiFileList.elementClicked(cachedSelectedIndex, false);
+        guiLibraryList.elementClicked(cachedSelectedIndex);
     }
 
     private void updateState()
     {
         cachedSortType = sortType;
-        cachedSelectedIndex = guiFileList.getSelectedIndex();
+        cachedSelectedIndex = guiLibraryList.getSelectedIndex();
         isStateCached = true;
     }
 
     @Override
     public void updateScreen()
     {
-        cachedSelectedIndex = guiFileList.getSelectedIndex();
-        guiFileList.elementClicked(cachedSelectedIndex, false);
+        cachedSelectedIndex = guiLibraryList.getSelectedIndex();
+        guiLibraryList.elementClicked(cachedSelectedIndex);
         search.updateCursorCounter();
         searchAndSort();
         super.updateScreen();
@@ -179,7 +205,7 @@ public class GuiMusicLibrary extends GuiScreen
         int posY = 5;
         mc.fontRenderer.drawStringWithShadow(guiMusicLibTitle, posX, posY, 0xD3D3D3);
 
-        guiFileList.drawScreen(mouseX, mouseY, partialTicks);
+        guiLibraryList.drawScreen(mouseX, mouseY, partialTicks);
         searchLabel.drawLabel(mc, mouseX, mouseY);
         search.drawTextBox();
 
@@ -225,7 +251,7 @@ public class GuiMusicLibrary extends GuiScreen
         super.actionPerformed(button);
     }
 
-    private void selectDone()
+    void selectDone()
     {
         // action get file, etc...
         mc.displayGuiScreen(guiScreenParent);
@@ -250,65 +276,8 @@ public class GuiMusicLibrary extends GuiScreen
     {
         int mouseX = Mouse.getEventX() * width / mc.displayWidth;
         int mouseY = height - Mouse.getEventY() * height / mc.displayHeight - 1;
-        guiFileList.handleMouseInput(mouseX, mouseY);
+        guiLibraryList.handleMouseInput(mouseX, mouseY);
         super.handleMouseInput();
-    }
-
-    private static class GuiFileList extends GuiScrollingList
-    {
-        private FontRenderer fontRenderer;
-        GuiMusicLibrary parent;
-
-        GuiFileList(GuiMusicLibrary parent, int width, int height, int top, int bottom, int left)
-        {
-            super(parent.mc, width, height, top, bottom, left, parent.entryHeight, parent.width, parent.height);
-            this.parent = parent;
-            this.fontRenderer = parent.mc.fontRenderer;
-        }
-
-        int getRight() {return right;}
-
-        int getSelectedIndex() { return selectedIndex; }
-
-        @Override
-        protected int getSize()
-        {
-            return parent.mmlFiles != null ? parent.mmlFiles.size() : 0;
-        }
-
-        @Override
-        protected void elementClicked(int index, boolean doubleClick)
-        {
-            selectedIndex = (index >= 0 && index <= parent.mmlFiles.size() ? index : -1);
-
-            if (selectedIndex >= 0 && selectedIndex <= parent.mmlFiles.size())
-                parent.selectedFile = parent.mmlFiles.get(selectedIndex);
-            if (index == selectedIndex && !doubleClick)
-                return;
-            if (doubleClick && parent.guiScreenParent != null)
-                parent.selectDone();
-        }
-
-        @Override
-        protected boolean isSelected(int index)
-        {
-            return index == selectedIndex && selectedIndex >= 0 && selectedIndex <= parent.mmlFiles.size();
-        }
-
-        @Override
-        protected void drawBackground()
-        {
-            Gui.drawRect(left - 1, top - 1, left + listWidth + 1, top + listHeight + 1, -6250336);
-            Gui.drawRect(left, top, left + listWidth, top + listHeight, -16777216);
-        }
-
-        @Override
-        protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
-        {
-            String name = (parent.mmlFiles.get(slotIdx).getFileName().toString());
-            String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
-            fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, 0xADD8E6);
-        }
     }
 
     @Override
@@ -319,8 +288,6 @@ public class GuiMusicLibrary extends GuiScreen
         super.mouseClicked(mouseX, mouseY, mouseButton);
         updateState();
     }
-
-
 
     private void initFileList()
     {
@@ -346,6 +313,7 @@ public class GuiMusicLibrary extends GuiScreen
             }
         }
         mmlFiles = files;
+        guiLibraryList.updateListRef(files);
         lastSearch = search.getText();
     }
 
@@ -360,8 +328,8 @@ public class GuiMusicLibrary extends GuiScreen
         {
             initFileList();
             mmlFiles.sort(sortType);
-            guiFileList.elementClicked(mmlFiles.indexOf(selectedFile), false);
-            cachedSelectedIndex = guiFileList.getSelectedIndex();
+            guiLibraryList.elementClicked(mmlFiles.indexOf(selectedFile));
+            cachedSelectedIndex = guiLibraryList.getSelectedIndex();
             sorted = true;
         }
     }
