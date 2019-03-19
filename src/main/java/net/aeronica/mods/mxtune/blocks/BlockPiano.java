@@ -55,6 +55,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
+import static net.aeronica.libs.mml.core.MMLUtil.preset2PackedPreset;
+
 @SuppressWarnings("deprecation")
 public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
 {
@@ -165,7 +167,7 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
     @Override
     public int getPatch()
     {
-        return 21;
+        return preset2PackedPreset(12, 21);
     }
 
     private boolean sitPiano(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn)

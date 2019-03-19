@@ -49,7 +49,7 @@ public enum MIDISystemUtil
     private static boolean midiAvailable = false;
     private static int timesToWarn = 10;
     private static final List<TextComponentString> chatStatus = new ArrayList<>();
-    private static final ResourceLocation SOUND_FONT = new ResourceLocation(Reference.MOD_ID, "synth/mxtune.sf2");
+    private static final ResourceLocation SOUND_FONT = new ResourceLocation(Reference.MOD_ID, "synth/mxtune_v2.sf2");
     private static final List<Instrument> instrumentCache = new ArrayList<>();
 
     public static void mxTuneInit()

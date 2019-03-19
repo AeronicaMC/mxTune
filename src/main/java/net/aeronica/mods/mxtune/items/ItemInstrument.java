@@ -16,7 +16,6 @@
  */
 package net.aeronica.mods.mxtune.items;
 
-import net.aeronica.libs.mml.core.MMLUtil;
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.advancements.ModCriteriaTriggers;
 import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
@@ -50,6 +49,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static net.aeronica.libs.mml.core.MMLUtil.preset2PackedPreset;
 import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType;
 
 /**
@@ -222,32 +222,32 @@ public class ItemInstrument extends Item implements IInstrument
 
     public enum EnumType implements IVariant
     {
-        LUTE(0, "lute", 0),
-        UKULELE(1, "ukulele", 1),
-        MANDOLIN(2, "mandolin", 2),
-        WHISTLE(3, "whistle", 3),
-        RONCADORA(4, "roncadora", 4),
-        FLUTE(5, "flute", 5),
-        CHALUMEAU(6, "chalumeau", 6),
-        TUBA(7, "tuba", 18),
-        LYRE(8, "lyre", 19),
-        ELECTRIC_GUITAR(9, "electric_guitar", 20),
-        VIOLIN(10, "violin", 22),
-        CELLO(11, "cello", 23),
-        HARP(12, "harp", 24),
-        TUNED_FLUTE(13, "tuned_flute", 55),
-        TUNED_WHISTLE(14, "tuned_whistle", 56),
-        BASS_DRUM(15, "bass_drum", 66),
-        SNARE_DRUM(16, "snare_drum", 67),
-        CYMBELS(17, "cymbels", 68),
-        HAND_CHIMES(18, "hand_chimes", 77),
-        RECORDER(19, "recorder", MMLUtil.preset2PackedPreset(16, 74)),
-        TRUMPET(20, "trumpet", MMLUtil.preset2PackedPreset(16, 56)),
-        HARPSICHORD(21, "harpsichord", MMLUtil.preset2PackedPreset(16, 6)),
-        HARPSICHORD_COUPLED(22, "harpsichord_coupled", MMLUtil.preset2PackedPreset(16, 7)),
-        STANDARD_SET(23, "standard_set", MMLUtil.preset2PackedPreset(128, 0)),
-        ORCHESTRA_SET(24, "orchestra_set", MMLUtil.preset2PackedPreset(128, 48)),
-        PIANO(25, "piano", 21),
+        LUTE(0, "lute", preset2PackedPreset(12, 0)),
+        UKULELE(1, "ukulele", preset2PackedPreset(12, 1)),
+        MANDOLIN(2, "mandolin", preset2PackedPreset(12, 2)),
+        WHISTLE(3, "whistle", preset2PackedPreset(12, 3)),
+        RONCADORA(4, "roncadora", preset2PackedPreset(12, 4)),
+        FLUTE(5, "flute", preset2PackedPreset(12, 5)),
+        CHALUMEAU(6, "chalumeau", preset2PackedPreset(12, 6)),
+        TUBA(7, "tuba", preset2PackedPreset(12, 18)),
+        LYRE(8, "lyre", preset2PackedPreset(12, 19)),
+        ELECTRIC_GUITAR(9, "electric_guitar", preset2PackedPreset(12, 20)),
+        VIOLIN(10, "violin", preset2PackedPreset(12, 22)),
+        CELLO(11, "cello", preset2PackedPreset(12, 23)),
+        HARP(12, "harp", preset2PackedPreset(12, 24)),
+        TUNED_FLUTE(13, "tuned_flute", preset2PackedPreset(12, 55)),
+        TUNED_WHISTLE(14, "tuned_whistle", preset2PackedPreset(12, 56)),
+        BASS_DRUM(15, "bass_drum", preset2PackedPreset(12, 66)),
+        SNARE_DRUM(16, "snare_drum", preset2PackedPreset(12, 67)),
+        CYMBELS(17, "cymbels", preset2PackedPreset(12, 68)),
+        HAND_CHIMES(18, "hand_chimes", preset2PackedPreset(12, 77)),
+        RECORDER(19, "recorder", 74),
+        TRUMPET(20, "trumpet", 56),
+        HARPSICHORD(21, "harpsichord", 6),
+        HARPSICHORD_COUPLED(22, "harpsichord_coupled", preset2PackedPreset(1, 6)),
+        STANDARD_SET(23, "standard_set", preset2PackedPreset(128, 0)),
+        ORCHESTRA_SET(24, "orchestra_set", preset2PackedPreset(128, 48)),
+        PIANO(25, "piano", preset2PackedPreset(12, 21)),
         ;
 
         @Override
