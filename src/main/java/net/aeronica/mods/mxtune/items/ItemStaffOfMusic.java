@@ -55,8 +55,8 @@ public class ItemStaffOfMusic extends Item
         else if (MXTune.proxy.playerIsInCreativeMode(playerIn))
         {
             BlockPos pos = playerIn.getPosition();
-            //String playListUuidString = "9bc9341f-bf79-589c-b31c-1bcae6fe8f6b"; // mx01
-            String playListUuidString = "88400408-f0bf-5d86-9a15-a4d12297bfc9"; // mx02
+            String playListUuidString = "5b76c75d-90f9-565a-97a7-dd2570d8e93d"; // mx01
+            //String playListUuidString = "88400408-f0bf-5d86-9a15-a4d12297bfc9"; // mx02
             ModChunkDataHelper.setString(worldIn.getChunk(pos), playListUuidString);
             ModChunkDataHelper.setFunctional(worldIn.getChunk(pos), true);
             ModChunkDataHelper.sync(playerIn, worldIn.getChunk(pos));
