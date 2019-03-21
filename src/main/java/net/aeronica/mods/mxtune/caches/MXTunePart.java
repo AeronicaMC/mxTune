@@ -23,9 +23,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static net.aeronica.mods.mxtune.caches.Simularity.ModInstrument;
-import static net.aeronica.mods.mxtune.caches.Simularity.getModInstruments;
-
 public class MXTunePart
 {
     private static final String TAG_INSTRUMENT = "instrument";
@@ -34,7 +31,6 @@ public class MXTunePart
     private static final String TAG_STAFF_PREFIX = "staff";
     private static final String TAG_STAFF_COUNT = "staffCount";
 
-    private ModInstrument modInstrument;
     private String instrument;
     private int packedPatch;
     private String suggestedInstrument;
@@ -42,7 +38,6 @@ public class MXTunePart
 
     public MXTunePart()
     {
-        this.modInstrument = getModInstruments().get(0);
         this.suggestedInstrument = "";
         this.instrument = "";
         this.staves = new ArrayList<>();
@@ -50,7 +45,6 @@ public class MXTunePart
 
     public MXTunePart(String instrument, String suggestedInstrument, int packedPatch, List<MXTuneStaff> staves)
     {
-        this.modInstrument = getModInstruments().get(0);
         this.suggestedInstrument = suggestedInstrument != null ? suggestedInstrument : "";
         this.instrument = instrument != null ? instrument : "";
         this.packedPatch = packedPatch;
@@ -88,16 +82,6 @@ public class MXTunePart
             compound.setTag(TAG_STAFF_PREFIX + i, compoundStaff);
             i++;
         }
-    }
-
-    @SuppressWarnings("unused")
-    public ModInstrument getModInstrument() { return modInstrument; }
-
-    @SuppressWarnings("unused")
-    public void setModInstrument(ModInstrument modInstrument)
-    {
-        this.modInstrument = modInstrument != null ? modInstrument : getModInstruments().get(0);
-        this.packedPatch = this.modInstrument.getPackedPreset();
     }
 
     public List<MXTuneStaff> getStaves()

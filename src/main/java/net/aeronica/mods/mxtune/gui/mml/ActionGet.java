@@ -17,15 +17,14 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
+import net.aeronica.libs.mml.core.MMLUtil;
+import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.Tuple;
 
 import javax.annotation.Nullable;
+import javax.sound.midi.Patch;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static net.aeronica.mods.mxtune.caches.Simularity.getModInstruments;
-import static net.aeronica.mods.mxtune.caches.Simularity.getPackedPresetFromName;
 
 public class ActionGet implements ISelectorAction
 {
@@ -46,21 +45,18 @@ public class ActionGet implements ISelectorAction
     {
         this.path = path;
         this.suggestedInstrument = getFileNameString();
-        Tuple<Integer, String> suggested = getPackedPresetFromName(suggestedInstrument);
-        this.instrument = suggested.getSecond();
     }
 
     @Override
-    public void select(String title, String author, String source, String mml, String instrument)
+    public void select(String title, String author, String source, String mml, int packedPreset)
     {
         this.title = title != null ? title : "";
         this.author = author != null ? author : "";
         this.source = source != null ? source : "";
         this.mml = mml != null ? mml : "";
-        this.instrument = instrument != null ? I18n.format(instrument) : I18n.format(getModInstruments().get(0).getLangKey());
-        Tuple<Integer, String> suggested = getPackedPresetFromName(this.instrument);
-        this.packedPatch = suggested.getFirst();
-        this.suggestedInstrument = I18n.format(suggested.getSecond());
+        Patch patchPreset = MMLUtil.packedPreset2Patch(packedPreset);
+        this.instrument =I18n.format(MIDISystemUtil.getPatchNameKey(patchPreset));
+        this.packedPatch = packedPreset;
     }
 
     public void clear()

@@ -3,6 +3,7 @@ package net.aeronica.libs.mml.core;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.sound.midi.Instrument;
 import javax.sound.midi.Patch;
 
 @SuppressWarnings("unused")
@@ -83,5 +84,20 @@ public enum MMLUtil
     {
         return preset2PackedPreset(patchIn.getBank(), patchIn.getProgram());
     }
-    
+
+    public static int instrument2PackedPreset(Instrument instrument)
+    {
+        /* Table Flip! */
+        boolean isPercussionSet = instrument.toString().contains("Drumkit:");
+        /* A SoundFont 2.04 preset allows 128 banks 0-127) plus the percussion
+         * set for 129 sets! OwO However when you get a patch from an
+         * Instrument from a loaded soundfont you will find the bank value
+         * for the preset is left shifted 7 bits. However what's worse is that
+         * for preset bank:128 the value returned by getBank() is ZERO!
+         * So as a workaround check the name of instrument to see if it's a percussion set.
+         */
+        int bank = instrument.getPatch().getBank() >>> 7;
+        int program = instrument.getPatch().getProgram();
+        return isPercussionSet ? MMLUtil.preset2PackedPreset(128, program) : MMLUtil.preset2PackedPreset(bank, program);
+    }
 }

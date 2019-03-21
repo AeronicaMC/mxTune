@@ -314,7 +314,9 @@ public class GuiMusicPaperParse extends GuiScreen implements IAudioStatusCallbac
                 else
                 {
                     if (selectedInst < 0 || selectedInst > MIDISystemUtil.getInstrumentCacheCopy().size()) selectedInst = 0;
-                    ActionGet.INSTANCE.select(musicTitle, null, null, musicText, MIDISystemUtil.getInstrumentCacheCopy().get(selectedInst).getName());
+                    Instrument inst = instrumentCache.get(selectedInst);
+                    int packedPreset = MMLUtil.instrument2PackedPreset(inst);
+                    ActionGet.INSTANCE.select(musicTitle, null, null, musicText, packedPreset);
                 }
                 mc.displayGuiScreen(guiScreenParent);
                 break;
@@ -591,22 +593,10 @@ public class GuiMusicPaperParse extends GuiScreen implements IAudioStatusCallbac
     {
         String mml = mmlIn;
         Instrument inst = instrumentCache.get(selectedInst);
-        
-        /* Table Flip! */
-        boolean isPercussionSet = inst.toString().contains("Drumkit:");
-        /* A SoundFont 2.04 preset allows 128 banks 0-127) plus the percussion
-         * set for 129 sets! OwO However when you get a patch from an
-         * Instrument from a loaded soundfont you will find the bank value
-         * for the preset is left shifted 7 bits. However what's worse is that
-         * for preset bank:128 the value returned by getBank() is ZERO!
-         * So as a workaround I check the name of instrument to see if it's a percussion set.
-         */
-        int bank = inst.getPatch().getBank() >>> 7;
-        int program = inst.getPatch().getProgram();
-        int packedPreset = isPercussionSet ? MMLUtil.preset2PackedPreset(128, program) : MMLUtil.preset2PackedPreset(bank, program);
+        int packedPreset = MMLUtil.instrument2PackedPreset(inst);
         
         mml = mml.replace("MML@", "MML@i" + packedPreset);
-        ModLogger.debug("GuiMusicPaperParse.mmlPlay() name: %s, bank %05d, program %03d, packed %08d, perc: %s", inst.getName(), bank, program, packedPreset, isPercussionSet);
+        ModLogger.debug("GuiMusicPaperParse.mmlPlay() name: %s, bank %05d, program %03d, packed %08d", inst.getName(), inst.getPatch().getBank() >> 7, inst.getPatch().getProgram(), packedPreset);
         ModLogger.debug("GuiMusicPaperParse.mmlPlay(): %s", mml.substring(0, mml.length() >= 25 ? 25 : mml.length()));
 
         playId = PlayIdSupplier.PlayType.PERSONAL.getAsInt();

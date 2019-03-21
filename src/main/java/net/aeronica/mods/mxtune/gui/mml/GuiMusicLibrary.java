@@ -17,7 +17,10 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
-import net.aeronica.mods.mxtune.caches.*;
+import net.aeronica.mods.mxtune.caches.FileHelper;
+import net.aeronica.mods.mxtune.caches.MXTuneFile;
+import net.aeronica.mods.mxtune.caches.MXTunePart;
+import net.aeronica.mods.mxtune.caches.MXTuneStaff;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingListMX;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
@@ -33,7 +36,6 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.Tuple;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
@@ -406,8 +408,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         StringBuilder builder = new StringBuilder();
         for (MXTunePart part : tune.getParts())
         {
-            Tuple<Integer, String> instrument = Simularity.getPackedPresetFromName(part.getInstrument());
-            builder.append("MML@I=").append(instrument.getFirst());
+            builder.append("MML@I=").append(part.getPackedPatch());
             Iterator<MXTuneStaff> iterator = part.getStaves().iterator();
             while (iterator.hasNext())
             {
