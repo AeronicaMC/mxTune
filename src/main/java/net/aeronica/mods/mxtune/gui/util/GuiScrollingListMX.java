@@ -44,7 +44,7 @@ import java.util.List;
 public abstract class GuiScrollingListMX extends GuiScrollingList
 {
     private static final Minecraft mc = Minecraft.getMinecraft();
-    private volatile List<?> listRef;
+    private List<?> listRef;
     private GuiScreen gui;
 
     public <T extends GuiScreen> GuiScrollingListMX(T gui, List<?> listRef, int entryHeight, int width, int height, int top, int bottom, int left)

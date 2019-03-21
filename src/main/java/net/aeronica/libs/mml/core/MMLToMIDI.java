@@ -44,9 +44,6 @@ public class MMLToMIDI extends MMLTransformBase
         long ticksOffset = TICKS_OFFSET;
         int currentTempo;
 
-//        NoteVolumeCompressor volumeCompressor = new NoteVolumeCompressor(mmlObject);
-//        List<MObject> volumeCompressedObjects = volumeCompressor.processVolumes();
-
         try
         {
             sequence = new Sequence(Sequence.PPQ, (int) PPQ);
