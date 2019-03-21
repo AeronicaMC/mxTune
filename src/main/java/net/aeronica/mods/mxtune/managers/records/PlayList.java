@@ -46,7 +46,7 @@ public class PlayList extends BaseData
     {
         this.name = name != null ? name : "";
         this.songUUIDs = songUUIDs != null ? songUUIDs : new ArrayList<>();
-        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_LIST, applyServerID(this.name));
+        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_LIST, this.name);
     }
 
     public PlayList(NBTTagCompound compound)
@@ -108,6 +108,7 @@ public class PlayList extends BaseData
         this.name = name;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends BaseData> T factory()
     {

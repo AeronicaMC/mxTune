@@ -33,15 +33,15 @@ public class Area extends BaseData
     public Area()
     {
         this.name = "";
-        playList = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_LIST, applyServerID(""));
-        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_AREA, applyServerID(this.name));
+        playList = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_LIST, "");
+        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_AREA, this.name);
     }
 
     public Area(String name, UUID playList)
     {
         this.name = name;
         this.playList = playList;
-        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_AREA, applyServerID(this.name));
+        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_AREA, this.name);
     }
 
     public static Area build(NBTTagCompound compound)
@@ -86,6 +86,7 @@ public class Area extends BaseData
         this.playList = playList;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends BaseData> T factory()
     {

@@ -48,7 +48,7 @@ public class Song extends BaseData
         this.mml = mml != null ? mml : NULL_MML;
         ValidDuration validDuration = SheetMusicUtil.validateMML(this. mml);
         this.duration = validDuration.getDuration();
-        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_SONG, applyServerID(this.title));
+        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_SONG, this.title);
     }
 
     public Song(NBTTagCompound compound)
@@ -89,6 +89,7 @@ public class Song extends BaseData
         return duration;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends BaseData> T factory()
     {

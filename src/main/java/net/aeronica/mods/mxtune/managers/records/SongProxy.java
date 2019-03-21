@@ -70,6 +70,7 @@ public class SongProxy extends BaseData
         return duration;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends BaseData> T factory()
     {

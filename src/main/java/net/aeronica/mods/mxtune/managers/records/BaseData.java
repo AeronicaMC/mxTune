@@ -17,7 +17,6 @@
 
 package net.aeronica.mods.mxtune.managers.records;
 
-import net.aeronica.mods.mxtune.managers.ServerFileManager;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.UUID;
@@ -64,11 +63,6 @@ public abstract class BaseData
     {
         compound.setLong(TAG_UUID_MSB, uuid.getMostSignificantBits());
         compound.setLong(TAG_UUID_LSB, uuid.getLeastSignificantBits());
-    }
-
-    public static String applyServerID(String stringIn)
-    {
-        return ServerFileManager.getServerID().toString() + stringIn;
     }
 
     public abstract <T extends BaseData> T factory();
