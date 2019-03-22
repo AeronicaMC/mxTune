@@ -25,6 +25,7 @@ import java.util.UUID;
 @Immutable
 public class OwnerUUID
 {
+    // TODO: Refactor to use NBTHelper methods and make a data fixer to update exiting worlds.
     public static final OwnerUUID EMPTY_UUID = new OwnerUUID(0L, 0L);
     private static final String OWNER_UUID_KEY_MSB = "OwnerUUIDKeyMSB";
     private static final String OWNER_UUID_KEY_LSB = "OwnerUUIDKeyLSB";
