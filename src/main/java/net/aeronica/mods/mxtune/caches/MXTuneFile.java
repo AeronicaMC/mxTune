@@ -17,27 +17,56 @@
 
 package net.aeronica.mods.mxtune.caches;
 
+import net.aeronica.mods.mxtune.Reference;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class MXTuneFile
 {
-    private static final  String TAG_TITLE = "title";
+    private static final String TAG_TITLE = "title";
     private static final String TAG_AUTHOR = "author";
     private static final String TAG_SOURCE = "source";
     private static final String TAG_PART_PREFIX = "part";
     private static final String TAG_PART_COUNT = "partCount";
+    private static final String TAG_CREATED_ON = "createdOn";
+    private static final String TAG_MODIFIED_ON = "modifiedOn";
+    private static final String TAG_CREATED_BY = "createdBy";
+    private static final String TAG_MODIFIED_BY = "modifiedBy";
+    private static final String TAG_UUID_MSB = "uuid_msb";
+    private static final String TAG_UUID_LSB = "uuid_lsb";
 
     private String title = "";
     private String author = "";
     private String source = "";
     private List<MXTunePart> parts;
+    private LocalDateTime createdOn;
+    private LocalDateTime modifiedOn;
+    private UUID createdBy;
+    private UUID modifiedBy;
 
     public MXTuneFile()
     {
         parts = new ArrayList<>();
+        createdBy = Reference.EMPTY_UUID;
+        modifiedBy = Reference.EMPTY_UUID;
+        createdOn = LocalDateTime.MIN;
+        modifiedOn = LocalDateTime.MIN;
+    }
+
+    public MXTuneFile(UUID createdBy, LocalDateTime createdOn)
+    {
+        this();
+        this.createdBy = createdBy;
+        this.createdOn = createdOn;
     }
 
     public static MXTuneFile build(NBTTagCompound compound)
@@ -45,6 +74,10 @@ public class MXTuneFile
         String title = compound.getString(TAG_TITLE);
         String author = compound.getString(TAG_AUTHOR);
         String source = compound.getString(TAG_SOURCE);
+        LocalDateTime createdOn = LocalDateTime.parse(compound.getString(TAG_CREATED_ON), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        LocalDateTime modifiedOn = LocalDateTime.parse(compound.getString(TAG_MODIFIED_ON), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        UUID createdBy = getUuidFromTag(compound, TAG_CREATED_BY);
+        UUID modifiedBy = getUuidFromTag(compound, TAG_MODIFIED_BY);
         int partCount = compound.getInteger(TAG_PART_COUNT);
 
         List<MXTunePart> parts = new ArrayList<>();
@@ -59,15 +92,25 @@ public class MXTuneFile
         mxTuneFile.author = author;
         mxTuneFile.source = source;
         mxTuneFile.parts = parts;
+        mxTuneFile.createdOn = createdOn;
+        mxTuneFile.modifiedOn = modifiedOn;
+        mxTuneFile.createdBy = createdBy;
+        mxTuneFile.modifiedBy = modifiedBy;
         return mxTuneFile;
     }
 
     public void writeToNBT(NBTTagCompound compound)
     {
+        applyUserDateTime(false);
         compound.setString(TAG_TITLE, title);
         compound.setString(TAG_AUTHOR, author);
         compound.setString(TAG_SOURCE, source);
         compound.setInteger(TAG_PART_COUNT, parts.size());
+        compound.setString(TAG_CREATED_ON, createdOn.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        compound.setString(TAG_MODIFIED_ON, modifiedOn.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        setUuidToTag(createdBy, compound, TAG_CREATED_BY);
+        setUuidToTag(modifiedBy, compound, TAG_MODIFIED_BY);
+
         int i = 0;
 
         for (MXTunePart part : parts)
@@ -117,4 +160,86 @@ public class MXTuneFile
 
     @SuppressWarnings("unused")
     public void setParts(List<MXTunePart> parts) { this.parts = parts != null ? parts : new ArrayList<>(); }
+
+    public LocalDateTime getCreatedOn()
+    {
+        return createdOn;
+    }
+
+    public void setCreatedOn(LocalDateTime createdOn)
+    {
+        this.createdOn = createdOn;
+    }
+
+    public LocalDateTime getModifiedOn()
+    {
+        return modifiedOn;
+    }
+
+    public void setModifiedOn(LocalDateTime modifiedOn)
+    {
+        this.modifiedOn = modifiedOn;
+    }
+
+    public UUID getCreatedBy()
+    {
+        return createdBy;
+    }
+
+    public void setCreatedBy(UUID createdBy)
+    {
+        this.createdBy = createdBy;
+    }
+
+    public UUID getModifiedBy()
+    {
+        return modifiedBy;
+    }
+
+    public void setModifiedBy(UUID modifiedBy)
+    {
+        this.modifiedBy = modifiedBy;
+    }
+
+    private static UUID getUuidFromCompound(NBTTagCompound compound)
+    {
+        long msb = compound.getLong(TAG_UUID_MSB);
+        long lsb = compound.getLong(TAG_UUID_LSB);
+        return new UUID(msb, lsb);
+    }
+
+    private static void setUuidToCompound(NBTTagCompound compound, UUID uuid)
+    {
+        compound.setLong(TAG_UUID_MSB, uuid.getMostSignificantBits());
+        compound.setLong(TAG_UUID_LSB, uuid.getLeastSignificantBits());
+    }
+
+    private static UUID getUuidFromTag(NBTTagCompound compound, String tagKey)
+    {
+        NBTTagCompound compoundTag = compound.getCompoundTag(tagKey);
+        return getUuidFromCompound(compoundTag);
+    }
+
+    private static void setUuidToTag(UUID uuid, NBTTagCompound compound, String tagKey)
+    {
+        NBTTagCompound tagCompound = new NBTTagCompound();
+        setUuidToCompound(tagCompound, uuid);
+        compound.setTag(tagKey, tagCompound);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void applyUserDateTime(boolean setAll)
+    {
+        EntityPlayerSP player = Minecraft.getMinecraft().player;
+        if (player != null)
+        {
+            modifiedBy = player.getPersistentID();
+            modifiedOn = LocalDateTime.now();
+            if (setAll)
+            {
+               createdBy = modifiedBy;
+               createdOn = modifiedOn;
+            }
+        }
+    }
 }

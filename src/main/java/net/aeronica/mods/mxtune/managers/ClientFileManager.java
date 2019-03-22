@@ -38,7 +38,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static net.aeronica.mods.mxtune.network.bidirectional.GetServerDataMessage.Type;
+import static net.aeronica.mods.mxtune.network.bidirectional.GetServerDataMessage.GetType;
 
 public class ClientFileManager
 {
@@ -305,7 +305,7 @@ public class ClientFileManager
             if (!Reference.EMPTY_UUID.equals(playListId) && isNotBadPlayList(playListId))
             {
                 waitPlayList = true;
-                PacketDispatcher.sendToServer(new GetServerDataMessage(playListId, Type.PLAY_LIST));
+                PacketDispatcher.sendToServer(new GetServerDataMessage(playListId, GetType.PLAY_LIST));
             }
             return false;
         }
@@ -323,7 +323,7 @@ public class ClientFileManager
             if (!Reference.EMPTY_UUID.equals(musicId) && isNotBadMusic(musicId))
             {
                 waitMusic = true;
-                PacketDispatcher.sendToServer(new GetServerDataMessage(musicId, Type.MUSIC));
+                PacketDispatcher.sendToServer(new GetServerDataMessage(musicId, GetType.MUSIC));
             }
         }
         return false;

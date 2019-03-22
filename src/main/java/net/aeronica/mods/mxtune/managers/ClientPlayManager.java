@@ -195,7 +195,7 @@ public class ClientPlayManager implements IAudioStatusCallback
             UUID song = randomSong(currentPlayListUUID);
             if (!Reference.EMPTY_UUID.equals(song) && !ClientFileManager.hasMusic(song))
             {
-                PacketDispatcher.sendToServer(new GetServerDataMessage(song, GetServerDataMessage.Type.MUSIC, currentPlayId));
+                PacketDispatcher.sendToServer(new GetServerDataMessage(song, GetServerDataMessage.GetType.MUSIC, currentPlayId));
                 ModLogger.debug("ChangeAreaMusic: Get from SERVER!");
             }
             else if (!Reference.EMPTY_UUID.equals(song) && ClientFileManager.hasMusic(song))

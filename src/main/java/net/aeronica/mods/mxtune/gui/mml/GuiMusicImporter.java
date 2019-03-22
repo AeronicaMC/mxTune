@@ -267,6 +267,7 @@ public class GuiMusicImporter extends GuiScreen
                 musicAuthor.setText(ActionGet.INSTANCE.getAuthor());
                 musicSource.setText(ActionGet.INSTANCE.getSource());
                 mxTuneFile = new MXTuneFile();
+                mxTuneFile.applyUserDateTime(true);
                 mxTuneFile.setTitle(musicTitle.getText());
                 mxTuneFile.setAuthor(musicAuthor.getText());
                 mxTuneFile.setSource(musicSource.getText());
@@ -282,6 +283,7 @@ public class GuiMusicImporter extends GuiScreen
                 mxTuneFile.setTitle(ActionGet.INSTANCE.getTitle());
                 mxTuneFile.setAuthor(ActionGet.INSTANCE.getAuthor());
                 mxTuneFile.setSource(ActionGet.INSTANCE.getAuthor());
+                mxTuneFile.applyUserDateTime(true);
                 staves = new ArrayList<>();
                 int i = 0;
                 for (String mml : ActionGet.INSTANCE.getMml().replaceAll("MML@|;", "").split(","))

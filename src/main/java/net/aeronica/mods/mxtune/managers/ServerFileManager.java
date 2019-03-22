@@ -53,6 +53,7 @@ public class ServerFileManager
     private static BiMap<UUID, String> songUuidVsTitles = HashBiMap.create();
     private static ListMultimap<UUID, UUID> playListVsSongs = ArrayListMultimap.create();
     private static ListMultimap<UUID, UUID> areaVsPlayList = ArrayListMultimap.create();
+    private static BiMap<UUID, Area> areas = HashBiMap.create();
 
     private ServerFileManager() { /* NOP */ }
 
@@ -70,7 +71,7 @@ public class ServerFileManager
     {
         songUuidVsTitles.clear();
         playListVsSongs.clear();
-        areaVsPlayList.clear();
+        areas.clear();
     }
 
     private static void getOrGenerateServerID()
@@ -179,13 +180,13 @@ public class ServerFileManager
 
     private static void initAreas()
     {
-        List<Path> areas = new ArrayList<>();
+        List<Path> areaFiles = new ArrayList<>();
 
         Path path = FileHelper.getDirectory(FileHelper.SERVER_AREAS_FOLDER, Side.SERVER);
         PathMatcher filter = FileHelper.getDatMatcher(path);
         try (Stream<Path> paths = Files.list(path))
         {
-            areas = paths
+            areaFiles = paths
                     .filter(filter::matches)
                     .collect(Collectors.toList());
         }
@@ -194,15 +195,38 @@ public class ServerFileManager
             ModLogger.error(e);
         }
 
-        for (Path pathArea : areas)
+        for (Path pathArea : areaFiles)
         {
             NBTTagCompound compound = FileHelper.getCompoundFromFile(pathArea);
             if (compound != null)
             {
                 Area area = Area.build(compound);
                 UUID uuidArea = area.getUUID();
+                    areas.put(uuidArea, area);
                     areaVsPlayList.put(uuidArea, area.getPlayList());
             }
+        }
+    }
+
+    public static void setArea(UUID dataTypeUuid, NBTTagCompound dataCompound)
+    {
+        if (dataCompound != null)
+        {
+            Area area = Area.build(dataCompound);
+            UUID uuidArea = area.getUUID();
+            if (dataTypeUuid.equals(uuidArea))
+            {
+                areas.put(uuidArea, area);
+                areaVsPlayList.put(uuidArea, area.getPlayList());
+            }
+            else
+            {
+                throw new MXTuneRuntimeException("UUID Mismatch in transport: Corrupted Area data");
+            }
+        }
+        else
+        {
+            throw new MXTuneRuntimeException("Area dataCompound is null in ServerFileManager.setArea");
         }
     }
 
