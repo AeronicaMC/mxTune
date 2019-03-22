@@ -25,11 +25,11 @@ import net.aeronica.libs.mml.core.TestData;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.caches.UUIDType5;
 import net.aeronica.mods.mxtune.managers.records.Area;
-import net.aeronica.mods.mxtune.managers.records.BaseData;
 import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.util.NBTHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -86,7 +86,7 @@ public class ServerFileManager
                 serverDatFile = FileHelper.getCacheFile(SERVER_FOLDER, SERVER_ID_FILE, Side.SERVER);
                 compound = FileHelper.getCompoundFromFile(serverDatFile);
                 if (compound != null)
-                    serverID = new UUID(compound.getLong(BaseData.TAG_UUID_MSB), compound.getLong(BaseData.TAG_UUID_LSB));
+                    serverID = NBTHelper.getUuidFromCompound(compound);
                 else throw new NullPointerException("NBTTagCompound compound is null!");
             } catch (NullPointerException | IOException e)
             {
@@ -101,8 +101,7 @@ public class ServerFileManager
                 serverDatFile = FileHelper.getCacheFile(SERVER_FOLDER, SERVER_ID_FILE, Side.SERVER);
                 serverID = UUID.randomUUID();
                 compound = new NBTTagCompound();
-                compound.setLong(BaseData.TAG_UUID_MSB, serverID.getMostSignificantBits());
-                compound.setLong(BaseData.TAG_UUID_LSB, serverID.getLeastSignificantBits());
+                NBTHelper.setUuidToCompound(compound, serverID);
                 FileHelper.sendCompoundToFile(serverDatFile, compound);
             }
             catch (IOException e)

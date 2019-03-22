@@ -17,14 +17,13 @@
 
 package net.aeronica.mods.mxtune.managers.records;
 
+import net.aeronica.mods.mxtune.util.NBTHelper;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.UUID;
 
 public abstract class BaseData
 {
-    public static final String TAG_UUID_MSB = "uuid_msb";
-    public static final String TAG_UUID_LSB = "uuid_lsb";
     protected UUID uuid;
 
     BaseData()
@@ -34,12 +33,12 @@ public abstract class BaseData
 
     public void readFromNBT(NBTTagCompound compound)
     {
-        uuid = getUuidFromCompound(compound);
+        uuid = NBTHelper.getUuidFromCompound(compound);
     }
 
     public void writeToNBT(NBTTagCompound compound)
     {
-        setUuidToCompound(compound, uuid);
+        NBTHelper.setUuidToCompound(compound, uuid);
     }
 
     public UUID getUUID()
@@ -50,19 +49,6 @@ public abstract class BaseData
     public String getFileName()
     {
         return uuid.toString() + ".dat";
-    }
-
-    static UUID getUuidFromCompound(NBTTagCompound compound)
-    {
-        long msb = compound.getLong(TAG_UUID_MSB);
-        long lsb = compound.getLong(TAG_UUID_LSB);
-        return new UUID(msb, lsb);
-    }
-
-    static void setUuidToCompound(NBTTagCompound compound, UUID uuid)
-    {
-        compound.setLong(TAG_UUID_MSB, uuid.getMostSignificantBits());
-        compound.setLong(TAG_UUID_LSB, uuid.getLeastSignificantBits());
     }
 
     public abstract <T extends BaseData> T factory();

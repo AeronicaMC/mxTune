@@ -18,6 +18,7 @@
 package net.aeronica.mods.mxtune.caches;
 
 import net.aeronica.mods.mxtune.Reference;
+import net.aeronica.mods.mxtune.util.NBTHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -44,8 +45,6 @@ public class MXTuneFile
     private static final String TAG_MODIFIED_ON = "modifiedOn";
     private static final String TAG_CREATED_BY = "createdBy";
     private static final String TAG_MODIFIED_BY = "modifiedBy";
-    private static final String TAG_UUID_MSB = "uuid_msb";
-    private static final String TAG_UUID_LSB = "uuid_lsb";
 
     private String title = "";
     private String author = "";
@@ -80,8 +79,8 @@ public class MXTuneFile
         String source = compound.getString(TAG_SOURCE);
         ZonedDateTime createdOn = ZonedDateTime.parse(compound.getString(TAG_CREATED_ON), DateTimeFormatter.ISO_ZONED_DATE_TIME);
         ZonedDateTime modifiedOn = ZonedDateTime.parse(compound.getString(TAG_MODIFIED_ON), DateTimeFormatter.ISO_ZONED_DATE_TIME);
-        UUID createdBy = getUuidFromTag(compound, TAG_CREATED_BY);
-        UUID modifiedBy = getUuidFromTag(compound, TAG_MODIFIED_BY);
+        UUID createdBy = NBTHelper.getUuidFromTag(compound, TAG_CREATED_BY);
+        UUID modifiedBy = NBTHelper.getUuidFromTag(compound, TAG_MODIFIED_BY);
         int partCount = compound.getInteger(TAG_PART_COUNT);
 
         List<MXTunePart> parts = new ArrayList<>();
@@ -112,8 +111,8 @@ public class MXTuneFile
         compound.setInteger(TAG_PART_COUNT, parts.size());
         compound.setString(TAG_CREATED_ON, createdOn.format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
         compound.setString(TAG_MODIFIED_ON, modifiedOn.format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
-        setUuidToTag(createdBy, compound, TAG_CREATED_BY);
-        setUuidToTag(modifiedBy, compound, TAG_MODIFIED_BY);
+        NBTHelper.setUuidToTag(createdBy, compound, TAG_CREATED_BY);
+        NBTHelper.setUuidToTag(modifiedBy, compound, TAG_MODIFIED_BY);
 
         int i = 0;
 
@@ -203,32 +202,6 @@ public class MXTuneFile
     public void setModifiedBy(UUID modifiedBy)
     {
         this.modifiedBy = modifiedBy;
-    }
-
-    private static UUID getUuidFromCompound(NBTTagCompound compound)
-    {
-        long msb = compound.getLong(TAG_UUID_MSB);
-        long lsb = compound.getLong(TAG_UUID_LSB);
-        return new UUID(msb, lsb);
-    }
-
-    private static void setUuidToCompound(NBTTagCompound compound, UUID uuid)
-    {
-        compound.setLong(TAG_UUID_MSB, uuid.getMostSignificantBits());
-        compound.setLong(TAG_UUID_LSB, uuid.getLeastSignificantBits());
-    }
-
-    private static UUID getUuidFromTag(NBTTagCompound compound, String tagKey)
-    {
-        NBTTagCompound compoundTag = compound.getCompoundTag(tagKey);
-        return getUuidFromCompound(compoundTag);
-    }
-
-    private static void setUuidToTag(UUID uuid, NBTTagCompound compound, String tagKey)
-    {
-        NBTTagCompound tagCompound = new NBTTagCompound();
-        setUuidToCompound(tagCompound, uuid);
-        compound.setTag(tagKey, tagCompound);
     }
 
     @SideOnly(Side.CLIENT)

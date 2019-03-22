@@ -18,6 +18,7 @@
 package net.aeronica.mods.mxtune.managers.records;
 
 import net.aeronica.mods.mxtune.caches.UUIDType5;
+import net.aeronica.mods.mxtune.util.NBTHelper;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.UUID;
@@ -48,7 +49,7 @@ public class Area extends BaseData
     {
         String name = compound.getString(TAG_NAME);
         NBTTagCompound compoundPlayList = compound.getCompoundTag(TAG_PLAY_LIST);
-        UUID playList = getUuidFromCompound(compoundPlayList);
+        UUID playList = NBTHelper.getUuidFromCompound(compoundPlayList);
         return new Area(name, playList);
     }
 
@@ -58,7 +59,7 @@ public class Area extends BaseData
         super.readFromNBT(compound);
         this.name = compound.getString(TAG_NAME);
         NBTTagCompound compoundPlayList = compound.getCompoundTag(TAG_PLAY_LIST);
-        playList = getUuidFromCompound(compoundPlayList);
+        playList = NBTHelper.getUuidFromCompound(compoundPlayList);
     }
 
     @Override
@@ -67,7 +68,7 @@ public class Area extends BaseData
         super.writeToNBT(compound);
         compound.setString(TAG_NAME, name);
         NBTTagCompound compoundPlayList = new NBTTagCompound();
-        setUuidToCompound(compoundPlayList, playList);
+        NBTHelper.setUuidToCompound(compoundPlayList, playList);
         compound.setTag(TAG_PLAY_LIST, compoundPlayList);
     }
 

@@ -18,6 +18,7 @@
 package net.aeronica.mods.mxtune.managers.records;
 
 import net.aeronica.mods.mxtune.caches.UUIDType5;
+import net.aeronica.mods.mxtune.util.NBTHelper;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ public class PlayList extends BaseData
         for(int i = 0; i < songCount; i++)
         {
             NBTTagCompound compoundSong = compound.getCompoundTag(TAG_SONG_PREFIX + i);
-            UUID uuid = getUuidFromCompound(compoundSong);
+            UUID uuid = NBTHelper.getUuidFromCompound(compoundSong);
             songUUIDs.add(uuid);
         }
     }
@@ -81,7 +82,7 @@ public class PlayList extends BaseData
         for (UUID uuid : songUUIDs)
         {
             NBTTagCompound compoundSong = new NBTTagCompound();
-            setUuidToCompound(compoundSong, uuid);
+            NBTHelper.setUuidToCompound(compoundSong, uuid);
             compound.setTag(TAG_SONG_PREFIX + i, compoundSong);
             i++;
         }
