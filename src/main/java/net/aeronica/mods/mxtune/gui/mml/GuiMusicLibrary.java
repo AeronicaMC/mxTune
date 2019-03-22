@@ -45,7 +45,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -62,14 +61,12 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
 {
     private static final String TITLE = I18n.format("mxtune.gui.guiMusicLibrary.title");
     private static final String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
-    GuiScreen guiScreenParent;
+    private GuiScreen guiScreenParent;
     private int guiLeft;
     private int guiTop;
     private boolean isStateCached;
     private boolean midiUnavailable;
 
-    // Library List
-    private int entryHeight;
     private Path selectedFile;
     private GuiButton buttonCancel;
     private List<GuiButton> safeButtonList;
@@ -114,7 +111,8 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         this.guiLeft = 0;
         this.guiTop = 0;
         int guiListWidth = (width - 15) * 3 / 4;
-        entryHeight = mc.fontRenderer.FONT_HEIGHT + 2;
+        // Library List
+        int entryHeight = mc.fontRenderer.FONT_HEIGHT + 2;
         int left = 5;
         int titleTop = 20;
         int listTop = titleTop + 25;
@@ -303,7 +301,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         super.actionPerformed(button);
     }
 
-    void selectDone()
+    private void selectDone()
     {
         // action get file, etc...
         stop();
@@ -396,16 +394,8 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
             tuneParts.clear();
             if (compound != null)
             {
-                try
-                {
-                    mxTuneFile = MXTuneFile.build(compound);
-                    tuneParts.addAll(mxTuneFile.getParts());
-                }
-                catch (DateTimeParseException e)
-                {
-                    ModLogger.error(e);
-                    ModLogger.error("Error parsing dates from %s", selectedFile.toString());
-                }
+                mxTuneFile = MXTuneFile.build(compound);
+                tuneParts.addAll(mxTuneFile.getParts());
             }
             guiPartList.updateListRef(tuneParts);
             ModLogger.debug("Selected file: %s", selectedFile.toString());

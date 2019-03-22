@@ -18,6 +18,7 @@
 package net.aeronica.mods.mxtune.caches;
 
 import net.aeronica.mods.mxtune.Reference;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.NBTHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -72,13 +73,26 @@ public class MXTuneFile
         this.createdOn = ZonedDateTime.of(createdOn, ZoneId.of("UTC"));
     }
 
-    public static MXTuneFile build(NBTTagCompound compound) throws DateTimeParseException
+    public static MXTuneFile build(NBTTagCompound compound)
     {
         String title = compound.getString(TAG_TITLE);
         String author = compound.getString(TAG_AUTHOR);
         String source = compound.getString(TAG_SOURCE);
-        ZonedDateTime createdOn = ZonedDateTime.parse(compound.getString(TAG_CREATED_ON), DateTimeFormatter.ISO_ZONED_DATE_TIME);
-        ZonedDateTime modifiedOn = ZonedDateTime.parse(compound.getString(TAG_MODIFIED_ON), DateTimeFormatter.ISO_ZONED_DATE_TIME);
+        ZonedDateTime createdOn;
+        ZonedDateTime modifiedOn;
+        try
+        {
+            createdOn = ZonedDateTime.parse(compound.getString(TAG_CREATED_ON), DateTimeFormatter.ISO_ZONED_DATE_TIME);
+            modifiedOn = ZonedDateTime.parse(compound.getString(TAG_MODIFIED_ON), DateTimeFormatter.ISO_ZONED_DATE_TIME);
+        }
+        catch (DateTimeParseException e)
+        {
+            ModLogger.error("Invalid data. Re-initializing createdOn and modifiedOn dates");
+            ModLogger.error(e);
+            LocalDateTime ldtNow = LocalDateTime.MIN;
+            createdOn = ZonedDateTime.of(ldtNow, ZoneId.of("UTC"));
+            modifiedOn = ZonedDateTime.now();
+        }
         UUID createdBy = NBTHelper.getUuidFromTag(compound, TAG_CREATED_BY);
         UUID modifiedBy = NBTHelper.getUuidFromTag(compound, TAG_MODIFIED_BY);
         int partCount = compound.getInteger(TAG_PART_COUNT);
