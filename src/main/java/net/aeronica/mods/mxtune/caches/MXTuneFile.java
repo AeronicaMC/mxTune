@@ -25,7 +25,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -48,8 +51,8 @@ public class MXTuneFile
     private String author = "";
     private String source = "";
     private List<MXTunePart> parts;
-    private LocalDateTime createdOn;
-    private LocalDateTime modifiedOn;
+    private ZonedDateTime createdOn;
+    private ZonedDateTime modifiedOn;
     private UUID createdBy;
     private UUID modifiedBy;
 
@@ -58,24 +61,25 @@ public class MXTuneFile
         parts = new ArrayList<>();
         createdBy = Reference.EMPTY_UUID;
         modifiedBy = Reference.EMPTY_UUID;
-        createdOn = LocalDateTime.MIN;
-        modifiedOn = LocalDateTime.MIN;
+        LocalDateTime ldtNow = LocalDateTime.MIN;
+        createdOn = ZonedDateTime.of(ldtNow, ZoneId.of("UTC"));
+        modifiedOn = createdOn;
     }
 
     public MXTuneFile(UUID createdBy, LocalDateTime createdOn)
     {
         this();
         this.createdBy = createdBy;
-        this.createdOn = createdOn;
+        this.createdOn = ZonedDateTime.of(createdOn, ZoneId.of("UTC"));
     }
 
-    public static MXTuneFile build(NBTTagCompound compound)
+    public static MXTuneFile build(NBTTagCompound compound) throws DateTimeParseException
     {
         String title = compound.getString(TAG_TITLE);
         String author = compound.getString(TAG_AUTHOR);
         String source = compound.getString(TAG_SOURCE);
-        LocalDateTime createdOn = LocalDateTime.parse(compound.getString(TAG_CREATED_ON), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        LocalDateTime modifiedOn = LocalDateTime.parse(compound.getString(TAG_MODIFIED_ON), DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        ZonedDateTime createdOn = ZonedDateTime.parse(compound.getString(TAG_CREATED_ON), DateTimeFormatter.ISO_ZONED_DATE_TIME);
+        ZonedDateTime modifiedOn = ZonedDateTime.parse(compound.getString(TAG_MODIFIED_ON), DateTimeFormatter.ISO_ZONED_DATE_TIME);
         UUID createdBy = getUuidFromTag(compound, TAG_CREATED_BY);
         UUID modifiedBy = getUuidFromTag(compound, TAG_MODIFIED_BY);
         int partCount = compound.getInteger(TAG_PART_COUNT);
@@ -106,8 +110,8 @@ public class MXTuneFile
         compound.setString(TAG_AUTHOR, author);
         compound.setString(TAG_SOURCE, source);
         compound.setInteger(TAG_PART_COUNT, parts.size());
-        compound.setString(TAG_CREATED_ON, createdOn.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-        compound.setString(TAG_MODIFIED_ON, modifiedOn.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        compound.setString(TAG_CREATED_ON, createdOn.format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
+        compound.setString(TAG_MODIFIED_ON, modifiedOn.format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
         setUuidToTag(createdBy, compound, TAG_CREATED_BY);
         setUuidToTag(modifiedBy, compound, TAG_MODIFIED_BY);
 
@@ -161,22 +165,22 @@ public class MXTuneFile
     @SuppressWarnings("unused")
     public void setParts(List<MXTunePart> parts) { this.parts = parts != null ? parts : new ArrayList<>(); }
 
-    public LocalDateTime getCreatedOn()
+    public ZonedDateTime getCreatedOn()
     {
         return createdOn;
     }
 
-    public void setCreatedOn(LocalDateTime createdOn)
+    public void setCreatedOn(ZonedDateTime createdOn)
     {
         this.createdOn = createdOn;
     }
 
-    public LocalDateTime getModifiedOn()
+    public ZonedDateTime getModifiedOn()
     {
         return modifiedOn;
     }
 
-    public void setModifiedOn(LocalDateTime modifiedOn)
+    public void setModifiedOn(ZonedDateTime modifiedOn)
     {
         this.modifiedOn = modifiedOn;
     }
@@ -234,7 +238,7 @@ public class MXTuneFile
         if (player != null)
         {
             modifiedBy = player.getPersistentID();
-            modifiedOn = LocalDateTime.now();
+            modifiedOn = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("UTC"));
             if (setAll)
             {
                createdBy = modifiedBy;

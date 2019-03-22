@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -395,8 +396,16 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
             tuneParts.clear();
             if (compound != null)
             {
-                mxTuneFile = MXTuneFile.build(compound);
-                tuneParts.addAll(mxTuneFile.getParts());
+                try
+                {
+                    mxTuneFile = MXTuneFile.build(compound);
+                    tuneParts.addAll(mxTuneFile.getParts());
+                }
+                catch (DateTimeParseException e)
+                {
+                    ModLogger.error(e);
+                    ModLogger.error("Error parsing dates from %s", selectedFile.toString());
+                }
             }
             guiPartList.updateListRef(tuneParts);
             ModLogger.debug("Selected file: %s", selectedFile.toString());
