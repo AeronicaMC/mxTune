@@ -38,8 +38,8 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
 {
     private boolean errorResult = false;
     private boolean fileError = false;
-    public enum Type {AREA, PLAY_LIST, MUSIC}
-    private Type type = Type.AREA;
+    public enum GetType {AREA, PLAY_LIST, MUSIC}
+    private GetType type = GetType.AREA;
     private NBTTagCompound dataCompound = new NBTTagCompound();
     private long dataTypeUuidMSB = 0;
     private long dataTypeUuidLSB = 0;
@@ -54,7 +54,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
      * @param uuidType data type unique id
      * @param type data type
      */
-    public GetServerDataMessage(UUID uuidType, Type type)
+    public GetServerDataMessage(UUID uuidType, GetType type)
     {
         this.type = type;
         dataTypeUuidMSB = uuidType.getMostSignificantBits();
@@ -68,7 +68,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
      * @param type data type
      * @param playId to use for the song. Only valid for the MUSIC type
      */
-    public GetServerDataMessage(UUID uuidType, Type type, int playId)
+    public GetServerDataMessage(UUID uuidType, GetType type, int playId)
     {
         this.type = type;
         dataTypeUuidMSB = uuidType.getMostSignificantBits();
@@ -83,7 +83,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
      * @param playId to use for the song or the INVALID id (default if not specified in the client request)
      * @param dataCompound provided data
      */
-    private GetServerDataMessage(UUID uuidType, Type type, int playId, NBTTagCompound dataCompound, boolean errorResult)
+    private GetServerDataMessage(UUID uuidType, GetType type, int playId, NBTTagCompound dataCompound, boolean errorResult)
     {
         this.type = type;
         dataTypeUuidMSB = uuidType.getMostSignificantBits();
@@ -96,7 +96,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
-        this.type = buffer.readEnumValue(Type.class);
+        this.type = buffer.readEnumValue(GetType.class);
         this.dataCompound = buffer.readCompoundTag();
         this.dataTypeUuidMSB = buffer.readLong();
         this.dataTypeUuidLSB = buffer.readLong();
