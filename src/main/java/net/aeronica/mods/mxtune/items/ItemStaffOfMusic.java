@@ -49,7 +49,10 @@ public class ItemStaffOfMusic extends Item
     {
         if (worldIn.isRemote)
         {
-            playerIn.openGui(MXTune.instance, GuiGuid.GUI_MUSIC_LIBRARY, worldIn, 0, 0, 0);
+            if (playerIn.isSneaking())
+                playerIn.openGui(MXTune.instance, GuiGuid.GUI_TEST, worldIn, 0, 0, 0);
+            else
+                playerIn.openGui(MXTune.instance, GuiGuid.GUI_MUSIC_LIBRARY, worldIn, 0, 0, 0);
             return new ActionResult<>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
         }
         else if (MXTune.proxy.playerIsInCreativeMode(playerIn))

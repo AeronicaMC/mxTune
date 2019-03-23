@@ -21,6 +21,7 @@ import net.aeronica.mods.mxtune.gui.*;
 import net.aeronica.mods.mxtune.gui.mml.GuiMusicImporter;
 import net.aeronica.mods.mxtune.gui.mml.GuiMusicLibrary;
 import net.aeronica.mods.mxtune.gui.mml.GuiMusicPaperParse;
+import net.aeronica.mods.mxtune.gui.mml.GuiTest;
 import net.aeronica.mods.mxtune.inventory.ContainerBandAmp;
 import net.aeronica.mods.mxtune.inventory.ContainerInstrument;
 import net.aeronica.mods.mxtune.world.LockableHelper;
@@ -88,6 +89,9 @@ public class GUIHandler implements IGuiHandler
 
             case GUI_MUSIC_LIBRARY:
                 return new GuiMusicLibrary(null);
+
+            case GUI_TEST:
+                return new GuiTest();
 
         default:
             return null;
