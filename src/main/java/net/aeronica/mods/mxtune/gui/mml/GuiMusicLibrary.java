@@ -125,7 +125,8 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
             {
-                String name = (mmlFiles.get(slotIdx).getFileName().toString());
+                // get the filename and remove the '.dat' extension
+                String name = (mmlFiles.get(slotIdx).getFileName().toString()).replaceAll("\\.[dD][aA][tT]$", "");
                 String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
                 int color = isSelected(slotIdx) ? 0xFFFF00 : 0xADD8E6;
                 fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, color);
