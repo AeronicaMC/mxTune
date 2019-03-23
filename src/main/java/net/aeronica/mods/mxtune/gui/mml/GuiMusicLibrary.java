@@ -236,6 +236,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         guiLibraryList.elementClicked(cachedSelectedIndex);
         search.updateCursorCounter();
         searchAndSort();
+        guiLibraryList.resetScroll();
         super.updateScreen();
     }
 

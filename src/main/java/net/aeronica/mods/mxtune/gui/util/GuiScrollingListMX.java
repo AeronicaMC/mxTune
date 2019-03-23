@@ -21,6 +21,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.client.GuiScrollingList;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import java.util.List;
 
@@ -29,12 +30,42 @@ public abstract class GuiScrollingListMX extends GuiScrollingList
     private static final Minecraft mc = Minecraft.getMinecraft();
     private List<?> listRef;
     private GuiScreen gui;
+    private int entryHeight;
 
     public <T extends GuiScreen> GuiScrollingListMX(T gui, List<?> listRef, int entryHeight, int width, int height, int top, int bottom, int left)
     {
         super(mc, width, height, top, bottom, left, entryHeight, gui.width, gui.height);
         this.gui = gui;
         this.listRef = listRef;
+        this.entryHeight = entryHeight;
+    }
+
+
+    public void resetScroll() {
+
+        ObfuscationReflectionHelper.setPrivateValue(GuiScrollingList.class, this, applyScrollLimits(), "scrollDistance");
+    }
+
+    private float applyScrollLimits()
+    {
+        int listHeight = this.getContentHeight() - (this.bottom - this.top - 4);
+        float scrollDistance = selectedIndex * entryHeight;
+
+        if (listHeight < 0)
+        {
+            listHeight /= 2;
+        }
+
+        if (scrollDistance < 0.0F)
+        {
+            scrollDistance = 0.0F;
+        }
+
+        if (scrollDistance > (float)listHeight)
+        {
+            scrollDistance = (float)listHeight;
+        }
+        return scrollDistance;
     }
 
     public void updateListRef(List<?>  listRef)
