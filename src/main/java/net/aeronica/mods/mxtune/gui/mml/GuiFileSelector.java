@@ -212,10 +212,10 @@ public class GuiFileSelector extends GuiScreen
         buttonList.add(buttonOpen);
         buttonList.add(buttonRefresh);
         safeButtonList = new CopyOnWriteArrayList<>(buttonList);
-        reloadState();
         sorted = false;
         startWatcher();
         initFileList();
+        reloadState();
         updateSortButtons(sortType, safeButtonList);
     }
 
@@ -224,6 +224,7 @@ public class GuiFileSelector extends GuiScreen
         if (!isStateCached) return;
         sortType = cachedSortType;
         guiFileList.elementClicked(cachedSelectedIndex);
+        guiFileList.resetScroll();
         cachedSelectedIndex = guiFileList.getSelectedIndex();
         search.setText(lastSearch);
     }

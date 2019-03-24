@@ -41,6 +41,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -205,9 +206,9 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         buttonList.add(buttonDone);
         buttonList.add(buttonCancel);
         safeButtonList = new CopyOnWriteArrayList<>(buttonList);
-        reloadState();
         sorted = false;
         initFileList();
+        reloadState();
         updateSortButtons(sortType, safeButtonList);
     }
 
@@ -230,6 +231,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         cachedIsPlaying = isPlaying;
         cachedPlayId = playId;
         cachedSelectedFile = selectedFile;
+        searchAndSort();
         buttonPlay.displayString = isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play");
         isStateCached = true;
     }
@@ -240,8 +242,6 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         //cachedSelectedIndex = guiLibraryList.getSelectedIndex();
         //guiLibraryList.setSelectedIndex(cachedSelectedIndex);
         search.updateCursorCounter();
-        searchAndSort();
-        guiLibraryList.resetScroll();
         super.updateScreen();
     }
 
@@ -326,6 +326,13 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         }
         updateState();
         super.keyTyped(typedChar, keyCode);
+    }
+
+    @Override
+    public void onResize(@Nonnull Minecraft mcIn, int w, int h)
+    {
+        updateState();
+        super.onResize(mcIn, w, h);
     }
 
     @Override
