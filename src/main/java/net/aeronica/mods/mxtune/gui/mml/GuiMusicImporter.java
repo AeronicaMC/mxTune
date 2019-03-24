@@ -288,7 +288,7 @@ public class GuiMusicImporter extends GuiScreen
             mxTuneFile.setSource(musicSource.getText().trim());
             NBTTagCompound compound = new NBTTagCompound();
             mxTuneFile.writeToNBT(compound);
-            FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.CLIENT_LIB_FOLDER, filename + ".dat", Side.CLIENT), compound);
+            FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.CLIENT_LIB_FOLDER, filename + FileHelper.EXTENSION_MXT, Side.CLIENT), compound);
             result = true;
         }
         else

@@ -57,6 +57,9 @@ public class FileHelper
     public static final String SERVER_MUSIC_FOLDER = SERVER_FOLDER + "/music";
     public static final String SERVER_PLAYLISTS_FOLDER = SERVER_FOLDER + "/playlists";
 
+    public static final String EXTENSION_DAT = ".dat";
+    public static final String EXTENSION_MXT = ".mxt";
+
     private static Path serverWorldFolder;
 
     /**
@@ -83,6 +86,16 @@ public class FileHelper
     public static PathMatcher getDatMatcher(Path path)
     {
         return path.getFileSystem().getPathMatcher("glob:**.{dat}");
+    }
+
+    /**
+     * Match the .mxt file extension
+     * @param path to match files
+     * @return files with the mxTune file type extension
+     */
+    public static PathMatcher getMXTMatcher(Path path)
+    {
+        return path.getFileSystem().getPathMatcher("glob:**.{mxt}");
     }
 
     private static void fixDirectory(Path dir)

@@ -128,7 +128,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
             {
                 // get the filename and remove the '.dat' extension
-                String name = (get(slotIdx).getFileName().toString()).replaceAll("\\.[dD][aA][tT]$", "");
+                String name = (get(slotIdx).getFileName().toString()).replaceAll("\\.[mM][xX][tT]$", "");
                 String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
                 int color = isSelected(slotIdx) ? 0xFFFF00 : 0xADD8E6;
                 fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, color);
@@ -357,7 +357,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
     private void initFileList()
     {
         Path path = FileHelper.getDirectory(FileHelper.CLIENT_LIB_FOLDER, Side.CLIENT);
-        PathMatcher filter = FileHelper.getDatMatcher(path);
+        PathMatcher filter = FileHelper.getMXTMatcher(path);
         try (Stream<Path> paths = Files.list(path))
         {
             libraryFiles = paths
