@@ -334,4 +334,10 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingList implements 
     {
         return arrayList.equals(obj);
     }
+
+    @Override
+    public int hashCode()
+    {
+        return arrayList.hashCode();
+    }
 }
