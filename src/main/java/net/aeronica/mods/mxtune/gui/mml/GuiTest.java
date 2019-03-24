@@ -71,7 +71,7 @@ public class GuiTest extends GuiScreen
                 String trimmedUUID = fontRenderer.trimStringToWidth(area.getUUID().toString(), listWidth - 10);
                 int color = isSelected(slotIdx) ? 0xFFFF00 : 0xADD8E6;
                 fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, color);
-                fontRenderer.drawStringWithShadow(trimmedUUID, (float)left + 3, slotTop + 10, color);
+                fontRenderer.drawStringWithShadow(trimmedUUID, (float)left + 3, (float)slotTop + 10, color);
             }
 
             @Override

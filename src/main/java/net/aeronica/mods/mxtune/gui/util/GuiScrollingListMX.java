@@ -40,16 +40,15 @@ public abstract class GuiScrollingListMX extends GuiScrollingList
         this.entryHeight = entryHeight;
     }
 
-
     public void resetScroll() {
 
-        ObfuscationReflectionHelper.setPrivateValue(GuiScrollingList.class, this, applyScrollLimits(), "scrollDistance");
+        ObfuscationReflectionHelper.setPrivateValue(GuiScrollingList.class, this, keepSelectionInViewableArea(), "scrollDistance");
     }
 
-    private float applyScrollLimits()
+    private float keepSelectionInViewableArea()
     {
         int listHeight = this.getContentHeight() - (this.bottom - this.top - 4);
-        float scrollDistance = selectedIndex * entryHeight;
+        float scrollDistance = (float)selectedIndex * entryHeight;
 
         if (listHeight < 0)
         {
