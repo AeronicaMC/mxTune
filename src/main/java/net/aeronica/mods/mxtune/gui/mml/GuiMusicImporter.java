@@ -21,6 +21,7 @@ import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.caches.MXTuneFile;
 import net.aeronica.mods.mxtune.caches.MXTunePart;
 import net.aeronica.mods.mxtune.caches.MXTuneStaff;
+import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -28,6 +29,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextFormatting;
@@ -52,9 +54,8 @@ public class GuiMusicImporter extends GuiScreen
 
     private MXTuneFile mxTuneFile = new MXTuneFile();
 
-    protected int entryHeightImportList;
-    protected GuiPartList guiPartList;
-    protected GuiStaffList guiStaffList;
+    private GuiScrollingListOf<MXTunePart> guiPartList;
+    private GuiScrollingListOf<MXTuneStaff> guiStaffList;
     private GuiTextField musicTitle;
     private GuiTextField musicAuthor;
     private GuiTextField musicSource;
@@ -87,7 +88,7 @@ public class GuiMusicImporter extends GuiScreen
         this.guiTop = 0;
         int guiListWidth = (width - 15) / 2;
         int guiTextWidth = width - 10;
-        entryHeightImportList = mc.fontRenderer.FONT_HEIGHT + 2;
+        int entryHeightImportList = mc.fontRenderer.FONT_HEIGHT + 2;
         int left = 5;
         int titleTop = 20;
         int authorTop = titleTop + entryHeightImportList + 5;
@@ -103,8 +104,62 @@ public class GuiMusicImporter extends GuiScreen
         musicAuthor.setMaxStringLength(80);
         musicSource = new GuiTextField(2, fontRenderer, left, sourceTop, guiTextWidth, entryHeightImportList);
         musicSource.setMaxStringLength(160);
-        guiPartList = new GuiPartList(this, guiListWidth, listHeight, listTop, listBottom, left);
-        guiStaffList = new GuiStaffList(this, guiListWidth, listHeight, listTop, listBottom, width - guiListWidth - 5);
+
+        guiPartList = new GuiScrollingListOf<MXTunePart>(this, entryHeightImportList, guiListWidth, listHeight, listTop, listBottom, left)
+        {
+
+            @Override
+            protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
+            {
+                if (!isEmpty() && slotIdx < size())
+                {
+                    MXTunePart tunePart = get(slotIdx);
+                    String trimmedName = fontRenderer.trimStringToWidth(tunePart.getInstrument(), listWidth - 10);
+                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, 0xADD8E6);
+                }
+            }
+
+            @Override
+            protected void selectedClickedCallback(int selectedIndex)
+            {
+                guiStaffList.clear();
+                guiStaffList.addAll(get(selectedIndex).getStaves());
+            }
+
+            @Override
+            protected void selectedDoubleClickedCallback(int selectedIndex)
+            {
+                /* NOP */
+            }
+        };
+
+        guiStaffList = new GuiScrollingListOf<MXTuneStaff>(this, entryHeightImportList, guiListWidth, listHeight, listTop, listBottom, width - guiListWidth - 5)
+        {
+            @Override
+            protected void selectedClickedCallback(int selectedIndex)
+            {
+
+            }
+
+            @Override
+            protected void selectedDoubleClickedCallback(int selectedIndex)
+            {
+                /* NOP */
+            }
+
+            @Override
+            protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
+            {
+                if (!isEmpty() && slotIdx < size())
+                {
+                    MXTuneStaff tuneStaff = get(slotIdx);
+                    String mml = String.format("%02d: %s", tuneStaff.getStaff(), tuneStaff.getMml().substring(0, Math.min(tuneStaff.getMml().length(), 25)));
+                    String trimmedName = fontRenderer.trimStringToWidth(mml, listWidth - 10);
+                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, 0xADD8E6);
+                }
+            }
+        };
+
         statusText = new GuiTextField(3, fontRenderer, left, statusTop, guiTextWidth, entryHeightImportList);
         statusText.setMaxStringLength(100);
         statusText.setTextColor(0xEEEE00);
@@ -137,9 +192,9 @@ public class GuiMusicImporter extends GuiScreen
         musicSource.setText(cacheMusicSource);
         musicTitle.setText(cacheMusicTitle);
         statusText.setText(cacheStatusText);
-        guiPartList.setTuneParts(mxTuneFile.getParts());
-        guiPartList.elementClicked(cacheSelectedPart, false);
-        guiStaffList.elementClicked(cacheSelectedStave, false);
+        guiPartList.addAll(mxTuneFile.getParts());
+        guiPartList.setSelectedIndex(cacheSelectedPart);
+        guiStaffList.setSelectedIndex(cacheSelectedStave);
     }
 
     private void updateState()
@@ -271,8 +326,10 @@ public class GuiMusicImporter extends GuiScreen
                 mxTuneFile.setTitle(musicTitle.getText());
                 mxTuneFile.setAuthor(musicAuthor.getText());
                 mxTuneFile.setSource(musicSource.getText());
-                guiPartList.tuneParts = mxTuneFile.getParts();
-                guiStaffList.setTuneStaves(staves);
+                guiPartList.clear();
+                guiPartList.addAll(mxTuneFile.getParts());
+                guiStaffList.clear();
+                guiStaffList.addAll(staves);
 
                 break;
             case PASTE:
@@ -293,7 +350,8 @@ public class GuiMusicImporter extends GuiScreen
                 }
                 MXTunePart part = new MXTunePart(ActionGet.INSTANCE.getInstrument(), ActionGet.INSTANCE.getSuggestedInstrument(), ActionGet.INSTANCE.getPackedPatch(), staves);
                 mxTuneFile.getParts().add(part);
-                guiPartList.setTuneParts(mxTuneFile.getParts());
+                guiPartList.clear();
+                guiPartList.addAll(mxTuneFile.getParts());
 
                 break;
             case CANCEL:
