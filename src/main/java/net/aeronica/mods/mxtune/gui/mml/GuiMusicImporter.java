@@ -107,18 +107,6 @@ public class GuiMusicImporter extends GuiScreen
 
         guiPartList = new GuiScrollingListOf<MXTunePart>(this, entryHeightImportList, guiListWidth, listHeight, listTop, listBottom, left)
         {
-
-            @Override
-            protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
-            {
-                if (!isEmpty() && slotIdx < size())
-                {
-                    MXTunePart tunePart = get(slotIdx);
-                    String trimmedName = fontRenderer.trimStringToWidth(tunePart.getInstrument(), listWidth - 10);
-                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, 0xADD8E6);
-                }
-            }
-
             @Override
             protected void selectedClickedCallback(int selectedIndex)
             {
@@ -131,6 +119,17 @@ public class GuiMusicImporter extends GuiScreen
             {
                 /* NOP */
             }
+
+            @Override
+            protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
+            {
+                if (!isEmpty() && slotIdx < size())
+                {
+                    MXTunePart tunePart = get(slotIdx);
+                    String trimmedName = fontRenderer.trimStringToWidth(tunePart.getInstrument(), listWidth - 10);
+                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, 0xADD8E6);
+                }
+            }
         };
 
         guiStaffList = new GuiScrollingListOf<MXTuneStaff>(this, entryHeightImportList, guiListWidth, listHeight, listTop, listBottom, width - guiListWidth - 5)
@@ -138,7 +137,7 @@ public class GuiMusicImporter extends GuiScreen
             @Override
             protected void selectedClickedCallback(int selectedIndex)
             {
-
+                /* NOP */
             }
 
             @Override

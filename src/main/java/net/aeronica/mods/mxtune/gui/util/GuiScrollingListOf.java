@@ -140,7 +140,7 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingList implements 
         Gui.drawRect(left, top, left + listWidth, top + listHeight, -16777216);
     }
 
-    // Implement List<E>
+    // Wrap ArrayList<E>
     @Override
     public boolean isEmpty()
     {
@@ -328,11 +328,10 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingList implements 
         arrayList.sort(c);
     }
 
-    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
     @Override
     public boolean equals(Object obj)
     {
-        return arrayList.equals(obj);
+        return obj instanceof List<?> && arrayList.equals(obj);
     }
 
     @Override
