@@ -53,6 +53,7 @@ public class GuiMusicImporter extends GuiScreen
     private boolean midiUnavailable;
 
     private MXTuneFile mxTuneFile = new MXTuneFile();
+    private String fileName = "";
 
     private GuiScrollingListOf<MXTunePart> guiPartList;
     private GuiScrollingListOf<MXTuneStaff> guiStaffList;
@@ -275,24 +276,28 @@ public class GuiMusicImporter extends GuiScreen
         super.actionPerformed(button);
     }
 
+    // TODO: Replace Yes/No?
     private boolean saveFile() throws IOException
     {
         boolean result = false;
-        String filename = musicTitle.getText().trim();
-        filename = filename.replace(".[^\\.]+$", "");
-        musicTitle.setText(filename);
-        mxTuneFile.setTitle(filename);
-        if (!mxTuneFile.getParts().isEmpty())
+        String title = musicTitle.getText().trim();
+        mxTuneFile.setTitle(title);
+        if (!title.isEmpty() && !mxTuneFile.getParts().isEmpty() && !fileName.isEmpty() && fileName.length() > 1)
         {
             mxTuneFile.setAuthor(musicAuthor.getText().trim());
             mxTuneFile.setSource(musicSource.getText().trim());
             NBTTagCompound compound = new NBTTagCompound();
             mxTuneFile.writeToNBT(compound);
-            FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.CLIENT_LIB_FOLDER, filename + FileHelper.EXTENSION_MXT, Side.CLIENT), compound);
+            FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.CLIENT_LIB_FOLDER, fileName + FileHelper.EXTENSION_MXT, Side.CLIENT), compound);
             result = true;
+            ModLogger.debug("Saved: %s", fileName);
+            fileName = "";
         }
         else
+        {
             statusText.setText("Unable to save! No parts, or title is too short.");
+            ModLogger.warn("Unable to save! No parts, or title is too short: %s", fileName);
+        }
         return result;
     }
 
@@ -310,14 +315,32 @@ public class GuiMusicImporter extends GuiScreen
         mc.displayGuiScreen(new GuiMusicPaperParse(this));
     }
 
+    private String removeExtension(String s)
+    {
+        return s.replaceAll("(\\.\\w+$)", "");
+    }
+
+    private String normalizeFilename(String s)
+    {
+        return s.replaceAll("([\\x00-\\x1F!\"\\$\'\\.\\(\\)\\*,\\/:;<>\\?\\[\\\\\\]\\{\\|\\}\\x7F]+)", "");
+    }
+
     private void getSelection()
     {
         List<MXTuneStaff> staves = new ArrayList<>();
+        String temp;
+        String title;
         switch (ActionGet.INSTANCE.getSelector())
         {
             case FILE:
                 ModLogger.debug("File: %s", ActionGet.INSTANCE.getFileNameString());
-                musicTitle.setText(ActionGet.INSTANCE.getFileNameString());
+                temp = ActionGet.INSTANCE.getFileNameString();
+                ModLogger.debug("ActionGet FILE raw: %s", temp);
+                title = removeExtension(temp);
+                ModLogger.debug("ActionGet FILE title: %s", title);
+                fileName = normalizeFilename(title);
+                ModLogger.debug("ActionGet FILE filename: %s", fileName);
+                musicTitle.setText(title.trim());
                 musicAuthor.setText(ActionGet.INSTANCE.getAuthor());
                 musicSource.setText(ActionGet.INSTANCE.getSource());
                 mxTuneFile = new MXTuneFile();
@@ -333,7 +356,13 @@ public class GuiMusicImporter extends GuiScreen
                 break;
             case PASTE:
                 ModLogger.debug("Paste: %s", ActionGet.INSTANCE.getTitle());
-                musicTitle.setText(ActionGet.INSTANCE.getTitle());
+                temp = ActionGet.INSTANCE.getTitle();
+                ModLogger.debug("ActionGet PASTE raw: %s", temp);
+                title = removeExtension(temp);
+                ModLogger.debug("ActionGet PASTE title: %s", title);
+                fileName = normalizeFilename(title);
+                ModLogger.debug("ActionGet PASTE filename: %s", fileName);
+                musicTitle.setText(title);
                 musicAuthor.setText(ActionGet.INSTANCE.getAuthor());
                 musicSource.setText(ActionGet.INSTANCE.getAuthor());
                 mxTuneFile.setTitle(ActionGet.INSTANCE.getTitle());
