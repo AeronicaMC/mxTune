@@ -23,13 +23,17 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.client.GuiScrollingList;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
-public abstract class GuiScrollingListOf<E> extends GuiScrollingList
+public abstract class GuiScrollingListOf<E> extends GuiScrollingList implements List<E>
 {
-    private ArrayList<E> arrayList = new ArrayList<>();
+    private List<E> arrayList = new ArrayList<>();
     protected GuiScreen gui;
     protected Minecraft mc;
     private int entryHeight;
@@ -42,20 +46,15 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingList
         this.entryHeight = entryHeight;
     }
 
-    public float getScroll()
-    {
-        return ObfuscationReflectionHelper.getPrivateValue(GuiScrollingList.class, this, "scrollDistance");
-    }
-
     public void resetScroll() {
 
-        ObfuscationReflectionHelper.setPrivateValue(GuiScrollingList.class, this, applyScrollLimits(), "scrollDistance");
+        ObfuscationReflectionHelper.setPrivateValue(GuiScrollingList.class, this, keepSelectionInViewableArea(), "scrollDistance");
     }
 
-    private float applyScrollLimits()
+    private float keepSelectionInViewableArea()
     {
         int listHeight = this.getContentHeight() - (this.bottom - this.top - 4);
-        float scrollDistance = selectedIndex * entryHeight;
+        float scrollDistance = (float)selectedIndex * entryHeight;
 
         if (listHeight < 0)
         {
@@ -83,31 +82,14 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingList
         selectedIndex = index;
     }
 
-    public int size()
+    @Nullable
+    public E get()
     {
-        return getSize();
+        if(this.isSelected(selectedIndex))
+            return arrayList.get(selectedIndex);
+        else
+            return null;
     }
-
-    public void clear()
-    {
-        arrayList.clear();
-    }
-
-    public boolean add(E e)
-    {
-        return this.arrayList.add(e);
-    }
-
-    public boolean addAll(Collection<? extends E> c)
-    {
-        return this.arrayList.addAll(c);
-    }
-
-    public E get(int index)
-    {
-        return this.arrayList.get(index);
-    }
-
 
     @Override
     protected int getSize()
@@ -129,7 +111,7 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingList
     protected void elementClicked(int index, boolean doubleClick)
     {
         if (index == selectedIndex && !doubleClick) return;
-        selectedIndex = (index >= 0 && index <= arrayList.size() && arrayList.size() != 0 ? index : -1);
+        selectedIndex = (index >= 0 && index <= arrayList.size() && !arrayList.isEmpty() ? index : -1);
 
         if (selectedIndex >= 0)
         {
@@ -156,5 +138,200 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingList
     {
         Gui.drawRect(left - 1, top - 1, left + listWidth + 1, top + listHeight + 1, -6250336);
         Gui.drawRect(left, top, left + listWidth, top + listHeight, -16777216);
+    }
+
+    // Implement List<E>
+    @Override
+    public boolean isEmpty()
+    {
+        return arrayList.isEmpty();
+    }
+
+    @Override
+    public boolean contains(Object o)
+    {
+        return arrayList.contains(o);
+    }
+
+    @Override
+    @Nonnull
+    public Iterator<E> iterator()
+    {
+        return arrayList.iterator();
+    }
+
+    @Override
+    @Nonnull
+    public Object[] toArray()
+    {
+        return arrayList.toArray();
+    }
+
+    @Override
+    @Nonnull
+    public <T> T[] toArray(@Nonnull T[] a)
+    {
+        //noinspection SuspiciousToArrayCall
+        return arrayList.toArray(a);
+    }
+
+    @Override
+    public boolean remove(Object o)
+    {
+        return arrayList.remove(o);
+    }
+
+    @Override
+    public boolean containsAll(@Nonnull Collection<?> c)
+    {
+        return arrayList.containsAll(c);
+    }
+
+    @Override
+    public boolean addAll(int index, @Nonnull Collection<? extends E> c)
+    {
+        return arrayList.addAll(index, c);
+    }
+
+    @Override
+    public void replaceAll(UnaryOperator<E> operator)
+    {
+        arrayList.replaceAll(operator);
+    }
+
+    @Override
+    public Spliterator<E> spliterator()
+    {
+        return arrayList.spliterator();
+    }
+
+    @Override
+    public int size()
+    {
+        return arrayList.size();
+    }
+
+    @Override
+    public boolean add(E e)
+    {
+        return arrayList.add(e);
+    }
+
+    @Override
+    public boolean addAll(@Nonnull Collection<? extends E> c)
+    {
+        return arrayList.addAll(c);
+    }
+
+    @Override
+    public void clear()
+    {
+        arrayList.clear();
+    }
+
+    @Override
+    public boolean removeAll(@Nonnull Collection<?> c)
+    {
+        return arrayList.removeAll(c);
+    }
+
+    @Override
+    public boolean retainAll(@Nonnull Collection<?> c)
+    {
+        return arrayList.retainAll(c);
+    }
+
+    @Override
+    public E get(int index)
+    {
+        return arrayList.get(index);
+    }
+
+    @Override
+    public E set(int index, E element)
+    {
+        return arrayList.set(index, element);
+    }
+
+    @Override
+    public void add(int index, E element)
+    {
+        arrayList.add(element);
+    }
+
+    @Override
+    public E remove(int index)
+    {
+        return arrayList.remove(index);
+    }
+
+    @Override
+    public int indexOf(Object o)
+    {
+        return arrayList.indexOf(o);
+    }
+
+    @Override
+    public int lastIndexOf(Object o)
+    {
+        return arrayList.lastIndexOf(o);
+    }
+
+    @Override
+    @Nonnull
+    public ListIterator<E> listIterator()
+    {
+        return arrayList.listIterator();
+    }
+
+    @Override
+    @Nonnull
+    public ListIterator<E> listIterator(int index)
+    {
+        return arrayList.listIterator(index);
+    }
+
+    @Override
+    @Nonnull
+    public List<E> subList(int fromIndex, int toIndex)
+    {
+        return arrayList.subList(fromIndex, toIndex);
+    }
+
+    @Override
+    public boolean removeIf(Predicate<? super E> filter)
+    {
+        return arrayList.removeIf(filter);
+    }
+
+    @Override
+    public Stream<E> stream()
+    {
+        return arrayList.stream();
+    }
+
+    @Override
+    public Stream<E> parallelStream()
+    {
+        return arrayList.parallelStream();
+    }
+
+    @Override
+    public void forEach(Consumer<? super E> action)
+    {
+        arrayList.forEach(action);
+    }
+
+    @Override
+    public void sort(Comparator<? super E> c)
+    {
+        arrayList.sort(c);
+    }
+
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
+    @Override
+    public boolean equals(Object obj)
+    {
+        return arrayList.equals(obj);
     }
 }
