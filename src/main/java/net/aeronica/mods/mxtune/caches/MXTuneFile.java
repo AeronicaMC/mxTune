@@ -37,6 +37,7 @@ import java.util.UUID;
 
 public class MXTuneFile
 {
+    private static final String MXT_VERSION = "1.0.0";
     private static final String TAG_TITLE = "title";
     private static final String TAG_AUTHOR = "author";
     private static final String TAG_SOURCE = "source";
@@ -46,6 +47,7 @@ public class MXTuneFile
     private static final String TAG_MODIFIED_ON = "modifiedOn";
     private static final String TAG_CREATED_BY = "createdBy";
     private static final String TAG_MODIFIED_BY = "modifiedBy";
+    private static final String TAG_MXT_VERSION = "mxtVersion";
 
     private String title = "";
     private String author = "";
@@ -75,6 +77,9 @@ public class MXTuneFile
 
     public static MXTuneFile build(NBTTagCompound compound)
     {
+        String mxtVersion = compound.getString(TAG_MXT_VERSION);
+        if (MXT_VERSION.compareTo(mxtVersion) < 0 || mxtVersion.equals(""))
+            ModLogger.warn("Unsupported mxTune file version! expected %s, found %s", MXT_VERSION, mxtVersion);
         String title = compound.getString(TAG_TITLE);
         String author = compound.getString(TAG_AUTHOR);
         String source = compound.getString(TAG_SOURCE);
@@ -118,6 +123,7 @@ public class MXTuneFile
 
     public void writeToNBT(NBTTagCompound compound)
     {
+        compound.setString(TAG_MXT_VERSION, MXT_VERSION);
         applyUserDateTime(false);
         compound.setString(TAG_TITLE, title);
         compound.setString(TAG_AUTHOR, author);
