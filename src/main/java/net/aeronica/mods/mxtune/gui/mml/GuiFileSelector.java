@@ -20,7 +20,7 @@ package net.aeronica.mods.mxtune.gui.mml;
 import net.aeronica.mods.mxtune.caches.DirectoryWatcher;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.gui.util.GuiButtonHooverText;
-import net.aeronica.mods.mxtune.gui.util.GuiScrollingListMX;
+import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -64,7 +64,7 @@ public class GuiFileSelector extends GuiScreen
     private int cachedSelectedIndex;
     private boolean midiUnavailable;
 
-    private GuiScrollingListMX guiFileList;
+    private GuiScrollingListOf<Path> guiFileList;
     private Path selectedFile;
 
     private GuiLabel searchLabel;
@@ -77,7 +77,7 @@ public class GuiFileSelector extends GuiScreen
     private GuiButton buttonCancel;
     private List<GuiButton> safeButtonList;
 
-    private List<Path> mmlFiles = new ArrayList<>();
+    private List<Path> fileList = new ArrayList<>();
     private boolean watcherStarted = false;
 
     private DirectoryWatcher watcher;
@@ -152,12 +152,12 @@ public class GuiFileSelector extends GuiScreen
         int listBottom = listTop + listHeight;
         int statusTop = listBottom + 4;
 
-        guiFileList = new GuiScrollingListMX(this, mmlFiles, entryHeight, guiListWidth, listHeight, listTop, listBottom, left)
+        guiFileList = new GuiScrollingListOf<Path>(this, entryHeight, guiListWidth, listHeight, listTop, listBottom, left)
         {
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
             {
-                String name = (mmlFiles.get(slotIdx).getFileName().toString());
+                String name = (get(slotIdx).getFileName().toString());
                 String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
                 fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, 0xADD8E6);
             }
@@ -165,7 +165,7 @@ public class GuiFileSelector extends GuiScreen
             @Override
             protected void selectedClickedCallback(int selectedIndex)
             {
-                selectedFile = mmlFiles.get(selectedIndex);
+                selectedFile = get(selectedIndex);
             }
 
             @Override
@@ -232,6 +232,7 @@ public class GuiFileSelector extends GuiScreen
     {
         cachedSelectedIndex = guiFileList.getSelectedIndex();
         cachedSortType = sortType;
+        searchAndSort();
         this.isStateCached = true;
     }
 
@@ -241,7 +242,6 @@ public class GuiFileSelector extends GuiScreen
         cachedSelectedIndex = guiFileList.getSelectedIndex();
         guiFileList.elementClicked(cachedSelectedIndex);
         search.updateCursorCounter();
-        searchAndSort();
         super.updateScreen();
     }
 
@@ -310,17 +310,8 @@ public class GuiFileSelector extends GuiScreen
 
     private void selectDone()
     {
-        ActionGet.INSTANCE.select(selectedFile());
+        ActionGet.INSTANCE.select(guiFileList.get());
         mc.displayGuiScreen(guiScreenParent);
-    }
-
-    private Path selectedFile()
-    {
-        int selectedIndex = guiFileList.getSelectedIndex();
-        if (selectedIndex < 0 || selectedIndex > mmlFiles.size() || mmlFiles.isEmpty())
-            return null;
-        else
-            return mmlFiles.get(selectedIndex);
     }
 
     @Override
@@ -361,7 +352,7 @@ public class GuiFileSelector extends GuiScreen
         PathMatcher filter = FileHelper.getMMLMatcher(path);
         try (Stream<Path> paths = Files.list(path))
         {
-            mmlFiles = paths
+            fileList = paths
                     .filter(filter::matches)
                     .collect(Collectors.toList());
         }
@@ -370,15 +361,16 @@ public class GuiFileSelector extends GuiScreen
             ModLogger.error(e);
         }
         List<Path> files = new ArrayList<>();
-        for (Path file : mmlFiles)
+        for (Path file : fileList)
         {
             if (file.getFileName().toString().toLowerCase(Locale.ROOT).contains(search.getText().toLowerCase(Locale.ROOT)))
             {
                 files.add(file);
             }
         }
-        mmlFiles = files;
-        guiFileList.updateListRef(files);
+        fileList = files;
+        guiFileList.clear();
+        guiFileList.addAll(files);
         lastSearch = search.getText();
     }
 
@@ -402,8 +394,8 @@ public class GuiFileSelector extends GuiScreen
         if (!sorted)
         {
             initFileList();
-            mmlFiles.sort(sortType);
-            guiFileList.elementClicked(mmlFiles.indexOf(selectedFile));
+            guiFileList.sort(sortType);
+            guiFileList.setSelectedIndex(fileList.indexOf(selectedFile));
             cachedSelectedIndex = guiFileList.getSelectedIndex();
             sorted = true;
         }
