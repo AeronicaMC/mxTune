@@ -54,7 +54,6 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static WeakReference<Chunk> currentChunkRef;
     private static int currentPlayId = INVALID;
     private static UUID currentAreaUUID = EMPTY_UUID;
-    private static UUID currentPlayListUUID = EMPTY_UUID;
 
     // AREA Song Shuffling
     private static final Random rand = new Random();
@@ -84,6 +83,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     {
         if (ClientCSDMonitor.canMXTunesPlay() && (event.phase == TickEvent.Phase.END) && ticks++ % 20 == 0)
         {
+            // Poll once per second
             updateChunk();
             counter++;
         }
@@ -236,7 +236,7 @@ public class ClientPlayManager implements IAudioStatusCallback
 
     private static boolean waiting()
     {
-        Boolean canPlay = ClientAudio.getActivePlayIDs().isEmpty() && !Reference.EMPTY_UUID.equals(currentAreaUUID) && ClientFileManager.isNotBadPlayList(currentAreaUUID);
+        Boolean canPlay = ClientAudio.getActivePlayIDs().isEmpty() && !Reference.EMPTY_UUID.equals(currentAreaUUID);
         if (canPlay && !wait) startTimer();
         return !canPlay || (counter <= delay);
     }

@@ -60,7 +60,6 @@ public class ServerFileManager
         getOrGenerateServerID();
         stuffServer(); // stuffServer goes here when needed - test data
         initSongs();
-        //initPlayLists();
         initAreas();
         dumpAll();
     }
@@ -144,36 +143,6 @@ public class ServerFileManager
                 ModLogger.warn("NULL NBTTagCompound for song file: %s", songFile.toString());
         }
     }
-
-//    private static void initPlayLists()
-//    {
-//        List<Path> playLists = new ArrayList<>();
-//
-//        Path path = FileHelper.getDirectory(FileHelper.SERVER_PLAYLISTS_FOLDER, Side.SERVER);
-//        PathMatcher filter = FileHelper.getDatMatcher(path);
-//        try (Stream<Path> paths = Files.list(path))
-//        {
-//            playLists = paths
-//                    .filter(filter::matches)
-//                    .collect(Collectors.toList());
-//        }
-//        catch (NullPointerException | IOException e)
-//        {
-//            ModLogger.error(e);
-//        }
-//
-//        for (Path playListFile : playLists)
-//        {
-//            NBTTagCompound compound = FileHelper.getCompoundFromFile(playListFile);
-//            if (compound != null)
-//            {
-//                PlayList playList = new PlayList(compound);
-//                UUID uuidPlayList = playList.getUUID();
-//                for (UUID songUUID : playList.getSongUUIDs())
-//                    playListVsSongs.put(uuidPlayList, songUUID);
-//            }
-//        }
-//    }
 
     private static void initAreas()
     {

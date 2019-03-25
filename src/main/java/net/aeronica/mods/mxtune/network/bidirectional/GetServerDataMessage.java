@@ -38,7 +38,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
 {
     private boolean errorResult = false;
     private boolean fileError = false;
-    public enum GetType {AREA, PLAY_LIST, MUSIC}
+    public enum GetType {AREA, MUSIC}
     private GetType type = GetType.AREA;
     private NBTTagCompound dataCompound = new NBTTagCompound();
     private long dataTypeUuidMSB = 0;
@@ -140,9 +140,6 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
             case AREA:
                 ClientFileManager.addArea(dataTypeUuid, dataCompound, errorResult);
                 break;
-            case PLAY_LIST:
-                ClientFileManager.addPlayList(dataTypeUuid, dataCompound, errorResult);
-                break;
             case MUSIC:
                 ClientFileManager.addMusic(dataTypeUuid, dataCompound, errorResult);
                 ClientPlayManager.playMusic(dataTypeUuid, playId);
@@ -162,9 +159,6 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
         {
             case AREA:
                 dataCompound = getDataCompoundFromFile(FileHelper.SERVER_AREAS_FOLDER, dataTypeUuid);
-                break;
-            case PLAY_LIST:
-                dataCompound = getDataCompoundFromFile(FileHelper.SERVER_PLAYLISTS_FOLDER, dataTypeUuid);
                 break;
             case MUSIC:
                 dataCompound = getDataCompoundFromFile(FileHelper.SERVER_MUSIC_FOLDER, dataTypeUuid);
