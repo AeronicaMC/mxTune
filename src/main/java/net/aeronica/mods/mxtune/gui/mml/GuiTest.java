@@ -31,7 +31,6 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class GuiTest extends GuiScreen
 {
@@ -181,7 +180,7 @@ public class GuiTest extends GuiScreen
     {
         for (int i = 0; i < 50; i++)
         {
-            Area area = new Area(String.format("TEST: %02d", i), UUID.randomUUID());
+            Area area = new Area(String.format("TEST: %02d", i));
             areaGuiList.add(area);
         }
     }

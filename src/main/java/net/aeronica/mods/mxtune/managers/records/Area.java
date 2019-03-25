@@ -21,45 +21,80 @@ import net.aeronica.mods.mxtune.caches.UUIDType5;
 import net.aeronica.mods.mxtune.util.NBTHelper;
 import net.minecraft.nbt.NBTTagCompound;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class Area extends BaseData
 {
     private static final  String TAG_NAME = "name";
-    private static final String TAG_PLAY_LIST = "play_list";
+    private static final String TAG_PLAY_LIST_DAY = "play_list_day";
+    private static final String TAG_PLAY_LIST_NIGHT = "play_list_night";
+    private static final String TAG_SONG_PREFIX = "song";
+    private static final String TAG_SONG_COUNT = "song_count";
 
     private String name;
-    private UUID playList;
+    private List<UUID> playListDay;
+    private List<UUID> playListNight;
 
     public Area()
     {
         this.name = "";
-        playList = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_LIST, "");
+        playListDay = new ArrayList<>();
+        playListNight = new ArrayList<>();
         uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_AREA, this.name);
     }
 
-    public Area(String name, UUID playList)
+    public Area(String name)
     {
         this.name = name;
-        this.playList = playList;
+        playListDay = new ArrayList<>();
+        playListNight = new ArrayList<>();
+        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_AREA, this.name);
+    }
+
+    public Area(String name, List<UUID> playListDay, List<UUID> playListNight)
+    {
+        this.name = name;
+        this.playListDay = playListDay;
+        this.playListNight = playListNight;
         uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_AREA, this.name);
     }
 
     public static Area build(NBTTagCompound compound)
     {
-        String name = compound.getString(TAG_NAME);
-        NBTTagCompound compoundPlayList = compound.getCompoundTag(TAG_PLAY_LIST);
-        UUID playList = NBTHelper.getUuidFromCompound(compoundPlayList);
-        return new Area(name, playList);
+        Area area = new Area();
+        area.readFromNBT(compound);
+        return area;
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound)
     {
         super.readFromNBT(compound);
-        this.name = compound.getString(TAG_NAME);
-        NBTTagCompound compoundPlayList = compound.getCompoundTag(TAG_PLAY_LIST);
-        playList = NBTHelper.getUuidFromCompound(compoundPlayList);
+        name = compound.getString(TAG_NAME);
+
+        NBTTagCompound compoundPlayListDay = compound.getCompoundTag(TAG_PLAY_LIST_DAY);
+        int songCount = compoundPlayListDay.getInteger(TAG_SONG_COUNT);
+
+        playListDay = new ArrayList<>();
+        for(int i = 0; i < songCount; i++)
+        {
+            NBTTagCompound compoundSong = compoundPlayListDay.getCompoundTag(TAG_SONG_PREFIX + i);
+            UUID uuid = NBTHelper.getUuidFromCompound(compoundSong);
+            playListDay.add(uuid);
+        }
+
+        NBTTagCompound compoundPlayListNight = compound.getCompoundTag(TAG_PLAY_LIST_NIGHT);
+        songCount = compoundPlayListNight.getInteger(TAG_SONG_COUNT);
+
+        playListNight = new ArrayList<>();
+        for(int i = 0; i < songCount; i++)
+        {
+            NBTTagCompound compoundSong = compoundPlayListDay.getCompoundTag(TAG_SONG_PREFIX + i);
+            UUID uuid = NBTHelper.getUuidFromCompound(compoundSong);
+            playListNight.add(uuid);
+        }
     }
 
     @Override
@@ -67,9 +102,30 @@ public class Area extends BaseData
     {
         super.writeToNBT(compound);
         compound.setString(TAG_NAME, name);
-        NBTTagCompound compoundPlayList = new NBTTagCompound();
-        NBTHelper.setUuidToCompound(compoundPlayList, playList);
-        compound.setTag(TAG_PLAY_LIST, compoundPlayList);
+
+        NBTTagCompound compoundPlayListDay = new NBTTagCompound();
+        compoundPlayListDay.setInteger(TAG_SONG_COUNT, playListDay.size());
+        int i = 0;
+        for (UUID uuid : playListDay)
+        {
+            NBTTagCompound compoundSong = new NBTTagCompound();
+            NBTHelper.setUuidToCompound(compoundSong, uuid);
+            compoundPlayListDay.setTag(TAG_SONG_PREFIX + i, compoundSong);
+            i++;
+        }
+        compound.setTag(TAG_PLAY_LIST_DAY, compoundPlayListDay);
+
+        NBTTagCompound compoundPlayListNight = new NBTTagCompound();
+        compoundPlayListNight.setInteger(TAG_SONG_COUNT, playListNight.size());
+        i = 0;
+        for (UUID uuid : playListNight)
+        {
+            NBTTagCompound compoundSong = new NBTTagCompound();
+            NBTHelper.setUuidToCompound(compoundSong, uuid);
+            compoundPlayListNight.setTag(TAG_SONG_PREFIX + i, compoundSong);
+            i++;
+        }
+        compound.setTag(TAG_PLAY_LIST_NIGHT, compoundPlayListNight);
     }
 
     public String getName()
@@ -77,14 +133,24 @@ public class Area extends BaseData
         return name;
     }
 
-    public UUID getPlayList()
+    public List<UUID> getPlayListDay()
     {
-        return playList;
+        return playListDay;
     }
 
-    public void setPlayList(UUID playList)
+    public void setPlayListDay(List<UUID> playListDay)
     {
-        this.playList = playList;
+        this.playListDay = playListDay;
+    }
+
+    public List<UUID> getPlayListNight()
+    {
+        return playListNight;
+    }
+
+    public void setPlayListNight(List<UUID> playListNight)
+    {
+        this.playListNight = playListNight;
     }
 
     @SuppressWarnings("unchecked")

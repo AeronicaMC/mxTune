@@ -18,7 +18,7 @@
 package net.aeronica.mods.mxtune.managers;
 
 import net.aeronica.mods.mxtune.Reference;
-import net.aeronica.mods.mxtune.managers.records.PlayList;
+import net.aeronica.mods.mxtune.managers.records.Area;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.GetServerDataMessage;
@@ -214,11 +214,11 @@ public class ClientPlayManager implements IAudioStatusCallback
 
     private static UUID randomSong(UUID uuidArea)
     {
-        PlayList playList = ClientFileManager.getAreaPlayList(uuidArea);
+        Area area = ClientFileManager.getAreaPlayList(uuidArea);
         UUID song;
-        if (playList != null)
+        if (area != null)
         {
-            List<UUID> songs = playList.getSongUUIDs();
+            List<UUID> songs = area.getPlayListDay(); // TODO: Day Night test and selection, empty list...
             int size = songs.size();
             song = songs.get(rand.nextInt(size));
             while (heardSong(song))

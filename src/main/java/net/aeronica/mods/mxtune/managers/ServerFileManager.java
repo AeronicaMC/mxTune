@@ -23,9 +23,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ListMultimap;
 import net.aeronica.libs.mml.core.TestData;
 import net.aeronica.mods.mxtune.caches.FileHelper;
-import net.aeronica.mods.mxtune.caches.UUIDType5;
 import net.aeronica.mods.mxtune.managers.records.Area;
-import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -62,7 +60,7 @@ public class ServerFileManager
         getOrGenerateServerID();
         stuffServer(); // stuffServer goes here when needed - test data
         initSongs();
-        initPlayLists();
+        //initPlayLists();
         initAreas();
         dumpAll();
     }
@@ -147,35 +145,35 @@ public class ServerFileManager
         }
     }
 
-    private static void initPlayLists()
-    {
-        List<Path> playLists = new ArrayList<>();
-
-        Path path = FileHelper.getDirectory(FileHelper.SERVER_PLAYLISTS_FOLDER, Side.SERVER);
-        PathMatcher filter = FileHelper.getDatMatcher(path);
-        try (Stream<Path> paths = Files.list(path))
-        {
-            playLists = paths
-                    .filter(filter::matches)
-                    .collect(Collectors.toList());
-        }
-        catch (NullPointerException | IOException e)
-        {
-            ModLogger.error(e);
-        }
-
-        for (Path playListFile : playLists)
-        {
-            NBTTagCompound compound = FileHelper.getCompoundFromFile(playListFile);
-            if (compound != null)
-            {
-                PlayList playList = new PlayList(compound);
-                UUID uuidPlayList = playList.getUUID();
-                for (UUID songUUID : playList.getSongUUIDs())
-                    playListVsSongs.put(uuidPlayList, songUUID);
-            }
-        }
-    }
+//    private static void initPlayLists()
+//    {
+//        List<Path> playLists = new ArrayList<>();
+//
+//        Path path = FileHelper.getDirectory(FileHelper.SERVER_PLAYLISTS_FOLDER, Side.SERVER);
+//        PathMatcher filter = FileHelper.getDatMatcher(path);
+//        try (Stream<Path> paths = Files.list(path))
+//        {
+//            playLists = paths
+//                    .filter(filter::matches)
+//                    .collect(Collectors.toList());
+//        }
+//        catch (NullPointerException | IOException e)
+//        {
+//            ModLogger.error(e);
+//        }
+//
+//        for (Path playListFile : playLists)
+//        {
+//            NBTTagCompound compound = FileHelper.getCompoundFromFile(playListFile);
+//            if (compound != null)
+//            {
+//                PlayList playList = new PlayList(compound);
+//                UUID uuidPlayList = playList.getUUID();
+//                for (UUID songUUID : playList.getSongUUIDs())
+//                    playListVsSongs.put(uuidPlayList, songUUID);
+//            }
+//        }
+//    }
 
     private static void initAreas()
     {
@@ -202,7 +200,6 @@ public class ServerFileManager
                 Area area = Area.build(compound);
                 UUID uuidArea = area.getUUID();
                     areas.put(uuidArea, area);
-                    areaVsPlayList.put(uuidArea, area.getPlayList());
             }
         }
     }
@@ -216,7 +213,6 @@ public class ServerFileManager
             if (dataTypeUuid.equals(uuidArea))
             {
                 areas.put(uuidArea, area);
-                areaVsPlayList.put(uuidArea, area.getPlayList());
             }
             else
             {
@@ -252,33 +248,13 @@ public class ServerFileManager
             }
         }
 
-        // Create a play list
-        String playListName = "Test Playlist";
-        String playListFileName ="";
-        UUID uuidPlayList = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_LIST, "");
-        try
-        {
-            NBTTagCompound compound = new NBTTagCompound();
-            PlayList playList = new PlayList(playListName, songUUIDs);
-            uuidPlayList = playList.getUUID();
-            playListFileName = playList.getFileName();
-            Path path = FileHelper.getCacheFile(FileHelper.SERVER_PLAYLISTS_FOLDER, playListFileName, Side.SERVER);
-            playList.writeToNBT(compound);
-            FileHelper.sendCompoundToFile(path, compound);
-        }
-        catch (IOException e)
-        {
-            ModLogger.error(e);
-            ModLogger.warn("Unable to create folder: %s and/or file: %s", FileHelper.SERVER_PLAYLISTS_FOLDER, playListFileName);
-        }
-
         // Create an area
         String areaName = "Test Area";
         String areaFileName = "";
         try
         {
             NBTTagCompound compound = new NBTTagCompound();
-            Area area = new Area(areaName, uuidPlayList);
+            Area area = new  Area(areaName, songUUIDs, songUUIDs);
             areaFileName = area.getFileName();
             Path path = FileHelper.getCacheFile(FileHelper.SERVER_AREAS_FOLDER, areaFileName, Side.SERVER);
             area.writeToNBT(compound);

@@ -298,7 +298,6 @@ public class ClientFileManager
     {
         if (mapAreas.containsKey(uuidArea))
         {
-            resolvePlayList(mapAreas.get(uuidArea).getPlayList());
             waitArea = false;
             return true;
         }
@@ -307,39 +306,18 @@ public class ClientFileManager
             if (!Reference.EMPTY_UUID.equals(uuidArea) && isNotBadArea(uuidArea))
             {
                 waitArea = true;
-                waitPlayList = true;
                 PacketDispatcher.sendToServer(new GetServerDataMessage(uuidArea, GetType.AREA));
             }
             return false;
         }
     }
 
-    private static boolean resolvePlayList(UUID uuidPlayList)
-    {
-        if (mapPlayLists.containsKey(uuidPlayList))
-        {
-            waitPlayList = false;
-            return true;
-        }
-        else
-        {
-            if (!Reference.EMPTY_UUID.equals(uuidPlayList) && isNotBadPlayList(uuidPlayList))
-            {
-                waitPlayList = true;
-                PacketDispatcher.sendToServer(new GetServerDataMessage(uuidPlayList, GetType.PLAY_LIST));
-            }
-            return false;
-        }
-    }
-
     @Nullable
-    static PlayList getAreaPlayList(UUID uuidArea)
+    static Area getAreaPlayList(UUID uuidArea)
     {
         if (resolveArea(uuidArea))
         {
-            UUID uuidPlayList = mapAreas.get(uuidArea).getPlayList();
-            if (resolvePlayList(uuidPlayList))
-                return mapPlayLists.get(uuidPlayList);
+            return mapAreas.get(uuidArea);
         }
         return null;
     }
