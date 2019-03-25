@@ -27,20 +27,19 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.world.ChunkWatchEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.Callable;
 
-@Mod.EventBusSubscriber
 public class ModChunkCapability
 {
     @CapabilityInject(IModChunkData.class)
@@ -51,6 +50,7 @@ public class ModChunkCapability
     public static void register()
     {
         CapabilityManager.INSTANCE.register(IModChunkData.class, new Storage(), new Factory());
+        MinecraftForge.EVENT_BUS.register(ModChunkCapability.class);
     }
 
     @SubscribeEvent
@@ -58,9 +58,9 @@ public class ModChunkCapability
     {
         final EntityPlayerMP player = event.getPlayer();
         final Chunk chunk = event.getChunkInstance();
-        if (chunk == null) return;
-        
-        PacketDispatcher.sendToAllAround(new UpdateChunkMusicData(chunk.getPos().x, chunk.getPos().z, ModChunkDataHelper.isFunctional(chunk), ModChunkDataHelper.getString(chunk)), player, 80);
+
+        if (chunk != null && chunk.hasCapability(MOD_CHUNK_DATA, null))
+            PacketDispatcher.sendToAllAround(new UpdateChunkMusicData(chunk.getPos().x, chunk.getPos().z, ModChunkDataHelper.isFunctional(chunk), ModChunkDataHelper.getString(chunk)), player, 80);
     }
 
     @SubscribeEvent

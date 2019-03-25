@@ -69,8 +69,11 @@ public class UpdateChunkMusicData extends AbstractClientMessage<UpdateChunkMusic
         if (world != null && world.isChunkGeneratedAt(chunkX, chunkZ))
         {
             Chunk chunk = world.getChunk(chunkX, chunkZ);
-            ModChunkDataHelper.setFunctional(chunk, functional);
-            ModChunkDataHelper.setString(chunk, someMusic);
+            if (chunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
+            {
+                ModChunkDataHelper.setFunctional(chunk, functional);
+                ModChunkDataHelper.setString(chunk, someMusic);
+            }
         }
     }
 }

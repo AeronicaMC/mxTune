@@ -19,7 +19,8 @@ package net.aeronica.mods.mxtune.world.chunk;
 
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.UpdateChunkMusicData;
-import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
+import net.aeronica.mods.mxtune.util.MXTuneException;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.Util;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -32,40 +33,70 @@ import javax.annotation.Nullable;
 public class ModChunkDataHelper
 {
     @CapabilityInject(IModChunkData.class)
-    private static final Capability<IModChunkData> MOD_CHUNK_DATA =  Util.nonNullInjected();
+    public static final Capability<IModChunkData> MOD_CHUNK_DATA =  Util.nonNullInjected();
 
     private ModChunkDataHelper() { /* NOP */ }
 
     public static void setFunctional(Chunk chunk, boolean functional)
     {
-        getImpl(chunk).setFunctional(functional);
+        try
+        {
+            getImpl(chunk).setFunctional(functional);
+        }
+        catch (MXTuneException e)
+        {
+            ModLogger.error(e);
+        }
         chunk.markDirty();
     }
 
     public static boolean isFunctional(Chunk chunk)
     {
-        return getImpl(chunk).isFunctional();
+        try
+        {
+            return getImpl(chunk).isFunctional();
+        }
+        catch (MXTuneException e)
+        {
+            ModLogger.error(e);
+        }
+        return false;
     }
 
     public static void setString(Chunk chunk, String string)
     {
-        getImpl(chunk).setString(string);
+        try
+        {
+            getImpl(chunk).setString(string);
+        }
+        catch (MXTuneException e)
+        {
+            ModLogger.error(e);
+        }
         chunk.markDirty();
     }
 
     public static String getString(Chunk chunk)
     {
-        return getImpl(chunk).getString();
+        try
+        {
+            return getImpl(chunk).getString();
+        }
+        catch (MXTuneException e)
+        {
+            ModLogger.error(e);
+        }
+        return "";
     }
 
     @Nullable
-    private static IModChunkData getImpl(Chunk chunk)
+    private static IModChunkData getImpl(Chunk chunk) throws MXTuneException
     {
         IModChunkData chunkData;
         if (chunk.hasCapability(MOD_CHUNK_DATA, null))
             chunkData =  chunk.getCapability(MOD_CHUNK_DATA, null);
         else
-            throw new MXTuneRuntimeException("IModChunkData capability is null");
+            throw new MXTuneException("IModChunkData capability is null");
         return chunkData;
     }
 

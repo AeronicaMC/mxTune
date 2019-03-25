@@ -144,7 +144,7 @@ public class ClientPlayManager implements IAudioStatusCallback
         if (mc.world == null || mc.player == null) return;
 
         Chunk chunk = mc.world.getChunk(mc.player.getPosition());
-        if (mc.world.isChunkGeneratedAt(chunk.x, chunk.z))
+        if (mc.world.isChunkGeneratedAt(chunk.x, chunk.z) && chunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
         {
             WeakReference<Chunk> prevChunkRef = currentChunkRef;
             currentChunkRef = new WeakReference<>(chunk);
@@ -161,13 +161,13 @@ public class ClientPlayManager implements IAudioStatusCallback
     {
         Chunk currentChunk = getChunk(current);
         Chunk prevChunk = getChunk(previous);
-        if (currentChunk != null)
+        if (currentChunk != null && currentChunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
         {
             currentPlayListUUID = getUUID(ModChunkDataHelper.getString(currentChunk));
             boolean b = ModChunkDataHelper.isFunctional(currentChunk);
             ModLogger.debug("----- Enter Chunk %s, functional: %s, uuid: %s", currentChunk.getPos(), b, currentPlayListUUID.toString());
         }
-        if (prevChunk != null)
+        if (prevChunk != null && prevChunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
         {
             UUID prevPlayListUUID = getUUID(ModChunkDataHelper.getString(prevChunk));
             boolean b = ModChunkDataHelper.isFunctional(prevChunk);

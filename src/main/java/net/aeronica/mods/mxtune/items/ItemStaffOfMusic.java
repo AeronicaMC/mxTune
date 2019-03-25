@@ -32,6 +32,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -58,14 +59,18 @@ public class ItemStaffOfMusic extends Item
         else if (MXTune.proxy.playerIsInCreativeMode(playerIn))
         {
             BlockPos pos = playerIn.getPosition();
+            Chunk chunk = worldIn.getChunk(pos);
             String playListUuidString = "76dd6de8-e0ec-50fe-b163-ccba769812ec"; // mx01
             //String playListUuidString = "88400408-f0bf-5d86-9a15-a4d12297bfc9"; // mx02
-            ModChunkDataHelper.setString(worldIn.getChunk(pos), playListUuidString);
-            ModChunkDataHelper.setFunctional(worldIn.getChunk(pos), true);
-            ModChunkDataHelper.sync(playerIn, worldIn.getChunk(pos));
+            if (chunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
+            {
+                ModChunkDataHelper.setString(chunk, playListUuidString);
+                ModChunkDataHelper.setFunctional(chunk, true);
+                ModChunkDataHelper.sync(playerIn, chunk);
 
-            ModLogger.debug("Staff of Music usable");
-            ModLogger.debug("PlayList UUID: %s", playListUuidString);
+                ModLogger.debug("Staff of Music usable");
+                ModLogger.debug("PlayList UUID: %s", playListUuidString);
+            }
             return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
         }
         else
