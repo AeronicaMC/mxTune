@@ -59,4 +59,8 @@ public interface IPlayerMusicOptions
     void setSoundRangeInfinityAllowed(boolean isAllowed);
 
     boolean isSoundRangeInfinityRangeAllowed();
+
+    void setMxTuneServerUpdateAllowed(boolean isAllowed);
+
+    boolean isMxTuneServerUpdateAllowed();
 }

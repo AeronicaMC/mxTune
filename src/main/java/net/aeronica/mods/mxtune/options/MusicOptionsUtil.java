@@ -137,6 +137,10 @@ public class MusicOptionsUtil
 
     public static void setSoundRangeInfinityAllowed(EntityPlayer playerIn, boolean isAllowed) { getImpl(playerIn).setSoundRangeInfinityAllowed(isAllowed); }
 
+    public static boolean isMxTuneServerUpdateAllowed(EntityPlayer playerIn) { return getImpl(playerIn).isMxTuneServerUpdateAllowed(); }
+
+    public static void setMxTuneServerUpdateAllowed(EntityPlayer playerIn, boolean isAllowed) { getImpl(playerIn).setMxTuneServerUpdateAllowed(isAllowed); }
+
     @Nullable
     private static IPlayerMusicOptions getImpl(EntityPlayer player)
     {

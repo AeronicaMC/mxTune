@@ -8,6 +8,7 @@ import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.network.bidirectional.ClientStateDataMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.GetServerDataMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.SendKeyMessage;
+import net.aeronica.mods.mxtune.network.bidirectional.SetServerDataMessage;
 import net.aeronica.mods.mxtune.network.client.*;
 import net.aeronica.mods.mxtune.network.server.*;
 import net.minecraft.entity.player.EntityPlayer;
@@ -94,6 +95,7 @@ public class PacketDispatcher
         registerMessage(SendKeyMessage.class);
         registerMessage(ClientStateDataMessage.class);
         registerMessage(GetServerDataMessage.class);
+        registerMessage(SetServerDataMessage.class);
     }
 
     /**

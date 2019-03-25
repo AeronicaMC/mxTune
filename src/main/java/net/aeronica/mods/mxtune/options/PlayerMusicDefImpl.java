@@ -34,6 +34,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     private List<ClassifiedPlayer> whiteList;
     private List<ClassifiedPlayer> blackList;
     private boolean soundRangeInfinityAllowed;
+    private boolean mxTuneServerUpdateAllowed;
 
     PlayerMusicDefImpl()
     {
@@ -47,6 +48,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
         this.whiteList = new ArrayList<>();
         this.blackList = new ArrayList<>();
         this.soundRangeInfinityAllowed = false;
+        this.mxTuneServerUpdateAllowed = false;
     }
 
     @Override
@@ -106,4 +108,10 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
 
     @Override
     public boolean isSoundRangeInfinityRangeAllowed() { return this.soundRangeInfinityAllowed; }
+
+    @Override
+    public void setMxTuneServerUpdateAllowed(boolean isAllowed) { mxTuneServerUpdateAllowed = isAllowed; }
+
+    @Override
+    public boolean isMxTuneServerUpdateAllowed() { return mxTuneServerUpdateAllowed; }
 }

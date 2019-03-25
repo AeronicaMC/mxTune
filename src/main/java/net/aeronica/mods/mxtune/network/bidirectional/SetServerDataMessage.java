@@ -17,11 +17,14 @@
 
 package net.aeronica.mods.mxtune.network.bidirectional;
 
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.managers.ServerFileManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.io.IOException;
@@ -29,16 +32,23 @@ import java.util.UUID;
 
 public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
 {
-    public enum SetType {AREA, PLAY_LIST, MUSIC}
+    public enum SetType {AREA, MUSIC}
     private SetType type = SetType.AREA;
+    private boolean errorResult = false;
+    private String errorMessage = "";
     private NBTTagCompound dataCompound = new NBTTagCompound();
     private long dataTypeUuidMSB = 0;
     private long dataTypeUuidLSB = 0;
-    private UUID dataTypeUuid;
+    private UUID dataTypeUuid = Reference.EMPTY_UUID;
 
     @SuppressWarnings("unused")
     public SetServerDataMessage() { /* Required by the PacketDispatcher */ }
 
+    public SetServerDataMessage(String errorMessage, Boolean errorResult)
+    {
+        this.errorMessage = errorMessage;
+        this.errorResult = errorResult;
+    }
     /**
      * Client Submission for data type
      * @param uuidType data type unique id
@@ -59,6 +69,8 @@ public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
         this.dataCompound = buffer.readCompoundTag();
         this.dataTypeUuidMSB = buffer.readLong();
         this.dataTypeUuidLSB = buffer.readLong();
+        this.errorMessage = buffer.readString(512);
+        this.errorResult = buffer.readBoolean();
         dataTypeUuid = new UUID(dataTypeUuidMSB, dataTypeUuidLSB);
     }
 
@@ -69,6 +81,8 @@ public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
         buffer.writeCompoundTag(dataCompound);
         buffer.writeLong(dataTypeUuidMSB);
         buffer.writeLong(dataTypeUuidLSB);
+        buffer.writeString(errorMessage);
+        buffer.writeBoolean(errorResult);
     }
 
     @Override
@@ -76,39 +90,43 @@ public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
     {
         if (side.isClient())
         {
-            handleClientSide();
+            handleClientSide(player);
         } else
         {
             handleServerSide(player);
         }
     }
 
-    private void handleClientSide()
+    private void handleClientSide(EntityPlayer player)
     {
-        switch(type)
+        switch (type)
         {
             case AREA:
-                break;
-            case PLAY_LIST:
                 break;
             case MUSIC:
                 break;
             default:
         }
+        ModLogger.debug("Error: %s, error %s", errorMessage, errorResult);
     }
 
     private void  handleServerSide(EntityPlayer player)
     {
-        switch(type)
+        if (player.canUseCommand(3, "mxTuneServerUpdateAllowed"))
         {
-            case AREA:
-                ServerFileManager.setArea(dataTypeUuid, dataCompound);
-                break;
-            case PLAY_LIST:
-                break;
-            case MUSIC:
-                break;
-            default:
+            switch (type)
+            {
+                case AREA:
+                    ServerFileManager.setArea(dataTypeUuid, dataCompound);
+                    break;
+                case MUSIC:
+                    break;
+                default:
+            }
+        }
+        else
+        {
+            player.sendStatusMessage(new TextComponentTranslation("mxtune.chat.set_server_data_not_allowed") {}, false);
         }
     }
 }

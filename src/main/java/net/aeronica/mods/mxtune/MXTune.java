@@ -19,6 +19,7 @@ package net.aeronica.mods.mxtune;
 import net.aeronica.mods.mxtune.advancements.ModCriteriaTriggers;
 import net.aeronica.mods.mxtune.blocks.TilePiano;
 import net.aeronica.mods.mxtune.caches.FileHelper;
+import net.aeronica.mods.mxtune.cmds.CommandMxTuneServerUpdate;
 import net.aeronica.mods.mxtune.cmds.CommandSoundRange;
 import net.aeronica.mods.mxtune.datafixers.ItemInventoryWalker;
 import net.aeronica.mods.mxtune.datafixers.SheetMusicFixer;
@@ -112,16 +113,10 @@ public class MXTune
     public void onEvent(FMLServerStartingEvent event)
     {
         event.registerServerCommand(new CommandSoundRange());
+        event.registerServerCommand(new CommandMxTuneServerUpdate());
         DurationTimer.start();
         FileHelper.initialize();
         ServerFileManager.startUp();
-    }
-
-
-    @Mod.EventHandler
-    public void onEvent(FMLServerStartedEvent event)
-    {
-        // TODO: Might not be needed, but keep it for now
     }
 
     @Mod.EventHandler
