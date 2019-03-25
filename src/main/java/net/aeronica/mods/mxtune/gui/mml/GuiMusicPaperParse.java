@@ -225,6 +225,12 @@ public class GuiMusicPaperParse extends GuiScreen implements IAudioStatusCallbac
     }
 
     @Override
+    public boolean doesGuiPauseGame()
+    {
+        return false;
+    }
+
+    @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
         drawDefaultBackground();

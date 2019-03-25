@@ -246,6 +246,12 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
     }
 
     @Override
+    public boolean doesGuiPauseGame()
+    {
+        return false;
+    }
+
+    @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
         drawDefaultBackground();
@@ -357,7 +363,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
     private void initFileList()
     {
         Path path = FileHelper.getDirectory(FileHelper.CLIENT_LIB_FOLDER, Side.CLIENT);
-        PathMatcher filter = FileHelper.getMXTMatcher(path);
+        PathMatcher filter = FileHelper.getMxtMatcher(path);
         try (Stream<Path> paths = Files.list(path))
         {
             libraryFiles = paths

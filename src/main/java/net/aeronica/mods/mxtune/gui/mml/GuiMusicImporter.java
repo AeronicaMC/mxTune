@@ -215,6 +215,12 @@ public class GuiMusicImporter extends GuiScreen
     }
 
     @Override
+    public boolean doesGuiPauseGame()
+    {
+        return false;
+    }
+
+    @Override
     public void updateScreen()
     {
         musicTitle.updateCursorCounter();

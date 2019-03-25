@@ -247,6 +247,12 @@ public class GuiFileSelector extends GuiScreen
     }
 
     @Override
+    public boolean doesGuiPauseGame()
+    {
+        return false;
+    }
+
+    @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
         drawDefaultBackground();
@@ -350,7 +356,7 @@ public class GuiFileSelector extends GuiScreen
     private void initFileList()
     {
         Path path = FileHelper.getDirectory(FileHelper.CLIENT_MML_FOLDER, Side.CLIENT);
-        PathMatcher filter = FileHelper.getMMLMatcher(path);
+        PathMatcher filter = FileHelper.getMmlMatcher(path);
         try (Stream<Path> paths = Files.list(path))
         {
             fileList = paths
