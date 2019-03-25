@@ -20,6 +20,7 @@ package net.aeronica.mods.mxtune.network.bidirectional;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.managers.ServerFileManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
+import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -32,7 +33,6 @@ import java.util.UUID;
 
 public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
 {
-    public enum SetType {AREA, MUSIC}
     private SetType type = SetType.AREA;
     private boolean errorResult = false;
     private String errorMessage = "";
@@ -49,6 +49,7 @@ public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
         this.errorMessage = errorMessage;
         this.errorResult = errorResult;
     }
+
     /**
      * Client Submission for data type
      * @param uuidType data type unique id
@@ -112,7 +113,7 @@ public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
 
     private void  handleServerSide(EntityPlayer player)
     {
-        if (player.canUseCommand(3, "mxTuneServerUpdateAllowed"))
+        if (MusicOptionsUtil.isMxTuneServerUpdateAllowed(player))
         {
             switch (type)
             {
@@ -129,4 +130,6 @@ public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
             player.sendStatusMessage(new TextComponentTranslation("mxtune.chat.set_server_data_not_allowed") {}, false);
         }
     }
+
+    public enum SetType {AREA, MUSIC}
 }

@@ -17,7 +17,6 @@
 
 package net.aeronica.mods.mxtune.cmds;
 
-import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -32,6 +31,7 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
+import static net.aeronica.mods.mxtune.options.MusicOptionsUtil.*;
 import static net.aeronica.mods.mxtune.util.Util.audiblePingPlayer;
 
 public class CommandMxTuneServerUpdate extends CommandBase
@@ -43,10 +43,7 @@ public class CommandMxTuneServerUpdate extends CommandBase
     public int getRequiredPermissionLevel() { return 3; }
 
     @Override
-    public String getName()
-    {
-        return "mxTuneServerUpdateAllowed";
-    }
+    public String getName() { return "mxTuneServerUpdateAllowed"; }
 
     @Override
     public String getUsage(ICommandSender sender) { return "commands.mxtune.mxtune_server_update_allowed.usage"; }
@@ -68,9 +65,11 @@ public class CommandMxTuneServerUpdate extends CommandBase
         switch (args.length)
         {
             case 1:
-                sender.sendMessage((new TextComponentString(playerName)).appendText(": mxTuneServerUpdateAllowed = ").appendText(MusicOptionsUtil.isSoundRangeInfinityAllowed(entityPlayer) ? TRUE : FALSE));
+                sender.sendMessage(
+                        (new TextComponentString(playerName))
+                                           .appendText(": mxTuneServerUpdateAllowed = ")
+                                           .appendText(isSoundRangeInfinityAllowed(entityPlayer) ? TRUE : FALSE));
                 break;
-
             case 2:
                 String option = buildString(args, 1);
                 if (TRUE.equals(option))
@@ -78,25 +77,25 @@ public class CommandMxTuneServerUpdate extends CommandBase
                 else if (FALSE.equals(option))
                     setAndNotifyMxTuneServerUpdateAllowed(sender, entityPlayer, playerName, false);
                 break;
-
             default:
         }
     }
 
     private void setAndNotifyMxTuneServerUpdateAllowed(ICommandSender sender, EntityPlayer entityPlayer, String playerName, boolean isAllowed)
     {
-        MusicOptionsUtil.setMxTuneServerUpdateAllowed(entityPlayer, isAllowed);
-        sender.sendMessage((new TextComponentString(playerName)).appendText(": mxTuneServerUpdateAllowed = ").appendText(MusicOptionsUtil.isMxTuneServerUpdateAllowed(entityPlayer) ? TRUE : FALSE));
+        setMxTuneServerUpdateAllowed(entityPlayer, isAllowed);
+        sender.sendMessage((new TextComponentString(playerName))
+                                   .appendText(": mxTuneServerUpdateAllowed = ")
+                                   .appendText(isMxTuneServerUpdateAllowed(entityPlayer) ? TRUE : FALSE));
         if (!sender.getName().equals(playerName))
         {
-            entityPlayer.sendMessage(new TextComponentString(sender.getName()).appendText(" set mxTuneServerUpdateAllowed = ").appendText(isAllowed ? TRUE : FALSE));
+            entityPlayer.sendMessage(new TextComponentString(sender.getName())
+                                             .appendText(" set mxTuneServerUpdateAllowed = ")
+                                             .appendText(isAllowed ? TRUE : FALSE));
             audiblePingPlayer(entityPlayer, SoundEvents.BLOCK_NOTE_PLING);
         }
     }
 
-    /**
-     * Get a list of options for when the user presses the TAB key
-     */
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
     {
@@ -104,7 +103,6 @@ public class CommandMxTuneServerUpdate extends CommandBase
             return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
         else if (args.length == 2)
             return getListOfStringsMatchingLastWord(args, TRUE, FALSE);
-
         return Collections.emptyList();
     }
 }
