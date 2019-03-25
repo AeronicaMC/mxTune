@@ -120,12 +120,12 @@ public class ClientFileManager
         mapAreas.put(uuid, area);
         try
         {
-            path = FileHelper.getCacheFile(pathAreas.toString(), uuid.toString() + ".dat", Side.CLIENT);
+            path = FileHelper.getCacheFile(pathAreas.toString(), uuid.toString() + FileHelper.EXTENSION_DAT, Side.CLIENT);
         }
         catch (IOException e)
         {
             ModLogger.error(e);
-            ModLogger.error("Unable to write Area file: %s to cache folder: %s", uuid.toString() + "dat", pathAreas.toString());
+            ModLogger.error("Unable to write Area file: %s to cache folder: %s", uuid.toString() + FileHelper.EXTENSION_DAT, pathAreas.toString());
             return;
         }
         waitArea = false;
@@ -146,16 +146,16 @@ public class ClientFileManager
             proxy.readFromNBT(data);
             mapMusic.put(uuid, proxy);
         }
-        Boolean fileExists = FileHelper.fileExists(pathMusic.toString(), uuid.toString() + ".dat", Side.CLIENT);
+        Boolean fileExists = FileHelper.fileExists(pathMusic.toString(), uuid.toString() + FileHelper.EXTENSION_DAT, Side.CLIENT);
         if (!fileExists)
         {
             try
             {
-                path = FileHelper.getCacheFile(pathMusic.toString(), uuid.toString() + ".dat", Side.CLIENT);
+                path = FileHelper.getCacheFile(pathMusic.toString(), uuid.toString() + FileHelper.EXTENSION_DAT, Side.CLIENT);
             } catch (IOException e)
             {
                 ModLogger.error(e);
-                ModLogger.error("Unable to write Music file: %s to cache folder: %s", uuid.toString() + "dat", pathMusic.toString());
+                ModLogger.error("Unable to write Music file: %s to cache folder: %s", uuid.toString() + FileHelper.EXTENSION_DAT, pathMusic.toString());
                 return;
             }
             waitMusic = false;
@@ -279,7 +279,7 @@ public class ClientFileManager
         {
             try
             {
-                Path path = FileHelper.getCacheFile(pathMusic.toString(), uuid.toString() + ".dat", Side.CLIENT);
+                Path path = FileHelper.getCacheFile(pathMusic.toString(), uuid.toString() + FileHelper.EXTENSION_DAT, Side.CLIENT);
                 NBTTagCompound compound = FileHelper.getCompoundFromFile(path);
                 Song song = new Song();
                 song.readFromNBT(compound);
@@ -287,7 +287,7 @@ public class ClientFileManager
             } catch (IOException e)
             {
                 ModLogger.error(e);
-                Path path = Paths.get(pathMusic.toString(), uuid.toString() + ".dat");
+                Path path = Paths.get(pathMusic.toString(), uuid.toString() + FileHelper.EXTENSION_DAT);
                 ModLogger.error("Unable to read file: " + path);
             }
         }

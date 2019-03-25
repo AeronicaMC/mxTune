@@ -134,7 +134,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
     private void handleClientSide()
     {
         if (errorResult)
-            ModLogger.error(type + " file: " + dataTypeUuid.toString() + ".dat does not exist on the server");
+            ModLogger.error(type + " file: " + dataTypeUuid.toString() + FileHelper.EXTENSION_DAT + " does not exist on the server");
         switch(type)
         {
             case AREA:
@@ -172,10 +172,10 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
     {
         Path path;
         NBTTagCompound emptyData = new NBTTagCompound();
-        Boolean fileExists = FileHelper.fileExists(folder, dataTypeUuid.toString() + ".dat", Side.SERVER);
+        Boolean fileExists = FileHelper.fileExists(folder, dataTypeUuid.toString() + FileHelper.EXTENSION_DAT, Side.SERVER);
         if (!fileExists)
         {
-            path = Paths.get(folder, dataTypeUuid.toString() + ".dat");
+            path = Paths.get(folder, dataTypeUuid.toString() + FileHelper.EXTENSION_DAT);
             ModLogger.error(path.toString() + " not found!");
             fileError = true;
             return emptyData;
@@ -183,7 +183,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
 
         try
         {
-            path = FileHelper.getCacheFile(folder, dataTypeUuid.toString() + ".dat", Side.SERVER);
+            path = FileHelper.getCacheFile(folder, dataTypeUuid.toString() + FileHelper.EXTENSION_DAT, Side.SERVER);
         } catch (IOException e)
         {
             ModLogger.error(e);

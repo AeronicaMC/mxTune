@@ -45,8 +45,8 @@ import static net.aeronica.mods.mxtune.caches.FileHelper.SERVER_FOLDER;
 
 public class ServerFileManager
 {
-    private static final String SERVER_ID_FILE = "server_id.dat";
-    private static final String SERVER_ID_FILE_ERROR = "Delete the <world save>/mxtune/server_id.dat file, then try loading the world again.";
+    private static final String SERVER_ID_FILE = "server_id" + FileHelper.EXTENSION_DAT;
+    private static final String SERVER_ID_FILE_ERROR = "Delete the <world save>/mxtune/server_id" + FileHelper.EXTENSION_DAT + " file, then try loading the world again.";
     private static UUID serverID;
     private static BiMap<UUID, String> songUuidVsTitles = HashBiMap.create();
     private static ListMultimap<UUID, UUID> playListVsSongs = ArrayListMultimap.create();

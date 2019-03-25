@@ -17,6 +17,7 @@
 
 package net.aeronica.mods.mxtune.managers.records;
 
+import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.util.NBTHelper;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -48,7 +49,7 @@ public abstract class BaseData
 
     public String getFileName()
     {
-        return uuid.toString() + ".dat";
+        return uuid.toString() + FileHelper.EXTENSION_DAT;
     }
 
     public abstract <T extends BaseData> T factory();
