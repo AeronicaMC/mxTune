@@ -17,6 +17,7 @@
 
 package net.aeronica.mods.mxtune.world.chunk;
 
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.UpdateChunkMusicData;
 import net.aeronica.mods.mxtune.util.MXTuneException;
@@ -29,6 +30,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 
 import javax.annotation.Nullable;
+import java.util.UUID;
 
 public class ModChunkDataHelper
 {
@@ -37,11 +39,11 @@ public class ModChunkDataHelper
 
     private ModChunkDataHelper() { /* NOP */ }
 
-    public static void setFunctional(Chunk chunk, boolean functional)
+    public static void setAreaUuid(Chunk chunk, UUID uuid)
     {
         try
         {
-            getImpl(chunk).setFunctional(functional);
+            getImpl(chunk).setAreaUuid(uuid);
         }
         catch (MXTuneException e)
         {
@@ -50,43 +52,17 @@ public class ModChunkDataHelper
         chunk.markDirty();
     }
 
-    public static boolean isFunctional(Chunk chunk)
+    public static UUID getAreaUuid(Chunk chunk)
     {
         try
         {
-            return getImpl(chunk).isFunctional();
+            return getImpl(chunk).getAreaUuid();
         }
         catch (MXTuneException e)
         {
             ModLogger.error(e);
         }
-        return false;
-    }
-
-    public static void setString(Chunk chunk, String string)
-    {
-        try
-        {
-            getImpl(chunk).setString(string);
-        }
-        catch (MXTuneException e)
-        {
-            ModLogger.error(e);
-        }
-        chunk.markDirty();
-    }
-
-    public static String getString(Chunk chunk)
-    {
-        try
-        {
-            return getImpl(chunk).getString();
-        }
-        catch (MXTuneException e)
-        {
-            ModLogger.error(e);
-        }
-        return "";
+        return Reference.EMPTY_UUID;
     }
 
     @Nullable
@@ -102,7 +78,7 @@ public class ModChunkDataHelper
 
     public static void sync(EntityPlayer entityPlayer, Chunk chunk)
     {
-        PacketDispatcher.sendToAllAround(new UpdateChunkMusicData(chunk.x, chunk.z, isFunctional(chunk), getString(chunk)), entityPlayer, 80);
-        PacketDispatcher.sendTo(new UpdateChunkMusicData(chunk.x, chunk.z, isFunctional(chunk), getString(chunk)), (EntityPlayerMP) entityPlayer);
+        PacketDispatcher.sendToAllAround(new UpdateChunkMusicData(chunk.x, chunk.z, getAreaUuid(chunk)), entityPlayer, 80);
+        PacketDispatcher.sendTo(new UpdateChunkMusicData(chunk.x, chunk.z, getAreaUuid(chunk)), (EntityPlayerMP) entityPlayer);
     }
 }

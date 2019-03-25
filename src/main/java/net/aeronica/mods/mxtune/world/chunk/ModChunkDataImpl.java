@@ -17,38 +17,28 @@
 
 package net.aeronica.mods.mxtune.world.chunk;
 
+import net.aeronica.mods.mxtune.Reference;
+
+import java.util.UUID;
+
 public class ModChunkDataImpl implements IModChunkData
 {
-    private boolean functional;
-    private String string;
+    private UUID uuid;
 
     ModChunkDataImpl()
     {
-        functional = false;
-        string = "";
+        uuid = Reference.EMPTY_UUID;
     }
 
     @Override
-    public boolean isFunctional()
+    public UUID getAreaUuid()
     {
-        return functional;
+        return uuid;
     }
 
     @Override
-    public void setFunctional(boolean functional)
+    public void setAreaUuid(UUID uuid)
     {
-        this.functional = functional;
-    }
-
-    @Override
-    public String getString()
-    {
-        return string;
-    }
-
-    @Override
-    public void setString(String string)
-    {
-        this.string = string;
+        this.uuid = uuid;
     }
 }

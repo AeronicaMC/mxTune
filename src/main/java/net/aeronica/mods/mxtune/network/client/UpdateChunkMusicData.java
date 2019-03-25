@@ -23,25 +23,28 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
+
+import java.util.UUID;
 
 public class UpdateChunkMusicData extends AbstractClientMessage<UpdateChunkMusicData>
 {
     private int chunkX;
     private int chunkZ;
-    private boolean functional;
-    private String someMusic;
+    private UUID uuid;
+    private long uuidMSB;
+    private long uuidLSB;
 
     @SuppressWarnings("unused")
     public UpdateChunkMusicData() {/* Required by the PacketDispatcher */}
 
-    public UpdateChunkMusicData(int chunkX, int chunkZ, boolean functional, String someMusic)
+    public UpdateChunkMusicData(int chunkX, int chunkZ, UUID uuid)
     {
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
-        this.functional = functional;
-        this.someMusic = someMusic;
+        this.uuid = uuid;
+        uuidMSB = uuid.getMostSignificantBits();
+        uuidLSB = uuid.getLeastSignificantBits();
     }
 
     @Override
@@ -49,8 +52,9 @@ public class UpdateChunkMusicData extends AbstractClientMessage<UpdateChunkMusic
     {
         chunkX = buffer.readInt();
         chunkZ = buffer.readInt();
-        functional = buffer.readBoolean();
-        someMusic = ByteBufUtils.readUTF8String(buffer);
+        uuidMSB = buffer.readLong();
+        uuidLSB = buffer.readLong();
+        uuid = new UUID(uuidMSB, uuidLSB);
     }
 
     @Override
@@ -58,8 +62,8 @@ public class UpdateChunkMusicData extends AbstractClientMessage<UpdateChunkMusic
     {
         buffer.writeInt(chunkX);
         buffer.writeInt(chunkZ);
-        buffer.writeBoolean(functional);
-        ByteBufUtils.writeUTF8String(buffer, someMusic);
+        buffer.writeLong(uuidMSB);
+        buffer.writeLong(uuidLSB);
     }
 
     @Override
@@ -70,10 +74,7 @@ public class UpdateChunkMusicData extends AbstractClientMessage<UpdateChunkMusic
         {
             Chunk chunk = world.getChunk(chunkX, chunkZ);
             if (chunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
-            {
-                ModChunkDataHelper.setFunctional(chunk, functional);
-                ModChunkDataHelper.setString(chunk, someMusic);
-            }
+                ModChunkDataHelper.setAreaUuid(chunk, uuid);
         }
     }
 }

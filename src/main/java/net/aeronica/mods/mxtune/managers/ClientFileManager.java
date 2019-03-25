@@ -65,6 +65,7 @@ public class ClientFileManager
     private static Set<UUID> badMusic = new HashSet<>();
     private static Deque<UUID> musicQueue = new ArrayDeque<>();
 
+    private static boolean waitArea = false;
     private static boolean waitPlayList = false;
     private static boolean waitMusic = false;
 
@@ -142,6 +143,7 @@ public class ClientFileManager
             ModLogger.error("Unable to write Area file: %s to cache folder: %s", uuid.toString() + "dat", pathAreas.toString());
             return;
         }
+        waitArea = false;
         FileHelper.sendCompoundToFile(path, data);
     }
 
@@ -272,11 +274,10 @@ public class ClientFileManager
         }
     }
 
-    // Uses Playlist for now. Area will be used once I all the basic mechanics are working
     // This is called every tick so after at least one to two ticks a song should be available
     // If no local cache files exist then the area/playlist will get DL and cached. On subsequent ticks
     // the song itself will be chosen and made available
-    static boolean songAvailable(UUID playListId)
+    static boolean songAvailable(UUID uuidArea)
     {
         // META: What to do?
 
@@ -290,61 +291,55 @@ public class ClientFileManager
         //     else
         //         get song from cache
         // queue song for next play and set songAvailable to true.
-        return resolvePlayList(playListId) && isNotBadPlayList(playListId) && !waitPlayList && !waitMusic;
+        return resolveArea(uuidArea) && isNotBadArea(uuidArea) && !waitArea && !waitPlayList && !waitMusic;
     }
 
-    private static boolean resolvePlayList(UUID playListId)
+    private static boolean resolveArea(UUID uuidArea)
     {
-        if (mapPlayLists.containsKey(playListId))
+        if (mapAreas.containsKey(uuidArea))
+        {
+            resolvePlayList(mapAreas.get(uuidArea).getPlayList());
+            waitArea = false;
+            return true;
+        }
+        else
+        {
+            if (!Reference.EMPTY_UUID.equals(uuidArea) && isNotBadArea(uuidArea))
+            {
+                waitArea = true;
+                waitPlayList = true;
+                PacketDispatcher.sendToServer(new GetServerDataMessage(uuidArea, GetType.AREA));
+            }
+            return false;
+        }
+    }
+
+    private static boolean resolvePlayList(UUID uuidPlayList)
+    {
+        if (mapPlayLists.containsKey(uuidPlayList))
         {
             waitPlayList = false;
             return true;
         }
         else
         {
-            if (!Reference.EMPTY_UUID.equals(playListId) && isNotBadPlayList(playListId))
+            if (!Reference.EMPTY_UUID.equals(uuidPlayList) && isNotBadPlayList(uuidPlayList))
             {
                 waitPlayList = true;
-                PacketDispatcher.sendToServer(new GetServerDataMessage(playListId, GetType.PLAY_LIST));
+                PacketDispatcher.sendToServer(new GetServerDataMessage(uuidPlayList, GetType.PLAY_LIST));
             }
             return false;
         }
     }
 
-    private static boolean resolveMusic(UUID musicId)
-    {
-        if (mapMusic.containsKey(musicId))
-        {
-            waitMusic = false;
-            return true;
-        }
-        else
-        {
-            if (!Reference.EMPTY_UUID.equals(musicId) && isNotBadMusic(musicId))
-            {
-                waitMusic = true;
-                PacketDispatcher.sendToServer(new GetServerDataMessage(musicId, GetType.MUSIC));
-            }
-        }
-        return false;
-    }
-
     @Nullable
-    static PlayList getPlayList(UUID uuid)
+    static PlayList getAreaPlayList(UUID uuidArea)
     {
-        if (resolvePlayList(uuid))
+        if (resolveArea(uuidArea))
         {
-            return mapPlayLists.get(uuid);
-        }
-        return null;
-    }
-
-    @Nullable
-    public static SongProxy getMusic(UUID uuid)
-    {
-        if (resolveMusic(uuid))
-        {
-            return mapMusic.get(uuid);
+            UUID uuidPlayList = mapAreas.get(uuidArea).getPlayList();
+            if (resolvePlayList(uuidPlayList))
+                return mapPlayLists.get(uuidPlayList);
         }
         return null;
     }

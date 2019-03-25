@@ -20,6 +20,7 @@ package net.aeronica.mods.mxtune.world.chunk;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.UpdateChunkMusicData;
+import net.aeronica.mods.mxtune.util.NBTHelper;
 import net.aeronica.mods.mxtune.util.Util;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
@@ -60,7 +61,7 @@ public class ModChunkCapability
         final Chunk chunk = event.getChunkInstance();
 
         if (chunk != null && chunk.hasCapability(MOD_CHUNK_DATA, null))
-            PacketDispatcher.sendToAllAround(new UpdateChunkMusicData(chunk.getPos().x, chunk.getPos().z, ModChunkDataHelper.isFunctional(chunk), ModChunkDataHelper.getString(chunk)), player, 80);
+            PacketDispatcher.sendToAllAround(new UpdateChunkMusicData(chunk.getPos().x, chunk.getPos().z, ModChunkDataHelper.getAreaUuid(chunk)), player, 80);
     }
 
     @SubscribeEvent
@@ -112,16 +113,12 @@ public class ModChunkCapability
     // TODO: Refactor to use NBTHelper methods and use an area tag
     private static class Storage implements Capability.IStorage<IModChunkData>
     {
-        private static final String KEY_FUNCTIONAL = "functional";
-        private static final String KEY_STRING = "string";
-
         @Nullable
         @Override
         public NBTBase writeNBT(Capability<IModChunkData> capability, IModChunkData instance, EnumFacing side)
         {
             NBTTagCompound properties =  new NBTTagCompound();
-            properties.setBoolean(KEY_FUNCTIONAL, instance.isFunctional());
-            properties.setString(KEY_STRING, instance.getString());
+            NBTHelper.setUuidToCompound(properties, instance.getAreaUuid());
             return properties;
         }
 
@@ -129,8 +126,7 @@ public class ModChunkCapability
         public void readNBT(Capability<IModChunkData> capability, IModChunkData instance, EnumFacing side, NBTBase nbt)
         {
             NBTTagCompound properties = (NBTTagCompound) nbt;
-            instance.setFunctional(properties.getBoolean(KEY_FUNCTIONAL));
-            instance.setString(properties.getString(KEY_STRING));
+            instance.setAreaUuid(NBTHelper.getUuidFromCompound(properties));
         }
     }
 }

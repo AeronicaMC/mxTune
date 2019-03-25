@@ -36,6 +36,7 @@ import net.minecraft.world.chunk.Chunk;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.UUID;
 
 public class ItemStaffOfMusic extends Item
 {
@@ -60,16 +61,14 @@ public class ItemStaffOfMusic extends Item
         {
             BlockPos pos = playerIn.getPosition();
             Chunk chunk = worldIn.getChunk(pos);
-            String playListUuidString = "76dd6de8-e0ec-50fe-b163-ccba769812ec"; // mx01
-            //String playListUuidString = "88400408-f0bf-5d86-9a15-a4d12297bfc9"; // mx02
+            String areaUuidString = "fb45d09b-b931-5fc4-b6a7-06a51c557c15"; // mx01
             if (chunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
             {
-                ModChunkDataHelper.setString(chunk, playListUuidString);
-                ModChunkDataHelper.setFunctional(chunk, true);
+                ModChunkDataHelper.setAreaUuid(chunk, UUID.fromString(areaUuidString));
                 ModChunkDataHelper.sync(playerIn, chunk);
 
                 ModLogger.debug("Staff of Music usable");
-                ModLogger.debug("PlayList UUID: %s", playListUuidString);
+                ModLogger.debug("Area UUID: %s", areaUuidString);
             }
             return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
         }

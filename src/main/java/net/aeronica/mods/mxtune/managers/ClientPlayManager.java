@@ -53,6 +53,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static Minecraft mc = Minecraft.getMinecraft();
     private static WeakReference<Chunk> currentChunkRef;
     private static int currentPlayId = INVALID;
+    private static UUID currentAreaUUID = EMPTY_UUID;
     private static UUID currentPlayListUUID = EMPTY_UUID;
 
     // AREA Song Shuffling
@@ -150,7 +151,7 @@ public class ClientPlayManager implements IAudioStatusCallback
             currentChunkRef = new WeakReference<>(chunk);
             if ((prevChunkRef != null && currentChunkRef.get() != prevChunkRef.get())
                     || (prevChunkRef == null && currentChunkRef.get() != null)
-                    || !(getUUID(ModChunkDataHelper.getString(currentChunkRef.get())).equals(currentPlayListUUID)))
+                    || !(ModChunkDataHelper.getAreaUuid(currentChunkRef.get())).equals(currentAreaUUID))
                 chunkChange(currentChunkRef, prevChunkRef);
 
         }
@@ -163,36 +164,22 @@ public class ClientPlayManager implements IAudioStatusCallback
         Chunk prevChunk = getChunk(previous);
         if (currentChunk != null && currentChunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
         {
-            currentPlayListUUID = getUUID(ModChunkDataHelper.getString(currentChunk));
-            boolean b = ModChunkDataHelper.isFunctional(currentChunk);
-            ModLogger.debug("----- Enter Chunk %s, functional: %s, uuid: %s", currentChunk.getPos(), b, currentPlayListUUID.toString());
+            currentAreaUUID = ModChunkDataHelper.getAreaUuid(currentChunk);
+            ModLogger.debug("----- Enter Chunk %s, uuid: %s", currentChunk.getPos(), currentAreaUUID.toString());
         }
         if (prevChunk != null && prevChunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
         {
-            UUID prevPlayListUUID = getUUID(ModChunkDataHelper.getString(prevChunk));
-            boolean b = ModChunkDataHelper.isFunctional(prevChunk);
-            ModLogger.debug("----- Exit Chunk %s, functional: %s, uuid: %s", prevChunk.getPos(), b, prevPlayListUUID.toString());
-        }
-    }
-
-    private static UUID getUUID(String uuidString)
-    {
-        try
-        {
-            return UUID.fromString(uuidString);
-        }
-        catch (IllegalArgumentException iao)
-        {
-            return new UUID(0L,0L);
+            UUID prevPlayListUUID = ModChunkDataHelper.getAreaUuid(prevChunk);
+            ModLogger.debug("----- Exit Chunk %s, uuid: %s", prevChunk.getPos(), prevPlayListUUID.toString());
         }
     }
 
     private static void changeAreaMusic()
     {
-        if (!waiting() && ClientFileManager.songAvailable(currentPlayListUUID) && currentPlayId == PlayType.INVALID)
+        if (!waiting() && ClientFileManager.songAvailable(currentAreaUUID) && currentPlayId == PlayType.INVALID)
         {
             currentPlayId = AREA.getAsInt();
-            UUID song = randomSong(currentPlayListUUID);
+            UUID song = randomSong(currentAreaUUID);
             if (!Reference.EMPTY_UUID.equals(song) && !ClientFileManager.hasMusic(song))
             {
                 PacketDispatcher.sendToServer(new GetServerDataMessage(song, GetServerDataMessage.GetType.MUSIC, currentPlayId));
@@ -225,9 +212,9 @@ public class ClientPlayManager implements IAudioStatusCallback
         }
     }
 
-    private static UUID randomSong(UUID uuidPlayList)
+    private static UUID randomSong(UUID uuidArea)
     {
-        PlayList playList = ClientFileManager.getPlayList(uuidPlayList);
+        PlayList playList = ClientFileManager.getAreaPlayList(uuidArea);
         UUID song;
         if (playList != null)
         {
@@ -248,7 +235,7 @@ public class ClientPlayManager implements IAudioStatusCallback
 
     private static boolean waiting()
     {
-        Boolean canPlay = ClientAudio.getActivePlayIDs().isEmpty() && !Reference.EMPTY_UUID.equals(currentPlayListUUID) && ClientFileManager.isNotBadPlayList(currentPlayListUUID);
+        Boolean canPlay = ClientAudio.getActivePlayIDs().isEmpty() && !Reference.EMPTY_UUID.equals(currentAreaUUID) && ClientFileManager.isNotBadPlayList(currentAreaUUID);
         if (canPlay && !wait) startTimer();
         return !canPlay || (counter <= delay);
     }
