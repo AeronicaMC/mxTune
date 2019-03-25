@@ -63,10 +63,11 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static int failedNewSongs;
 
     // Inter-song delay
-    private static final int MAX_DELAY = 600;
-    private static final int MIN_DELAY = 200;
+    private static final int MAX_DELAY = 30;
+    private static final int MIN_DELAY = 10;
     private static int delay = MAX_DELAY / 2;
     private static int counter = 0;
+    private static int ticks = 0;
     private static boolean wait = false;
 
     private ClientPlayManager() { /* NOP */ }
@@ -81,7 +82,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     @SubscribeEvent
     public static void onEvent(TickEvent.ClientTickEvent event)
     {
-        if (ClientCSDMonitor.canMXTunesPlay() && (event.phase == TickEvent.Phase.END))
+        if (ClientCSDMonitor.canMXTunesPlay() && (event.phase == TickEvent.Phase.END) && ticks++ % 20 == 0)
         {
             updateChunk();
             counter++;
@@ -249,7 +250,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     public static void resetTimer()
     {
         delay = rand.nextInt(MAX_DELAY - MIN_DELAY) + MIN_DELAY;
-        ModLogger.debug("resetTimer: new delay %05d seconds", delay/20);
+        ModLogger.debug("resetTimer: new delay %05d seconds", delay);
         wait = false;
     }
 
