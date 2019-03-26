@@ -134,14 +134,14 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 GlStateManager.disableTexture2D();
                 box.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-                box.pos(min,     slotTop + slotBuffer + 2, 0).tex(0, 1).color(0x80, 0x80, 0x80, 0xFF).endVertex();
-                box.pos(max,     slotTop + slotBuffer + 2, 0).tex(1, 1).color(0x80, 0x80, 0x80, 0xFF).endVertex();
-                box.pos(max,     slotTop              - 2, 0).tex(1, 0).color(0x80, 0x80, 0x80, 0xFF).endVertex();
-                box.pos(min,     slotTop              - 2, 0).tex(0, 0).color(0x80, 0x80, 0x80, 0xFF).endVertex();
-                box.pos(min + 1, slotTop + slotBuffer + 1, 0).tex(0, 1).color(0x00, 0x00, 0x00, 0xFF).endVertex();
-                box.pos(max - 1, slotTop + slotBuffer + 1, 0).tex(1, 1).color(0x00, 0x00, 0x00, 0xFF).endVertex();
-                box.pos(max - 1, slotTop              - 1, 0).tex(1, 0).color(0x00, 0x00, 0x00, 0xFF).endVertex();
-                box.pos(min + 1, slotTop              - 1, 0).tex(0, 0).color(0x00, 0x00, 0x00, 0xFF).endVertex();
+                box.pos(min,     slotTop + slotBuffer + (double)2, 0).tex(0, 1).color(0x80, 0x80, 0x80, 0xFF).endVertex();
+                box.pos(max,     slotTop + slotBuffer + (double)2, 0).tex(1, 1).color(0x80, 0x80, 0x80, 0xFF).endVertex();
+                box.pos(max,     slotTop              - (double)2, 0).tex(1, 0).color(0x80, 0x80, 0x80, 0xFF).endVertex();
+                box.pos(min,     slotTop              - (double)2, 0).tex(0, 0).color(0x80, 0x80, 0x80, 0xFF).endVertex();
+                box.pos(min + (double)1, slotTop + slotBuffer + (double)1, 0).tex(0, 1).color(0x00, 0x00, 0x00, 0xFF).endVertex();
+                box.pos(max - (double)1, slotTop + slotBuffer + (double)1, 0).tex(1, 1).color(0x00, 0x00, 0x00, 0xFF).endVertex();
+                box.pos(max - (double)1, slotTop              - (double)1, 0).tex(1, 0).color(0x00, 0x00, 0x00, 0xFF).endVertex();
+                box.pos(min + (double)1, slotTop              - (double)1, 0).tex(0, 0).color(0x00, 0x00, 0x00, 0xFF).endVertex();
                 tess.draw();
                 GlStateManager.enableTexture2D();
             }
