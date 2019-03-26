@@ -31,7 +31,9 @@ import org.lwjgl.input.Mouse;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class GuiTest extends GuiScreen
 {
@@ -43,6 +45,7 @@ public class GuiTest extends GuiScreen
     private Area selectedArea;
     private int cachedSelectedAreaIndex;
     private boolean cacheKeyRepeatState;
+    private Set<Integer> cachedSelectedIndexes = new HashSet<>();
 
     public GuiTest()
     {
@@ -105,6 +108,7 @@ public class GuiTest extends GuiScreen
         if (!isStateCached) return;
         areaGuiList.addAll(cachedAreaGuiList);
         areaGuiList.setSelectedIndex(cachedSelectedAreaIndex);
+        areaGuiList.setSelectedRowIndexes(cachedSelectedIndexes);
         areaGuiList.resetScroll();
     }
 
@@ -113,6 +117,8 @@ public class GuiTest extends GuiScreen
         cachedAreaGuiList.clear();
         cachedAreaGuiList.addAll(areaGuiList.getList());
         cachedSelectedAreaIndex = areaGuiList.getSelectedIndex();
+        cachedSelectedIndexes.clear();
+        cachedSelectedIndexes.addAll(areaGuiList.getSelectedRowIndexes());
         isStateCached = true;
     }
 

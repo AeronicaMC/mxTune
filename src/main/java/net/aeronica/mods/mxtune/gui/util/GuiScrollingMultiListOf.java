@@ -125,26 +125,36 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
         int slotTop = baseY + slotIdx * this.slotHeight;
         int slotBuffer = this.slotHeight - border;
 
-        if (slotTop <= this.bottom && slotTop + slotBuffer >= this.top)
+        if (slotTop <= this.bottom && slotTop + slotBuffer >= this.top &&
+                selectedRowIndexes.contains(slotIdx) || selectedIndex == slotIdx)
         {
-            if (selectedRowIndexes.contains(slotIdx)|| selectedIndex == slotIdx)
-            {
-                int min = this.left;
-                int max = entryRight;
-                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-                GlStateManager.disableTexture2D();
-                box.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-                box.pos(min,     slotTop + slotBuffer + (double)2, 0).tex(0, 1).color(0x80, 0x80, 0x80, 0xFF).endVertex();
-                box.pos(max,     slotTop + slotBuffer + (double)2, 0).tex(1, 1).color(0x80, 0x80, 0x80, 0xFF).endVertex();
-                box.pos(max,     slotTop              - (double)2, 0).tex(1, 0).color(0x80, 0x80, 0x80, 0xFF).endVertex();
-                box.pos(min,     slotTop              - (double)2, 0).tex(0, 0).color(0x80, 0x80, 0x80, 0xFF).endVertex();
-                box.pos(min + (double)1, slotTop + slotBuffer + (double)1, 0).tex(0, 1).color(0x00, 0x00, 0x00, 0xFF).endVertex();
-                box.pos(max - (double)1, slotTop + slotBuffer + (double)1, 0).tex(1, 1).color(0x00, 0x00, 0x00, 0xFF).endVertex();
-                box.pos(max - (double)1, slotTop              - (double)1, 0).tex(1, 0).color(0x00, 0x00, 0x00, 0xFF).endVertex();
-                box.pos(min + (double)1, slotTop              - (double)1, 0).tex(0, 0).color(0x00, 0x00, 0x00, 0xFF).endVertex();
-                tess.draw();
-                GlStateManager.enableTexture2D();
-            }
+            int min = this.left;
+            int max = entryRight;
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            GlStateManager.disableTexture2D();
+            box.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+            box.pos(min, slotTop + slotBuffer + (double) 2, 0).tex(0, 1).color(0x80, 0x80, 0x80, 0xFF).endVertex();
+            box.pos(max, slotTop + slotBuffer + (double) 2, 0).tex(1, 1).color(0x80, 0x80, 0x80, 0xFF).endVertex();
+            box.pos(max, slotTop - (double) 2, 0).tex(1, 0).color(0x80, 0x80, 0x80, 0xFF).endVertex();
+            box.pos(min, slotTop - (double) 2, 0).tex(0, 0).color(0x80, 0x80, 0x80, 0xFF).endVertex();
+            box.pos(min + (double) 1, slotTop + slotBuffer + (double) 1, 0).tex(0, 1).color(0x00, 0x00, 0x00, 0xFF).endVertex();
+            box.pos(max - (double) 1, slotTop + slotBuffer + (double) 1, 0).tex(1, 1).color(0x00, 0x00, 0x00, 0xFF).endVertex();
+            box.pos(max - (double) 1, slotTop - (double) 1, 0).tex(1, 0).color(0x00, 0x00, 0x00, 0xFF).endVertex();
+            box.pos(min + (double) 1, slotTop - (double) 1, 0).tex(0, 0).color(0x00, 0x00, 0x00, 0xFF).endVertex();
+            tess.draw();
+            GlStateManager.enableTexture2D();
         }
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return obj instanceof List<?> && super.equals(obj);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return super.hashCode();
     }
 }
