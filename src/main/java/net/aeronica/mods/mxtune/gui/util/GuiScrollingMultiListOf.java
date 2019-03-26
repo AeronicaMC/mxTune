@@ -47,13 +47,20 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
     @Override
     protected void elementClicked(int index, boolean doubleClick)
     {
-        super.elementClicked(index, false);
+        super.elementClicked(index, doubleClick);
+
         if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && !selectedRowIndexes.contains(selectedIndex))
             selectedRowIndexes.add(selectedIndex);
         else if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && selectedRowIndexes.contains(selectedIndex))
             selectedRowIndexes.remove(selectedIndex);
         else if (!Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
             selectedRowIndexes.clear();
+
+        if (doubleClick)
+            selectedDoubleClickedCallback(selectedIndex);
+        else
+            selectedClickedCallback(selectedIndex);
+
         this.selectedIndex = -1;
     }
 
@@ -63,7 +70,7 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
      */
     public Set<Integer> getSelectedRowIndexes()
     {
-        return Collections.unmodifiableSet(selectedRowIndexes);
+        return selectedRowIndexes;
     }
 
     /**

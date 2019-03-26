@@ -93,7 +93,6 @@ public class GuiTest extends GuiScreen
             protected void selectedClickedCallback(int selectedIndex)
             {
                 updateStatus();
-                super.selectedClickedCallback(selectedIndex);
             }
         };
 
