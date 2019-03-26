@@ -36,7 +36,7 @@ import java.util.*;
  */
 public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
 {
-    protected Set<Integer> selectedRowIndexes = new HashSet<>();
+    protected SortedSet<Integer> selectedRowIndexes = new TreeSet<>();
 
     public <T extends GuiScreen> GuiScrollingMultiListOf(T gui, int entryHeight, int width, int height, int top, int bottom, int left)
     {
