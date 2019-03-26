@@ -17,7 +17,7 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
-import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
+import net.aeronica.mods.mxtune.gui.util.GuiScrollingMultiListOf;
 import net.aeronica.mods.mxtune.managers.records.Area;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
@@ -25,6 +25,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import javax.annotation.Nonnull;
@@ -36,13 +37,24 @@ public class GuiTest extends GuiScreen
 {
     private int guiLeft;
     private int guiTop;
-    private GuiScrollingListOf<Area> areaGuiList;
+    private GuiScrollingMultiListOf<Area> areaGuiList;
     private List<Area> cachedAreaGuiList = new ArrayList<>();
     private boolean isStateCached;
     private Area selectedArea;
     private int cachedSelectedAreaIndex;
+    private boolean cacheKeyRepeatState;
 
-    public GuiTest() { /* NOP */ }
+    public GuiTest()
+    {
+        cacheKeyRepeatState = Keyboard.areRepeatEventsEnabled();
+        Keyboard.enableRepeatEvents(false);
+    }
+
+    @Override
+    public void onGuiClosed()
+    {
+        Keyboard.enableRepeatEvents(cacheKeyRepeatState);
+    }
 
     @Override
     public void initGui()
@@ -60,31 +72,17 @@ public class GuiTest extends GuiScreen
         int statusTop = listBottom + 4;
         int partListWidth = (width - 15) / 4;
 
-        areaGuiList = new GuiScrollingListOf<Area>(this, entryHeight, guiListWidth, listHeight, listTop, listBottom, left)
+        areaGuiList = new GuiScrollingMultiListOf<Area>(this, entryHeight, guiListWidth, listHeight, listTop, listBottom, left)
         {
             @Override
-            protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
+            protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
             {
                 Area area = get(slotIdx);
                 String trimmedName = fontRenderer.trimStringToWidth(area.getName(), listWidth - 10);
                 String trimmedUUID = fontRenderer.trimStringToWidth(area.getUUID().toString(), listWidth - 10);
-                int color = isSelected(slotIdx) ? 0xFFFF00 : 0xADD8E6;
-                fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, color);
-                fontRenderer.drawStringWithShadow(trimmedUUID, (float)left + 3, (float)slotTop + 10, color);
-            }
-
-            @Override
-            protected void selectedClickedCallback(int selectedIndex)
-            {
-                selectedArea = get(selectedIndex);
-                ModLogger.debug("areaGuiList clicked selected index: %d", selectedIndex);
-            }
-
-            @Override
-            protected void selectedDoubleClickedCallback(int selectedIndex)
-            {
-                selectedArea = getList().get(selectedIndex);
-                ModLogger.debug("areaGuiList double clicked selected index: %d", selectedIndex);
+                int color = selectedRowIndexes.contains(slotIdx) ? 0xFFFF00 : 0xAADDEE;
+                fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
+                fontRenderer.drawStringWithShadow(trimmedUUID, (float) left + 3, (float) slotTop + 10, color);
             }
         };
 
@@ -116,7 +114,6 @@ public class GuiTest extends GuiScreen
         cachedAreaGuiList.addAll(areaGuiList.getList());
         cachedSelectedAreaIndex = areaGuiList.getSelectedIndex();
         isStateCached = true;
-        ModLogger.debug("updateState listSize %2d, cachedList size %2d", areaGuiList.size(), cachedAreaGuiList.size());
     }
 
     @Override
@@ -144,6 +141,10 @@ public class GuiTest extends GuiScreen
                 initAreas();
                 break;
             case 1:
+                for (Area area : areaGuiList.getSelectedRows())
+                {
+                    ModLogger.debug("%s, %s", area.getName(), area.getUUID().toString());
+                }
                 mc.displayGuiScreen(null);
                 break;
             default:

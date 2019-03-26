@@ -36,7 +36,7 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingList implements 
     private List<E> arrayList = new ArrayList<>();
     protected GuiScreen gui;
     protected Minecraft mc;
-    private int entryHeight;
+    protected int entryHeight;
 
     public <T extends GuiScreen> GuiScrollingListOf(T gui, int entryHeight, int width, int height, int top, int bottom, int left)
     {
@@ -54,7 +54,7 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingList implements 
     private float keepSelectionInViewableArea()
     {
         int listHeight = this.getContentHeight() - (this.bottom - this.top - 4);
-        float scrollDistance = (float)selectedIndex * entryHeight;
+        float scrollDistance = (float) selectedIndex * entryHeight;
 
         if (listHeight < 0)
         {
@@ -66,11 +66,16 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingList implements 
             scrollDistance = 0.0F;
         }
 
-        if (scrollDistance > (float)listHeight)
+        if (scrollDistance > (float) listHeight)
         {
-            scrollDistance = (float)listHeight;
+            scrollDistance = (float) listHeight;
         }
         return scrollDistance;
+    }
+
+    private boolean isEnableHighlightSelected()
+    {
+        return ObfuscationReflectionHelper.getPrivateValue(GuiScrollingList.class, this,"highlightSelected");
     }
 
     public int getRight() {return right;}
@@ -110,7 +115,7 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingList implements 
     @Override
     protected void elementClicked(int index, boolean doubleClick)
     {
-        if (index == selectedIndex && !doubleClick) return;
+        if (isEnableHighlightSelected() && index == selectedIndex && !doubleClick) return;
         selectedIndex = (index >= 0 && index <= arrayList.size() && !arrayList.isEmpty() ? index : -1);
 
         if (selectedIndex >= 0)
@@ -120,7 +125,6 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingList implements 
             else
                 selectedDoubleClickedCallback(selectedIndex);
         }
-
     }
 
     protected abstract void selectedClickedCallback(int selectedIndex);
