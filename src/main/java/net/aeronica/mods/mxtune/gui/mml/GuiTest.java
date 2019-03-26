@@ -23,6 +23,7 @@ import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import org.lwjgl.input.Keyboard;
@@ -37,15 +38,18 @@ import java.util.Set;
 
 public class GuiTest extends GuiScreen
 {
-    private int guiLeft;
-    private int guiTop;
+    // Area Multi Selector
     private GuiScrollingMultiListOf<Area> areaGuiList;
     private List<Area> cachedAreaGuiList = new ArrayList<>();
-    private boolean isStateCached;
-    private Area selectedArea;
     private int cachedSelectedAreaIndex;
-    private boolean cacheKeyRepeatState;
     private Set<Integer> cachedSelectedIndexes = new HashSet<>();
+
+    // Status
+    private GuiTextField status;
+
+    // Misc
+    private boolean cacheKeyRepeatState;
+    private boolean isStateCached;
 
     public GuiTest()
     {
@@ -62,18 +66,15 @@ public class GuiTest extends GuiScreen
     @Override
     public void initGui()
     {
-        this.guiLeft = 0;
-        this.guiTop = 0;
         int guiListWidth = (width - 15) * 3 / 4;
-        // Area List
-        int entryHeight = (mc.fontRenderer.FONT_HEIGHT + 2) * 2;
+        int statusHeight = mc.fontRenderer.FONT_HEIGHT + 2;
+        int entryHeight = statusHeight * 2;
         int left = 5;
         int titleTop = 20;
         int listTop = titleTop + 25;
         int listHeight = height - titleTop - entryHeight - 2 - 10 - 25 - 25;
         int listBottom = listTop + listHeight;
         int statusTop = listBottom + 4;
-        int partListWidth = (width - 15) / 4;
 
         areaGuiList = new GuiScrollingMultiListOf<Area>(this, entryHeight, guiListWidth, listHeight, listTop, listBottom, left)
         {
@@ -87,7 +88,16 @@ public class GuiTest extends GuiScreen
                 fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
                 fontRenderer.drawStringWithShadow(trimmedUUID, (float) left + 3, (float) slotTop + 10, color);
             }
+
+            @Override
+            protected void selectedClickedCallback(int selectedIndex)
+            {
+                updateStatus();
+                super.selectedClickedCallback(selectedIndex);
+            }
         };
+
+        status = new GuiTextField(0, fontRenderer, left, statusTop, guiListWidth, statusHeight + 2);
 
         int buttonTop = height - 25;
         int xImport = (this.width /2) - 75 * 2;
@@ -109,6 +119,7 @@ public class GuiTest extends GuiScreen
         areaGuiList.addAll(cachedAreaGuiList);
         areaGuiList.setSelectedIndex(cachedSelectedAreaIndex);
         areaGuiList.setSelectedRowIndexes(cachedSelectedIndexes);
+        updateStatus();
         areaGuiList.resetScroll();
     }
 
@@ -119,7 +130,13 @@ public class GuiTest extends GuiScreen
         cachedSelectedAreaIndex = areaGuiList.getSelectedIndex();
         cachedSelectedIndexes.clear();
         cachedSelectedIndexes.addAll(areaGuiList.getSelectedRowIndexes());
+        updateStatus();
         isStateCached = true;
+    }
+
+    private void updateStatus()
+    {
+        status.setText(String.format("Selected Item Count: %s", areaGuiList.getSelectedRowIndexes().size()));
     }
 
     @Override
@@ -127,6 +144,7 @@ public class GuiTest extends GuiScreen
     {
         drawDefaultBackground();
         areaGuiList.drawScreen(mouseX, mouseY, partialTicks);
+        status.drawTextBox();
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
