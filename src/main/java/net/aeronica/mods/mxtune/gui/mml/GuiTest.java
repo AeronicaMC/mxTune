@@ -135,7 +135,7 @@ public class GuiTest extends GuiScreen
 
     private void updateStatus()
     {
-        status.setText(String.format("Selected Item Count: %s", areaGuiList.getSelectedRowIndexes().size()));
+        status.setText(String.format("Selected Item Count: %s", areaGuiList.getSelectedRowsCount()));
     }
 
     @Override

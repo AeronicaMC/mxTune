@@ -70,7 +70,7 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
      */
     public Set<Integer> getSelectedRowIndexes()
     {
-        return selectedRowIndexes;
+        return Collections.unmodifiableSet(selectedRowIndexes);
     }
 
     /**
@@ -81,6 +81,11 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
     {
         selectedRowIndexes.clear();
         selectedRowIndexes.addAll(set);
+    }
+
+    public int getSelectedRowsCount()
+    {
+        return selectedRowIndexes.size();
     }
 
     public List<E> getSelectedRows()
