@@ -20,11 +20,15 @@ package net.aeronica.mods.mxtune.network.bidirectional;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.managers.ServerFileManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
+import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.util.ResultMessage;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -35,7 +39,7 @@ public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
 {
     private SetType type = SetType.AREA;
     private boolean errorResult = false;
-    private String errorMessage = "";
+    private ITextComponent component;
     private NBTTagCompound dataCompound = new NBTTagCompound();
     private long dataTypeUuidMSB = 0;
     private long dataTypeUuidLSB = 0;
@@ -44,9 +48,9 @@ public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
     @SuppressWarnings("unused")
     public SetServerDataMessage() { /* Required by the PacketDispatcher */ }
 
-    public SetServerDataMessage(String errorMessage, Boolean errorResult)
+    public SetServerDataMessage(ITextComponent component, Boolean errorResult)
     {
-        this.errorMessage = errorMessage;
+        this.component = component;
         this.errorResult = errorResult;
     }
 
@@ -70,7 +74,7 @@ public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
         this.dataCompound = buffer.readCompoundTag();
         this.dataTypeUuidMSB = buffer.readLong();
         this.dataTypeUuidLSB = buffer.readLong();
-        this.errorMessage = buffer.readString(512);
+        this.component = ITextComponent.Serializer.jsonToComponent(buffer.readString(32767));
         this.errorResult = buffer.readBoolean();
         dataTypeUuid = new UUID(dataTypeUuidMSB, dataTypeUuidLSB);
     }
@@ -82,7 +86,7 @@ public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
         buffer.writeCompoundTag(dataCompound);
         buffer.writeLong(dataTypeUuidMSB);
         buffer.writeLong(dataTypeUuidLSB);
-        buffer.writeString(errorMessage);
+        buffer.writeString(ITextComponent.Serializer.componentToJson(component));
         buffer.writeBoolean(errorResult);
     }
 
@@ -94,7 +98,7 @@ public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
             handleClientSide(player);
         } else
         {
-            handleServerSide(player);
+            handleServerSide((EntityPlayerMP) player);
         }
     }
 
@@ -108,26 +112,32 @@ public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
                 break;
             default:
         }
-        ModLogger.debug("Error: %s, error %s", errorMessage, errorResult);
+        ModLogger.debug("Error: %s, error %s", component.getFormattedText(), errorResult);
     }
 
-    private void  handleServerSide(EntityPlayer player)
+    private void  handleServerSide(EntityPlayerMP player)
     {
+        ResultMessage resultMessage= ResultMessage.NO_ERROR;
         if (MusicOptionsUtil.isMxTuneServerUpdateAllowed(player))
         {
             switch (type)
             {
                 case AREA:
-                    ServerFileManager.setArea(dataTypeUuid, dataCompound);
+                    resultMessage = ServerFileManager.setArea(dataTypeUuid, dataCompound);
                     break;
                 case MUSIC:
+                    resultMessage = ServerFileManager.setSong(dataTypeUuid, dataCompound);
                     break;
                 default:
             }
         }
+        if (resultMessage.hasError())
+        {
+            PacketDispatcher.sendTo(new SetServerDataMessage(resultMessage.getMessage(), resultMessage.hasError()), player);
+        }
         else
         {
-            player.sendStatusMessage(new TextComponentTranslation("mxtune.chat.set_server_data_not_allowed") {}, false);
+            PacketDispatcher.sendTo(new SetServerDataMessage((new TextComponentTranslation("mxtune.chat.set_server_data_not_allowed")), true), player);
         }
     }
 

@@ -17,27 +17,24 @@
 
 package net.aeronica.mods.mxtune.managers;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ListMultimap;
 import net.aeronica.libs.mml.core.TestData;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.managers.records.Area;
 import net.aeronica.mods.mxtune.managers.records.Song;
+import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.NBTHelper;
+import net.aeronica.mods.mxtune.util.ResultMessage;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,10 +45,8 @@ public class ServerFileManager
     private static final String SERVER_ID_FILE = "server_id" + FileHelper.EXTENSION_DAT;
     private static final String SERVER_ID_FILE_ERROR = "Delete the <world save>/mxtune/server_id" + FileHelper.EXTENSION_DAT + " file, then try loading the world again.";
     private static UUID serverID;
-    private static BiMap<UUID, String> songUuidVsTitles = HashBiMap.create();
-    private static ListMultimap<UUID, UUID> playListVsSongs = ArrayListMultimap.create();
-    private static ListMultimap<UUID, UUID> areaVsPlayList = ArrayListMultimap.create();
-    private static BiMap<UUID, Area> areas = HashBiMap.create();
+    private static Map<UUID, SongProxy> songProxyMap = new HashMap<>();
+    private static Map<UUID, Area> areas = new HashMap<>();
 
     private ServerFileManager() { /* NOP */ }
 
@@ -66,8 +61,7 @@ public class ServerFileManager
 
     public static void shutDown()
     {
-        songUuidVsTitles.clear();
-        playListVsSongs.clear();
+        songProxyMap.clear();
         areas.clear();
     }
 
@@ -136,8 +130,8 @@ public class ServerFileManager
             NBTTagCompound songCompound = FileHelper.getCompoundFromFile(songFile);
             if (songCompound != null)
             {
-                Song song = new Song(songCompound);
-                songUuidVsTitles.put(song.getUUID(), song.getTitle());
+                SongProxy songProxy = new SongProxy(songCompound);
+                songProxyMap.put(songProxy.getUUID(), songProxy);
             }
             else
                 ModLogger.warn("NULL NBTTagCompound for song file: %s", songFile.toString());
@@ -173,15 +167,29 @@ public class ServerFileManager
         }
     }
 
-    public static void setArea(UUID dataTypeUuid, NBTTagCompound dataCompound)
+    public static ResultMessage setArea(UUID dataTypeUuid, NBTTagCompound dataCompound)
     {
+        ResultMessage errorResult = ResultMessage.NO_ERROR;
         if (dataCompound != null)
         {
             Area area = Area.build(dataCompound);
             UUID uuidArea = area.getUUID();
             if (dataTypeUuid.equals(uuidArea))
             {
-                areas.put(uuidArea, area);
+                String areaFileName = area.getFileName();
+                try
+                {
+                    Path path = FileHelper.getCacheFile(FileHelper.SERVER_AREAS_FOLDER, areaFileName, Side.SERVER);
+                    FileHelper.sendCompoundToFile(path, dataCompound);
+                }
+                catch(IOException e)
+                {
+                    ModLogger.error(e);
+                    ModLogger.warn("Unable to create folder: %s and/or file: %s", FileHelper.SERVER_AREAS_FOLDER, areaFileName);
+                    errorResult = new ResultMessage(true, new TextComponentTranslation("mxtune.error.unable_to_create_file_folder",FileHelper.SERVER_AREAS_FOLDER, areaFileName));
+                }
+                if (!errorResult.hasError() || !areas.containsKey(uuidArea))
+                    areas.put(uuidArea, area);
             }
             else
             {
@@ -190,8 +198,46 @@ public class ServerFileManager
         }
         else
         {
-            throw new MXTuneRuntimeException("Area dataCompound is null in ServerFileManager.setArea");
+            throw new MXTuneRuntimeException("dataCompound is null in ServerFileManager.setArea");
         }
+        return errorResult;
+    }
+
+    public static ResultMessage setSong(UUID dataTypeUuid, NBTTagCompound dataCompound)
+    {
+        ResultMessage errorResult = ResultMessage.NO_ERROR;
+        if (dataCompound != null)
+        {
+            SongProxy songProxy = new SongProxy(dataCompound);
+            Song song = new Song(dataCompound);
+            UUID uuidSong = songProxy.getUUID();
+            if (dataTypeUuid.equals(uuidSong))
+            {
+                String songFileName = song.getFileName();
+                try
+                {
+                    Path path = FileHelper.getCacheFile(FileHelper.SERVER_MUSIC_FOLDER, songFileName, Side.SERVER);
+                    FileHelper.sendCompoundToFile(path, dataCompound);
+                }
+                catch(IOException e)
+                {
+                    ModLogger.warn(e);
+                    ModLogger.warn("Unable to create folder: %s and/or file: %s", FileHelper.SERVER_MUSIC_FOLDER, songFileName);
+                    errorResult = new ResultMessage(true, new TextComponentTranslation("mxtune.error.unable_to_create_file_folder",FileHelper.SERVER_MUSIC_FOLDER, songFileName));
+                }
+                if (!errorResult.hasError() || !songProxyMap.containsKey(uuidSong))
+                    songProxyMap.put(uuidSong, songProxy);
+            }
+            else
+            {
+                throw new MXTuneRuntimeException("UUID Mismatch in transport: Corrupted Song data");
+            }
+        }
+        else
+        {
+            throw new MXTuneRuntimeException("dataCompound is null in ServerFileManager.setSong");
+        }
+        return errorResult;
     }
 
     private static void stuffServer()
@@ -212,7 +258,7 @@ public class ServerFileManager
             }
             catch (IOException e)
             {
-                ModLogger.error(e);
+                ModLogger.warn(e);
                 ModLogger.warn("Unable to create folder: %s and/or file: %s", FileHelper.SERVER_MUSIC_FOLDER, song.getFileName());
             }
         }
@@ -231,15 +277,14 @@ public class ServerFileManager
         }
         catch(IOException e)
         {
-            ModLogger.error(e);
+            ModLogger.warn(e);
             ModLogger.warn("Unable to create folder: %s and/or file: %s", FileHelper.SERVER_AREAS_FOLDER, areaFileName);
         }
     }
 
     private static void dumpAll()
     {
-        songUuidVsTitles.forEach((key, value) -> ModLogger.debug("Song uuid:     %s, title:    %s", key.toString(), value));
-        playListVsSongs.forEach((key, value) -> ModLogger.debug( "Playlist uuid: %s, song:     %s", key.toString(), value.toString()));
-        areaVsPlayList.forEach((key, value) -> ModLogger.debug(  "Area uuid:     %s, playlist: %s", key.toString(), value.toString()));
+        areas.forEach((key, value) -> ModLogger.debug("Song uuid:     %s, title:    %s", key.toString(), value.getName()));
+        songProxyMap.forEach((key, value) -> ModLogger.debug("Song uuid:     %s, title:    %s", key.toString(), value));
     }
 }
