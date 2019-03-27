@@ -163,7 +163,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
                 if (!isEmpty() && slotIdx < size())
                 {
                     MXTunePart tunePart = get(slotIdx);
-                    String trimmedName = fontRenderer.trimStringToWidth(tunePart.getInstrument(), listWidth - 10);
+                    String trimmedName = fontRenderer.trimStringToWidth(tunePart.getInstrumentName(), listWidth - 10);
                     fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, 0xADD8E6);
                 }
             }

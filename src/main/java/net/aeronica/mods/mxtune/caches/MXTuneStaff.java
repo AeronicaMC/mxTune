@@ -21,14 +21,10 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class MXTuneStaff
 {
-    private static final String TAG_WRAP_OCTAVE = "wrapOctave";
-    private static final String TAG_TRANSPOSE = "transpose";
     private static final String TAG_MML = "mml";
     private static final String TAG_META = "meta";
 
     private final int staff;
-    private boolean wrapOctave;
-    private int transpose;
     private final String mml;
     private String meta = "";
 
@@ -41,16 +37,12 @@ public class MXTuneStaff
     public MXTuneStaff(int i, NBTTagCompound compound)
     {
         staff = i;
-        wrapOctave = compound.getBoolean(TAG_WRAP_OCTAVE);
-        transpose = compound.getInteger(TAG_TRANSPOSE);
         mml = compound.getString(TAG_MML);
         meta = compound.getString(TAG_META);
     }
 
     public void writeToNBT(NBTTagCompound compound)
     {
-        compound.setBoolean(TAG_WRAP_OCTAVE, wrapOctave);
-        compound.setInteger(TAG_TRANSPOSE, transpose);
         compound.setString(TAG_MML, mml);
         compound.setString(TAG_META, meta);
     }
@@ -63,30 +55,6 @@ public class MXTuneStaff
     public String getMml()
     {
         return mml;
-    }
-
-    @SuppressWarnings("unused")
-    public boolean isWrapOctave()
-    {
-        return wrapOctave;
-    }
-
-    @SuppressWarnings("unused")
-    public void setWrapOctave(boolean wrapOctave)
-    {
-        this.wrapOctave = wrapOctave;
-    }
-
-    @SuppressWarnings("unused")
-    public int getTranspose()
-    {
-        return transpose;
-    }
-
-    @SuppressWarnings("unused")
-    public void setTranspose(int transpose)
-    {
-        this.transpose = transpose;
     }
 
     public String getMeta()

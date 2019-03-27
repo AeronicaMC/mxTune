@@ -181,7 +181,6 @@ public class MXTuneFile
         return parts;
     }
 
-    @SuppressWarnings("unused")
     public void setParts(List<MXTunePart> parts) { this.parts = parts != null ? parts : new ArrayList<>(); }
 
     public ZonedDateTime getCreatedOn()

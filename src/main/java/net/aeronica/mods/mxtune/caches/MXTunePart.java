@@ -27,35 +27,40 @@ public class MXTunePart
 {
     private static final String TAG_INSTRUMENT = "instrument";
     private static final String TAG_PACKED_PATCH = "packedPatch";
-    private static final String TAG_SUGGESTED = "suggestedName";
+    private static final String TAG_META = "meta";
     private static final String TAG_STAFF_PREFIX = "staff";
     private static final String TAG_STAFF_COUNT = "staffCount";
+    private static final String TAG_TRANSPOSE = "transpose";
 
-    private String instrument;
+    private String instrumentName;
     private int packedPatch;
-    private String suggestedInstrument;
+    private String meta;
+    private int transpose;
     private List<MXTuneStaff> staves;
 
     public MXTunePart()
     {
-        this.suggestedInstrument = "";
-        this.instrument = "";
-        this.staves = new ArrayList<>();
+        meta = "";
+        instrumentName = "";
+        staves = new ArrayList<>();
+        transpose = 0;
     }
 
-    public MXTunePart(String instrument, String suggestedInstrument, int packedPatch, List<MXTuneStaff> staves)
+    public MXTunePart(String instrumentName, String meta, int packedPatch, List<MXTuneStaff> staves)
     {
-        this.suggestedInstrument = suggestedInstrument != null ? suggestedInstrument : "";
-        this.instrument = instrument != null ? instrument : "";
+        this.meta = meta != null ? meta : "";
+        this.instrumentName = instrumentName != null ? instrumentName : "";
         this.packedPatch = packedPatch;
         this.staves = staves != null ? staves : new ArrayList<>();
+        transpose = 0;
     }
 
     public MXTunePart(NBTTagCompound compound)
     {
-        instrument = compound.getString(TAG_INSTRUMENT);
-        suggestedInstrument = compound.getString(TAG_SUGGESTED);
+        instrumentName = compound.getString(TAG_INSTRUMENT);
+        meta = compound.getString(TAG_META);
         packedPatch = compound.getInteger(TAG_PACKED_PATCH);
+        transpose = compound.getInteger(TAG_TRANSPOSE);
         int staffCount = compound.getInteger(TAG_STAFF_COUNT);
 
         staves = new ArrayList<>();
@@ -68,10 +73,11 @@ public class MXTunePart
 
     public void writeToNBT(NBTTagCompound compound)
     {
-        compound.setString(TAG_INSTRUMENT, instrument);
-        compound.setString(TAG_SUGGESTED, suggestedInstrument);
-        compound.setInteger(TAG_STAFF_COUNT, staves.size());
+        compound.setString(TAG_INSTRUMENT, instrumentName);
+        compound.setString(TAG_META, meta);
         compound.setInteger(TAG_PACKED_PATCH, packedPatch);
+        compound.setInteger(TAG_TRANSPOSE, transpose);
+        compound.setInteger(TAG_STAFF_COUNT, staves.size());
 
         int i = 0;
         for (MXTuneStaff staff : staves)
@@ -95,26 +101,27 @@ public class MXTunePart
         this.staves = staves;
     }
 
-    public String getInstrument()
+    public String getInstrumentName()
     {
-        return instrument != null ? instrument : "";
-    }
-
-    public void setInstrument(String instrument)
-    {
-        this.instrument = instrument;
+        return instrumentName != null ? instrumentName : "";
     }
 
     @SuppressWarnings("unused")
-    public String getSuggestedInstrument()
+    public void setInstrumentName(String instrumentName)
     {
-        return suggestedInstrument != null ? suggestedInstrument : "";
+        this.instrumentName = instrumentName;
     }
 
     @SuppressWarnings("unused")
-    public void setSuggestedInstrument(String suggestedInstrument)
+    public String getMeta()
     {
-        this.suggestedInstrument = suggestedInstrument;
+        return meta != null ? meta : "";
+    }
+
+    @SuppressWarnings("unused")
+    public void setMeta(String meta)
+    {
+        this.meta = meta;
     }
 
     @SuppressWarnings("unused")
@@ -127,5 +134,17 @@ public class MXTunePart
     public void setPackedPatch(int packedPatch)
     {
         this.packedPatch = packedPatch;
+    }
+
+    @SuppressWarnings("unused")
+    public int getTranspose()
+    {
+        return transpose;
+    }
+
+    @SuppressWarnings("unused")
+    public void setTranspose(int transpose)
+    {
+        this.transpose = transpose;
     }
 }
