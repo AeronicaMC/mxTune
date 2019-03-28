@@ -17,6 +17,7 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
+import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingMultiListOf;
 import net.aeronica.mods.mxtune.managers.records.Area;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
@@ -28,24 +29,30 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
+import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GuiTest extends GuiScreen
 {
     private static final String TITLE = "Test Gui";
     // Song Multi Selector
     private GuiScrollingMultiListOf<Path> guiFileList;
-    private List<Path> songFiles = new ArrayList<>();
+    private List<Path> cachedFileList = new ArrayList<>();
     private Set<Integer> cachedSelectedSongs = new HashSet<>();
+    private int cachedSelectedFileDummy = -1;
 
     // Area Multi Selector
-    private GuiScrollingMultiListOf<Area> areaGuiList;
+    private GuiScrollingMultiListOf<Area> guiAreaList;
     private List<Area> cachedAreaGuiList = new ArrayList<>();
     private Set<Integer> cachedSelectedIndexes = new HashSet<>();
 
@@ -75,24 +82,43 @@ public class GuiTest extends GuiScreen
     @Override
     public void initGui()
     {
-        int guiAreaListWidth = (width - 15) * 3 / 4;
+        int guiAreaListWidth = (width - 15) / 3;
+        int guiFileListWidth = (width - 15) / 3;
         int singleLineHeight = mc.fontRenderer.FONT_HEIGHT + 2;
         int entryAreaHeight = singleLineHeight * 2;
-        int titleTop = 5;
-        int left = 5;
+        int border = 5;
+        int titleTop = border;
+        int left = border;
         int titleWidth = fontRenderer.getStringWidth(TITLE);
         int titleX = (width / 2) - (titleWidth / 2);
+
         int titleHeight = singleLineHeight + 2;
-        int statusheight = singleLineHeight + 2;
+        int statusHeight = singleLineHeight + 2;
+        int entryFileHeight = singleLineHeight;
+
         int listTop = titleTop + titleHeight;
-        int listBottom = height - statusheight - listTop - titleHeight - 5;
+        int listBottom = height - statusHeight - listTop - titleHeight - border;
         int areaListHeight = Math.max(listBottom - listTop, entryAreaHeight);
-        int statusTop = listBottom + 5;
+        int fileListHeight = Math.max(listBottom - listTop, singleLineHeight);
+        int statusTop = listBottom + border;
 
         titleLabel = new GuiLabel(fontRenderer, 0, titleX, titleTop, titleWidth, singleLineHeight, 0xFFFFFF );
         titleLabel.addLine(TITLE);
 
-        areaGuiList = new GuiScrollingMultiListOf<Area>(this, entryAreaHeight, guiAreaListWidth, areaListHeight, listTop, listBottom, left)
+        guiFileList = new GuiScrollingMultiListOf<Path>(this, entryFileHeight, guiFileListWidth, fileListHeight,listTop, listBottom, left)
+        {
+            @Override
+            protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
+            {
+                // get the filename and remove the '.mxt' extension
+                String name = (get(slotIdx).getFileName().toString());//.replaceAll("\\.[mM][xX][tT]$", "");
+                String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
+                int color = selectedRowIndexes.contains(slotIdx) ? 0xFFFF00 : 0xADD8E6;
+                fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, color);
+            }
+        };
+
+        guiAreaList = new GuiScrollingMultiListOf<Area>(this, entryAreaHeight, guiAreaListWidth, areaListHeight, listTop, listBottom, width - guiAreaListWidth - border)
         {
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
@@ -112,7 +138,7 @@ public class GuiTest extends GuiScreen
             }
         };
 
-        status = new GuiTextField(0, fontRenderer, left, statusTop, guiAreaListWidth, singleLineHeight + 2);
+        status = new GuiTextField(0, fontRenderer, left, statusTop, width - border * 2, singleLineHeight + 2);
 
         int buttonTop = height - 25;
         int xImport = (this.width /2) - 75 * 2;
@@ -125,31 +151,39 @@ public class GuiTest extends GuiScreen
         buttonList.add(buttonImport);
         buttonList.add(buttonDone);
 
+        initFileList();
         reloadState();
     }
 
     private void reloadState()
     {
         if (!isStateCached) return;
-        areaGuiList.addAll(cachedAreaGuiList);
-        areaGuiList.setSelectedRowIndexes(cachedSelectedIndexes);
+        guiAreaList.addAll(cachedAreaGuiList);
+        guiAreaList.setSelectedRowIndexes(cachedSelectedIndexes);
+        guiFileList.addAll(cachedFileList);
+        guiFileList.setSelectedRowIndexes(cachedSelectedSongs);
+        guiFileList.setSelectedIndex(cachedSelectedFileDummy);
         updateStatus();
-        areaGuiList.resetScroll();
+        guiAreaList.resetScroll();
+        guiFileList.resetScroll();
     }
 
     private void updateState()
     {
         cachedAreaGuiList.clear();
-        cachedAreaGuiList.addAll(areaGuiList.getList());
+        cachedAreaGuiList.addAll(guiAreaList.getList());
         cachedSelectedIndexes.clear();
-        cachedSelectedIndexes.addAll(areaGuiList.getSelectedRowIndexes());
+        cachedSelectedIndexes.addAll(guiAreaList.getSelectedRowIndexes());
+        cachedSelectedSongs.clear();
+        cachedSelectedSongs.addAll(guiFileList.getSelectedRowIndexes());
+        cachedSelectedFileDummy = guiFileList.getSelectedIndex();
         updateStatus();
         isStateCached = true;
     }
 
     private void updateStatus()
     {
-        status.setText(String.format("Selected Item Count: %s", areaGuiList.getSelectedRowsCount()));
+        status.setText(String.format("Selected Item Count: %s", guiAreaList.getSelectedRowsCount()));
     }
 
     @Override
@@ -157,7 +191,8 @@ public class GuiTest extends GuiScreen
     {
         drawDefaultBackground();
         titleLabel.drawLabel(mc, mouseX, mouseY);
-        areaGuiList.drawScreen(mouseX, mouseY, partialTicks);
+        guiFileList.drawScreen(mouseX, mouseY, partialTicks);
+        guiAreaList.drawScreen(mouseX, mouseY, partialTicks);
         status.drawTextBox();
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
@@ -175,11 +210,11 @@ public class GuiTest extends GuiScreen
         switch (button.id)
         {
             case 0:
-                areaGuiList.clear();
+                guiAreaList.clear();
                 initAreas();
                 break;
             case 1:
-                areaGuiList.getSelectedRows().forEach(area -> ModLogger.debug("%s, %s", area.getName(), area.getUUID().toString()));
+                guiAreaList.getSelectedRows().forEach(area -> ModLogger.debug("%s, %s", area.getName(), area.getUUID().toString()));
                 mc.displayGuiScreen(null);
                 break;
             default:
@@ -214,7 +249,8 @@ public class GuiTest extends GuiScreen
     {
         int mouseX = Mouse.getEventX() * width / mc.displayWidth;
         int mouseY = height - Mouse.getEventY() * height / mc.displayHeight - 1;
-        areaGuiList.handleMouseInput(mouseX, mouseY);
+        guiAreaList.handleMouseInput(mouseX, mouseY);
+        guiFileList.handleMouseInput(mouseX, mouseY);
         super.handleMouseInput();
     }
 
@@ -223,7 +259,36 @@ public class GuiTest extends GuiScreen
         for (int i = 0; i < 50; i++)
         {
             Area area = new Area(String.format("TEST: %02d", i));
-            areaGuiList.add(area);
+            guiAreaList.add(area);
         }
+    }
+
+    private void initFileList()
+    {
+        Path path = FileHelper.getDirectory(FileHelper.CLIENT_LIB_FOLDER, Side.CLIENT);
+        PathMatcher filter = FileHelper.getMxtMatcher(path);
+        try (Stream<Path> paths = Files.list(path))
+        {
+            cachedFileList = paths
+                    .filter(filter::matches)
+                    .collect(Collectors.toList());
+        }
+        catch (NullPointerException | IOException e)
+        {
+            ModLogger.error(e);
+        }
+
+        List<Path> files = new ArrayList<>();
+        for (Path file : cachedFileList)
+        {
+//            if (file.getFileName().toString().toLowerCase(Locale.ROOT).contains(search.getText().toLowerCase(Locale.ROOT)))
+//            {
+                files.add(file);
+//            }
+        }
+        cachedFileList = files;
+        guiFileList.clear();
+        guiFileList.addAll(files);
+        //lastSearch = search.getText();
     }
 }
