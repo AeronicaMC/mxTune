@@ -164,10 +164,7 @@ public class GuiTest extends GuiScreen
                 initAreas();
                 break;
             case 1:
-                for (Area area : areaGuiList.getSelectedRows())
-                {
-                    ModLogger.debug("%s, %s", area.getName(), area.getUUID().toString());
-                }
+                areaGuiList.getSelectedRows().forEach(area -> ModLogger.debug("%s, %s", area.getName(), area.getUUID().toString()));
                 mc.displayGuiScreen(null);
                 break;
             default:

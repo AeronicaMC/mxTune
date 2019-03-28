@@ -284,7 +284,7 @@ public class ServerFileManager
 
     private static void dumpAll()
     {
-        areas.forEach((key, value) -> ModLogger.debug("Song uuid:     %s, title:    %s", key.toString(), value.getName()));
-        songProxyMap.forEach((key, value) -> ModLogger.debug("Song uuid:     %s, title:    %s", key.toString(), value));
+        areas.forEach((key, value) -> ModLogger.debug("Area uuid:     %s, Name:    %s", key.toString(), value.getName()));
+        songProxyMap.forEach((key, value) -> ModLogger.debug("Song uuid:     %s, title:    %s", key.toString(), value.getTitle()));
     }
 }

@@ -39,7 +39,7 @@ public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
 {
     private SetType type = SetType.AREA;
     private boolean errorResult = false;
-    private ITextComponent component;
+    private ITextComponent component = new TextComponentTranslation("mxtune.no_error");
     private NBTTagCompound dataCompound = new NBTTagCompound();
     private long dataTypeUuidMSB = 0;
     private long dataTypeUuidLSB = 0;
@@ -113,11 +113,12 @@ public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
             default:
         }
         ModLogger.debug("Error: %s, error %s", component.getFormattedText(), errorResult);
+        ResultMessage resultMessage = new ResultMessage(errorResult, component);
     }
 
     private void  handleServerSide(EntityPlayerMP player)
     {
-        ResultMessage resultMessage= ResultMessage.NO_ERROR;
+        ResultMessage resultMessage = ResultMessage.NO_ERROR;
         if (MusicOptionsUtil.isMxTuneServerUpdateAllowed(player))
         {
             switch (type)
@@ -129,6 +130,7 @@ public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
                     resultMessage = ServerFileManager.setSong(dataTypeUuid, dataCompound);
                     break;
                 default:
+                    resultMessage = new ResultMessage(true, new TextComponentTranslation("mxtune.error.unexpected_type", type.name()));
             }
         }
         if (resultMessage.hasError())
@@ -137,7 +139,7 @@ public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
         }
         else
         {
-            PacketDispatcher.sendTo(new SetServerDataMessage((new TextComponentTranslation("mxtune.chat.set_server_data_not_allowed")), true), player);
+            PacketDispatcher.sendTo(new SetServerDataMessage((new TextComponentTranslation("mxtune.warning.set_server_data_not_allowed")), true), player);
         }
     }
 

@@ -18,6 +18,7 @@
 package net.aeronica.mods.mxtune.util;
 
 import net.minecraft.util.Tuple;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 
 @SuppressWarnings("unchecked")
@@ -25,7 +26,7 @@ public class ResultMessage extends Tuple
 {
     public static final ResultMessage NO_ERROR = new ResultMessage(false, new TextComponentTranslation("mxtune.no_error"));
 
-    public ResultMessage(Boolean errorResult, TextComponentTranslation message)
+    public ResultMessage(Boolean errorResult, ITextComponent message)
     {
         super(errorResult, message);
     }
@@ -35,8 +36,8 @@ public class ResultMessage extends Tuple
         return (Boolean) super.getFirst();
     }
 
-    public TextComponentTranslation getMessage()
+    public ITextComponent getMessage()
     {
-        return ((TextComponentTranslation) super.getSecond());
+        return ((ITextComponent) super.getSecond());
     }
 }
