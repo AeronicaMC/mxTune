@@ -19,9 +19,11 @@ package net.aeronica.mods.mxtune.gui.mml;
 
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingMultiListOf;
 import net.aeronica.mods.mxtune.managers.records.Area;
+import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiLabel;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
@@ -31,23 +33,30 @@ import org.lwjgl.input.Mouse;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.nio.file.Path;
+import java.util.*;
 
 public class GuiTest extends GuiScreen
 {
+    private static final String TITLE = "Test Gui";
+    // Song Multi Selector
+    private GuiScrollingMultiListOf<Path> guiFileList;
+    private List<Path> songFiles = new ArrayList<>();
+    private Set<Integer> cachedSelectedSongs = new HashSet<>();
+
     // Area Multi Selector
     private GuiScrollingMultiListOf<Area> areaGuiList;
     private List<Area> cachedAreaGuiList = new ArrayList<>();
-    private int cachedSelectedAreaIndex;
     private Set<Integer> cachedSelectedIndexes = new HashSet<>();
+
+    // Song data
+    private Map<UUID, SongProxy> songMap = new HashMap<>();
 
     // Status
     private GuiTextField status;
 
     // Misc
+    private GuiLabel titleLabel;
     private boolean cacheKeyRepeatState;
     private boolean isStateCached;
 
@@ -66,17 +75,24 @@ public class GuiTest extends GuiScreen
     @Override
     public void initGui()
     {
-        int guiListWidth = (width - 15) * 3 / 4;
-        int statusHeight = mc.fontRenderer.FONT_HEIGHT + 2;
-        int entryHeight = statusHeight * 2;
+        int guiAreaListWidth = (width - 15) * 3 / 4;
+        int singleLineHeight = mc.fontRenderer.FONT_HEIGHT + 2;
+        int entryAreaHeight = singleLineHeight * 2;
+        int titleTop = 5;
         int left = 5;
-        int titleTop = 20;
-        int listTop = titleTop + 25;
-        int listHeight = height - titleTop - entryHeight - 2 - 10 - 25 - 25;
-        int listBottom = listTop + listHeight;
-        int statusTop = listBottom + 4;
+        int titleWidth = fontRenderer.getStringWidth(TITLE);
+        int titleX = (width / 2) - (titleWidth / 2);
+        int titleHeight = singleLineHeight + 2;
+        int statusheight = singleLineHeight + 2;
+        int listTop = titleTop + titleHeight;
+        int listBottom = height - statusheight - listTop - titleHeight - 5;
+        int areaListHeight = Math.max(listBottom - listTop, entryAreaHeight);
+        int statusTop = listBottom + 5;
 
-        areaGuiList = new GuiScrollingMultiListOf<Area>(this, entryHeight, guiListWidth, listHeight, listTop, listBottom, left)
+        titleLabel = new GuiLabel(fontRenderer, 0, titleX, titleTop, titleWidth, singleLineHeight, 0xFFFFFF );
+        titleLabel.addLine(TITLE);
+
+        areaGuiList = new GuiScrollingMultiListOf<Area>(this, entryAreaHeight, guiAreaListWidth, areaListHeight, listTop, listBottom, left)
         {
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
@@ -96,7 +112,7 @@ public class GuiTest extends GuiScreen
             }
         };
 
-        status = new GuiTextField(0, fontRenderer, left, statusTop, guiListWidth, statusHeight + 2);
+        status = new GuiTextField(0, fontRenderer, left, statusTop, guiAreaListWidth, singleLineHeight + 2);
 
         int buttonTop = height - 25;
         int xImport = (this.width /2) - 75 * 2;
@@ -116,7 +132,6 @@ public class GuiTest extends GuiScreen
     {
         if (!isStateCached) return;
         areaGuiList.addAll(cachedAreaGuiList);
-        areaGuiList.setSelectedIndex(cachedSelectedAreaIndex);
         areaGuiList.setSelectedRowIndexes(cachedSelectedIndexes);
         updateStatus();
         areaGuiList.resetScroll();
@@ -126,7 +141,6 @@ public class GuiTest extends GuiScreen
     {
         cachedAreaGuiList.clear();
         cachedAreaGuiList.addAll(areaGuiList.getList());
-        cachedSelectedAreaIndex = areaGuiList.getSelectedIndex();
         cachedSelectedIndexes.clear();
         cachedSelectedIndexes.addAll(areaGuiList.getSelectedRowIndexes());
         updateStatus();
@@ -142,6 +156,7 @@ public class GuiTest extends GuiScreen
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
         drawDefaultBackground();
+        titleLabel.drawLabel(mc, mouseX, mouseY);
         areaGuiList.drawScreen(mouseX, mouseY, partialTicks);
         status.drawTextBox();
         super.drawScreen(mouseX, mouseY, partialTicks);
