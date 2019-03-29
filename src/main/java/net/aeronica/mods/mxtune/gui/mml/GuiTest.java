@@ -109,20 +109,20 @@ public class GuiTest extends GuiScreen
         int entryFileHeight = singleLineHeight;
 
         int listTop = titleTop + titleHeight;
-        int fileListBottom = height - statusHeight - listTop - titleHeight - border;
+        int fileListBottom = Math.max(height - statusHeight - listTop - titleHeight - border, entryAreaHeight * 9);
 
         int fileListHeight = Math.max(fileListBottom - listTop, singleLineHeight);
         int statusTop = fileListBottom + border;
 
-        int thirdsHeight = (fileListBottom - listTop) / 3;
+        int thirdsHeight = ((statusTop - listTop) / 3) - border;
         int areaListHeight = Math.max(thirdsHeight, entryAreaHeight);
-        int areaBottom = (height - areaListHeight * 3);
+        int areaBottom = listTop + areaListHeight;
 
-        int nightTop = fileListBottom - areaListHeight;
-        int nightBottom = fileListBottom;
+        int dayTop = areaBottom + border;
+        int dayBottom = dayTop + areaListHeight;
 
-        int dayTop = nightTop - areaListHeight;
-        int dayBottom = nightTop;
+        int nightTop = dayBottom + border;
+        int nightBottom = nightTop + areaListHeight;
 
         titleLabel = new GuiLabel(fontRenderer, 0, titleX, titleTop, titleWidth, singleLineHeight, 0xFFFFFF );
         titleLabel.addLine(TITLE);
@@ -201,14 +201,19 @@ public class GuiTest extends GuiScreen
 
         int selectButtonWidth = ((width - 15) / 3) - 10;
         int selectButtonLeft = guiFileList.getRight() + 8;
-        int buttonYOffset = (areaListHeight / 2) - 12;
+        int buttonYOffset = border;
         GuiButton buttonToDay = new GuiButton(2, selectButtonLeft, dayTop + buttonYOffset, selectButtonWidth, 20, "To Day List ->");
         GuiButton buttonToNight = new GuiButton(3, selectButtonLeft, nightTop + buttonYOffset, selectButtonWidth, 20, "To Night List ->");
+        GuiButton buttonDDeleteDay = new GuiButton(4, selectButtonLeft, buttonToDay.y + buttonToDay.height + border, selectButtonWidth, 20, "Delete");
+        GuiButton buttonDDeleteNight = new GuiButton(5, selectButtonLeft, buttonToNight.y + buttonToNight.height + border, selectButtonWidth, 20, "Delete");
 
         buttonList.add(buttonImport);
         buttonList.add(buttonDone);
         buttonList.add(buttonToDay);
         buttonList.add(buttonToNight);
+        buttonList.add(buttonDDeleteDay);
+        buttonList.add(buttonDDeleteNight);
+
 
         initFileList();
         reloadState();
@@ -307,6 +312,13 @@ public class GuiTest extends GuiScreen
                 // to Night
                 guiNight.addAll(pathsToSongProxies(guiFileList.getSelectedRows(), guiNight.getList()));
                 break;
+            case 4:
+                // delete Day
+                guiDay.getSelectedRowIndexes().forEach(i->guiDay.remove(guiDay.get(i)));
+                break;
+            case 5:
+                // delete Night
+                guiNight.getSelectedRowIndexes().forEach(i->guiNight.remove(guiNight.get(i)));
             default:
         }
         updateState();
