@@ -24,7 +24,6 @@ import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingMultiListOf;
 import net.aeronica.mods.mxtune.managers.records.Area;
 import net.aeronica.mods.mxtune.managers.records.Song;
-import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -61,20 +60,16 @@ public class GuiTest extends GuiScreen
     private int cachedSelectedAreaIndex = -1;
 
     // PlayList Day
-    private GuiScrollingMultiListOf<SongProxy> guiDay;
-    private List<SongProxy> cachedDayList = new ArrayList<>();
+    private GuiScrollingMultiListOf<Song> guiDay;
+    private List<Song> cachedDayList = new ArrayList<>();
     private Set<Integer> cachedSelectedDaySongs = new HashSet<>();
     private int cachedSelectedDaySongDummy = -1;
 
     // PlayList Night
-    private GuiScrollingMultiListOf<SongProxy> guiNight;
-    private List<SongProxy> cachedNightList = new ArrayList<>();
+    private GuiScrollingMultiListOf<Song> guiNight;
+    private List<Song> cachedNightList = new ArrayList<>();
     private Set<Integer> cachedSelectedNightSongs = new HashSet<>();
     private int cachedSelectedNightSongDummy = -1;
-
-    // Song data
-    private Map<UUID, SongProxy> songProxyMap = new HashMap<>();
-    private Map<UUID, Song> songMap = new HashMap<>();
 
     // Status
     private GuiTextField status;
@@ -168,7 +163,7 @@ public class GuiTest extends GuiScreen
             protected void selectedDoubleClickedCallback(int selectedIndex) { updateStatus(); }
         };
 
-        guiDay = new GuiScrollingMultiListOf<SongProxy>(this, singleLineHeight, guiAreaListWidth, areaListHeight ,dayTop, dayBottom, width - guiAreaListWidth - border)
+        guiDay = new GuiScrollingMultiListOf<Song>(this, singleLineHeight, guiAreaListWidth, areaListHeight ,dayTop, dayBottom, width - guiAreaListWidth - border)
         {
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
@@ -181,7 +176,7 @@ public class GuiTest extends GuiScreen
             }
         };
 
-        guiNight = new GuiScrollingMultiListOf<SongProxy>(this, singleLineHeight, guiAreaListWidth, areaListHeight, nightTop, nightBottom, width - guiAreaListWidth - border)
+        guiNight = new GuiScrollingMultiListOf<Song>(this, singleLineHeight, guiAreaListWidth, areaListHeight, nightTop, nightBottom, width - guiAreaListWidth - border)
         {
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
@@ -363,57 +358,39 @@ public class GuiTest extends GuiScreen
     // This is experimental and inefficient
     private void initFileList()
     {
-        final Runnable runnable = () ->
-        {
-            Path path = FileHelper.getDirectory(FileHelper.CLIENT_LIB_FOLDER, Side.CLIENT);
-            PathMatcher filter = FileHelper.getMxtMatcher(path);
-            try (Stream<Path> paths = Files.list(path))
-            {
-                cachedFileList = paths
-                        .filter(filter::matches)
-                        .collect(Collectors.toList());
-            } catch (NullPointerException | IOException e)
-            {
-                ModLogger.error(e);
-            }
 
-            List<Path> files = new ArrayList<>();
-            for (Path file : cachedFileList)
-            {
+        Path path = FileHelper.getDirectory(FileHelper.CLIENT_LIB_FOLDER, Side.CLIENT);
+        PathMatcher filter = FileHelper.getMxtMatcher(path);
+        try (Stream<Path> paths = Files.list(path))
+        {
+            cachedFileList = paths
+                    .filter(filter::matches)
+                    .collect(Collectors.toList());
+        } catch (NullPointerException | IOException e)
+        {
+            ModLogger.error(e);
+        }
+
+        List<Path> files = new ArrayList<>();
+        for (Path file : cachedFileList)
+        {
 //            if (file.getFileName().toString().toLowerCase(Locale.ROOT).contains(search.getText().toLowerCase(Locale.ROOT)))
 //            {
-                Song song;
-
-                files.add(file);
-                MXTuneFile mxTuneFile = MXTuneFileHelper.getMXTuneFile(file);
-                if (mxTuneFile != null)
-                {
-                    song = MXTuneFileHelper.getSong(mxTuneFile);
-                    if (!songMap.containsKey(song.getUUID()))
-                        songMap.put(song.getUUID(), song);
-                    SongProxy songProxy = MXTuneFileHelper.getSongProxy(song);
-                    if (!songProxyMap.containsKey(songProxy.getUUID()))
-                        songProxyMap.put(songProxy.getUUID(), songProxy);
-                }
-                else
-                    ModLogger.warn("mxt file is missing or corrupt");
+            files.add(file);
 //            }
-            }
-            cachedFileList = files;
-            guiFileList.clear();
-            guiFileList.addAll(files);
-            //lastSearch = search.getText();
-        };
-        new Thread(runnable).start();
+        }
+        cachedFileList = files;
+        guiFileList.clear();
+        guiFileList.addAll(files);
+        //lastSearch = search.getText();
     }
 
     // So crude: add unique songs only
-    private List<SongProxy> pathsToSongProxies(List<Path> paths, List<SongProxy> current)
+    private List<Song> pathsToSongProxies(List<Path> paths, List<Song> current)
     {
-        Song song;
-        List<SongProxy> songProxies = new ArrayList<>();
+        List<Song> songList = new ArrayList<>();
         List<UUID> uuid = new ArrayList<>();
-        for (SongProxy s : current)
+        for (Song s : current)
         {
             uuid.add(s.getUUID());
         }
@@ -422,14 +399,13 @@ public class GuiTest extends GuiScreen
             MXTuneFile mxTuneFile = MXTuneFileHelper.getMXTuneFile(path);
             if (mxTuneFile != null)
             {
-                song = MXTuneFileHelper.getSong(mxTuneFile);
-                SongProxy songProxy = MXTuneFileHelper.getSongProxy(song);
-                if (!uuid.contains(songProxy.getUUID()))
-                    songProxies.add(songProxy);
+                Song song = MXTuneFileHelper.getSong(mxTuneFile);
+                if (!uuid.contains(song.getUUID()))
+                    songList.add(song);
             }
             else
                 ModLogger.warn("mxt file is missing or corrupt");
         }
-        return songProxies;
+        return songList;
     }
 }
