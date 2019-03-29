@@ -301,8 +301,8 @@ public class GuiTest extends GuiScreen
             case 0:
                 break;
             case 1:
-                guiDay.forEach(song -> ModLogger.debug("Song uuid: %s, Title: %s", song.getUUID().toString(), song.getTitle()));
-                guiNight.forEach(song -> ModLogger.debug("Song uuid: %s, Title: %s", song.getUUID().toString(), song.getTitle()));
+                guiDay.forEach(song -> ModLogger.debug("Day Song   uuid: %s, Title: %s", song.getUUID().toString(), song.getTitle()));
+                guiNight.forEach(song -> ModLogger.debug("Night Song uuid: %s, Title: %s", song.getUUID().toString(), song.getTitle()));
                 mc.displayGuiScreen(null);
                 break;
             case 2:
