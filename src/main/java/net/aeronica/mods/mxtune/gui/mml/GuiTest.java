@@ -24,6 +24,8 @@ import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingMultiListOf;
 import net.aeronica.mods.mxtune.managers.records.Area;
 import net.aeronica.mods.mxtune.managers.records.Song;
+import net.aeronica.mods.mxtune.network.PacketDispatcher;
+import net.aeronica.mods.mxtune.network.bidirectional.SetServerDataMessage;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -32,6 +34,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -44,6 +47,8 @@ import java.nio.file.PathMatcher;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static net.aeronica.mods.mxtune.network.bidirectional.SetServerDataMessage.SetType;
 
 public class GuiTest extends GuiScreen
 {
@@ -446,6 +451,26 @@ public class GuiTest extends GuiScreen
         // checks empty areaName, empty toDay, empty toNight
         // existing area check
         // push <-> status
+        List<UUID> dayUUIDs = new ArrayList<>();
+        List<UUID> nightUUIDs = new ArrayList<>();
+        guiDay.forEach(song->dayUUIDs.add(song.getUUID()));
+        guiNight.forEach(song->dayUUIDs.add(song.getUUID()));
+        Area area = new Area(areaName.getText(), dayUUIDs, nightUUIDs);
+        NBTTagCompound areaCompound = new NBTTagCompound();
+        area.writeToNBT(areaCompound);
+        PacketDispatcher.sendToServer(new SetServerDataMessage(area.getUUID(), SetType.AREA, areaCompound));
+        for (Song song : guiDay.getList())
+        {
+            NBTTagCompound songCompound = new NBTTagCompound();
+            song.writeToNBT(songCompound);
+            PacketDispatcher.sendToServer(new SetServerDataMessage(song.getUUID(), SetType.MUSIC, songCompound));
+        }
+        for (Song song : guiNight.getList())
+        {
+            NBTTagCompound songCompound = new NBTTagCompound();
+            song.writeToNBT(songCompound);
+            PacketDispatcher.sendToServer(new SetServerDataMessage(song.getUUID(), SetType.MUSIC, songCompound));
+        }
         // done
         // shipTo button enable
     }

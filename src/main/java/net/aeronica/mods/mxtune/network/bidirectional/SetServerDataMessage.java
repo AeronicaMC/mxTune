@@ -37,7 +37,7 @@ import java.util.UUID;
 
 public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
 {
-    private SetType type = SetType.AREA;
+    SetType type = SetType.AREA;
     private boolean errorResult = false;
     private ITextComponent component = new TextComponentTranslation("mxtune.no_error");
     private NBTTagCompound dataCompound = new NBTTagCompound();
@@ -133,14 +133,12 @@ public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
                     resultMessage = new ResultMessage(true, new TextComponentTranslation("mxtune.error.unexpected_type", type.name()));
             }
         }
-        if (resultMessage.hasError())
-        {
-            PacketDispatcher.sendTo(new SetServerDataMessage(resultMessage.getMessage(), resultMessage.hasError()), player);
-        }
         else
-        {
             PacketDispatcher.sendTo(new SetServerDataMessage((new TextComponentTranslation("mxtune.warning.set_server_data_not_allowed")), true), player);
-        }
+
+        if (resultMessage.hasError())
+            PacketDispatcher.sendTo(new SetServerDataMessage(resultMessage.getMessage(), resultMessage.hasError()), player);
+
     }
 
     public enum SetType {AREA, MUSIC}
