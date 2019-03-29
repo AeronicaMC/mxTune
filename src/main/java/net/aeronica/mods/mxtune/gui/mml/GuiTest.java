@@ -301,7 +301,8 @@ public class GuiTest extends GuiScreen
             case 0:
                 break;
             case 1:
-                //guiAreaList.getSelectedRows().forEach(area -> ModLogger.debug("%s, %s", area.getName(), area.getUUID().toString()));
+                guiDay.forEach(song -> ModLogger.debug("Song uuid: %s, Title: %s", song.getUUID().toString(), song.getTitle()));
+                guiNight.forEach(song -> ModLogger.debug("Song uuid: %s, Title: %s", song.getUUID().toString(), song.getTitle()));
                 mc.displayGuiScreen(null);
                 break;
             case 2:
@@ -314,11 +315,11 @@ public class GuiTest extends GuiScreen
                 break;
             case 4:
                 // delete Day
-                guiDay.getSelectedRowIndexes().forEach(i->guiDay.remove(guiDay.get(i)));
+                guiDay.deleteSelectedRows();
                 break;
             case 5:
                 // delete Night
-                guiNight.getSelectedRowIndexes().forEach(i->guiNight.remove(guiNight.get(i)));
+                guiNight.deleteSelectedRows();
             default:
         }
         updateState();

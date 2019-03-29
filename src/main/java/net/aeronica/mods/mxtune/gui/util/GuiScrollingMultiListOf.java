@@ -98,6 +98,22 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
         return selectedData;
     }
 
+    public void deleteSelectedRows()
+    {
+        synchronized (this)
+        {
+            // remove starting from last to preserve order and index relevance
+            for (int i = this.getSize(); i >= 0; i--)
+            {
+                if (selectedRowIndexes.contains(i))
+                {
+                    this.remove(i);
+                    selectedRowIndexes.remove(i);
+                }
+            }
+        }
+    }
+
     @Override
     protected void selectedClickedCallback(int selectedIndex) {/* NOP */}
 
