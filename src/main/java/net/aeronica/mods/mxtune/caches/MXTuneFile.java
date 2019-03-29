@@ -78,8 +78,6 @@ public class MXTuneFile
     public static MXTuneFile build(NBTTagCompound compound)
     {
         String mxtVersion = compound.getString(TAG_MXT_VERSION);
-        if (MXT_VERSION.compareTo(mxtVersion) < 0 || mxtVersion.equals(""))
-            ModLogger.warn("Unsupported mxTune file version! expected %s, found %s", MXT_VERSION, mxtVersion);
         String title = compound.getString(TAG_TITLE);
         String author = compound.getString(TAG_AUTHOR);
         String source = compound.getString(TAG_SOURCE);
@@ -118,6 +116,8 @@ public class MXTuneFile
         mxTuneFile.modifiedOn = modifiedOn;
         mxTuneFile.createdBy = createdBy;
         mxTuneFile.modifiedBy = modifiedBy;
+        if (MXT_VERSION.compareTo(mxtVersion) < 0 || mxtVersion.equals(""))
+            ModLogger.warn("Unsupported mxTune file version! expected %s, found %s, Title: %s", MXT_VERSION, mxtVersion.equals("") ? "No Version" : mxtVersion, title);
         return mxTuneFile;
     }
 

@@ -18,8 +18,12 @@
 package net.aeronica.mods.mxtune.gui.mml;
 
 import net.aeronica.mods.mxtune.caches.FileHelper;
+import net.aeronica.mods.mxtune.caches.MXTuneFile;
+import net.aeronica.mods.mxtune.caches.MXTuneFileHelper;
+import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingMultiListOf;
 import net.aeronica.mods.mxtune.managers.records.Area;
+import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
@@ -52,12 +56,25 @@ public class GuiTest extends GuiScreen
     private int cachedSelectedFileDummy = -1;
 
     // Area Multi Selector
-    private GuiScrollingMultiListOf<Area> guiAreaList;
+    private GuiScrollingListOf<Area> guiAreaList;
     private List<Area> cachedAreaGuiList = new ArrayList<>();
-    private Set<Integer> cachedSelectedIndexes = new HashSet<>();
+    private int cachedSelectedAreaIndex = -1;
+
+    // PlayList Day
+    private GuiScrollingMultiListOf<SongProxy> guiDay;
+    private List<SongProxy> cachedDayList = new ArrayList<>();
+    private Set<Integer> cachedSelectedDaySongs = new HashSet<>();
+    private int cachedSelectedDaySongDummy = -1;
+
+    // PlayList Night
+    private GuiScrollingMultiListOf<SongProxy> guiNight;
+    private List<SongProxy> cachedNightList = new ArrayList<>();
+    private Set<Integer> cachedSelectedNightSongs = new HashSet<>();
+    private int cachedSelectedNightSongDummy = -1;
 
     // Song data
-    private Map<UUID, SongProxy> songMap = new HashMap<>();
+    private Map<UUID, SongProxy> songProxyMap = new HashMap<>();
+    private Map<UUID, Song> songMap = new HashMap<>();
 
     // Status
     private GuiTextField status;
@@ -97,36 +114,46 @@ public class GuiTest extends GuiScreen
         int entryFileHeight = singleLineHeight;
 
         int listTop = titleTop + titleHeight;
-        int listBottom = height - statusHeight - listTop - titleHeight - border;
-        int areaListHeight = Math.max(listBottom - listTop, entryAreaHeight);
-        int fileListHeight = Math.max(listBottom - listTop, singleLineHeight);
-        int statusTop = listBottom + border;
+        int fileListBottom = height - statusHeight - listTop - titleHeight - border;
+
+        int fileListHeight = Math.max(fileListBottom - listTop, singleLineHeight);
+        int statusTop = fileListBottom + border;
+
+        int thirdsHeight = (fileListBottom - listTop) / 3;
+        int areaListHeight = Math.max(thirdsHeight, entryAreaHeight);
+        int areaBottom = (height - areaListHeight * 3);
+
+        int nightTop = fileListBottom - areaListHeight;
+        int nightBottom = fileListBottom;
+
+        int dayTop = nightTop - areaListHeight;
+        int dayBottom = nightTop;
 
         titleLabel = new GuiLabel(fontRenderer, 0, titleX, titleTop, titleWidth, singleLineHeight, 0xFFFFFF );
         titleLabel.addLine(TITLE);
 
-        guiFileList = new GuiScrollingMultiListOf<Path>(this, entryFileHeight, guiFileListWidth, fileListHeight,listTop, listBottom, left)
+        guiFileList = new GuiScrollingMultiListOf<Path>(this, entryFileHeight, guiFileListWidth, fileListHeight,listTop, fileListBottom, left)
         {
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
             {
                 // get the filename and remove the '.mxt' extension
-                String name = (get(slotIdx).getFileName().toString());//.replaceAll("\\.[mM][xX][tT]$", "");
+                String name = (get(slotIdx).getFileName().toString()).replaceAll("\\.[mM][xX][tT]$", "");
                 String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
                 int color = selectedRowIndexes.contains(slotIdx) ? 0xFFFF00 : 0xADD8E6;
                 fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, color);
             }
         };
 
-        guiAreaList = new GuiScrollingMultiListOf<Area>(this, entryAreaHeight, guiAreaListWidth, areaListHeight, listTop, listBottom, width - guiAreaListWidth - border)
+        guiAreaList = new GuiScrollingListOf<Area>(this, entryAreaHeight, guiAreaListWidth, areaListHeight, listTop, areaBottom, width - guiAreaListWidth - border)
         {
             @Override
-            protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
+            protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
             {
                 Area area = get(slotIdx);
                 String trimmedName = fontRenderer.trimStringToWidth(area.getName(), listWidth - 10);
                 String trimmedUUID = fontRenderer.trimStringToWidth(area.getUUID().toString(), listWidth - 10);
-                int color = selectedRowIndexes.contains(slotIdx) ? 0xFFFF00 : 0xAADDEE;
+                int color = isSelected(slotIdx) ? 0xFFFF00 : 0xAADDEE;
                 fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
                 fontRenderer.drawStringWithShadow(trimmedUUID, (float) left + 3, (float) slotTop + 10, color);
             }
@@ -135,6 +162,35 @@ public class GuiTest extends GuiScreen
             protected void selectedClickedCallback(int selectedIndex)
             {
                 updateStatus();
+            }
+
+            @Override
+            protected void selectedDoubleClickedCallback(int selectedIndex) { updateStatus(); }
+        };
+
+        guiDay = new GuiScrollingMultiListOf<SongProxy>(this, singleLineHeight, guiAreaListWidth, areaListHeight ,dayTop, dayBottom, width - guiAreaListWidth - border)
+        {
+            @Override
+            protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
+            {
+                // get the filename and remove the '.mxt' extension
+                String name = (get(slotIdx).getTitle());
+                String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
+                int color = selectedRowIndexes.contains(slotIdx) ? 0xFFFF00 : 0xADD8E6;
+                fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, color);
+            }
+        };
+
+        guiNight = new GuiScrollingMultiListOf<SongProxy>(this, singleLineHeight, guiAreaListWidth, areaListHeight, nightTop, nightBottom, width - guiAreaListWidth - border)
+        {
+            @Override
+            protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
+            {
+                // get the filename and remove the '.mxt' extension
+                String name = (get(slotIdx).getTitle());
+                String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
+                int color = selectedRowIndexes.contains(slotIdx) ? 0xFFFF00 : 0xADD8E6;
+                fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, color);
             }
         };
 
@@ -148,8 +204,16 @@ public class GuiTest extends GuiScreen
         GuiButton buttonImport = new GuiButton(0, xImport, buttonTop, 75, 20, I18n.format("mxtune.gui.button.importMML"));
         GuiButton buttonDone = new GuiButton(1, xSaveDone, buttonTop, 75, 20, I18n.format("gui.done"));
 
+        int selectButtonWidth = ((width - 15) / 3) - 10;
+        int selectButtonLeft = guiFileList.getRight() + 8;
+        int buttonYOffset = (areaListHeight / 2) - 12;
+        GuiButton buttonToDay = new GuiButton(2, selectButtonLeft, dayTop + buttonYOffset, selectButtonWidth, 20, "To Day List ->");
+        GuiButton buttonToNight = new GuiButton(3, selectButtonLeft, nightTop + buttonYOffset, selectButtonWidth, 20, "To Night List ->");
+
         buttonList.add(buttonImport);
         buttonList.add(buttonDone);
+        buttonList.add(buttonToDay);
+        buttonList.add(buttonToNight);
 
         initFileList();
         reloadState();
@@ -159,10 +223,20 @@ public class GuiTest extends GuiScreen
     {
         if (!isStateCached) return;
         guiAreaList.addAll(cachedAreaGuiList);
-        guiAreaList.setSelectedRowIndexes(cachedSelectedIndexes);
+        guiAreaList.setSelectedIndex(cachedSelectedAreaIndex);
+
         guiFileList.addAll(cachedFileList);
         guiFileList.setSelectedRowIndexes(cachedSelectedSongs);
         guiFileList.setSelectedIndex(cachedSelectedFileDummy);
+
+        guiDay.addAll(cachedDayList);
+        guiDay.setSelectedRowIndexes(cachedSelectedDaySongs);
+        guiDay.setSelectedIndex(cachedSelectedDaySongDummy);
+
+        guiNight.addAll(cachedNightList);
+        guiNight.setSelectedRowIndexes(cachedSelectedNightSongs);
+        guiNight.setSelectedIndex(cachedSelectedNightSongDummy);
+
         updateStatus();
         guiAreaList.resetScroll();
         guiFileList.resetScroll();
@@ -172,18 +246,31 @@ public class GuiTest extends GuiScreen
     {
         cachedAreaGuiList.clear();
         cachedAreaGuiList.addAll(guiAreaList.getList());
-        cachedSelectedIndexes.clear();
-        cachedSelectedIndexes.addAll(guiAreaList.getSelectedRowIndexes());
+        cachedSelectedAreaIndex = guiAreaList.getSelectedIndex();
+
         cachedSelectedSongs.clear();
         cachedSelectedSongs.addAll(guiFileList.getSelectedRowIndexes());
         cachedSelectedFileDummy = guiFileList.getSelectedIndex();
+
+        cachedSelectedDaySongs.clear();
+        cachedSelectedDaySongs.addAll(guiDay.getSelectedRowIndexes());
+        cachedDayList.clear();
+        cachedDayList.addAll(guiDay.getList());
+        cachedSelectedDaySongDummy = guiDay.getSelectedIndex();
+
+        cachedSelectedNightSongs.clear();
+        cachedSelectedNightSongs.addAll(guiNight.getSelectedRowIndexes());
+        cachedNightList.clear();
+        cachedNightList.addAll(guiNight.getList());
+        cachedSelectedNightSongDummy = guiNight.getSelectedIndex();
+
         updateStatus();
         isStateCached = true;
     }
 
     private void updateStatus()
     {
-        status.setText(String.format("Selected Item Count: %s", guiAreaList.getSelectedRowsCount()));
+        status.setText(String.format("Selected Song Count: %s", guiFileList.getSelectedRowsCount()));
     }
 
     @Override
@@ -193,6 +280,8 @@ public class GuiTest extends GuiScreen
         titleLabel.drawLabel(mc, mouseX, mouseY);
         guiFileList.drawScreen(mouseX, mouseY, partialTicks);
         guiAreaList.drawScreen(mouseX, mouseY, partialTicks);
+        guiDay.drawScreen(mouseX, mouseY, partialTicks);
+        guiNight.drawScreen(mouseX, mouseY, partialTicks);
         status.drawTextBox();
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
@@ -210,12 +299,18 @@ public class GuiTest extends GuiScreen
         switch (button.id)
         {
             case 0:
-                guiAreaList.clear();
-                initAreas();
                 break;
             case 1:
-                guiAreaList.getSelectedRows().forEach(area -> ModLogger.debug("%s, %s", area.getName(), area.getUUID().toString()));
+                //guiAreaList.getSelectedRows().forEach(area -> ModLogger.debug("%s, %s", area.getName(), area.getUUID().toString()));
                 mc.displayGuiScreen(null);
+                break;
+            case 2:
+                // to Day
+                guiDay.addAll(pathsToSongProxies(guiFileList.getSelectedRows(), guiDay.getList()));
+                break;
+            case 3:
+                // to Night
+                guiNight.addAll(pathsToSongProxies(guiFileList.getSelectedRows(), guiNight.getList()));
                 break;
             default:
         }
@@ -251,6 +346,8 @@ public class GuiTest extends GuiScreen
         int mouseY = height - Mouse.getEventY() * height / mc.displayHeight - 1;
         guiAreaList.handleMouseInput(mouseX, mouseY);
         guiFileList.handleMouseInput(mouseX, mouseY);
+        guiDay.handleMouseInput(mouseX, mouseY);
+        guiNight.handleMouseInput(mouseX, mouseY);
         super.handleMouseInput();
     }
 
@@ -263,32 +360,76 @@ public class GuiTest extends GuiScreen
         }
     }
 
+    // This is experimental and inefficient
     private void initFileList()
     {
-        Path path = FileHelper.getDirectory(FileHelper.CLIENT_LIB_FOLDER, Side.CLIENT);
-        PathMatcher filter = FileHelper.getMxtMatcher(path);
-        try (Stream<Path> paths = Files.list(path))
+        final Runnable runnable = () ->
         {
-            cachedFileList = paths
-                    .filter(filter::matches)
-                    .collect(Collectors.toList());
-        }
-        catch (NullPointerException | IOException e)
-        {
-            ModLogger.error(e);
-        }
+            Path path = FileHelper.getDirectory(FileHelper.CLIENT_LIB_FOLDER, Side.CLIENT);
+            PathMatcher filter = FileHelper.getMxtMatcher(path);
+            try (Stream<Path> paths = Files.list(path))
+            {
+                cachedFileList = paths
+                        .filter(filter::matches)
+                        .collect(Collectors.toList());
+            } catch (NullPointerException | IOException e)
+            {
+                ModLogger.error(e);
+            }
 
-        List<Path> files = new ArrayList<>();
-        for (Path file : cachedFileList)
-        {
+            List<Path> files = new ArrayList<>();
+            for (Path file : cachedFileList)
+            {
 //            if (file.getFileName().toString().toLowerCase(Locale.ROOT).contains(search.getText().toLowerCase(Locale.ROOT)))
 //            {
+                Song song;
+
                 files.add(file);
+                MXTuneFile mxTuneFile = MXTuneFileHelper.getMXTuneFile(file);
+                if (mxTuneFile != null)
+                {
+                    song = MXTuneFileHelper.getSong(mxTuneFile);
+                    if (!songMap.containsKey(song.getUUID()))
+                        songMap.put(song.getUUID(), song);
+                    SongProxy songProxy = MXTuneFileHelper.getSongProxy(song);
+                    if (!songProxyMap.containsKey(songProxy.getUUID()))
+                        songProxyMap.put(songProxy.getUUID(), songProxy);
+                }
+                else
+                    ModLogger.warn("mxt file is missing or corrupt");
 //            }
+            }
+            cachedFileList = files;
+            guiFileList.clear();
+            guiFileList.addAll(files);
+            //lastSearch = search.getText();
+        };
+        new Thread(runnable).start();
+    }
+
+    // So crude: add unique songs only
+    private List<SongProxy> pathsToSongProxies(List<Path> paths, List<SongProxy> current)
+    {
+        Song song;
+        List<SongProxy> songProxies = new ArrayList<>();
+        List<UUID> uuid = new ArrayList<>();
+        for (SongProxy s : current)
+        {
+            uuid.add(s.getUUID());
         }
-        cachedFileList = files;
-        guiFileList.clear();
-        guiFileList.addAll(files);
-        //lastSearch = search.getText();
+        for (Path path : paths)
+        {
+            MXTuneFile mxTuneFile = MXTuneFileHelper.getMXTuneFile(path);
+            if (mxTuneFile != null)
+            {
+                song = MXTuneFileHelper.getSong(mxTuneFile);
+                SongProxy songProxy = MXTuneFileHelper.getSongProxy(song);
+                if (!uuid.contains(songProxy.getUUID()))
+                    songProxies.add(songProxy);
+            }
+            else
+                ModLogger.warn("mxt file is missing or corrupt");
+        }
+        return songProxies;
     }
 }

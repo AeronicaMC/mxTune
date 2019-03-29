@@ -19,8 +19,8 @@ package net.aeronica.mods.mxtune.gui.mml;
 
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.caches.MXTuneFile;
+import net.aeronica.mods.mxtune.caches.MXTuneFileHelper;
 import net.aeronica.mods.mxtune.caches.MXTunePart;
-import net.aeronica.mods.mxtune.caches.MXTuneStaff;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
@@ -47,7 +47,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -239,8 +238,6 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
     @Override
     public void updateScreen()
     {
-        //cachedSelectedIndex = guiLibraryList.getSelectedIndex();
-        //guiLibraryList.setSelectedIndex(cachedSelectedIndex);
         search.updateCursorCounter();
         super.updateScreen();
     }
@@ -426,24 +423,6 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         }
     }
 
-    private String getMML(MXTuneFile tune)
-    {
-        StringBuilder builder = new StringBuilder();
-        for (MXTunePart part : tune.getParts())
-        {
-            builder.append("MML@I=").append(part.getPackedPatch());
-            Iterator<MXTuneStaff> iterator = part.getStaves().iterator();
-            while (iterator.hasNext())
-            {
-                builder.append(iterator.next().getMml());
-                if (iterator.hasNext())
-                    builder.append(",");
-            }
-            builder.append(";");
-        }
-        return builder.toString();
-    }
-
     private void play()
     {
         if (isPlaying)
@@ -453,7 +432,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         else if (mxTuneFile != null)
         {
             isPlaying = true;
-            String mml = getMML(mxTuneFile);
+            String mml = MXTuneFileHelper.getMML(mxTuneFile);
             playId = PlayIdSupplier.PlayType.PERSONAL.getAsInt();
             ClientAudio.playLocal(playId, mml, this);
         }
