@@ -71,6 +71,10 @@ public class GuiTest extends GuiScreen
     private Set<Integer> cachedSelectedNightSongs = new HashSet<>();
     private int cachedSelectedNightSongDummy = -1;
 
+    // Area
+    private GuiTextField areaName;
+    private String cachedAreaName = "";
+
     // Status
     private GuiTextField status;
 
@@ -98,9 +102,9 @@ public class GuiTest extends GuiScreen
         int guiFileListWidth = (width - 15) / 3;
         int singleLineHeight = mc.fontRenderer.FONT_HEIGHT + 2;
         int entryAreaHeight = singleLineHeight * 2;
-        int border = 5;
-        int titleTop = border;
-        int left = border;
+        int padding = 5;
+        int titleTop = padding;
+        int left = padding;
         int titleWidth = fontRenderer.getStringWidth(TITLE);
         int titleX = (width / 2) - (titleWidth / 2);
 
@@ -109,19 +113,19 @@ public class GuiTest extends GuiScreen
         int entryFileHeight = singleLineHeight;
 
         int listTop = titleTop + titleHeight;
-        int fileListBottom = Math.max(height - statusHeight - listTop - titleHeight - border, entryAreaHeight * 9);
+        int fileListBottom = Math.max(height - statusHeight - listTop - titleHeight - padding, entryAreaHeight * 9);
 
         int fileListHeight = Math.max(fileListBottom - listTop, singleLineHeight);
-        int statusTop = fileListBottom + border;
+        int statusTop = fileListBottom + padding;
 
-        int thirdsHeight = ((statusTop - listTop) / 3) - border;
+        int thirdsHeight = ((statusTop - listTop) / 3) - padding;
         int areaListHeight = Math.max(thirdsHeight, entryAreaHeight);
         int areaBottom = listTop + areaListHeight;
 
-        int dayTop = areaBottom + border;
+        int dayTop = areaBottom + padding;
         int dayBottom = dayTop + areaListHeight;
 
-        int nightTop = dayBottom + border;
+        int nightTop = dayBottom + padding;
         int nightBottom = nightTop + areaListHeight;
 
         titleLabel = new GuiLabel(fontRenderer, 0, titleX, titleTop, titleWidth, singleLineHeight, 0xFFFFFF );
@@ -140,7 +144,7 @@ public class GuiTest extends GuiScreen
             }
         };
 
-        guiAreaList = new GuiScrollingListOf<Area>(this, entryAreaHeight, guiAreaListWidth, areaListHeight, listTop, areaBottom, width - guiAreaListWidth - border)
+        guiAreaList = new GuiScrollingListOf<Area>(this, entryAreaHeight, guiAreaListWidth, areaListHeight, listTop, areaBottom, width - guiAreaListWidth - padding)
         {
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
@@ -163,7 +167,7 @@ public class GuiTest extends GuiScreen
             protected void selectedDoubleClickedCallback(int selectedIndex) { updateStatus(); }
         };
 
-        guiDay = new GuiScrollingMultiListOf<Song>(this, singleLineHeight, guiAreaListWidth, areaListHeight ,dayTop, dayBottom, width - guiAreaListWidth - border)
+        guiDay = new GuiScrollingMultiListOf<Song>(this, singleLineHeight, guiAreaListWidth, areaListHeight ,dayTop, dayBottom, width - guiAreaListWidth - padding)
         {
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
@@ -176,7 +180,7 @@ public class GuiTest extends GuiScreen
             }
         };
 
-        guiNight = new GuiScrollingMultiListOf<Song>(this, singleLineHeight, guiAreaListWidth, areaListHeight, nightTop, nightBottom, width - guiAreaListWidth - border)
+        guiNight = new GuiScrollingMultiListOf<Song>(this, singleLineHeight, guiAreaListWidth, areaListHeight, nightTop, nightBottom, width - guiAreaListWidth - padding)
         {
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
@@ -189,7 +193,7 @@ public class GuiTest extends GuiScreen
             }
         };
 
-        status = new GuiTextField(0, fontRenderer, left, statusTop, width - border * 2, singleLineHeight + 2);
+        status = new GuiTextField(0, fontRenderer, left, statusTop, width - padding * 2, singleLineHeight + 2);
 
         int buttonTop = height - 25;
         int xImport = (this.width /2) - 75 * 2;
@@ -201,11 +205,14 @@ public class GuiTest extends GuiScreen
 
         int selectButtonWidth = ((width - 15) / 3) - 10;
         int selectButtonLeft = guiFileList.getRight() + 8;
-        int buttonYOffset = border;
-        GuiButton buttonToDay = new GuiButton(2, selectButtonLeft, dayTop + buttonYOffset, selectButtonWidth, 20, "To Day List ->");
-        GuiButton buttonToNight = new GuiButton(3, selectButtonLeft, nightTop + buttonYOffset, selectButtonWidth, 20, "To Night List ->");
-        GuiButton buttonDDeleteDay = new GuiButton(4, selectButtonLeft, buttonToDay.y + buttonToDay.height + border, selectButtonWidth, 20, "Delete");
-        GuiButton buttonDDeleteNight = new GuiButton(5, selectButtonLeft, buttonToNight.y + buttonToNight.height + border, selectButtonWidth, 20, "Delete");
+
+        areaName = new GuiTextField(1, fontRenderer, selectButtonLeft, listTop, selectButtonWidth, singleLineHeight + 2);
+        GuiButton buttonToServer = new GuiButton(6, selectButtonLeft, areaName.y + areaName.height + padding, selectButtonWidth, 20, "Send to Server");
+
+        GuiButton buttonToDay = new GuiButton(2, selectButtonLeft, dayTop + padding, selectButtonWidth, 20, "To Day List ->");
+        GuiButton buttonToNight = new GuiButton(3, selectButtonLeft, nightTop + padding, selectButtonWidth, 20, "To Night List ->");
+        GuiButton buttonDDeleteDay = new GuiButton(4, selectButtonLeft, buttonToDay.y + buttonToDay.height + padding, selectButtonWidth, 20, "Delete");
+        GuiButton buttonDDeleteNight = new GuiButton(5, selectButtonLeft, buttonToNight.y + buttonToNight.height + padding, selectButtonWidth, 20, "Delete");
 
         buttonList.add(buttonImport);
         buttonList.add(buttonDone);
@@ -213,6 +220,7 @@ public class GuiTest extends GuiScreen
         buttonList.add(buttonToNight);
         buttonList.add(buttonDDeleteDay);
         buttonList.add(buttonDDeleteNight);
+        buttonList.add(buttonToServer);
 
 
         initFileList();
@@ -236,6 +244,8 @@ public class GuiTest extends GuiScreen
         guiNight.addAll(cachedNightList);
         guiNight.setSelectedRowIndexes(cachedSelectedNightSongs);
         guiNight.setSelectedIndex(cachedSelectedNightSongDummy);
+
+        areaName.setText(cachedAreaName);
 
         updateStatus();
         guiAreaList.resetScroll();
@@ -264,6 +274,8 @@ public class GuiTest extends GuiScreen
         cachedNightList.addAll(guiNight.getList());
         cachedSelectedNightSongDummy = guiNight.getSelectedIndex();
 
+        cachedAreaName = areaName.getText();
+
         updateStatus();
         isStateCached = true;
     }
@@ -282,6 +294,7 @@ public class GuiTest extends GuiScreen
         guiAreaList.drawScreen(mouseX, mouseY, partialTicks);
         guiDay.drawScreen(mouseX, mouseY, partialTicks);
         guiNight.drawScreen(mouseX, mouseY, partialTicks);
+        areaName.drawTextBox();
         status.drawTextBox();
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
@@ -320,6 +333,9 @@ public class GuiTest extends GuiScreen
             case 5:
                 // delete Night
                 guiNight.deleteSelectedRows();
+            case 6:
+                // send to Server
+                shipIt();
             default:
         }
         updateState();
@@ -329,6 +345,7 @@ public class GuiTest extends GuiScreen
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException
     {
+        areaName.textboxKeyTyped(typedChar, keyCode);
         updateState();
         super.keyTyped(typedChar, keyCode);
     }
@@ -343,6 +360,7 @@ public class GuiTest extends GuiScreen
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
+        areaName.mouseClicked(mouseX, mouseY, mouseButton);
         updateState();
         super.mouseClicked(mouseX, mouseY, mouseButton);
     }
@@ -420,5 +438,15 @@ public class GuiTest extends GuiScreen
                 ModLogger.warn("mxt file is missing or corrupt");
         }
         return songList;
+    }
+
+    private void shipIt()
+    {
+        // shipTo button disable
+        // checks empty areaName, empty toDay, empty toNight
+        // existing area check
+        // push <-> status
+        // done
+        // shipTo button enable
     }
 }
