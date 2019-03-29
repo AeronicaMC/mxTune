@@ -64,15 +64,13 @@ public class MXTuneFileHelper
 
     public static Song getSong(MXTuneFile tune)
     {
-        Song song = new Song(tune.getTitle(), getMML(tune));
-        return song;
+        return new Song(tune.getTitle(), getMML(tune));
     }
 
     public static SongProxy getSongProxy(Song song)
     {
         NBTTagCompound songCompmoung = new NBTTagCompound();
         song.writeToNBT(songCompmoung);
-        SongProxy songProxy = new SongProxy(songCompmoung);
-        return songProxy;
+        return new SongProxy(songCompmoung);
     }
 }

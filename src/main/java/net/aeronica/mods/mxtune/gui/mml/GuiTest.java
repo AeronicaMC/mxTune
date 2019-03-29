@@ -222,7 +222,7 @@ public class GuiTest extends GuiScreen
         buttonList.add(buttonDDeleteNight);
         buttonList.add(buttonToServer);
 
-
+        initAreas();
         initFileList();
         reloadState();
     }
@@ -333,9 +333,11 @@ public class GuiTest extends GuiScreen
             case 5:
                 // delete Night
                 guiNight.deleteSelectedRows();
+                break;
             case 6:
                 // send to Server
                 shipIt();
+                break;
             default:
         }
         updateState();
@@ -379,7 +381,8 @@ public class GuiTest extends GuiScreen
 
     private void initAreas()
     {
-        for (int i = 0; i < 50; i++)
+        // TODO: Get existing Areas from the server
+        for (int i = 0; i < 2; i++)
         {
             Area area = new Area(String.format("TEST: %02d", i));
             guiAreaList.add(area);
@@ -405,15 +408,11 @@ public class GuiTest extends GuiScreen
         List<Path> files = new ArrayList<>();
         for (Path file : cachedFileList)
         {
-//            if (file.getFileName().toString().toLowerCase(Locale.ROOT).contains(search.getText().toLowerCase(Locale.ROOT)))
-//            {
             files.add(file);
-//            }
         }
         cachedFileList = files;
         guiFileList.clear();
         guiFileList.addAll(files);
-        //lastSearch = search.getText();
     }
 
     // So crude: add unique songs only
@@ -442,6 +441,7 @@ public class GuiTest extends GuiScreen
 
     private void shipIt()
     {
+        // TODO: Send Area and Song data to the server
         // shipTo button disable
         // checks empty areaName, empty toDay, empty toNight
         // existing area check
