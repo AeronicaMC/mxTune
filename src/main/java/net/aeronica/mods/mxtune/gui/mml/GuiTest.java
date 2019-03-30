@@ -103,8 +103,8 @@ public class GuiTest extends GuiScreen
     @Override
     public void initGui()
     {
-        int guiAreaListWidth = (width - 15) / 3;
-        int guiFileListWidth = (width - 15) / 3;
+        int guiAreaListWidth = Math.min(Math.max((width - 15) / 3, 100), 400);
+        int guiFileListWidth = guiAreaListWidth;
         int singleLineHeight = mc.fontRenderer.FONT_HEIGHT + 2;
         int entryAreaHeight = singleLineHeight * 2;
         int padding = 5;
@@ -208,7 +208,7 @@ public class GuiTest extends GuiScreen
         GuiButton buttonImport = new GuiButton(0, xImport, buttonTop, 75, 20, I18n.format("mxtune.gui.button.importMML"));
         GuiButton buttonDone = new GuiButton(1, xSaveDone, buttonTop, 75, 20, I18n.format("gui.done"));
 
-        int selectButtonWidth = ((width - 15) / 3) - 10;
+        int selectButtonWidth = guiFileListWidth - 10;
         int selectButtonLeft = guiFileList.getRight() + 8;
 
         areaName = new GuiTextField(1, fontRenderer, selectButtonLeft, listTop, selectButtonWidth, singleLineHeight + 2);
@@ -454,11 +454,13 @@ public class GuiTest extends GuiScreen
         List<UUID> dayUUIDs = new ArrayList<>();
         List<UUID> nightUUIDs = new ArrayList<>();
         guiDay.forEach(song->dayUUIDs.add(song.getUUID()));
-        guiNight.forEach(song->dayUUIDs.add(song.getUUID()));
+        guiNight.forEach(song->nightUUIDs.add(song.getUUID()));
+
         Area area = new Area(areaName.getText(), dayUUIDs, nightUUIDs);
         NBTTagCompound areaCompound = new NBTTagCompound();
         area.writeToNBT(areaCompound);
         PacketDispatcher.sendToServer(new SetServerDataMessage(area.getUUID(), SetType.AREA, areaCompound));
+
         for (Song song : guiDay.getList())
         {
             NBTTagCompound songCompound = new NBTTagCompound();
