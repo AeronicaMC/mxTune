@@ -50,6 +50,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     private String sParam3;
     private List<ClassifiedPlayer> blackList;
     private List<ClassifiedPlayer> whiteList;
+    private boolean allowMusicOp;
 
     private byte[] byteBuffer = null;
 
@@ -61,36 +62,40 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         this.propertyID = propertyID;
         switch (propertyID)
         {
-        case MusicOptionsUtil.SYNC_ALL:
-            this.data = new NBTTagCompound();
-            this.data = (NBTTagCompound) MUSIC_OPTIONS.writeNBT(inst, null);
-            break;
+            case MusicOptionsUtil.SYNC_ALL:
+                this.data = new NBTTagCompound();
+                this.data = (NBTTagCompound) MUSIC_OPTIONS.writeNBT(inst, null);
+                break;
 
-        case MusicOptionsUtil.SYNC_DISPLAY_HUD:
-            this.disableHud = inst.isHudDisabled();
-            this.positionHud = inst.getPositionHud();
-            this.sizeHud = inst.getSizeHud();
-            break;
-            
-        case MusicOptionsUtil.SYNC_MUTE_OPTION:
-            this.muteOption = inst.getMuteOption();
-            break;
-            
-        case MusicOptionsUtil.SYNC_S_PARAMS:
-            this.sParam1 = inst.getSParam1();
-            this.sParam2 = inst.getSParam2();
-            this.sParam3 = inst.getSParam3();
-            break;
+            case MusicOptionsUtil.SYNC_DISPLAY_HUD:
+                this.disableHud = inst.isHudDisabled();
+                this.positionHud = inst.getPositionHud();
+                this.sizeHud = inst.getSizeHud();
+                break;
 
-        case MusicOptionsUtil.SYNC_WHITE_LIST:
-            this.whiteList = inst.getWhiteList();
-            break;
-            
-        case MusicOptionsUtil.SYNC_BLACK_LIST:
-            this.blackList = inst.getBlackList();
-            break;
+            case MusicOptionsUtil.SYNC_MUTE_OPTION:
+                this.muteOption = inst.getMuteOption();
+                break;
 
-        default:
+            case MusicOptionsUtil.SYNC_S_PARAMS:
+                this.sParam1 = inst.getSParam1();
+                this.sParam2 = inst.getSParam2();
+                this.sParam3 = inst.getSParam3();
+                break;
+
+            case MusicOptionsUtil.SYNC_WHITE_LIST:
+                this.whiteList = inst.getWhiteList();
+                break;
+
+            case MusicOptionsUtil.SYNC_BLACK_LIST:
+                this.blackList = inst.getBlackList();
+                break;
+
+            case MusicOptionsUtil.SYNC_MUSIC_OP:
+                this.allowMusicOp = inst.isMxTuneServerUpdateAllowed();
+                break;
+
+            default:
         }
     }
 
@@ -100,29 +105,32 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         propertyID = buffer.readByte();
         switch (propertyID)
         {
-        case MusicOptionsUtil.SYNC_ALL:
-            this.data = buffer.readCompoundTag();
-            break;
-        case MusicOptionsUtil.SYNC_DISPLAY_HUD:
-            this.disableHud = buffer.readBoolean();
-            this.positionHud = buffer.readInt();
-            this.sizeHud = buffer.readFloat();
-            break;
-        case MusicOptionsUtil.SYNC_MUTE_OPTION:
-           this. muteOption = buffer.readInt();
-            break;
-        case MusicOptionsUtil.SYNC_S_PARAMS:
-            this.sParam1 = ByteBufUtils.readUTF8String(buffer);
-            this.sParam2 = ByteBufUtils.readUTF8String(buffer);
-            this.sParam3 = ByteBufUtils.readUTF8String(buffer);
-            break;
-        case MusicOptionsUtil.SYNC_WHITE_LIST:
-            this.whiteList = readPlayerList(buffer);
-            break;            
-        case MusicOptionsUtil.SYNC_BLACK_LIST:
-            this.blackList = readPlayerList(buffer);
-            break;
-        default:        
+            case MusicOptionsUtil.SYNC_ALL:
+                this.data = buffer.readCompoundTag();
+                break;
+            case MusicOptionsUtil.SYNC_DISPLAY_HUD:
+                this.disableHud = buffer.readBoolean();
+                this.positionHud = buffer.readInt();
+                this.sizeHud = buffer.readFloat();
+                break;
+            case MusicOptionsUtil.SYNC_MUTE_OPTION:
+                this.muteOption = buffer.readInt();
+                break;
+            case MusicOptionsUtil.SYNC_S_PARAMS:
+                this.sParam1 = ByteBufUtils.readUTF8String(buffer);
+                this.sParam2 = ByteBufUtils.readUTF8String(buffer);
+                this.sParam3 = ByteBufUtils.readUTF8String(buffer);
+                break;
+            case MusicOptionsUtil.SYNC_WHITE_LIST:
+                this.whiteList = readPlayerList(buffer);
+                break;
+            case MusicOptionsUtil.SYNC_BLACK_LIST:
+                this.blackList = readPlayerList(buffer);
+                break;
+            case MusicOptionsUtil.SYNC_MUSIC_OP:
+                this.allowMusicOp = buffer.readBoolean();
+                break;
+            default:
         }
     }
 
@@ -132,29 +140,32 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         buffer.writeByte(this.propertyID);
         switch (this.propertyID)
         {
-        case MusicOptionsUtil.SYNC_ALL:
-            buffer.writeCompoundTag(this.data);
-            break;
-        case MusicOptionsUtil.SYNC_DISPLAY_HUD:
-            buffer.writeBoolean(this.disableHud);
-            buffer.writeInt(this.positionHud);
-            buffer.writeFloat(this.sizeHud);
-            break;
-        case MusicOptionsUtil.SYNC_MUTE_OPTION:
-            buffer.writeInt(this.muteOption);
-            break;
-        case MusicOptionsUtil.SYNC_S_PARAMS:
-            ByteBufUtils.writeUTF8String(buffer, this.sParam1);
-            ByteBufUtils.writeUTF8String(buffer, this.sParam2);
-            ByteBufUtils.writeUTF8String(buffer, this.sParam3);
-            break;
-        case MusicOptionsUtil.SYNC_WHITE_LIST:
-            writePlayerList(buffer, this.whiteList);
-            break;            
-        case MusicOptionsUtil.SYNC_BLACK_LIST:
-            writePlayerList(buffer, this.blackList);
-            break;
-        default:
+            case MusicOptionsUtil.SYNC_ALL:
+                buffer.writeCompoundTag(this.data);
+                break;
+            case MusicOptionsUtil.SYNC_DISPLAY_HUD:
+                buffer.writeBoolean(this.disableHud);
+                buffer.writeInt(this.positionHud);
+                buffer.writeFloat(this.sizeHud);
+                break;
+            case MusicOptionsUtil.SYNC_MUTE_OPTION:
+                buffer.writeInt(this.muteOption);
+                break;
+            case MusicOptionsUtil.SYNC_S_PARAMS:
+                ByteBufUtils.writeUTF8String(buffer, this.sParam1);
+                ByteBufUtils.writeUTF8String(buffer, this.sParam2);
+                ByteBufUtils.writeUTF8String(buffer, this.sParam3);
+                break;
+            case MusicOptionsUtil.SYNC_WHITE_LIST:
+                writePlayerList(buffer, this.whiteList);
+                break;
+            case MusicOptionsUtil.SYNC_BLACK_LIST:
+                writePlayerList(buffer, this.blackList);
+                break;
+            case MusicOptionsUtil.SYNC_MUSIC_OP:
+                buffer.writeBoolean(allowMusicOp);
+                break;
+            default:
         }
     }
 

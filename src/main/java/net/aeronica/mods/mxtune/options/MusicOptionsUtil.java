@@ -40,6 +40,8 @@ public class MusicOptionsUtil
     public static final byte SYNC_S_PARAMS = 3;
     public static final byte SYNC_WHITE_LIST = 4;
     public static final byte SYNC_BLACK_LIST = 5;
+    public static final byte SYNC_MUSIC_OP = 6;
+
 
     @CapabilityInject(IPlayerMusicOptions.class)
     private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = Util.nonNullInjected();
@@ -139,7 +141,11 @@ public class MusicOptionsUtil
 
     public static boolean isMxTuneServerUpdateAllowed(EntityPlayer playerIn) { return getImpl(playerIn).isMxTuneServerUpdateAllowed(); }
 
-    public static void setMxTuneServerUpdateAllowed(EntityPlayer playerIn, boolean isAllowed) { getImpl(playerIn).setMxTuneServerUpdateAllowed(isAllowed); }
+    public static void setMxTuneServerUpdateAllowed(EntityPlayer playerIn, boolean isAllowed)
+    {
+        getImpl(playerIn).setMxTuneServerUpdateAllowed(isAllowed);
+        sync(playerIn, SYNC_MUSIC_OP);
+    }
 
     @Nullable
     private static IPlayerMusicOptions getImpl(EntityPlayer player)

@@ -347,7 +347,7 @@ public class GroupManager
 
             debug(playerInitiator.getName() + " pokes " + playerTarget.getName());
             Group targetGroup = getMembersGroup(playerTarget.getEntityId());
-            if ((targetGroup != null) && targetGroup.getLeaderEntityID().equals(playerTarget.getEntityId())
+            if ((!targetGroup.isEmpty()) && targetGroup.getLeaderEntityID().equals(playerTarget.getEntityId())
                     && isNotGroupMember(playerInitiator.getEntityId()))
             {
                 if (!notMuted(playerInitiator, playerTarget)) return;
