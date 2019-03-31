@@ -25,8 +25,12 @@ import net.aeronica.mods.mxtune.gui.util.GuiScrollingMultiListOf;
 import net.aeronica.mods.mxtune.managers.records.Area;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
+import net.aeronica.mods.mxtune.network.bidirectional.GetAreasMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.SetServerDataMessage;
+import net.aeronica.mods.mxtune.util.CallBack;
+import net.aeronica.mods.mxtune.util.CallBackManager;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.util.ResultMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiLabel;
@@ -50,7 +54,7 @@ import java.util.stream.Stream;
 
 import static net.aeronica.mods.mxtune.network.bidirectional.SetServerDataMessage.SetType;
 
-public class GuiTest extends GuiScreen
+public class GuiTest extends GuiScreen implements CallBack
 {
     private static final String TITLE = "Test Gui";
     // Song Multi Selector
@@ -87,6 +91,7 @@ public class GuiTest extends GuiScreen
     private GuiLabel titleLabel;
     private boolean cacheKeyRepeatState;
     private boolean isStateCached;
+    private GuiButton buttonToServer;
 
     public GuiTest()
     {
@@ -199,6 +204,7 @@ public class GuiTest extends GuiScreen
         };
 
         status = new GuiTextField(0, fontRenderer, left, statusTop, width - padding * 2, singleLineHeight + 2);
+        status.setMaxStringLength(256);
 
         int buttonTop = height - 25;
         int xImport = (this.width /2) - 75 * 2;
@@ -212,7 +218,7 @@ public class GuiTest extends GuiScreen
         int selectButtonLeft = guiFileList.getRight() + 8;
 
         areaName = new GuiTextField(1, fontRenderer, selectButtonLeft, listTop, selectButtonWidth, singleLineHeight + 2);
-        GuiButton buttonToServer = new GuiButton(6, selectButtonLeft, areaName.y + areaName.height + padding, selectButtonWidth, 20, "Send to Server");
+        buttonToServer = new GuiButton(6, selectButtonLeft, areaName.y + areaName.height + padding, selectButtonWidth, 20, "Send to Server");
 
         GuiButton buttonToDay = new GuiButton(2, selectButtonLeft, dayTop + padding, selectButtonWidth, 20, "To Day List ->");
         GuiButton buttonToNight = new GuiButton(3, selectButtonLeft, nightTop + padding, selectButtonWidth, 20, "To Night List ->");
@@ -281,6 +287,7 @@ public class GuiTest extends GuiScreen
 
         cachedAreaName = areaName.getText();
 
+        buttonToServer.enabled = !(areaName.getText().trim().equals("") || (guiDay.isEmpty() && guiNight.isEmpty()));
         updateStatus();
         isStateCached = true;
     }
@@ -384,16 +391,6 @@ public class GuiTest extends GuiScreen
         super.handleMouseInput();
     }
 
-    private void initAreas()
-    {
-        // TODO: Get existing Areas from the server
-        for (int i = 0; i < 2; i++)
-        {
-            Area area = new Area(String.format("TEST: %02d", i));
-            guiAreaList.add(area);
-        }
-    }
-
     // This is experimental and inefficient
     private void initFileList()
     {
@@ -447,8 +444,6 @@ public class GuiTest extends GuiScreen
     private void shipIt()
     {
         // TODO: Send Area and Song data to the server
-        // shipTo button disable
-        // checks empty areaName, empty toDay, empty toNight
         // existing area check
         // push <-> status
         List<UUID> dayUUIDs = new ArrayList<>();
@@ -456,6 +451,7 @@ public class GuiTest extends GuiScreen
         guiDay.forEach(song->dayUUIDs.add(song.getUUID()));
         guiNight.forEach(song->nightUUIDs.add(song.getUUID()));
 
+        areaName.setText(areaName.getText().trim());
         Area area = new Area(areaName.getText(), dayUUIDs, nightUUIDs);
         NBTTagCompound areaCompound = new NBTTagCompound();
         area.writeToNBT(areaCompound);
@@ -474,6 +470,27 @@ public class GuiTest extends GuiScreen
             PacketDispatcher.sendToServer(new SetServerDataMessage(song.getUUID(), SetType.MUSIC, songCompound));
         }
         // done
-        // shipTo button enable
+        initAreas();
+        updateState();
+    }
+
+
+    private void initAreas()
+    {
+        PacketDispatcher.sendToServer(new GetAreasMessage(CallBackManager.register(this)));
+    }
+
+    @Override
+    public void onFailure(ResultMessage resultMessage)
+    {
+        status.setText(resultMessage.getMessage().getFormattedText());
+    }
+
+    @Override
+    public void onResponse(Object result, ResultMessage resultMessage)
+    {
+        guiAreaList.clear();
+        guiAreaList.addAll(((List<Area>) result));
+        updateState();
     }
 }

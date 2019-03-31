@@ -20,6 +20,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import net.aeronica.mods.mxtune.gui.hud.GuiJamOverlay;
 import net.aeronica.mods.mxtune.handler.KeyHandler;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
+import net.aeronica.mods.mxtune.util.CallBackManager;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -32,6 +33,9 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
+
+import static net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
+import static net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 
 public class ClientProxy extends ServerProxy
 {
@@ -124,5 +128,17 @@ public class ClientProxy extends ServerProxy
     public IThreadListener getThreadFromContext(MessageContext ctx)
     {
         return (ctx.side.isClient() ? this.getMinecraft() : super.getThreadFromContext(ctx));
+    }
+
+    @Override
+    public void clientConnect(ClientConnectedToServerEvent event)
+    {
+        CallBackManager.start();
+    }
+
+    @Override
+    public void clientDisconnect(ClientDisconnectionFromServerEvent event)
+    {
+        CallBackManager.shutdown();
     }
 }

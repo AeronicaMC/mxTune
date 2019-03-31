@@ -37,6 +37,7 @@ import net.aeronica.mods.mxtune.world.chunk.ModChunkCapability;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.util.datafix.walkers.ItemStackDataLists;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.CompoundDataFixer;
 import net.minecraftforge.common.util.ModFixs;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -44,7 +45,11 @@ import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+
+import static net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
+import static net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION,
      acceptedMinecraftVersions = Reference.ACCEPTED_MINECRAFT_VERSIONS,
@@ -65,6 +70,7 @@ public class MXTune
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
+        MinecraftForge.EVENT_BUS.register(this);
         ModLogger.setLogger(event.getModLog());
         ModCriteriaTriggers.init();
         ModChunkCapability.register();
@@ -124,5 +130,17 @@ public class MXTune
     {
         DurationTimer.shutdown();
         ServerFileManager.shutDown();
+    }
+
+    @SubscribeEvent
+    void onEvent(ClientConnectedToServerEvent event)
+    {
+        proxy.clientConnect(event);
+    }
+
+    @SubscribeEvent
+    void onEvent(ClientDisconnectionFromServerEvent event)
+    {
+        proxy.clientDisconnect(event);
     }
 }

@@ -21,10 +21,12 @@ import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.util.NBTHelper;
 import net.minecraft.nbt.NBTTagCompound;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public abstract class BaseData
+public abstract class BaseData implements Serializable
 {
+    private static final long serialVersionUID = -76044260522231311L;
     protected UUID uuid;
 
     BaseData()

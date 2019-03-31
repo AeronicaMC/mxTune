@@ -26,6 +26,7 @@ import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -85,4 +86,14 @@ public class ServerProxy
     public EntityPlayer getPlayerEntity(MessageContext ctx) { return ctx.getServerHandler().player; }
 
     public IThreadListener getThreadFromContext(MessageContext ctx) { return ctx.getServerHandler().player.getServer(); }
+
+    public void clientConnect(FMLNetworkEvent.ClientConnectedToServerEvent event)
+    {
+        // Override and use in ClientProxy Only
+    }
+
+    public void clientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event)
+    {
+        // Override and use in ClientProxy Only
+    }
 }
