@@ -53,7 +53,7 @@ public class ServerFileManager
     public static void startUp()
     {
         getOrGenerateServerID();
-        stuffServer(); // stuffServer goes here when needed - test data
+        //stuffServer(); // stuffServer goes here when needed - test data
         initSongs();
         initAreas();
         dumpAll();
@@ -165,6 +165,13 @@ public class ServerFileManager
                     areas.put(uuidArea, area);
             }
         }
+    }
+
+    public static List<Area> getAreas()
+    {
+        List<Area> areaList = new ArrayList<>();
+        areas.forEach((key, value) -> areaList.add(value));
+        return areaList;
     }
 
     public static ResultMessage setArea(UUID dataTypeUuid, NBTTagCompound dataCompound)
