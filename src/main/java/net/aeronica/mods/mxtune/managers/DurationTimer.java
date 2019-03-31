@@ -17,6 +17,7 @@
 
 package net.aeronica.mods.mxtune.managers;
 
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.util.ModLogger;
 
 import java.util.Timer;
@@ -35,7 +36,7 @@ public class DurationTimer
 
     public static void start()
     {
-        timer = new Timer("Timer");
+        timer = new Timer(Reference.MOD_NAME + " Duration Timer");
     }
 
     public static void shutdown()
@@ -43,7 +44,7 @@ public class DurationTimer
         if (timer != null)
         {
             timer.purge();
-            timer = null;
+            timer.cancel();
         }
     }
 
