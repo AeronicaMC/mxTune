@@ -53,10 +53,14 @@ public class ServerFileManager
     public static void startUp()
     {
         getOrGenerateServerID();
-        //stuffServer(); // stuffServer goes here when needed - test data
-        initSongs();
-        initAreas();
-        dumpAll();
+        // stuffServer goes here when needed - test data
+        new Thread(() ->
+                   {
+                       initSongs();
+                       initAreas();
+                       dumpAll();
+                   }
+        ).start();
     }
 
     public static void shutDown()
@@ -247,6 +251,7 @@ public class ServerFileManager
         return errorResult;
     }
 
+    @SuppressWarnings("unused")
     private static void stuffServer()
     {
         // Create Songs
