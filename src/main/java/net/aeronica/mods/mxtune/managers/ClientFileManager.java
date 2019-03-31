@@ -25,6 +25,7 @@ import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.GetServerDataMessage;
+import net.aeronica.mods.mxtune.util.MXTuneException;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
@@ -62,6 +63,8 @@ public class ClientFileManager
     private static boolean waitArea = false;
     private static boolean waitMusic = false;
 
+    private static UUID cachedPlayerUUID;
+
     private ClientFileManager() { /* NOP*/ }
 
     /**
@@ -82,14 +85,23 @@ public class ClientFileManager
         ModLogger.debug("Cache loaded");
     }
 
+    public static void clearCache()
+    {
+        if (!cachedPlayerUUID.equals(Reference.EMPTY_UUID) && !cachedServerID.equals(Reference.EMPTY_UUID))
+        {
+            clearCache(pathAreas);
+            clearCache(pathMusic);
+        }
+    }
+
     /**
      * <p>Build a unique client side server data cache directory by player and server.</p>
      * e.g. &lt;game folder&gt;/mxtune/server_cache/&lt;player UUID&gt/&lt;server UUID&gt;
      */
     private static void createClientSideCacheDirectories()
     {
-        UUID playerUniqueID = mc.player.getUniqueID();
-        Path clientSidePlayerServerCachePath = Paths.get(FileHelper.CLIENT_SERVER_CACHE_FOLDER, playerUniqueID.toString(), getCachedServerID().toString());
+        cachedPlayerUUID = mc.player.getUniqueID();
+        Path clientSidePlayerServerCachePath = Paths.get(FileHelper.CLIENT_SERVER_CACHE_FOLDER, cachedPlayerUUID.toString(), getCachedServerID().toString());
         pathAreas = getSubDirectory(clientSidePlayerServerCachePath.toString(), DIR_AREAS);
         pathMusic = getSubDirectory(clientSidePlayerServerCachePath.toString(), DIR_MUSIC);
     }
@@ -221,6 +233,38 @@ public class ClientFileManager
                     ModLogger.error("What did you do? What's this thing?: %s", type.getSimpleName());
                     throw new MXTuneRuntimeException(e);
                 }
+        }
+    }
+
+    private static void clearCache(Path loc)
+    {
+        List<Path> files = new ArrayList<>();
+        Path path = FileHelper.getDirectory(loc.toString(), Side.CLIENT);
+        PathMatcher filter = FileHelper.getDatMatcher(path);
+        try (Stream<Path> paths = Files.list(path))
+        {
+            files = paths
+                    .filter(filter::matches)
+                    .collect(Collectors.toList());
+        }
+        catch (NullPointerException | IOException e)
+        {
+            ModLogger.error(e);
+        }
+
+        for (Path file : files)
+        {
+            try
+            {
+                if (!file.toFile().isDirectory())
+                {
+                    if (!file.toFile().delete())
+                        throw new MXTuneException("Unable to delete: " + file.getFileName());
+                }
+            } catch (MXTuneException e)
+            {
+                ModLogger.error(e);
+            }
         }
     }
 
