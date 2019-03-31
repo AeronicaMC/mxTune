@@ -24,7 +24,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import java.io.Serializable;
 import java.util.UUID;
 
-public abstract class BaseData implements Serializable
+public abstract class BaseData implements Serializable, Comparable<UUID>
 {
     private static final long serialVersionUID = -76044260522231311L;
     protected UUID uuid;
@@ -55,4 +55,22 @@ public abstract class BaseData implements Serializable
     }
 
     public abstract <T extends BaseData> T factory();
+
+    @Override
+    public int hashCode()
+    {
+        return this.uuid.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return obj instanceof BaseData && super.equals(obj);
+    }
+
+    @Override
+    public int compareTo(UUID uuid)
+    {
+        return this.uuid.compareTo(uuid);
+    }
 }
