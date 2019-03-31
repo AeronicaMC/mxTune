@@ -69,6 +69,10 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static int ticks = 0;
     private static boolean wait = false;
 
+    // Day / Night
+    private static long time;
+    private static boolean night;
+
     private ClientPlayManager() { /* NOP */ }
 
     public static void start()
@@ -135,6 +139,12 @@ public class ClientPlayManager implements IAudioStatusCallback
         return false;
     }
 
+    private static void updateTimeOfDay()
+    {
+        time = mc.world.getWorldTime() % 24000;
+        night = time > 13300 && time < 23200;
+    }
+
     @Nullable
     private static Chunk getChunk(WeakReference<Chunk> chunkRef)
     {
@@ -156,6 +166,7 @@ public class ClientPlayManager implements IAudioStatusCallback
                 chunkChange(currentChunkRef, prevChunkRef);
 
         }
+        updateTimeOfDay();
         changeAreaMusic();
     }
 
@@ -219,8 +230,12 @@ public class ClientPlayManager implements IAudioStatusCallback
         UUID song;
         if (area != null)
         {
-            List<UUID> songs = area.getPlayListDay(); // TODO: Day Night test and selection, empty list...
+            List<UUID> songs = night ? area.getPlayListDay() : area.getPlayListDay();
             int size = songs.size();
+
+            if (size == 0)
+                return Reference.EMPTY_UUID; // Playlist is empty
+
             song = songs.get(rand.nextInt(size));
             while (heardSong(song))
             {
@@ -228,7 +243,7 @@ public class ClientPlayManager implements IAudioStatusCallback
             }
 
         trackLastSongs(song);
-        ModLogger.info("------- Song uuid: %s", song.toString());
+        ModLogger.info("------- %s Song uuid: %s", night ? "Night" : "Day", song.toString());
         return song;
         }
         return Reference.EMPTY_UUID;
