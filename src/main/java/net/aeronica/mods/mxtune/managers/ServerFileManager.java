@@ -250,12 +250,15 @@ public class ServerFileManager
     private static void stuffServer()
     {
         // Create Songs
-        List<UUID> songUUIDs = new ArrayList<>();
+        List<SongProxy> songProxies = new ArrayList<>();
         for (TestData testData : TestData.values())
         {
             Song song = new Song(testData.getTitle(), testData.getMML());
-            songUUIDs.add(song.getUUID());
+
             NBTTagCompound songCompound = new NBTTagCompound();
+            SongProxy songProxy = new SongProxy(songCompound);
+            songProxies.add(songProxy);
+
             song.writeToNBT(songCompound);
             Path path;
             try
@@ -276,7 +279,7 @@ public class ServerFileManager
         try
         {
             NBTTagCompound compound = new NBTTagCompound();
-            Area area = new  Area(areaName, songUUIDs, songUUIDs);
+            Area area = new  Area(areaName, songProxies, songProxies);
             areaFileName = area.getFileName();
             Path path = FileHelper.getCacheFile(FileHelper.SERVER_AREAS_FOLDER, areaFileName, Side.SERVER);
             area.writeToNBT(compound);

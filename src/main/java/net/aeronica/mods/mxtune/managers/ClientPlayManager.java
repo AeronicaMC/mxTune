@@ -20,6 +20,7 @@ package net.aeronica.mods.mxtune.managers;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.managers.records.Area;
 import net.aeronica.mods.mxtune.managers.records.Song;
+import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.GetServerDataMessage;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
@@ -57,7 +58,7 @@ public class ClientPlayManager implements IAudioStatusCallback
 
     // AREA Song Shuffling
     private static final Random rand = new Random();
-    private static Deque<UUID> lastSongs  = new ArrayDeque<>();
+    private static Deque<String> lastSongs  = new ArrayDeque<>();
     private static final int NUM_LAST_SONGS = 10;
     private static int failedNewSongs;
 
@@ -101,29 +102,30 @@ public class ClientPlayManager implements IAudioStatusCallback
         }
     }
 
-    private static void trackLastSongs(UUID uuidSong)
+    private static void trackLastSongs(String title)
+
     {
         int size = lastSongs.size();
-        boolean songInDeque = lastSongs.contains(uuidSong);
+        boolean songInDeque = lastSongs.contains(title);
         if (!songInDeque && size < NUM_LAST_SONGS)
         {
-            lastSongs.addLast(uuidSong);
+            lastSongs.addLast(title);
         }
         else if (!songInDeque)
         {
             lastSongs.removeFirst();
-            lastSongs.addLast(uuidSong);
+            lastSongs.addLast(title);
         }
-        Iterator<UUID> it = lastSongs.iterator();
+        Iterator<String> it = lastSongs.iterator();
         for (int i = 0; i < lastSongs.size(); i++)
         {
-            ModLogger.info(".......%d uuid: %s", i+1, it.next().toString());
+            ModLogger.info(".......%d Title: %s", i+1, it.next());
         }
     }
 
-    private static boolean heardSong(UUID uuidSong)
+    private static boolean heardSong(String title)
     {
-        boolean hasSong =  lastSongs.contains(uuidSong);
+        boolean hasSong =  lastSongs.contains(title);
         boolean isEmpty = lastSongs.isEmpty();
         boolean manyFails = failedNewSongs > NUM_LAST_SONGS * 5;
         if (isEmpty || manyFails)
@@ -227,24 +229,24 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static UUID randomSong(UUID uuidArea)
     {
         Area area = ClientFileManager.getAreaPlayList(uuidArea);
-        UUID song;
+        SongProxy songProxy;
         if (area != null)
         {
-            List<UUID> songs = night ? area.getPlayListNight() : area.getPlayListDay();
-            int size = songs.size();
+            List<SongProxy> songProxies = night ? area.getPlayListNight() : area.getPlayListDay();
+            int size = songProxies.size();
 
             if (size == 0)
                 return Reference.EMPTY_UUID; // Playlist is empty
 
-            song = songs.get(rand.nextInt(size));
-            while (heardSong(song))
+            songProxy = songProxies.get(rand.nextInt(size));
+            while (heardSong(songProxy.getTitle()))
             {
-                song = songs.get(rand.nextInt(size));
+                songProxy = songProxies.get(rand.nextInt(size));
             }
 
-        trackLastSongs(song);
-        ModLogger.info("------- %s Song uuid: %s", night ? "Night" : "Day", song.toString());
-        return song;
+        trackLastSongs(songProxy.getTitle());
+        ModLogger.info("------- %s Song uuid: %s, Title: %s", night ? "Night" : "Day", songProxy.getUUID().toString(), songProxy.getTitle());
+        return songProxy.getUUID();
         }
         return Reference.EMPTY_UUID;
     }

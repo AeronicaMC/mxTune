@@ -18,12 +18,10 @@
 package net.aeronica.mods.mxtune.managers.records;
 
 import net.aeronica.mods.mxtune.caches.UUIDType5;
-import net.aeronica.mods.mxtune.util.NBTHelper;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class Area extends BaseData
 {
@@ -34,10 +32,9 @@ public class Area extends BaseData
     private static final String TAG_SONG_COUNT = "song_count";
 
     private String name;
-    private List<UUID> playListDay;
-    private List<UUID> playListNight;
+    private List<SongProxy> playListDay;
+    private List<SongProxy> playListNight;
 
-    // Todo: Convert playlists from UUID to SongProxy. It's too hard to know what in these
     public Area()
     {
         this.name = "";
@@ -54,11 +51,13 @@ public class Area extends BaseData
         uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_AREA, this.name);
     }
 
-    public Area(String name, List<UUID> playListDay, List<UUID> playListNight)
+    public Area(String name, List<SongProxy> playListDay, List<SongProxy> playListNight)
     {
         this.name = name;
-        this.playListDay = playListDay;
-        this.playListNight = playListNight;
+        this.playListDay = new ArrayList<>();
+        this.playListDay.addAll(playListDay);
+        this.playListNight = new ArrayList<>();
+        this.playListNight.addAll(playListNight);
         uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_AREA, this.name);
     }
 
@@ -82,8 +81,8 @@ public class Area extends BaseData
         for(int i = 0; i < songCount; i++)
         {
             NBTTagCompound compoundSong = compoundPlayListDay.getCompoundTag(TAG_SONG_PREFIX + i);
-            UUID uuid = NBTHelper.getUuidFromCompound(compoundSong);
-            playListDay.add(uuid);
+            SongProxy songProxy = new SongProxy(compoundSong);
+            playListDay.add(songProxy);
         }
 
         NBTTagCompound compoundPlayListNight = compound.getCompoundTag(TAG_PLAY_LIST_NIGHT);
@@ -93,8 +92,8 @@ public class Area extends BaseData
         for(int i = 0; i < songCount; i++)
         {
             NBTTagCompound compoundSong = compoundPlayListDay.getCompoundTag(TAG_SONG_PREFIX + i);
-            UUID uuid = NBTHelper.getUuidFromCompound(compoundSong);
-            playListNight.add(uuid);
+            SongProxy songProxy = new SongProxy(compoundSong);
+            playListNight.add(songProxy);
         }
     }
 
@@ -107,10 +106,11 @@ public class Area extends BaseData
         NBTTagCompound compoundPlayListDay = new NBTTagCompound();
         compoundPlayListDay.setInteger(TAG_SONG_COUNT, playListDay.size());
         int i = 0;
-        for (UUID uuid : playListDay)
+        for (SongProxy songProxy : playListDay)
         {
             NBTTagCompound compoundSong = new NBTTagCompound();
-            NBTHelper.setUuidToCompound(compoundSong, uuid);
+            //NBTHelper.setUuidToCompound(compoundSong, entry.getKey());
+            songProxy.writeToNBT(compoundSong);
             compoundPlayListDay.setTag(TAG_SONG_PREFIX + i, compoundSong);
             i++;
         }
@@ -119,10 +119,11 @@ public class Area extends BaseData
         NBTTagCompound compoundPlayListNight = new NBTTagCompound();
         compoundPlayListNight.setInteger(TAG_SONG_COUNT, playListNight.size());
         i = 0;
-        for (UUID uuid : playListNight)
+        for (SongProxy songProxy : playListNight)
         {
             NBTTagCompound compoundSong = new NBTTagCompound();
-            NBTHelper.setUuidToCompound(compoundSong, uuid);
+            //NBTHelper.setUuidToCompound(compoundSong, entry.getKey());
+            songProxy.writeToNBT(compoundSong);
             compoundPlayListNight.setTag(TAG_SONG_PREFIX + i, compoundSong);
             i++;
         }
@@ -134,22 +135,22 @@ public class Area extends BaseData
         return name;
     }
 
-    public List<UUID> getPlayListDay()
+    public List<SongProxy> getPlayListDay()
     {
         return playListDay;
     }
 
-    public void setPlayListDay(List<UUID> playListDay)
+    public void setPlayListDay(List<SongProxy> playListDay)
     {
         this.playListDay = playListDay;
     }
 
-    public List<UUID> getPlayListNight()
+    public List<SongProxy> getPlayListNight()
     {
         return playListNight;
     }
 
-    public void setPlayListNight(List<UUID> playListNight)
+    public void setPlayListNight(List<SongProxy> playListNight)
     {
         this.playListNight = playListNight;
     }

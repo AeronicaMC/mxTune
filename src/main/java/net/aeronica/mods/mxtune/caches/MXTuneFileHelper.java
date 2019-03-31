@@ -67,6 +67,11 @@ public class MXTuneFileHelper
         return new Song(tune.getTitle(), getMML(tune));
     }
 
+    public static SongProxy getSongProxy(MXTuneFile tune)
+    {
+        return getSongProxy(getSong(tune));
+    }
+
     public static SongProxy getSongProxy(Song song)
     {
         NBTTagCompound songCompmoung = new NBTTagCompound();

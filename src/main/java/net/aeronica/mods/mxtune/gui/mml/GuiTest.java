@@ -17,6 +17,8 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.caches.MXTuneFile;
 import net.aeronica.mods.mxtune.caches.MXTuneFileHelper;
@@ -24,6 +26,7 @@ import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingMultiListOf;
 import net.aeronica.mods.mxtune.managers.records.Area;
 import net.aeronica.mods.mxtune.managers.records.Song;
+import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.GetAreasMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.SetServerDataMessage;
@@ -48,7 +51,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -69,14 +75,14 @@ public class GuiTest extends GuiScreen implements CallBack
     private int cachedSelectedAreaIndex = -1;
 
     // PlayList Day
-    private GuiScrollingMultiListOf<Song> guiDay;
-    private List<Song> cachedDayList = new ArrayList<>();
+    private GuiScrollingMultiListOf<SongProxy> guiDay;
+    private List<SongProxy> cachedDayList = new ArrayList<>();
     private Set<Integer> cachedSelectedDaySongs = new HashSet<>();
     private int cachedSelectedDaySongDummy = -1;
 
     // PlayList Night
-    private GuiScrollingMultiListOf<Song> guiNight;
-    private List<Song> cachedNightList = new ArrayList<>();
+    private GuiScrollingMultiListOf<SongProxy> guiNight;
+    private List<SongProxy> cachedNightList = new ArrayList<>();
     private Set<Integer> cachedSelectedNightSongs = new HashSet<>();
     private int cachedSelectedNightSongDummy = -1;
 
@@ -93,10 +99,14 @@ public class GuiTest extends GuiScreen implements CallBack
     private boolean isStateCached;
     private GuiButton buttonToServer;
 
+    // Mapping
+    private BiMap<Path, SongProxy> pathSongProxyBiMap = HashBiMap.create();
+
     public GuiTest()
     {
         cacheKeyRepeatState = Keyboard.areRepeatEventsEnabled();
         Keyboard.enableRepeatEvents(false);
+        initFileList();
     }
 
     @Override
@@ -177,7 +187,7 @@ public class GuiTest extends GuiScreen implements CallBack
             protected void selectedDoubleClickedCallback(int selectedIndex) { updateStatus(); }
         };
 
-        guiDay = new GuiScrollingMultiListOf<Song>(this, singleLineHeight, guiAreaListWidth, areaListHeight ,dayTop, dayBottom, width - guiAreaListWidth - padding)
+        guiDay = new GuiScrollingMultiListOf<SongProxy>(this, singleLineHeight, guiAreaListWidth, areaListHeight ,dayTop, dayBottom, width - guiAreaListWidth - padding)
         {
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
@@ -190,7 +200,7 @@ public class GuiTest extends GuiScreen implements CallBack
             }
         };
 
-        guiNight = new GuiScrollingMultiListOf<Song>(this, singleLineHeight, guiAreaListWidth, areaListHeight, nightTop, nightBottom, width - guiAreaListWidth - padding)
+        guiNight = new GuiScrollingMultiListOf<SongProxy>(this, singleLineHeight, guiAreaListWidth, areaListHeight, nightTop, nightBottom, width - guiAreaListWidth - padding)
         {
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
@@ -234,7 +244,7 @@ public class GuiTest extends GuiScreen implements CallBack
         buttonList.add(buttonToServer);
 
         initAreas();
-        initFileList();
+        //initFileList();
         reloadState();
     }
 
@@ -394,80 +404,97 @@ public class GuiTest extends GuiScreen implements CallBack
     // This is experimental and inefficient
     private void initFileList()
     {
+        new Thread(
+                () ->
+                {
+                    Path pathDir = FileHelper.getDirectory(FileHelper.CLIENT_LIB_FOLDER, Side.CLIENT);
+                    PathMatcher filter = FileHelper.getMxtMatcher(pathDir);
+                    try (Stream<Path> paths = Files.list(pathDir))
+                    {
+                        cachedFileList = paths
+                                .filter(filter::matches)
+                                .collect(Collectors.toList());
+                    } catch (NullPointerException | IOException e)
+                    {
+                        ModLogger.error(e);
+                    }
 
-        Path path = FileHelper.getDirectory(FileHelper.CLIENT_LIB_FOLDER, Side.CLIENT);
-        PathMatcher filter = FileHelper.getMxtMatcher(path);
-        try (Stream<Path> paths = Files.list(path))
-        {
-            cachedFileList = paths
-                    .filter(filter::matches)
-                    .collect(Collectors.toList());
-        } catch (NullPointerException | IOException e)
-        {
-            ModLogger.error(e);
-        }
+                    List<Path> files = new ArrayList<>();
+                    for (Path file : cachedFileList)
+                    {
+                        files.add(file);
+                        pathSongProxyBiMap.forcePut(file, pathToSongProxy(file));
+                    }
+                    cachedFileList = files;
+                    guiFileList.clear();
+                    guiFileList.addAll(files);
+                }).start();
+    }
 
-        List<Path> files = new ArrayList<>();
-        for (Path file : cachedFileList)
-        {
-            files.add(file);
-        }
-        cachedFileList = files;
-        guiFileList.clear();
-        guiFileList.addAll(files);
+    private SongProxy pathToSongProxy(Path path)
+    {
+        MXTuneFile mxTuneFile = MXTuneFileHelper.getMXTuneFile(path);
+        if (mxTuneFile != null)
+            return MXTuneFileHelper.getSongProxy(mxTuneFile);
+        else
+            ModLogger.warn("mxt file is missing or corrupt");
+
+        // The EMPTY SongProxy
+        return new SongProxy();
+    }
+
+    private Song pathToSong(Path path)
+    {
+        MXTuneFile mxTuneFile = MXTuneFileHelper.getMXTuneFile(path);
+        if (mxTuneFile != null)
+            return MXTuneFileHelper.getSong(mxTuneFile);
+        else
+            ModLogger.warn("mxt file is missing or corrupt");
+
+        // The EMPTY SongProxy
+        return new Song();
     }
 
     // So crude: add unique songs only
-    private List<Song> pathsToSongProxies(List<Path> paths, List<Song> current)
+    private List<SongProxy> pathsToSongProxies(List<Path> paths, List<SongProxy> current)
     {
-        List<Song> songList = new ArrayList<>();
-        List<UUID> uuid = new ArrayList<>();
-        for (Song s : current)
-        {
-            uuid.add(s.getUUID());
-        }
+
+        List<SongProxy> songList = new ArrayList<>(current);
         for (Path path : paths)
         {
-            MXTuneFile mxTuneFile = MXTuneFileHelper.getMXTuneFile(path);
-            if (mxTuneFile != null)
-            {
-                Song song = MXTuneFileHelper.getSong(mxTuneFile);
-                if (!uuid.contains(song.getUUID()))
-                    songList.add(song);
-            }
-            else
-                ModLogger.warn("mxt file is missing or corrupt");
+            SongProxy songProxy = pathSongProxyBiMap.get(path);
+            if (!songList.contains(songProxy))
+                songList.add(songProxy);
         }
         return songList;
     }
 
     private void shipIt()
     {
+        BiMap<SongProxy, Path> songProxyPathBiMap = pathSongProxyBiMap.inverse();
         // TODO: Send Area and Song data to the server
         // existing area check
         // push <-> status
-        List<UUID> dayUUIDs = new ArrayList<>();
-        List<UUID> nightUUIDs = new ArrayList<>();
-        guiDay.forEach(song->dayUUIDs.add(song.getUUID()));
-        guiNight.forEach(song->nightUUIDs.add(song.getUUID()));
 
         areaName.setText(areaName.getText().trim());
-        Area area = new Area(areaName.getText(), dayUUIDs, nightUUIDs);
+        Area area = new Area(areaName.getText(), guiDay.getList(), guiNight.getList());
         NBTTagCompound areaCompound = new NBTTagCompound();
         area.writeToNBT(areaCompound);
         PacketDispatcher.sendToServer(new SetServerDataMessage(area.getUUID(), SetType.AREA, areaCompound));
 
-        for (Song song : guiDay.getList())
+        for (SongProxy songProxy : guiDay.getList())
         {
+            Song song = pathToSong(songProxyPathBiMap.get(songProxy));
             NBTTagCompound songCompound = new NBTTagCompound();
             song.writeToNBT(songCompound);
-            PacketDispatcher.sendToServer(new SetServerDataMessage(song.getUUID(), SetType.MUSIC, songCompound));
+            PacketDispatcher.sendToServer(new SetServerDataMessage(songProxy.getUUID(), SetType.MUSIC, songCompound));
         }
-        for (Song song : guiNight.getList())
+        for (SongProxy songProxy : guiNight.getList())
         {
+            Song song = pathToSong(songProxyPathBiMap.get(songProxy));
             NBTTagCompound songCompound = new NBTTagCompound();
             song.writeToNBT(songCompound);
-            PacketDispatcher.sendToServer(new SetServerDataMessage(song.getUUID(), SetType.MUSIC, songCompound));
+            PacketDispatcher.sendToServer(new SetServerDataMessage(songProxy.getUUID(), SetType.MUSIC, songCompound));
         }
         // done
         initAreas();
