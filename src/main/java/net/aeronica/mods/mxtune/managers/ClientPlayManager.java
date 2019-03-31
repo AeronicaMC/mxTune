@@ -57,9 +57,10 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static UUID currentAreaUUID = EMPTY_UUID;
 
     // AREA Song Shuffling
+    private static List<SongProxy> songProxies = new ArrayList<>();
     private static final Random rand = new Random();
-    private static Deque<String> lastSongs  = new ArrayDeque<>();
-    private static final int NUM_LAST_SONGS = 10;
+    private static Deque<UUID> lastSongs  = new ArrayDeque<>();
+    private static final int NUM_LAST_SONGS = 100;
     private static int failedNewSongs;
 
     // Inter-song delay
@@ -102,30 +103,35 @@ public class ClientPlayManager implements IAudioStatusCallback
         }
     }
 
-    private static void trackLastSongs(String title)
+    private static void trackLastSongs(UUID uuid)
 
     {
         int size = lastSongs.size();
-        boolean songInDeque = lastSongs.contains(title);
+        boolean songInDeque = lastSongs.contains(uuid);
         if (!songInDeque && size < NUM_LAST_SONGS)
         {
-            lastSongs.addLast(title);
+            lastSongs.addLast(uuid);
         }
         else if (!songInDeque)
         {
             lastSongs.removeFirst();
-            lastSongs.addLast(title);
+            lastSongs.addLast(uuid);
         }
-        Iterator<String> it = lastSongs.iterator();
+        Iterator<UUID> it = lastSongs.iterator();
         for (int i = 0; i < lastSongs.size(); i++)
         {
-            ModLogger.info(".......%d Title: %s", i+1, it.next());
+            UUID uuidSong = it.next();
+            SongProxy songProxy = ClientFileManager.getSongProxy(uuidSong);
+            String title = "---waiting on cache to update---";
+            if (songProxy != null)
+                title = songProxy.getTitle();
+            ModLogger.debug(".......%d uuid: %s, title: %s", i+1, uuidSong.toString(), title);
         }
     }
 
-    private static boolean heardSong(String title)
+    private static boolean heardSong(UUID uuid)
     {
-        boolean hasSong =  lastSongs.contains(title);
+        boolean hasSong =  lastSongs.contains(uuid);
         boolean isEmpty = lastSongs.isEmpty();
         boolean manyFails = failedNewSongs > NUM_LAST_SONGS * 5;
         if (isEmpty || manyFails)
@@ -194,19 +200,26 @@ public class ClientPlayManager implements IAudioStatusCallback
         {
             currentPlayId = AREA.getAsInt();
             UUID song = randomSong(currentAreaUUID);
-            if (!Reference.EMPTY_UUID.equals(song) && !ClientFileManager.hasMusic(song))
+            if (!Reference.EMPTY_UUID.equals(song) && !ClientFileManager.hasSongProxy(song))
             {
                 PacketDispatcher.sendToServer(new GetServerDataMessage(song, GetServerDataMessage.GetType.MUSIC, currentPlayId));
                 ModLogger.debug("ChangeAreaMusic: Get from SERVER!");
             }
-            else if (!Reference.EMPTY_UUID.equals(song) && ClientFileManager.hasMusic(song))
+            else if (!Reference.EMPTY_UUID.equals(song) && ClientFileManager.hasSongProxy(song))
             {
                 playMusic(song, currentPlayId);
                 ModLogger.debug("ChangeAreaMusic: Get from CACHE!");
             }
-            else if (!ClientFileManager.isNotBadMusic(song))
+            else if (!ClientFileManager.isNotBadSong(song))
             {
                 resetTimer();
+                invalidatePlayId();
+            }
+            else if (Reference.EMPTY_UUID.equals(song))
+            {
+                // This should never happen unless I screwed something up
+                ModLogger.warn("ClientPlayManger: What has Aeronica / Rymor done this time?!, SongProxy uuid: %s, playId %d", song.toString(), currentPlayId);
+                resetTimer(2);
                 invalidatePlayId();
             }
         }
@@ -216,7 +229,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     {
         if (PlayType.INVALID != playId)
         {
-            Song song = ClientFileManager.getMusicFromCache(musicId);
+            Song song = ClientFileManager.getSongFromCache(musicId);
             if (song != null)
             {
                 currentPlayId = playId;
@@ -228,24 +241,33 @@ public class ClientPlayManager implements IAudioStatusCallback
 
     private static UUID randomSong(UUID uuidArea)
     {
-        Area area = ClientFileManager.getAreaPlayList(uuidArea);
+        Area area = ClientFileManager.getArea(uuidArea);
         SongProxy songProxy;
         if (area != null)
         {
-            List<SongProxy> songProxies = night ? area.getPlayListNight() : area.getPlayListDay();
+            songProxies.clear();
+            if (night)
+                songProxies.addAll(area.getPlayListNight());
+            else
+                songProxies.addAll(area.getPlayListDay());
+
             int size = songProxies.size();
 
             if (size == 0)
                 return Reference.EMPTY_UUID; // Playlist is empty
 
             songProxy = songProxies.get(rand.nextInt(size));
-            while (heardSong(songProxy.getTitle()))
+            while (heardSong(songProxy.getUUID()))
             {
                 songProxy = songProxies.get(rand.nextInt(size));
             }
 
-        trackLastSongs(songProxy.getTitle());
-        ModLogger.info("------- %s Song uuid: %s, Title: %s", night ? "Night" : "Day", songProxy.getUUID().toString(), songProxy.getTitle());
+            trackLastSongs(songProxy.getUUID());
+            ModLogger.info("Size: %d", size);
+            ModLogger.info("------- %s Song uuid: %s, Duration: %s, Title: %s", night ? "Night" : "Day",
+                           songProxy.getUUID().toString(), SheetMusicUtil.formatDuration(songProxy.getDuration()),
+                           songProxy.getTitle());
+
         return songProxy.getUUID();
         }
         return Reference.EMPTY_UUID;
@@ -267,6 +289,13 @@ public class ClientPlayManager implements IAudioStatusCallback
     public static void resetTimer()
     {
         delay = rand.nextInt(MAX_DELAY - MIN_DELAY) + MIN_DELAY;
+        ModLogger.debug("resetTimer: new delay %05d seconds", delay);
+        wait = false;
+    }
+
+    public static void resetTimer(int newDelay)
+    {
+        delay = newDelay < 1 ? 1 : newDelay;
         ModLogger.debug("resetTimer: new delay %05d seconds", delay);
         wait = false;
     }
