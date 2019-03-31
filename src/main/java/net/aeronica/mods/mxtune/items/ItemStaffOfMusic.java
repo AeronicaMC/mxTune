@@ -61,7 +61,7 @@ public class ItemStaffOfMusic extends Item
         {
             BlockPos pos = playerIn.getPosition();
             Chunk chunk = worldIn.getChunk(pos);
-            String areaUuidString = "a4464da6-ec8f-5c67-98f5-8312a26e76d4"; // mx01
+            String areaUuidString = "fb45d09b-b931-5fc4-b6a7-06a51c557c15"; // mx01
             if (chunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
             {
                 ModChunkDataHelper.setAreaUuid(chunk, UUID.fromString(areaUuidString));
