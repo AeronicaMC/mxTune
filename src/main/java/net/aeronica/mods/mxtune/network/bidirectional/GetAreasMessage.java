@@ -120,7 +120,7 @@ public class GetAreasMessage extends AbstractMessage<GetAreasMessage>
         if (canProcess)
         {
             CallBack callback = CallBackManager.getCaller(callbackUuid);
-            callback.onResponse(areas, new ResultMessage(false, new TextComponentTranslation("mxtune.no_error")));
+            callback.onResponse(areas, new TextComponentTranslation("mxtune.no_error"));
         }
     }
 

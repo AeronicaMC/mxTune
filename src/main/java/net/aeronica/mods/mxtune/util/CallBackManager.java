@@ -106,6 +106,6 @@ public class CallBackManager
     {
         callbacks.remove(uuid);
         tasks.remove(uuid);
-        callback.onFailure(new ResultMessage(true, new TextComponentTranslation("mxtune.error.network_timeout", timeout)));
+        callback.onFailure(new TextComponentTranslation("mxtune.error.network_timeout", timeout));
     }
 }

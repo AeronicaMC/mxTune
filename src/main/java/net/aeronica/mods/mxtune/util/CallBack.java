@@ -17,9 +17,14 @@
 
 package net.aeronica.mods.mxtune.util;
 
+import net.minecraft.util.text.ITextComponent;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public interface CallBack
 {
-    void onFailure(ResultMessage resultMessage);
+    void onFailure(@Nonnull ITextComponent textComponent);
 
-    void onResponse(Object result, ResultMessage resultMessage);
+    void onResponse(@Nullable Object payload, @Nonnull ITextComponent textComponent);
 }

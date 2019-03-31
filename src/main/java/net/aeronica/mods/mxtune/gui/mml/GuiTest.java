@@ -33,7 +33,6 @@ import net.aeronica.mods.mxtune.network.bidirectional.SetServerDataMessage;
 import net.aeronica.mods.mxtune.util.CallBack;
 import net.aeronica.mods.mxtune.util.CallBackManager;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.aeronica.mods.mxtune.util.ResultMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiLabel;
@@ -42,11 +41,13 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -101,6 +102,7 @@ public class GuiTest extends GuiScreen implements CallBack
 
     // Mapping
     private BiMap<Path, SongProxy> pathSongProxyBiMap = HashBiMap.create();
+    private BiMap<SongProxy, Path> songProxyPathBiMap;
 
     public GuiTest()
     {
@@ -244,7 +246,6 @@ public class GuiTest extends GuiScreen implements CallBack
         buttonList.add(buttonToServer);
 
         initAreas();
-        //initFileList();
         reloadState();
     }
 
@@ -428,6 +429,7 @@ public class GuiTest extends GuiScreen implements CallBack
                     cachedFileList = files;
                     guiFileList.clear();
                     guiFileList.addAll(files);
+                    songProxyPathBiMap = pathSongProxyBiMap.inverse();
                 }).start();
     }
 
@@ -458,20 +460,19 @@ public class GuiTest extends GuiScreen implements CallBack
     // So crude: add unique songs only
     private List<SongProxy> pathsToSongProxies(List<Path> paths, List<SongProxy> current)
     {
-
         List<SongProxy> songList = new ArrayList<>(current);
         for (Path path : paths)
         {
-            SongProxy songProxy = pathSongProxyBiMap.get(path);
-            if (!songList.contains(songProxy))
-                songList.add(songProxy);
+            SongProxy songProxyPath = pathSongProxyBiMap.get(path);
+            if (!songList.contains(songProxyPath))
+                songList.add(songProxyPath);
         }
+        current.clear();
         return songList;
     }
 
     private void shipIt()
     {
-        BiMap<SongProxy, Path> songProxyPathBiMap = pathSongProxyBiMap.inverse();
         // TODO: Send Area and Song data to the server
         // existing area check
         // push <-> status
@@ -508,16 +509,18 @@ public class GuiTest extends GuiScreen implements CallBack
     }
 
     @Override
-    public void onFailure(ResultMessage resultMessage)
+    public void onFailure(@Nonnull ITextComponent textComponent)
     {
-        status.setText(resultMessage.getMessage().getFormattedText());
+        status.setText(textComponent.getFormattedText());
     }
 
     @Override
-    public void onResponse(Object result, ResultMessage resultMessage)
+    @SuppressWarnings("unchecked")
+    public void onResponse(@Nullable Object payload, @Nonnull ITextComponent textComponent)
     {
         guiAreaList.clear();
-        guiAreaList.addAll(((List<Area>) result));
+        if (payload != null)
+            guiAreaList.addAll((List<Area>) payload);
         updateState();
     }
 }
