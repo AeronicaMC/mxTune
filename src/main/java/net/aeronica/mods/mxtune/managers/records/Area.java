@@ -37,6 +37,7 @@ public class Area extends BaseData
     private List<UUID> playListDay;
     private List<UUID> playListNight;
 
+    // Todo: Convert playlists from UUID to SongProxy. It's too hard to know what in these
     public Area()
     {
         this.name = "";
