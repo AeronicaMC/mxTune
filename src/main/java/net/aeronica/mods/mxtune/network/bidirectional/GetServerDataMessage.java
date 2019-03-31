@@ -141,7 +141,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
                 ClientFileManager.addArea(dataTypeUuid, dataCompound, errorResult);
                 break;
             case MUSIC:
-                ClientFileManager.addMusic(dataTypeUuid, dataCompound, errorResult);
+                ClientFileManager.addSong(dataTypeUuid, dataCompound, errorResult);
                 ClientPlayManager.playMusic(dataTypeUuid, playId);
                 break;
 

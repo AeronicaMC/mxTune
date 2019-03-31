@@ -56,12 +56,12 @@ public class ClientFileManager
     private static Path pathMusic;
 
     private static Map<UUID, Area> mapAreas = new HashMap<>();
-    private static Map<UUID, SongProxy> mapMusic = new HashMap<>();
+    private static Map<UUID, SongProxy> mapSongProxies = new HashMap<>();
     private static Set<UUID> badAreas = new HashSet<>();
-    private static Set<UUID> badMusic = new HashSet<>();
+    private static Set<UUID> badSongs = new HashSet<>();
 
     private static boolean waitArea = false;
-    private static boolean waitMusic = false;
+    private static boolean waitSong = false;
 
     private static UUID cachedPlayerUUID;
 
@@ -79,9 +79,9 @@ public class ClientFileManager
         ModLogger.debug("Cached Server ID received: %s", cachedServerID.toString());
         createClientSideCacheDirectories();
         loadCache(pathAreas, mapAreas, Area.class);
-        loadCache(pathMusic, mapMusic, SongProxy.class);
+        loadCache(pathMusic, mapSongProxies, SongProxy.class);
         badAreas.clear();
-        badMusic.clear();
+        badSongs.clear();
         ModLogger.debug("Cache loaded");
     }
 
@@ -144,19 +144,19 @@ public class ClientFileManager
         FileHelper.sendCompoundToFile(path, data);
     }
 
-    public static void addMusic(UUID uuid, NBTTagCompound data, boolean error)
+    public static void addSong(UUID uuid, NBTTagCompound data, boolean error)
     {
         if (error)
         {
-            addBadMusic(uuid);
+            addBadSong(uuid);
             return;
         }
         Path path;
-        if (!mapMusic.containsKey(uuid))
+        if (!mapSongProxies.containsKey(uuid))
         {
             SongProxy proxy = new SongProxy();
             proxy.readFromNBT(data);
-            mapMusic.put(uuid, proxy);
+            mapSongProxies.put(uuid, proxy);
         }
         Boolean fileExists = FileHelper.fileExists(pathMusic.toString(), uuid.toString() + FileHelper.EXTENSION_DAT, Side.CLIENT);
         if (!fileExists)
@@ -170,14 +170,23 @@ public class ClientFileManager
                 ModLogger.error("Unable to write Music file: %s to cache folder: %s", uuid.toString() + FileHelper.EXTENSION_DAT, pathMusic.toString());
                 return;
             }
-            waitMusic = false;
+            waitSong = false;
             FileHelper.sendCompoundToFile(path, data);
         }
     }
 
-    static boolean hasMusic(UUID uuidMusic)
+    static boolean hasSongProxy(UUID uuidSong)
     {
-        return mapMusic.containsKey(uuidMusic);
+        return mapSongProxies.containsKey(uuidSong);
+    }
+
+    @Nullable
+    static SongProxy getSongProxy(UUID uuidSong)
+    {
+        if (hasSongProxy(uuidSong))
+            return  mapSongProxies.get(uuidSong);
+        else
+            return null;
     }
 
     private static void addBadArea(UUID badUuid)
@@ -185,9 +194,9 @@ public class ClientFileManager
         badAreas.add(badUuid);
     }
 
-    private static void addBadMusic(UUID badUuid)
+    private static void addBadSong(UUID badUuid)
     {
-        badMusic.add(badUuid);
+        badSongs.add(badUuid);
     }
 
     private static boolean isNotBadArea(UUID uuid)
@@ -195,9 +204,9 @@ public class ClientFileManager
         return !badAreas.contains(uuid);
     }
 
-    static boolean isNotBadMusic(UUID uuid)
+    static boolean isNotBadSong(UUID uuid)
     {
-        return !badMusic.contains(uuid);
+        return !badSongs.contains(uuid);
     }
 
     private static <T extends BaseData> void loadCache(Path loc, Map<UUID, T> map, Class<T> type)
@@ -285,7 +294,7 @@ public class ClientFileManager
         //     else
         //         get song from cache
         // queue song for next play and set songAvailable to true.
-        return resolveArea(uuidArea) && isNotBadArea(uuidArea) && !waitArea && !waitMusic;
+        return resolveArea(uuidArea) && isNotBadArea(uuidArea) && !waitArea && !waitSong;
     }
 
     private static boolean resolveArea(UUID uuidArea)
@@ -307,7 +316,7 @@ public class ClientFileManager
     }
 
     @Nullable
-    static Area getAreaPlayList(UUID uuidArea)
+    static Area getArea(UUID uuidArea)
     {
         if (resolveArea(uuidArea))
         {
@@ -317,9 +326,9 @@ public class ClientFileManager
     }
 
     @Nullable
-    static Song getMusicFromCache(UUID uuid)
+    static Song getSongFromCache(UUID uuid)
     {
-        if (mapMusic.containsKey(uuid) && isNotBadMusic(uuid))
+        if (mapSongProxies.containsKey(uuid) && isNotBadSong(uuid))
         {
             try
             {
