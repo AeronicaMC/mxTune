@@ -42,6 +42,7 @@ package net.aeronica.mods.mxtune.sound;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.aeronica.mods.mxtune.MXTune;
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.managers.ClientPlayManager;
 import net.aeronica.mods.mxtune.managers.GroupHelper;
@@ -128,7 +129,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         if (threadFactory == null)
         {
             threadFactory = new ThreadFactoryBuilder()
-                    .setNameFormat("mxTune-ClientAudio-%d")
+                    .setNameFormat(Reference.MOD_NAME + " ClientAudio-%d")
                     .setDaemon(true)
                     .setPriority(Thread.NORM_PRIORITY)
                     .build();
