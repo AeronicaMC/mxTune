@@ -91,7 +91,7 @@ public class Area extends BaseData
         playListNight = new ArrayList<>();
         for(int i = 0; i < songCount; i++)
         {
-            NBTTagCompound compoundSong = compoundPlayListDay.getCompoundTag(TAG_SONG_PREFIX + i);
+            NBTTagCompound compoundSong = compoundPlayListNight.getCompoundTag(TAG_SONG_PREFIX + i);
             SongProxy songProxy = new SongProxy(compoundSong);
             playListNight.add(songProxy);
         }
@@ -109,7 +109,6 @@ public class Area extends BaseData
         for (SongProxy songProxy : playListDay)
         {
             NBTTagCompound compoundSong = new NBTTagCompound();
-            //NBTHelper.setUuidToCompound(compoundSong, entry.getKey());
             songProxy.writeToNBT(compoundSong);
             compoundPlayListDay.setTag(TAG_SONG_PREFIX + i, compoundSong);
             i++;
@@ -122,7 +121,6 @@ public class Area extends BaseData
         for (SongProxy songProxy : playListNight)
         {
             NBTTagCompound compoundSong = new NBTTagCompound();
-            //NBTHelper.setUuidToCompound(compoundSong, entry.getKey());
             songProxy.writeToNBT(compoundSong);
             compoundPlayListNight.setTag(TAG_SONG_PREFIX + i, compoundSong);
             i++;
