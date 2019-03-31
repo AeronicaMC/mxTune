@@ -75,7 +75,7 @@ public class ClientPlayManager implements IAudioStatusCallback
 
     private ClientPlayManager() { /* NOP */ }
 
-    public static void start()
+    public static void reset()
     {
         ClientPlayManager.resetTimer();
         ClientPlayManager.invalidatePlayId();
@@ -125,7 +125,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     {
         boolean hasSong =  lastSongs.contains(uuidSong);
         boolean isEmpty = lastSongs.isEmpty();
-        boolean manyFails = failedNewSongs > NUM_LAST_SONGS;
+        boolean manyFails = failedNewSongs > NUM_LAST_SONGS * 5;
         if (isEmpty || manyFails)
         {
             failedNewSongs = 0;
@@ -230,7 +230,7 @@ public class ClientPlayManager implements IAudioStatusCallback
         UUID song;
         if (area != null)
         {
-            List<UUID> songs = night ? area.getPlayListDay() : area.getPlayListDay();
+            List<UUID> songs = night ? area.getPlayListNight() : area.getPlayListDay();
             int size = songs.size();
 
             if (size == 0)

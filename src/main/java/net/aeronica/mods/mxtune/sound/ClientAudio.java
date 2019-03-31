@@ -409,7 +409,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
             musicTicker = Minecraft.getMinecraft().getMusicTicker();
             setVanillaMusicPaused(false);
             playIDAudioData.clear();
-            ClientPlayManager.start();
+            ClientPlayManager.reset();
         }
     }
     
