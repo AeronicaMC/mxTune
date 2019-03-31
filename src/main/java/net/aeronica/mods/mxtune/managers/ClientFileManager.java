@@ -25,7 +25,6 @@ import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.GetServerDataMessage;
-import net.aeronica.mods.mxtune.util.MXTuneException;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
@@ -262,19 +261,17 @@ public class ClientFileManager
         }
 
         for (Path file : files)
-        {
             try
             {
                 if (!file.toFile().isDirectory())
                 {
-                    if (!file.toFile().delete())
-                        throw new MXTuneException("Unable to delete: " + file.getFileName());
+                    Files.delete(file);
+
                 }
-            } catch (MXTuneException e)
+            } catch (UnsupportedOperationException | IOException | SecurityException e)
             {
                 ModLogger.error(e);
             }
-        }
     }
 
     // This is called every tick so after at least one to two ticks a song should be available
