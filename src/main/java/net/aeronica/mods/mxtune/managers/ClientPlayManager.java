@@ -71,8 +71,6 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static int ticks = 0;
     private static boolean wait = false;
 
-    // Day / Night
-    private static long time;
     private static boolean night;
 
     private ClientPlayManager() { /* NOP */ }
@@ -149,7 +147,8 @@ public class ClientPlayManager implements IAudioStatusCallback
 
     private static void updateTimeOfDay()
     {
-        time = mc.world.getWorldTime() % 24000;
+        // Day / Night
+        long time = mc.world.getWorldTime() % 24000;
         night = time > 13300 && time < 23200;
     }
 
