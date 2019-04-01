@@ -40,14 +40,16 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.Mirror;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.IWorldNameable;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -231,7 +233,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     @Override
     public int getLightValue(IBlockState state)
     {
-        return MinecraftForgeClient.getRenderLayer() == BlockRenderLayer.SOLID && state.getValue(PLAYING) ? 15 : super.getLightValue(state);
+        return /* MinecraftForgeClient.getRenderLayer() == BlockRenderLayer.SOLID && state.getValue(PLAYING) ? 15 : */ super.getLightValue(state);
     }
 
     @Override
