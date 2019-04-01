@@ -512,11 +512,12 @@ public class GuiTest extends GuiScreen implements CallBack
     public void onFailure(@Nonnull ITextComponent textComponent)
     {
         status.setText(textComponent.getFormattedText());
+        ModLogger.warn("InitAreas onFailure: %s", textComponent.getFormattedText());
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void onResponse(@Nullable Object payload, @Nonnull ITextComponent textComponent)
+    public void onResponse(@Nullable Object payload)
     {
         guiAreaList.clear();
         if (payload != null)

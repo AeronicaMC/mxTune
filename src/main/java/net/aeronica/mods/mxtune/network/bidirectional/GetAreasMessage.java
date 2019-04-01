@@ -24,10 +24,10 @@ import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.util.CallBack;
 import net.aeronica.mods.mxtune.util.CallBackManager;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.aeronica.mods.mxtune.util.ResultMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -41,12 +41,12 @@ public class GetAreasMessage extends AbstractMessage<GetAreasMessage>
     private byte[] byteBuffer = null;
     private long callbackUuidMSB = 0;
     private long callbackUuidLSB = 0;
+    private ITextComponent message = new TextComponentTranslation("mxtune.no_error", "");
     private UUID callbackUuid;
     private List<Area> areas;
-    private boolean canProcess = true;
+    private boolean readError = false;
 
     public GetAreasMessage() { /* Required by the PacketDispatcher */ }
-
 
     public GetAreasMessage(UUID callback)
     {
@@ -54,9 +54,10 @@ public class GetAreasMessage extends AbstractMessage<GetAreasMessage>
         callbackUuidLSB = callback.getLeastSignificantBits();
     }
 
-    public GetAreasMessage(List<Area> areas, UUID callbackUuid, ResultMessage resultMessage)
+    public GetAreasMessage(List<Area> areas, UUID callbackUuid, ITextComponent message)
     {
         this.areas = areas;
+        this.message = message;
         this.callbackUuidMSB = callbackUuid.getMostSignificantBits();
         this.callbackUuidLSB = callbackUuid.getLeastSignificantBits();
     }
@@ -66,6 +67,7 @@ public class GetAreasMessage extends AbstractMessage<GetAreasMessage>
     {
         callbackUuidMSB = buffer.readLong();
         callbackUuidLSB = buffer.readLong();
+        this.message = ITextComponent.Serializer.jsonToComponent(buffer.readString(32767));
         callbackUuid = new UUID (callbackUuidMSB, callbackUuidLSB);
         try {
             // Deserialize data object from a byte array
@@ -77,7 +79,7 @@ public class GetAreasMessage extends AbstractMessage<GetAreasMessage>
 
         } catch (ClassNotFoundException | IOException e)
         {
-            canProcess = false;
+            readError = true;
             ModLogger.error(e);
         }
     }
@@ -87,6 +89,7 @@ public class GetAreasMessage extends AbstractMessage<GetAreasMessage>
     {
         buffer.writeLong(callbackUuidMSB);
         buffer.writeLong(callbackUuidLSB);
+        buffer.writeString(ITextComponent.Serializer.componentToJson(message));
         try {
             // Serialize data object to a byte array
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -108,24 +111,28 @@ public class GetAreasMessage extends AbstractMessage<GetAreasMessage>
     {
         if (side.isClient())
         {
-            handleClientSide(player);
+            handleClientSide();
         } else
         {
             handleServerSide((EntityPlayerMP) player);
         }
     }
 
-    private void handleClientSide(EntityPlayer player)
+    private void handleClientSide()
     {
-        if (canProcess)
+        CallBack callback = CallBackManager.getCaller(callbackUuid);
+        if (!readError)
         {
-            CallBack callback = CallBackManager.getCaller(callbackUuid);
-            callback.onResponse(areas, new TextComponentTranslation("mxtune.no_error"));
+            if (callback != null)
+                callback.onResponse(areas);
         }
+        else
+            if (callback != null)
+                callback.onFailure(message.appendText("/n").appendSibling(new TextComponentTranslation("mxtune.error.network_data_error", "CLIENT Read Error.")));
     }
 
     private void handleServerSide(EntityPlayerMP playerMP)
     {
-        PacketDispatcher.sendTo(new GetAreasMessage(ServerFileManager.getAreas(), callbackUuid, new ResultMessage(false, new TextComponentTranslation("mxtune.no_error"))), playerMP);
+        PacketDispatcher.sendTo(new GetAreasMessage(ServerFileManager.getAreas(), callbackUuid, new TextComponentTranslation("mxtune.no_error", "SERVER")),playerMP);
     }
 }
