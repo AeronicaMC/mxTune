@@ -262,8 +262,9 @@ public class ClientPlayManager implements IAudioStatusCallback
             }
 
             trackLastSongs(songProxy.getUUID());
-            ModLogger.info("Size: %d", size);
-            ModLogger.info("------- %s Song uuid: %s, Duration: %s, Title: %s", night ? "Night" : "Day",
+            ModLogger.debug("Area name: %s, PL-Day Size: %2d, PL-Night size: %2d",
+                            area.getName(), area.getPlayListDay().size(), area.getPlayListNight().size());
+            ModLogger.debug("------- Play PL-%s, Song uuid: %s, Duration: %s, Title: %s", night ? "Night" : "Day",
                            songProxy.getUUID().toString(), SheetMusicUtil.formatDuration(songProxy.getDuration()),
                            songProxy.getTitle());
 
