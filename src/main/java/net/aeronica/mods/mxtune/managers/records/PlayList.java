@@ -80,10 +80,13 @@ public class PlayList extends BaseData
         int i = 0;
         for (UUID uuid : songUUIDs)
         {
-            NBTTagCompound compoundSong = new NBTTagCompound();
-            NBTHelper.setUuidToCompound(compoundSong, uuid);
-            compound.setTag(TAG_SONG_PREFIX + i, compoundSong);
-            i++;
+            if (uuid != null)
+            {
+                NBTTagCompound compoundSong = new NBTTagCompound();
+                NBTHelper.setUuidToCompound(compoundSong, uuid);
+                compound.setTag(TAG_SONG_PREFIX + i, compoundSong);
+                i++;
+            }
         }
     }
 

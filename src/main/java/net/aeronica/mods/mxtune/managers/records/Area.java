@@ -104,28 +104,34 @@ public class Area extends BaseData
         compound.setString(TAG_NAME, name);
 
         NBTTagCompound compoundPlayListDay = new NBTTagCompound();
-        compoundPlayListDay.setInteger(TAG_SONG_COUNT, playListDay.size());
         int i = 0;
         for (SongProxy songProxy : playListDay)
         {
-            NBTTagCompound compoundSong = new NBTTagCompound();
-            songProxy.writeToNBT(compoundSong);
-            compoundPlayListDay.setTag(TAG_SONG_PREFIX + i, compoundSong);
-            i++;
+            if (songProxy != null)
+            {
+                NBTTagCompound compoundSong = new NBTTagCompound();
+                songProxy.writeToNBT(compoundSong);
+                compoundPlayListDay.setTag(TAG_SONG_PREFIX + i, compoundSong);
+                i++;
+            }
         }
         compound.setTag(TAG_PLAY_LIST_DAY, compoundPlayListDay);
+        compoundPlayListDay.setInteger(TAG_SONG_COUNT, i);
 
         NBTTagCompound compoundPlayListNight = new NBTTagCompound();
-        compoundPlayListNight.setInteger(TAG_SONG_COUNT, playListNight.size());
         i = 0;
         for (SongProxy songProxy : playListNight)
         {
-            NBTTagCompound compoundSong = new NBTTagCompound();
-            songProxy.writeToNBT(compoundSong);
-            compoundPlayListNight.setTag(TAG_SONG_PREFIX + i, compoundSong);
-            i++;
+            if (songProxy != null)
+            {
+                NBTTagCompound compoundSong = new NBTTagCompound();
+                songProxy.writeToNBT(compoundSong);
+                compoundPlayListNight.setTag(TAG_SONG_PREFIX + i, compoundSong);
+                i++;
+            }
         }
         compound.setTag(TAG_PLAY_LIST_NIGHT, compoundPlayListNight);
+        compoundPlayListNight.setInteger(TAG_SONG_COUNT, i);
     }
 
     public String getName()

@@ -32,6 +32,7 @@ import net.aeronica.mods.mxtune.network.bidirectional.GetAreasMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.SetServerDataMessage;
 import net.aeronica.mods.mxtune.util.CallBack;
 import net.aeronica.mods.mxtune.util.CallBackManager;
+import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -159,10 +160,20 @@ public class GuiTest extends GuiScreen implements CallBack
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
             {
                 // get the filename and remove the '.mxt' extension
-                String name = (get(slotIdx).getFileName().toString()).replaceAll("\\.[mM][xX][tT]$", "");
-                String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
-                int color = selectedRowIndexes.contains(slotIdx) ? 0xFFFF00 : 0xADD8E6;
-                fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, color);
+                Path entry = get(slotIdx);
+                if (entry != null)
+                {
+                    String name = entry.getFileName().toString().replaceAll("\\.[mM][xX][tT]$", "");
+                    String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
+                    int color = selectedRowIndexes.contains(slotIdx) ? 0xFFFF00 : 0xADD8E6;
+                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
+                } else
+                {
+                    String name = "---NULL---";
+                    String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
+                    int color = 0xFF0000;
+                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
+                }
             }
         };
 
@@ -172,11 +183,20 @@ public class GuiTest extends GuiScreen implements CallBack
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
             {
                 Area area = get(slotIdx);
-                String trimmedName = fontRenderer.trimStringToWidth(area.getName(), listWidth - 10);
-                String trimmedUUID = fontRenderer.trimStringToWidth(area.getUUID().toString(), listWidth - 10);
-                int color = isSelected(slotIdx) ? 0xFFFF00 : 0xAADDEE;
-                fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
-                fontRenderer.drawStringWithShadow(trimmedUUID, (float) left + 3, (float) slotTop + 10, color);
+                if (area != null)
+                {
+                    String trimmedName = fontRenderer.trimStringToWidth(area.getName(), listWidth - 10);
+                    String trimmedUUID = fontRenderer.trimStringToWidth(area.getUUID().toString(), listWidth - 10);
+                    int color = isSelected(slotIdx) ? 0xFFFF00 : 0xAADDEE;
+                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
+                    fontRenderer.drawStringWithShadow(trimmedUUID, (float) left + 3, (float) slotTop + 10, color);
+                } else
+                {
+                    String name = "---UUID Conflict---";
+                    String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
+                    int color = 0xFF0000;
+                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
+                }
             }
 
             @Override
@@ -195,10 +215,20 @@ public class GuiTest extends GuiScreen implements CallBack
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
             {
                 // get the filename and remove the '.mxt' extension
-                String name = (get(slotIdx).getTitle());
-                String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
-                int color = selectedRowIndexes.contains(slotIdx) ? 0xFFFF00 : 0xADD8E6;
-                fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, color);
+                SongProxy entry = get(slotIdx);
+                if (entry != null)
+                {
+                    String name = entry.getTitle();
+                    String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
+                    int color = selectedRowIndexes.contains(slotIdx) ? 0xFFFF00 : 0xADD8E6;
+                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
+                } else
+                {
+                    String name = "---UUID Conflict---";
+                    String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
+                    int color = 0xFF0000;
+                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
+                }
             }
         };
 
@@ -207,11 +237,20 @@ public class GuiTest extends GuiScreen implements CallBack
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
             {
-                // get the filename and remove the '.mxt' extension
-                String name = (get(slotIdx).getTitle());
-                String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
-                int color = selectedRowIndexes.contains(slotIdx) ? 0xFFFF00 : 0xADD8E6;
-                fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, color);
+                SongProxy entry = get(slotIdx);
+                if (entry != null)
+                {
+                    String name = entry.getTitle();
+                    String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
+                    int color = selectedRowIndexes.contains(slotIdx) ? 0xFFFF00 : 0xADD8E6;
+                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
+                } else
+                {
+                    String name = "---UUID Conflict---";
+                    String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
+                    int color = 0xFF0000;
+                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
+                }
             }
         };
 
@@ -337,8 +376,12 @@ public class GuiTest extends GuiScreen implements CallBack
             case 0:
                 break;
             case 1:
-                guiDay.forEach(song -> ModLogger.debug("Day Song   uuid: %s, Title: %s", song.getUUID().toString(), song.getTitle()));
-                guiNight.forEach(song -> ModLogger.debug("Night Song uuid: %s, Title: %s", song.getUUID().toString(), song.getTitle()));
+                for (SongProxy songProxy : guiDay)
+                    if (songProxy != null)
+                        ModLogger.debug("Day Song   uuid: %s, Title: %s", songProxy.getUUID().toString(), songProxy.getTitle());
+                for (SongProxy songProxy : guiNight)
+                    if (songProxy != null)
+                        ModLogger.debug("Night Song uuid: %s, Title: %s", songProxy.getUUID().toString(), songProxy.getTitle());
                 mc.displayGuiScreen(null);
                 break;
             case 2:
@@ -408,6 +451,7 @@ public class GuiTest extends GuiScreen implements CallBack
         new Thread(
                 () ->
                 {
+                    pathSongProxyBiMap.clear();
                     Path pathDir = FileHelper.getDirectory(FileHelper.CLIENT_LIB_FOLDER, Side.CLIENT);
                     PathMatcher filter = FileHelper.getMxtMatcher(pathDir);
                     try (Stream<Path> paths = Files.list(pathDir))
@@ -421,10 +465,15 @@ public class GuiTest extends GuiScreen implements CallBack
                     }
 
                     List<Path> files = new ArrayList<>();
+
                     for (Path file : cachedFileList)
                     {
                         files.add(file);
-                        pathSongProxyBiMap.forcePut(file, pathToSongProxy(file));
+                        SongProxy songProxy = pathToSongProxy(file);
+                        if (songProxy != null)
+                            pathSongProxyBiMap.forcePut(file, songProxy);
+                        else
+                            throw new MXTuneRuntimeException("soundProxy Unexpected NULL in initFileList");
                     }
                     cachedFileList = files;
                     guiFileList.clear();
@@ -433,6 +482,7 @@ public class GuiTest extends GuiScreen implements CallBack
                 }).start();
     }
 
+    @Nullable
     private SongProxy pathToSongProxy(Path path)
     {
         MXTuneFile mxTuneFile = MXTuneFileHelper.getMXTuneFile(path);
@@ -441,8 +491,7 @@ public class GuiTest extends GuiScreen implements CallBack
         else
             ModLogger.warn("mxt file is missing or corrupt");
 
-        // The EMPTY SongProxy
-        return new SongProxy();
+        return null;
     }
 
     private Song pathToSong(Path path)
@@ -485,18 +534,25 @@ public class GuiTest extends GuiScreen implements CallBack
 
         for (SongProxy songProxy : guiDay.getList())
         {
-            Song song = pathToSong(songProxyPathBiMap.get(songProxy));
-            NBTTagCompound songCompound = new NBTTagCompound();
-            song.writeToNBT(songCompound);
-            PacketDispatcher.sendToServer(new SetServerDataMessage(songProxy.getUUID(), SetType.MUSIC, songCompound));
+            if (songProxy != null)
+            {
+                Song song = pathToSong(songProxyPathBiMap.get(songProxy));
+                NBTTagCompound songCompound = new NBTTagCompound();
+                song.writeToNBT(songCompound);
+                PacketDispatcher.sendToServer(new SetServerDataMessage(songProxy.getUUID(), SetType.MUSIC, songCompound));
+            }
         }
         for (SongProxy songProxy : guiNight.getList())
         {
-            Song song = pathToSong(songProxyPathBiMap.get(songProxy));
-            NBTTagCompound songCompound = new NBTTagCompound();
-            song.writeToNBT(songCompound);
-            PacketDispatcher.sendToServer(new SetServerDataMessage(songProxy.getUUID(), SetType.MUSIC, songCompound));
+            if (songProxy != null)
+            {
+                Song song = pathToSong(songProxyPathBiMap.get(songProxy));
+                NBTTagCompound songCompound = new NBTTagCompound();
+                song.writeToNBT(songCompound);
+                PacketDispatcher.sendToServer(new SetServerDataMessage(songProxy.getUUID(), SetType.MUSIC, songCompound));
+            }
         }
+
         // done
         initAreas();
         updateState();
