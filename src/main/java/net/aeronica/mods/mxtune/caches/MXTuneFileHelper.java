@@ -74,8 +74,8 @@ public class MXTuneFileHelper
 
     public static SongProxy getSongProxy(Song song)
     {
-        NBTTagCompound songCompmoung = new NBTTagCompound();
-        song.writeToNBT(songCompmoung);
-        return new SongProxy(songCompmoung);
+        NBTTagCompound compound = new NBTTagCompound();
+        song.writeToNBT(compound);
+        return new SongProxy(compound);
     }
 }
