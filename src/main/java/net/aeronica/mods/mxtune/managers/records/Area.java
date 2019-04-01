@@ -159,4 +159,10 @@ public class Area extends BaseData
     {
         return (T) new Area();
     }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return obj instanceof Area && this.uuid.equals(((Area) obj).getUUID());
+    }
 }

@@ -76,4 +76,10 @@ public class SongProxy extends BaseData
     {
         return (T) new SongProxy();
     }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return obj instanceof SongProxy && this.uuid.equals(((SongProxy) obj).getUUID());
+    }
 }

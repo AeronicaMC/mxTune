@@ -95,4 +95,10 @@ public class Song extends BaseData
     {
         return (T) new Song();
     }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return obj instanceof Song && this.uuid.equals(((Song) obj).getUUID());
+    }
 }

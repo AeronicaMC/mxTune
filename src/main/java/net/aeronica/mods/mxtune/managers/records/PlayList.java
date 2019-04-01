@@ -114,4 +114,10 @@ public class PlayList extends BaseData
     {
         return (T) new PlayList();
     }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return obj instanceof PlayList && this.uuid.equals(((PlayList) obj).getUUID());
+    }
 }
