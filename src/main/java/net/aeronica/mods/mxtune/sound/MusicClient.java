@@ -63,5 +63,5 @@ public class MusicClient extends MovingSound
     
     private void setDonePlaying() { this.donePlaying = true; }
 
-    private  float getModVolume() { return 2F * ModConfig.getClientPlayerVolume(); }
+    private  float getModVolume() { return ModConfig.getClientPlayerVolume(); }
 }
