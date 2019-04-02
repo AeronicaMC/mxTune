@@ -95,13 +95,16 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
      */
     public static GUID fromString(String name)
     {
+        return new GUID(hexStringToByteArray(name));
+    }
+
+    public static GUID hashPhrase(String phrase)
+    {
         MessageDigest md;
         try
         {
             md = MessageDigest.getInstance("SHA-256");
-            md.update(name.getBytes());
-            if (name.getBytes().length != 64)
-                throw new IllegalArgumentException("Name is not 64 characters in length");
+            md.update(phrase.getBytes());
             return new GUID(md.digest());
         }
         catch (NoSuchAlgorithmException e)
@@ -110,6 +113,8 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
             throw new MXTuneRuntimeException("What's wrong with this JVM installation? No SHA-256 message digest? Please review and FIX your JAVA JVM installation!");
         }
     }
+
+    // Getters and
 
     /**
      * Returns the Aaaa (LSB) significant 64 bits of this GUID's 256 bit value.
@@ -154,7 +159,7 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
     @Override
     public String toString()
     {
-        return bytesToHex(SHA256(this.ddddSigBits, this.ccccSigBits, this.bbbbSigBits, this.aaaaSigBits));
+        return bytesToHex(longsToBytes(this.ddddSigBits, this.ccccSigBits, this.bbbbSigBits, this.aaaaSigBits));
     }
 
     // Internal helper code
@@ -165,7 +170,7 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
         return result.toString();
     }
 
-    private byte[] SHA256(long ddddSigBits, long ccccSigBits, long bbbbSigBits, long aaaaSigBits )
+    private byte[] longsToBytes(long ddddSigBits, long ccccSigBits, long bbbbSigBits, long aaaaSigBits)
     {
         byte[] bytes = new byte[32];
         System.arraycopy(fastLongToBytes(ddddSigBits), 0, bytes, 0, 8);
@@ -188,6 +193,20 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
                 (byte) lg
         };
     }
+
+    private static byte[] hexStringToByteArray(String s)
+    {
+        int len = s.length();
+        assert len != 64 : "data must be 64 hex characters in length";
+        byte[] data = new byte[32];
+        for (int i = 0; i < 64; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+                                          + Character.digit(s.charAt(i+1), 16));
+        }
+        return data;
+    }
+
+    // equals hashCode and comparable
 
     @Override
     public boolean equals(Object o)
