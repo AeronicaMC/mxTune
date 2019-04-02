@@ -40,7 +40,7 @@ public class Area extends BaseData
         this.name = "";
         playListDay = new ArrayList<>();
         playListNight = new ArrayList<>();
-        guid = GUID.fromString(this.name);
+        guid = GUID.hashPhrase(this.name);
     }
 
     public Area(String name)
@@ -48,7 +48,7 @@ public class Area extends BaseData
         this.name = name;
         playListDay = new ArrayList<>();
         playListNight = new ArrayList<>();
-        guid = GUID.fromString(this.name);
+        guid = GUID.hashPhrase(this.name);
     }
 
     public Area(String name, List<SongProxy> playListDay, List<SongProxy> playListNight)
@@ -58,7 +58,7 @@ public class Area extends BaseData
         this.playListDay.addAll(playListDay);
         this.playListNight = new ArrayList<>();
         this.playListNight.addAll(playListNight);
-        guid = GUID.fromString(this.name);
+        guid = GUID.hashPhrase(this.name);
     }
 
     public static Area build(NBTTagCompound compound)
@@ -176,11 +176,5 @@ public class Area extends BaseData
     public int hashCode()
     {
         return super.hashCode();
-    }
-
-    @Override
-    public int compareTo(GUID o)
-    {
-        return super.compareTo(o);
     }
 }

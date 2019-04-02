@@ -45,7 +45,7 @@ public class PlayList extends BaseData
     {
         this.name = name != null ? name : "";
         this.songGUIDs = songGUIDs != null ? songGUIDs : new ArrayList<>();
-        guid = GUID.fromString(this.name);
+        guid = GUID.hashPhrase(this.name);
     }
 
     public PlayList(NBTTagCompound compound)
@@ -127,11 +127,5 @@ public class PlayList extends BaseData
     public int hashCode()
     {
         return super.hashCode();
-    }
-
-    @Override
-    public int compareTo(GUID o)
-    {
-        return super.compareTo(o);
     }
 }

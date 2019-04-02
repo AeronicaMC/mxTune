@@ -48,7 +48,7 @@ public class Song extends BaseData
         this.mml = mml != null ? mml : NULL_MML;
         ValidDuration validDuration = SheetMusicUtil.validateMML(this. mml);
         this.duration = validDuration.getDuration();
-        guid = GUID.fromString(this.title);
+        guid = GUID.hashPhrase(this.title);
     }
 
     public Song(NBTTagCompound compound)
@@ -106,11 +106,5 @@ public class Song extends BaseData
     public int hashCode()
     {
         return super.hashCode();
-    }
-
-    @Override
-    public int compareTo(GUID o)
-    {
-        return super.compareTo(o);
     }
 }
