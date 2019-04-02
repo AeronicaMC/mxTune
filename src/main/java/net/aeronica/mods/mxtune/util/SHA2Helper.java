@@ -89,14 +89,15 @@ public class SHA2Helper
         long lsb = aLongSigBits;
         byte[] bytes = new byte[32];
 
-        System.arraycopy(longToBytes(dLongSigBits), 0, bytes, 0, 8);
-        System.arraycopy(longToBytes(cLongSigBits), 0, bytes, 8, 8);
-        System.arraycopy(longToBytes(bLongSigBits), 0, bytes, 16, 8);
-        System.arraycopy(longToBytes(aLongSigBits), 0, bytes, 24, 8);
+        System.arraycopy(fastLongToBytes(dLongSigBits), 0, bytes, 0, 8);
+        System.arraycopy(fastLongToBytes(cLongSigBits), 0, bytes, 8, 8);
+        System.arraycopy(fastLongToBytes(bLongSigBits), 0, bytes, 16, 8);
+        System.arraycopy(fastLongToBytes(aLongSigBits), 0, bytes, 24, 8);
 
         return bytes;
     }
 
+    // neat use of nio, but can I make the class thread safe doing this?
     // https://stackoverflow.com/questions/4485128/how-do-i-convert-long-to-byte-and-back-in-java
     public static byte[] longToBytes(long x) {
         buffer.putLong(0, x);
@@ -113,22 +114,55 @@ public class SHA2Helper
     public static byte[] hexStringToByteArray(String s)
     {
         int len = s.length();
-        assert len != 64;
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
+        assert len != 64 : "data must be 64 hex characters in length";
+        byte[] data = new byte[32];
+        for (int i = 0; i < 64; i += 2) {
             data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
                                           + Character.digit(s.charAt(i+1), 16));
         }
         return data;
     }
 
+    public static byte[] fastLongToBytes(long lg)
+    {
+        return new byte[]{
+                (byte) (lg >>> 56),
+                (byte) (lg >>> 48),
+                (byte) (lg >>> 40),
+                (byte) (lg >>> 32),
+                (byte) (lg >>> 24),
+                (byte) (lg >>> 16),
+                (byte) (lg >>> 8),
+                (byte) lg
+        };
+    }
+
+    private static byte[] longToByteArray(long l) {
+        byte[] b = new byte[8];
+        b[7] = (byte) (l);
+        l >>>= 8;
+        b[6] = (byte) (l);
+        l >>>= 8;
+        b[5] = (byte) (l);
+        l >>>= 8;
+        b[4] = (byte) (l);
+        l >>>= 8;
+        b[3] = (byte) (l);
+        l >>>= 8;
+        b[2] = (byte) (l);
+        l >>>= 8;
+        b[1] = (byte) (l);
+        l >>>= 8;
+        b[0] = (byte) (l);
+        return b;
+    }
+
     public static void main(String[] args) throws Exception
     {
         LOGGER.info("Test SHA2");
-        String phrase = "The Hill";
+        String phrase = "Paul Boese";
         String sha2 = hash256(phrase);
         LOGGER.info("Phrase {}, SHA2 Hex: {}", phrase, sha2);
-
 
         byte[] bytesIn = hexStringToByteArray(sha2);
         String junk = bytesToHex(bytesIn);
@@ -140,5 +174,8 @@ public class SHA2Helper
         byte[] recon = SHA256(dLongSigBits, cLongSigBits, bLongSigBits, aLongSigBits);
         String test =  bytesToHex(recon);
         LOGGER.info("Phrase {}, Test Hex: {}", phrase, test);
+
+        GUID guid = GUID.fromString(phrase);
+        LOGGER.info("Phrase {}, GUID Hex: {}", phrase, guid.toString());
     }
 }
