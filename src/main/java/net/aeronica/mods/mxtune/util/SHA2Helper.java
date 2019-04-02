@@ -34,27 +34,27 @@ public class SHA2Helper
     static final Logger LOGGER = LogManager.getLogger();
     private static ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
 
-    static long dLongSigBits;
-    static long cLongSigBits;
-    static long bLongSigBits;
-    static long aLongSigBits;
+    private static long dLongSigBits;
+    private static long cLongSigBits;
+    private static long bLongSigBits;
+    private static long aLongSigBits;
 
     private SHA2Helper() { /* NOP */ }
 
-    public static String hash256(String data) throws NoSuchAlgorithmException
+    private static String hash256(String data) throws NoSuchAlgorithmException
     {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         md.update(data.getBytes());
         return bytesToHex(md.digest());
     }
 
-    public static String bytesToHex(byte[] bytes) {
+    private static String bytesToHex(byte[] bytes) {
         StringBuilder result = new StringBuilder();
         for (byte byt : bytes) result.append(Integer.toString((byt & 0xff) + 0x100, 16).substring(1));
         return result.toString();
     }
 
-    public static byte[] hash256Bytes(String data) throws NoSuchAlgorithmException
+    private static byte[] hash256Bytes(String data) throws NoSuchAlgorithmException
     {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         md.update(data.getBytes());
@@ -112,7 +112,7 @@ public class SHA2Helper
     }
 
     // todo: improve
-    public static byte[] hexStringToByteArray(String s)
+    private static byte[] hexStringToByteArray(String s)
     {
         int len = s.length();
         assert len != 64 : "data must be 64 hex characters in length";
@@ -124,7 +124,7 @@ public class SHA2Helper
         return data;
     }
 
-    public static byte[] fastLongToBytes(long lg)
+    private static byte[] fastLongToBytes(long lg)
     {
         return new byte[]{
                 (byte) (lg >>> 56),
@@ -180,20 +180,20 @@ public class SHA2Helper
         LOGGER.info("Empty: new GUID(0,0,0,0):  {}", Reference.EMPTY_GUID);
         LOGGER.info("Empty string hashPhrase:   {}", GUID.hashPhrase(""));
         LOGGER.info("");
-        // fixme: GUID.fromString is not for hashing! It's for reading a the hash in string format!  Phrase hasher!
+
         GUID guid = GUID.hashPhrase(phrase);
         LOGGER.info("Phrase {}, GUID Hex: {}", phrase, guid.toString());
         LOGGER.info("");
 
         GUID guidTest = GUID.hashPhrase(phrase);
         GUID guidFrom = GUID.fromString(guidTest.toString());
-        LOGGER.info("Phrase: {}, Hex to Guid: {}, Guid to Hex: {}", phrase, guidTest, guidFrom);
-        long a, b, c, d;
-        a = guidTest.getAaaaSignificantBits();
-        b = guidTest.getBbbbSignificantBits();
-        c = guidTest.getCcccSignificantBits();
-        d = guidTest.getDdddSignificantBits();
+        LOGGER.info("Phrase: {}, Hex to Guid: {}, Guid to Hex: {} equal? {}", phrase, guidTest, guidFrom, guidTest.equals(guidFrom));
+        long a = guidTest.getAaaaSignificantBits();
+        long b = guidTest.getBbbbSignificantBits();
+        long c = guidTest.getCcccSignificantBits();
+        long d = guidTest.getDdddSignificantBits();
         GUID guidLongs = new GUID(d,c,b,a);
-        LOGGER.info("Guid to Longs: {}", guidLongs);
+        LOGGER.info("a={}, b={}, c={}, d={}",a,b,c,d);
+        LOGGER.info("Guid from Longs: {}", guidLongs);
     }
 }

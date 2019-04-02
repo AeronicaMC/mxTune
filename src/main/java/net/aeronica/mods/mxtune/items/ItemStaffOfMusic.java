@@ -64,7 +64,7 @@ public class ItemStaffOfMusic extends Item
             String areaGuidString = "a4db4c2454f503b05d4734226c026aa91332c637440eabd7886faf53304a8551";
             if (chunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
             {
-                ModChunkDataHelper.setAreaUuid(chunk, GUID.fromString(areaGuidString));
+                ModChunkDataHelper.setAreaGuid(chunk, GUID.fromString(areaGuidString));
                 ModChunkDataHelper.sync(playerIn, chunk);
 
                 ModLogger.debug("Staff of Music usable");

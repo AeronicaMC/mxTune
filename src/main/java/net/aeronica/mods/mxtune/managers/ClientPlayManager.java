@@ -170,7 +170,7 @@ public class ClientPlayManager implements IAudioStatusCallback
             currentChunkRef = new WeakReference<>(chunk);
             if ((prevChunkRef != null && currentChunkRef.get() != prevChunkRef.get())
                     || (prevChunkRef == null && currentChunkRef.get() != null)
-                    || !(ModChunkDataHelper.getAreaUuid(currentChunkRef.get())).equals(currentAreaUUID))
+                    || !(ModChunkDataHelper.getAreaGuid(currentChunkRef.get())).equals(currentAreaUUID))
                 chunkChange(currentChunkRef, prevChunkRef);
 
         }
@@ -184,12 +184,12 @@ public class ClientPlayManager implements IAudioStatusCallback
         Chunk prevChunk = getChunk(previous);
         if (currentChunk != null && currentChunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
         {
-            currentAreaUUID = ModChunkDataHelper.getAreaUuid(currentChunk);
+            currentAreaUUID = ModChunkDataHelper.getAreaGuid(currentChunk);
             ModLogger.debug("----- Enter Chunk %s, guid: %s", currentChunk.getPos(), currentAreaUUID.toString());
         }
         if (prevChunk != null && prevChunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
         {
-            GUID prevPlayListGUID = ModChunkDataHelper.getAreaUuid(prevChunk);
+            GUID prevPlayListGUID = ModChunkDataHelper.getAreaGuid(prevChunk);
             ModLogger.debug("----- Exit Chunk %s, guid: %s", prevChunk.getPos(), prevPlayListGUID.toString());
         }
     }
@@ -199,26 +199,26 @@ public class ClientPlayManager implements IAudioStatusCallback
         if (!waiting() && ClientFileManager.songAvailable(currentAreaUUID) && currentPlayId == PlayType.INVALID)
         {
             currentPlayId = AREA.getAsInt();
-            GUID song = randomSong(currentAreaUUID);
-            if (!Reference.EMPTY_GUID.equals(song) && !ClientFileManager.hasSongProxy(song))
+            GUID guidSong = randomSong(currentAreaUUID);
+            if (!Reference.EMPTY_GUID.equals(guidSong) && !ClientFileManager.hasSongProxy(guidSong))
             {
-                PacketDispatcher.sendToServer(new GetServerDataMessage(song, GetServerDataMessage.GetType.MUSIC, currentPlayId));
+                PacketDispatcher.sendToServer(new GetServerDataMessage(guidSong, GetServerDataMessage.GetType.MUSIC, currentPlayId));
                 ModLogger.debug("ChangeAreaMusic: Get from SERVER!");
             }
-            else if (!Reference.EMPTY_GUID.equals(song) && ClientFileManager.hasSongProxy(song))
+            else if (!Reference.EMPTY_GUID.equals(guidSong) && ClientFileManager.hasSongProxy(guidSong))
             {
-                playMusic(song, currentPlayId);
+                playMusic(guidSong, currentPlayId);
                 ModLogger.debug("ChangeAreaMusic: Get from CACHE!");
             }
-            else if (!ClientFileManager.isNotBadSong(song))
+            else if (!ClientFileManager.isNotBadSong(guidSong))
             {
                 resetTimer();
                 invalidatePlayId();
             }
-            else if (Reference.EMPTY_GUID.equals(song))
+            else if (Reference.EMPTY_GUID.equals(guidSong))
             {
                 // This should never happen unless I screwed something up
-                ModLogger.warn("ClientPlayManger: What has Aeronica / Rymor done this time?!, SongProxy guid: %s, playId %d", song.toString(), currentPlayId);
+                ModLogger.warn("ClientPlayManger: What has Aeronica / Rymor done this time?!, SongProxy guid: %s, playId %d", guidSong.toString(), currentPlayId);
                 resetTimer(2);
                 invalidatePlayId();
             }

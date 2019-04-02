@@ -61,7 +61,7 @@ public class ModChunkCapability
         final Chunk chunk = event.getChunkInstance();
 
         if (chunk != null && chunk.hasCapability(MOD_CHUNK_DATA, null))
-            PacketDispatcher.sendToAllAround(new UpdateChunkMusicData(chunk.getPos().x, chunk.getPos().z, ModChunkDataHelper.getAreaUuid(chunk)), player, 80);
+            PacketDispatcher.sendToAllAround(new UpdateChunkMusicData(chunk.getPos().x, chunk.getPos().z, ModChunkDataHelper.getAreaGuid(chunk)), player, 80);
     }
 
     @SubscribeEvent

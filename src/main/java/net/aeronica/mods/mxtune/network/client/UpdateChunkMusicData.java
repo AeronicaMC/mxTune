@@ -81,7 +81,7 @@ public class UpdateChunkMusicData extends AbstractClientMessage<UpdateChunkMusic
         {
             Chunk chunk = world.getChunk(chunkX, chunkZ);
             if (chunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
-                ModChunkDataHelper.setAreaUuid(chunk, guid);
+                ModChunkDataHelper.setAreaGuid(chunk, guid);
         }
     }
 }

@@ -43,7 +43,7 @@ public class PlayList extends BaseData
 
     public PlayList(String name, List<GUID> songGUIDs)
     {
-        this.name = name != null ? name : "";
+        this.name = name != null ? name.trim() : "";
         this.songGUIDs = songGUIDs != null ? songGUIDs : new ArrayList<>();
         guid = GUID.hashPhrase(this.name);
     }

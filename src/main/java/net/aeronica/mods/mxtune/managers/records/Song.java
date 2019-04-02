@@ -27,7 +27,6 @@ public class Song extends BaseData
     private static final String TAG_TITLE = "title";
     private static final String TAG_MML = "mml";
     private static final String TAG_DURATION = "duration";
-    private static final String NULL_TITLE = "--- null title ---";
     private static final String NULL_MML = "@MML;";
 
     private String title;
@@ -37,15 +36,15 @@ public class Song extends BaseData
     public Song()
     {
         super();
-        title = NULL_TITLE;
+        title = "";
         mml = NULL_MML;
         duration = 0;
     }
 
     public Song(String title, String mml)
     {
-        this.title = title != null ? title : NULL_TITLE;
-        this.mml = mml != null ? mml : NULL_MML;
+        this.title = title.trim();
+        this.mml = mml != null ? mml.trim() : NULL_MML;
         ValidDuration validDuration = SheetMusicUtil.validateMML(this. mml);
         this.duration = validDuration.getDuration();
         guid = GUID.hashPhrase(this.title);

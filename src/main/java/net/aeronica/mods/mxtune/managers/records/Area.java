@@ -37,15 +37,15 @@ public class Area extends BaseData
 
     public Area()
     {
+        super();
         this.name = "";
         playListDay = new ArrayList<>();
         playListNight = new ArrayList<>();
-        guid = GUID.hashPhrase(this.name);
     }
 
     public Area(String name)
     {
-        this.name = name;
+        this.name = name.trim();
         playListDay = new ArrayList<>();
         playListNight = new ArrayList<>();
         guid = GUID.hashPhrase(this.name);
@@ -53,7 +53,7 @@ public class Area extends BaseData
 
     public Area(String name, List<SongProxy> playListDay, List<SongProxy> playListNight)
     {
-        this.name = name;
+        this.name = name.trim();
         this.playListDay = new ArrayList<>();
         this.playListDay.addAll(playListDay);
         this.playListNight = new ArrayList<>();
@@ -137,6 +137,12 @@ public class Area extends BaseData
     public String getName()
     {
         return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name.trim();
+        this.guid = GUID.hashPhrase(this.name);
     }
 
     public List<SongProxy> getPlayListDay()

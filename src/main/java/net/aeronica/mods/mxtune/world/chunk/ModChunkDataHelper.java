@@ -30,16 +30,14 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 
-import javax.annotation.Nullable;
-
 public class ModChunkDataHelper
 {
     @CapabilityInject(IModChunkData.class)
-    public static final Capability<IModChunkData> MOD_CHUNK_DATA =  Util.nonNullInjected();
+    public static final Capability<IModChunkData> MOD_CHUNK_DATA = Util.nonNullInjected();
 
     private ModChunkDataHelper() { /* NOP */ }
 
-    public static void setAreaUuid(Chunk chunk, GUID guid)
+    public static void setAreaGuid(Chunk chunk, GUID guid)
     {
         try
         {
@@ -52,7 +50,7 @@ public class ModChunkDataHelper
         chunk.markDirty();
     }
 
-    public static GUID getAreaUuid(Chunk chunk)
+    public static GUID getAreaGuid(Chunk chunk)
     {
         try
         {
@@ -65,7 +63,6 @@ public class ModChunkDataHelper
         return Reference.EMPTY_GUID;
     }
 
-    @Nullable
     private static IModChunkData getImpl(Chunk chunk) throws MXTuneException
     {
         IModChunkData chunkData;
@@ -78,7 +75,7 @@ public class ModChunkDataHelper
 
     public static void sync(EntityPlayer entityPlayer, Chunk chunk)
     {
-        PacketDispatcher.sendToAllAround(new UpdateChunkMusicData(chunk.x, chunk.z, getAreaUuid(chunk)), entityPlayer, 80);
-        PacketDispatcher.sendTo(new UpdateChunkMusicData(chunk.x, chunk.z, getAreaUuid(chunk)), (EntityPlayerMP) entityPlayer);
+        PacketDispatcher.sendToAllAround(new UpdateChunkMusicData(chunk.x, chunk.z, getAreaGuid(chunk)), entityPlayer, 80);
+        PacketDispatcher.sendTo(new UpdateChunkMusicData(chunk.x, chunk.z, getAreaGuid(chunk)), (EntityPlayerMP) entityPlayer);
     }
 }
