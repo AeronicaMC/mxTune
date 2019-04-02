@@ -37,7 +37,7 @@ import java.io.IOException;
 
 public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
 {
-    public SetType type = SetType.AREA;
+    private SetType type = SetType.AREA;
     private boolean errorResult = false;
     private ITextComponent component = new TextComponentTranslation("mxtune.no_error", "");
     private NBTTagCompound dataCompound = new NBTTagCompound();
