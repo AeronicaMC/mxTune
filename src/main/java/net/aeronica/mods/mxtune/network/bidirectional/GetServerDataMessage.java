@@ -61,8 +61,8 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
         this.type = type;
         ddddSigBits = guidType.getDdddSignificantBits();
         ccccSigBits = guidType.getCcccSignificantBits();
-        bbbbSigBits = guidType.getCcccSignificantBits();
-        aaaaSigBits = guidType.getCcccSignificantBits();
+        bbbbSigBits = guidType.getBbbbSignificantBits();
+        aaaaSigBits = guidType.getAaaaSignificantBits();
     }
 
     /**
@@ -77,8 +77,8 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
         this.type = type;
         ddddSigBits = guidType.getDdddSignificantBits();
         ccccSigBits = guidType.getCcccSignificantBits();
-        bbbbSigBits = guidType.getCcccSignificantBits();
-        aaaaSigBits = guidType.getCcccSignificantBits();
+        bbbbSigBits = guidType.getBbbbSignificantBits();
+        aaaaSigBits = guidType.getAaaaSignificantBits();
         this.playId = playId;
     }
 
@@ -94,8 +94,8 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
         this.type = type;
         ddddSigBits = guidType.getDdddSignificantBits();
         ccccSigBits = guidType.getCcccSignificantBits();
-        bbbbSigBits = guidType.getCcccSignificantBits();
-        aaaaSigBits = guidType.getCcccSignificantBits();
+        bbbbSigBits = guidType.getBbbbSignificantBits();
+        aaaaSigBits = guidType.getAaaaSignificantBits();
         this.playId = playId;
         this.dataCompound = dataCompound;
         this.errorResult = errorResult;
