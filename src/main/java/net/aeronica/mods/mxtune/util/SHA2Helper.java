@@ -173,14 +173,27 @@ public class SHA2Helper
         SHA256(hash256Bytes(phrase));
         LOGGER.info("dLongSigBits: {}, cLongSigBits: {}, bLongSigBits: {}, aLongSigBits {}", dLongSigBits, cLongSigBits, bLongSigBits, aLongSigBits);
         byte[] recon = SHA256(dLongSigBits, cLongSigBits, bLongSigBits, aLongSigBits);
-        String test =  bytesToHex(recon);
+        String test = bytesToHex(recon);
         LOGGER.info("Phrase {}, Test Hex: {}", phrase, test);
 
+        LOGGER.info("GUID class Tests");
+        LOGGER.info("Empty: new GUID(0,0,0,0):  {}", Reference.EMPTY_GUID);
+        LOGGER.info("Empty string hashPhrase:   {}", GUID.hashPhrase(""));
+        LOGGER.info("");
         // fixme: GUID.fromString is not for hashing! It's for reading a the hash in string format!  Phrase hasher!
-        GUID guid = GUID.fromString(phrase);
+        GUID guid = GUID.hashPhrase(phrase);
         LOGGER.info("Phrase {}, GUID Hex: {}", phrase, guid.toString());
+        LOGGER.info("");
 
-        LOGGER.info("Empty: new GUID(0,0,0,0) = {}", Reference.EMPTY_GUID);
-        LOGGER.info("Empty String: {} = ", GUID.fromString(""));
+        GUID guidTest = GUID.hashPhrase(phrase);
+        GUID guidFrom = GUID.fromString(guidTest.toString());
+        LOGGER.info("Phrase: {}, Hex to Guid: {}, Guid to Hex: {}", phrase, guidTest, guidFrom);
+        long a, b, c, d;
+        a = guidTest.getAaaaSignificantBits();
+        b = guidTest.getBbbbSignificantBits();
+        c = guidTest.getCcccSignificantBits();
+        d = guidTest.getDdddSignificantBits();
+        GUID guidLongs = new GUID(d,c,b,a);
+        LOGGER.info("Guid to Longs: {}", guidLongs);
     }
 }
