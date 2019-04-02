@@ -17,14 +17,13 @@
 
 package net.aeronica.mods.mxtune.managers.records;
 
-import net.aeronica.mods.mxtune.caches.UUIDType5;
+import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.NBTHelper;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 public class PlayList extends BaseData
 {
@@ -33,20 +32,20 @@ public class PlayList extends BaseData
     private static final String TAG_SONG_COUNT = "song_count";
 
     private String name;
-    private List<UUID> songUUIDs;
+    private List<GUID> songGUIDs;
 
     public PlayList()
     {
         super();
         this.name = "";
-        this.songUUIDs = new ArrayList<>();
+        this.songGUIDs = new ArrayList<>();
     }
 
-    public PlayList(String name, List<UUID> songUUIDs)
+    public PlayList(String name, List<GUID> songGUIDs)
     {
         this.name = name != null ? name : "";
-        this.songUUIDs = songUUIDs != null ? songUUIDs : new ArrayList<>();
-        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_LIST, this.name);
+        this.songGUIDs = songGUIDs != null ? songGUIDs : new ArrayList<>();
+        guid = GUID.fromString(this.name);
     }
 
     public PlayList(NBTTagCompound compound)
@@ -61,12 +60,12 @@ public class PlayList extends BaseData
         name = compound.getString(TAG_NAME);
         int songCount = compound.getInteger(TAG_SONG_COUNT);
 
-        songUUIDs = new ArrayList<>();
+        songGUIDs = new ArrayList<>();
         for(int i = 0; i < songCount; i++)
         {
             NBTTagCompound compoundSong = compound.getCompoundTag(TAG_SONG_PREFIX + i);
-            UUID uuid = NBTHelper.getUuidFromCompound(compoundSong);
-            songUUIDs.add(uuid);
+            GUID guid = NBTHelper.getGuidFromCompound(compoundSong);
+            songGUIDs.add(guid);
         }
     }
 
@@ -75,30 +74,30 @@ public class PlayList extends BaseData
     {
         super.writeToNBT(compound);
         compound.setString(TAG_NAME, name);
-        compound.setInteger(TAG_SONG_COUNT, songUUIDs.size());
+        compound.setInteger(TAG_SONG_COUNT, songGUIDs.size());
 
         int i = 0;
-        for (UUID uuid : songUUIDs)
+        for (GUID guid : songGUIDs)
         {
-            if (uuid != null)
+            if (guid != null)
             {
                 NBTTagCompound compoundSong = new NBTTagCompound();
-                NBTHelper.setUuidToCompound(compoundSong, uuid);
+                NBTHelper.setGuidToCompound(compoundSong, guid);
                 compound.setTag(TAG_SONG_PREFIX + i, compoundSong);
                 i++;
             }
         }
     }
 
-    public List<UUID> getSongUUIDs()
+    public List<GUID> getSongGUIDs()
     {
-        return songUUIDs != null ? songUUIDs : Collections.emptyList();
+        return songGUIDs != null ? songGUIDs : Collections.emptyList();
     }
 
     @SuppressWarnings("unused")
-    public void setSongUUIDs(List<UUID> songUUIDs)
+    public void setSongGUIDs(List<GUID> songGUIDs)
     {
-        this.songUUIDs = songUUIDs;
+        this.songGUIDs = songGUIDs;
     }
 
     public String getName()
@@ -119,8 +118,20 @@ public class PlayList extends BaseData
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(Object o)
     {
-        return obj instanceof PlayList && this.uuid.equals(((PlayList) obj).getUUID());
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return super.hashCode();
+    }
+
+    @Override
+    public int compareTo(GUID o)
+    {
+        return super.compareTo(o);
     }
 }

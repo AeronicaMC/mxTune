@@ -22,6 +22,7 @@ import net.aeronica.mods.mxtune.managers.ServerFileManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
+import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.ResultMessage;
 import net.minecraft.entity.player.EntityPlayer;
@@ -33,17 +34,18 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.io.IOException;
-import java.util.UUID;
 
 public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
 {
-    SetType type = SetType.AREA;
+    public SetType type = SetType.AREA;
     private boolean errorResult = false;
-    private ITextComponent component = new TextComponentTranslation("mxtune.no_error");
+    private ITextComponent component = new TextComponentTranslation("mxtune.no_error", "");
     private NBTTagCompound dataCompound = new NBTTagCompound();
-    private long dataTypeUuidMSB = 0;
-    private long dataTypeUuidLSB = 0;
-    private UUID dataTypeUuid = Reference.EMPTY_UUID;
+    private long ddddSigBits;
+    private long ccccSigBits;
+    private long bbbbSigBits;
+    private long aaaaSigBits;
+    private GUID dataTypeUuid = Reference.EMPTY_GUID;
 
     @SuppressWarnings("unused")
     public SetServerDataMessage() { /* Required by the PacketDispatcher */ }
@@ -56,15 +58,17 @@ public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
 
     /**
      * Client Submission for data type
-     * @param uuidType data type unique id
+     * @param guidType data type unique id
      * @param type data type
      */
-    public SetServerDataMessage(UUID uuidType, SetType type , NBTTagCompound dataCompound)
+    public SetServerDataMessage(GUID guidType, SetType type , NBTTagCompound dataCompound)
     {
         this.type = type;
         this.dataCompound = dataCompound;
-        dataTypeUuidMSB = uuidType.getMostSignificantBits();
-        dataTypeUuidLSB = uuidType.getLeastSignificantBits();
+        ddddSigBits = guidType.getDdddSignificantBits();
+        ccccSigBits = guidType.getCcccSignificantBits();
+        bbbbSigBits = guidType.getBbbbSignificantBits();
+        aaaaSigBits = guidType.getAaaaSignificantBits();
     }
 
     @Override
@@ -72,20 +76,24 @@ public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
     {
         this.type = buffer.readEnumValue(SetType.class);
         this.dataCompound = buffer.readCompoundTag();
-        this.dataTypeUuidMSB = buffer.readLong();
-        this.dataTypeUuidLSB = buffer.readLong();
+        ddddSigBits = buffer.readLong();
+        ccccSigBits = buffer.readLong();
+        bbbbSigBits = buffer.readLong();
+        aaaaSigBits = buffer.readLong();
         this.component = ITextComponent.Serializer.jsonToComponent(buffer.readString(32767));
         this.errorResult = buffer.readBoolean();
-        dataTypeUuid = new UUID(dataTypeUuidMSB, dataTypeUuidLSB);
+        dataTypeUuid = new GUID(ddddSigBits, ccccSigBits, bbbbSigBits, aaaaSigBits);
     }
 
     @Override
-    protected void write(PacketBuffer buffer) throws IOException
+    protected void write(PacketBuffer buffer)
     {
         buffer.writeEnumValue(type);
         buffer.writeCompoundTag(dataCompound);
-        buffer.writeLong(dataTypeUuidMSB);
-        buffer.writeLong(dataTypeUuidLSB);
+        buffer.writeLong(ddddSigBits);
+        buffer.writeLong(ccccSigBits);
+        buffer.writeLong(bbbbSigBits);
+        buffer.writeLong(aaaaSigBits);
         buffer.writeString(ITextComponent.Serializer.componentToJson(component));
         buffer.writeBoolean(errorResult);
     }
@@ -95,14 +103,14 @@ public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
     {
         if (side.isClient())
         {
-            handleClientSide(player);
+            handleClientSide();
         } else
         {
             handleServerSide((EntityPlayerMP) player);
         }
     }
 
-    private void handleClientSide(EntityPlayer player)
+    private void handleClientSide()
     {
         switch (type)
         {
@@ -113,7 +121,6 @@ public class SetServerDataMessage extends AbstractMessage<SetServerDataMessage>
             default:
         }
         ModLogger.debug("Error: %s, error %s", component.getFormattedText(), errorResult);
-        ResultMessage resultMessage = new ResultMessage(errorResult, component);
     }
 
     private void  handleServerSide(EntityPlayerMP player)

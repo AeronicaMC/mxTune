@@ -22,6 +22,7 @@ import net.aeronica.mods.mxtune.managers.ClientPlayManager;
 import net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
+import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -32,7 +33,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.UUID;
 
 public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
 {
@@ -41,9 +41,11 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
     public enum GetType {AREA, MUSIC}
     private GetType type = GetType.AREA;
     private NBTTagCompound dataCompound = new NBTTagCompound();
-    private long dataTypeUuidMSB = 0;
-    private long dataTypeUuidLSB = 0;
-    private UUID dataTypeUuid;
+    private long ddddSigBits;
+    private long ccccSigBits;
+    private long bbbbSigBits;
+    private long aaaaSigBits;
+    private GUID dataTypeUuid;
     private int playId = PlayType.INVALID;
 
     @SuppressWarnings("unused")
@@ -51,43 +53,49 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
 
     /**
      * Client Request for data type
-     * @param uuidType data type unique id
+     * @param guidType data type unique id
      * @param type data type
      */
-    public GetServerDataMessage(UUID uuidType, GetType type)
+    public GetServerDataMessage(GUID guidType, GetType type)
     {
         this.type = type;
-        dataTypeUuidMSB = uuidType.getMostSignificantBits();
-        dataTypeUuidLSB = uuidType.getLeastSignificantBits();
+        ddddSigBits = guidType.getDdddSignificantBits();
+        ccccSigBits = guidType.getCcccSignificantBits();
+        bbbbSigBits = guidType.getCcccSignificantBits();
+        aaaaSigBits = guidType.getCcccSignificantBits();
     }
 
     /**
      * Client Request for data type using playId which will cause the client to start playing the song after it is
      * received by the client.
-     * @param uuidType data type unique id
+     * @param guidType data type unique id
      * @param type data type
      * @param playId to use for the song. Only valid for the MUSIC type
      */
-    public GetServerDataMessage(UUID uuidType, GetType type, int playId)
+    public GetServerDataMessage(GUID guidType, GetType type, int playId)
     {
         this.type = type;
-        dataTypeUuidMSB = uuidType.getMostSignificantBits();
-        dataTypeUuidLSB = uuidType.getLeastSignificantBits();
+        ddddSigBits = guidType.getDdddSignificantBits();
+        ccccSigBits = guidType.getCcccSignificantBits();
+        bbbbSigBits = guidType.getCcccSignificantBits();
+        aaaaSigBits = guidType.getCcccSignificantBits();
         this.playId = playId;
     }
 
     /**
      * Server response with data
-     * @param uuidType data type unique id
+     * @param guidType data type unique id
      * @param type data type
      * @param playId to use for the song or the INVALID id (default if not specified in the client request)
      * @param dataCompound provided data
      */
-    private GetServerDataMessage(UUID uuidType, GetType type, int playId, NBTTagCompound dataCompound, boolean errorResult)
+    private GetServerDataMessage(GUID guidType, GetType type, int playId, NBTTagCompound dataCompound, boolean errorResult)
     {
         this.type = type;
-        dataTypeUuidMSB = uuidType.getMostSignificantBits();
-        dataTypeUuidLSB = uuidType.getLeastSignificantBits();
+        ddddSigBits = guidType.getDdddSignificantBits();
+        ccccSigBits = guidType.getCcccSignificantBits();
+        bbbbSigBits = guidType.getCcccSignificantBits();
+        aaaaSigBits = guidType.getCcccSignificantBits();
         this.playId = playId;
         this.dataCompound = dataCompound;
         this.errorResult = errorResult;
@@ -98,11 +106,13 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
     {
         this.type = buffer.readEnumValue(GetType.class);
         this.dataCompound = buffer.readCompoundTag();
-        this.dataTypeUuidMSB = buffer.readLong();
-        this.dataTypeUuidLSB = buffer.readLong();
+        ddddSigBits = buffer.readLong();
+        ccccSigBits = buffer.readLong();
+        bbbbSigBits = buffer.readLong();
+        aaaaSigBits = buffer.readLong();
         this.errorResult = buffer.readBoolean();
         this.playId = buffer.readInt();
-        dataTypeUuid = new UUID(dataTypeUuidMSB, dataTypeUuidLSB);
+        dataTypeUuid = new GUID(ddddSigBits, ccccSigBits,bbbbSigBits, aaaaSigBits);
     }
 
     @Override
@@ -110,8 +120,10 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
     {
         buffer.writeEnumValue(type);
         buffer.writeCompoundTag(dataCompound);
-        buffer.writeLong(dataTypeUuidMSB);
-        buffer.writeLong(dataTypeUuidLSB);
+        buffer.writeLong(ddddSigBits);
+        buffer.writeLong(ccccSigBits);
+        buffer.writeLong(bbbbSigBits);
+        buffer.writeLong(aaaaSigBits);
         buffer.writeBoolean(errorResult);
         buffer.writeInt(playId);
     }
@@ -168,14 +180,14 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
         PacketDispatcher.sendTo(new GetServerDataMessage(dataTypeUuid, type, playId, dataCompound, fileError), (EntityPlayerMP) playerIn);
     }
 
-    private NBTTagCompound getDataCompoundFromFile(String folder, UUID dataTypeUuid)
+    private NBTTagCompound getDataCompoundFromFile(String folder, GUID dataTypeGuid)
     {
         Path path;
         NBTTagCompound emptyData = new NBTTagCompound();
-        Boolean fileExists = FileHelper.fileExists(folder, dataTypeUuid.toString() + FileHelper.EXTENSION_DAT, Side.SERVER);
+        Boolean fileExists = FileHelper.fileExists(folder, dataTypeGuid.toString() + FileHelper.EXTENSION_DAT, Side.SERVER);
         if (!fileExists)
         {
-            path = Paths.get(folder, dataTypeUuid.toString() + FileHelper.EXTENSION_DAT);
+            path = Paths.get(folder, dataTypeGuid.toString() + FileHelper.EXTENSION_DAT);
             ModLogger.error(path.toString() + " not found!");
             fileError = true;
             return emptyData;
@@ -183,7 +195,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
 
         try
         {
-            path = FileHelper.getCacheFile(folder, dataTypeUuid.toString() + FileHelper.EXTENSION_DAT, Side.SERVER);
+            path = FileHelper.getCacheFile(folder, dataTypeGuid.toString() + FileHelper.EXTENSION_DAT, Side.SERVER);
         } catch (IOException e)
         {
             ModLogger.error(e);

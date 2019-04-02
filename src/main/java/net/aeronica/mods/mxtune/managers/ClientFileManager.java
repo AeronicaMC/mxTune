@@ -25,6 +25,7 @@ import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.GetServerDataMessage;
+import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
@@ -54,10 +55,10 @@ public class ClientFileManager
     private static Path pathAreas;
     private static Path pathMusic;
 
-    private static Map<UUID, Area> mapAreas = new HashMap<>();
-    private static Map<UUID, SongProxy> mapSongProxies = new HashMap<>();
-    private static Set<UUID> badAreas = new HashSet<>();
-    private static Set<UUID> badSongs = new HashSet<>();
+    private static Map<GUID, Area> mapAreas = new HashMap<>();
+    private static Map<GUID, SongProxy> mapSongProxies = new HashMap<>();
+    private static Set<GUID> badAreas = new HashSet<>();
+    private static Set<GUID> badSongs = new HashSet<>();
 
     private static boolean waitArea = false;
     private static boolean waitSong = false;
@@ -118,32 +119,32 @@ public class ClientFileManager
         return cachedServerID;
     }
 
-    public static void addArea(UUID uuid, NBTTagCompound data, boolean error)
+    public static void addArea(GUID guid, NBTTagCompound data, boolean error)
     {
         if (error)
         {
-            addBadArea(uuid);
+            addBadArea(guid);
             return;
         }
         Path path;
         Area area = new Area();
         area.readFromNBT(data);
-        mapAreas.put(uuid, area);
+        mapAreas.put(guid, area);
         try
         {
-            path = FileHelper.getCacheFile(pathAreas.toString(), uuid.toString() + FileHelper.EXTENSION_DAT, Side.CLIENT);
+            path = FileHelper.getCacheFile(pathAreas.toString(), guid.toString() + FileHelper.EXTENSION_DAT, Side.CLIENT);
         }
         catch (IOException e)
         {
             ModLogger.error(e);
-            ModLogger.error("Unable to write Area file: %s to cache folder: %s", uuid.toString() + FileHelper.EXTENSION_DAT, pathAreas.toString());
+            ModLogger.error("Unable to write Area file: %s to cache folder: %s", guid.toString() + FileHelper.EXTENSION_DAT, pathAreas.toString());
             return;
         }
         waitArea = false;
         FileHelper.sendCompoundToFile(path, data);
     }
 
-    public static void addSong(UUID uuid, NBTTagCompound data, boolean error)
+    public static void addSong(GUID uuid, NBTTagCompound data, boolean error)
     {
         if (error)
         {
@@ -174,41 +175,41 @@ public class ClientFileManager
         }
     }
 
-    static boolean hasSongProxy(UUID uuidSong)
+    static boolean hasSongProxy(GUID guid)
     {
-        return mapSongProxies.containsKey(uuidSong);
+        return mapSongProxies.containsKey(guid);
     }
 
     @Nullable
-    static SongProxy getSongProxy(UUID uuidSong)
+    static SongProxy getSongProxy(GUID guid)
     {
-        if (hasSongProxy(uuidSong))
-            return  mapSongProxies.get(uuidSong);
+        if (hasSongProxy(guid))
+            return  mapSongProxies.get(guid);
         else
             return null;
     }
 
-    private static void addBadArea(UUID badUuid)
+    private static void addBadArea(GUID guid)
     {
-        badAreas.add(badUuid);
+        badAreas.add(guid);
     }
 
-    private static void addBadSong(UUID badUuid)
+    private static void addBadSong(GUID guid)
     {
-        badSongs.add(badUuid);
+        badSongs.add(guid);
     }
 
-    private static boolean isNotBadArea(UUID uuid)
+    private static boolean isNotBadArea(GUID guid)
     {
-        return !badAreas.contains(uuid);
+        return !badAreas.contains(guid);
     }
 
-    static boolean isNotBadSong(UUID uuid)
+    static boolean isNotBadSong(GUID guid)
     {
-        return !badSongs.contains(uuid);
+        return !badSongs.contains(guid);
     }
 
-    private static <T extends BaseData> void loadCache(Path loc, Map<UUID, T> map, Class<T> type)
+    private static <T extends BaseData> void loadCache(Path loc, Map<GUID, T> map, Class<T> type)
     {
         List<Path> files = new ArrayList<>();
         map.clear();
@@ -233,8 +234,8 @@ public class ClientFileManager
                 {
                     T data = type.newInstance();
                     data.readFromNBT(compound);
-                    UUID uuid = data.getUUID();
-                    map.put(uuid, data);
+                    GUID guid = data.getGUID();
+                    map.put(guid, data);
                 } catch (InstantiationException | IllegalAccessException e)
                 {
                     ModLogger.error(e);
@@ -277,7 +278,7 @@ public class ClientFileManager
     // This is called every tick so after at least one to two ticks a song should be available
     // If no local cache files exist then the area/playlist will get DL and cached. On subsequent ticks
     // the song itself will be chosen and made available
-    static boolean songAvailable(UUID uuidArea)
+    static boolean songAvailable(GUID uuidArea)
     {
         // META: What to do?
 
@@ -294,42 +295,42 @@ public class ClientFileManager
         return resolveArea(uuidArea) && isNotBadArea(uuidArea) && !waitArea && !waitSong;
     }
 
-    private static boolean resolveArea(UUID uuidArea)
+    private static boolean resolveArea(GUID guid)
     {
-        if (mapAreas.containsKey(uuidArea))
+        if (mapAreas.containsKey(guid))
         {
             waitArea = false;
             return true;
         }
         else
         {
-            if (!Reference.EMPTY_UUID.equals(uuidArea) && isNotBadArea(uuidArea))
+            if (!Reference.EMPTY_GUID.equals(guid) && isNotBadArea(guid))
             {
                 waitArea = true;
-                PacketDispatcher.sendToServer(new GetServerDataMessage(uuidArea, GetType.AREA));
+                PacketDispatcher.sendToServer(new GetServerDataMessage(guid, GetType.AREA));
             }
             return false;
         }
     }
 
     @Nullable
-    static Area getArea(UUID uuidArea)
+    static Area getArea(GUID guid)
     {
-        if (resolveArea(uuidArea))
+        if (resolveArea(guid))
         {
-            return mapAreas.get(uuidArea);
+            return mapAreas.get(guid);
         }
         return null;
     }
 
     @Nullable
-    static Song getSongFromCache(UUID uuid)
+    static Song getSongFromCache(GUID guid)
     {
-        if (mapSongProxies.containsKey(uuid) && isNotBadSong(uuid))
+        if (mapSongProxies.containsKey(guid) && isNotBadSong(guid))
         {
             try
             {
-                Path path = FileHelper.getCacheFile(pathMusic.toString(), uuid.toString() + FileHelper.EXTENSION_DAT, Side.CLIENT);
+                Path path = FileHelper.getCacheFile(pathMusic.toString(), guid.toString() + FileHelper.EXTENSION_DAT, Side.CLIENT);
                 NBTTagCompound compound = FileHelper.getCompoundFromFile(path);
                 Song song = new Song();
                 song.readFromNBT(compound);
@@ -337,7 +338,7 @@ public class ClientFileManager
             } catch (IOException e)
             {
                 ModLogger.error(e);
-                Path path = Paths.get(pathMusic.toString(), uuid.toString() + FileHelper.EXTENSION_DAT);
+                Path path = Paths.get(pathMusic.toString(), guid.toString() + FileHelper.EXTENSION_DAT);
                 ModLogger.error("Unable to read file: " + path);
             }
         }

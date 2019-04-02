@@ -27,6 +27,7 @@ import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.sound.ClientAudio.Status;
 import net.aeronica.mods.mxtune.sound.IAudioStatusCallback;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
+import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.aeronica.mods.mxtune.world.chunk.ModChunkDataHelper;
@@ -41,7 +42,7 @@ import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.*;
 
-import static net.aeronica.mods.mxtune.Reference.EMPTY_UUID;
+import static net.aeronica.mods.mxtune.Reference.EMPTY_GUID;
 import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType;
 import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType.AREA;
 import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType.INVALID;
@@ -54,12 +55,12 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static Minecraft mc = Minecraft.getMinecraft();
     private static WeakReference<Chunk> currentChunkRef;
     private static int currentPlayId = INVALID;
-    private static UUID currentAreaUUID = EMPTY_UUID;
+    private static GUID currentAreaUUID = EMPTY_GUID;
 
     // AREA Song Shuffling
     private static List<SongProxy> songProxies = new ArrayList<>();
     private static final Random rand = new Random();
-    private static Deque<UUID> lastSongs  = new ArrayDeque<>();
+    private static Deque<GUID> lastSongs  = new ArrayDeque<>();
     private static final int NUM_LAST_SONGS = 100;
     private static int failedNewSongs;
 
@@ -101,35 +102,35 @@ public class ClientPlayManager implements IAudioStatusCallback
         }
     }
 
-    private static void trackLastSongs(UUID uuid)
+    private static void trackLastSongs(GUID guid)
 
     {
         int size = lastSongs.size();
-        boolean songInDeque = lastSongs.contains(uuid);
+        boolean songInDeque = lastSongs.contains(guid);
         if (!songInDeque && size < NUM_LAST_SONGS)
         {
-            lastSongs.addLast(uuid);
+            lastSongs.addLast(guid);
         }
         else if (!songInDeque)
         {
             lastSongs.removeFirst();
-            lastSongs.addLast(uuid);
+            lastSongs.addLast(guid);
         }
-        Iterator<UUID> it = lastSongs.iterator();
+        Iterator<GUID> it = lastSongs.iterator();
         for (int i = 0; i < lastSongs.size(); i++)
         {
-            UUID uuidSong = it.next();
-            SongProxy songProxy = ClientFileManager.getSongProxy(uuidSong);
+            GUID guidSong = it.next();
+            SongProxy songProxy = ClientFileManager.getSongProxy(guidSong);
             String title = "---waiting on cache to update---";
             if (songProxy != null)
                 title = songProxy.getTitle();
-            ModLogger.debug(".......%d uuid: %s, title: %s", i+1, uuidSong.toString(), title);
+            ModLogger.debug(".......%d guid: %s, title: %s", i+1, guidSong.toString(), title);
         }
     }
 
-    private static boolean heardSong(UUID uuid)
+    private static boolean heardSong(GUID guid)
     {
-        boolean hasSong =  lastSongs.contains(uuid);
+        boolean hasSong =  lastSongs.contains(guid);
         boolean isEmpty = lastSongs.isEmpty();
         boolean manyFails = failedNewSongs > NUM_LAST_SONGS * 5;
         if (isEmpty || manyFails)
@@ -184,12 +185,12 @@ public class ClientPlayManager implements IAudioStatusCallback
         if (currentChunk != null && currentChunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
         {
             currentAreaUUID = ModChunkDataHelper.getAreaUuid(currentChunk);
-            ModLogger.debug("----- Enter Chunk %s, uuid: %s", currentChunk.getPos(), currentAreaUUID.toString());
+            ModLogger.debug("----- Enter Chunk %s, guid: %s", currentChunk.getPos(), currentAreaUUID.toString());
         }
         if (prevChunk != null && prevChunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
         {
-            UUID prevPlayListUUID = ModChunkDataHelper.getAreaUuid(prevChunk);
-            ModLogger.debug("----- Exit Chunk %s, uuid: %s", prevChunk.getPos(), prevPlayListUUID.toString());
+            GUID prevPlayListGUID = ModChunkDataHelper.getAreaUuid(prevChunk);
+            ModLogger.debug("----- Exit Chunk %s, guid: %s", prevChunk.getPos(), prevPlayListGUID.toString());
         }
     }
 
@@ -198,13 +199,13 @@ public class ClientPlayManager implements IAudioStatusCallback
         if (!waiting() && ClientFileManager.songAvailable(currentAreaUUID) && currentPlayId == PlayType.INVALID)
         {
             currentPlayId = AREA.getAsInt();
-            UUID song = randomSong(currentAreaUUID);
-            if (!Reference.EMPTY_UUID.equals(song) && !ClientFileManager.hasSongProxy(song))
+            GUID song = randomSong(currentAreaUUID);
+            if (!Reference.EMPTY_GUID.equals(song) && !ClientFileManager.hasSongProxy(song))
             {
                 PacketDispatcher.sendToServer(new GetServerDataMessage(song, GetServerDataMessage.GetType.MUSIC, currentPlayId));
                 ModLogger.debug("ChangeAreaMusic: Get from SERVER!");
             }
-            else if (!Reference.EMPTY_UUID.equals(song) && ClientFileManager.hasSongProxy(song))
+            else if (!Reference.EMPTY_GUID.equals(song) && ClientFileManager.hasSongProxy(song))
             {
                 playMusic(song, currentPlayId);
                 ModLogger.debug("ChangeAreaMusic: Get from CACHE!");
@@ -214,17 +215,17 @@ public class ClientPlayManager implements IAudioStatusCallback
                 resetTimer();
                 invalidatePlayId();
             }
-            else if (Reference.EMPTY_UUID.equals(song))
+            else if (Reference.EMPTY_GUID.equals(song))
             {
                 // This should never happen unless I screwed something up
-                ModLogger.warn("ClientPlayManger: What has Aeronica / Rymor done this time?!, SongProxy uuid: %s, playId %d", song.toString(), currentPlayId);
+                ModLogger.warn("ClientPlayManger: What has Aeronica / Rymor done this time?!, SongProxy guid: %s, playId %d", song.toString(), currentPlayId);
                 resetTimer(2);
                 invalidatePlayId();
             }
         }
     }
 
-    public static void playMusic(UUID musicId, int playId)
+    public static void playMusic(GUID musicId, int playId)
     {
         if (PlayType.INVALID != playId)
         {
@@ -238,9 +239,9 @@ public class ClientPlayManager implements IAudioStatusCallback
         }
     }
 
-    private static UUID randomSong(UUID uuidArea)
+    private static GUID randomSong(GUID guidArea)
     {
-        Area area = ClientFileManager.getArea(uuidArea);
+        Area area = ClientFileManager.getArea(guidArea);
         SongProxy songProxy;
         if (area != null)
         {
@@ -253,29 +254,29 @@ public class ClientPlayManager implements IAudioStatusCallback
             int size = songProxies.size();
 
             if (size == 0)
-                return Reference.EMPTY_UUID; // Playlist is empty
+                return Reference.EMPTY_GUID; // Playlist is empty
 
             songProxy = songProxies.get(rand.nextInt(size));
-            while (heardSong(songProxy.getUUID()))
+            while (heardSong(songProxy.getGUID()))
             {
                 songProxy = songProxies.get(rand.nextInt(size));
             }
 
-            trackLastSongs(songProxy.getUUID());
+            trackLastSongs(songProxy.getGUID());
             ModLogger.debug("Area name: %s, PL-Day Size: %2d, PL-Night size: %2d",
                             area.getName(), area.getPlayListDay().size(), area.getPlayListNight().size());
-            ModLogger.debug("------- Play PL-%s, Song uuid: %s, Duration: %s, Title: %s", night ? "Night" : "Day",
-                           songProxy.getUUID().toString(), SheetMusicUtil.formatDuration(songProxy.getDuration()),
-                           songProxy.getTitle());
+            ModLogger.debug("------- Play PL-%s, Song guid: %s, Duration: %s, Title: %s", night ? "Night" : "Day",
+                            songProxy.getGUID().toString(), SheetMusicUtil.formatDuration(songProxy.getDuration()),
+                            songProxy.getTitle());
 
-        return songProxy.getUUID();
+        return songProxy.getGUID();
         }
-        return Reference.EMPTY_UUID;
+        return Reference.EMPTY_GUID;
     }
 
     private static boolean waiting()
     {
-        Boolean canPlay = ClientAudio.getActivePlayIDs().isEmpty() && !Reference.EMPTY_UUID.equals(currentAreaUUID);
+        Boolean canPlay = ClientAudio.getActivePlayIDs().isEmpty() && !Reference.EMPTY_GUID.equals(currentAreaUUID);
         if (canPlay && !wait) startTimer();
         return !canPlay || (counter <= delay);
     }

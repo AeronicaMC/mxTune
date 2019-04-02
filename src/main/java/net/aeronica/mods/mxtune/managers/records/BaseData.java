@@ -17,41 +17,43 @@
 
 package net.aeronica.mods.mxtune.managers.records;
 
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.caches.FileHelper;
+import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.NBTHelper;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.io.Serializable;
-import java.util.UUID;
+import java.util.Objects;
 
-public abstract class BaseData implements Serializable, Comparable<UUID>
+public abstract class BaseData implements Serializable, Comparable<GUID>
 {
     private static final long serialVersionUID = -76044260522231311L;
-    protected UUID uuid;
+    protected GUID guid;
 
     BaseData()
     {
-        uuid = new UUID(0L, 0L);
+        guid = Reference.EMPTY_GUID;
     }
 
     public void readFromNBT(NBTTagCompound compound)
     {
-        uuid = NBTHelper.getUuidFromCompound(compound);
+        guid = NBTHelper.getGuidFromCompound(compound);
     }
 
     public void writeToNBT(NBTTagCompound compound)
     {
-        NBTHelper.setUuidToCompound(compound, uuid);
+        NBTHelper.setGuidToCompound(compound, guid);
     }
 
-    public UUID getUUID()
+    public GUID getGUID()
     {
-        return uuid;
+        return guid;
     }
 
     public String getFileName()
     {
-        return uuid.toString() + FileHelper.EXTENSION_DAT;
+        return guid.toString() + FileHelper.EXTENSION_DAT;
     }
 
     public abstract <T extends BaseData> T factory();
@@ -59,18 +61,21 @@ public abstract class BaseData implements Serializable, Comparable<UUID>
     @Override
     public int hashCode()
     {
-        return this.uuid.hashCode();
+        return this.guid.hashCode();
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(Object o)
     {
-        return obj instanceof BaseData && super.equals(obj);
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BaseData baseData = (BaseData) o;
+        return Objects.equals(guid, baseData.guid);
     }
 
     @Override
-    public int compareTo(UUID uuid)
+    public int compareTo(GUID o)
     {
-        return this.uuid.compareTo(uuid);
+        return guid.compareTo(o);
     }
 }

@@ -18,27 +18,26 @@
 package net.aeronica.mods.mxtune.world.chunk;
 
 import net.aeronica.mods.mxtune.Reference;
-
-import java.util.UUID;
+import net.aeronica.mods.mxtune.util.GUID;
 
 public class ModChunkDataImpl implements IModChunkData
 {
-    private UUID uuid;
+    private GUID guid;
 
     ModChunkDataImpl()
     {
-        uuid = Reference.EMPTY_UUID;
+        guid = Reference.EMPTY_GUID;
     }
 
     @Override
-    public UUID getAreaUuid()
+    public GUID getAreaGuid()
     {
-        return uuid;
+        return guid;
     }
 
     @Override
-    public void setAreaUuid(UUID uuid)
+    public void setAreaGuid(GUID guid)
     {
-        this.uuid = uuid;
+        this.guid = guid;
     }
 }

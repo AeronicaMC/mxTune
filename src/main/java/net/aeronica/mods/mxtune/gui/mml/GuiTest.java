@@ -186,13 +186,13 @@ public class GuiTest extends GuiScreen implements CallBack
                 if (area != null)
                 {
                     String trimmedName = fontRenderer.trimStringToWidth(area.getName(), listWidth - 10);
-                    String trimmedUUID = fontRenderer.trimStringToWidth(area.getUUID().toString(), listWidth - 10);
+                    String trimmedUUID = fontRenderer.trimStringToWidth(area.getGUID().toString(), listWidth - 10);
                     int color = isSelected(slotIdx) ? 0xFFFF00 : 0xAADDEE;
                     fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
                     fontRenderer.drawStringWithShadow(trimmedUUID, (float) left + 3, (float) slotTop + 10, color);
                 } else
                 {
-                    String name = "---UUID Conflict---";
+                    String name = "---GUID Conflict---";
                     String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
                     int color = 0xFF0000;
                     fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
@@ -224,7 +224,7 @@ public class GuiTest extends GuiScreen implements CallBack
                     fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
                 } else
                 {
-                    String name = "---UUID Conflict---";
+                    String name = "---GUID Conflict---";
                     String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
                     int color = 0xFF0000;
                     fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
@@ -246,7 +246,7 @@ public class GuiTest extends GuiScreen implements CallBack
                     fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
                 } else
                 {
-                    String name = "---UUID Conflict---";
+                    String name = "---GUID Conflict---";
                     String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
                     int color = 0xFF0000;
                     fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
@@ -378,10 +378,10 @@ public class GuiTest extends GuiScreen implements CallBack
             case 1:
                 for (SongProxy songProxy : guiDay)
                     if (songProxy != null)
-                        ModLogger.debug("Day Song   uuid: %s, Title: %s", songProxy.getUUID().toString(), songProxy.getTitle());
+                        ModLogger.debug("Day Song   guid: %s, Title: %s", songProxy.getGUID().toString(), songProxy.getTitle());
                 for (SongProxy songProxy : guiNight)
                     if (songProxy != null)
-                        ModLogger.debug("Night Song uuid: %s, Title: %s", songProxy.getUUID().toString(), songProxy.getTitle());
+                        ModLogger.debug("Night Song guid: %s, Title: %s", songProxy.getGUID().toString(), songProxy.getTitle());
                 mc.displayGuiScreen(null);
                 break;
             case 2:
@@ -530,7 +530,7 @@ public class GuiTest extends GuiScreen implements CallBack
         Area area = new Area(areaName.getText(), guiDay.getList(), guiNight.getList());
         NBTTagCompound areaCompound = new NBTTagCompound();
         area.writeToNBT(areaCompound);
-        PacketDispatcher.sendToServer(new SetServerDataMessage(area.getUUID(), SetType.AREA, areaCompound));
+        PacketDispatcher.sendToServer(new SetServerDataMessage(area.getGUID(), SetType.AREA, areaCompound));
 
         for (SongProxy songProxy : guiDay.getList())
         {
@@ -539,7 +539,7 @@ public class GuiTest extends GuiScreen implements CallBack
                 Song song = pathToSong(songProxyPathBiMap.get(songProxy));
                 NBTTagCompound songCompound = new NBTTagCompound();
                 song.writeToNBT(songCompound);
-                PacketDispatcher.sendToServer(new SetServerDataMessage(songProxy.getUUID(), SetType.MUSIC, songCompound));
+                PacketDispatcher.sendToServer(new SetServerDataMessage(songProxy.getGUID(), SetType.MUSIC, songCompound));
             }
         }
         for (SongProxy songProxy : guiNight.getList())
@@ -549,7 +549,7 @@ public class GuiTest extends GuiScreen implements CallBack
                 Song song = pathToSong(songProxyPathBiMap.get(songProxy));
                 NBTTagCompound songCompound = new NBTTagCompound();
                 song.writeToNBT(songCompound);
-                PacketDispatcher.sendToServer(new SetServerDataMessage(songProxy.getUUID(), SetType.MUSIC, songCompound));
+                PacketDispatcher.sendToServer(new SetServerDataMessage(songProxy.getGUID(), SetType.MUSIC, songCompound));
             }
         }
 

@@ -19,6 +19,7 @@ package net.aeronica.mods.mxtune.items;
 
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.gui.GuiGuid;
+import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.world.chunk.ModChunkDataHelper;
 import net.minecraft.client.resources.I18n;
@@ -36,7 +37,6 @@ import net.minecraft.world.chunk.Chunk;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.UUID;
 
 public class ItemStaffOfMusic extends Item
 {
@@ -61,14 +61,14 @@ public class ItemStaffOfMusic extends Item
         {
             BlockPos pos = playerIn.getPosition();
             Chunk chunk = worldIn.getChunk(pos);
-            String areaUuidString = "bd995943-0225-53da-b62e-06322f66562c"; // mx01
+            String areaGuidString = "a4db4c2454f503b05d4734226c026aa91332c637440eabd7886faf53304a8551";
             if (chunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
             {
-                ModChunkDataHelper.setAreaUuid(chunk, UUID.fromString(areaUuidString));
+                ModChunkDataHelper.setAreaUuid(chunk, GUID.fromString(areaGuidString));
                 ModChunkDataHelper.sync(playerIn, chunk);
 
                 ModLogger.debug("Staff of Music usable");
-                ModLogger.debug("Area UUID: %s", areaUuidString);
+                ModLogger.debug("Area UUID: %s", areaGuidString);
             }
             return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
         }

@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
+import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.world.chunk.ModChunkDataHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
@@ -25,26 +26,28 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.util.UUID;
-
 public class UpdateChunkMusicData extends AbstractClientMessage<UpdateChunkMusicData>
 {
     private int chunkX;
     private int chunkZ;
-    private UUID uuid;
-    private long uuidMSB;
-    private long uuidLSB;
+    private GUID guid;
+    private long ddddSigBits;
+    private long ccccSigBits;
+    private long bbbbSigBits;
+    private long aaaaSigBits;
 
     @SuppressWarnings("unused")
     public UpdateChunkMusicData() {/* Required by the PacketDispatcher */}
 
-    public UpdateChunkMusicData(int chunkX, int chunkZ, UUID uuid)
+    public UpdateChunkMusicData(int chunkX, int chunkZ, GUID guid)
     {
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
-        this.uuid = uuid;
-        uuidMSB = uuid.getMostSignificantBits();
-        uuidLSB = uuid.getLeastSignificantBits();
+        this.guid = guid;
+        ddddSigBits = guid.getDdddSignificantBits();
+        ccccSigBits = guid.getCcccSignificantBits();
+        bbbbSigBits = guid.getBbbbSignificantBits();
+        aaaaSigBits = guid.getAaaaSignificantBits();
     }
 
     @Override
@@ -52,9 +55,11 @@ public class UpdateChunkMusicData extends AbstractClientMessage<UpdateChunkMusic
     {
         chunkX = buffer.readInt();
         chunkZ = buffer.readInt();
-        uuidMSB = buffer.readLong();
-        uuidLSB = buffer.readLong();
-        uuid = new UUID(uuidMSB, uuidLSB);
+        ddddSigBits = buffer.readLong();
+        ccccSigBits = buffer.readLong();
+        bbbbSigBits = buffer.readLong();
+        aaaaSigBits = buffer.readLong();
+        guid = new GUID(ddddSigBits, ccccSigBits, bbbbSigBits, aaaaSigBits);
     }
 
     @Override
@@ -62,8 +67,10 @@ public class UpdateChunkMusicData extends AbstractClientMessage<UpdateChunkMusic
     {
         buffer.writeInt(chunkX);
         buffer.writeInt(chunkZ);
-        buffer.writeLong(uuidMSB);
-        buffer.writeLong(uuidLSB);
+        buffer.writeLong(ddddSigBits);
+        buffer.writeLong(ccccSigBits);
+        buffer.writeLong(bbbbSigBits);
+        buffer.writeLong(aaaaSigBits);
     }
 
     @Override
@@ -74,7 +81,7 @@ public class UpdateChunkMusicData extends AbstractClientMessage<UpdateChunkMusic
         {
             Chunk chunk = world.getChunk(chunkX, chunkZ);
             if (chunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
-                ModChunkDataHelper.setAreaUuid(chunk, uuid);
+                ModChunkDataHelper.setAreaUuid(chunk, guid);
         }
     }
 }

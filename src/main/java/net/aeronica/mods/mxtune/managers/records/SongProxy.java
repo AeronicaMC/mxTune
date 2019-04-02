@@ -17,6 +17,7 @@
 
 package net.aeronica.mods.mxtune.managers.records;
 
+import net.aeronica.mods.mxtune.util.GUID;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**
@@ -78,8 +79,20 @@ public class SongProxy extends BaseData
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(Object o)
     {
-        return obj instanceof SongProxy && this.uuid.equals(((SongProxy) obj).getUUID());
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return super.hashCode();
+    }
+
+    @Override
+    public int compareTo(GUID o)
+    {
+        return super.compareTo(o);
     }
 }

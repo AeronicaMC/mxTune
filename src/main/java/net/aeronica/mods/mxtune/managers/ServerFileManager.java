@@ -22,10 +22,7 @@ import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.managers.records.Area;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
-import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
-import net.aeronica.mods.mxtune.util.ModLogger;
-import net.aeronica.mods.mxtune.util.NBTHelper;
-import net.aeronica.mods.mxtune.util.ResultMessage;
+import net.aeronica.mods.mxtune.util.*;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.Side;
@@ -45,8 +42,8 @@ public class ServerFileManager
     private static final String SERVER_ID_FILE = "server_id" + FileHelper.EXTENSION_DAT;
     private static final String SERVER_ID_FILE_ERROR = "Delete the <world save>/mxtune/server_id" + FileHelper.EXTENSION_DAT + " file, then try loading the world again.";
     private static UUID serverID;
-    private static Map<UUID, SongProxy> songProxyMap = new HashMap<>();
-    private static Map<UUID, Area> areas = new HashMap<>();
+    private static Map<GUID, SongProxy> songProxyMap = new HashMap<>();
+    private static Map<GUID, Area> areas = new HashMap<>();
 
     private ServerFileManager() { /* NOP */ }
 
@@ -135,7 +132,7 @@ public class ServerFileManager
             if (songCompound != null)
             {
                 SongProxy songProxy = new SongProxy(songCompound);
-                songProxyMap.put(songProxy.getUUID(), songProxy);
+                songProxyMap.put(songProxy.getGUID(), songProxy);
             }
             else
                 ModLogger.warn("NULL NBTTagCompound for song file: %s", songFile.toString());
@@ -165,8 +162,8 @@ public class ServerFileManager
             if (compound != null)
             {
                 Area area = Area.build(compound);
-                UUID uuidArea = area.getUUID();
-                    areas.put(uuidArea, area);
+                GUID areaGUID = area.getGUID();
+                    areas.put(areaGUID, area);
             }
         }
     }
@@ -178,14 +175,14 @@ public class ServerFileManager
         return areaList;
     }
 
-    public static ResultMessage setArea(UUID dataTypeUuid, NBTTagCompound dataCompound)
+    public static ResultMessage setArea(GUID dataTypeUuid, NBTTagCompound dataCompound)
     {
         ResultMessage errorResult = ResultMessage.NO_ERROR;
         if (dataCompound != null)
         {
             Area area = Area.build(dataCompound);
-            UUID uuidArea = area.getUUID();
-            if (dataTypeUuid.equals(uuidArea))
+            GUID areaGUID = area.getGUID();
+            if (dataTypeUuid.equals(areaGUID))
             {
                 String areaFileName = area.getFileName();
                 try
@@ -199,12 +196,12 @@ public class ServerFileManager
                     ModLogger.warn("Unable to create folder: %s and/or file: %s", FileHelper.SERVER_AREAS_FOLDER, areaFileName);
                     errorResult = new ResultMessage(true, new TextComponentTranslation("mxtune.error.unable_to_create_file_folder",FileHelper.SERVER_AREAS_FOLDER, areaFileName));
                 }
-                if (!errorResult.hasError() || !areas.containsKey(uuidArea))
-                    areas.put(uuidArea, area);
+                if (!errorResult.hasError() || !areas.containsKey(areaGUID))
+                    areas.put(areaGUID, area);
             }
             else
             {
-                throw new MXTuneRuntimeException("UUID Mismatch in transport: Corrupted Area data");
+                throw new MXTuneRuntimeException("GUID Mismatch in transport: Corrupted Area data");
             }
         }
         else
@@ -214,15 +211,15 @@ public class ServerFileManager
         return errorResult;
     }
 
-    public static ResultMessage setSong(UUID dataTypeUuid, NBTTagCompound dataCompound)
+    public static ResultMessage setSong(GUID dataTypeUuid, NBTTagCompound dataCompound)
     {
         ResultMessage errorResult = ResultMessage.NO_ERROR;
         if (dataCompound != null)
         {
             SongProxy songProxy = new SongProxy(dataCompound);
             Song song = new Song(dataCompound);
-            UUID uuidSong = songProxy.getUUID();
-            if (dataTypeUuid.equals(uuidSong))
+            GUID songProxyGUID = songProxy.getGUID();
+            if (dataTypeUuid.equals(songProxyGUID))
             {
                 String songFileName = song.getFileName();
                 try
@@ -236,12 +233,12 @@ public class ServerFileManager
                     ModLogger.warn("Unable to create folder: %s and/or file: %s", FileHelper.SERVER_MUSIC_FOLDER, songFileName);
                     errorResult = new ResultMessage(true, new TextComponentTranslation("mxtune.error.unable_to_create_file_folder",FileHelper.SERVER_MUSIC_FOLDER, songFileName));
                 }
-                if (!errorResult.hasError() || !songProxyMap.containsKey(uuidSong))
-                    songProxyMap.put(uuidSong, songProxy);
+                if (!errorResult.hasError() || !songProxyMap.containsKey(songProxyGUID))
+                    songProxyMap.put(songProxyGUID, songProxy);
             }
             else
             {
-                throw new MXTuneRuntimeException("UUID Mismatch in transport: Corrupted Song data");
+                throw new MXTuneRuntimeException("GUID Mismatch in transport: Corrupted Song data");
             }
         }
         else
@@ -299,7 +296,7 @@ public class ServerFileManager
 
     private static void dumpAll()
     {
-        areas.forEach((key, value) -> ModLogger.debug("Area uuid:     %s, Name:    %s", key.toString(), value.getName()));
-        songProxyMap.forEach((key, value) -> ModLogger.debug("Song uuid:     %s, title:    %s", key.toString(), value.getTitle()));
+        areas.forEach((key, value) -> ModLogger.debug("Area guid:     %s, Name:    %s", key.toString(), value.getName()));
+        songProxyMap.forEach((key, value) -> ModLogger.debug("Song guid:     %s, title:    %s", key.toString(), value.getTitle()));
     }
 }

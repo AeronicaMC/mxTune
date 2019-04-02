@@ -18,6 +18,7 @@
 package net.aeronica.mods.mxtune.util;
 
 
+import net.aeronica.mods.mxtune.Reference;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -160,7 +161,7 @@ public class SHA2Helper
     public static void main(String[] args) throws Exception
     {
         LOGGER.info("Test SHA2");
-        String phrase = "Paul Boese";
+        String phrase = "The Hill";
         String sha2 = hash256(phrase);
         LOGGER.info("Phrase {}, SHA2 Hex: {}", phrase, sha2);
 
@@ -175,7 +176,11 @@ public class SHA2Helper
         String test =  bytesToHex(recon);
         LOGGER.info("Phrase {}, Test Hex: {}", phrase, test);
 
+        // fixme: GUID.fromString is not for hashing! It's for reading a the hash in string format!  Phrase hasher!
         GUID guid = GUID.fromString(phrase);
         LOGGER.info("Phrase {}, GUID Hex: {}", phrase, guid.toString());
+
+        LOGGER.info("Empty: new GUID(0,0,0,0) = {}", Reference.EMPTY_GUID);
+        LOGGER.info("Empty String: {} = ", GUID.fromString(""));
     }
 }

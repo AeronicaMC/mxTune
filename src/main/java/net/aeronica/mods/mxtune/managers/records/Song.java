@@ -17,7 +17,7 @@
 
 package net.aeronica.mods.mxtune.managers.records;
 
-import net.aeronica.mods.mxtune.caches.UUIDType5;
+import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.aeronica.mods.mxtune.util.ValidDuration;
 import net.minecraft.nbt.NBTTagCompound;
@@ -48,7 +48,7 @@ public class Song extends BaseData
         this.mml = mml != null ? mml : NULL_MML;
         ValidDuration validDuration = SheetMusicUtil.validateMML(this. mml);
         this.duration = validDuration.getDuration();
-        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_SONG, this.title);
+        guid = GUID.fromString(this.title);
     }
 
     public Song(NBTTagCompound compound)
@@ -97,8 +97,20 @@ public class Song extends BaseData
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(Object o)
     {
-        return obj instanceof Song && this.uuid.equals(((Song) obj).getUUID());
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return super.hashCode();
+    }
+
+    @Override
+    public int compareTo(GUID o)
+    {
+        return super.compareTo(o);
     }
 }

@@ -118,7 +118,7 @@ public class ModChunkCapability
         public NBTBase writeNBT(Capability<IModChunkData> capability, IModChunkData instance, EnumFacing side)
         {
             NBTTagCompound properties =  new NBTTagCompound();
-            NBTHelper.setUuidToCompound(properties, instance.getAreaUuid());
+            NBTHelper.setGuidToCompound(properties, instance.getAreaGuid());
             return properties;
         }
 
@@ -126,7 +126,7 @@ public class ModChunkCapability
         public void readNBT(Capability<IModChunkData> capability, IModChunkData instance, EnumFacing side, NBTBase nbt)
         {
             NBTTagCompound properties = (NBTTagCompound) nbt;
-            instance.setAreaUuid(NBTHelper.getUuidFromCompound(properties));
+            instance.setAreaGuid(NBTHelper.getGuidFromCompound(properties));
         }
     }
 }

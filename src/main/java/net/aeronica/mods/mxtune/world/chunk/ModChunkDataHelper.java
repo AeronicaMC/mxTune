@@ -20,6 +20,7 @@ package net.aeronica.mods.mxtune.world.chunk;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.UpdateChunkMusicData;
+import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.MXTuneException;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.Util;
@@ -30,7 +31,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 
 import javax.annotation.Nullable;
-import java.util.UUID;
 
 public class ModChunkDataHelper
 {
@@ -39,11 +39,11 @@ public class ModChunkDataHelper
 
     private ModChunkDataHelper() { /* NOP */ }
 
-    public static void setAreaUuid(Chunk chunk, UUID uuid)
+    public static void setAreaUuid(Chunk chunk, GUID guid)
     {
         try
         {
-            getImpl(chunk).setAreaUuid(uuid);
+            getImpl(chunk).setAreaGuid(guid);
         }
         catch (MXTuneException e)
         {
@@ -52,17 +52,17 @@ public class ModChunkDataHelper
         chunk.markDirty();
     }
 
-    public static UUID getAreaUuid(Chunk chunk)
+    public static GUID getAreaUuid(Chunk chunk)
     {
         try
         {
-            return getImpl(chunk).getAreaUuid();
+            return getImpl(chunk).getAreaGuid();
         }
         catch (MXTuneException e)
         {
             ModLogger.error(e);
         }
-        return Reference.EMPTY_UUID;
+        return Reference.EMPTY_GUID;
     }
 
     @Nullable

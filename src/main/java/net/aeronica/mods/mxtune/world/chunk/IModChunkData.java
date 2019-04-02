@@ -17,10 +17,10 @@
 
 package net.aeronica.mods.mxtune.world.chunk;
 
-import java.util.UUID;
+import net.aeronica.mods.mxtune.util.GUID;
 
 public interface IModChunkData
 {
-    UUID getAreaUuid();
-    void setAreaUuid(UUID uuid);
+    GUID getAreaGuid();
+    void setAreaGuid(GUID guid);
 }

@@ -17,7 +17,7 @@
 
 package net.aeronica.mods.mxtune.managers.records;
 
-import net.aeronica.mods.mxtune.caches.UUIDType5;
+import net.aeronica.mods.mxtune.util.GUID;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class Area extends BaseData
         this.name = "";
         playListDay = new ArrayList<>();
         playListNight = new ArrayList<>();
-        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_AREA, this.name);
+        guid = GUID.fromString(this.name);
     }
 
     public Area(String name)
@@ -48,7 +48,7 @@ public class Area extends BaseData
         this.name = name;
         playListDay = new ArrayList<>();
         playListNight = new ArrayList<>();
-        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_AREA, this.name);
+        guid = GUID.fromString(this.name);
     }
 
     public Area(String name, List<SongProxy> playListDay, List<SongProxy> playListNight)
@@ -58,7 +58,7 @@ public class Area extends BaseData
         this.playListDay.addAll(playListDay);
         this.playListNight = new ArrayList<>();
         this.playListNight.addAll(playListNight);
-        uuid = UUIDType5.nameUUIDFromNamespaceAndString(UUIDType5.NAMESPACE_AREA, this.name);
+        guid = GUID.fromString(this.name);
     }
 
     public static Area build(NBTTagCompound compound)
@@ -167,8 +167,20 @@ public class Area extends BaseData
     }
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(Object o)
     {
-        return obj instanceof Area && this.uuid.equals(((Area) obj).getUUID());
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return super.hashCode();
+    }
+
+    @Override
+    public int compareTo(GUID o)
+    {
+        return super.compareTo(o);
     }
 }

@@ -19,116 +19,132 @@ package net.aeronica.mods.mxtune.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Objects;
 
 public class GUID implements java.io.Serializable, Comparable<GUID>
 {
     private static final long serialVersionUID = -4856826361193249489L;
 
-    private final long mostSigBits;
-    private final long lessSigBits;
-    private final long lesserSigBits;
-    private final long leastSigBits;
-
-    /*
-     * The random number generator used by this class to create random
-     * based UUIDs. In a holder class to defer initialization until needed.
-     */
-    private static class Holder {
-        static final SecureRandom numberGenerator = new SecureRandom();
-    }
+    private final long ddddSigBits;
+    private final long ccccSigBits;
+    private final long bbbbSigBits;
+    private final long aaaaSigBits;
 
     // Constructors and Factories
 
     /*
-     * Private constructor which uses a byte array to construct the new UUID.
+     * Private constructor which uses a byte array to construct the new GUID.
      */
     private GUID(byte[] data)
     {
-        long msb = 0;
-        long nsb = 0;
-        long osb = 0;
-        long lsb = 0;
+        long dsb = 0;
+        long csb = 0;
+        long bsb = 0;
+        long asb = 0;
         assert data.length == 32 : "data must be 32 bytes in length";
         for (int i=0; i<8; i++)
-            msb = (msb << 8) | (data[i] & 0xff);
+            dsb = (dsb << 8) | (data[i] & 0xff);
         for (int i=8; i<16; i++)
-            nsb = (nsb << 8) | (data[i] & 0xff);
+            csb = (csb << 8) | (data[i] & 0xff);
         for (int i=16; i<24; i++)
-            osb = (osb << 8) | (data[i] & 0xff);
+            bsb = (bsb << 8) | (data[i] & 0xff);
         for (int i=24; i<32; i++)
-            lsb = (lsb << 8) | (data[i] & 0xff);
+            asb = (asb << 8) | (data[i] & 0xff);
 
-        this.mostSigBits = msb;
-        this.lessSigBits = nsb;
-        this.lesserSigBits = osb;
-        this.leastSigBits = lsb;
+        this.ddddSigBits = dsb;
+        this.ccccSigBits = csb;
+        this.bbbbSigBits = bsb;
+        this.aaaaSigBits = asb;
     }
 
     /**
      * Constructs a new {@code GUID} using the specified data.  {@code
-     * mostSigBits} is used for the most significant 64 bits of the {@code
-     * GUID} and {@code leastSigBits} becomes the least significant 64 bits of
+     * ddddSigBits} is used for the most significant 64 bits of the {@code
+     * GUID} and {@code aaaaSigBits} becomes the least significant 64 bits of
      * the {@code GUID}.
      *
-     * @param  mostSigBits
+     * @param  ddddSigBits
      *         The most significant bits of the {@code GUID}
-     * @param lessSigBits
+     * @param ccccSigBits
      *         The less significant bits of the {@code GUID}
-     * @param lesserSigBits
+     * @param bbbbSigBits
      *         The lesser significant bits of the {@code GUID}
-     * @param  leastSigBits
+     * @param  aaaaSigBits
      *         The least significant bits of the {@code GUID}
      */
-    public GUID(long mostSigBits, long lessSigBits, long lesserSigBits, long leastSigBits) {
-        this.mostSigBits = mostSigBits;
-        this.lessSigBits = lessSigBits;
-        this.lesserSigBits = lesserSigBits;
-        this.leastSigBits = leastSigBits;
+    public GUID(long ddddSigBits, long ccccSigBits, long bbbbSigBits, long aaaaSigBits) {
+        this.ddddSigBits = ddddSigBits;
+        this.ccccSigBits = ccccSigBits;
+        this.bbbbSigBits = bbbbSigBits;
+        this.aaaaSigBits = aaaaSigBits;
     }
 
-    public static GUID fromString(String name) throws NoSuchAlgorithmException
+    /**
+     * Creates a {@code GUID} from the string standard representation as
+     * described in the {@link #toString} method.
+     *
+     * @param  name
+     *         A string that specifies a {@code GUID}
+     *
+     * @return  A {@code GUID} with the specified value
+     *
+     * @throws  IllegalArgumentException
+     *          If name does not conform to the string representation as
+     *          described in {@link #toString}
+     *
+     */
+    public static GUID fromString(String name)
     {
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        md.update(name.getBytes());
-        return new GUID(md.digest());
+        MessageDigest md;
+        try
+        {
+            md = MessageDigest.getInstance("SHA-256");
+            md.update(name.getBytes());
+            if (name.getBytes().length != 64)
+                throw new IllegalArgumentException("Name is not 64 characters in length");
+            return new GUID(md.digest());
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            ModLogger.error(e);
+            throw new MXTuneRuntimeException("What's wrong with this JVM installation? No SHA-256 message digest? Please review and FIX your JAVA JVM installation!");
+        }
     }
 
     /**
-     * Returns the least significant 64 bits of this GUID's 256 bit value.
+     * Returns the Aaaa (LSB) significant 64 bits of this GUID's 256 bit value.
      *
-     * @return  The least significant 64 bits of this GUID's 256 bit value
+     * @return  The Aaaa (LSB) significant 64 bits of this GUID's 256 bit value
      */
-    public long getLeastSignificantBits() {
-        return leastSigBits;
+    public long getAaaaSignificantBits() {
+        return aaaaSigBits;
     }
 
     /**
-     * Returns the less significant 64 bits of this GUID's 256 bit value.
+     * Returns the Bbbb significant 64 bits of this GUID's 256 bit value.
      *
-     * @return  The less significant 64 bits of this GUID's 256 bit value
+     * @return  The Bbbb significant 64 bits of this GUID's 256 bit value
      */
-    public long getLessSignificantBits() {
-        return lessSigBits;
+    public long getBbbbSignificantBits() {
+        return bbbbSigBits;
     }
 
     /**
-     * Returns the lesser significant 64 bits of this GUID's 256 bit value.
+     * Returns the Cccc significant 64 bits of this GUID's 256 bit value.
      *
-     * @return  The lesser significant 64 bits of this GUID's 256 bit value
+     * @return  The Cccc significant 64 bits of this GUID's 256 bit value
      */
-    public long getLesersSignificantBits() {
-        return lesserSigBits;
+    public long getCcccSignificantBits() {
+        return ccccSigBits;
     }
 
     /**
-     * Returns the most significant 64 bits of this GUID's 256 bit value.
+     * Returns the Dddd (MSB) significant 64 bits of this GUID's 256 bit value.
      *
-     * @return  The most significant 64 bits of this GUID's 256 bit value
+     * @return  The Dddd (MSB) significant 64 bits of this GUID's 256 bit value
      */
-    public long getMostSignificantBits() {
-        return mostSigBits;
+    public long getDdddSignificantBits() {
+        return ddddSigBits;
     }
 
     /**
@@ -138,9 +154,8 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
     @Override
     public String toString()
     {
-        return bytesToHex(SHA256(this.mostSigBits, this.lessSigBits, this.lesserSigBits, this.leastSigBits));
+        return bytesToHex(SHA256(this.ddddSigBits, this.ccccSigBits, this.bbbbSigBits, this.aaaaSigBits));
     }
-
 
     // Internal helper code
 
@@ -150,19 +165,13 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
         return result.toString();
     }
 
-    private byte[] SHA256(long mostSigBits, long lessSigBits, long lesserSigBits, long leastSigBits )
+    private byte[] SHA256(long ddddSigBits, long ccccSigBits, long bbbbSigBits, long aaaaSigBits )
     {
-        long msb = mostSigBits;
-        long nsb = lessSigBits;
-        long osb = lesserSigBits;
-        long lsb = leastSigBits;
         byte[] bytes = new byte[32];
-
-        System.arraycopy(fastLongToBytes(mostSigBits), 0, bytes, 0, 8);
-        System.arraycopy(fastLongToBytes(lessSigBits), 0, bytes, 8, 8);
-        System.arraycopy(fastLongToBytes(lesserSigBits), 0, bytes, 16, 8);
-        System.arraycopy(fastLongToBytes(leastSigBits), 0, bytes, 24, 8);
-
+        System.arraycopy(fastLongToBytes(ddddSigBits), 0, bytes, 0, 8);
+        System.arraycopy(fastLongToBytes(ccccSigBits), 0, bytes, 8, 8);
+        System.arraycopy(fastLongToBytes(bbbbSigBits), 0, bytes, 16, 8);
+        System.arraycopy(fastLongToBytes(aaaaSigBits), 0, bytes, 24, 8);
         return bytes;
     }
 
@@ -186,16 +195,16 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         GUID guid = (GUID) o;
-        return mostSigBits == guid.mostSigBits &&
-                lessSigBits == guid.lessSigBits &&
-                lesserSigBits == guid.lesserSigBits &&
-                leastSigBits == guid.leastSigBits;
+        return ddddSigBits == guid.ddddSigBits &&
+                ccccSigBits == guid.ccccSigBits &&
+                bbbbSigBits == guid.bbbbSigBits &&
+                aaaaSigBits == guid.aaaaSigBits;
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(mostSigBits, lessSigBits, lesserSigBits, leastSigBits);
+        return Objects.hash(ddddSigBits, ccccSigBits, bbbbSigBits, aaaaSigBits);
     }
 
     @Override
@@ -205,14 +214,14 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
         The ordering is intentionally set up so that the UUIDs
         can simply be numerically compared as two numbers
         */
-        return (this.mostSigBits < val.mostSigBits ? -1 :
-                (this.mostSigBits > val.mostSigBits ? 1 :
-                 (this.lessSigBits < val.lessSigBits ? -1 :
-                  (this.lessSigBits > val.lessSigBits ? 1 :
-                   (this.lesserSigBits < val.lesserSigBits ? -1 :
-                    (this.lesserSigBits > val.lesserSigBits ? 1 :
-                 (this.leastSigBits < val.leastSigBits ? -1 :
-                  (this.leastSigBits > val.leastSigBits ? 1 :
-                   0))))))));
+        return (this.ddddSigBits < val.ddddSigBits ? -1 :
+                (this.ddddSigBits > val.ddddSigBits ? 1 :
+                 (this.ccccSigBits < val.ccccSigBits ? -1 :
+                  (this.ccccSigBits > val.ccccSigBits ? 1 :
+                   (this.bbbbSigBits < val.bbbbSigBits ? -1 :
+                    (this.bbbbSigBits > val.bbbbSigBits ? 1 :
+                     (this.aaaaSigBits < val.aaaaSigBits ? -1 :
+                      (this.aaaaSigBits > val.aaaaSigBits ? 1 :
+                       0))))))));
     }
 }
