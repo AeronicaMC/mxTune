@@ -45,7 +45,7 @@ public class PlayList extends BaseData
     {
         this.name = name != null ? name.trim() : "";
         this.songGUIDs = songGUIDs != null ? songGUIDs : new ArrayList<>();
-        guid = GUID.hashPhrase(this.name);
+        guid = GUID.stringToSHA2Hash(this.name);
     }
 
     public PlayList(NBTTagCompound compound)

@@ -21,6 +21,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
+/*
+ * A better name for this class would be SHA2 since it's main purpose is to create unique 64 character
+ * hexadecimal strings. It's Useful for use as file names. It's less useful than java.util.UUID in many respects, but
+ * I've noted at least one UUID collision which prompted me to make this class.
+ */
 public class GUID implements java.io.Serializable, Comparable<GUID>
 {
     private static final long serialVersionUID = -4856826361193249489L;
@@ -34,6 +39,7 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
 
     /*
      * Private constructor which uses a byte array to construct the new GUID.
+     * Requires exactly 32 bytes. The perfect size to hold all 256 bits needed to store a SHA2 hash.
      */
     private GUID(byte[] data)
     {
@@ -98,7 +104,12 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
         return new GUID(hexStringToByteArray(name));
     }
 
-    public static GUID hashPhrase(String phrase)
+    /**
+     * Generates a SHA256 hash for the entered phrase/string and stores if in the GUID
+     * @param phrase to hash.
+     * @return A GUID that represents the SHA256 hash for phrase.
+     */
+    public static GUID stringToSHA2Hash(String phrase)
     {
         MessageDigest md;
         try
@@ -114,7 +125,7 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
         }
     }
 
-    // Getters and
+    // Getters and toString
 
     /**
      * Returns the Aaaa (LSB) significant 64 bits of this GUID's 256 bit value.
@@ -154,7 +165,7 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
 
     /**
      * Returns a {@code String} object representing this {@code GUID}.
-     * @return A hexadecimal string representation of this {@code GUID}
+     * @return A 64 character (256 bit) hexadecimal string representation of this {@code GUID}
      */
     @Override
     public String toString()

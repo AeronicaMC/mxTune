@@ -48,7 +48,7 @@ public class Area extends BaseData
         this.name = name.trim();
         playListDay = new ArrayList<>();
         playListNight = new ArrayList<>();
-        guid = GUID.hashPhrase(this.name);
+        guid = GUID.stringToSHA2Hash(this.name);
     }
 
     public Area(String name, List<SongProxy> playListDay, List<SongProxy> playListNight)
@@ -58,7 +58,7 @@ public class Area extends BaseData
         this.playListDay.addAll(playListDay);
         this.playListNight = new ArrayList<>();
         this.playListNight.addAll(playListNight);
-        guid = GUID.hashPhrase(this.name);
+        guid = GUID.stringToSHA2Hash(this.name);
     }
 
     public static Area build(NBTTagCompound compound)
@@ -142,7 +142,7 @@ public class Area extends BaseData
     public void setName(String name)
     {
         this.name = name.trim();
-        this.guid = GUID.hashPhrase(this.name);
+        this.guid = GUID.stringToSHA2Hash(this.name);
     }
 
     public List<SongProxy> getPlayListDay()
