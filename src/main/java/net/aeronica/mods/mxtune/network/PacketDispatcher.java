@@ -94,6 +94,7 @@ public class PacketDispatcher
         registerMessage(GetServerDataMessage.class);
         registerMessage(SetServerDataMessage.class);
         registerMessage(GetAreasMessage.class);
+        registerMessage(SetServerSerializedDataMessage.class);
     }
 
     /**
