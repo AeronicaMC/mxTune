@@ -227,20 +227,21 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
     }
 
     @Override
+    @SuppressWarnings("all")
     public int compareTo(GUID val)
     {
         /*
-        The ordering is intentionally set up so that the UUIDs
-        can simply be numerically compared as two numbers
-        */
-        return (this.ddddSigBits < val.ddddSigBits ? -1 :
-                (this.ddddSigBits > val.ddddSigBits ? 1 :
-                 (this.ccccSigBits < val.ccccSigBits ? -1 :
-                  (this.ccccSigBits > val.ccccSigBits ? 1 :
-                   (this.bbbbSigBits < val.bbbbSigBits ? -1 :
-                    (this.bbbbSigBits > val.bbbbSigBits ? 1 :
-                     (this.aaaaSigBits < val.aaaaSigBits ? -1 :
-                      (this.aaaaSigBits > val.aaaaSigBits ? 1 :
+         * The ordering is intentionally set up so that the UUIDs
+         * can simply be numerically compared as two numbers
+         */
+        return ((this.ddddSigBits < val.ddddSigBits) ? -1 :
+                ((this.ddddSigBits > val.ddddSigBits) ? 1 :
+                 ((this.ccccSigBits < val.ccccSigBits) ? -1 :
+                  ((this.ccccSigBits > val.ccccSigBits) ? 1 :
+                   ((this.bbbbSigBits < val.bbbbSigBits) ? -1 :
+                    ((this.bbbbSigBits > val.bbbbSigBits) ? 1 :
+                     ((this.aaaaSigBits < val.aaaaSigBits) ? -1 :
+                      ((this.aaaaSigBits > val.aaaaSigBits) ? 1 :
                        0))))))));
     }
 }
