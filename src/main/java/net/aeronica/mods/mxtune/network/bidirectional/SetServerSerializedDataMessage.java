@@ -119,9 +119,11 @@ public class SetServerSerializedDataMessage extends AbstractMessage<SetServerSer
         {
             case AREA:
                 Area area = (Area)baseData;
-                ModLogger.debug("AREA Serialized Test: pass %s", dataTypeUuid.equals(area.getGUID()));
+                ModLogger.debug("AREA Serialized Test: pass %s, name: %s, Day Count %d", dataTypeUuid.equals(area.getGUID()), area.getName(), area.getPlayListDay().size());
                 break;
             case MUSIC:
+                Song song = (Song)baseData;
+                ModLogger.debug("SONG Serialized Test: pass %s, title: %s, MML length %d", dataTypeUuid.equals(song.getGUID()), song.getTitle(), song.getMml().length());
                 break;
             default:
         }
@@ -144,7 +146,9 @@ public class SetServerSerializedDataMessage extends AbstractMessage<SetServerSer
                 case MUSIC:
                     //resultMessage = ServerFileManager.setSong(dataTypeUuid, baseData);
                     Song song = (Song)baseData;
-                    ModLogger.debug("AREA Serialized Test: pass %s", dataTypeUuid.equals(song.getGUID()));
+                    ModLogger.debug("MUSIC Serialized Test: pass %s", dataTypeUuid.equals(song.getGUID()));
+                    PacketDispatcher.sendTo(new SetServerSerializedDataMessage(song.getGUID(), SetServerSerializedDataMessage.SetType.MUSIC, song), player);
+
                     break;
                 default:
                     resultMessage = new ResultMessage(true, new TextComponentTranslation("mxtune.error.unexpected_type", type.name()));

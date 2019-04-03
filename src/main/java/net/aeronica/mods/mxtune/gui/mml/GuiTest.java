@@ -594,6 +594,21 @@ public class GuiTest extends GuiScreen implements CallBack
         Area area = new Area(areaName.getText(), guiDay.getList(), guiNight.getList());
         NBTTagCompound areaCompound = new NBTTagCompound();
         area.writeToNBT(areaCompound);
+        ModLogger.debug("...............................................................");
+        ModLogger.debug("AREA TEST %s, Day Count: %d", area.getName(), area.getPlayListDay().size());
         PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(area.getGUID(), SetServerSerializedDataMessage.SetType.AREA, area));
+
+        for (SongProxy songProxy : guiDay.getList())
+        {
+            if (songProxy != null)
+            {
+                Song song = pathToSong(songProxyPathBiMap.get(songProxy));
+                NBTTagCompound songCompound = new NBTTagCompound();
+                song.writeToNBT(songCompound);
+                ModLogger.debug("-------------------------------------------------------------------");
+                ModLogger.debug("SONG TEST %s, MML Length: %d", song.getTitle(), song.getMml().length());
+                PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(songProxy.getGUID(), SetServerSerializedDataMessage.SetType.MUSIC, song));
+            }
+        }
     }
 }
