@@ -108,6 +108,8 @@ public class NetworkSerializedHelper
             inStreamSize = in.available();
             obj = (Serializable) in.readObject();
             in.close();
+            ModLogger.debug("");
+            ModLogger.debug("ReadObjStats: bufferMaxCapacity: %d, expectedBytes: %d,bufferReadableBytes: %d, inStreamSize: %d", bufferMaxCapacity, expectedBytes, bufferReadableBytes, inStreamSize);
             return obj;
         }
         catch (ClassNotFoundException e)
@@ -115,7 +117,6 @@ public class NetworkSerializedHelper
             ModLogger.error(e);
             ModLogger.debug("ClassNotFoundException: obj is null");
         }
-        ModLogger.debug("ReadObjStats: bufferMaxCapacity: %d, expectedBytes: %d,bufferReadableBytes: %d, inStreamSize: %d", bufferMaxCapacity, expectedBytes, bufferReadableBytes, inStreamSize);
         return null;
     }
 
@@ -132,6 +133,7 @@ public class NetworkSerializedHelper
         int maxWriteBytes = buffer.maxWritableBytes();
         int writableBytes = buffer.writableBytes();
 
+        ModLogger.debug("");
         ModLogger.debug("WriteObjStats: bosSize: %s, bufferCapacity %d, maxWriteBytes %d, writableBytes %d", bosSize, bufferCapacity, maxWriteBytes, writableBytes);
 
         // bytes to write

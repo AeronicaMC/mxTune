@@ -19,7 +19,6 @@ package net.aeronica.mods.mxtune.network.bidirectional;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.managers.records.Area;
-import net.aeronica.mods.mxtune.managers.records.BaseData;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
@@ -65,7 +64,7 @@ public class SetServerSerializedDataMessage extends AbstractMessage<SetServerSer
      * @param type data type
      * @param baseData
      */
-    public SetServerSerializedDataMessage(GUID guidType, SetType type , BaseData baseData)
+    public SetServerSerializedDataMessage(GUID guidType, SetType type , Serializable baseData)
     {
         this.type = type;
         this.baseData = baseData;
@@ -119,6 +118,8 @@ public class SetServerSerializedDataMessage extends AbstractMessage<SetServerSer
         switch (type)
         {
             case AREA:
+                Area area = (Area)baseData;
+                ModLogger.debug("AREA Serialized Test: pass %s", dataTypeUuid.equals(area.getGUID()));
                 break;
             case MUSIC:
                 break;
@@ -138,6 +139,7 @@ public class SetServerSerializedDataMessage extends AbstractMessage<SetServerSer
                     //resultMessage = ServerFileManager.setArea(dataTypeUuid, baseData);
                     Area area = (Area)baseData;
                     ModLogger.debug("AREA Serialized Test: pass %s", dataTypeUuid.equals(area.getGUID()));
+                    PacketDispatcher.sendTo(new SetServerSerializedDataMessage(area.getGUID(), SetServerSerializedDataMessage.SetType.AREA, area), player);
                     break;
                 case MUSIC:
                     //resultMessage = ServerFileManager.setSong(dataTypeUuid, baseData);
