@@ -61,14 +61,14 @@ public class ItemStaffOfMusic extends Item
         {
             BlockPos pos = playerIn.getPosition();
             Chunk chunk = worldIn.getChunk(pos);
-            String areaGuidString = "a4db4c2454f503b05d4734226c026aa91332c637440eabd7886faf53304a8551";
+            String areaName = "Village Well";
             if (chunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
             {
-                ModChunkDataHelper.setAreaGuid(chunk, GUID.fromString(areaGuidString));
+                ModChunkDataHelper.setAreaGuid(chunk, GUID.stringToSHA2Hash(areaName));
                 ModChunkDataHelper.sync(playerIn, chunk);
 
                 ModLogger.debug("Staff of Music usable");
-                ModLogger.debug("Area UUID: %s", areaGuidString);
+                ModLogger.debug("Area UUID: %s", areaName);
             }
             return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
         }
