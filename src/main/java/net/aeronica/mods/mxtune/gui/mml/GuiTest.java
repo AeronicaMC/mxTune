@@ -272,7 +272,7 @@ public class GuiTest extends GuiScreen implements CallBack
         areaName = new GuiTextField(1, fontRenderer, selectButtonLeft, listTop, selectButtonWidth, singleLineHeight + 2);
         buttonToServer = new GuiButton(6, selectButtonLeft, areaName.y + areaName.height + padding, selectButtonWidth, 20, "Send to Server");
 
-        GuiButton test = new GuiButton(7, selectButtonLeft, buttonToServer.y + buttonToServer.height + padding, selectButtonWidth, 20, "Test");
+        GuiButton test = new GuiButton(7, selectButtonLeft, buttonToServer.y + buttonToServer.height, selectButtonWidth, 20, "Test");
 
         GuiButton buttonToDay = new GuiButton(2, selectButtonLeft, dayTop + padding, selectButtonWidth, 20, "To Day List ->");
         GuiButton buttonToNight = new GuiButton(3, selectButtonLeft, nightTop + padding, selectButtonWidth, 20, "To Night List ->");

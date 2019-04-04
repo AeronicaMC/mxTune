@@ -41,9 +41,7 @@ import java.io.*;
 
 public class NetworkSerializedHelper
 {
-    private static final int MAX_BUFFER = 32000;
-    private static final String EMPTY_STRING = "";
-    private static byte[] byteBuffer = null;
+    private static final int MAX_BUFFER = 8192;
 
     public NetworkSerializedHelper() { /* NOP */ }
 
@@ -92,14 +90,22 @@ public class NetworkSerializedHelper
     public static Serializable readBuffer(PacketBuffer buffer) throws IOException
     {
         // bytes to read
-        int expectedBytes = buffer.readInt();
-        int inStreamSize = 0;
+        int inStreamSize;
         int bufferReadableBytes = buffer.readableBytes();
-        int bufferMaxCapacity = buffer.maxCapacity();
+
         Serializable obj;
 
         // Deserialize data object from a byte array
-        byteBuffer = buffer.readByteArray();
+        int expectedLength = buffer.readInt();
+        int expectedHashCode = buffer.readInt();
+        byte[] byteBuffer = new byte[0];
+        do
+        {
+            byte[] readBuffer;
+            readBuffer = buffer.readByteArray(MAX_BUFFER);
+            byteBuffer = appendByteArrays(byteBuffer, readBuffer, readBuffer.length);
+        }
+        while (byteBuffer.length < expectedLength);
 
         try
         {
@@ -109,37 +115,107 @@ public class NetworkSerializedHelper
             obj = (Serializable) in.readObject();
             in.close();
             ModLogger.debug("");
-            ModLogger.debug("ReadObjStats: bufferMaxCapacity: %d, expectedBytes: %d,bufferReadableBytes: %d, inStreamSize: %d", bufferMaxCapacity, expectedBytes, bufferReadableBytes, inStreamSize);
-            return obj;
+            ModLogger.debug("ReadObjStats: expectedLength: %d, expectedHashCode: %d, bufferReadableBytes: %d, inStreamSize: %d", expectedLength, expectedHashCode, bufferReadableBytes, inStreamSize);
         }
         catch (ClassNotFoundException e)
         {
             ModLogger.error(e);
             ModLogger.debug("ClassNotFoundException: obj is null");
+            return null;
         }
-        return null;
+        if ((obj != null && expectedHashCode == obj.hashCode()))
+        {
+            return obj;
+        }
+        else
+        {
+            ModLogger.error("StringHelper#readLongString received data error: expected hash: %d, actual: %d", expectedHashCode, obj.hashCode());
+            return null;
+        }
     }
 
     public static void writeBuffer(PacketBuffer buffer, Serializable obj) throws IOException
     {
+        byte[] byteBuffer = null;
+        int totalLength = 0;
+        int index = 0;
+        int start;
+        int end;
         // Serialize data object to a byte array
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream out = new ObjectOutputStream(bos);
         out.writeObject((Serializable) obj);
-        out.close();
+        out.flush();
 
-        int bosSize = bos.size();
+        byteBuffer = bos.toByteArray();
+
         int bufferCapacity = buffer.maxCapacity();
         int maxWriteBytes = buffer.maxWritableBytes();
         int writableBytes = buffer.writableBytes();
 
+        totalLength = byteBuffer.length;
+        buffer.writeInt(totalLength);
+        buffer.writeInt(obj.hashCode());
+        do
+        {
+            byte[] writeBuffer = new byte[MAX_BUFFER];
+            start = (MAX_BUFFER * index);
+            end = Math.min((MAX_BUFFER * (index + 1)), totalLength);
+            System.arraycopy(byteBuffer, start, writeBuffer, 0, end - start);
+            buffer.writeByteArray(writeBuffer);
+            index++;
+        } while (end < totalLength);
+
         ModLogger.debug("");
-        ModLogger.debug("WriteObjStats: bosSize: %s, bufferCapacity %d, maxWriteBytes %d, writableBytes %d", bosSize, bufferCapacity, maxWriteBytes, writableBytes);
+        ModLogger.debug("WriteObjStats: byteBuffer[] length: %s, bufferCapacity: %d, maxWriteBytes: %d, writableBytes: %d, obj.hash: %d", totalLength, bufferCapacity, maxWriteBytes, writableBytes, obj.hashCode());
 
         // bytes to write
-        buffer.writeInt(bosSize);
-        // Get the bytes of the serialized object
-        byteBuffer = bos.toByteArray();
-        buffer.writeByteArray(byteBuffer);
+//        buffer.writeInt(bosSize);
+//        // Get the bytes of the serialized object
+//        byteBuffer = bos.toByteArray();
+//        buffer.writeByteArray(byteBuffer);
+    }
+
+    /**
+     * Creates a new array with the second array appended to the end of the
+     * first array.
+     *
+     * @param arrayOne The first array.
+     * @param arrayTwo The second array.
+     * @param length   How many bytes to append from the second array.
+     * @return Byte array containing information from both arrays.
+     */
+    private static byte[] appendByteArrays(byte[] arrayOne, byte[] arrayTwo, int length)
+    {
+        byte[] newArray;
+        if (arrayOne == null && arrayTwo == null)
+        {
+            // no data, just return
+            return new byte[0];
+        }
+        else if (arrayOne == null)
+        {
+            // create the new array, same length as arrayTwo:
+            newArray = new byte[length];
+            // fill the new array with the contents of arrayTwo:
+            System.arraycopy(arrayTwo, 0, newArray, 0, length);
+        }
+        else if (arrayTwo == null)
+        {
+            // create the new array, same length as arrayOne:
+            newArray = new byte[arrayOne.length];
+            // fill the new array with the contents of arrayOne:
+            System.arraycopy(arrayOne, 0, newArray, 0, arrayOne.length);
+        }
+        else
+        {
+            // create the new array large enough to hold both arrays:
+            newArray = new byte[arrayOne.length + length];
+            System.arraycopy(arrayOne, 0, newArray, 0, arrayOne.length);
+            // fill the new array with the contents of both arrays:
+            System.arraycopy(arrayTwo, 0, newArray, arrayOne.length, length);
+        }
+
+        return newArray;
     }
 }
