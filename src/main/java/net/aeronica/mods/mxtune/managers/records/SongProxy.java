@@ -42,6 +42,7 @@ public class SongProxy extends BaseData
     public SongProxy(Song song)
     {
         NBTTagCompound compound = new NBTTagCompound();
+        song.writeToNBT(compound);
         this.readFromNBT(compound);
     }
 
