@@ -34,7 +34,7 @@ public class NetworkSerializedHelper
 {
     private static final int MAX_BUFFER = 24576;
 
-    public NetworkSerializedHelper() { /* NOP */ }
+    private NetworkSerializedHelper() { /* NOP */ }
 
     public static Serializable readSerializedObject(PacketBuffer buffer) throws IOException
     {
