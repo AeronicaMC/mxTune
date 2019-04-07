@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.network.server;
 
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
+import net.aeronica.mods.mxtune.network.NetworkStringHelper;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;

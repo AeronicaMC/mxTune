@@ -29,7 +29,6 @@ import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.GetAreasMessage;
-import net.aeronica.mods.mxtune.network.bidirectional.SetServerDataMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.SetServerSerializedDataMessage;
 import net.aeronica.mods.mxtune.util.CallBack;
 import net.aeronica.mods.mxtune.util.CallBackManager;
@@ -42,7 +41,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
@@ -60,8 +58,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static net.aeronica.mods.mxtune.network.bidirectional.SetServerDataMessage.SetType;
 
 public class GuiTest extends GuiScreen implements CallBack
 {
@@ -272,8 +268,6 @@ public class GuiTest extends GuiScreen implements CallBack
         areaName = new GuiTextField(1, fontRenderer, selectButtonLeft, listTop, selectButtonWidth, singleLineHeight + 2);
         buttonToServer = new GuiButton(6, selectButtonLeft, areaName.y + areaName.height + padding, selectButtonWidth, 20, "Send to Server");
 
-        GuiButton test = new GuiButton(7, selectButtonLeft, buttonToServer.y + buttonToServer.height, selectButtonWidth, 20, "Test");
-
         GuiButton buttonToDay = new GuiButton(2, selectButtonLeft, dayTop + padding, selectButtonWidth, 20, "To Day List ->");
         GuiButton buttonToNight = new GuiButton(3, selectButtonLeft, nightTop + padding, selectButtonWidth, 20, "To Night List ->");
         GuiButton buttonDDeleteDay = new GuiButton(4, selectButtonLeft, buttonToDay.y + buttonToDay.height + padding, selectButtonWidth, 20, "Delete");
@@ -286,7 +280,6 @@ public class GuiTest extends GuiScreen implements CallBack
         buttonList.add(buttonDDeleteDay);
         buttonList.add(buttonDDeleteNight);
         buttonList.add(buttonToServer);
-        buttonList.add(test);
 
         initAreas();
         reloadState();
@@ -407,9 +400,6 @@ public class GuiTest extends GuiScreen implements CallBack
             case 6:
                 // send to Server
                 shipIt();
-                break;
-            case 7:
-                test();
                 break;
             default:
         }
@@ -535,18 +525,14 @@ public class GuiTest extends GuiScreen implements CallBack
 
         areaName.setText(areaName.getText().trim());
         Area area = new Area(areaName.getText(), guiDay.getList(), guiNight.getList());
-        NBTTagCompound areaCompound = new NBTTagCompound();
-        area.writeToNBT(areaCompound);
-        PacketDispatcher.sendToServer(new SetServerDataMessage(area.getGUID(), SetType.AREA, areaCompound));
+        PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(area.getGUID(), SetServerSerializedDataMessage.SetType.AREA, area));
 
         for (SongProxy songProxy : guiDay.getList())
         {
             if (songProxy != null)
             {
                 Song song = pathToSong(songProxyPathBiMap.get(songProxy));
-                NBTTagCompound songCompound = new NBTTagCompound();
-                song.writeToNBT(songCompound);
-                PacketDispatcher.sendToServer(new SetServerDataMessage(songProxy.getGUID(), SetType.MUSIC, songCompound));
+                PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(songProxy.getGUID(), SetServerSerializedDataMessage.SetType.MUSIC, song));
             }
         }
         for (SongProxy songProxy : guiNight.getList())
@@ -554,9 +540,7 @@ public class GuiTest extends GuiScreen implements CallBack
             if (songProxy != null)
             {
                 Song song = pathToSong(songProxyPathBiMap.get(songProxy));
-                NBTTagCompound songCompound = new NBTTagCompound();
-                song.writeToNBT(songCompound);
-                PacketDispatcher.sendToServer(new SetServerDataMessage(songProxy.getGUID(), SetType.MUSIC, songCompound));
+                PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(songProxy.getGUID(), SetServerSerializedDataMessage.SetType.MUSIC, song));
             }
         }
 
@@ -586,29 +570,5 @@ public class GuiTest extends GuiScreen implements CallBack
         if (payload != null)
             guiAreaList.addAll((List<Area>) payload);
         updateState();
-    }
-
-    private void test()
-    {
-        areaName.setText(areaName.getText().trim());
-        Area area = new Area(areaName.getText(), guiDay.getList(), guiNight.getList());
-        NBTTagCompound areaCompound = new NBTTagCompound();
-        area.writeToNBT(areaCompound);
-        ModLogger.debug("...............................................................");
-        ModLogger.debug("AREA TEST %s, Day Count: %d", area.getName(), area.getPlayListDay().size());
-        PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(area.getGUID(), SetServerSerializedDataMessage.SetType.AREA, area));
-
-        for (SongProxy songProxy : guiDay.getList())
-        {
-            if (songProxy != null)
-            {
-                Song song = pathToSong(songProxyPathBiMap.get(songProxy));
-                NBTTagCompound songCompound = new NBTTagCompound();
-                song.writeToNBT(songCompound);
-                ModLogger.debug("-------------------------------------------------------------------");
-                ModLogger.debug("SONG TEST %s, MML Length: %d", song.getTitle(), song.getMml().length());
-                PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(songProxy.getGUID(), SetServerSerializedDataMessage.SetType.MUSIC, song));
-            }
-        }
     }
 }

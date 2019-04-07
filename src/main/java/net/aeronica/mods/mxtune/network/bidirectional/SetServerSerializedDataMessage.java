@@ -18,11 +18,13 @@
 package net.aeronica.mods.mxtune.network.bidirectional;
 
 import net.aeronica.mods.mxtune.Reference;
+import net.aeronica.mods.mxtune.managers.ServerFileManager;
 import net.aeronica.mods.mxtune.managers.records.Area;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
+import net.aeronica.mods.mxtune.network.NetworkSerializedHelper;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
-import net.aeronica.mods.mxtune.network.server.NetworkSerializedHelper;
+import net.aeronica.mods.mxtune.network.client.SendResultMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -30,18 +32,15 @@ import net.aeronica.mods.mxtune.util.ResultMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.io.IOException;
 import java.io.Serializable;
 
-public class SetServerSerializedDataMessage extends AbstractMessage<SetServerSerializedDataMessage>
+public class SetServerSerializedDataMessage extends AbstractMessage.AbstractServerMessage<SetServerSerializedDataMessage>
 {
     private SetType type = SetType.AREA;
-    private boolean errorResult = false;
-    private ITextComponent component = new TextComponentTranslation("mxtune.no_error", "");
     private Serializable baseData;
     private long ddddSigBits;
     private long ccccSigBits;
@@ -51,12 +50,6 @@ public class SetServerSerializedDataMessage extends AbstractMessage<SetServerSer
 
     @SuppressWarnings("unused")
     public SetServerSerializedDataMessage() { /* Required by the PacketDispatcher */ }
-
-    public SetServerSerializedDataMessage(ITextComponent component, Boolean errorResult)
-    {
-        this.component = component;
-        this.errorResult = errorResult;
-    }
 
     /**
      * Client Submission for data type
@@ -78,13 +71,11 @@ public class SetServerSerializedDataMessage extends AbstractMessage<SetServerSer
     protected void read(PacketBuffer buffer) throws IOException
     {
         this.type = buffer.readEnumValue(SetType.class);
-        this.baseData = NetworkSerializedHelper.readBuffer(buffer);
+        this.baseData = NetworkSerializedHelper.readSerializedObject(buffer);
         ddddSigBits = buffer.readLong();
         ccccSigBits = buffer.readLong();
         bbbbSigBits = buffer.readLong();
         aaaaSigBits = buffer.readLong();
-        this.component = ITextComponent.Serializer.jsonToComponent(buffer.readString(32767));
-        this.errorResult = buffer.readBoolean();
         dataTypeUuid = new GUID(ddddSigBits, ccccSigBits, bbbbSigBits, aaaaSigBits);
     }
 
@@ -92,45 +83,15 @@ public class SetServerSerializedDataMessage extends AbstractMessage<SetServerSer
     protected void write(PacketBuffer buffer) throws IOException
     {
         buffer.writeEnumValue(type);
-        NetworkSerializedHelper.writeBuffer(buffer, baseData);
+        NetworkSerializedHelper.writeSerializedObject(buffer, baseData);
         buffer.writeLong(ddddSigBits);
         buffer.writeLong(ccccSigBits);
         buffer.writeLong(bbbbSigBits);
         buffer.writeLong(aaaaSigBits);
-        buffer.writeString(ITextComponent.Serializer.componentToJson(component));
-        buffer.writeBoolean(errorResult);
     }
 
     @Override
     public void process(EntityPlayer player, Side side)
-    {
-        if (side.isClient())
-        {
-            handleClientSide();
-        } else
-        {
-            handleServerSide((EntityPlayerMP) player);
-        }
-    }
-
-    private void handleClientSide()
-    {
-        switch (type)
-        {
-            case AREA:
-                Area area = (Area)baseData;
-                ModLogger.debug("AREA Serialized Test: pass %s, name: %s, Day Count %d", dataTypeUuid.equals(area.getGUID()), area.getName(), area.getPlayListDay().size());
-                break;
-            case MUSIC:
-                Song song = (Song)baseData;
-                ModLogger.debug("SONG Serialized Test: pass %s, title: %s, MML length %d", dataTypeUuid.equals(song.getGUID()), song.getTitle(), song.getMml().length());
-                break;
-            default:
-        }
-        ModLogger.debug("Error: %s, error %s", component.getFormattedText(), errorResult);
-    }
-
-    private void  handleServerSide(EntityPlayerMP player)
     {
         ResultMessage resultMessage = ResultMessage.NO_ERROR;
         if (MusicOptionsUtil.isMxTuneServerUpdateAllowed(player))
@@ -138,29 +99,25 @@ public class SetServerSerializedDataMessage extends AbstractMessage<SetServerSer
             switch (type)
             {
                 case AREA:
-                    //resultMessage = ServerFileManager.setArea(dataTypeUuid, baseData);
                     Area area = (Area)baseData;
+                    resultMessage = ServerFileManager.setArea(dataTypeUuid, area);
                     ModLogger.debug("AREA Serialized Test: pass %s", dataTypeUuid.equals(area.getGUID()));
-                    PacketDispatcher.sendTo(new SetServerSerializedDataMessage(area.getGUID(), SetServerSerializedDataMessage.SetType.AREA, area), player);
                     break;
                 case MUSIC:
-                    //resultMessage = ServerFileManager.setSong(dataTypeUuid, baseData);
                     Song song = (Song)baseData;
+                    resultMessage = ServerFileManager.setSong(dataTypeUuid, song);
                     ModLogger.debug("MUSIC Serialized Test: pass %s", dataTypeUuid.equals(song.getGUID()));
-                    PacketDispatcher.sendTo(new SetServerSerializedDataMessage(song.getGUID(), SetServerSerializedDataMessage.SetType.MUSIC, song), player);
-
                     break;
                 default:
                     resultMessage = new ResultMessage(true, new TextComponentTranslation("mxtune.error.unexpected_type", type.name()));
             }
         }
         else
-            PacketDispatcher.sendTo(new SetServerSerializedDataMessage((new TextComponentTranslation("mxtune.warning.set_server_data_not_allowed")), true), player);
+            PacketDispatcher.sendTo(new SendResultMessage((new TextComponentTranslation("mxtune.warning.set_server_data_not_allowed")), true), (EntityPlayerMP) player);
 
         if (resultMessage.hasError())
-            PacketDispatcher.sendTo(new SetServerSerializedDataMessage(resultMessage.getMessage(), resultMessage.hasError()), player);
+            PacketDispatcher.sendTo(new SendResultMessage(resultMessage.getMessage(), resultMessage.hasError()), (EntityPlayerMP) player);
 
     }
-
     public enum SetType {AREA, MUSIC}
 }

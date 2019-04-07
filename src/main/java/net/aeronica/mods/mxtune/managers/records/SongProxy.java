@@ -39,6 +39,12 @@ public class SongProxy extends BaseData
         duration = 0;
     }
 
+    public SongProxy(Song song)
+    {
+        NBTTagCompound compound = new NBTTagCompound();
+        this.readFromNBT(compound);
+    }
+
     public SongProxy(NBTTagCompound compound)
     {
         this.readFromNBT(compound);

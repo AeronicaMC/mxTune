@@ -21,6 +21,7 @@ import net.aeronica.mods.mxtune.gui.hud.GuiJamOverlay;
 import net.aeronica.mods.mxtune.handler.KeyHandler;
 import net.aeronica.mods.mxtune.managers.ClientFileManager;
 import net.aeronica.mods.mxtune.managers.ClientPlayManager;
+import net.aeronica.mods.mxtune.network.MultiPacketSerializedObjectManager;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.CallBackManager;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
@@ -135,7 +136,6 @@ public class ClientProxy extends ServerProxy
     @Override
     public void clientConnect(ClientConnectedToServerEvent event)
     {
-        CallBackManager.start();
         ClientPlayManager.reset();
     }
 
@@ -144,5 +144,6 @@ public class ClientProxy extends ServerProxy
     {
         CallBackManager.shutdown();
         ClientFileManager.clearCache();
+        MultiPacketSerializedObjectManager.shutdown();
     }
 }

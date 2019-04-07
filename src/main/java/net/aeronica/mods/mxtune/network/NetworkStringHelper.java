@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-package net.aeronica.mods.mxtune.network.server;
+package net.aeronica.mods.mxtune.network;
 
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.network.PacketBuffer;
@@ -27,6 +27,13 @@ public class NetworkStringHelper
 
     public NetworkStringHelper() { /* NOP */ }
 
+    /**
+     * For Server to Client use a network buffer is limited to about 1MB (1048576).
+     * <p>For Client to Server use a network buffer is limited to about 32KB (32767).
+     *
+     * @param buffer The vanilla netty packet wrapper.
+     * @param stringIn The string to be transferred.
+     */
     public void writeLongString(PacketBuffer buffer, String stringIn)
     {
         int totalLength = stringIn.length();

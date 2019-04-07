@@ -47,7 +47,7 @@ public class ServerFileManager
 
     private ServerFileManager() { /* NOP */ }
 
-    public static void startUp()
+    public static void start()
     {
         getOrGenerateServerID();
         // stuffServer goes here when needed - test data
@@ -60,7 +60,7 @@ public class ServerFileManager
         ).start();
     }
 
-    public static void shutDown()
+    public static void shutdown()
     {
         songProxyMap.clear();
         areas.clear();
@@ -175,20 +175,21 @@ public class ServerFileManager
         return areaList;
     }
 
-    public static ResultMessage setArea(GUID dataTypeUuid, NBTTagCompound dataCompound)
+    public static ResultMessage setArea(GUID dataTypeUuid, Area area)
     {
         ResultMessage errorResult = ResultMessage.NO_ERROR;
-        if (dataCompound != null)
+        if (area != null)
         {
-            Area area = Area.build(dataCompound);
             GUID areaGUID = area.getGUID();
             if (dataTypeUuid.equals(areaGUID))
             {
                 String areaFileName = area.getFileName();
                 try
                 {
+                    NBTTagCompound compound = new NBTTagCompound();
+                    area.writeToNBT(compound);
                     Path path = FileHelper.getCacheFile(FileHelper.SERVER_AREAS_FOLDER, areaFileName, Side.SERVER);
-                    FileHelper.sendCompoundToFile(path, dataCompound);
+                    FileHelper.sendCompoundToFile(path, compound);
                 }
                 catch(IOException e)
                 {
@@ -211,19 +212,20 @@ public class ServerFileManager
         return errorResult;
     }
 
-    public static ResultMessage setSong(GUID dataTypeUuid, NBTTagCompound dataCompound)
+    public static ResultMessage setSong(GUID dataTypeUuid, Song song)
     {
         ResultMessage errorResult = ResultMessage.NO_ERROR;
-        if (dataCompound != null)
+        if (song != null)
         {
-            SongProxy songProxy = new SongProxy(dataCompound);
-            Song song = new Song(dataCompound);
-            GUID songProxyGUID = songProxy.getGUID();
-            if (dataTypeUuid.equals(songProxyGUID))
+            SongProxy songProxy = new SongProxy(song);
+            GUID songGUID = song.getGUID();
+            if (dataTypeUuid.equals(songGUID))
             {
                 String songFileName = song.getFileName();
                 try
                 {
+                    NBTTagCompound dataCompound = new NBTTagCompound();
+                    song.writeToNBT(dataCompound);
                     Path path = FileHelper.getCacheFile(FileHelper.SERVER_MUSIC_FOLDER, songFileName, Side.SERVER);
                     FileHelper.sendCompoundToFile(path, dataCompound);
                 }
@@ -233,8 +235,8 @@ public class ServerFileManager
                     ModLogger.warn("Unable to create folder: %s and/or file: %s", FileHelper.SERVER_MUSIC_FOLDER, songFileName);
                     errorResult = new ResultMessage(true, new TextComponentTranslation("mxtune.error.unable_to_create_file_folder",FileHelper.SERVER_MUSIC_FOLDER, songFileName));
                 }
-                if (!errorResult.hasError() || !songProxyMap.containsKey(songProxyGUID))
-                    songProxyMap.put(songProxyGUID, songProxy);
+                if (!errorResult.hasError() || !songProxyMap.containsKey(songGUID))
+                    songProxyMap.put(songGUID, songProxy);
             }
             else
             {

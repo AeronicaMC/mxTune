@@ -78,6 +78,7 @@ public class PacketDispatcher
         registerMessage(MusicTextMessage.class);
         registerMessage(HudOptionsMessage.class);
         registerMessage(BandAmpMessage.class);
+        registerMessage(ByteArrayPartMessage.class);
 
         /*
          * If you don't want to make a 'registerMessage' method, you can do it
@@ -92,7 +93,7 @@ public class PacketDispatcher
         registerMessage(SendKeyMessage.class);
         registerMessage(ClientStateDataMessage.class);
         registerMessage(GetServerDataMessage.class);
-        registerMessage(SetServerDataMessage.class);
+        registerMessage(SendResultMessage.class);
         registerMessage(GetAreasMessage.class);
         registerMessage(SetServerSerializedDataMessage.class);
     }

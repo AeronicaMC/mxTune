@@ -28,9 +28,11 @@ import net.aeronica.mods.mxtune.datafixers.TileIdFixer;
 import net.aeronica.mods.mxtune.handler.GUIHandler;
 import net.aeronica.mods.mxtune.managers.DurationTimer;
 import net.aeronica.mods.mxtune.managers.ServerFileManager;
+import net.aeronica.mods.mxtune.network.MultiPacketSerializedObjectManager;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.options.PlayerMusicOptionsCapability;
 import net.aeronica.mods.mxtune.proxy.ServerProxy;
+import net.aeronica.mods.mxtune.util.CallBackManager;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.MusicTab;
 import net.aeronica.mods.mxtune.world.chunk.ModChunkCapability;
@@ -76,6 +78,8 @@ public class MXTune
         ModChunkCapability.register();
         PlayerMusicOptionsCapability.register();
         PacketDispatcher.registerPackets();
+        CallBackManager.start();
+        MultiPacketSerializedObjectManager.start();
         proxy.preInit();
         proxy.registerEventHandlers();
         proxy.initEntities();
@@ -122,14 +126,16 @@ public class MXTune
         event.registerServerCommand(new CommandMxTuneServerUpdate());
         DurationTimer.start();
         FileHelper.initialize();
-        ServerFileManager.startUp();
+        ServerFileManager.start();
     }
 
     @Mod.EventHandler
     public void onEvent(FMLServerStoppingEvent event)
     {
         DurationTimer.shutdown();
-        ServerFileManager.shutDown();
+        ServerFileManager.shutdown();
+        CallBackManager.shutdown();
+        MultiPacketSerializedObjectManager.shutdown();
     }
 
     @SubscribeEvent
