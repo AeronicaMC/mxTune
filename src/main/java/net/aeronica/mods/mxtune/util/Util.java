@@ -60,6 +60,7 @@ public class Util
      * @param length   How many bytes to append from the second array.
      * @return Byte array containing information from both arrays.
      */
+    @SuppressWarnings("all")
     public static byte[] appendByteArrays(byte[] arrayOne, byte[] arrayTwo, int length)
     {
         byte[] newArray;

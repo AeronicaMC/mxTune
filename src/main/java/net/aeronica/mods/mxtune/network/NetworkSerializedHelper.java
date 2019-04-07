@@ -53,7 +53,7 @@ public class NetworkSerializedHelper
                 Thread.sleep(100);
             } catch (InterruptedException e)
             {
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
         } while (numberOfPackets(uuid) != expectedPackets && timeout-- > 0);
 
@@ -86,8 +86,6 @@ public class NetworkSerializedHelper
             ObjectInputStream in = new ObjectInputStream(bis);
             obj = (Serializable) in.readObject();
             in.close();
-            ModLogger.debug("");
-            ModLogger.debug("ReadObjStats: expectedLength: %d, expectedHashCode: %d, expectedPackets: %d", expectedLength, expectedHashCode, expectedPackets);
         }
         catch (ClassNotFoundException e)
         {
@@ -95,13 +93,13 @@ public class NetworkSerializedHelper
             ModLogger.debug("ClassNotFoundException: obj is null");
             return null;
         }
-        if ((obj != null && expectedHashCode == obj.hashCode()))
+        if ((obj != null) && (expectedHashCode == obj.hashCode()))
         {
             return obj;
         }
         else
         {
-            ModLogger.error("NetworkSerializedHelper#readSerializedObject received data error: expected hash: %d, actual: %d", expectedHashCode, obj.hashCode());
+            ModLogger.error("NetworkSerializedHelper#readSerializedObject received data error: null object or hashcode does not match: %d", expectedHashCode);
             return null;
         }
     }
@@ -147,8 +145,5 @@ public class NetworkSerializedHelper
             PacketDispatcher.sendToServer(new ByteArrayPartMessage(uuid, index, writeBuffer));
             index++;
         } while (end < totalLength);
-
-        ModLogger.debug("");
-        ModLogger.debug("writeSerializedObject: totalLength: %s, obj.hashCode: %d, numPackets: %d", totalLength, obj.hashCode(), numPackets);
     }
 }
