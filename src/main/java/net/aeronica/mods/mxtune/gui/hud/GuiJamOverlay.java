@@ -61,7 +61,7 @@ public class GuiJamOverlay extends Gui
 {
     private static final String INSTRUMENT_INVENTORY_EMPTY = "["+I18n.format("mxtune.instrumentInventory.empty")+"]";
     private static final ResourceLocation TEXTURE_STATUS = new ResourceLocation(Reference.MOD_ID, "textures/gui/status_widgets.png");
-    static final int HOT_BAR_CLEARANCE = 40;
+    public static final int HOT_BAR_CLEARANCE = 40;
     private static final int WIDGET_WIDTH = 256;
     private static final int WIDGET_HEIGHT = 104;
 

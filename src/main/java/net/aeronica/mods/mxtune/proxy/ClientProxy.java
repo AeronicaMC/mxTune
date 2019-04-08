@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.proxy;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import net.aeronica.mods.mxtune.gui.hud.GuiJamOverlay;
+import net.aeronica.mods.mxtune.gui.mml.GuiStaffOverlay;
 import net.aeronica.mods.mxtune.handler.KeyHandler;
 import net.aeronica.mods.mxtune.managers.ClientFileManager;
 import net.aeronica.mods.mxtune.managers.ClientPlayManager;
@@ -102,7 +103,11 @@ public class ClientProxy extends ServerProxy
     }
 
     @Override
-    public void registerHUD() { MinecraftForge.EVENT_BUS.register(GuiJamOverlay.getInstance()); }
+    public void registerHUD()
+    {
+        MinecraftForge.EVENT_BUS.register(GuiJamOverlay.getInstance());
+        MinecraftForge.EVENT_BUS.register(GuiStaffOverlay.getInstance());
+    }
 
     @Override
     public boolean playerIsInCreativeMode(EntityPlayer player)
