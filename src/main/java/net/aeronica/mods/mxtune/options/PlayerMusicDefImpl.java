@@ -16,6 +16,9 @@
  */
 package net.aeronica.mods.mxtune.options;
 
+import net.aeronica.mods.mxtune.Reference;
+import net.aeronica.mods.mxtune.util.GUID;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +38,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     private List<ClassifiedPlayer> blackList;
     private boolean soundRangeInfinityAllowed;
     private boolean mxTuneServerUpdateAllowed;
+    private GUID selectedAreaGuid;
 
     PlayerMusicDefImpl()
     {
@@ -49,6 +53,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
         this.blackList = new ArrayList<>();
         this.soundRangeInfinityAllowed = false;
         this.mxTuneServerUpdateAllowed = false;
+        this.selectedAreaGuid = Reference.EMPTY_GUID;
     }
 
     @Override
@@ -114,4 +119,10 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
 
     @Override
     public boolean isMxTuneServerUpdateAllowed() { return mxTuneServerUpdateAllowed; }
+
+    @Override
+    public void setSelectedAreaGuid(GUID guidArea) { selectedAreaGuid = guidArea; }
+
+    @Override
+    public GUID getSelectedAreaGuid() { return selectedAreaGuid; }
 }

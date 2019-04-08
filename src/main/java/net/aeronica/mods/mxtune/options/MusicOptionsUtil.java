@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.options;
 
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.SyncPlayerMusicOptionsMessage;
+import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.Util;
 import net.minecraft.client.resources.I18n;
@@ -41,6 +42,7 @@ public class MusicOptionsUtil
     public static final byte SYNC_WHITE_LIST = 4;
     public static final byte SYNC_BLACK_LIST = 5;
     public static final byte SYNC_MUSIC_OP = 6;
+    public static final byte SYNC_SELECTED_AREA_GUID = 7;
 
 
     @CapabilityInject(IPlayerMusicOptions.class)
@@ -146,6 +148,14 @@ public class MusicOptionsUtil
         getImpl(playerIn).setMxTuneServerUpdateAllowed(isAllowed);
         sync(playerIn, SYNC_MUSIC_OP);
     }
+
+    public static void setSelectedAreaGuid(EntityPlayer playerIn, GUID guidArea)
+    {
+        getImpl(playerIn).setSelectedAreaGuid(guidArea);
+        sync(playerIn, SYNC_SELECTED_AREA_GUID);
+    }
+
+    public static GUID getSelectedAreaGuid(EntityPlayer playerIn) { return getImpl(playerIn).getSelectedAreaGuid(); }
 
     @Nullable
     private static IPlayerMusicOptions getImpl(EntityPlayer player)

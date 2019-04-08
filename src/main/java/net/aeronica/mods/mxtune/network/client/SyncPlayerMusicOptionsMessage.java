@@ -20,6 +20,7 @@ import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.options.ClassifiedPlayer;
 import net.aeronica.mods.mxtune.options.IPlayerMusicOptions;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
+import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.Util;
 import net.minecraft.entity.player.EntityPlayer;
@@ -51,6 +52,11 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     private List<ClassifiedPlayer> blackList;
     private List<ClassifiedPlayer> whiteList;
     private boolean allowMusicOp;
+    private GUID selectedAreaGuid;
+    private long ddddSigBits;
+    private long ccccSigBits;
+    private long bbbbSigBits;
+    private long aaaaSigBits;
 
     private byte[] byteBuffer = null;
 
@@ -95,6 +101,9 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                 this.allowMusicOp = inst.isMxTuneServerUpdateAllowed();
                 break;
 
+            case MusicOptionsUtil.SYNC_SELECTED_AREA_GUID:
+                this.selectedAreaGuid = inst.getSelectedAreaGuid();
+                break;
             default:
         }
     }
@@ -129,6 +138,13 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                 break;
             case MusicOptionsUtil.SYNC_MUSIC_OP:
                 this.allowMusicOp = buffer.readBoolean();
+                break;
+            case MusicOptionsUtil.SYNC_SELECTED_AREA_GUID:
+                ddddSigBits = buffer.readLong();
+                ccccSigBits = buffer.readLong();
+                bbbbSigBits = buffer.readLong();
+                aaaaSigBits = buffer.readLong();
+                selectedAreaGuid = new GUID(ddddSigBits, ccccSigBits, bbbbSigBits, aaaaSigBits);
                 break;
             default:
         }
@@ -165,6 +181,12 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             case MusicOptionsUtil.SYNC_MUSIC_OP:
                 buffer.writeBoolean(allowMusicOp);
                 break;
+            case MusicOptionsUtil.SYNC_SELECTED_AREA_GUID:
+                buffer.writeLong(selectedAreaGuid.getDdddSignificantBits());
+                buffer.writeLong(selectedAreaGuid.getCcccSignificantBits());
+                buffer.writeLong(selectedAreaGuid.getBbbbSignificantBits());
+                buffer.writeLong(selectedAreaGuid.getAaaaSignificantBits());
+                break;
             default:
         }
     }
@@ -179,22 +201,28 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                 switch (this.propertyID)
                 {
                     case MusicOptionsUtil.SYNC_ALL:
-                        MUSIC_OPTIONS.readNBT(instance, null, this.data);
+                        MUSIC_OPTIONS.readNBT(instance, null, data);
                         break;
                     case MusicOptionsUtil.SYNC_DISPLAY_HUD:
                         instance.setHudOptions(disableHud, positionHud, sizeHud);
                         break;
                     case MusicOptionsUtil.SYNC_MUTE_OPTION:
-                        instance.setMuteOption(this.muteOption);
+                        instance.setMuteOption(muteOption);
                         break;
                     case MusicOptionsUtil.SYNC_S_PARAMS:
-                        instance.setSParams(this.sParam1, this.sParam2, this.sParam3);
+                        instance.setSParams(sParam1, sParam2, sParam3);
                         break;
                     case MusicOptionsUtil.SYNC_WHITE_LIST:
-                        instance.setWhiteList(this.whiteList);
+                        instance.setWhiteList(whiteList);
                         break;
                     case MusicOptionsUtil.SYNC_BLACK_LIST:
-                        instance.setBlackList(this.blackList);
+                        instance.setBlackList(blackList);
+                        break;
+                    case MusicOptionsUtil.SYNC_MUSIC_OP:
+                        instance.setMxTuneServerUpdateAllowed(allowMusicOp);
+                        break;
+                    case MusicOptionsUtil.SYNC_SELECTED_AREA_GUID:
+                        instance.setSelectedAreaGuid(selectedAreaGuid);
                         break;
                     default:
                 }

@@ -16,6 +16,8 @@
  */
 package net.aeronica.mods.mxtune.options;
 
+import net.aeronica.mods.mxtune.util.GUID;
+
 import java.util.List;
 
 public interface IPlayerMusicOptions
@@ -63,4 +65,8 @@ public interface IPlayerMusicOptions
     void setMxTuneServerUpdateAllowed(boolean isAllowed);
 
     boolean isMxTuneServerUpdateAllowed();
+
+    void setSelectedAreaGuid(GUID guidArea);
+
+    GUID getSelectedAreaGuid();
 }
