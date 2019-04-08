@@ -24,6 +24,7 @@ import net.aeronica.mods.mxtune.items.ItemStaffOfMusic;
 import net.aeronica.mods.mxtune.managers.ClientFileManager;
 import net.aeronica.mods.mxtune.managers.ClientPlayManager;
 import net.aeronica.mods.mxtune.managers.records.Area;
+import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -125,6 +126,7 @@ public class GuiStaffOverlay extends Gui
         int fontHeight = fontRenderer.FONT_HEIGHT + 2;
         GUID chunkAreaGuid = ClientPlayManager.getCurrentAreaGUID();
         Area area = ClientFileManager.getArea(chunkAreaGuid);
+        Area selectedArea = ClientFileManager.getArea(MusicOptionsUtil.getSelectedAreaGuid(mc.player));
 
         String areaName = area != null ? area.getName() : I18n.format("mxtune.error.undefined_area");
         String formattedText = I18n.format("mxtune.gui.guiStaffOverlay.area_name", areaName);
@@ -147,7 +149,8 @@ public class GuiStaffOverlay extends Gui
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0x888800);
 
         y += fontHeight;
-        formattedText = I18n.format("mxtune.gui.guiStaffOverlay.selected_area_to_apply", I18n.format("mxtune.info.null"));
+        areaName = selectedArea != null ? selectedArea.getName() : I18n.format("mxtune.info.null");
+        formattedText = I18n.format("mxtune.gui.guiStaffOverlay.selected_area_to_apply",areaName);
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0x00EE00);
     }
 

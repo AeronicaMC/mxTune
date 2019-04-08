@@ -203,7 +203,11 @@ public class GuiTest extends GuiScreen implements CallBack
             }
 
             @Override
-            protected void selectedDoubleClickedCallback(int selectedIndex) { updateStatus(); }
+            protected void selectedDoubleClickedCallback(int selectedIndex)
+            {
+                updatePlayersSelectedAreaGuid(guiAreaList.get(selectedIndex));
+                updateStatus();
+            }
         };
 
         guiDay = new GuiScrollingMultiListOf<SongProxy>(this, singleLineHeight, guiAreaListWidth, areaListHeight ,dayTop, dayBottom, width - guiAreaListWidth - padding)
@@ -570,5 +574,11 @@ public class GuiTest extends GuiScreen implements CallBack
         if (payload != null)
             guiAreaList.addAll((List<Area>) payload);
         updateState();
+    }
+
+    private void  updatePlayersSelectedAreaGuid(Area selectedArea)
+    {
+        ModLogger.debug("GuiTest: guidSelectedArea: %s", selectedArea != null ? selectedArea.getName() : "[null]");
+        ModLogger.debug("GuiTest: selected Name   : %s", selectedArea != null ? selectedArea.getName() : "[null]");
     }
 }
