@@ -17,33 +17,40 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
-import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
+import net.aeronica.mods.mxtune.gui.hud.GuiHudAdjust;
+import net.aeronica.mods.mxtune.gui.hud.HudData;
+import net.aeronica.mods.mxtune.gui.hud.HudDataFactory;
 import net.aeronica.mods.mxtune.items.ItemStaffOfMusic;
+import net.aeronica.mods.mxtune.managers.ClientFileManager;
+import net.aeronica.mods.mxtune.managers.ClientPlayManager;
 import net.aeronica.mods.mxtune.managers.records.Area;
+import net.aeronica.mods.mxtune.util.GUID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.client.renderer.debug.DebugRendererChunkBorder;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.lwjgl.opengl.GL11;
 
 import static net.aeronica.mods.mxtune.gui.hud.GuiJamOverlay.HOT_BAR_CLEARANCE;
 
-public class GuiStaffOverlay extends GuiScreen
+public class GuiStaffOverlay extends Gui
 {
-   // private Minecraft mc;
-    //private FontRenderer fontRenderer;
+    private Minecraft mc;
+    private FontRenderer fontRenderer;
     private float partialTicks;
-    //private int width;
-    //private int height;
+    private int width;
+    private int height;
     private DebugRenderer.IDebugRenderer chunkBorder;
-    private boolean showChunkBorders;
+    private boolean holdingStaffOfMusic;
 
-    private GuiScrollingListOf<Area> guiAreaList;
 
     private static class GuiStaffOverlayHolder { private static final GuiStaffOverlay INSTANCE = new GuiStaffOverlay(); }
     public static GuiStaffOverlay getInstance() { return GuiStaffOverlayHolder.INSTANCE; }
@@ -54,37 +61,6 @@ public class GuiStaffOverlay extends GuiScreen
         this.fontRenderer = this.mc.fontRenderer;
         this.chunkBorder = new DebugRendererChunkBorder(mc);
 
-        guiAreaList = new GuiScrollingListOf<Area>(this, (mc.fontRenderer.FONT_HEIGHT + 2) * 2, 200, (mc.displayHeight - HOT_BAR_CLEARANCE) / 2, 5,(mc.displayHeight - HOT_BAR_CLEARANCE) / 2, 5) {
-            @Override
-            protected void selectedClickedCallback(int selectedIndex) { /* NOP */ }
-
-            @Override
-            protected void selectedDoubleClickedCallback(int selectedIndex) { /* NOP */ }
-
-            @Override
-            protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
-            {
-                Area area = get(slotIdx);
-                if (area != null)
-                {
-                    String trimmedName = fontRenderer.trimStringToWidth(area.getName(), listWidth - 10);
-                    String trimmedUUID = fontRenderer.trimStringToWidth(area.getGUID().toString(), listWidth - 10);
-                    int color = isSelected(slotIdx) ? 0xFFFF00 : 0xAADDEE;
-                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
-                    fontRenderer.drawStringWithShadow(trimmedUUID, (float) left + 3, (float) slotTop + 10, color);
-                } else
-                {
-                    String name = "---GUID Conflict---";
-                    String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
-                    int color = 0xFF0000;
-                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
-                }
-            }
-        };
-        guiAreaList.add(new Area("Shrine Path"));
-        guiAreaList.add(new Area("Village Well"));
-        guiAreaList.add(new Area("Great Hall"));
-        guiAreaList.add(new Area("McJunk's Saloon"));
     }
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
@@ -100,20 +76,95 @@ public class GuiStaffOverlay extends GuiScreen
         width = event.getResolution().getScaledWidth();
         height = event.getResolution().getScaledHeight() - HOT_BAR_CLEARANCE;
         partialTicks = event.getPartialTicks();
+        HudData hudData = HudDataFactory.calcHudPositions(0, width, height);
 
-        showChunkBorders = playerSP.getHeldItemMainhand().getItem() instanceof ItemStaffOfMusic;
+        holdingStaffOfMusic = playerSP.getHeldItemMainhand().getItem() instanceof ItemStaffOfMusic;
 
-        if (showChunkBorders)
+        if (holdingStaffOfMusic)
         {
-            guiAreaList.drawScreen(0,0, partialTicks);
+            renderHud(hudData, playerSP, elementType);
         }
     }
 
     @SubscribeEvent
     public void onEvent(RenderWorldLastEvent event)
     {
-        if (showChunkBorders && !mc.gameSettings.showDebugInfo)
+        if (holdingStaffOfMusic && !mc.gameSettings.showDebugInfo)
             chunkBorder.render(event.getPartialTicks(), 0);
     }
 
+    private boolean inGuiHudAdjust() {return (mc.currentScreen instanceof GuiHudAdjust);}
+
+    public void setTexture(ResourceLocation texture) { this.mc.renderEngine.bindTexture(texture);}
+
+    private void renderHud(HudData hd, EntityPlayerSP playerSP, RenderGameOverlayEvent.ElementType elementType)
+    {
+        int maxWidth = width - 4;
+        int maxHeight = (fontRenderer.FONT_HEIGHT + 2) * 6;
+
+       // String musicTitle = getMusicTitle(sheetMusic);
+
+        GL11.glPushMatrix();
+        GL11.glTranslatef(hd.getPosX(), hd.getPosY(), 0F);
+        if (elementType == RenderGameOverlayEvent.ElementType.TEXT)
+            drawAreaInfo(hd, maxWidth, maxHeight);
+
+        int iconX = hd.quadX(maxWidth, 0, 2, maxWidth);
+        int iconY = hd.quadY(maxHeight, 0, 2, maxHeight);
+
+        //setTexture(TEXTURE_STATUS);
+        if (elementType == RenderGameOverlayEvent.ElementType.EXPERIENCE)
+            drawBox(iconX, iconY, maxWidth, maxHeight);
+
+        GL11.glPopMatrix();
+    }
+
+    private void drawAreaInfo(HudData hd, int maxWidth, int maxHeight)
+    {
+        int y = 0;
+        int fontHeight = fontRenderer.FONT_HEIGHT + 2;
+        GUID chunkAreaGuid = ClientPlayManager.getCurrentAreaGUID();
+        Area area = ClientFileManager.getArea(chunkAreaGuid);
+
+        String areaName = area != null ? area.getName() : I18n.format("mxtune.error.undefined_area");
+        String formattedText = I18n.format("mxtune.gui.guiStaffOverlay.area_name", areaName);
+        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight);
+
+        y += fontHeight;
+        formattedText = I18n.format("mxtune.gui.guiStaffOverlay.area_guid", chunkAreaGuid.toString());
+        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0x888888);
+
+        y += fontHeight;
+        formattedText = ClientPlayManager.getLastSongLine01();
+        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0xDDDD00);
+
+        y += fontHeight;
+        formattedText = ClientPlayManager.getLastSongLine02();
+        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0xFFFF00);
+
+        y += fontHeight;
+        formattedText = ClientPlayManager.getLastSongLine03();
+        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0x888800);
+
+        y += fontHeight;
+        formattedText = I18n.format("mxtune.gui.guiStaffOverlay.selected_area_to_apply", I18n.format("mxtune.info.null"));
+        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0x00EE00);
+    }
+
+    private void renderLine(String formattedText, int y, HudData hd, int maxWidth, int maxHeight, int fontHeight)
+    {
+        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0xFFFFFF);
+    }
+    private void renderLine(String formattedText, int y, HudData hd, int maxWidth, int maxHeight, int fontHeight, int fontColor)
+    {
+        String trimmedText = fontRenderer.trimStringToWidth(formattedText, maxWidth);
+        int qX = hd.quadX(maxWidth, 0, 4, maxWidth - 4);
+        int qY = hd.quadY(maxHeight, y, 4, fontHeight);
+        fontRenderer.drawStringWithShadow(trimmedText, qX, qY, fontColor);
+    }
+
+    private void drawBox(int x, int y, int width, int height) {
+        drawRect(x - 2, y - 2, x + width + 2, y + height + 2, 0x88222222);
+        drawRect(x, y, x + width, y + height,0xCC444444);
+    }
 }

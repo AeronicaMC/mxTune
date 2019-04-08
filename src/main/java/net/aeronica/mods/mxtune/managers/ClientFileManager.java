@@ -314,7 +314,7 @@ public class ClientFileManager
     }
 
     @Nullable
-    static Area getArea(GUID guid)
+    public static Area getArea(GUID guid)
     {
         if (resolveArea(guid))
         {
