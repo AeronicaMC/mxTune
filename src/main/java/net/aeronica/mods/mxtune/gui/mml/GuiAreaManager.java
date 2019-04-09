@@ -61,9 +61,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class GuiTest extends GuiScreen implements CallBack
+public class GuiAreaManager extends GuiScreen implements CallBack
 {
-    private static final String TITLE = "Test Gui";
+    private static final String TITLE = I18n.format("mxtune.gui.guiAreaManager.title");
     // Song Multi Selector
     private GuiScrollingMultiListOf<Path> guiFileList;
     private List<Path> cachedFileList = new ArrayList<>();
@@ -104,7 +104,8 @@ public class GuiTest extends GuiScreen implements CallBack
     private BiMap<Path, SongProxy> pathSongProxyBiMap = HashBiMap.create();
     private BiMap<SongProxy, Path> songProxyPathBiMap;
 
-    public GuiTest()
+    // TODO: Finnish updating string to use the lang file.
+    public GuiAreaManager()
     {
         cacheKeyRepeatState = Keyboard.areRepeatEventsEnabled();
         Keyboard.enableRepeatEvents(false);
@@ -127,7 +128,7 @@ public class GuiTest extends GuiScreen implements CallBack
         int padding = 5;
         int titleTop = padding;
         int left = padding;
-        int titleWidth = fontRenderer.getStringWidth(TITLE);
+        int titleWidth = fontRenderer.getStringWidth(I18n.format("mxtune.gui.guiAreaManager.title"));
         int titleX = (width / 2) - (titleWidth / 2);
 
         int titleHeight = singleLineHeight + 2;
@@ -264,13 +265,13 @@ public class GuiTest extends GuiScreen implements CallBack
         status = new GuiTextField(0, fontRenderer, left, statusTop, width - padding * 2, singleLineHeight + 2);
         status.setMaxStringLength(256);
 
-        int buttonTop = height - 25;
-        int xImport = (this.width /2) - 75 * 2;
-        int xPlay = xImport + 75;
-        int xSaveDone = xPlay + 75;
+        int buttonWidth = 80;
+        int buttonTop = height - 22;
+        int xLibrary = (this.width /2) - buttonWidth;
+        int xDone = xLibrary + buttonWidth;
 
-        GuiButton buttonImport = new GuiButton(0, xImport, buttonTop, 75, 20, I18n.format("mxtune.gui.button.importMML"));
-        GuiButton buttonDone = new GuiButton(1, xSaveDone, buttonTop, 75, 20, I18n.format("gui.done"));
+        GuiButton buttonImport = new GuiButton(0, xLibrary, buttonTop, buttonWidth, 20, I18n.format("mxtune.gui.button.musicLibrary"));
+        GuiButton buttonDone = new GuiButton(1, xDone, buttonTop, buttonWidth, 20, I18n.format("gui.done"));
 
         int selectButtonWidth = guiFileListWidth - 10;
         int selectButtonLeft = guiFileList.getRight() + 8;
@@ -386,6 +387,7 @@ public class GuiTest extends GuiScreen implements CallBack
         switch (button.id)
         {
             case 0:
+                mc.displayGuiScreen(new GuiMusicLibrary(this));
                 break;
             case 1:
                 for (SongProxy songProxy : guiDay)
@@ -593,8 +595,15 @@ public class GuiTest extends GuiScreen implements CallBack
     {
         ModLogger.debug("GuiTest: guidSelectedArea: %s", selectedArea != null ? selectedArea.getName() : "[null]");
         ModLogger.debug("GuiTest: selected Name   : %s", selectedArea != null ? selectedArea.getName() : "[null]");
-        PacketDispatcher.sendToServer(new PlayerSelectedAreaMessage(selectedArea != null ? selectedArea.getGUID() : Reference.EMPTY_GUID));
-        String areaName = selectedArea.getName().trim().equals("") ? I18n.format("mxtune.error.undefined_area") : selectedArea.getName();
-        updateStatus(String.format("Updated StaffOfMusic Area to: %s", areaName));
+        if (selectedArea != null)
+        {
+            PacketDispatcher.sendToServer(new PlayerSelectedAreaMessage(selectedArea != null ? selectedArea.getGUID() : Reference.EMPTY_GUID));
+            String areaName = selectedArea.getName().trim().equals("") ? I18n.format("mxtune.error.undefined_area") : selectedArea.getName();
+            updateStatus(String.format("Updated StaffOfMusic Area to: %s", areaName));
+        }
+        else
+        {
+            updateStatus("Failed to Update StaffOfMusic Area!");
+        }
     }
 }
