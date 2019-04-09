@@ -175,6 +175,16 @@ public class ServerFileManager
         return areaList;
     }
 
+    /**
+     * Get the Area record that corresponds to the given GUID.
+     * @param guidArea GUID of the desired Area record
+     * @return the Area record, or if it does not exist an Empty Area
+     */
+    public static Area getArea(GUID guidArea)
+    {
+        return areas.containsKey(guidArea) ? areas.get(guidArea) : new Area();
+    }
+
     public static ResultMessage setArea(GUID dataTypeUuid, Area area)
     {
         ResultMessage errorResult = ResultMessage.NO_ERROR;

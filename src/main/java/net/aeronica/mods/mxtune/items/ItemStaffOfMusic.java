@@ -19,18 +19,23 @@ package net.aeronica.mods.mxtune.items;
 
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.gui.GuiGuid;
+import net.aeronica.mods.mxtune.managers.ServerFileManager;
+import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.util.Util;
 import net.aeronica.mods.mxtune.world.chunk.ModChunkDataHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -53,28 +58,35 @@ public class ItemStaffOfMusic extends Item
         {
             if (playerIn.isSneaking())
                 playerIn.openGui(MXTune.instance, GuiGuid.GUI_TEST, worldIn, 0, 0, 0);
-            else
-                playerIn.openGui(MXTune.instance, GuiGuid.GUI_MUSIC_LIBRARY, worldIn, 0, 0, 0);
+
             return new ActionResult<>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
         }
-        else if (MXTune.proxy.playerIsInCreativeMode(playerIn))
+        else if ( !playerIn.isSneaking())
         {
             BlockPos pos = playerIn.getPosition();
             Chunk chunk = worldIn.getChunk(pos);
-            String areaName = "Village Well";
-            if (chunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
+            GUID guidArea = MusicOptionsUtil.getSelectedAreaGuid(playerIn);
+            if (chunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null) && MusicOptionsUtil.isMxTuneServerUpdateAllowed(playerIn))
             {
-                ModChunkDataHelper.setAreaGuid(chunk, GUID.stringToSHA2Hash(areaName));
+                ModChunkDataHelper.setAreaGuid(chunk, guidArea);
                 ModChunkDataHelper.sync(playerIn, chunk);
 
-                ModLogger.debug("Staff of Music usable");
-                ModLogger.debug("Area UUID: %s", areaName);
+                ModLogger.debug("Area name:", ServerFileManager.getArea(guidArea));
+                ModLogger.debug("Area UUID: %s", guidArea);
+                Util.audiblePingPlayer(playerIn, SoundEvents.BLOCK_NOTE_PLING);
+                playerIn.sendStatusMessage(new TextComponentTranslation("mxtune.gui.guiStaffOverlay.area_update_successful"), true);
+            }
+            else if (chunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
+            {
+                Util.audiblePingPlayer(playerIn, SoundEvents.BLOCK_GLASS_BREAK);
+                playerIn.sendStatusMessage(new TextComponentTranslation("commands.mxtune.mxtune_server_update_not_allowed"), true);
+                ModLogger.debug("Player does not have rights to update Areas");
             }
             return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
         }
         else
         {
-            ModLogger.debug("Staff of Music is Only usable in Creative Mode");
+
             return new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
         }
     }

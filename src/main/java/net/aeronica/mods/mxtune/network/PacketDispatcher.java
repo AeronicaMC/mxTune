@@ -79,6 +79,7 @@ public class PacketDispatcher
         registerMessage(HudOptionsMessage.class);
         registerMessage(BandAmpMessage.class);
         registerMessage(ByteArrayPartMessage.class);
+        registerMessage(PlayerSelectedAreaMessage.class);
 
         /*
          * If you don't want to make a 'registerMessage' method, you can do it

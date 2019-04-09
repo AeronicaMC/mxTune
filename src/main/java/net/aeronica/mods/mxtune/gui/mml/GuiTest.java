@@ -19,6 +19,7 @@ package net.aeronica.mods.mxtune.gui.mml;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.caches.MXTuneFile;
 import net.aeronica.mods.mxtune.caches.MXTuneFileHelper;
@@ -30,6 +31,7 @@ import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.GetAreasMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.SetServerSerializedDataMessage;
+import net.aeronica.mods.mxtune.network.server.PlayerSelectedAreaMessage;
 import net.aeronica.mods.mxtune.util.CallBack;
 import net.aeronica.mods.mxtune.util.CallBackManager;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
@@ -172,6 +174,13 @@ public class GuiTest extends GuiScreen implements CallBack
                     fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
                 }
             }
+
+            @Override
+            protected void selectedClickedCallback(int selectedIndex)
+            {
+                super.selectedClickedCallback(selectedIndex);
+                updateStatus();
+            }
         };
 
         guiAreaList = new GuiScrollingListOf<Area>(this, entryAreaHeight, guiAreaListWidth, areaListHeight, listTop, areaBottom, width - guiAreaListWidth - padding)
@@ -182,7 +191,8 @@ public class GuiTest extends GuiScreen implements CallBack
                 Area area = get(slotIdx);
                 if (area != null)
                 {
-                    String trimmedName = fontRenderer.trimStringToWidth(area.getName(), listWidth - 10);
+                    String areaName = area.getName().trim().equals("") ? I18n.format("mxtune.error.undefined_area") : area.getName();
+                    String trimmedName = fontRenderer.trimStringToWidth(areaName, listWidth - 10);
                     String trimmedUUID = fontRenderer.trimStringToWidth(area.getGUID().toString(), listWidth - 10);
                     int color = isSelected(slotIdx) ? 0xFFFF00 : 0xAADDEE;
                     fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
@@ -197,16 +207,12 @@ public class GuiTest extends GuiScreen implements CallBack
             }
 
             @Override
-            protected void selectedClickedCallback(int selectedIndex)
-            {
-                updateStatus();
-            }
+            protected void selectedClickedCallback(int selectedIndex) { /* NOP */ }
 
             @Override
             protected void selectedDoubleClickedCallback(int selectedIndex)
             {
                 updatePlayersSelectedAreaGuid(guiAreaList.get(selectedIndex));
-                updateStatus();
             }
         };
 
@@ -348,6 +354,11 @@ public class GuiTest extends GuiScreen implements CallBack
         status.setText(String.format("Selected Song Count: %s", guiFileList.getSelectedRowsCount()));
     }
 
+    private void updateStatus(String message)
+    {
+        status.setText(message);
+    }
+
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
@@ -430,7 +441,7 @@ public class GuiTest extends GuiScreen implements CallBack
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
         areaName.mouseClicked(mouseX, mouseY, mouseButton);
-        updateState();
+        //updateState();
         super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
@@ -571,6 +582,8 @@ public class GuiTest extends GuiScreen implements CallBack
     public void onResponse(@Nullable Object payload)
     {
         guiAreaList.clear();
+        // add an EMPTY_GUID Area
+        guiAreaList.add(new Area());
         if (payload != null)
             guiAreaList.addAll((List<Area>) payload);
         updateState();
@@ -580,5 +593,8 @@ public class GuiTest extends GuiScreen implements CallBack
     {
         ModLogger.debug("GuiTest: guidSelectedArea: %s", selectedArea != null ? selectedArea.getName() : "[null]");
         ModLogger.debug("GuiTest: selected Name   : %s", selectedArea != null ? selectedArea.getName() : "[null]");
+        PacketDispatcher.sendToServer(new PlayerSelectedAreaMessage(selectedArea != null ? selectedArea.getGUID() : Reference.EMPTY_GUID));
+        String areaName = selectedArea.getName().trim().equals("") ? I18n.format("mxtune.error.undefined_area") : selectedArea.getName();
+        updateStatus(String.format("Updated StaffOfMusic Area to: %s", areaName));
     }
 }
