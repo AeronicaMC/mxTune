@@ -1,21 +1,4 @@
 /*
- * Aeronica's mxTune MOD
- * Copyright 2019, Paul Boese a.k.a. Aeronica
- *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
- */
-
-/*
  * Minecraft Forge
  * Copyright (c) 2016-2018.
  *
@@ -34,6 +17,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+/*
+ * 2019-Apr-09, Paul Boese a.k.s. Aeronica / Rymor
+ *
+ * Changed the following to protected fields:
+ *   scrollDistance, highlightSelected
+ *
+ * Removed:
+ *   boolean captureMouse
+ */
 package net.aeronica.mods.mxtune.gui.util;
 
 import net.minecraft.client.Minecraft;
@@ -75,7 +67,6 @@ public abstract class GuiScrollingListMX
     protected boolean highlightSelected = true;
     private boolean hasHeader;
     private int headerHeight;
-    protected boolean captureMouse = true;
 
     @Deprecated // We need to know screen size.
     public GuiScrollingListMX(Minecraft client, int width, int height, int top, int bottom, int left, int entryHeight)
@@ -189,13 +180,13 @@ public abstract class GuiScrollingListMX
         {
             if (button.id == this.scrollUpActionId)
             {
-                this.scrollDistance -= (float)(this.slotHeight * 2 / 3);
+                this.scrollDistance -= (float) (this.slotHeight * 2 / (double) 3);
                 this.initialMouseClickY = -2.0F;
                 this.applyScrollLimits();
             }
             else if (button.id == this.scrollDownActionId)
             {
-                this.scrollDistance += (float)(this.slotHeight * 2 / 3);
+                this.scrollDistance += (float) (this.slotHeight * 2 / (double) 3);
                 this.initialMouseClickY = -2.0F;
                 this.applyScrollLimits();
             }
@@ -342,14 +333,14 @@ public abstract class GuiScrollingListMX
                     GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                     GlStateManager.disableTexture2D();
                     worldr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-                    worldr.pos(min,     slotTop + slotBuffer + 2, 0).tex(0, 1).color(0x80, 0x80, 0x80, 0xFF).endVertex();
-                    worldr.pos(max,     slotTop + slotBuffer + 2, 0).tex(1, 1).color(0x80, 0x80, 0x80, 0xFF).endVertex();
-                    worldr.pos(max,     slotTop              - 2, 0).tex(1, 0).color(0x80, 0x80, 0x80, 0xFF).endVertex();
-                    worldr.pos(min,     slotTop              - 2, 0).tex(0, 0).color(0x80, 0x80, 0x80, 0xFF).endVertex();
-                    worldr.pos(min + 1, slotTop + slotBuffer + 1, 0).tex(0, 1).color(0x00, 0x00, 0x00, 0xFF).endVertex();
-                    worldr.pos(max - 1, slotTop + slotBuffer + 1, 0).tex(1, 1).color(0x00, 0x00, 0x00, 0xFF).endVertex();
-                    worldr.pos(max - 1, slotTop              - 1, 0).tex(1, 0).color(0x00, 0x00, 0x00, 0xFF).endVertex();
-                    worldr.pos(min + 1, slotTop              - 1, 0).tex(0, 0).color(0x00, 0x00, 0x00, 0xFF).endVertex();
+                    worldr.pos(min,     slotTop + slotBuffer + (double) 2, 0).tex(0, 1).color(0x80, 0x80, 0x80, 0xFF).endVertex();
+                    worldr.pos(max,     slotTop + slotBuffer + (double) 2, 0).tex(1, 1).color(0x80, 0x80, 0x80, 0xFF).endVertex();
+                    worldr.pos(max,     slotTop              - (double) 2, 0).tex(1, 0).color(0x80, 0x80, 0x80, 0xFF).endVertex();
+                    worldr.pos(min,     slotTop              - (double) 2, 0).tex(0, 0).color(0x80, 0x80, 0x80, 0xFF).endVertex();
+                    worldr.pos(min + (double) 1, slotTop + slotBuffer + (double) 1, 0).tex(0, 1).color(0x00, 0x00, 0x00, 0xFF).endVertex();
+                    worldr.pos(max - (double) 1, slotTop + slotBuffer + (double) 1, 0).tex(1, 1).color(0x00, 0x00, 0x00, 0xFF).endVertex();
+                    worldr.pos(max - (double) 1, slotTop              - (double) 1, 0).tex(1, 0).color(0x00, 0x00, 0x00, 0xFF).endVertex();
+                    worldr.pos(min + (double) 1, slotTop              - (double) 1, 0).tex(0, 0).color(0x00, 0x00, 0x00, 0xFF).endVertex();
                     tess.draw();
                     GlStateManager.enableTexture2D();
                 }
@@ -384,15 +375,15 @@ public abstract class GuiScrollingListMX
             worldr.pos(scrollBarLeft,  this.top,    0.0D).tex(0.0D, 0.0D).color(0x00, 0x00, 0x00, 0xFF).endVertex();
             tess.draw();
             worldr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-            worldr.pos(scrollBarLeft,  barTop + height, 0.0D).tex(0.0D, 1.0D).color(0x80, 0x80, 0x80, 0xFF).endVertex();
-            worldr.pos(scrollBarRight, barTop + height, 0.0D).tex(1.0D, 1.0D).color(0x80, 0x80, 0x80, 0xFF).endVertex();
+            worldr.pos(scrollBarLeft,  barTop + (double) height, 0.0D).tex(0.0D, 1.0D).color(0x80, 0x80, 0x80, 0xFF).endVertex();
+            worldr.pos(scrollBarRight, barTop + (double) height, 0.0D).tex(1.0D, 1.0D).color(0x80, 0x80, 0x80, 0xFF).endVertex();
             worldr.pos(scrollBarRight, barTop,          0.0D).tex(1.0D, 0.0D).color(0x80, 0x80, 0x80, 0xFF).endVertex();
             worldr.pos(scrollBarLeft,  barTop,          0.0D).tex(0.0D, 0.0D).color(0x80, 0x80, 0x80, 0xFF).endVertex();
             tess.draw();
             worldr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-            worldr.pos(scrollBarLeft,      barTop + height - 1, 0.0D).tex(0.0D, 1.0D).color(0xC0, 0xC0, 0xC0, 0xFF).endVertex();
-            worldr.pos(scrollBarRight - 1, barTop + height - 1, 0.0D).tex(1.0D, 1.0D).color(0xC0, 0xC0, 0xC0, 0xFF).endVertex();
-            worldr.pos(scrollBarRight - 1, barTop,              0.0D).tex(1.0D, 0.0D).color(0xC0, 0xC0, 0xC0, 0xFF).endVertex();
+            worldr.pos(scrollBarLeft,      barTop + height - (double) 1, 0.0D).tex(0.0D, 1.0D).color(0xC0, 0xC0, 0xC0, 0xFF).endVertex();
+            worldr.pos(scrollBarRight - (double) 1, barTop + height - (double) 1, 0.0D).tex(1.0D, 1.0D).color(0xC0, 0xC0, 0xC0, 0xFF).endVertex();
+            worldr.pos(scrollBarRight - (double) 1, barTop,              0.0D).tex(1.0D, 0.0D).color(0xC0, 0xC0, 0xC0, 0xFF).endVertex();
             worldr.pos(scrollBarLeft,      barTop,              0.0D).tex(0.0D, 0.0D).color(0xC0, 0xC0, 0xC0, 0xFF).endVertex();
             tess.draw();
         }
