@@ -39,7 +39,7 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
     public <T extends GuiScreen> GuiScrollingMultiListOf(T gui, int entryHeight, int width, int height, int top, int bottom, int left)
     {
         super(gui, entryHeight, width, height, top, bottom, left);
-        enableHighlightSelected(false);
+        setHighlightSelected(false);
     }
 
     @Override
@@ -123,10 +123,7 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
         return this.scrollDistance;
     }
 
-    private void enableHighlightSelected(boolean state)
-    {
-        this.highlightSelected = state;
-    }
+
 
     @Override
     protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)

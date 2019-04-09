@@ -23,6 +23,10 @@
  * Changed the following to protected fields:
  *   scrollDistance, highlightSelected
  *
+ * Renamed and made protected for children of this class to use
+ *   was: public func_27258_a(boolean p_27258_1_)
+ *   now: protected void setHighlightSelected(boolean state)
+ *
  * Removed:
  *   boolean captureMouse
  */
@@ -68,6 +72,16 @@ public abstract class GuiScrollingListMX
     private boolean hasHeader;
     private int headerHeight;
 
+    /**
+     * Deprecated since we need to know screen size.
+     * @param client Minecraft
+     * @param width scroll list width
+     * @param height scroll list height
+     * @param top of the scroll area
+     * @param bottom of the scroll area
+     * @param left side of the scroll area
+     * @param entryHeight of the displayed data
+     */
     @Deprecated // We need to know screen size.
     public GuiScrollingListMX(Minecraft client, int width, int height, int top, int bottom, int left, int entryHeight)
     {
@@ -87,10 +101,9 @@ public abstract class GuiScrollingListMX
         this.screenHeight = screenHeight;
     }
 
-    @Deprecated // Unused, remove in 1.9.3?
-    public void func_27258_a(boolean p_27258_1_)
+    protected void setHighlightSelected(boolean state)
     {
-        this.highlightSelected = p_27258_1_;
+        this.highlightSelected = state;
     }
 
     @Deprecated protected void func_27259_a(boolean hasFooter, int footerHeight){ setHeaderInfo(hasFooter, footerHeight); }

@@ -191,8 +191,8 @@ public class GuiAreaManager extends GuiScreen implements CallBack
                 Area area = get(slotIdx);
                 if (area != null)
                 {
-                    String areaName = area.getName().trim().equals("") ? I18n.format("mxtune.error.undefined_area") : area.getName();
-                    String trimmedName = fontRenderer.trimStringToWidth(areaName, listWidth - 10);
+                    String areaNameOrUndefined = area.getName().trim().equals("") ? I18n.format("mxtune.error.undefined_area") : area.getName();
+                    String trimmedName = fontRenderer.trimStringToWidth(areaNameOrUndefined, listWidth - 10);
                     int color = isSelected(slotIdx) ? 0xFFFF00 : 0xAADDEE;
                     fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
                 } else
@@ -219,7 +219,7 @@ public class GuiAreaManager extends GuiScreen implements CallBack
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
             {
-                drawSlotCommon(this, slotIdx, entryRight, slotTop, slotBuffer, scrollDistance, tess, listWidth, left);
+                drawSlotCommon(this, slotIdx, slotTop, listWidth, left);
             }
         };
 
@@ -228,7 +228,7 @@ public class GuiAreaManager extends GuiScreen implements CallBack
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
             {
-                drawSlotCommon(this, slotIdx, entryRight, slotTop, slotBuffer, scrollDistance, tess, listWidth, left);
+                drawSlotCommon(this, slotIdx, slotTop, listWidth, left);
             }
         };
 
@@ -266,7 +266,7 @@ public class GuiAreaManager extends GuiScreen implements CallBack
         reloadState();
     }
 
-    private <T extends GuiScrollingMultiListOf<SongProxy>> void drawSlotCommon(T parent, int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess, int listWidth, int left)
+    private <T extends GuiScrollingMultiListOf<SongProxy>> void drawSlotCommon(T parent, int slotIdx, int slotTop, int listWidth, int left)
     {
         SongProxy entry = parent.get(slotIdx);
         if (entry != null)
@@ -431,7 +431,6 @@ public class GuiAreaManager extends GuiScreen implements CallBack
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
         areaName.mouseClicked(mouseX, mouseY, mouseButton);
-        //updateState();
         super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
@@ -524,9 +523,7 @@ public class GuiAreaManager extends GuiScreen implements CallBack
 
     private void shipIt()
     {
-        // TODO: Send Area and Song data to the server
-        // existing area check
-        // push <-> status
+        // TODO: push <-> status need to be created
 
         areaName.setText(areaName.getText().trim());
         Area area = new Area(areaName.getText(), guiDay.getList(), guiNight.getList());
@@ -586,8 +583,8 @@ public class GuiAreaManager extends GuiScreen implements CallBack
         if (selectedArea != null)
         {
             PacketDispatcher.sendToServer(new PlayerSelectedAreaMessage(selectedArea.getGUID()));
-            String areaName = selectedArea.getName().trim().equals("") ? I18n.format("mxtune.error.undefined_area") : selectedArea.getName();
-            updateStatus(String.format("Updated StaffOfMusic Area to: %s", areaName));
+            String areaNameOrUndefined = selectedArea.getName().trim().equals("") ? I18n.format("mxtune.error.undefined_area") : selectedArea.getName();
+            updateStatus(String.format("Updated StaffOfMusic Area to: %s", areaNameOrUndefined));
         }
         else
         {

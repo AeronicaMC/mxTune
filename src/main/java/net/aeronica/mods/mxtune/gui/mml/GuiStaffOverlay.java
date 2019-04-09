@@ -17,7 +17,6 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
-import net.aeronica.mods.mxtune.gui.hud.GuiHudAdjust;
 import net.aeronica.mods.mxtune.gui.hud.HudData;
 import net.aeronica.mods.mxtune.gui.hud.HudDataFactory;
 import net.aeronica.mods.mxtune.items.ItemStaffOfMusic;
@@ -48,9 +47,6 @@ public class GuiStaffOverlay extends Gui
 {
     private Minecraft mc;
     private FontRenderer fontRenderer;
-    private float partialTicks;
-    private int width;
-    private int height;
     private DebugRenderer.IDebugRenderer chunkBorder;
     private boolean holdingStaffOfMusic;
 
@@ -76,16 +72,15 @@ public class GuiStaffOverlay extends Gui
             return;
 
         EntityPlayerSP playerSP = this.mc.player;
-        width = event.getResolution().getScaledWidth();
-        height = event.getResolution().getScaledHeight() - HOT_BAR_CLEARANCE;
-        partialTicks = event.getPartialTicks();
+        int width = event.getResolution().getScaledWidth();
+        int height = event.getResolution().getScaledHeight() - HOT_BAR_CLEARANCE;
         HudData hudData = HudDataFactory.calcHudPositions(0, width, height);
 
         holdingStaffOfMusic = playerSP.getHeldItemMainhand().getItem() instanceof ItemStaffOfMusic;
 
         if (holdingStaffOfMusic)
         {
-            renderHud(hudData, playerSP, elementType);
+            renderHud(hudData, width, elementType);
         }
     }
 
@@ -96,16 +91,12 @@ public class GuiStaffOverlay extends Gui
             chunkBorder.render(event.getPartialTicks(), 0);
     }
 
-    private boolean inGuiHudAdjust() {return (mc.currentScreen instanceof GuiHudAdjust);}
-
     public void setTexture(ResourceLocation texture) { this.mc.renderEngine.bindTexture(texture);}
 
-    private void renderHud(HudData hd, EntityPlayerSP playerSP, RenderGameOverlayEvent.ElementType elementType)
+    private void renderHud(HudData hd, int width, RenderGameOverlayEvent.ElementType elementType)
     {
         int maxWidth = width - 4;
         int maxHeight = (fontRenderer.FONT_HEIGHT + 2) * 6;
-
-       // String musicTitle = getMusicTitle(sheetMusic);
 
         GL11.glPushMatrix();
         GL11.glTranslatef(hd.getPosX(), hd.getPosY(), 0F);
@@ -115,7 +106,6 @@ public class GuiStaffOverlay extends Gui
         int iconX = hd.quadX(maxWidth, 0, 2, maxWidth);
         int iconY = hd.quadY(maxHeight, 0, 2, maxHeight);
 
-        //setTexture(TEXTURE_STATUS);
         if (elementType == RenderGameOverlayEvent.ElementType.EXPERIENCE)
             drawBox(iconX, iconY, maxWidth, maxHeight);
 
