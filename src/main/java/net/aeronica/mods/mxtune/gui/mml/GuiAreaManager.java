@@ -123,7 +123,7 @@ public class GuiAreaManager extends GuiScreen implements CallBack
         int guiAreaListWidth = Math.min(Math.max((width - 15) / 3, 100), 400);
         int guiFileListWidth = guiAreaListWidth;
         int singleLineHeight = mc.fontRenderer.FONT_HEIGHT + 2;
-        int entryAreaHeight = singleLineHeight * 2;
+        int entryAreaHeight = singleLineHeight;
         int padding = 5;
         int titleTop = padding;
         int left = padding;
@@ -193,10 +193,8 @@ public class GuiAreaManager extends GuiScreen implements CallBack
                 {
                     String areaName = area.getName().trim().equals("") ? I18n.format("mxtune.error.undefined_area") : area.getName();
                     String trimmedName = fontRenderer.trimStringToWidth(areaName, listWidth - 10);
-                    String trimmedUUID = fontRenderer.trimStringToWidth(area.getGUID().toString(), listWidth - 10);
                     int color = isSelected(slotIdx) ? 0xFFFF00 : 0xAADDEE;
                     fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
-                    fontRenderer.drawStringWithShadow(trimmedUUID, (float) left + 3, (float) slotTop + 10, color);
                 } else
                 {
                     String name = "---GUID Conflict---";

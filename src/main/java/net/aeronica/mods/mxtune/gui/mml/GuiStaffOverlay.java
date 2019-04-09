@@ -34,6 +34,8 @@ import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.client.renderer.debug.DebugRendererChunkBorder;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -124,12 +126,15 @@ public class GuiStaffOverlay extends Gui
     {
         int y = 0;
         int fontHeight = fontRenderer.FONT_HEIGHT + 2;
+        BlockPos pos = mc.player.getPosition();
+        Chunk chunk = mc.world.getChunk(pos);
         GUID chunkAreaGuid = ClientPlayManager.getCurrentAreaGUID();
         Area area = ClientFileManager.getArea(chunkAreaGuid);
         Area selectedArea = ClientFileManager.getArea(MusicOptionsUtil.getSelectedAreaGuid(mc.player));
 
         String areaName = area != null ? area.getName() : I18n.format("mxtune.error.undefined_area");
-        String formattedText = I18n.format("mxtune.gui.guiStaffOverlay.area_name", areaName);
+        String formattedText = I18n.format("mxtune.gui.guiStaffOverlay.area_name_chunk", areaName,
+                                           String.format("%+d", chunk.x), String.format("%+d", chunk.z));
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight);
 
         y += fontHeight;
@@ -138,11 +143,11 @@ public class GuiStaffOverlay extends Gui
 
         y += fontHeight;
         formattedText = ClientPlayManager.getLastSongLine01();
-        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0xFFFF00);
+        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0xFFCC00);
 
         y += fontHeight;
         formattedText = ClientPlayManager.getLastSongLine02();
-        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0xFFFF00);
+        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0xFFCC00);
 
         y += fontHeight;
         formattedText = ClientPlayManager.getLastSongLine03();

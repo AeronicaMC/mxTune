@@ -22,8 +22,6 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraftforge.fml.client.GuiScrollingList;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -122,12 +120,12 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
 
     private float getScrollDistance()
     {
-        return ObfuscationReflectionHelper.getPrivateValue(GuiScrollingList.class, this, "scrollDistance");
+        return this.scrollDistance;
     }
 
     private void enableHighlightSelected(boolean state)
     {
-        ObfuscationReflectionHelper.setPrivateValue(GuiScrollingList.class, this, state, "highlightSelected");
+        this.highlightSelected = state;
     }
 
     @Override

@@ -20,8 +20,6 @@ package net.aeronica.mods.mxtune.gui.util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraftforge.fml.client.GuiScrollingList;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,7 +29,7 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
-public abstract class GuiScrollingListOf<E> extends GuiScrollingList implements List<E>
+public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implements List<E>
 {
     private List<E> arrayList = new ArrayList<>();
     protected GuiScreen gui;
@@ -48,7 +46,7 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingList implements 
 
     public void resetScroll() {
 
-        ObfuscationReflectionHelper.setPrivateValue(GuiScrollingList.class, this, keepSelectionInViewableArea(), "scrollDistance");
+        this.scrollDistance = keepSelectionInViewableArea();
     }
 
     private float keepSelectionInViewableArea()
@@ -75,7 +73,7 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingList implements 
 
     private boolean isEnableHighlightSelected()
     {
-        return ObfuscationReflectionHelper.getPrivateValue(GuiScrollingList.class, this,"highlightSelected");
+        return this.highlightSelected;
     }
 
     public int getRight() {return right;}
