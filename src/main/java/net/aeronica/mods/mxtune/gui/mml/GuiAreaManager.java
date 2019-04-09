@@ -19,7 +19,6 @@ package net.aeronica.mods.mxtune.gui.mml;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.caches.MXTuneFile;
 import net.aeronica.mods.mxtune.caches.MXTuneFileHelper;
@@ -222,21 +221,7 @@ public class GuiAreaManager extends GuiScreen implements CallBack
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
             {
-                // get the filename and remove the '.mxt' extension
-                SongProxy entry = get(slotIdx);
-                if (entry != null)
-                {
-                    String name = entry.getTitle();
-                    String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
-                    int color = selectedRowIndexes.contains(slotIdx) ? 0xFFFF00 : 0xADD8E6;
-                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
-                } else
-                {
-                    String name = "---GUID Conflict---";
-                    String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
-                    int color = 0xFF0000;
-                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
-                }
+                drawSlotCommon(this, slotIdx, entryRight, slotTop, slotBuffer, scrollDistance, tess, listWidth, left);
             }
         };
 
@@ -245,20 +230,7 @@ public class GuiAreaManager extends GuiScreen implements CallBack
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
             {
-                SongProxy entry = get(slotIdx);
-                if (entry != null)
-                {
-                    String name = entry.getTitle();
-                    String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
-                    int color = selectedRowIndexes.contains(slotIdx) ? 0xFFFF00 : 0xADD8E6;
-                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
-                } else
-                {
-                    String name = "---GUID Conflict---";
-                    String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
-                    int color = 0xFF0000;
-                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
-                }
+                drawSlotCommon(this, slotIdx, entryRight, slotTop, slotBuffer, scrollDistance, tess, listWidth, left);
             }
         };
 
@@ -294,6 +266,24 @@ public class GuiAreaManager extends GuiScreen implements CallBack
 
         initAreas();
         reloadState();
+    }
+
+    private <T extends GuiScrollingMultiListOf<SongProxy>> void drawSlotCommon(T parent, int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess, int listWidth, int left)
+    {
+        SongProxy entry = parent.get(slotIdx);
+        if (entry != null)
+        {
+            String name = entry.getTitle();
+            String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
+            int color = parent.getSelectedRowIndexes().contains(slotIdx) ? 0xFFFF00 : 0xADD8E6;
+            fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
+        } else
+        {
+            String name = "---GUID Conflict---";
+            String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
+            int color = 0xFF0000;
+            fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
+        }
     }
 
     private void reloadState()
@@ -597,7 +587,7 @@ public class GuiAreaManager extends GuiScreen implements CallBack
         ModLogger.debug("GuiTest: selected Name   : %s", selectedArea != null ? selectedArea.getName() : "[null]");
         if (selectedArea != null)
         {
-            PacketDispatcher.sendToServer(new PlayerSelectedAreaMessage(selectedArea != null ? selectedArea.getGUID() : Reference.EMPTY_GUID));
+            PacketDispatcher.sendToServer(new PlayerSelectedAreaMessage(selectedArea.getGUID()));
             String areaName = selectedArea.getName().trim().equals("") ? I18n.format("mxtune.error.undefined_area") : selectedArea.getName();
             updateStatus(String.format("Updated StaffOfMusic Area to: %s", areaName));
         }
