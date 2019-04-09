@@ -39,7 +39,6 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -62,7 +61,7 @@ public class ItemStaffOfMusic extends Item
 
             return new ActionResult<>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
         }
-        else if ( !playerIn.isSneaking() && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
+        else if ( !playerIn.isSneaking())
         {
             BlockPos pos = playerIn.getPosition();
             Chunk chunk = worldIn.getChunk(pos);
