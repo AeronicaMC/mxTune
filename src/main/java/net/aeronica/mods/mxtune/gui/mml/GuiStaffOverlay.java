@@ -133,12 +133,12 @@ public class GuiStaffOverlay extends Gui
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight);
 
         y += fontHeight;
-        formattedText = I18n.format("mxtune.gui.guiStaffOverlay.area_guid", chunkAreaGuid.toString());
-        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0x888888);
+        formattedText = I18n.format("mxtune.gui.guiStaffOverlay.help");
+        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0xAAAAAA);
 
         y += fontHeight;
         formattedText = ClientPlayManager.getLastSongLine01();
-        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0xDDDD00);
+        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0xFFFF00);
 
         y += fontHeight;
         formattedText = ClientPlayManager.getLastSongLine02();
@@ -146,7 +146,7 @@ public class GuiStaffOverlay extends Gui
 
         y += fontHeight;
         formattedText = ClientPlayManager.getLastSongLine03();
-        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0x888800);
+        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0xFFFF00);
 
         y += fontHeight;
         areaName = selectedArea != null ? selectedArea.getName() : I18n.format("mxtune.info.null");

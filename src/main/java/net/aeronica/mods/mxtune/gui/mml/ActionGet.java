@@ -62,7 +62,7 @@ public class ActionGet implements ISelectorAction
     public void clear()
     {
         path = null;
-        title = "";
+        //title = "";
         author = "";
         source = "";
         mml = "";

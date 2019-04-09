@@ -318,7 +318,7 @@ public class GuiMusicImporter extends GuiScreen
     {
         ActionGet.INSTANCE.setPaste();
         ActionGet.INSTANCE.clear();
-        mc.displayGuiScreen(new GuiMusicPaperParse(this));
+        mc.displayGuiScreen(new GuiMusicPaperParse(this, ActionGet.INSTANCE.getTitle()));
     }
 
     private String removeExtension(String s)

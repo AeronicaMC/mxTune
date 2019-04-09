@@ -275,8 +275,8 @@ public class ClientPlayManager implements IAudioStatusCallback
             trackLastSongs(songProxy.getGUID());
 
             lastSongLine01 = I18n.format("mxtune.info.last_song_line_01", area.getName(), area.getPlayListDay().size(), area.getPlayListNight().size());
-            lastSongLine02 = I18n.format("mxtune.info.last_song_line_02", night ? I18n.format("mxtune.info.night") : I18n.format("mxtune.info.day"), SheetMusicUtil.formatDuration(songProxy.getDuration()),songProxy.getTitle() );
-            lastSongLine03 = I18n.format("mxtune.info.last_song_line_03", songProxy.getGUID().toString());
+            lastSongLine02 = I18n.format("mxtune.info.last_song_line_02", night ? I18n.format("mxtune.info.night") : I18n.format("mxtune.info.day"), SheetMusicUtil.formatDuration(songProxy.getDuration()));
+            lastSongLine03 = I18n.format("mxtune.info.last_song_line_03", songProxy.getTitle());
             ModLogger.debug(lastSongLine01);
             ModLogger.debug(lastSongLine02);
             ModLogger.debug(lastSongLine03);

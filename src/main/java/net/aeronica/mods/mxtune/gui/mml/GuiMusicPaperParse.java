@@ -96,13 +96,17 @@ public class GuiMusicPaperParse extends GuiScreen implements IAudioStatusCallbac
     private int cachedSelectedInst;
     private boolean cachedIgnoreParseErrors;
 
-    public GuiMusicPaperParse(GuiScreen guiScreenParent)
+    // Passed in Title
+    private String passedTitle;
+
+    public GuiMusicPaperParse(GuiScreen guiScreenParent, String title)
     {
         this.guiScreenParent = guiScreenParent;
         this.mc = Minecraft.getMinecraft();
         this.fontRenderer = mc.fontRenderer;
         midiUnavailable = MIDISystemUtil.midiUnavailable();
         instrumentCache = MIDISystemUtil.getInstrumentCacheCopy();
+        passedTitle = title;
     }
     
     @Override
@@ -186,6 +190,8 @@ public class GuiMusicPaperParse extends GuiScreen implements IAudioStatusCallbac
 
     private void reloadState()
     {
+        if (passedTitle != null && !passedTitle.isEmpty())
+            textMMLTitle.setText(passedTitle);
         if (!isStateCached) return;
         textMMLTitle.setText(cachedMMLTitle);
         textMMLPaste.setText(cachedMMLText);

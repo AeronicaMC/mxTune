@@ -39,6 +39,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -57,11 +58,11 @@ public class ItemStaffOfMusic extends Item
         if (worldIn.isRemote)
         {
             if (playerIn.isSneaking())
-                playerIn.openGui(MXTune.instance, GuiGuid.GUI_TEST, worldIn, 0, 0, 0);
+                playerIn.openGui(MXTune.instance, GuiGuid.GUI_AREA_MANAGER, worldIn, 0, 0, 0);
 
             return new ActionResult<>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
         }
-        else if ( !playerIn.isSneaking())
+        else if ( !playerIn.isSneaking() && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
         {
             BlockPos pos = playerIn.getPosition();
             Chunk chunk = worldIn.getChunk(pos);
@@ -86,7 +87,6 @@ public class ItemStaffOfMusic extends Item
         }
         else
         {
-
             return new ActionResult<>(EnumActionResult.FAIL, playerIn.getHeldItem(handIn));
         }
     }
