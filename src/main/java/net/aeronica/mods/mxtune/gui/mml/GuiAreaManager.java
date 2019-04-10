@@ -99,6 +99,9 @@ public class GuiAreaManager extends GuiScreen implements CallBack
     private boolean isStateCached;
     private GuiButton buttonToServer;
 
+    // Uploading
+    private boolean uploading = false;
+
     // Mapping
     private BiMap<Path, SongProxy> pathSongProxyBiMap = HashBiMap.create();
     private BiMap<SongProxy, Path> songProxyPathBiMap;
@@ -333,7 +336,7 @@ public class GuiAreaManager extends GuiScreen implements CallBack
 
         cachedAreaName = areaName.getText();
 
-        buttonToServer.enabled = !(areaName.getText().trim().equals("") || (guiDay.isEmpty() && guiNight.isEmpty()));
+        buttonToServer.enabled = !(areaName.getText().trim().equals("") || (guiDay.isEmpty() && guiNight.isEmpty() || uploading));
         updateStatus();
         isStateCached = true;
     }
@@ -525,27 +528,41 @@ public class GuiAreaManager extends GuiScreen implements CallBack
     {
         // TODO: push <-> status need to be created
 
+        uploading = true;
         areaName.setText(areaName.getText().trim());
         Area area = new Area(areaName.getText(), guiDay.getList(), guiNight.getList());
         PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(area.getGUID(), SetServerSerializedDataMessage.SetType.AREA, area));
 
-        for (SongProxy songProxy : guiDay.getList())
-        {
-            if (songProxy != null)
-            {
-                Song song = pathToSong(songProxyPathBiMap.get(songProxy));
-                PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(songProxy.getGUID(), SetServerSerializedDataMessage.SetType.MUSIC, song));
-            }
-        }
+        // Build one list of songs to send from both lists to remove duplicates!
+        List<SongProxy> proxyMap = new ArrayList<>(guiDay.getList());
+
         for (SongProxy songProxy : guiNight.getList())
         {
-            if (songProxy != null)
-            {
-                Song song = pathToSong(songProxyPathBiMap.get(songProxy));
-                PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(songProxy.getGUID(), SetServerSerializedDataMessage.SetType.MUSIC, song));
-            }
+            if (!proxyMap.contains(songProxy))
+                proxyMap.add(songProxy);
         }
 
+        new Thread ( () ->
+                     {
+                         for (SongProxy songProxy : proxyMap)
+                         {
+                             if (songProxy != null)
+                             {
+                                 Song song = pathToSong(songProxyPathBiMap.get(songProxy));
+                                 PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(songProxy.getGUID(), SetServerSerializedDataMessage.SetType.MUSIC, song));
+                                 updateStatus(String.format("Uploading: %s", song.getTitle()));
+                                 try
+                                 {
+                                     Thread.sleep(1000);
+                                 } catch (InterruptedException e)
+                                 {
+                                     Thread.currentThread().interrupt();
+                                 }
+                             }
+                         }
+                         uploading = false;
+                         updateState();
+                     }).start();
         // done
         initAreas();
         updateState();
@@ -554,7 +571,17 @@ public class GuiAreaManager extends GuiScreen implements CallBack
 
     private void initAreas()
     {
-        PacketDispatcher.sendToServer(new GetAreasMessage(CallBackManager.register(this)));
+        new Thread ( () ->
+                     {
+                         try
+                         {
+                             Thread.sleep(500);
+                         } catch (InterruptedException e)
+                         {
+                             Thread.currentThread().interrupt();
+                         }
+                         PacketDispatcher.sendToServer(new GetAreasMessage(CallBackManager.register(this)));
+                     }).start();
     }
 
     @Override
