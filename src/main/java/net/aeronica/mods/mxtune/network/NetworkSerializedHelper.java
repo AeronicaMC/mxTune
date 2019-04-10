@@ -38,7 +38,7 @@ public class NetworkSerializedHelper
 
     public static Serializable readSerializedObject(PacketBuffer buffer) throws IOException
     {
-        int timeout = 300;
+        int timeout = 1200;
         Serializable obj;
 
         UUID uuid = new UUID(buffer.readLong(), buffer.readLong());
@@ -50,10 +50,11 @@ public class NetworkSerializedHelper
         {
             try
             {
-                Thread.sleep(100);
+                Thread.sleep(25);
             } catch (InterruptedException e)
             {
                 Thread.currentThread().interrupt();
+                ModLogger.warn("NetworkSerializedHelper#readSerializedObject Network Timeout.", e.getLocalizedMessage());
             }
         } while (numberOfPackets(uuid) != expectedPackets && timeout-- > 0);
 
