@@ -42,8 +42,8 @@ public class ServerFileManager
     private static final String SERVER_ID_FILE = "server_id" + FileHelper.EXTENSION_DAT;
     private static final String SERVER_ID_FILE_ERROR = "Delete the <world save>/mxtune/server_id" + FileHelper.EXTENSION_DAT + " file, then try loading the world again.";
     private static UUID serverID;
-    private static Map<GUID, SongProxy> songProxyMap = new HashMap<>();
-    private static Map<GUID, Area> areas = new HashMap<>();
+    private static final Map<GUID, SongProxy> songProxyMap = new HashMap<>();
+    private static final Map<GUID, Area> areas = new HashMap<>();
 
     private ServerFileManager() { /* NOP */ }
 
@@ -168,7 +168,7 @@ public class ServerFileManager
         }
     }
 
-    public static List<Area> getAreas()
+    public synchronized static List<Area> getAreas()
     {
         List<Area> areaList = new ArrayList<>();
         areas.forEach((key, value) -> areaList.add(value));
@@ -180,7 +180,7 @@ public class ServerFileManager
      * @param guidArea GUID of the desired Area record
      * @return the Area record, or if it does not exist an Empty Area
      */
-    public static Area getArea(GUID guidArea)
+    public synchronized static Area getArea(GUID guidArea)
     {
         return areas.containsKey(guidArea) ? areas.get(guidArea) : new Area();
     }
@@ -207,8 +207,11 @@ public class ServerFileManager
                     ModLogger.warn("Unable to create folder: %s and/or file: %s", FileHelper.SERVER_AREAS_FOLDER, areaFileName);
                     errorResult = new ResultMessage(true, new TextComponentTranslation("mxtune.error.unable_to_create_file_folder",FileHelper.SERVER_AREAS_FOLDER, areaFileName));
                 }
-                if (!errorResult.hasError() || !areas.containsKey(areaGUID))
-                    areas.put(areaGUID, area);
+                if (!errorResult.hasError())
+                    synchronized (areas)
+                    {
+                        areas.put(areaGUID, area);
+                    }
             }
             else
             {
@@ -245,8 +248,11 @@ public class ServerFileManager
                     ModLogger.warn("Unable to create folder: %s and/or file: %s", FileHelper.SERVER_MUSIC_FOLDER, songFileName);
                     errorResult = new ResultMessage(true, new TextComponentTranslation("mxtune.error.unable_to_create_file_folder",FileHelper.SERVER_MUSIC_FOLDER, songFileName));
                 }
-                if (!errorResult.hasError() || !songProxyMap.containsKey(songGUID))
-                    songProxyMap.put(songGUID, songProxy);
+                if (!errorResult.hasError())
+                    synchronized (songProxyMap)
+                    {
+                        songProxyMap.put(songGUID, songProxy);
+                    }
             }
             else
             {
