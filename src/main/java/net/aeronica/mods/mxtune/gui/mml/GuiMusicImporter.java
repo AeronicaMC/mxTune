@@ -17,6 +17,7 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
+import net.aeronica.libs.mml.readers.ms2mml.Ms2MmlReader;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.caches.MXTuneFile;
 import net.aeronica.mods.mxtune.caches.MXTunePart;
@@ -339,25 +340,39 @@ public class GuiMusicImporter extends GuiScreen
         switch (ActionGet.INSTANCE.getSelector())
         {
             case FILE:
-                ModLogger.debug("File: %s", ActionGet.INSTANCE.getFileNameString());
-                temp = ActionGet.INSTANCE.getFileNameString();
-                ModLogger.debug("ActionGet FILE raw: %s", temp);
-                title = removeExtension(temp);
-                ModLogger.debug("ActionGet FILE title: %s", title);
-                fileName = normalizeFilename(title);
-                ModLogger.debug("ActionGet FILE filename: %s", fileName);
-                musicTitle.setText(title.trim());
-                musicAuthor.setText(ActionGet.INSTANCE.getAuthor());
-                musicSource.setText(ActionGet.INSTANCE.getSource());
-                mxTuneFile = new MXTuneFile();
-                mxTuneFile.applyUserDateTime(true);
-                mxTuneFile.setTitle(musicTitle.getText());
-                mxTuneFile.setAuthor(musicAuthor.getText());
-                mxTuneFile.setSource(musicSource.getText());
-                guiPartList.clear();
-                guiPartList.addAll(mxTuneFile.getParts());
-                guiStaffList.clear();
-                guiStaffList.addAll(staves);
+                Ms2MmlReader ms2MmlReader = new Ms2MmlReader();
+                ms2MmlReader.parseFile(ActionGet.INSTANCE.getPath());
+                if (!ms2MmlReader.hasErrors())
+                {
+                    ModLogger.debug("File: %s", ActionGet.INSTANCE.getFileNameString());
+                    temp = ActionGet.INSTANCE.getFileNameString();
+                    ModLogger.debug("ActionGet FILE raw: %s", temp);
+                    title = removeExtension(temp);
+                    ModLogger.debug("ActionGet FILE title: %s", title);
+                    fileName = normalizeFilename(title);
+                    ModLogger.debug("ActionGet FILE filename: %s", fileName);
+                    musicTitle.setText(title.trim());
+                    musicAuthor.setText(ActionGet.INSTANCE.getAuthor());
+                    musicSource.setText(ActionGet.INSTANCE.getSource());
+                    mxTuneFile = new MXTuneFile();
+                    staves = new ArrayList<>();
+                    int i = 0;
+                    for (String mml : ms2MmlReader.getMML().replaceAll("MML@|;", "").split(","))
+                    {
+                        staves.add(new MXTuneStaff(i, mml));
+                        i++;
+                    }
+                    MXTunePart part = new MXTunePart("Acoustic Piano", "Acoustic Piano", 0, staves);
+                    mxTuneFile.getParts().add(part);
+                    mxTuneFile.applyUserDateTime(true);
+                    mxTuneFile.setTitle(musicTitle.getText());
+                    mxTuneFile.setAuthor(musicAuthor.getText());
+                    mxTuneFile.setSource(musicSource.getText());
+                    guiPartList.clear();
+                    guiPartList.addAll(mxTuneFile.getParts());
+                    guiStaffList.clear();
+                    guiStaffList.addAll(staves);
+                }
 
                 break;
             case PASTE:
