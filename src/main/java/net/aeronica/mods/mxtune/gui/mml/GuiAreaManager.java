@@ -182,7 +182,7 @@ public class GuiAreaManager extends GuiScreen implements CallBack
             protected void selectedClickedCallback(int selectedIndex)
             {
                 super.selectedClickedCallback(selectedIndex);
-                updateStatus();
+                updateSongCountStatus();
             }
         };
 
@@ -307,7 +307,7 @@ public class GuiAreaManager extends GuiScreen implements CallBack
 
         areaName.setText(cachedAreaName);
 
-        updateStatus();
+        updateSongCountStatus();
         guiAreaList.resetScroll();
         guiFileList.resetScroll();
     }
@@ -337,11 +337,11 @@ public class GuiAreaManager extends GuiScreen implements CallBack
         cachedAreaName = areaName.getText();
 
         buttonToServer.enabled = !(areaName.getText().trim().equals("") || (guiDay.isEmpty() && guiNight.isEmpty() || uploading));
-        updateStatus();
+        //updateSongCountStatus();
         isStateCached = true;
     }
 
-    private void updateStatus()
+    private void updateSongCountStatus()
     {
         status.setText(String.format("Selected Song Count: %s", guiFileList.getSelectedRowsCount()));
     }
@@ -544,13 +544,15 @@ public class GuiAreaManager extends GuiScreen implements CallBack
 
         new Thread ( () ->
                      {
+                         int count = 0;
                          for (SongProxy songProxy : proxyMap)
                          {
+                             count++;
                              if (songProxy != null)
                              {
                                  Song song = pathToSong(songProxyPathBiMap.get(songProxy));
                                  PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(songProxy.getGUID(), SetServerSerializedDataMessage.SetType.MUSIC, song));
-                                 updateStatus(String.format("Uploading: %s", song.getTitle()));
+                                 updateStatus(String.format("Uploading %s of %s: %s", String.format("%03d", count), String.format("%03d",proxyMap.size()), song.getTitle()));
                                  try
                                  {
                                      Thread.sleep(1000);
