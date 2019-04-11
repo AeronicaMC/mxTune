@@ -53,34 +53,34 @@ public class Ms2MmlReader extends AbstractMmlFileReader
     private void readMs2Mml(InputStream is)
     {
         Ms2 ms2;
-        StringBuilder builder =  new StringBuilder("MML@");
         try
         {
             JAXBContext jaxbContext = JAXBContext.newInstance("net.aeronica.libs.mml.readers.ms2mml");
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             ms2 = (Ms2) unmarshaller.unmarshal(is);
 
-        if (ms2 != null)
-        {
-            String melodyValue = MMLAllowedCharacters.filterAllowedCharacters(ms2.melody);
-            if (!melodyValue.equals(""))
-                builder.append(melodyValue);
-
-            for (Ms2.Chord chord : ms2.chord)
+            if (ms2 != null)
             {
-                String chordValue = MMLAllowedCharacters.filterAllowedCharacters(chord.value);
-                if ((chordValue.equals("")))
-                    continue;
-                builder.append(",");
-                builder.append(chordValue);
+                StringBuilder builder = new StringBuilder("MML@");
+                String melodyValue = MMLAllowedCharacters.filterAllowedCharacters(ms2.melody);
+                if (!melodyValue.equals(""))
+                    builder.append(melodyValue);
+
+                for (Ms2.Chord chord : ms2.chord)
+                {
+                    String chordValue = MMLAllowedCharacters.filterAllowedCharacters(chord.value);
+                    if ((chordValue.equals("")))
+                        continue;
+                    builder.append(",");
+                    builder.append(chordValue);
+                }
+                builder.append(";");
+                mml = builder.toString();
             }
-            builder.append(";");
-            mml = builder.toString();
-        }
-        }
-        catch (JAXBException e)
+        } catch (JAXBException e)
         {
             addError(e.getLocalizedMessage());
+            mml = "";
         }
     }
 }
