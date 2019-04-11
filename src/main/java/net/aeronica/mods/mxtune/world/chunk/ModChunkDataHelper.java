@@ -22,8 +22,8 @@ import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.UpdateChunkMusicData;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.MXTuneException;
+import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.aeronica.mods.mxtune.util.Util;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.chunk.Chunk;
@@ -33,7 +33,7 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 public class ModChunkDataHelper
 {
     @CapabilityInject(IModChunkData.class)
-    public static final Capability<IModChunkData> MOD_CHUNK_DATA = Util.nonNullInjected();
+    public static final Capability<IModChunkData> MOD_CHUNK_DATA = Miscellus.nonNullInjected();
 
     private ModChunkDataHelper() { /* NOP */ }
 

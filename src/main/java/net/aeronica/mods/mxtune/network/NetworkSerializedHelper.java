@@ -28,7 +28,7 @@ import java.util.TreeMap;
 import java.util.UUID;
 
 import static net.aeronica.mods.mxtune.network.MultiPacketSerializedObjectManager.*;
-import static net.aeronica.mods.mxtune.util.Util.appendByteArrays;
+import static net.aeronica.mods.mxtune.util.Miscellus.appendByteArrays;
 
 public class NetworkSerializedHelper
 {

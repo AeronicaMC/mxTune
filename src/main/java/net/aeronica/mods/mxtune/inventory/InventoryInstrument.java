@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.inventory;
 
-import net.aeronica.mods.mxtune.util.Util;
+import net.aeronica.mods.mxtune.util.Miscellus;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
@@ -177,7 +177,7 @@ public class InventoryInstrument implements IInventory
 	public boolean hasCustomName() { return false; }
 
 	@Override
-	public ITextComponent getDisplayName() { return Util.nonNullInjected(); }
+	public ITextComponent getDisplayName() { return Miscellus.nonNullInjected(); }
 
 	@Override
 	public ItemStack removeStackFromSlot(int index) { return decrStackSize(index, stack.getCount()); }

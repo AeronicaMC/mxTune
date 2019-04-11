@@ -20,7 +20,7 @@ import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.SyncPlayerMusicOptionsMessage;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
-import net.aeronica.mods.mxtune.util.Util;
+import net.aeronica.mods.mxtune.util.Miscellus;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -47,7 +47,7 @@ public class MusicOptionsUtil
 
 
     @CapabilityInject(IPlayerMusicOptions.class)
-    private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = Util.nonNullInjected();
+    private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = Miscellus.nonNullInjected();
     
     private MusicOptionsUtil() {}
     

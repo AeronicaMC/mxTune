@@ -31,7 +31,7 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
-import static net.aeronica.mods.mxtune.util.Util.audiblePingPlayer;
+import static net.aeronica.mods.mxtune.util.Miscellus.audiblePingPlayer;
 
 public class CommandSoundRange extends CommandBase
 {

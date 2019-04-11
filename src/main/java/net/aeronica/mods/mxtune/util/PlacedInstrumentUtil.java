@@ -67,7 +67,7 @@ public class PlacedInstrumentUtil
             /* Standing on Fluids or Air is not allowed */
             if ((worldIn.getBlockState(underFoot).getBlock() instanceof BlockLiquid) || worldIn.isAirBlock(underFoot))
                 return false;
-            double blockHeight = worldIn.getBlockState(underFoot).getBoundingBox(Util.nonNullInjected(), underFoot).maxY;
+            double blockHeight = worldIn.getBlockState(underFoot).getBoundingBox(Miscellus.nonNullInjected(), underFoot).maxY;
             EntitySittableBlock sittableBlock = new EntitySittableBlock(worldIn, underFoot, blockHeight + 6 * 0.0625F, false);
             worldIn.spawnEntity(sittableBlock);
             playerIn.startRiding(sittableBlock, true);

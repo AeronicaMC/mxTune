@@ -17,8 +17,8 @@
 package net.aeronica.mods.mxtune.options;
 
 import net.aeronica.mods.mxtune.Reference;
+import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.NBTHelper;
-import net.aeronica.mods.mxtune.util.Util;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -48,7 +48,7 @@ import java.util.concurrent.Callable;
 public class PlayerMusicOptionsCapability
 {
     @CapabilityInject(IPlayerMusicOptions.class)
-    private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = Util.nonNullInjected();
+    private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = Miscellus.nonNullInjected();
 
     private PlayerMusicOptionsCapability() { /* NOP */ }
 

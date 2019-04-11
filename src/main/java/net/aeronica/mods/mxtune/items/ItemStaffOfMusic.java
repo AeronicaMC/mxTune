@@ -22,8 +22,8 @@ import net.aeronica.mods.mxtune.gui.GuiGuid;
 import net.aeronica.mods.mxtune.managers.ServerFileManager;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.GUID;
+import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.aeronica.mods.mxtune.util.Util;
 import net.aeronica.mods.mxtune.world.chunk.ModChunkDataHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
@@ -73,12 +73,12 @@ public class ItemStaffOfMusic extends Item
 
                 ModLogger.debug("Area name:", ServerFileManager.getArea(guidArea));
                 ModLogger.debug("Area UUID: %s", guidArea);
-                Util.audiblePingPlayer(playerIn, SoundEvents.BLOCK_NOTE_PLING);
+                Miscellus.audiblePingPlayer(playerIn, SoundEvents.BLOCK_NOTE_PLING);
                 playerIn.sendStatusMessage(new TextComponentTranslation("mxtune.gui.guiStaffOverlay.area_update_successful"), true);
             }
             else if (chunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
             {
-                Util.audiblePingPlayer(playerIn, SoundEvents.BLOCK_GLASS_BREAK);
+                Miscellus.audiblePingPlayer(playerIn, SoundEvents.BLOCK_GLASS_BREAK);
                 playerIn.sendStatusMessage(new TextComponentTranslation("commands.mxtune.mxtune_server_update_not_allowed"), true);
                 ModLogger.debug("Player does not have rights to update Areas");
             }

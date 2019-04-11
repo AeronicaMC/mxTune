@@ -9,10 +9,14 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.SoundEvent;
 
-public class Util
+/*
+ * Miscellus
+ * Latin: mixed
+ */
+public class Miscellus
 {
 
-    private Util() { /* NOP */ }
+    private Miscellus() { /* NOP */ }
 
     /**
      * Forge really likes annotation magic. This makes static analysis tools shut up.

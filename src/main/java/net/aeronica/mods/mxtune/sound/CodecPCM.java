@@ -17,7 +17,7 @@
 package net.aeronica.mods.mxtune.sound;
 
 import net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType;
-import net.aeronica.mods.mxtune.util.Util;
+import net.aeronica.mods.mxtune.util.Miscellus;
 import paulscode.sound.ICodec;
 import paulscode.sound.SoundBuffer;
 import paulscode.sound.SoundSystemConfig;
@@ -209,14 +209,14 @@ public class CodecPCM implements ICodec
 
         int bufferSize;
         byte[] readBuffer = new byte[SoundSystemConfig.getStreamingBufferSize()];
-        byte[] outputBuffer = Util.nonNullInjected();
+        byte[] outputBuffer = Miscellus.nonNullInjected();
         try
         {
             if (hasStream && (audioInputStream != null))
             {
                 bufferSize = audioInputStream.read(readBuffer);
                 if (bufferSize > 0)
-                    outputBuffer = Util.appendByteArrays(outputBuffer, readBuffer, bufferSize);
+                    outputBuffer = Miscellus.appendByteArrays(outputBuffer, readBuffer, bufferSize);
 
                 if (bufferSize == -1)
                 {
@@ -228,7 +228,7 @@ public class CodecPCM implements ICodec
             else
             {
                 nextNoiseZeroBuffer();
-                outputBuffer = Util.appendByteArrays(outputBuffer, zeroBuffer, SAMPLE_SIZE);
+                outputBuffer = Miscellus.appendByteArrays(outputBuffer, zeroBuffer, SAMPLE_SIZE);
                 if (zeroBufferCount++ > 64)
                 {
                     errorMessage("MML to PCM audio processing took too long. Aborting!");
@@ -312,7 +312,7 @@ public class CodecPCM implements ICodec
         for (int i = 0; i < 25; i++)
         {
             nextNoiseZeroBuffer();
-            outputBuffer = Util.appendByteArrays(outputBuffer, noiseBuffer, SAMPLE_SIZE);
+            outputBuffer = Miscellus.appendByteArrays(outputBuffer, noiseBuffer, SAMPLE_SIZE);
         }
         errorMessage("ReadAll NOT Supported! Always use stream = true. You have been warned.");
         if (!reverseBytes && outputBuffer != null)

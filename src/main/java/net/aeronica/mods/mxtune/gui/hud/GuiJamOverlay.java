@@ -24,8 +24,8 @@ import net.aeronica.mods.mxtune.managers.GroupHelper;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
+import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.PlacedInstrumentUtil;
-import net.aeronica.mods.mxtune.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
@@ -270,7 +270,7 @@ public class GuiJamOverlay extends Gui
 
     private void drawDebug(HudData hd, int maxWidth, int maxHeight)
     {
-        if (!Util.inDev()) return;
+        if (!Miscellus.inDev()) return;
 
         int statusWidth;
         int qX;

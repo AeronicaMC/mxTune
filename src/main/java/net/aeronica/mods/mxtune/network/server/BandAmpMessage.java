@@ -31,7 +31,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.LockCode;
 import net.minecraftforge.fml.relauncher.Side;
 
-import static net.aeronica.mods.mxtune.util.Util.audiblePingPlayer;
+import static net.aeronica.mods.mxtune.util.Miscellus.audiblePingPlayer;
 
 public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAmpMessage>
 {
