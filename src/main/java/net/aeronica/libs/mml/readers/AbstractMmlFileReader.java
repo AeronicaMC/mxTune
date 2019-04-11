@@ -31,7 +31,6 @@ public abstract class AbstractMmlFileReader
     protected String author = "";
     protected String url = "";
     protected String mml = "";
-    protected String[] meta = new String[0];
 
     public abstract boolean parseFile(Path path);
 
@@ -43,8 +42,6 @@ public abstract class AbstractMmlFileReader
 
     public String getUrl() { return url; }
 
-    public String[] getMeta() { return meta; }
-
     public abstract String getMML();
 
     public boolean hasErrors()
@@ -54,7 +51,7 @@ public abstract class AbstractMmlFileReader
 
     public String[] getErrorMessages()
     {
-        return (String[]) collectedErrors.toArray();
+        return collectedErrors.toArray(new String[0]);
     }
 
     protected void addError(String message)
