@@ -63,6 +63,7 @@ public class GetAreasMessage extends AbstractMessage<GetAreasMessage>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void read(PacketBuffer buffer)
     {
         callbackUuidMSB = buffer.readLong();

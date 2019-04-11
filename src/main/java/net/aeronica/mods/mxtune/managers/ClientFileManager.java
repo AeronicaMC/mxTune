@@ -25,13 +25,16 @@ import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.GetServerDataMessage;
+import net.aeronica.mods.mxtune.util.CallBack;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.relauncher.Side;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -44,8 +47,10 @@ import java.util.stream.Stream;
 
 import static net.aeronica.mods.mxtune.network.bidirectional.GetServerDataMessage.GetType;
 
-public class ClientFileManager
+public enum  ClientFileManager implements CallBack
 {
+    INSTANCE;
+
     private static UUID cachedServerID = Reference.EMPTY_UUID;
     private static Minecraft mc = Minecraft.getMinecraft();
 
@@ -55,7 +60,7 @@ public class ClientFileManager
     private static Path pathAreas;
     private static Path pathMusic;
 
-    private static Map<GUID, Area> mapAreas = new HashMap<>();
+    private static final Map<GUID, Area> mapAreas = new HashMap<>();
     private static Map<GUID, SongProxy> mapSongProxies = new HashMap<>();
     private static Set<GUID> badAreas = new HashSet<>();
     private static Set<GUID> badSongs = new HashSet<>();
@@ -117,6 +122,41 @@ public class ClientFileManager
         if (Reference.EMPTY_UUID.equals(cachedServerID))
             throw new MXTuneRuntimeException("EMPTY_UUID detected! Something is seriously wrong.");
         return cachedServerID;
+    }
+
+
+    @Override
+    public void onFailure(@Nonnull ITextComponent textComponent)
+    {
+        ModLogger.warn("ClientFileManager onFailure: %s", textComponent.getFormattedText());
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void onResponse(@Nullable Object payload)
+    {
+        if (payload != null)
+        {
+            for (Area area : (List<Area>) payload)
+            {
+                NBTTagCompound compound = new NBTTagCompound();
+                area.writeToNBT(compound);
+                addArea(area.getGUID(), compound, false);
+            }
+        }
+    }
+
+    private static List<Area> getAreas()
+    {
+        List<Area> areas = new ArrayList<>();
+        synchronized (mapAreas)
+        {
+            for (Map.Entry<GUID, Area> entry : mapAreas.entrySet())
+            {
+                areas.add(entry.getValue());
+            }
+        }
+        return areas;
     }
 
     public static void addArea(GUID guid, NBTTagCompound data, boolean error)

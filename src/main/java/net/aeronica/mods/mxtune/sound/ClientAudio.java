@@ -409,7 +409,6 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
             musicTicker = Minecraft.getMinecraft().getMusicTicker();
             setVanillaMusicPaused(false);
             playIDAudioData.clear();
-            ClientPlayManager.reset();
         }
     }
     
@@ -420,7 +419,6 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         playIDQueue01.clear();
         playIDQueue02.clear();
         playIDQueue03.clear();
-        ClientPlayManager.resetTimer();
     }
 
     @Override

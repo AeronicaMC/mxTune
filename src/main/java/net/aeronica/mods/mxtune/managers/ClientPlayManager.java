@@ -70,8 +70,8 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static int failedNewSongs;
 
     // Inter-song delay
-    private static final int MAX_DELAY = 60;
-    private static final int MIN_DELAY = 20;
+    private static final int MAX_DELAY = 30;
+    private static final int MIN_DELAY = 10;
     private static int delay = MAX_DELAY / 2;
     private static int counter = 0;
     private static int ticks = 0;
@@ -84,7 +84,7 @@ public class ClientPlayManager implements IAudioStatusCallback
 
     public static void reset()
     {
-        ClientPlayManager.resetTimer();
+        ClientPlayManager.resetTimer(5);
         ClientPlayManager.invalidatePlayId();
         lastSongs.clear();
         clearLastSongInfo();
@@ -237,14 +237,14 @@ public class ClientPlayManager implements IAudioStatusCallback
             }
             else if (!ClientFileManager.isNotBadSong(guidSong))
             {
-                resetTimer();
-                invalidatePlayId();
+                resetTimer(0);
+                //invalidatePlayId();
             }
             else if (Reference.EMPTY_GUID.equals(guidSong))
             {
                 // This should never happen unless I screwed something up
                 ModLogger.warn("ClientPlayManger: What has Aeronica / Rymor done this time?!, SongProxy guid: %s, playId %d", guidSong.toString(), currentPlayId);
-                resetTimer(2);
+                resetTimer(0);
                 invalidatePlayId();
             }
         }
@@ -332,15 +332,15 @@ public class ClientPlayManager implements IAudioStatusCallback
 
     public static void resetTimer()
     {
-        delay = rand.nextInt(MAX_DELAY - MIN_DELAY) + MIN_DELAY;
-        ModLogger.debug("resetTimer: new delay %05d seconds", delay);
+        delay = (rand.nextInt(MAX_DELAY - MIN_DELAY) + MIN_DELAY) * 2;
+        ModLogger.debug("resetTimer: new delay %05d seconds", delay / 2);
         wait = false;
     }
 
     public static void resetTimer(int newDelay)
     {
-        delay = newDelay < 1 ? 1 : newDelay;
-        ModLogger.debug("resetTimer: new delay %05d seconds", delay);
+        delay = newDelay < 2 ? 2 : newDelay * 2;
+        ModLogger.debug("resetTimer: new delay %05d seconds", delay / 2);
         wait = false;
     }
 
@@ -348,7 +348,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     {
         PlayType testType = getTypeForPlayId(playId);
         removePlayTypeBelow(ClientAudio.getActivePlayIDs(), testType);
-        resetTimer();
+        resetTimer(0);
     }
 
     private static void removePlayTypeBelow(Set<Integer> setOfPlayIDS, PlayType playTypeIn)
