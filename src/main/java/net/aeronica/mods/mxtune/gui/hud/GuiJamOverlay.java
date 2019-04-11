@@ -122,7 +122,7 @@ public class GuiJamOverlay extends Gui
     private static void setRidingFlag(boolean flag) {riding = flag;}
     
     @SuppressWarnings("static-access")
-    @SubscribeEvent(priority = EventPriority.NORMAL)
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRenderExperienceBar(RenderGameOverlayEvent.Post event)
     {
         if (mc.gameSettings.showDebugInfo) return;
