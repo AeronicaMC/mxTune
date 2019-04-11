@@ -38,6 +38,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
+import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
@@ -95,7 +96,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     @SubscribeEvent
     public static void onEvent(TickEvent.ClientTickEvent event)
     {
-        if (ClientCSDMonitor.canMXTunesPlay() && (event.phase == TickEvent.Phase.END) && ticks++ % 20 == 0)
+        if (ClientCSDMonitor.canMXTunesPlay() && (event.phase == TickEvent.Phase.END) && ((ticks++ % 20 == 0) || Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)))
         {
             // Poll once per second
             updateChunk();
@@ -159,7 +160,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     {
         // Day / Night
         long time = mc.world.getWorldTime() % 24000;
-        night = time > 13300 && time < 23200;
+        night = time > 13200 && time < 23200;
     }
 
     @Nullable

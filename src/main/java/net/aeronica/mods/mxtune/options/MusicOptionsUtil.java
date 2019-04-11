@@ -43,6 +43,7 @@ public class MusicOptionsUtil
     public static final byte SYNC_BLACK_LIST = 5;
     public static final byte SYNC_MUSIC_OP = 6;
     public static final byte SYNC_SELECTED_AREA_GUID = 7;
+    public static final byte SYNC_CTRL_KEY_DOWN = 8;
 
 
     @CapabilityInject(IPlayerMusicOptions.class)
@@ -157,12 +158,24 @@ public class MusicOptionsUtil
 
     public static GUID getSelectedAreaGuid(EntityPlayer playerIn) { return getImpl(playerIn).getSelectedAreaGuid(); }
 
+
+    public static void setCtrlKey(EntityPlayer playerIn, boolean isDown)
+    {
+        getImpl(playerIn).setCtrlKey(isDown);
+        sync(playerIn, SYNC_CTRL_KEY_DOWN);
+    }
+
+    public static boolean isCtrlKeyDown(EntityPlayer playerIn)
+    {
+        return getImpl(playerIn).isCtrlKeyDown();
+    }
+
     @Nullable
     private static IPlayerMusicOptions getImpl(EntityPlayer player)
     {
         IPlayerMusicOptions bardActionImpl;
         if (player.hasCapability(Objects.requireNonNull(MUSIC_OPTIONS), null))
-            bardActionImpl =  player.getCapability(MUSIC_OPTIONS, null);
+            bardActionImpl = player.getCapability(MUSIC_OPTIONS, null);
         else
             throw new MXTuneRuntimeException("IBardAction capability is null");
         return bardActionImpl;

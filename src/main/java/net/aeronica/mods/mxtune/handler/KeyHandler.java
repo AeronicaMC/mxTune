@@ -33,6 +33,8 @@ public class KeyHandler
     
     private KeyBinding keyOpenPartyGUI = new KeyBinding("mxtune.key.openParty", Keyboard.KEY_J, Reference.MOD_ID);
     private KeyBinding keyOpenMusicOptionsGUI = new KeyBinding("mxtune.key.openMusicOptions", Keyboard.KEY_P, Reference.MOD_ID);
+    private Minecraft mc = Minecraft.getMinecraft();
+    private boolean ctrlKeyDown = false;
 
     private KeyHandler()
     {
@@ -51,6 +53,17 @@ public class KeyHandler
         if (keyOpenMusicOptionsGUI.isPressed())
         {
             PacketDispatcher.sendToServer(new SendKeyMessage(keyOpenMusicOptionsGUI.getKeyDescription()));
+        }
+
+        if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && !ctrlKeyDown)
+        {
+            PacketDispatcher.sendToServer(new SendKeyMessage("ctrl-down"));
+            ctrlKeyDown = !ctrlKeyDown;
+        }
+        if (!Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && ctrlKeyDown)
+        {
+            PacketDispatcher.sendToServer(new SendKeyMessage("ctrl-up"));
+            ctrlKeyDown = !ctrlKeyDown;
         }
     }
 }

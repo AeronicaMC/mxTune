@@ -39,6 +39,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     private boolean soundRangeInfinityAllowed;
     private boolean mxTuneServerUpdateAllowed;
     private GUID selectedAreaGuid;
+    private boolean ctrlKeyDown;
 
     PlayerMusicDefImpl()
     {
@@ -54,6 +55,7 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
         this.soundRangeInfinityAllowed = false;
         this.mxTuneServerUpdateAllowed = false;
         this.selectedAreaGuid = Reference.EMPTY_GUID;
+        this.ctrlKeyDown = false;
     }
 
     @Override
@@ -125,4 +127,10 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
 
     @Override
     public GUID getSelectedAreaGuid() { return selectedAreaGuid; }
+
+    @Override
+    public void setCtrlKey(boolean isDown) { ctrlKeyDown = isDown; }
+
+    @Override
+    public boolean isCtrlKeyDown() { return ctrlKeyDown; }
 }

@@ -20,6 +20,7 @@ import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.gui.GuiGuid;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
+import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.PacketBuffer;
@@ -73,6 +74,11 @@ public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
 
     private void handleServerSide(EntityPlayer playerMP)
     {
-        PacketDispatcher.sendTo(new SendKeyMessage(this.keyBindingDesc), (EntityPlayerMP) playerMP);
+        if ("ctrl-down".equalsIgnoreCase(keyBindingDesc))
+            MusicOptionsUtil.setCtrlKey(playerMP, true);
+        else if ("ctrl-up".equalsIgnoreCase(keyBindingDesc))
+            MusicOptionsUtil.setCtrlKey(playerMP, false);
+        else
+            PacketDispatcher.sendTo(new SendKeyMessage(this.keyBindingDesc), (EntityPlayerMP) playerMP);
     }
 }

@@ -61,7 +61,7 @@ public class ItemStaffOfMusic extends Item
 
             return new ActionResult<>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
         }
-        else if ( !playerIn.isSneaking())
+        else if (!playerIn.isSneaking() && MusicOptionsUtil.isCtrlKeyDown(playerIn))
         {
             BlockPos pos = playerIn.getPosition();
             Chunk chunk = worldIn.getChunk(pos);

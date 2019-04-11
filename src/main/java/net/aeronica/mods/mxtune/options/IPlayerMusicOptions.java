@@ -69,4 +69,8 @@ public interface IPlayerMusicOptions
     void setSelectedAreaGuid(GUID guidArea);
 
     GUID getSelectedAreaGuid();
+
+    void setCtrlKey(boolean isDown);
+
+    boolean isCtrlKeyDown();
 }

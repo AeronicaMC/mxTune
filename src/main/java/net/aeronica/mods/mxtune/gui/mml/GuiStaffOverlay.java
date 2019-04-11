@@ -34,6 +34,7 @@ import net.minecraft.client.renderer.debug.DebugRendererChunkBorder;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -59,7 +60,6 @@ public class GuiStaffOverlay extends Gui
         this.mc = Minecraft.getMinecraft();
         this.fontRenderer = this.mc.fontRenderer;
         this.chunkBorder = new DebugRendererChunkBorder(mc);
-
     }
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
@@ -84,7 +84,7 @@ public class GuiStaffOverlay extends Gui
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onEvent(RenderWorldLastEvent event)
     {
         if (holdingStaffOfMusic && !mc.gameSettings.showDebugInfo)
@@ -116,6 +116,8 @@ public class GuiStaffOverlay extends Gui
     {
         int fontHeight = fontRenderer.FONT_HEIGHT + 2;
         int y = fontHeight;
+        boolean isCtrlDown = MusicOptionsUtil.isCtrlKeyDown(mc.player);
+        String normalBoldUnderline = isCtrlDown ? TextFormatting.BOLD + TextFormatting.UNDERLINE.toString() : TextFormatting.RESET.toString();
         BlockPos pos = mc.player.getPosition();
         Chunk chunk = mc.world.getChunk(pos);
         GUID chunkAreaGuid = ClientPlayManager.getCurrentAreaGUID();
@@ -141,8 +143,8 @@ public class GuiStaffOverlay extends Gui
 
         y += fontHeight;
         areaName = selectedArea != null ? selectedArea.getName() : I18n.format("mxtune.error.undefined_area");
-        formattedText = I18n.format("mxtune.gui.guiStaffOverlay.selected_area_to_apply",areaName);
-        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0x00EE00);
+        formattedText = normalBoldUnderline + I18n.format("mxtune.gui.guiStaffOverlay.selected_area_to_apply", areaName);
+        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, isCtrlDown ? 0x00FF00 : 0x7FFFFF);
     }
 
     private void renderLine(String formattedText, int y, HudData hd, int maxWidth, int maxHeight, int fontHeight)

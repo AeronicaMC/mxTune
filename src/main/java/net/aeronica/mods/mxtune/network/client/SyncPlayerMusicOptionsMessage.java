@@ -57,6 +57,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     private long ccccSigBits;
     private long bbbbSigBits;
     private long aaaaSigBits;
+    private boolean ctrlKeyDown;
 
     private byte[] byteBuffer = null;
 
@@ -104,6 +105,10 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             case MusicOptionsUtil.SYNC_SELECTED_AREA_GUID:
                 this.selectedAreaGuid = inst.getSelectedAreaGuid();
                 break;
+
+            case MusicOptionsUtil.SYNC_CTRL_KEY_DOWN:
+                this.ctrlKeyDown = inst.isCtrlKeyDown();
+                break;
             default:
         }
     }
@@ -146,6 +151,9 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                 aaaaSigBits = buffer.readLong();
                 selectedAreaGuid = new GUID(ddddSigBits, ccccSigBits, bbbbSigBits, aaaaSigBits);
                 break;
+            case MusicOptionsUtil.SYNC_CTRL_KEY_DOWN:
+                this.ctrlKeyDown = buffer.readBoolean();
+                break;
             default:
         }
     }
@@ -187,6 +195,9 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                 buffer.writeLong(selectedAreaGuid.getBbbbSignificantBits());
                 buffer.writeLong(selectedAreaGuid.getAaaaSignificantBits());
                 break;
+            case MusicOptionsUtil.SYNC_CTRL_KEY_DOWN:
+                buffer.writeBoolean(ctrlKeyDown);
+                break;
             default:
         }
     }
@@ -223,6 +234,9 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                         break;
                     case MusicOptionsUtil.SYNC_SELECTED_AREA_GUID:
                         instance.setSelectedAreaGuid(selectedAreaGuid);
+                        break;
+                    case MusicOptionsUtil.SYNC_CTRL_KEY_DOWN:
+                        instance.setCtrlKey(ctrlKeyDown);
                         break;
                     default:
                 }

@@ -53,18 +53,18 @@ public class ClientEventHandler
     {
         if (
                 (event.getEntity() instanceof EntityPlayer) &&
-                !event.getEntity().isInvisible() &&
-                !mc.gameSettings.showDebugInfo &&
-                !mc.gameSettings.hideGUI &&
-                getClientMembers().containsKey(event.getEntity().getEntityId()) &&
-                !(mc.gameSettings.thirdPersonView == 0 && mc.player.equals(event.getEntity())))
-            {
-                placardRenderer.setPlacard(getIndex(event.getEntity().getEntityId()));
-                placardRenderer.doRender(event);
-            }
+                        !event.getEntity().isInvisible() &&
+                        !mc.gameSettings.showDebugInfo &&
+                        !mc.gameSettings.hideGUI &&
+                        getClientMembers().containsKey(event.getEntity().getEntityId()) &&
+                        !(mc.gameSettings.thirdPersonView == 0 && mc.player.equals(event.getEntity())))
+        {
+            placardRenderer.setPlacard(getIndex(event.getEntity().getEntityId()));
+            placardRenderer.doRender(event);
+        }
 
-    } 
-    
+    }
+
     @SubscribeEvent
     public static void textureRestitchEvent(TextureStitchEvent.Post e)
     {
