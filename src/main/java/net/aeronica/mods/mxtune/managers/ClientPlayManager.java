@@ -58,6 +58,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static WeakReference<Chunk> currentChunkRef;
     private static int currentPlayId = INVALID;
     private static GUID currentAreaGUID = EMPTY_GUID;
+    private static GUID previousAreaGUID = EMPTY_GUID;
     private static String lastSongLine01 = "";
     private static String lastSongLine02 = "";
 
@@ -65,17 +66,18 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static List<SongProxy> songProxies = new ArrayList<>();
     private static final Random rand = new Random();
     private static Deque<GUID> lastSongs  = new ArrayDeque<>();
-    private static final int NUM_LAST_SONGS = 100;
+    private static final int NUM_LAST_SONGS = 10;
     private static int failedNewSongs;
 
     // Inter-song delay
-    private static final int MAX_DELAY = 30;
-    private static final int MIN_DELAY = 10;
+    private static final int MAX_DELAY = 60;
+    private static final int MIN_DELAY = 20;
     private static int delay = MAX_DELAY / 2;
     private static int counter = 0;
     private static int ticks = 0;
     private static boolean wait = false;
 
+    // Miscellus
     private static boolean night;
 
     private ClientPlayManager() { /* NOP */ }
@@ -96,7 +98,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     @SubscribeEvent
     public static void onEvent(TickEvent.ClientTickEvent event)
     {
-        if (ClientCSDMonitor.canMXTunesPlay() && (event.phase == TickEvent.Phase.END) && ((ticks++ % 20 == 0) || Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)))
+        if (ClientCSDMonitor.canMXTunesPlay() && (event.phase == TickEvent.Phase.END) && ((ticks++ % 10 == 0) || Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)))
         {
             // Poll once per second
             updateChunk();
@@ -185,7 +187,7 @@ public class ClientPlayManager implements IAudioStatusCallback
 
         }
         updateTimeOfDay();
-        changeAreaMusic();
+        changeAreaMusic(false);
     }
 
     private static void chunkChange(WeakReference<Chunk> current, WeakReference<Chunk> previous)
@@ -199,13 +201,26 @@ public class ClientPlayManager implements IAudioStatusCallback
         }
         if (prevChunk != null && prevChunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
         {
-            GUID prevPlayListGUID = ModChunkDataHelper.getAreaGuid(prevChunk);
-            ModLogger.debug("----- Exit Chunk %s, guid: %s", prevChunk.getPos(), prevPlayListGUID.toString());
+            GUID prevAreaGUID = ModChunkDataHelper.getAreaGuid(prevChunk);
+            previousAreaGUID = prevAreaGUID;
+            ModLogger.debug("----- Exit Chunk %s, guid: %s", prevChunk.getPos(), prevAreaGUID.toString());
         }
+        if (!currentAreaGUID.equals(previousAreaGUID))
+            changeAreaMusic(true);
     }
 
-    private static void changeAreaMusic()
+    private static void changeAreaMusic(boolean chunkChanged)
     {
+        if (chunkChanged)
+        {
+            if (currentPlayId != PlayType.INVALID)
+            {
+                ClientAudio.queueAudioDataRemoval(currentPlayId);
+                currentPlayId = PlayType.INVALID;
+                resetTimer(0);
+            }
+        }
+
         if (!waiting() && ClientFileManager.songAvailable(currentAreaGUID) && currentPlayId == PlayType.INVALID)
         {
             currentPlayId = AREA.getAsInt();
@@ -355,7 +370,7 @@ public class ClientPlayManager implements IAudioStatusCallback
             if (currentPlayId == playId && (status == Status.ERROR || status == Status.DONE))
             {
                 invalidatePlayId();
-                changeAreaMusic();
+                changeAreaMusic(false);
                 resetTimer();
             }
         });
