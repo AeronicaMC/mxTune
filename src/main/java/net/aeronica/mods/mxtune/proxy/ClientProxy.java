@@ -141,6 +141,7 @@ public class ClientProxy extends ServerProxy
     @Override
     public void clientConnect(ClientConnectedToServerEvent event)
     {
+        CallBackManager.start();
         ClientPlayManager.reset();
     }
 

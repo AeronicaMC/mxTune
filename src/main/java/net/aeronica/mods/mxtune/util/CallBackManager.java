@@ -33,7 +33,8 @@ public class CallBackManager
 
     public static void start()
     {
-        timer = new Timer(Reference.MOD_NAME + " CallBackManager Timer");
+        if (timer == null)
+            timer = new Timer(Reference.MOD_NAME + " CallBackManager Timer");
     }
 
     public static void shutdown()

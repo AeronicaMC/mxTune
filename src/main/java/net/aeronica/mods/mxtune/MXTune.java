@@ -78,8 +78,6 @@ public class MXTune
         ModChunkCapability.register();
         PlayerMusicOptionsCapability.register();
         PacketDispatcher.registerPackets();
-        CallBackManager.start();
-        MultiPacketSerializedObjectManager.start();
         proxy.preInit();
         proxy.registerEventHandlers();
         proxy.initEntities();
@@ -124,6 +122,8 @@ public class MXTune
     {
         event.registerServerCommand(new CommandSoundRange());
         event.registerServerCommand(new CommandMxTuneServerUpdate());
+        CallBackManager.start();
+        MultiPacketSerializedObjectManager.start();
         DurationTimer.start();
         FileHelper.initialize();
         ServerFileManager.start();

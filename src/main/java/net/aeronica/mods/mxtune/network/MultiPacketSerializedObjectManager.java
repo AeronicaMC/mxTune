@@ -35,7 +35,8 @@ public class MultiPacketSerializedObjectManager
 
     public static void start()
     {
-        timer = new Timer(Reference.MOD_NAME + " MultiPacketSerializedObjectManager Timer");
+        if (timer == null)
+            timer = new Timer(Reference.MOD_NAME + " MultiPacketSerializedObjectManager Timer");
     }
 
     public static void shutdown()
