@@ -59,7 +59,6 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static GUID currentAreaGUID = EMPTY_GUID;
     private static String lastSongLine01 = "";
     private static String lastSongLine02 = "";
-    private static String lastSongLine03 = "";
 
     // AREA Song Shuffling
     private static List<SongProxy> songProxies = new ArrayList<>();
@@ -274,12 +273,11 @@ public class ClientPlayManager implements IAudioStatusCallback
 
             trackLastSongs(songProxy.getGUID());
 
-            lastSongLine01 = I18n.format("mxtune.info.last_song_line_01", area.getName(), area.getPlayListDay().size(), area.getPlayListNight().size());
-            lastSongLine02 = I18n.format("mxtune.info.last_song_line_02", night ? I18n.format("mxtune.info.night") : I18n.format("mxtune.info.day"), SheetMusicUtil.formatDuration(songProxy.getDuration()));
-            lastSongLine03 = I18n.format("mxtune.info.last_song_line_03", songProxy.getTitle());
+            lastSongLine01 = I18n.format("mxtune.info.last_song_line_01", area.getName(), night ? I18n.format("mxtune.info.night") : I18n.format("mxtune.info.day"), SheetMusicUtil.formatDuration(songProxy.getDuration()));
+            lastSongLine02 = I18n.format("mxtune.info.last_song_line_02", songProxy.getTitle());
             ModLogger.debug(lastSongLine01);
             ModLogger.debug(lastSongLine02);
-            ModLogger.debug(lastSongLine03);
+
         return songProxy.getGUID();
         }
         clearLastSongInfo();
@@ -290,8 +288,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     {
         String i18nNull = I18n.format("mxtune.info.null");
         lastSongLine01 = I18n.format("mxtune.info.last_song_line_01", i18nNull, i18nNull, i18nNull);
-        lastSongLine02 = I18n.format("mxtune.info.last_song_line_02", i18nNull, i18nNull,i18nNull);
-        lastSongLine03 = I18n.format("mxtune.info.last_song_line_03", i18nNull);
+        lastSongLine02 = I18n.format("mxtune.info.last_song_line_02", I18n.format("mxtune.error.undefined_area"));
     }
 
     public static String getLastSongLine01()
@@ -302,11 +299,6 @@ public class ClientPlayManager implements IAudioStatusCallback
     public static String getLastSongLine02()
     {
         return lastSongLine02;
-    }
-
-    public static String getLastSongLine03()
-    {
-        return lastSongLine03;
     }
 
     private static boolean waiting()

@@ -114,8 +114,8 @@ public class GuiStaffOverlay extends Gui
 
     private void drawAreaInfo(HudData hd, int maxWidth, int maxHeight)
     {
-        int y = 0;
         int fontHeight = fontRenderer.FONT_HEIGHT + 2;
+        int y = fontHeight;
         BlockPos pos = mc.player.getPosition();
         Chunk chunk = mc.world.getChunk(pos);
         GUID chunkAreaGuid = ClientPlayManager.getCurrentAreaGUID();
@@ -137,14 +137,10 @@ public class GuiStaffOverlay extends Gui
 
         y += fontHeight;
         formattedText = ClientPlayManager.getLastSongLine02();
-        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0xFFCC00);
-
-        y += fontHeight;
-        formattedText = ClientPlayManager.getLastSongLine03();
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0xFFFF00);
 
         y += fontHeight;
-        areaName = selectedArea != null ? selectedArea.getName() : I18n.format("mxtune.info.null");
+        areaName = selectedArea != null ? selectedArea.getName() : I18n.format("mxtune.error.undefined_area");
         formattedText = I18n.format("mxtune.gui.guiStaffOverlay.selected_area_to_apply",areaName);
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0x00EE00);
     }
