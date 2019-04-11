@@ -17,6 +17,7 @@
 
 package net.aeronica.libs.mml.readers;
 
+import javax.annotation.Nullable;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
@@ -59,16 +60,23 @@ public abstract class AbstractMmlFileReader
         collectedErrors.add(message);
     }
 
-    protected FileInputStream getFile(Path path)
+    @Nullable
+    protected FileInputStream getFile(@Nullable Path path)
     {
         FileInputStream is = null;
-        try
+        if (path != null)
         {
-            is = new FileInputStream(path.toFile());
-        } catch (FileNotFoundException e)
-        {
-            collectedErrors.add(e.getLocalizedMessage());
+            try
+            {
+                is = new FileInputStream(path.toFile());
+            } catch (FileNotFoundException e)
+            {
+                collectedErrors.add(e.getLocalizedMessage());
+            }
+            return is;
         }
-        return is;
+        else
+            collectedErrors.add("Path is null in AbstractMmlFileReader#getFile");
+        return null;
     }
 }

@@ -20,6 +20,7 @@ package net.aeronica.libs.mml.readers.ms2mml;
 import net.aeronica.libs.mml.core.MMLAllowedCharacters;
 import net.aeronica.libs.mml.readers.AbstractMmlFileReader;
 
+import javax.annotation.Nonnull;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -38,7 +39,7 @@ public class Ms2MmlReader extends AbstractMmlFileReader
     }
 
     @Override
-    public boolean parseFile(Path path)
+    public boolean parseFile(@Nonnull Path path)
     {
         readMs2Mml(getFile(path));
         return hasErrors();

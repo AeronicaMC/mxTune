@@ -341,8 +341,9 @@ public class GuiMusicImporter extends GuiScreen
         {
             case FILE:
                 Ms2MmlReader ms2MmlReader = new Ms2MmlReader();
-                ms2MmlReader.parseFile(ActionGet.INSTANCE.getPath());
-                if (!ms2MmlReader.hasErrors())
+                if (ActionGet.INSTANCE.getPath() != null)
+                    ms2MmlReader.parseFile(ActionGet.INSTANCE.getPath());
+                if (!ms2MmlReader.hasErrors() && !ms2MmlReader.getMML().equalsIgnoreCase(""))
                 {
                     ModLogger.debug("File: %s", ActionGet.INSTANCE.getFileNameString());
                     temp = ActionGet.INSTANCE.getFileNameString();
