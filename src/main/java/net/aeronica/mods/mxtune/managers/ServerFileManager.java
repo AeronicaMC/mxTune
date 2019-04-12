@@ -39,6 +39,7 @@ import static net.aeronica.mods.mxtune.caches.FileHelper.SERVER_FOLDER;
 
 public class ServerFileManager
 {
+    private static final String FORMAT_UNABLE_TO_CREATE = "Unable to create folder: %s and/or file: %s";
     private static final String SERVER_ID_FILE = "server_id" + FileHelper.EXTENSION_DAT;
     private static final String SERVER_ID_FILE_ERROR = "Delete the <world save>/mxtune/server_id" + FileHelper.EXTENSION_DAT + " file, then try loading the world again.";
     private static UUID serverID;
@@ -204,7 +205,7 @@ public class ServerFileManager
                 catch(IOException e)
                 {
                     ModLogger.error(e);
-                    ModLogger.warn("Unable to create folder: %s and/or file: %s", FileHelper.SERVER_AREAS_FOLDER, areaFileName);
+                    ModLogger.warn(FORMAT_UNABLE_TO_CREATE, FileHelper.SERVER_AREAS_FOLDER, areaFileName);
                     errorResult = new ResultMessage(true, new TextComponentTranslation("mxtune.error.unable_to_create_file_folder",FileHelper.SERVER_AREAS_FOLDER, areaFileName));
                 }
                 if (!errorResult.hasError())
@@ -245,7 +246,7 @@ public class ServerFileManager
                 catch(IOException e)
                 {
                     ModLogger.warn(e);
-                    ModLogger.warn("Unable to create folder: %s and/or file: %s", FileHelper.SERVER_MUSIC_FOLDER, songFileName);
+                    ModLogger.warn(FORMAT_UNABLE_TO_CREATE, FileHelper.SERVER_MUSIC_FOLDER, songFileName);
                     errorResult = new ResultMessage(true, new TextComponentTranslation("mxtune.error.unable_to_create_file_folder",FileHelper.SERVER_MUSIC_FOLDER, songFileName));
                 }
                 if (!errorResult.hasError())
@@ -289,7 +290,7 @@ public class ServerFileManager
             catch (IOException e)
             {
                 ModLogger.warn(e);
-                ModLogger.warn("Unable to create folder: %s and/or file: %s", FileHelper.SERVER_MUSIC_FOLDER, song.getFileName());
+                ModLogger.warn(FORMAT_UNABLE_TO_CREATE, FileHelper.SERVER_MUSIC_FOLDER, song.getFileName());
             }
         }
 
@@ -308,7 +309,7 @@ public class ServerFileManager
         catch(IOException e)
         {
             ModLogger.warn(e);
-            ModLogger.warn("Unable to create folder: %s and/or file: %s", FileHelper.SERVER_AREAS_FOLDER, areaFileName);
+            ModLogger.warn(FORMAT_UNABLE_TO_CREATE, FileHelper.SERVER_AREAS_FOLDER, areaFileName);
         }
     }
 
