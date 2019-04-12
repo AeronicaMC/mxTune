@@ -211,16 +211,15 @@ public class ClientPlayManager implements IAudioStatusCallback
 
     private static void changeAreaMusic(boolean chunkChanged)
     {
-        if (chunkChanged)
+        // Hard music change on entering a chunk with a different playlist (Area record)
+        if (chunkChanged && currentPlayId != PlayType.INVALID)
         {
-            if (currentPlayId != PlayType.INVALID)
-            {
-                ClientAudio.queueAudioDataRemoval(currentPlayId);
-                currentPlayId = PlayType.INVALID;
-                resetTimer(0);
-            }
+            ClientAudio.queueAudioDataRemoval(currentPlayId);
+            currentPlayId = PlayType.INVALID;
+            resetTimer(0);
         }
 
+        // Normal Delayed Song Change
         if (!waiting() && ClientFileManager.songAvailable(currentAreaGUID) && currentPlayId == PlayType.INVALID)
         {
             currentPlayId = AREA.getAsInt();
