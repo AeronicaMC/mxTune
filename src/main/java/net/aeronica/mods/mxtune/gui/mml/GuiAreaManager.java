@@ -24,6 +24,7 @@ import net.aeronica.mods.mxtune.caches.MXTuneFile;
 import net.aeronica.mods.mxtune.caches.MXTuneFileHelper;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingMultiListOf;
+import net.aeronica.mods.mxtune.managers.ClientFileManager;
 import net.aeronica.mods.mxtune.managers.records.Area;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
@@ -31,7 +32,6 @@ import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.GetAreasMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.SetServerSerializedDataMessage;
 import net.aeronica.mods.mxtune.network.server.PlayerSelectedAreaMessage;
-import net.aeronica.mods.mxtune.util.CallBack;
 import net.aeronica.mods.mxtune.util.CallBackManager;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -42,7 +42,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -60,7 +59,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class GuiAreaManager extends GuiScreen implements CallBack
+public class GuiAreaManager extends GuiScreen
 {
     private static final String TITLE = I18n.format("mxtune.gui.guiAreaManager.title");
     // Song Multi Selector
@@ -573,37 +572,42 @@ public class GuiAreaManager extends GuiScreen implements CallBack
 
     private void initAreas()
     {
-        new Thread ( () ->
-                     {
-                         try
-                         {
-                             Thread.sleep(500);
-                         } catch (InterruptedException e)
-                         {
-                             Thread.currentThread().interrupt();
-                         }
-                         PacketDispatcher.sendToServer(new GetAreasMessage(CallBackManager.register(this)));
-                     }).start();
+        PacketDispatcher.sendToServer(new GetAreasMessage(CallBackManager.register(ClientFileManager.INSTANCE)));
+        new Thread(() ->
+                   {
+                       try
+                       {
+                           Thread.sleep(1000);
+                       } catch (InterruptedException e)
+                       {
+                           Thread.currentThread().interrupt();
+                       }
+                       guiAreaList.clear();
+                       // add an EMPTY_GUID Area
+                       guiAreaList.add(new Area());
+                       guiAreaList.addAll(ClientFileManager.getAreas());
+                       updateState();
+                   }).start();
     }
 
-    @Override
-    public void onFailure(@Nonnull ITextComponent textComponent)
-    {
-        status.setText(textComponent.getFormattedText());
-        ModLogger.warn("InitAreas onFailure: %s", textComponent.getFormattedText());
-    }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public void onResponse(@Nullable Object payload)
-    {
-        guiAreaList.clear();
-        // add an EMPTY_GUID Area
-        guiAreaList.add(new Area());
-        if (payload != null)
-            guiAreaList.addAll((List<Area>) payload);
-        updateState();
-    }
+//    public void onFailure(@Nonnull ITextComponent textComponent)
+//    {
+//        status.setText(textComponent.getFormattedText());
+//        ModLogger.warn("InitAreas onFailure: %s", textComponent.getFormattedText());
+//    }
+//
+//
+//    @SuppressWarnings("unchecked")
+//    public void onResponse(@Nullable Object payload)
+//    {
+//        guiAreaList.clear();
+//        // add an EMPTY_GUID Area
+//        guiAreaList.add(new Area());
+//        if (payload != null)
+//            guiAreaList.addAll((List<Area>) payload);
+//        updateState();
+//    }
 
     private void  updatePlayersSelectedAreaGuid(Area selectedArea)
     {

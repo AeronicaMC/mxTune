@@ -146,7 +146,7 @@ public enum  ClientFileManager implements CallBack
         }
     }
 
-    private static List<Area> getAreas()
+    public static List<Area> getAreas()
     {
         List<Area> areas = new ArrayList<>();
         synchronized (mapAreas)

@@ -53,8 +53,8 @@ public class ServerFileManager
         // stuffServer goes here when needed - test data
         new Thread(() ->
                    {
-                       initSongs();
                        initAreas();
+                       initSongs();
                        dumpAll();
                    }
         ).start();
