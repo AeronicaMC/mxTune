@@ -9,6 +9,9 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.SoundEvent;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /*
  * Miscellus
  * Latin: mixed
@@ -64,8 +67,8 @@ public class Miscellus
      * @param length   How many bytes to append from the second array.
      * @return Byte array containing information from both arrays.
      */
-    @SuppressWarnings("all")
-    public static byte[] appendByteArrays(byte[] arrayOne, byte[] arrayTwo, int length)
+    @Nonnull
+    public static byte[] appendByteArrays(@Nullable byte[] arrayOne, @Nullable byte[] arrayTwo, int length)
     {
         byte[] newArray;
         if (arrayOne == null && arrayTwo == null)

@@ -110,7 +110,6 @@ public class ModChunkCapability
         }
     }
 
-    // TODO: Refactor to use NBTHelper methods and use an area tag
     private static class Storage implements Capability.IStorage<IModChunkData>
     {
         @Nullable
