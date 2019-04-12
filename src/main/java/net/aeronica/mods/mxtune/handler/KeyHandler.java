@@ -33,7 +33,6 @@ public class KeyHandler
     
     private KeyBinding keyOpenPartyGUI = new KeyBinding("mxtune.key.openParty", Keyboard.KEY_J, Reference.MOD_ID);
     private KeyBinding keyOpenMusicOptionsGUI = new KeyBinding("mxtune.key.openMusicOptions", Keyboard.KEY_P, Reference.MOD_ID);
-    private Minecraft mc = Minecraft.getMinecraft();
     private boolean ctrlKeyDown = false;
 
     private KeyHandler()
