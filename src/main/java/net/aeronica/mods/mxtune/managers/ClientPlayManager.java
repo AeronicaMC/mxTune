@@ -237,7 +237,7 @@ public class ClientPlayManager implements IAudioStatusCallback
             else if (!ClientFileManager.isNotBadSong(guidSong))
             {
                 resetTimer(0);
-                //invalidatePlayId();
+                invalidatePlayId();
             }
             else if (Reference.EMPTY_GUID.equals(guidSong))
             {
