@@ -53,10 +53,6 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     private List<ClassifiedPlayer> whiteList;
     private boolean allowMusicOp;
     private GUID selectedAreaGuid;
-    private long ddddSigBits;
-    private long ccccSigBits;
-    private long bbbbSigBits;
-    private long aaaaSigBits;
     private boolean ctrlKeyDown;
 
     private byte[] byteBuffer = null;
@@ -145,10 +141,10 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                 this.allowMusicOp = buffer.readBoolean();
                 break;
             case MusicOptionsUtil.SYNC_SELECTED_AREA_GUID:
-                ddddSigBits = buffer.readLong();
-                ccccSigBits = buffer.readLong();
-                bbbbSigBits = buffer.readLong();
-                aaaaSigBits = buffer.readLong();
+                long ddddSigBits = buffer.readLong();
+                long ccccSigBits = buffer.readLong();
+                long bbbbSigBits = buffer.readLong();
+                long aaaaSigBits = buffer.readLong();
                 selectedAreaGuid = new GUID(ddddSigBits, ccccSigBits, bbbbSigBits, aaaaSigBits);
                 break;
             case MusicOptionsUtil.SYNC_CTRL_KEY_DOWN:
