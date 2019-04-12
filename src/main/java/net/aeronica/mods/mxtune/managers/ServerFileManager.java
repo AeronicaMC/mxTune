@@ -168,7 +168,7 @@ public class ServerFileManager
         }
     }
 
-    public synchronized static List<Area> getAreas()
+    public static synchronized List<Area> getAreas()
     {
         List<Area> areaList = new ArrayList<>();
         areas.forEach((key, value) -> areaList.add(value));
@@ -180,7 +180,7 @@ public class ServerFileManager
      * @param guidArea GUID of the desired Area record
      * @return the Area record, or if it does not exist an Empty Area
      */
-    public synchronized static Area getArea(GUID guidArea)
+    public static synchronized Area getArea(GUID guidArea)
     {
         return areas.containsKey(guidArea) ? areas.get(guidArea) : new Area();
     }
