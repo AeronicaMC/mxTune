@@ -23,7 +23,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.io.IOException;
 import java.util.UUID;
 
 import static net.aeronica.mods.mxtune.network.MultiPacketSerializedObjectManager.SerializedObjectPacket;
@@ -31,8 +30,6 @@ import static net.aeronica.mods.mxtune.network.MultiPacketSerializedObjectManage
 public class ByteArrayPartMessage extends AbstractMessage.AbstractServerMessage<ByteArrayPartMessage>
 {
     private UUID serialObjectId;
-    private long msb;
-    private long lsb;
 
     // part
     private int packetId;
@@ -48,10 +45,10 @@ public class ByteArrayPartMessage extends AbstractMessage.AbstractServerMessage<
     }
 
     @Override
-    protected void read(PacketBuffer buffer) throws IOException
+    protected void read(PacketBuffer buffer)
     {
-        msb = buffer.readLong();
-        lsb = buffer.readLong();
+        long msb = buffer.readLong();
+        long lsb = buffer.readLong();
         serialObjectId = new UUID(msb, lsb);
         // Packet Id and data
         packetId = buffer.readInt();
@@ -59,7 +56,7 @@ public class ByteArrayPartMessage extends AbstractMessage.AbstractServerMessage<
     }
 
     @Override
-    protected void write(PacketBuffer buffer) throws IOException
+    protected void write(PacketBuffer buffer)
     {
         buffer.writeLong(serialObjectId.getMostSignificantBits());
         buffer.writeLong(serialObjectId.getLeastSignificantBits());
