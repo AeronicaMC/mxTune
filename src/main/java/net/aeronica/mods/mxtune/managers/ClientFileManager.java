@@ -70,8 +70,6 @@ public enum  ClientFileManager implements CallBack
 
     private static UUID cachedPlayerUUID;
 
-    private ClientFileManager() { /* NOP*/ }
-
     /**
      * Sets the cached server ID for the server the client logged onto. This is an mxTune feature for internal use.
      * Called when the client logs on to the server as part of the ClientStateData query.
@@ -83,8 +81,9 @@ public enum  ClientFileManager implements CallBack
         cachedServerID = new UUID(msb, lsb);
         ModLogger.debug("Cached Server ID received: %s", cachedServerID.toString());
         createClientSideCacheDirectories();
-        //loadCache(pathAreas, mapAreas, Area.class);
-        //loadCache(pathMusic, mapSongProxies, SongProxy.class);
+        // No need to retrieve from cache since we pull down each session and clear the cache on close.
+        // load Cache (pathAreas, mapAreas, Area.class) ;
+        // load Cache (pathMusic, mapSongProxies, SongProxy.class );
         badAreas.clear();
         badSongs.clear();
         ModLogger.debug("Cache loaded");
@@ -124,6 +123,7 @@ public enum  ClientFileManager implements CallBack
         return cachedServerID;
     }
 
+    // Call backs from the Client State Monitor on serer connect. Pulls the playlists.
 
     @Override
     public void onFailure(@Nonnull ITextComponent textComponent)
@@ -145,6 +145,8 @@ public enum  ClientFileManager implements CallBack
             }
         }
     }
+
+    // Playlist
 
     public static List<Area> getAreas()
     {
@@ -183,6 +185,8 @@ public enum  ClientFileManager implements CallBack
         waitArea = false;
         FileHelper.sendCompoundToFile(path, data);
     }
+
+    // Songs
 
     public static void addSong(GUID uuid, NBTTagCompound data, boolean error)
     {
@@ -229,6 +233,8 @@ public enum  ClientFileManager implements CallBack
             return null;
     }
 
+    // Bad Playlist and Bad Song - not found data.
+
     private static void addBadArea(GUID guid)
     {
         badAreas.add(guid);
@@ -249,6 +255,9 @@ public enum  ClientFileManager implements CallBack
         return !badSongs.contains(guid);
     }
 
+    // Cache management
+
+    @SuppressWarnings("unused")
     private static <T extends BaseData> void loadCache(Path loc, Map<GUID, T> map, Class<T> type)
     {
         List<Path> files = new ArrayList<>();

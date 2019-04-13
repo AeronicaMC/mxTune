@@ -583,8 +583,6 @@ public class GuiAreaManager extends GuiScreen
                            Thread.currentThread().interrupt();
                        }
                        guiAreaList.clear();
-                       // add an EMPTY_GUID Area
-                       //guiAreaList.add(new Area());
                        guiAreaList.addAll(ClientFileManager.getAreas());
                        updateState();
                    }).start();

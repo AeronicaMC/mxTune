@@ -201,13 +201,11 @@ public class ClientPlayManager implements IAudioStatusCallback
         if (currentChunk != null && currentChunk.hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null))
         {
             currentPlaylistGUID = ModChunkPlaylistHelper.getPlaylistGuid(currentChunk);
-            ModLogger.debug("----- Enter Chunk %s, guid: %s", currentChunk.getPos(), currentPlaylistGUID.toString());
         }
         if (prevChunk != null && prevChunk.hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null))
         {
             GUID prevAreaGUID = ModChunkPlaylistHelper.getPlaylistGuid(prevChunk);
             previousPlaylistGUID = prevAreaGUID;
-            ModLogger.debug("----- Exit Chunk %s, guid: %s", prevChunk.getPos(), prevAreaGUID.toString());
         }
         if (!currentPlaylistGUID.equals(previousPlaylistGUID))
             changeAreaMusic(true);

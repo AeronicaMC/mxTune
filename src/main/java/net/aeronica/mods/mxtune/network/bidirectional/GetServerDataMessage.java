@@ -146,7 +146,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
     private void handleClientSide()
     {
         if (errorResult)
-            ModLogger.error(type + " file: " + dataTypeUuid.toString() + FileHelper.EXTENSION_DAT + " does not exist on the server");
+            ModLogger.warn(type + " file: " + dataTypeUuid.toString() + FileHelper.EXTENSION_DAT + " does not exist on the server");
         switch(type)
         {
             case AREA:
@@ -188,7 +188,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
         if (!fileExists)
         {
             path = Paths.get(folder, dataTypeGuid.toString() + FileHelper.EXTENSION_DAT);
-            ModLogger.error(path.toString() + " not found!");
+            ModLogger.warn(path.toString() + " not found!");
             fileError = true;
             return emptyData;
         }
