@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-package net.aeronica.mods.mxtune.world.chunk;
+package net.aeronica.mods.mxtune.world.caps.chunk;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
@@ -30,18 +30,18 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 
-public class ModChunkDataHelper
+public class ModChunkPlaylistHelper
 {
-    @CapabilityInject(IModChunkData.class)
-    public static final Capability<IModChunkData> MOD_CHUNK_DATA = Miscellus.nonNullInjected();
+    @CapabilityInject(IModChunkPlaylist.class)
+    public static final Capability<IModChunkPlaylist> MOD_CHUNK_DATA = Miscellus.nonNullInjected();
 
-    private ModChunkDataHelper() { /* NOP */ }
+    private ModChunkPlaylistHelper() { /* NOP */ }
 
-    public static void setAreaGuid(Chunk chunk, GUID guid)
+    public static void setPlaylistGuid(Chunk chunk, GUID guid)
     {
         try
         {
-            getImpl(chunk).setAreaGuid(guid);
+            getImpl(chunk).setPlaylistGuid(guid);
         }
         catch (MXTuneException e)
         {
@@ -50,11 +50,11 @@ public class ModChunkDataHelper
         chunk.markDirty();
     }
 
-    public static GUID getAreaGuid(Chunk chunk)
+    public static GUID getPlaylistGuid(Chunk chunk)
     {
         try
         {
-            return getImpl(chunk).getAreaGuid();
+            return getImpl(chunk).getPlaylistGuid();
         }
         catch (MXTuneException e)
         {
@@ -63,9 +63,9 @@ public class ModChunkDataHelper
         return Reference.EMPTY_GUID;
     }
 
-    private static IModChunkData getImpl(Chunk chunk) throws MXTuneException
+    private static IModChunkPlaylist getImpl(Chunk chunk) throws MXTuneException
     {
-        IModChunkData chunkData;
+        IModChunkPlaylist chunkData;
         if (chunk.hasCapability(MOD_CHUNK_DATA, null))
             chunkData =  chunk.getCapability(MOD_CHUNK_DATA, null);
         else
@@ -75,7 +75,7 @@ public class ModChunkDataHelper
 
     public static void sync(EntityPlayer entityPlayer, Chunk chunk)
     {
-        PacketDispatcher.sendToAllAround(new UpdateChunkMusicData(chunk.x, chunk.z, getAreaGuid(chunk)), entityPlayer, 80);
-        PacketDispatcher.sendTo(new UpdateChunkMusicData(chunk.x, chunk.z, getAreaGuid(chunk)), (EntityPlayerMP) entityPlayer);
+        PacketDispatcher.sendToAllAround(new UpdateChunkMusicData(chunk.x, chunk.z, getPlaylistGuid(chunk)), entityPlayer, 80);
+        PacketDispatcher.sendTo(new UpdateChunkMusicData(chunk.x, chunk.z, getPlaylistGuid(chunk)), (EntityPlayerMP) entityPlayer);
     }
 }

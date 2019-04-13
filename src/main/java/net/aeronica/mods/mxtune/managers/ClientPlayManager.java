@@ -30,9 +30,11 @@ import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
-import net.aeronica.mods.mxtune.world.chunk.ModChunkDataHelper;
+import net.aeronica.mods.mxtune.world.caps.chunk.ModChunkPlaylistHelper;
+import net.aeronica.mods.mxtune.world.caps.world.ModWorldPlaylistHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -57,8 +59,8 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static Minecraft mc = Minecraft.getMinecraft();
     private static WeakReference<Chunk> currentChunkRef;
     private static int currentPlayId = INVALID;
-    private static GUID currentAreaGUID = EMPTY_GUID;
-    private static GUID previousAreaGUID = EMPTY_GUID;
+    private static GUID currentPlaylistGUID = EMPTY_GUID;
+    private static GUID previousPlaylistGUID = EMPTY_GUID;
     private static String lastSongLine01 = "";
     private static String lastSongLine02 = "";
 
@@ -90,9 +92,9 @@ public class ClientPlayManager implements IAudioStatusCallback
         clearLastSongInfo();
     }
 
-    public static GUID getCurrentAreaGUID()
+    public static GUID getCurrentPlaylistGUID()
     {
-        return currentAreaGUID;
+        return currentPlaylistGUID;
     }
 
     @SubscribeEvent
@@ -102,6 +104,8 @@ public class ClientPlayManager implements IAudioStatusCallback
         {
             // Poll once per second
             updateChunk();
+            updateBiome();
+            updateWorld();
             counter++;
         }
     }
@@ -176,13 +180,13 @@ public class ClientPlayManager implements IAudioStatusCallback
         if (mc.world == null || mc.player == null) return;
 
         Chunk chunk = mc.world.getChunk(mc.player.getPosition());
-        if (mc.world.isChunkGeneratedAt(chunk.x, chunk.z) && chunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
+        if (mc.world.isChunkGeneratedAt(chunk.x, chunk.z) && chunk.hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null))
         {
             WeakReference<Chunk> prevChunkRef = currentChunkRef;
             currentChunkRef = new WeakReference<>(chunk);
             if ((prevChunkRef != null && currentChunkRef.get() != prevChunkRef.get())
                     || (prevChunkRef == null && currentChunkRef.get() != null)
-                    || !(ModChunkDataHelper.getAreaGuid(currentChunkRef.get())).equals(currentAreaGUID))
+                    || !(ModChunkPlaylistHelper.getPlaylistGuid(currentChunkRef.get())).equals(currentPlaylistGUID))
                 chunkChange(currentChunkRef, prevChunkRef);
 
         }
@@ -194,18 +198,18 @@ public class ClientPlayManager implements IAudioStatusCallback
     {
         Chunk currentChunk = getChunk(current);
         Chunk prevChunk = getChunk(previous);
-        if (currentChunk != null && currentChunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
+        if (currentChunk != null && currentChunk.hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null))
         {
-            currentAreaGUID = ModChunkDataHelper.getAreaGuid(currentChunk);
-            ModLogger.debug("----- Enter Chunk %s, guid: %s", currentChunk.getPos(), currentAreaGUID.toString());
+            currentPlaylistGUID = ModChunkPlaylistHelper.getPlaylistGuid(currentChunk);
+            ModLogger.debug("----- Enter Chunk %s, guid: %s", currentChunk.getPos(), currentPlaylistGUID.toString());
         }
-        if (prevChunk != null && prevChunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
+        if (prevChunk != null && prevChunk.hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null))
         {
-            GUID prevAreaGUID = ModChunkDataHelper.getAreaGuid(prevChunk);
-            previousAreaGUID = prevAreaGUID;
+            GUID prevAreaGUID = ModChunkPlaylistHelper.getPlaylistGuid(prevChunk);
+            previousPlaylistGUID = prevAreaGUID;
             ModLogger.debug("----- Exit Chunk %s, guid: %s", prevChunk.getPos(), prevAreaGUID.toString());
         }
-        if (!currentAreaGUID.equals(previousAreaGUID))
+        if (!currentPlaylistGUID.equals(previousPlaylistGUID))
             changeAreaMusic(true);
     }
 
@@ -220,10 +224,10 @@ public class ClientPlayManager implements IAudioStatusCallback
         }
 
         // Normal Delayed Song Change
-        if (!waiting() && ClientFileManager.songAvailable(currentAreaGUID) && currentPlayId == PlayType.INVALID)
+        if (!waiting() && ClientFileManager.songAvailable(currentPlaylistGUID) && currentPlayId == PlayType.INVALID)
         {
             currentPlayId = AREA.getAsInt();
-            GUID guidSong = randomSong(currentAreaGUID);
+            GUID guidSong = randomSong(currentPlaylistGUID);
             if (!Reference.EMPTY_GUID.equals(guidSong) && !ClientFileManager.hasSongProxy(guidSong))
             {
                 PacketDispatcher.sendToServer(new GetServerDataMessage(guidSong, GetServerDataMessage.GetType.MUSIC, currentPlayId));
@@ -245,6 +249,27 @@ public class ClientPlayManager implements IAudioStatusCallback
                 ModLogger.warn("ClientPlayManger: What has Aeronica / Rymor done this time?!, SongProxy guid: %s, playId %d", guidSong.toString(), currentPlayId);
                 resetTimer(0);
                 invalidatePlayId();
+            }
+        }
+    }
+
+    private static void updateBiome()
+    {
+       // NOP
+    }
+
+    private static void updateWorld()
+    {
+        if (mc.world == null || mc.player == null) return;
+
+        if (Reference.EMPTY_GUID.equals(currentPlaylistGUID) && currentPlayId == PlayType.INVALID)
+        {
+            World world = mc.world;
+            if (world.hasCapability(ModWorldPlaylistHelper.MOD_WORLD_DATA, null))
+            {
+                currentPlaylistGUID = ModWorldPlaylistHelper.getPlaylistGuid(world);
+                changeAreaMusic(true);
+                ModLogger.debug("World Playlist: %s", currentPlaylistGUID.toString());
             }
         }
     }
@@ -318,7 +343,7 @@ public class ClientPlayManager implements IAudioStatusCallback
 
     private static boolean waiting()
     {
-        Boolean canPlay = ClientAudio.getActivePlayIDs().isEmpty() && !Reference.EMPTY_GUID.equals(currentAreaGUID);
+        Boolean canPlay = ClientAudio.getActivePlayIDs().isEmpty() && !Reference.EMPTY_GUID.equals(currentPlaylistGUID);
         if (canPlay && !wait) startTimer();
         return !canPlay || (counter <= delay);
     }

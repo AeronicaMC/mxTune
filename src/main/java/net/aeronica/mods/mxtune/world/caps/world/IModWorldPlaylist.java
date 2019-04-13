@@ -15,29 +15,12 @@
  *   limitations under the License.
  */
 
-package net.aeronica.mods.mxtune.world.chunk;
+package net.aeronica.mods.mxtune.world.caps.world;
 
-import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.util.GUID;
 
-public class ModChunkDataImpl implements IModChunkData
+public interface IModWorldPlaylist
 {
-    private GUID guid;
-
-    ModChunkDataImpl()
-    {
-        guid = Reference.EMPTY_GUID;
-    }
-
-    @Override
-    public GUID getAreaGuid()
-    {
-        return guid;
-    }
-
-    @Override
-    public void setAreaGuid(GUID guid)
-    {
-        this.guid = guid;
-    }
+    GUID getPlaylistGuid();
+    void setPlaylistGuid(GUID guid);
 }

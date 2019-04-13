@@ -120,7 +120,7 @@ public class GuiStaffOverlay extends Gui
         String normalBoldUnderline = isCtrlDown ? TextFormatting.BOLD + TextFormatting.UNDERLINE.toString() : TextFormatting.RESET.toString();
         BlockPos pos = mc.player.getPosition();
         Chunk chunk = mc.world.getChunk(pos);
-        GUID chunkAreaGuid = ClientPlayManager.getCurrentAreaGUID();
+        GUID chunkAreaGuid = ClientPlayManager.getCurrentPlaylistGUID();
         Area area = ClientFileManager.getArea(chunkAreaGuid);
         Area selectedArea = ClientFileManager.getArea(MusicOptionsUtil.getSelectedAreaGuid(mc.player));
 

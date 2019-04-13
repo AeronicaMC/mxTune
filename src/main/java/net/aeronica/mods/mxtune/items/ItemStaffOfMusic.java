@@ -24,7 +24,7 @@ import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.aeronica.mods.mxtune.world.chunk.ModChunkDataHelper;
+import net.aeronica.mods.mxtune.world.caps.chunk.ModChunkPlaylistHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
@@ -66,17 +66,17 @@ public class ItemStaffOfMusic extends Item
             BlockPos pos = playerIn.getPosition();
             Chunk chunk = worldIn.getChunk(pos);
             GUID guidArea = MusicOptionsUtil.getSelectedAreaGuid(playerIn);
-            if (chunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null) && MusicOptionsUtil.isMxTuneServerUpdateAllowed(playerIn))
+            if (chunk.hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null) && MusicOptionsUtil.isMxTuneServerUpdateAllowed(playerIn))
             {
-                ModChunkDataHelper.setAreaGuid(chunk, guidArea);
-                ModChunkDataHelper.sync(playerIn, chunk);
+                ModChunkPlaylistHelper.setPlaylistGuid(chunk, guidArea);
+                ModChunkPlaylistHelper.sync(playerIn, chunk);
 
                 ModLogger.debug("Area name:", ServerFileManager.getArea(guidArea));
                 ModLogger.debug("Area UUID: %s", guidArea);
                 Miscellus.audiblePingPlayer(playerIn, SoundEvents.BLOCK_NOTE_PLING);
                 playerIn.sendStatusMessage(new TextComponentTranslation("mxtune.gui.guiStaffOverlay.area_update_successful"), true);
             }
-            else if (chunk.hasCapability(ModChunkDataHelper.MOD_CHUNK_DATA, null))
+            else if (chunk.hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null))
             {
                 Miscellus.audiblePingPlayer(playerIn, SoundEvents.BLOCK_GLASS_BREAK);
                 playerIn.sendStatusMessage(new TextComponentTranslation("commands.mxtune.mxtune_server_update_not_allowed"), true);

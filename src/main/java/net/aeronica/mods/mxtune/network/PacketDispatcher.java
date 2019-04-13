@@ -70,6 +70,7 @@ public class PacketDispatcher
         registerMessage(PlayBlockMusicMessage.class);
         registerMessage(AudiblePingPlayerMessage.class);
         registerMessage(UpdateChunkMusicData.class);
+        registerMessage(UpdateWorldMusicData.class);
         registerMessage(StopPlayIDMessage.class);
 
         // Packets handled on SERVER

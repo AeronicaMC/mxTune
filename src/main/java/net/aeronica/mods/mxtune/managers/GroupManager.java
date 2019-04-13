@@ -23,6 +23,7 @@ import net.aeronica.mods.mxtune.network.client.JoinGroupMessage;
 import net.aeronica.mods.mxtune.network.client.SyncGroupMessage;
 import net.aeronica.mods.mxtune.status.ServerCSDManager;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.world.caps.world.ModWorldPlaylistHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -410,6 +411,7 @@ public class GroupManager
         {
             GroupManager.sync();
             ServerCSDManager.queryClient(event.player);
+            ModWorldPlaylistHelper.sync(event.player, event.player.world);
         }
     } 
     
@@ -417,14 +419,19 @@ public class GroupManager
     public void onPlayerLoggedOutEvent(PlayerLoggedOutEvent event)
     {
         if(MXTune.proxy.getEffectiveSide() == Side.SERVER)
+        {
             removeMember(event.player.getEntityId());
+        }
     }
 
     @SubscribeEvent
     public void onPlayerChangedDimensionEvent(PlayerChangedDimensionEvent event)
     {
         if(MXTune.proxy.getEffectiveSide() == Side.SERVER)
+        {
             removeMember(event.player.getEntityId());
+            ModWorldPlaylistHelper.sync(event.player, event.player.world);
+        }
     }
 
     private static EntityPlayer getEntityPlayer(Integer entityID)

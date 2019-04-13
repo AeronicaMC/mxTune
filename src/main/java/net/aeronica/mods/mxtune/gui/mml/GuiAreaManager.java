@@ -568,8 +568,7 @@ public class GuiAreaManager extends GuiScreen
         initAreas();
         updateState();
     }
-
-
+    
     private void initAreas()
     {
         PacketDispatcher.sendToServer(new GetAreasMessage(CallBackManager.register(ClientFileManager.INSTANCE)));
@@ -589,25 +588,6 @@ public class GuiAreaManager extends GuiScreen
                        updateState();
                    }).start();
     }
-
-
-//    public void onFailure(@Nonnull ITextComponent textComponent)
-//    {
-//        status.setText(textComponent.getFormattedText());
-//        ModLogger.warn("InitAreas onFailure: %s", textComponent.getFormattedText());
-//    }
-//
-//
-//    @SuppressWarnings("unchecked")
-//    public void onResponse(@Nullable Object payload)
-//    {
-//        guiAreaList.clear();
-//        // add an EMPTY_GUID Area
-//        guiAreaList.add(new Area());
-//        if (payload != null)
-//            guiAreaList.addAll((List<Area>) payload);
-//        updateState();
-//    }
 
     private void  updatePlayersSelectedAreaGuid(Area selectedArea)
     {
