@@ -26,6 +26,7 @@ import net.aeronica.mods.mxtune.managers.ClientPlayManager;
 import net.aeronica.mods.mxtune.managers.records.Area;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.GUID;
+import net.aeronica.mods.mxtune.world.caps.chunk.ModChunkPlaylistHelper;
 import net.aeronica.mods.mxtune.world.caps.world.ModWorldPlaylistHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -124,7 +125,7 @@ public class GuiStaffOverlay extends Gui
         // Chunk Playlist
         BlockPos pos = mc.player.getPosition();
         Chunk chunk = mc.world.getChunk(pos);
-        GUID chunkAreaGuid = ClientPlayManager.getCurrentPlaylistGUID();
+        GUID chunkAreaGuid = ModChunkPlaylistHelper.getPlaylistGuid(chunk);
         Area chunkPlaylists = ClientFileManager.getArea(chunkAreaGuid);
         String chunkPlaylistName = ModGuiUtils.getPlaylistName(chunkPlaylists);
 
