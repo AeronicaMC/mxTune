@@ -25,6 +25,7 @@ import net.aeronica.mods.mxtune.managers.ClientPlayManager;
 import net.aeronica.mods.mxtune.managers.records.Area;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.GUID;
+import net.aeronica.mods.mxtune.world.caps.world.ModWorldPlaylistHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
@@ -118,15 +119,23 @@ public class GuiStaffOverlay extends Gui
         int y = fontHeight;
         boolean isCtrlDown = MusicOptionsUtil.isCtrlKeyDown(mc.player);
         String normalBoldUnderline = isCtrlDown ? TextFormatting.BOLD + TextFormatting.UNDERLINE.toString() : TextFormatting.RESET.toString();
+
+        // Chunk Playlist
         BlockPos pos = mc.player.getPosition();
         Chunk chunk = mc.world.getChunk(pos);
         GUID chunkAreaGuid = ClientPlayManager.getCurrentPlaylistGUID();
-        Area area = ClientFileManager.getArea(chunkAreaGuid);
+        Area chunkPlaylists = ClientFileManager.getArea(chunkAreaGuid);
         Area selectedArea = ClientFileManager.getArea(MusicOptionsUtil.getSelectedAreaGuid(mc.player));
+        String chunkPlaylistName = chunkPlaylists != null ? chunkPlaylists.getName() : I18n.format("mxtune.error.undefined_area");
 
-        String areaName = area != null ? area.getName() : I18n.format("mxtune.error.undefined_area");
-        String formattedText = I18n.format("mxtune.gui.guiStaffOverlay.area_name_chunk", areaName,
-                                           String.format("%+d", chunk.x), String.format("%+d", chunk.z));
+        // World Playlist
+        GUID worldAreaGuid = ModWorldPlaylistHelper.getPlaylistGuid(mc.world);
+        Area worldPlaylists = ClientFileManager.getArea(worldAreaGuid);
+        String worldPlaylistName = worldPlaylists != null ? worldPlaylists.getName() : I18n.format("mxtune.error.undefined_area");
+
+        String formattedText = I18n.format("mxtune.gui.guiStaffOverlay.area_name_chunk", worldPlaylistName,
+                                           String.format("%+d", chunk.x), String.format("%+d", chunk.z),
+                                           chunkPlaylistName);
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight);
 
         y += fontHeight;
@@ -142,8 +151,8 @@ public class GuiStaffOverlay extends Gui
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0xFFFF00);
 
         y += fontHeight;
-        areaName = selectedArea != null ? selectedArea.getName() : I18n.format("mxtune.error.undefined_area");
-        formattedText = normalBoldUnderline + I18n.format("mxtune.gui.guiStaffOverlay.selected_area_to_apply", areaName);
+        chunkPlaylistName = selectedArea != null ? selectedArea.getName() : I18n.format("mxtune.error.undefined_area");
+        formattedText = normalBoldUnderline + I18n.format("mxtune.gui.guiStaffOverlay.selected_area_to_apply", chunkPlaylistName);
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, isCtrlDown ? 0x00FF00 : 0x7FFFFF);
     }
 
