@@ -82,11 +82,12 @@ public enum  ClientFileManager implements CallBack
         ModLogger.debug("Cached Server ID received: %s", cachedServerID.toString());
         createClientSideCacheDirectories();
         // No need to retrieve from cache since we pull down each session and clear the cache on close.
-        // load Cache (pathAreas, mapAreas, Area.class) ;
-        // load Cache (pathMusic, mapSongProxies, SongProxy.class );
+        mapAreas.clear();
+        mapSongProxies.clear();
+        // loadCache(pathAreas, mapAreas, Area.class);
+        // loadCache(pathMusic, mapSongProxies, SongProxy.class);
         badAreas.clear();
         badSongs.clear();
-        ModLogger.debug("Cache loaded");
     }
 
     public static void clearCache()
