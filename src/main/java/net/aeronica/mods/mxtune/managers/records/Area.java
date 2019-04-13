@@ -68,6 +68,13 @@ public class Area extends BaseData
         return area;
     }
 
+    public static Area noMusic()
+    {
+        Area area = new Area("[ No Music ]");
+        area.guid = new GUID(0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff);
+        return area;
+    }
+
     @Override
     public void readFromNBT(NBTTagCompound compound)
     {

@@ -17,8 +17,6 @@
 
 package net.aeronica.mods.mxtune.managers;
 
-import net.aeronica.mods.mxtune.util.ModLogger;
-
 import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.function.IntSupplier;
@@ -66,7 +64,6 @@ public class PlayIdSupplier
         public int getAsInt()
         {
             int id = playIdSource.getAsInt();
-            ModLogger.debug("Type: %s, start: %d, end: %s, id: %d", playType, start, end, id);
             return id;
         }
 

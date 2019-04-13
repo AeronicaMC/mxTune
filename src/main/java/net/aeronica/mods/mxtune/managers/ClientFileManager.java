@@ -83,8 +83,8 @@ public enum  ClientFileManager implements CallBack
         cachedServerID = new UUID(msb, lsb);
         ModLogger.debug("Cached Server ID received: %s", cachedServerID.toString());
         createClientSideCacheDirectories();
-        loadCache(pathAreas, mapAreas, Area.class);
-        loadCache(pathMusic, mapSongProxies, SongProxy.class);
+        //loadCache(pathAreas, mapAreas, Area.class);
+        //loadCache(pathMusic, mapSongProxies, SongProxy.class);
         badAreas.clear();
         badSongs.clear();
         ModLogger.debug("Cache loaded");

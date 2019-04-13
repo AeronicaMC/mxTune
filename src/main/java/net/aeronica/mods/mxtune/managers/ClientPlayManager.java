@@ -243,10 +243,9 @@ public class ClientPlayManager implements IAudioStatusCallback
                 resetTimer(0);
                 invalidatePlayId();
             }
-            else if (Reference.EMPTY_GUID.equals(guidSong))
+            else if (Reference.EMPTY_GUID.equals(guidSong) && Reference.NO_MUSIC_GUID.equals(currentPlaylistGUID))
             {
-                // This should never happen unless I screwed something up
-                ModLogger.warn("ClientPlayManger: What has Aeronica / Rymor done this time?!, SongProxy guid: %s, playId %d", guidSong.toString(), currentPlayId);
+                // The Empty Playlist or No Music
                 resetTimer(0);
                 invalidatePlayId();
             }
@@ -269,7 +268,6 @@ public class ClientPlayManager implements IAudioStatusCallback
             {
                 currentPlaylistGUID = ModWorldPlaylistHelper.getPlaylistGuid(world);
                 changeAreaMusic(true);
-                ModLogger.debug("World Playlist: %s", currentPlaylistGUID.toString());
             }
         }
     }
@@ -328,7 +326,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     {
         String i18nNull = I18n.format("mxtune.info.null");
         lastSongLine01 = I18n.format("mxtune.info.last_song_line_01", i18nNull, i18nNull, i18nNull);
-        lastSongLine02 = I18n.format("mxtune.info.last_song_line_02", I18n.format("mxtune.error.undefined_area"));
+        lastSongLine02 = I18n.format("mxtune.info.last_song_line_02", I18n.format("mxtune.info.playlist.null_playlist"));
     }
 
     public static String getLastSongLine01()
@@ -357,14 +355,12 @@ public class ClientPlayManager implements IAudioStatusCallback
     public static void resetTimer()
     {
         delay = (rand.nextInt(MAX_DELAY - MIN_DELAY) + MIN_DELAY) * 2;
-        ModLogger.debug("resetTimer: new delay %05d seconds", delay / 2);
         wait = false;
     }
 
     public static void resetTimer(int newDelay)
     {
         delay = newDelay < 2 ? 2 : newDelay * 2;
-        ModLogger.debug("resetTimer: new delay %05d seconds", delay / 2);
         wait = false;
     }
 

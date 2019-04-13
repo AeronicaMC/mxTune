@@ -142,6 +142,12 @@ public class ServerFileManager
 
     private static void initAreas()
     {
+        // The NULL and NO MUSIC Playlists.
+        Area nullPlaylist = new Area();
+        areas.put(nullPlaylist.getGUID(), nullPlaylist);
+        Area noPlaylists = Area.noMusic();
+        areas.put(noPlaylists.getGUID(), noPlaylists);
+
         List<Path> areaFiles = new ArrayList<>();
 
         Path path = FileHelper.getDirectory(FileHelper.SERVER_AREAS_FOLDER, Side.SERVER);

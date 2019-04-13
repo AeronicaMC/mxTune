@@ -19,6 +19,7 @@ package net.aeronica.mods.mxtune.gui.mml;
 
 import net.aeronica.mods.mxtune.gui.hud.HudData;
 import net.aeronica.mods.mxtune.gui.hud.HudDataFactory;
+import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.aeronica.mods.mxtune.items.ItemStaffOfMusic;
 import net.aeronica.mods.mxtune.managers.ClientFileManager;
 import net.aeronica.mods.mxtune.managers.ClientPlayManager;
@@ -125,13 +126,16 @@ public class GuiStaffOverlay extends Gui
         Chunk chunk = mc.world.getChunk(pos);
         GUID chunkAreaGuid = ClientPlayManager.getCurrentPlaylistGUID();
         Area chunkPlaylists = ClientFileManager.getArea(chunkAreaGuid);
-        Area selectedArea = ClientFileManager.getArea(MusicOptionsUtil.getSelectedAreaGuid(mc.player));
-        String chunkPlaylistName = chunkPlaylists != null ? chunkPlaylists.getName() : I18n.format("mxtune.error.undefined_area");
+        String chunkPlaylistName = ModGuiUtils.getPlaylistName(chunkPlaylists);
 
         // World Playlist
         GUID worldAreaGuid = ModWorldPlaylistHelper.getPlaylistGuid(mc.world);
         Area worldPlaylists = ClientFileManager.getArea(worldAreaGuid);
-        String worldPlaylistName = worldPlaylists != null ? worldPlaylists.getName() : I18n.format("mxtune.error.undefined_area");
+        String worldPlaylistName = ModGuiUtils.getPlaylistName(worldPlaylists);
+
+        // Selected Playlist
+        Area selectedPlaylistToApply = ClientFileManager.getArea(MusicOptionsUtil.getSelectedAreaGuid(mc.player));
+        String selectedPlaylistName = ModGuiUtils.getPlaylistName(selectedPlaylistToApply);
 
         String formattedText = I18n.format("mxtune.gui.guiStaffOverlay.area_name_chunk", worldPlaylistName,
                                            String.format("%+d", chunk.x), String.format("%+d", chunk.z),
@@ -151,8 +155,7 @@ public class GuiStaffOverlay extends Gui
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0xFFFF00);
 
         y += fontHeight;
-        chunkPlaylistName = selectedArea != null ? selectedArea.getName() : I18n.format("mxtune.error.undefined_area");
-        formattedText = normalBoldUnderline + I18n.format("mxtune.gui.guiStaffOverlay.selected_area_to_apply", chunkPlaylistName);
+        formattedText = normalBoldUnderline + I18n.format("mxtune.gui.guiStaffOverlay.selected_area_to_apply", selectedPlaylistName);
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, isCtrlDown ? 0x00FF00 : 0x7FFFFF);
     }
 

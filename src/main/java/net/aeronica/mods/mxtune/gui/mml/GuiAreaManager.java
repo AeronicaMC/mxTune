@@ -24,6 +24,7 @@ import net.aeronica.mods.mxtune.caches.MXTuneFile;
 import net.aeronica.mods.mxtune.caches.MXTuneFileHelper;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingMultiListOf;
+import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.aeronica.mods.mxtune.managers.ClientFileManager;
 import net.aeronica.mods.mxtune.managers.records.Area;
 import net.aeronica.mods.mxtune.managers.records.Song;
@@ -193,8 +194,8 @@ public class GuiAreaManager extends GuiScreen
                 Area area = get(slotIdx);
                 if (area != null)
                 {
-                    String areaNameOrUndefined = area.getName().trim().equals("") ? I18n.format("mxtune.error.undefined_area") : area.getName();
-                    String trimmedName = fontRenderer.trimStringToWidth(areaNameOrUndefined, listWidth - 10);
+                    String playlistName = ModGuiUtils.getPlaylistName(area);
+                    String trimmedName = fontRenderer.trimStringToWidth(playlistName, listWidth - 10);
                     int color = isSelected(slotIdx) ? 0xFFFF00 : 0xAADDEE;
                     fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
                 } else
@@ -583,7 +584,7 @@ public class GuiAreaManager extends GuiScreen
                        }
                        guiAreaList.clear();
                        // add an EMPTY_GUID Area
-                       guiAreaList.add(new Area());
+                       //guiAreaList.add(new Area());
                        guiAreaList.addAll(ClientFileManager.getAreas());
                        updateState();
                    }).start();
@@ -596,7 +597,7 @@ public class GuiAreaManager extends GuiScreen
         if (selectedArea != null)
         {
             PacketDispatcher.sendToServer(new PlayerSelectedAreaMessage(selectedArea.getGUID()));
-            String areaNameOrUndefined = selectedArea.getName().trim().equals("") ? I18n.format("mxtune.error.undefined_area") : selectedArea.getName();
+            String areaNameOrUndefined = selectedArea.getName().trim().equals("") ? I18n.format("mxtune.info.playlist.null_playlist") : selectedArea.getName();
             updateStatus(String.format("Updated StaffOfMusic Area to: %s", areaNameOrUndefined));
         }
         else
