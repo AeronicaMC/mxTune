@@ -33,6 +33,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
@@ -430,6 +431,17 @@ public class GroupManager
         if(MXTune.proxy.getEffectiveSide() == Side.SERVER)
         {
             removeMember(event.player.getEntityId());
+            ModWorldPlaylistHelper.sync(event.player, event.player.world);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onEvent(PlayerEvent.PlayerRespawnEvent event)
+    {
+        if(MXTune.proxy.getEffectiveSide() == Side.SERVER)
+        {
+            GroupManager.sync();
+            ServerCSDManager.queryClient(event.player);
             ModWorldPlaylistHelper.sync(event.player, event.player.world);
         }
     }

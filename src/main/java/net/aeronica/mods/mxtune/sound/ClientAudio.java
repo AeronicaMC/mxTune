@@ -447,6 +447,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
     public static void event(PlayerRespawnEvent event)
     {
         cleanup();
+        ClientPlayManager.reset();
         ModLogger.debug("ClientAudio PlayerRespawnEvent: %s", event.player.getName());
     }
 

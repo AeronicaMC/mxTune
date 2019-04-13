@@ -20,7 +20,9 @@ package net.aeronica.mods.mxtune.world.caps.chunk;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.UpdateChunkMusicData;
+import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.Miscellus;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.NBTHelper;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
@@ -34,6 +36,7 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.event.world.ChunkWatchEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -62,7 +65,24 @@ public class ModChunkPlaylistCap
 
         // TODO: Review, is this really needed, or is there a better way to deal with this?
         if (chunk != null && chunk.hasCapability(MOD_CHUNK_DATA, null))
-            PacketDispatcher.sendToAllAround(new UpdateChunkMusicData(chunk.getPos().x, chunk.getPos().z, ModChunkPlaylistHelper.getPlaylistGuid(chunk)), player, 80);
+        {
+            PacketDispatcher.sendTo(new UpdateChunkMusicData(chunk.getPos().x, chunk.getPos().z, ModChunkPlaylistHelper.getPlaylistGuid(chunk)), player);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onEvent(final ChunkDataEvent.Load event)
+    {
+
+        if (event.getChunk().hasCapability(MOD_CHUNK_DATA, null))
+        {
+            GUID guid = ModChunkPlaylistHelper.getPlaylistGuid(event.getChunk());
+            if (!Reference.EMPTY_GUID.equals(guid))
+            {
+                Chunk chunk = event.getChunk();
+                ModLogger.debug("ChunkDataEvent.Load: x: %d, z: %d, dim: %d, guid: %s", chunk.x, chunk.z, event.getWorld().provider.getDimension(), guid);
+            }
+        }
     }
 
     @SubscribeEvent
