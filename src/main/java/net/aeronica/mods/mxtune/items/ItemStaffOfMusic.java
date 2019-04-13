@@ -104,16 +104,15 @@ public class ItemStaffOfMusic extends Item
 
     private void applyToWorldOnSneakCtrlRightClick(EntityPlayer playerIn, World worldIn, GUID playlist)
     {
-        if (worldIn.hasCapability(ModWorldPlaylistHelper.MOD_WORLD_DATA, null) &&
-                playerIn.isSneaking() && MusicOptionsUtil.isCtrlKeyDown(playerIn) &&
+        if (worldIn.hasCapability(ModWorldPlaylistHelper.MOD_WORLD_DATA, null) && playerIn.isSneaking() && MusicOptionsUtil.isCtrlKeyDown(playerIn) &&
                 !Reference.NO_MUSIC_GUID.equals(playlist))
         {
             ModWorldPlaylistHelper.setPlaylistGuid(worldIn, playlist);
             ModWorldPlaylistHelper.sync(playerIn, worldIn);
-            notifyPlayer(playerIn, playlist, SoundEvents.BLOCK_NOTE_PLING, "mxtune.gui.guiStaffOverlay.world_update.cannot_apply_empty_playlist_to_worlds");
+            notifyPlayer(playerIn, playlist, SoundEvents.BLOCK_NOTE_PLING, "mxtune.gui.guiStaffOverlay.world_update_successful");
         }
         else
-            notifyPlayer(playerIn, playlist, SoundEvents.BLOCK_GLASS_BREAK, "");
+            notifyPlayer(playerIn, playlist, SoundEvents.BLOCK_GLASS_BREAK, "mxtune.gui.guiStaffOverlay.world_update.cannot_apply_empty_playlist_to_worlds");
     }
 
     private void notifyPlayer(EntityPlayer playerIn, GUID playlist, SoundEvent soundEvent, String translationKey)
