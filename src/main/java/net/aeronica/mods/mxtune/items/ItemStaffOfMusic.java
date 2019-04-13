@@ -106,7 +106,7 @@ public class ItemStaffOfMusic extends Item
     {
         if (worldIn.hasCapability(ModWorldPlaylistHelper.MOD_WORLD_DATA, null) &&
                 playerIn.isSneaking() && MusicOptionsUtil.isCtrlKeyDown(playerIn) &&
-                Reference.NO_MUSIC_GUID.equals(playlist))
+                !Reference.NO_MUSIC_GUID.equals(playlist))
         {
             ModWorldPlaylistHelper.setPlaylistGuid(worldIn, playlist);
             ModWorldPlaylistHelper.sync(playerIn, worldIn);
