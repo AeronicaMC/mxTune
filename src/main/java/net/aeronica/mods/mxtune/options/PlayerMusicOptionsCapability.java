@@ -111,6 +111,8 @@ public class PlayerMusicOptionsCapability
                     live.setBlackList(dead.getBlackList());
                     live.setWhiteList(dead.getWhiteList());
                     live.setSoundRangeInfinityAllowed(dead.isSoundRangeInfinityRangeAllowed());
+                    live.setMxTuneServerUpdateAllowed(dead.isSoundRangeInfinityRangeAllowed());
+                    live.setSelectedAreaGuid(dead.getSelectedAreaGuid());
                 }
             }
         }
