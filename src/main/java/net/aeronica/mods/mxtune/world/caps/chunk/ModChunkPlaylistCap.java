@@ -70,7 +70,7 @@ public class ModChunkPlaylistCap
         }
     }
 
-    @SubscribeEvent
+//    @SubscribeEvent // disable this. Not needed.
     public static void onEvent(final ChunkDataEvent.Load event)
     {
 
