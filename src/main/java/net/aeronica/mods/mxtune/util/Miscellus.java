@@ -1,6 +1,7 @@
 package net.aeronica.mods.mxtune.util;
 
 
+import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.AudiblePingPlayerMessage;
@@ -8,6 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.SoundEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -50,7 +52,10 @@ public class Miscellus
 
     public static void audiblePingPlayer(EntityPlayer entityPlayer, SoundEvent soundEvent)
     {
-        PacketDispatcher.sendTo(new AudiblePingPlayerMessage(soundEvent), (EntityPlayerMP) entityPlayer);
+        if (MXTune.proxy.getEffectiveSide() == Side.SERVER)
+            PacketDispatcher.sendTo(new AudiblePingPlayerMessage(soundEvent), (EntityPlayerMP) entityPlayer);
+        else
+            entityPlayer.playSound(soundEvent, 1F, 1F);
     }
 
     public static boolean inDev()

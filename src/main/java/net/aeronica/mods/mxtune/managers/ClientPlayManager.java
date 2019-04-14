@@ -87,7 +87,11 @@ public class ClientPlayManager implements IAudioStatusCallback
     public static void reset()
     {
         ClientPlayManager.resetTimer(5);
-        ClientPlayManager.invalidatePlayId();
+        if (currentPlayId != PlayType.INVALID)
+        {
+            ClientAudio.queueAudioDataRemoval(currentPlayId);
+            currentPlayId = PlayType.INVALID;
+        }
         lastSongs.clear();
         clearLastSongInfo();
     }

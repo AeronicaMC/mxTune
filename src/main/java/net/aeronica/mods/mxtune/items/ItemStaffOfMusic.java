@@ -20,11 +20,11 @@ package net.aeronica.mods.mxtune.items;
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.gui.GuiGuid;
-import net.aeronica.mods.mxtune.managers.ServerFileManager;
+import net.aeronica.mods.mxtune.network.PacketDispatcher;
+import net.aeronica.mods.mxtune.network.client.ResetClientPlayEngine;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.Miscellus;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.world.caps.chunk.ModChunkPlaylistHelper;
 import net.aeronica.mods.mxtune.world.caps.world.ModWorldPlaylistHelper;
 import net.minecraft.client.resources.I18n;
@@ -57,9 +57,16 @@ public class ItemStaffOfMusic extends Item
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
     {
+        boolean hasRights = MusicOptionsUtil.isMxTuneServerUpdateAllowed(playerIn);
         if (worldIn.isRemote)
         {
-            openGui(worldIn, playerIn);
+            if (playerIn.isSneaking() && !MusicOptionsUtil.isCtrlKeyDown(playerIn) && hasRights)
+            {
+                playerIn.openGui(MXTune.instance, GuiGuid.GUI_AREA_MANAGER, worldIn, 0, 0, 0);
+            }
+            else if (!hasRights)
+                notifyPlayer(playerIn, SoundEvents.BLOCK_GLASS_BREAK, "commands.mxtune.mxtune_server_update_not_allowed");
+
             return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
         }
         else
@@ -67,58 +74,41 @@ public class ItemStaffOfMusic extends Item
             BlockPos pos = playerIn.getPosition();
             Chunk chunk = worldIn.getChunk(pos);
             GUID playlist = MusicOptionsUtil.getSelectedAreaGuid(playerIn);
-            if (checkPermissionServer(playerIn, chunk))
+
+            boolean hasChunkCap = chunk.hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null);
+            boolean hasWorldCap = worldIn.hasCapability(ModWorldPlaylistHelper.MOD_WORLD_DATA, null);
+            if (hasRights)
             {
-                applyToChunkOnCtrlRightClick(playerIn, chunk, playlist);
-                applyToWorldOnSneakCtrlRightClick(playerIn, worldIn, playlist);
+                if (hasChunkCap && !playerIn.isSneaking() && MusicOptionsUtil.isCtrlKeyDown(playerIn))
+                {
+                    ModChunkPlaylistHelper.setPlaylistGuid(chunk, playlist);
+                    ModChunkPlaylistHelper.sync(playerIn, chunk);
+                    notifyPlayer(playerIn, SoundEvents.BLOCK_NOTE_PLING, "mxtune.gui.guiStaffOverlay.chunk_update_successful");
+                    PacketDispatcher.sendToAll(new ResetClientPlayEngine());
+                }
+                else if (hasWorldCap && playerIn.isSneaking() && MusicOptionsUtil.isCtrlKeyDown(playerIn))
+                {
+                    if (!Reference.NO_MUSIC_GUID.equals(playlist))
+                    {
+                        ModWorldPlaylistHelper.setPlaylistGuid(worldIn, playlist);
+                        ModWorldPlaylistHelper.sync(playerIn, worldIn);
+                        notifyPlayer(playerIn, SoundEvents.BLOCK_NOTE_PLING, "mxtune.gui.guiStaffOverlay.world_update_successful");
+                        PacketDispatcher.sendToAll(new ResetClientPlayEngine());
+                    }
+                     else
+                        notifyPlayer(playerIn, SoundEvents.BLOCK_GLASS_BREAK, "mxtune.gui.guiStaffOverlay.world_update.cannot_apply_empty_playlist_to_worlds");
+                }
             }
             else
             {
-                ModLogger.debug("Player does not have rights to update Chunk or World playlists.");
-                notifyPlayer(playerIn, playlist, SoundEvents.BLOCK_GLASS_BREAK, "commands.mxtune.mxtune_server_update_not_allowed");
+                notifyPlayer(playerIn, SoundEvents.BLOCK_GLASS_BREAK, "commands.mxtune.mxtune_server_update_not_allowed");
             }
         }
         return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
     }
 
-    private void openGui(World worldIn, EntityPlayer playerIn)
+    private void notifyPlayer(EntityPlayer playerIn, SoundEvent soundEvent, String translationKey)
     {
-        if (playerIn.isSneaking() && !MusicOptionsUtil.isCtrlKeyDown(playerIn))
-                playerIn.openGui(MXTune.instance, GuiGuid.GUI_AREA_MANAGER, worldIn, 0, 0, 0);
-    }
-
-    private boolean checkPermissionServer(EntityPlayer playerIn, Chunk chunk)
-    {
-        return chunk.hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null) && MusicOptionsUtil.isMxTuneServerUpdateAllowed(playerIn);
-    }
-
-    private void applyToChunkOnCtrlRightClick(EntityPlayer playerIn, Chunk chunk, GUID playlist)
-    {
-        if (chunk.hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null) && !playerIn.isSneaking() && MusicOptionsUtil.isCtrlKeyDown(playerIn))
-        {
-            ModChunkPlaylistHelper.setPlaylistGuid(chunk, playlist);
-            ModChunkPlaylistHelper.sync(playerIn, chunk);
-            notifyPlayer(playerIn, playlist, SoundEvents.BLOCK_NOTE_PLING, "mxtune.gui.guiStaffOverlay.chunk_update_successful");
-        }
-    }
-
-    private void applyToWorldOnSneakCtrlRightClick(EntityPlayer playerIn, World worldIn, GUID playlist)
-    {
-        if (worldIn.hasCapability(ModWorldPlaylistHelper.MOD_WORLD_DATA, null) && playerIn.isSneaking() && MusicOptionsUtil.isCtrlKeyDown(playerIn) &&
-                !Reference.NO_MUSIC_GUID.equals(playlist))
-        {
-            ModWorldPlaylistHelper.setPlaylistGuid(worldIn, playlist);
-            ModWorldPlaylistHelper.sync(playerIn, worldIn);
-            notifyPlayer(playerIn, playlist, SoundEvents.BLOCK_NOTE_PLING, "mxtune.gui.guiStaffOverlay.world_update_successful");
-        }
-        else
-            notifyPlayer(playerIn, playlist, SoundEvents.BLOCK_GLASS_BREAK, "mxtune.gui.guiStaffOverlay.world_update.cannot_apply_empty_playlist_to_worlds");
-    }
-
-    private void notifyPlayer(EntityPlayer playerIn, GUID playlist, SoundEvent soundEvent, String translationKey)
-    {
-        ModLogger.debug("Playlist name:", ServerFileManager.getArea(playlist));
-        ModLogger.debug("Playlist GUID: %s", playlist);
         Miscellus.audiblePingPlayer(playerIn, soundEvent);
         playerIn.sendStatusMessage(new TextComponentTranslation(translationKey), true);
     }

@@ -72,6 +72,7 @@ public class PacketDispatcher
         registerMessage(UpdateChunkMusicData.class);
         registerMessage(UpdateWorldMusicData.class);
         registerMessage(StopPlayIDMessage.class);
+        registerMessage(ResetClientPlayEngine.class);
 
         // Packets handled on SERVER
         registerMessage(ManageGroupMessage.class);

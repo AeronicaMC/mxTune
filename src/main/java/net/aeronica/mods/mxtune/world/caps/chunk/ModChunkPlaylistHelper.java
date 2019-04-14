@@ -17,6 +17,7 @@
 
 package net.aeronica.mods.mxtune.world.caps.chunk;
 
+import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.UpdateChunkMusicData;
@@ -29,6 +30,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class ModChunkPlaylistHelper
 {
@@ -75,7 +77,9 @@ public class ModChunkPlaylistHelper
 
     public static void sync(EntityPlayer entityPlayer, Chunk chunk)
     {
-        PacketDispatcher.sendToAllAround(new UpdateChunkMusicData(chunk.x, chunk.z, getPlaylistGuid(chunk)), entityPlayer, 80);
-        PacketDispatcher.sendTo(new UpdateChunkMusicData(chunk.x, chunk.z, getPlaylistGuid(chunk)), (EntityPlayerMP) entityPlayer);
+        if (MXTune.proxy.getEffectiveSide() == Side.SERVER)
+        {
+            PacketDispatcher.sendTo(new UpdateChunkMusicData(chunk.x, chunk.z, getPlaylistGuid(chunk)), (EntityPlayerMP) entityPlayer);
+        }
     }
 }
