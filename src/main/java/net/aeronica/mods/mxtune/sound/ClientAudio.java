@@ -93,6 +93,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
 {
     INSTANCE;
     public static final Object THREAD_SYNC = new Object();
+    private static Minecraft mc = Minecraft.getMinecraft();
     private static SoundHandler handler;
     private static SoundSystem sndSystem;
     private static MusicTicker musicTicker;
@@ -399,6 +400,21 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         delayedAudioDataRemovalQueue.add(playId);
     }
 
+    private static void updateVolumeFades()
+    {
+        playIDAudioData.values().forEach(ClientAudio::updateVolumeFade);
+    }
+
+    private static void updateVolumeFade(AudioData audioData)
+    {
+        if (audioData.isFading())
+        {
+            audioData.updateVolumeFade();
+            MxSound mxSound = (MxSound) audioData.getISound();
+            sndSystem.setVolume(audioData.getUuid(), mxSound.getVolume() * audioData.getFadeMultiplier());
+        }
+    }
+
     private static void init()
     {
         if (sndSystem == null || sndSystem.randomNumberGenerator == null)
@@ -454,10 +470,15 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
     @SubscribeEvent
     public static void event(ClientTickEvent event)
     {
-        if (event.side == Side.CLIENT && event.phase == TickEvent.Phase.END && counter++ % 5 == 0)
+        if (event.side == Side.CLIENT && event.phase == TickEvent.Phase.END)
         {
             /* once every 1/4 second */
-            updateClientAudio();
+            if (counter++ % 5 == 0)
+                updateClientAudio();
+
+            /* once per tick but not if game is paused */
+            if (!mc.isGamePaused())
+                updateVolumeFades();
         }
     }
     

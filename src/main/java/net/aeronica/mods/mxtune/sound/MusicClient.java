@@ -24,14 +24,14 @@ import net.minecraft.util.SoundCategory;
 
 /**
  * Using MovingSound just to make this ITickableSound based. This keeps the sound from timing out after 20 ticks.
- * @author Paul Boese a.k.a. Aeronica
  *
+ * @author Paul Boese a.k.a. Aeronica
  */
 public class MusicClient extends MovingSound
 {
     private Integer playID;
     private SoundEventAccessor soundEventAccessor;
-    
+
     public MusicClient(Integer playID)
     {
         super(ModSoundEvents.PCM_PROXY, SoundCategory.MASTER);
@@ -60,8 +60,9 @@ public class MusicClient extends MovingSound
             this.setDonePlaying();
         this.volume = getModVolume();
     }
-    
+
     private void setDonePlaying() { this.donePlaying = true; }
 
-    private  float getModVolume() { return ModConfig.getClientPlayerVolume(); }
+    private float getModVolume() { return ModConfig.getClientPlayerVolume(); }
+
 }

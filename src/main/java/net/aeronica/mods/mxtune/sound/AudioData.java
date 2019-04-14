@@ -38,6 +38,11 @@ public class AudioData
     private final PlayIdSupplier.PlayType playType;
     private final IAudioStatusCallback callback;
 
+    private float volumeFade = 1F;
+    private boolean isFading;
+    private int fadeTicks;
+    private int fadeCounter;
+
     AudioData(Integer playId, BlockPos blockPos, boolean isClientPlayer, SoundRange soundRange, IAudioStatusCallback callback)
     {
         this.playId = playId;
@@ -136,5 +141,41 @@ public class AudioData
     public PlayIdSupplier.PlayType getPlayType()
     {
         return playType;
+    }
+
+    public void updateVolumeFade()
+    {
+        if (isFading)
+        {
+            fadeCounter--;
+            if (fadeCounter > 1)
+            {
+                volumeFade = (float) fadeTicks / fadeCounter;
+            }
+            else
+            {
+                isFading = false;
+                setStatus(Status.DONE);
+                volumeFade = 0F;
+            }
+        }
+    }
+
+    public void startFadeOut(int seconds)
+    {
+        fadeTicks = Math.max(Math.abs(seconds * 20), 1);
+        fadeCounter = fadeTicks;
+        volumeFade = 1F;
+        isFading = true;
+    }
+
+    public float getFadeMultiplier()
+    {
+        return volumeFade;
+    }
+
+    public boolean isFading()
+    {
+        return isFading;
     }
 }

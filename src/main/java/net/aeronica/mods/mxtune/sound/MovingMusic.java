@@ -16,14 +16,9 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
-import net.aeronica.mods.mxtune.managers.GroupHelper;
-import net.minecraft.client.audio.MovingSound;
 import net.minecraft.client.audio.SoundEventAccessor;
-import net.minecraft.client.audio.SoundHandler;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.Vec3d;
 
-public class MovingMusic extends MovingSound
+public class MovingMusic extends MxSound
 {
 
     private Integer playID;
@@ -35,57 +30,13 @@ public class MovingMusic extends MovingSound
      */
     MovingMusic(Integer playID)
     {
-        super(ModSoundEvents.PCM_PROXY, SoundCategory.RECORDS);
-        this.playID = playID;
-        this.sound = new PCMSound();
-        this.volume = 2F;
-        this.pitch = 1F;
-        this.repeat = false;
-        this.repeatDelay = 0;
-        this.donePlaying = false;
-        Vec3d pos = GroupHelper.getMedianPos(playID);
-        this.xPosF = (float) pos.x;
-        this.yPosF = (float) pos.y;
-        this.zPosF = (float) pos.z;
-        this.attenuationType = AttenuationType.LINEAR;
-        this.soundEventAccessor = new SoundEventAccessor(this.sound.getSoundLocation(), "mxtune.subtitle.pcm-proxy");
+        super(playID);
     }
     
     /** This is used as the key for our PlaySoundEvent handler */
     MovingMusic()
     {
-        super(ModSoundEvents.PCM_PROXY, SoundCategory.RECORDS);
+        super();
     }
-    
-    @Override
-    public SoundEventAccessor createAccessor(SoundHandler handler)
-    {
-        return this.soundEventAccessor;
-    }
-
-    @Override
-    public void update()
-    {
-        if (this.playID != null && ClientAudio.hasPlayID(playID))
-        {
-            Vec3d pos = GroupHelper.getMedianPos(playID);
-            this.xPosF = (float) pos.x;
-            this.yPosF = (float) pos.y;
-            this.zPosF = (float) pos.z; 
-        }
-        else
-        {
-            this.setDonePlaying();
-        }
-
-    }
-    
-    private void setDonePlaying()
-    {
-        this.repeat = false;
-        this.donePlaying = true;
-        this.repeatDelay = 0;
-    }
-
 }
 
