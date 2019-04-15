@@ -469,6 +469,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         if (event.getEntity() instanceof EntityPlayerSP)
         {
             cleanup();
+            ClientPlayManager.reset();
             ModLogger.debug("ClientAudio EntityJoinWorldEvent: %s", event.getEntity().getName());
         }
     }
