@@ -144,13 +144,13 @@ public class GuiStaffOverlay extends Gui
         int delayWidth = fontRenderer.getStringWidth(delayTimer);
         int spaceWidth = fontRenderer.getStringWidth(" ");
         int widthMinusDelayTimerText = (maxWidth - delayWidth - 2) / spaceWidth;
-        String padding = "";
+        StringBuilder paddedText = new StringBuilder();
         for (int i = 0; i < widthMinusDelayTimerText; i++)
-            padding += " ";
+            paddedText.append(" ");
 
-        padding += ClientPlayManager.getDelayTimerDisplay();
+        paddedText.append(ClientPlayManager.getDelayTimerDisplay());
 
-        renderLine(padding, y, hd, maxWidth, maxHeight, fontHeight);
+        renderLine(paddedText.toString(), y, hd, maxWidth, maxHeight, fontHeight);
 
         String formattedText = I18n.format("mxtune.gui.guiStaffOverlay.area_name_chunk", worldPlaylistName,
                                            String.format("%+d", chunk.x), String.format("%+d", chunk.z),

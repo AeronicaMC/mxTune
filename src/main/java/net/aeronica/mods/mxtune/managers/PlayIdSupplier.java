@@ -63,8 +63,7 @@ public class PlayIdSupplier
         @Override
         public int getAsInt()
         {
-            int id = playIdSource.getAsInt();
-            return id;
+            return playIdSource.getAsInt();
         }
 
         @Nullable

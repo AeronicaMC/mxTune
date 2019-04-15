@@ -63,7 +63,6 @@ public class ModChunkPlaylistCap
         final EntityPlayerMP player = event.getPlayer();
         final Chunk chunk = event.getChunkInstance();
 
-        // TODO: Review, is this really needed, or is there a better way to deal with this?
         if (chunk != null && chunk.hasCapability(MOD_CHUNK_DATA, null))
         {
             PacketDispatcher.sendTo(new UpdateChunkMusicData(chunk.getPos().x, chunk.getPos().z, ModChunkPlaylistHelper.getPlaylistGuid(chunk)), player);

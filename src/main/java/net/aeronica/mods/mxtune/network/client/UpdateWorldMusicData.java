@@ -69,10 +69,7 @@ public class UpdateWorldMusicData extends AbstractClientMessage<UpdateWorldMusic
     public void process(EntityPlayer player, Side side)
     {
         World world = MXTune.proxy.getClientWorld();
-        if (world != null)
-        {
-            if (world.hasCapability(ModWorldPlaylistHelper.MOD_WORLD_DATA, null))
-                ModWorldPlaylistHelper.setPlaylistGuid(world, guid);
-        }
+        if (world != null && world.hasCapability(ModWorldPlaylistHelper.MOD_WORLD_DATA, null))
+            ModWorldPlaylistHelper.setPlaylistGuid(world, guid);
     }
 }
