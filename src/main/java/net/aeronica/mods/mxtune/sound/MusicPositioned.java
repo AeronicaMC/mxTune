@@ -16,9 +16,6 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
-import net.minecraft.client.audio.MovingSound;
-import net.minecraft.client.audio.SoundEventAccessor;
-import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 
@@ -26,38 +23,29 @@ import net.minecraft.util.math.BlockPos;
  * Implements ISound<br></br>
  * For musical machines placed in the world
  */
-public class MusicPositioned extends MovingSound
+public class MusicPositioned extends MxSound
 {
-    private Integer playID;
-    private SoundEventAccessor soundEventAccessor;
-
     public MusicPositioned(Integer playID, BlockPos pos, SoundRange soundRange)
     {
-        super(ModSoundEvents.PCM_PROXY, SoundCategory.RECORDS);
-        this.playID = playID;
-        this.sound = new PCMSound();
-        this.volume = soundRange.getRange();
-        this.pitch = 1F;
+        super(playID);
+        this.category = SoundCategory.RECORDS;
         this.xPosF = (float)pos.getX()+0.5F;
         this.yPosF = (float)pos.getY()+0.5F;
         this.zPosF = (float)pos.getZ()+0.5F;
-        this.repeat = false;
-        this.donePlaying = false;
-        this.repeatDelay = 0;
+        this.volume = soundRange.getRange();
         this.attenuationType = soundRange.getAttenuationType();
-        this.soundEventAccessor = new SoundEventAccessor(this.sound.getSoundLocation(), "mxtune.subtitle.pcm-proxy");
     }
-
-    @Override
-    public SoundEventAccessor createAccessor(SoundHandler handler) { return this.soundEventAccessor; }
 
     @Override
     public void update()
     {
-        // update nothing - just hold the stream open until done
-        if ((this.playID == null) || !ClientAudio.hasPlayID(playID))
+        if (this.playID != null && ClientAudio.hasPlayID(playID))
+        {
+            // Override ModSoundVolume updates
+        }
+        else
+        {
             this.setDonePlaying();
+        }
     }
-
-    private void setDonePlaying() { this.donePlaying = true; }
 }

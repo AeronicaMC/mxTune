@@ -38,6 +38,7 @@ public class AudioData
     private final PlayIdSupplier.PlayType playType;
     private final IAudioStatusCallback callback;
 
+    // Fadeout volume - Not fully utilized. Using Paul's SoundSystem fadeOut method in tandem
     private float volumeFade = 1F;
     private boolean isFading;
     private int fadeTicks;
@@ -148,14 +149,13 @@ public class AudioData
         if (isFading)
         {
             fadeCounter--;
-            if (fadeCounter > 1)
+            if (fadeCounter > 0)
             {
-                volumeFade = (float) fadeTicks / fadeCounter;
+                volumeFade = (float) fadeCounter / fadeTicks;
             }
             else
             {
                 isFading = false;
-                setStatus(Status.DONE);
                 volumeFade = 0F;
             }
         }

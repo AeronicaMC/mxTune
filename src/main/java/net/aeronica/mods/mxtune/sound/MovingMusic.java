@@ -14,16 +14,14 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
+
 package net.aeronica.mods.mxtune.sound;
 
-import net.minecraft.client.audio.SoundEventAccessor;
+import net.aeronica.mods.mxtune.managers.GroupHelper;
+import net.minecraft.util.math.Vec3d;
 
 public class MovingMusic extends MxSound
 {
-
-    private Integer playID;
-    private SoundEventAccessor soundEventAccessor;
-
     /**
      * Implements ISound<br></br>
      * For musical machines carried or used in the world
@@ -31,12 +29,26 @@ public class MovingMusic extends MxSound
     MovingMusic(Integer playID)
     {
         super(playID);
+        Vec3d pos = GroupHelper.getMedianPos(playID);
+        this.xPosF = (float) pos.x;
+        this.yPosF = (float) pos.y;
+        this.zPosF = (float) pos.z;
     }
-    
+
     /** This is used as the key for our PlaySoundEvent handler */
     MovingMusic()
     {
         super();
     }
+
+    @Override
+    public void onUpdate()
+    {
+        Vec3d pos = GroupHelper.getMedianPos(this.playID);
+        this.xPosF = (float) pos.x;
+        this.yPosF = (float) pos.y;
+        this.zPosF = (float) pos.z;
+    }
 }
+
 

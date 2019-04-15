@@ -107,7 +107,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
     private static Queue<Integer> playIDQueue01 = new ConcurrentLinkedQueue<>(); // Polled in ClientAudio#PlaySoundEvent
     private static Queue<Integer> playIDQueue02 = new ConcurrentLinkedQueue<>(); // Polled in CodecPCM
     private static Queue<Integer> playIDQueue03 = new ConcurrentLinkedQueue<>(); // Polled in ClientAudio#playStreamingSourceEvent
-    private static Map<Integer, AudioData> playIDAudioData = new ConcurrentHashMap<>();
+    private static final Map<Integer, AudioData> playIDAudioData = new ConcurrentHashMap<>();
 
     private static ExecutorService executorService = null;
     private static ThreadFactory threadFactory = null;
@@ -274,9 +274,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         }
     }
 
-    public static void stop(int playId) { stop(playId, 100); }
-
-    public static void stop(int playID, int fadeMilliseconds)
+    public static void stop(int playID)
     {
         synchronized (SoundSystemConfig.THREAD_SYNC)
         {
@@ -284,7 +282,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
             if (sndSystem != null && audioData != null && audioData.getUuid() != null)
             {
                 audioData.setStatus(Status.DONE);
-                sndSystem.fadeOut(audioData.getUuid(), null, fadeMilliseconds);
+                sndSystem.fadeOut(audioData.getUuid(), null, 100);
             }
         }
     }
@@ -402,16 +400,32 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
 
     private static void updateVolumeFades()
     {
-        playIDAudioData.values().forEach(ClientAudio::updateVolumeFade);
+        synchronized (playIDAudioData)
+        {
+           playIDAudioData.values().forEach(ClientAudio::updateVolumeFade);
+        }
     }
 
     private static void updateVolumeFade(AudioData audioData)
     {
-        if (audioData.isFading())
+        if (audioData.getStatus() != Status.DONE && audioData.getStatus() != Status.ERROR && audioData.isFading())
         {
             audioData.updateVolumeFade();
-            MxSound mxSound = (MxSound) audioData.getISound();
-            sndSystem.setVolume(audioData.getUuid(), mxSound.getVolume() * audioData.getFadeMultiplier());
+            if (audioData.getFadeMultiplier() <= 0.05)
+                queueAudioDataRemoval(audioData.getPlayId());
+        }
+    }
+
+    public static void fadeOut(int playID, int seconds)
+    {
+        synchronized (playIDAudioData)
+        {
+            AudioData audioData = playIDAudioData.get(playID);
+            if (sndSystem != null && audioData != null && audioData.getUuid() != null)
+            {
+                sndSystem.fadeOut(audioData.getUuid(), null, seconds * 900);
+                audioData.startFadeOut(seconds);
+            }
         }
     }
 
@@ -472,13 +486,13 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
     {
         if (event.side == Side.CLIENT && event.phase == TickEvent.Phase.END)
         {
-            /* once every 1/4 second */
-            if (counter++ % 5 == 0)
-                updateClientAudio();
-
             /* once per tick but not if game is paused */
             if (!mc.isGamePaused())
                 updateVolumeFades();
+
+            /* once every 1/4 second */
+            if (counter++ % 5 == 0)
+                updateClientAudio();
         }
     }
     

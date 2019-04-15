@@ -34,17 +34,15 @@
 package net.aeronica.mods.mxtune.sound;
 
 import net.aeronica.mods.mxtune.config.ModConfig;
-import net.aeronica.mods.mxtune.managers.GroupHelper;
 import net.minecraft.client.audio.MovingSound;
 import net.minecraft.client.audio.SoundEventAccessor;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.Vec3d;
 
 public abstract class MxSound extends MovingSound
 {
 
-    private Integer playID;
+    protected Integer playID;
     private SoundEventAccessor soundEventAccessor;
 
     /**
@@ -61,10 +59,9 @@ public abstract class MxSound extends MovingSound
         this.repeat = false;
         this.repeatDelay = 0;
         this.donePlaying = false;
-        Vec3d pos = GroupHelper.getMedianPos(playID);
-        this.xPosF = (float) pos.x;
-        this.yPosF = (float) pos.y;
-        this.zPosF = (float) pos.z;
+        this.xPosF = 0F;
+        this.yPosF = 0F;
+        this.zPosF = 0F;
         this.attenuationType = AttenuationType.LINEAR;
         this.soundEventAccessor = new SoundEventAccessor(this.sound.getSoundLocation(), "mxtune.subtitle.pcm-proxy");
     }
@@ -86,19 +83,18 @@ public abstract class MxSound extends MovingSound
     {
         if (this.playID != null && ClientAudio.hasPlayID(playID))
         {
-            Vec3d pos = GroupHelper.getMedianPos(playID);
-            this.xPosF = (float) pos.x;
-            this.yPosF = (float) pos.y;
-            this.zPosF = (float) pos.z; 
+            onUpdate();
+            this.volume = getModVolume();
         }
         else
         {
             this.setDonePlaying();
         }
-        this.volume = getModVolume();
     }
-    
-    private void setDonePlaying()
+
+    protected void onUpdate() { /* NOP */ }
+
+    protected void setDonePlaying()
     {
         this.repeat = false;
         this.donePlaying = true;

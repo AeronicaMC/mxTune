@@ -74,7 +74,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     // Inter-song delay
     private static final int MAX_DELAY = 30;
     private static final int MIN_DELAY = 10;
-    private static int delay = MAX_DELAY / 2;
+    private static int delay = MIN_DELAY;
     private static int counter = 0;
     private static int ticks = 0;
     private static boolean wait = false;
@@ -86,12 +86,12 @@ public class ClientPlayManager implements IAudioStatusCallback
 
     public static void reset()
     {
-        ClientPlayManager.resetTimer(5);
         if (currentPlayId != PlayType.INVALID)
         {
-            ClientAudio.queueAudioDataRemoval(currentPlayId);
+            ClientAudio.fadeOut(currentPlayId, 2);
             currentPlayId = PlayType.INVALID;
         }
+        ClientPlayManager.resetTimer(2);
         lastSongs.clear();
         clearLastSongInfo();
     }
@@ -220,7 +220,7 @@ public class ClientPlayManager implements IAudioStatusCallback
         // Hard music change on entering a chunk with a different playlist (Area record)
         if (chunkChanged && currentPlayId != PlayType.INVALID)
         {
-            ClientAudio.queueAudioDataRemoval(currentPlayId);
+            ClientAudio.fadeOut(currentPlayId, 4);
             currentPlayId = PlayType.INVALID;
             resetTimer(0);
         }
@@ -362,8 +362,15 @@ public class ClientPlayManager implements IAudioStatusCallback
 
     public static void resetTimer(int newDelay)
     {
-        delay = newDelay < 2 ? 2 : newDelay * 2;
+        delay = newDelay < 0 ? 0 : newDelay * 2;
         wait = false;
+    }
+
+    public static String getDelayTimerDisplay()
+    {
+        int normalizedDelay = (delay) / 2;
+        int normalizedCounter = Math.min(normalizedDelay, counter / 2);
+        return String.format("Waiting: %s, Delay: %03d, timer: %03d", waiting(), normalizedDelay, normalizedCounter);
     }
 
     public static void removeLowerPriorityPlayIds(int playId)

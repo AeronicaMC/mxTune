@@ -118,7 +118,7 @@ public class GuiStaffOverlay extends Gui
     private void drawAreaInfo(HudData hd, int maxWidth, int maxHeight)
     {
         int fontHeight = fontRenderer.FONT_HEIGHT + 2;
-        int y = fontHeight;
+        int y = 0;
         boolean isCtrlDown = MusicOptionsUtil.isCtrlKeyDown(mc.player);
         String normalBoldUnderline = isCtrlDown ? TextFormatting.BOLD + TextFormatting.UNDERLINE.toString() : TextFormatting.RESET.toString();
 
@@ -138,9 +138,24 @@ public class GuiStaffOverlay extends Gui
         Area selectedPlaylistToApply = ClientFileManager.getArea(MusicOptionsUtil.getSelectedAreaGuid(mc.player));
         String selectedPlaylistName = ModGuiUtils.getPlaylistName(selectedPlaylistToApply);
 
+        // Draw texts
+
+        String delayTimer = ClientPlayManager.getDelayTimerDisplay();
+        int delayWidth = fontRenderer.getStringWidth(delayTimer);
+        int spaceWidth = fontRenderer.getStringWidth(" ");
+        int widthMinusDelayTimerText = (maxWidth - delayWidth) / spaceWidth;
+        String padding = "";
+        for (int i = 0; i < widthMinusDelayTimerText; i++)
+            padding += " ";
+
+        padding += ClientPlayManager.getDelayTimerDisplay();
+
+        renderLine(padding, y, hd, maxWidth, maxHeight, fontHeight);
+
         String formattedText = I18n.format("mxtune.gui.guiStaffOverlay.area_name_chunk", worldPlaylistName,
                                            String.format("%+d", chunk.x), String.format("%+d", chunk.z),
                                            chunkPlaylistName);
+        y += fontHeight;
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight);
 
         y += fontHeight;
