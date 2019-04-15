@@ -143,7 +143,7 @@ public class GuiStaffOverlay extends Gui
         String delayTimer = ClientPlayManager.getDelayTimerDisplay();
         int delayWidth = fontRenderer.getStringWidth(delayTimer);
         int spaceWidth = fontRenderer.getStringWidth(" ");
-        int widthMinusDelayTimerText = (maxWidth - delayWidth) / spaceWidth;
+        int widthMinusDelayTimerText = (maxWidth - delayWidth - 2) / spaceWidth;
         String padding = "";
         for (int i = 0; i < widthMinusDelayTimerText; i++)
             padding += " ";
