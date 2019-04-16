@@ -24,6 +24,9 @@ import net.minecraft.util.math.BlockPos;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 
+import static net.aeronica.mods.mxtune.sound.ClientAudio.Status.DONE;
+import static net.aeronica.mods.mxtune.sound.ClientAudio.Status.ERROR;
+
 public class AudioData
 {
     private final Integer playId;
@@ -163,10 +166,14 @@ public class AudioData
 
     public void startFadeOut(int seconds)
     {
-        fadeTicks = Math.max(Math.abs(seconds * 20), 1);
-        fadeCounter = fadeTicks;
-        volumeFade = 1F;
-        isFading = true;
+        // If a fade out is already in progress we will not change it.
+        if (!isFading && status != ERROR && status != DONE)
+        {
+            fadeTicks = Math.max(Math.abs(seconds * 20), 1);
+            fadeCounter = fadeTicks;
+            volumeFade = 1F;
+            isFading = true;
+        }
     }
 
     public float getFadeMultiplier()

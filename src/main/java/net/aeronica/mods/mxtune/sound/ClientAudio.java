@@ -423,7 +423,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
             AudioData audioData = playIDAudioData.get(playID);
             if (sndSystem != null && audioData != null && audioData.getUuid() != null)
             {
-                sndSystem.fadeOut(audioData.getUuid(), null, (long) seconds * 900L);
+                sndSystem.fadeOut(audioData.getUuid(), null, Math.max(Math.abs(seconds * 900L), 100L));
                 audioData.startFadeOut(seconds);
             }
         }
