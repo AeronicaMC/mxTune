@@ -48,7 +48,7 @@ import java.util.*;
 
 import static net.aeronica.mods.mxtune.Reference.EMPTY_GUID;
 import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType;
-import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType.AREA;
+import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType.BACKGROUND;
 import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType.INVALID;
 import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.getTypeForPlayId;
 
@@ -64,7 +64,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static String lastSongLine01 = "";
     private static String lastSongLine02 = "";
 
-    // AREA Song Shuffling
+    // BACKGROUND Song Shuffling
     private static List<SongProxy> songProxies = new ArrayList<>();
     private static final Random rand = new Random();
     private static Deque<GUID> lastSongs  = new ArrayDeque<>();
@@ -227,7 +227,7 @@ public class ClientPlayManager implements IAudioStatusCallback
         // Normal Delayed Song Change
         if (!waiting() && ClientFileManager.songAvailable(currentPlaylistGUID) && currentPlayId == PlayType.INVALID)
         {
-            currentPlayId = AREA.getAsInt();
+            currentPlayId = BACKGROUND.getAsInt();
             GUID guidSong = randomSong(currentPlaylistGUID);
             if (!Reference.EMPTY_GUID.equals(guidSong) && !ClientFileManager.hasSongProxy(guidSong))
             {
@@ -282,7 +282,7 @@ public class ClientPlayManager implements IAudioStatusCallback
             {
                 currentPlayId = playId;
                 ClientAudio.playLocal(playId, song.getMml(), INSTANCE);
-                ModLogger.debug("AREA duration: %s, title: %s", SheetMusicUtil.formatDuration(song.getDuration()), song.getTitle());
+                ModLogger.debug("BACKGROUND duration: %s, title: %s", SheetMusicUtil.formatDuration(song.getDuration()), song.getTitle());
             }
         }
     }

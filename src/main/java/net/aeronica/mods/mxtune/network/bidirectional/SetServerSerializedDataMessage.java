@@ -101,7 +101,7 @@ public class SetServerSerializedDataMessage extends AbstractMessage.AbstractServ
                 case AREA:
                     Area area = (Area)baseData;
                     resultMessage = ServerFileManager.setArea(dataTypeUuid, area);
-                    ModLogger.debug("AREA Serialized Test: pass %s", dataTypeUuid.equals(area.getGUID()));
+                    ModLogger.debug("BACKGROUND Serialized Test: pass %s", dataTypeUuid.equals(area.getGUID()));
                     break;
                 case MUSIC:
                     Song song = (Song)baseData;
