@@ -27,7 +27,8 @@ import net.minecraft.util.SoundCategory;
 public abstract class MxSound extends MovingSound
 {
     protected Integer playID;
-    protected PlayIdSupplier.PlayType playType;
+    private PlayIdSupplier.PlayType playType;
+    private ModConfig.ConfigClient.AudioVolumes audioVolumes;
     private SoundEventAccessor soundEventAccessor;
 
     /**
@@ -39,6 +40,7 @@ public abstract class MxSound extends MovingSound
         super(ModSoundEvents.PCM_PROXY, SoundCategory.MASTER);
         this.playID = playID;
         this.playType = PlayIdSupplier.getTypeForPlayId(playID);
+        this.audioVolumes = ModConfig.ConfigClient.audioVolumes;
         this.sound = new PCMSound();
         this.volume = getModVolume();
         this.pitch = 1F;
@@ -91,7 +93,15 @@ public abstract class MxSound extends MovingSound
 
     public float getVolume()
     {
-        return volume;
+        switch (playType)
+        {
+            case EVENT:
+            case PERSONAL:
+            case PLAYERS:
+            case BACKGROUND:
+            default:
+                return audioVolumes.clientPlayer;
+        }
     }
 }
 
