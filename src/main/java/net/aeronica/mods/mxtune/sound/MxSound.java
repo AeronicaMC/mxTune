@@ -18,6 +18,7 @@
 package net.aeronica.mods.mxtune.sound;
 
 import net.aeronica.mods.mxtune.config.ModConfig;
+import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
 import net.minecraft.client.audio.MovingSound;
 import net.minecraft.client.audio.SoundEventAccessor;
 import net.minecraft.client.audio.SoundHandler;
@@ -25,8 +26,8 @@ import net.minecraft.util.SoundCategory;
 
 public abstract class MxSound extends MovingSound
 {
-
     protected Integer playID;
+    protected PlayIdSupplier.PlayType playType;
     private SoundEventAccessor soundEventAccessor;
 
     /**
@@ -37,6 +38,7 @@ public abstract class MxSound extends MovingSound
     {
         super(ModSoundEvents.PCM_PROXY, SoundCategory.MASTER);
         this.playID = playID;
+        this.playType = PlayIdSupplier.getTypeForPlayId(playID);
         this.sound = new PCMSound();
         this.volume = getModVolume();
         this.pitch = 1F;
