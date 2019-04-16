@@ -217,7 +217,6 @@ public class ClientPlayManager implements IAudioStatusCallback
 
     private static void changeAreaMusic(boolean chunkChanged)
     {
-        // Hard music change on entering a chunk with a different playlist (Area record)
         if (chunkChanged && currentPlayId != PlayType.INVALID)
         {
             ClientAudio.fadeOut(currentPlayId, 4);
@@ -387,7 +386,8 @@ public class ClientPlayManager implements IAudioStatusCallback
             PlayType playType = getTypeForPlayId(pid);
             if (PlayIdSupplier.compare(playTypeIn, playType) > 0)
             {
-                ClientAudio.queueAudioDataRemoval(pid);
+                //ClientAudio.queueAudioDataRemoval(pid);
+                ClientAudio.fadeOut(pid, 1);
             }
         }
     }

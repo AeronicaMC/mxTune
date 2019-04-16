@@ -441,7 +441,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
 
     private void stop()
     {
-        ClientAudio.queueAudioDataRemoval(playId);
+        ClientAudio.fadeOut(playId, 1);
         isPlaying = false;
         playId = PlayIdSupplier.PlayType.INVALID;
     }
