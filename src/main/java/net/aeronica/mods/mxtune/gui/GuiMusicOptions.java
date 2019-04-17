@@ -18,7 +18,9 @@ package net.aeronica.mods.mxtune.gui;
 
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
+import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.gui.hud.GuiHudAdjust;
+import net.aeronica.mods.mxtune.gui.util.GuiSliderMX;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.MusicOptionsMessage;
 import net.aeronica.mods.mxtune.options.ClassifiedPlayer;
@@ -74,6 +76,11 @@ public class GuiMusicOptions extends GuiScreen
     private List<ClassifiedPlayer> whiteListedPlayers;
     private List<ClassifiedPlayer> blackListedPlayers;
 
+    private GuiSliderMX sliderBackgroundMusic;
+    private GuiSliderMX sliderOtherPlayers;
+    private float prevBackgroundMusic;
+    private float prevOtherPlayers;
+
     /* Cached State for when the GUI is resized */
     private boolean isStateCached = false;
     private int cachedSelectedPlayerIndex = -1;
@@ -88,7 +95,6 @@ public class GuiMusicOptions extends GuiScreen
         muteOption = MusicOptionsUtil.getMuteOption(player);
         midiUnavailable = MIDISystemUtil.midiUnavailable();
         initPlayerLists();
-
     }
 
     @Override
@@ -123,7 +129,13 @@ public class GuiMusicOptions extends GuiScreen
         buttonMuteOption = new GuiButtonExt(0, left, y, buttonWidth, 20, (MusicOptionsUtil.EnumMuteOptions.byIndex(muteOption).toString()));
         y += 22;
         GuiButtonExt buttonAdjHud = new GuiButtonExt(4, left, y, buttonWidth, 20, BUTTON_ADJ_HUD);
-        
+
+        y += 22;
+        float backgroundMusic = ModConfig.getVolumes().backgroundMusic * 100F;
+        float otherPlayers = ModConfig.getVolumes().otherPlayers * 100F;
+        sliderBackgroundMusic = new GuiSliderMX(20, left, y, 150, 20, I18n.format("config.mxtune.audioVolumes.background_music"), backgroundMusic, 0F, 100F, 1F);
+        sliderOtherPlayers = new GuiSliderMX(21, left + sliderBackgroundMusic.width + 2, y, 150, 20, I18n.format("config.mxtune.audioVolumes.other_players"), otherPlayers, 0F, 100F, 1F);
+
         this.buttonList.add(buttonWhiteToPlayers);
         this.buttonList.add(buttonPlayersToWhite);
         this.buttonList.add(buttonPlayersToBlack);
@@ -133,6 +145,9 @@ public class GuiMusicOptions extends GuiScreen
         this.buttonList.add(buttonCancel);
         this.buttonList.add(buttonDone);
         this.buttonList.add(buttonAdjHud);
+
+        this.buttonList.add(sliderBackgroundMusic);
+        this.buttonList.add(sliderOtherPlayers);
         
         reloadState();
     }
@@ -153,6 +168,15 @@ public class GuiMusicOptions extends GuiScreen
         this.cachedSelectedBlackIndex = listBoxBlack.getSelectedIndex();
         this.isStateCached = true;
     }
+
+    @Override
+    public void onGuiClosed()
+    {
+        ModConfig.RegistrationHandler.sync();
+    }
+
+    @Override
+    public boolean doesGuiPauseGame() {return false;}
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
@@ -191,6 +215,15 @@ public class GuiMusicOptions extends GuiScreen
     }
 
     @Override
+    public void updateScreen()
+    {
+        prevBackgroundMusic = sliderBackgroundMusic.getValue();
+        ModConfig.getVolumes().backgroundMusic = prevBackgroundMusic / 100F;
+        prevOtherPlayers = sliderOtherPlayers.getValue();
+        ModConfig.getVolumes().otherPlayers = prevOtherPlayers / 100F;
+    }
+
+    @Override
     protected void actionPerformed(GuiButton guibutton)
     {
         switch (guibutton.id)
@@ -206,10 +239,12 @@ public class GuiMusicOptions extends GuiScreen
             case 3:
                 /* done */
                 sendOptionsToServer(this.muteOption);
+                ModConfig.RegistrationHandler.sync();
                 mc.displayGuiScreen(guiScreenOld);
                 break;
             case 2:
                 /* cancel */
+                ModConfig.RegistrationHandler.sync();
                 mc.displayGuiScreen(guiScreenOld);
                 break;
             case 4:

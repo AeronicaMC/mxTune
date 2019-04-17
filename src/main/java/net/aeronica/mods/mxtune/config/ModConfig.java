@@ -59,11 +59,17 @@ public class ModConfig
 
         public static class AudioVolumes
         {
-            @Name("Client Player")
-            @LangKey("config.mxtune.audioVolumes.clientPlayer")
+            @Name("Background Music")
+            @LangKey("config.mxtune.audioVolumes.background_music")
             @SlidingOption
             @RangeDouble(min = 0F, max = 1.0F)
-            public float clientPlayer = 0.25F;
+            public float backgroundMusic = 0.25F;
+
+            @Name("Other Players")
+            @LangKey("config.mxtune.audioVolumes.other_players")
+            @SlidingOption
+            @RangeDouble(min = 0F, max = 1.0F)
+            public float otherPlayers = 0.25F;
         }
 
         public static class Sound
@@ -160,22 +166,13 @@ public class ModConfig
 
     public static boolean showWelcomeStatusMessage() {return ConfigGeneral.general.showWelcomeStatusMessage;}
 
-    public static float getClientPlayerVolume() {return  ConfigClient.audioVolumes.clientPlayer;}
-
-    public static void setClientPlayerVolume(float volume, boolean sync)
-    {
-        if (ConfigClient.audioVolumes.clientPlayer != volume)
-        {
-            ConfigClient.audioVolumes.clientPlayer = volume;
-            RegistrationHandler.sync();
-        }
-    }
-
     public static boolean moreDebugMessages() { return ConfigGeneral.general.moreDebugMessages; }
 
     public static boolean getAutoConfigureChannels() {return ConfigClient.sound.autoConfigureChannels;}
 
     public static String getMmlLink() {return ConfigClient.links.site;}
+
+    public static ConfigClient.AudioVolumes getVolumes() {return ConfigClient.audioVolumes;}
 
     /**
      * Will only allow this mods recipes to be disabled
@@ -209,7 +206,7 @@ public class ModConfig
             if(event.getModID().equals(Reference.MOD_ID))
                 sync();
         }
-        static void sync()
+        public static void sync()
         {
             ConfigManager.sync(Reference.MOD_ID, Config.Type.INSTANCE);
         }

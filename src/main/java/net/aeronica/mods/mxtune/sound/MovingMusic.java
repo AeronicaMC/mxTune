@@ -17,6 +17,7 @@
 
 package net.aeronica.mods.mxtune.sound;
 
+import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.managers.GroupHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -48,6 +49,12 @@ public class MovingMusic extends MxSound
         this.xPosF = (float) pos.x;
         this.yPosF = (float) pos.y;
         this.zPosF = (float) pos.z;
+    }
+
+    @Override
+    public float getModVolume()
+    {
+        return ModConfig.getVolumes().otherPlayers;
     }
 }
 

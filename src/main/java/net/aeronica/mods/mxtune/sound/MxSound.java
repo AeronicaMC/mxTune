@@ -17,8 +17,6 @@
 
 package net.aeronica.mods.mxtune.sound;
 
-import net.aeronica.mods.mxtune.config.ModConfig;
-import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
 import net.minecraft.client.audio.MovingSound;
 import net.minecraft.client.audio.SoundEventAccessor;
 import net.minecraft.client.audio.SoundHandler;
@@ -27,8 +25,6 @@ import net.minecraft.util.SoundCategory;
 public abstract class MxSound extends MovingSound
 {
     protected Integer playID;
-    private PlayIdSupplier.PlayType playType;
-    private ModConfig.ConfigClient.AudioVolumes audioVolumes;
     private SoundEventAccessor soundEventAccessor;
 
     /**
@@ -39,8 +35,6 @@ public abstract class MxSound extends MovingSound
     {
         super(ModSoundEvents.PCM_PROXY, SoundCategory.MASTER);
         this.playID = playID;
-        this.playType = PlayIdSupplier.getTypeForPlayId(playID);
-        this.audioVolumes = ModConfig.ConfigClient.audioVolumes;
         this.sound = new PCMSound();
         this.volume = getModVolume();
         this.pitch = 1F;
@@ -89,19 +83,6 @@ public abstract class MxSound extends MovingSound
         this.repeatDelay = 0;
     }
 
-    private float getModVolume() { return ModConfig.getClientPlayerVolume(); }
-
-    public float getVolume()
-    {
-        switch (playType)
-        {
-            case EVENT:
-            case PERSONAL:
-            case PLAYERS:
-            case BACKGROUND:
-            default:
-                return audioVolumes.clientPlayer;
-        }
-    }
+    public float getModVolume() { return 0.5F; }
 }
 

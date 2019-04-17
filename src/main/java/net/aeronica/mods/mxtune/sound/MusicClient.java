@@ -16,6 +16,8 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
+import net.aeronica.mods.mxtune.config.ModConfig;
+
 /**
  * Using MovingSound just to make this ITickableSound based. This keeps the sound from timing out after 20 ticks.
  *
@@ -27,5 +29,11 @@ public class MusicClient extends MxSound
     {
         super(playID);
         super.attenuationType = AttenuationType.NONE;
+    }
+
+    @Override
+    public float getModVolume()
+    {
+        return ModConfig.getVolumes().backgroundMusic;
     }
 }
