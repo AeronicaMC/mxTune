@@ -416,16 +416,24 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         }
     }
 
+    /**
+     * Causes the specified playID to fade out over the specified number of seconds.
+     * @param playID the play session to fade.
+     * @param seconds to fade out and stop the song. A value of 0 will stop the song immediately.
+     */
     public static void fadeOut(int playID, int seconds)
     {
         synchronized (playIDAudioData)
         {
             AudioData audioData = playIDAudioData.get(playID);
-            if (sndSystem != null && audioData != null && audioData.getUuid() != null)
+            if (sndSystem != null && audioData != null && audioData.getUuid() != null &&
+                    seconds > 0)
             {
                 sndSystem.fadeOut(audioData.getUuid(), null, Math.max(Math.abs(seconds * 900L), 100L));
                 audioData.startFadeOut(seconds);
             }
+            else
+                queueAudioDataRemoval(playID);
         }
     }
 
