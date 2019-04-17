@@ -64,6 +64,11 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static String lastSongLine01 = "";
     private static String lastSongLine02 = "";
 
+    public static final int FADE_TIME_CHANGE_SONG = 3;
+    public static final int FADE_TIME_RESET = 2;
+    public static final int FADE_TIME_STOP_SONG = 1;
+
+
     // BACKGROUND Song Shuffling
     private static List<SongProxy> songProxies = new ArrayList<>();
     private static final Random rand = new Random();
@@ -88,7 +93,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     {
         if (currentPlayId != PlayType.INVALID)
         {
-            ClientAudio.fadeOut(currentPlayId, 2);
+            ClientAudio.fadeOut(currentPlayId, FADE_TIME_RESET);
             currentPlayId = PlayType.INVALID;
         }
         ClientPlayManager.resetTimer(2);
@@ -219,7 +224,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     {
         if (chunkChanged && currentPlayId != PlayType.INVALID)
         {
-            ClientAudio.fadeOut(currentPlayId, 4);
+            ClientAudio.fadeOut(currentPlayId, FADE_TIME_CHANGE_SONG);
             currentPlayId = PlayType.INVALID;
             resetTimer(0);
         }
@@ -387,7 +392,7 @@ public class ClientPlayManager implements IAudioStatusCallback
             if (PlayIdSupplier.compare(playTypeIn, playType) > 0)
             {
                 //ClientAudio.queueAudioDataRemoval(pid);
-                ClientAudio.fadeOut(pid, 1);
+                ClientAudio.fadeOut(pid, FADE_TIME_STOP_SONG);
             }
         }
     }
