@@ -42,6 +42,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.*;
@@ -64,7 +65,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static String lastSongLine01 = "";
     private static String lastSongLine02 = "";
 
-    public static final int FADE_TIME_CHANGE_SONG = 3;
+    public static final int FADE_TIME_CHANGE_SONG = 2;
     public static final int FADE_TIME_RESET = 2;
     public static final int FADE_TIME_STOP_SONG = 1;
 
@@ -72,13 +73,13 @@ public class ClientPlayManager implements IAudioStatusCallback
     // BACKGROUND Song Shuffling
     private static List<SongProxy> songProxies = new ArrayList<>();
     private static final Random rand = new Random();
-    private static Deque<GUID> lastSongs  = new ArrayDeque<>();
-    private static final int NUM_LAST_SONGS = 10;
+    private static Deque<String> lastSongs  = new ArrayDeque<>();
+    private static final int NUM_LAST_SONGS = 1000;
     private static int failedNewSongs;
 
     // Inter-song delay
-    private static final int MAX_DELAY = 30;
-    private static final int MIN_DELAY = 10;
+    private static final int MAX_DELAY = 16;
+    private static final int MIN_DELAY = 8;
     private static int delay = MIN_DELAY;
     private static int counter = 0;
     private static int ticks = 0;
@@ -127,37 +128,32 @@ public class ClientPlayManager implements IAudioStatusCallback
         }
     }
 
-    private static void trackLastSongs(GUID guid)
-
+    private static void trackLastSongs(@Nonnull SongProxy proxy)
     {
         int size = lastSongs.size();
-        boolean songInDeque = lastSongs.contains(guid);
+        boolean songInDeque = lastSongs.contains(proxy.getTitle());
         if (!songInDeque && size < NUM_LAST_SONGS)
         {
-            lastSongs.addLast(guid);
+            lastSongs.addLast(proxy.getTitle());
         }
         else if (!songInDeque)
         {
             lastSongs.removeFirst();
-            lastSongs.addLast(guid);
+            lastSongs.addLast(proxy.getTitle());
         }
-        Iterator<GUID> it = lastSongs.iterator();
+        Iterator<String> it = lastSongs.iterator();
         for (int i = 0; i < lastSongs.size(); i++)
         {
-            GUID guidSong = it.next();
-            SongProxy songProxy = ClientFileManager.getSongProxy(guidSong);
-            String title = "---waiting on cache to update---";
-            if (songProxy != null)
-                title = songProxy.getTitle();
-            ModLogger.debug(".......%d guid: %s, title: %s", i+1, guidSong.toString(), title);
+            String title = it.next();
+            ModLogger.debug(".......%02d, title: %s", i+1, title);
         }
     }
 
-    private static boolean heardSong(GUID guid)
+    private static boolean heardSong(String title)
     {
-        boolean hasSong =  lastSongs.contains(guid);
+        boolean hasSong =  lastSongs.contains(title);
         boolean isEmpty = lastSongs.isEmpty();
-        boolean manyFails = failedNewSongs > NUM_LAST_SONGS * 5;
+        boolean manyFails = failedNewSongs > 100;
         if (isEmpty || manyFails)
         {
             failedNewSongs = 0;
@@ -310,12 +306,12 @@ public class ClientPlayManager implements IAudioStatusCallback
                 return Reference.EMPTY_GUID; // Playlist is empty
 
             songProxy = songProxies.get(rand.nextInt(size));
-            while (heardSong(songProxy.getGUID()))
+            while (heardSong(songProxy.getTitle()))
             {
                 songProxy = songProxies.get(rand.nextInt(size));
             }
 
-            trackLastSongs(songProxy.getGUID());
+            trackLastSongs(songProxy);
 
             lastSongLine01 = I18n.format("mxtune.info.last_song_line_01", area.getName(), night ? I18n.format("mxtune.info.night") : I18n.format("mxtune.info.day"), SheetMusicUtil.formatDuration(songProxy.getDuration()));
             lastSongLine02 = I18n.format("mxtune.info.last_song_line_02", songProxy.getTitle());
@@ -347,9 +343,26 @@ public class ClientPlayManager implements IAudioStatusCallback
 
     private static boolean waiting()
     {
-        Boolean canPlay = ClientAudio.getActivePlayIDs().isEmpty() && !Reference.EMPTY_GUID.equals(currentPlaylistGUID);
+        Boolean canPlay = (ClientAudio.getActivePlayIDs().isEmpty() && !Reference.EMPTY_GUID.equals(currentPlaylistGUID));
         if (canPlay && !wait) startTimer();
         return !canPlay || (counter <= delay);
+    }
+
+    /**
+     * Test if all the playIDs are within the playType specified.
+     * @param playIDs set of playIds to test against.
+     * @param playType the playType to test against.
+     * @return true of all playIds are of the specified PlayType.
+     */
+    private static boolean allInRange(Set<Integer> playIDs, PlayType playType)
+    {
+        int result = 0;
+        for (Integer playId : playIDs)
+        {
+            if (!PlayIdSupplier.getTypeForPlayId(playId).equals(playType))
+                result++;
+        }
+        return result == 0;
     }
 
     private static void startTimer()
