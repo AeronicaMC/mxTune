@@ -83,6 +83,7 @@ public class MMLToMIDI extends MMLTransformBase
                     track++;
                     if (track > MAX_TRACKS) track = MAX_TRACKS;
                     channel++;
+                    if (channel == 8) channel = 10; // Skip over percussion channels
                     if (channel > 15) channel = 15;
                     break;
 
