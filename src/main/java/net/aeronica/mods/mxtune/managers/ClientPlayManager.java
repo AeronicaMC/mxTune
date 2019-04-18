@@ -352,7 +352,7 @@ public class ClientPlayManager implements IAudioStatusCallback
      * Test if all the playIDs are within the playType specified.
      * @param playIDs set of playIds to test against.
      * @param playType the playType to test against.
-     * @return true of all playIds are of the specified PlayType.
+     * @return true if all playIds are of the specified PlayType.
      */
     private static boolean allInRange(Set<Integer> playIDs, PlayType playType)
     {
