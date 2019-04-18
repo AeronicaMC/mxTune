@@ -78,8 +78,7 @@ public class GuiMusicOptions extends GuiScreen
 
     private GuiSliderMX sliderBackgroundMusic;
     private GuiSliderMX sliderOtherPlayers;
-    private float prevBackgroundMusic;
-    private float prevOtherPlayers;
+    private GuiSliderMX sliderMyMusic;
 
     /* Cached State for when the GUI is resized */
     private boolean isStateCached = false;
@@ -103,7 +102,7 @@ public class GuiMusicOptions extends GuiScreen
         this.buttonList.clear();
         guiListWidth = mc.fontRenderer.getStringWidth("MWMWMWMWMWMWMWMW") + 10 + 12;
         entryHeight = mc.fontRenderer.FONT_HEIGHT + 2;
-        int y = (height - 100) / 2;
+        int y = (height - 100) / 3;
         int left = (width - ((guiListWidth * 3) + 24 + 24)) / 2;
         int listHeight = height - 32 - 100 + 4;
         int listTop = 32;
@@ -133,8 +132,12 @@ public class GuiMusicOptions extends GuiScreen
         y += 22;
         float backgroundMusic = ModConfig.getVolumes().backgroundMusic * 100F;
         float otherPlayers = ModConfig.getVolumes().otherPlayers * 100F;
+        float myMusic = ModConfig.getVolumes().myMusic * 100F;
         sliderBackgroundMusic = new GuiSliderMX(20, left, y, 150, 20, I18n.format("config.mxtune.audioVolumes.background_music"), backgroundMusic, 0F, 100F, 1F);
-        sliderOtherPlayers = new GuiSliderMX(21, left + sliderBackgroundMusic.width + 2, y, 150, 20, I18n.format("config.mxtune.audioVolumes.other_players"), otherPlayers, 0F, 100F, 1F);
+        left =  left + sliderBackgroundMusic.width + 2;
+        sliderOtherPlayers = new GuiSliderMX(21, left, y, 150, 20, I18n.format("config.mxtune.audioVolumes.other_players"), otherPlayers, 0F, 100F, 1F);
+        y += 22;
+        sliderMyMusic = new GuiSliderMX(22, left, y, 150, 20, I18n.format("config.mxtune.audioVolumes.my_music"), myMusic, 0F, 100F, 1F);
 
         this.buttonList.add(buttonWhiteToPlayers);
         this.buttonList.add(buttonPlayersToWhite);
@@ -148,6 +151,7 @@ public class GuiMusicOptions extends GuiScreen
 
         this.buttonList.add(sliderBackgroundMusic);
         this.buttonList.add(sliderOtherPlayers);
+        this.buttonList.add(sliderMyMusic);
         
         reloadState();
     }
@@ -217,10 +221,12 @@ public class GuiMusicOptions extends GuiScreen
     @Override
     public void updateScreen()
     {
-        prevBackgroundMusic = sliderBackgroundMusic.getValue();
+        float prevBackgroundMusic = sliderBackgroundMusic.getValue();
         ModConfig.getVolumes().backgroundMusic = prevBackgroundMusic / 100F;
-        prevOtherPlayers = sliderOtherPlayers.getValue();
+        float prevOtherPlayers = sliderOtherPlayers.getValue();
         ModConfig.getVolumes().otherPlayers = prevOtherPlayers / 100F;
+        float prevMyMusic = sliderMyMusic.getValue();
+        ModConfig.getVolumes().myMusic = prevMyMusic / 100F;
     }
 
     @Override

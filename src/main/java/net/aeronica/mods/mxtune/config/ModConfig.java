@@ -63,13 +63,19 @@ public class ModConfig
             @LangKey("config.mxtune.audioVolumes.background_music")
             @SlidingOption
             @RangeDouble(min = 0F, max = 1.0F)
-            public float backgroundMusic = 0.25F;
+            public float backgroundMusic = 0.20F;
 
             @Name("Other Players")
             @LangKey("config.mxtune.audioVolumes.other_players")
             @SlidingOption
             @RangeDouble(min = 0F, max = 1.0F)
-            public float otherPlayers = 0.25F;
+            public float otherPlayers = 0.45F;
+
+            @Name("My Music")
+            @LangKey("config.mxtune.audioVolumes.my_music")
+            @SlidingOption
+            @RangeDouble(min = 0F, max = 1.0F)
+            public float myMusic = 0.35F;
         }
 
         public static class Sound
