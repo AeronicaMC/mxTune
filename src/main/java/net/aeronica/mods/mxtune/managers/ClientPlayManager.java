@@ -112,7 +112,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     {
         if (ClientCSDMonitor.canMXTunesPlay() && (event.phase == TickEvent.Phase.END) && ((ticks++ % 10 == 0) || Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)))
         {
-            // Poll once per second
+            // Poll twice per second
             updateChunk();
             updateBiome();
             updateWorld();
@@ -225,8 +225,8 @@ public class ClientPlayManager implements IAudioStatusCallback
             resetTimer(0);
         }
 
-        // Normal Delayed Song Change
-        if (!waiting() && ClientFileManager.songAvailable(currentPlaylistGUID) && currentPlayId == PlayType.INVALID)
+        // Normal Delayed Song Change if not chunkChanged
+        if (!waiting(chunkChanged) && ClientFileManager.songAvailable(currentPlaylistGUID) && !Reference.NO_MUSIC_GUID.equals(currentPlaylistGUID) && currentPlayId == PlayType.INVALID)
         {
             currentPlayId = BACKGROUND.getAsInt();
             GUID guidSong = randomSong(currentPlaylistGUID);
@@ -269,7 +269,7 @@ public class ClientPlayManager implements IAudioStatusCallback
             if (world.hasCapability(ModWorldPlaylistHelper.MOD_WORLD_DATA, null))
             {
                 currentPlaylistGUID = ModWorldPlaylistHelper.getPlaylistGuid(world);
-                changeAreaMusic(true);
+                changeAreaMusic(false);
             }
         }
     }
@@ -341,9 +341,10 @@ public class ClientPlayManager implements IAudioStatusCallback
         return lastSongLine02;
     }
 
-    private static boolean waiting()
+    private static boolean waiting(boolean override)
     {
-        Boolean canPlay = (ClientAudio.getActivePlayIDs().isEmpty() && !Reference.EMPTY_GUID.equals(currentPlaylistGUID));
+        Boolean canPlay = (override && allInRange(ClientAudio.getActivePlayIDs(), BACKGROUND)||ClientAudio.getActivePlayIDs().isEmpty() && !Reference.EMPTY_GUID.equals(currentPlaylistGUID));
+        if (override) resetTimer(0);
         if (canPlay && !wait) startTimer();
         return !canPlay || (counter <= delay);
     }
@@ -387,7 +388,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     {
         int normalizedDelay = (delay) / 2;
         int normalizedCounter = Math.min(normalizedDelay, counter / 2);
-        return String.format("Waiting: %s, Delay: %03d, timer: %03d", waiting(), normalizedDelay, normalizedCounter);
+        return String.format("Waiting: %s, Delay: %03d, timer: %03d", waiting(false), normalizedDelay, normalizedCounter);
     }
 
     public static void removeLowerPriorityPlayIds(int playId)
@@ -404,7 +405,6 @@ public class ClientPlayManager implements IAudioStatusCallback
             PlayType playType = getTypeForPlayId(pid);
             if (PlayIdSupplier.compare(playTypeIn, playType) > 0)
             {
-                //ClientAudio.queueAudioDataRemoval(pid);
                 ClientAudio.fadeOut(pid, FADE_TIME_STOP_SONG);
             }
         }
