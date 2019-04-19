@@ -349,17 +349,21 @@ public class GroupManager
 
             debug(playerInitiator.getName() + " pokes " + playerTarget.getName());
             Group targetGroup = getMembersGroup(playerTarget.getEntityId());
+            Group initiatorGroup = getMembersGroup(playerInitiator.getEntityId());
             if ((!targetGroup.isEmpty()) && targetGroup.getLeaderEntityID().equals(playerTarget.getEntityId())
-                    && isNotGroupMember(playerInitiator.getEntityId()))
+                    && initiatorGroup.isEmpty())
             {
                 if (!notMuted(playerInitiator, playerTarget)) return;
                 setSParams(playerInitiator, targetGroup.getGroupID().toString(), "", "");
                 PacketDispatcher.sendTo(new JoinGroupMessage(targetGroup.getGroupID()), (EntityPlayerMP) playerInitiator);
             }
-            else if (!isLeader(playerTarget.getEntityId()) && isNotGroupMember(playerInitiator.getEntityId()))
-                playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.player_not_leader", playerTarget.getName()));
-            else
-                playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.cannot_join_if_group_member"));
+            else if (!targetGroup.isEmpty())
+            {
+                if (!isLeader(playerTarget.getEntityId()) && initiatorGroup.isEmpty())
+                    playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.player_not_leader", playerTarget.getName()));
+                else
+                    playerInitiator.sendMessage(new TextComponentTranslation("mxtune.chat.groupManager.cannot_join_if_group_member"));
+            }
         }
     }
 
