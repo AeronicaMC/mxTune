@@ -19,6 +19,7 @@ package net.aeronica.mods.mxtune.gui.mml;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.caches.MXTuneFile;
 import net.aeronica.mods.mxtune.caches.MXTuneFileHelper;
@@ -60,6 +61,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static net.aeronica.mods.mxtune.gui.mml.SortHelper.PLAYLIST_ORDERING;
+import static net.aeronica.mods.mxtune.gui.mml.SortHelper.SONG_PROXY_ORDERING;
+
 public class GuiPlaylistManager extends GuiScreen
 {
     private static final String TITLE = I18n.format("mxtune.gui.guiAreaManager.title");
@@ -69,7 +73,7 @@ public class GuiPlaylistManager extends GuiScreen
     private Set<Integer> cachedSelectedSongs = new HashSet<>();
     private int cachedSelectedFileDummy = -1;
 
-    // Area Multi Selector
+    // Playlist Selector
     private GuiScrollingListOf<Area> guiAreaList;
     private List<Area> cachedAreaGuiList = new ArrayList<>();
     private int cachedSelectedAreaIndex = -1;
@@ -208,7 +212,10 @@ public class GuiPlaylistManager extends GuiScreen
             }
 
             @Override
-            protected void selectedClickedCallback(int selectedIndex) { /* NOP */ }
+            protected void selectedClickedCallback(int selectedIndex)
+            {
+                showSelectedPlaylistsPlaylists(guiAreaList.get(selectedIndex));
+            }
 
             @Override
             protected void selectedDoubleClickedCallback(int selectedIndex)
@@ -521,7 +528,7 @@ public class GuiPlaylistManager extends GuiScreen
                 songList.add(songProxyPath);
         }
         current.clear();
-        return songList;
+        return SONG_PROXY_ORDERING.sortedCopy(songList);
     }
 
     private void shipIt()
@@ -583,9 +590,27 @@ public class GuiPlaylistManager extends GuiScreen
                            Thread.currentThread().interrupt();
                        }
                        guiAreaList.clear();
-                       guiAreaList.addAll(ClientFileManager.getAreas());
+                       guiAreaList.addAll(PLAYLIST_ORDERING.sortedCopy(ClientFileManager.getAreas()));
                        updateState();
                    }).start();
+    }
+
+    private void showSelectedPlaylistsPlaylists(Area selectedArea)
+    {
+        if (selectedArea != null)
+        {
+            if (!Reference.NO_MUSIC_GUID.equals(selectedArea.getGUID()) && !Reference.EMPTY_GUID.equals(selectedArea.getGUID()))
+                areaName.setText(ModGuiUtils.getPlaylistName(selectedArea));
+            else
+                areaName.setText("");
+            guiDay.clear();
+            guiNight.clear();
+            guiDay.addAll(SONG_PROXY_ORDERING.sortedCopy(selectedArea.getPlayListDay()));
+            guiNight.addAll(SONG_PROXY_ORDERING.sortedCopy(selectedArea.getPlayListNight()));
+            cachedSelectedDaySongs.clear();
+            cachedSelectedNightSongs.clear();
+            updateState();
+        }
     }
 
     private void  updatePlayersSelectedAreaGuid(Area selectedArea)
