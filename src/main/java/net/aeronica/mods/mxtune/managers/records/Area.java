@@ -68,10 +68,19 @@ public class Area extends BaseData
         return area;
     }
 
-    public static Area noMusic()
+    public static Area emptyPlaylist()
     {
-        Area area = new Area("[ No Music ]");
+        Area area = new Area();
+        area.name = "[ empty playlist ]";
         area.guid = new GUID(0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff);
+        return area;
+    }
+
+    public static Area undefinedPlaylist()
+    {
+        Area area = new Area();
+        area.name = " [ undefined playlist ] ";
+        area.guid = new GUID(0L, 0L, 0L, 0L);
         return area;
     }
 

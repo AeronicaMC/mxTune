@@ -27,7 +27,7 @@ public class Reference
 
     public static final UUID EMPTY_UUID = new UUID(0L, 0L);
     public static final GUID EMPTY_GUID = new GUID(0L,0L,0L,0L);
-    public static final GUID NO_MUSIC_GUID = Area.noMusic().getGUID();
+    public static final GUID NO_MUSIC_GUID = Area.emptyPlaylist().getGUID();
     public static final String MOD_ID = "mxtune";
     public static final String MOD_NAME = "mxTune";
     public static final String VERSION = "{@VERSION}";

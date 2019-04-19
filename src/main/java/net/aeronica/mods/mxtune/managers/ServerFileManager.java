@@ -143,9 +143,9 @@ public class ServerFileManager
     private static void initAreas()
     {
         // The NULL and NO MUSIC Playlists.
-        Area nullPlaylist = new Area();
+        Area nullPlaylist = Area.undefinedPlaylist();
         areas.put(nullPlaylist.getGUID(), nullPlaylist);
-        Area noPlaylists = Area.noMusic();
+        Area noPlaylists = Area.emptyPlaylist();
         areas.put(noPlaylists.getGUID(), noPlaylists);
 
         List<Path> areaFiles = new ArrayList<>();
@@ -189,7 +189,7 @@ public class ServerFileManager
      */
     public static synchronized Area getArea(GUID guidArea)
     {
-        return areas.containsKey(guidArea) ? areas.get(guidArea) : new Area();
+        return areas.containsKey(guidArea) ? areas.get(guidArea) : Area.undefinedPlaylist();
     }
 
     public static ResultMessage setArea(GUID dataTypeUuid, Area area)
