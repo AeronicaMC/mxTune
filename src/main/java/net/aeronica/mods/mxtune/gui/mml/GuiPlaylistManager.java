@@ -58,6 +58,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -102,6 +104,7 @@ public class GuiPlaylistManager extends GuiScreen
     private boolean cacheKeyRepeatState;
     private boolean isStateCached;
     private GuiButton buttonToServer;
+    private Pattern patternPlaylistName = Pattern.compile("^\\s+|\\s+$|^\\[");
 
     // Uploading
     private boolean uploading = false;
@@ -343,9 +346,20 @@ public class GuiPlaylistManager extends GuiScreen
 
         cachedAreaName = areaName.getText();
 
-        buttonToServer.enabled = !(areaName.getText().trim().equals("") || (guiDay.isEmpty() && guiNight.isEmpty() || uploading));
+        buttonToServer.enabled = !(areaName.getText().equals("") ||
+                                           !globalMatcher(patternPlaylistName, areaName.getText()) ||
+                                           (guiDay.isEmpty() && guiNight.isEmpty() || uploading));
         //updateSongCountStatus();
         isStateCached = true;
+    }
+
+    private boolean globalMatcher(Pattern pattern, String string)
+    {
+        int result = 0;
+        Matcher matcher = pattern.matcher(string);
+        while(matcher.find())
+            result++;
+        return result == 0;
     }
 
     private void updateSongCountStatus()
