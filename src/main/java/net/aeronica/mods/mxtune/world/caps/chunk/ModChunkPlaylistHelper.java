@@ -26,7 +26,6 @@ import net.aeronica.mods.mxtune.util.MXTuneException;
 import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -79,7 +78,7 @@ public class ModChunkPlaylistHelper
     {
         if (MXTune.proxy.getEffectiveSide() == Side.SERVER)
         {
-            PacketDispatcher.sendTo(new UpdateChunkMusicData(chunk.x, chunk.z, getPlaylistGuid(chunk)), (EntityPlayerMP) entityPlayer);
+            PacketDispatcher.sendToDimension(new UpdateChunkMusicData(chunk.x, chunk.z, getPlaylistGuid(chunk)), entityPlayer.getEntityWorld().provider.getDimension());
         }
     }
 }

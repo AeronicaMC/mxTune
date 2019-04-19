@@ -25,7 +25,6 @@ import net.aeronica.mods.mxtune.util.MXTuneException;
 import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -75,7 +74,6 @@ public class ModWorldPlaylistHelper
 
     public static void sync(EntityPlayer entityPlayer, World world)
     {
-        PacketDispatcher.sendToAllAround(new UpdateWorldMusicData(getPlaylistGuid(world)), entityPlayer, 80);
-        PacketDispatcher.sendTo(new UpdateWorldMusicData(getPlaylistGuid(world)), (EntityPlayerMP) entityPlayer);
+        PacketDispatcher.sendToDimension(new UpdateWorldMusicData(getPlaylistGuid(world)), entityPlayer.getEntityWorld().provider.getDimension());
     }
 }
