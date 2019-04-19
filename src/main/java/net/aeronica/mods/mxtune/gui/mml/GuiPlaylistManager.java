@@ -60,7 +60,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class GuiAreaManager extends GuiScreen
+public class GuiPlaylistManager extends GuiScreen
 {
     private static final String TITLE = I18n.format("mxtune.gui.guiAreaManager.title");
     // Song Multi Selector
@@ -107,7 +107,7 @@ public class GuiAreaManager extends GuiScreen
     private BiMap<SongProxy, Path> songProxyPathBiMap;
 
     // TODO: Finnish updating string to use the lang file.
-    public GuiAreaManager()
+    public GuiPlaylistManager()
     {
         cacheKeyRepeatState = Keyboard.areRepeatEventsEnabled();
         Keyboard.enableRepeatEvents(false);
