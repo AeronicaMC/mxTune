@@ -35,6 +35,7 @@ import net.aeronica.mods.mxtune.network.bidirectional.GetAreasMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.SetServerSerializedDataMessage;
 import net.aeronica.mods.mxtune.network.server.PlayerSelectedAreaMessage;
 import net.aeronica.mods.mxtune.util.CallBackManager;
+import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
@@ -44,6 +45,9 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -54,10 +58,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -76,9 +79,9 @@ public class GuiPlaylistManager extends GuiScreen
     private int cachedSelectedFileDummy = -1;
 
     // Playlist Selector
-    private GuiScrollingListOf<Area> guiAreaList;
-    private List<Area> cachedAreaGuiList = new ArrayList<>();
-    private int cachedSelectedAreaIndex = -1;
+    private GuiScrollingListOf<Area> guiPlayList;
+    private List<Area> cachedPlayListGuiList = new ArrayList<>();
+    private int cachedSelectedPlayListIndex = -1;
 
     // PlayList Day
     private GuiScrollingMultiListOf<SongProxy> guiDay;
@@ -92,12 +95,14 @@ public class GuiPlaylistManager extends GuiScreen
     private Set<Integer> cachedSelectedNightSongs = new HashSet<>();
     private int cachedSelectedNightSongDummy = -1;
 
-    // Area
-    private GuiTextField areaName;
-    private String cachedAreaName = "";
+    // Playlist Name Field
+    private GuiTextField playListName;
+    private String cachedPlayListName = "";
 
     // Status
-    private GuiTextField status;
+    private GuiScrollingListOf<ITextComponent> guiStatusList;
+    private List<ITextComponent> cachedGuiStatusList = new ArrayList<>();
+    private final DateFormat timeInstance = SimpleDateFormat.getTimeInstance(DateFormat.MEDIUM);
 
     // Misc
     private GuiLabel titleLabel;
@@ -112,6 +117,8 @@ public class GuiPlaylistManager extends GuiScreen
     // Mapping
     private BiMap<Path, SongProxy> pathSongProxyBiMap = HashBiMap.create();
     private BiMap<SongProxy, Path> songProxyPathBiMap;
+    private BiMap<Path, GUID> pathSongGuidBiMap = HashBiMap.create();
+    private BiMap<GUID, Path> songGuidPathBiMap;
 
     // TODO: Finnish updating string to use the lang file.
     public GuiPlaylistManager()
@@ -130,28 +137,28 @@ public class GuiPlaylistManager extends GuiScreen
     @Override
     public void initGui()
     {
-        int guiAreaListWidth = Math.min(Math.max((width - 15) / 3, 100), 400);
-        int guiFileListWidth = guiAreaListWidth;
+        int guiPlayListListWidth = Math.min(Math.max((width - 15) / 3, 100), 400);
+        int guiFileListWidth = guiPlayListListWidth;
         int singleLineHeight = mc.fontRenderer.FONT_HEIGHT + 2;
-        int entryAreaHeight = singleLineHeight;
-        int padding = 5;
+        int entryPlayListHeight = singleLineHeight;
+        int padding = 4;
         int titleTop = padding;
         int left = padding;
         int titleWidth = fontRenderer.getStringWidth(I18n.format("mxtune.gui.guiAreaManager.title"));
         int titleX = (width / 2) - (titleWidth / 2);
 
         int titleHeight = singleLineHeight + 2;
-        int statusHeight = singleLineHeight + 2;
+        int statusHeight = singleLineHeight * 8;
         int entryFileHeight = singleLineHeight;
 
         int listTop = titleTop + titleHeight;
-        int fileListBottom = Math.max(height - statusHeight - listTop - titleHeight - padding, entryAreaHeight * 9);
+        int fileListBottom = Math.max(height - statusHeight - listTop - titleHeight - padding, entryPlayListHeight * 9);
 
         int fileListHeight = Math.max(fileListBottom - listTop, singleLineHeight);
         int statusTop = fileListBottom + padding;
 
         int thirdsHeight = ((statusTop - listTop) / 3) - padding;
-        int areaListHeight = Math.max(thirdsHeight, entryAreaHeight);
+        int areaListHeight = Math.max(thirdsHeight, entryPlayListHeight);
         int areaBottom = listTop + areaListHeight;
 
         int dayTop = areaBottom + padding;
@@ -193,7 +200,7 @@ public class GuiPlaylistManager extends GuiScreen
             }
         };
 
-        guiAreaList = new GuiScrollingListOf<Area>(this, entryAreaHeight, guiAreaListWidth, areaListHeight, listTop, areaBottom, width - guiAreaListWidth - padding)
+        guiPlayList = new GuiScrollingListOf<Area>(this, entryPlayListHeight, guiPlayListListWidth, areaListHeight, listTop, areaBottom, width - guiPlayListListWidth - padding)
         {
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
@@ -217,17 +224,17 @@ public class GuiPlaylistManager extends GuiScreen
             @Override
             protected void selectedClickedCallback(int selectedIndex)
             {
-                showSelectedPlaylistsPlaylists(guiAreaList.get(selectedIndex));
+                showSelectedPlaylistsPlaylists(guiPlayList.get(selectedIndex));
             }
 
             @Override
             protected void selectedDoubleClickedCallback(int selectedIndex)
             {
-                updatePlayersSelectedAreaGuid(guiAreaList.get(selectedIndex));
+                updatePlayersSelectedAreaGuid(guiPlayList.get(selectedIndex));
             }
         };
 
-        guiDay = new GuiScrollingMultiListOf<SongProxy>(this, singleLineHeight, guiAreaListWidth, areaListHeight ,dayTop, dayBottom, width - guiAreaListWidth - padding)
+        guiDay = new GuiScrollingMultiListOf<SongProxy>(this, singleLineHeight, guiPlayListListWidth, areaListHeight ,dayTop, dayBottom, width - guiPlayListListWidth - padding)
         {
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
@@ -236,7 +243,7 @@ public class GuiPlaylistManager extends GuiScreen
             }
         };
 
-        guiNight = new GuiScrollingMultiListOf<SongProxy>(this, singleLineHeight, guiAreaListWidth, areaListHeight, nightTop, nightBottom, width - guiAreaListWidth - padding)
+        guiNight = new GuiScrollingMultiListOf<SongProxy>(this, singleLineHeight, guiPlayListListWidth, areaListHeight, nightTop, nightBottom, width - guiPlayListListWidth - padding)
         {
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
@@ -245,8 +252,25 @@ public class GuiPlaylistManager extends GuiScreen
             }
         };
 
-        status = new GuiTextField(0, fontRenderer, left, statusTop, width - padding * 2, singleLineHeight + 2);
-        status.setMaxStringLength(256);
+        guiStatusList = new GuiScrollingListOf<ITextComponent>(this, singleLineHeight, width - padding *2, statusHeight, statusTop, height - 22 - padding * 2, left) {
+            @Override
+            protected void selectedClickedCallback(int selectedIndex) { /* NOP */ }
+
+            @Override
+            protected void selectedDoubleClickedCallback(int selectedIndex){ /* NOP */ }
+
+            @Override
+            protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
+            {
+                ITextComponent component = get(slotIdx);
+                if (component != null)
+                {
+                    String statusEntry = component.getFormattedText();
+                    String trimmedName = fontRenderer.trimStringToWidth(statusEntry, listWidth - 10);
+                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, -1);
+                }
+            }
+        };
 
         int buttonWidth = 80;
         int buttonTop = height - 22;
@@ -259,13 +283,13 @@ public class GuiPlaylistManager extends GuiScreen
         int selectButtonWidth = guiFileListWidth - 10;
         int selectButtonLeft = guiFileList.getRight() + 8;
 
-        areaName = new GuiTextField(1, fontRenderer, selectButtonLeft, listTop, selectButtonWidth, singleLineHeight + 2);
-        buttonToServer = new GuiButton(6, selectButtonLeft, areaName.y + areaName.height + padding, selectButtonWidth, 20, "Send to Server");
+        playListName = new GuiTextField(1, fontRenderer, selectButtonLeft, listTop, selectButtonWidth, singleLineHeight + 2);
+        buttonToServer = new GuiButton(6, selectButtonLeft, playListName.y + playListName.height + padding, selectButtonWidth, 20, "Send to Server");
 
         GuiButton buttonToDay = new GuiButton(2, selectButtonLeft, dayTop + padding, selectButtonWidth, 20, "To Day List ->");
         GuiButton buttonToNight = new GuiButton(3, selectButtonLeft, nightTop + padding, selectButtonWidth, 20, "To Night List ->");
-        GuiButton buttonDDeleteDay = new GuiButton(4, selectButtonLeft, buttonToDay.y + buttonToDay.height + padding, selectButtonWidth, 20, "Delete");
-        GuiButton buttonDDeleteNight = new GuiButton(5, selectButtonLeft, buttonToNight.y + buttonToNight.height + padding, selectButtonWidth, 20, "Delete");
+        GuiButton buttonDDeleteDay = new GuiButton(4, selectButtonLeft, buttonToDay.y + buttonToDay.height, selectButtonWidth, 20, "Delete");
+        GuiButton buttonDDeleteNight = new GuiButton(5, selectButtonLeft, buttonToNight.y + buttonToNight.height, selectButtonWidth, 20, "Delete");
 
         buttonList.add(buttonImport);
         buttonList.add(buttonDone);
@@ -300,8 +324,8 @@ public class GuiPlaylistManager extends GuiScreen
     private void reloadState()
     {
         if (!isStateCached) return;
-        guiAreaList.addAll(cachedAreaGuiList);
-        guiAreaList.setSelectedIndex(cachedSelectedAreaIndex);
+        guiPlayList.addAll(cachedPlayListGuiList);
+        guiPlayList.setSelectedIndex(cachedSelectedPlayListIndex);
 
         guiFileList.addAll(cachedFileList);
         guiFileList.setSelectedRowIndexes(cachedSelectedSongs);
@@ -315,18 +339,21 @@ public class GuiPlaylistManager extends GuiScreen
         guiNight.setSelectedRowIndexes(cachedSelectedNightSongs);
         guiNight.setSelectedIndex(cachedSelectedNightSongDummy);
 
-        areaName.setText(cachedAreaName);
+        playListName.setText(cachedPlayListName);
+
+        guiStatusList.addAll(cachedGuiStatusList);
+        guiStatusList.scrollToEnd();
 
         updateSongCountStatus();
-        guiAreaList.resetScroll();
+        guiPlayList.resetScroll();
         guiFileList.resetScroll();
     }
 
     private void updateState()
     {
-        cachedAreaGuiList.clear();
-        cachedAreaGuiList.addAll(guiAreaList.getList());
-        cachedSelectedAreaIndex = guiAreaList.getSelectedIndex();
+        cachedPlayListGuiList.clear();
+        cachedPlayListGuiList.addAll(guiPlayList.getList());
+        cachedSelectedPlayListIndex = guiPlayList.getSelectedIndex();
 
         cachedSelectedSongs.clear();
         cachedSelectedSongs.addAll(guiFileList.getSelectedRowIndexes());
@@ -344,10 +371,13 @@ public class GuiPlaylistManager extends GuiScreen
         cachedNightList.addAll(guiNight.getList());
         cachedSelectedNightSongDummy = guiNight.getSelectedIndex();
 
-        cachedAreaName = areaName.getText();
+        cachedPlayListName = playListName.getText();
 
-        buttonToServer.enabled = !(areaName.getText().equals("") ||
-                                           !globalMatcher(patternPlaylistName, areaName.getText()) ||
+        cachedGuiStatusList.clear();
+        cachedGuiStatusList.addAll(guiStatusList.getList());
+
+        buttonToServer.enabled = !(playListName.getText().equals("") ||
+                                           !globalMatcher(patternPlaylistName, playListName.getText()) ||
                                            (guiDay.isEmpty() && guiNight.isEmpty() || uploading));
         //updateSongCountStatus();
         isStateCached = true;
@@ -364,12 +394,15 @@ public class GuiPlaylistManager extends GuiScreen
 
     private void updateSongCountStatus()
     {
-        status.setText(String.format("Selected Song Count: %s", guiFileList.getSelectedRowsCount()));
+        //updateStatus(String.format("Selected Song Count: %s", guiFileList.getSelectedRowsCount()));
     }
 
     private void updateStatus(String message)
     {
-        status.setText(message);
+        Date dateNow = new Date();
+        String now = timeInstance.format(dateNow);
+        guiStatusList.add(new TextComponentString(TextFormatting.GRAY + now + "> " + TextFormatting.RESET + message));
+        guiStatusList.scrollToEnd();
     }
 
     @Override
@@ -378,18 +411,18 @@ public class GuiPlaylistManager extends GuiScreen
         drawDefaultBackground();
         titleLabel.drawLabel(mc, mouseX, mouseY);
         guiFileList.drawScreen(mouseX, mouseY, partialTicks);
-        guiAreaList.drawScreen(mouseX, mouseY, partialTicks);
+        guiPlayList.drawScreen(mouseX, mouseY, partialTicks);
         guiDay.drawScreen(mouseX, mouseY, partialTicks);
         guiNight.drawScreen(mouseX, mouseY, partialTicks);
-        areaName.drawTextBox();
-        status.drawTextBox();
+        playListName.drawTextBox();
+        guiStatusList.drawScreen(mouseX, mouseY, partialTicks);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
     @Override
     public void updateScreen()
     {
-        Keyboard.enableRepeatEvents(areaName.isFocused());
+        Keyboard.enableRepeatEvents(playListName.isFocused());
     }
 
     @Override
@@ -405,9 +438,11 @@ public class GuiPlaylistManager extends GuiScreen
         switch (button.id)
         {
             case 0:
+                // Open Music Library
                 mc.displayGuiScreen(new GuiMusicLibrary(this));
                 break;
             case 1:
+                // Done
                 for (SongProxy songProxy : guiDay)
                     if (songProxy != null)
                         ModLogger.debug("Day Song   guid: %s, Title: %s", songProxy.getGUID().toString(), songProxy.getTitle());
@@ -445,8 +480,8 @@ public class GuiPlaylistManager extends GuiScreen
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException
     {
-        if (!(keyCode == Keyboard.KEY_TAB))
-            areaName.textboxKeyTyped(typedChar, keyCode);
+        if (keyCode != Keyboard.KEY_TAB)
+            playListName.textboxKeyTyped(typedChar, keyCode);
         updateState();
         super.keyTyped(typedChar, keyCode);
     }
@@ -461,7 +496,7 @@ public class GuiPlaylistManager extends GuiScreen
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
-        areaName.mouseClicked(mouseX, mouseY, mouseButton);
+        playListName.mouseClicked(mouseX, mouseY, mouseButton);
         super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
@@ -470,8 +505,9 @@ public class GuiPlaylistManager extends GuiScreen
     {
         int mouseX = Mouse.getEventX() * width / mc.displayWidth;
         int mouseY = height - Mouse.getEventY() * height / mc.displayHeight - 1;
-        guiAreaList.handleMouseInput(mouseX, mouseY);
+        guiPlayList.handleMouseInput(mouseX, mouseY);
         guiFileList.handleMouseInput(mouseX, mouseY);
+        guiStatusList.handleMouseInput(mouseX, mouseY);
         guiDay.handleMouseInput(mouseX, mouseY);
         guiNight.handleMouseInput(mouseX, mouseY);
         super.handleMouseInput();
@@ -484,6 +520,7 @@ public class GuiPlaylistManager extends GuiScreen
                 () ->
                 {
                     pathSongProxyBiMap.clear();
+                    pathSongGuidBiMap.clear();
                     Path pathDir = FileHelper.getDirectory(FileHelper.CLIENT_LIB_FOLDER, Side.CLIENT);
                     PathMatcher filter = FileHelper.getMxtMatcher(pathDir);
                     try (Stream<Path> paths = Files.list(pathDir))
@@ -503,7 +540,10 @@ public class GuiPlaylistManager extends GuiScreen
                         files.add(file);
                         SongProxy songProxy = pathToSongProxy(file);
                         if (songProxy != null)
+                        {
                             pathSongProxyBiMap.forcePut(file, songProxy);
+                            pathSongGuidBiMap.forcePut(file, songProxy.getGUID());
+                        }
                         else
                             throw new MXTuneRuntimeException("soundProxy Unexpected NULL in initFileList");
                     }
@@ -511,6 +551,7 @@ public class GuiPlaylistManager extends GuiScreen
                     guiFileList.clear();
                     guiFileList.addAll(files);
                     songProxyPathBiMap = pathSongProxyBiMap.inverse();
+                    songGuidPathBiMap = pathSongGuidBiMap.inverse();
                 }).start();
     }
 
@@ -526,6 +567,7 @@ public class GuiPlaylistManager extends GuiScreen
         return null;
     }
 
+    @Nullable
     private Song pathToSong(Path path)
     {
         MXTuneFile mxTuneFile = MXTuneFileHelper.getMXTuneFile(path);
@@ -534,8 +576,7 @@ public class GuiPlaylistManager extends GuiScreen
         else
             ModLogger.warn("mxt file is missing or corrupt");
 
-        // The EMPTY SongProxy
-        return new Song();
+        return null;
     }
 
     // So crude: add unique songs only
@@ -557,8 +598,9 @@ public class GuiPlaylistManager extends GuiScreen
         // TODO: push <-> status need to be created
 
         uploading = true;
-        areaName.setText(areaName.getText().trim());
-        Area area = new Area(areaName.getText(), guiDay.getList(), guiNight.getList());
+        playListName.setText(playListName.getText().trim());
+        Area area = new Area(playListName.getText(), guiDay.getList(), guiNight.getList());
+        updateStatus(TextFormatting.GOLD + String.format("Upload Playlist: %s", TextFormatting.RESET + playListName.getText().trim()));
         PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(area.getGUID(), SetServerSerializedDataMessage.SetType.AREA, area));
 
         // Build one list of songs to send from both lists to remove duplicates!
@@ -578,9 +620,15 @@ public class GuiPlaylistManager extends GuiScreen
                              count++;
                              if (songProxy != null)
                              {
-                                 Song song = pathToSong(songProxyPathBiMap.get(songProxy));
-                                 PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(songProxy.getGUID(), SetServerSerializedDataMessage.SetType.MUSIC, song));
-                                 updateStatus(String.format("Uploading %s of %s: %s", String.format("%03d", count), String.format("%03d",proxyMap.size()), song.getTitle()));
+                                 Song song = pathToSong(songGuidPathBiMap.get(songProxy.getGUID()));
+                                 if (song != null)
+                                 {
+                                     PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(songProxy.getGUID(), SetServerSerializedDataMessage.SetType.MUSIC, song));
+                                     updateStatus(TextFormatting.DARK_GREEN + String.format("Uploading %s of %s: %s", String.format("%03d", count), String.format("%03d", proxyMap.size()), TextFormatting.RESET + song.getTitle()));
+                                 } else
+                                 {
+                                     updateStatus(String.format(TextFormatting.DARK_RED + "Song not found in library! %s of %s: %s", String.format("%03d", count), String.format("%03d", proxyMap.size()), TextFormatting.RESET + songProxy.getTitle()));
+                                 }
                                  try
                                  {
                                      Thread.sleep(1000);
@@ -610,8 +658,8 @@ public class GuiPlaylistManager extends GuiScreen
                        {
                            Thread.currentThread().interrupt();
                        }
-                       guiAreaList.clear();
-                       guiAreaList.addAll(PLAYLIST_ORDERING.sortedCopy(ClientFileManager.getAreas()));
+                       guiPlayList.clear();
+                       guiPlayList.addAll(PLAYLIST_ORDERING.sortedCopy(ClientFileManager.getAreas()));
                        updateState();
                    }).start();
     }
@@ -621,9 +669,9 @@ public class GuiPlaylistManager extends GuiScreen
         if (selectedArea != null)
         {
             if (!Reference.NO_MUSIC_GUID.equals(selectedArea.getGUID()) && !Reference.EMPTY_GUID.equals(selectedArea.getGUID()))
-                areaName.setText(ModGuiUtils.getPlaylistName(selectedArea));
+                playListName.setText(ModGuiUtils.getPlaylistName(selectedArea));
             else
-                areaName.setText("");
+                playListName.setText("");
             guiDay.clear();
             guiNight.clear();
             guiDay.addAll(SONG_PROXY_ORDERING.sortedCopy(selectedArea.getPlayListDay()));
@@ -642,11 +690,11 @@ public class GuiPlaylistManager extends GuiScreen
         {
             PacketDispatcher.sendToServer(new PlayerSelectedAreaMessage(selectedArea.getGUID()));
             String areaNameOrUndefined = selectedArea.getName().trim().equals("") ? I18n.format("mxtune.info.playlist.null_playlist") : selectedArea.getName();
-            updateStatus(String.format("Updated StaffOfMusic Area to: %s", areaNameOrUndefined));
+            updateStatus(String.format(TextFormatting.GOLD + "Updated StaffOfMusic Playlist to: %s", TextFormatting.RESET + areaNameOrUndefined));
         }
         else
         {
-            updateStatus("Failed to Update StaffOfMusic Area!");
+            updateStatus(TextFormatting.DARK_RED + "Failed to Update StaffOfMusic Playlist!");
         }
     }
 }
