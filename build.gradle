@@ -77,8 +77,8 @@ shadowJar {
     configurations = [project.configurations.compile]
 	archiveName = tasks.jar.archiveName
 	relocate 'org.antlr.v4.runtime', 'net.aeronica.shadowedlibs.org.antlr.v4.runtime'
-    relocate 'de.johni0702.minecraft.gui', 'net.aeronica.shadowedlibs.de.johni0702.minecraft.gui'
-    relocate 'assets/jgui', 'assets/mxtune/jgui'
+    // relocate 'de.johni0702.minecraft.gui', 'net.aeronica.shadowedlibs.de.johni0702.minecraft.gui'
+    // relocate 'assets/jgui', 'assets/mxtune/jgui'
 }
 
 reobfJar {
