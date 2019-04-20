@@ -71,6 +71,12 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
         return scrollDistance;
     }
 
+    public void scrollToEnd()
+    {
+        elementClicked(getList().size());
+        resetScroll();
+    }
+
     private boolean isEnableHighlightSelected()
     {
         return this.highlightSelected;
