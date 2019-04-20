@@ -1,6 +1,5 @@
 language: java
 sudo: false
-install: true
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -21,7 +20,7 @@ before_install:
 - chmod +x gradlew
 install: ./gradlew setupCIWorkspace -s
 script:
-- "./gradlew clean build sonarqube"
+- "./gradlew clean build sonarqube --stacktrace"
 cache:
   directories:
   - "$HOME/.m2/repository"
