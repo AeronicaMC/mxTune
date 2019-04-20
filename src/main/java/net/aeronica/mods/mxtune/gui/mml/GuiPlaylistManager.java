@@ -387,6 +387,12 @@ public class GuiPlaylistManager extends GuiScreen
     }
 
     @Override
+    public void updateScreen()
+    {
+        Keyboard.enableRepeatEvents(areaName.isFocused());
+    }
+
+    @Override
     public boolean doesGuiPauseGame()
     {
         return false;
@@ -439,7 +445,8 @@ public class GuiPlaylistManager extends GuiScreen
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException
     {
-        areaName.textboxKeyTyped(typedChar, keyCode);
+        if (!(keyCode == Keyboard.KEY_TAB))
+            areaName.textboxKeyTyped(typedChar, keyCode);
         updateState();
         super.keyTyped(typedChar, keyCode);
     }
@@ -447,8 +454,8 @@ public class GuiPlaylistManager extends GuiScreen
     @Override
     public void onResize(@Nonnull Minecraft mcIn, int w, int h)
     {
-        updateState();
         super.onResize(mcIn, w, h);
+        updateState();
     }
 
     @Override
