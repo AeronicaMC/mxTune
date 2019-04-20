@@ -20,10 +20,7 @@ apply plugin: 'org.sonarqube'
 apply plugin: 'java'
 apply plugin: 'com.github.johnrengelman.shadow'
 
-sourceCompatibility = targetCompatibility = "1.8"
-compileJava {
-    sourceCompatibility = targetCompatibility = "1.8"
-}
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 
 ext.buildProperties = file "build.properties"
 
@@ -34,6 +31,10 @@ buildProperties.withReader {
 }
 
 repositories {
+    jcenter()
+    maven {
+        url 'https://oss.sonatype.org/content/repositories/snapshots'
+    }
     maven {
         // location of the maven that hosts JEI files
         name = "Progwml6 maven"
