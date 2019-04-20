@@ -20,7 +20,7 @@ import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
 
 /**
- * Using MovingSound just to make this ITickableSound based. This keeps the sound from timing out after 20 ticks.
+ * MusicClient ISound
  *
  * @author Paul Boese a.k.a. Aeronica
  */
@@ -39,8 +39,12 @@ public class MusicClient extends MxSound
         switch (playType)
         {
             case PERSONAL:
+                // Volume for the personal player and when testing music in the library
+            case PLAYERS:
+                // Volume when I play my own mxTune instruments in game.
                 return ModConfig.getVolumes().myMusic;
             case BACKGROUND:
+                // Background music
                 return ModConfig.getVolumes().backgroundMusic;
             default:
                 return ModConfig.getVolumes().backgroundMusic;
