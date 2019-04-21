@@ -55,6 +55,17 @@ public class ModGuiUtils
         return pointX >= rectX - 1 && pointX < rectX + rectWidth + 1 && pointY >= rectY - 1 && pointY < rectY + rectHeight + 1;
     }
 
+    public static boolean isPointInRegion(int x, int y, int height, int width, int guiLeft,  int guiTop, int pointX, int pointY)
+    {
+        pointX = pointX - guiLeft;
+        pointY = pointY - guiTop;
+        int rectX = x - guiLeft;
+        int rectY = y - guiTop;
+        int rectWidth = width;
+        int rectHeight = height;
+        return pointX >= rectX - 1 && pointX < rectX + rectWidth + 1 && pointY >= rectY - 1 && pointY < rectY + rectHeight + 1;
+    }
+
     public <T extends GuiScreen> void drawHooveringHelp(T guiScreen, List<IHooverText> hooverTexts, int guiLeft, int guiTop, int mouseX, int mouseY)
     {
         for(IHooverText text : hooverTexts)

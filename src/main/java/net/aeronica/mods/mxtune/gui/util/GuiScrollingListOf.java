@@ -31,6 +31,7 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
+@SuppressWarnings("unused")
 public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implements List<E>, IHooverText
 {
     private final List<E> arrayList = new ArrayList<>();
@@ -40,6 +41,8 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
     private final List<String> hooverTexts = new ArrayList<>();
     private final List<String> hooverTextsCopy = new ArrayList<>();
     private String hooverStatusText = "";
+    protected int guiLeft = 0;
+    protected int guiTop = 0;
 
     public <T extends GuiScreen> GuiScrollingListOf(T gui, int entryHeight, int width, int height, int top, int bottom, int left)
     {
@@ -47,6 +50,17 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
         this.gui = gui;
         this.mc = gui.mc;
         this.entryHeight = entryHeight;
+    }
+
+    /**
+     * Used to the set the guiLeft and guiTop of a guiContainer based gui.
+     * @param guiLeft guiLeft from the parent gui.
+     * @param guiTop guiTop from the parent gui.
+     */
+    public void setGui(int guiLeft, int guiTop)
+    {
+        this.guiLeft = guiLeft;
+        this.guiTop = guiTop;
     }
 
     public void resetScroll() {
@@ -78,39 +92,63 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
 
     public void scrollToEnd()
     {
-        elementClicked(arrayList.size());
+        setSelectedIndex(arrayList.size());
         resetScroll();
     }
 
     public void scrollToTop()
     {
-        elementClicked(0);
+        setSelectedIndex(0);
         resetScroll();
     }
 
     public void keyTyped(char typedChar, int keyCode) throws IOException
     {
-        if (isPointInRegion(this.mouseX, this.mouseY))
+        if (isPointInRegion())
         {
-            if (keyCode == Keyboard.KEY_HOME)
-                scrollToTop();
-            else if (keyCode == Keyboard.KEY_END)
-                scrollToEnd();
+            int pageSize = (bottom - top) / entryHeight;
+            switch (keyCode)
+            {
+                case Keyboard.KEY_HOME:
+                    scrollToTop();
+                    break;
+                case Keyboard.KEY_END:
+                    scrollToEnd();
+                    break;
+                case Keyboard.KEY_DOWN:
+                    int next = selectedIndex + 1;
+                    setSelectedIndex(next < getSize() ? next : getSize());
+                    if (next + 1 > pageSize) resetScroll();
+                    break;
+                case Keyboard.KEY_UP:
+                    int prev = selectedIndex - 1;
+                    setSelectedIndex(prev > 0 ? prev : 0);
+                    if (prev <= selectedIndex) resetScroll();
+                    break;
+                case Keyboard.KEY_NEXT:
+                    next = selectedIndex + pageSize - 1;
+                    setSelectedIndex(next < getSize() ? next : getSize());
+                    if (next > pageSize) resetScroll();
+                    break;
+                case Keyboard.KEY_PRIOR:
+                    prev = selectedIndex - pageSize + 1;
+                    setSelectedIndex(prev > 0 ? prev : 0);
+                    if (prev <= pageSize) resetScroll();
+                    break;
+                default:
+            }
         }
     }
 
     @Override
     public boolean isMouseOverElement(int guiLeft, int guiTop, int mouseX, int mouseY)
     {
-        return this.isPointInRegion(mouseX, mouseY);
+        return ModGuiUtils.isPointInRegion(left, top, bottom - top, listWidth, guiLeft, guiTop, mouseX, mouseY);
     }
 
-    private boolean isPointInRegion(int pointX, int pointY)
+    protected boolean isPointInRegion()
     {
-        int rectX = this.left;
-        int rectY = this.top;
-        int rectHeight = this.bottom - this.top;
-        return pointX >= rectX - 1 && pointX < rectX + this.listWidth + 1 && pointY >= rectY - 1 && pointY < rectY + rectHeight + 1;
+        return ModGuiUtils.isPointInRegion(left, top, bottom - top, listWidth, guiLeft, guiTop, mouseX, mouseY);
     }
 
     @Override
@@ -124,7 +162,8 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
 
     public void setHooverStatusText(String hooverStatusText) {this.hooverStatusText = hooverStatusText;}
 
-    public void addHooverText(String hooverText) {hooverTexts.add(hooverText);}
+    @Override
+    public void addHooverTexts(String hooverText) {hooverTexts.add(hooverText);}
 
     private boolean isEnableHighlightSelected()
     {
@@ -135,7 +174,12 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
 
     public void setSelectedIndex(int index)
     {
-        selectedIndex = index;
+        if (index < 0)
+            selectedIndex = -1;
+        else if (index >= arrayList.size())
+            selectedIndex = arrayList.size() - 1;
+        else
+            selectedIndex = index;
     }
 
     @Nullable
@@ -167,7 +211,7 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
     protected void elementClicked(int index, boolean doubleClick)
     {
         if (isEnableHighlightSelected() && index == selectedIndex && !doubleClick) return;
-        selectedIndex = (index >= 0 && index <= arrayList.size() ? (index >= arrayList.size() ? arrayList.size() - 1 : index) : -1);
+        setSelectedIndex(index);
 
         if (selectedIndex >= 0)
         {

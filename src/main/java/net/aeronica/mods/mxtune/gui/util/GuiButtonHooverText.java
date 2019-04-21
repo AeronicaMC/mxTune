@@ -26,7 +26,7 @@ import java.util.List;
 
 @SideOnly(Side.CLIENT)
 @SuppressWarnings("unused")
-public class GuiButtonHooverText extends GuiButton
+public class GuiButtonHooverText extends GuiButton implements IHooverText
 {
     private List<String> hooverTexts = new ArrayList<>();
     private List<String> hooverTextsCopy = new ArrayList<>();
@@ -45,6 +45,7 @@ public class GuiButtonHooverText extends GuiButton
         if(!buttonText.equals("")) hooverTexts.add(buttonText);
     }
 
+    @Override
     public List<String> getHooverTexts()
     {
         hooverTextsCopy.clear();
@@ -53,7 +54,7 @@ public class GuiButtonHooverText extends GuiButton
         return hooverTextsCopy;
     }
 
-    public void addHooverText(String hooverText)
+    public void addHooverTexts(String hooverText)
     {
         hooverTexts.add(hooverText);
     }
@@ -66,5 +67,11 @@ public class GuiButtonHooverText extends GuiButton
     public String getStatusText()
     {
         return statusText;
+    }
+
+    @Override
+    public boolean isMouseOverElement(int guiLeft, int guiTop, int mouseX, int mouseY)
+    {
+        return ModGuiUtils.isPointInRegion(x, y, height, width, guiLeft, guiTop, mouseX, mouseY);
     }
 }

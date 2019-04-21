@@ -25,6 +25,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -123,7 +124,65 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
         return this.scrollDistance;
     }
 
+    @Override
+    public void keyTyped(char typedChar, int keyCode) throws IOException
+    {
+        if (isPointInRegion() && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
+        {
+            int pageSize = (bottom - top) / entryHeight;
+            switch (keyCode)
+            {
+                case Keyboard.KEY_A:
+                    // Select All
+                    for (int i = 0; i < getSize(); i++)
+                        selectedRowIndexes.add(i);
+                    break;
 
+                case Keyboard.KEY_D:
+                    // Select None
+                    selectedRowIndexes.clear();
+                    break;
+
+                case Keyboard.KEY_HOME:
+                    // Select from Selection to Top
+                    for (int i = 0; i <= selectedIndex; i++)
+                        selectedRowIndexes.add(i);
+                    selectedRowIndexes.add(0);
+                    setSelectedIndex(0);
+                    break;
+
+                case Keyboard.KEY_END:
+                    // Select from Selection to End
+                    for (int i = selectedIndex; i < getSize(); i++)
+                        selectedRowIndexes.add(i);
+                    setSelectedIndex(getSize());
+                    break;
+
+                case Keyboard.KEY_NEXT:
+                    // Select from Selection to Page size
+                    int page = Math.min(getSize()  , selectedIndex + pageSize);
+                    for (int i = selectedIndex; i < page; i++)
+                        selectedRowIndexes.add(i);
+
+                    setSelectedIndex(selectedIndex + pageSize - 1);
+                    break;
+                default:
+            }
+            resetScroll();
+        } else
+            super.keyTyped(typedChar, keyCode);
+    }
+
+    private void junk()
+    {
+        if (isPointInRegion())
+        {
+            if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
+                selectedRowIndexes.add(selectedIndex);
+            else if (!Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
+                selectedRowIndexes.remove(selectedIndex);
+        }
+    }
 
     @Override
     protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
