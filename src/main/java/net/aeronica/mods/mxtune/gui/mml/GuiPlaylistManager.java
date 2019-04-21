@@ -23,9 +23,7 @@ import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.caches.MXTuneFile;
 import net.aeronica.mods.mxtune.caches.MXTuneFileHelper;
-import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
-import net.aeronica.mods.mxtune.gui.util.GuiScrollingMultiListOf;
-import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
+import net.aeronica.mods.mxtune.gui.util.*;
 import net.aeronica.mods.mxtune.managers.ClientFileManager;
 import net.aeronica.mods.mxtune.managers.records.Area;
 import net.aeronica.mods.mxtune.managers.records.Song;
@@ -72,7 +70,7 @@ public class GuiPlaylistManager extends GuiScreen
 {
     private static final String TITLE = I18n.format("mxtune.gui.guiPlayListManager.title");
     // Song Multi Selector
-    private GuiLabel labelFileList;
+    private GuiLabelMX labelFileList;
     private GuiScrollingMultiListOf<Path> guiFileList;
     private List<Path> cachedFileList = new ArrayList<>();
     private Set<Integer> cachedSelectedSongs = new HashSet<>();
@@ -103,12 +101,14 @@ public class GuiPlaylistManager extends GuiScreen
     private GuiTextField playListName;
     private String cachedPlayListName = "";
 
-    // Status
-    private GuiScrollingListOf<ITextComponent> guiStatusList;
-    private List<ITextComponent> cachedGuiStatusList = new ArrayList<>();
+    // Logging
+    private GuiLabelMX labelLog;
+    private GuiScrollingListOf<ITextComponent> guiLogList;
+    private List<ITextComponent> cachedGuiLogList = new ArrayList<>();
     private final DateFormat timeInstance = SimpleDateFormat.getTimeInstance(DateFormat.MEDIUM);
 
     // Misc
+    private List<IHooverText> hooverTexts = new ArrayList<>();
     private GuiLabel labelTitle;
     private boolean cacheKeyRepeatState;
     private boolean isStateCached;
@@ -140,6 +140,7 @@ public class GuiPlaylistManager extends GuiScreen
     @Override
     public void initGui()
     {
+        hooverTexts.clear();
         int guiPlayListListWidth = Math.min(Math.max((width - 15) / 3, 100), 400);
         int guiFileListWidth = guiPlayListListWidth;
         int singleLineHeight = mc.fontRenderer.FONT_HEIGHT + 2;
@@ -158,9 +159,9 @@ public class GuiPlaylistManager extends GuiScreen
         int fileListBottom = Math.max(height - statusHeight - listTop - titleHeight - padding, entryPlayListHeight * 9);
 
         int fileListHeight = Math.max(fileListBottom - listTop, singleLineHeight);
-        int statusTop = fileListBottom + padding;
+        int logStatusTop = fileListBottom + padding;
 
-        int thirdsHeight = ((statusTop - listTop) / 3) - padding;
+        int thirdsHeight = ((logStatusTop - listTop) / 3) - padding;
         int areaListHeight = Math.max(thirdsHeight, entryPlayListHeight);
         int areaBottom = listTop + areaListHeight;
 
@@ -172,8 +173,8 @@ public class GuiPlaylistManager extends GuiScreen
 
         labelTitle = new GuiLabel(fontRenderer, 0, titleX, titleTop, titleWidth, singleLineHeight, 0xFFFFFF );
         labelTitle.addLine(TITLE);
-        labelFileList = new GuiLabel(fontRenderer,1, left, titleTop, guiFileListWidth, singleLineHeight, 0xFFFFFF);
-        labelFileList.addLine("mxtune.gui.guiPlayListManager.label.music_file_selector");
+        labelFileList = new GuiLabelMX(fontRenderer,1, left, titleTop, guiFileListWidth, singleLineHeight, -1);
+        labelFileList.setLabel(I18n.format("mxtune.gui.guiPlayListManager.label.music_file_selector", cachedSelectedSongs.size()));
 
         guiFileList = new GuiScrollingMultiListOf<Path>(this, entryFileHeight, guiFileListWidth, fileListHeight,listTop, fileListBottom, left)
         {
@@ -257,7 +258,7 @@ public class GuiPlaylistManager extends GuiScreen
             }
         };
 
-        guiStatusList = new GuiScrollingListOf<ITextComponent>(this, singleLineHeight, width - padding *2, statusHeight, statusTop, height - 22 - padding * 2, left) {
+        guiLogList = new GuiScrollingListOf<ITextComponent>(this, singleLineHeight, width - padding *2, statusHeight, logStatusTop, height - 22 - padding * 2, left) {
             @Override
             protected void selectedClickedCallback(int selectedIndex) { /* NOP */ }
 
@@ -277,7 +278,11 @@ public class GuiPlaylistManager extends GuiScreen
             }
         };
 
-        labelPlayListList = new GuiLabel(fontRenderer,2, guiPlayList.getRight() - guiPlayListListWidth, titleTop, guiPlayListListWidth, singleLineHeight, 0xFFFFFF);
+        labelLog = new GuiLabelMX(fontRenderer, 2, guiFileList.getRight(), logStatusTop - singleLineHeight -2, guiPlayList.getLeft()-guiFileList.getRight(), singleLineHeight,-1);
+        labelLog.setCentered();
+        labelLog.setLabel(I18n.format("mxtune.gui.guiPlayListManager.label.status_log"));
+
+        labelPlayListList = new GuiLabel(fontRenderer,3, guiPlayList.getRight() - guiPlayListListWidth, titleTop, guiPlayListListWidth, singleLineHeight, 0xFFFFFF);
         labelPlayListList.addLine("mxtune.gui.guiPlayListManager.label.playlist_selector");
 
         int buttonWidth = 80;
@@ -291,15 +296,15 @@ public class GuiPlaylistManager extends GuiScreen
         int selectButtonWidth = guiFileListWidth - 10;
         int selectButtonLeft = guiFileList.getRight() + 8;
 
-        labelPlaylistName = new GuiLabel(fontRenderer,3, selectButtonLeft, listTop, guiPlayListListWidth, singleLineHeight, 0xFFFFFF);
+        labelPlaylistName = new GuiLabel(fontRenderer,4, selectButtonLeft, listTop, guiPlayListListWidth, singleLineHeight, 0xFFFFFF);
         labelPlaylistName.addLine("mxtune.gui.guiPlayListManager.label.playlist_name");
         playListName = new GuiTextField(1, fontRenderer, selectButtonLeft, labelPlaylistName.y + singleLineHeight + 2, selectButtonWidth, singleLineHeight + 2);
         buttonToServer = new GuiButton(6, selectButtonLeft, playListName.y + playListName.height + padding, selectButtonWidth, 20, "Send to Server");
 
-        labelPlaylistDay = new GuiLabel(fontRenderer,3, selectButtonLeft, dayTop + padding, guiPlayListListWidth, singleLineHeight, 0xFFFFFF);
+        labelPlaylistDay = new GuiLabel(fontRenderer,5, selectButtonLeft, dayTop + padding, guiPlayListListWidth, singleLineHeight, 0xFFFFFF);
         labelPlaylistDay.addLine("mxtune.gui.guiPlayListManager.label.list_day");
 
-        labelPlaylistNight = new GuiLabel(fontRenderer,3, selectButtonLeft, nightTop + padding, guiPlayListListWidth, singleLineHeight, 0xFFFFFF);
+        labelPlaylistNight = new GuiLabel(fontRenderer,6, selectButtonLeft, nightTop + padding, guiPlayListListWidth, singleLineHeight, 0xFFFFFF);
         labelPlaylistNight.addLine("mxtune.gui.guiPlayListManager.label.list_night");
 
         GuiButton buttonToDay = new GuiButton(2, selectButtonLeft, labelPlaylistDay.y + singleLineHeight + 2, selectButtonWidth, 20, I18n.format("mxtune.gui.guiPlayListManager.button.to_day_list"));
@@ -315,6 +320,11 @@ public class GuiPlaylistManager extends GuiScreen
         buttonList.add(buttonDDeleteNight);
         buttonList.add(buttonToServer);
 
+        hooverTexts.add(guiFileList);
+        hooverTexts.add(guiPlayList);
+        hooverTexts.add(guiDay);
+        hooverTexts.add(guiNight);
+        initHooverHelp();
         initAreas();
         initFileList();
         reloadState();
@@ -358,8 +368,8 @@ public class GuiPlaylistManager extends GuiScreen
 
         playListName.setText(cachedPlayListName);
 
-        guiStatusList.addAll(cachedGuiStatusList);
-        guiStatusList.scrollToEnd();
+        guiLogList.addAll(cachedGuiLogList);
+        guiLogList.scrollToEnd();
 
         updateSongCountStatus();
         guiPlayList.resetScroll();
@@ -390,8 +400,8 @@ public class GuiPlaylistManager extends GuiScreen
 
         cachedPlayListName = playListName.getText();
 
-        cachedGuiStatusList.clear();
-        cachedGuiStatusList.addAll(guiStatusList.getList());
+        cachedGuiLogList.clear();
+        cachedGuiLogList.addAll(guiLogList.getList());
 
         buttonToServer.enabled = !(playListName.getText().equals("") ||
                                            !globalMatcher(patternPlaylistName, playListName.getText()) ||
@@ -411,15 +421,15 @@ public class GuiPlaylistManager extends GuiScreen
 
     private void updateSongCountStatus()
     {
-        //updateStatus(String.format("Selected Song Count: %s", guiFileList.getSelectedRowsCount()));
+        labelFileList.setLabel(I18n.format("mxtune.gui.guiPlayListManager.label.music_file_selector", guiFileList.getSelectedRowsCount()));
     }
 
     private void updateStatus(String message)
     {
         Date dateNow = new Date();
         String now = timeInstance.format(dateNow);
-        guiStatusList.add(new TextComponentString(TextFormatting.GRAY + now + ": " + TextFormatting.RESET + message));
-        guiStatusList.scrollToEnd();
+        guiLogList.add(new TextComponentString(TextFormatting.GRAY + now + ": " + TextFormatting.RESET + message));
+        guiLogList.scrollToEnd();
     }
 
     @Override
@@ -432,14 +442,16 @@ public class GuiPlaylistManager extends GuiScreen
         labelPlayListList.drawLabel(mc, mouseX, mouseY);
         labelPlaylistDay.drawLabel(mc, mouseX, mouseY);
         labelPlaylistNight.drawLabel(mc, mouseX, mouseY);
+        labelLog.drawLabel(mc, mouseX, mouseY);
+        playListName.drawTextBox();
 
         guiFileList.drawScreen(mouseX, mouseY, partialTicks);
         guiPlayList.drawScreen(mouseX, mouseY, partialTicks);
         guiDay.drawScreen(mouseX, mouseY, partialTicks);
         guiNight.drawScreen(mouseX, mouseY, partialTicks);
-        playListName.drawTextBox();
-        guiStatusList.drawScreen(mouseX, mouseY, partialTicks);
+        guiLogList.drawScreen(mouseX, mouseY, partialTicks);
         super.drawScreen(mouseX, mouseY, partialTicks);
+        ModGuiUtils.INSTANCE.drawHooveringHelp(this, hooverTexts,0, 0, mouseX, mouseY);
     }
 
     @Override
@@ -505,6 +517,12 @@ public class GuiPlaylistManager extends GuiScreen
     {
         if (keyCode != Keyboard.KEY_TAB)
             playListName.textboxKeyTyped(typedChar, keyCode);
+
+        guiFileList.keyTyped(typedChar, keyCode);
+        guiPlayList.keyTyped(typedChar, keyCode);
+        guiDay.keyTyped(typedChar, keyCode);
+        guiNight.keyTyped(typedChar, keyCode);
+        guiLogList.keyTyped(typedChar, keyCode);
         updateState();
         super.keyTyped(typedChar, keyCode);
     }
@@ -512,6 +530,7 @@ public class GuiPlaylistManager extends GuiScreen
     @Override
     public void onResize(@Nonnull Minecraft mcIn, int w, int h)
     {
+        updateState();
         super.onResize(mcIn, w, h);
         updateState();
     }
@@ -530,7 +549,7 @@ public class GuiPlaylistManager extends GuiScreen
         int mouseY = height - Mouse.getEventY() * height / mc.displayHeight - 1;
         guiPlayList.handleMouseInput(mouseX, mouseY);
         guiFileList.handleMouseInput(mouseX, mouseY);
-        guiStatusList.handleMouseInput(mouseX, mouseY);
+        guiLogList.handleMouseInput(mouseX, mouseY);
         guiDay.handleMouseInput(mouseX, mouseY);
         guiNight.handleMouseInput(mouseX, mouseY);
         super.handleMouseInput();
@@ -568,7 +587,7 @@ public class GuiPlaylistManager extends GuiScreen
                             pathSongGuidBiMap.forcePut(file, songProxy.getGUID());
                         }
                         else
-                            updateStatus(TextFormatting.DARK_RED + I18n.format("mxtune.gui.guiPlayListManager.status.corrupted_file", (String.format("%s", TextFormatting.RESET + file.getFileName().toString()))));
+                            updateStatus(TextFormatting.DARK_RED + I18n.format("mxtune.gui.guiPlayListManager.log.corrupted_file", (String.format("%s", TextFormatting.RESET + file.getFileName().toString()))));
                     }
                     cachedFileList = files;
                     guiFileList.clear();
@@ -618,17 +637,14 @@ public class GuiPlaylistManager extends GuiScreen
 
     private void shipIt()
     {
-        // TODO: push <-> status need to be created
-
         uploading = true;
         playListName.setText(playListName.getText().trim());
         Area area = new Area(playListName.getText(), guiDay.getList(), guiNight.getList());
-        updateStatus(TextFormatting.GOLD + I18n.format("mxtune.gui.guiPlayListManager.status.upload_playlist", TextFormatting.RESET + playListName.getText().trim()));
+        updateStatus(TextFormatting.GOLD + I18n.format("mxtune.gui.guiPlayListManager.log.upload_playlist", TextFormatting.RESET + playListName.getText().trim()));
         PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(area.getGUID(), SetServerSerializedDataMessage.SetType.AREA, area));
 
         // Build one list of songs to send from both lists to remove duplicates!
         List<SongProxy> proxyMap = new ArrayList<>(guiDay.getList());
-
         for (SongProxy songProxy : guiNight.getList())
         {
             if (!proxyMap.contains(songProxy))
@@ -647,13 +663,14 @@ public class GuiPlaylistManager extends GuiScreen
                                  if (song != null)
                                  {
                                      PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(songProxy.getGUID(), SetServerSerializedDataMessage.SetType.MUSIC, song));
-                                     updateStatus(TextFormatting.DARK_GREEN + I18n.format("mxtune.gui.guiPlayListManager.status.uploading_music", String.format("%03d", count), String.format("%03d", proxyMap.size()), TextFormatting.RESET + song.getTitle()));
+                                     updateStatus(TextFormatting.DARK_GREEN + I18n.format("mxtune.gui.guiPlayListManager.log.uploading_music", String.format("%03d", count), String.format("%03d", proxyMap.size()), TextFormatting.RESET + song.getTitle()));
                                  } else
                                  {
-                                     updateStatus(TextFormatting.DARK_RED + I18n.format("mxtune.gui.guiPlayListManager.status.not_found_in_library", String.format("%03d", count), String.format("%03d", proxyMap.size()), TextFormatting.RESET + songProxy.getTitle()));
+                                     updateStatus(TextFormatting.DARK_RED + I18n.format("mxtune.gui.guiPlayListManager.log.not_found_in_library", String.format("%03d", count), String.format("%03d", proxyMap.size()), TextFormatting.RESET + songProxy.getTitle()));
                                  }
                                  try
                                  {
+                                     // Don't spam the server. Upload once per second.
                                      Thread.sleep(1000);
                                  } catch (InterruptedException e)
                                  {
@@ -713,11 +730,18 @@ public class GuiPlaylistManager extends GuiScreen
         {
             PacketDispatcher.sendToServer(new PlayerSelectedAreaMessage(selectedArea.getGUID()));
             String areaNameOrUndefined = ModGuiUtils.getPlaylistName(selectedArea);
-            updateStatus(TextFormatting.GOLD + I18n.format("mxtune.gui.guiPlayListManager.status.set_staff_of_music_playlist", TextFormatting.RESET + areaNameOrUndefined));
+            updateStatus(TextFormatting.GOLD + I18n.format("mxtune.gui.guiPlayListManager.log.set_staff_of_music_playlist", TextFormatting.RESET + areaNameOrUndefined));
         }
         else
         {
-            updateStatus(TextFormatting.DARK_RED + I18n.format("mxtune.gui.guiPlayListManager.status.failed_set_staff_of_music_playlist"));
+            updateStatus(TextFormatting.DARK_RED + I18n.format("mxtune.gui.guiPlayListManager.log.failed_set_staff_of_music_playlist"));
         }
+    }
+
+    private void initHooverHelp()
+    {
+        guiPlayList.addHooverText(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiPlayListManager.label.playlist_selector"));
+        guiPlayList.addHooverText(TextFormatting.RESET + I18n.format("mxtune.gui.guiPlayListManager.help.playlist_selector_01"));
+        guiPlayList.addHooverText(TextFormatting.RESET + I18n.format("mxtune.gui.guiPlayListManager.help.playlist_selector_02"));
     }
 }

@@ -20,21 +20,26 @@ package net.aeronica.mods.mxtune.gui.util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
+import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
-public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implements List<E>
+public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implements List<E>, IHooverText
 {
-    private List<E> arrayList = new ArrayList<>();
+    private final List<E> arrayList = new ArrayList<>();
     protected GuiScreen gui;
     protected Minecraft mc;
     protected int entryHeight;
+    private final List<String> hooverTexts = new ArrayList<>();
+    private final List<String> hooverTextsCopy = new ArrayList<>();
+    private String hooverStatusText = "";
 
     public <T extends GuiScreen> GuiScrollingListOf(T gui, int entryHeight, int width, int height, int top, int bottom, int left)
     {
@@ -73,16 +78,58 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
 
     public void scrollToEnd()
     {
-        elementClicked(getList().size());
+        elementClicked(arrayList.size());
         resetScroll();
     }
+
+    public void scrollToTop()
+    {
+        elementClicked(0);
+        resetScroll();
+    }
+
+    public void keyTyped(char typedChar, int keyCode) throws IOException
+    {
+        if (isPointInRegion(this.mouseX, this.mouseY))
+        {
+            if (keyCode == Keyboard.KEY_HOME)
+                scrollToTop();
+            else if (keyCode == Keyboard.KEY_END)
+                scrollToEnd();
+        }
+    }
+
+    @Override
+    public boolean isMouseOverElement(int guiLeft, int guiTop, int mouseX, int mouseY)
+    {
+        return this.isPointInRegion(mouseX, mouseY);
+    }
+
+    private boolean isPointInRegion(int pointX, int pointY)
+    {
+        int rectX = this.left;
+        int rectY = this.top;
+        int rectHeight = this.bottom - this.top;
+        return pointX >= rectX - 1 && pointX < rectX + this.listWidth + 1 && pointY >= rectY - 1 && pointY < rectY + rectHeight + 1;
+    }
+
+    @Override
+    public List<String> getHooverTexts()
+    {
+        hooverTextsCopy.clear();
+        hooverTextsCopy.addAll(hooverTexts);
+        if (!hooverStatusText.equals(""))hooverTextsCopy.add(hooverStatusText);
+        return hooverTextsCopy;
+    }
+
+    public void setHooverStatusText(String hooverStatusText) {this.hooverStatusText = hooverStatusText;}
+
+    public void addHooverText(String hooverText) {hooverTexts.add(hooverText);}
 
     private boolean isEnableHighlightSelected()
     {
         return this.highlightSelected;
     }
-
-    public int getRight() {return right;}
 
     public int getSelectedIndex() { return selectedIndex; }
 
@@ -120,7 +167,7 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
     protected void elementClicked(int index, boolean doubleClick)
     {
         if (isEnableHighlightSelected() && index == selectedIndex && !doubleClick) return;
-        selectedIndex = (index >= 0 && index <= arrayList.size() && !arrayList.isEmpty() ? index : -1);
+        selectedIndex = (index >= 0 && index <= arrayList.size() ? (index >= arrayList.size() ? arrayList.size() - 1 : index) : -1);
 
         if (selectedIndex >= 0)
         {

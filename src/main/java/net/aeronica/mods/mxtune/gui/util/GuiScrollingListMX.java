@@ -114,6 +114,14 @@ public abstract class GuiScrollingListMX
         if (!hasHeader) this.headerHeight = 0;
     }
 
+    public int getRight() {return right;}
+
+    public int getLeft() {return left;}
+
+    public int getTop() {return top;}
+
+    public int getBottom() {return bottom;}
+
     protected abstract int getSize();
 
     protected abstract void elementClicked(int index, boolean doubleClick);

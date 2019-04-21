@@ -23,6 +23,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.resources.I18n;
+import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -52,6 +53,13 @@ public class ModGuiUtils
         int rectWidth = button.width;
         int rectHeight = button.height;
         return pointX >= rectX - 1 && pointX < rectX + rectWidth + 1 && pointY >= rectY - 1 && pointY < rectY + rectHeight + 1;
+    }
+
+    public <T extends GuiScreen> void drawHooveringHelp(T guiScreen, List<IHooverText> hooverTexts, int guiLeft, int guiTop, int mouseX, int mouseY)
+    {
+        for(IHooverText text : hooverTexts)
+            if (text.isMouseOverElement(guiLeft, guiTop, mouseX, mouseY) && (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)))
+                guiScreen.drawHoveringText(text.getHooverTexts(), mouseX, mouseY);
     }
 
     public static <T extends GuiTextField> void clearOnMouseLeftClicked(T guiTextField, int mouseX, int mouseY, int mouseButton)

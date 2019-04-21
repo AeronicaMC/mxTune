@@ -59,7 +59,7 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
         else
             selectedClickedCallback(selectedIndex);
 
-        this.selectedIndex = -1;
+        //this.selectedIndex = -1;
     }
 
     /**
