@@ -129,7 +129,6 @@ public class GuiPlaylistManager extends GuiScreen
     {
         cacheKeyRepeatState = Keyboard.areRepeatEventsEnabled();
         Keyboard.enableRepeatEvents(false);
-        initFileList();
     }
 
     @Override
@@ -317,6 +316,7 @@ public class GuiPlaylistManager extends GuiScreen
         buttonList.add(buttonToServer);
 
         initAreas();
+        initFileList();
         reloadState();
     }
 
