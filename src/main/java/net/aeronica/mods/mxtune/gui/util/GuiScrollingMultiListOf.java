@@ -170,17 +170,19 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
 
                 case Keyboard.KEY_HOME:
                     // Select from Selection to Top
-                    for (int i = 0; i <= selectedIndex; i++)
-                        selectedRowIndexes.add(i);
-                    selectedRowIndexes.add(0);
-                    setSelectedIndex(0);
+//                    for (int i = 0; i <= selectedIndex; i++)
+//                        selectedRowIndexes.add(i);
+//                    selectedRowIndexes.add(0);
+//                    setSelectedIndex(0);
+                    scrollToTop();
                     break;
 
                 case Keyboard.KEY_END:
                     // Select from Selection to End
-                    for (int i = selectedIndex; i < getSize(); i++)
-                        selectedRowIndexes.add(i);
-                    setSelectedIndex(getSize());
+//                    for (int i = selectedIndex; i < getSize(); i++)
+//                        selectedRowIndexes.add(i);
+//                    setSelectedIndex(getSize());
+                    scrollToEnd();
                     break;
 
                 case Keyboard.KEY_NEXT:
@@ -202,7 +204,7 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
                     break;
                 default:
             }
-            resetScroll();
+            //resetScroll();
         } else
             super.keyTyped(typedChar, keyCode);
     }

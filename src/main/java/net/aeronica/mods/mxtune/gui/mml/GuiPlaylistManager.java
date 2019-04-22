@@ -129,7 +129,7 @@ public class GuiPlaylistManager extends GuiScreen
     public GuiPlaylistManager()
     {
         cacheKeyRepeatState = Keyboard.areRepeatEventsEnabled();
-        Keyboard.enableRepeatEvents(false);
+        Keyboard.enableRepeatEvents(true);
     }
 
     @Override
@@ -470,7 +470,7 @@ public class GuiPlaylistManager extends GuiScreen
     @Override
     public void updateScreen()
     {
-        Keyboard.enableRepeatEvents(playListName.isFocused());
+        // Keyboard.enableRepeatEvents(playListName.isFocused());
     }
 
     @Override
@@ -745,6 +745,17 @@ public class GuiPlaylistManager extends GuiScreen
 
     private void initHooverHelp()
     {
+        guiFileList.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiPlayListManager.label.music_file_selector", "0"));
+        guiFileList.addHooverTexts(
+                TextFormatting.RESET +
+                        new TextComponentTranslation( "mxtune.gui.guiPlayListManager.help.multi_selector_01",
+                                                      TextFormatting.GOLD + new TextComponentTranslation("mxtune.gui.guiPlayListManager.help.ctrl_plus_mouse_left_click").getFormattedText()).getFormattedText());
+        guiFileList.addHooverTexts(
+                TextFormatting.RESET +
+                        new TextComponentTranslation( "mxtune.gui.guiPlayListManager.help.multi_selector_01",
+                                                      TextFormatting.GOLD + new TextComponentTranslation("mxtune.gui.guiPlayListManager.help.ctrl_plus_spacebar_up_down_arrow_keys").getFormattedText()).getFormattedText());
+
+
         guiPlayList.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiPlayListManager.label.playlist_selector"));
         guiPlayList.addHooverTexts(TextFormatting.RESET + I18n.format("mxtune.gui.guiPlayListManager.help.playlist_selector_01"));
         guiPlayList.addHooverTexts(TextFormatting.RESET + I18n.format("mxtune.gui.guiPlayListManager.help.playlist_selector_02"));
@@ -760,5 +771,6 @@ public class GuiPlaylistManager extends GuiScreen
                 TextFormatting.RESET +
                         new TextComponentTranslation("mxtune.gui.guiPlayListManager.help.playlist_selector_05",
                                                      TextFormatting.GOLD + new TextComponentTranslation("mxtune.info.playlist.empty_playlist").getFormattedText()).getFormattedText());
+
     }
 }
