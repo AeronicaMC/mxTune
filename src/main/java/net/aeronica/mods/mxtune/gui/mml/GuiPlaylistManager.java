@@ -243,6 +243,12 @@ public class GuiPlaylistManager extends GuiScreen
         guiDay = new GuiScrollingMultiListOf<SongProxy>(this, singleLineHeight, guiPlayListListWidth, areaListHeight ,dayTop, dayBottom, width - guiPlayListListWidth - padding)
         {
             @Override
+            protected void deleteAction(int index)
+            {
+                this.deleteSelectedRows();
+            }
+
+            @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
             {
                 drawSlotCommon(this, slotIdx, slotTop, listWidth, left);
@@ -251,6 +257,12 @@ public class GuiPlaylistManager extends GuiScreen
 
         guiNight = new GuiScrollingMultiListOf<SongProxy>(this, singleLineHeight, guiPlayListListWidth, areaListHeight, nightTop, nightBottom, width - guiPlayListListWidth - padding)
         {
+            @Override
+            protected void deleteAction(int index)
+            {
+                this.deleteSelectedRows();
+            }
+
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
             {

@@ -135,6 +135,9 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
                     setSelectedIndex(prev > 0 ? prev : 0);
                     if (prev <= pageSize) resetScroll();
                     break;
+                case Keyboard.KEY_DELETE:
+                    deleteAction(selectedIndex);
+                    break;
                 default:
             }
         }
@@ -225,6 +228,8 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
     protected abstract void selectedClickedCallback(int selectedIndex);
 
     protected abstract void selectedDoubleClickedCallback(int selectedIndex);
+
+    protected void deleteAction(int index) {/* NOP */}
 
     @Override
     protected boolean isSelected(int index)
