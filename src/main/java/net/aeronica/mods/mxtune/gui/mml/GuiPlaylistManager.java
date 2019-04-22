@@ -44,6 +44,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
@@ -748,16 +749,16 @@ public class GuiPlaylistManager extends GuiScreen
         guiPlayList.addHooverTexts(TextFormatting.RESET + I18n.format("mxtune.gui.guiPlayListManager.help.playlist_selector_01"));
         guiPlayList.addHooverTexts(TextFormatting.RESET + I18n.format("mxtune.gui.guiPlayListManager.help.playlist_selector_02"));
         guiPlayList.addHooverTexts(TextFormatting.RESET + "");
-        // TODO: FIXME:
         guiPlayList.addHooverTexts(
-                TextFormatting.AQUA + I18n.format("mxtune.gui.guiPlayListManager.help.playlist_selector_03"));
-        guiPlayList.addHooverTexts(
-                TextFormatting.RESET +
-                        I18n.format("mxtune.gui.guiPlayListManager.help.playlist_selector_04",
-                                    (TextFormatting.GOLD + I18n.format("mxtune.info.playlist.null_playlist" + TextFormatting.RESET))));
+                TextFormatting.AQUA +
+                        new TextComponentTranslation("mxtune.gui.guiPlayListManager.help.playlist_selector_03").getFormattedText());
         guiPlayList.addHooverTexts(
                 TextFormatting.RESET +
-                        I18n.format("mxtune.gui.guiPlayListManager.help.playlist_selector_05",
-                                    (TextFormatting.GOLD + I18n.format("mxtune.info.playlist.empty_playlist" + TextFormatting.RESET))));
+                        new TextComponentTranslation( "mxtune.gui.guiPlayListManager.help.playlist_selector_04",
+                                                      TextFormatting.GOLD + new TextComponentTranslation("mxtune.info.playlist.null_playlist").getFormattedText()).getFormattedText());
+        guiPlayList.addHooverTexts(
+                TextFormatting.RESET +
+                        new TextComponentTranslation("mxtune.gui.guiPlayListManager.help.playlist_selector_05",
+                                                     TextFormatting.GOLD + new TextComponentTranslation("mxtune.info.playlist.empty_playlist").getFormattedText()).getFormattedText());
     }
 }
