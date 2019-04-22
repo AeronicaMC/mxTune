@@ -490,12 +490,6 @@ public class GuiPlaylistManager extends GuiScreen
                 break;
             case 1:
                 // Done
-                for (SongProxy songProxy : guiDay)
-                    if (songProxy != null)
-                        ModLogger.debug("Day Song   guid: %s, Title: %s", songProxy.getGUID().toString(), songProxy.getTitle());
-                for (SongProxy songProxy : guiNight)
-                    if (songProxy != null)
-                        ModLogger.debug("Night Song guid: %s, Title: %s", songProxy.getGUID().toString(), songProxy.getTitle());
                 mc.displayGuiScreen(null);
                 break;
             case 2:
@@ -736,8 +730,6 @@ public class GuiPlaylistManager extends GuiScreen
 
     private void  updatePlayersSelectedAreaGuid(Area selectedArea)
     {
-        ModLogger.debug("GuiTest: guidSelectedArea: %s", selectedArea != null ? selectedArea.getGUID().toString() : "[null]");
-        ModLogger.debug("GuiTest: selected Name   : %s", ModGuiUtils.getPlaylistName(selectedArea));
         if (selectedArea != null)
         {
             PacketDispatcher.sendToServer(new PlayerSelectedAreaMessage(selectedArea.getGUID()));

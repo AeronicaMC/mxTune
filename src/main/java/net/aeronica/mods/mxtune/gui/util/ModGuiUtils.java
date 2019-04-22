@@ -19,7 +19,6 @@ package net.aeronica.mods.mxtune.gui.util;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.managers.records.Area;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.resources.I18n;
@@ -32,29 +31,6 @@ public class ModGuiUtils
 {
     public static final ModGuiUtils INSTANCE = new ModGuiUtils(){};
 
-    public <T extends GuiScreen> void drawHooveringButtonHelp(T guiScreen, List<GuiButton> guiButtonList, int guiLeft, int guiTop, int mouseX, int mouseY)
-    {
-        for(GuiButton b : guiButtonList)
-            if (this.isMouseOverButton(b, guiLeft, guiTop, mouseX, mouseY))
-                guiScreen.drawHoveringText(((GuiButtonHooverText) b).getHooverTexts(), mouseX, mouseY);
-    }
-
-    private <T extends GuiButton> boolean isMouseOverButton(T button, int guiLeft, int guiTop, int mouseX, int mouseY)
-    {
-        return (button instanceof GuiButtonHooverText) && this.isPointInRegion(button, guiLeft, guiTop, mouseX, mouseY);
-    }
-
-    private <T extends GuiButton> boolean isPointInRegion(T button, int guiLeft,  int guiTop, int pointX, int pointY)
-    {
-        pointX = pointX - guiLeft;
-        pointY = pointY - guiTop;
-        int rectX = button.x - guiLeft;
-        int rectY = button.y - guiTop;
-        int rectWidth = button.width;
-        int rectHeight = button.height;
-        return pointX >= rectX - 1 && pointX < rectX + rectWidth + 1 && pointY >= rectY - 1 && pointY < rectY + rectHeight + 1;
-    }
-
     public static boolean isPointInRegion(int x, int y, int height, int width, int guiLeft,  int guiTop, int pointX, int pointY)
     {
         pointX = pointX - guiLeft;
@@ -66,11 +42,11 @@ public class ModGuiUtils
         return pointX >= rectX - 1 && pointX < rectX + rectWidth + 1 && pointY >= rectY - 1 && pointY < rectY + rectHeight + 1;
     }
 
-    public <T extends GuiScreen> void drawHooveringHelp(T guiScreen, List<IHooverText> hooverTexts, int guiLeft, int guiTop, int mouseX, int mouseY)
+    public <T extends GuiScreen, S extends Object>  void drawHooveringHelp(T guiScreen, List<S> hooverTexts, int guiLeft, int guiTop, int mouseX, int mouseY)
     {
-        for(IHooverText text : hooverTexts)
-            if (text.isMouseOverElement(guiLeft, guiTop, mouseX, mouseY) && (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)))
-                guiScreen.drawHoveringText(text.getHooverTexts(), mouseX, mouseY);
+        for(Object text : hooverTexts)
+            if (text instanceof IHooverText && ((IHooverText) text).isMouseOverElement(guiLeft, guiTop, mouseX, mouseY) && (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)))
+                guiScreen.drawHoveringText(((IHooverText) text).getHooverTexts(), mouseX, mouseY);
     }
 
     public static <T extends GuiTextField> void clearOnMouseLeftClicked(T guiTextField, int mouseX, int mouseY, int mouseButton)

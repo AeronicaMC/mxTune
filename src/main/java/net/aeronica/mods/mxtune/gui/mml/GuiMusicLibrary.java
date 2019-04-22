@@ -268,7 +268,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         search.drawTextBox();
 
         super.drawScreen(mouseX, mouseY, partialTicks);
-        ModGuiUtils.INSTANCE.drawHooveringButtonHelp(this, safeButtonList, guiLeft, guiTop, mouseX, mouseY);
+        ModGuiUtils.INSTANCE.drawHooveringHelp(this, safeButtonList, guiLeft, guiTop, mouseX, mouseY);
     }
 
     @Override

@@ -251,7 +251,7 @@ public class GuiMusicImporter extends GuiScreen
         guiStaffList.drawScreen(mouseX, mouseY, partialTicks);
         statusText.drawTextBox();
         super.drawScreen(mouseX, mouseY, partialTicks);
-        ModGuiUtils.INSTANCE.drawHooveringButtonHelp(this, safeButtonList, guiLeft, guiTop, mouseX, mouseY);
+        ModGuiUtils.INSTANCE.drawHooveringHelp(this, safeButtonList, guiLeft, guiTop, mouseX, mouseY);
     }
 
     @Override

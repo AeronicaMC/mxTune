@@ -19,7 +19,7 @@ package net.aeronica.mods.mxtune.gui.mml;
 
 import net.aeronica.mods.mxtune.caches.DirectoryWatcher;
 import net.aeronica.mods.mxtune.caches.FileHelper;
-import net.aeronica.mods.mxtune.gui.util.GuiButtonHooverText;
+import net.aeronica.mods.mxtune.gui.util.GuiButtonMX;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
@@ -200,9 +200,9 @@ public class GuiFileSelector extends GuiScreen
         int xRefresh = xOpen + 75;
         int xDone = xRefresh + 75;
         int xCancel = xDone + 75;
-        GuiButtonHooverText buttonOpen = new GuiButtonHooverText(2, xOpen, buttonTop, 75, 20, I18n.format("mxtune.gui.guiFileSelector.openFolder"));
+        GuiButtonMX buttonOpen = new GuiButtonMX(2, xOpen, buttonTop, 75, 20, I18n.format("mxtune.gui.guiFileSelector.openFolder"));
         buttonOpen.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiFileSelector.openFolder.help"));
-        GuiButtonHooverText buttonRefresh = new GuiButtonHooverText(3, xRefresh, buttonTop, 75, 20, I18n.format("mxtune.gui.guiFileSelector.refresh"));
+        GuiButtonMX buttonRefresh = new GuiButtonMX(3, xRefresh, buttonTop, 75, 20, I18n.format("mxtune.gui.guiFileSelector.refresh"));
         buttonRefresh.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiFileSelector.refresh.help"));
         GuiButton buttonDone = new GuiButton(0, xDone, buttonTop, 75, 20, I18n.format("gui.done"));
         buttonCancel = new GuiButton(1, xCancel, buttonTop, 75, 20, I18n.format("gui.cancel"));
@@ -271,7 +271,7 @@ public class GuiFileSelector extends GuiScreen
         search.drawTextBox();
 
         super.drawScreen(mouseX, mouseY, partialTicks);
-        ModGuiUtils.INSTANCE.drawHooveringButtonHelp(this, safeButtonList, guiLeft, guiTop, mouseX, mouseY);
+        ModGuiUtils.INSTANCE.drawHooveringHelp(this, safeButtonList, guiLeft, guiTop, mouseX, mouseY);
     }
 
     @Override

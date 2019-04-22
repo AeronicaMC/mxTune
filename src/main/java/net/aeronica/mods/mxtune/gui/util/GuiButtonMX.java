@@ -26,20 +26,20 @@ import java.util.List;
 
 @SideOnly(Side.CLIENT)
 @SuppressWarnings("unused")
-public class GuiButtonHooverText extends GuiButton implements IHooverText
+public class GuiButtonMX extends GuiButton implements IHooverText
 {
     private List<String> hooverTexts = new ArrayList<>();
     private List<String> hooverTextsCopy = new ArrayList<>();
 
     private String statusText = "";
 
-    public GuiButtonHooverText(int buttonId, int x, int y, String buttonText)
+    public GuiButtonMX(int buttonId, int x, int y, String buttonText)
     {
         super(buttonId, x, y, buttonText);
         if(!buttonText.equals("")) hooverTexts.add(buttonText);
     }
 
-    public GuiButtonHooverText(int buttonId, int x, int y, int widthIn, int heightIn, String buttonText)
+    public GuiButtonMX(int buttonId, int x, int y, int widthIn, int heightIn, String buttonText)
     {
         super(buttonId, x, y, widthIn, heightIn, buttonText);
         if(!buttonText.equals("")) hooverTexts.add(buttonText);

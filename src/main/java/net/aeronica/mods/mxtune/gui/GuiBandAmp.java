@@ -19,7 +19,7 @@ package net.aeronica.mods.mxtune.gui;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.blocks.TileBandAmp;
-import net.aeronica.mods.mxtune.gui.util.GuiButtonHooverText;
+import net.aeronica.mods.mxtune.gui.util.GuiButtonMX;
 import net.aeronica.mods.mxtune.gui.util.GuiLockButton;
 import net.aeronica.mods.mxtune.gui.util.GuiRedstoneButton;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
@@ -51,7 +51,7 @@ public class GuiBandAmp extends GuiContainer
     private GuiRedstoneButton rearInputButton;
     private GuiRedstoneButton leftOutputButton;
     private GuiRedstoneButton rightOutputButton;
-    private GuiButtonHooverText soundRangeButton;
+    private GuiButtonMX soundRangeButton;
     private boolean prevLockState;
     private boolean prevRearInputButtonState;
     private boolean prevLeftOutputButtonState;
@@ -111,7 +111,7 @@ public class GuiBandAmp extends GuiContainer
         rightOutputButton.enabled = isEnabled;
         prevRightOutputButtonState = rightOutputButton.isSignalEnabled();
 
-        soundRangeButton = new GuiButtonHooverText(104, guiLeft +6 , guiTop + 45, 40, 20, "");
+        soundRangeButton = new GuiButtonMX(104, guiLeft +6 , guiTop + 45, 40, 20, "");
         soundRangeButton.displayString = I18n.format(soundRange.getLanguageKey());
         soundRangeButton.addHooverTexts(I18n.format("mxtune.gui.bandAmp.soundRangeButton.help01"));
         soundRangeButton.addHooverTexts(TextFormatting.GREEN + I18n.format("mxtune.gui.bandAmp.soundRangeButton.help02"));
@@ -270,6 +270,6 @@ public class GuiBandAmp extends GuiContainer
         this.drawDefaultBackground();
         super.drawScreen(mouseX, mouseY, partialTicks);
         this.renderHoveredToolTip(mouseX, mouseY);
-        ModGuiUtils.INSTANCE.drawHooveringButtonHelp(this, buttonList, guiLeft, guiTop, mouseX, mouseY);
+        ModGuiUtils.INSTANCE.drawHooveringHelp(this, buttonList, guiLeft, guiTop, mouseX, mouseY);
     }
 }

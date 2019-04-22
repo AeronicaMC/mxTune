@@ -26,7 +26,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nonnull;
 
 @SideOnly(Side.CLIENT)
-public class GuiLockButton extends GuiButtonHooverText
+public class GuiLockButton extends GuiButtonMX
 {
     private boolean locked;
 

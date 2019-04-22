@@ -26,7 +26,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nonnull;
 
 @SideOnly(Side.CLIENT)
-public class GuiRedstoneButton extends GuiButtonHooverText
+public class GuiRedstoneButton extends GuiButtonMX
 {
     private boolean signalEnabled;
     private ArrowFaces direction;
