@@ -47,7 +47,6 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
     protected void elementClicked(int index, boolean doubleClick)
     {
         super.elementClicked(index, doubleClick);
-
         if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && !selectedRowIndexes.contains(selectedIndex))
             selectedRowIndexes.add(selectedIndex);
         else if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && selectedRowIndexes.contains(selectedIndex))
@@ -59,8 +58,14 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
             selectedDoubleClickedCallback(selectedIndex);
         else
             selectedClickedCallback(selectedIndex);
+    }
 
-        //this.selectedIndex = -1;
+    private void selectionToggle()
+    {
+        if (!selectedRowIndexes.contains(selectedIndex))
+            selectedRowIndexes.add(selectedIndex);
+        else if (selectedRowIndexes.contains(selectedIndex))
+            selectedRowIndexes.remove(selectedIndex);
     }
 
     /**
@@ -119,6 +124,9 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
     @Override
     protected void selectedDoubleClickedCallback(int selectedIndex) {/* NOP */}
 
+    @Override
+    protected void deleteAction(int index) {/* NOP */}
+
     private float getScrollDistance()
     {
         return this.scrollDistance;
@@ -132,6 +140,11 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
             int pageSize = (bottom - top) / entryHeight;
             switch (keyCode)
             {
+                case Keyboard.KEY_SPACE:
+                    // Toggle selection
+                    selectionToggle();
+                    break;
+
                 case Keyboard.KEY_A:
                     // Select All
                     for (int i = 0; i < getSize(); i++)
@@ -141,6 +154,18 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
                 case Keyboard.KEY_D:
                     // Select None
                     selectedRowIndexes.clear();
+                    break;
+
+                case Keyboard.KEY_DOWN:
+                    int next = selectedIndex + 1;
+                    setSelectedIndex(next < getSize() ? next : getSize());
+                    if (next + 1 > pageSize) resetScroll();
+                    break;
+
+                case Keyboard.KEY_UP:
+                    int prev = selectedIndex - 1;
+                    setSelectedIndex(prev > 0 ? prev : 0);
+                    if (prev <= selectedIndex) resetScroll();
                     break;
 
                 case Keyboard.KEY_HOME:
@@ -159,12 +184,21 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
                     break;
 
                 case Keyboard.KEY_NEXT:
-                    // Select from Selection to Page size
-                    int page = Math.min(getSize()  , selectedIndex + pageSize);
+                    // Select from Selection to bottom by Page size
+                    int page = Math.min(getSize(), selectedIndex + pageSize);
                     for (int i = selectedIndex; i < page; i++)
                         selectedRowIndexes.add(i);
 
                     setSelectedIndex(selectedIndex + pageSize - 1);
+                    break;
+
+                case Keyboard.KEY_PRIOR:
+                    // Select from Selection toward top by Page size
+                    page = Math.max(0, selectedIndex - pageSize);
+                    for (int i = selectedIndex; i >= page; i--)
+                        selectedRowIndexes.add(i);
+
+                    setSelectedIndex(selectedIndex - pageSize - 1);
                     break;
                 default:
             }
