@@ -747,5 +747,16 @@ public class GuiPlaylistManager extends GuiScreen
         guiPlayList.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiPlayListManager.label.playlist_selector"));
         guiPlayList.addHooverTexts(TextFormatting.RESET + I18n.format("mxtune.gui.guiPlayListManager.help.playlist_selector_01"));
         guiPlayList.addHooverTexts(TextFormatting.RESET + I18n.format("mxtune.gui.guiPlayListManager.help.playlist_selector_02"));
+        guiPlayList.addHooverTexts(TextFormatting.RESET + "");
+        guiPlayList.addHooverTexts(
+                TextFormatting.AQUA + I18n.format("mxtune.gui.guiPlayListManager.help.playlist_selector_03"));
+        guiPlayList.addHooverTexts(
+                TextFormatting.RESET +
+                        I18n.format("mxtune.gui.guiPlayListManager.help.playlist_selector_04",
+                                    (TextFormatting.GOLD + I18n.format("mxtune.info.playlist.null_playlist" + TextFormatting.RESET))));
+        guiPlayList.addHooverTexts(
+                TextFormatting.RESET +
+                        I18n.format("mxtune.gui.guiPlayListManager.help.playlist_selector_05",
+                                    (TextFormatting.GOLD + I18n.format("mxtune.info.playlist.empty_playlist" + TextFormatting.RESET))));
     }
 }
