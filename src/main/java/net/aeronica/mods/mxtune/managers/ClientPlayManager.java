@@ -87,6 +87,7 @@ public class ClientPlayManager implements IAudioStatusCallback
 
     // Miscellus
     private static boolean night;
+    private static boolean lastDuskDawnTransition;
 
     private ClientPlayManager() { /* NOP */ }
 
@@ -100,6 +101,8 @@ public class ClientPlayManager implements IAudioStatusCallback
         ClientPlayManager.resetTimer(2);
         lastSongs.clear();
         clearLastSongInfo();
+        updateDayNight();
+        lastDuskDawnTransition = night;
     }
 
     public static GUID getCurrentPlaylistGUID()
@@ -116,6 +119,7 @@ public class ClientPlayManager implements IAudioStatusCallback
             updateChunk();
             updateBiome();
             updateWorld();
+            updateDayNight();
             counter++;
         }
     }
@@ -165,13 +169,6 @@ public class ClientPlayManager implements IAudioStatusCallback
             return true;
         }
         return false;
-    }
-
-    private static void updateTimeOfDay()
-    {
-        // Day / Night
-        long time = mc.world.getWorldTime() % 24000;
-        night = time > 13200 && time < 23200;
     }
 
     @Nullable
@@ -272,6 +269,24 @@ public class ClientPlayManager implements IAudioStatusCallback
                 changeAreaMusic(false);
             }
         }
+    }
+
+    private static void updateDayNight()
+    {
+        if (mc.world == null || mc.player == null) return;
+
+        if (Reference.EMPTY_GUID.equals(currentPlaylistGUID) && currentPlayId == PlayType.INVALID || (lastDuskDawnTransition != night))
+        {
+            lastDuskDawnTransition = night;
+            changeAreaMusic(true);
+        }
+    }
+
+    private static void updateTimeOfDay()
+    {
+        // Day / Night
+        long time = mc.world.getWorldTime() % 24000;
+        night = time > 13200 && time < 23200;
     }
 
     public static void playMusic(GUID musicId, int playId)
@@ -388,7 +403,12 @@ public class ClientPlayManager implements IAudioStatusCallback
     {
         int normalizedDelay = (delay) / 2;
         int normalizedCounter = Math.min(normalizedDelay, counter / 2);
-        return String.format("Waiting: %s, Delay: %03d, timer: %03d", waiting(false), normalizedDelay, normalizedCounter);
+        int time = ((int) mc.world.getWorldTime() + 30000) % 24000;
+        int hour = (time / 1000) % 24;
+        int minute = (int) ((float) time / 16.666666) % 60 ;
+
+        return String.format("World Time: %02d:%02d %s, Waiting: %s, Delay: %03d, timer: %03d", hour, minute, night ? "night" : "day",
+                             waiting(false), normalizedDelay, normalizedCounter);
     }
 
     public static void removeLowerPriorityPlayIds(int playId)
