@@ -63,29 +63,29 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
         this.guiTop = guiTop;
     }
 
-    public void resetScroll() {
-
+    public void resetScroll()
+    {
         this.scrollDistance = keepSelectionInViewableArea();
     }
 
     private float keepSelectionInViewableArea()
     {
         int listHeight = this.getContentHeight() - (this.bottom - this.top - 4);
-        float scrollDistance = (float) selectedIndex * entryHeight;
+        float scrollDistance = (float) (selectedIndex * entryHeight);
 
+        // NPE prevention!
         if (listHeight < 0)
         {
-            listHeight /= 2;
+            listHeight = entryHeight;
         }
 
         if (scrollDistance < 0.0F)
         {
             scrollDistance = 0.0F;
         }
-
-        if (scrollDistance > (float) listHeight)
+        if (scrollDistance > listHeight)
         {
-            scrollDistance = (float) listHeight;
+            scrollDistance = listHeight;
         }
         return scrollDistance;
     }
@@ -118,22 +118,22 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
                 case Keyboard.KEY_DOWN:
                     int next = selectedIndex + 1;
                     setSelectedIndex(next < getSize() ? next : getSize());
-                    if (next + 1 > pageSize) resetScroll();
+                    resetScroll();
                     break;
                 case Keyboard.KEY_UP:
                     int prev = selectedIndex - 1;
                     setSelectedIndex(prev > 0 ? prev : 0);
-                    if (prev <= selectedIndex) resetScroll();
+                    resetScroll();
                     break;
                 case Keyboard.KEY_NEXT:
                     next = selectedIndex + pageSize - 1;
                     setSelectedIndex(next < getSize() ? next : getSize());
-                    if (next > pageSize) resetScroll();
+                    resetScroll();
                     break;
                 case Keyboard.KEY_PRIOR:
                     prev = selectedIndex - pageSize + 1;
                     setSelectedIndex(prev > 0 ? prev : 0);
-                    if (prev <= pageSize) resetScroll();
+                    resetScroll();
                     break;
                 case Keyboard.KEY_DELETE:
                     deleteAction(selectedIndex);

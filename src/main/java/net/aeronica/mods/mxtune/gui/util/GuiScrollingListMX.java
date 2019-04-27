@@ -175,13 +175,13 @@ public abstract class GuiScrollingListMX
         this.scrollDownActionId = downActionID;
     }
 
-    private void applyScrollLimits()
+    protected void applyScrollLimits()
     {
         int listHeight = this.getContentHeight() - (this.bottom - this.top - 4);
 
         if (listHeight < 0)
         {
-            listHeight /= 2;
+            listHeight = 0;
         }
 
         if (this.scrollDistance < 0.0F)
@@ -213,7 +213,6 @@ public abstract class GuiScrollingListMX
             }
         }
     }
-
 
     public void handleMouseInput(int mouseX, int mouseY) throws IOException
     {
@@ -375,7 +374,12 @@ public abstract class GuiScrollingListMX
         int extraHeight = (this.getContentHeight() + border) - viewHeight;
         if (extraHeight > 0)
         {
-            int height = (viewHeight * viewHeight) / this.getContentHeight();
+            int height;
+            // NPE prevention
+            if (this.getContentHeight() != 0)
+                height = (viewHeight * viewHeight) / this.getContentHeight();
+            else
+                height = 0;
 
             if (height < 32) height = 32;
 
