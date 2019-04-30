@@ -34,11 +34,11 @@ public class GuiMXT extends GuiScreen
     private GuiScreen guiScreenParent;
     private boolean isStateCached;
 
-    private MXTuneFile mxTuneFile;
+    MXTuneFile mxTuneFile;
 
-    private GuiMXTPart[] guiMXTParts = new GuiMXTPart[0];
+    //private GuiMXTPart[] guiMXTParts = new GuiMXTPart[0];
     private int activePartIndex;
-    private GuiMXTPart activePart;
+    private GuiTabExtended activePart;
 
     public GuiMXT(GuiScreen guiScreenParent)
     {
@@ -57,11 +57,10 @@ public class GuiMXT extends GuiScreen
         int left = padding;
         int titleWidth = fontRenderer.getStringWidth("GuiMXT");
         int titleX = (width / 2) - (titleWidth / 2);
-        int middle = height /2;
+        int middle = height / 2;
 
-        labelTitle = new GuiLabelMX(fontRenderer,1, titleX, titleTop, titleWidth, singleLineHeight, -1);
+        labelTitle = new GuiLabelMX(fontRenderer, 1, titleX, titleTop, titleWidth, singleLineHeight, -1);
         labelTitle.setLabel("GuiMXT");
-
 
 
         reloadState();
