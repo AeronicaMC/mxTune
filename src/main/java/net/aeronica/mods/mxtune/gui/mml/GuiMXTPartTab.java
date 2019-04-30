@@ -19,6 +19,7 @@ package net.aeronica.mods.mxtune.gui.mml;
 
 import net.aeronica.mods.mxtune.caches.MXTunePart;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.ArrayUtils;
@@ -41,15 +42,24 @@ public class GuiMXTPartTab extends GuiTabExtended
     }
 
     @Override
-    public IGuiPartTab getTabEntry(int index)
+    protected int getSize()
+    {
+        return partTabs.length;
+    }
+
+    /**
+     * Gets the IGuiPartTab object for the given index
+     */
+    @Override
+    public GuiTabExtended.IGuiPartTab getTabEntry(int index)
     {
         return partTabs[index];
     }
 
     @Override
-    protected int getSize()
+    protected int getScrollBarX()
     {
-        return partTabs.length;
+        return super.getScrollBarX() + 35;
     }
 
     /**
@@ -61,22 +71,69 @@ public class GuiMXTPartTab extends GuiTabExtended
     }
 
     @SideOnly(Side.CLIENT)
-    public class PartTabEntry implements GuiTabExtended.IGuiPartTab
+    public class PartNameTabEntry implements GuiTabExtended.IGuiPartTab
     {
+        private final String labelText;
+        private final int labelWidth;
+
+        public PartNameTabEntry(String name)
+        {
+            this.labelText = I18n.format(name);
+            this.labelWidth = GuiMXTPartTab.this.mc.fontRenderer.getStringWidth(this.labelText);
+        }
 
         @Override
         public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks)
         {
-
+            GuiMXTPartTab.this.mc.fontRenderer.drawString(this.labelText, GuiMXTPartTab.this.mc.currentScreen.width / 2 - this.labelWidth / 2, y + slotHeight - GuiMXTPartTab.this.mc.fontRenderer.FONT_HEIGHT - 1, 16777215);
         }
 
+        /**
+         * Called when the mouse is clicked within this entry. Returning true means that something within this entry was
+         * clicked and the list should not be dragged.
+         */
         @Override
         public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY) { return false; }
 
+        /**
+         * Fired when the mouse button is released. Arguments: index, x, y, mouseEvent, relativeX, relativeY
+         */
         @Override
         public void mouseReleased(int slotIndex, int x, int y, int mouseEvent, int relativeX, int relativeY) { /* NOP */ }
 
         @Override
         public void updatePosition(int slotIndex, int x, int y, float partialTicks) { /* NOP */ }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public class PartEntry implements GuiMXTPartTab.IGuiPartTab
+    {
+        private final String partDecc;
+
+        public PartEntry(String name)
+        {
+            partDecc = name;
+        }
+
+        @Override
+        public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected, float partialTicks)
+        {
+            GuiMXTPartTab.this.mc.fontRenderer.drawString(this.partDecc, x + 90 - GuiMXTPartTab.this.maxTabLabelWidth, y + slotHeight / 2 - GuiMXTPartTab.this.mc.fontRenderer.FONT_HEIGHT / 2, 16777215);
+        }
+
+        @Override
+        public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY)
+        {
+            return false;
+        }
+
+        @Override
+        public void mouseReleased(int slotIndex, int x, int y, int mouseEvent, int relativeX, int relativeY)
+        {
+
+        }
+
+        @Override
+        public void updatePosition(int slotIndex, int x, int y, float partialTicks) { /*NOP */ }
     }
 }
