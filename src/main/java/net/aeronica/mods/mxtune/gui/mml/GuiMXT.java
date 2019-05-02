@@ -22,8 +22,10 @@ import net.aeronica.mods.mxtune.gui.util.GuiLabelMX;
 import net.aeronica.mods.mxtune.gui.util.IHooverText;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,9 +38,9 @@ public class GuiMXT extends GuiScreen
 
     MXTuneFile mxTuneFile;
 
-    //private GuiMXTPart[] guiMXTParts = new GuiMXTPart[0];
+    private static final int MAX_PARTS = 12;
     private int activePartIndex;
-    private GuiTabExtended activePart;
+    private int cachedActivePartIndex;
 
     public GuiMXT(GuiScreen guiScreenParent)
     {
@@ -62,19 +64,26 @@ public class GuiMXT extends GuiScreen
         labelTitle = new GuiLabelMX(fontRenderer, 1, titleX, titleTop, titleWidth, singleLineHeight, -1);
         labelTitle.setLabel("GuiMXT");
 
-
         reloadState();
     }
 
     private void reloadState()
     {
+        updateButtons();
         if (!isStateCached) return;
-
+        activePartIndex = cachedActivePartIndex;
     }
 
     private void updateState()
     {
+        cachedActivePartIndex = activePartIndex;
         isStateCached = true;
+    }
+
+    private void updateButtons()
+    {
+        for (int i = 0; i< MAX_PARTS; i++)
+            buttonList.get(i).enabled = activePartIndex != i;
     }
 
     @Override
@@ -82,6 +91,13 @@ public class GuiMXT extends GuiScreen
     {
 
         super.updateScreen();
+    }
+
+    @Override
+    protected void actionPerformed(GuiButton button) throws IOException
+    {
+
+        updateState();
     }
 
     @Override
@@ -98,5 +114,30 @@ public class GuiMXT extends GuiScreen
         labelTitle.drawLabel(mc, mouseX, mouseY);
         super.drawScreen(mouseX, mouseY, partialTicks);
         ModGuiUtils.INSTANCE.drawHooveringHelp(this, hooverTexts, 0, 0, mouseX, mouseY);
+    }
+
+    @Override
+    public void handleMouseInput() throws IOException
+    {
+        super.handleMouseInput();
+
+    }
+
+    /**
+     * Called when the mouse is clicked. Args : mouseX, mouseY, clickedButton
+     */
+    @Override
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
+    {
+
+    }
+
+    /**
+     * Called when a mouse button is released.
+     */
+    @Override
+    protected void mouseReleased(int mouseX, int mouseY, int state)
+    {
+
     }
 }
