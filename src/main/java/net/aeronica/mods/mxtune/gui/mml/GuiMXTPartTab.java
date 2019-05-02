@@ -18,8 +18,6 @@
 package net.aeronica.mods.mxtune.gui.mml;
 
 import net.aeronica.libs.mml.core.*;
-import net.aeronica.mods.mxtune.config.ModConfig;
-import net.aeronica.mods.mxtune.gui.util.GuiLink;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
 import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
@@ -60,7 +58,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private GuiTextField labelStatus;
     private GuiButton buttonPlay;
     private GuiButton buttonStop;
-    private GuiLink mmlLink;
     private GuiScrollingListOf<ParseErrorEntry> listBoxMMLError;
     private GuiInstruments listBoxInstruments;
     private int helperTextCounter;
@@ -102,7 +99,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
             @Override
             protected void selectedClickedCallback(int selectedIndex)
             {
-
+                selectError(selectedIndex);
             }
 
             @Override
@@ -164,12 +161,10 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         listBoxInstruments = new GuiInstruments(this, instrumentCache, instListWidth, entryHeight);
         buttonPlay = new GuiButton(2, 10, height - 49, instListWidth, 20, I18n.format("mxtune.gui.button.play"));
         buttonStop = new GuiButton(3, 10, height - 27, instListWidth, 20, I18n.format("mxtune.gui.button.stop"));
-        mmlLink = new GuiLink(4, width - 10 , 20, ModConfig.getMmlLink(), GuiLink.AlignText.RIGHT);
         buttonPlay.enabled = false;
         buttonStop.enabled = false;
         buttonList.add(buttonPlay);
         buttonList.add(buttonStop);
-        buttonList.add(mmlLink);
 
         /* create MML Title field */
         int posX = listBoxInstruments.getRight() + 5;
@@ -326,9 +321,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
                 mmlStop();
                 break;
 
-            case 4:
-                handleComponentClick(mmlLink.getLinkComponent());
-                break;
             case 5:
                 // ignoreParseErrors
                 break;
@@ -427,6 +419,18 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         listBoxMMLError.clear();
         parser.test();
         listBoxMMLError.addAll(parseErrorListener.getParseErrorEntries());
+    }
+
+    private void selectError(int index)
+    {
+        this.selectedError = index;
+        this.selectedErrorEntry = (index >= 0 && index <= listBoxMMLError.size()) ? listBoxMMLError.get(this.selectedError) : null;
+        if (this.selectedErrorEntry != null)
+        {
+            textMMLPaste.setCursorPosition(selectedErrorEntry.getCharPositionInLine());
+            textMMLPaste.setFocused(true);
+        }
+        updateState();
     }
 
     public static class GuiParserErrorList extends GuiScrollingList
