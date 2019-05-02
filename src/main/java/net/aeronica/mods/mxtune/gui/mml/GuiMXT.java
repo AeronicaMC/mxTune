@@ -82,8 +82,8 @@ public class GuiMXT extends GuiScreen
 
     private void updateButtons()
     {
-        for (int i = 0; i< MAX_PARTS; i++)
-            buttonList.get(i).enabled = activePartIndex != i;
+//        for (int i = 0; i< MAX_PARTS; i++)
+//            buttonList.get(i).enabled = activePartIndex != i;
     }
 
     @Override
