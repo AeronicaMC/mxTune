@@ -52,6 +52,20 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
         this.entryHeight = entryHeight;
     }
 
+    public <T extends GuiScreen> GuiScrollingListOf(T gui)
+    {
+        super(gui.mc);
+        this.gui = gui;
+        this.mc = gui.mc;
+    }
+
+    public void setLayout(int entryHeight, int width, int height, int top, int bottom, int left)
+    {
+        super.setLayout(entryHeight, width, height, top, bottom, left);
+        super.screenWidth = gui.width;
+        super.screenHeight = gui.height;
+    }
+
     /**
      * Used to the set the guiLeft and guiTop of a guiContainer based gui.
      * @param guiLeft guiLeft from the parent gui.
