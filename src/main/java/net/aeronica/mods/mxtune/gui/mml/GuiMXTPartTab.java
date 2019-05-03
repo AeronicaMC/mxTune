@@ -182,29 +182,29 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         buttonList.add(buttonStop);
 
         int posY = top + 15;
-        listBoxInstruments.setLayout(entryHeight, instListWidth, buttonPlay.y - 5 - posY, posY,buttonPlay.y - 5, 5);
+        int coreHeight = Math.max(bottom - posY, 100);
+        int statusHeight = entryHeight + 4;
+        int pasteErrorHeight = (coreHeight / 2) - statusHeight - 10;
+        listBoxInstruments.setLayout(entryHeight, instListWidth, Math.max(buttonPlay.y - 5 - posY, entryHeight), posY,buttonPlay.y - 5, 5);
 
         /* create MML Title field */
         int posX = listBoxInstruments.getRight() + 5;
 
         /* create MML Paste/Edit field */
-        posY = top + 32 + 5;
-        textMMLPaste = new GuiMMLBox(1, fontRenderer, posX, posY, width - posX - 5, 77);
+        textMMLPaste = new GuiMMLBox(1, fontRenderer, posX, posY, width - posX - 5, pasteErrorHeight);
         textMMLPaste.setFocused(false);
         textMMLPaste.setCanLoseFocus(true);
         textMMLPaste.setMaxStringLength(10000);
 
         /* create Status line */
-        posY = top + 32 + 5 + 77 + 5;
-        labelStatus = new GuiTextField(2, fontRenderer, posX, posY, width - posX - 5, 18);
+        labelStatus = new GuiTextField(2, fontRenderer, posX, textMMLPaste.yPosition + textMMLPaste.height + 5 , width - posX - 5, statusHeight);
         labelStatus.setFocused(false);
         labelStatus.setCanLoseFocus(true);
         labelStatus.setEnabled(false);
         labelStatus.setMaxStringLength(80);
 
         /* create Parse Error selector */
-        posY = top + 32 + 5 + 77 + 5 + 18 + 5;
-        listBoxMMLError.setLayout(entryHeight, width - posX - 5, bottom - posY,  posY, bottom, posX);
+        listBoxMMLError.setLayout(entryHeight, width - posX - 5, Math.max(bottom - labelStatus.y - labelStatus.height - 5, entryHeight), labelStatus.y + labelStatus.height + 5, bottom, posX);
 
         reloadState();
     }
@@ -217,6 +217,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         isPlaying = cachedIsPlaying;
         parseMML(textMMLPaste.getText());
         updateButtonState();
+        listBoxInstruments.resetScroll();
     }
 
     private void updateState()
@@ -254,12 +255,11 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     {
         /* draw Field names */
         int posX = listBoxInstruments.getRight() + 10;
-        int posY = top + 20;
+        int posY = top + 2;
         fontRenderer.drawStringWithShadow(LABEL_TITLE_MML, posX, posY, 0xD3D3D3);
 
         /* draw the instrument list */
         posX = 5;
-        posY = top + 2;
         fontRenderer.drawStringWithShadow(LABEL_INSTRUMENTS, posX, posY, 0xD3D3D3);
 
         listBoxInstruments.drawScreen(mouseX, mouseY, partialTicks);
@@ -380,7 +380,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
          * while clicking on the error list.
          **/
         if (!listBoxMMLError.isHovering()) super.handleMouseInput();
-
         listBoxInstruments.handleMouseInput(mouseX, mouseY);
         listBoxMMLError.handleMouseInput(mouseX, mouseY);
     }
