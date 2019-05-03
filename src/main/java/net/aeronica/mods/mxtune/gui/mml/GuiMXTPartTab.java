@@ -56,7 +56,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private GuiMMLBox textMMLPaste;
     private GuiTextField labelStatus;
     private GuiButton buttonPlay;
-    private GuiButton buttonStop;
     private GuiScrollingListOf<ParseErrorEntry> listBoxMMLError;
     private GuiScrollingListOf<Instrument> listBoxInstruments;
     private int helperTextCounter;
@@ -64,7 +63,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private boolean helperState;
 
     /* MML Parser */
-    private ParseErrorListener parseErrorListener = null;
+    private ParseErrorListener parseErrorListener = new ParseErrorListener();
     private ParseErrorEntry selectedErrorEntry;
     private int selectedError;
 
@@ -110,6 +109,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
                 fontRenderer.drawString(s, left + 3, slotTop, 0xADD8E6);
             }
         };
+        listBoxInstruments.addAll(MIDISystemUtil.getInstrumentCacheCopy());
 
         listBoxMMLError = new GuiScrollingListOf<ParseErrorEntry>(this)
         {
@@ -157,13 +157,9 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     public void initGui()
     {
         int entryHeight = fontRenderer.FONT_HEIGHT + 2;
-        parseErrorListener = new ParseErrorListener();
         selectedError = -1;
         selectedInst = -1;
         buttonList.clear();
-
-        listBoxInstruments.clear();
-        listBoxInstruments.addAll(MIDISystemUtil.getInstrumentCacheCopy());
 
         for (Instrument in : listBoxInstruments)
         {
@@ -174,12 +170,9 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         instListWidth = Math.min(instListWidth, 150);
 
         // create Instrument selector, and buttons
-        buttonPlay = new GuiButton(2, 5, bottom - 40, instListWidth, 20, I18n.format("mxtune.gui.button.play"));
-        buttonStop = new GuiButton(3, 5, bottom - 20, instListWidth, 20, I18n.format("mxtune.gui.button.stop"));
+        buttonPlay = new GuiButton(2, 5, bottom - 20, instListWidth, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play"));
         buttonPlay.enabled = false;
-        buttonStop.enabled = false;
         buttonList.add(buttonPlay);
-        buttonList.add(buttonStop);
 
         int posY = top + 15;
         int coreHeight = Math.max(bottom - posY, 100);
@@ -216,6 +209,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         listBoxInstruments.setSelectedIndex(cachedSelectedInst);
         isPlaying = cachedIsPlaying;
         parseMML(textMMLPaste.getText());
+        labelStatus.setText(String.format("[%04d]", textMMLPaste.getCursorPosition()));
         updateButtonState();
         listBoxInstruments.resetScroll();
     }
@@ -226,6 +220,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         cachedSelectedInst = selectedInst;
         cachedIsPlaying = isPlaying;
         labelStatus.setText(String.format("[%04d]", textMMLPaste.getCursorPosition()));
+        buttonPlay.displayString = isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play");
         updateButtonState();
         isStateCached = true;
     }
@@ -234,14 +229,13 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     {
         /* enable OKAY button when Title Field is greater than 0 chars and passes the MML parsing tests */
         boolean isOK = (!textMMLPaste.isEmpty()) && (listBoxMMLError.isEmpty());
-        buttonPlay.enabled = !isPlaying && isOK;
-        buttonStop.enabled = isPlaying && isOK;
+        buttonPlay.enabled = isPlaying || isOK;
     }
 
     @Override
     public void onGuiClosed()
     {
-        mmlStop();
+        stop();
     }
 
     @Override
@@ -317,26 +311,13 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
             case 1:
                 /* Cancelled - remove the GUI */
-                if (guiMXT != null)
-                    ActionGet.INSTANCE.cancel();
-                mmlStop();
+                stop();
                 mc.displayGuiScreen(guiMXT);
                 break;
 
             case 2:
                 /* Play MML */
-                if (selectedInst < 0)
-                {
-                    selectedInst = 0;
-                    listBoxInstruments.setSelectedIndex(selectedInst);
-                }
-                String mml = textMMLPaste.getTextToParse();
-                isPlaying = mmlPlay(mml);
-                break;
-
-            case 3:
-                /* Stop playing MML */
-                mmlStop();
+                play();
                 break;
 
             case 5:
@@ -373,7 +354,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     {
         int mouseX = Mouse.getEventX() * width / mc.displayWidth;
         int mouseY = height - Mouse.getEventY() * height / mc.displayHeight - 1;
-
         /*
          * A hack is a hack is a hack - Disabling mouse handling on other
          * controls. In this case to ensure a particular control keeps focus
@@ -488,6 +468,23 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         return true;
     }
 
+    private void play()
+    {
+        if (isPlaying)
+        {
+            stop();
+        }
+        else
+        {
+            if (selectedInst < 0)
+            {
+                selectedInst = 0;
+                listBoxInstruments.setSelectedIndex(selectedInst);
+            }
+            String mml = textMMLPaste.getTextToParse();
+            isPlaying = mmlPlay(mml);
+        }
+    }
 
     @Override
     public void statusCallBack(Status status, int playId)
@@ -496,16 +493,16 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
             if (this.playId == playId && (status == Status.ERROR || status == Status.DONE))
             {
                 ModLogger.debug("AudioStatus event received: %s, playId: %s", status, playId);
-                mmlStop();
-                updateButtonState();
+                stop();
             }
         });
     }
 
-    private void mmlStop()
+    private void stop()
     {
         ClientAudio.queueAudioDataRemoval(playId);
         isPlaying = false;
         playId = PlayIdSupplier.PlayType.INVALID;
+        updateButtonState();
     }
 }
