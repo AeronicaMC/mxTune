@@ -26,10 +26,11 @@ import net.aeronica.mods.mxtune.sound.IAudioStatusCallback;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.*;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
-import net.minecraftforge.fml.client.GuiScrollingList;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -37,8 +38,6 @@ import javax.annotation.Nonnull;
 import javax.sound.midi.Instrument;
 import javax.sound.midi.Patch;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 {
@@ -59,14 +58,13 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private GuiButton buttonPlay;
     private GuiButton buttonStop;
     private GuiScrollingListOf<ParseErrorEntry> listBoxMMLError;
-    private GuiInstruments listBoxInstruments;
+    private GuiScrollingListOf<Instrument> listBoxInstruments;
     private int helperTextCounter;
     private int helperTextColor;
     private boolean helperState;
 
     /* MML Parser */
     private ParseErrorListener parseErrorListener = null;
-    private List<ParseErrorEntry> parseErrorCache;
     private ParseErrorEntry selectedErrorEntry;
     private int selectedError;
 
@@ -74,12 +72,10 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private int playId = PlayIdSupplier.PlayType.INVALID;
 
     /* Instruments */
-    private List<Instrument> instrumentCache;
     private int instListWidth;
     private Instrument selectedInstID = null;
     private int selectedInst;
     private boolean isPlaying = false;
-    private boolean midiUnavailable;
 
     /* Cached State for when the GUI is resized */
     private boolean isStateCached = false;
@@ -92,10 +88,31 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         this.guiMXT = guiMXT;
         this.mc = Minecraft.getMinecraft();
         this.fontRenderer = mc.fontRenderer;
-        midiUnavailable = MIDISystemUtil.midiUnavailable();
-        instrumentCache = MIDISystemUtil.getInstrumentCacheCopy();
+        Keyboard.enableRepeatEvents(true);
 
-        listBoxMMLError = new GuiScrollingListOf<ParseErrorEntry>(this) {
+        listBoxInstruments = new GuiScrollingListOf<Instrument>(this)
+        {
+            @Override
+            protected void selectedClickedCallback(int selectedIndex)
+            {
+                selectInstrument(selectedIndex);
+            }
+
+            @Override
+            protected void selectedDoubleClickedCallback(int selectedIndex) { /* NOP */ }
+
+            @Override
+            protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
+            {
+                Instrument instrument = get(slotIdx);
+                String s = fontRenderer.trimStringToWidth(I18n.format(instrument.getName()), listWidth - 10);
+                /* light Blue */
+                fontRenderer.drawString(s, left + 3, slotTop, 0xADD8E6);
+            }
+        };
+
+        listBoxMMLError = new GuiScrollingListOf<ParseErrorEntry>(this)
+        {
             @Override
             protected void selectedClickedCallback(int selectedIndex)
             {
@@ -103,10 +120,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
             }
 
             @Override
-            protected void selectedDoubleClickedCallback(int selectedIndex)
-            {
-
-            }
+            protected void selectedDoubleClickedCallback(int selectedIndex) { /* NOP */ }
 
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
@@ -135,7 +149,8 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         updateHelperTextCounter();
         listBoxMMLError.setSelectedIndex(listBoxMMLError.indexOf(selectedErrorEntry));
         selectedError = listBoxMMLError.getSelectedIndex();
-        selectedInst = listBoxInstruments.selectedIndex(instrumentCache.indexOf(selectedInstID));
+        listBoxInstruments.setSelectedIndex(listBoxInstruments.indexOf(selectedInstID));
+        selectedInst = listBoxInstruments.getSelectedIndex();
     }
 
     @Override
@@ -143,42 +158,45 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     {
         int entryHeight = fontRenderer.FONT_HEIGHT + 2;
         parseErrorListener = new ParseErrorListener();
-        parseErrorCache = new ArrayList<>();
         selectedError = -1;
         selectedInst = -1;
-        Keyboard.enableRepeatEvents(true);
         buttonList.clear();
 
-        for (Instrument in : instrumentCache)
+        listBoxInstruments.clear();
+        listBoxInstruments.addAll(MIDISystemUtil.getInstrumentCacheCopy());
+
+        for (Instrument in : listBoxInstruments)
         {
             int stringWidth = fontRenderer.getStringWidth(I18n.format(in.getName()));
             instListWidth = Math.max(instListWidth, stringWidth + 10);
-            instListWidth = Math.max(instListWidth, stringWidth + 5 + entryHeight);
+            //instListWidth = Math.max(instListWidth, stringWidth + 5 + entryHeight);
         }
         instListWidth = Math.min(instListWidth, 150);
 
         // create Instrument selector, and buttons
-        listBoxInstruments = new GuiInstruments(this, instrumentCache, instListWidth, entryHeight);
-        buttonPlay = new GuiButton(2, 10, height - 49, instListWidth, 20, I18n.format("mxtune.gui.button.play"));
-        buttonStop = new GuiButton(3, 10, height - 27, instListWidth, 20, I18n.format("mxtune.gui.button.stop"));
+        buttonPlay = new GuiButton(2, 5, bottom - 40, instListWidth, 20, I18n.format("mxtune.gui.button.play"));
+        buttonStop = new GuiButton(3, 5, bottom - 20, instListWidth, 20, I18n.format("mxtune.gui.button.stop"));
         buttonPlay.enabled = false;
         buttonStop.enabled = false;
         buttonList.add(buttonPlay);
         buttonList.add(buttonStop);
 
+        int posY = top + 15;
+        listBoxInstruments.setLayout(entryHeight, instListWidth, buttonPlay.y - 5 - posY, posY,buttonPlay.y - 5, 5);
+
         /* create MML Title field */
         int posX = listBoxInstruments.getRight() + 5;
 
         /* create MML Paste/Edit field */
-        int posY = top + 32 + 5;
-        textMMLPaste = new GuiMMLBox(1, fontRenderer, posX, posY, width - posX - 10, 77);
+        posY = top + 32 + 5;
+        textMMLPaste = new GuiMMLBox(1, fontRenderer, posX, posY, width - posX - 5, 77);
         textMMLPaste.setFocused(false);
         textMMLPaste.setCanLoseFocus(true);
         textMMLPaste.setMaxStringLength(10000);
 
         /* create Status line */
         posY = top + 32 + 5 + 77 + 5;
-        labelStatus = new GuiTextField(2, fontRenderer, posX, posY, width - posX - 10, 18);
+        labelStatus = new GuiTextField(2, fontRenderer, posX, posY, width - posX - 5, 18);
         labelStatus.setFocused(false);
         labelStatus.setCanLoseFocus(true);
         labelStatus.setEnabled(false);
@@ -186,7 +204,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
         /* create Parse Error selector */
         posY = top + 32 + 5 + 77 + 5 + 18 + 5;
-        listBoxMMLError.setLayout(entryHeight, width - posX - 10, bottom - posY,  posY, bottom, posX);
+        listBoxMMLError.setLayout(entryHeight, width - posX - 5, bottom - posY,  posY, bottom, posX);
 
         reloadState();
     }
@@ -195,7 +213,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     {
         if (!isStateCached) return;
         textMMLPaste.setText(cachedMMLText);
-        listBoxInstruments.elementClicked(cachedSelectedInst, false);
+        listBoxInstruments.setSelectedIndex(cachedSelectedInst);
         isPlaying = cachedIsPlaying;
         parseMML(textMMLPaste.getText());
         updateButtonState();
@@ -310,7 +328,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
                 if (selectedInst < 0)
                 {
                     selectedInst = 0;
-                    listBoxInstruments.elementClicked(selectedInst, false);
+                    listBoxInstruments.setSelectedIndex(selectedInst);
                 }
                 String mml = textMMLPaste.getTextToParse();
                 isPlaying = mmlPlay(mml);
@@ -433,128 +451,12 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         updateState();
     }
 
-    public static class GuiParserErrorList extends GuiScrollingList
+    // Fixme
+    private void selectInstrument(int index)
     {
-        private GuiMXTPartTab parent;
-        private final List<ParseErrorEntry> parseErrorCache;
-        private FontRenderer fontRenderer;
-
-        GuiParserErrorList(GuiMXTPartTab parent, List<ParseErrorEntry> parseErrorCache, int left, int top, int listWidth, int listHeight, int slotHeight)
-        {
-            super(parent.mc, listWidth, listHeight, top, top + listHeight, left, slotHeight, parent.width, parent.height);
-            this.parent = parent;
-            this.parseErrorCache = parseErrorCache;
-            this.fontRenderer = parent.mc.fontRenderer;
-        }
-
-        boolean isHovering()
-        {
-            return mouseX >= left && mouseX <= left + listWidth && mouseY >= top && mouseY <= bottom && getSize() > 0;
-        }
-
-        int selectedIndex(int s)
-        {
-            selectedIndex = s;
-            return s;
-        }
-
-        @Override
-        protected int getSize() {return parseErrorCache.size();}
-
-        @Override
-        protected void elementClicked(int index, boolean doubleClick)
-        {
-            parent.selectedError = index;
-            parent.selectedErrorEntry = (index >= 0 && index <= parseErrorCache.size()) ? parseErrorCache.get(parent.selectedError) : null;
-            if (parent.selectedErrorEntry != null)
-            {
-                parent.textMMLPaste.setCursorPosition(parent.selectedErrorEntry.getCharPositionInLine());
-                parent.textMMLPaste.setFocused(true);
-            }
-            parent.updateState();
-        }
-
-        @Override
-        protected boolean isSelected(int index) { return index == parent.selectedError; }
-
-        @Override
-        protected void drawBackground()
-        {
-            Gui.drawRect(left - 1, top - 1, left + listWidth + 1, top + listHeight + 1, -6250336);
-            Gui.drawRect(left, top, left + listWidth, top + listHeight, -16777216);
-        }
-
-        @Override
-        protected int getContentHeight() {return (getSize()) * slotHeight;}
-
-        @Override
-        protected void drawSlot(int idx, int right, int top, int height, Tessellator tess)
-        {
-            ParseErrorEntry errorEntry = parseErrorCache.get(idx);
-            String charAt = String.format("%04d", errorEntry.getCharPositionInLine());
-            String formattedErrorEntry = fontRenderer.trimStringToWidth(charAt + ": " + errorEntry.getMsg(), listWidth - 10);
-            fontRenderer.drawString(formattedErrorEntry, left + 3, top, 0xFF2222);
-        }
-    }
-
-    public static class GuiInstruments extends GuiScrollingList
-    {
-        private GuiMXTPartTab parent;
-        private List<Instrument> instruments;
-        private FontRenderer fontRenderer;
-
-        GuiInstruments(GuiMXTPartTab parent, List<Instrument> instruments, int listWidth, int slotHeight)
-        {
-            super(parent.mc, listWidth, parent.top - 32 - 60 + 4, 32, parent.bottom - 60 + 4, 10, slotHeight, parent.width, parent.height);
-            this.parent = parent;
-            this.instruments = instruments;
-            this.fontRenderer = parent.mc.fontRenderer;
-        }
-
-        int selectedIndex(int s)
-        {
-            selectedIndex = s;
-            return s;
-        }
-
-        public int getRight() {return right;}
-
-        @Override
-        protected int getSize() { return instruments.size(); }
-
-        @Override
-        protected void elementClicked(int index, boolean doubleClick)
-        {
-            if (index == parent.selectedInst) return;
-            parent.selectedInst = index;
-            parent.selectedInstID = (index >= 0 && index <= parent.instrumentCache.size() && !parent.instrumentCache.isEmpty()) ? parent.instrumentCache.get(parent.selectedInst) : null;
-            parent.updateState();
-        }
-
-        @Override
-        protected boolean isSelected(int index)
-        {
-            return index == parent.selectedInst;
-        }
-
-        @Override
-        protected void drawBackground()
-        {
-            Gui.drawRect(left - 1, top - 1, left + listWidth + 1, top + listHeight + 1, -6250336);
-            Gui.drawRect(left, top, left + listWidth, top + listHeight, -16777216);
-        }
-
-        @Override
-        protected int getContentHeight() { return (getSize()) * slotHeight; }
-
-        @Override
-        protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
-        {
-            Instrument instrument = instruments.get(slotIdx);
-            String s = fontRenderer.trimStringToWidth(I18n.format(instrument.getName()), listWidth - 10);
-            /* light Blue */
-            fontRenderer.drawStringWithShadow(s, (float)left + 3, slotTop, 0xADD8E6);
-        }
+        selectedInst = index;
+        selectedInstID = (index >= 0 && index < listBoxInstruments.size()) ? listBoxInstruments.get(index) : null;
+        updateState();
     }
 
     /** Table Flip!
@@ -575,7 +477,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private boolean mmlPlay(String mmlIn)
     {
         String mml = mmlIn;
-        Instrument inst = instrumentCache.get(selectedInst);
+        Instrument inst = listBoxInstruments.get(selectedInst);
         int packedPreset = MMLUtil.instrument2PackedPreset(inst);
         
         mml = mml.replace("MML@", "MML@i" + packedPreset);
