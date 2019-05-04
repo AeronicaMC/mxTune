@@ -43,6 +43,21 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
         setHighlightSelected(false);
     }
 
+    public <T extends GuiScreen> GuiScrollingMultiListOf(T gui)
+    {
+        super(gui);
+        this.gui = gui;
+        this.mc = gui.mc;
+        setHighlightSelected(false);
+    }
+
+    public void setLayout(int entryHeight, int width, int height, int top, int bottom, int left)
+    {
+        super.setLayout(entryHeight, width, height, top, bottom, left, gui.width, gui.height);
+        this.entryHeight = entryHeight;
+        setHighlightSelected(false);
+    }
+
     @Override
     protected void elementClicked(int index, boolean doubleClick)
     {

@@ -61,9 +61,8 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
 
     public void setLayout(int entryHeight, int width, int height, int top, int bottom, int left)
     {
-        super.setLayout(entryHeight, width, height, top, bottom, left);
-        super.screenWidth = gui.width;
-        super.screenHeight = gui.height;
+        super.setLayout(entryHeight, width, height, top, bottom, left, gui.width, gui.height);
+        this.entryHeight = entryHeight;
     }
 
     /**

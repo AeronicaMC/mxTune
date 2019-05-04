@@ -106,7 +106,7 @@ public abstract class GuiScrollingListMX
         this.client = client;
     }
 
-    public void setLayout(int entryHeight, int width, int height, int top, int bottom, int left)
+    public void setLayout(int entryHeight, int width, int height, int top, int bottom, int left, int screenWidth, int screenHeight)
     {
         this.listWidth = width;
         this.listHeight = height;
@@ -115,6 +115,8 @@ public abstract class GuiScrollingListMX
         this.slotHeight = entryHeight;
         this.left = left;
         this.right = width + this.left;
+        this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
     }
 
     protected void setHighlightSelected(boolean state)
