@@ -525,7 +525,6 @@ public class GuiPlaylistManager extends GuiScreen
         if (keyCode != Keyboard.KEY_TAB)
             playListName.textboxKeyTyped(typedChar, keyCode);
 
-        guiFileList.keyTyped(typedChar, keyCode);
         guiPlayList.keyTyped(typedChar, keyCode);
         guiDay.keyTyped(typedChar, keyCode);
         guiNight.keyTyped(typedChar, keyCode);
