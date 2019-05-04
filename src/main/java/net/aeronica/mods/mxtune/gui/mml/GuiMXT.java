@@ -50,7 +50,7 @@ public class GuiMXT extends GuiScreen
     private int cachedActiveChildIndex;
 
     // Tab limits - allow limiting the viewable tabs
-    private int viewableTabCount = MIN_TABS;
+    private int viewableTabCount = MIN_TABS + 2;
     private int cachedViewableTabCount;
 
     public GuiMXT(GuiScreen guiScreenParent)
@@ -136,6 +136,7 @@ public class GuiMXT extends GuiScreen
             this.childTabs[activeChildIndex].onResize(mc, width, height);
             ModLogger.info("Tab: %d", button.id - TAB_BTN_IDX - 1);
         }
+        updateButtons();
         updateState();
     }
 

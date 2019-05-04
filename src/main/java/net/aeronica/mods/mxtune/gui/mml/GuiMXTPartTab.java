@@ -18,6 +18,7 @@
 package net.aeronica.mods.mxtune.gui.mml;
 
 import net.aeronica.libs.mml.core.*;
+import net.aeronica.mods.mxtune.caches.MXTunePart;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
 import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
@@ -31,6 +32,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
+import net.minecraftforge.fml.client.config.GuiButtonExt;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -53,9 +55,10 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private int childHeight;
 
     // Content
+    MXTunePart mxTunePart = new MXTunePart();
     private GuiMMLBox textMMLPaste;
     private GuiTextField labelStatus;
-    private GuiButton buttonPlay;
+    private GuiButtonExt buttonPlay;
     private GuiScrollingListOf<ParseErrorEntry> listBoxMMLError;
     private GuiScrollingListOf<Instrument> listBoxInstruments;
     private int helperTextCounter;
@@ -72,9 +75,10 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
     /* Instruments */
     private int instListWidth;
-    private Instrument selectedInstID = null;
-    private int selectedInst;
+    private Instrument selectedInstrument = null;
+    private int selectedInstrumentIndex;
     private boolean isPlaying = false;
+    private int selectedPackedPreset;
 
     /* Cached State for when the GUI is resized */
     private boolean isStateCached = false;
@@ -103,10 +107,10 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
             {
-                Instrument instrument = get(slotIdx);
+                Instrument instrument = !isEmpty() && slotIdx < getSize() && slotIdx >= 0 ? get(slotIdx) : null;
                 String s = fontRenderer.trimStringToWidth(I18n.format(instrument.getName()), listWidth - 10);
-                /* light Blue */
-                fontRenderer.drawString(s, left + 3, slotTop, 0xADD8E6);
+                int color = isSelected(slotIdx) ? 0xFFFF00 : 0xAADDEE;
+                fontRenderer.drawString(s, left + 3, slotTop, color);
             }
         };
         listBoxInstruments.addAll(MIDISystemUtil.getInstrumentCacheCopy());
@@ -125,7 +129,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
             {
-                ParseErrorEntry errorEntry = get(slotIdx);
+                ParseErrorEntry errorEntry = !isEmpty() && slotIdx < getSize() && slotIdx >= 0 ? get(slotIdx) : null;
                 String charAt = String.format("%04d", errorEntry.getCharPositionInLine());
                 String formattedErrorEntry = fontRenderer.trimStringToWidth(charAt + ": " + errorEntry.getMsg(), listWidth - 10);
                 fontRenderer.drawString(formattedErrorEntry, this.left + 3, slotTop, 0xFF2222);
@@ -149,8 +153,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         updateHelperTextCounter();
         listBoxMMLError.setSelectedIndex(listBoxMMLError.indexOf(selectedErrorEntry));
         selectedError = listBoxMMLError.getSelectedIndex();
-        listBoxInstruments.setSelectedIndex(listBoxInstruments.indexOf(selectedInstID));
-        selectedInst = listBoxInstruments.getSelectedIndex();
+        selectedInstrumentIndex = listBoxInstruments.getSelectedIndex();
     }
 
     @Override
@@ -158,7 +161,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     {
         int entryHeight = fontRenderer.FONT_HEIGHT + 2;
         selectedError = -1;
-        selectedInst = -1;
+        selectedInstrumentIndex = -1;
         buttonList.clear();
 
         for (Instrument in : listBoxInstruments)
@@ -170,7 +173,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         instListWidth = Math.min(instListWidth, 150);
 
         // create Instrument selector, and buttons
-        buttonPlay = new GuiButton(2, 5, bottom - 20, instListWidth, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play"));
+        buttonPlay = new GuiButtonExt(2, 5, bottom - 20, instListWidth, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play"));
         buttonPlay.enabled = false;
         buttonList.add(buttonPlay);
 
@@ -217,19 +220,19 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private void updateState()
     {
         cachedMMLText = textMMLPaste.getText();
-        cachedSelectedInst = selectedInst;
+        cachedSelectedInst = listBoxInstruments.getSelectedIndex();
         cachedIsPlaying = isPlaying;
         labelStatus.setText(String.format("[%04d]", textMMLPaste.getCursorPosition()));
-        buttonPlay.displayString = isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play");
         updateButtonState();
         isStateCached = true;
     }
 
     private void updateButtonState()
     {
-        /* enable OKAY button when Title Field is greater than 0 chars and passes the MML parsing tests */
+        // enable Play button when MML Parsing Field has greater than 0 characters and passes the MML parsing tests
         boolean isOK = (!textMMLPaste.isEmpty()) && (listBoxMMLError.isEmpty());
         buttonPlay.enabled = isPlaying || isOK;
+        buttonPlay.displayString = isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play");
     }
 
     @Override
@@ -344,6 +347,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         }
         /* add char to GuiTextField */
         textMMLPaste.textboxKeyTyped(typedChar, keyCode);
+        listBoxInstruments.keyTyped(typedChar, keyCode);
         parseMML(textMMLPaste.getText());
         updateState();
         super.keyTyped(typedChar, keyCode);
@@ -364,11 +368,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         listBoxMMLError.handleMouseInput(mouseX, mouseY);
     }
 
-    /*
-     * Called when the mouse is clicked.
-     *
-     * @throws IOException
-     */
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int partialTicks) throws IOException
     {
@@ -376,6 +375,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         super.mouseClicked(mouseX, mouseY, partialTicks);
         updateState();
     }
+
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int state)
     {
@@ -430,11 +430,9 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         updateState();
     }
 
-    // Fixme
     private void selectInstrument(int index)
     {
-        selectedInst = index;
-        selectedInstID = (index >= 0 && index < listBoxInstruments.size()) ? listBoxInstruments.get(index) : null;
+        selectedInstrumentIndex = index;
         updateState();
     }
 
@@ -446,17 +444,17 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
      * A soundfont preset bank:0, program:0 for a piano AND
      * a soundfont preset bank:128, program:0 for a standard percussion set
      * produce identical {@link Patch} objects using
-     * {@link Patch javax.sound.midi.Instrument.getPatch()}
+     * {@link Patch javax.sound.midi.Instrument.getPatch()} However
+     * percussion sets use a different internal class. It uses the Drumkit class.
      * <br/><br/>
-     * While a synthesizer can load the Instrument directly, if you want
-     * to manipulate or test values for bank or program settings you are
-     * out of luck.
+     * If you want to manipulate or test values for bank or program settings
+     * you must also check for the existence of "Drumkit:" in Instrument#toString.
      */
     @SuppressWarnings("restriction")
     private boolean mmlPlay(String mmlIn)
     {
         String mml = mmlIn;
-        Instrument inst = listBoxInstruments.get(selectedInst);
+        Instrument inst = listBoxInstruments.get(selectedInstrumentIndex);
         int packedPreset = MMLUtil.instrument2PackedPreset(inst);
         
         mml = mml.replace("MML@", "MML@i" + packedPreset);
@@ -476,10 +474,10 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         }
         else
         {
-            if (selectedInst < 0)
+            if (selectedInstrumentIndex < 0)
             {
-                selectedInst = 0;
-                listBoxInstruments.setSelectedIndex(selectedInst);
+                selectedInstrumentIndex = 0;
+                listBoxInstruments.setSelectedIndex(selectedInstrumentIndex);
             }
             String mml = textMMLPaste.getTextToParse();
             isPlaying = mmlPlay(mml);
@@ -503,6 +501,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         ClientAudio.queueAudioDataRemoval(playId);
         isPlaying = false;
         playId = PlayIdSupplier.PlayType.INVALID;
-        updateButtonState();
+        updateState();
     }
 }
