@@ -183,7 +183,7 @@ public class GuiPlaylistManager extends GuiScreen
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
             {
                 // get the filename and remove the '.mxt' extension
-                Path entry = get(slotIdx);
+                Path entry = !isEmpty() && slotIdx < getSize() && slotIdx >= 0 ? get(slotIdx) : null;
                 if (entry != null)
                 {
                     String name = entry.getFileName().toString().replaceAll("\\.[mM][xX][tT]$", "");
@@ -212,7 +212,7 @@ public class GuiPlaylistManager extends GuiScreen
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
             {
-                Area area = get(slotIdx);
+                Area area = !isEmpty() && slotIdx < getSize() && slotIdx >= 0 ? get(slotIdx) : null;
                 if (area != null)
                 {
                     String playlistName = ModGuiUtils.getPlaylistName(area);
@@ -281,7 +281,7 @@ public class GuiPlaylistManager extends GuiScreen
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
             {
-                ITextComponent component = get(slotIdx);
+                ITextComponent component = !isEmpty() && slotIdx < getSize() && slotIdx >= 0 ? get(slotIdx) : null;
                 if (component != null)
                 {
                     String statusEntry = component.getFormattedText();
