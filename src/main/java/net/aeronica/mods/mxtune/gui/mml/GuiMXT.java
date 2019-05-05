@@ -75,7 +75,7 @@ public class GuiMXT extends GuiScreen
         int left = padding;
         int titleWidth = fontRenderer.getStringWidth("GuiMXT");
         int titleX = (width / 2) - (titleWidth / 2);
-        int middle = height / 2;
+        int tabbedAreaTop = (height * 2) / 5;
 
         labelTitle = new GuiLabelMX(fontRenderer, 1, titleX, titleTop, titleWidth, singleLineHeight, -1);
         labelTitle.setLabel("GuiMXT");
@@ -83,8 +83,8 @@ public class GuiMXT extends GuiScreen
         // Button tabs
         for (int i = 0; i< MAX_TABS; i++)
         {
-            buttonList.add(new GuiButton(TAB_BTN_IDX + i, 5 + 20 * i, middle - 25, 20, 20, String.format("%d", i + 1)));
-            childTabs[i].setLayout(middle, height - 5, height - 5 - middle);
+            buttonList.add(new GuiButton(TAB_BTN_IDX + i, 5 + 20 * i, tabbedAreaTop - 25, 20, 20, String.format("%d", i + 1)));
+            childTabs[i].setLayout(tabbedAreaTop, height - 5, height - 5 - tabbedAreaTop);
             childTabs[i].initGui();
         }
 

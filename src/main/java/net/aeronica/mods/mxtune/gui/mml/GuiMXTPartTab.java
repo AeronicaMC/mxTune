@@ -19,6 +19,7 @@ package net.aeronica.mods.mxtune.gui.mml;
 
 import net.aeronica.libs.mml.core.*;
 import net.aeronica.mods.mxtune.caches.MXTunePart;
+import net.aeronica.mods.mxtune.caches.MXTuneStaff;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
 import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
@@ -33,6 +34,8 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
+import net.minecraftforge.fml.client.config.GuiCheckBox;
+import net.minecraftforge.fml.client.config.GuiSlider;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -46,7 +49,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     // Localization Keys
     private static final String HELPER_ENTER_MML = I18n.format("mxtune.gui.musicPaperParse.enterMML");
     private static final String LABEL_INSTRUMENTS = I18n.format("mxtune.gui.musicPaperParse.labelInstruments");
-    private static final String LABEL_TITLE_MML = I18n.format("mxtune.gui.musicPaperParse.labelTitleMML");
+    private static final String LABEL_TITLE_MML = I18n.format("mxtune.gui.guiMXT.labelBulkPasteMML");
 
     // Layout
     private GuiMXT guiMXT;
@@ -58,12 +61,27 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     MXTunePart mxTunePart = new MXTunePart();
     private GuiMMLBox textMMLPaste;
     private GuiTextField labelStatus;
+    private GuiTextField labelMeta;
     private GuiButtonExt buttonPlay;
     private GuiScrollingListOf<ParseErrorEntry> listBoxMMLError;
     private GuiScrollingListOf<Instrument> listBoxInstruments;
-    private int helperTextCounter;
-    private int helperTextColor;
-    private boolean helperState;
+    private GuiScrollingListOf<MXTuneStaff> listBoxStaves;
+
+    // MIDI Channel Settings
+    GuiCheckBox enableVolume;
+    boolean cachedEnableVolume;
+    GuiSlider sliderVolume;
+    double cachedVolume = 100D;
+
+    GuiCheckBox enableLeftRight;
+    boolean cachedEnabledLeftRight;
+    GuiSlider sliderLeftRight;
+    double cachedLeftRight = 0D;
+
+    GuiCheckBox enableChorus;
+    boolean cachedEnabledChorus;
+    GuiSlider sliderChorus;
+    double cachedChorus = 0D;
 
     /* MML Parser */
     private ParseErrorListener parseErrorListener = new ParseErrorListener();
@@ -85,6 +103,11 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private boolean cachedIsPlaying;
     private String cachedMMLText;
     private int cachedSelectedInst;
+
+    // Colored Text Helper
+    private int helperTextCounter;
+    private int helperTextColor;
+    private boolean helperState;
 
     public GuiMXTPartTab(GuiMXT guiMXT)
     {
@@ -130,7 +153,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
             {
                 ParseErrorEntry errorEntry = !isEmpty() && slotIdx < getSize() && slotIdx >= 0 ? get(slotIdx) : null;
-                String charAt = String.format("%04d", errorEntry.getCharPositionInLine());
+                String charAt = String.format("%05d", errorEntry.getCharPositionInLine());
                 String formattedErrorEntry = fontRenderer.trimStringToWidth(charAt + ": " + errorEntry.getMsg(), listWidth - 10);
                 fontRenderer.drawString(formattedErrorEntry, this.left + 3, slotTop, 0xFF2222);
             }
@@ -154,6 +177,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         listBoxMMLError.setSelectedIndex(listBoxMMLError.indexOf(selectedErrorEntry));
         selectedError = listBoxMMLError.getSelectedIndex();
         selectedInstrumentIndex = listBoxInstruments.getSelectedIndex();
+        cachedVolume = sliderVolume.getValue();
     }
 
     @Override
@@ -182,11 +206,25 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         int statusHeight = entryHeight + 4;
         int pasteErrorHeight = (coreHeight / 2) - statusHeight - 10;
         listBoxInstruments.setLayout(entryHeight, instListWidth, Math.max(buttonPlay.y - 5 - posY, entryHeight), posY,buttonPlay.y - 5, 5);
-
-        /* create MML Title field */
         int posX = listBoxInstruments.getRight() + 5;
 
+        // Create Channel Controls
+        enableVolume = new GuiCheckBox(20, posX, posY, "", cachedEnableVolume);
+        sliderVolume = new GuiSlider(21, posX + enableVolume.width + 2, posY,150, 20, I18n.format("mxtune.gui.guiMXT.Volume") + " ", "%", 0, 100, cachedVolume, false, true);
+        enableLeftRight = new GuiCheckBox(22, posX, sliderVolume.y + sliderVolume.height + 2, "", cachedEnabledLeftRight);
+        sliderLeftRight = new GuiSlider(21, posX + enableVolume.width + 2, sliderVolume.y + sliderVolume.height + 2,150, 20, I18n.format("mxtune.gui.guiMXT.center.left") + " ", " " + I18n.format("mxtune.gui.guiMXT.center.Right"), -100, 100, cachedLeftRight, false, true);
+        enableChorus = new GuiCheckBox(22, posX, sliderLeftRight.y + sliderLeftRight.height + 2, "", cachedEnabledChorus);
+        sliderChorus = new GuiSlider(21, posX + enableChorus.width + 2, sliderLeftRight.y + sliderLeftRight.height + 2,150, 20, I18n.format("mxtune.gui.guiMXT.Chorus") + " ", "%", 0, 100, cachedChorus, false, true);
+
+        buttonList.add(enableVolume);
+        buttonList.add(sliderVolume);
+        buttonList.add(enableLeftRight);
+        buttonList.add(sliderLeftRight);
+        buttonList.add(enableChorus);
+        buttonList.add(sliderChorus);
+
         /* create MML Paste/Edit field */
+        posX = sliderVolume.x + sliderVolume.width + 5;
         textMMLPaste = new GuiMMLBox(1, fontRenderer, posX, posY, width - posX - 5, pasteErrorHeight);
         textMMLPaste.setFocused(false);
         textMMLPaste.setCanLoseFocus(true);
@@ -212,7 +250,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         listBoxInstruments.setSelectedIndex(cachedSelectedInst);
         isPlaying = cachedIsPlaying;
         parseMML(textMMLPaste.getText());
-        labelStatus.setText(String.format("[%04d]", textMMLPaste.getCursorPosition()));
+        labelStatus.setText(String.format("[%05d]", textMMLPaste.getCursorPosition()));
         updateButtonState();
         listBoxInstruments.resetScroll();
     }
@@ -222,7 +260,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         cachedMMLText = textMMLPaste.getText();
         cachedSelectedInst = listBoxInstruments.getSelectedIndex();
         cachedIsPlaying = isPlaying;
-        labelStatus.setText(String.format("[%04d]", textMMLPaste.getCursorPosition()));
+        labelStatus.setText(String.format("[%05d]", textMMLPaste.getCursorPosition()));
         updateButtonState();
         isStateCached = true;
     }
@@ -251,7 +289,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
         /* draw Field names */
-        int posX = listBoxInstruments.getRight() + 10;
+        int posX = sliderVolume.x + sliderVolume.width + 5;
         int posY = top + 2;
         fontRenderer.drawStringWithShadow(LABEL_TITLE_MML, posX, posY, 0xD3D3D3);
 
@@ -270,8 +308,11 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         if (textMMLPaste.isEmpty())
         {
             int helperWidth = fontRenderer.getStringWidth(HELPER_ENTER_MML);
+            int pasteWidth = textMMLPaste.width - 4;
+            int visibleHelperWidth = Math.min(helperWidth, pasteWidth);
+            String helperText = fontRenderer.trimStringToWidth(HELPER_ENTER_MML, visibleHelperWidth);
             int fontHeight = fontRenderer.FONT_HEIGHT + 2;
-            fontRenderer.drawString(HELPER_ENTER_MML, textMMLPaste.xPosition + textMMLPaste.width / 2 - helperWidth / 2, textMMLPaste.yPosition + textMMLPaste.height / 2 - fontHeight / 2,
+            fontRenderer.drawString(helperText, textMMLPaste.xPosition + 4, textMMLPaste.yPosition + textMMLPaste.height / 2 - fontHeight / 2,
                                     getHelperTextColor());
         }
 
