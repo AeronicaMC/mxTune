@@ -41,10 +41,6 @@ public class ModConfig
     {
         private ConfigClient() {/* NOP */}
 
-        @LangKey("config.mxtune.audioVolumes")
-        @Comment("Audio Volumes")
-        public static final AudioVolumes audioVolumes = new AudioVolumes();
-
         @LangKey("config.mxtune.vanillaMusic")
         @Comment("Vanilla Background Music")
         public static final VanillaMusic vanillaMusic = new VanillaMusic();
@@ -60,27 +56,6 @@ public class ModConfig
         @Config.LangKey("config.mxtune.playerNameInWindowTitle")
         @Config.Comment("Show player name in window title. Updates on logon and/or changing dimension.")
         public static final WindowTitle windowTitle = new WindowTitle();
-
-        public static class AudioVolumes
-        {
-            @Name("Background Music")
-            @LangKey("config.mxtune.audioVolumes.background_music")
-            @SlidingOption
-            @RangeDouble(min = 0F, max = 1.0F)
-            public float backgroundMusic = 0.20F;
-
-            @Name("Other Players")
-            @LangKey("config.mxtune.audioVolumes.other_players")
-            @SlidingOption
-            @RangeDouble(min = 0F, max = 1.0F)
-            public float otherPlayers = 0.45F;
-
-            @Name("My Music")
-            @LangKey("config.mxtune.audioVolumes.my_music")
-            @SlidingOption
-            @RangeDouble(min = 0F, max = 1.0F)
-            public float myMusic = 0.35F;
-        }
 
         public static class Sound
         {
@@ -190,8 +165,6 @@ public class ModConfig
     public static boolean isVanillaMusicDisabled() {return ConfigClient.vanillaMusic.disableVanillaMusic;}
 
     public static String getMmlLink() {return ConfigClient.links.site;}
-
-    public static ConfigClient.AudioVolumes getVolumes() {return ConfigClient.audioVolumes;}
 
     /**
      * Will only allow this mods recipes to be disabled

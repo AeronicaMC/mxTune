@@ -17,7 +17,6 @@
 
 package net.aeronica.mods.mxtune.sound;
 
-import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
 import net.minecraft.client.audio.MovingSound;
 import net.minecraft.client.audio.SoundEventAccessor;
 import net.minecraft.client.audio.SoundHandler;
@@ -26,20 +25,14 @@ import net.minecraft.util.SoundCategory;
 public abstract class MxSound extends MovingSound
 {
     protected Integer playID;
-    protected PlayIdSupplier.PlayType playType;
     private SoundEventAccessor soundEventAccessor;
 
-    /**
-     * Implements ISound<br></br>
-     * For musical machines carried or used in the world
-     */
-    MxSound(Integer playID)
+    MxSound(Integer playID, SoundCategory soundCategory)
     {
-        super(ModSoundEvents.PCM_PROXY, SoundCategory.MASTER);
+        super(ModSoundEvents.PCM_PROXY, soundCategory);
         this.playID = playID;
         this.sound = new PCMSound();
-        this.playType = PlayIdSupplier.getTypeForPlayId(playID);
-        this.volume = getModVolume();
+        this.volume = 1F;
         this.pitch = 1F;
         this.repeat = false;
         this.repeatDelay = 0;
@@ -69,7 +62,6 @@ public abstract class MxSound extends MovingSound
         if (this.playID != null && ClientAudio.hasPlayID(playID))
         {
             onUpdate();
-            this.volume = getModVolume();
         }
         else
         {
@@ -85,7 +77,5 @@ public abstract class MxSound extends MovingSound
         this.donePlaying = true;
         this.repeatDelay = 0;
     }
-
-    public float getModVolume() { return 0.5F; }
 }
 

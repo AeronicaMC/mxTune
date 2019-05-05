@@ -27,8 +27,7 @@ public class MusicPositioned extends MxSound
 {
     public MusicPositioned(Integer playID, BlockPos pos, SoundRange soundRange)
     {
-        super(playID);
-        this.category = SoundCategory.RECORDS;
+        super(playID,SoundCategory.RECORDS);
         this.xPosF = (float)pos.getX()+0.5F;
         this.yPosF = (float)pos.getY()+0.5F;
         this.zPosF = (float)pos.getZ()+0.5F;

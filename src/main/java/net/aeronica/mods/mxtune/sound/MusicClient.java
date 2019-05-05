@@ -16,8 +16,7 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
-import net.aeronica.mods.mxtune.config.ModConfig;
-import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
+import net.minecraft.util.SoundCategory;
 
 /**
  * MusicClient ISound
@@ -28,26 +27,7 @@ public class MusicClient extends MxSound
 {
     public MusicClient(Integer playID)
     {
-        super(playID);
+        super(playID, SoundCategory.MUSIC);
         super.attenuationType = AttenuationType.NONE;
-        this.playType = PlayIdSupplier.getTypeForPlayId(playID);
-    }
-
-    @Override
-    public float getModVolume()
-    {
-        switch (playType)
-        {
-            case PERSONAL:
-                // Volume for the personal player and when testing music in the library
-            case PLAYERS:
-                // Volume when I play my own mxTune instruments in game.
-                return ModConfig.getVolumes().myMusic;
-            case BACKGROUND:
-                // Background music
-                return ModConfig.getVolumes().backgroundMusic;
-            default:
-                return ModConfig.getVolumes().backgroundMusic;
-        }
     }
 }

@@ -40,7 +40,6 @@ import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.GuiScrollingList;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
-import net.minecraftforge.fml.client.config.GuiSlider;
 import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nullable;
@@ -75,10 +74,6 @@ public class GuiMusicOptions extends GuiScreen
     private List<ClassifiedPlayer> networkPlayers;
     private List<ClassifiedPlayer> whiteListedPlayers;
     private List<ClassifiedPlayer> blackListedPlayers;
-
-    private GuiSlider sliderBackgroundMusic;
-    private GuiSlider sliderOtherPlayers;
-    private GuiSlider sliderMyMusic;
 
     /* Cached State for when the GUI is resized */
     private boolean isStateCached = false;
@@ -129,16 +124,6 @@ public class GuiMusicOptions extends GuiScreen
         y += 22;
         GuiButtonExt buttonAdjHud = new GuiButtonExt(4, left, y, buttonWidth, 20, BUTTON_ADJ_HUD);
 
-        y += 22;
-        float backgroundMusic = ModConfig.getVolumes().backgroundMusic * 100F;
-        float otherPlayers = ModConfig.getVolumes().otherPlayers * 100F;
-        float myMusic = ModConfig.getVolumes().myMusic * 100F;
-        sliderBackgroundMusic = new GuiSlider(20, left, y, 150, 20, I18n.format("config.mxtune.audioVolumes.background_music") + " ", "%", 0D, 100F, backgroundMusic, false, true);
-        left =  left + sliderBackgroundMusic.width + 2;
-        sliderOtherPlayers = new GuiSlider(21, left, y, 150, 20, I18n.format("config.mxtune.audioVolumes.other_players") + " ", "%", 0F, 100F, otherPlayers, false, true);
-        y += 22;
-        sliderMyMusic = new GuiSlider(22, left, y, 150, 20, I18n.format("config.mxtune.audioVolumes.my_music") + " ", "%", 0F, 100F, myMusic, false, true);
-
         this.buttonList.add(buttonWhiteToPlayers);
         this.buttonList.add(buttonPlayersToWhite);
         this.buttonList.add(buttonPlayersToBlack);
@@ -148,10 +133,6 @@ public class GuiMusicOptions extends GuiScreen
         this.buttonList.add(buttonCancel);
         this.buttonList.add(buttonDone);
         this.buttonList.add(buttonAdjHud);
-
-        this.buttonList.add(sliderBackgroundMusic);
-        this.buttonList.add(sliderOtherPlayers);
-        this.buttonList.add(sliderMyMusic);
         
         reloadState();
     }
@@ -219,15 +200,7 @@ public class GuiMusicOptions extends GuiScreen
     }
 
     @Override
-    public void updateScreen()
-    {
-        double prevBackgroundMusic = sliderBackgroundMusic.getValue();
-        ModConfig.getVolumes().backgroundMusic = (float) (prevBackgroundMusic / 100D);
-        double prevOtherPlayers = sliderOtherPlayers.getValue();
-        ModConfig.getVolumes().otherPlayers = (float) (prevOtherPlayers / 100D);
-        double prevMyMusic = sliderMyMusic.getValue();
-        ModConfig.getVolumes().myMusic = (float) (prevMyMusic / 100D);
-    }
+    public void updateScreen() { /* NOP */ }
 
     @Override
     protected void actionPerformed(GuiButton guibutton)
