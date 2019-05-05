@@ -45,6 +45,10 @@ public class ModConfig
         @Comment("Audio Volumes")
         public static final AudioVolumes audioVolumes = new AudioVolumes();
 
+        @LangKey("config.mxtune.vanillaMusic")
+        @Comment("Vanilla Background Music")
+        public static final VanillaMusic vanillaMusic = new VanillaMusic();
+
         @LangKey("config.mxtune.autoConfigureChannels")
         @Comment("Sound Channel Configuration")
         public static final Sound sound = new Sound();
@@ -97,6 +101,13 @@ public class ModConfig
             @Name("Show player name in window title")
             @Config.LangKey("config.mxtune.playerNameInWindowTitle")
             public boolean showPlayerName = false;
+        }
+
+        public static class VanillaMusic
+        {
+            @Name("Disable Vanilla Music")
+            @Config.LangKey("config.mxtune.disableVanillaMusic")
+            public boolean disableVanillaMusic = false;
         }
     }
     
@@ -175,6 +186,8 @@ public class ModConfig
     public static boolean moreDebugMessages() { return ConfigGeneral.general.moreDebugMessages; }
 
     public static boolean getAutoConfigureChannels() {return ConfigClient.sound.autoConfigureChannels;}
+
+    public static boolean isVanillaMusicDisabled() {return ConfigClient.vanillaMusic.disableVanillaMusic;}
 
     public static String getMmlLink() {return ConfigClient.links.site;}
 

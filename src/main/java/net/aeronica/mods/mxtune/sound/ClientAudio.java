@@ -56,6 +56,8 @@ import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.audio.SoundManager;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.PlayStreamingSourceEvent;
@@ -518,8 +520,9 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
     public static void event(PlaySoundEvent e)
     {
         init();
+        ResourceLocation soundLocation = e.getSound().getSoundLocation();
         /* Testing for a the PCM_PROXY sound. For playing MML though the MML->PCM ClientAudio chain */
-        if (e.getSound().getSoundLocation().equals(ModSoundEvents.PCM_PROXY.getSoundName()))
+        if (soundLocation.equals(ModSoundEvents.PCM_PROXY.getSoundName()))
         {
             Integer playID = pollPlayIDQueue01();
             if (playID != null)
@@ -546,6 +549,16 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
                                    playID, getBlockPos(playID), isClientPlayer(playID));
                 }
             }
+        }  else if (ModConfig.isVanillaMusicDisabled() &&
+                (soundLocation.equals(SoundEvents.MUSIC_CREATIVE.getSoundName()) ||
+                         soundLocation.equals(SoundEvents.MUSIC_CREDITS.getSoundName()) ||
+                         soundLocation.equals(SoundEvents.MUSIC_DRAGON.getSoundName()) ||
+                         soundLocation.equals(SoundEvents.MUSIC_END.getSoundName()) ||
+                         soundLocation.equals(SoundEvents.MUSIC_GAME.getSoundName()) ||
+                         soundLocation.equals(SoundEvents.MUSIC_MENU.getSoundName()) ||
+                         soundLocation.equals(SoundEvents.MUSIC_NETHER.getSoundName())))
+        {
+            e.setResultSound(null);
         }
     }
 
