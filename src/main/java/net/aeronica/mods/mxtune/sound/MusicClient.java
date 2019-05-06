@@ -16,6 +16,7 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
+import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
 import net.minecraft.util.SoundCategory;
 
 /**
@@ -28,6 +29,24 @@ public class MusicClient extends MxSound
     public MusicClient(Integer playID)
     {
         super(playID, SoundCategory.MUSIC);
-        super.attenuationType = AttenuationType.NONE;
+        category = getSoundCategory(playID);
+        attenuationType = AttenuationType.NONE;
+    }
+
+    private SoundCategory getSoundCategory(int playID)
+    {
+        PlayIdSupplier.PlayType playType = PlayIdSupplier.getTypeForPlayId(playID);
+
+        switch (playType)
+        {
+            case BACKGROUND:
+            case EVENT:
+                return SoundCategory.MUSIC;
+            case PERSONAL:
+            case PLAYERS:
+                return SoundCategory.PLAYERS;
+            default:
+        }
+        return SoundCategory.MUSIC;
     }
 }
