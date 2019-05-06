@@ -41,7 +41,7 @@ public class ModConfig
     {
         private ConfigClient() {/* NOP */}
 
-        @LangKey("config.mxtune.vanillaMusic")
+        @LangKey("config.mxtune.vm.vanillaMusic")
         @Comment("Vanilla Background Music")
         public static final VanillaMusic vanillaMusic = new VanillaMusic();
 
@@ -80,9 +80,33 @@ public class ModConfig
 
         public static class VanillaMusic
         {
-            @Name("Disable Vanilla Music")
-            @Config.LangKey("config.mxtune.disableVanillaMusic")
-            public boolean disableVanillaMusic = false;
+            @Name("Disable Creative Music")
+            @Config.LangKey("config.mxtune.vm.disableCreativeMusic")
+            public boolean disableCreativeMusic = false;
+
+            @Name("Disable Credits Music")
+            @Config.LangKey("config.mxtune.vm.disableCreditsMusic")
+            public boolean disableCreditsMusic = false;
+
+            @Name("Disable End Dragon Music")
+            @Config.LangKey("config.mxtune.vm.disableEndDragonMusic")
+            public boolean disableEndDragonMusic = false;
+
+            @Name("Disable End Music")
+            @Config.LangKey("config.mxtune.vm.disableEndMusic")
+            public boolean disableEndMusic = false;
+
+            @Name("Disable Game Music")
+            @Config.LangKey("config.mxtune.vm.disableGameMusic")
+            public boolean disableGameMusic = false;
+
+            @Name("Disable Menu Music")
+            @Config.LangKey("config.mxtune.vm.disableMenuMusic")
+            public boolean disableMenuMusic = false;
+
+            @Name("Disable Nether Music")
+            @Config.LangKey("config.mxtune.vm.disableNetherMusic")
+            public boolean disableNetherMusic = false;
         }
     }
     
@@ -162,7 +186,19 @@ public class ModConfig
 
     public static boolean getAutoConfigureChannels() {return ConfigClient.sound.autoConfigureChannels;}
 
-    public static boolean isVanillaMusicDisabled() {return ConfigClient.vanillaMusic.disableVanillaMusic;}
+    public static boolean isCreativeMusicDisabled() {return ConfigClient.vanillaMusic.disableCreativeMusic;}
+
+    public static boolean isCreditsMusicDisabled() {return ConfigClient.vanillaMusic.disableCreditsMusic;}
+
+    public static boolean isDragonMusicDisabled() {return ConfigClient.vanillaMusic.disableEndDragonMusic;}
+
+    public static boolean isEndMusicDisabled() {return ConfigClient.vanillaMusic.disableEndMusic;}
+
+    public static boolean isGameMusicDisabled() {return ConfigClient.vanillaMusic.disableGameMusic;}
+
+    public static boolean isMenuMusicDisabled() {return ConfigClient.vanillaMusic.disableMenuMusic;}
+
+    public static boolean isNetherMusicDisabled() {return ConfigClient.vanillaMusic.disableNetherMusic;}
 
     public static String getMmlLink() {return ConfigClient.links.site;}
 

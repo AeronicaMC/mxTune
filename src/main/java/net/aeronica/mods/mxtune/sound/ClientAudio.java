@@ -549,17 +549,15 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
                                    playID, getBlockPos(playID), isClientPlayer(playID));
                 }
             }
-        }  else if (ModConfig.isVanillaMusicDisabled() &&
-                (soundLocation.equals(SoundEvents.MUSIC_CREATIVE.getSoundName()) ||
-                         soundLocation.equals(SoundEvents.MUSIC_CREDITS.getSoundName()) ||
-                         soundLocation.equals(SoundEvents.MUSIC_DRAGON.getSoundName()) ||
-                         soundLocation.equals(SoundEvents.MUSIC_END.getSoundName()) ||
-                         soundLocation.equals(SoundEvents.MUSIC_GAME.getSoundName()) ||
-                         soundLocation.equals(SoundEvents.MUSIC_MENU.getSoundName()) ||
-                         soundLocation.equals(SoundEvents.MUSIC_NETHER.getSoundName())))
-        {
+        }  else if (
+                        (ModConfig.isCreativeMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_CREATIVE.getSoundName())) ||
+                        (ModConfig.isCreditsMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_CREDITS.getSoundName())) ||
+                        (ModConfig.isDragonMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_DRAGON.getSoundName())) ||
+                        (ModConfig.isEndMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_END.getSoundName())) ||
+                        (ModConfig.isGameMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_GAME.getSoundName())) ||
+                        (ModConfig.isMenuMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_MENU.getSoundName())) ||
+                        (ModConfig.isNetherMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_NETHER.getSoundName())))
             e.setResultSound(null);
-        }
     }
 
     /**
