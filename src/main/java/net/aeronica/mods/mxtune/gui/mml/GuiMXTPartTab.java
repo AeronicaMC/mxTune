@@ -73,10 +73,15 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     GuiSlider sliderVolume;
     double cachedVolume = 100D;
 
-    GuiCheckBox enableLeftRight;
-    boolean cachedEnabledLeftRight;
-    GuiSlider sliderLeftRight;
-    double cachedLeftRight = 0D;
+    GuiCheckBox enablePan;
+    boolean cachedEnabledPan;
+    GuiSlider sliderPan;
+    double cachedPan = 0D;
+
+    GuiCheckBox enableReverb;
+    boolean cachedEnabledReverb;
+    GuiSlider sliderReverb;
+    double cachedReverb = 0D;
 
     GuiCheckBox enableChorus;
     boolean cachedEnabledChorus;
@@ -177,7 +182,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         listBoxMMLError.setSelectedIndex(listBoxMMLError.indexOf(selectedErrorEntry));
         selectedError = listBoxMMLError.getSelectedIndex();
         selectedInstrumentIndex = listBoxInstruments.getSelectedIndex();
-        cachedVolume = sliderVolume.getValue();
     }
 
     @Override
@@ -210,16 +214,20 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
         // Create Channel Controls
         enableVolume = new GuiCheckBox(20, posX, posY, "", cachedEnableVolume);
-        sliderVolume = new GuiSlider(21, posX + enableVolume.width + 2, posY,150, 20, I18n.format("mxtune.gui.guiMXT.Volume") + " ", "%", 0, 100, cachedVolume, false, true);
-        enableLeftRight = new GuiCheckBox(22, posX, sliderVolume.y + sliderVolume.height + 2, "", cachedEnabledLeftRight);
-        sliderLeftRight = new GuiSlider(21, posX + enableVolume.width + 2, sliderVolume.y + sliderVolume.height + 2,150, 20, I18n.format("mxtune.gui.guiMXT.center.left") + " ", " " + I18n.format("mxtune.gui.guiMXT.center.Right"), -100, 100, cachedLeftRight, false, true);
-        enableChorus = new GuiCheckBox(22, posX, sliderLeftRight.y + sliderLeftRight.height + 2, "", cachedEnabledChorus);
-        sliderChorus = new GuiSlider(21, posX + enableChorus.width + 2, sliderLeftRight.y + sliderLeftRight.height + 2,150, 20, I18n.format("mxtune.gui.guiMXT.Chorus") + " ", "%", 0, 100, cachedChorus, false, true);
+        sliderVolume = new GuiSlider(21, posX + enableVolume.width + 2, posY, 150, 20, I18n.format("mxtune.gui.guiMXT.Volume") + " ", "%", 0, 100, cachedVolume, false, true);
+        enablePan = new GuiCheckBox(22, posX, sliderVolume.y + sliderVolume.height + 2, "", cachedEnabledPan);
+        sliderPan = new GuiSlider(21, posX + enablePan.width + 2, sliderVolume.y + sliderVolume.height + 2, 150, 20, I18n.format("mxtune.gui.guiMXT.pan.left") + " ", " " + I18n.format("mxtune.gui.guiMXT.pan.Right"), -100, 100, cachedPan, false, true);
+        enableReverb = new GuiCheckBox(22, posX, sliderPan.y + sliderPan.height + 2, "", cachedEnabledReverb);
+        sliderReverb = new GuiSlider(21, posX + enableReverb.width + 2, sliderPan.y + sliderPan.height + 2, 150, 20, I18n.format("mxtune.gui.guiMXT.reverb") + " ", "%", 0, 100, cachedReverb, false, true);
+        enableChorus = new GuiCheckBox(22, posX, sliderReverb.y + sliderReverb.height + 2, "", cachedEnabledChorus);
+        sliderChorus = new GuiSlider(21, posX + enableChorus.width + 2, sliderReverb.y + sliderReverb.height + 2, 150, 20, I18n.format("mxtune.gui.guiMXT.Chorus") + " ", "%", 0, 100, cachedChorus, false, true);
 
         buttonList.add(enableVolume);
         buttonList.add(sliderVolume);
-        buttonList.add(enableLeftRight);
-        buttonList.add(sliderLeftRight);
+        buttonList.add(enablePan);
+        buttonList.add(sliderPan);
+        buttonList.add(enableReverb);
+        buttonList.add(sliderReverb);
         buttonList.add(enableChorus);
         buttonList.add(sliderChorus);
 
