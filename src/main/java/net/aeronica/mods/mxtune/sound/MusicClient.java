@@ -19,10 +19,8 @@ package net.aeronica.mods.mxtune.sound;
 import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
 import net.minecraft.util.SoundCategory;
 
-/**
+/*
  * MusicClient ISound
- *
- * @author Paul Boese a.k.a. Aeronica
  */
 public class MusicClient extends MxSound
 {
@@ -39,12 +37,11 @@ public class MusicClient extends MxSound
 
         switch (playType)
         {
-            case BACKGROUND:
-            case EVENT:
-                return SoundCategory.MUSIC;
             case PERSONAL:
             case PLAYERS:
                 return SoundCategory.PLAYERS;
+            case BACKGROUND:
+            case EVENT:
             default:
         }
         return SoundCategory.MUSIC;
