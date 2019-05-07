@@ -68,30 +68,28 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private GuiScrollingListOf<MXTuneStaff> listBoxStaves;
 
     // MIDI Channel Settings
-    GuiCheckBox enableVolume;
-    boolean cachedEnableVolume;
-    GuiSlider sliderVolume;
-    double cachedVolume = 100D;
+    private GuiCheckBox enableVolume;
+    private boolean cachedEnableVolume;
+    private GuiSlider sliderVolume;
+    private double cachedVolume = 100D;
 
-    GuiCheckBox enablePan;
-    boolean cachedEnabledPan;
-    GuiSlider sliderPan;
-    double cachedPan = 0D;
+    private GuiCheckBox enablePan;
+    private boolean cachedEnabledPan;
+    private GuiSlider sliderPan;
+    private double cachedPan = 0D;
 
-    GuiCheckBox enableReverb;
-    boolean cachedEnabledReverb;
-    GuiSlider sliderReverb;
-    double cachedReverb = 0D;
+    private GuiCheckBox enableReverb;
+    private boolean cachedEnabledReverb;
+    private GuiSlider sliderReverb;
+    private double cachedReverb = 0D;
 
-    GuiCheckBox enableChorus;
-    boolean cachedEnabledChorus;
-    GuiSlider sliderChorus;
-    double cachedChorus = 0D;
+    private GuiCheckBox enableChorus;
+    private boolean cachedEnabledChorus;
+    private GuiSlider sliderChorus;
+    private double cachedChorus = 0D;
 
     /* MML Parser */
     private ParseErrorListener parseErrorListener = new ParseErrorListener();
-//    private ParseErrorEntry selectedErrorEntry;
-//    private int selectedError;
 
     /* MML Player */
     private int playId = PlayIdSupplier.PlayType.INVALID;
@@ -123,7 +121,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
             @Override
             protected void selectedClickedCallback(int selectedIndex)
             {
-                selectInstrument(selectedIndex);
+                selectInstrument();
             }
 
             @Override
@@ -148,13 +146,13 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
             @Override
             protected void selectedClickedCallback(int selectedIndex)
             {
-                selectError(selectedIndex);
+                selectError();
             }
 
             @Override
             protected void selectedDoubleClickedCallback(int selectedIndex)
             {
-                selectError(selectedIndex);
+                selectError();
             }
 
             @Override
@@ -479,7 +477,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         listBoxMMLError.addAll(parseErrorListener.getParseErrorEntries());
     }
 
-    private void selectError(int index)
+    private void selectError()
     {
         ParseErrorEntry parseErrorEntry = listBoxMMLError.get();
         if (parseErrorEntry != null)
@@ -490,7 +488,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         updateState();
     }
 
-    private void selectInstrument(int index)
+    private void selectInstrument()
     {
         updateState();
     }
