@@ -21,12 +21,12 @@ import net.aeronica.mods.mxtune.caches.MXTuneFile;
 import net.aeronica.mods.mxtune.gui.util.GuiLabelMX;
 import net.aeronica.mods.mxtune.gui.util.IHooverText;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.input.Keyboard;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +72,6 @@ public class GuiMXT extends GuiScreen
         int singleLineHeight = mc.fontRenderer.FONT_HEIGHT + 2;
         int padding = 4;
         int titleTop = padding;
-        int left = padding;
         int titleWidth = fontRenderer.getStringWidth("GuiMXT");
         int titleX = (width / 2) - (titleWidth / 2);
         int tabbedAreaTop = (height * 2) / 5;
@@ -128,13 +127,12 @@ public class GuiMXT extends GuiScreen
     }
 
     @Override
-    protected void actionPerformed(GuiButton button) throws IOException
+    protected void actionPerformed(GuiButton button)
     {
         if (button.id >= TAB_BTN_IDX && button.id < TAB_BTN_IDX + MAX_TABS)
         {
             this.activeChildIndex = button.id - TAB_BTN_IDX;
             this.childTabs[activeChildIndex].onResize(mc, width, height);
-            ModLogger.info("Tab: %d", button.id - TAB_BTN_IDX - 1);
         }
         updateButtons();
         updateState();
@@ -193,7 +191,7 @@ public class GuiMXT extends GuiScreen
     }
 
     @Override
-    public void onResize(Minecraft mcIn, int w, int h)
+    public void onResize(@Nonnull Minecraft mcIn, int w, int h)
     {
         super.onResize(mcIn, w, h);
         childTabs[activeChildIndex].onResize(mcIn, w, h);
