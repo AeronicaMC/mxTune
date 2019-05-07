@@ -90,8 +90,8 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
     /* MML Parser */
     private ParseErrorListener parseErrorListener = new ParseErrorListener();
-    private ParseErrorEntry selectedErrorEntry;
-    private int selectedError;
+//    private ParseErrorEntry selectedErrorEntry;
+//    private int selectedError;
 
     /* MML Player */
     private int playId = PlayIdSupplier.PlayType.INVALID;
@@ -191,7 +191,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     public void initGui()
     {
         int entryHeight = fontRenderer.FONT_HEIGHT + 2;
-        selectedError = -1;
         buttonList.clear();
 
         for (Instrument in : listBoxInstruments)
@@ -482,11 +481,10 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
     private void selectError(int index)
     {
-        this.selectedError = index;
-        this.selectedErrorEntry = (index >= 0 && index <= listBoxMMLError.size()) ? listBoxMMLError.get(this.selectedError) : null;
-        if (this.selectedErrorEntry != null)
+        ParseErrorEntry parseErrorEntry = listBoxMMLError.get();
+        if (parseErrorEntry != null)
         {
-            textMMLPaste.setCursorPosition(selectedErrorEntry.getCharPositionInLine());
+            textMMLPaste.setCursorPosition(parseErrorEntry.getCharPositionInLine());
             textMMLPaste.setFocused(true);
         }
         updateState();
