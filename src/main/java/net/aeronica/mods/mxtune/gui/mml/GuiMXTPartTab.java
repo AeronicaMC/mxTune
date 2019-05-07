@@ -98,10 +98,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
     /* Instruments */
     private int instListWidth;
-    private Instrument selectedInstrument = null;
-    private int selectedInstrumentIndex;
     private boolean isPlaying = false;
-    private int selectedPackedPreset;
 
     /* Cached State for when the GUI is resized */
     private boolean isStateCached = false;
@@ -136,9 +133,12 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
             {
                 Instrument instrument = !isEmpty() && slotIdx < getSize() && slotIdx >= 0 ? get(slotIdx) : null;
-                String s = fontRenderer.trimStringToWidth(I18n.format(instrument.getName()), listWidth - 10);
-                int color = isSelected(slotIdx) ? 0xFFFF00 : 0xAADDEE;
-                fontRenderer.drawString(s, left + 3, slotTop, color);
+                if (instrument != null)
+                {
+                    String s = fontRenderer.trimStringToWidth(I18n.format(instrument.getName()), listWidth - 10);
+                    int color = isSelected(slotIdx) ? 0xFFFF00 : 0xAADDEE;
+                    fontRenderer.drawString(s, left + 3, slotTop, color);
+                }
             }
         };
         listBoxInstruments.addAll(MIDISystemUtil.getInstrumentCacheCopy());
@@ -152,15 +152,21 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
             }
 
             @Override
-            protected void selectedDoubleClickedCallback(int selectedIndex) { /* NOP */ }
+            protected void selectedDoubleClickedCallback(int selectedIndex)
+            {
+                selectError(selectedIndex);
+            }
 
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
             {
                 ParseErrorEntry errorEntry = !isEmpty() && slotIdx < getSize() && slotIdx >= 0 ? get(slotIdx) : null;
-                String charAt = String.format("%05d", errorEntry.getCharPositionInLine());
-                String formattedErrorEntry = fontRenderer.trimStringToWidth(charAt + ": " + errorEntry.getMsg(), listWidth - 10);
-                fontRenderer.drawString(formattedErrorEntry, this.left + 3, slotTop, 0xFF2222);
+                if (errorEntry != null)
+                {
+                    String charAt = String.format("%05d", errorEntry.getCharPositionInLine());
+                    String formattedErrorEntry = fontRenderer.trimStringToWidth(charAt + ": " + errorEntry.getMsg(), listWidth - 10);
+                    fontRenderer.drawString(formattedErrorEntry, this.left + 3, slotTop, 0xFF2222);
+                }
             }
         };
     }
@@ -179,9 +185,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     {
         textMMLPaste.updateCursorCounter();
         updateHelperTextCounter();
-        listBoxMMLError.setSelectedIndex(listBoxMMLError.indexOf(selectedErrorEntry));
-        selectedError = listBoxMMLError.getSelectedIndex();
-        selectedInstrumentIndex = listBoxInstruments.getSelectedIndex();
     }
 
     @Override
@@ -189,7 +192,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     {
         int entryHeight = fontRenderer.FONT_HEIGHT + 2;
         selectedError = -1;
-        selectedInstrumentIndex = -1;
         buttonList.clear();
 
         for (Instrument in : listBoxInstruments)
@@ -215,19 +217,18 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         // Create Channel Controls
         enableVolume = new GuiCheckBox(20, posX, posY, "", cachedEnableVolume);
         sliderVolume = new GuiSlider(21, posX + enableVolume.width + 2, posY, 150, 20, I18n.format("mxtune.gui.guiMXT.Volume") + " ", "%", 0, 100, cachedVolume, false, true);
-        enablePan = new GuiCheckBox(22, posX, sliderVolume.y + sliderVolume.height + 2, "", cachedEnabledPan);
-        sliderPan = new GuiSlider(21, posX + enablePan.width + 2, sliderVolume.y + sliderVolume.height + 2, 150, 20, I18n.format("mxtune.gui.guiMXT.pan.left") + " ", " " + I18n.format("mxtune.gui.guiMXT.pan.Right"), -100, 100, cachedPan, false, true);
-        enableReverb = new GuiCheckBox(22, posX, sliderPan.y + sliderPan.height + 2, "", cachedEnabledReverb);
-        sliderReverb = new GuiSlider(21, posX + enableReverb.width + 2, sliderPan.y + sliderPan.height + 2, 150, 20, I18n.format("mxtune.gui.guiMXT.reverb") + " ", "%", 0, 100, cachedReverb, false, true);
-        enableChorus = new GuiCheckBox(22, posX, sliderReverb.y + sliderReverb.height + 2, "", cachedEnabledChorus);
-        sliderChorus = new GuiSlider(21, posX + enableChorus.width + 2, sliderReverb.y + sliderReverb.height + 2, 150, 20, I18n.format("mxtune.gui.guiMXT.Chorus") + " ", "%", 0, 100, cachedChorus, false, true);
-
         buttonList.add(enableVolume);
         buttonList.add(sliderVolume);
+        enablePan = new GuiCheckBox(22, posX, sliderVolume.y + sliderVolume.height + 2, "", cachedEnabledPan);
+        sliderPan = new GuiSlider(21, posX + enablePan.width + 2, sliderVolume.y + sliderVolume.height + 2, 150, 20, I18n.format("mxtune.gui.guiMXT.pan.left") + " ", " " + I18n.format("mxtune.gui.guiMXT.pan.Right"), -100, 100, cachedPan, false, true);
         buttonList.add(enablePan);
         buttonList.add(sliderPan);
+        enableReverb = new GuiCheckBox(22, posX, sliderPan.y + sliderPan.height + 2, "", cachedEnabledReverb);
+        sliderReverb = new GuiSlider(21, posX + enableReverb.width + 2, sliderPan.y + sliderPan.height + 2, 150, 20, I18n.format("mxtune.gui.guiMXT.reverb") + " ", "%", 0, 100, cachedReverb, false, true);
         buttonList.add(enableReverb);
         buttonList.add(sliderReverb);
+        enableChorus = new GuiCheckBox(22, posX, sliderReverb.y + sliderReverb.height + 2, "", cachedEnabledChorus);
+        sliderChorus = new GuiSlider(21, posX + enableChorus.width + 2, sliderReverb.y + sliderReverb.height + 2, 150, 20, I18n.format("mxtune.gui.guiMXT.Chorus") + " ", "%", 0, 100, cachedChorus, false, true);
         buttonList.add(enableChorus);
         buttonList.add(sliderChorus);
 
@@ -269,6 +270,17 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         cachedSelectedInst = listBoxInstruments.getSelectedIndex();
         cachedIsPlaying = isPlaying;
         labelStatus.setText(String.format("[%05d]", textMMLPaste.getCursorPosition()));
+
+        cachedVolume = sliderVolume.getValue();
+        cachedPan = sliderPan.getValue();
+        cachedReverb = sliderReverb.getValue();
+        cachedChorus = sliderChorus.getValue();
+
+        cachedEnableVolume = enableVolume.isChecked();
+        cachedEnabledPan = enablePan.isChecked();
+        cachedEnabledReverb = enableReverb.isChecked();
+        cachedEnabledChorus = enableChorus.isChecked();
+
         updateButtonState();
         isStateCached = true;
     }
@@ -415,6 +427,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         if (!listBoxMMLError.isHovering()) super.handleMouseInput();
         listBoxInstruments.handleMouseInput(mouseX, mouseY);
         listBoxMMLError.handleMouseInput(mouseX, mouseY);
+        updateState();
     }
 
     @Override
@@ -481,7 +494,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
     private void selectInstrument(int index)
     {
-        selectedInstrumentIndex = index;
         updateState();
     }
 
@@ -503,8 +515,12 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private boolean mmlPlay(String mmlIn)
     {
         String mml = mmlIn;
-        Instrument inst = listBoxInstruments.get(selectedInstrumentIndex);
-        int packedPreset = MMLUtil.instrument2PackedPreset(inst);
+        int packedPreset;
+        Instrument inst = listBoxInstruments.get();
+        if (inst != null)
+            packedPreset = MMLUtil.instrument2PackedPreset(inst);
+        else
+            return false;
         
         mml = mml.replace("MML@", "MML@i" + packedPreset);
         ModLogger.debug("GuiMusicPaperParse.mmlPlay() name: %s, bank %05d, program %03d, packed %08d", inst.getName(), inst.getPatch().getBank() >> 7, inst.getPatch().getProgram(), packedPreset);
@@ -523,11 +539,9 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         }
         else
         {
-            if (selectedInstrumentIndex < 0)
-            {
-                selectedInstrumentIndex = 0;
-                listBoxInstruments.setSelectedIndex(selectedInstrumentIndex);
-            }
+            if (listBoxInstruments.getSelectedIndex() < 0)
+                listBoxInstruments.setSelectedIndex(0);
+
             String mml = textMMLPaste.getTextToParse();
             isPlaying = mmlPlay(mml);
         }

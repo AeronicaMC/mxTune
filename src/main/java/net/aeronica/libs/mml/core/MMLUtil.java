@@ -3,6 +3,7 @@ package net.aeronica.libs.mml.core;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nonnull;
 import javax.sound.midi.Instrument;
 import javax.sound.midi.Patch;
 
@@ -85,7 +86,7 @@ public enum MMLUtil
         return preset2PackedPreset(patchIn.getBank(), patchIn.getProgram());
     }
 
-    public static int instrument2PackedPreset(Instrument instrument)
+    public static int instrument2PackedPreset(@Nonnull Instrument instrument)
     {
         /* Table Flip! */
         boolean isPercussionSet = instrument.toString().contains("Drumkit:");
