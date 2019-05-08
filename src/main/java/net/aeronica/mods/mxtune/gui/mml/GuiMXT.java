@@ -93,7 +93,7 @@ public class GuiMXT extends GuiScreen
         int tabbedAreaTop = (height * 2) / 5;
 
         labelMXTFileName = new GuiLabelMX(fontRenderer, 0, padding, padding, titleWidth, singleLineHeight, -1);
-        setDislayedFilename(cachedMXTFilename);
+        setDisplayedFilename(cachedMXTFilename);
         int buttonWidth = Math.max(((width * 2 / 3)- padding * 2)/ 5, 75);
         int buttonY = labelMXTFileName.y + labelMXTFileName.height;
 
@@ -109,13 +109,28 @@ public class GuiMXT extends GuiScreen
         buttonList.add(buttonDone);
 
         int textY = buttonDone.y + buttonDone.height + padding;
-        String labelText = I18n.format("mxtune.gui.label.title");
-        int labelWidth = fontRenderer.getStringWidth(labelText);
-        labelTitle = new GuiLabelMX(fontRenderer, 1, padding, textY, labelWidth, fontRenderer.FONT_HEIGHT + 2, -1);
-        labelTitle.setLabel(labelText);
-        textTitle = new GuiTextField(1, fontRenderer, labelTitle.x + labelWidth + padding, textY, width / 2 -labelTitle.width, fontRenderer.FONT_HEIGHT + 2);
+        String labelTitleText = I18n.format("mxtune.gui.label.title");
+        int labelTitleWidth = fontRenderer.getStringWidth(labelTitleText);
+        String labelAuthorText = I18n.format("mxtune.gui.label.author");
+        int labelAuthorWidth = fontRenderer.getStringWidth(labelAuthorText);
+        labelTitle = new GuiLabelMX(fontRenderer, 1, padding, textY, labelTitleWidth, fontRenderer.FONT_HEIGHT + 2, -1);
+        labelTitle.setLabel(labelTitleText);
+        textTitle = new GuiTextField(1, fontRenderer, labelTitle.x + labelTitleWidth + padding, textY, width / 2 - labelTitle.width - padding, fontRenderer.FONT_HEIGHT + 2);
         textTitle.setMaxStringLength(80);
         textTitle.setCanLoseFocus(true);
+        labelAuthor = new GuiLabelMX(fontRenderer, 2, textTitle.x + textTitle.width + padding, textY, labelAuthorWidth, fontRenderer.FONT_HEIGHT + 2, -1);
+        labelAuthor.setLabel(labelAuthorText);
+        textAuthor = new GuiTextField(2, fontRenderer, labelAuthor.x + labelAuthorWidth + padding, textY, width - labelAuthor.x - labelAuthor.width - padding * 2, fontRenderer.FONT_HEIGHT + 2);
+        textAuthor.setMaxStringLength(80);
+        textAuthor.setCanLoseFocus(true);
+        textY = textTitle.y + textTitle.height + padding;
+        String labelSourceText = I18n.format("mxtune.gui.label.source");
+        int labelSourceWidth = fontRenderer.getStringWidth(labelSourceText);
+        labelSource = new GuiLabelMX(fontRenderer, 3, padding, textY, labelSourceWidth, fontRenderer.FONT_HEIGHT + 2, -1);
+        labelSource.setLabel(labelSourceText);
+        textSource = new GuiTextField(3, fontRenderer, labelSource.x + labelSource.width + padding, textY, width - labelSource.x - labelSource.width - padding * 2,fontRenderer.FONT_HEIGHT + 2);
+        textSource.setMaxStringLength(200);
+        textSource.setCanLoseFocus(true);
 
         // Button tabs
         for (int i = 0; i< MAX_TABS; i++)
@@ -164,6 +179,8 @@ public class GuiMXT extends GuiScreen
     public void updateScreen()
     {
         textTitle.updateCursorCounter();
+        textAuthor.updateCursorCounter();
+        textSource.updateCursorCounter();
         childTabs[activeChildIndex].updateScreen();
     }
 
@@ -184,7 +201,8 @@ public class GuiMXT extends GuiScreen
     {
         childTabs[activeChildIndex].keyTyped(typedChar, keyCode);
         textTitle.textboxKeyTyped(typedChar, keyCode);
-
+        textAuthor.textboxKeyTyped(typedChar, keyCode);
+        textSource.textboxKeyTyped(typedChar, keyCode);
         updateState();
         super.keyTyped(typedChar, keyCode);
     }
@@ -203,6 +221,10 @@ public class GuiMXT extends GuiScreen
         labelMXTFileName.drawLabel(mc, mouseX, mouseY);
         labelTitle.drawLabel(mc, mouseX, mouseY);
         textTitle.drawTextBox();
+        labelAuthor.drawLabel(mc, mouseX, mouseY);
+        textAuthor.drawTextBox();
+        labelSource.drawLabel(mc, mouseX, mouseY);
+        textSource.drawTextBox();
         super.drawScreen(mouseX, mouseY, partialTicks);
         childTabs[activeChildIndex].drawScreen(mouseX, mouseY, partialTicks);
         ModGuiUtils.INSTANCE.drawHooveringHelp(this, hooverTexts, 0, 0, mouseX, mouseY);
@@ -223,6 +245,8 @@ public class GuiMXT extends GuiScreen
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
         textTitle.mouseClicked(mouseX, mouseY, mouseButton);
+        textAuthor.mouseClicked(mouseX, mouseY, mouseButton);
+        textSource.mouseClicked(mouseX, mouseY, mouseButton);
         super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
@@ -242,7 +266,7 @@ public class GuiMXT extends GuiScreen
         childTabs[activeChildIndex].onResize(mcIn, w, h);
     }
 
-    private void setDislayedFilename(@Nullable String name)
+    private void setDisplayedFilename(@Nullable String name)
     {
         if (name == null) name = "";
         labelMXTFileName.setLabel(I18n.format("mxtune.gui.guiMXT.displayedFilename", name));
