@@ -68,7 +68,7 @@ public class GuiMXT extends GuiScreen
     private GuiButtonExt buttonAddTab;
 
     // Tab limits - allow limiting the viewable tabs
-    private int viewableTabCount = MIN_TABS + 2;
+    private int viewableTabCount = MIN_TABS + 11;
     private int cachedViewableTabCount;
 
     public GuiMXT(GuiScreen guiScreenParent)
@@ -120,7 +120,7 @@ public class GuiMXT extends GuiScreen
         textTitle.setCanLoseFocus(true);
         labelAuthor = new GuiLabelMX(fontRenderer, 2, textTitle.x + textTitle.width + padding, textY, labelAuthorWidth, fontRenderer.FONT_HEIGHT + 2, -1);
         labelAuthor.setLabel(labelAuthorText);
-        textAuthor = new GuiTextField(2, fontRenderer, labelAuthor.x + labelAuthorWidth + padding, textY, width - labelAuthor.x - labelAuthor.width - padding * 2, fontRenderer.FONT_HEIGHT + 2);
+        textAuthor = new GuiTextField(2, fontRenderer, labelAuthor.x + labelAuthorWidth + padding, textY, width - labelAuthor.x - labelAuthor.width - 1 - padding * 2, fontRenderer.FONT_HEIGHT + 2);
         textAuthor.setMaxStringLength(80);
         textAuthor.setCanLoseFocus(true);
         textY = textTitle.y + textTitle.height + padding;
@@ -128,8 +128,8 @@ public class GuiMXT extends GuiScreen
         int labelSourceWidth = fontRenderer.getStringWidth(labelSourceText);
         labelSource = new GuiLabelMX(fontRenderer, 3, padding, textY, labelSourceWidth, fontRenderer.FONT_HEIGHT + 2, -1);
         labelSource.setLabel(labelSourceText);
-        textSource = new GuiTextField(3, fontRenderer, labelSource.x + labelSource.width + padding, textY, width - labelSource.x - labelSource.width - padding * 2,fontRenderer.FONT_HEIGHT + 2);
-        textSource.setMaxStringLength(200);
+        textSource = new GuiTextField(3, fontRenderer, labelSource.x + labelSource.width + padding, textY, width - labelSource.x - labelSource.width - 1 - padding * 2, fontRenderer.FONT_HEIGHT + 2);
+        textSource.setMaxStringLength(320);
         textSource.setCanLoseFocus(true);
 
         // Button tabs
