@@ -68,7 +68,7 @@ public class GuiMXT extends GuiScreen
     private GuiButtonExt buttonAddTab;
 
     // Tab limits - allow limiting the viewable tabs
-    private int viewableTabCount = MIN_TABS + 11;
+    private int viewableTabCount = MIN_TABS;
     private int cachedViewableTabCount;
 
     public GuiMXT(GuiScreen guiScreenParent)
@@ -139,7 +139,11 @@ public class GuiMXT extends GuiScreen
             childTabs[i].setLayout(tabbedAreaTop, height - 5, height - 5 - tabbedAreaTop);
             childTabs[i].initGui();
         }
+        buttonAddTab = new GuiButtonExt(250, 5 + MAX_TABS * 20 + 20, tabbedAreaTop - 25, 20, 20, "+");
+        buttonList.add(buttonAddTab);
 
+        buttonPlayStop = new GuiButtonExt(6, width - 5 - 100, tabbedAreaTop - 25, 100, 20, "Play/Stop");
+        buttonList.add(buttonPlayStop);
         reloadState();
     }
 
@@ -173,6 +177,8 @@ public class GuiMXT extends GuiScreen
                 if (activeChildIndex >= viewableTabCount)
                     activeChildIndex = viewableTabCount - 1;
             }
+        buttonAddTab.x = 5 + viewableTabCount * 20;
+        buttonAddTab.enabled = viewableTabCount < 12;
     }
 
     @Override
@@ -191,6 +197,14 @@ public class GuiMXT extends GuiScreen
         {
             this.activeChildIndex = button.id - TAB_BTN_IDX;
             this.childTabs[activeChildIndex].onResize(mc, width, height);
+        }
+        switch (button.id)
+        {
+            case 250:
+                // Add Tab
+                viewableTabCount = (viewableTabCount + 1) > MAX_TABS ? viewableTabCount : viewableTabCount + 1;
+                break;
+            default:
         }
         updateButtons();
         updateState();
