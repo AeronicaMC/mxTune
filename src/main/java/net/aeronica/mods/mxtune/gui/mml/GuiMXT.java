@@ -24,9 +24,13 @@ import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.resources.I18n;
+import net.minecraftforge.fml.client.config.GuiButtonExt;
 import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +38,22 @@ import java.util.List;
 public class GuiMXT extends GuiScreen
 {
     private List<IHooverText> hooverTexts = new ArrayList<>();
-    private GuiLabelMX labelTitle;
     private GuiScreen guiScreenParent;
     private boolean isStateCached;
+    private GuiLabelMX labelMXTFileName;
+    private String cachedMXTFilename;
+    private GuiButtonExt buttonImport;
+    private GuiButtonExt buttonOpen;
+    private GuiButtonExt buttonSave;
+    private GuiButtonExt buttonSaveAs;
+    private GuiButtonExt buttonDone;
+    private GuiLabelMX labelTitle;
+    private GuiLabelMX labelAuthor;
+    private GuiLabelMX labelSource;
+    private GuiTextField textTitle;
+    private GuiTextField textAuthor;
+    private GuiTextField textSource;
+    private GuiButtonExt buttonPlayStop;
 
     // Common data
     MXTuneFile mxTuneFile;
@@ -48,6 +65,7 @@ public class GuiMXT extends GuiScreen
     private GuiMXTPartTab[] childTabs = new GuiMXTPartTab[MAX_TABS];
     private int activeChildIndex;
     private int cachedActiveChildIndex;
+    private GuiButtonExt buttonAddTab;
 
     // Tab limits - allow limiting the viewable tabs
     private int viewableTabCount = MIN_TABS + 2;
@@ -71,13 +89,33 @@ public class GuiMXT extends GuiScreen
         hooverTexts.clear();
         int singleLineHeight = mc.fontRenderer.FONT_HEIGHT + 2;
         int padding = 4;
-        int titleTop = padding;
-        int titleWidth = fontRenderer.getStringWidth("GuiMXT");
-        int titleX = (width / 2) - (titleWidth / 2);
+        int titleWidth = width - padding * 2;
         int tabbedAreaTop = (height * 2) / 5;
 
-        labelTitle = new GuiLabelMX(fontRenderer, 1, titleX, titleTop, titleWidth, singleLineHeight, -1);
-        labelTitle.setLabel("GuiMXT");
+        labelMXTFileName = new GuiLabelMX(fontRenderer, 0, padding, padding, titleWidth, singleLineHeight, -1);
+        setDislayedFilename(cachedMXTFilename);
+        int buttonWidth = Math.max(((width * 2 / 3)- padding * 2)/ 5, 75);
+        int buttonY = labelMXTFileName.y + labelMXTFileName.height;
+
+        buttonImport = new GuiButtonExt(1, padding, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.import"));
+        buttonOpen = new GuiButtonExt(2, buttonImport.x + buttonImport.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.open"));
+        buttonSave = new GuiButtonExt(3, buttonOpen.x + buttonOpen.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.save"));
+        buttonSaveAs = new GuiButtonExt(4, buttonSave.x + buttonSave.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.save_as"));
+        buttonDone = new GuiButtonExt(5, buttonSaveAs.x + buttonSaveAs.width, buttonY, buttonWidth, 20, I18n.format("gui.done"));
+        buttonList.add(buttonImport);
+        buttonList.add(buttonOpen);
+        buttonList.add(buttonSave);
+        buttonList.add(buttonSaveAs);
+        buttonList.add(buttonDone);
+
+        int textY = buttonDone.y + buttonDone.height + padding;
+        String labelText = I18n.format("mxtune.gui.label.title");
+        int labelWidth = fontRenderer.getStringWidth(labelText);
+        labelTitle = new GuiLabelMX(fontRenderer, 1, padding, textY, labelWidth, fontRenderer.FONT_HEIGHT + 2, -1);
+        labelTitle.setLabel(labelText);
+        textTitle = new GuiTextField(1, fontRenderer, labelTitle.x + labelWidth + padding, textY, width / 2 -labelTitle.width, fontRenderer.FONT_HEIGHT + 2);
+        textTitle.setMaxStringLength(80);
+        textTitle.setCanLoseFocus(true);
 
         // Button tabs
         for (int i = 0; i< MAX_TABS; i++)
@@ -94,12 +132,14 @@ public class GuiMXT extends GuiScreen
     {
         updateButtons();
         if (!isStateCached) return;
+        labelMXTFileName.setLabel(cachedMXTFilename);
         activeChildIndex = cachedActiveChildIndex;
         viewableTabCount = cachedViewableTabCount;
     }
 
     private void updateState()
     {
+        cachedMXTFilename = labelMXTFileName.getLabel();
         cachedActiveChildIndex = activeChildIndex;
         cachedViewableTabCount = viewableTabCount;
         isStateCached = true;
@@ -123,6 +163,7 @@ public class GuiMXT extends GuiScreen
     @Override
     public void updateScreen()
     {
+        textTitle.updateCursorCounter();
         childTabs[activeChildIndex].updateScreen();
     }
 
@@ -142,6 +183,7 @@ public class GuiMXT extends GuiScreen
     protected void keyTyped(char typedChar, int keyCode) throws IOException
     {
         childTabs[activeChildIndex].keyTyped(typedChar, keyCode);
+        textTitle.textboxKeyTyped(typedChar, keyCode);
 
         updateState();
         super.keyTyped(typedChar, keyCode);
@@ -158,7 +200,9 @@ public class GuiMXT extends GuiScreen
     {
         drawDefaultBackground();
 
+        labelMXTFileName.drawLabel(mc, mouseX, mouseY);
         labelTitle.drawLabel(mc, mouseX, mouseY);
+        textTitle.drawTextBox();
         super.drawScreen(mouseX, mouseY, partialTicks);
         childTabs[activeChildIndex].drawScreen(mouseX, mouseY, partialTicks);
         ModGuiUtils.INSTANCE.drawHooveringHelp(this, hooverTexts, 0, 0, mouseX, mouseY);
@@ -178,6 +222,7 @@ public class GuiMXT extends GuiScreen
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
+        textTitle.mouseClicked(mouseX, mouseY, mouseButton);
         super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
@@ -195,5 +240,11 @@ public class GuiMXT extends GuiScreen
     {
         super.onResize(mcIn, w, h);
         childTabs[activeChildIndex].onResize(mcIn, w, h);
+    }
+
+    private void setDislayedFilename(@Nullable String name)
+    {
+        if (name == null) name = "";
+        labelMXTFileName.setLabel(I18n.format("mxtune.gui.guiMXT.displayedFilename", name));
     }
 }
