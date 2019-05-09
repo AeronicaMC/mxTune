@@ -178,11 +178,6 @@ public class GuiMXT extends GuiScreen
 
     private void updateButtons()
     {
-        // Tab buttons
-//        for (GuiButton button : buttonList)
-//            if (button.id >= TAB_BTN_IDX && button.id < (MAX_TABS + TAB_BTN_IDX))
-//                button.enabled = (activeChildIndex + TAB_BTN_IDX) != button.id;
-
         for (GuiButton button : buttonList)
             if (button.id >= TAB_BTN_IDX && button.id < (MAX_TABS + TAB_BTN_IDX))
             {
