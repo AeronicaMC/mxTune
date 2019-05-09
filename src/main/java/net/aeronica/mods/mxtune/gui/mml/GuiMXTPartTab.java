@@ -372,23 +372,9 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         /* id 0 = okay; 1 = cancel; 2 = play; 3 = stop */
         switch (guibutton.id)
         {
-            case 0:
-                /* Done / OKAY - Save MML */
-                break;
-
-            case 1:
-                /* Cancelled - remove the GUI */
-                stop();
-                mc.displayGuiScreen(guiMXT);
-                break;
-
             case 2:
                 /* Play MML */
                 play();
-                break;
-
-            case 5:
-                // ignoreParseErrors
                 break;
             default:
         }

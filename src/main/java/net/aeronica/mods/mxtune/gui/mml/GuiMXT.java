@@ -138,16 +138,16 @@ public class GuiMXT extends GuiScreen
         textSource.setCanLoseFocus(true);
 
         // Button tabs
+        buttonAddTab = new GuiButtonExt(250, 4, tabbedAreaTop - 25, 20, 20, I18n.format("mxtune.gui.button.plus"));
+        buttonMinusTab = new GuiButtonExt(251, buttonAddTab.x + 20, tabbedAreaTop - 25, 20, 20, I18n.format("mxtune.gui.button.minus"));
+        buttonList.add(buttonAddTab);
+        buttonList.add(buttonMinusTab);
         for (int i = 0; i< MAX_TABS; i++)
         {
-            buttonList.add(new GuiButton(TAB_BTN_IDX + i, 5 + 20 * i, tabbedAreaTop - 25, 20, 20, String.format("%d", i + 1)));
+            buttonList.add(new GuiButton(TAB_BTN_IDX + i, buttonMinusTab.x + 20 + 20 * i, tabbedAreaTop - 25, 20, 20, String.format("%d", i + 1)));
             childTabs[i].setLayout(tabbedAreaTop, height - 5, height - 5 - tabbedAreaTop);
             childTabs[i].initGui();
         }
-        buttonAddTab = new GuiButtonExt(250, 5 + MAX_TABS * 20 + 20, tabbedAreaTop - 25, 20, 20, I18n.format("mxtune.gui.button.plus"));
-        buttonMinusTab = new GuiButtonExt(251, 5 + MAX_TABS * 20 + 40, tabbedAreaTop - 25, 20, 20, I18n.format("mxtune.gui.button.minus"));
-        buttonList.add(buttonAddTab);
-        buttonList.add(buttonMinusTab);
 
         // Play/Stop
         buttonPlayStop = new GuiButtonExt(6, width - 5 - 100, tabbedAreaTop - 25, 100, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play_all"));
@@ -190,9 +190,7 @@ public class GuiMXT extends GuiScreen
                 if (activeChildIndex >= viewableTabCount)
                     activeChildIndex = viewableTabCount - 1;
             }
-        buttonAddTab.x = 5 + viewableTabCount * 20;
         buttonAddTab.enabled = viewableTabCount < 12;
-        buttonMinusTab.x = buttonAddTab.x + 20;
         buttonMinusTab.enabled = viewableTabCount > 1;
 
         // Play/Stop button state
@@ -241,6 +239,8 @@ public class GuiMXT extends GuiScreen
             case 5:
                 // Done
                 // Todo: Warning if un-saved! Quit Yes/No dialog
+                for (GuiMXTPartTab gui : childTabs)
+                    gui.onGuiClosed();
                 mc.displayGuiScreen(guiScreenParent);
                 break;
             case 250:
