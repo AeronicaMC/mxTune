@@ -54,9 +54,12 @@ public class GuiMXT extends GuiScreen
     private GuiTextField textAuthor;
     private GuiTextField textSource;
     private GuiButtonExt buttonPlayStop;
+    private int ticks;
 
     // Common data
     MXTuneFile mxTuneFile;
+    private boolean isPlaying = false;
+    private boolean cachedIsPlaying;
 
     // Child tabs
     private static final int MAX_TABS = 12;
@@ -108,6 +111,7 @@ public class GuiMXT extends GuiScreen
         buttonList.add(buttonSaveAs);
         buttonList.add(buttonDone);
 
+        // Text fields
         int textY = buttonDone.y + buttonDone.height + padding;
         String labelTitleText = I18n.format("mxtune.gui.label.title");
         int labelTitleWidth = fontRenderer.getStringWidth(labelTitleText);
@@ -142,7 +146,9 @@ public class GuiMXT extends GuiScreen
         buttonAddTab = new GuiButtonExt(250, 5 + MAX_TABS * 20 + 20, tabbedAreaTop - 25, 20, 20, "+");
         buttonList.add(buttonAddTab);
 
-        buttonPlayStop = new GuiButtonExt(6, width - 5 - 100, tabbedAreaTop - 25, 100, 20, "Play/Stop");
+        // Play/Stop
+        buttonPlayStop = new GuiButtonExt(6, width - 5 - 100, tabbedAreaTop - 25, 100, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play"));
+        buttonPlayStop.enabled = false;
         buttonList.add(buttonPlayStop);
         reloadState();
     }
@@ -154,6 +160,7 @@ public class GuiMXT extends GuiScreen
         labelMXTFileName.setLabel(cachedMXTFilename);
         activeChildIndex = cachedActiveChildIndex;
         viewableTabCount = cachedViewableTabCount;
+        isPlaying = cachedIsPlaying;
     }
 
     private void updateState()
@@ -161,24 +168,37 @@ public class GuiMXT extends GuiScreen
         cachedMXTFilename = labelMXTFileName.getLabel();
         cachedActiveChildIndex = activeChildIndex;
         cachedViewableTabCount = viewableTabCount;
+        cachedIsPlaying = isPlaying;
         isStateCached = true;
     }
 
     private void updateButtons()
     {
-        for (GuiButton button : buttonList)
-            if (button.id >= TAB_BTN_IDX && button.id < (MAX_TABS + TAB_BTN_IDX))
-                button.enabled = (activeChildIndex + TAB_BTN_IDX) != button.id;
+        // Tab buttons
+//        for (GuiButton button : buttonList)
+//            if (button.id >= TAB_BTN_IDX && button.id < (MAX_TABS + TAB_BTN_IDX))
+//                button.enabled = (activeChildIndex + TAB_BTN_IDX) != button.id;
 
         for (GuiButton button : buttonList)
             if (button.id >= TAB_BTN_IDX && button.id < (MAX_TABS + TAB_BTN_IDX))
             {
+                button.enabled = (activeChildIndex + TAB_BTN_IDX) != button.id;
                 button.visible = (button.id) < (viewableTabCount + TAB_BTN_IDX);
                 if (activeChildIndex >= viewableTabCount)
                     activeChildIndex = viewableTabCount - 1;
             }
         buttonAddTab.x = 5 + viewableTabCount * 20;
         buttonAddTab.enabled = viewableTabCount < 12;
+
+        // Play/Stop button state
+        int countOK = 0;
+        for (int i=0; i < viewableTabCount; i++)
+        {
+            countOK = childTabs[i].canPlay() ? countOK + 1 : countOK;
+        }
+        boolean isOK = countOK == viewableTabCount;
+        buttonPlayStop.enabled = isPlaying || isOK;
+        buttonPlayStop.displayString = isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play");
     }
 
     @Override
@@ -188,6 +208,7 @@ public class GuiMXT extends GuiScreen
         textAuthor.updateCursorCounter();
         textSource.updateCursorCounter();
         childTabs[activeChildIndex].updateScreen();
+        if (ticks++ % 5 == 0) updateButtons();
     }
 
     @Override
@@ -200,6 +221,22 @@ public class GuiMXT extends GuiScreen
         }
         switch (button.id)
         {
+            case 1:
+                // Import
+                break;
+            case 2:
+                // Open
+                break;
+            case 3:
+                // Save
+                break;
+            case 4:
+                // Save As
+                break;
+            case 5:
+                // Done
+                mc.displayGuiScreen(guiScreenParent);
+                break;
             case 250:
                 // Add Tab
                 viewableTabCount = (viewableTabCount + 1) > MAX_TABS ? viewableTabCount : viewableTabCount + 1;
@@ -213,6 +250,11 @@ public class GuiMXT extends GuiScreen
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException
     {
+        if (keyCode == Keyboard.KEY_ESCAPE)
+        {
+            // Unsaved warning! Exit Yes or No
+            return;
+        }
         childTabs[activeChildIndex].keyTyped(typedChar, keyCode);
         textTitle.textboxKeyTyped(typedChar, keyCode);
         textAuthor.textboxKeyTyped(typedChar, keyCode);

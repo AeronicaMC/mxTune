@@ -206,8 +206,8 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
         int posY = top + 15;
         int coreHeight = Math.max(bottom - posY, 100);
-        int statusHeight = entryHeight + 4;
-        int pasteErrorHeight = (coreHeight / 2) - statusHeight - 10;
+        int statusHeight = entryHeight;
+        int pasteErrorHeight = ((coreHeight / 2) / fontRenderer.FONT_HEIGHT) * fontRenderer.FONT_HEIGHT - statusHeight - 10;
         listBoxInstruments.setLayout(entryHeight, instListWidth, Math.max(buttonPlay.y - 5 - posY, entryHeight), posY,buttonPlay.y - 5, 5);
         int posX = listBoxInstruments.getRight() + 5;
 
@@ -289,6 +289,11 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         boolean isOK = (!textMMLPaste.isEmpty()) && (listBoxMMLError.isEmpty());
         buttonPlay.enabled = isPlaying || isOK;
         buttonPlay.displayString = isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play");
+    }
+
+    boolean canPlay()
+    {
+        return buttonPlay.enabled;
     }
 
     @Override
@@ -401,7 +406,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     {
         if (keyCode == Keyboard.KEY_ESCAPE)
         {
-            onGuiClosed();
+            // Let the parent handle the escape kay!
             return;
         }
         /* add char to GuiTextField */
