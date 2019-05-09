@@ -33,6 +33,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class GuiMXT extends GuiScreen
@@ -239,8 +240,7 @@ public class GuiMXT extends GuiScreen
             case 5:
                 // Done
                 // Todo: Warning if un-saved! Quit Yes/No dialog
-                for (GuiMXTPartTab gui : childTabs)
-                    gui.onGuiClosed();
+                Arrays.stream(childTabs).forEach(GuiMXTPartTab::onGuiClosed);
                 mc.displayGuiScreen(guiScreenParent);
                 break;
             case 250:
