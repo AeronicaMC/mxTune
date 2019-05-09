@@ -19,6 +19,8 @@ public class MMLToMIDI extends MMLTransformBase
     private static final int MAX_TRACKS = 160;
     private Sequence sequence;
     private Set<Integer> packedPresets = new HashSet<>();
+    private int channel;
+    private int track;
 
     public MMLToMIDI() {/* NOP */}
 
@@ -39,8 +41,8 @@ public class MMLToMIDI extends MMLTransformBase
     @Override
     public void processMObjects(List<MObject> mmlObjects)
     {
-        int channel = 0;
-        int track = 0;
+        channel = 0;
+        track = 0;
         long ticksOffset = TICKS_OFFSET;
         int currentTempo;
 
@@ -71,8 +73,7 @@ public class MMLToMIDI extends MMLTransformBase
                     break;
 
                 case PART:
-                    track++;
-                    if (track > 23) track = 23;
+                    nextTrack();
                     break;
 
                 case NOTE:
@@ -80,11 +81,8 @@ public class MMLToMIDI extends MMLTransformBase
                     break;
 
                 case INST_END:
-                    track++;
-                    if (track > MAX_TRACKS) track = MAX_TRACKS;
-                    channel++;
-                    if (channel == 8) channel = 10; // Skip over percussion channels
-                    if (channel > 15) channel = 15;
+                    nextTrack();
+                    nextChannel();
                     break;
 
                 case DONE:
@@ -98,6 +96,18 @@ public class MMLToMIDI extends MMLTransformBase
         {
             MML_LOGGER.error("MMLToMIDI#processMObjects failed: {}", e);
         }
+    }
+
+    private void nextTrack()
+    {
+        if (track++ > MAX_TRACKS) track = MAX_TRACKS;
+    }
+
+    private void nextChannel()
+    {
+        channel++;
+        if (channel == 8) channel = 10; // Skip over percussion channels
+        if (channel > 15) channel = 15;
     }
 
     private void addInstrument(MObject mmo, Track track, int ch, long ticksOffset) throws InvalidMidiDataException
