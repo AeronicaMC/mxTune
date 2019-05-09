@@ -43,11 +43,6 @@ public class GuiMXT extends GuiScreen
     private boolean isStateCached;
     private GuiLabelMX labelMXTFileName;
     private String cachedMXTFilename;
-    private GuiButtonExt buttonImport;
-    private GuiButtonExt buttonOpen;
-    private GuiButtonExt buttonSave;
-    private GuiButtonExt buttonSaveAs;
-    private GuiButtonExt buttonDone;
     private GuiLabelMX labelTitle;
     private GuiLabelMX labelAuthor;
     private GuiLabelMX labelSource;
@@ -99,14 +94,14 @@ public class GuiMXT extends GuiScreen
 
         labelMXTFileName = new GuiLabelMX(fontRenderer, 0, padding, padding, titleWidth, singleLineHeight, -1);
         setDisplayedFilename(cachedMXTFilename);
-        int buttonWidth = Math.max(((width * 2 / 3)- padding * 2)/ 5, 75);
+        int buttonWidth = Math.max(((width * 2 / 3) - padding * 2) / 5, 75);
         int buttonY = labelMXTFileName.getY() + labelMXTFileName.getHeight();
 
-        buttonImport = new GuiButtonExt(1, padding, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.import"));
-        buttonOpen = new GuiButtonExt(2, buttonImport.x + buttonImport.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.open"));
-        buttonSave = new GuiButtonExt(3, buttonOpen.x + buttonOpen.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.save"));
-        buttonSaveAs = new GuiButtonExt(4, buttonSave.x + buttonSave.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.save_as"));
-        buttonDone = new GuiButtonExt(5, buttonSaveAs.x + buttonSaveAs.width, buttonY, buttonWidth, 20, I18n.format("gui.done"));
+        GuiButtonExt buttonImport = new GuiButtonExt(1, padding, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.import"));
+        GuiButtonExt buttonOpen = new GuiButtonExt(2, buttonImport.x + buttonImport.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.open"));
+        GuiButtonExt buttonSave = new GuiButtonExt(3, buttonOpen.x + buttonOpen.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.save"));
+        GuiButtonExt buttonSaveAs = new GuiButtonExt(4, buttonSave.x + buttonSave.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.save_as"));
+        GuiButtonExt buttonDone = new GuiButtonExt(5, buttonSaveAs.x + buttonSaveAs.width, buttonY, buttonWidth, 20, I18n.format("gui.done"));
         buttonList.add(buttonImport);
         buttonList.add(buttonOpen);
         buttonList.add(buttonSave);
@@ -126,7 +121,7 @@ public class GuiMXT extends GuiScreen
         textTitle.setCanLoseFocus(true);
         labelAuthor = new GuiLabelMX(fontRenderer, 2, textTitle.x + textTitle.width + padding, textY, labelAuthorWidth, fontRenderer.FONT_HEIGHT + 2, -1);
         labelAuthor.setLabel(labelAuthorText);
-        textAuthor = new GuiTextField(2, fontRenderer, labelAuthor.getX() + labelAuthorWidth + padding, textY, width - labelAuthor.getX() - labelAuthor.getWidth() - 1 - padding * 2, fontRenderer.FONT_HEIGHT + 2);
+        textAuthor = new GuiTextField(2, fontRenderer, labelAuthor.getX() + labelAuthorWidth + padding, textY, width - labelAuthor.getX() - labelAuthor.getWidth() - padding * 2, fontRenderer.FONT_HEIGHT + 2);
         textAuthor.setMaxStringLength(80);
         textAuthor.setCanLoseFocus(true);
         textY = textTitle.y + textTitle.height + padding;
@@ -134,24 +129,24 @@ public class GuiMXT extends GuiScreen
         int labelSourceWidth = fontRenderer.getStringWidth(labelSourceText);
         labelSource = new GuiLabelMX(fontRenderer, 3, padding, textY, labelSourceWidth, fontRenderer.FONT_HEIGHT + 2, -1);
         labelSource.setLabel(labelSourceText);
-        textSource = new GuiTextField(3, fontRenderer, labelSource.getX() + labelSource.getWidth() + padding, textY, width - labelSource.getX() - labelSource.getWidth() - 1 - padding * 2, fontRenderer.FONT_HEIGHT + 2);
+        textSource = new GuiTextField(3, fontRenderer, labelSource.getX() + labelSource.getWidth() + padding, textY, width - labelSource.getX() - labelSource.getWidth() - padding * 2, fontRenderer.FONT_HEIGHT + 2);
         textSource.setMaxStringLength(320);
         textSource.setCanLoseFocus(true);
 
         // Button tabs
-        buttonAddTab = new GuiButtonExt(250, 4, tabbedAreaTop - 25, 20, 20, I18n.format("mxtune.gui.button.plus"));
+        buttonAddTab = new GuiButtonExt(250, padding, tabbedAreaTop - 25, 20, 20, I18n.format("mxtune.gui.button.plus"));
         buttonMinusTab = new GuiButtonExt(251, buttonAddTab.x + 20, tabbedAreaTop - 25, 20, 20, I18n.format("mxtune.gui.button.minus"));
         buttonList.add(buttonAddTab);
         buttonList.add(buttonMinusTab);
         for (int i = 0; i< MAX_TABS; i++)
         {
             buttonList.add(new GuiButton(TAB_BTN_IDX + i, buttonMinusTab.x + 20 + 20 * i, tabbedAreaTop - 25, 20, 20, String.format("%d", i + 1)));
-            childTabs[i].setLayout(tabbedAreaTop, height - 5, height - 5 - tabbedAreaTop);
+            childTabs[i].setLayout(tabbedAreaTop, height - padding, height - padding - tabbedAreaTop);
             childTabs[i].initGui();
         }
 
         // Play/Stop
-        buttonPlayStop = new GuiButtonExt(6, width - 5 - 100, tabbedAreaTop - 25, 100, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play_all"));
+        buttonPlayStop = new GuiButtonExt(6, width - padding - 100, tabbedAreaTop - 25, 100, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play_all"));
         buttonPlayStop.enabled = false;
         buttonList.add(buttonPlayStop);
         reloadState();
@@ -222,21 +217,23 @@ public class GuiMXT extends GuiScreen
         {
             case 1:
                 // Import
+                importAction();
                 break;
             case 2:
                 // Open
+                openAction();
                 break;
             case 3:
                 // Save
+                saveAction();
                 break;
             case 4:
                 // Save As
+                saveAsAction();
                 break;
             case 5:
                 // Done
-                // Todo: Warning if un-saved! Quit Yes/No dialog
-                Arrays.stream(childTabs).forEach(GuiMXTPartTab::onGuiClosed);
-                mc.displayGuiScreen(guiScreenParent);
+                doneAction();
                 break;
             case 250:
                 // Add Tab
@@ -250,6 +247,33 @@ public class GuiMXT extends GuiScreen
         }
         updateButtons();
         updateState();
+    }
+
+    private void importAction()
+    {
+        // NOP
+    }
+
+    private void openAction()
+    {
+        // NOP
+    }
+
+    private void saveAction()
+    {
+        // NOP
+    }
+
+    private void saveAsAction()
+    {
+        // NOP
+    }
+
+    private void doneAction()
+    {
+        // Todo: Warning if un-saved! Quit Yes/No dialog
+        Arrays.stream(childTabs).forEach(GuiMXTPartTab::onGuiClosed);
+        mc.displayGuiScreen(guiScreenParent);
     }
 
     @Override

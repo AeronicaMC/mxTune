@@ -189,6 +189,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     public void initGui()
     {
         int entryHeight = fontRenderer.FONT_HEIGHT + 2;
+        int padding = 4;
         buttonList.clear();
 
         for (Instrument in : listBoxInstruments)
@@ -200,7 +201,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         instListWidth = Math.min(instListWidth, 150);
 
         // create Instrument selector, and buttons
-        buttonPlay = new GuiButtonExt(2, 5, bottom - 20, instListWidth, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play_part"));
+        buttonPlay = new GuiButtonExt(2, padding, bottom - 20, instListWidth, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play_part"));
         buttonPlay.enabled = false;
         buttonList.add(buttonPlay);
 
@@ -208,11 +209,11 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         int coreHeight = Math.max(bottom - posY, 100);
         int statusHeight = entryHeight;
         int pasteErrorHeight = ((coreHeight / 2) / fontRenderer.FONT_HEIGHT) * fontRenderer.FONT_HEIGHT - statusHeight - 10;
-        listBoxInstruments.setLayout(entryHeight, instListWidth, Math.max(buttonPlay.y - 5 - posY, entryHeight), posY,buttonPlay.y - 5, 5);
-        int posX = listBoxInstruments.getRight() + 5;
+        listBoxInstruments.setLayout(entryHeight, instListWidth, Math.max(buttonPlay.y - padding - posY, entryHeight), posY,buttonPlay.y - padding, padding);
+        int posX = listBoxInstruments.getRight() + padding;
 
         // Create Channel Controls
-        int sliderHeight = fontRenderer.FONT_HEIGHT + 5;
+        int sliderHeight = fontRenderer.FONT_HEIGHT + padding;
         enableVolume = new GuiCheckBox(20, posX, posY, "", cachedEnableVolume);
         sliderVolume = new GuiSlider(21, posX + enableVolume.width + 2, posY, 150, sliderHeight, I18n.format("mxtune.gui.guiMXT.Volume") + " ", "%", 0, 100, cachedVolume, false, true);
         buttonList.add(enableVolume);
@@ -231,21 +232,21 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         buttonList.add(sliderChorus);
 
         /* create MML Paste/Edit field */
-        posX = sliderVolume.x + sliderVolume.width + 5;
-        textMMLPaste = new GuiMMLBox(1, fontRenderer, posX, posY, width - posX - 5, pasteErrorHeight);
+        posX = sliderVolume.x + sliderVolume.width + padding;
+        textMMLPaste = new GuiMMLBox(1, fontRenderer, posX, posY, width - posX - padding, pasteErrorHeight);
         textMMLPaste.setFocused(false);
         textMMLPaste.setCanLoseFocus(true);
         textMMLPaste.setMaxStringLength(10000);
 
         /* create Status line */
-        labelStatus = new GuiTextField(2, fontRenderer, posX, textMMLPaste.yPosition + textMMLPaste.height + 5 , width - posX - 5, statusHeight);
+        labelStatus = new GuiTextField(2, fontRenderer, posX, textMMLPaste.yPosition + textMMLPaste.height + padding , width - posX - padding, statusHeight);
         labelStatus.setFocused(false);
         labelStatus.setCanLoseFocus(true);
         labelStatus.setEnabled(false);
         labelStatus.setMaxStringLength(80);
 
         /* create Parse Error selector */
-        listBoxMMLError.setLayout(entryHeight, width - posX - 5, Math.max(bottom - labelStatus.y - labelStatus.height - 5, entryHeight), labelStatus.y + labelStatus.height + 5, bottom, posX);
+        listBoxMMLError.setLayout(entryHeight, width - posX - padding, Math.max(bottom - labelStatus.y - labelStatus.height - padding, entryHeight), labelStatus.y + labelStatus.height + padding, bottom, posX);
 
         reloadState();
     }
@@ -312,7 +313,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
         /* draw Field names */
-        int posX = sliderVolume.x + sliderVolume.width + 5;
+        int posX = sliderVolume.x + sliderVolume.width + 4;
         int posY = top + 2;
         fontRenderer.drawStringWithShadow(LABEL_TITLE_MML, posX, posY, 0xD3D3D3);
 
