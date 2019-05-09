@@ -14,14 +14,14 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiLabelMX extends Gui
 {
-    public int width;
-    public int height;
-    public int x;
-    public int y;
+    private int width;
+    private int height;
+    private int x;
+    private int y;
     private String label;
-    public int id;
+    public final int id;
     private boolean centered;
-    public boolean visible = true;
+    private boolean visible = true;
     private boolean labelBgEnabled;
     private final int textColor;
     private int backColor;
@@ -65,6 +65,56 @@ public class GuiLabelMX extends Gui
     {
         this.centered = true;
         return this;
+    }
+
+    public int getWidth()
+    {
+        return width;
+    }
+
+    public void setWidth(int width)
+    {
+        this.width = width;
+    }
+
+    public int getHeight()
+    {
+        return height;
+    }
+
+    public void setHeight(int height)
+    {
+        this.height = height;
+    }
+
+    public int getX()
+    {
+        return x;
+    }
+
+    public void setX(int x)
+    {
+        this.x = x;
+    }
+
+    public int getY()
+    {
+        return y;
+    }
+
+    public void setY(int y)
+    {
+        this.y = y;
+    }
+
+    public boolean isVisible()
+    {
+        return visible;
+    }
+
+    public void setVisible(boolean visible)
+    {
+        this.visible = visible;
     }
 
     public void drawLabel(Minecraft mc, int mouseX, int mouseY)

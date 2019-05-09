@@ -100,7 +100,7 @@ public class GuiMXT extends GuiScreen
         labelMXTFileName = new GuiLabelMX(fontRenderer, 0, padding, padding, titleWidth, singleLineHeight, -1);
         setDisplayedFilename(cachedMXTFilename);
         int buttonWidth = Math.max(((width * 2 / 3)- padding * 2)/ 5, 75);
-        int buttonY = labelMXTFileName.y + labelMXTFileName.height;
+        int buttonY = labelMXTFileName.getY() + labelMXTFileName.getHeight();
 
         buttonImport = new GuiButtonExt(1, padding, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.import"));
         buttonOpen = new GuiButtonExt(2, buttonImport.x + buttonImport.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.open"));
@@ -121,12 +121,12 @@ public class GuiMXT extends GuiScreen
         int labelAuthorWidth = fontRenderer.getStringWidth(labelAuthorText);
         labelTitle = new GuiLabelMX(fontRenderer, 1, padding, textY, labelTitleWidth, fontRenderer.FONT_HEIGHT + 2, -1);
         labelTitle.setLabel(labelTitleText);
-        textTitle = new GuiTextField(1, fontRenderer, labelTitle.x + labelTitleWidth + padding, textY, width / 2 - labelTitle.width - padding, fontRenderer.FONT_HEIGHT + 2);
+        textTitle = new GuiTextField(1, fontRenderer, labelTitle.getX() + labelTitleWidth + padding, textY, width / 2 - labelTitle.getWidth() - padding, fontRenderer.FONT_HEIGHT + 2);
         textTitle.setMaxStringLength(80);
         textTitle.setCanLoseFocus(true);
         labelAuthor = new GuiLabelMX(fontRenderer, 2, textTitle.x + textTitle.width + padding, textY, labelAuthorWidth, fontRenderer.FONT_HEIGHT + 2, -1);
         labelAuthor.setLabel(labelAuthorText);
-        textAuthor = new GuiTextField(2, fontRenderer, labelAuthor.x + labelAuthorWidth + padding, textY, width - labelAuthor.x - labelAuthor.width - 1 - padding * 2, fontRenderer.FONT_HEIGHT + 2);
+        textAuthor = new GuiTextField(2, fontRenderer, labelAuthor.getX() + labelAuthorWidth + padding, textY, width - labelAuthor.getX() - labelAuthor.getWidth() - 1 - padding * 2, fontRenderer.FONT_HEIGHT + 2);
         textAuthor.setMaxStringLength(80);
         textAuthor.setCanLoseFocus(true);
         textY = textTitle.y + textTitle.height + padding;
@@ -134,7 +134,7 @@ public class GuiMXT extends GuiScreen
         int labelSourceWidth = fontRenderer.getStringWidth(labelSourceText);
         labelSource = new GuiLabelMX(fontRenderer, 3, padding, textY, labelSourceWidth, fontRenderer.FONT_HEIGHT + 2, -1);
         labelSource.setLabel(labelSourceText);
-        textSource = new GuiTextField(3, fontRenderer, labelSource.x + labelSource.width + padding, textY, width - labelSource.x - labelSource.width - 1 - padding * 2, fontRenderer.FONT_HEIGHT + 2);
+        textSource = new GuiTextField(3, fontRenderer, labelSource.getX() + labelSource.getWidth() + padding, textY, width - labelSource.getX() - labelSource.getWidth() - 1 - padding * 2, fontRenderer.FONT_HEIGHT + 2);
         textSource.setMaxStringLength(320);
         textSource.setCanLoseFocus(true);
 
