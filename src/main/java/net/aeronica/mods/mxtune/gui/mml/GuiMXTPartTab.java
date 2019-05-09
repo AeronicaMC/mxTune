@@ -200,7 +200,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         instListWidth = Math.min(instListWidth, 150);
 
         // create Instrument selector, and buttons
-        buttonPlay = new GuiButtonExt(2, 5, bottom - 20, instListWidth, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play"));
+        buttonPlay = new GuiButtonExt(2, 5, bottom - 20, instListWidth, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play_part"));
         buttonPlay.enabled = false;
         buttonList.add(buttonPlay);
 
@@ -288,7 +288,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         // enable Play button when MML Parsing Field has greater than 0 characters and passes the MML parsing tests
         boolean isOK = (!textMMLPaste.isEmpty()) && (listBoxMMLError.isEmpty());
         buttonPlay.enabled = isPlaying || isOK;
-        buttonPlay.displayString = isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play");
+        buttonPlay.displayString = isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play_part");
     }
 
     boolean canPlay()

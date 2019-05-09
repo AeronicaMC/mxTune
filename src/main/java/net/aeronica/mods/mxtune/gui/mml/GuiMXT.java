@@ -69,6 +69,7 @@ public class GuiMXT extends GuiScreen
     private int activeChildIndex;
     private int cachedActiveChildIndex;
     private GuiButtonExt buttonAddTab;
+    private GuiButtonExt buttonMinusTab;
 
     // Tab limits - allow limiting the viewable tabs
     private int viewableTabCount = MIN_TABS;
@@ -143,11 +144,13 @@ public class GuiMXT extends GuiScreen
             childTabs[i].setLayout(tabbedAreaTop, height - 5, height - 5 - tabbedAreaTop);
             childTabs[i].initGui();
         }
-        buttonAddTab = new GuiButtonExt(250, 5 + MAX_TABS * 20 + 20, tabbedAreaTop - 25, 20, 20, "+");
+        buttonAddTab = new GuiButtonExt(250, 5 + MAX_TABS * 20 + 20, tabbedAreaTop - 25, 20, 20, I18n.format("mxtune.gui.button.plus"));
+        buttonMinusTab = new GuiButtonExt(251, 5 + MAX_TABS * 20 + 40, tabbedAreaTop - 25, 20, 20, I18n.format("mxtune.gui.button.minus"));
         buttonList.add(buttonAddTab);
+        buttonList.add(buttonMinusTab);
 
         // Play/Stop
-        buttonPlayStop = new GuiButtonExt(6, width - 5 - 100, tabbedAreaTop - 25, 100, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play"));
+        buttonPlayStop = new GuiButtonExt(6, width - 5 - 100, tabbedAreaTop - 25, 100, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play_all"));
         buttonPlayStop.enabled = false;
         buttonList.add(buttonPlayStop);
         reloadState();
@@ -189,6 +192,8 @@ public class GuiMXT extends GuiScreen
             }
         buttonAddTab.x = 5 + viewableTabCount * 20;
         buttonAddTab.enabled = viewableTabCount < 12;
+        buttonMinusTab.x = buttonAddTab.x + 20;
+        buttonMinusTab.enabled = viewableTabCount > 1;
 
         // Play/Stop button state
         int countOK = 0;
@@ -198,7 +203,7 @@ public class GuiMXT extends GuiScreen
         }
         boolean isOK = countOK == viewableTabCount;
         buttonPlayStop.enabled = isPlaying || isOK;
-        buttonPlayStop.displayString = isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play");
+        buttonPlayStop.displayString = isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play_all");
     }
 
     @Override
@@ -241,6 +246,10 @@ public class GuiMXT extends GuiScreen
             case 250:
                 // Add Tab
                 viewableTabCount = (viewableTabCount + 1) > MAX_TABS ? viewableTabCount : viewableTabCount + 1;
+                break;
+            case 251:
+                // Minus Tab
+                viewableTabCount = (viewableTabCount - 1) >= MIN_TABS ? viewableTabCount - 1 : viewableTabCount;
                 break;
             default:
         }
