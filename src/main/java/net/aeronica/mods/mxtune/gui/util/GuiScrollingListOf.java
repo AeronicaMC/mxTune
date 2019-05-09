@@ -210,7 +210,7 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
     @Override
     protected int getSize()
     {
-        return arrayList != null ? arrayList.size() : 0;
+        return arrayList.size();
     }
 
     public List<E> getList()
