@@ -18,6 +18,8 @@
 package net.aeronica.mods.mxtune.gui.mml;
 
 import net.aeronica.mods.mxtune.caches.MXTuneFile;
+import net.aeronica.mods.mxtune.caches.MXTuneFileHelper;
+import net.aeronica.mods.mxtune.caches.MXTunePart;
 import net.aeronica.mods.mxtune.gui.util.GuiLabelMX;
 import net.aeronica.mods.mxtune.gui.util.IHooverText;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
@@ -26,6 +28,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import org.lwjgl.input.Keyboard;
 
@@ -150,6 +153,7 @@ public class GuiMXT extends GuiScreen
         buttonPlayStop.enabled = false;
         buttonList.add(buttonPlayStop);
         reloadState();
+        getSelection();
     }
 
     private void reloadState()
@@ -237,16 +241,31 @@ public class GuiMXT extends GuiScreen
                 break;
             case 250:
                 // Add Tab
-                viewableTabCount = (viewableTabCount + 1) > MAX_TABS ? viewableTabCount : viewableTabCount + 1;
+                addTab();
                 break;
             case 251:
                 // Minus Tab
-                viewableTabCount = (viewableTabCount - 1) >= MIN_TABS ? viewableTabCount - 1 : viewableTabCount;
+                minusTab();
                 break;
             default:
         }
         updateButtons();
         updateState();
+    }
+
+    private void addTab()
+    {
+        viewableTabCount = (viewableTabCount + 1) > MAX_TABS ? viewableTabCount : viewableTabCount + 1;
+    }
+
+    private void minusTab()
+    {
+        viewableTabCount = (viewableTabCount - 1) >= MIN_TABS ? viewableTabCount - 1 : viewableTabCount;
+    }
+
+    private boolean canAddTab()
+    {
+        return (viewableTabCount + 1) < MAX_TABS;
     }
 
     private void importAction()
@@ -256,7 +275,10 @@ public class GuiMXT extends GuiScreen
 
     private void openAction()
     {
-        // NOP
+        ActionGet.INSTANCE.clear();
+        ActionGet.INSTANCE.setFile();
+        viewableTabCount = MIN_TABS;
+        mc.displayGuiScreen(new GuiMusicLibrary(this));
     }
 
     private void saveAction()
@@ -274,6 +296,37 @@ public class GuiMXT extends GuiScreen
         // Todo: Warning if un-saved! Quit Yes/No dialog
         Arrays.stream(childTabs).forEach(GuiMXTPartTab::onGuiClosed);
         mc.displayGuiScreen(guiScreenParent);
+    }
+
+    private void getSelection()
+    {
+        switch (ActionGet.INSTANCE.getSelector())
+        {
+            case FILE:
+                mxTuneFile = MXTuneFileHelper.getMXTuneFile(ActionGet.INSTANCE.getPath());
+                if (mxTuneFile != null)
+                {
+                    textTitle.setText(mxTuneFile.getTitle());
+                    textAuthor.setText(mxTuneFile.getAuthor());
+                    textSource.setText(mxTuneFile.getSource());
+                    int tab = 0;
+                    setDisplayedFilename(TextFormatting.AQUA + ActionGet.INSTANCE.getFileNameString());
+                    for (MXTunePart part : mxTuneFile.getParts())
+                    {
+                        if (canAddTab())
+                        {
+                            childTabs[tab++].mxTunePart = part;
+                            if ((tab < mxTuneFile.getParts().size()))
+                                addTab();
+                        }
+                    }
+                }
+                else
+                    setDisplayedFilename(TextFormatting.RED + "***ERROR READING FILE***");
+                break;
+            default:
+        }
+        ActionGet.INSTANCE.cancel();
     }
 
     @Override

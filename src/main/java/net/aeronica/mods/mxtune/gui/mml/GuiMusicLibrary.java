@@ -313,6 +313,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
     private void selectDone()
     {
         // action get file, etc...
+        ActionGet.INSTANCE.select(selectedFile);
         stop();
         mc.displayGuiScreen(guiScreenParent);
     }

@@ -18,6 +18,7 @@
 package net.aeronica.mods.mxtune.gui.mml;
 
 import net.aeronica.libs.mml.core.MMLUtil;
+import net.aeronica.libs.mml.readers.AbstractMmlFileReader;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.resources.I18n;
 
@@ -38,6 +39,7 @@ public class ActionGet implements ISelectorAction
     private String instrument;
     private String suggestedInstrument;
     private int packedPatch;
+    private AbstractMmlFileReader mmlFileReader;
     SELECTOR selector = SELECTOR.CANCEL;
 
     @Override
@@ -96,6 +98,12 @@ public class ActionGet implements ISelectorAction
     public void setPaste() { selector = SELECTOR.PASTE; }
 
     public SELECTOR getSelector() { return selector; }
+
+    @Override
+    public void select(AbstractMmlFileReader mmlFileReader)
+    {
+        this.mmlFileReader = mmlFileReader;
+    }
 
     public enum SELECTOR
     {
