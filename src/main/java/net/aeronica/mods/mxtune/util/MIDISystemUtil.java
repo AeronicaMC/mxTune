@@ -16,7 +16,10 @@
  */
 package net.aeronica.mods.mxtune.util;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.sun.media.sound.AudioSynthesizer;
+import net.aeronica.libs.mml.core.MMLUtil;
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.config.ModConfig;
@@ -51,6 +54,8 @@ public enum MIDISystemUtil
     private static final List<TextComponentString> chatStatus = new ArrayList<>();
     private static final ResourceLocation SOUND_FONT = new ResourceLocation(Reference.MOD_ID, "synth/mxtune_v2.sf2");
     private static final List<Instrument> instrumentCache = new ArrayList<>();
+    private static final BiMap<Integer, Integer> packedPresetToInstrumentCacheIndex =  HashBiMap.create();
+    private static BiMap<Integer, Integer> instrumentCacheIndexToPackedPreset;
 
     public static void mxTuneInit()
     {
@@ -203,9 +208,45 @@ public enum MIDISystemUtil
             instrumentCache.add(getNullInstrument());
         else
             Collections.addAll(instrumentCache, mxTuneSoundBank.getInstruments());
+
+        int index = 0;
+        int packedPreset;
+        for (Instrument instrument : instrumentCache)
+        {
+            packedPreset = MMLUtil.instrument2PackedPreset(instrument);
+            packedPresetToInstrumentCacheIndex.put(packedPreset, index++);
+        }
+
+        instrumentCacheIndexToPackedPreset = packedPresetToInstrumentCacheIndex.inverse();
     }
 
     public static List<Instrument> getInstrumentCacheCopy() { return new ArrayList<>(instrumentCache); }
+
+    public static int getPackedPresetFromInstrumentCacheIndex(int index)
+    {
+        int packedPreset;
+        try {
+            packedPreset = instrumentCacheIndexToPackedPreset.get(index);
+        }
+        catch (NullPointerException | ClassCastException e)
+        {
+            packedPreset = 0; // Acoustic Piano
+        }
+        return packedPreset;
+    }
+
+    public static int getInstrumentCachedIndexFromPackedPreset(int packedPatch)
+    {
+        int cacheIndex;
+        try {
+            cacheIndex = packedPresetToInstrumentCacheIndex.get(packedPatch);
+        }
+        catch (NullPointerException | ClassCastException e)
+        {
+            cacheIndex = 0; // Acoustic Piano
+        }
+        return cacheIndex;
+    }
 
     // A hack is hack is a hack
     // Probably due to my poor understanding of the SoundFont2 specification
