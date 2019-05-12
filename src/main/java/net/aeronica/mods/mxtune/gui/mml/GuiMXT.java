@@ -287,6 +287,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
 
     private void openAction()
     {
+        stop();
         ActionGet.INSTANCE.clear();
         ActionGet.INSTANCE.setFile();
         viewableTabCount = MIN_TABS;
@@ -306,7 +307,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     private void doneAction()
     {
         // Todo: Warning if un-saved! Quit Yes/No dialog
-        Arrays.stream(childTabs).forEach(GuiMXTPartTab::onGuiClosed);
+        stop();
         mc.displayGuiScreen(guiScreenParent);
     }
 
@@ -478,6 +479,9 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         ClientAudio.queueAudioDataRemoval(playId);
         isPlaying = false;
         playId = PlayIdSupplier.PlayType.INVALID;
+
+        // stop child tabs
+        Arrays.stream(childTabs).forEach(GuiMXTPartTab::onGuiClosed);
         updateState();
     }
 }
