@@ -33,6 +33,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.GuiCheckBox;
 import net.minecraftforge.fml.client.config.GuiSlider;
@@ -43,6 +44,9 @@ import javax.annotation.Nonnull;
 import javax.sound.midi.Instrument;
 import javax.sound.midi.Patch;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 {
@@ -58,7 +62,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private int childHeight;
 
     // Content
-    MXTunePart mxTunePart = new MXTunePart();
+    private MXTunePart mxTunePart = new MXTunePart();
     private GuiMMLBox textMMLPaste;
     private GuiTextField labelStatus;
     private GuiTextField labelMeta;
@@ -176,6 +180,44 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         this.top = top;
         this.bottom = bottom;
         this.childHeight = childHeight;
+    }
+
+    void setPart(MXTunePart mxTunePart)
+    {
+        NBTTagCompound compound = new NBTTagCompound();
+        mxTunePart.writeToNBT(compound);
+        this.mxTunePart = new MXTunePart(compound);
+        this.listBoxInstruments.setSelectedIndex(MIDISystemUtil.getInstrumentCachedIndexFromPackedPreset(mxTunePart.getPackedPatch()));
+        listBoxInstruments.resetScroll();
+        StringBuilder mml = new StringBuilder();
+        Iterator<MXTuneStaff> iterator = mxTunePart.getStaves().iterator();
+        while (iterator.hasNext())
+        {
+            mml.append(iterator.next().getMml());
+            if (iterator.hasNext())
+                mml.append(",");
+        }
+        textMMLPaste.setText(mml.toString());
+        updateState();
+        initGui();
+    }
+
+    MXTunePart getPart()
+    {
+        return mxTunePart;
+    }
+
+    void updatePart()
+    {
+        List<MXTuneStaff> staves = new ArrayList<>();
+        int i = 0;
+        for (String mml : textMMLPaste.getText().replaceAll("MML@|;", "").split(","))
+        {
+            staves.add(new MXTuneStaff(i, mml));
+            i++;
+        }
+        mxTunePart.setStaves(staves);
+        selectInstrument();
     }
 
     @Override
@@ -483,6 +525,9 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
     private void selectInstrument()
     {
+        int index = listBoxInstruments.getSelectedIndex();
+        mxTunePart.setPackedPatch(MIDISystemUtil.getPackedPresetFromInstrumentCacheIndex(index));
+        mxTunePart.setInstrumentName(I18n.format(listBoxInstruments.get(index).getName()));
         updateState();
     }
 

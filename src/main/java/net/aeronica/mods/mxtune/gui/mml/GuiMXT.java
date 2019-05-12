@@ -20,9 +20,14 @@ package net.aeronica.mods.mxtune.gui.mml;
 import net.aeronica.mods.mxtune.caches.MXTuneFile;
 import net.aeronica.mods.mxtune.caches.MXTuneFileHelper;
 import net.aeronica.mods.mxtune.caches.MXTunePart;
+import net.aeronica.mods.mxtune.caches.MXTuneStaff;
 import net.aeronica.mods.mxtune.gui.util.GuiLabelMX;
 import net.aeronica.mods.mxtune.gui.util.IHooverText;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
+import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
+import net.aeronica.mods.mxtune.sound.ClientAudio;
+import net.aeronica.mods.mxtune.sound.IAudioStatusCallback;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -37,9 +42,10 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
-public class GuiMXT extends GuiScreen
+public class GuiMXT extends GuiScreen implements IAudioStatusCallback
 {
     private List<IHooverText> hooverTexts = new ArrayList<>();
     private GuiScreen guiScreenParent;
@@ -59,6 +65,8 @@ public class GuiMXT extends GuiScreen
     MXTuneFile mxTuneFile;
     private boolean isPlaying = false;
     private boolean cachedIsPlaying;
+    /* MML Player */
+    private int playId = PlayIdSupplier.PlayType.INVALID;
 
     // Child tabs
     private static final int MAX_TABS = 12;
@@ -239,6 +247,10 @@ public class GuiMXT extends GuiScreen
                 // Done
                 doneAction();
                 break;
+            case 6:
+                // Play/Stop
+                play();
+                break;
             case 250:
                 // Add Tab
                 addTab();
@@ -315,7 +327,7 @@ public class GuiMXT extends GuiScreen
                     {
                         if (canAddTab())
                         {
-                            childTabs[tab++].mxTunePart = part;
+                            childTabs[tab++].setPart(part);
                             if ((tab < mxTuneFile.getParts().size()))
                                 addTab();
                         }
@@ -408,5 +420,64 @@ public class GuiMXT extends GuiScreen
     {
         if (name == null) name = "";
         labelMXTFileName.setLabel(I18n.format("mxtune.gui.guiMXT.displayedFilename", name));
+    }
+
+    private boolean mmlPlay(String mmlIn)
+    {
+        playId = PlayIdSupplier.PlayType.PERSONAL.getAsInt();
+        ClientAudio.playLocal(playId, mmlIn, this);
+        return true;
+    }
+
+    private void play()
+    {
+        if (isPlaying)
+        {
+            stop();
+        }
+        else
+        {
+            isPlaying = mmlPlay(getMML());
+        }
+    }
+
+    public String getMML()
+    {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < viewableTabCount; i++)
+        {
+            childTabs[i].updatePart();
+            MXTunePart part = childTabs[i].getPart();
+            builder.append("MML@I=").append(part.getPackedPatch());
+            Iterator<MXTuneStaff> iterator = part.getStaves().iterator();
+            while (iterator.hasNext())
+            {
+                builder.append(iterator.next().getMml());
+                if (iterator.hasNext())
+                    builder.append(",");
+            }
+            builder.append(";");
+        }
+        return builder.toString();
+    }
+
+    @Override
+    public void statusCallBack(ClientAudio.Status status, int playId)
+    {
+        Minecraft.getMinecraft().addScheduledTask(() -> {
+            if (this.playId == playId && (status == ClientAudio.Status.ERROR || status == ClientAudio.Status.DONE))
+            {
+                ModLogger.debug("AudioStatus event received: %s, playId: %s", status, playId);
+                stop();
+            }
+        });
+    }
+
+    private void stop()
+    {
+        ClientAudio.queueAudioDataRemoval(playId);
+        isPlaying = false;
+        playId = PlayIdSupplier.PlayType.INVALID;
+        updateState();
     }
 }
