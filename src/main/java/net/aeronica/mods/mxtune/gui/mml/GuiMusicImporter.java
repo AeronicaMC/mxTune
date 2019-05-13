@@ -283,7 +283,6 @@ public class GuiMusicImporter extends GuiScreen
         super.actionPerformed(button);
     }
 
-    // TODO: Replace Yes/No?
     private boolean saveFile() throws IOException
     {
         boolean result = false;
@@ -324,7 +323,7 @@ public class GuiMusicImporter extends GuiScreen
 
     private void getSelection()
     {
-        List<MXTuneStaff> staves = new ArrayList<>();
+        List<MXTuneStaff> staves;
         String temp;
         String title;
         switch (ActionGet.INSTANCE.getSelector())
