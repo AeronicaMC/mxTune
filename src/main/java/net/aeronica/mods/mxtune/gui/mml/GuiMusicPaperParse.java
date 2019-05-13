@@ -338,7 +338,7 @@ public class GuiMusicPaperParse extends GuiScreen implements IAudioStatusCallbac
             case 1:
                 /* Cancelled - remove the GUI */
                 if (guiScreenParent != null)
-                    ActionGet.INSTANCE.cancel();
+                    ActionGet.INSTANCE.setCancel();
                 mmlStop();
                 mc.displayGuiScreen(guiScreenParent);
                 break;

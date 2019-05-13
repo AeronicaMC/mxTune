@@ -309,7 +309,7 @@ public class GuiMusicImporter extends GuiScreen
 
     private void getFile()
     {
-        ActionGet.INSTANCE.setFile();
+        ActionGet.INSTANCE.setFileOpen();
         ActionGet.INSTANCE.clear();
         mc.displayGuiScreen(new GuiFileSelector(this));
     }
@@ -328,7 +328,7 @@ public class GuiMusicImporter extends GuiScreen
         String title;
         switch (ActionGet.INSTANCE.getSelector())
         {
-            case FILE:
+            case FILE_OPEN:
                 Ms2MmlReader ms2MmlReader = new Ms2MmlReader();
                 if (ActionGet.INSTANCE.getPath() != null)
                     ms2MmlReader.parseFile(ActionGet.INSTANCE.getPath());
@@ -336,11 +336,11 @@ public class GuiMusicImporter extends GuiScreen
                 {
                     ModLogger.debug("File: %s", ActionGet.INSTANCE.getFileNameString());
                     temp = ActionGet.INSTANCE.getFileNameString();
-                    ModLogger.debug("ActionGet FILE raw: %s", temp);
+                    ModLogger.debug("ActionGet FILE_OPEN raw: %s", temp);
                     title = FileHelper.removeExtension(temp);
-                    ModLogger.debug("ActionGet FILE title: %s", title);
+                    ModLogger.debug("ActionGet FILE_OPEN title: %s", title);
                     fileName = FileHelper.normalizeFilename(title);
-                    ModLogger.debug("ActionGet FILE filename: %s", fileName);
+                    ModLogger.debug("ActionGet FILE_OPEN filename: %s", fileName);
                     musicTitle.setText(title.trim());
                     musicAuthor.setText(ActionGet.INSTANCE.getAuthor());
                     musicSource.setText(ActionGet.INSTANCE.getSource());
@@ -397,7 +397,7 @@ public class GuiMusicImporter extends GuiScreen
                 break;
             default:
         }
-        ActionGet.INSTANCE.cancel();
+        ActionGet.INSTANCE.setCancel();
         updateState();
     }
 

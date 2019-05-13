@@ -297,7 +297,7 @@ public class GuiFileSelector extends GuiScreen
                     case 1:
                         // Cancel
                         if (guiScreenParent != null)
-                            ActionGet.INSTANCE.cancel();
+                            ActionGet.INSTANCE.setCancel();
                         mc.displayGuiScreen(guiScreenParent);
                         break;
                     case 2:

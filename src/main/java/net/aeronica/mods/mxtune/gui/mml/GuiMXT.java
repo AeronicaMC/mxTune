@@ -290,7 +290,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     {
         stop();
         ActionGet.INSTANCE.clear();
-        ActionGet.INSTANCE.setFile();
+        ActionGet.INSTANCE.setFileOpen();
         viewableTabCount = MIN_TABS;
         mc.displayGuiScreen(new GuiMusicLibrary(this));
     }
@@ -316,7 +316,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     {
         switch (ActionGet.INSTANCE.getSelector())
         {
-            case FILE:
+            case FILE_OPEN:
                 mxTuneFile = MXTuneFileHelper.getMXTuneFile(ActionGet.INSTANCE.getPath());
                 if (mxTuneFile != null)
                 {
@@ -340,7 +340,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
                 break;
             default:
         }
-        ActionGet.INSTANCE.cancel();
+        ActionGet.INSTANCE.setCancel();
     }
 
     @Override

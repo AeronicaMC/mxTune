@@ -91,9 +91,19 @@ public class ActionGet implements ISelectorAction
 
     public int getPackedPatch() { return packedPatch; }
 
-    public void cancel() { selector = SELECTOR.CANCEL; }
+    public void setCancel() { selector = SELECTOR.CANCEL; }
 
-    public void setFile() { selector = SELECTOR.FILE; }
+    public void setDone() { selector = SELECTOR.DONE; }
+
+    public void setFileImport() { selector = SELECTOR.FILE_IMPORT; }
+
+    public void setFileOpen() { selector = SELECTOR.FILE_OPEN; }
+
+    public void setFileSave() { selector = SELECTOR.FILE_SAVE; }
+
+    public void setFileSaveAs() { selector = SELECTOR.FILE_SAVE_AS; }
+
+    public void setNewFile() { selector = SELECTOR.FILE_NEW; }
 
     public void setPaste() { selector = SELECTOR.PASTE; }
 
@@ -107,8 +117,13 @@ public class ActionGet implements ISelectorAction
 
     public enum SELECTOR
     {
-        FILE,
+        CANCEL,
+        DONE,
+        FILE_IMPORT,
+        FILE_NEW,
+        FILE_OPEN,
+        FILE_SAVE,
+        FILE_SAVE_AS,
         PASTE,
-        CANCEL
     }
 }
