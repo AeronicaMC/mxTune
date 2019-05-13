@@ -60,6 +60,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     private GuiTextField textSource;
     private GuiButtonExt buttonPlayStop;
     private int ticks;
+    private char formatCodeFileName;
 
     // Common data
     MXTuneFile mxTuneFile;
@@ -104,7 +105,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         int tabbedAreaTop = (height * 2) / 5;
 
         labelMXTFileName = new GuiLabelMX(fontRenderer, 0, padding, padding, titleWidth, singleLineHeight, -1);
-        setDisplayedFilename(cachedMXTFilename);
+        setDisplayedFilename(cachedMXTFilename, TextFormatting.AQUA);
         int buttonWidth = Math.max(((width * 2 / 3) - padding * 2) / 5, 75);
         int buttonY = labelMXTFileName.getY() + labelMXTFileName.getHeight();
 
@@ -126,12 +127,12 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         String labelAuthorText = I18n.format("mxtune.gui.label.author");
         int labelAuthorWidth = fontRenderer.getStringWidth(labelAuthorText);
         labelTitle = new GuiLabelMX(fontRenderer, 1, padding, textY, labelTitleWidth, fontRenderer.FONT_HEIGHT + 2, -1);
-        labelTitle.setLabel(labelTitleText);
+        labelTitle.setLabelName(labelTitleText);
         textTitle = new GuiTextField(1, fontRenderer, labelTitle.getX() + labelTitleWidth + padding, textY, width / 2 - labelTitle.getWidth() - padding, fontRenderer.FONT_HEIGHT + 2);
         textTitle.setMaxStringLength(80);
         textTitle.setCanLoseFocus(true);
         labelAuthor = new GuiLabelMX(fontRenderer, 2, textTitle.x + textTitle.width + padding, textY, labelAuthorWidth, fontRenderer.FONT_HEIGHT + 2, -1);
-        labelAuthor.setLabel(labelAuthorText);
+        labelAuthor.setLabelName(labelAuthorText);
         textAuthor = new GuiTextField(2, fontRenderer, labelAuthor.getX() + labelAuthorWidth + padding, textY, width - labelAuthor.getX() - labelAuthor.getWidth() - padding * 2, fontRenderer.FONT_HEIGHT + 2);
         textAuthor.setMaxStringLength(80);
         textAuthor.setCanLoseFocus(true);
@@ -139,7 +140,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         String labelSourceText = I18n.format("mxtune.gui.label.source");
         int labelSourceWidth = fontRenderer.getStringWidth(labelSourceText);
         labelSource = new GuiLabelMX(fontRenderer, 3, padding, textY, labelSourceWidth, fontRenderer.FONT_HEIGHT + 2, -1);
-        labelSource.setLabel(labelSourceText);
+        labelSource.setLabelName(labelSourceText);
         textSource = new GuiTextField(3, fontRenderer, labelSource.getX() + labelSource.getWidth() + padding, textY, width - labelSource.getX() - labelSource.getWidth() - padding * 2, fontRenderer.FONT_HEIGHT + 2);
         textSource.setMaxStringLength(320);
         textSource.setCanLoseFocus(true);
@@ -168,7 +169,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     {
         updateButtons();
         if (!isStateCached) return;
-        labelMXTFileName.setLabel(cachedMXTFilename);
+        labelMXTFileName.setLabelName(cachedMXTFilename);
         activeChildIndex = cachedActiveChildIndex;
         viewableTabCount = cachedViewableTabCount;
         isPlaying = cachedIsPlaying;
@@ -176,7 +177,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
 
     private void updateState()
     {
-        cachedMXTFilename = labelMXTFileName.getLabel();
+        cachedMXTFilename = labelMXTFileName.getLabelName();
         cachedActiveChildIndex = activeChildIndex;
         cachedViewableTabCount = viewableTabCount;
         cachedIsPlaying = isPlaying;
@@ -323,7 +324,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
                     textAuthor.setText(mxTuneFile.getAuthor());
                     textSource.setText(mxTuneFile.getSource());
                     int tab = 0;
-                    setDisplayedFilename(TextFormatting.AQUA + ActionGet.INSTANCE.getFileNameString());
+                    setDisplayedFilename(ActionGet.INSTANCE.getFileNameString(), TextFormatting.AQUA);
                     for (MXTunePart part : mxTuneFile.getParts())
                     {
                         if (canAddTab())
@@ -335,7 +336,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
                     }
                 }
                 else
-                    setDisplayedFilename(TextFormatting.RED + "***ERROR READING FILE***");
+                    setDisplayedFilename("***ERROR READING FILE***", TextFormatting.RED);
                 break;
             default:
         }
@@ -417,10 +418,12 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         childTabs[activeChildIndex].onResize(mcIn, w, h);
     }
 
-    private void setDisplayedFilename(@Nullable String name)
+    private void setDisplayedFilename(@Nullable String name, TextFormatting textFormatting)
     {
         if (name == null) name = "";
-        labelMXTFileName.setLabel(I18n.format("mxtune.gui.guiMXT.displayedFilename", name));
+        labelMXTFileName.setLabelName(I18n.format("mxtune.gui.guiMXT.displayedFilename"));
+        labelMXTFileName.setLabelText(name);
+        labelMXTFileName.setTextFormatting(textFormatting);
     }
 
     private boolean mmlPlay(String mmlIn)
