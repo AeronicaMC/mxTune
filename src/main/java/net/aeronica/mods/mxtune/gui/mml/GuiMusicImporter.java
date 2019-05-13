@@ -322,16 +322,6 @@ public class GuiMusicImporter extends GuiScreen
         mc.displayGuiScreen(new GuiMusicPaperParse(this, ActionGet.INSTANCE.getTitle()));
     }
 
-    private String removeExtension(String s)
-    {
-        return s.replaceAll("(\\.\\w+$)", "");
-    }
-
-    private String normalizeFilename(String s)
-    {
-        return s.replaceAll("([\\x00-\\x1F!\"\\$\'\\.\\(\\)\\*,\\/:;<>\\?\\[\\\\\\]\\{\\|\\}\\x7F]+)", "");
-    }
-
     private void getSelection()
     {
         List<MXTuneStaff> staves = new ArrayList<>();
@@ -348,9 +338,9 @@ public class GuiMusicImporter extends GuiScreen
                     ModLogger.debug("File: %s", ActionGet.INSTANCE.getFileNameString());
                     temp = ActionGet.INSTANCE.getFileNameString();
                     ModLogger.debug("ActionGet FILE raw: %s", temp);
-                    title = removeExtension(temp);
+                    title = FileHelper.removeExtension(temp);
                     ModLogger.debug("ActionGet FILE title: %s", title);
-                    fileName = normalizeFilename(title);
+                    fileName = FileHelper.normalizeFilename(title);
                     ModLogger.debug("ActionGet FILE filename: %s", fileName);
                     musicTitle.setText(title.trim());
                     musicAuthor.setText(ActionGet.INSTANCE.getAuthor());
@@ -380,9 +370,9 @@ public class GuiMusicImporter extends GuiScreen
                 ModLogger.debug("Paste: %s", ActionGet.INSTANCE.getTitle());
                 temp = ActionGet.INSTANCE.getTitle();
                 ModLogger.debug("ActionGet PASTE raw: %s", temp);
-                title = removeExtension(temp);
+                title = FileHelper.removeExtension(temp);
                 ModLogger.debug("ActionGet PASTE title: %s", title);
-                fileName = normalizeFilename(title);
+                fileName = FileHelper.normalizeFilename(title);
                 ModLogger.debug("ActionGet PASTE filename: %s", fileName);
                 musicTitle.setText(title);
                 musicAuthor.setText(ActionGet.INSTANCE.getAuthor());

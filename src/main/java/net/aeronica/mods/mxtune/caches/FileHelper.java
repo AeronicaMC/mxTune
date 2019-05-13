@@ -98,6 +98,16 @@ public class FileHelper
         return path.getFileSystem().getPathMatcher("glob:**.{mxt}");
     }
 
+    public static String removeExtension(String s)
+    {
+        return s.replaceAll("(\\.\\w+$)", "");
+    }
+
+    public static String normalizeFilename(String s)
+    {
+        return s.replaceAll("([\\x00-\\x1F!\"\\$\'\\.\\(\\)\\*,\\/:;<>\\?\\[\\\\\\]\\{\\|\\}\\x7F]+)", "");
+    }
+
     private static void fixDirectory(Path dir)
     {
         if (dir.toFile().exists() && !dir.toFile().isDirectory())
