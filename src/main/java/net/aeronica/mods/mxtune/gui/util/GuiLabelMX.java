@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -18,7 +19,9 @@ public class GuiLabelMX extends Gui
     private int height;
     private int x;
     private int y;
-    private String label;
+    private String labelName;
+    private String labelText;
+    private TextFormatting textFormatting = TextFormatting.RESET;
     public final int id;
     private boolean centered;
     private boolean visible = true;
@@ -38,7 +41,8 @@ public class GuiLabelMX extends Gui
         this.y = yIn;
         this.width = widthIn;
         this.height = heightIn;
-        this.label = "";
+        this.labelName = "";
+        this.labelText = "";
         this.centered = false;
         this.labelBgEnabled = false;
         this.textColor = colorIn;
@@ -48,15 +52,19 @@ public class GuiLabelMX extends Gui
         this.border = 0;
     }
 
-    public void setLabel(String label)
+    public void setLabelName(String labelName)
     {
-        this.label = label;
+        this.labelName = labelName;
     }
 
-    public String getLabel()
+    public String getLabelName()
     {
-        return label;
+        return labelName;
     }
+
+    public String getLabelText() { return labelText; }
+
+    public void setLabelText(String labelText) { this.labelText = labelText; }
 
     /**
      * Sets the Label to be centered
@@ -117,21 +125,32 @@ public class GuiLabelMX extends Gui
         this.visible = visible;
     }
 
+    public TextFormatting getTextFormatting()
+    {
+        return textFormatting;
+    }
+
+    public void setTextFormatting(TextFormatting textFormatting)
+    {
+        this.textFormatting = textFormatting;
+    }
+
     public void drawLabel(Minecraft mc, int mouseX, int mouseY)
     {
         if (this.visible)
         {
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+            String combinedTexts = labelName + " " + textFormatting + labelText;
             this.drawLabelBackground(mc, mouseX, mouseY);
 
             if (this.centered)
             {
-                this.drawCenteredString(this.fontRenderer, this.label, this.x + this.width / 2, this.y, this.textColor);
+                this.drawCenteredString(this.fontRenderer, combinedTexts, this.x + this.width / 2, this.y, this.textColor);
             }
             else
             {
-                this.drawString(this.fontRenderer, this.label, this.x, this.y, this.textColor);
+                this.drawString(this.fontRenderer, combinedTexts, this.x, this.y, this.textColor);
             }
         }
     }

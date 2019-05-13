@@ -175,7 +175,7 @@ public class GuiPlaylistManager extends GuiScreen
         labelTitle = new GuiLabel(fontRenderer, 0, titleX, titleTop, titleWidth, singleLineHeight, 0xFFFFFF );
         labelTitle.addLine(TITLE);
         labelFileList = new GuiLabelMX(fontRenderer,1, left, titleTop, guiFileListWidth, singleLineHeight, -1);
-        labelFileList.setLabel(I18n.format("mxtune.gui.guiPlayListManager.label.music_file_selector", cachedSelectedSongs.size()));
+        labelFileList.setLabelName(I18n.format("mxtune.gui.guiPlayListManager.label.music_file_selector", cachedSelectedSongs.size()));
 
         guiFileList = new GuiScrollingMultiListOf<Path>(this, entryFileHeight, guiFileListWidth, fileListHeight,listTop, fileListBottom, left)
         {
@@ -293,7 +293,7 @@ public class GuiPlaylistManager extends GuiScreen
 
         labelLog = new GuiLabelMX(fontRenderer, 2, guiFileList.getRight(), logStatusTop - singleLineHeight -2, guiPlayList.getLeft()-guiFileList.getRight(), singleLineHeight,-1);
         labelLog.setCentered();
-        labelLog.setLabel(I18n.format("mxtune.gui.guiPlayListManager.label.status_log"));
+        labelLog.setLabelName(I18n.format("mxtune.gui.guiPlayListManager.label.status_log"));
 
         labelPlayListList = new GuiLabel(fontRenderer,3, guiPlayList.getRight() - guiPlayListListWidth, titleTop, guiPlayListListWidth, singleLineHeight, 0xFFFFFF);
         labelPlayListList.addLine("mxtune.gui.guiPlayListManager.label.playlist_selector");
@@ -434,7 +434,7 @@ public class GuiPlaylistManager extends GuiScreen
 
     private void updateSongCountStatus()
     {
-        labelFileList.setLabel(I18n.format("mxtune.gui.guiPlayListManager.label.music_file_selector", guiFileList.getSelectedRowsCount()));
+        labelFileList.setLabelName(I18n.format("mxtune.gui.guiPlayListManager.label.music_file_selector", guiFileList.getSelectedRowsCount()));
     }
 
     private void updateStatus(String message)
