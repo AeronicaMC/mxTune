@@ -105,7 +105,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     /* Cached State for when the GUI is resized */
     private boolean isStateCached = false;
     private boolean cachedIsPlaying;
-    private String cachedMMLText;
+    private String cachedMMLText = "";
     private int cachedSelectedInst;
 
     // Colored Text Helper
@@ -126,6 +126,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
             protected void selectedClickedCallback(int selectedIndex)
             {
                 selectInstrument();
+                updateState();
             }
 
             @Override
@@ -275,20 +276,21 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
         /* create MML Paste/Edit field */
         posX = sliderVolume.x + sliderVolume.width + padding;
-        textMMLPaste = new GuiMMLBox(1, fontRenderer, posX, posY, width - posX - padding, pasteErrorHeight);
+        int rightSideWidth = Math.max(width - posX - padding, 100);
+        textMMLPaste = new GuiMMLBox(1, fontRenderer, posX, posY, rightSideWidth, pasteErrorHeight);
         textMMLPaste.setFocused(false);
         textMMLPaste.setCanLoseFocus(true);
         textMMLPaste.setMaxStringLength(10000);
 
         /* create Status line */
-        labelStatus = new GuiTextField(2, fontRenderer, posX, textMMLPaste.yPosition + textMMLPaste.height + padding , width - posX - padding, statusHeight);
+        labelStatus = new GuiTextField(2, fontRenderer, posX, textMMLPaste.yPosition + textMMLPaste.height + padding , rightSideWidth, statusHeight);
         labelStatus.setFocused(false);
         labelStatus.setCanLoseFocus(true);
         labelStatus.setEnabled(false);
         labelStatus.setMaxStringLength(80);
 
         /* create Parse Error selector */
-        listBoxMMLError.setLayout(entryHeight, width - posX - padding, Math.max(bottom - labelStatus.y - labelStatus.height - padding, entryHeight), labelStatus.y + labelStatus.height + padding, bottom, posX);
+        listBoxMMLError.setLayout(entryHeight, rightSideWidth, Math.max(bottom - labelStatus.y - labelStatus.height - padding, entryHeight), labelStatus.y + labelStatus.height + padding, bottom, posX);
 
         reloadState();
     }
@@ -307,6 +309,8 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
     private void updateState()
     {
+        if (cachedMMLText.length() != textMMLPaste.getText().length())
+            updatePart();
         cachedMMLText = textMMLPaste.getText();
         cachedSelectedInst = listBoxInstruments.getSelectedIndex();
         cachedIsPlaying = isPlaying;
@@ -525,10 +529,9 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
     private void selectInstrument()
     {
-        int index = listBoxInstruments.getSelectedIndex();
+        int index = listBoxInstruments.getSelectedIndex() >= 0 ? listBoxInstruments.getSelectedIndex() : 0;
         mxTunePart.setPackedPatch(MIDISystemUtil.getPackedPresetFromInstrumentCacheIndex(index));
         mxTunePart.setInstrumentName(I18n.format(listBoxInstruments.get(index).getName()));
-        updateState();
     }
 
     /** Table Flip!
