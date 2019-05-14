@@ -17,10 +17,7 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
-import net.aeronica.mods.mxtune.caches.MXTuneFile;
-import net.aeronica.mods.mxtune.caches.MXTuneFileHelper;
-import net.aeronica.mods.mxtune.caches.MXTunePart;
-import net.aeronica.mods.mxtune.caches.MXTuneStaff;
+import net.aeronica.mods.mxtune.caches.*;
 import net.aeronica.mods.mxtune.gui.util.GuiLabelMX;
 import net.aeronica.mods.mxtune.gui.util.IHooverText;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
@@ -32,9 +29,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.GuiYesNo;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
+import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
@@ -56,8 +56,11 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     private GuiLabelMX labelAuthor;
     private GuiLabelMX labelSource;
     private GuiTextField textTitle;
+    private String cachedTitle = "";
     private GuiTextField textAuthor;
+    private String cachedAuthor = "";
     private GuiTextField textSource;
+    private String cachedSource = "";
     private GuiButtonExt buttonPlayStop;
     private int ticks;
     private char formatCodeFileName;
@@ -152,7 +155,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         buttonList.add(buttonMinusTab);
         for (int i = 0; i< MAX_TABS; i++)
         {
-            buttonList.add(new GuiButton(TAB_BTN_IDX + i, buttonMinusTab.x + 20 + 20 * i, tabbedAreaTop - 25, 20, 20, String.format("%d", i + 1)));
+            buttonList.add(new GuiButton(TAB_BTN_IDX + i, buttonMinusTab.x + 40 + 20 * i, tabbedAreaTop - 25, 20, 20, String.format("%d", i + 1)));
             childTabs[i].setLayout(tabbedAreaTop, height - padding, height - padding - tabbedAreaTop);
             childTabs[i].initGui();
         }
@@ -169,17 +172,23 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     {
         updateButtons();
         if (!isStateCached) return;
-        labelMXTFileName.setLabelName(cachedMXTFilename);
+        labelMXTFileName.setLabelText(cachedMXTFilename);
         activeChildIndex = cachedActiveChildIndex;
         viewableTabCount = cachedViewableTabCount;
+        textTitle.setText(cachedTitle);
+        textAuthor.setText(cachedAuthor);
+        textSource.setText(cachedSource);
         isPlaying = cachedIsPlaying;
     }
 
     private void updateState()
     {
-        cachedMXTFilename = labelMXTFileName.getLabelName();
+        cachedMXTFilename = labelMXTFileName.getLabelText();
         cachedActiveChildIndex = activeChildIndex;
         cachedViewableTabCount = viewableTabCount;
+        cachedTitle = textTitle.getText();
+        cachedAuthor = textAuthor.getText();
+        cachedSource = textSource.getText();
         cachedIsPlaying = isPlaying;
         isStateCached = true;
     }
@@ -297,7 +306,42 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
 
     private void saveAction()
     {
-        // NOP
+        // TODO: clean this up and toss warnings as needed.
+        String fileName = FileHelper.removeExtension(labelMXTFileName.getLabelText());
+        if (fileName.length() < 1)
+        {
+            fileName = FileHelper.normalizeFilename(textTitle.getText().trim());
+            labelMXTFileName.setLabelText(fileName);
+        }
+        if (!fileName.equals("") && !textTitle.getText().trim().equals(""))
+        {
+            if (mxTuneFile == null)
+                mxTuneFile = new MXTuneFile();
+            mxTuneFile.setTitle(textTitle.getText().trim());
+            mxTuneFile.setAuthor(textAuthor.getText().trim());
+            mxTuneFile.setSource(textSource.getText().trim());
+            List<MXTunePart> parts = new ArrayList<>();
+            for (int i = 0; i < viewableTabCount; i++)
+            {
+                childTabs[i].updatePart();
+                MXTunePart part = childTabs[i].getPart();
+                if (part.getStaves().size() > 0)
+                    parts.add(part);
+            }
+            mxTuneFile.setParts(parts);
+
+            NBTTagCompound compound = new NBTTagCompound();
+            mxTuneFile.writeToNBT(compound);
+            try
+            {
+                FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.CLIENT_LIB_FOLDER, fileName + FileHelper.EXTENSION_MXT, Side.CLIENT), compound);
+            }
+            catch (IOException e)
+            {
+                ModLogger.error(e);
+            }
+        }
+        updateState();
     }
 
     private void saveAsAction()
@@ -309,38 +353,69 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     {
         // Todo: Warning if un-saved! Quit Yes/No dialog
         stop();
-        mc.displayGuiScreen(guiScreenParent);
+        updateState();
+        mc.displayGuiScreen(new GuiYesNo(this, "Have you saved changes?","Do you still want to exit?",0));
     }
 
     private void getSelection()
     {
         switch (ActionGet.INSTANCE.getSelector())
         {
+            case DONE:
+                break;
+            case FILE_NEW:
+                break;
+            case FILE_IMPORT:
+                break;
             case FILE_OPEN:
-                mxTuneFile = MXTuneFileHelper.getMXTuneFile(ActionGet.INSTANCE.getPath());
-                if (mxTuneFile != null)
-                {
-                    textTitle.setText(mxTuneFile.getTitle());
-                    textAuthor.setText(mxTuneFile.getAuthor());
-                    textSource.setText(mxTuneFile.getSource());
-                    int tab = 0;
-                    setDisplayedFilename(ActionGet.INSTANCE.getFileNameString(), TextFormatting.AQUA);
-                    for (MXTunePart part : mxTuneFile.getParts())
-                    {
-                        if (canAddTab())
-                        {
-                            childTabs[tab++].setPart(part);
-                            if ((tab < mxTuneFile.getParts().size()))
-                                addTab();
-                        }
-                    }
-                }
-                else
-                    setDisplayedFilename("***ERROR READING FILE***", TextFormatting.RED);
+                fileOpen();
+            case FILE_SAVE:
+                break;
+            case FILE_SAVE_AS:
                 break;
             default:
         }
         ActionGet.INSTANCE.setCancel();
+    }
+
+    private void fileOpen()
+    {
+        mxTuneFile = MXTuneFileHelper.getMXTuneFile(ActionGet.INSTANCE.getPath());
+        if (mxTuneFile != null)
+        {
+            textTitle.setText(mxTuneFile.getTitle());
+            textAuthor.setText(mxTuneFile.getAuthor());
+            textSource.setText(mxTuneFile.getSource());
+            int tab = 0;
+            setDisplayedFilename(ActionGet.INSTANCE.getFileNameString(), TextFormatting.AQUA);
+            for (MXTunePart part : mxTuneFile.getParts())
+            {
+                if (canAddTab())
+                {
+                    childTabs[tab++].setPart(part);
+                    if ((tab < mxTuneFile.getParts().size()))
+                        addTab();
+                }
+            }
+        }
+        else
+            setDisplayedFilename("***ERROR READING FILE***", TextFormatting.RED);
+    }
+
+    @Override
+    public void confirmClicked(boolean result, int id)
+    {
+        switch (id)
+        {
+            case 0:
+                // Done! Unsaved Changes! Go back and save?
+                if (result)
+                    mc.displayGuiScreen(guiScreenParent);
+                else
+                    mc.displayGuiScreen(this);
+                break;
+            default:
+        }
     }
 
     @Override
