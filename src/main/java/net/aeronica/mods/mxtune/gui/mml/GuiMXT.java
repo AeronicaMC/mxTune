@@ -278,6 +278,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     private void addTab()
     {
         viewableTabCount = (viewableTabCount + 1) > MAX_TABS ? viewableTabCount : viewableTabCount + 1;
+        activeChildIndex = viewableTabCount;
     }
 
     private void minusTab()
