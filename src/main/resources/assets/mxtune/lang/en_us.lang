@@ -216,6 +216,7 @@ mxtune.gui.button.play=Play
 mxtune.gui.button.play_part=Play Part
 mxtune.gui.button.play_all=Play All
 mxtune.gui.button.stop=Stop
+mxtune.gui.button.new=New
 mxtune.gui.button.import=Import
 mxtune.gui.button.open=Open
 mxtune.gui.button.save=Save

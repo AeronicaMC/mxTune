@@ -221,6 +221,16 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         selectInstrument();
     }
 
+    public void clearPart()
+    {
+        this.mxTunePart = new MXTunePart();
+        this.listBoxInstruments.setSelectedIndex(-1);
+        listBoxInstruments.resetScroll();
+        textMMLPaste.setText("");
+        updateState();
+        initGui();
+    }
+
     @Override
     public void updateScreen()
     {

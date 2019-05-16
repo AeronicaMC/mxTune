@@ -63,7 +63,6 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     private String cachedSource = "";
     private GuiButtonExt buttonPlayStop;
     private int ticks;
-    private char formatCodeFileName;
 
     // Common data
     MXTuneFile mxTuneFile;
@@ -109,14 +108,16 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
 
         labelMXTFileName = new GuiLabelMX(fontRenderer, 0, padding, padding, titleWidth, singleLineHeight, -1);
         setDisplayedFilename(cachedMXTFilename, TextFormatting.AQUA);
-        int buttonWidth = Math.max(((width * 2 / 3) - padding * 2) / 5, 75);
+        int buttonWidth = Math.max(((width * 2 / 3) - padding * 2) / 6, 65);
         int buttonY = labelMXTFileName.getY() + labelMXTFileName.getHeight();
 
-        GuiButtonExt buttonImport = new GuiButtonExt(1, padding, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.import"));
+        GuiButtonExt buttonNew = new GuiButtonExt(0, padding, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.new"));
+        GuiButtonExt buttonImport = new GuiButtonExt(1, buttonNew.x + buttonNew.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.import"));
         GuiButtonExt buttonOpen = new GuiButtonExt(2, buttonImport.x + buttonImport.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.open"));
         GuiButtonExt buttonSave = new GuiButtonExt(3, buttonOpen.x + buttonOpen.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.save"));
         GuiButtonExt buttonSaveAs = new GuiButtonExt(4, buttonSave.x + buttonSave.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.save_as"));
         GuiButtonExt buttonDone = new GuiButtonExt(5, buttonSaveAs.x + buttonSaveAs.width, buttonY, buttonWidth, 20, I18n.format("gui.done"));
+        buttonList.add(buttonNew);
         buttonList.add(buttonImport);
         buttonList.add(buttonOpen);
         buttonList.add(buttonSave);
@@ -237,6 +238,10 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         }
         switch (button.id)
         {
+            case 0:
+                // New
+                newAction();
+                break;
             case 1:
                 // Import
                 importAction();
@@ -289,6 +294,13 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     private boolean canAddTab()
     {
         return (viewableTabCount + 1) < MAX_TABS;
+    }
+
+    private void newAction()
+    {
+        stop();
+        updateState();
+        mc.displayGuiScreen(new GuiYesNo(this, "New File! This will clear all fields and parts!","Confirm?",0));
     }
 
     private void importAction()
@@ -355,7 +367,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         // Todo: Warning if un-saved! Quit Yes/No dialog
         stop();
         updateState();
-        mc.displayGuiScreen(new GuiYesNo(this, "Have you saved changes?","Do you still want to exit?",0));
+        mc.displayGuiScreen(new GuiYesNo(this, "Have you saved changes?","Do you still want to exit?",5));
     }
 
     private void getSelection()
@@ -365,6 +377,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
             case DONE:
                 break;
             case FILE_NEW:
+                fileNew();
                 break;
             case FILE_IMPORT:
                 break;
@@ -377,6 +390,20 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
             default:
         }
         ActionGet.INSTANCE.setCancel();
+    }
+
+    private void fileNew()
+    {
+        mxTuneFile = null;
+        setDisplayedFilename("", TextFormatting.AQUA);
+        textTitle.setText("");
+        textAuthor.setText("");
+        textSource.setText("");
+        for (int i = 0; i< MAX_TABS; i++)
+            childTabs[i].clearPart();
+        viewableTabCount = MIN_TABS;
+        activeChildIndex = 0;
+        updateState();
     }
 
     private void fileOpen()
@@ -409,6 +436,11 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         switch (id)
         {
             case 0:
+                if (result)
+                    fileNew();
+                mc.displayGuiScreen(this);
+                break;
+            case 5:
                 // Done! Unsaved Changes! Go back and save?
                 if (result)
                     mc.displayGuiScreen(guiScreenParent);
