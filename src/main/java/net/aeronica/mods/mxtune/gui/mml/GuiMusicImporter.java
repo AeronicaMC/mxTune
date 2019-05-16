@@ -352,7 +352,7 @@ public class GuiMusicImporter extends GuiScreen
                         staves.add(new MXTuneStaff(i, mml));
                         i++;
                     }
-                    MXTunePart part = new MXTunePart("Acoustic Piano", "Acoustic Piano", 0, staves);
+                    MXTunePart part = new MXTunePart("Acoustic Piano", title, 0, staves);
                     mxTuneFile.getParts().add(part);
                     mxTuneFile.applyUserDateTime(true);
                     mxTuneFile.setTitle(musicTitle.getText());
