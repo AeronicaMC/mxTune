@@ -24,6 +24,7 @@ import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.sound.IAudioStatusCallback;
+import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -31,6 +32,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.GuiYesNo;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
@@ -427,7 +429,10 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
             }
         }
         else
-            setDisplayedFilename("***ERROR READING FILE***", TextFormatting.RED);
+        {
+            Miscellus.audiblePingPlayer(mc.player, SoundEvents.BLOCK_GLASS_BREAK);
+            fileNew();
+        }
     }
 
     @Override
