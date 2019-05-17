@@ -49,8 +49,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static net.aeronica.mods.mxtune.gui.mml.SortHelper.SortType;
-import static net.aeronica.mods.mxtune.gui.mml.SortHelper.updateSortButtons;
+import static net.aeronica.mods.mxtune.gui.mml.SortPathHelper.SortType;
+import static net.aeronica.mods.mxtune.gui.mml.SortPathHelper.updateSortButtons;
 import static net.aeronica.mods.mxtune.gui.util.ModGuiUtils.clearOnMouseLeftClicked;
 
 public class GuiFileSelector extends GuiScreen
