@@ -245,9 +245,9 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
     protected void deleteAction(int index) {/* NOP */}
 
     @Override
-    protected boolean isSelected(int index)
+    public boolean isSelected(int index)
     {
-        return index == selectedIndex && selectedIndex >= 0 && selectedIndex <= arrayList.size();
+        return index == selectedIndex && index > -1 && index < arrayList.size();
     }
 
     @Override

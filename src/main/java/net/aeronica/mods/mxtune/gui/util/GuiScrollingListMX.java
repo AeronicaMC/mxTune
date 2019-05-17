@@ -144,7 +144,7 @@ public abstract class GuiScrollingListMX
 
     protected abstract void elementClicked(int index, boolean doubleClick);
 
-    protected abstract boolean isSelected(int index);
+    public abstract boolean isSelected(int index);
 
     protected int getContentHeight()
     {
