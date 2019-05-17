@@ -441,6 +441,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         switch (id)
         {
             case 0:
+                // NewAction
                 if (result)
                     fileNew();
                 mc.displayGuiScreen(this);
