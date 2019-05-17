@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Locale;
 
 // Adapted from the FML GuiModList class
-class SortHelper
+class SortPathHelper
 {
     /**
      * SortType for lists of Path instances
