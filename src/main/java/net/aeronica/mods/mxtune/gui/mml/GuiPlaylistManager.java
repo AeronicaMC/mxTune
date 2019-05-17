@@ -64,8 +64,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static net.aeronica.mods.mxtune.gui.mml.SortHelper.PLAYLIST_ORDERING;
-import static net.aeronica.mods.mxtune.gui.mml.SortHelper.SONG_PROXY_ORDERING;
+import static net.aeronica.mods.mxtune.gui.mml.SortPathHelper.PLAYLIST_ORDERING;
+import static net.aeronica.mods.mxtune.gui.mml.SortPathHelper.SONG_PROXY_ORDERING;
 
 public class GuiPlaylistManager extends GuiScreen
 {
@@ -525,6 +525,7 @@ public class GuiPlaylistManager extends GuiScreen
         if (keyCode != Keyboard.KEY_TAB)
             playListName.textboxKeyTyped(typedChar, keyCode);
 
+        guiFileList.keyTyped(typedChar, keyCode);
         guiPlayList.keyTyped(typedChar, keyCode);
         guiDay.keyTyped(typedChar, keyCode);
         guiNight.keyTyped(typedChar, keyCode);
