@@ -426,7 +426,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
             guiPartList.clear();
             guiPartList.addAll(tuneParts);
             ModLogger.debug("Selected file: %s", path.toString());
-        } else if (guiLibraryList.size() < 1)
+        } else if (guiLibraryList.isEmpty())
             guiPartList.clear();
     }
 
