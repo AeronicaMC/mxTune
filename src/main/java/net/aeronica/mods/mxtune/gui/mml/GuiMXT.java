@@ -64,6 +64,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     private GuiTextField textSource;
     private String cachedSource = "";
     private GuiButtonExt buttonPlayStop;
+    private GuiMMLBox textMMLPaste;
     private int ticks;
 
     // Common data
@@ -106,7 +107,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         int singleLineHeight = mc.fontRenderer.FONT_HEIGHT + 2;
         int padding = 4;
         int titleWidth = width - padding * 2;
-        int tabbedAreaTop = (height * 2) / 5;
+        int tabbedAreaTop = (height * 1) / 2;
 
         labelMXTFileName = new GuiLabelMX(fontRenderer, 0, padding, padding, titleWidth, singleLineHeight, -1);
         setDisplayedFilename(cachedMXTFilename, TextFormatting.AQUA);
@@ -150,6 +151,13 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         textSource = new GuiTextField(3, fontRenderer, labelSource.getX() + labelSource.getWidth() + padding, textY, width - labelSource.getX() - labelSource.getWidth() - padding * 2, fontRenderer.FONT_HEIGHT + 2);
         textSource.setMaxStringLength(320);
         textSource.setCanLoseFocus(true);
+
+        // Common MML Paste
+        int pasteHeight = Math.min((((fontRenderer.FONT_HEIGHT * 6) / fontRenderer.FONT_HEIGHT) * fontRenderer.FONT_HEIGHT) - 10, (tabbedAreaTop - textSource.y + textSource.height + padding - 50)  / fontRenderer.FONT_HEIGHT * fontRenderer.FONT_HEIGHT - 10);
+        textMMLPaste = new GuiMMLBox(1, fontRenderer, padding, textSource.y + textSource.height + padding, width - padding * 2, pasteHeight);
+        textMMLPaste.setFocused(false);
+        textMMLPaste.setCanLoseFocus(true);
+        textMMLPaste.setMaxStringLength(10000);
 
         // Button tabs
         buttonAddTab = new GuiButtonExt(250, padding, tabbedAreaTop - 25, 20, 20, I18n.format("mxtune.gui.button.plus"));
@@ -226,6 +234,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         textTitle.updateCursorCounter();
         textAuthor.updateCursorCounter();
         textSource.updateCursorCounter();
+        textMMLPaste.updateCursorCounter();
         childTabs[activeChildIndex].updateScreen();
         if (ticks++ % 5 == 0) updateButtons();
     }
@@ -416,6 +425,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
             textTitle.setText(mxTuneFile.getTitle());
             textAuthor.setText(mxTuneFile.getAuthor());
             textSource.setText(mxTuneFile.getSource());
+            textMMLPaste.setText("");
             int tab = 0;
             setDisplayedFilename(ActionGet.INSTANCE.getFileNameString(), TextFormatting.AQUA);
             for (MXTunePart part : mxTuneFile.getParts())
@@ -469,6 +479,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         textTitle.textboxKeyTyped(typedChar, keyCode);
         textAuthor.textboxKeyTyped(typedChar, keyCode);
         textSource.textboxKeyTyped(typedChar, keyCode);
+        textMMLPaste.textboxKeyTyped(typedChar, keyCode);
         updateState();
         super.keyTyped(typedChar, keyCode);
     }
@@ -491,6 +502,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         textAuthor.drawTextBox();
         labelSource.drawLabel(mc, mouseX, mouseY);
         textSource.drawTextBox();
+        textMMLPaste.drawTextBox();
         super.drawScreen(mouseX, mouseY, partialTicks);
         childTabs[activeChildIndex].drawScreen(mouseX, mouseY, partialTicks);
         ModGuiUtils.INSTANCE.drawHooveringHelp(this, hooverTexts, 0, 0, mouseX, mouseY);
@@ -513,6 +525,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         textTitle.mouseClicked(mouseX, mouseY, mouseButton);
         textAuthor.mouseClicked(mouseX, mouseY, mouseButton);
         textSource.mouseClicked(mouseX, mouseY, mouseButton);
+        textMMLPaste.mouseClicked(mouseX, mouseY, mouseButton);
         super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
