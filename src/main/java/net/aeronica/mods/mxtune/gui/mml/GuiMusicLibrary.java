@@ -53,8 +53,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static net.aeronica.mods.mxtune.gui.mml.SortHelper.SortType;
-import static net.aeronica.mods.mxtune.gui.mml.SortHelper.updateSortButtons;
 import static net.aeronica.mods.mxtune.gui.util.ModGuiUtils.clearOnMouseLeftClicked;
 
 public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
@@ -67,25 +65,23 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
     private boolean isStateCached;
     private boolean midiUnavailable;
 
-    private Path selectedFile;
     private GuiButton buttonCancel;
     private List<GuiButton> safeButtonList;
-    private GuiScrollingListOf<Path> guiLibraryList;
+    private GuiScrollingListOf<FileData> guiLibraryList;
     private List<Path> libraryFiles = new ArrayList<>();
 
     // Sort and Search
     private GuiLabel searchLabel;
     private GuiTextField search;
     private boolean sorted = false;
-    private SortType sortType = SortType.NORMAL;
+    private SortFileDataHelper.SortType sortType = SortFileDataHelper.SortType.NORMAL;
     private String lastSearch = "";
 
     // Cache across screen resizing
     private int cachedSelectedIndex = -1;
-    private SortType cachedSortType;
+    private SortFileDataHelper.SortType cachedSortType;
     private boolean cachedIsPlaying;
     private int cachedPlayId;
-    private Path cachedSelectedFile;
 
     // Part List
     private MXTuneFile mxTuneFile;
@@ -103,6 +99,50 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         mc = Minecraft.getMinecraft();
         fontRenderer = mc.fontRenderer;
         midiUnavailable = MIDISystemUtil.midiUnavailable();
+
+        guiLibraryList = new GuiScrollingListOf<FileData>(this){
+            @Override
+            protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
+            {
+                // get the filename and remove the '.mxt' extension
+                String name = (get(slotIdx).name);
+                String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
+                int color = isSelected(slotIdx) ? 0xFFFF00 : 0xADD8E6;
+                fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, color);
+            }
+
+            @Override
+            protected void selectedClickedCallback(int selectedIndex)
+            {
+                updatePartList();
+            }
+
+            @Override
+            protected void selectedDoubleClickedCallback(int selectedIndex)
+            {
+                selectDone();
+            }
+        };
+
+        guiPartList = new GuiScrollingListOf<MXTunePart>(this)
+        {
+            @Override
+            protected void selectedClickedCallback(int selectedIndex) { /* NOP */ }
+
+            @Override
+            protected void selectedDoubleClickedCallback(int selectedIndex) { /* NOP */ }
+
+            @Override
+            protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
+            {
+                if (!isEmpty() && slotIdx < size())
+                {
+                    MXTunePart tunePart = get(slotIdx);
+                    String trimmedName = fontRenderer.trimStringToWidth(tunePart.getInstrumentName(), listWidth - 10);
+                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, 0xADD8E6);
+                }
+            }
+        };
     }
 
     @Override
@@ -122,51 +162,9 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         int statusTop = listBottom + 4;
         int partListWidth = (width - 15) / 4;
 
-        guiLibraryList = new GuiScrollingListOf<Path>(this, entryHeight, guiListWidth, listHeight, listTop, listBottom, left){
-            @Override
-            protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
-            {
-                // get the filename and remove the '.mxt' extension
-                String name = (get(slotIdx).getFileName().toString()).replaceAll("\\.[mM][xX][tT]$", "");
-                String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
-                int color = isSelected(slotIdx) ? 0xFFFF00 : 0xADD8E6;
-                fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, color);
-            }
+        guiLibraryList.setLayout(entryHeight, guiListWidth, listHeight, listTop, listBottom, left);
 
-            @Override
-            protected void selectedClickedCallback(int selectedIndex)
-            {
-                selectedFile = get(selectedIndex);
-                updatePartList(selectedFile);
-            }
-
-            @Override
-            protected void selectedDoubleClickedCallback(int selectedIndex)
-            {
-                selectedFile = get(selectedIndex);
-                selectDone();
-            }
-        };
-
-        guiPartList = new GuiScrollingListOf<MXTunePart>(this, entryHeight, partListWidth, listHeight, listTop, listBottom, guiLibraryList.getRight() + 5)
-        {
-            @Override
-            protected void selectedClickedCallback(int selectedIndex) { /* NOP */ }
-
-            @Override
-            protected void selectedDoubleClickedCallback(int selectedIndex) { /* NOP */ }
-
-            @Override
-            protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
-            {
-                if (!isEmpty() && slotIdx < size())
-                {
-                    MXTunePart tunePart = get(slotIdx);
-                    String trimmedName = fontRenderer.trimStringToWidth(tunePart.getInstrumentName(), listWidth - 10);
-                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, 0xADD8E6);
-                }
-            }
-        };
+        guiPartList.setLayout(entryHeight, partListWidth, listHeight, listTop, listBottom, guiLibraryList.getRight() + 5);
 
         String searchLabelText = I18n.format("mxtune.gui.label.search");
         int searchLabelWidth =  fontRenderer.getStringWidth(searchLabelText) + 4;
@@ -178,15 +176,15 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         search.setCanLoseFocus(true);
 
         int buttonMargin = 1;
-        int buttonWidth = (guiListWidth / 3);
+        int buttonWidth = 75;
         int x = left;
-        GuiButton normalSort = new GuiButton(SortType.NORMAL.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, I18n.format("fml.menu.mods.normal"));
+        GuiButton normalSort = new GuiButton(SortFileDataHelper.SortType.NORMAL.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, I18n.format("fml.menu.mods.normal"));
         normalSort.enabled = false;
         buttonList.add(normalSort);
         x += buttonWidth + buttonMargin;
-        buttonList.add(new GuiButton(SortType.A_TO_Z.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, "A-Z"));
+        buttonList.add(new GuiButton(SortFileDataHelper.SortType.A_TO_Z.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, "A-Z"));
         x += buttonWidth + buttonMargin;
-        buttonList.add(new GuiButton(SortType.Z_TO_A.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, "Z-A"));
+        buttonList.add(new GuiButton(SortFileDataHelper.SortType.Z_TO_A.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, "Z-A"));
 
         int buttonTop = height - 25;
         int xImport = (this.width /2) - 75 * 2;
@@ -208,7 +206,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         sorted = false;
         initFileList();
         reloadState();
-        updateSortButtons(sortType, safeButtonList);
+        SortFileDataHelper.updateSortButtons(sortType, safeButtonList);
     }
 
     private void reloadState()
@@ -217,7 +215,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         sortType = cachedSortType;
         search.setText(lastSearch);
         guiLibraryList.setSelectedIndex(cachedSelectedIndex);
-        updatePartList(cachedSelectedFile);
+        updatePartList();
         guiLibraryList.resetScroll();
         isPlaying = cachedIsPlaying;
         playId = cachedPlayId;
@@ -229,7 +227,6 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         cachedSelectedIndex = guiLibraryList.getSelectedIndex();
         cachedIsPlaying = isPlaying;
         cachedPlayId = playId;
-        cachedSelectedFile = selectedFile;
         searchAndSort();
         buttonPlay.displayString = isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play");
         isStateCached = true;
@@ -276,10 +273,10 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
     {
         if (button.enabled)
         {
-            SortType type = SortType.getTypeForButton(button);
+            SortFileDataHelper.SortType type = SortFileDataHelper.SortType.getTypeForButton(button);
             if (type != null)
             {
-                updateSortButtons(type, buttonList);
+                SortFileDataHelper.updateSortButtons(type, buttonList);
                 sorted = false;
                 sortType = type;
                 initFileList();
@@ -293,7 +290,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
                         break;
                     case 1:
                         // Cancel
-                        selectDone();
+                        selectCancel();
                         break;
                     case 2:
                         // Import
@@ -313,7 +310,14 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
     private void selectDone()
     {
         // action get file, etc...
-        ActionGet.INSTANCE.select(selectedFile);
+        if (guiLibraryList.isSelected(guiLibraryList.getSelectedIndex()))
+            ActionGet.INSTANCE.select(guiLibraryList.get(guiLibraryList.getSelectedIndex()).path);
+        stop();
+        mc.displayGuiScreen(guiScreenParent);
+    }
+
+    private void selectCancel()
+    {
         stop();
         mc.displayGuiScreen(guiScreenParent);
     }
@@ -328,6 +332,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
             this.actionPerformed(buttonCancel);
             return;
         }
+        guiLibraryList.keyTyped(typedChar, keyCode);
         updateState();
         super.keyTyped(typedChar, keyCode);
     }
@@ -374,16 +379,18 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         }
 
         List<Path> files = new ArrayList<>();
+        List<FileData> fileDatas = new ArrayList<>();
         for (Path file : libraryFiles)
         {
-            if (file.getFileName().toString().toLowerCase(Locale.ROOT).contains(search.getText().toLowerCase(Locale.ROOT)))
+            FileData fileData = new FileData(file);
+            if (fileData.name.toLowerCase(Locale.ROOT).contains(search.getText().toLowerCase(Locale.ROOT)))
             {
-                files.add(file);
+                fileDatas.add(fileData);
             }
         }
         libraryFiles = files;
         guiLibraryList.clear();
-        guiLibraryList.addAll(files);
+        guiLibraryList.addAll(fileDatas);
         lastSearch = search.getText();
     }
 
@@ -393,25 +400,23 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         {
             initFileList();
             sorted = false;
-            updatePartList(guiLibraryList.get());
+            updatePartList();
         }
         if (!sorted)
         {
             initFileList();
             guiLibraryList.sort(sortType);
-            guiLibraryList.setSelectedIndex(libraryFiles.indexOf(selectedFile));
-            cachedSelectedIndex = guiLibraryList.getSelectedIndex();
             sorted = true;
-            updatePartList(guiLibraryList.get());
+            updatePartList();
         }
     }
 
-    private void updatePartList(Path selectedFile)
+    private void updatePartList()
     {
-        cachedSelectedFile = selectedFile;
-        if (selectedFile != null)
+        if (guiLibraryList.isSelected(guiLibraryList.getSelectedIndex()))
         {
-            NBTTagCompound compound = FileHelper.getCompoundFromFile(selectedFile);
+            Path path = guiLibraryList.get(guiLibraryList.getSelectedIndex()).path;
+            NBTTagCompound compound = FileHelper.getCompoundFromFile(path);
             tuneParts.clear();
             if (compound != null)
             {
@@ -420,8 +425,9 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
             }
             guiPartList.clear();
             guiPartList.addAll(tuneParts);
-            ModLogger.debug("Selected file: %s", selectedFile.toString());
-        }
+            ModLogger.debug("Selected file: %s", path.toString());
+        } else if (guiLibraryList.size() < 1)
+            guiPartList.clear();
     }
 
     private void play()
