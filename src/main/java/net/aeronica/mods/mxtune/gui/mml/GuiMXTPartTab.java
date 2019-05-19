@@ -42,10 +42,7 @@ import javax.annotation.Nonnull;
 import javax.sound.midi.Instrument;
 import javax.sound.midi.Patch;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.IntStream;
 
 public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
@@ -107,6 +104,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private GuiButtonExt buttonMinusLine;
     private GuiButtonExt buttonPasteFromClipBoard;
     private GuiButtonExt buttonCopyToClipBoard;
+    private static String lineNames[] = new String[MAX_MML_LINES];
 
     /* MML Line limits - allow limiting the viewable lines */
     private int viewableLineCount = MIN_MML_LINES;
@@ -114,6 +112,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
     /* MML Parser */
     private ParseErrorListener parseErrorListener = new ParseErrorListener();
+    private Set<Integer> errorLines = new HashSet<>();
 
     /* MML Player */
     private int playId = PlayIdSupplier.PlayType.INVALID;
@@ -138,6 +137,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         Keyboard.enableRepeatEvents(true);
 
         Arrays.fill(cachedTextLines, "");
+        initPartNames();
 
         listBoxInstruments = new GuiScrollingListOf<Instrument>(this)
         {
@@ -185,7 +185,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
                 ParseErrorEntry errorEntry = !isEmpty() && slotIdx < getSize() && slotIdx >= 0 ? get(slotIdx) : null;
                 if (errorEntry != null)
                 {
-                    String charAt = String.format("%05d", errorEntry.getCharPositionInLine());
+                    String charAt = String.format("%s: %d", lineNames[errorEntry.getLine()] ,errorEntry.getCharPositionInLine());
                     String formattedErrorEntry = fontRenderer.trimStringToWidth(charAt + ": " + errorEntry.getMsg(), listWidth - 10);
                     fontRenderer.drawString(formattedErrorEntry, this.left + 3, slotTop, 0xFF2222);
                 }
@@ -255,6 +255,12 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     {
         for (int i = 0; i < viewableLineCount; i++)
             mmlTextLines[i].updateCursorCounter();
+    }
+
+    private void initPartNames()
+    {
+        lineNames[0] = I18n.format("mxtune.gui.label.melody");
+        IntStream.range(1, MAX_MML_LINES).forEach(i -> lineNames[i] = I18n.format("mxtune.gui.label.chord", String.format("%02d", i)));
     }
 
     @Override
@@ -399,6 +405,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
         buttonAddLine.enabled = viewableLineCount < MAX_MML_LINES;
         buttonMinusLine.enabled = viewableLineCount > MIN_MML_LINES;
+        IntStream.range(0, viewableLineCount).forEach(i -> parseMML(i, mmlTextLines[i].getText()));
         setLinesLayout(viewableLineCount);
     }
 
@@ -423,7 +430,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
         /* draw Field names */
-        // FIXME: int posX = sliderVolume.x + sliderVolume.width + 4;
         int posX = listBoxInstruments.getRight() + 4;
         int posY = top + 2;
         fontRenderer.drawStringWithShadow(LABEL_STATUS, posX, posY, 0xD3D3D3);
@@ -436,8 +442,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         listBoxMMLError.drawScreen(mouseX, mouseY, partialTicks);
         labelStatus.drawTextBox();
 
-        /* draw the GuiTextField */
-        // FIXME: textMMLPaste.drawTextBox();
+        /* draw the MML text lines */
         for (int i = 0; i < viewableLineCount; i++)
             mmlTextLines[i].drawTextBox();
 
@@ -523,12 +528,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         GuiScreen.setClipboardString(mml);
     }
 
-    /*
-     * Fired when a key is typed. This is the equivalent of
-     * KeyListener.keyTyped(KeyEvent e).
-     *
-     * @throws IOException
-     */
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException
     {
@@ -538,10 +537,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
             return;
         }
         /* add char to GuiTextField */
-        // FIXME: textMMLPaste.textboxKeyTyped(typedChar, keyCode);
-        for (int i = 0; i < viewableLineCount; i++)
-            mmlTextLines[i].textboxKeyTyped(typedChar, keyCode);
-
+        IntStream.range(0, viewableLineCount).forEach(i -> mmlTextLines[i].textboxKeyTyped(typedChar, keyCode));
         listBoxInstruments.keyTyped(typedChar, keyCode);
         // FIXME: parseMML(textMMLPaste.getText());
         updateState();
@@ -567,7 +563,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int partialTicks) throws IOException
     {
-        // FIXME: textMMLPaste.mouseClicked(mouseX, mouseY, partialTicks);
         for (int i = 0; i < viewableLineCount; i++)
             mmlTextLines[i].mouseClicked(mouseX, mouseY, partialTicks);
 
@@ -594,9 +589,14 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     }
 
     /* MML Parsing */
-    private void parseMML(String mml)
+    private void parseMML(int index, String mml)
     {
         MMLParser parser;
+        if (index == 0)
+        {
+            listBoxMMLError.clear();
+            errorLines.clear();
+        }
 
         try
         {
@@ -605,25 +605,38 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         catch (IOException e)
         {
             ModLogger.debug("MMLParserFactory.getMMLParser() IOException in %s, Error: %s", GuiMXTPartTab.class.getSimpleName(), e);
-            listBoxMMLError.clear();
-            listBoxMMLError.add(new ParseErrorEntry(0,0, "MMLParserFactory.getMMLParser(mml) is null", null));
+
+            errorLines.add(index);
+            listBoxMMLError.add(new ParseErrorEntry(index,0, "MMLParserFactory.getMMLParser(mml) is null", null));
             return;
         }
         parser.removeErrorListeners();
         parser.addErrorListener(parseErrorListener);
         parser.setBuildParseTree(true);
-        listBoxMMLError.clear();
+
         parser.test();
-        listBoxMMLError.addAll(parseErrorListener.getParseErrorEntries());
+        parseErrorListener.getParseErrorEntries().forEach
+            (pe ->
+             {
+                 errorLines.add(index);
+                 pe.setLine(index);
+                 listBoxMMLError.add(pe);
+             });
     }
 
     private void selectError()
     {
-        ParseErrorEntry parseErrorEntry = listBoxMMLError.get();
-        if (parseErrorEntry != null)
+        ParseErrorEntry pe = listBoxMMLError.get();
+        if (pe != null && pe.getLine() < viewableLineCount)
         {
-            // FIXME: textMMLPaste.setCursorPosition(parseErrorEntry.getCharPositionInLine());
-            // FIXME: textMMLPaste.setFocused(true);
+            IntStream.range(0, viewableLineCount).forEach(i -> {
+                if (pe.getLine() == i)
+                {
+                    mmlTextLines[i].setCursorPosition(pe.getCharPositionInLine());
+                    mmlTextLines[i].setFocused(true);
+                } else
+                    mmlTextLines[i].setFocused(false);
+            });
         }
         updateState();
     }
@@ -683,10 +696,13 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
             StringBuilder lines = new StringBuilder();
             for (int i = 0; i < viewableLineCount; i++)
             {
+                // commas (chord part breaks) should not exist so we will remove them.
                 lines.append(mmlTextLines[i].getText().replaceAll(",", ""));
+                // append a comma to separate the melody and chord note parts (tracks).
                 if (i < viewableLineCount) lines.append(",");
             }
 
+            // bind it all up into Mabinogi Past format
             String mml = getTextToParse(lines.toString());
             isPlaying = mmlPlay(mml);
         }

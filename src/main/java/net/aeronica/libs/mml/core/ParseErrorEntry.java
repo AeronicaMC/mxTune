@@ -19,6 +19,8 @@ public class ParseErrorEntry
 
     public String getMsg() {return msg;}
 
+    public void setLine(int line) {this.line = line;}
+
     public int getLine() {return line;}
 
     public int getCharPositionInLine() {return charPositionInLine;}
