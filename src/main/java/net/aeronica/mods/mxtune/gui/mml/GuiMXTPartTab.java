@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 {
@@ -59,6 +60,8 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private int top;
     private int bottom;
     private int childHeight;
+    private int entryHeight;
+    private static final int PADDING = 4;
 
     // Content
     private MXTunePart mxTunePart = new MXTunePart();
@@ -97,14 +100,15 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private static final int MML_LINE_IDX = 200;
     private GuiMMLTextField[] mmlTextLines = new GuiMMLTextField[MAX_MML_LINES];
     private String[] cachedTextLines = new String[MAX_MML_LINES];
+    private int[] cachedCursorPos = new int[MAX_MML_LINES];
     private int activeMMLIndex;
     private int cachedActiveMMLIndex;
     private GuiButtonExt buttonAddLine;
     private GuiButtonExt buttonMinusLine;
 
     /* MML Line limits - allow limiting the viewable lines */
-    private int viewableLineCount = MIN_MML_LINES + 1;
-    private int cachedViewableLineCount = MIN_MML_LINES + 1;
+    private int viewableLineCount = MIN_MML_LINES;
+    private int cachedViewableLineCount = MIN_MML_LINES;
 
     /* MML Parser */
     private ParseErrorListener parseErrorListener = new ParseErrorListener();
@@ -132,6 +136,8 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         this.guiMXT = guiMXT;
         this.mc = Minecraft.getMinecraft();
         this.fontRenderer = mc.fontRenderer;
+        entryHeight = fontRenderer.FONT_HEIGHT + 2;
+
         Keyboard.enableRepeatEvents(true);
 
         Arrays.fill(cachedTextLines, "");
@@ -201,20 +207,21 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
     void setPart(MXTunePart mxTunePart)
     {
+        clearPart();
         NBTTagCompound compound = new NBTTagCompound();
         mxTunePart.writeToNBT(compound);
         this.mxTunePart = new MXTunePart(compound);
         this.listBoxInstruments.setSelectedIndex(MIDISystemUtil.getInstrumentCachedIndexFromPackedPreset(mxTunePart.getPackedPatch()));
         listBoxInstruments.resetScroll();
-        StringBuilder mml = new StringBuilder();
         Iterator<MXTuneStaff> iterator = mxTunePart.getStaves().iterator();
+        int i = 0;
         while (iterator.hasNext())
         {
-            mml.append(iterator.next().getMml());
+            mmlTextLines[i].setText(iterator.next().getMml());
+            mmlTextLines[i++].setCursorPositionZero();
             if (iterator.hasNext())
-                mml.append(",");
+                addLine();
         }
-        // FIXME: textMMLPaste.setText(mml.toString());
         updateState();
         initGui();
     }
@@ -227,12 +234,10 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     void updatePart()
     {
         List<MXTuneStaff> staves = new ArrayList<>();
-        int i = 0;
-//        for (String mml : textMMLPaste.getText().replaceAll("MML@|;", "").split(",")) // FIXME:
-//        {
-//            staves.add(new MXTuneStaff(i, mml));
-//            i++;
-//        }
+        for (int i = 0; i < viewableLineCount; i++)
+        {
+            staves.add(new MXTuneStaff(i, mmlTextLines[i].getText()));
+        }
         mxTunePart.setStaves(staves);
         selectInstrument();
     }
@@ -242,7 +247,8 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         this.mxTunePart = new MXTunePart();
         this.listBoxInstruments.setSelectedIndex(-1);
         listBoxInstruments.resetScroll();
-        // FIXME: textMMLPaste.setText("");
+        IntStream.range(0, MAX_MML_LINES).forEach(i -> mmlTextLines[i].setText(""));
+        viewableLineCount = MIN_MML_LINES;
         updateState();
         initGui();
     }
@@ -250,7 +256,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     @Override
     public void updateScreen()
     {
-        // FIXME: textMMLPaste.updateCursorCounter();
         updateHelperTextCounter();
         for (int i = 0; i < viewableLineCount; i++)
             mmlTextLines[i].updateCursorCounter();
@@ -259,8 +264,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     @Override
     public void initGui()
     {
-        int entryHeight = fontRenderer.FONT_HEIGHT + 2;
-        int padding = 4;
         buttonList.clear();
 
         for (Instrument in : listBoxInstruments)
@@ -272,7 +275,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         instListWidth = Math.min(instListWidth, 150);
 
         // create Instrument selector, and buttons
-        buttonPlay = new GuiButtonExt(2, padding, bottom - 20, instListWidth, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play_part"));
+        buttonPlay = new GuiButtonExt(2, PADDING, bottom - 20, instListWidth, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play_part"));
         buttonPlay.enabled = false;
         buttonList.add(buttonPlay);
 
@@ -280,11 +283,18 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         int coreHeight = Math.max(bottom - posY, 100);
         int statusHeight = entryHeight;
         int pasteErrorHeight = ((coreHeight / 2) / fontRenderer.FONT_HEIGHT) * fontRenderer.FONT_HEIGHT - statusHeight - 10;
-        listBoxInstruments.setLayout(entryHeight, instListWidth, Math.max(buttonPlay.y - padding - posY, entryHeight), posY,buttonPlay.y - padding, padding);
-        int posX = listBoxInstruments.getRight() + padding;
+        listBoxInstruments.setLayout(entryHeight, instListWidth, Math.max(buttonPlay.y - PADDING - posY, entryHeight), posY, buttonPlay.y - PADDING, PADDING);
+        int posX = listBoxInstruments.getRight() + PADDING;
+
+
+        // Create add/minus line buttons
+        buttonAddLine = new GuiButtonExt(0,posX, posY, 20, 20, I18n.format("mxtune.gui.button.plus"));
+        buttonList.add(buttonAddLine);
+        buttonMinusLine = new GuiButtonExt(1, posX, buttonAddLine.y + buttonAddLine.height + PADDING, 20, 20, I18n.format("mxtune.gui.button.minus"));
+        buttonList.add(buttonMinusLine);
 
         // Create Channel Controls
-//        int sliderHeight = fontRenderer.FONT_HEIGHT + padding;
+//        int sliderHeight = fontRenderer.FONT_HEIGHT + PADDING;
 //        enableVolume = new GuiCheckBox(20, posX, posY, "", cachedEnableVolume);
 //        sliderVolume = new GuiSlider(21, posX + enableVolume.width + 2, posY, 150, sliderHeight, I18n.format("mxtune.gui.guiMXT.Volume") + " ", "%", 0, 100, cachedVolume, false, true);
 //        buttonList.add(enableVolume);
@@ -303,39 +313,43 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 //        buttonList.add(sliderChorus);
 
         /* create MML Paste/Edit field */
-        // FIXME: posX = sliderVolume.x + sliderVolume.width + padding;
-        int rightSideWidth = Math.max(width - posX - padding, 100);
+        posX = buttonMinusLine.x + buttonMinusLine.width + PADDING;
+        int rightSideWidth = Math.max(width - posX - PADDING, 100);
 //        textMMLPaste = new GuiMMLBox(1, fontRenderer, posX, posY, rightSideWidth, pasteErrorHeight); // FIXME:
 //        textMMLPaste.setFocused(false);
 //        textMMLPaste.setCanLoseFocus(true);
 //        textMMLPaste.setMaxStringLength(10000);
 
         /* create Status line */
-        // FIXME: labelStatus = new GuiTextField(2, fontRenderer, posX, textMMLPaste.yPosition + textMMLPaste.height + padding , rightSideWidth, statusHeight);
+        // FIXME: labelStatus = new GuiTextField(2, fontRenderer, posX, textMMLPaste.yPosition + textMMLPaste.height + PADDING , rightSideWidth, statusHeight);
         labelStatus = new GuiTextField(2, fontRenderer, posX, posY , rightSideWidth, statusHeight);
         labelStatus.setFocused(false);
         labelStatus.setCanLoseFocus(true);
         labelStatus.setEnabled(false);
         labelStatus.setMaxStringLength(80);
 
-        posY = labelStatus.y + labelStatus.height + padding;
+        posY = labelStatus.y + labelStatus.height + PADDING;
         for(int i = 0; i < MAX_MML_LINES; i++)
         {
             mmlTextLines[i] = new GuiMMLTextField( i + MML_LINE_IDX, fontRenderer, posX, posY, rightSideWidth, fontRenderer.FONT_HEIGHT + 2);
             mmlTextLines[i].setFocused(false);
             mmlTextLines[i].setCanLoseFocus(true);
             mmlTextLines[i].setMaxStringLength(10000);
-            posY += fontRenderer.FONT_HEIGHT + 6;
+            posY += entryHeight + PADDING;
         }
 
-        GuiMMLTextField mmlTextField = mmlTextLines[cachedViewableLineCount - 1];
-
-        /* create Parse Error selector */
-        listBoxMMLError.setLayout(entryHeight, rightSideWidth, Math.max(bottom - mmlTextField.y - mmlTextField.height - padding, entryHeight), mmlTextField.y + mmlTextField.height + padding, bottom, posX);
-
+        setLinesLayout(cachedViewableLineCount);
         reloadState();
     }
 
+    private void setLinesLayout(int viewableLines)
+    {
+        int posX = buttonMinusLine.x + buttonMinusLine.width + PADDING;
+        int rightSideWidth = Math.max(width - posX - PADDING, 100);
+        GuiMMLTextField mmlTextField = mmlTextLines[viewableLines - 1];
+        listBoxMMLError.setLayout(entryHeight, rightSideWidth, Math.max(bottom - mmlTextField.y - mmlTextField.height - PADDING, entryHeight), mmlTextField.y + mmlTextField.height + PADDING, bottom, posX);
+
+    }
     private void reloadState()
     {
         if (!isStateCached) return;
@@ -344,6 +358,10 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         isPlaying = cachedIsPlaying;
         // FIXME: parseMML(textMMLPaste.getText());
         // FIXME: labelStatus.setText(String.format("[%05d]", textMMLPaste.getCursorPosition()));
+        IntStream.range(0, MAX_MML_LINES).forEach(i -> mmlTextLines[i].setText(cachedTextLines[i]));
+        IntStream.range(0, MAX_MML_LINES).forEach(i -> mmlTextLines[i].setCursorPosition(cachedCursorPos[i]));
+        viewableLineCount = cachedViewableLineCount;
+
         updateButtonState();
         listBoxInstruments.resetScroll();
     }
@@ -352,7 +370,9 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     {
 //        if (cachedMMLText.length() != textMMLPaste.getText().length()) // FIXME:
 //            updatePart();
-        // FIXME: cachedMMLText = textMMLPaste.getText();
+        IntStream.range(0, MAX_MML_LINES).forEach(i -> cachedTextLines[i] = mmlTextLines[i].getText());
+        IntStream.range(0, MAX_MML_LINES).forEach(i -> cachedCursorPos[i] = mmlTextLines[i].getCursorPosition());
+        cachedViewableLineCount = viewableLineCount;
         cachedSelectedInst = listBoxInstruments.getSelectedIndex();
         cachedIsPlaying = isPlaying;
         // FIXME: labelStatus.setText(String.format("[%05d]", textMMLPaste.getCursorPosition()));
@@ -378,6 +398,10 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         boolean isOK = listBoxMMLError.isEmpty();
         buttonPlay.enabled = isPlaying || isOK;
         buttonPlay.displayString = isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play_part");
+
+        buttonAddLine.enabled = viewableLineCount < MAX_MML_LINES;
+        buttonMinusLine.enabled = viewableLineCount > MIN_MML_LINES;
+        setLinesLayout(viewableLineCount);
     }
 
     boolean canPlay()
@@ -464,6 +488,12 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         /* id 0 = okay; 1 = cancel; 2 = play; 3 = stop */
         switch (guibutton.id)
         {
+            case 0:
+                addLine();
+                break;
+            case 1:
+                minusLine();
+                break;
             case 2:
                 /* Play MML */
                 play();
@@ -471,6 +501,22 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
             default:
         }
         updateState();
+    }
+
+    private void addLine()
+    {
+        viewableLineCount = (viewableLineCount + 1) > MAX_MML_LINES ? viewableLineCount : viewableLineCount + 1;
+        activeMMLIndex = viewableLineCount;
+    }
+
+    private void minusLine()
+    {
+        viewableLineCount = (viewableLineCount - 1) >= MIN_MML_LINES ? viewableLineCount - 1 : viewableLineCount;
+    }
+
+    private boolean canAddLine()
+    {
+        return (viewableLineCount + 1) < MAX_MML_LINES;
     }
 
     /*

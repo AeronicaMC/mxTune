@@ -64,7 +64,6 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     private GuiTextField textSource;
     private String cachedSource = "";
     private GuiButtonExt buttonPlayStop;
-    private GuiMMLBox textMMLPaste;
     private int ticks;
 
     // Common data
@@ -93,7 +92,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         this.guiScreenParent = guiScreenParent;
         this.mc = Minecraft.getMinecraft();
         this.fontRenderer = mc.fontRenderer;
-        for (int i = 0; i< MAX_TABS; i++)
+        for (int i = 0; i < MAX_TABS; i++)
         {
             childTabs[i] = new GuiMXTPartTab(this);
         }
@@ -152,19 +151,12 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         textSource.setMaxStringLength(320);
         textSource.setCanLoseFocus(true);
 
-        // Common MML Paste
-        int pasteHeight = Math.min((((fontRenderer.FONT_HEIGHT * 6) / fontRenderer.FONT_HEIGHT) * fontRenderer.FONT_HEIGHT) - 10, (tabbedAreaTop - textSource.y + textSource.height + padding - 50)  / fontRenderer.FONT_HEIGHT * fontRenderer.FONT_HEIGHT - 10);
-        textMMLPaste = new GuiMMLBox(1, fontRenderer, padding, textSource.y + textSource.height + padding, width - padding * 2, pasteHeight);
-        textMMLPaste.setFocused(false);
-        textMMLPaste.setCanLoseFocus(true);
-        textMMLPaste.setMaxStringLength(10000);
-
         // Button tabs
         buttonAddTab = new GuiButtonExt(250, padding, tabbedAreaTop - 25, 20, 20, I18n.format("mxtune.gui.button.plus"));
         buttonMinusTab = new GuiButtonExt(251, buttonAddTab.x + 20, tabbedAreaTop - 25, 20, 20, I18n.format("mxtune.gui.button.minus"));
         buttonList.add(buttonAddTab);
         buttonList.add(buttonMinusTab);
-        for (int i = 0; i< MAX_TABS; i++)
+        for (int i = 0; i < MAX_TABS; i++)
         {
             buttonList.add(new GuiButton(TAB_BTN_IDX + i, buttonMinusTab.x + 40 + 20 * i, tabbedAreaTop - 25, 20, 20, String.format("%d", i + 1)));
             childTabs[i].setLayout(tabbedAreaTop, height - padding, height - padding - tabbedAreaTop);
@@ -214,8 +206,8 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
                 if (activeChildIndex >= viewableTabCount)
                     activeChildIndex = viewableTabCount - 1;
             }
-        buttonAddTab.enabled = viewableTabCount < 12;
-        buttonMinusTab.enabled = viewableTabCount > 1;
+        buttonAddTab.enabled = viewableTabCount < MAX_TABS;
+        buttonMinusTab.enabled = viewableTabCount > MIN_TABS;
 
         // Play/Stop button state
         int countOK = 0;
@@ -234,7 +226,6 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         textTitle.updateCursorCounter();
         textAuthor.updateCursorCounter();
         textSource.updateCursorCounter();
-        textMMLPaste.updateCursorCounter();
         childTabs[activeChildIndex].updateScreen();
         if (ticks++ % 5 == 0) updateButtons();
     }
@@ -294,7 +285,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     private void addTab()
     {
         viewableTabCount = (viewableTabCount + 1) > MAX_TABS ? viewableTabCount : viewableTabCount + 1;
-        activeChildIndex = viewableTabCount;
+        activeChildIndex = viewableTabCount - 1;
     }
 
     private void minusTab()
@@ -304,7 +295,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
 
     private boolean canAddTab()
     {
-        return (viewableTabCount + 1) < MAX_TABS;
+        return !((viewableTabCount + 1) > MAX_TABS);
     }
 
     private void newAction()
@@ -425,17 +416,14 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
             textTitle.setText(mxTuneFile.getTitle());
             textAuthor.setText(mxTuneFile.getAuthor());
             textSource.setText(mxTuneFile.getSource());
-            textMMLPaste.setText("");
             int tab = 0;
             setDisplayedFilename(ActionGet.INSTANCE.getFileNameString(), TextFormatting.AQUA);
-            for (MXTunePart part : mxTuneFile.getParts())
+            Iterator<MXTunePart> iterator = mxTuneFile.getParts().iterator();
+            while (iterator.hasNext() && tab < MAX_TABS)
             {
-                if (canAddTab())
-                {
-                    childTabs[tab++].setPart(part);
-                    if ((tab < mxTuneFile.getParts().size()))
-                        addTab();
-                }
+                childTabs[tab++].setPart(iterator.next());
+                if (iterator.hasNext())
+                    addTab();
             }
         }
         else
@@ -479,7 +467,6 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         textTitle.textboxKeyTyped(typedChar, keyCode);
         textAuthor.textboxKeyTyped(typedChar, keyCode);
         textSource.textboxKeyTyped(typedChar, keyCode);
-        textMMLPaste.textboxKeyTyped(typedChar, keyCode);
         updateState();
         super.keyTyped(typedChar, keyCode);
     }
@@ -502,7 +489,6 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         textAuthor.drawTextBox();
         labelSource.drawLabel(mc, mouseX, mouseY);
         textSource.drawTextBox();
-        textMMLPaste.drawTextBox();
         super.drawScreen(mouseX, mouseY, partialTicks);
         childTabs[activeChildIndex].drawScreen(mouseX, mouseY, partialTicks);
         ModGuiUtils.INSTANCE.drawHooveringHelp(this, hooverTexts, 0, 0, mouseX, mouseY);
@@ -525,7 +511,6 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         textTitle.mouseClicked(mouseX, mouseY, mouseButton);
         textAuthor.mouseClicked(mouseX, mouseY, mouseButton);
         textSource.mouseClicked(mouseX, mouseY, mouseButton);
-        textMMLPaste.mouseClicked(mouseX, mouseY, mouseButton);
         super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
