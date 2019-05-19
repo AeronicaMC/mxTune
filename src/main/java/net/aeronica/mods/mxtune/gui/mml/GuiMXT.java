@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class GuiMXT extends GuiScreen implements IAudioStatusCallback
 {
@@ -106,7 +107,6 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         int singleLineHeight = mc.fontRenderer.FONT_HEIGHT + 2;
         int padding = 4;
         int titleWidth = width - padding * 2;
-        int tabbedAreaTop = (height * 1) / 2;
 
         labelMXTFileName = new GuiLabelMX(fontRenderer, 0, padding, padding, titleWidth, singleLineHeight, -1);
         setDisplayedFilename(cachedMXTFilename, TextFormatting.AQUA);
@@ -152,13 +152,16 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         textSource.setCanLoseFocus(true);
 
         // Button tabs
-        buttonAddTab = new GuiButtonExt(250, padding, tabbedAreaTop - 25, 20, 20, I18n.format("mxtune.gui.button.plus"));
-        buttonMinusTab = new GuiButtonExt(251, buttonAddTab.x + 20, tabbedAreaTop - 25, 20, 20, I18n.format("mxtune.gui.button.minus"));
+        int tabButtonTop = textSource.y +  textSource.height + padding * 2;
+        buttonAddTab = new GuiButtonExt(250, padding, tabButtonTop, 20, 20, I18n.format("mxtune.gui.button.plus"));
+        buttonMinusTab = new GuiButtonExt(251, buttonAddTab.x + 20, tabButtonTop, 20, 20, I18n.format("mxtune.gui.button.minus"));
         buttonList.add(buttonAddTab);
         buttonList.add(buttonMinusTab);
+
+        int tabbedAreaTop = tabButtonTop + 20 + padding;
         for (int i = 0; i < MAX_TABS; i++)
         {
-            buttonList.add(new GuiButton(TAB_BTN_IDX + i, buttonMinusTab.x + 40 + 20 * i, tabbedAreaTop - 25, 20, 20, String.format("%d", i + 1)));
+            buttonList.add(new GuiButton(TAB_BTN_IDX + i, buttonMinusTab.x + 40 + 20 * i, tabButtonTop, 20, 20, String.format("%d", i + 1)));
             childTabs[i].setLayout(tabbedAreaTop, height - padding, height - padding - tabbedAreaTop);
             childTabs[i].initGui();
         }
@@ -401,8 +404,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         textTitle.setText("");
         textAuthor.setText("");
         textSource.setText("");
-        for (int i = 0; i< MAX_TABS; i++)
-            childTabs[i].clearPart();
+        IntStream.range(0, MAX_TABS).forEach(i -> childTabs[i].clearPart());
         viewableTabCount = MIN_TABS;
         activeChildIndex = 0;
         updateState();
@@ -413,6 +415,9 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         mxTuneFile = MXTuneFileHelper.getMXTuneFile(ActionGet.INSTANCE.getPath());
         if (mxTuneFile != null)
         {
+            IntStream.range(0, MAX_TABS).forEach(i -> childTabs[i].clearPart());
+            viewableTabCount = MIN_TABS;
+            activeChildIndex = 0;
             textTitle.setText(mxTuneFile.getTitle());
             textAuthor.setText(mxTuneFile.getAuthor());
             textSource.setText(mxTuneFile.getSource());
@@ -429,7 +434,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         else
         {
             Miscellus.audiblePingPlayer(mc.player, SoundEvents.BLOCK_GLASS_BREAK);
-            fileNew();
+            //fileNew();
         }
     }
 
