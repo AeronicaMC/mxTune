@@ -49,7 +49,6 @@ import java.util.stream.IntStream;
 public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 {
     // Localization Keys
-    private static final String HELPER_ENTER_MML = I18n.format("mxtune.gui.musicPaperParse.enterMML");
     private static final String LABEL_INSTRUMENTS = I18n.format("mxtune.gui.musicPaperParse.labelInstruments");
     private static final String LABEL_STATUS = I18n.format("mxtune.gui.guiMXT.labelStatus");
 
@@ -63,13 +62,11 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
     // Content
     private MXTunePart mxTunePart = new MXTunePart();
-    // FIXME: private GuiMMLBox textMMLPaste;
     private GuiTextField labelStatus;
     private GuiTextField labelMeta;
     private GuiButtonExt buttonPlay;
     private GuiScrollingListOf<ParseErrorEntry> listBoxMMLError;
     private GuiScrollingListOf<Instrument> listBoxInstruments;
-    private GuiScrollingListOf<MXTuneStaff> listBoxStaves;
 
     // MIDI Channel Settings
 //    private GuiCheckBox enableVolume;
@@ -127,7 +124,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     /* Cached State for when the GUI is resized */
     private boolean isStateCached = false;
     private boolean cachedIsPlaying;
-    private String cachedMMLText = "";
     private int cachedSelectedInst;
 
     public GuiMXTPartTab(GuiMXT guiMXT)
@@ -285,9 +281,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         buttonList.add(buttonPlay);
 
         int posY = top + 15;
-        int coreHeight = Math.max(bottom - posY, 100);
         int statusHeight = entryHeight;
-        int pasteErrorHeight = ((coreHeight / 2) / fontRenderer.FONT_HEIGHT) * fontRenderer.FONT_HEIGHT - statusHeight - 10;
         listBoxInstruments.setLayout(entryHeight, instListWidth, Math.max(buttonPlay.y - PADDING - posY, entryHeight), posY, buttonPlay.y - PADDING, PADDING);
         int posX = listBoxInstruments.getRight() + PADDING;
 
@@ -317,8 +311,9 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         labelStatus = new GuiTextField(2, fontRenderer, posX, posY , rightSideWidth, statusHeight);
         labelStatus.setFocused(false);
         labelStatus.setCanLoseFocus(true);
-        labelStatus.setEnabled(false);
-        labelStatus.setMaxStringLength(80);
+        labelStatus.setEnabled(true);
+        labelStatus.setMaxStringLength(100);
+
 
         // Create add/minus line buttons
         posY = labelStatus.y + labelStatus.height + PADDING;
@@ -338,7 +333,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         posY = labelStatus.y + labelStatus.height + PADDING;
         rightSideWidth = Math.max(width - posX - PADDING, 100);
         int textX = posX + labelWidth + PADDING;
-        int linesRightSideWidth = rightSideWidth - labelWidth;
+        int linesRightSideWidth = rightSideWidth - labelWidth - PADDING;
         for(int i = 0; i < MAX_MML_LINES; i++)
         {
             mmlLabelLines[i] = new GuiLabelMX(fontRenderer, i, posX, posY, labelWidth, entryHeight, 0xFFFFFF);
@@ -352,7 +347,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
         setLinesLayout(cachedViewableLineCount);
         reloadState();
-        parseTest(true);
+        parseTest(false);
     }
 
     private void setLinesLayout(int viewableLines)
@@ -366,11 +361,9 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private void reloadState()
     {
         if (!isStateCached) return;
-        // FIXME: textMMLPaste.setText(cachedMMLText);
         listBoxInstruments.setSelectedIndex(cachedSelectedInst);
         isPlaying = cachedIsPlaying;
-        // FIXME: parseMML(textMMLPaste.getText());
-        // FIXME: labelStatus.setText(String.format("[%05d]", textMMLPaste.getCursorPosition()));
+        updateStatusText();
         IntStream.range(0, MAX_MML_LINES).forEach(i -> mmlTextLines[i].setText(cachedTextLines[i]));
         IntStream.range(0, MAX_MML_LINES).forEach(i -> mmlTextLines[i].setCursorPosition(cachedCursorPos[i]));
         viewableLineCount = cachedViewableLineCount;
@@ -381,16 +374,14 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
     private void updateState()
     {
-//        if (cachedMMLText.length() != textMMLPaste.getText().length()) // FIXME:
-//            updatePart();
         IntStream.range(0, MAX_MML_LINES).forEach(i -> cachedTextLines[i] = mmlTextLines[i].getText());
         IntStream.range(0, MAX_MML_LINES).forEach(i -> cachedCursorPos[i] = mmlTextLines[i].getCursorPosition());
         cachedViewableLineCount = viewableLineCount;
         cachedSelectedInst = listBoxInstruments.getSelectedIndex();
         cachedIsPlaying = isPlaying;
-        // FIXME: labelStatus.setText(String.format("[%05d]", textMMLPaste.getCursorPosition()));
+        updateStatusText();
 
-//        cachedVolume = sliderVolume.getValue(); // FIXME:
+//        cachedVolume = sliderVolume.getValue();
 //        cachedPan = sliderPan.getValue();
 //        cachedReverb = sliderReverb.getValue();
 //        cachedChorus = sliderChorus.getValue();
@@ -402,6 +393,11 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
         updateButtonState();
         isStateCached = true;
+    }
+
+    private void updateStatusText()
+    {
+        labelStatus.setText(String.format("[%05d] Meta: ", totalCharacters, mxTunePart != null ? mxTunePart.getMeta() : ""));
     }
 
     private void updateButtonState()
