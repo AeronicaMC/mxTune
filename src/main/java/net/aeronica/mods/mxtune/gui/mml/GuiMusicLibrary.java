@@ -187,18 +187,14 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         buttonList.add(new GuiButton(SortFileDataHelper.SortType.Z_TO_A.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, "Z-A"));
 
         int buttonTop = height - 25;
-        int xImport = (this.width /2) - 75 * 2;
-        int xPlay = xImport + 75;
-        int xSaveDone = xPlay + 75;
-        int xCancel = xSaveDone + 75;
+        int xPlay = (this.width / 2) - (75 * 3 / 2);
+        int xSelect = xPlay + 75;
+        int xCancel = xSelect + 75;
 
-        GuiButton buttonImport = new GuiButton(2, xImport, buttonTop, 75, 20, I18n.format("mxtune.gui.button.importMML"));
-        buttonPlay = new GuiButton(3, xPlay, buttonTop, 75, 20,
-                                   isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play"));
-        GuiButton buttonDone = new GuiButton(0, xSaveDone, buttonTop, 75, 20, I18n.format("gui.done"));
+        buttonPlay = new GuiButton(3, xPlay, buttonTop, 75, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play"));
+        GuiButton buttonDone = new GuiButton(0, xSelect, buttonTop, 75, 20, I18n.format("mxtune.gui.button.select"));
         buttonCancel = new GuiButton(1, xCancel, buttonTop, 75, 20, I18n.format("gui.cancel"));
 
-        buttonList.add(buttonImport);
         buttonList.add(buttonPlay);
         buttonList.add(buttonDone);
         buttonList.add(buttonCancel);
@@ -291,10 +287,6 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
                     case 1:
                         // Cancel
                         selectCancel();
-                        break;
-                    case 2:
-                        // Import
-                        mc.displayGuiScreen(new GuiMusicImporter(this));
                         break;
                     case 3:
                         // Play

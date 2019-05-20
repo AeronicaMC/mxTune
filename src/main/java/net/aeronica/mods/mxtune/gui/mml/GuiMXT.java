@@ -71,6 +71,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     MXTuneFile mxTuneFile;
     private boolean isPlaying = false;
     private boolean cachedIsPlaying;
+    private GuiButtonExt buttonSave;
     /* MML Player */
     private int playId = PlayIdSupplier.PlayType.INVALID;
 
@@ -117,7 +118,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         GuiButtonExt buttonImport = new GuiButtonExt(1, buttonNew.x + buttonNew.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.import"));
         buttonImport.enabled = false;
         GuiButtonExt buttonOpen = new GuiButtonExt(2, buttonImport.x + buttonImport.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.open"));
-        GuiButtonExt buttonSave = new GuiButtonExt(3, buttonOpen.x + buttonOpen.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.save"));
+        buttonSave = new GuiButtonExt(3, buttonOpen.x + buttonOpen.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.save"));
         GuiButtonExt buttonSaveAs = new GuiButtonExt(4, buttonSave.x + buttonSave.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.save_as"));
         buttonSaveAs.enabled = false;
         GuiButtonExt buttonDone = new GuiButtonExt(5, buttonSaveAs.x + buttonSaveAs.width, buttonY, buttonWidth, 20, I18n.format("gui.done"));
@@ -223,6 +224,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         boolean isOK = countOK == viewableTabCount;
         buttonPlayStop.enabled = isPlaying || isOK;
         buttonPlayStop.displayString = isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play_all");
+        buttonSave.enabled = !textTitle.getText().isEmpty();
     }
 
     @Override

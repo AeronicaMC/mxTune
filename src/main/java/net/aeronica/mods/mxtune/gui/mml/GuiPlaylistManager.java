@@ -303,7 +303,7 @@ public class GuiPlaylistManager extends GuiScreen
         int xLibrary = (this.width /2) - buttonWidth;
         int xDone = xLibrary + buttonWidth;
 
-        GuiButton buttonImport = new GuiButton(0, xLibrary, buttonTop, buttonWidth, 20, I18n.format("mxtune.gui.button.musicLibrary"));
+        GuiButton buttonManageMusic = new GuiButton(0, xLibrary, buttonTop, buttonWidth, 20, I18n.format("mxtune.gui.button.manageMusic"));
         GuiButton buttonDone = new GuiButton(1, xDone, buttonTop, buttonWidth, 20, I18n.format("gui.done"));
 
         int selectButtonWidth = guiFileListWidth - 10;
@@ -325,7 +325,7 @@ public class GuiPlaylistManager extends GuiScreen
         GuiButton buttonDDeleteDay = new GuiButton(4, selectButtonLeft, buttonToDay.y + buttonToDay.height, selectButtonWidth, 20, I18n.format("mxtune.gui.guiPlayListManager.button.delete"));
         GuiButton buttonDDeleteNight = new GuiButton(5, selectButtonLeft, buttonToNight.y + buttonToNight.height, selectButtonWidth, 20, I18n.format("mxtune.gui.guiPlayListManager.button.delete"));
 
-        buttonList.add(buttonImport);
+        buttonList.add(buttonManageMusic);
         buttonList.add(buttonDone);
         buttonList.add(buttonToDay);
         buttonList.add(buttonToNight);
@@ -487,7 +487,7 @@ public class GuiPlaylistManager extends GuiScreen
         {
             case 0:
                 // Open Music Library
-                mc.displayGuiScreen(new GuiMusicLibrary(this));
+                mc.displayGuiScreen(new GuiMXT(this));
                 break;
             case 1:
                 // Done

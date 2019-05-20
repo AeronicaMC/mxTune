@@ -397,7 +397,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
     private void updateStatusText()
     {
-        labelStatus.setText(String.format("[%05d] Meta: ", totalCharacters, mxTunePart != null ? mxTunePart.getMeta() : ""));
+        labelStatus.setText(I18n.format("mxtune.gui.guiMXT.textStatus", String.format("%05d", totalCharacters), mxTunePart != null ? mxTunePart.getMeta() : ""));
     }
 
     private void updateButtonState()
