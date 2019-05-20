@@ -115,9 +115,11 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
 
         GuiButtonExt buttonNew = new GuiButtonExt(0, padding, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.new"));
         GuiButtonExt buttonImport = new GuiButtonExt(1, buttonNew.x + buttonNew.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.import"));
+        buttonImport.enabled = false;
         GuiButtonExt buttonOpen = new GuiButtonExt(2, buttonImport.x + buttonImport.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.open"));
         GuiButtonExt buttonSave = new GuiButtonExt(3, buttonOpen.x + buttonOpen.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.save"));
         GuiButtonExt buttonSaveAs = new GuiButtonExt(4, buttonSave.x + buttonSave.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.save_as"));
+        buttonSaveAs.enabled = false;
         GuiButtonExt buttonDone = new GuiButtonExt(5, buttonSaveAs.x + buttonSaveAs.width, buttonY, buttonWidth, 20, I18n.format("gui.done"));
         buttonList.add(buttonNew);
         buttonList.add(buttonImport);

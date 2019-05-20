@@ -20,6 +20,7 @@ package net.aeronica.mods.mxtune.gui.mml;
 import net.aeronica.libs.mml.core.*;
 import net.aeronica.mods.mxtune.caches.MXTunePart;
 import net.aeronica.mods.mxtune.caches.MXTuneStaff;
+import net.aeronica.mods.mxtune.gui.util.GuiLabelMX;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
 import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
@@ -96,6 +97,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private static final int MIN_MML_LINES = 1;
     private static final int MML_LINE_IDX = 200;
     private GuiMMLTextField[] mmlTextLines = new GuiMMLTextField[MAX_MML_LINES];
+    private GuiLabelMX[] mmlLabelLines = new GuiLabelMX[MAX_MML_LINES];
     private String[] cachedTextLines = new String[MAX_MML_LINES];
     private int[] cachedCursorPos = new int[MAX_MML_LINES];
     private int activeMMLIndex;
@@ -109,6 +111,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     /* MML Line limits - allow limiting the viewable lines */
     private int viewableLineCount = MIN_MML_LINES;
     private int cachedViewableLineCount = MIN_MML_LINES;
+    private int totalCharacters;
 
     /* MML Parser */
     private ParseErrorListener parseErrorListener = new ParseErrorListener();
@@ -330,12 +333,17 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         buttonCopyToClipBoard =  new GuiButtonExt(4, posX, buttonPasteFromClipBoard.y + buttonPasteFromClipBoard.height, 120, 20, I18n.format("mxtune.gui.button.copyToClipboard"));
         buttonList.add(buttonCopyToClipBoard);
 
+        int labelWidth = Math.max(fontRenderer.getStringWidth(lineNames[0]), fontRenderer.getStringWidth(lineNames[1])) + PADDING;
         posX = buttonCopyToClipBoard.x + buttonCopyToClipBoard.width + PADDING;
         posY = labelStatus.y + labelStatus.height + PADDING;
         rightSideWidth = Math.max(width - posX - PADDING, 100);
+        int textX = posX + labelWidth + PADDING;
+        int linesRightSideWidth = rightSideWidth - labelWidth;
         for(int i = 0; i < MAX_MML_LINES; i++)
         {
-            mmlTextLines[i] = new GuiMMLTextField( i + MML_LINE_IDX, fontRenderer, posX, posY, rightSideWidth, fontRenderer.FONT_HEIGHT + 2);
+            mmlLabelLines[i] = new GuiLabelMX(fontRenderer, i, posX, posY, labelWidth, entryHeight, 0xFFFFFF);
+            mmlLabelLines[i].setLabelText(lineNames[i]);
+            mmlTextLines[i] = new GuiMMLTextField( i + MML_LINE_IDX, fontRenderer, textX, posY, linesRightSideWidth, fontRenderer.FONT_HEIGHT + 2);
             mmlTextLines[i].setFocused(false);
             mmlTextLines[i].setCanLoseFocus(true);
             mmlTextLines[i].setMaxStringLength(10000);
@@ -344,6 +352,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
         setLinesLayout(cachedViewableLineCount);
         reloadState();
+        parseTest(true);
     }
 
     private void setLinesLayout(int viewableLines)
@@ -352,8 +361,8 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         int rightSideWidth = Math.max(width - posX - PADDING, 100);
         GuiMMLTextField mmlTextField = mmlTextLines[viewableLines - 1];
         listBoxMMLError.setLayout(entryHeight, rightSideWidth, Math.max(bottom - mmlTextField.y - mmlTextField.height - PADDING, entryHeight), mmlTextField.y + mmlTextField.height + PADDING, bottom, posX);
-
     }
+
     private void reloadState()
     {
         if (!isStateCached) return;
@@ -405,7 +414,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
         buttonAddLine.enabled = viewableLineCount < MAX_MML_LINES;
         buttonMinusLine.enabled = viewableLineCount > MIN_MML_LINES;
-        IntStream.range(0, viewableLineCount).forEach(i -> parseMML(i, mmlTextLines[i].getText()));
+        parseTest(false);
         setLinesLayout(viewableLineCount);
     }
 
@@ -443,8 +452,11 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         labelStatus.drawTextBox();
 
         /* draw the MML text lines */
-        for (int i = 0; i < viewableLineCount; i++)
+        IntStream.range(0, viewableLineCount).forEach(i -> {
+            mmlLabelLines[i].drawLabel(mc, mouseX, mouseY);
             mmlTextLines[i].drawTextBox();
+        });
+
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
@@ -464,13 +476,16 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
                 break;
             case 1:
                 addLine();
+                parseTest(true);
                 break;
             case 2:
                 minusLine();
+                parseTest(true);
                 break;
             case 3:
                 // Paste from clipboard
                 pasteFromClipboard();
+                parseTest(true);
                 break;
             case 4:
                 // copy to clipboard
@@ -532,14 +547,12 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     protected void keyTyped(char typedChar, int keyCode) throws IOException
     {
         if (keyCode == Keyboard.KEY_ESCAPE)
-        {
-            // Let the parent handle the escape kay!
-            return;
-        }
-        /* add char to GuiTextField */
+            return; // Let the parent handle the escape kay!
+
+        // add char to GuiTextField
         IntStream.range(0, viewableLineCount).forEach(i -> mmlTextLines[i].textboxKeyTyped(typedChar, keyCode));
+        parseTest(false);
         listBoxInstruments.keyTyped(typedChar, keyCode);
-        // FIXME: parseMML(textMMLPaste.getText());
         updateState();
         super.keyTyped(typedChar, keyCode);
     }
@@ -622,6 +635,18 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
                  pe.setLine(index);
                  listBoxMMLError.add(pe);
              });
+    }
+
+    private void parseTest(boolean force)
+    {
+        int count = 0;
+        for (int i = 0; i < viewableLineCount; i++)
+            count += mmlTextLines[i].getText().length();
+        if (totalCharacters != count | force)
+        {
+            totalCharacters = count;
+            IntStream.range(0, viewableLineCount).forEach(i -> parseMML(i, mmlTextLines[i].getText()));
+        }
     }
 
     private void selectError()
