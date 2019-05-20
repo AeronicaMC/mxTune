@@ -39,7 +39,6 @@ public class ActionGet implements ISelectorAction
     private String instrument;
     private String suggestedInstrument;
     private int packedPatch;
-    private AbstractMmlFileReader mmlFileReader;
     SELECTOR selector = SELECTOR.CANCEL;
 
     @Override
@@ -112,7 +111,7 @@ public class ActionGet implements ISelectorAction
     @Override
     public void select(AbstractMmlFileReader mmlFileReader)
     {
-        this.mmlFileReader = mmlFileReader;
+        AbstractMmlFileReader mmlFileReader1 = mmlFileReader;
     }
 
     public enum SELECTOR

@@ -300,11 +300,6 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         viewableTabCount = (viewableTabCount - 1) >= MIN_TABS ? viewableTabCount - 1 : viewableTabCount;
     }
 
-    private boolean canAddTab()
-    {
-        return !((viewableTabCount + 1) > MAX_TABS);
-    }
-
     private void newAction()
     {
         stop();
@@ -347,7 +342,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
             {
                 childTabs[i].updatePart();
                 MXTunePart part = childTabs[i].getPart();
-                if (part.getStaves().size() > 0)
+                if (!part.getStaves().isEmpty())
                     parts.add(part);
             }
             mxTuneFile.setParts(parts);
@@ -392,6 +387,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
                 break;
             case FILE_OPEN:
                 fileOpen();
+                break;
             case FILE_SAVE:
                 break;
             case FILE_SAVE_AS:
@@ -438,7 +434,6 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         else
         {
             Miscellus.audiblePingPlayer(mc.player, SoundEvents.BLOCK_GLASS_BREAK);
-            //fileNew();
         }
     }
 
@@ -521,15 +516,6 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         textAuthor.mouseClicked(mouseX, mouseY, mouseButton);
         textSource.mouseClicked(mouseX, mouseY, mouseButton);
         super.mouseClicked(mouseX, mouseY, mouseButton);
-    }
-
-    /**
-     * Called when a mouse button is released.
-     */
-    @Override
-    protected void mouseReleased(int mouseX, int mouseY, int state)
-    {
-        super.mouseReleased(mouseX, mouseY, state);
     }
 
     @Override

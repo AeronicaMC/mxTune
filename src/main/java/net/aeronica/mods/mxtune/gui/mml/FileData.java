@@ -37,4 +37,18 @@ public class FileData implements Comparable<FileData>
     {
         return this.name.compareTo(o.name);
     }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return obj instanceof FileData &&
+                this.path != null && this.name != null &&
+                this.path.equals(((FileData)obj).path) && this.name.equals(((FileData) obj).name);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return path != null && name != null ? this.path.hashCode() * this.name.hashCode() : super.hashCode();
+    }
 }
