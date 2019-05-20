@@ -253,6 +253,8 @@ public abstract class GuiScrollingListMX
 
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
+        if (bottom - top < 0) return;
+
         this.mouseX = mouseX;
         this.mouseY = mouseY;
         this.drawBackground();
