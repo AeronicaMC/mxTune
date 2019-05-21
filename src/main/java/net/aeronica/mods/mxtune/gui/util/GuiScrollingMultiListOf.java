@@ -25,7 +25,6 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -148,7 +147,7 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
     }
 
     @Override
-    public void keyTyped(char typedChar, int keyCode) throws IOException
+    public void keyTyped(char typedChar, int keyCode)
     {
         if (isPointInRegion() && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
         {

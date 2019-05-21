@@ -24,7 +24,6 @@ import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -115,7 +114,7 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
         resetScroll();
     }
 
-    public void keyTyped(char typedChar, int keyCode) throws IOException
+    public void keyTyped(char typedChar, int keyCode)
     {
         if (isPointInRegion())
         {
