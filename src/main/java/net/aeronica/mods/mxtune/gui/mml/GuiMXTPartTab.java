@@ -507,17 +507,13 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     {
         clearPart();
         int i = 0;
-        List<String> lines = new ArrayList<>();
-        for (String string : GuiScreen.getClipboardString().replaceAll("MML@|;", "").split(","))
-        {
-            lines.add(string);
-        }
+        List<String> lines = new ArrayList<>(Arrays.asList(GuiScreen.getClipboardString().replaceAll("MML@|;", "").split(",")));
         Iterator<String> iterator = lines.iterator();
         while (iterator.hasNext())
         {
             if (viewableLineCount < MAX_MML_LINES)
             {
-                mmlTextLines[i].setText(iterator.next());
+                mmlTextLines[i].setText(MMLAllowedCharacters.filterAllowedCharacters(iterator.next()));
                 mmlTextLines[i++].setCursorPositionZero();
                 if (iterator.hasNext())addLine();
             } else

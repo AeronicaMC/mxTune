@@ -39,7 +39,7 @@ public class ActionGet implements ISelectorAction
     private String instrument;
     private String suggestedInstrument;
     private int packedPatch;
-    SELECTOR selector = SELECTOR.CANCEL;
+    private SELECTOR selector = SELECTOR.CANCEL;
 
     @Override
     public void select(Path path)
