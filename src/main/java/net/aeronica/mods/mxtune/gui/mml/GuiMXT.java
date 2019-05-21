@@ -156,15 +156,15 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
 
         // Button tabs
         int tabButtonTop = textSource.y +  textSource.height + padding * 2;
-        buttonAddTab = new GuiButtonExt(250, padding, tabButtonTop, 20, 20, I18n.format("mxtune.gui.button.plus"));
-        buttonMinusTab = new GuiButtonExt(251, buttonAddTab.x + 20, tabButtonTop, 20, 20, I18n.format("mxtune.gui.button.minus"));
+        buttonAddTab = new GuiButtonExt(250, padding, tabButtonTop, 40, 20, I18n.format("mxtune.gui.button.plus"));
+        buttonMinusTab = new GuiButtonExt(251, buttonAddTab.x + buttonAddTab.width, tabButtonTop, 40, 20, I18n.format("mxtune.gui.button.minus"));
         buttonList.add(buttonAddTab);
         buttonList.add(buttonMinusTab);
 
         int tabbedAreaTop = tabButtonTop + 20 + padding;
         for (int i = 0; i < MAX_TABS; i++)
         {
-            buttonList.add(new GuiButton(TAB_BTN_IDX + i, buttonMinusTab.x + 40 + 20 * i, tabButtonTop, 20, 20, String.format("%d", i + 1)));
+            buttonList.add(new GuiButtonExt(TAB_BTN_IDX + i, buttonMinusTab.x + buttonMinusTab.width + padding + 20 * i, tabButtonTop, 20, 20, String.format("%d", i + 1)));
             childTabs[i].setLayout(tabbedAreaTop, height - padding, height - padding - tabbedAreaTop);
             childTabs[i].initGui();
         }
@@ -485,7 +485,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
         drawDefaultBackground();
-
+        // update tabbed button names here!
         labelMXTFileName.drawLabel(mc, mouseX, mouseY);
         labelTitle.drawLabel(mc, mouseX, mouseY);
         textTitle.drawTextBox();

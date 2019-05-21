@@ -317,9 +317,9 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
         // Create add/minus line buttons
         posY = labelStatus.y + labelStatus.height + PADDING;
-        buttonAddLine = new GuiButtonExt(1,posX, posY, 20, 20, I18n.format("mxtune.gui.button.plus"));
+        buttonAddLine = new GuiButtonExt(1,posX, posY, 40, 20, I18n.format("mxtune.gui.button.plus"));
         buttonList.add(buttonAddLine);
-        buttonMinusLine = new GuiButtonExt(2, buttonAddLine.x + buttonAddLine.width, posY, 20, 20, I18n.format("mxtune.gui.button.minus"));
+        buttonMinusLine = new GuiButtonExt(2, buttonAddLine.x + buttonAddLine.width, posY, 40, 20, I18n.format("mxtune.gui.button.minus"));
         buttonList.add(buttonMinusLine);
 
         // Create Clipboard Paste and Copy buttons
