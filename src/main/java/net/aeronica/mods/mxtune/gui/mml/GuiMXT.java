@@ -72,6 +72,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     private boolean isPlaying = false;
     private boolean cachedIsPlaying;
     private GuiButtonExt buttonSave;
+    private static final int PADDING = 4;
     /* MML Player */
     private int playId = PlayIdSupplier.PlayType.INVALID;
 
@@ -84,6 +85,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     private int cachedActiveChildIndex;
     private GuiButtonExt buttonAddTab;
     private GuiButtonExt buttonMinusTab;
+    private GuiButtonExt[] buttonNames = new GuiButtonExt[MAX_TABS];
 
     // Tab limits - allow limiting the viewable tabs
     private int viewableTabCount = MIN_TABS;
@@ -106,15 +108,14 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     {
         hooverTexts.clear();
         int singleLineHeight = mc.fontRenderer.FONT_HEIGHT + 2;
-        int padding = 4;
-        int titleWidth = width - padding * 2;
+        int titleWidth = width - PADDING * 2;
 
-        labelMXTFileName = new GuiLabelMX(fontRenderer, 0, padding, padding, titleWidth, singleLineHeight, -1);
+        labelMXTFileName = new GuiLabelMX(fontRenderer, 0, PADDING, PADDING, titleWidth, singleLineHeight, -1);
         setDisplayedFilename(cachedMXTFilename, TextFormatting.AQUA);
-        int buttonWidth = Math.max(((width * 2 / 3) - padding * 2) / 6, 65);
+        int buttonWidth = Math.max(((width * 2 / 3) - PADDING * 2) / 6, 65);
         int buttonY = labelMXTFileName.getY() + labelMXTFileName.getHeight();
 
-        GuiButtonExt buttonNew = new GuiButtonExt(0, padding, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.new"));
+        GuiButtonExt buttonNew = new GuiButtonExt(0, PADDING, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.new"));
         GuiButtonExt buttonImport = new GuiButtonExt(1, buttonNew.x + buttonNew.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.import"));
         buttonImport.enabled = false;
         GuiButtonExt buttonOpen = new GuiButtonExt(2, buttonImport.x + buttonImport.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.open"));
@@ -130,47 +131,48 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         buttonList.add(buttonDone);
 
         // Text fields
-        int textY = buttonDone.y + buttonDone.height + padding;
+        int textY = buttonDone.y + buttonDone.height + PADDING;
         String labelTitleText = I18n.format("mxtune.gui.label.title");
         int labelTitleWidth = fontRenderer.getStringWidth(labelTitleText);
         String labelAuthorText = I18n.format("mxtune.gui.label.author");
         int labelAuthorWidth = fontRenderer.getStringWidth(labelAuthorText);
-        labelTitle = new GuiLabelMX(fontRenderer, 1, padding, textY, labelTitleWidth, fontRenderer.FONT_HEIGHT + 2, -1);
+        labelTitle = new GuiLabelMX(fontRenderer, 1, PADDING, textY, labelTitleWidth, fontRenderer.FONT_HEIGHT + 2, -1);
         labelTitle.setLabelName(labelTitleText);
-        textTitle = new GuiTextField(1, fontRenderer, labelTitle.getX() + labelTitleWidth + padding, textY, width / 2 - labelTitle.getWidth() - padding, fontRenderer.FONT_HEIGHT + 2);
+        textTitle = new GuiTextField(1, fontRenderer, labelTitle.getX() + labelTitleWidth + PADDING, textY, width / 2 - labelTitle.getWidth() - PADDING, fontRenderer.FONT_HEIGHT + 2);
         textTitle.setMaxStringLength(80);
         textTitle.setCanLoseFocus(true);
-        labelAuthor = new GuiLabelMX(fontRenderer, 2, textTitle.x + textTitle.width + padding, textY, labelAuthorWidth, fontRenderer.FONT_HEIGHT + 2, -1);
+        labelAuthor = new GuiLabelMX(fontRenderer, 2, textTitle.x + textTitle.width + PADDING, textY, labelAuthorWidth, fontRenderer.FONT_HEIGHT + 2, -1);
         labelAuthor.setLabelName(labelAuthorText);
-        textAuthor = new GuiTextField(2, fontRenderer, labelAuthor.getX() + labelAuthorWidth + padding, textY, width - labelAuthor.getX() - labelAuthor.getWidth() - padding * 2, fontRenderer.FONT_HEIGHT + 2);
+        textAuthor = new GuiTextField(2, fontRenderer, labelAuthor.getX() + labelAuthorWidth + PADDING, textY, width - labelAuthor.getX() - labelAuthor.getWidth() - PADDING * 2, fontRenderer.FONT_HEIGHT + 2);
         textAuthor.setMaxStringLength(80);
         textAuthor.setCanLoseFocus(true);
-        textY = textTitle.y + textTitle.height + padding;
+        textY = textTitle.y + textTitle.height + PADDING;
         String labelSourceText = I18n.format("mxtune.gui.label.source");
         int labelSourceWidth = fontRenderer.getStringWidth(labelSourceText);
-        labelSource = new GuiLabelMX(fontRenderer, 3, padding, textY, labelSourceWidth, fontRenderer.FONT_HEIGHT + 2, -1);
+        labelSource = new GuiLabelMX(fontRenderer, 3, PADDING, textY, labelSourceWidth, fontRenderer.FONT_HEIGHT + 2, -1);
         labelSource.setLabelName(labelSourceText);
-        textSource = new GuiTextField(3, fontRenderer, labelSource.getX() + labelSource.getWidth() + padding, textY, width - labelSource.getX() - labelSource.getWidth() - padding * 2, fontRenderer.FONT_HEIGHT + 2);
+        textSource = new GuiTextField(3, fontRenderer, labelSource.getX() + labelSource.getWidth() + PADDING, textY, width - labelSource.getX() - labelSource.getWidth() - PADDING * 2, fontRenderer.FONT_HEIGHT + 2);
         textSource.setMaxStringLength(320);
         textSource.setCanLoseFocus(true);
 
         // Button tabs
-        int tabButtonTop = textSource.y +  textSource.height + padding * 2;
-        buttonAddTab = new GuiButtonExt(250, padding, tabButtonTop, 40, 20, I18n.format("mxtune.gui.button.plus"));
+        int tabButtonTop = textSource.y +  textSource.height + PADDING * 2;
+        buttonAddTab = new GuiButtonExt(250, PADDING, tabButtonTop, 40, 20, I18n.format("mxtune.gui.button.plus"));
         buttonMinusTab = new GuiButtonExt(251, buttonAddTab.x + buttonAddTab.width, tabButtonTop, 40, 20, I18n.format("mxtune.gui.button.minus"));
         buttonList.add(buttonAddTab);
         buttonList.add(buttonMinusTab);
 
-        int tabbedAreaTop = tabButtonTop + 20 + padding;
+        int tabbedAreaTop = tabButtonTop + 20 + PADDING;
         for (int i = 0; i < MAX_TABS; i++)
         {
-            buttonList.add(new GuiButtonExt(TAB_BTN_IDX + i, buttonMinusTab.x + buttonMinusTab.width + padding + 20 * i, tabButtonTop, 20, 20, String.format("%d", i + 1)));
-            childTabs[i].setLayout(tabbedAreaTop, height - padding, height - padding - tabbedAreaTop);
+            buttonNames[i] = new GuiButtonExt(TAB_BTN_IDX + i, buttonMinusTab.x + buttonMinusTab.width + PADDING + 20 * i, tabButtonTop, 20, 20, String.format("%d", i + 1));
+            buttonList.add(buttonNames[i]);
+            childTabs[i].setLayout(tabbedAreaTop, height - PADDING, height - PADDING - tabbedAreaTop);
             childTabs[i].initGui();
         }
 
         // Play/Stop
-        buttonPlayStop = new GuiButtonExt(6, width - padding - 100, tabbedAreaTop - 25, 100, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play_all"));
+        buttonPlayStop = new GuiButtonExt(6, width - PADDING - 100, tabbedAreaTop - 24, 100, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play_all"));
         buttonPlayStop.enabled = false;
         buttonList.add(buttonPlayStop);
         reloadState();
@@ -225,6 +227,30 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         buttonPlayStop.enabled = isPlaying || isOK;
         buttonPlayStop.displayString = isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play_all");
         buttonSave.enabled = !textTitle.getText().isEmpty();
+    }
+
+    private void updateTabbedButtonNames()
+    {
+        int prevWidth = buttonMinusTab.x + buttonMinusTab.width;
+        int staticButtonWidth = buttonMinusTab.width + buttonAddTab.width + buttonPlayStop.width +  PADDING * 3;
+        for (int i = 0; i < viewableTabCount; i++)
+        {
+            GuiButtonExt gb = buttonNames[i];
+            String name = getButtonName(i);
+            int nameWidth = fontRenderer.getStringWidth(name) + PADDING * 4;
+            gb.x = prevWidth + PADDING;
+            gb.displayString = name;
+            int limitedWidth = Math.min((width - staticButtonWidth) / viewableTabCount, Math.max(20, nameWidth));
+            gb.width = limitedWidth;
+            prevWidth += limitedWidth;
+        }
+    }
+
+    private String getButtonName(int index)
+    {
+        String number = String.format("%d", index + 1);
+        MXTunePart part = childTabs[index].getPart();
+        return (part != null) && (!part.getInstrumentName().equals("")) ? number + ": " + childTabs[index].getPart().getInstrumentName() : number;
     }
 
     @Override
@@ -486,6 +512,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     {
         drawDefaultBackground();
         // update tabbed button names here!
+        updateTabbedButtonNames();
         labelMXTFileName.drawLabel(mc, mouseX, mouseY);
         labelTitle.drawLabel(mc, mouseX, mouseY);
         textTitle.drawTextBox();
