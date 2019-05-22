@@ -97,8 +97,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private GuiLabelMX[] mmlLabelLines = new GuiLabelMX[MAX_MML_LINES];
     private String[] cachedTextLines = new String[MAX_MML_LINES];
     private int[] cachedCursorPos = new int[MAX_MML_LINES];
-    private int activeMMLIndex;
-    private int cachedActiveMMLIndex;
     private GuiButtonExt buttonAddLine;
     private GuiButtonExt buttonMinusLine;
     private GuiButtonExt buttonPasteFromClipBoard;
@@ -495,7 +493,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private void addLine()
     {
         viewableLineCount = (viewableLineCount + 1) > MAX_MML_LINES ? viewableLineCount : viewableLineCount + 1;
-        activeMMLIndex = viewableLineCount;
     }
 
     private void minusLine()
