@@ -152,6 +152,7 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
                     break;
                 default:
             }
+            selectedClickedCallback(selectedIndex);
         }
     }
 
