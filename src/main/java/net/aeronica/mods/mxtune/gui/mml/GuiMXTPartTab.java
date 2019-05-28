@@ -353,7 +353,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         int posX = buttonCopyToClipBoard.x + buttonCopyToClipBoard.width + PADDING;
         int rightSideWidth = Math.max(width - posX - PADDING, 100);
         GuiMMLTextField mmlTextField = mmlTextLines[viewableLines - 1];
-        listBoxMMLError.setLayout(entryHeight, rightSideWidth, Math.max(bottom - mmlTextField.y - mmlTextField.height - PADDING, entryHeight), mmlTextField.y + mmlTextField.height + PADDING, bottom, posX);
+        listBoxMMLError.setLayout(entryHeight, rightSideWidth, Math.max(bottom - mmlTextField.getY() - mmlTextField.getHeight() - PADDING, entryHeight), mmlTextField.getY() + mmlTextField.getHeight() + PADDING, bottom, posX);
     }
 
     private void reloadState()
@@ -401,7 +401,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private void updateButtonState()
     {
         // enable Play button when MML Parsing Field has greater than 0 characters and passes the MML parsing tests
-        // FIXME: boolean isOK = (!textMMLPaste.isEmpty()) && (listBoxMMLError.isEmpty());
         boolean isOK = listBoxMMLError.isEmpty();
         buttonPlay.enabled = isPlaying || isOK;
         buttonPlay.displayString = isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play_part");
@@ -547,6 +546,16 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     }
 
     @Override
+    protected void mouseClicked(int mouseX, int mouseY, int partialTicks) throws IOException
+    {
+        for (int i = 0; i < viewableLineCount; i++)
+            mmlTextLines[i].mouseClicked(mouseX, mouseY, partialTicks);
+
+        super.mouseClicked(mouseX, mouseY, partialTicks);
+        updateState();
+    }
+
+    @Override
     public void handleMouseInput() throws IOException
     {
         int mouseX = Mouse.getEventX() * width / mc.displayWidth;
@@ -559,16 +568,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         if (!listBoxMMLError.isHovering()) super.handleMouseInput();
         listBoxInstruments.handleMouseInput(mouseX, mouseY);
         listBoxMMLError.handleMouseInput(mouseX, mouseY);
-        updateState();
-    }
-
-    @Override
-    protected void mouseClicked(int mouseX, int mouseY, int partialTicks) throws IOException
-    {
-        for (int i = 0; i < viewableLineCount; i++)
-            mmlTextLines[i].mouseClicked(mouseX, mouseY, partialTicks);
-
-        super.mouseClicked(mouseX, mouseY, partialTicks);
         updateState();
     }
 

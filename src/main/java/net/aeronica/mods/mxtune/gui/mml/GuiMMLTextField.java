@@ -28,11 +28,11 @@ public class GuiMMLTextField extends Gui
 {
     private final int id;
     private final FontRenderer fontRenderer;
-    public int x;
-    public int y;
+    private int x;
+    private int y;
     /** The width of this text field. */
-    public int width;
-    public int height;
+    private int width;
+    private int height;
     /** Has the current text being edited on the textbox. */
     private String text = "";
     private int maxStringLength = 32;
@@ -74,6 +74,20 @@ public class GuiMMLTextField extends Gui
     {
         this.guiResponder = guiResponderIn;
     }
+
+    public int getX() { return x; }
+
+    public void setX(int x) { this.x = x; }
+
+    public int getY() { return y; }
+
+    public void setY(int y) { this.y = y; }
+
+    public void setWidth(int width) { this.width = width; }
+
+    public int getHeight() { return height; }
+
+    public void setHeight(int height) { this.height = height; }
 
     /**
      * Increments the cursor counter
