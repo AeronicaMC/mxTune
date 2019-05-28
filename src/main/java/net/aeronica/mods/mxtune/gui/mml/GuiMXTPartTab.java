@@ -39,7 +39,6 @@ import net.minecraftforge.fml.client.config.GuiButtonExt;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import javax.annotation.Nonnull;
 import javax.sound.midi.Instrument;
 import javax.sound.midi.Patch;
 import java.io.IOException;
@@ -566,24 +565,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         updateState();
     }
 
-    @Override
-    protected void mouseReleased(int mouseX, int mouseY, int state)
-    {
-        super.mouseReleased(mouseX, mouseY, state);
-    }
-
-    @Override
-    public void handleKeyboardInput() throws IOException
-    {
-        super.handleKeyboardInput();
-    }
-
-    @Override
-    public void onResize(@Nonnull Minecraft mcIn, int w, int h)
-    {
-        super.onResize(mcIn, w, h);
-    }
-
     /* MML Parsing */
     private void parseMML(int index, String mml)
     {
@@ -625,7 +606,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         int count = 0;
         for (int i = 0; i < viewableLineCount; i++)
             count += mmlTextLines[i].getText().length();
-        if (totalCharacters != count | force)
+        if (totalCharacters != count || force)
         {
             totalCharacters = count;
             IntStream.range(0, viewableLineCount).forEach(i -> parseMML(i, mmlTextLines[i].getText()));
@@ -707,7 +688,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
                 // commas (chord part breaks) should not exist so we will remove them.
                 lines.append(mmlTextLines[i].getText().replaceAll(",", ""));
                 // append a comma to separate the melody and chord note parts (tracks).
-                if (i < viewableLineCount) lines.append(",");
+                if (i < (viewableLineCount - 1)) lines.append(",");
             }
 
             // bind it all up into Mabinogi Past format
