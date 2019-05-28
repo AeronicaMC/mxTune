@@ -117,7 +117,6 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
 
         GuiButtonExt buttonNew = new GuiButtonExt(0, PADDING, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.new"));
         GuiButtonExt buttonImport = new GuiButtonExt(1, buttonNew.x + buttonNew.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.import"));
-        buttonImport.enabled = false;
         GuiButtonExt buttonOpen = new GuiButtonExt(2, buttonImport.x + buttonImport.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.open"));
         buttonSave = new GuiButtonExt(3, buttonOpen.x + buttonOpen.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.save"));
         GuiButtonExt buttonSaveAs = new GuiButtonExt(4, buttonSave.x + buttonSave.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.save_as"));
@@ -335,7 +334,11 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
 
     private void importAction()
     {
-        // NOP
+        stop();
+        ActionGet.INSTANCE.clear();
+        ActionGet.INSTANCE.setFileImport();
+        viewableTabCount = MIN_TABS;
+        mc.displayGuiScreen(new GuiFileSelector(this));
     }
 
     private void openAction()
@@ -410,6 +413,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
                 fileNew();
                 break;
             case FILE_IMPORT:
+                fileImport();
                 break;
             case FILE_OPEN:
                 fileOpen();
@@ -434,6 +438,11 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         viewableTabCount = MIN_TABS;
         activeChildIndex = 0;
         updateState();
+    }
+
+    private void fileImport()
+    {
+
     }
 
     private void fileOpen()
