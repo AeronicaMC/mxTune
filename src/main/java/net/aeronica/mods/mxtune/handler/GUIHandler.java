@@ -66,7 +66,7 @@ public class GUIHandler implements IGuiHandler
         switch (guiID)
         {
             case GUI_MUSIC_PAPER_PARSE:
-                return new GuiMusicPaperParse(null, "");
+                return new GuiMusicPaperParse(null);
 
             case GUI_INSTRUMENT_INVENTORY:
                 return new GuiInstrumentInventory(new ContainerInstrument(playerIn));
