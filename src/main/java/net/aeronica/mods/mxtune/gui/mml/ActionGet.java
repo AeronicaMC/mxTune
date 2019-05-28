@@ -17,13 +17,9 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
-import net.aeronica.libs.mml.core.MMLUtil;
-import net.aeronica.libs.mml.readers.AbstractMmlFileReader;
-import net.aeronica.mods.mxtune.util.MIDISystemUtil;
-import net.minecraft.client.resources.I18n;
+import net.aeronica.mods.mxtune.caches.MXTuneFile;
 
 import javax.annotation.Nullable;
-import javax.sound.midi.Patch;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -32,41 +28,25 @@ public class ActionGet implements ISelectorAction
     public static final ActionGet INSTANCE = new ActionGet();
 
     private Path path;
-    private String title;
-    private String author;
-    private String source;
-    private String mml;
-    private String instrument;
-    private String suggestedInstrument;
-    private int packedPatch;
+    private MXTuneFile mxTuneFile;
     private SELECTOR selector = SELECTOR.CANCEL;
 
     @Override
     public void select(Path path)
     {
         this.path = path;
-        this.suggestedInstrument = getFileNameString();
     }
 
     @Override
-    public void select(String title, String author, String source, String mml, int packedPreset)
+    public void select(MXTuneFile mxTuneFile)
     {
-        this.title = title != null ? title : "";
-        this.author = author != null ? author : "";
-        this.source = source != null ? source : "";
-        this.mml = mml != null ? mml : "";
-        Patch patchPreset = MMLUtil.packedPreset2Patch(packedPreset);
-        this.instrument =I18n.format(MIDISystemUtil.getPatchNameKey(patchPreset));
-        this.packedPatch = packedPreset;
+        this.mxTuneFile = mxTuneFile;
     }
 
     public void clear()
     {
         path = null;
-        //title = "";
-        author = "";
-        source = "";
-        mml = "";
+        mxTuneFile = null;
     }
 
     public Path getFileName() { return path != null ? path.getFileName() : Paths.get(""); }
@@ -76,19 +56,7 @@ public class ActionGet implements ISelectorAction
     @Nullable
     public Path getPath() { return path; }
 
-    public String getTitle() { return title; }
-
-    public String getAuthor() { return author; }
-
-    public String getSource() { return source; }
-
-    public String getMml() { return mml; }
-
-    public String getInstrument() { return instrument; }
-
-    public String getSuggestedInstrument() { return suggestedInstrument; }
-
-    public int getPackedPatch() { return packedPatch; }
+    public MXTuneFile getMxTuneFile() { return mxTuneFile; }
 
     public void setCancel() { selector = SELECTOR.CANCEL; }
 
@@ -107,12 +75,6 @@ public class ActionGet implements ISelectorAction
     public void setPaste() { selector = SELECTOR.PASTE; }
 
     public SELECTOR getSelector() { return selector; }
-
-    @Override
-    public void select(AbstractMmlFileReader mmlFileReader)
-    {
-        AbstractMmlFileReader mmlFileReader1 = mmlFileReader;
-    }
 
     public enum SELECTOR
     {

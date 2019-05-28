@@ -17,7 +17,7 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
-import net.aeronica.libs.mml.readers.AbstractMmlFileReader;
+import net.aeronica.mods.mxtune.caches.MXTuneFile;
 
 import java.nio.file.Path;
 
@@ -31,7 +31,5 @@ public interface ISelectorAction
 {
     void select(Path path);
 
-    void select(String title, String author, String source, String mml, int packedPreset);
-
-    void select(AbstractMmlFileReader mmlFileReader);
+    void select(MXTuneFile mxTuneFile);
 }
