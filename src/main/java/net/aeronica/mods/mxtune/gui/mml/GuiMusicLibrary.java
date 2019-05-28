@@ -18,12 +18,12 @@
 package net.aeronica.mods.mxtune.gui.mml;
 
 import net.aeronica.mods.mxtune.caches.FileHelper;
-import net.aeronica.mods.mxtune.caches.MXTuneFile;
-import net.aeronica.mods.mxtune.caches.MXTuneFileHelper;
-import net.aeronica.mods.mxtune.caches.MXTunePart;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
+import net.aeronica.mods.mxtune.mxt.MXTuneFile;
+import net.aeronica.mods.mxtune.mxt.MXTuneFileHelper;
+import net.aeronica.mods.mxtune.mxt.MXTunePart;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.sound.IAudioStatusCallback;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;

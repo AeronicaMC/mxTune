@@ -15,8 +15,9 @@
  *   limitations under the License.
  */
 
-package net.aeronica.mods.mxtune.caches;
+package net.aeronica.mods.mxtune.mxt;
 
+import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.minecraft.nbt.NBTTagCompound;

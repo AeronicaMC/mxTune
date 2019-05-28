@@ -17,7 +17,7 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
-import net.aeronica.mods.mxtune.caches.MXTuneFile;
+import net.aeronica.mods.mxtune.mxt.MXTuneFile;
 
 import javax.annotation.Nullable;
 import java.nio.file.Path;

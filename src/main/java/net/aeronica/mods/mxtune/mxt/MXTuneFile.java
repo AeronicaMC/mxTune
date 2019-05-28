@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-package net.aeronica.mods.mxtune.caches;
+package net.aeronica.mods.mxtune.mxt;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.util.ModLogger;
