@@ -96,17 +96,13 @@ public class GuiMusicPaperParse extends GuiScreen implements IAudioStatusCallbac
     private int cachedSelectedInst;
     private boolean cachedIgnoreParseErrors;
 
-    // Passed in Title
-    private String passedTitle;
-
-    public GuiMusicPaperParse(GuiScreen guiScreenParent, String title)
+    public GuiMusicPaperParse(GuiScreen guiScreenParent)
     {
         this.guiScreenParent = guiScreenParent;
         this.mc = Minecraft.getMinecraft();
         this.fontRenderer = mc.fontRenderer;
         midiUnavailable = MIDISystemUtil.midiUnavailable();
         instrumentCache = MIDISystemUtil.getInstrumentCacheCopy();
-        passedTitle = title;
     }
     
     @Override
@@ -190,8 +186,6 @@ public class GuiMusicPaperParse extends GuiScreen implements IAudioStatusCallbac
 
     private void reloadState()
     {
-        if (passedTitle != null && !passedTitle.isEmpty())
-            textMMLTitle.setText(passedTitle);
         if (!isStateCached) return;
         textMMLTitle.setText(cachedMMLTitle);
         textMMLPaste.setText(cachedMMLText);
@@ -323,22 +317,12 @@ public class GuiMusicPaperParse extends GuiScreen implements IAudioStatusCallbac
                 String musicText = textMMLPaste.getTextToParse().trim();
                 String musicTitle = textMMLTitle.getText().trim();
                 mmlStop();
-                if (guiScreenParent == null)
-                    sendMMLTextToServer(musicTitle, musicText);
-                else
-                {
-                    if (selectedInst < 0 || selectedInst > MIDISystemUtil.getInstrumentCacheCopy().size()) selectedInst = 0;
-                    Instrument inst = instrumentCache.get(selectedInst);
-                    int packedPreset = MMLUtil.instrument2PackedPreset(inst);
-                    ActionGet.INSTANCE.select(musicTitle, null, null, musicText, packedPreset);
-                }
+                sendMMLTextToServer(musicTitle, musicText);
                 mc.displayGuiScreen(guiScreenParent);
                 break;
 
             case 1:
                 /* Cancelled - remove the GUI */
-                if (guiScreenParent != null)
-                    ActionGet.INSTANCE.setCancel();
                 mmlStop();
                 mc.displayGuiScreen(guiScreenParent);
                 break;
