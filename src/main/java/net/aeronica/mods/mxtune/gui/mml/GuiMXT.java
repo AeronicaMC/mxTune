@@ -72,7 +72,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     private int ticks;
 
     // Common data
-    MXTuneFile mxTuneFile;
+    private MXTuneFile mxTuneFile;
     private boolean isPlaying = false;
     private boolean cachedIsPlaying;
     private GuiButtonExt buttonSave;
@@ -170,7 +170,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         {
             buttonNames[i] = new GuiButtonExt(TAB_BTN_IDX + i, buttonMinusTab.x + buttonMinusTab.width + PADDING + 20 * i, tabButtonTop, 20, 20, String.format("%d", i + 1));
             buttonList.add(buttonNames[i]);
-            childTabs[i].setLayout(tabbedAreaTop, height - PADDING, height - PADDING - tabbedAreaTop);
+            childTabs[i].setLayout(tabbedAreaTop, height - PADDING);
             childTabs[i].initGui();
         }
 

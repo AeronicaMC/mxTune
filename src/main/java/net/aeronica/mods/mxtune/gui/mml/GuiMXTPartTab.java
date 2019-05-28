@@ -56,14 +56,12 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private GuiMXT guiMXT;
     private int top;
     private int bottom;
-    private int childHeight;
     private int entryHeight;
     private static final int PADDING = 4;
 
     // Content
     private MXTunePart mxTunePart = new MXTunePart();
     private GuiTextField labelStatus;
-    private GuiTextField labelMeta;
     private GuiButtonExt buttonPlay;
     private GuiScrollingListOf<ParseErrorEntry> listBoxMMLError;
     private GuiScrollingListOf<Instrument> listBoxInstruments;
@@ -101,7 +99,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private GuiButtonExt buttonMinusLine;
     private GuiButtonExt buttonPasteFromClipBoard;
     private GuiButtonExt buttonCopyToClipBoard;
-    private static String lineNames[] = new String[MAX_MML_LINES];
+    private static String[] lineNames = new String[MAX_MML_LINES];
 
     /* MML Line limits - allow limiting the viewable lines */
     private int viewableLineCount = MIN_MML_LINES;
@@ -190,13 +188,12 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         };
     }
 
-    void setLayout(int top, int bottom, int childHeight)
+    void setLayout(int top, int bottom)
     {
         this.width = guiMXT.width;
         this.height = guiMXT.height;
         this.top = top;
         this.bottom = bottom;
-        this.childHeight = childHeight;
     }
 
     void setPart(MXTunePart mxTunePart)
@@ -254,7 +251,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
             mmlTextLines[i].updateCursorCounter();
     }
 
-    private void initPartNames()
+    private static void initPartNames()
     {
         lineNames[0] = I18n.format("mxtune.gui.label.melody");
         IntStream.range(1, MAX_MML_LINES).forEach(i -> lineNames[i] = I18n.format("mxtune.gui.label.chord", String.format("%02d", i)));
@@ -269,7 +266,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         {
             int stringWidth = fontRenderer.getStringWidth(I18n.format(in.getName()));
             instListWidth = Math.max(instListWidth, stringWidth + 10);
-            //instListWidth = Math.max(instListWidth, stringWidth + 5 + entryHeight);
         }
         instListWidth = Math.min(instListWidth, 150);
 
@@ -304,7 +300,6 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 //        buttonList.add(sliderChorus);
 
         /* create Status line */
-        // FIXME: labelStatus = new GuiTextField(2, fontRenderer, posX, textMMLPaste.yPosition + textMMLPaste.height + PADDING , rightSideWidth, statusHeight);
         int rightSideWidth = Math.max(width - posX - PADDING, 100);
         labelStatus = new GuiTextField(2, fontRenderer, posX, posY , rightSideWidth, statusHeight);
         labelStatus.setFocused(false);
@@ -519,16 +514,16 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
     private void copyToClipboard()
     {
-        // TODO: Need to remove duplicate code
         StringBuilder lines = new StringBuilder();
         for (int i = 0; i < viewableLineCount; i++)
         {
             lines.append(mmlTextLines[i].getText().replaceAll(",", ""));
-            if (i < viewableLineCount) lines.append(",");
+            if (i < (viewableLineCount - 1)) lines.append(",");
         }
 
         String mml = getTextToParse(lines.toString());
-        GuiScreen.setClipboardString(mml);
+        // Setting the clipboard to the empty string does nothing. If there are no lines use an 'empty' MML formatted string instead.
+        GuiScreen.setClipboardString(mml.isEmpty() ? "MML@;" : mml);
     }
 
     @Override
