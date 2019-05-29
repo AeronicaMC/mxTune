@@ -46,6 +46,13 @@ public class Ms2MmlReader extends AbstractMmlFileReader
     }
 
     @Override
+    public boolean parseStream(InputStream is)
+    {
+        readMs2Mml(is);
+        return !hasErrors();
+    }
+
+    @Override
     public String getMML()
     {
         return mml;
@@ -67,13 +74,16 @@ public class Ms2MmlReader extends AbstractMmlFileReader
                 if (!melodyValue.equals(""))
                     builder.append(melodyValue);
 
-                for (Ms2.Chord chord : ms2.chord)
+                if (ms2.chord != null)
                 {
-                    String chordValue = MMLAllowedCharacters.filterAllowedCharacters(chord.value);
-                    if ((chordValue.equals("")))
-                        continue;
-                    builder.append(",");
-                    builder.append(chordValue);
+                    for (Ms2.Chord chord : ms2.chord)
+                    {
+                        String chordValue = MMLAllowedCharacters.filterAllowedCharacters(chord.value);
+                        if ((chordValue.equals("")))
+                            continue;
+                        builder.append(",");
+                        builder.append(chordValue);
+                    }
                 }
                 builder.append(";");
                 mml = builder.toString();

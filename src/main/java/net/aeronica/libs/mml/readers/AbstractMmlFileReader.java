@@ -20,6 +20,7 @@ package net.aeronica.libs.mml.readers;
 import javax.annotation.Nullable;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
@@ -34,6 +35,8 @@ public abstract class AbstractMmlFileReader
     protected String mml = "";
 
     public abstract boolean parseFile(Path path);
+
+    public abstract boolean parseStream(InputStream is);
 
     public abstract String getFileExtension();
 
