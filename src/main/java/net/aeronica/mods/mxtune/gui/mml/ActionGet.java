@@ -56,6 +56,7 @@ public class ActionGet implements ISelectorAction
     @Nullable
     public Path getPath() { return path; }
 
+    @Nullable
     public MXTuneFile getMxTuneFile() { return mxTuneFile; }
 
     public void setCancel() { selector = SELECTOR.CANCEL; }

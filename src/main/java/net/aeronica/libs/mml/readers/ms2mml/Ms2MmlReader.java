@@ -42,7 +42,7 @@ public class Ms2MmlReader extends AbstractMmlFileReader
     public boolean parseFile(@Nonnull Path path)
     {
         readMs2Mml(getFile(path));
-        return hasErrors();
+        return !hasErrors();
     }
 
     @Override

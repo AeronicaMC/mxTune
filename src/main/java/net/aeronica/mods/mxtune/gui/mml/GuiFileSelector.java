@@ -204,7 +204,7 @@ public class GuiFileSelector extends GuiScreen
         buttonOpen.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiFileSelector.openFolder.help"));
         GuiButtonMX buttonRefresh = new GuiButtonMX(3, xRefresh, buttonTop, 75, 20, I18n.format("mxtune.gui.guiFileSelector.refresh"));
         buttonRefresh.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiFileSelector.refresh.help"));
-        GuiButton buttonDone = new GuiButton(0, xDone, buttonTop, 75, 20, I18n.format("gui.done"));
+        GuiButton buttonDone = new GuiButton(0, xDone, buttonTop, 75, 20, I18n.format("mxtune.gui.button.select"));
         buttonCancel = new GuiButton(1, xCancel, buttonTop, 75, 20, I18n.format("gui.cancel"));
 
         buttonList.add(buttonDone);
@@ -317,7 +317,7 @@ public class GuiFileSelector extends GuiScreen
 
     private void selectDone()
     {
-        ActionGet.INSTANCE.select(guiFileList.get());
+        ActionGet.INSTANCE.select(ImportHelper.importToMXTFile(guiFileList.get()));
         mc.displayGuiScreen(guiScreenParent);
     }
 

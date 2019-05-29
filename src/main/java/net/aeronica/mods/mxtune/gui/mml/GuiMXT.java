@@ -446,12 +446,18 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
 
     private void fileImport()
     {
-
+        mxTuneFile = ActionGet.INSTANCE.getMxTuneFile();
+        getMXTFileData();
     }
 
     private void fileOpen()
     {
         mxTuneFile = MXTuneFileHelper.getMXTuneFile(ActionGet.INSTANCE.getPath());
+        getMXTFileData();
+    }
+
+    private void getMXTFileData()
+    {
         if (mxTuneFile != null)
         {
             IntStream.range(0, MAX_TABS).forEach(i -> childTabs[i].clearPart());
