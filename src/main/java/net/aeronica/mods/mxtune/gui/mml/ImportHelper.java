@@ -98,7 +98,7 @@ public class ImportHelper
             MXTuneFile mxTuneFile = new MXTuneFile();
             mxTuneFile.setTitle(title);
             Enumeration<? extends ZipEntry> entries = file.entries();
-            ModLogger.debug("---- Zip File: %s", file.getName().substring(file.getName().lastIndexOf("\\")+1));
+            ModLogger.debug("---- Zip File: %s", file.getName().substring(file.getName().lastIndexOf('\\')+1));
             int count = 0;
             while(entries.hasMoreElements())
             {
