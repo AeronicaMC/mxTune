@@ -256,6 +256,31 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         return (part != null) && (!part.getInstrumentName().equals("")) ? number + ": " + childTabs[index].getPart().getInstrumentName() : number;
     }
 
+    private void drawMarkers()
+    {
+        for (int i = 0; i < viewableTabCount; i++)
+        {
+            GuiButtonExt gb = buttonNames[i];
+            if (!gb.enabled)
+                drawBox(gb, -1);
+           if (!childTabs[i].canPlay())
+                drawLine(gb, 0xFFFF2222);
+        }
+    }
+
+    private void drawBox(GuiButtonExt gb, int color)
+    {
+        drawHorizontalLine(gb.x, gb.x + gb.width - 1, gb.y, color);
+        drawHorizontalLine(gb.x, gb.x + gb.width - 1, gb.y + gb.height - 1, color);
+        drawVerticalLine(gb.x, gb.y, gb.y + gb.height - 1, color);
+        drawVerticalLine(gb.x + gb.width - 1, gb.y, gb.y + gb.height - 1, color);
+    }
+
+    private void drawLine(GuiButtonExt gb, int color)
+    {
+        drawRect(gb.x + 1, gb.y + gb.height + 1, gb.x +1 + gb.width - 2, gb.y + gb.height + 3, color);
+    }
+
     @Override
     public void updateScreen()
     {
@@ -540,6 +565,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         labelSource.drawLabel(mc, mouseX, mouseY);
         textSource.drawTextBox();
         super.drawScreen(mouseX, mouseY, partialTicks);
+        drawMarkers();
         childTabs[activeChildIndex].drawScreen(mouseX, mouseY, partialTicks);
         ModGuiUtils.INSTANCE.drawHooveringHelp(this, hooverTexts, 0, 0, mouseX, mouseY);
     }
