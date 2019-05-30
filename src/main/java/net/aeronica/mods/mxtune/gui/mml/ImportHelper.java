@@ -66,7 +66,7 @@ public class ImportHelper
 
     private static boolean hasExtension(String test, String ext)
     {
-        return Files.getFileExtension(test).toLowerCase(Locale.ROOT).equals(ext);
+        return Files.getFileExtension(test).equalsIgnoreCase(ext);
     }
 
     @Nullable
