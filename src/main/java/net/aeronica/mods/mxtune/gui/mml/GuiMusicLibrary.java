@@ -37,6 +37,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -74,7 +75,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
     private GuiLabel searchLabel;
     private GuiTextField search;
     private boolean sorted = false;
-    private SortFileDataHelper.SortType sortType = SortFileDataHelper.SortType.NORMAL;
+    private SortFileDataHelper.SortType sortType = SortFileDataHelper.SortType.NATURAL;
     private String lastSearch = "";
 
     // Cache across screen resizing
@@ -178,13 +179,13 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         int buttonMargin = 1;
         int buttonWidth = 75;
         int x = left;
-        GuiButton normalSort = new GuiButton(SortFileDataHelper.SortType.NORMAL.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, I18n.format("fml.menu.mods.normal"));
+        GuiButtonExt normalSort = new GuiButtonExt(SortFileDataHelper.SortType.NATURAL.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, I18n.format("fml.menu.mods.normal"));
         normalSort.enabled = false;
         buttonList.add(normalSort);
         x += buttonWidth + buttonMargin;
-        buttonList.add(new GuiButton(SortFileDataHelper.SortType.A_TO_Z.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, "A-Z"));
+        buttonList.add(new GuiButtonExt(SortFileDataHelper.SortType.ASCENDING.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, "A-Z"));
         x += buttonWidth + buttonMargin;
-        buttonList.add(new GuiButton(SortFileDataHelper.SortType.Z_TO_A.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, "Z-A"));
+        buttonList.add(new GuiButtonExt(SortFileDataHelper.SortType.DESCENDING.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, "Z-A"));
 
         int buttonTop = height - 25;
         int xPlay = (this.width / 2) - (75 * 3 / 2);
@@ -269,7 +270,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
     {
         if (button.enabled)
         {
-            SortFileDataHelper.SortType type = SortFileDataHelper.SortType.getTypeForButton(button);
+            SortFileDataHelper.SortType type = SortFileDataHelper.SortType.getSortTypeForButton(button);
             if (type != null)
             {
                 SortFileDataHelper.updateSortButtons(type, buttonList);

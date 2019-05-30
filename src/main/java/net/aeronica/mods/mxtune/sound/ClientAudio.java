@@ -230,7 +230,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
      * @param playID unique submission identifier.
      * @param pos block position in the world
      * @param musicText MML string
-     * @param soundRange defines the attenuation: NORMAL or INFINITY respectively
+     * @param soundRange defines the attenuation: NATURAL or INFINITY respectively
      */
     public static void play(Integer playID, BlockPos pos, String musicText, SoundRange soundRange)
     {

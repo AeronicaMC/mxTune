@@ -17,11 +17,6 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Ordering;
-import net.aeronica.mods.mxtune.managers.records.Area;
-import net.aeronica.mods.mxtune.managers.records.Song;
-import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.StringUtils;
 
@@ -32,8 +27,10 @@ import java.util.List;
 import java.util.Locale;
 
 // Adapted from the FML GuiModList class
-class SortPathHelper
+final class SortPathHelper
 {
+    private SortPathHelper() { /* NOP */ }
+
     /**
      * SortType for lists of Path instances
      */
@@ -89,37 +86,4 @@ class SortPathHelper
                 button.enabled = true;
         }
     }
-
-    static class PlaylistComparator implements Comparator<Area>
-    {
-        @Override
-        public int compare(Area o1, Area o2)
-        {
-            return ComparisonChain.start().compare(o1.getName(), o2.getName()).result();
-        }
-    }
-
-    public static final Ordering<Area> PLAYLIST_ORDERING = Ordering.from(new PlaylistComparator());
-
-    static class SongProxyComparator implements Comparator<SongProxy>
-    {
-        @Override
-        public int compare(SongProxy o1, SongProxy o2)
-        {
-            return ComparisonChain.start().compare(o1.getTitle(), o2.getTitle()).result();
-        }
-    }
-
-    public static final Ordering<SongProxy> SONG_PROXY_ORDERING = Ordering.from(new SongProxyComparator());
-
-    static class SongComparator implements Comparator<Song>
-    {
-        @Override
-        public int compare(Song o1, Song o2)
-        {
-            return ComparisonChain.start().compare(o1.getTitle(), o2.getTitle()).result();
-        }
-    }
-
-    public static final Ordering<Song> SONG_ORDERING = Ordering.from(new SongComparator());
 }

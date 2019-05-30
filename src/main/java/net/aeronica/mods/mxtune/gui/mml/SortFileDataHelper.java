@@ -17,11 +17,6 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Ordering;
-import net.aeronica.mods.mxtune.managers.records.Area;
-import net.aeronica.mods.mxtune.managers.records.Song;
-import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.StringUtils;
 
@@ -31,16 +26,18 @@ import java.util.List;
 import java.util.Locale;
 
 // Adapted from the FML GuiModList class
-class SortFileDataHelper
+final class SortFileDataHelper
 {
+    private SortFileDataHelper() { /* NOP */}
+
     /**
      * SortType for lists of Path instances
      */
     public enum SortType implements Comparator<FileData>
     {
-        NORMAL(24),
-        A_TO_Z(25){ @Override protected int compare(String name1, String name2){ return name1.compareTo(name2); }},
-        Z_TO_A(26){ @Override protected int compare(String name1, String name2){ return name2.compareTo(name1); }};
+        NATURAL(24),
+        ASCENDING(25){ @Override protected int compare(String name1, String name2){ return name1.compareTo(name2); }},
+        DESCENDING(26){ @Override protected int compare(String name1, String name2){ return name2.compareTo(name1); }};
 
         private static final int NO_SORT = 0;
         private int buttonID;
@@ -53,7 +50,7 @@ class SortFileDataHelper
         public int getButtonID() { return buttonID; }
 
         @Nullable
-        public static SortType getTypeForButton(GuiButton button)
+        public static SortType getSortTypeForButton(GuiButton button)
         {
             for (SortType t : values())
             {
@@ -81,44 +78,11 @@ class SortFileDataHelper
     {
         for (GuiButton button : buttonList)
         {
-            SortType type = SortType.getTypeForButton(button);
+            SortType type = SortType.getSortTypeForButton(button);
             if (type != null && type == sortType)
                 button.enabled = false;
             else if (type != null)
                 button.enabled = true;
         }
     }
-
-    static class PlaylistComparator implements Comparator<Area>
-    {
-        @Override
-        public int compare(Area o1, Area o2)
-        {
-            return ComparisonChain.start().compare(o1.getName(), o2.getName()).result();
-        }
-    }
-
-    public static final Ordering<Area> PLAYLIST_ORDERING = Ordering.from(new PlaylistComparator());
-
-    static class SongProxyComparator implements Comparator<SongProxy>
-    {
-        @Override
-        public int compare(SongProxy o1, SongProxy o2)
-        {
-            return ComparisonChain.start().compare(o1.getTitle(), o2.getTitle()).result();
-        }
-    }
-
-    public static final Ordering<SongProxy> SONG_PROXY_ORDERING = Ordering.from(new SongProxyComparator());
-
-    static class SongComparator implements Comparator<Song>
-    {
-        @Override
-        public int compare(Song o1, Song o2)
-        {
-            return ComparisonChain.start().compare(o1.getTitle(), o2.getTitle()).result();
-        }
-    }
-
-    public static final Ordering<Song> SONG_ORDERING = Ordering.from(new SongComparator());
 }
