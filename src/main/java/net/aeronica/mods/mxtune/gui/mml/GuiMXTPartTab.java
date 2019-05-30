@@ -179,7 +179,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
                 ParseErrorEntry errorEntry = !isEmpty() && slotIdx < getSize() && slotIdx >= 0 ? get(slotIdx) : null;
                 if (errorEntry != null)
                 {
-                    String charAt = String.format("%s: %d", lineNames[errorEntry.getLine()] ,errorEntry.getCharPositionInLine());
+                    String charAt = String.format("%s %d", lineNames[errorEntry.getLine()] ,errorEntry.getCharPositionInLine());
                     String formattedErrorEntry = fontRenderer.trimStringToWidth(charAt + ": " + errorEntry.getMsg(), listWidth - 10);
                     fontRenderer.drawString(formattedErrorEntry, this.left + 3, slotTop, 0xFF2222);
                 }
