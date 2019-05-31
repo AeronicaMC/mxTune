@@ -200,7 +200,7 @@ public class GuiFileSelector extends GuiScreen
         int xRefresh = xOpen + 75;
         int xDone = xRefresh + 75;
         int xCancel = xDone + 75;
-        GuiButtonMX buttonOpen = new GuiButtonMX(2, xOpen, buttonTop, 75, 20, I18n.format("mxtune.gui.guiFileSelector.openFolder"));
+        GuiButtonMX buttonOpen = new GuiButtonMX(2, xOpen, buttonTop, 75, 20, I18n.format("mxtune.gui.button.openFolder"));
         buttonOpen.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiFileSelector.openFolder.help"));
         GuiButtonMX buttonRefresh = new GuiButtonMX(3, xRefresh, buttonTop, 75, 20, I18n.format("mxtune.gui.guiFileSelector.refresh"));
         buttonRefresh.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiFileSelector.refresh.help"));

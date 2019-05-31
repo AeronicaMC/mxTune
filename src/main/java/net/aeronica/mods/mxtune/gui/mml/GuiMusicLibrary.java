@@ -188,14 +188,17 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         buttonList.add(new GuiButtonExt(SortFileDataHelper.SortType.DESCENDING.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, "Z-A"));
 
         int buttonTop = height - 25;
-        int xPlay = (this.width / 2) - (75 * 3 / 2);
+        int xOpen = (this.width / 2) - (75 * 4 / 2);
+        int xPlay = xOpen + 75;
         int xSelect = xPlay + 75;
         int xCancel = xSelect + 75;
 
+        GuiButton buttonOpen = new GuiButton(2, xOpen, buttonTop, 75, 20, I18n.format("mxtune.gui.button.openFolder"));
         buttonPlay = new GuiButton(3, xPlay, buttonTop, 75, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play"));
         GuiButton buttonDone = new GuiButton(0, xSelect, buttonTop, 75, 20, I18n.format("mxtune.gui.button.select"));
         buttonCancel = new GuiButton(1, xCancel, buttonTop, 75, 20, I18n.format("gui.cancel"));
 
+        buttonList.add(buttonOpen);
         buttonList.add(buttonPlay);
         buttonList.add(buttonDone);
         buttonList.add(buttonCancel);
@@ -284,6 +287,9 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
                     case 0:
                         // Done
                         selectDone();
+                        break;
+                    case 2:
+                        openFolder();
                         break;
                     case 1:
                         // Cancel
@@ -457,5 +463,10 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
                 updateState();
             }
         });
+    }
+
+    private void openFolder()
+    {
+        FileHelper.openFolder(FileHelper.CLIENT_LIB_FOLDER);
     }
 }
