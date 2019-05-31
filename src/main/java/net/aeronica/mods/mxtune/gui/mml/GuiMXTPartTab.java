@@ -304,7 +304,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         labelStatus.setFocused(false);
         labelStatus.setCanLoseFocus(true);
         labelStatus.setEnabled(true);
-        labelStatus.setMaxStringLength(100);
+        labelStatus.setMaxStringLength(150);
 
 
         // Create add/minus line buttons
