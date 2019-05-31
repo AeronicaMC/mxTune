@@ -185,7 +185,7 @@ public class GuiFileSelector extends GuiScreen
         search.setCanLoseFocus(true);
 
         int buttonMargin = 1;
-        int buttonWidth = (guiListWidth / 3);
+        int buttonWidth = 75;
         int x = left;
         GuiButton normalSort = new GuiButton(SortType.NORMAL.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, I18n.format("fml.menu.mods.normal"));
         normalSort.enabled = false;
@@ -202,7 +202,7 @@ public class GuiFileSelector extends GuiScreen
         int xCancel = xDone + 75;
         GuiButtonMX buttonOpen = new GuiButtonMX(2, xOpen, buttonTop, 75, 20, I18n.format("mxtune.gui.button.openFolder"));
         buttonOpen.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiFileSelector.openFolder.help"));
-        GuiButtonMX buttonRefresh = new GuiButtonMX(3, xRefresh, buttonTop, 75, 20, I18n.format("mxtune.gui.guiFileSelector.refresh"));
+        GuiButtonMX buttonRefresh = new GuiButtonMX(3, xRefresh, buttonTop, 75, 20, I18n.format("mxtune.gui.button.refresh"));
         buttonRefresh.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiFileSelector.refresh.help"));
         GuiButton buttonDone = new GuiButton(0, xDone, buttonTop, 75, 20, I18n.format("mxtune.gui.button.select"));
         buttonCancel = new GuiButton(1, xCancel, buttonTop, 75, 20, I18n.format("gui.cancel"));

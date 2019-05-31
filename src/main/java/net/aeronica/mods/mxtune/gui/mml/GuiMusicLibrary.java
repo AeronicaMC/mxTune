@@ -17,6 +17,7 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
+import net.aeronica.mods.mxtune.caches.DirectoryWatcher;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
@@ -44,6 +45,7 @@ import org.lwjgl.input.Mouse;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
@@ -93,6 +95,10 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
     private GuiButton buttonPlay;
     private boolean isPlaying = false;
     private int playId = PlayIdSupplier.PlayType.INVALID;
+
+    // Directory Watcher
+    private boolean watcherStarted = false;
+    private DirectoryWatcher watcher;
 
     public GuiMusicLibrary(GuiScreen guiScreenParent)
     {
@@ -144,6 +150,51 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
                 }
             }
         };
+
+        // refresh the file list automatically - might be better to not bother the extension filtering but we'll see
+        DirectoryStream.Filter<Path> filter = entry ->
+                (entry.toString().endsWith(".mxt"));
+        watcher = new DirectoryWatcher.Builder()
+                .addDirectories(FileHelper.getDirectory(FileHelper.CLIENT_LIB_FOLDER, Side.CLIENT))
+                .setPreExistingAsCreated(true)
+                .setFilter(filter::accept)
+                .build((event, path) ->
+                       {
+                           switch (event)
+                           {
+                               case ENTRY_CREATE:
+                               case ENTRY_MODIFY:
+                               case ENTRY_DELETE:
+                                   initGui();
+                           }
+                       });
+    }
+
+    @Override
+    public void onGuiClosed()
+    {
+        stopWatcher();
+    }
+
+    private void startWatcher()
+    {
+        if (!watcherStarted)
+            try
+            {
+                watcherStarted = true;
+                watcher.start();
+            }
+            catch (Exception e)
+            {
+                watcherStarted = false;
+                ModLogger.error(e);
+            }
+    }
+
+    private void stopWatcher()
+    {
+        if (watcherStarted)
+            watcher.stop();
     }
 
     @Override
@@ -188,22 +239,26 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         buttonList.add(new GuiButtonExt(SortFileDataHelper.SortType.DESCENDING.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, "Z-A"));
 
         int buttonTop = height - 25;
-        int xOpen = (this.width / 2) - (75 * 4 / 2);
-        int xPlay = xOpen + 75;
+        int xOpen = (this.width / 2) - (75 * 5 / 2);
+        int xRefresh = xOpen + 75;
+        int xPlay = xRefresh + 75;
         int xSelect = xPlay + 75;
         int xCancel = xSelect + 75;
 
         GuiButton buttonOpen = new GuiButton(2, xOpen, buttonTop, 75, 20, I18n.format("mxtune.gui.button.openFolder"));
+        GuiButton buttonRefresh = new GuiButton(3, xRefresh, buttonTop, 75, 20, I18n.format("mxtune.gui.button.refresh"));
         buttonPlay = new GuiButton(3, xPlay, buttonTop, 75, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play"));
         GuiButton buttonDone = new GuiButton(0, xSelect, buttonTop, 75, 20, I18n.format("mxtune.gui.button.select"));
         buttonCancel = new GuiButton(1, xCancel, buttonTop, 75, 20, I18n.format("gui.cancel"));
 
         buttonList.add(buttonOpen);
+        buttonList.add(buttonRefresh);
         buttonList.add(buttonPlay);
         buttonList.add(buttonDone);
         buttonList.add(buttonCancel);
         safeButtonList = new CopyOnWriteArrayList<>(buttonList);
         sorted = false;
+        startWatcher();
         initFileList();
         reloadState();
         SortFileDataHelper.updateSortButtons(sortType, safeButtonList);
@@ -298,6 +353,10 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
                     case 3:
                         // Play
                         play();
+                        break;
+                    case 4:
+                        // Refresh
+                        refresh();
                         break;
                     default:
                 }
@@ -468,5 +527,10 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
     private void openFolder()
     {
         FileHelper.openFolder(FileHelper.CLIENT_LIB_FOLDER);
+    }
+
+    private void refresh()
+    {
+        initGui();
     }
 }
