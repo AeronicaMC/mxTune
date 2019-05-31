@@ -24,7 +24,8 @@
  * Ignore channel options.
  *
  * Use 'MMLUtil.MML_LOGGER'
- *
+ * Partial potential bug fixes for: "The value returned from a stream read should be checked"
+ *     Collect and log only, but ideally asserts should raised.
  * Update to read data into mxTune MXT file classes
  */
 
@@ -123,22 +124,30 @@ public final class MMLFile
 
         int dataLength = ByteBuffer.wrap(b, 0, 4).order(ByteOrder.LITTLE_ENDIAN).getInt();
         byte data[] = new byte[dataLength];
+        int readLength = 0;
 
         try
         {
             BZip2CompressorInputStream bz2istream = new BZip2CompressorInputStream(new ByteArrayInputStream(b, 12, b.length - 12));
-            bz2istream.read(data);
+            readLength = bz2istream.read(data);
             bz2istream.close();
         } catch (IOException e)
         {
             MMLUtil.MML_LOGGER.error(e);
         }
 
-        for (int i = 0; i < dataLength; i++)
+        MMLUtil.MML_LOGGER.info("byte[] decode: dataLength {}, readLength {}", dataLength, readLength);
+        for (int i = 0; i < dataLength;)
         {
-            System.out.printf("%02x ", data[i]);
+            StringBuilder out = new StringBuilder();
+            for (int j = 0; j < 25; j++)
+            {
+                if (i < dataLength)
+                    out.append(String.format("%02x ", data[i++]));
+                else break;
+            }
+            MMLUtil.MML_LOGGER.info(out.toString());
         }
-        System.out.println();
         return data;
     }
 
@@ -179,7 +188,8 @@ public final class MMLFile
                 MMLUtil.MML_LOGGER.info("text[{}]= {}", i, text[i]);
             }
             int packedPreset = MMLUtil.preset2PackedPreset(12, program);
-            MXTunePart mxTunePart = new MXTunePart(I18n.format(MIDISystemUtil.getPatchNameKey(MMLUtil.packedPreset2Patch(packedPreset))), track.getTrackName(), packedPreset, staves);
+            String meta = String.format("%s, program %d", track.getTrackName(), program);
+            MXTunePart mxTunePart = new MXTunePart(I18n.format(MIDISystemUtil.getPatchNameKey(MMLUtil.packedPreset2Patch(packedPreset))), meta, packedPreset, staves);
             mxTuneFile.getParts().add(mxTunePart);
         }
     }
@@ -260,26 +270,29 @@ public final class MMLFile
 
     private void parseHeader(ByteArrayInputStream istream)
     {
-        istream.skip(37);
+        long skipped = istream.skip(37);
         int len = readLEIntValue(istream);
-        istream.skip(len);
+        long lenSkipped = istream.skip(len);
+        MMLUtil.MML_LOGGER.debug("parseHeader: skipping 37 bytes. Actual={}, OK={}. Skipping {} bytes to track data.", skipped, 37 == skipped, len);
+        MMLUtil.MML_LOGGER.debug("parseHeader: skipping {} bytes. Actual={}, OK={}", len, lenSkipped, len == lenSkipped);
     }
 
     private void parseTrack(LinkedList<Extension3mleTrack> trackList, ByteArrayInputStream istream)
     {
         // parse Track
-        istream.skip(3);
+        long skips = istream.skip(3);
         int trackNo = istream.read();
-        istream.skip(1); // volumn
+        skips += istream.skip(1); // volumn
         int panpot = istream.read();
-        istream.skip(5);
+        skips += istream.skip(5);
         int startMarker = istream.read();
-        istream.skip(7);
+        skips += istream.skip(7);
         int instrument = istream.read();
-        istream.skip(3);
+        skips += istream.skip(3);
         int group = istream.read();
-        istream.skip(13);
+        skips += istream.skip(13);
         String trackName = readString(istream);
+        MMLUtil.MML_LOGGER.debug("parseTrack: skips expected 32, skips actual {}, OK={}", skips, 32 == skips);
         MMLUtil.MML_LOGGER.info(trackNo + " " + instrument + " " + trackName);
 
         Extension3mleTrack lastTrack = trackList.getLast();
@@ -297,11 +310,13 @@ public final class MMLFile
     private int readLEIntValue(InputStream istream)
     {
         byte b[] = new byte[4];
+        int expected = 0;
         try
         {
-            istream.read(b);
+            expected = istream.read(b);
         } catch (IOException e)
         {
+            MMLUtil.MML_LOGGER.error("readLEIntValue: expected bytes 4, read {}.", expected);
             MMLUtil.MML_LOGGER.error(e);
         }
         return ByteBuffer.wrap(b).order(ByteOrder.LITTLE_ENDIAN).getInt();
@@ -312,10 +327,11 @@ public final class MMLFile
 //		List<Marker> markerList = mxTuneFile.getMarkerList();
 
         // parse Marker
-        istream.skip(7);
+        long skips = istream.skip(7);
         int tickOffset = readLEIntValue(istream);
-        istream.skip(4);
+        skips += istream.skip(4);
         String name = readString(istream);
+        MMLUtil.MML_LOGGER.debug("parseMarker: skips expected 11, skips actual {}, OK={}", skips, 11 == skips);
         MMLUtil.MML_LOGGER.info("Marker {}={}", name, tickOffset);
 //		if (markerList != null) {
 //			markerList.add(new Marker(name, tickOffset));
