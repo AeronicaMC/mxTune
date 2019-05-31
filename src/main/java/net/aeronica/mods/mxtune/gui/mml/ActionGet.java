@@ -69,8 +69,6 @@ public class ActionGet implements ISelectorAction
 
     public void setFileSave() { selector = SELECTOR.FILE_SAVE; }
 
-    public void setFileSaveAs() { selector = SELECTOR.FILE_SAVE_AS; }
-
     public void setNewFile() { selector = SELECTOR.FILE_NEW; }
 
     public void setPaste() { selector = SELECTOR.PASTE; }
@@ -85,7 +83,6 @@ public class ActionGet implements ISelectorAction
         FILE_NEW,
         FILE_OPEN,
         FILE_SAVE,
-        FILE_SAVE_AS,
         PASTE,
     }
 }

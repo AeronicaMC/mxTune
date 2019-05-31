@@ -112,10 +112,13 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
             {
                 // get the filename and remove the '.mxt' extension
-                String name = (get(slotIdx).name);
-                String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
-                int color = isSelected(slotIdx) ? 0xFFFF00 : 0xADD8E6;
-                fontRenderer.drawStringWithShadow(trimmedName, (float)left + 3, slotTop, color);
+                if (!isEmpty() && slotIdx >= 0 && slotIdx < size())
+                {
+                    String name = (get(slotIdx).name);
+                    String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
+                    int color = isSelected(slotIdx) ? 0xFFFF00 : 0xADD8E6;
+                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
+                }
             }
 
             @Override
@@ -142,7 +145,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
             {
-                if (!isEmpty() && slotIdx < size())
+                if (!isEmpty() && slotIdx >= 0 && slotIdx < size())
                 {
                     MXTunePart tunePart = get(slotIdx);
                     String trimmedName = fontRenderer.trimStringToWidth(tunePart.getInstrumentName(), listWidth - 10);

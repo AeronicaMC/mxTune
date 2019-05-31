@@ -20,7 +20,6 @@ import net.aeronica.mods.mxtune.blocks.TileBandAmp;
 import net.aeronica.mods.mxtune.gui.*;
 import net.aeronica.mods.mxtune.gui.mml.GuiMXT;
 import net.aeronica.mods.mxtune.gui.mml.GuiMusicLibrary;
-import net.aeronica.mods.mxtune.gui.mml.GuiMusicPaperParse;
 import net.aeronica.mods.mxtune.gui.mml.GuiPlaylistManager;
 import net.aeronica.mods.mxtune.inventory.ContainerBandAmp;
 import net.aeronica.mods.mxtune.inventory.ContainerInstrument;
@@ -66,7 +65,7 @@ public class GUIHandler implements IGuiHandler
         switch (guiID)
         {
             case GUI_MUSIC_PAPER_PARSE:
-                return new GuiMusicPaperParse(null);
+                return new GuiMXT(null, GuiMXT.Mode.SHEET_MUSIC);
 
             case GUI_INSTRUMENT_INVENTORY:
                 return new GuiInstrumentInventory(new ContainerInstrument(playerIn));
@@ -91,7 +90,7 @@ public class GUIHandler implements IGuiHandler
                 return new GuiPlaylistManager();
 
             case GUI_MXT_TEST:
-                return new GuiMXT(null);
+                return new GuiMXT(null, GuiMXT.Mode.SELECT);
 
         default:
             return null;

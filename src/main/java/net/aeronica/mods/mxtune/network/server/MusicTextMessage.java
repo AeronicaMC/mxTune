@@ -17,14 +17,15 @@
 package net.aeronica.mods.mxtune.network.server;
 
 import net.aeronica.mods.mxtune.init.ModItems;
+import net.aeronica.mods.mxtune.items.ItemMusicPaper;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
 import net.aeronica.mods.mxtune.network.NetworkStringHelper;
+import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
@@ -69,7 +70,7 @@ public class MusicTextMessage extends AbstractServerMessage<MusicTextMessage>
     {
         String mml = musicText.trim();
 
-        if (!player.getHeldItemMainhand().isEmpty())
+        if (!player.getHeldItemMainhand().isEmpty() && player.getHeldItemMainhand().getItem() instanceof ItemMusicPaper)
         {
             ItemStack sheetMusic = new ItemStack(ModItems.ITEM_SHEET_MUSIC);
             if (SheetMusicUtil.writeSheetMusic(sheetMusic, musicTitle, mml))
@@ -81,9 +82,14 @@ public class MusicTextMessage extends AbstractServerMessage<MusicTextMessage>
             else
             {
                 player.sendStatusMessage(new TextComponentTranslation("mxtune.status.mml_server_side_validation_failure"), false);
-                player.world.playSound(null, player.getPosition(), SoundEvents.BLOCK_ANVIL_PLACE, SoundCategory.BLOCKS, 1F, 1F);
+                Miscellus.audiblePingPlayer(player, SoundEvents.BLOCK_ANVIL_PLACE);
             }
             player.inventoryContainer.detectAndSendChanges();
+        }
+        else
+        {
+            player.sendStatusMessage(new TextComponentTranslation("mxtune.status.mml_server_side_music_paper_supply_empty"), false);
+            Miscellus.audiblePingPlayer(player, SoundEvents.BLOCK_ANVIL_PLACE);
         }
     }
 }

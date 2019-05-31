@@ -18,7 +18,9 @@
 package net.aeronica.mods.mxtune.gui.mml;
 
 import net.aeronica.mods.mxtune.caches.FileHelper;
+import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.gui.util.GuiLabelMX;
+import net.aeronica.mods.mxtune.gui.util.GuiLink;
 import net.aeronica.mods.mxtune.gui.util.IHooverText;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
@@ -26,6 +28,8 @@ import net.aeronica.mods.mxtune.mxt.MXTuneFile;
 import net.aeronica.mods.mxtune.mxt.MXTuneFileHelper;
 import net.aeronica.mods.mxtune.mxt.MXTunePart;
 import net.aeronica.mods.mxtune.mxt.MXTuneStaff;
+import net.aeronica.mods.mxtune.network.PacketDispatcher;
+import net.aeronica.mods.mxtune.network.server.MusicTextMessage;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.sound.IAudioStatusCallback;
 import net.aeronica.mods.mxtune.util.Miscellus;
@@ -71,12 +75,17 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     private GuiButtonExt buttonPlayStop;
     private int ticks;
 
+    // Links
+    private GuiLink sourcesLink;
+    private GuiLink mmlLink;
+
     // Common data
     private MXTuneFile mxTuneFile;
     private boolean isPlaying = false;
     private boolean cachedIsPlaying;
     private GuiButtonExt buttonSave;
     private static final int PADDING = 4;
+    private Mode mode;
     /* MML Player */
     private int playId = PlayIdSupplier.PlayType.INVALID;
 
@@ -95,11 +104,12 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     private int viewableTabCount = MIN_TABS;
     private int cachedViewableTabCount;
 
-    public GuiMXT(GuiScreen guiScreenParent)
+    public GuiMXT(GuiScreen guiScreenParent, Mode mode)
     {
         this.guiScreenParent = guiScreenParent;
         this.mc = Minecraft.getMinecraft();
         this.fontRenderer = mc.fontRenderer;
+        this.mode = mode;
         for (int i = 0; i < MAX_TABS; i++)
         {
             childTabs[i] = new GuiMXTPartTab(this);
@@ -123,18 +133,33 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         GuiButtonExt buttonImport = new GuiButtonExt(1, buttonNew.x + buttonNew.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.import"));
         GuiButtonExt buttonOpen = new GuiButtonExt(2, buttonImport.x + buttonImport.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.open"));
         buttonSave = new GuiButtonExt(3, buttonOpen.x + buttonOpen.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.save"));
-        GuiButtonExt buttonSaveAs = new GuiButtonExt(4, buttonSave.x + buttonSave.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.save_as"));
-        buttonSaveAs.enabled = false;
-        GuiButtonExt buttonDone = new GuiButtonExt(5, buttonSaveAs.x + buttonSaveAs.width, buttonY, buttonWidth, 20, I18n.format("gui.done"));
+        GuiButtonExt buttonDone = new GuiButtonExt(4, buttonSave.x + buttonSave.width, buttonY, buttonWidth, 20,
+                                                    mode == Mode.SELECT ? I18n.format("gui.done") : I18n.format("mxtune.gui.button.create"));
+        GuiButtonExt buttonCancel = new GuiButtonExt(5, buttonDone.x + buttonDone.width, buttonY, buttonWidth, 20, I18n.format("gui.cancel"));
+        if (mode == Mode.SELECT)
+            buttonCancel.visible = false;
+
         buttonList.add(buttonNew);
         buttonList.add(buttonImport);
         buttonList.add(buttonOpen);
         buttonList.add(buttonSave);
-        buttonList.add(buttonSaveAs);
         buttonList.add(buttonDone);
+        buttonList.add(buttonCancel);
+
+        // Links
+        int textY = buttonDone.y + buttonDone.height + PADDING;
+        int urlWidth = width / 2 - PADDING;
+        sourcesLink = new GuiLink(10, PADDING, textY, cachedSource, GuiLink.AlignText.LEFT);
+        sourcesLink.width = urlWidth;
+        sourcesLink.height = singleLineHeight;
+        mmlLink = new GuiLink(11, width - PADDING , textY, ModConfig.getMmlLink(), GuiLink.AlignText.RIGHT);
+        mmlLink.width = urlWidth;
+        mmlLink.height = singleLineHeight;
+        buttonList.add(sourcesLink);
+        buttonList.add(mmlLink);
 
         // Text fields
-        int textY = buttonDone.y + buttonDone.height + PADDING;
+        textY = sourcesLink.y + sourcesLink.height + PADDING;
         String labelTitleText = I18n.format("mxtune.gui.label.title");
         int labelTitleWidth = fontRenderer.getStringWidth(labelTitleText);
         String labelAuthorText = I18n.format("mxtune.gui.label.author");
@@ -204,6 +229,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         cachedAuthor = textAuthor.getText();
         cachedSource = textSource.getText();
         cachedIsPlaying = isPlaying;
+        sourcesLink.displayString = cachedSource;
         isStateCached = true;
     }
 
@@ -230,6 +256,8 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         buttonPlayStop.enabled = isPlaying || isOK;
         buttonPlayStop.displayString = isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play_all");
         buttonSave.enabled = !textTitle.getText().isEmpty();
+
+        sourcesLink.visible = sourcesLink.displayString.matches("^(http(s)?:\\/\\/[a-zA-Z0-9\\-_]+\\.[a-zA-Z]+(.)+)+");
     }
 
     private void updateTabbedButtonNames()
@@ -318,16 +346,24 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
                 saveAction();
                 break;
             case 4:
-                // Save As
-                saveAsAction();
-                break;
-            case 5:
                 // Done
                 doneAction();
+                break;
+            case 5:
+                // Cancel
+                cancelAction();
                 break;
             case 6:
                 // Play/Stop
                 play();
+                break;
+            case 10:
+                // Source Link
+                handleComponentClick(sourcesLink.getLinkComponent());
+                break;
+            case 11:
+                // MML Link
+                handleComponentClick(mmlLink.getLinkComponent());
                 break;
             case 250:
                 // Add Tab
@@ -419,17 +455,28 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         updateState();
     }
 
-    private void saveAsAction()
-    {
-        // NOP
-    }
-
     private void doneAction()
     {
         // Todo: Warning if un-saved! Quit Yes/No dialog
         stop();
         updateState();
-        mc.displayGuiScreen(new GuiYesNo(this, "Have you saved changes?","Do you still want to exit?",5));
+        switch (mode)
+        {
+            case SELECT:
+                mc.displayGuiScreen(new GuiYesNo(this, "Have you saved changes?","Do you still want to exit?",4));
+                break;
+
+            case SHEET_MUSIC:
+                if (makeSheetMusic())
+                    mc.displayGuiScreen(guiScreenParent);
+                break;
+                default:
+        }
+    }
+
+    private void cancelAction()
+    {
+        mc.displayGuiScreen(guiScreenParent);
     }
 
     private void getSelection()
@@ -448,8 +495,6 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
                 fileOpen();
                 break;
             case FILE_SAVE:
-                break;
-            case FILE_SAVE_AS:
                 break;
             default:
         }
@@ -518,7 +563,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
                     fileNew();
                 mc.displayGuiScreen(this);
                 break;
-            case 5:
+            case 4:
                 // Done! Unsaved Changes! Go back and save?
                 if (result)
                     mc.displayGuiScreen(guiScreenParent);
@@ -527,6 +572,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
                 break;
             default:
         }
+        super.confirmClicked(result, id);
     }
 
     @Override
@@ -665,5 +711,37 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         // stop child tabs
         Arrays.stream(childTabs).forEach(GuiMXTPartTab::onGuiClosed);
         updateState();
+    }
+
+    public enum Mode
+    {
+        SELECT, SHEET_MUSIC
+    }
+
+    private boolean makeSheetMusic()
+    {
+        if (!textTitle.getText().trim().equals("") && buttonPlayStop.enabled)
+        {
+            String title = this.textTitle.getText();
+            for (int i = 0; i < viewableTabCount; i++)
+            {
+                childTabs[i].updatePart();
+                String titleAndInstrument = formatTitle(title, i, viewableTabCount, childTabs[i].getPart().getInstrumentName());
+                String mml = childTabs[i].getMMLClipBoardFormat();
+                PacketDispatcher.sendToServer(new MusicTextMessage(titleAndInstrument, mml));
+            }
+            return true;
+        }
+        else
+            Miscellus.audiblePingPlayer(mc.player, SoundEvents.BLOCK_ANVIL_PLACE);
+        return false;
+    }
+
+    private String formatTitle(String title, int part, int parts, String instrumentName)
+    {
+        if (parts == 1)
+            return String.format("%s (%s)", title, instrumentName);
+        else
+            return String.format("%s (%d-%d : %s)", title, part + 1, parts, instrumentName);
     }
 }

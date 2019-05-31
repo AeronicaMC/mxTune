@@ -487,7 +487,7 @@ public class GuiPlaylistManager extends GuiScreen
         {
             case 0:
                 // Open Music Library
-                mc.displayGuiScreen(new GuiMXT(this));
+                mc.displayGuiScreen(new GuiMXT(this, GuiMXT.Mode.SELECT));
                 break;
             case 1:
                 // Done

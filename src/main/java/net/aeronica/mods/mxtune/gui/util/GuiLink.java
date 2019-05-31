@@ -54,7 +54,7 @@ public class GuiLink extends GuiButton
         {
             FontRenderer fontrenderer = mc.fontRenderer;
             ITextComponent formattedLink = ForgeHooks.newChatWithLinks(this.displayString, false);
-            int stringWidth = fontrenderer.getStringWidth(formattedLink.getFormattedText());
+            int stringWidth = Math.min(fontrenderer.getStringWidth(formattedLink.getFormattedText()), width);
             int alignX = this.x;
             switch (this.alignText)
             {
@@ -68,7 +68,9 @@ public class GuiLink extends GuiButton
                 break;
             default:
             }
-            this.drawString(fontrenderer, formattedLink.getFormattedText(), alignX, this.y, 0xFF0000);
+            String displayLink = fontrenderer.trimStringToWidth(formattedLink.getFormattedText(), width);
+            this.drawGradientRect(alignX - 2 , y - 2, alignX + width + 2, y +  height, 0xCC000000, 0xCC000000);
+            this.drawString(fontrenderer, displayLink, alignX, this.y, 0xFF0000);
          }
     }
 

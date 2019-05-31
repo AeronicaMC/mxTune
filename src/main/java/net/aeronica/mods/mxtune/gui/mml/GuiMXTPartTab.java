@@ -108,6 +108,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     /* MML Parser */
     private ParseErrorListener parseErrorListener = new ParseErrorListener();
     private Set<Integer> errorLines = new HashSet<>();
+    private boolean firstParse = false;
 
     /* MML Player */
     private int playId = PlayIdSupplier.PlayType.INVALID;
@@ -339,7 +340,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
         setLinesLayout(cachedViewableLineCount);
         reloadState();
-        parseTest(false);
+        parseTest(!firstParse);
     }
 
     private void setLinesLayout(int viewableLines)
@@ -513,6 +514,13 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
     private void copyToClipboard()
     {
+        // Setting the clipboard to the empty string does nothing. If there are no lines use an 'empty' MML formatted string instead.
+        String mml = getMMLClipBoardFormat();
+        GuiScreen.setClipboardString(mml.isEmpty() ? "MML@;" : mml);
+    }
+
+    public String getMMLClipBoardFormat()
+    {
         StringBuilder lines = new StringBuilder();
         for (int i = 0; i < viewableLineCount; i++)
         {
@@ -520,9 +528,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
             if (i < (viewableLineCount - 1)) lines.append(",");
         }
 
-        String mml = getTextToParse(lines.toString());
-        // Setting the clipboard to the empty string does nothing. If there are no lines use an 'empty' MML formatted string instead.
-        GuiScreen.setClipboardString(mml.isEmpty() ? "MML@;" : mml);
+        return getTextToParse(lines.toString());
     }
 
     @Override
@@ -603,6 +609,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
     private void parseTest(boolean force)
     {
+        firstParse = true;
         int count = 0;
         for (int i = 0; i < viewableLineCount; i++)
             count += mmlTextLines[i].getText().length();
