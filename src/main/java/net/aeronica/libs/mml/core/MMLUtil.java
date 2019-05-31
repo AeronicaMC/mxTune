@@ -11,7 +11,8 @@ import javax.sound.midi.Patch;
 public enum MMLUtil
 {
     ;
-    static final Logger MML_LOGGER = LogManager.getLogger("MML Core");
+    public static final Logger MML_LOGGER = LogManager.getLogger("MML Core");
+    public static final int MAX_TRACKS = 10;
 
     /* int[0] is not used. Used to reorder ASCII letters to musical notes taking into account accidentals. That is ABCDEFG to CDEFGAB */
     private static final int[] DOE_RE_MI = {50, 9, 11, 0, 2, 4, 5, 7};

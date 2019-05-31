@@ -18,6 +18,7 @@
 package net.aeronica.mods.mxtune.gui.mml;
 
 import com.google.common.io.Files;
+import net.aeronica.libs.mml.readers.mml3mle.MMLFile;
 import net.aeronica.libs.mml.readers.ms2mml.Ms2MmlReader;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.mxt.MXTuneFile;
@@ -50,13 +51,12 @@ public class ImportHelper
             case "ms2mml":
                 return importMs2mml(path);
             case "mml":
-                break;
+                return MMLFile.parse(path);
             case "zip": // Only multi-part ms2mml supported at this time
                 return importZippedMs2mml(path);
             default:
                 return null;
         }
-        return new MXTuneFile();
     }
 
     private static String getExtension(Path path)
