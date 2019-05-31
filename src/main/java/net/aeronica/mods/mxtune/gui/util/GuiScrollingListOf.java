@@ -152,7 +152,8 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
                     break;
                 default:
             }
-            selectedClickedCallback(selectedIndex);
+            if (selectedIndex >= 0 && selectedIndex < arrayList.size())
+                selectedClickedCallback(selectedIndex);
         }
     }
 
