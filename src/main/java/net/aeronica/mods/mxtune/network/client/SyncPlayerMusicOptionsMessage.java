@@ -98,8 +98,8 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                 this.allowMusicOp = inst.isMxTuneServerUpdateAllowed();
                 break;
 
-            case MusicOptionsUtil.SYNC_SELECTED_AREA_GUID:
-                this.selectedAreaGuid = inst.getSelectedAreaGuid();
+            case MusicOptionsUtil.SYNC_SELECTED_PLAY_LIST_GUID:
+                this.selectedAreaGuid = inst.getSelectedPlayListGuid();
                 break;
 
             case MusicOptionsUtil.SYNC_CTRL_KEY_DOWN:
@@ -140,7 +140,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             case MusicOptionsUtil.SYNC_MUSIC_OP:
                 this.allowMusicOp = buffer.readBoolean();
                 break;
-            case MusicOptionsUtil.SYNC_SELECTED_AREA_GUID:
+            case MusicOptionsUtil.SYNC_SELECTED_PLAY_LIST_GUID:
                 long ddddSigBits = buffer.readLong();
                 long ccccSigBits = buffer.readLong();
                 long bbbbSigBits = buffer.readLong();
@@ -185,7 +185,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             case MusicOptionsUtil.SYNC_MUSIC_OP:
                 buffer.writeBoolean(allowMusicOp);
                 break;
-            case MusicOptionsUtil.SYNC_SELECTED_AREA_GUID:
+            case MusicOptionsUtil.SYNC_SELECTED_PLAY_LIST_GUID:
                 buffer.writeLong(selectedAreaGuid.getDdddSignificantBits());
                 buffer.writeLong(selectedAreaGuid.getCcccSignificantBits());
                 buffer.writeLong(selectedAreaGuid.getBbbbSignificantBits());
@@ -228,8 +228,8 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                     case MusicOptionsUtil.SYNC_MUSIC_OP:
                         instance.setMxTuneServerUpdateAllowed(allowMusicOp);
                         break;
-                    case MusicOptionsUtil.SYNC_SELECTED_AREA_GUID:
-                        instance.setSelectedAreaGuid(selectedAreaGuid);
+                    case MusicOptionsUtil.SYNC_SELECTED_PLAY_LIST_GUID:
+                        instance.setSelectedPlayListGuid(selectedAreaGuid);
                         break;
                     case MusicOptionsUtil.SYNC_CTRL_KEY_DOWN:
                         instance.setCtrlKey(ctrlKeyDown);

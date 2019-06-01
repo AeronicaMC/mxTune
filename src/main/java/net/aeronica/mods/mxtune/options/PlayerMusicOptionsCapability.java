@@ -112,7 +112,7 @@ public class PlayerMusicOptionsCapability
                     live.setWhiteList(dead.getWhiteList());
                     live.setSoundRangeInfinityAllowed(dead.isSoundRangeInfinityRangeAllowed());
                     live.setMxTuneServerUpdateAllowed(dead.isSoundRangeInfinityRangeAllowed());
-                    live.setSelectedAreaGuid(dead.getSelectedAreaGuid());
+                    live.setSelectedPlayListGuid(dead.getSelectedPlayListGuid());
                 }
             }
         }
@@ -162,7 +162,7 @@ public class PlayerMusicOptionsCapability
         static final String KEY_PLAYER_NAME = "playerName";
         static final String KEY_SOUND_RANGE_INFINITY_ALLOWED = "soundRangeInfinityAllowed";
         static final String KEY_MXTUNE_SERVER_UPDATE_ALLOWED = "mxTuneServerUpdateAllowed";
-        static final String KEY_SELECTED_AREA_GUID = "selectedAreaGuid";
+        static final String KEY_SELECTED_PLAY_LIST_GUID = "selectedPlayListGuid";
 
 
         @Override
@@ -178,7 +178,7 @@ public class PlayerMusicOptionsCapability
             properties.setString(KEY_S_PARAM_3, instance.getSParam3());
             properties.setBoolean(KEY_SOUND_RANGE_INFINITY_ALLOWED, instance.isSoundRangeInfinityRangeAllowed());
             properties.setBoolean(KEY_MXTUNE_SERVER_UPDATE_ALLOWED, instance.isMxTuneServerUpdateAllowed());
-            NBTHelper.setGuidToTag(instance.getSelectedAreaGuid(), properties, KEY_SELECTED_AREA_GUID);
+            NBTHelper.setGuidToTag(instance.getSelectedPlayListGuid(), properties, KEY_SELECTED_PLAY_LIST_GUID);
             NBTTagList listBlack = new NBTTagList();
             properties.setTag(KEY_LIST_BLACK, listBlack);
             for (int i=0; i<instance.getBlackList().size(); i++)
@@ -211,7 +211,7 @@ public class PlayerMusicOptionsCapability
             instance.setSParams(properties.getString(KEY_S_PARAM_1), properties.getString(KEY_S_PARAM_2), properties.getString(KEY_S_PARAM_3));
             instance.setSoundRangeInfinityAllowed(properties.getBoolean(KEY_SOUND_RANGE_INFINITY_ALLOWED));
             instance.setMxTuneServerUpdateAllowed(properties.getBoolean(KEY_MXTUNE_SERVER_UPDATE_ALLOWED));
-            instance.setSelectedAreaGuid(NBTHelper.getGuidFromTag(properties, KEY_SELECTED_AREA_GUID));
+            instance.setSelectedPlayListGuid(NBTHelper.getGuidFromTag(properties, KEY_SELECTED_PLAY_LIST_GUID));
             if (properties.hasKey(KEY_LIST_BLACK, Constants.NBT.TAG_LIST))
             {
                 NBTTagList listBlack = properties.getTagList(KEY_LIST_BLACK, Constants.NBT.TAG_COMPOUND);

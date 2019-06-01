@@ -62,7 +62,7 @@ public class ItemStaffOfMusic extends Item
         {
             if (playerIn.isSneaking() && !MusicOptionsUtil.isCtrlKeyDown(playerIn) && hasRights)
             {
-                playerIn.openGui(MXTune.instance, GuiGuid.GUI_AREA_MANAGER, worldIn, 0, 0, 0);
+                playerIn.openGui(MXTune.instance, GuiGuid.GUI_PLAY_LIST_MANAGER, worldIn, 0, 0, 0);
             }
             else if (!hasRights)
                 notifyPlayer(playerIn, SoundEvents.BLOCK_GLASS_BREAK, "commands.mxtune.mxtune_server_update_not_allowed");
@@ -73,7 +73,7 @@ public class ItemStaffOfMusic extends Item
         {
             BlockPos pos = playerIn.getPosition();
             Chunk chunk = worldIn.getChunk(pos);
-            GUID playlist = MusicOptionsUtil.getSelectedAreaGuid(playerIn);
+            GUID playlist = MusicOptionsUtil.getSelectedPlayListGuid(playerIn);
 
             boolean hasChunkCap = chunk.hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null);
             boolean hasWorldCap = worldIn.hasCapability(ModWorldPlaylistHelper.MOD_WORLD_DATA, null);

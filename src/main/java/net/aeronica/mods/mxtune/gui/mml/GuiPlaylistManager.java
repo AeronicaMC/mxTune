@@ -23,15 +23,15 @@ import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.gui.util.*;
 import net.aeronica.mods.mxtune.managers.ClientFileManager;
-import net.aeronica.mods.mxtune.managers.records.Area;
+import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.aeronica.mods.mxtune.mxt.MXTuneFile;
 import net.aeronica.mods.mxtune.mxt.MXTuneFileHelper;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
-import net.aeronica.mods.mxtune.network.bidirectional.GetAreasMessage;
+import net.aeronica.mods.mxtune.network.bidirectional.GetPlayListsMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.SetServerSerializedDataMessage;
-import net.aeronica.mods.mxtune.network.server.PlayerSelectedAreaMessage;
+import net.aeronica.mods.mxtune.network.server.PlayerSelectedPlayListMessage;
 import net.aeronica.mods.mxtune.util.CallBackManager;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -79,8 +79,8 @@ public class GuiPlaylistManager extends GuiScreen
 
     // Playlist Selector
     private GuiLabel labelPlayListList;
-    private GuiScrollingListOf<Area> guiPlayList;
-    private List<Area> cachedPlayListGuiList = new ArrayList<>();
+    private GuiScrollingListOf<PlayList> guiPlayList;
+    private List<PlayList> cachedPlayListGuiList = new ArrayList<>();
     private int cachedSelectedPlayListIndex = -1;
 
     // PlayList Day
@@ -163,14 +163,14 @@ public class GuiPlaylistManager extends GuiScreen
         int logStatusTop = fileListBottom + padding;
 
         int thirdsHeight = ((logStatusTop - listTop) / 3) - padding;
-        int areaListHeight = Math.max(thirdsHeight, entryPlayListHeight);
-        int areaBottom = listTop + areaListHeight;
+        int playListListHeight = Math.max(thirdsHeight, entryPlayListHeight);
+        int playListBottom = listTop + playListListHeight;
 
-        int dayTop = areaBottom + padding;
-        int dayBottom = dayTop + areaListHeight;
+        int dayTop = playListBottom + padding;
+        int dayBottom = dayTop + playListListHeight;
 
         int nightTop = dayBottom + padding;
-        int nightBottom = nightTop + areaListHeight;
+        int nightBottom = nightTop + playListListHeight;
 
         labelTitle = new GuiLabel(fontRenderer, 0, titleX, titleTop, titleWidth, singleLineHeight, 0xFFFFFF );
         labelTitle.addLine(TITLE);
@@ -207,15 +207,15 @@ public class GuiPlaylistManager extends GuiScreen
             }
         };
 
-        guiPlayList = new GuiScrollingListOf<Area>(this, entryPlayListHeight, guiPlayListListWidth, areaListHeight, listTop, areaBottom, width - guiPlayListListWidth - padding)
+        guiPlayList = new GuiScrollingListOf<PlayList>(this, entryPlayListHeight, guiPlayListListWidth, playListListHeight, listTop, playListBottom, width - guiPlayListListWidth - padding)
         {
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
             {
-                Area area = !isEmpty() && slotIdx < getSize() && slotIdx >= 0 ? get(slotIdx) : null;
-                if (area != null)
+                PlayList playList = !isEmpty() && slotIdx < getSize() && slotIdx >= 0 ? get(slotIdx) : null;
+                if (playList != null)
                 {
-                    String playlistName = ModGuiUtils.getPlaylistName(area);
+                    String playlistName = ModGuiUtils.getPlaylistName(playList);
                     String trimmedName = fontRenderer.trimStringToWidth(playlistName, listWidth - 10);
                     int color = isSelected(slotIdx) ? 0xFFFF00 : 0xAADDEE;
                     fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
@@ -237,11 +237,11 @@ public class GuiPlaylistManager extends GuiScreen
             @Override
             protected void selectedDoubleClickedCallback(int selectedIndex)
             {
-                updatePlayersSelectedAreaGuid(guiPlayList.get(selectedIndex));
+                updatePlayersSelectedPlayListGuid(guiPlayList.get(selectedIndex));
             }
         };
 
-        guiDay = new GuiScrollingMultiListOf<SongProxy>(this, singleLineHeight, guiPlayListListWidth, areaListHeight ,dayTop, dayBottom, width - guiPlayListListWidth - padding)
+        guiDay = new GuiScrollingMultiListOf<SongProxy>(this, singleLineHeight, guiPlayListListWidth, playListListHeight ,dayTop, dayBottom, width - guiPlayListListWidth - padding)
         {
             @Override
             protected void deleteAction(int index)
@@ -256,7 +256,7 @@ public class GuiPlaylistManager extends GuiScreen
             }
         };
 
-        guiNight = new GuiScrollingMultiListOf<SongProxy>(this, singleLineHeight, guiPlayListListWidth, areaListHeight, nightTop, nightBottom, width - guiPlayListListWidth - padding)
+        guiNight = new GuiScrollingMultiListOf<SongProxy>(this, singleLineHeight, guiPlayListListWidth, playListListHeight, nightTop, nightBottom, width - guiPlayListListWidth - padding)
         {
             @Override
             protected void deleteAction(int index)
@@ -338,7 +338,7 @@ public class GuiPlaylistManager extends GuiScreen
         hooverTexts.add(guiDay);
         hooverTexts.add(guiNight);
         initHooverHelp();
-        initAreas();
+        initPlayLists();
         initFileList();
         reloadState();
     }
@@ -646,9 +646,9 @@ public class GuiPlaylistManager extends GuiScreen
     {
         uploading = true;
         playListName.setText(playListName.getText().trim());
-        Area area = new Area(playListName.getText(), guiDay.getList(), guiNight.getList());
+        PlayList playList = new PlayList(playListName.getText(), guiDay.getList(), guiNight.getList());
         updateStatus(TextFormatting.GOLD + I18n.format("mxtune.gui.guiPlayListManager.log.upload_playlist", TextFormatting.RESET + playListName.getText().trim()));
-        PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(area.getGUID(), SetServerSerializedDataMessage.SetType.AREA, area));
+        PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(playList.getGUID(), SetServerSerializedDataMessage.SetType.PLAY_LIST, playList));
 
         // Build one list of songs to send from both lists to remove duplicates!
         List<SongProxy> proxyMap = new ArrayList<>(guiDay.getList());
@@ -689,13 +689,13 @@ public class GuiPlaylistManager extends GuiScreen
                          updateState();
                      }).start();
         // done
-        initAreas();
+        initPlayLists();
         updateState();
     }
     
-    private void initAreas()
+    private void initPlayLists()
     {
-        PacketDispatcher.sendToServer(new GetAreasMessage(CallBackManager.register(ClientFileManager.INSTANCE)));
+        PacketDispatcher.sendToServer(new GetPlayListsMessage(CallBackManager.register(ClientFileManager.INSTANCE)));
         new Thread(() ->
                    {
                        try
@@ -706,36 +706,36 @@ public class GuiPlaylistManager extends GuiScreen
                            Thread.currentThread().interrupt();
                        }
                        guiPlayList.clear();
-                       guiPlayList.addAll(PLAYLIST_ORDERING.sortedCopy(ClientFileManager.getAreas()));
+                       guiPlayList.addAll(PLAYLIST_ORDERING.sortedCopy(ClientFileManager.getPlayLists()));
                        updateState();
                    }).start();
     }
 
-    private void showSelectedPlaylistsPlaylists(Area selectedArea)
+    private void showSelectedPlaylistsPlaylists(PlayList selectedPlayList)
     {
-        if (selectedArea != null)
+        if (selectedPlayList != null)
         {
-            if (!Reference.NO_MUSIC_GUID.equals(selectedArea.getGUID()) && !Reference.EMPTY_GUID.equals(selectedArea.getGUID()))
-                playListName.setText(ModGuiUtils.getPlaylistName(selectedArea));
+            if (!Reference.NO_MUSIC_GUID.equals(selectedPlayList.getGUID()) && !Reference.EMPTY_GUID.equals(selectedPlayList.getGUID()))
+                playListName.setText(ModGuiUtils.getPlaylistName(selectedPlayList));
             else
                 playListName.setText("");
             guiDay.clear();
             guiNight.clear();
-            guiDay.addAll(SONG_PROXY_ORDERING.sortedCopy(selectedArea.getPlayListDay()));
-            guiNight.addAll(SONG_PROXY_ORDERING.sortedCopy(selectedArea.getPlayListNight()));
+            guiDay.addAll(SONG_PROXY_ORDERING.sortedCopy(selectedPlayList.getPlayListDay()));
+            guiNight.addAll(SONG_PROXY_ORDERING.sortedCopy(selectedPlayList.getPlayListNight()));
             cachedSelectedDaySongs.clear();
             cachedSelectedNightSongs.clear();
             updateState();
         }
     }
 
-    private void  updatePlayersSelectedAreaGuid(Area selectedArea)
+    private void updatePlayersSelectedPlayListGuid(PlayList selectedPlayList)
     {
-        if (selectedArea != null)
+        if (selectedPlayList != null)
         {
-            PacketDispatcher.sendToServer(new PlayerSelectedAreaMessage(selectedArea.getGUID()));
-            String areaNameOrUndefined = ModGuiUtils.getPlaylistName(selectedArea);
-            updateStatus(TextFormatting.GOLD + I18n.format("mxtune.gui.guiPlayListManager.log.set_staff_of_music_playlist", TextFormatting.RESET + areaNameOrUndefined));
+            PacketDispatcher.sendToServer(new PlayerSelectedPlayListMessage(selectedPlayList.getGUID()));
+            String playListNameOrUndefined = ModGuiUtils.getPlaylistName(selectedPlayList);
+            updateStatus(TextFormatting.GOLD + I18n.format("mxtune.gui.guiPlayListManager.log.set_staff_of_music_playlist", TextFormatting.RESET + playListNameOrUndefined));
         }
         else
         {

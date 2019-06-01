@@ -19,7 +19,7 @@ package net.aeronica.mods.mxtune.managers;
 
 import net.aeronica.libs.mml.core.TestData;
 import net.aeronica.mods.mxtune.caches.FileHelper;
-import net.aeronica.mods.mxtune.managers.records.Area;
+import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.aeronica.mods.mxtune.util.*;
@@ -44,7 +44,7 @@ public class ServerFileManager
     private static final String SERVER_ID_FILE_ERROR = "Delete the <world save>/mxtune/server_id" + FileHelper.EXTENSION_DAT + " file, then try loading the world again.";
     private static UUID serverID;
     private static final Map<GUID, SongProxy> songProxyMap = new HashMap<>();
-    private static final Map<GUID, Area> areas = new HashMap<>();
+    private static final Map<GUID, PlayList> playLists = new HashMap<>();
 
     private ServerFileManager() { /* NOP */ }
 
@@ -54,7 +54,7 @@ public class ServerFileManager
         // stuffServer goes here when needed - test data
         new Thread(() ->
                    {
-                       initAreas();
+                       initPlayLists();
                        initSongs();
                        dumpAll();
                    }
@@ -64,7 +64,7 @@ public class ServerFileManager
     public static void shutdown()
     {
         songProxyMap.clear();
-        areas.clear();
+        playLists.clear();
     }
 
     private static void getOrGenerateServerID()
@@ -140,21 +140,21 @@ public class ServerFileManager
         }
     }
 
-    private static void initAreas()
+    private static void initPlayLists()
     {
         // The NULL and NO MUSIC Playlists.
-        Area nullPlaylist = Area.undefinedPlaylist();
-        areas.put(nullPlaylist.getGUID(), nullPlaylist);
-        Area noPlaylists = Area.emptyPlaylist();
-        areas.put(noPlaylists.getGUID(), noPlaylists);
+        PlayList nullPlaylist = PlayList.undefinedPlaylist();
+        playLists.put(nullPlaylist.getGUID(), nullPlaylist);
+        PlayList noPlaylists = PlayList.emptyPlaylist();
+        playLists.put(noPlaylists.getGUID(), noPlaylists);
 
-        List<Path> areaFiles = new ArrayList<>();
+        List<Path> playListFiles = new ArrayList<>();
 
-        Path path = FileHelper.getDirectory(FileHelper.SERVER_AREAS_FOLDER, Side.SERVER);
+        Path path = FileHelper.getDirectory(FileHelper.SERVER_PLAY_LISTS_FOLDER, Side.SERVER);
         PathMatcher filter = FileHelper.getDatMatcher(path);
         try (Stream<Path> paths = Files.list(path))
         {
-            areaFiles = paths
+            playListFiles = paths
                     .filter(filter::matches)
                     .collect(Collectors.toList());
         }
@@ -163,71 +163,71 @@ public class ServerFileManager
             ModLogger.error(e);
         }
 
-        for (Path pathArea : areaFiles)
+        for (Path pathPlayList : playListFiles)
         {
-            NBTTagCompound compound = FileHelper.getCompoundFromFile(pathArea);
+            NBTTagCompound compound = FileHelper.getCompoundFromFile(pathPlayList);
             if (compound != null)
             {
-                Area area = Area.build(compound);
-                GUID areaGUID = area.getGUID();
-                    areas.put(areaGUID, area);
+                PlayList playList = PlayList.build(compound);
+                GUID playListGUID = playList.getGUID();
+                    playLists.put(playListGUID, playList);
             }
         }
     }
 
-    public static synchronized List<Area> getAreas()
+    public static synchronized List<PlayList> getPlayLists()
     {
-        List<Area> areaList = new ArrayList<>();
-        areas.forEach((key, value) -> areaList.add(value));
-        return areaList;
+        List<PlayList> playListList = new ArrayList<>();
+        playLists.forEach((key, value) -> playListList.add(value));
+        return playListList;
     }
 
     /**
-     * Get the Area record that corresponds to the given GUID.
-     * @param guidArea GUID of the desired Area record
-     * @return the Area record, or if it does not exist an Empty Area
+     * Get the PlayList record that corresponds to the given GUID.
+     * @param guidPlayList GUID of the desired PlayList record
+     * @return the PlayList record, or if it does not exist an Empty PlayList
      */
-    public static synchronized Area getArea(GUID guidArea)
+    public static synchronized PlayList getPlayList(GUID guidPlayList)
     {
-        return areas.containsKey(guidArea) ? areas.get(guidArea) : Area.undefinedPlaylist();
+        return playLists.containsKey(guidPlayList) ? playLists.get(guidPlayList) : PlayList.undefinedPlaylist();
     }
 
-    public static ResultMessage setArea(GUID dataTypeUuid, Area area)
+    public static ResultMessage setPlayList(GUID dataTypeUuid, PlayList playList)
     {
         ResultMessage errorResult = ResultMessage.NO_ERROR;
-        if (area != null)
+        if (playList != null)
         {
-            GUID areaGUID = area.getGUID();
-            if (dataTypeUuid.equals(areaGUID))
+            GUID playListGUID = playList.getGUID();
+            if (dataTypeUuid.equals(playListGUID))
             {
-                String areaFileName = area.getFileName();
+                String playListFileName = playList.getFileName();
                 try
                 {
                     NBTTagCompound compound = new NBTTagCompound();
-                    area.writeToNBT(compound);
-                    Path path = FileHelper.getCacheFile(FileHelper.SERVER_AREAS_FOLDER, areaFileName, Side.SERVER);
+                    playList.writeToNBT(compound);
+                    Path path = FileHelper.getCacheFile(FileHelper.SERVER_PLAY_LISTS_FOLDER, playListFileName, Side.SERVER);
                     FileHelper.sendCompoundToFile(path, compound);
                 }
                 catch(IOException e)
                 {
                     ModLogger.error(e);
-                    ModLogger.warn(FORMAT_UNABLE_TO_CREATE, FileHelper.SERVER_AREAS_FOLDER, areaFileName);
-                    errorResult = new ResultMessage(true, new TextComponentTranslation("mxtune.error.unable_to_create_file_folder",FileHelper.SERVER_AREAS_FOLDER, areaFileName));
+                    ModLogger.warn(FORMAT_UNABLE_TO_CREATE, FileHelper.SERVER_PLAY_LISTS_FOLDER, playListFileName);
+                    errorResult = new ResultMessage(true, new TextComponentTranslation("mxtune.error.unable_to_create_file_folder", FileHelper.SERVER_PLAY_LISTS_FOLDER, playListFileName));
                 }
                 if (!errorResult.hasError())
-                    synchronized (areas)
+                    synchronized (playLists)
                     {
-                        areas.put(areaGUID, area);
+                        playLists.put(playListGUID, playList);
                     }
             }
             else
             {
-                throw new MXTuneRuntimeException("GUID Mismatch in transport: Corrupted Area data");
+                throw new MXTuneRuntimeException("GUID Mismatch in transport: Corrupted PlayList data");
             }
         }
         else
         {
-            throw new MXTuneRuntimeException("dataCompound is null in ServerFileManager.setArea");
+            throw new MXTuneRuntimeException("dataCompound is null in ServerFileManager.setPlayList");
         }
         return errorResult;
     }
@@ -300,28 +300,28 @@ public class ServerFileManager
             }
         }
 
-        // Create an area
-        String areaName = "Test Area";
-        String areaFileName = "";
+        // Create an playlist
+        String playListName = "Test PlayList";
+        String playListFileName = "";
         try
         {
             NBTTagCompound compound = new NBTTagCompound();
-            Area area = new  Area(areaName, songProxies, songProxies);
-            areaFileName = area.getFileName();
-            Path path = FileHelper.getCacheFile(FileHelper.SERVER_AREAS_FOLDER, areaFileName, Side.SERVER);
-            area.writeToNBT(compound);
+            PlayList playList = new PlayList(playListName, songProxies, songProxies);
+            playListFileName = playList.getFileName();
+            Path path = FileHelper.getCacheFile(FileHelper.SERVER_PLAY_LISTS_FOLDER, playListFileName, Side.SERVER);
+            playList.writeToNBT(compound);
             FileHelper.sendCompoundToFile(path, compound);
         }
         catch(IOException e)
         {
             ModLogger.warn(e);
-            ModLogger.warn(FORMAT_UNABLE_TO_CREATE, FileHelper.SERVER_AREAS_FOLDER, areaFileName);
+            ModLogger.warn(FORMAT_UNABLE_TO_CREATE, FileHelper.SERVER_PLAY_LISTS_FOLDER, playListFileName);
         }
     }
 
     private static void dumpAll()
     {
-        areas.forEach((key, value) -> ModLogger.debug("Area guid:     %s, Name:    %s", key.toString(), value.getName()));
+        playLists.forEach((key, value) -> ModLogger.debug("PlayList guid:     %s, Name:    %s", key.toString(), value.getName()));
         songProxyMap.forEach((key, value) -> ModLogger.debug("Song guid:     %s, title:    %s", key.toString(), value.getTitle()));
     }
 }

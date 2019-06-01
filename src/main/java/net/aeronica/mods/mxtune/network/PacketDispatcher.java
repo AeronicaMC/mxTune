@@ -81,7 +81,7 @@ public class PacketDispatcher
         registerMessage(HudOptionsMessage.class);
         registerMessage(BandAmpMessage.class);
         registerMessage(ByteArrayPartMessage.class);
-        registerMessage(PlayerSelectedAreaMessage.class);
+        registerMessage(PlayerSelectedPlayListMessage.class);
 
         /*
          * If you don't want to make a 'registerMessage' method, you can do it
@@ -97,7 +97,7 @@ public class PacketDispatcher
         registerMessage(ClientStateDataMessage.class);
         registerMessage(GetServerDataMessage.class);
         registerMessage(SendResultMessage.class);
-        registerMessage(GetAreasMessage.class);
+        registerMessage(GetPlayListsMessage.class);
         registerMessage(SetServerSerializedDataMessage.class);
     }
 

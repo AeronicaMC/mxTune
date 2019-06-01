@@ -38,8 +38,8 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
 {
     private boolean errorResult = false;
     private boolean fileError = false;
-    public enum GetType {AREA, MUSIC}
-    private GetType type = GetType.AREA;
+    public enum GetType {PLAY_LIST, MUSIC}
+    private GetType type = GetType.PLAY_LIST;
     private NBTTagCompound dataCompound = new NBTTagCompound();
     private long ddddSigBits;
     private long ccccSigBits;
@@ -149,8 +149,8 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
             ModLogger.warn(type + " file: " + dataTypeUuid.toString() + FileHelper.EXTENSION_DAT + " does not exist on the server");
         switch(type)
         {
-            case AREA:
-                ClientFileManager.addArea(dataTypeUuid, dataCompound, errorResult);
+            case PLAY_LIST:
+                ClientFileManager.addPlayList(dataTypeUuid, dataCompound, errorResult);
                 break;
             case MUSIC:
                 ClientFileManager.addSong(dataTypeUuid, dataCompound, errorResult);
@@ -169,8 +169,8 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
     {
         switch(type)
         {
-            case AREA:
-                dataCompound = getDataCompoundFromFile(FileHelper.SERVER_AREAS_FOLDER, dataTypeUuid);
+            case PLAY_LIST:
+                dataCompound = getDataCompoundFromFile(FileHelper.SERVER_PLAY_LISTS_FOLDER, dataTypeUuid);
                 break;
             case MUSIC:
                 dataCompound = getDataCompoundFromFile(FileHelper.SERVER_MUSIC_FOLDER, dataTypeUuid);

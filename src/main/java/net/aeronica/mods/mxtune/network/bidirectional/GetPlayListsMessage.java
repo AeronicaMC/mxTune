@@ -18,7 +18,7 @@
 package net.aeronica.mods.mxtune.network.bidirectional;
 
 import net.aeronica.mods.mxtune.managers.ServerFileManager;
-import net.aeronica.mods.mxtune.managers.records.Area;
+import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.util.CallBack;
@@ -36,27 +36,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class GetAreasMessage extends AbstractMessage<GetAreasMessage>
+public class GetPlayListsMessage extends AbstractMessage<GetPlayListsMessage>
 {
     private byte[] byteBuffer = null;
     private long callbackUuidMSB = 0;
     private long callbackUuidLSB = 0;
     private ITextComponent message = new TextComponentTranslation("mxtune.no_error", "");
     private UUID callbackUuid;
-    private List<Area> areas;
+    private List<PlayList> playLists;
     private boolean readError = false;
 
-    public GetAreasMessage() { /* Required by the PacketDispatcher */ }
+    public GetPlayListsMessage() { /* Required by the PacketDispatcher */ }
 
-    public GetAreasMessage(UUID callback)
+    public GetPlayListsMessage(UUID callback)
     {
         callbackUuidMSB = callback.getMostSignificantBits();
         callbackUuidLSB = callback.getLeastSignificantBits();
     }
 
-    public GetAreasMessage(List<Area> areas, UUID callbackUuid, ITextComponent message)
+    public GetPlayListsMessage(List<PlayList> playLists, UUID callbackUuid, ITextComponent message)
     {
-        this.areas = areas;
+        this.playLists = playLists;
         this.message = message;
         this.callbackUuidMSB = callbackUuid.getMostSignificantBits();
         this.callbackUuidLSB = callbackUuid.getLeastSignificantBits();
@@ -75,7 +75,7 @@ public class GetAreasMessage extends AbstractMessage<GetAreasMessage>
             byteBuffer = buffer.readByteArray();
             ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
             ObjectInputStream in = new ObjectInputStream(bis);
-            areas =  (ArrayList<Area>) in.readObject();
+            playLists =  (ArrayList<PlayList>) in.readObject();
             in.close();
 
         } catch (ClassNotFoundException | IOException e)
@@ -95,7 +95,7 @@ public class GetAreasMessage extends AbstractMessage<GetAreasMessage>
             // Serialize data object to a byte array
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ObjectOutputStream out = new ObjectOutputStream(bos);
-            out.writeObject((Serializable) areas);
+            out.writeObject((Serializable) playLists);
             out.close();
 
             // Get the bytes of the serialized object
@@ -125,7 +125,7 @@ public class GetAreasMessage extends AbstractMessage<GetAreasMessage>
         if (!readError)
         {
             if (callback != null)
-                callback.onResponse(areas);
+                callback.onResponse(playLists);
         }
         else
             if (callback != null)
@@ -134,6 +134,6 @@ public class GetAreasMessage extends AbstractMessage<GetAreasMessage>
 
     private void handleServerSide(EntityPlayerMP playerMP)
     {
-        PacketDispatcher.sendTo(new GetAreasMessage(ServerFileManager.getAreas(), callbackUuid, new TextComponentTranslation("mxtune.no_error", "SERVER")),playerMP);
+        PacketDispatcher.sendTo(new GetPlayListsMessage(ServerFileManager.getPlayLists(), callbackUuid, new TextComponentTranslation("mxtune.no_error", "SERVER")), playerMP);
     }
 }

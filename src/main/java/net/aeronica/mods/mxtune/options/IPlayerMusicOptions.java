@@ -66,9 +66,9 @@ public interface IPlayerMusicOptions
 
     boolean isMxTuneServerUpdateAllowed();
 
-    void setSelectedAreaGuid(GUID guidArea);
+    void setSelectedPlayListGuid(GUID guidPlayList);
 
-    GUID getSelectedAreaGuid();
+    GUID getSelectedPlayListGuid();
 
     void setCtrlKey(boolean isDown);
 

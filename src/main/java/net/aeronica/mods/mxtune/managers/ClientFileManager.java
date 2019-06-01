@@ -19,8 +19,8 @@ package net.aeronica.mods.mxtune.managers;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.caches.FileHelper;
-import net.aeronica.mods.mxtune.managers.records.Area;
 import net.aeronica.mods.mxtune.managers.records.BaseData;
+import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
@@ -54,18 +54,18 @@ public enum  ClientFileManager implements CallBack
     private static UUID cachedServerID = Reference.EMPTY_UUID;
     private static Minecraft mc = Minecraft.getMinecraft();
 
-    private static final String DIR_AREAS = "areas";
+    private static final String DIR_PLAY_LISTS = "playlists";
     private static final String DIR_MUSIC = "music";
 
-    private static Path pathAreas;
+    private static Path pathPlayLists;
     private static Path pathMusic;
 
-    private static final Map<GUID, Area> mapAreas = new HashMap<>();
+    private static final Map<GUID, PlayList> mapPlayLists = new HashMap<>();
     private static Map<GUID, SongProxy> mapSongProxies = new HashMap<>();
-    private static Set<GUID> badAreas = new HashSet<>();
+    private static Set<GUID> badPlayLists = new HashSet<>();
     private static Set<GUID> badSongs = new HashSet<>();
 
-    private static boolean waitArea = false;
+    private static boolean waitPlayList = false;
     private static boolean waitSong = false;
 
     private static UUID cachedPlayerUUID;
@@ -82,11 +82,11 @@ public enum  ClientFileManager implements CallBack
         ModLogger.debug("Cached Server ID received: %s", cachedServerID.toString());
         createClientSideCacheDirectories();
         // No need to retrieve from cache since we pull down each session and clear the cache on close.
-        mapAreas.clear();
+        mapPlayLists.clear();
         mapSongProxies.clear();
-        // loadCache(pathAreas, mapAreas, Area.class);
+        // loadCache(pathPlayLists, mapPlayLists, PlayList.class);
         // loadCache(pathMusic, mapSongProxies, SongProxy.class);
-        badAreas.clear();
+        badPlayLists.clear();
         badSongs.clear();
     }
 
@@ -94,7 +94,7 @@ public enum  ClientFileManager implements CallBack
     {
         if (!cachedPlayerUUID.equals(Reference.EMPTY_UUID) && !cachedServerID.equals(Reference.EMPTY_UUID))
         {
-            clearCache(pathAreas);
+            clearCache(pathPlayLists);
             clearCache(pathMusic);
         }
     }
@@ -107,7 +107,7 @@ public enum  ClientFileManager implements CallBack
     {
         cachedPlayerUUID = mc.player.getUniqueID();
         Path clientSidePlayerServerCachePath = Paths.get(FileHelper.CLIENT_SERVER_CACHE_FOLDER, cachedPlayerUUID.toString(), getCachedServerID().toString());
-        pathAreas = getSubDirectory(clientSidePlayerServerCachePath.toString(), DIR_AREAS);
+        pathPlayLists = getSubDirectory(clientSidePlayerServerCachePath.toString(), DIR_PLAY_LISTS);
         pathMusic = getSubDirectory(clientSidePlayerServerCachePath.toString(), DIR_MUSIC);
     }
 
@@ -138,52 +138,52 @@ public enum  ClientFileManager implements CallBack
     {
         if (payload != null)
         {
-            for (Area area : (List<Area>) payload)
+            for (PlayList playList : (List<PlayList>) payload)
             {
                 NBTTagCompound compound = new NBTTagCompound();
-                area.writeToNBT(compound);
-                addArea(area.getGUID(), compound, false);
+                playList.writeToNBT(compound);
+                addPlayList(playList.getGUID(), compound, false);
             }
         }
     }
 
     // Playlist
 
-    public static List<Area> getAreas()
+    public static List<PlayList> getPlayLists()
     {
-        List<Area> areas = new ArrayList<>();
-        synchronized (mapAreas)
+        List<PlayList> playLists = new ArrayList<>();
+        synchronized (mapPlayLists)
         {
-            for (Map.Entry<GUID, Area> entry : mapAreas.entrySet())
+            for (Map.Entry<GUID, PlayList> entry : mapPlayLists.entrySet())
             {
-                areas.add(entry.getValue());
+                playLists.add(entry.getValue());
             }
         }
-        return areas;
+        return playLists;
     }
 
-    public static void addArea(GUID guid, NBTTagCompound data, boolean error)
+    public static void addPlayList(GUID guid, NBTTagCompound data, boolean error)
     {
         if (error)
         {
-            addBadArea(guid);
+            addBadPlayList(guid);
             return;
         }
         Path path;
-        Area area = new Area();
-        area.readFromNBT(data);
-        mapAreas.put(guid, area);
+        PlayList playList = new PlayList();
+        playList.readFromNBT(data);
+        mapPlayLists.put(guid, playList);
         try
         {
-            path = FileHelper.getCacheFile(pathAreas.toString(), guid.toString() + FileHelper.EXTENSION_DAT, Side.CLIENT);
+            path = FileHelper.getCacheFile(pathPlayLists.toString(), guid.toString() + FileHelper.EXTENSION_DAT, Side.CLIENT);
         }
         catch (IOException e)
         {
             ModLogger.error(e);
-            ModLogger.error("Unable to write Area file: %s to cache folder: %s", guid.toString() + FileHelper.EXTENSION_DAT, pathAreas.toString());
+            ModLogger.error("Unable to write PlayList file: %s to cache folder: %s", guid.toString() + FileHelper.EXTENSION_DAT, pathPlayLists.toString());
             return;
         }
-        waitArea = false;
+        waitPlayList = false;
         FileHelper.sendCompoundToFile(path, data);
     }
 
@@ -236,9 +236,9 @@ public enum  ClientFileManager implements CallBack
 
     // Bad Playlist and Bad Song - not found data.
 
-    private static void addBadArea(GUID guid)
+    private static void addBadPlayList(GUID guid)
     {
-        badAreas.add(guid);
+        badPlayLists.add(guid);
     }
 
     private static void addBadSong(GUID guid)
@@ -246,9 +246,9 @@ public enum  ClientFileManager implements CallBack
         badSongs.add(guid);
     }
 
-    private static boolean isNotBadArea(GUID guid)
+    private static boolean isNotBadPlayList(GUID guid)
     {
-        return !badAreas.contains(guid);
+        return !badPlayLists.contains(guid);
     }
 
     static boolean isNotBadSong(GUID guid)
@@ -326,49 +326,49 @@ public enum  ClientFileManager implements CallBack
     }
 
     // This is called every tick so after at least one to two ticks a song should be available
-    // If no local cache files exist then the area/playlist will get DL and cached. On subsequent ticks
+    // If no local cache files exist then the playlist will get DL and cached. On subsequent ticks
     // the song itself will be chosen and made available
-    static boolean songAvailable(GUID uuidArea)
+    static boolean songAvailable(GUID guidPlayList)
     {
         // META: What to do?
 
-        // Check local cache for area/playlist
-        // if area/playlist not exists
-        //     DL area/playlist and cache to collection and disk (async threaded flush)
+        // Check local cache for playlist
+        // if playlist not exists
+        //     DL playlist and cache to collection and disk (async threaded flush)
         // else
-        //     choose song based on <Area> settings and <playlist>
+        //     choose song based on <PlayList> settings and <playlist>
         //     if song not cached
         //         DL and cache
         //     else
         //         get song from cache
         // queue song for next play and set songAvailable to true.
-        return resolveArea(uuidArea) && isNotBadArea(uuidArea) && !waitArea && !waitSong;
+        return resolvePlayList(guidPlayList) && isNotBadPlayList(guidPlayList) && !waitPlayList && !waitSong;
     }
 
-    private static boolean resolveArea(GUID guid)
+    private static boolean resolvePlayList(GUID guid)
     {
-        if (mapAreas.containsKey(guid))
+        if (mapPlayLists.containsKey(guid))
         {
-            waitArea = false;
+            waitPlayList = false;
             return true;
         }
         else
         {
-            if (!Reference.EMPTY_GUID.equals(guid) && isNotBadArea(guid))
+            if (!Reference.EMPTY_GUID.equals(guid) && isNotBadPlayList(guid))
             {
-                waitArea = true;
-                PacketDispatcher.sendToServer(new GetServerDataMessage(guid, GetType.AREA));
+                waitPlayList = true;
+                PacketDispatcher.sendToServer(new GetServerDataMessage(guid, GetType.PLAY_LIST));
             }
             return false;
         }
     }
 
     @Nullable
-    public static Area getArea(GUID guid)
+    public static PlayList getPlayList(GUID guid)
     {
-        if (resolveArea(guid))
+        if (resolvePlayList(guid))
         {
-            return mapAreas.get(guid);
+            return mapPlayLists.get(guid);
         }
         return null;
     }

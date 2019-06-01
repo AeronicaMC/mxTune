@@ -19,7 +19,7 @@ package net.aeronica.mods.mxtune.gui.mml;
 
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
-import net.aeronica.mods.mxtune.managers.records.Area;
+import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
 
@@ -29,14 +29,14 @@ public final class SortHelper
 {
     private SortHelper() { /* NOP */ }
 
-    public static final Ordering<Area> PLAYLIST_ORDERING = Ordering.from(new PlaylistComparator());
+    public static final Ordering<PlayList> PLAYLIST_ORDERING = Ordering.from(new PlaylistComparator());
     public static final Ordering<SongProxy> SONG_PROXY_ORDERING = Ordering.from(new SongProxyComparator());
     public static final Ordering<Song> SONG_ORDERING = Ordering.from(new SongComparator());
 
-    static class PlaylistComparator implements Comparator<Area>
+    static class PlaylistComparator implements Comparator<PlayList>
     {
         @Override
-        public int compare(Area o1, Area o2)
+        public int compare(PlayList o1, PlayList o2)
         {
             return ComparisonChain.start().compare(o1.getName(), o2.getName()).result();
         }

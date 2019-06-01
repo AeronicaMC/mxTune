@@ -24,7 +24,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
-public class PlayerSelectedAreaMessage extends AbstractMessage.AbstractServerMessage<PlayerSelectedAreaMessage>
+public class PlayerSelectedPlayListMessage extends AbstractMessage.AbstractServerMessage<PlayerSelectedPlayListMessage>
 {
     private GUID selectedAreaGuid;
     private long ddddSigBits;
@@ -32,9 +32,9 @@ public class PlayerSelectedAreaMessage extends AbstractMessage.AbstractServerMes
     private long bbbbSigBits;
     private long aaaaSigBits;
 
-    public PlayerSelectedAreaMessage() { /* Required by the Packet Dispatcher */}
+    public PlayerSelectedPlayListMessage() { /* Required by the Packet Dispatcher */}
 
-    public PlayerSelectedAreaMessage(GUID selectedAreaGuid)
+    public PlayerSelectedPlayListMessage(GUID selectedAreaGuid)
     {
         ddddSigBits = selectedAreaGuid.getDdddSignificantBits();
         ccccSigBits = selectedAreaGuid.getCcccSignificantBits();
@@ -64,6 +64,6 @@ public class PlayerSelectedAreaMessage extends AbstractMessage.AbstractServerMes
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        MusicOptionsUtil.setSelectedAreaGuid(player, selectedAreaGuid);
+        MusicOptionsUtil.setSelectedPlayListGuid(player, selectedAreaGuid);
     }
 }

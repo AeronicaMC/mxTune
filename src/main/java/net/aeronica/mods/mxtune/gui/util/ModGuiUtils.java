@@ -18,7 +18,7 @@
 package net.aeronica.mods.mxtune.gui.util;
 
 import net.aeronica.mods.mxtune.Reference;
-import net.aeronica.mods.mxtune.managers.records.Area;
+import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.resources.I18n;
@@ -58,7 +58,7 @@ public class ModGuiUtils
         }
     }
 
-    public static String getPlaylistName(@Nullable Area playlist)
+    public static String getPlaylistName(@Nullable PlayList playlist)
     {
         if (playlist != null)
         {

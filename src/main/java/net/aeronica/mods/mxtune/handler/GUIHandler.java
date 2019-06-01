@@ -86,7 +86,7 @@ public class GUIHandler implements IGuiHandler
             case GUI_MUSIC_LIBRARY:
                 return new GuiMusicLibrary(null);
 
-            case GUI_AREA_MANAGER:
+            case GUI_PLAY_LIST_MANAGER:
                 return new GuiPlaylistManager();
 
             case GUI_MXT_TEST:

@@ -18,7 +18,7 @@
 package net.aeronica.mods.mxtune.managers;
 
 import net.aeronica.mods.mxtune.Reference;
-import net.aeronica.mods.mxtune.managers.records.Area;
+import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
@@ -193,7 +193,7 @@ public class ClientPlayManager implements IAudioStatusCallback
 
         }
         updateTimeOfDay();
-        changeAreaMusic(false);
+        changePlayListMusic(false);
     }
 
     private static void chunkChange(WeakReference<Chunk> current, WeakReference<Chunk> previous)
@@ -206,14 +206,14 @@ public class ClientPlayManager implements IAudioStatusCallback
         }
         if (prevChunk != null && prevChunk.hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null))
         {
-            GUID prevAreaGUID = ModChunkPlaylistHelper.getPlaylistGuid(prevChunk);
-            previousPlaylistGUID = prevAreaGUID;
+            GUID prevPlayListGUID = ModChunkPlaylistHelper.getPlaylistGuid(prevChunk);
+            previousPlaylistGUID = prevPlayListGUID;
         }
         if (!currentPlaylistGUID.equals(previousPlaylistGUID))
-            changeAreaMusic(true);
+            changePlayListMusic(true);
     }
 
-    private static void changeAreaMusic(boolean chunkChanged)
+    private static void changePlayListMusic(boolean chunkChanged)
     {
         if (chunkChanged && currentPlayId != PlayType.INVALID)
         {
@@ -230,12 +230,12 @@ public class ClientPlayManager implements IAudioStatusCallback
             if (!Reference.EMPTY_GUID.equals(guidSong) && !ClientFileManager.hasSongProxy(guidSong))
             {
                 PacketDispatcher.sendToServer(new GetServerDataMessage(guidSong, GetServerDataMessage.GetType.MUSIC, currentPlayId));
-                ModLogger.debug("ChangeAreaMusic: Get from SERVER!");
+                ModLogger.debug("ChangePlayListMusic: Get from SERVER!");
             }
             else if (!Reference.EMPTY_GUID.equals(guidSong) && ClientFileManager.hasSongProxy(guidSong))
             {
                 playMusic(guidSong, currentPlayId);
-                ModLogger.debug("ChangeAreaMusic: Get from CACHE!");
+                ModLogger.debug("ChangePlayListMusic: Get from CACHE!");
             }
             else if (!ClientFileManager.isNotBadSong(guidSong))
             {
@@ -266,7 +266,7 @@ public class ClientPlayManager implements IAudioStatusCallback
             if (world.hasCapability(ModWorldPlaylistHelper.MOD_WORLD_DATA, null))
             {
                 currentPlaylistGUID = ModWorldPlaylistHelper.getPlaylistGuid(world);
-                changeAreaMusic(false);
+                changePlayListMusic(false);
             }
         }
     }
@@ -278,7 +278,7 @@ public class ClientPlayManager implements IAudioStatusCallback
         if (Reference.EMPTY_GUID.equals(currentPlaylistGUID) && currentPlayId == PlayType.INVALID || (lastDuskDawnTransition != night))
         {
             lastDuskDawnTransition = night;
-            changeAreaMusic(true);
+            changePlayListMusic(true);
         }
     }
 
@@ -303,17 +303,17 @@ public class ClientPlayManager implements IAudioStatusCallback
         }
     }
 
-    private static GUID randomSong(GUID guidArea)
+    private static GUID randomSong(GUID guidPlayList)
     {
-        Area area = ClientFileManager.getArea(guidArea);
+        PlayList playList = ClientFileManager.getPlayList(guidPlayList);
         SongProxy songProxy;
-        if (area != null)
+        if (playList != null)
         {
             songProxies.clear();
             if (night)
-                songProxies.addAll(area.getPlayListNight());
+                songProxies.addAll(playList.getPlayListNight());
             else
-                songProxies.addAll(area.getPlayListDay());
+                songProxies.addAll(playList.getPlayListDay());
 
             int size = songProxies.size();
 
@@ -328,7 +328,7 @@ public class ClientPlayManager implements IAudioStatusCallback
 
             trackLastSongs(songProxy);
 
-            lastSongLine01 = I18n.format("mxtune.info.last_song_line_01", area.getName(), night ? I18n.format("mxtune.info.night") : I18n.format("mxtune.info.day"), SheetMusicUtil.formatDuration(songProxy.getDuration()));
+            lastSongLine01 = I18n.format("mxtune.info.last_song_line_01", playList.getName(), night ? I18n.format("mxtune.info.night") : I18n.format("mxtune.info.day"), SheetMusicUtil.formatDuration(songProxy.getDuration()));
             lastSongLine02 = I18n.format("mxtune.info.last_song_line_02", songProxy.getTitle());
             ModLogger.debug(lastSongLine01);
             ModLogger.debug(lastSongLine02);
@@ -437,7 +437,7 @@ public class ClientPlayManager implements IAudioStatusCallback
             if (currentPlayId == playId && (status == Status.ERROR || status == Status.DONE))
             {
                 invalidatePlayId();
-                changeAreaMusic(false);
+                changePlayListMusic(false);
                 resetTimer();
             }
         });

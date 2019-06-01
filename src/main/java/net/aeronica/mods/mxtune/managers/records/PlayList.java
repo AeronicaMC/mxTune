@@ -23,7 +23,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Area extends BaseData
+public class PlayList extends BaseData
 {
     private static final  String TAG_NAME = "name";
     private static final String TAG_PLAY_LIST_DAY = "play_list_day";
@@ -35,7 +35,7 @@ public class Area extends BaseData
     private List<SongProxy> playListDay;
     private List<SongProxy> playListNight;
 
-    public Area()
+    public PlayList()
     {
         super();
         this.name = "";
@@ -43,7 +43,7 @@ public class Area extends BaseData
         playListNight = new ArrayList<>();
     }
 
-    public Area(String name)
+    public PlayList(String name)
     {
         this.name = name.trim();
         playListDay = new ArrayList<>();
@@ -51,7 +51,7 @@ public class Area extends BaseData
         guid = GUID.stringToSHA2Hash(this.name);
     }
 
-    public Area(String name, List<SongProxy> playListDay, List<SongProxy> playListNight)
+    public PlayList(String name, List<SongProxy> playListDay, List<SongProxy> playListNight)
     {
         this.name = name.trim();
         this.playListDay = new ArrayList<>();
@@ -61,27 +61,27 @@ public class Area extends BaseData
         guid = GUID.stringToSHA2Hash(this.name);
     }
 
-    public static Area build(NBTTagCompound compound)
+    public static PlayList build(NBTTagCompound compound)
     {
-        Area area = new Area();
-        area.readFromNBT(compound);
-        return area;
+        PlayList playList = new PlayList();
+        playList.readFromNBT(compound);
+        return playList;
     }
 
-    public static Area emptyPlaylist()
+    public static PlayList emptyPlaylist()
     {
-        Area area = new Area();
-        area.name = "[ empty playlist ]";
-        area.guid = new GUID(0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff);
-        return area;
+        PlayList playList = new PlayList();
+        playList.name = "[ empty playlist ]";
+        playList.guid = new GUID(0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff);
+        return playList;
     }
 
-    public static Area undefinedPlaylist()
+    public static PlayList undefinedPlaylist()
     {
-        Area area = new Area();
-        area.name = " [ undefined playlist ] ";
-        area.guid = new GUID(0L, 0L, 0L, 0L);
-        return area;
+        PlayList playList = new PlayList();
+        playList.name = " [ undefined playlist ] ";
+        playList.guid = new GUID(0L, 0L, 0L, 0L);
+        return playList;
     }
 
     @Override
@@ -185,7 +185,7 @@ public class Area extends BaseData
     @Override
     public <T extends BaseData> T factory()
     {
-        return (T) new Area();
+        return (T) new PlayList();
     }
 
     @Override

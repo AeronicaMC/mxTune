@@ -19,7 +19,7 @@ package net.aeronica.mods.mxtune.network.bidirectional;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.managers.ServerFileManager;
-import net.aeronica.mods.mxtune.managers.records.Area;
+import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.network.NetworkSerializedHelper;
@@ -40,7 +40,7 @@ import java.io.Serializable;
 
 public class SetServerSerializedDataMessage extends AbstractMessage.AbstractServerMessage<SetServerSerializedDataMessage>
 {
-    private SetType type = SetType.AREA;
+    private SetType type = SetType.PLAY_LIST;
     private Serializable baseData;
     private long ddddSigBits;
     private long ccccSigBits;
@@ -98,10 +98,10 @@ public class SetServerSerializedDataMessage extends AbstractMessage.AbstractServ
         {
             switch (type)
             {
-                case AREA:
-                    Area area = (Area)baseData;
-                    resultMessage = ServerFileManager.setArea(dataTypeUuid, area);
-                    ModLogger.debug("BACKGROUND Serialized Test: pass %s", dataTypeUuid.equals(area.getGUID()));
+                case PLAY_LIST:
+                    PlayList playList = (PlayList)baseData;
+                    resultMessage = ServerFileManager.setPlayList(dataTypeUuid, playList);
+                    ModLogger.debug("BACKGROUND Serialized Test: pass %s", dataTypeUuid.equals(playList.getGUID()));
                     break;
                 case MUSIC:
                     Song song = (Song)baseData;
@@ -119,5 +119,5 @@ public class SetServerSerializedDataMessage extends AbstractMessage.AbstractServ
             PacketDispatcher.sendTo(new SendResultMessage(resultMessage.getMessage(), resultMessage.hasError()), (EntityPlayerMP) player);
 
     }
-    public enum SetType {AREA, MUSIC}
+    public enum SetType {PLAY_LIST, MUSIC}
 }

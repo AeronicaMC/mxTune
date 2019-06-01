@@ -23,7 +23,7 @@ import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.aeronica.mods.mxtune.items.ItemStaffOfMusic;
 import net.aeronica.mods.mxtune.managers.ClientFileManager;
 import net.aeronica.mods.mxtune.managers.ClientPlayManager;
-import net.aeronica.mods.mxtune.managers.records.Area;
+import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.world.caps.chunk.ModChunkPlaylistHelper;
@@ -104,7 +104,7 @@ public class GuiStaffOverlay extends Gui
         GL11.glPushMatrix();
         GL11.glTranslatef(hd.getPosX(), hd.getPosY(), 0F);
         if (elementType == RenderGameOverlayEvent.ElementType.TEXT)
-            drawAreaInfo(hd, maxWidth, maxHeight);
+            drawPlayListInfo(hd, maxWidth, maxHeight);
 
         int iconX = hd.quadX(maxWidth, 0, 2, maxWidth);
         int iconY = hd.quadY(maxHeight, 0, 2, maxHeight);
@@ -115,7 +115,7 @@ public class GuiStaffOverlay extends Gui
         GL11.glPopMatrix();
     }
 
-    private void drawAreaInfo(HudData hd, int maxWidth, int maxHeight)
+    private void drawPlayListInfo(HudData hd, int maxWidth, int maxHeight)
     {
         int fontHeight = fontRenderer.FONT_HEIGHT + 2;
         int y = 0;
@@ -125,17 +125,17 @@ public class GuiStaffOverlay extends Gui
         // Chunk Playlist
         BlockPos pos = mc.player.getPosition();
         Chunk chunk = mc.world.getChunk(pos);
-        GUID chunkAreaGuid = ModChunkPlaylistHelper.getPlaylistGuid(chunk);
-        Area chunkPlaylists = ClientFileManager.getArea(chunkAreaGuid);
+        GUID chunkPlayListGuid = ModChunkPlaylistHelper.getPlaylistGuid(chunk);
+        PlayList chunkPlaylists = ClientFileManager.getPlayList(chunkPlayListGuid);
         String chunkPlaylistName = ModGuiUtils.getPlaylistName(chunkPlaylists);
 
         // World Playlist
-        GUID worldAreaGuid = ModWorldPlaylistHelper.getPlaylistGuid(mc.world);
-        Area worldPlaylists = ClientFileManager.getArea(worldAreaGuid);
+        GUID worldPlayListGuid = ModWorldPlaylistHelper.getPlaylistGuid(mc.world);
+        PlayList worldPlaylists = ClientFileManager.getPlayList(worldPlayListGuid);
         String worldPlaylistName = ModGuiUtils.getPlaylistName(worldPlaylists);
 
         // Selected Playlist
-        Area selectedPlaylistToApply = ClientFileManager.getArea(MusicOptionsUtil.getSelectedAreaGuid(mc.player));
+        PlayList selectedPlaylistToApply = ClientFileManager.getPlayList(MusicOptionsUtil.getSelectedPlayListGuid(mc.player));
         String selectedPlaylistName = ModGuiUtils.getPlaylistName(selectedPlaylistToApply);
 
         // Draw texts
@@ -152,7 +152,7 @@ public class GuiStaffOverlay extends Gui
 
         renderLine(paddedText.toString(), y, hd, maxWidth, maxHeight, fontHeight);
 
-        String formattedText = I18n.format("mxtune.gui.guiStaffOverlay.area_name_chunk", worldPlaylistName,
+        String formattedText = I18n.format("mxtune.gui.guiStaffOverlay.play_list_name_chunk", worldPlaylistName,
                                            String.format("%+d", chunk.x), String.format("%+d", chunk.z),
                                            chunkPlaylistName);
         y += fontHeight;
@@ -171,7 +171,7 @@ public class GuiStaffOverlay extends Gui
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0xFFFF00);
 
         y += fontHeight;
-        formattedText = normalBoldUnderline + I18n.format("mxtune.gui.guiStaffOverlay.selected_area_to_apply", selectedPlaylistName);
+        formattedText = normalBoldUnderline + I18n.format("mxtune.gui.guiStaffOverlay.selected_play_list_to_apply", selectedPlaylistName);
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, isCtrlDown ? 0x00FF00 : 0x7FFFFF);
     }
 

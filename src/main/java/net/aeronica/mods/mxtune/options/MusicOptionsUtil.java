@@ -42,7 +42,7 @@ public class MusicOptionsUtil
     public static final byte SYNC_WHITE_LIST = 4;
     public static final byte SYNC_BLACK_LIST = 5;
     public static final byte SYNC_MUSIC_OP = 6;
-    public static final byte SYNC_SELECTED_AREA_GUID = 7;
+    public static final byte SYNC_SELECTED_PLAY_LIST_GUID = 7;
     public static final byte SYNC_CTRL_KEY_DOWN = 8;
 
 
@@ -150,13 +150,13 @@ public class MusicOptionsUtil
         sync(playerIn, SYNC_MUSIC_OP);
     }
 
-    public static void setSelectedAreaGuid(EntityPlayer playerIn, GUID guidArea)
+    public static void setSelectedPlayListGuid(EntityPlayer playerIn, GUID guidPlayList)
     {
-        getImpl(playerIn).setSelectedAreaGuid(guidArea);
-        sync(playerIn, SYNC_SELECTED_AREA_GUID);
+        getImpl(playerIn).setSelectedPlayListGuid(guidPlayList);
+        sync(playerIn, SYNC_SELECTED_PLAY_LIST_GUID);
     }
 
-    public static GUID getSelectedAreaGuid(EntityPlayer playerIn) { return getImpl(playerIn).getSelectedAreaGuid(); }
+    public static GUID getSelectedPlayListGuid(EntityPlayer playerIn) { return getImpl(playerIn).getSelectedPlayListGuid(); }
 
 
     public static void setCtrlKey(EntityPlayer playerIn, boolean isDown)

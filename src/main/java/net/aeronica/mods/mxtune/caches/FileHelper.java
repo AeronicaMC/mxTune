@@ -50,11 +50,9 @@ public class FileHelper
     private static final String CLIENT_FOLDER = MOD_FOLDER;
     public static final String CLIENT_MML_FOLDER = CLIENT_FOLDER + "/import_folder";
     public static final String CLIENT_LIB_FOLDER = CLIENT_FOLDER + "/library";
-    public static final String CLIENT_PLAYLISTS_FOLDER = CLIENT_FOLDER + "/playlists";
-    public static final String CLIENT_PROJECTS_FOLDER = CLIENT_FOLDER + "/projects";
     public static final String CLIENT_SERVER_CACHE_FOLDER = CLIENT_FOLDER + "/server_cache";
     public static final String SERVER_FOLDER = MOD_FOLDER;
-    public static final String SERVER_AREAS_FOLDER = SERVER_FOLDER + "/areas";
+    public static final String SERVER_PLAY_LISTS_FOLDER = SERVER_FOLDER + "/areas"; // TODO: Change to "/playlists" before release.
     public static final String SERVER_MUSIC_FOLDER = SERVER_FOLDER + "/music";
 
     public static final String EXTENSION_DAT = ".dat";

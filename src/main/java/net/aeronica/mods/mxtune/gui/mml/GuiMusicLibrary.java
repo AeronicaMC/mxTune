@@ -154,7 +154,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
             }
         };
 
-        // refresh the file list automatically - might be better to not bother the extension filtering but we'll see
+        // refresh the file list automatically
         DirectoryStream.Filter<Path> filter = entry ->
                 (entry.toString().endsWith(".mxt"));
         watcher = new DirectoryWatcher.Builder()
