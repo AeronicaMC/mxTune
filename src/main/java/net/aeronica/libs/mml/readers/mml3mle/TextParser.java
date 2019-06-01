@@ -40,16 +40,11 @@ public final class TextParser
 
     public void parse()
     {
-        Pattern.compile("\n").splitAsStream(this.text).forEachOrdered((lineText) ->
-            {
-                map.keySet().forEach(key ->
-                    {
-                        if (lineText.startsWith(key))
-                        {
-                            map.get(key).accept(lineText.substring(key.length()));
-                            return;
-                        }
-                    });
-            });
+        Pattern.compile("\n").splitAsStream(this.text).forEachOrdered(lineText ->
+            map.keySet().forEach(key ->
+                {
+                    if (lineText.startsWith(key))
+                        map.get(key).accept(lineText.substring(key.length()));
+                }));
     }
 }

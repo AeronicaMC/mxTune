@@ -84,7 +84,7 @@ public final class MMLFile
             throw (new MMLParseException("no contents"));
         }
         parseSection(contentsList);
-        if ((trackList == null) || (trackList.size() == 0))
+        if ((trackList == null) || trackList.isEmpty())
         {
             throw new MMLParseException("no track");
         }
@@ -120,10 +120,10 @@ public final class MMLFile
             throw new MMLParseException("invalid c=" + c + " <> " + crc.getValue());
         }
         Decoder decoder = Base64.getDecoder();
-        byte b[] = decoder.decode(dSection);
+        byte[] b = decoder.decode(dSection);
 
         int dataLength = ByteBuffer.wrap(b, 0, 4).order(ByteOrder.LITTLE_ENDIAN).getInt();
-        byte data[] = new byte[dataLength];
+        byte[] data = new byte[dataLength];
         int readLength = 0;
 
         try
@@ -137,10 +137,11 @@ public final class MMLFile
         }
 
         MMLUtil.MML_LOGGER.info("byte[] decode: dataLength {}, readLength {}", dataLength, readLength);
-        for (int i = 0; i < dataLength;)
+        int i = 0;
+        while (i < dataLength)
         {
             StringBuilder out = new StringBuilder();
-            for (int j = 0; j < 25; j++)
+            for (int k = 0; k < 25; k++)
             {
                 if (i < dataLength)
                     out.append(String.format("%02x ", data[i++]));
@@ -179,7 +180,7 @@ public final class MMLFile
         for (Extension3mleTrack track : trackList)
         {
             int program = track.getInstrument() - 1; // 3MLEのInstruments番号は1がスタート.
-            String text[] = new String[MMLUtil.MAX_TRACKS];
+            String[] text = new String[MMLUtil.MAX_TRACKS];
             List<MXTuneStaff> staves = new ArrayList<>();
             for (int i = 0; i < track.getTrackCount(); i++)
             {
@@ -202,8 +203,8 @@ public final class MMLFile
     private void parseSettings(String contents)
     {
         TextParser.text(contents)
-                .pattern("Title=", t -> mxTuneFile.setTitle(t))
-                .pattern("Source=", t -> mxTuneFile.setSource(t))
+                .pattern("Title=", mxTuneFile::setTitle)
+                .pattern("Source=", mxTuneFile::setSource)
                 .pattern("Encoding=", t -> this.encoding = t)
                 .parse();
     }
@@ -230,7 +231,7 @@ public final class MMLFile
             }
         }
 
-        byte data[] = decode(sb.toString(), c);
+        byte[] data = decode(sb.toString(), c);
         return parseData(data);
     }
 
@@ -238,10 +239,10 @@ public final class MMLFile
      * @param data decompress済みのバイト列
      * @return トラック構成情報
      */
-    private List<Extension3mleTrack> parseData(byte data[])
+    private List<Extension3mleTrack> parseData(byte[] data)
     {
-        LinkedList<Extension3mleTrack> trackList = new LinkedList<>();
-        trackList.add(new Extension3mleTrack(-1, -1, -1, null, 0)); // dummy
+        LinkedList<Extension3mleTrack> extension3mleTracks = new LinkedList<>();
+        extension3mleTracks.add(new Extension3mleTrack(-1, -1, -1, null, 0)); // dummy
 
         ByteArrayInputStream istream = new ByteArrayInputStream(data);
         int b = 0;
@@ -254,7 +255,7 @@ public final class MMLFile
             }
             else if ((hb == 0x02) && (b == 0x1c))
             {
-                parseTrack(trackList, istream);
+                parseTrack(extension3mleTracks, istream);
             }
             else if ((hb == 0x09) && ((b > 0x00) && (b < 0x20)))
             {
@@ -264,8 +265,8 @@ public final class MMLFile
             hb = b;
         }
 
-        trackList.removeFirst();
-        return trackList;
+        extension3mleTracks.removeFirst();
+        return extension3mleTracks;
     }
 
     private void parseHeader(ByteArrayInputStream istream)
@@ -293,7 +294,7 @@ public final class MMLFile
         skips += istream.skip(13);
         String trackName = readString(istream);
         MMLUtil.MML_LOGGER.debug("parseTrack: skips expected 32, skips actual {}, OK={}", skips, 32 == skips);
-        MMLUtil.MML_LOGGER.info(trackNo + " " + instrument + " " + trackName);
+        MMLUtil.MML_LOGGER.info("{} {} {}", trackNo, instrument, trackName);
 
         Extension3mleTrack lastTrack = trackList.getLast();
         if ((lastTrack.getGroup() != group) || (lastTrack.getInstrument() != instrument) || (lastTrack.getPanpot() != panpot) || (lastTrack.isLimit()))
@@ -309,14 +310,13 @@ public final class MMLFile
 
     private int readLEIntValue(InputStream istream)
     {
-        byte b[] = new byte[4];
+        byte[] b = new byte[4];
         int expected = 0;
         try
         {
-            expected = istream.read(b);
+            istream.read(b);
         } catch (IOException e)
         {
-            MMLUtil.MML_LOGGER.error("readLEIntValue: expected bytes 4, read {}.", expected);
             MMLUtil.MML_LOGGER.error(e);
         }
         return ByteBuffer.wrap(b).order(ByteOrder.LITTLE_ENDIAN).getInt();
@@ -324,8 +324,6 @@ public final class MMLFile
 
     private void parseMarker(ByteArrayInputStream istream)
     {
-//		List<Marker> markerList = mxTuneFile.getMarkerList();
-
         // parse Marker
         long skips = istream.skip(7);
         int tickOffset = readLEIntValue(istream);
@@ -333,9 +331,6 @@ public final class MMLFile
         String name = readString(istream);
         MMLUtil.MML_LOGGER.debug("parseMarker: skips expected 11, skips actual {}, OK={}", skips, 11 == skips);
         MMLUtil.MML_LOGGER.info("Marker {}={}", name, tickOffset);
-//		if (markerList != null) {
-//			markerList.add(new Marker(name, tickOffset));
-//		}
     }
 
     private String readString(InputStream istream)

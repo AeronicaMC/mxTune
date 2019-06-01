@@ -13,6 +13,8 @@
 
 package net.aeronica.libs.mml.readers.mml3mle;
 
+import net.aeronica.libs.mml.core.MMLUtil;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -38,8 +40,8 @@ public final class SectionContents
     /**
      * InputStreamからセクションのリストを作成します.
      *
-     * @param istream
-     * @return
+     * @param istream Data stream
+     * @return Section contents
      */
     public static List<SectionContents> makeSectionContentsByInputStream(InputStream istream)
     {
@@ -49,7 +51,7 @@ public final class SectionContents
     /**
      * セクション名を取得します.
      *
-     * @return
+     * @return Section Name
      */
     public String getName()
     {
@@ -59,7 +61,7 @@ public final class SectionContents
     /**
      * セクションコンテンツ（text...部分）を取得します.
      *
-     * @return
+     * @return Contents
      */
     public String getContents()
     {
@@ -69,9 +71,9 @@ public final class SectionContents
     /**
      * InputStreamからセクションのリストを作成します.
      *
-     * @param istream
-     * @param charsetName
-     * @return
+     * @param istream Data stream
+     * @param charsetName Charset name
+     * @return Content List
      */
     public static List<SectionContents> makeSectionContentsByInputStream(InputStream istream, String charsetName)
     {
@@ -85,13 +87,15 @@ public final class SectionContents
                     {
                         contentsList.add(new SectionContents(s));
                     }
-                    else if (contentsList.size() > 0)
+                    else if (!contentsList.isEmpty())
                     {
                         SectionContents section = contentsList.getLast();
                         section.buffer.append(s).append('\n');
                     }
                 });
-        } catch (UnsupportedEncodingException e) {}
+        } catch (UnsupportedEncodingException e) {
+            MMLUtil.MML_LOGGER.error(e);
+        }
 
         return contentsList;
     }

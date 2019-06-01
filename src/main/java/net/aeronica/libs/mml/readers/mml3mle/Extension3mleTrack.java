@@ -11,7 +11,7 @@
  * Used with permission.
  *
  * Remove dependency on 'import fourthline.mabiicco.midi.InstClass;'
- * Set trackLimit to MMLUtil.MAX_TRACKS;
+ * Set trackLimit to 'MMLUtil MAX_TRACKS;'
  */
 
 package net.aeronica.libs.mml.readers.mml3mle;
