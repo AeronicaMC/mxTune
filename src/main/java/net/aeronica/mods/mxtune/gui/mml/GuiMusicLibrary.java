@@ -114,7 +114,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
                 // get the filename and remove the '.mxt' extension
                 if (!isEmpty() && slotIdx >= 0 && slotIdx < size())
                 {
-                    String name = (get(slotIdx).name);
+                    String name = get(slotIdx) != null ? get(slotIdx).name : "";
                     String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
                     int color = isSelected(slotIdx) ? 0xFFFF00 : 0xADD8E6;
                     fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
@@ -145,7 +145,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
             {
-                if (!isEmpty() && slotIdx >= 0 && slotIdx < size())
+                if (!isEmpty() && slotIdx >= 0 && slotIdx < size() && get(slotIdx) != null)
                 {
                     MXTunePart tunePart = get(slotIdx);
                     String trimmedName = fontRenderer.trimStringToWidth(tunePart.getInstrumentName(), listWidth - 10);
@@ -439,8 +439,8 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
             ModLogger.error(e);
         }
 
-        List<Path> files = new ArrayList<>();
-        List<FileData> fileDatas = new ArrayList<>();
+        List<Path> files = new CopyOnWriteArrayList<>();
+        List<FileData> fileDatas = new CopyOnWriteArrayList<>();
         for (Path file : libraryFiles)
         {
             FileData fileData = new FileData(file);
