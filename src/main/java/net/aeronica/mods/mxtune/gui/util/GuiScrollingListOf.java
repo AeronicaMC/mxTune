@@ -25,6 +25,7 @@ import org.lwjgl.input.Keyboard;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -33,7 +34,7 @@ import java.util.stream.Stream;
 @SuppressWarnings("unused")
 public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implements List<E>, IHooverText
 {
-    private final List<E> arrayList = new ArrayList<>();
+    private final List<E> arrayList = new CopyOnWriteArrayList<>();
     protected GuiScreen gui;
     protected Minecraft mc;
     protected int entryHeight;
