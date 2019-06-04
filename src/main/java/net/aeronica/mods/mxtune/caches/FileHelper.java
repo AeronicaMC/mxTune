@@ -52,7 +52,7 @@ public class FileHelper
     public static final String CLIENT_LIB_FOLDER = CLIENT_FOLDER + "/library";
     public static final String CLIENT_SERVER_CACHE_FOLDER = CLIENT_FOLDER + "/server_cache";
     public static final String SERVER_FOLDER = MOD_FOLDER;
-    public static final String SERVER_PLAY_LISTS_FOLDER = SERVER_FOLDER + "/areas"; // TODO: Change to "/playlists" before release.
+    public static final String SERVER_PLAY_LISTS_FOLDER = SERVER_FOLDER + "/playlists";
     public static final String SERVER_MUSIC_FOLDER = SERVER_FOLDER + "/music";
 
     public static final String EXTENSION_DAT = ".dat";
@@ -144,15 +144,32 @@ public class FileHelper
      * getDirectory is side sensitive.
      * Client side references the game run folder (e.g. .minecraft): "."
      * Server side references the world save folder (e.g. world):  "<world folder name>"
+     * This method will create the specified directory if it does not exist!
      * @param folder folder name
      * @param side Side.SERVER or Side CLIENT
      * @return the Path of the folder on the specified side
      */
     public static Path getDirectory(String folder, Side side)
     {
+        return getDirectory(folder, side, true);
+    }
+
+    /**
+     * getDirectory is side sensitive.
+     * Client side references the game run folder (e.g. .minecraft): "."
+     * Server side references the world save folder (e.g. world):  "<world folder name>"
+     * This method will create the specified directory if it does not exist!
+     * @param folder folder name
+     * @param side Side.SERVER or Side CLIENT
+     * @param fixDirectory Recreates the directory if true
+     * @return the Path of the folder on the specified side
+     */
+    public static Path getDirectory(String folder, Side side, boolean fixDirectory)
+    {
         String sidedPath = side == Side.SERVER ? serverWorldFolder.toString() : ".";
         Path loc = Paths.get(sidedPath, folder);
-        fixDirectory(loc);
+        if (fixDirectory)
+            fixDirectory(loc);
         return loc;
     }
 
