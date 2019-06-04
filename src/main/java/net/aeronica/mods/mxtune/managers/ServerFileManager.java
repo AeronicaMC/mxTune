@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -49,34 +48,11 @@ public class ServerFileManager
 
     private ServerFileManager() { /* NOP */ }
 
-    /**
-     * A one time update for SNAPSHOT x to 29+
-     */
-    private static void renameAreasToPlaylists()
-    {
-        Path oldDir = FileHelper.getDirectory(FileHelper.SERVER_FOLDER + "/areas", Side.SERVER, false);
-        Path newDir = FileHelper.getDirectory(FileHelper.SERVER_PLAY_LISTS_FOLDER, Side.SERVER, false);
-        ModLogger.info("Try renameAreasToPlaylists()");
-        if (Files.exists(oldDir) && Files.isDirectory(oldDir))
-        {
-            try
-            {
-                Files.move(oldDir, newDir, StandardCopyOption.ATOMIC_MOVE);
-                ModLogger.info("...Renaming <world>/mxtune/areas to <world>/mxtune/playlists");
-            }
-            catch (IOException e)
-            {
-                ModLogger.info("...Failed to rename <world>/mxtune/areas to <world>/mxtune/playlists");
-                ModLogger.error(e);
-            }
-        } else
-            ModLogger.info("...Nothing to do");
-    }
-
     public static void start()
     {
         getOrGenerateServerID();
-        renameAreasToPlaylists();
+        Update.renameAreasToPlaylists();
+        Update.convertSongToMxt();
         // stuffServer goes here when needed - test data
         new Thread(() ->
                    {
@@ -349,5 +325,10 @@ public class ServerFileManager
     {
         playLists.forEach((key, value) -> ModLogger.debug("PlayList guid:     %s, Name:    %s", key.toString(), value.getName()));
         songProxyMap.forEach((key, value) -> ModLogger.debug("Song guid:     %s, title:    %s", key.toString(), value.getTitle()));
+    }
+
+    public static void main(String[] args)
+    {
+        //convertSongToMxt();
     }
 }

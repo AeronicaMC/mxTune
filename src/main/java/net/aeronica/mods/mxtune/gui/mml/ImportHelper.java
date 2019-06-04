@@ -130,7 +130,7 @@ public class ImportHelper
         return null;
     }
 
-    private static List<MXTuneStaff> getStaves(String data)
+    public static List<MXTuneStaff> getStaves(String data)
     {
         final List<MXTuneStaff> staves = new ArrayList<>();
         int i = 0;

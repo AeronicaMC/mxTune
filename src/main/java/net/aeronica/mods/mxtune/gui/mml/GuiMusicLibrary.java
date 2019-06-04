@@ -439,8 +439,8 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
             ModLogger.error(e);
         }
 
-        List<Path> files = new CopyOnWriteArrayList<>();
-        List<FileData> fileDatas = new CopyOnWriteArrayList<>();
+        List<Path> files = new ArrayList<>();
+        List<FileData> fileDatas = new ArrayList<>();
         for (Path file : libraryFiles)
         {
             FileData fileData = new FileData(file);
