@@ -644,6 +644,7 @@ public class GuiPlaylistManager extends GuiScreen
 
     private void shipIt()
     {
+        // TODO: Sync MXT Files!
         uploading = true;
         playListName.setText(playListName.getText().trim());
         PlayList playList = new PlayList(playListName.getText(), guiDay.getList(), guiNight.getList());
@@ -669,7 +670,8 @@ public class GuiPlaylistManager extends GuiScreen
                                  Song song = pathToSong(songGuidPathBiMap.get(songProxy.getGUID()));
                                  if (song != null)
                                  {
-                                     PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(songProxy.getGUID(), SetServerSerializedDataMessage.SetType.MUSIC, song));
+                                     // TODO: Sync MXT Files!
+                                     //PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(songProxy.getGUID(), SetServerSerializedDataMessage.SetType.MUSIC, song));
                                      updateStatus(TextFormatting.DARK_GREEN + I18n.format("mxtune.gui.guiPlayListManager.log.uploading_music", String.format("%03d", count), String.format("%03d", proxyMap.size()), TextFormatting.RESET + song.getTitle()));
                                  } else
                                  {
