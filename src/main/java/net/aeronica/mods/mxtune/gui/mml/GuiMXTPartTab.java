@@ -28,6 +28,8 @@ import net.aeronica.mods.mxtune.sound.ClientAudio.Status;
 import net.aeronica.mods.mxtune.sound.IAudioStatusCallback;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.util.SheetMusicUtil;
+import net.aeronica.mods.mxtune.util.ValidDuration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -109,6 +111,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private ParseErrorListener parseErrorListener = new ParseErrorListener();
     private Set<Integer> errorLines = new HashSet<>();
     private boolean firstParse = false;
+    private int duration;
 
     /* MML Player */
     private int playId = PlayIdSupplier.PlayType.INVALID;
@@ -390,7 +393,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
     private void updateStatusText()
     {
-        labelStatus.setText(I18n.format("mxtune.gui.guiMXT.textStatus", String.format("%05d", totalCharacters), mxTunePart != null ? mxTunePart.getMeta() : ""));
+        labelStatus.setText(I18n.format("mxtune.gui.guiMXT.textStatus", String.format("%05d", totalCharacters), SheetMusicUtil.formatDuration(duration) ,mxTunePart != null ? mxTunePart.getMeta() : ""));
     }
 
     private void updateButtonState()
@@ -591,6 +594,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
             errorLines.add(index);
             listBoxMMLError.add(new ParseErrorEntry(index,0, "MMLParserFactory.getMMLParser(mml) is null", null));
+            duration = 0;
             return;
         }
         parser.removeErrorListeners();
@@ -598,13 +602,21 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         parser.setBuildParseTree(true);
 
         parser.test();
-        parseErrorListener.getParseErrorEntries().forEach
+        List<ParseErrorEntry> errorEntries = parseErrorListener.getParseErrorEntries();
+        errorEntries.forEach
             (pe ->
              {
                  errorLines.add(index);
                  pe.setLine(index);
                  listBoxMMLError.add(pe);
              });
+        if (errorEntries.isEmpty())
+        {
+            ValidDuration validDuration = SheetMusicUtil.validateMML(getTextToParse(mml));
+            if (validDuration.getDuration() > duration)
+                duration = validDuration.getDuration();
+        } else
+            duration = 0;
     }
 
     private void parseTest(boolean force)
