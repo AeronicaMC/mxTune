@@ -157,7 +157,7 @@ public class MXTuneFile extends BaseData
     @Override
     public String getFileName()
     {
-        return super.getFileName() + FileHelper.EXTENSION_MXT;
+        return guid.toString() + FileHelper.EXTENSION_MXT;
     }
 
     @SuppressWarnings("unchecked")
