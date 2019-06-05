@@ -20,14 +20,19 @@ import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.managers.ClientFileManager;
 import net.aeronica.mods.mxtune.managers.ClientPlayManager;
 import net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType;
+import net.aeronica.mods.mxtune.managers.records.Song;
+import net.aeronica.mods.mxtune.mxt.MXTuneFile;
+import net.aeronica.mods.mxtune.mxt.MXTuneFileHelper;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.util.GUID;
+import net.aeronica.mods.mxtune.util.MXTuneException;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.io.IOException;
@@ -173,7 +178,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
                 dataCompound = getDataCompoundFromFile(FileHelper.SERVER_PLAY_LISTS_FOLDER, dataTypeUuid);
                 break;
             case MUSIC:
-                dataCompound = getDataCompoundFromFile(FileHelper.SERVER_MUSIC_FOLDER, dataTypeUuid);
+                dataCompound = getDataCompoundFromMXTuneFile(FileHelper.SERVER_MUSIC_FOLDER, dataTypeUuid);
                 break;
             default:
         }
@@ -204,5 +209,45 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
         }
         fileError = false;
         return FileHelper.getCompoundFromFile(path);
+    }
+
+    /**
+     * MXT files are now saved on the server side. This method gets the song compound from the MXT file.
+     * @param folder The path to the resource.
+     * @param dataTypeGuid The GUID of the resource.
+     * @return The Song compound.
+     */
+    private NBTTagCompound getDataCompoundFromMXTuneFile(String folder, GUID dataTypeGuid)
+    {
+        Path path;
+        NBTTagCompound emptyData = new NBTTagCompound();
+        Boolean fileExists = FileHelper.fileExists(folder, dataTypeGuid.toString() + FileHelper.EXTENSION_MXT, Side.SERVER);
+        if (!fileExists)
+        {
+            path = Paths.get(folder, dataTypeGuid.toString() + FileHelper.EXTENSION_MXT);
+            ModLogger.warn(path.toString() + " not found!");
+            fileError = true;
+            return emptyData;
+        }
+
+        MXTuneFile mxTuneFile;
+        try
+        {
+            path = FileHelper.getCacheFile(folder, dataTypeGuid.toString() + FileHelper.EXTENSION_MXT, Side.SERVER);
+            mxTuneFile = MXTuneFileHelper.getMXTuneFile(path);
+            if (mxTuneFile == null)
+                throw new MXTuneException(new TextComponentTranslation("mxtune.error.unexpected_data_error", path.toString()).getUnformattedComponentText());
+        } catch (MXTuneException | IOException e)
+        {
+            ModLogger.error(e);
+            fileError = true;
+            return emptyData;
+        }
+        fileError = false;
+
+        Song song = MXTuneFileHelper.getSong(mxTuneFile);
+        NBTTagCompound songData = new NBTTagCompound();
+        song.writeToNBT(songData);
+        return songData;
     }
 }

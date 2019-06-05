@@ -90,7 +90,7 @@ public class GUIHandler implements IGuiHandler
                 return new GuiPlaylistManager();
 
             case GUI_MXT_TEST:
-                return new GuiMXT(null, GuiMXT.Mode.SELECT);
+                return new GuiMXT(null, GuiMXT.Mode.CLIENT);
 
         default:
             return null;

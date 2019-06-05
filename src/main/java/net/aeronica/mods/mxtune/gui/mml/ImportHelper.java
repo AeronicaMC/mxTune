@@ -82,7 +82,6 @@ public class ImportHelper
             mxTuneFile.setTitle(title);
             MXTunePart part = new MXTunePart("Acoustic Piano", "", 0, staves);
             mxTuneFile.getParts().add(part);
-            mxTuneFile.applyUserDateTime(true);
             return mxTuneFile;
         } else
             return null;

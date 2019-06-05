@@ -20,7 +20,7 @@ package net.aeronica.mods.mxtune.network.bidirectional;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.managers.ServerFileManager;
 import net.aeronica.mods.mxtune.managers.records.PlayList;
-import net.aeronica.mods.mxtune.managers.records.Song;
+import net.aeronica.mods.mxtune.mxt.MXTuneFile;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.network.NetworkSerializedHelper;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
@@ -104,9 +104,9 @@ public class SetServerSerializedDataMessage extends AbstractMessage.AbstractServ
                     ModLogger.debug("BACKGROUND Serialized Test: pass %s", dataTypeUuid.equals(playList.getGUID()));
                     break;
                 case MUSIC:
-                    Song song = (Song)baseData;
-                    resultMessage = ServerFileManager.setSong(dataTypeUuid, song);
-                    ModLogger.debug("MUSIC Serialized Test: pass %s", dataTypeUuid.equals(song.getGUID()));
+                    MXTuneFile mxTuneFile = (MXTuneFile) baseData;
+                    resultMessage = ServerFileManager.setMXTFile(dataTypeUuid, mxTuneFile);
+                    ModLogger.debug("MUSIC Serialized Test: pass %s", dataTypeUuid.equals(mxTuneFile.getGUID()));
                     break;
                 default:
                     resultMessage = new ResultMessage(true, new TextComponentTranslation("mxtune.error.unexpected_type", type.name()));

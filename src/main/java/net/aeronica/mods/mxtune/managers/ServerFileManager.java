@@ -22,6 +22,8 @@ import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
+import net.aeronica.mods.mxtune.mxt.MXTuneFile;
+import net.aeronica.mods.mxtune.mxt.MXTuneFileHelper;
 import net.aeronica.mods.mxtune.util.*;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -234,20 +236,20 @@ public class ServerFileManager
         return errorResult;
     }
 
-    public static ResultMessage setSong(GUID dataTypeUuid, Song song)
+    public static ResultMessage setMXTFile(GUID dataTypeUuid, MXTuneFile mxTuneFile)
     {
         ResultMessage errorResult = ResultMessage.NO_ERROR;
-        if (song != null)
+        if (mxTuneFile != null)
         {
-            SongProxy songProxy = new SongProxy(song);
-            GUID songGUID = song.getGUID();
+            SongProxy songProxy = MXTuneFileHelper.getSongProxy(mxTuneFile);
+            GUID songGUID = mxTuneFile.getGUID();
             if (dataTypeUuid.equals(songGUID))
             {
-                String songFileName = song.getFileName();
+                String songFileName = mxTuneFile.getFileName();
                 try
                 {
                     NBTTagCompound dataCompound = new NBTTagCompound();
-                    song.writeToNBT(dataCompound);
+                    mxTuneFile.writeToNBT(dataCompound);
                     Path path = FileHelper.getCacheFile(FileHelper.SERVER_MUSIC_FOLDER, songFileName, Side.SERVER);
                     FileHelper.sendCompoundToFile(path, dataCompound);
                 }
