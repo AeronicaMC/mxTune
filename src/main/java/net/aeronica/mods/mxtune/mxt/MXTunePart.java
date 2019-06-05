@@ -19,12 +19,14 @@ package net.aeronica.mods.mxtune.mxt;
 
 import net.minecraft.nbt.NBTTagCompound;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class MXTunePart
+public class MXTunePart implements Serializable
 {
+    private static final long serialVersionUID = -76034260522031311L;
     private static final String TAG_INSTRUMENT = "instrument";
     private static final String TAG_PACKED_PATCH = "packedPatch";
     private static final String TAG_META = "meta";

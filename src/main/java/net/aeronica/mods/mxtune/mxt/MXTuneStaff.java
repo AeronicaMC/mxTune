@@ -19,8 +19,11 @@ package net.aeronica.mods.mxtune.mxt;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-public class MXTuneStaff
+import java.io.Serializable;
+
+public class MXTuneStaff implements Serializable
 {
+    private static final long serialVersionUID = -76024260522131311L;
     private static final String TAG_MML = "mml";
     private static final String TAG_META = "meta";
 

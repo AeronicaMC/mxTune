@@ -31,7 +31,7 @@ public abstract class BaseData implements Serializable, Comparable<GUID>
     private static final long serialVersionUID = -76044260522231311L;
     protected GUID guid;
 
-    BaseData()
+    public BaseData()
     {
         guid = Reference.EMPTY_GUID;
     }
