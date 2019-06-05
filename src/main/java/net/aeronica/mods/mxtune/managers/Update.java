@@ -169,6 +169,7 @@ public final class Update
     static void convertSongToMxt()
     {
         List<Path> songFiles = new ArrayList<>();
+        boolean error;
 
         Path path = FileHelper.getDirectory(FileHelper.SERVER_MUSIC_FOLDER, Side.SERVER);
         PathMatcher filter = FileHelper.getDatMatcher(path);
@@ -181,10 +182,13 @@ public final class Update
         catch (NullPointerException | IOException e)
         {
             ModLogger.error(e);
+            ModLogger.info("convertSongToMxt: Aborted reading <song>.dat files: %e", e.getLocalizedMessage());
         }
 
         for (Path songFile : songFiles)
         {
+            error = false;
+            // Create MXTuneFile from Song
             MXTuneFile mxTuneFile = new MXTuneFile();
             NBTTagCompound songCompound = FileHelper.getCompoundFromFile(songFile);
             Song song = new Song(songCompound);
@@ -198,6 +202,7 @@ public final class Update
                 mxTuneFile.getParts().add(mxTunePart);
             }
 
+            // Write <songID>.mxt
             NBTTagCompound compoundMxt = new NBTTagCompound();
             mxTuneFile.writeToNBT(compoundMxt);
             try
@@ -208,10 +213,20 @@ public final class Update
             catch (IOException e)
             {
                 ModLogger.warn(e);
-                ModLogger.warn("Error in %s for %s", FileHelper.SERVER_MUSIC_FOLDER, song.getFileName());
+                ModLogger.info("convertSongToMxt: Write Error in %s for %s", FileHelper.SERVER_MUSIC_FOLDER, song.getFileName());
+                error = true;
             }
 
-            // delete song file here
+            // Delete <songID.dat>
+            try
+            {
+                if (!error && !Files.isDirectory(songFile) && Files.exists(songFile))
+                    Files.delete(songFile);
+            } catch (IOException e)
+            {
+                ModLogger.error(e);
+                ModLogger.info("convertSongToMxt: Delete Error in %s for %s", FileHelper.SERVER_MUSIC_FOLDER, song.getFileName());
+            }
         }
     }
 
