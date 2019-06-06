@@ -79,6 +79,7 @@ public class MXTuneFile extends BaseData
             ModLogger.warn(ERROR_MSG_MXT_VERSION, MXT_VERSION, mxtVersion.equals("") ? "No Version" : mxtVersion, title);
     }
 
+    @Override
     public void writeToNBT(NBTTagCompound compound)
     {
         super.writeToNBT(compound);
@@ -149,12 +150,6 @@ public class MXTuneFile extends BaseData
     public void setParts(List<MXTunePart> parts) { this.parts = parts != null ? parts : new ArrayList<>(); }
 
     @Override
-    public GUID getGUID()
-    {
-        return super.getGUID();
-    }
-
-    @Override
     public String getFileName()
     {
         return guid.toString() + FileHelper.EXTENSION_MXT;
@@ -177,11 +172,5 @@ public class MXTuneFile extends BaseData
     public boolean equals(Object o)
     {
         return super.equals(o);
-    }
-
-    @Override
-    public int compareTo(GUID o)
-    {
-        return super.compareTo(o);
     }
 }
