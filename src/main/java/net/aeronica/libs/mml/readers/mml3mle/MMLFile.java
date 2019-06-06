@@ -311,7 +311,6 @@ public final class MMLFile
     private int readLEIntValue(InputStream istream)
     {
         byte[] b = new byte[4];
-        int expected = 0;
         try
         {
             istream.read(b);
