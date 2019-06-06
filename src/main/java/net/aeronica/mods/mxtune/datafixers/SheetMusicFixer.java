@@ -49,7 +49,7 @@ public class SheetMusicFixer implements IFixableData
             if (tag.hasKey(TAG_MUSIC_BOOK, Constants.NBT.TAG_COMPOUND))
             {
                 ValidDuration validDuration = fixSheetMusic(tag);
-                ModLogger.info("SheetMusicFixer changed  \"MusicBook\" to \"SheetMusic\" Valid MML: %s, Duration: %s", validDuration.isValidMML(), SheetMusicUtil.formatDuration(validDuration.getDuration()));
+                ModLogger.debug("SheetMusicFixer changed  \"MusicBook\" to \"SheetMusic\" Valid MML: %s, Duration: %s", validDuration.isValidMML(), SheetMusicUtil.formatDuration(validDuration.getDuration()));
             }
         }
         return compound;

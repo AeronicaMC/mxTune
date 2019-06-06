@@ -48,7 +48,7 @@ public class TileEntityInventoryWalker implements IDataWalker
             if (te.hasKey(key))
             {
                 DataFixesManager.processInventory(fixer, te, version, key);
-                ModLogger.info("TileEntityInventoryWalker Walked inventory of TE %s using tag %s", te.getString(KEY_ID), key);
+                ModLogger.debug("TileEntityInventoryWalker Walked inventory of TE %s using tag %s", te.getString(KEY_ID), key);
             }
         return te;
     }
