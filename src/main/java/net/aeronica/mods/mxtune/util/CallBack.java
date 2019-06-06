@@ -17,6 +17,7 @@
 
 package net.aeronica.mods.mxtune.util;
 
+import net.aeronica.mods.mxtune.managers.records.RecordType;
 import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nonnull;
@@ -26,5 +27,5 @@ public interface CallBack
 {
     void onFailure(@Nonnull ITextComponent textComponent);
 
-    void onResponse(@Nullable Object payload, @Nullable Enum<?> xEnum);
+    void onResponse(@Nullable Object payload, RecordType recordType);
 }
