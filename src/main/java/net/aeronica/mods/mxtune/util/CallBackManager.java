@@ -26,7 +26,7 @@ import java.util.*;
 public class CallBackManager
 {
     private static Timer timer;
-    private static Map<UUID, CallBack>  callbacks = new HashMap<>();
+    private static Map<UUID, CallBackData>  callbacks = new HashMap<>();
     private static Map<UUID, TimerTask> tasks = new HashMap<>();
 
     private CallBackManager() { /* NOP */ }
@@ -49,18 +49,19 @@ public class CallBackManager
         tasks.clear();
     }
 
-    public static UUID register(CallBack callback)
+    public static UUID register(CallBack callBack, @Nullable Enum<?> xEnum)
     {
-        return register(callback, 30);
+        return register(callBack, xEnum, 30);
     }
 
-    public static UUID register(CallBack callback, int timeout)
+    public static UUID register(CallBack callback, @Nullable Enum<?> xEnum, int timeout)
     {
         UUID uuid = UUID.randomUUID();
         if (timer != null)
         {
-            callbacks.put(uuid, callback);
-            scheduleTimeout(uuid, callback, timeout);
+            CallBackData callBackData = new CallBackData(callback, xEnum);
+            callbacks.put(uuid, callBackData);
+            scheduleTimeout(uuid, callBackData, timeout);
         }
         return uuid;
     }
@@ -72,7 +73,7 @@ public class CallBackManager
         tasks.remove(uuid);
     }
 
-    private static void scheduleTimeout(UUID uuid, CallBack callback, int timeout)
+    private static void scheduleTimeout(UUID uuid, CallBackData callBackData, int timeout)
     {
         if (timer != null)
         {
@@ -82,7 +83,7 @@ public class CallBackManager
                 @Override
                 public void run()
                 {
-                    timedOut(uuid, callback, timeout);
+                    timedOut(uuid, callBackData, timeout);
                 }
             };
             tasks.put(uuid, task);
@@ -92,21 +93,33 @@ public class CallBackManager
     }
 
     @Nullable
-    public static synchronized CallBack getCaller(UUID uuid)
+    public static synchronized CallBackData getCaller(UUID uuid)
     {
         if (callbacks.containsKey(uuid))
         {
-            CallBack callback = callbacks.get(uuid);
+            CallBackData callBackData = callbacks.get(uuid);
             cancel(uuid);
-            return callback;
+            return callBackData;
         }
         return null;
     }
 
-    private static synchronized void timedOut(UUID uuid, CallBack callback, int timeout)
+    private static synchronized void timedOut(UUID uuid, CallBackData callBackData, int timeout)
     {
         callbacks.remove(uuid);
         tasks.remove(uuid);
-        callback.onFailure(new TextComponentTranslation("mxtune.error.network_timeout", timeout));
+        callBackData.callBack.onFailure(new TextComponentTranslation("mxtune.error.network_timeout", timeout));
+    }
+
+    public static final class CallBackData
+    {
+        public CallBack callBack;
+        public Enum<?> xEnum;
+
+        CallBackData(CallBack callBack, @Nullable Enum<?> xEnum)
+        {
+            this.callBack = callBack;
+            this.xEnum = xEnum;
+        }
     }
 }

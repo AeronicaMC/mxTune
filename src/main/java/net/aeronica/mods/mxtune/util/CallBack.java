@@ -26,5 +26,5 @@ public interface CallBack
 {
     void onFailure(@Nonnull ITextComponent textComponent);
 
-    void onResponse(@Nullable Object payload);
+    void onResponse(@Nullable Object payload, @Nullable Enum<?> xEnum);
 }
