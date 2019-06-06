@@ -20,7 +20,6 @@ package net.aeronica.mods.mxtune.gui.mml;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import net.aeronica.mods.mxtune.Reference;
-import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.gui.util.*;
 import net.aeronica.mods.mxtune.managers.ClientFileManager;
 import net.aeronica.mods.mxtune.managers.records.PlayList;
@@ -30,6 +29,7 @@ import net.aeronica.mods.mxtune.mxt.MXTuneFile;
 import net.aeronica.mods.mxtune.mxt.MXTuneFileHelper;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.GetPlayListsMessage;
+import net.aeronica.mods.mxtune.network.bidirectional.GetSongsMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.SetServerSerializedDataMessage;
 import net.aeronica.mods.mxtune.network.server.PlayerSelectedPlayListMessage;
 import net.aeronica.mods.mxtune.util.CallBackManager;
@@ -46,23 +46,18 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.PathMatcher;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static net.aeronica.mods.mxtune.gui.mml.SortHelper.PLAYLIST_ORDERING;
 import static net.aeronica.mods.mxtune.gui.mml.SortHelper.SONG_PROXY_ORDERING;
@@ -72,7 +67,7 @@ public class GuiPlaylistManager extends GuiScreen
     private static final String TITLE = I18n.format("mxtune.gui.guiPlayListManager.title");
     // Song Multi Selector
     private GuiLabelMX labelFileList;
-    private GuiScrollingMultiListOf<Path> guiFileList;
+    private GuiScrollingMultiListOf<SongProxy> guiFileList;
     private List<Path> cachedFileList = new ArrayList<>();
     private Set<Integer> cachedSelectedSongs = new HashSet<>();
     private int cachedSelectedFileDummy = -1;
@@ -177,16 +172,16 @@ public class GuiPlaylistManager extends GuiScreen
         labelFileList = new GuiLabelMX(fontRenderer,1, left, titleTop, guiFileListWidth, singleLineHeight, -1);
         labelFileList.setLabelName(I18n.format("mxtune.gui.guiPlayListManager.label.music_file_selector", cachedSelectedSongs.size()));
 
-        guiFileList = new GuiScrollingMultiListOf<Path>(this, entryFileHeight, guiFileListWidth, fileListHeight,listTop, fileListBottom, left)
+        guiFileList = new GuiScrollingMultiListOf<SongProxy>(this, entryFileHeight, guiFileListWidth, fileListHeight,listTop, fileListBottom, left)
         {
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
             {
                 // get the filename and remove the '.mxt' extension
-                Path entry = !isEmpty() && slotIdx < getSize() && slotIdx >= 0 ? get(slotIdx) : null;
+                SongProxy entry = !isEmpty() && slotIdx < getSize() && slotIdx >= 0 ? get(slotIdx) : null;
                 if (entry != null)
                 {
-                    String name = entry.getFileName().toString().replaceAll("\\.[mM][xX][tT]$", "");
+                    String name = entry.getTitle();
                     String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
                     int color = selectedRowIndexes.contains(slotIdx) ? 0xFFFF00 : 0xADD8E6;
                     fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
@@ -339,6 +334,7 @@ public class GuiPlaylistManager extends GuiScreen
         hooverTexts.add(guiNight);
         initHooverHelp();
         initPlayLists();
+        initSongList();
         initFileList();
         reloadState();
     }
@@ -367,7 +363,7 @@ public class GuiPlaylistManager extends GuiScreen
         guiPlayList.addAll(cachedPlayListGuiList);
         guiPlayList.setSelectedIndex(cachedSelectedPlayListIndex);
 
-        guiFileList.addAll(cachedFileList);
+        //guiFileList.addAll(cachedFileList);
         guiFileList.setSelectedRowIndexes(cachedSelectedSongs);
         guiFileList.setSelectedIndex(cachedSelectedFileDummy);
 
@@ -565,43 +561,43 @@ public class GuiPlaylistManager extends GuiScreen
     // This is experimental and inefficient
     private void initFileList()
     {
-        new Thread(
-                () ->
-                {
-                    pathSongProxyBiMap.clear();
-                    pathSongGuidBiMap.clear();
-                    Path pathDir = FileHelper.getDirectory(FileHelper.CLIENT_LIB_FOLDER, Side.CLIENT);
-                    PathMatcher filter = FileHelper.getMxtMatcher(pathDir);
-                    try (Stream<Path> paths = Files.list(pathDir))
-                    {
-                        cachedFileList = paths
-                                .filter(filter::matches)
-                                .collect(Collectors.toList());
-                    } catch (NullPointerException | IOException e)
-                    {
-                        ModLogger.error(e);
-                    }
-
-                    List<Path> files = new ArrayList<>();
-
-                    for (Path file : cachedFileList)
-                    {
-                        files.add(file);
-                        SongProxy songProxy = pathToSongProxy(file);
-                        if (songProxy != null)
-                        {
-                            pathSongProxyBiMap.forcePut(file, songProxy);
-                            pathSongGuidBiMap.forcePut(file, songProxy.getGUID());
-                        }
-                        else
-                            updateStatus(TextFormatting.DARK_RED + I18n.format("mxtune.gui.guiPlayListManager.log.corrupted_file", (String.format("%s", TextFormatting.RESET + file.getFileName().toString()))));
-                    }
-                    cachedFileList = files;
-                    guiFileList.clear();
-                    guiFileList.addAll(files);
-                    songProxyPathBiMap = pathSongProxyBiMap.inverse();
-                    songGuidPathBiMap = pathSongGuidBiMap.inverse();
-                }).start();
+//        new Thread(
+//                () ->
+//                {
+//                    pathSongProxyBiMap.clear();
+//                    pathSongGuidBiMap.clear();
+//                    Path pathDir = FileHelper.getDirectory(FileHelper.CLIENT_LIB_FOLDER, Side.CLIENT);
+//                    PathMatcher filter = FileHelper.getMxtMatcher(pathDir);
+//                    try (Stream<Path> paths = Files.list(pathDir))
+//                    {
+//                        cachedFileList = paths
+//                                .filter(filter::matches)
+//                                .collect(Collectors.toList());
+//                    } catch (NullPointerException | IOException e)
+//                    {
+//                        ModLogger.error(e);
+//                    }
+//
+//                    List<Path> files = new ArrayList<>();
+//
+//                    for (Path file : cachedFileList)
+//                    {
+//                        files.add(file);
+//                        SongProxy songProxy = pathToSongProxy(file);
+//                        if (songProxy != null)
+//                        {
+//                            pathSongProxyBiMap.forcePut(file, songProxy);
+//                            pathSongGuidBiMap.forcePut(file, songProxy.getGUID());
+//                        }
+//                        else
+//                            updateStatus(TextFormatting.DARK_RED + I18n.format("mxtune.gui.guiPlayListManager.log.corrupted_file", (String.format("%s", TextFormatting.RESET + file.getFileName().toString()))));
+//                    }
+//                    cachedFileList = files;
+//                    guiFileList.clear();
+//                    guiFileList.addAll(files);
+//                    songProxyPathBiMap = pathSongProxyBiMap.inverse();
+//                    songGuidPathBiMap = pathSongGuidBiMap.inverse();
+//                }).start();
     }
 
     @Nullable
@@ -629,14 +625,13 @@ public class GuiPlaylistManager extends GuiScreen
     }
 
     // So crude: add unique songs only
-    private List<SongProxy> pathsToSongProxies(List<Path> paths, List<SongProxy> current)
+    private List<SongProxy> pathsToSongProxies(List<SongProxy> serverSongs, List<SongProxy> current)
     {
         List<SongProxy> songList = new ArrayList<>(current);
-        for (Path path : paths)
+        for (SongProxy songProxyServer : serverSongs)
         {
-            SongProxy songProxyPath = pathSongProxyBiMap.get(path);
-            if (!songList.contains(songProxyPath))
-                songList.add(songProxyPath);
+            if (!songList.contains(songProxyServer))
+                songList.add(songProxyServer);
         }
         current.clear();
         return SONG_PROXY_ORDERING.sortedCopy(songList);
@@ -652,52 +647,70 @@ public class GuiPlaylistManager extends GuiScreen
         PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(playList.getGUID(), SetServerSerializedDataMessage.SetType.PLAY_LIST, playList));
 
         // Build one list of songs to send from both lists to remove duplicates!
-        List<SongProxy> proxyMap = new ArrayList<>(guiDay.getList());
-        for (SongProxy songProxy : guiNight.getList())
-        {
-            if (!proxyMap.contains(songProxy))
-                proxyMap.add(songProxy);
-        }
-
-        new Thread ( () ->
-                     {
-                         int count = 0;
-                         for (SongProxy songProxy : proxyMap)
-                         {
-                             count++;
-                             if (songProxy != null)
-                             {
-                                 Song song = pathToSong(songGuidPathBiMap.get(songProxy.getGUID()));
-                                 if (song != null)
-                                 {
-                                     // TODO: Sync MXT Files!
-                                     //PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(songProxy.getGUID(), SetServerSerializedDataMessage.SetType.MUSIC, song));
-                                     updateStatus(TextFormatting.DARK_GREEN + I18n.format("mxtune.gui.guiPlayListManager.log.uploading_music", String.format("%03d", count), String.format("%03d", proxyMap.size()), TextFormatting.RESET + song.getTitle()));
-                                 } else
-                                 {
-                                     updateStatus(TextFormatting.DARK_RED + I18n.format("mxtune.gui.guiPlayListManager.log.not_found_in_library", String.format("%03d", count), String.format("%03d", proxyMap.size()), TextFormatting.RESET + songProxy.getTitle()));
-                                 }
-                                 try
-                                 {
-                                     // Don't spam the server. Upload once per second.
-                                     Thread.sleep(1000);
-                                 } catch (InterruptedException e)
-                                 {
-                                     Thread.currentThread().interrupt();
-                                 }
-                             }
-                         }
-                         uploading = false;
-                         updateState();
-                     }).start();
+//        List<SongProxy> proxyMap = new ArrayList<>(guiDay.getList());
+//        for (SongProxy songProxy : guiNight.getList())
+//        {
+//            if (!proxyMap.contains(songProxy))
+//                proxyMap.add(songProxy);
+//        }
+//
+//        new Thread ( () ->
+//                     {
+//                         int count = 0;
+//                         for (SongProxy songProxy : proxyMap)
+//                         {
+//                             count++;
+//                             if (songProxy != null)
+//                             {
+//                                 Song song = pathToSong(songGuidPathBiMap.get(songProxy.getGUID()));
+//                                 if (song != null)
+//                                 {
+//                                     // TODO: Sync MXT Files!
+//                                     //PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(songProxy.getGUID(), SetServerSerializedDataMessage.SetType.MUSIC, song));
+//                                     updateStatus(TextFormatting.DARK_GREEN + I18n.format("mxtune.gui.guiPlayListManager.log.uploading_music", String.format("%03d", count), String.format("%03d", proxyMap.size()), TextFormatting.RESET + song.getTitle()));
+//                                 } else
+//                                 {
+//                                     updateStatus(TextFormatting.DARK_RED + I18n.format("mxtune.gui.guiPlayListManager.log.not_found_in_library", String.format("%03d", count), String.format("%03d", proxyMap.size()), TextFormatting.RESET + songProxy.getTitle()));
+//                                 }
+//                                 try
+//                                 {
+//                                     // Don't spam the server. Upload once per second.
+//                                     Thread.sleep(1000);
+//                                 } catch (InterruptedException e)
+//                                 {
+//                                     Thread.currentThread().interrupt();
+//                                 }
+//                             }
+//                         }
+//                         uploading = false;
+//                         updateState();
+//                     }).start();
         // done
         initPlayLists();
         updateState();
     }
-    
+
+    private void initSongList()
+    {
+        PacketDispatcher.sendToServer(new GetSongsMessage(CallBackManager.register(ClientFileManager.INSTANCE, ClientFileManager.ResponseType.SERVER_SONGS)));
+        new Thread(() ->
+                   {
+                       try
+                       {
+                           Thread.sleep(1000);
+                       } catch (InterruptedException e)
+                       {
+                           Thread.currentThread().interrupt();
+                       }
+                       guiFileList.clear();
+                       guiFileList.addAll(SONG_PROXY_ORDERING.sortedCopy(ClientFileManager.getCachedServerSongList()));
+                       updateState();
+                   }).start();
+    }
+
     private void initPlayLists()
     {
-        PacketDispatcher.sendToServer(new GetPlayListsMessage(CallBackManager.register(ClientFileManager.INSTANCE)));
+        PacketDispatcher.sendToServer(new GetPlayListsMessage(CallBackManager.register(ClientFileManager.INSTANCE, ClientFileManager.ResponseType.PLAY_LIST)));
         new Thread(() ->
                    {
                        try
@@ -709,6 +722,10 @@ public class GuiPlaylistManager extends GuiScreen
                        }
                        guiPlayList.clear();
                        guiPlayList.addAll(PLAYLIST_ORDERING.sortedCopy(ClientFileManager.getPlayLists()));
+
+                       if (uploading)
+                           uploading = false;
+
                        updateState();
                    }).start();
     }
