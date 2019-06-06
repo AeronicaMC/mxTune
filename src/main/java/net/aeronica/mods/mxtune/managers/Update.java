@@ -146,7 +146,7 @@ public final class Update
         Path oldDir = FileHelper.getDirectory(FileHelper.SERVER_FOLDER + "/areas", Side.SERVER, false);
         Path newDir = FileHelper.getDirectory(FileHelper.SERVER_PLAY_LISTS_FOLDER, Side.SERVER, false);
         ModLogger.info("Try renameAreasToPlaylists()");
-        if (Files.exists(oldDir) && Files.isDirectory(oldDir))
+        if (oldDir.toFile().exists() && oldDir.toFile().isDirectory())
         {
             try
             {
@@ -220,7 +220,7 @@ public final class Update
             // Delete <songID.dat>
             try
             {
-                if (!error && !Files.isDirectory(songFile) && Files.exists(songFile))
+                if (!error && !songFile.toFile().isDirectory() && songFile.toFile().exists())
                     Files.delete(songFile);
             } catch (IOException e)
             {
@@ -251,7 +251,6 @@ public final class Update
         Matcher matcher = patternPatch.matcher(part);
         if (matcher.find())
         {
-            System.out.print("m ");
             patch = Integer.parseInt(matcher.group(0));
             part = part.replaceFirst(patternPatch.pattern(), "");
         }
