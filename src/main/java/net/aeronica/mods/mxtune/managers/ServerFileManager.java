@@ -119,7 +119,7 @@ public class ServerFileManager
         List<Path> songFiles = new ArrayList<>();
 
         Path path = FileHelper.getDirectory(FileHelper.SERVER_MUSIC_FOLDER, Side.SERVER);
-        PathMatcher filter = FileHelper.getDatMatcher(path);
+        PathMatcher filter = FileHelper.getMxtMatcher(path);
         try (Stream<Path> paths = Files.list(path))
         {
             songFiles = paths
@@ -133,14 +133,14 @@ public class ServerFileManager
 
         for (Path songFile : songFiles)
         {
-            NBTTagCompound songCompound = FileHelper.getCompoundFromFile(songFile);
-            if (songCompound != null)
+            MXTuneFile mxTuneFile = MXTuneFileHelper.getMXTuneFile(songFile);
+            if (mxTuneFile != null)
             {
-                SongProxy songProxy = new SongProxy(songCompound);
+                SongProxy songProxy = MXTuneFileHelper.getSongProxy(mxTuneFile);
                 songProxyMap.put(songProxy.getGUID(), songProxy);
             }
             else
-                ModLogger.warn("NULL NBTTagCompound for song file: %s", songFile.toString());
+                ModLogger.warn("NULL mxTuneFile for song file: %s", songFile.toString());
         }
     }
 
