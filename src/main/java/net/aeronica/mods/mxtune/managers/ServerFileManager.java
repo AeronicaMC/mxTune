@@ -304,7 +304,7 @@ public class ServerFileManager
             }
         }
 
-        // Create an playlist
+        // Create a playlist
         String playListName = "Test PlayList";
         String playListFileName = "";
         try
@@ -327,10 +327,5 @@ public class ServerFileManager
     {
         playLists.forEach((key, value) -> ModLogger.debug("PlayList guid:     %s, Name:    %s", key.toString(), value.getName()));
         songProxyMap.forEach((key, value) -> ModLogger.debug("Song guid:     %s, title:    %s", key.toString(), value.getTitle()));
-    }
-
-    public static void main(String[] args)
-    {
-        //convertSongToMxt();
     }
 }
