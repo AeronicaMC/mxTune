@@ -20,6 +20,7 @@ package net.aeronica.mods.mxtune.network.bidirectional;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.managers.ServerFileManager;
 import net.aeronica.mods.mxtune.managers.records.PlayList;
+import net.aeronica.mods.mxtune.managers.records.RecordType;
 import net.aeronica.mods.mxtune.mxt.MXTuneFile;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.network.NetworkSerializedHelper;
@@ -40,7 +41,7 @@ import java.io.Serializable;
 
 public class SetServerSerializedDataMessage extends AbstractMessage.AbstractServerMessage<SetServerSerializedDataMessage>
 {
-    private SetType type = SetType.PLAY_LIST;
+    private RecordType recordType = RecordType.PLAY_LIST.PLAY_LIST;
     private Serializable baseData;
     private long ddddSigBits;
     private long ccccSigBits;
@@ -54,12 +55,12 @@ public class SetServerSerializedDataMessage extends AbstractMessage.AbstractServ
     /**
      * Client Submission for data type
      * @param guidType data type unique id
-     * @param type data type
+     * @param recordType data type
      * @param baseData
      */
-    public SetServerSerializedDataMessage(GUID guidType, SetType type , Serializable baseData)
+    public SetServerSerializedDataMessage(GUID guidType, RecordType recordType, Serializable baseData)
     {
-        this.type = type;
+        this.recordType = recordType;
         this.baseData = baseData;
         ddddSigBits = guidType.getDdddSignificantBits();
         ccccSigBits = guidType.getCcccSignificantBits();
@@ -70,7 +71,7 @@ public class SetServerSerializedDataMessage extends AbstractMessage.AbstractServ
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
-        this.type = buffer.readEnumValue(SetType.class);
+        this.recordType = buffer.readEnumValue(RecordType.class);
         this.baseData = NetworkSerializedHelper.readSerializedObject(buffer);
         ddddSigBits = buffer.readLong();
         ccccSigBits = buffer.readLong();
@@ -82,7 +83,7 @@ public class SetServerSerializedDataMessage extends AbstractMessage.AbstractServ
     @Override
     protected void write(PacketBuffer buffer) throws IOException
     {
-        buffer.writeEnumValue(type);
+        buffer.writeEnumValue(recordType);
         NetworkSerializedHelper.writeSerializedObject(buffer, baseData);
         buffer.writeLong(ddddSigBits);
         buffer.writeLong(ccccSigBits);
@@ -96,20 +97,20 @@ public class SetServerSerializedDataMessage extends AbstractMessage.AbstractServ
         ResultMessage resultMessage = ResultMessage.NO_ERROR;
         if (MusicOptionsUtil.isMxTuneServerUpdateAllowed(player))
         {
-            switch (type)
+            switch (recordType)
             {
                 case PLAY_LIST:
                     PlayList playList = (PlayList)baseData;
                     resultMessage = ServerFileManager.setPlayList(dataTypeUuid, playList);
                     ModLogger.debug("BACKGROUND Serialized Test: pass %s", dataTypeUuid.equals(playList.getGUID()));
                     break;
-                case MUSIC:
+                case MXT:
                     MXTuneFile mxTuneFile = (MXTuneFile) baseData;
                     resultMessage = ServerFileManager.setMXTFile(dataTypeUuid, mxTuneFile);
                     ModLogger.debug("MUSIC Serialized Test: pass %s", dataTypeUuid.equals(mxTuneFile.getGUID()));
                     break;
                 default:
-                    resultMessage = new ResultMessage(true, new TextComponentTranslation("mxtune.error.unexpected_type", type.name()));
+                    resultMessage = new ResultMessage(true, new TextComponentTranslation("mxtune.error.unexpected_type", recordType.name()));
             }
         }
         else
@@ -119,5 +120,4 @@ public class SetServerSerializedDataMessage extends AbstractMessage.AbstractServ
             PacketDispatcher.sendTo(new SendResultMessage(resultMessage.getMessage(), resultMessage.hasError()), (EntityPlayerMP) player);
 
     }
-    public enum SetType {PLAY_LIST, MUSIC}
 }

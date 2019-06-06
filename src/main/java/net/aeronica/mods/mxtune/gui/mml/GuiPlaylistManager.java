@@ -23,13 +23,13 @@ import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.gui.util.*;
 import net.aeronica.mods.mxtune.managers.ClientFileManager;
 import net.aeronica.mods.mxtune.managers.records.PlayList;
+import net.aeronica.mods.mxtune.managers.records.RecordType;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.aeronica.mods.mxtune.mxt.MXTuneFile;
 import net.aeronica.mods.mxtune.mxt.MXTuneFileHelper;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
-import net.aeronica.mods.mxtune.network.bidirectional.GetPlayListsMessage;
-import net.aeronica.mods.mxtune.network.bidirectional.GetSongsMessage;
+import net.aeronica.mods.mxtune.network.bidirectional.GetBaseDataListsMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.SetServerSerializedDataMessage;
 import net.aeronica.mods.mxtune.network.server.PlayerSelectedPlayListMessage;
 import net.aeronica.mods.mxtune.util.CallBackManager;
@@ -644,7 +644,7 @@ public class GuiPlaylistManager extends GuiScreen
         playListName.setText(playListName.getText().trim());
         PlayList playList = new PlayList(playListName.getText(), guiDay.getList(), guiNight.getList());
         updateStatus(TextFormatting.GOLD + I18n.format("mxtune.gui.guiPlayListManager.log.upload_playlist", TextFormatting.RESET + playListName.getText().trim()));
-        PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(playList.getGUID(), SetServerSerializedDataMessage.SetType.PLAY_LIST, playList));
+        PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(playList.getGUID(), RecordType.PLAY_LIST, playList));
 
         // Build one list of songs to send from both lists to remove duplicates!
 //        List<SongProxy> proxyMap = new ArrayList<>(guiDay.getList());
@@ -692,7 +692,7 @@ public class GuiPlaylistManager extends GuiScreen
 
     private void initSongList()
     {
-        PacketDispatcher.sendToServer(new GetSongsMessage(CallBackManager.register(ClientFileManager.INSTANCE, ClientFileManager.ResponseType.SERVER_SONGS)));
+        PacketDispatcher.sendToServer(new GetBaseDataListsMessage(CallBackManager.register(ClientFileManager.INSTANCE), RecordType.SONG_PROXY));
         new Thread(() ->
                    {
                        try
@@ -710,7 +710,7 @@ public class GuiPlaylistManager extends GuiScreen
 
     private void initPlayLists()
     {
-        PacketDispatcher.sendToServer(new GetPlayListsMessage(CallBackManager.register(ClientFileManager.INSTANCE, ClientFileManager.ResponseType.PLAY_LIST)));
+        PacketDispatcher.sendToServer(new GetBaseDataListsMessage(CallBackManager.register(ClientFileManager.INSTANCE), RecordType.PLAY_LIST));
         new Thread(() ->
                    {
                        try

@@ -17,6 +17,7 @@
 package net.aeronica.mods.mxtune.network.bidirectional;
 
 import net.aeronica.mods.mxtune.managers.ClientFileManager;
+import net.aeronica.mods.mxtune.managers.records.RecordType;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
@@ -82,7 +83,7 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
         ClientCSDMonitor.collectAndSend();
         MIDISystemUtil.onPlayerLoggedInModStatus(playerIn);
         ClientFileManager.setCachedServerID(serverIdUuidMSB, serverIdUuidLSB);
-        PacketDispatcher.sendToServer(new GetPlayListsMessage(CallBackManager.register(ClientFileManager.INSTANCE, ClientFileManager.ResponseType.PLAY_LIST)));
+        PacketDispatcher.sendToServer(new GetBaseDataListsMessage(CallBackManager.register(ClientFileManager.INSTANCE), RecordType.PLAY_LIST));
     }
 
     private void handleServerSide(EntityPlayer playerIn)

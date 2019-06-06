@@ -19,10 +19,7 @@ package net.aeronica.mods.mxtune.managers;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.caches.FileHelper;
-import net.aeronica.mods.mxtune.managers.records.BaseData;
-import net.aeronica.mods.mxtune.managers.records.PlayList;
-import net.aeronica.mods.mxtune.managers.records.Song;
-import net.aeronica.mods.mxtune.managers.records.SongProxy;
+import net.aeronica.mods.mxtune.managers.records.*;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.GetServerDataMessage;
 import net.aeronica.mods.mxtune.util.CallBack;
@@ -45,13 +42,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static net.aeronica.mods.mxtune.network.bidirectional.GetServerDataMessage.GetType;
-
 public enum  ClientFileManager implements CallBack
 {
     INSTANCE;
 
-    public enum ResponseType { PLAY_LIST, SERVER_SONGS }
     private static UUID cachedServerID = Reference.EMPTY_UUID;
     private static Minecraft mc = Minecraft.getMinecraft();
 
@@ -87,6 +81,7 @@ public enum  ClientFileManager implements CallBack
         // No need to retrieve from cache since we pull down each session and clear the cache on close.
         mapPlayLists.clear();
         mapSongProxies.clear();
+        mapServerSongProxies.clear();
         // loadCache(pathPlayLists, mapPlayLists, PlayList.class);
         // loadCache(pathMusic, mapSongProxies, SongProxy.class);
         badPlayLists.clear();
@@ -137,10 +132,10 @@ public enum  ClientFileManager implements CallBack
 
     @Override
     @SuppressWarnings("unchecked")
-    public void onResponse(@Nullable Object payload, Enum<?> xEnum)
+    public void onResponse(@Nullable Object payload, RecordType recordType)
     {
-        if (payload == null || xEnum == null || !(xEnum instanceof ResponseType)) return;
-        switch ((ResponseType) xEnum)
+        if (payload == null) return;
+        switch (recordType)
         {
             case PLAY_LIST:
                 for (PlayList playList : (List<PlayList>) payload)
@@ -151,11 +146,8 @@ public enum  ClientFileManager implements CallBack
                 }
                 break;
 
-            case SERVER_SONGS:
-                for (SongProxy songProxy : (List<SongProxy>) payload)
-                {
-                    mapServerSongProxies.put(songProxy.getGUID(), songProxy);
-                }
+            case SONG_PROXY:
+                ((List<SongProxy>) payload).forEach(songProxy -> mapServerSongProxies.put(songProxy.getGUID(), songProxy));
                 break;
             default:
         }
@@ -166,10 +158,7 @@ public enum  ClientFileManager implements CallBack
         List<SongProxy> songProxies = new ArrayList<>();
         synchronized (mapServerSongProxies)
         {
-            for (Map.Entry<GUID, SongProxy> entry : mapServerSongProxies.entrySet())
-            {
-                songProxies.add(entry.getValue());
-            }
+            mapServerSongProxies.forEach((key, value) -> songProxies.add(value));
         }
         return songProxies;
     }
@@ -384,7 +373,7 @@ public enum  ClientFileManager implements CallBack
             if (!Reference.EMPTY_GUID.equals(guid) && isNotBadPlayList(guid))
             {
                 waitPlayList = true;
-                PacketDispatcher.sendToServer(new GetServerDataMessage(guid, GetType.PLAY_LIST));
+                PacketDispatcher.sendToServer(new GetServerDataMessage(guid, RecordType.PLAY_LIST));
             }
             return false;
         }

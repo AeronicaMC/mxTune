@@ -19,6 +19,7 @@ package net.aeronica.mods.mxtune.managers;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.managers.records.PlayList;
+import net.aeronica.mods.mxtune.managers.records.RecordType;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
@@ -229,7 +230,7 @@ public class ClientPlayManager implements IAudioStatusCallback
             GUID guidSong = randomSong(currentPlaylistGUID);
             if (!Reference.EMPTY_GUID.equals(guidSong) && !ClientFileManager.hasSongProxy(guidSong))
             {
-                PacketDispatcher.sendToServer(new GetServerDataMessage(guidSong, GetServerDataMessage.GetType.MUSIC, currentPlayId));
+                PacketDispatcher.sendToServer(new GetServerDataMessage(guidSong, RecordType.SONG, currentPlayId));
                 ModLogger.debug("ChangePlayListMusic: Get from SERVER!");
             }
             else if (!Reference.EMPTY_GUID.equals(guidSong) && ClientFileManager.hasSongProxy(guidSong))

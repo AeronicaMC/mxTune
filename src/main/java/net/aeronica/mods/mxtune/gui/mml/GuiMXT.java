@@ -24,6 +24,7 @@ import net.aeronica.mods.mxtune.gui.util.GuiLink;
 import net.aeronica.mods.mxtune.gui.util.IHooverText;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
+import net.aeronica.mods.mxtune.managers.records.RecordType;
 import net.aeronica.mods.mxtune.mxt.MXTuneFile;
 import net.aeronica.mods.mxtune.mxt.MXTuneFileHelper;
 import net.aeronica.mods.mxtune.mxt.MXTunePart;
@@ -465,7 +466,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         if (!textTitle.getText().trim().equals("") && buttonPlayStop.enabled)
         {
             createMxt();
-            PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(mxTuneFile.getGUID(), SetServerSerializedDataMessage.SetType.MUSIC, mxTuneFile));
+            PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(mxTuneFile.getGUID(), RecordType.MXT, mxTuneFile));
             return true;
         }
         else
