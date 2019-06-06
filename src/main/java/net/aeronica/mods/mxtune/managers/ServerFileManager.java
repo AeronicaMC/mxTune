@@ -144,6 +144,13 @@ public class ServerFileManager
         }
     }
 
+    public static synchronized List<SongProxy> getSongProxies()
+    {
+        List<SongProxy> songProxies = new ArrayList<>();
+        songProxyMap.forEach((key, value) -> songProxies.add(value));
+        return songProxies;
+    }
+
     private static void initPlayLists()
     {
         // The NULL and NO MUSIC Playlists.
@@ -325,7 +332,9 @@ public class ServerFileManager
 
     private static void dumpAll()
     {
-        playLists.forEach((key, value) -> ModLogger.debug("PlayList guid:     %s, Name:    %s", key.toString(), value.getName()));
-        songProxyMap.forEach((key, value) -> ModLogger.debug("Song guid:     %s, title:    %s", key.toString(), value.getTitle()));
+        ModLogger.debug("ServerFileManager: Play Lists");
+        playLists.forEach((key, value) -> ModLogger.debug("PlayList guid:  %s, Name:  %s", key.toString(), value.getName()));
+        ModLogger.debug("ServerFileManager: Music");
+        songProxyMap.forEach((key, value) -> ModLogger.debug("Song guid:      %s, title: %s", key.toString(), value.getTitle()));
     }
 }

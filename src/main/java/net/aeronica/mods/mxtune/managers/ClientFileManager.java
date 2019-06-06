@@ -51,6 +51,7 @@ public enum  ClientFileManager implements CallBack
 {
     INSTANCE;
 
+    public enum ResponseType { PLAY_LIST, SERVER_SONGS }
     private static UUID cachedServerID = Reference.EMPTY_UUID;
     private static Minecraft mc = Minecraft.getMinecraft();
 
@@ -60,15 +61,17 @@ public enum  ClientFileManager implements CallBack
     private static Path pathPlayLists;
     private static Path pathMusic;
 
+    // Client play list and song caching
     private static final Map<GUID, PlayList> mapPlayLists = new HashMap<>();
-    private static Map<GUID, SongProxy> mapSongProxies = new HashMap<>();
-    private static Set<GUID> badPlayLists = new HashSet<>();
-    private static Set<GUID> badSongs = new HashSet<>();
-
+    private static final Map<GUID, SongProxy> mapSongProxies = new HashMap<>();
+    private static final Set<GUID> badPlayLists = new HashSet<>();
+    private static final Set<GUID> badSongs = new HashSet<>();
     private static boolean waitPlayList = false;
     private static boolean waitSong = false;
-
     private static UUID cachedPlayerUUID;
+
+    // Client cache of server songs
+    private static final Map<GUID, SongProxy> mapServerSongProxies = new HashMap<>();
 
     /**
      * Sets the cached server ID for the server the client logged onto. This is an mxTune feature for internal use.
@@ -134,17 +137,41 @@ public enum  ClientFileManager implements CallBack
 
     @Override
     @SuppressWarnings("unchecked")
-    public void onResponse(@Nullable Object payload)
+    public void onResponse(@Nullable Object payload, Enum<?> xEnum)
     {
-        if (payload != null)
+        if (payload == null || xEnum == null || !(xEnum instanceof ResponseType)) return;
+        switch ((ResponseType) xEnum)
         {
-            for (PlayList playList : (List<PlayList>) payload)
+            case PLAY_LIST:
+                for (PlayList playList : (List<PlayList>) payload)
+                {
+                    NBTTagCompound compound = new NBTTagCompound();
+                    playList.writeToNBT(compound);
+                    addPlayList(playList.getGUID(), compound, false);
+                }
+                break;
+
+            case SERVER_SONGS:
+                for (SongProxy songProxy : (List<SongProxy>) payload)
+                {
+                    mapServerSongProxies.put(songProxy.getGUID(), songProxy);
+                }
+                break;
+            default:
+        }
+    }
+
+    public static List<SongProxy> getCachedServerSongList()
+    {
+        List<SongProxy> songProxies = new ArrayList<>();
+        synchronized (mapServerSongProxies)
+        {
+            for (Map.Entry<GUID, SongProxy> entry : mapServerSongProxies.entrySet())
             {
-                NBTTagCompound compound = new NBTTagCompound();
-                playList.writeToNBT(compound);
-                addPlayList(playList.getGUID(), compound, false);
+                songProxies.add(entry.getValue());
             }
         }
+        return songProxies;
     }
 
     // Playlist

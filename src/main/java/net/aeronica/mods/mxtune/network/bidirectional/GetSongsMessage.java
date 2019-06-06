@@ -18,7 +18,7 @@
 package net.aeronica.mods.mxtune.network.bidirectional;
 
 import net.aeronica.mods.mxtune.managers.ServerFileManager;
-import net.aeronica.mods.mxtune.managers.records.PlayList;
+import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.util.CallBackManager;
@@ -35,27 +35,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class GetPlayListsMessage extends AbstractMessage<GetPlayListsMessage>
+public class GetSongsMessage extends AbstractMessage<GetSongsMessage>
 {
     private byte[] byteBuffer = null;
     private long callbackUuidMSB = 0;
     private long callbackUuidLSB = 0;
     private ITextComponent message = new TextComponentTranslation("mxtune.no_error", "");
     private UUID callbackUuid;
-    private List<PlayList> playLists;
+    private List<SongProxy> songProxies;
     private boolean readError = false;
 
-    public GetPlayListsMessage() { /* Required by the PacketDispatcher */ }
+    public GetSongsMessage() { /* Required by the PacketDispatcher */ }
 
-    public GetPlayListsMessage(UUID callback)
+    public GetSongsMessage(UUID callback)
     {
         callbackUuidMSB = callback.getMostSignificantBits();
         callbackUuidLSB = callback.getLeastSignificantBits();
     }
 
-    public GetPlayListsMessage(List<PlayList> playLists, UUID callbackUuid, ITextComponent message)
+    public GetSongsMessage(List<SongProxy> songProxies, UUID callbackUuid, ITextComponent message)
     {
-        this.playLists = playLists;
+        this.songProxies = songProxies;
         this.message = message;
         this.callbackUuidMSB = callbackUuid.getMostSignificantBits();
         this.callbackUuidLSB = callbackUuid.getLeastSignificantBits();
@@ -74,7 +74,7 @@ public class GetPlayListsMessage extends AbstractMessage<GetPlayListsMessage>
             byteBuffer = buffer.readByteArray();
             ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
             ObjectInputStream in = new ObjectInputStream(bis);
-            playLists =  (ArrayList<PlayList>) in.readObject();
+            songProxies =  (ArrayList<SongProxy>) in.readObject();
             in.close();
 
         } catch (ClassNotFoundException | IOException e)
@@ -94,7 +94,7 @@ public class GetPlayListsMessage extends AbstractMessage<GetPlayListsMessage>
             // Serialize data object to a byte array
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ObjectOutputStream out = new ObjectOutputStream(bos);
-            out.writeObject((Serializable) playLists);
+            out.writeObject((Serializable) songProxies);
             out.close();
 
             // Get the bytes of the serialized object
@@ -124,7 +124,7 @@ public class GetPlayListsMessage extends AbstractMessage<GetPlayListsMessage>
         if (!readError)
         {
             if (callBackData != null)
-                callBackData.callBack.onResponse(playLists, callBackData.xEnum);
+                callBackData.callBack.onResponse(songProxies, callBackData.xEnum);
         }
         else
             if (callBackData != null)
@@ -133,6 +133,6 @@ public class GetPlayListsMessage extends AbstractMessage<GetPlayListsMessage>
 
     private void handleServerSide(EntityPlayerMP playerMP)
     {
-        PacketDispatcher.sendTo(new GetPlayListsMessage(ServerFileManager.getPlayLists(), callbackUuid, new TextComponentTranslation("mxtune.no_error", "SERVER")), playerMP);
+        PacketDispatcher.sendTo(new GetSongsMessage(ServerFileManager.getSongProxies(), callbackUuid, new TextComponentTranslation("mxtune.no_error", "SERVER")), playerMP);
     }
 }

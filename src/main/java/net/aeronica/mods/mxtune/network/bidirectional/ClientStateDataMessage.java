@@ -82,7 +82,7 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
         ClientCSDMonitor.collectAndSend();
         MIDISystemUtil.onPlayerLoggedInModStatus(playerIn);
         ClientFileManager.setCachedServerID(serverIdUuidMSB, serverIdUuidLSB);
-        PacketDispatcher.sendToServer(new GetPlayListsMessage(CallBackManager.register(ClientFileManager.INSTANCE)));
+        PacketDispatcher.sendToServer(new GetPlayListsMessage(CallBackManager.register(ClientFileManager.INSTANCE, ClientFileManager.ResponseType.PLAY_LIST)));
     }
 
     private void handleServerSide(EntityPlayer playerIn)

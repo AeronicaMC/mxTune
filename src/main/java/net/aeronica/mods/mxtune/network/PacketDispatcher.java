@@ -98,6 +98,7 @@ public class PacketDispatcher
         registerMessage(GetServerDataMessage.class);
         registerMessage(SendResultMessage.class);
         registerMessage(GetPlayListsMessage.class);
+        registerMessage(GetSongsMessage.class);
         registerMessage(SetServerSerializedDataMessage.class);
     }
 
