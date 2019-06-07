@@ -102,12 +102,12 @@ public class SetServerSerializedDataMessage extends AbstractMessage.AbstractServ
                 case PLAY_LIST:
                     PlayList playList = (PlayList)baseData;
                     resultMessage = ServerFileManager.setPlayList(dataTypeUuid, playList);
-                    ModLogger.debug("BACKGROUND Serialized Test: pass %s", dataTypeUuid.equals(playList.getGUID()));
+                    ModLogger.debug("PLAY_LIST Serialized Test: pass %s", dataTypeUuid.equals(playList.getGUID()));
                     break;
                 case MXT:
                     MXTuneFile mxTuneFile = (MXTuneFile) baseData;
                     resultMessage = ServerFileManager.setMXTFile(dataTypeUuid, mxTuneFile);
-                    ModLogger.debug("MUSIC Serialized Test: pass %s", dataTypeUuid.equals(mxTuneFile.getGUID()));
+                    ModLogger.debug("MXT Serialized Test: pass %s", dataTypeUuid.equals(mxTuneFile.getGUID()));
                     break;
                 default:
                     resultMessage = new ResultMessage(true, new TextComponentTranslation("mxtune.error.unexpected_type", recordType.name()));
