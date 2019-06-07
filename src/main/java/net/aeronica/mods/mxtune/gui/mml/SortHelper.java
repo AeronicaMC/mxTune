@@ -22,8 +22,10 @@ import com.google.common.collect.Ordering;
 import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
+import net.minecraft.util.StringUtils;
 
 import java.util.Comparator;
+import java.util.Locale;
 
 public final class SortHelper
 {
@@ -38,7 +40,7 @@ public final class SortHelper
         @Override
         public int compare(PlayList o1, PlayList o2)
         {
-            return ComparisonChain.start().compare(o1.getName(), o2.getName()).result();
+            return ComparisonChain.start().compare(stripCase(o1.getName()), stripCase(o2.getName())).result();
         }
     }
 
@@ -47,7 +49,7 @@ public final class SortHelper
         @Override
         public int compare(SongProxy o1, SongProxy o2)
         {
-            return ComparisonChain.start().compare(o1.getTitle(), o2.getTitle()).result();
+            return ComparisonChain.start().compare(stripCase(o1.getTitle()), stripCase(o2.getTitle())).result();
         }
     }
 
@@ -56,7 +58,12 @@ public final class SortHelper
         @Override
         public int compare(Song o1, Song o2)
         {
-            return ComparisonChain.start().compare(o1.getTitle(), o2.getTitle()).result();
+            return ComparisonChain.start().compare(stripCase(o1.getTitle()), stripCase(o2.getTitle())).result();
         }
+    }
+
+    private static String stripCase(String s)
+    {
+        return StringUtils.stripControlCodes(s).toLowerCase(Locale.ROOT);
     }
 }
