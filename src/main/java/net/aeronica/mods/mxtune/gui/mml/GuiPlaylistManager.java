@@ -55,7 +55,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -65,32 +67,22 @@ import static net.aeronica.mods.mxtune.gui.mml.SortHelper.SONG_PROXY_ORDERING;
 public class GuiPlaylistManager extends GuiScreen
 {
     private static final String TITLE = I18n.format("mxtune.gui.guiPlayListManager.title");
+    private static final int PADDING = 4;
     // Song Multi Selector
     private GuiLabelMX labelFileList;
     private GuiScrollingMultiListOf<SongProxy> guiFileList;
-    private List<Path> cachedFileList = new ArrayList<>();
-    private Set<Integer> cachedSelectedSongs = new HashSet<>();
-    private int cachedSelectedFileDummy = -1;
 
     // Playlist Selector
     private GuiLabel labelPlayListList;
     private GuiScrollingListOf<PlayList> guiPlayList;
-    private List<PlayList> cachedPlayListGuiList = new ArrayList<>();
-    private int cachedSelectedPlayListIndex = -1;
 
     // PlayList Day
     private GuiLabel labelPlaylistDay;
     private GuiScrollingMultiListOf<SongProxy> guiDay;
-    private List<SongProxy> cachedDayList = new ArrayList<>();
-    private Set<Integer> cachedSelectedDaySongs = new HashSet<>();
-    private int cachedSelectedDaySongDummy = -1;
 
     // PlayList Night
     private GuiLabel labelPlaylistNight;
     private GuiScrollingMultiListOf<SongProxy> guiNight;
-    private List<SongProxy> cachedNightList = new ArrayList<>();
-    private Set<Integer> cachedSelectedNightSongs = new HashSet<>();
-    private int cachedSelectedNightSongDummy = -1;
 
     // Playlist Name Field
     private GuiLabel labelPlaylistName;
@@ -100,7 +92,6 @@ public class GuiPlaylistManager extends GuiScreen
     // Logging
     private GuiLabelMX labelLog;
     private GuiScrollingListOf<ITextComponent> guiLogList;
-    private List<ITextComponent> cachedGuiLogList = new ArrayList<>();
     private final DateFormat timeInstance = SimpleDateFormat.getTimeInstance(DateFormat.MEDIUM);
 
     // Misc
@@ -123,56 +114,12 @@ public class GuiPlaylistManager extends GuiScreen
     // TODO: Finnish updating string to use the lang file.
     public GuiPlaylistManager()
     {
+        mc = Minecraft.getMinecraft();
+        fontRenderer = mc.fontRenderer;
         cacheKeyRepeatState = Keyboard.areRepeatEventsEnabled();
         Keyboard.enableRepeatEvents(true);
-    }
 
-    @Override
-    public void onGuiClosed()
-    {
-        Keyboard.enableRepeatEvents(cacheKeyRepeatState);
-    }
-
-    @Override
-    public void initGui()
-    {
-        hooverTexts.clear();
-        int guiPlayListListWidth = Math.min(Math.max((width - 15) / 3, 100), 400);
-        int guiFileListWidth = guiPlayListListWidth;
-        int singleLineHeight = mc.fontRenderer.FONT_HEIGHT + 2;
-        int entryPlayListHeight = singleLineHeight;
-        int padding = 4;
-        int titleTop = padding;
-        int left = padding;
-        int titleWidth = fontRenderer.getStringWidth(I18n.format("mxtune.gui.guiPlayListManager.title"));
-        int titleX = (width / 2) - (titleWidth / 2);
-
-        int titleHeight = singleLineHeight + 2;
-        int statusHeight = singleLineHeight * 8;
-        int entryFileHeight = singleLineHeight;
-
-        int listTop = titleTop + titleHeight;
-        int fileListBottom = Math.max(height - statusHeight - listTop - titleHeight - padding, entryPlayListHeight * 9);
-
-        int fileListHeight = Math.max(fileListBottom - listTop, singleLineHeight);
-        int logStatusTop = fileListBottom + padding;
-
-        int thirdsHeight = ((logStatusTop - listTop) / 3) - padding;
-        int playListListHeight = Math.max(thirdsHeight, entryPlayListHeight);
-        int playListBottom = listTop + playListListHeight;
-
-        int dayTop = playListBottom + padding;
-        int dayBottom = dayTop + playListListHeight;
-
-        int nightTop = dayBottom + padding;
-        int nightBottom = nightTop + playListListHeight;
-
-        labelTitle = new GuiLabel(fontRenderer, 0, titleX, titleTop, titleWidth, singleLineHeight, 0xFFFFFF );
-        labelTitle.addLine(TITLE);
-        labelFileList = new GuiLabelMX(fontRenderer,1, left, titleTop, guiFileListWidth, singleLineHeight, -1);
-        labelFileList.setLabelName(I18n.format("mxtune.gui.guiPlayListManager.label.music_file_selector", cachedSelectedSongs.size()));
-
-        guiFileList = new GuiScrollingMultiListOf<SongProxy>(this, entryFileHeight, guiFileListWidth, fileListHeight,listTop, fileListBottom, left)
+        guiFileList = new GuiScrollingMultiListOf<SongProxy>(this)
         {
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, float scrollDistance, Tessellator tess)
@@ -202,7 +149,7 @@ public class GuiPlaylistManager extends GuiScreen
             }
         };
 
-        guiPlayList = new GuiScrollingListOf<PlayList>(this, entryPlayListHeight, guiPlayListListWidth, playListListHeight, listTop, playListBottom, width - guiPlayListListWidth - padding)
+        guiPlayList = new GuiScrollingListOf<PlayList>(this)
         {
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
@@ -236,7 +183,7 @@ public class GuiPlaylistManager extends GuiScreen
             }
         };
 
-        guiDay = new GuiScrollingMultiListOf<SongProxy>(this, singleLineHeight, guiPlayListListWidth, playListListHeight ,dayTop, dayBottom, width - guiPlayListListWidth - padding)
+        guiDay = new GuiScrollingMultiListOf<SongProxy>(this)
         {
             @Override
             protected void deleteAction(int index)
@@ -251,7 +198,7 @@ public class GuiPlaylistManager extends GuiScreen
             }
         };
 
-        guiNight = new GuiScrollingMultiListOf<SongProxy>(this, singleLineHeight, guiPlayListListWidth, playListListHeight, nightTop, nightBottom, width - guiPlayListListWidth - padding)
+        guiNight = new GuiScrollingMultiListOf<SongProxy>(this)
         {
             @Override
             protected void deleteAction(int index)
@@ -266,7 +213,7 @@ public class GuiPlaylistManager extends GuiScreen
             }
         };
 
-        guiLogList = new GuiScrollingListOf<ITextComponent>(this, singleLineHeight, width - padding *2, statusHeight, logStatusTop, height - 22 - padding * 2, left) {
+        guiLogList = new GuiScrollingListOf<ITextComponent>(this) {
             @Override
             protected void selectedClickedCallback(int selectedIndex) { /* NOP */ }
 
@@ -285,12 +232,75 @@ public class GuiPlaylistManager extends GuiScreen
                 }
             }
         };
+    }
+
+    @Override
+    public void onGuiClosed()
+    {
+        Keyboard.enableRepeatEvents(cacheKeyRepeatState);
+    }
+
+    @Override
+    public void initGui()
+    {
+        hooverTexts.clear();
+        int buttonHeight = 20;
+        int guiBottom = height - 22 - PADDING * 2;
+        int guiListWidth = Math.min(Math.max((width - PADDING * 3) / 2, 720), (width - PADDING * 3) / 2);
+        int guiFileListWidth = guiListWidth;
+        int singleLineHeight = mc.fontRenderer.FONT_HEIGHT + 2;
+        int entryPlayListHeight = singleLineHeight;
+        int textEntryHeight = singleLineHeight + 2;
+        int leftPlayLists = width - guiListWidth - PADDING;
+        int titleTop = PADDING;
+        int left = PADDING;
+        int titleWidth = fontRenderer.getStringWidth(I18n.format("mxtune.gui.guiPlayListManager.title"));
+        int titleX = leftPlayLists - titleWidth - PADDING;
+
+        int titleHeight = singleLineHeight + 2;
+        int statusHeight = singleLineHeight * 8;
+        int entryFileHeight = singleLineHeight;
+
+        int listTop = titleTop + titleHeight;
+        int fileListBottom = Math.max(height - statusHeight - listTop - titleHeight - PADDING, entryPlayListHeight * 9);
+
+        int fileListHeight = Math.max(fileListBottom - listTop, singleLineHeight);
+        int logStatusTop = fileListBottom + PADDING;
+
+        int playListNameTop = listTop;
+
+        int playListTop = playListNameTop + buttonHeight + PADDING;
+        int thirdsHeight = (guiBottom - playListNameTop - (buttonHeight * 3) - (PADDING * 5)) / 3;
+        int playListListHeight = Math.max(thirdsHeight, entryPlayListHeight);
+        int playListBottom = playListTop + thirdsHeight;
+
+        int dayLabelButtonTop = playListBottom + PADDING;
+        int dayTop = dayLabelButtonTop + buttonHeight + PADDING;
+        int dayBottom = dayTop + playListListHeight;
+
+        int nightLabelButtonTop = dayBottom + PADDING;
+        int nightTop = nightLabelButtonTop + buttonHeight + PADDING;
+        int nightBottom = guiBottom;
+
+        labelTitle = new GuiLabel(fontRenderer, 0, titleX, titleTop, titleWidth, singleLineHeight, 0xFFFFFF );
+        labelTitle.addLine(TITLE);
+
+
+        guiFileList.setLayout(entryFileHeight, guiFileListWidth, fileListHeight,listTop, fileListBottom, left);
+        labelFileList = new GuiLabelMX(fontRenderer,1, left, titleTop, guiFileListWidth, singleLineHeight, -1);
+        labelFileList.setLabelName(I18n.format("mxtune.gui.guiPlayListManager.label.music_file_selector", guiFileList.size()));
+
+        guiPlayList.setLayout(entryPlayListHeight, guiListWidth, playListListHeight, playListTop, playListBottom, leftPlayLists);
+        guiDay.setLayout(singleLineHeight, guiListWidth, playListListHeight ,dayTop, dayBottom, leftPlayLists);
+        guiNight.setLayout(singleLineHeight, guiListWidth, nightBottom - nightTop, nightTop, nightBottom, leftPlayLists);
+
+        guiLogList.setLayout(singleLineHeight, guiListWidth, statusHeight, logStatusTop, guiBottom, left);
 
         labelLog = new GuiLabelMX(fontRenderer, 2, guiFileList.getRight(), logStatusTop - singleLineHeight -2, guiPlayList.getLeft()-guiFileList.getRight(), singleLineHeight,-1);
         labelLog.setCentered();
         labelLog.setLabelName(I18n.format("mxtune.gui.guiPlayListManager.label.status_log"));
 
-        labelPlayListList = new GuiLabel(fontRenderer,3, guiPlayList.getRight() - guiPlayListListWidth, titleTop, guiPlayListListWidth, singleLineHeight, 0xFFFFFF);
+        labelPlayListList = new GuiLabel(fontRenderer,3, guiPlayList.getRight() - guiListWidth, titleTop, guiListWidth, singleLineHeight, 0xFFFFFF);
         labelPlayListList.addLine("mxtune.gui.guiPlayListManager.label.playlist_selector");
 
         int buttonWidth = 80;
@@ -298,27 +308,27 @@ public class GuiPlaylistManager extends GuiScreen
         int xLibrary = (this.width /2) - buttonWidth;
         int xDone = xLibrary + buttonWidth;
 
-        GuiButton buttonManageMusic = new GuiButton(0, xLibrary, buttonTop, buttonWidth, 20, I18n.format("mxtune.gui.button.manageMusic"));
-        GuiButton buttonDone = new GuiButton(1, xDone, buttonTop, buttonWidth, 20, I18n.format("gui.done"));
+        GuiButton buttonManageMusic = new GuiButton(0, xLibrary, buttonTop, buttonWidth, buttonHeight, I18n.format("mxtune.gui.button.manageMusic"));
+        GuiButton buttonDone = new GuiButton(1, xDone, buttonTop, buttonWidth, buttonHeight, I18n.format("gui.done"));
 
         int selectButtonWidth = guiFileListWidth - 10;
         int selectButtonLeft = guiFileList.getRight() + 8;
 
-        labelPlaylistName = new GuiLabel(fontRenderer,4, selectButtonLeft, listTop, guiPlayListListWidth, singleLineHeight, 0xFFFFFF);
+        labelPlaylistName = new GuiLabel(fontRenderer,4, selectButtonLeft, listTop, guiListWidth, singleLineHeight, 0xFFFFFF);
         labelPlaylistName.addLine("mxtune.gui.guiPlayListManager.label.playlist_name");
-        playListName = new GuiTextField(1, fontRenderer, selectButtonLeft, labelPlaylistName.y + singleLineHeight + 2, selectButtonWidth, singleLineHeight + 2);
-        buttonToServer = new GuiButton(6, selectButtonLeft, playListName.y + playListName.height + padding, selectButtonWidth, 20, "Send to Server");
+        playListName = new GuiTextField(1, fontRenderer, leftPlayLists, playListNameTop, guiListWidth - 75 -PADDING, buttonHeight);
+        buttonToServer = new GuiButton(6, width - 75 - PADDING, playListNameTop, 75, buttonHeight, I18n.format("mxtune.gui.button.send"));
 
-        labelPlaylistDay = new GuiLabel(fontRenderer,5, selectButtonLeft, dayTop + padding, guiPlayListListWidth, singleLineHeight, 0xFFFFFF);
+        labelPlaylistDay = new GuiLabel(fontRenderer,5, leftPlayLists, dayLabelButtonTop + PADDING, guiListWidth, singleLineHeight, 0xFFFFFF);
         labelPlaylistDay.addLine("mxtune.gui.guiPlayListManager.label.list_day");
 
-        labelPlaylistNight = new GuiLabel(fontRenderer,6, selectButtonLeft, nightTop + padding, guiPlayListListWidth, singleLineHeight, 0xFFFFFF);
+        labelPlaylistNight = new GuiLabel(fontRenderer,6, leftPlayLists, nightLabelButtonTop + PADDING, guiListWidth, singleLineHeight, 0xFFFFFF);
         labelPlaylistNight.addLine("mxtune.gui.guiPlayListManager.label.list_night");
 
-        GuiButton buttonToDay = new GuiButton(2, selectButtonLeft, labelPlaylistDay.y + singleLineHeight + 2, selectButtonWidth, 20, I18n.format("mxtune.gui.guiPlayListManager.button.to_day_list"));
-        GuiButton buttonToNight = new GuiButton(3, selectButtonLeft, labelPlaylistNight.y + singleLineHeight + 2, selectButtonWidth, 20, I18n.format("mxtune.gui.guiPlayListManager.button.to_night_list"));
-        GuiButton buttonDDeleteDay = new GuiButton(4, selectButtonLeft, buttonToDay.y + buttonToDay.height, selectButtonWidth, 20, I18n.format("mxtune.gui.guiPlayListManager.button.delete"));
-        GuiButton buttonDDeleteNight = new GuiButton(5, selectButtonLeft, buttonToNight.y + buttonToNight.height, selectButtonWidth, 20, I18n.format("mxtune.gui.guiPlayListManager.button.delete"));
+        GuiButton buttonToDay = new GuiButton(2, selectButtonLeft, labelPlaylistDay.y + singleLineHeight + 2, selectButtonWidth, buttonHeight, I18n.format("mxtune.gui.guiPlayListManager.button.to_day_list"));
+        GuiButton buttonToNight = new GuiButton(3, selectButtonLeft, labelPlaylistNight.y + singleLineHeight + 2, selectButtonWidth, buttonHeight, I18n.format("mxtune.gui.guiPlayListManager.button.to_night_list"));
+        GuiButton buttonDDeleteDay = new GuiButton(4, selectButtonLeft, buttonToDay.y + buttonToDay.height, selectButtonWidth, buttonHeight, I18n.format("mxtune.gui.guiPlayListManager.button.delete"));
+        GuiButton buttonDDeleteNight = new GuiButton(5, selectButtonLeft, buttonToNight.y + buttonToNight.height, selectButtonWidth, buttonHeight, I18n.format("mxtune.gui.guiPlayListManager.button.delete"));
 
         buttonList.add(buttonManageMusic);
         buttonList.add(buttonDone);
@@ -335,7 +345,6 @@ public class GuiPlaylistManager extends GuiScreen
         initHooverHelp();
         initPlayLists();
         initSongList();
-        initFileList();
         reloadState();
     }
 
@@ -360,24 +369,8 @@ public class GuiPlaylistManager extends GuiScreen
     private void reloadState()
     {
         if (!isStateCached) return;
-        guiPlayList.addAll(cachedPlayListGuiList);
-        guiPlayList.setSelectedIndex(cachedSelectedPlayListIndex);
-
-        //guiFileList.addAll(cachedFileList);
-        guiFileList.setSelectedRowIndexes(cachedSelectedSongs);
-        guiFileList.setSelectedIndex(cachedSelectedFileDummy);
-
-        guiDay.addAll(cachedDayList);
-        guiDay.setSelectedRowIndexes(cachedSelectedDaySongs);
-        guiDay.setSelectedIndex(cachedSelectedDaySongDummy);
-
-        guiNight.addAll(cachedNightList);
-        guiNight.setSelectedRowIndexes(cachedSelectedNightSongs);
-        guiNight.setSelectedIndex(cachedSelectedNightSongDummy);
-
         playListName.setText(cachedPlayListName);
 
-        guiLogList.addAll(cachedGuiLogList);
         guiLogList.scrollToEnd();
 
         updateSongCountStatus();
@@ -387,30 +380,7 @@ public class GuiPlaylistManager extends GuiScreen
 
     private void updateState()
     {
-        cachedPlayListGuiList.clear();
-        cachedPlayListGuiList.addAll(guiPlayList.getList());
-        cachedSelectedPlayListIndex = guiPlayList.getSelectedIndex();
-
-        cachedSelectedSongs.clear();
-        cachedSelectedSongs.addAll(guiFileList.getSelectedRowIndexes());
-        cachedSelectedFileDummy = guiFileList.getSelectedIndex();
-
-        cachedSelectedDaySongs.clear();
-        cachedSelectedDaySongs.addAll(guiDay.getSelectedRowIndexes());
-        cachedDayList.clear();
-        cachedDayList.addAll(guiDay.getList());
-        cachedSelectedDaySongDummy = guiDay.getSelectedIndex();
-
-        cachedSelectedNightSongs.clear();
-        cachedSelectedNightSongs.addAll(guiNight.getSelectedRowIndexes());
-        cachedNightList.clear();
-        cachedNightList.addAll(guiNight.getList());
-        cachedSelectedNightSongDummy = guiNight.getSelectedIndex();
-
         cachedPlayListName = playListName.getText();
-
-        cachedGuiLogList.clear();
-        cachedGuiLogList.addAll(guiLogList.getList());
 
         buttonToServer.enabled = !(playListName.getText().equals("") ||
                                            !globalMatcher(patternPlaylistName, playListName.getText()) ||
@@ -558,48 +528,6 @@ public class GuiPlaylistManager extends GuiScreen
         super.handleMouseInput();
     }
 
-    // This is experimental and inefficient
-    private void initFileList()
-    {
-//        new Thread(
-//                () ->
-//                {
-//                    pathSongProxyBiMap.clear();
-//                    pathSongGuidBiMap.clear();
-//                    Path pathDir = FileHelper.getDirectory(FileHelper.CLIENT_LIB_FOLDER, Side.CLIENT);
-//                    PathMatcher filter = FileHelper.getMxtMatcher(pathDir);
-//                    try (Stream<Path> paths = Files.list(pathDir))
-//                    {
-//                        cachedFileList = paths
-//                                .filter(filter::matches)
-//                                .collect(Collectors.toList());
-//                    } catch (NullPointerException | IOException e)
-//                    {
-//                        ModLogger.error(e);
-//                    }
-//
-//                    List<Path> files = new ArrayList<>();
-//
-//                    for (Path file : cachedFileList)
-//                    {
-//                        files.add(file);
-//                        SongProxy songProxy = pathToSongProxy(file);
-//                        if (songProxy != null)
-//                        {
-//                            pathSongProxyBiMap.forcePut(file, songProxy);
-//                            pathSongGuidBiMap.forcePut(file, songProxy.getGUID());
-//                        }
-//                        else
-//                            updateStatus(TextFormatting.DARK_RED + I18n.format("mxtune.gui.guiPlayListManager.log.corrupted_file", (String.format("%s", TextFormatting.RESET + file.getFileName().toString()))));
-//                    }
-//                    cachedFileList = files;
-//                    guiFileList.clear();
-//                    guiFileList.addAll(files);
-//                    songProxyPathBiMap = pathSongProxyBiMap.inverse();
-//                    songGuidPathBiMap = pathSongGuidBiMap.inverse();
-//                }).start();
-    }
-
     @Nullable
     private SongProxy pathToSongProxy(Path path)
     {
@@ -742,8 +670,6 @@ public class GuiPlaylistManager extends GuiScreen
             guiNight.clear();
             guiDay.addAll(SONG_PROXY_ORDERING.sortedCopy(selectedPlayList.getPlayListDay()));
             guiNight.addAll(SONG_PROXY_ORDERING.sortedCopy(selectedPlayList.getPlayListNight()));
-            cachedSelectedDaySongs.clear();
-            cachedSelectedNightSongs.clear();
             updateState();
         }
     }
