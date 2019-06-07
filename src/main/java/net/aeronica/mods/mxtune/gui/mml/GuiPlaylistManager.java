@@ -63,6 +63,7 @@ import java.util.regex.Pattern;
 
 import static net.aeronica.mods.mxtune.gui.mml.SortHelper.PLAYLIST_ORDERING;
 import static net.aeronica.mods.mxtune.gui.mml.SortHelper.SONG_PROXY_ORDERING;
+import static net.aeronica.mods.mxtune.gui.toasts.ModToastHelper.postPlayListManagerToast;
 
 public class GuiPlaylistManager extends GuiScreen
 {
@@ -232,6 +233,7 @@ public class GuiPlaylistManager extends GuiScreen
                 }
             }
         };
+        initGuiHooverHelp();
     }
 
     @Override
@@ -325,10 +327,10 @@ public class GuiPlaylistManager extends GuiScreen
         labelPlaylistNight = new GuiLabel(fontRenderer,6, leftPlayLists, nightLabelButtonTop + PADDING, guiListWidth, singleLineHeight, 0xFFFFFF);
         labelPlaylistNight.addLine("mxtune.gui.guiPlayListManager.label.list_night");
 
-        GuiButton buttonToDay = new GuiButton(2, selectButtonLeft, labelPlaylistDay.y + singleLineHeight + 2, selectButtonWidth, buttonHeight, I18n.format("mxtune.gui.guiPlayListManager.button.to_day_list"));
-        GuiButton buttonToNight = new GuiButton(3, selectButtonLeft, labelPlaylistNight.y + singleLineHeight + 2, selectButtonWidth, buttonHeight, I18n.format("mxtune.gui.guiPlayListManager.button.to_night_list"));
-        GuiButton buttonDDeleteDay = new GuiButton(4, selectButtonLeft, buttonToDay.y + buttonToDay.height, selectButtonWidth, buttonHeight, I18n.format("mxtune.gui.guiPlayListManager.button.delete"));
-        GuiButton buttonDDeleteNight = new GuiButton(5, selectButtonLeft, buttonToNight.y + buttonToNight.height, selectButtonWidth, buttonHeight, I18n.format("mxtune.gui.guiPlayListManager.button.delete"));
+        GuiButton buttonToDay = new GuiButton(2, width - 150 - PADDING, dayLabelButtonTop,  75, buttonHeight, I18n.format("mxtune.gui.guiPlayListManager.button.to_day_list"));
+        GuiButton buttonToNight = new GuiButton(3, width - 150 - PADDING, nightLabelButtonTop, 75, buttonHeight, I18n.format("mxtune.gui.guiPlayListManager.button.to_night_list"));
+        GuiButton buttonDDeleteDay = new GuiButton(4, width - 75 - PADDING, dayLabelButtonTop, 75, buttonHeight, I18n.format("mxtune.gui.guiPlayListManager.button.delete"));
+        GuiButton buttonDDeleteNight = new GuiButton(5, width - 75 - PADDING, nightLabelButtonTop, 75, buttonHeight, I18n.format("mxtune.gui.guiPlayListManager.button.delete"));
 
         buttonList.add(buttonManageMusic);
         buttonList.add(buttonDone);
@@ -342,7 +344,6 @@ public class GuiPlaylistManager extends GuiScreen
         hooverTexts.add(guiPlayList);
         hooverTexts.add(guiDay);
         hooverTexts.add(guiNight);
-        initHooverHelp();
         initPlayLists();
         initSongList();
         reloadState();
@@ -574,48 +575,20 @@ public class GuiPlaylistManager extends GuiScreen
         updateStatus(TextFormatting.GOLD + I18n.format("mxtune.gui.guiPlayListManager.log.upload_playlist", TextFormatting.RESET + playListName.getText().trim()));
         PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(playList.getGUID(), RecordType.PLAY_LIST, playList));
 
-        // Build one list of songs to send from both lists to remove duplicates!
-//        List<SongProxy> proxyMap = new ArrayList<>(guiDay.getList());
-//        for (SongProxy songProxy : guiNight.getList())
-//        {
-//            if (!proxyMap.contains(songProxy))
-//                proxyMap.add(songProxy);
-//        }
-//
-//        new Thread ( () ->
-//                     {
-//                         int count = 0;
-//                         for (SongProxy songProxy : proxyMap)
-//                         {
-//                             count++;
-//                             if (songProxy != null)
-//                             {
-//                                 Song song = pathToSong(songGuidPathBiMap.get(songProxy.getGUID()));
-//                                 if (song != null)
-//                                 {
-//                                     // TODO: Sync MXT Files!
-//                                     //PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(songProxy.getGUID(), SetServerSerializedDataMessage.SetType.MUSIC, song));
-//                                     updateStatus(TextFormatting.DARK_GREEN + I18n.format("mxtune.gui.guiPlayListManager.log.uploading_music", String.format("%03d", count), String.format("%03d", proxyMap.size()), TextFormatting.RESET + song.getTitle()));
-//                                 } else
-//                                 {
-//                                     updateStatus(TextFormatting.DARK_RED + I18n.format("mxtune.gui.guiPlayListManager.log.not_found_in_library", String.format("%03d", count), String.format("%03d", proxyMap.size()), TextFormatting.RESET + songProxy.getTitle()));
-//                                 }
-//                                 try
-//                                 {
-//                                     // Don't spam the server. Upload once per second.
-//                                     Thread.sleep(1000);
-//                                 } catch (InterruptedException e)
-//                                 {
-//                                     Thread.currentThread().interrupt();
-//                                 }
-//                             }
-//                         }
-//                         uploading = false;
-//                         updateState();
-//                     }).start();
-        // done
-        initPlayLists();
-        updateState();
+        new Thread ( () ->
+                     {
+                         try
+                         {
+                             Thread.sleep(1000);
+                         } catch (InterruptedException e)
+                         {
+                             Thread.currentThread().interrupt();
+                         }
+                         postPlayListManagerToast();
+                         uploading = false;
+                         initPlayLists();
+                         updateState();
+                     }).start();
     }
 
     private void initSongList()
@@ -688,7 +661,7 @@ public class GuiPlaylistManager extends GuiScreen
         }
     }
 
-    private void initHooverHelp()
+    private void initGuiHooverHelp()
     {
         guiFileList.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiPlayListManager.label.music_file_selector", "0"));
         guiFileList.addHooverTexts(
