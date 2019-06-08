@@ -262,18 +262,21 @@ public class GuiPlaylistManager extends GuiScreen
         int titleX = leftPlayLists - titleWidth - PADDING;
 
         int titleHeight = singleLineHeight + 2;
-        int statusHeight = singleLineHeight * 8;
         int entryFileHeight = singleLineHeight;
 
         int listTop = titleTop + titleHeight;
-        int fileListBottom = Math.max(height - statusHeight - listTop - titleHeight - PADDING, entryPlayListHeight * 9);
-
-        int fileListHeight = Math.max(fileListBottom - listTop, singleLineHeight);
-        int logStatusTop = fileListBottom + PADDING;
 
         int buttonSortSongsTop = listTop;
-        int songListTop = listTop + 20 + PADDING;
 
+        int logStatusHeight = singleLineHeight * 5;
+        int logStatusTop = guiBottom - logStatusHeight;
+        int logStatusBottom = guiBottom;
+
+        int songListTop = listTop + 20 + PADDING;
+        int songListBottom = logStatusTop - singleLineHeight - PADDING;
+        int songListHeight = songListBottom - songListTop;
+
+        // Right side
         int playListNameTop = listTop;
 
         int playListTop = playListNameTop + buttonHeight + PADDING;
@@ -292,13 +295,14 @@ public class GuiPlaylistManager extends GuiScreen
         labelTitle = new GuiLabel(fontRenderer, 0, titleX, titleTop, titleWidth, singleLineHeight, 0xFFFFFF );
         labelTitle.addLine(TITLE);
 
-        buttonSortSongs = new GuiSortButton<SongProxy>(24, left, buttonSortSongsTop) {
+        buttonSortSongs = new GuiSortButton<SongProxy>(24, left, buttonSortSongsTop, 50, 20) {
             @Override
             public String getString(SongProxy o) { return o.getTitle(); }
         };
+        buttonSortSongs.setDisplayText(I18n.format("mxtune.gui.button.order_a-z"), I18n.format("mxtune.gui.button.order_z-a"),"");
         buttonList.add(buttonSortSongs);
 
-        guiFileList.setLayout(entryFileHeight, guiFileListWidth, fileListHeight,songListTop, fileListBottom, left);
+        guiFileList.setLayout(entryFileHeight, guiFileListWidth, songListHeight, songListTop, songListBottom, left);
         labelFileList = new GuiLabelMX(fontRenderer,1, left, titleTop, guiFileListWidth, singleLineHeight, -1);
         labelFileList.setLabelName(I18n.format("mxtune.gui.guiPlayListManager.label.music_file_selector", guiFileList.size()));
 
@@ -306,10 +310,9 @@ public class GuiPlaylistManager extends GuiScreen
         guiDay.setLayout(singleLineHeight, guiListWidth, playListListHeight ,dayTop, dayBottom, leftPlayLists);
         guiNight.setLayout(singleLineHeight, guiListWidth, nightBottom - nightTop, nightTop, nightBottom, leftPlayLists);
 
-        guiLogList.setLayout(singleLineHeight, guiListWidth, statusHeight, logStatusTop, guiBottom, left);
+        guiLogList.setLayout(singleLineHeight, guiListWidth, logStatusHeight, logStatusTop, logStatusBottom, left);
 
-        labelLog = new GuiLabelMX(fontRenderer, 2, guiFileList.getRight(), logStatusTop - singleLineHeight -2, guiPlayList.getLeft()-guiFileList.getRight(), singleLineHeight,-1);
-        labelLog.setCentered();
+        labelLog = new GuiLabelMX(fontRenderer, 2, left, logStatusTop - singleLineHeight, guiListWidth, singleLineHeight,-1);
         labelLog.setLabelName(I18n.format("mxtune.gui.guiPlayListManager.label.status_log"));
 
         labelPlayListList = new GuiLabel(fontRenderer,3, guiPlayList.getRight() - guiListWidth, titleTop, guiListWidth, singleLineHeight, 0xFFFFFF);
@@ -466,6 +469,7 @@ public class GuiPlaylistManager extends GuiScreen
         {
             case 0:
                 // Open Music Library
+                guiFileList.unSelectAll();
                 mc.displayGuiScreen(new GuiMXT(this, GuiMXT.Mode.SERVER));
                 break;
             case 1:
@@ -495,6 +499,7 @@ public class GuiPlaylistManager extends GuiScreen
             case 24:
                 // Sort Song List
                 guiFileList.sort(buttonSortSongs);
+                guiFileList.unSelectAll();
                 break;
             default:
         }

@@ -24,13 +24,29 @@ import net.minecraft.util.StringUtils;
 import java.util.Comparator;
 import java.util.Locale;
 
+@SuppressWarnings("unused")
 public abstract class GuiSortButton<T> extends GuiButtonMX implements Comparator<T>
 {
+    private static final String ASCENDING = "\u25B2";
+    private static final String DESCENDING = "\u25BC";
+    private static final String NATURAL = "\u25AC";
+
+    private String displayAscending = "";
+    private String displayDescending = "";
+    private String displayNatural = "";
+
     private int sortMode = 0;
+    private boolean naturalOrderOption = false;
 
     public GuiSortButton(int buttonId, int x, int y)
     {
         super(buttonId, x, y, 20, 20, "");
+        setButtonText();
+    }
+
+    public GuiSortButton(int buttonId, int x, int y, int widthIn, int heightIn)
+    {
+        super(buttonId, x, y, widthIn, heightIn, "");
         setButtonText();
     }
 
@@ -74,7 +90,7 @@ public abstract class GuiSortButton<T> extends GuiButtonMX implements Comparator
         return StringUtils.stripControlCodes(getString(o)).toLowerCase(Locale.ROOT);
     }
 
-    public int getSortMode() { return sortMode % 2; }
+    public int getSortMode() { return sortMode % (naturalOrderOption ? 3 : 2); }
 
     public void setSortMode(int sortMode)
     {
@@ -82,18 +98,30 @@ public abstract class GuiSortButton<T> extends GuiButtonMX implements Comparator
         setButtonText();
     }
 
+    public void setDisplayText(String displayAscending, String displayDescending, String displayNatural)
+    {
+        this.displayAscending = displayAscending;
+        this.displayDescending = displayDescending;
+        this.displayNatural = displayNatural;
+        setButtonText();
+    }
+
+    public boolean hasNaturalOrderOption() { return naturalOrderOption; }
+
+    public void setNaturalOrderOption(boolean naturalOrderOption) { this.naturalOrderOption = naturalOrderOption; }
+
     private void setButtonText()
     {
         switch (getSortMode())
         {
             case 0:
-                this.displayString = "\u25B2";
+                this.displayString = displayAscending.isEmpty() ? ASCENDING : displayAscending;
                 break;
             case 1:
-                this.displayString = "\u25BC";
+                this.displayString = displayDescending.isEmpty() ? DESCENDING : displayDescending;
                 break;
             case 2:
-                this.displayString = "\u25AC";
+                this.displayString = displayNatural.isEmpty() ? NATURAL : displayNatural;
                 break;
             default:
         }

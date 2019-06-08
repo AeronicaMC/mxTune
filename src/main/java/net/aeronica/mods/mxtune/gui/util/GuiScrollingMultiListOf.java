@@ -75,6 +75,11 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
             selectedClickedCallback(selectedIndex);
     }
 
+    public void unSelectAll()
+    {
+        selectedRowIndexes.clear();
+    }
+
     private void selectionToggle()
     {
         if (!selectedRowIndexes.contains(selectedIndex))
