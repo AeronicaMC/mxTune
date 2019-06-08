@@ -17,7 +17,7 @@
 
 package net.aeronica.mods.mxtune.gui.util;
 
-import net.minecraft.client.gui.GuiButton;
+import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -26,7 +26,7 @@ import java.util.List;
 
 @SideOnly(Side.CLIENT)
 @SuppressWarnings("unused")
-public class GuiButtonMX extends GuiButton implements IHooverText
+public class GuiButtonMX extends GuiButtonExt implements IHooverText
 {
     private List<String> hooverTexts = new ArrayList<>();
     private List<String> hooverTextsCopy = new ArrayList<>();
