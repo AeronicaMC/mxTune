@@ -72,6 +72,8 @@ public class GuiPlaylistManager extends GuiScreen
     // Song Multi Selector
     private GuiLabelMX labelFileList;
     private GuiScrollingMultiListOf<SongProxy> guiFileList;
+    private GuiSortButton<SongProxy> buttonSortSongs;
+    private int cachedSortMode;
 
     // Playlist Selector
     private GuiLabel labelPlayListList;
@@ -269,6 +271,9 @@ public class GuiPlaylistManager extends GuiScreen
         int fileListHeight = Math.max(fileListBottom - listTop, singleLineHeight);
         int logStatusTop = fileListBottom + PADDING;
 
+        int buttonSortSongsTop = listTop;
+        int songListTop = listTop + 20 + PADDING;
+
         int playListNameTop = listTop;
 
         int playListTop = playListNameTop + buttonHeight + PADDING;
@@ -287,8 +292,13 @@ public class GuiPlaylistManager extends GuiScreen
         labelTitle = new GuiLabel(fontRenderer, 0, titleX, titleTop, titleWidth, singleLineHeight, 0xFFFFFF );
         labelTitle.addLine(TITLE);
 
+        buttonSortSongs = new GuiSortButton<SongProxy>(24, left, buttonSortSongsTop) {
+            @Override
+            public String getString(SongProxy o) { return o.getTitle(); }
+        };
+        buttonList.add(buttonSortSongs);
 
-        guiFileList.setLayout(entryFileHeight, guiFileListWidth, fileListHeight,listTop, fileListBottom, left);
+        guiFileList.setLayout(entryFileHeight, guiFileListWidth, fileListHeight,songListTop, fileListBottom, left);
         labelFileList = new GuiLabelMX(fontRenderer,1, left, titleTop, guiFileListWidth, singleLineHeight, -1);
         labelFileList.setLabelName(I18n.format("mxtune.gui.guiPlayListManager.label.music_file_selector", guiFileList.size()));
 
@@ -376,6 +386,7 @@ public class GuiPlaylistManager extends GuiScreen
 
         updateSongCountStatus();
         guiPlayList.resetScroll();
+        buttonSortSongs.setSortMode(cachedSortMode);
         guiFileList.resetScroll();
     }
 
@@ -386,6 +397,7 @@ public class GuiPlaylistManager extends GuiScreen
         buttonToServer.enabled = !(playListName.getText().equals("") ||
                                            !globalMatcher(patternPlaylistName, playListName.getText()) ||
                                            (guiDay.isEmpty() && guiNight.isEmpty() || uploading));
+        cachedSortMode = buttonSortSongs.getSortMode();
         updateSongCountStatus();
         isStateCached = true;
     }
@@ -479,6 +491,10 @@ public class GuiPlaylistManager extends GuiScreen
             case 6:
                 // send to Server
                 shipIt();
+                break;
+            case 24:
+                // Sort Song List
+                guiFileList.sort(buttonSortSongs);
                 break;
             default:
         }
@@ -604,7 +620,8 @@ public class GuiPlaylistManager extends GuiScreen
                            Thread.currentThread().interrupt();
                        }
                        guiFileList.clear();
-                       guiFileList.addAll(SONG_PROXY_ORDERING.sortedCopy(ClientFileManager.getCachedServerSongList()));
+                       guiFileList.addAll(ClientFileManager.getCachedServerSongList());
+                       guiFileList.sort(buttonSortSongs);
                        updateState();
                    }).start();
     }
