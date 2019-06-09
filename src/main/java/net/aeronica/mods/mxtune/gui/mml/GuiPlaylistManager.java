@@ -256,7 +256,7 @@ public class GuiPlaylistManager extends GuiScreen
     {
         hooverTexts.clear();
         int buttonHeight = 20;
-        int guiBottom = height - 22 - PADDING * 2;
+        int guiBottom = height - PADDING;
         int guiListWidth = Math.min(Math.max((width - PADDING * 3) / 2, 720), (width - PADDING * 3) / 2);
         int guiSongListWidth = guiListWidth;
         int singleLineHeight = mc.fontRenderer.FONT_HEIGHT + 2;
@@ -266,12 +266,15 @@ public class GuiPlaylistManager extends GuiScreen
         int titleTop = PADDING;
         int left = PADDING;
         int titleWidth = fontRenderer.getStringWidth(I18n.format("mxtune.gui.guiPlayListManager.title"));
-        int titleX = leftPlayLists - titleWidth - PADDING;
+        int titleX = width - titleWidth - PADDING;
 
         int titleHeight = singleLineHeight + 2;
         int entryFileHeight = singleLineHeight;
 
-        int listTop = titleTop + titleHeight;
+        int buttonWidthMain = 80;
+        int buttonTopMain = titleTop;
+        int columnLabelsTop = buttonTopMain + buttonHeight + PADDING;
+        int listTop = columnLabelsTop + textEntryHeight;
 
         // Left side
         int buttonSortSongsTop = listTop;
@@ -281,7 +284,7 @@ public class GuiPlaylistManager extends GuiScreen
         int logStatusTop = guiBottom - logStatusHeight;
         int logStatusBottom = guiBottom;
 
-        int songListTop = listTop + 20 + PADDING;
+        int songListTop = listTop + buttonHeight + PADDING;
         int songListBottom = logStatusTop - singleLineHeight - PADDING;
         int songListHeight = songListBottom - songListTop;
 
@@ -304,6 +307,13 @@ public class GuiPlaylistManager extends GuiScreen
         labelTitle = new GuiLabel(fontRenderer, 0, titleX, titleTop, titleWidth, singleLineHeight, 0xFFFFFF );
         labelTitle.addLine(TITLE);
 
+        int xLibrary = (this.width /2) - buttonWidthMain;
+        int xDone = xLibrary + buttonWidthMain;
+
+        GuiButton buttonManageMusic = new GuiButton(0, xLibrary, buttonTopMain, buttonWidthMain, buttonHeight, I18n.format("mxtune.gui.button.manageMusic"));
+        GuiButton buttonDone = new GuiButton(1, xDone, buttonTopMain, buttonWidthMain, buttonHeight, I18n.format("gui.done"));
+
+        // Left and Right
         buttonSortSongs = new GuiSortButton<SongProxy>(24, buttonSortRight - 50, buttonSortSongsTop, 50, 20) {
             @Override
             public String getString(SongProxy o) { return o.getTitle(); }
@@ -317,7 +327,7 @@ public class GuiPlaylistManager extends GuiScreen
         textSearch = new GuiTextField(2, fontRenderer, left + labelSearchWidth, buttonSortSongsTop, guiSongListWidth - labelSearchWidth - buttonSortSongs.width - PADDING, 20);
 
         guiSongList.setLayout(entryFileHeight, guiSongListWidth, songListHeight, songListTop, songListBottom, left);
-        labelSongList = new GuiLabelMX(fontRenderer, 1, left, titleTop, guiSongListWidth, singleLineHeight, -1);
+        labelSongList = new GuiLabelMX(fontRenderer, 1, left, columnLabelsTop, guiSongListWidth, singleLineHeight, -1);
         labelSongList.setLabelName(I18n.format("mxtune.gui.guiPlayListManager.label.music_file_selector", guiSongList.size()));
 
         guiPlayList.setLayout(entryPlayListHeight, guiListWidth, playListListHeight, playListTop, playListBottom, leftPlayLists);
@@ -329,16 +339,8 @@ public class GuiPlaylistManager extends GuiScreen
         labelLog = new GuiLabelMX(fontRenderer, 2, left, logStatusTop - singleLineHeight, guiListWidth, singleLineHeight,-1);
         labelLog.setLabelName(I18n.format("mxtune.gui.guiPlayListManager.label.status_log"));
 
-        labelPlayListList = new GuiLabel(fontRenderer,3, guiPlayList.getRight() - guiListWidth, titleTop, guiListWidth, singleLineHeight, 0xFFFFFF);
+        labelPlayListList = new GuiLabel(fontRenderer,3, guiPlayList.getRight() - guiListWidth, columnLabelsTop, guiListWidth, singleLineHeight, 0xFFFFFF);
         labelPlayListList.addLine("mxtune.gui.guiPlayListManager.label.playlist_selector");
-
-        int buttonWidth = 80;
-        int buttonTop = height - 22;
-        int xLibrary = (this.width /2) - buttonWidth;
-        int xDone = xLibrary + buttonWidth;
-
-        GuiButton buttonManageMusic = new GuiButton(0, xLibrary, buttonTop, buttonWidth, buttonHeight, I18n.format("mxtune.gui.button.manageMusic"));
-        GuiButton buttonDone = new GuiButton(1, xDone, buttonTop, buttonWidth, buttonHeight, I18n.format("gui.done"));
 
         int selectButtonLeft = guiSongList.getRight() + PADDING;
 
@@ -728,7 +730,7 @@ public class GuiPlaylistManager extends GuiScreen
 
     private void initGuiHooverHelp()
     {
-        guiSongList.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiPlayListManager.label.music_file_selector", "0"));
+        guiSongList.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiPlayListManager.label.music_file_selector", "n"));
         guiSongList.addHooverTexts(
                 TextFormatting.RESET +
                         new TextComponentTranslation( "mxtune.gui.guiPlayListManager.help.multi_selector_01",
@@ -754,6 +756,26 @@ public class GuiPlaylistManager extends GuiScreen
                 TextFormatting.RESET +
                         new TextComponentTranslation("mxtune.gui.guiPlayListManager.help.playlist_selector_05",
                                                      TextFormatting.GOLD + new TextComponentTranslation("mxtune.info.playlist.empty_playlist").getFormattedText()).getFormattedText());
+
+        guiDay.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiPlayListManager.label.list_day"));
+        guiDay.addHooverTexts(
+                TextFormatting.RESET +
+                        new TextComponentTranslation( "mxtune.gui.guiPlayListManager.help.multi_selector_01",
+                                                      TextFormatting.GOLD + new TextComponentTranslation("mxtune.gui.guiPlayListManager.help.ctrl_plus_mouse_left_click").getFormattedText()).getFormattedText());
+        guiDay.addHooverTexts(
+                TextFormatting.RESET +
+                        new TextComponentTranslation( "mxtune.gui.guiPlayListManager.help.multi_selector_01",
+                                                      TextFormatting.GOLD + new TextComponentTranslation("mxtune.gui.guiPlayListManager.help.ctrl_plus_spacebar_up_down_arrow_keys").getFormattedText()).getFormattedText());
+
+        guiNight.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiPlayListManager.label.list_night"));
+        guiNight.addHooverTexts(
+                TextFormatting.RESET +
+                        new TextComponentTranslation( "mxtune.gui.guiPlayListManager.help.multi_selector_01",
+                                                      TextFormatting.GOLD + new TextComponentTranslation("mxtune.gui.guiPlayListManager.help.ctrl_plus_mouse_left_click").getFormattedText()).getFormattedText());
+        guiNight.addHooverTexts(
+                TextFormatting.RESET +
+                        new TextComponentTranslation( "mxtune.gui.guiPlayListManager.help.multi_selector_01",
+                                                      TextFormatting.GOLD + new TextComponentTranslation("mxtune.gui.guiPlayListManager.help.ctrl_plus_spacebar_up_down_arrow_keys").getFormattedText()).getFormattedText());
 
     }
 }
