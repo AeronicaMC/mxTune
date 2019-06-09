@@ -537,6 +537,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
 
     private void cancelAction()
     {
+        stop();
         mc.displayGuiScreen(guiScreenParent);
     }
 
