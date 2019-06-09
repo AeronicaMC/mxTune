@@ -38,6 +38,7 @@ import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.CallBackManager;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiLabel;
@@ -120,6 +121,7 @@ public class GuiPlaylistManager extends GuiScreen
     GuiButtonMX buttonPlayStop;
     private int playId = PlayIdSupplier.PlayType.INVALID;
     private boolean isPlaying = false;
+    private int counter;
 
     // Uploading
     private boolean uploading = false;
@@ -506,6 +508,14 @@ public class GuiPlaylistManager extends GuiScreen
     @Override
     public void updateScreen()
     {
+        if (counter++ % 10 == 0 )
+        {
+            synchronized (ClientAudio.INSTANCE)
+            {
+                isPlaying = ClientAudio.getActivePlayIDs().contains(playId);
+                buttonPlayStop.displayString = isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play");
+            }
+        }
         // Keyboard.enableRepeatEvents(textPlayListName.isFocused());
     }
 
@@ -774,6 +784,7 @@ public class GuiPlaylistManager extends GuiScreen
             if (song != null && !isPlaying)
             {
                 isPlaying = mmlPlay(song.getGUID());
+                updateStatus(TextFormatting.GOLD + I18n.format("mxtune.gui.guiPlayListManager.log.play", SheetMusicUtil.formatDuration(song.getDuration()), TextFormatting.RESET + song.getTitle()));
             }
             else
                 isPlaying = false;
@@ -785,6 +796,7 @@ public class GuiPlaylistManager extends GuiScreen
     {
         ClientAudio.fadeOut(playId, 1);
         isPlaying = false;
+        playId = PlayIdSupplier.PlayType.INVALID;
     }
 
     private void initGuiHooverHelp()

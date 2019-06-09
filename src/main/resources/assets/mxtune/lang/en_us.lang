@@ -330,6 +330,7 @@ mxtune.gui.guiPlayListManager.log.corrupted_file=MxTune Music File (.mxt) is mis
 mxtune.gui.guiPlayListManager.log.not_found_in_library=Song Not Found in Music Library! %s of %s: %s
 mxtune.gui.guiPlayListManager.log.set_staff_of_music_playlist=Set Staff of Music Playlist to: %s
 mxtune.gui.guiPlayListManager.log.failed_set_staff_of_music_playlist=Failed to Set Staff of Music Playlist!
+mxtune.gui.guiPlayListManager.log.play=Playing (%s) %s
 mxtune.gui.guiMXT.displayedFilename=MXT Filename:
 mxtune.gui.guiMXT.labelStatus=Status
 mxtune.gui.guiMXT.textStatus=Chars: %s, Duration: %s, Metadata: %s
