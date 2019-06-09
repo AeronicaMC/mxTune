@@ -252,6 +252,27 @@ public class ClientPlayManager implements IAudioStatusCallback
         }
     }
 
+    public static boolean playFromCacheElseServer(GUID guidSong, int playId)
+    {
+        if (!Reference.EMPTY_GUID.equals(guidSong) && !ClientFileManager.hasSongProxy(guidSong))
+        {
+            PacketDispatcher.sendToServer(new GetServerDataMessage(guidSong, RecordType.SONG, playId));
+            ModLogger.debug("playFromCacheElseServer: Get from SERVER!");
+            return true;
+        }
+        else if (!Reference.EMPTY_GUID.equals(guidSong) && ClientFileManager.hasSongProxy(guidSong))
+        {
+            Song song = ClientFileManager.getSongFromCache(guidSong);
+            if (song != null)
+            {
+                ClientAudio.playLocal(playId, song.getMml(),INSTANCE);
+                ModLogger.debug("playFromCacheElseServer: Get from CACHE!");
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static void updateBiome()
     {
        // NOP
