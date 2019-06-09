@@ -22,6 +22,8 @@ import com.google.common.collect.HashBiMap;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.gui.util.*;
 import net.aeronica.mods.mxtune.managers.ClientFileManager;
+import net.aeronica.mods.mxtune.managers.ClientPlayManager;
+import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
 import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.aeronica.mods.mxtune.managers.records.RecordType;
 import net.aeronica.mods.mxtune.managers.records.Song;
@@ -32,6 +34,7 @@ import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.GetBaseDataListsMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.SetServerSerializedDataMessage;
 import net.aeronica.mods.mxtune.network.server.PlayerSelectedPlayListMessage;
+import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.CallBackManager;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -42,6 +45,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.StringUtils;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -109,8 +113,13 @@ public class GuiPlaylistManager extends GuiScreen
     private GuiLabel labelTitle;
     private boolean cacheKeyRepeatState;
     private boolean isStateCached;
-    private GuiButton buttonToServer;
+    private GuiButtonMX buttonToServer;
     private Pattern patternPlaylistName = Pattern.compile("^\\s+|\\s+$|^\\[");
+
+    /* MML Player */
+    GuiButtonMX buttonPlayStop;
+    private int playId = PlayIdSupplier.PlayType.INVALID;
+    private boolean isPlaying = false;
 
     // Uploading
     private boolean uploading = false;
@@ -248,6 +257,7 @@ public class GuiPlaylistManager extends GuiScreen
     @Override
     public void onGuiClosed()
     {
+        stop();
         Keyboard.enableRepeatEvents(cacheKeyRepeatState);
     }
 
@@ -307,11 +317,12 @@ public class GuiPlaylistManager extends GuiScreen
         labelTitle = new GuiLabel(fontRenderer, 0, titleX, titleTop, titleWidth, singleLineHeight, 0xFFFFFF );
         labelTitle.addLine(TITLE);
 
-        int xLibrary = (this.width /2) - buttonWidthMain;
-        int xDone = xLibrary + buttonWidthMain;
+        // Play/Stop
+        buttonPlayStop = new GuiButtonMX(7, left, buttonTopMain, buttonWidthMain, buttonHeight, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play"));
+        buttonPlayStop.enabled = true;
 
-        GuiButton buttonManageMusic = new GuiButton(0, xLibrary, buttonTopMain, buttonWidthMain, buttonHeight, I18n.format("mxtune.gui.button.manageMusic"));
-        GuiButton buttonDone = new GuiButton(1, xDone, buttonTopMain, buttonWidthMain, buttonHeight, I18n.format("gui.done"));
+        GuiButton buttonManageMusic = new GuiButton(0, buttonPlayStop.x + buttonWidthMain, buttonTopMain, buttonWidthMain, buttonHeight, I18n.format("mxtune.gui.button.manageMusic"));
+        GuiButton buttonDone = new GuiButton(1, buttonManageMusic.x + buttonWidthMain, buttonTopMain, buttonWidthMain, buttonHeight, I18n.format("gui.done"));
 
         // Left and Right
         buttonSortSongs = new GuiSortButton<SongProxy>(24, buttonSortRight - 50, buttonSortSongsTop, 50, 20) {
@@ -349,7 +360,7 @@ public class GuiPlaylistManager extends GuiScreen
         int labelPlayListNameWidth = fontRenderer.getStringWidth(labelPlaylistName.getLabelName()) + PADDING;
 
         textPlayListName = new GuiTextField(1, fontRenderer, leftPlayLists + labelPlayListNameWidth, playListNameTop, guiListWidth - labelPlayListNameWidth - 75 - PADDING, buttonHeight);
-        buttonToServer = new GuiButton(6, width - 75 - PADDING, playListNameTop, 75, buttonHeight, I18n.format("mxtune.gui.button.send"));
+        buttonToServer = new GuiButtonMX(6, width - 75 - PADDING, playListNameTop, 75, buttonHeight, I18n.format("mxtune.gui.button.send"));
 
         labelPlaylistDay = new GuiLabel(fontRenderer,5, leftPlayLists, dayLabelButtonTop + PADDING, guiListWidth, singleLineHeight, 0xFFFFFF);
         labelPlaylistDay.addLine("mxtune.gui.guiPlayListManager.label.list_day");
@@ -362,6 +373,7 @@ public class GuiPlaylistManager extends GuiScreen
         GuiButton buttonDDeleteDay = new GuiButton(4, width - 75 - PADDING, dayLabelButtonTop, 75, buttonHeight, I18n.format("mxtune.gui.guiPlayListManager.button.delete"));
         GuiButton buttonDDeleteNight = new GuiButton(5, width - 75 - PADDING, nightLabelButtonTop, 75, buttonHeight, I18n.format("mxtune.gui.guiPlayListManager.button.delete"));
 
+        buttonList.add(buttonPlayStop);
         buttonList.add(buttonManageMusic);
         buttonList.add(buttonDone);
         buttonList.add(buttonToDay);
@@ -417,6 +429,9 @@ public class GuiPlaylistManager extends GuiScreen
                                            !globalMatcher(patternPlaylistName, textPlayListName.getText()) ||
                                            (guiDay.isEmpty() && guiNight.isEmpty() || uploading));
         cachedSortMode = buttonSortSongs.getSortMode();
+
+        buttonPlayStop.displayString = isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play");
+
         searchAndSort();
         updateSongCountStatus();
         isStateCached = true;
@@ -508,11 +523,13 @@ public class GuiPlaylistManager extends GuiScreen
         {
             case 0:
                 // Open Music Library
+                stop();
                 guiSongList.unSelectAll();
                 mc.displayGuiScreen(new GuiMXT(this, GuiMXT.Mode.SERVER));
                 break;
             case 1:
                 // Done
+                stop();
                 mc.displayGuiScreen(null);
                 break;
             case 2:
@@ -534,6 +551,10 @@ public class GuiPlaylistManager extends GuiScreen
             case 6:
                 // send to Server
                 shipIt();
+                break;
+            case 7:
+                // Play-Stop
+                play();
                 break;
             case 24:
                 // Sort Song List
@@ -635,8 +656,11 @@ public class GuiPlaylistManager extends GuiScreen
     private void shipIt()
     {
         // TODO: Sync MXT Files!
+
+        String playListTitle = StringUtils.stripControlCodes(textPlayListName.getText()).trim();
+        if (playListTitle.isEmpty()) return;
         uploading = true;
-        textPlayListName.setText(textPlayListName.getText().trim());
+        textPlayListName.setText(playListTitle);
         PlayList playList = new PlayList(textPlayListName.getText(), guiDay.getList(), guiNight.getList());
         updateStatus(TextFormatting.GOLD + I18n.format("mxtune.gui.guiPlayListManager.log.upload_playlist", TextFormatting.RESET + textPlayListName.getText().trim()));
         PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(playList.getGUID(), RecordType.PLAY_LIST, playList));
@@ -726,6 +750,41 @@ public class GuiPlaylistManager extends GuiScreen
         {
             updateStatus(TextFormatting.DARK_RED + I18n.format("mxtune.gui.guiPlayListManager.log.failed_set_staff_of_music_playlist"));
         }
+    }
+
+    private boolean mmlPlay(GUID guidSong)
+    {
+        if (guidSong != null && !guidSong.equals(Reference.EMPTY_GUID) && !guidSong.equals(Reference.NO_MUSIC_GUID))
+        {
+            playId = PlayIdSupplier.PlayType.PERSONAL.getAsInt();
+            return ClientPlayManager.playFromCacheElseServer(guidSong, playId);
+        }
+        return false;
+    }
+
+    private void play()
+    {
+        if (isPlaying)
+        {
+            stop();
+        }
+        else
+        {
+            SongProxy song = !guiSongList.isEmpty() && guiSongList.isSelected(guiSongList.getSelectedIndex()) ? guiSongList.get(guiSongList.getSelectedIndex()) : null;
+            if (song != null && !isPlaying)
+            {
+                isPlaying = mmlPlay(song.getGUID());
+            }
+            else
+                isPlaying = false;
+
+        }
+    }
+
+    private void stop()
+    {
+        ClientAudio.fadeOut(playId, 1);
+        isPlaying = false;
     }
 
     private void initGuiHooverHelp()
