@@ -265,12 +265,10 @@ public class CodecPCM implements ICodec
         if (!hasStream && (audioData.getStatus() == Status.READY))
         {
             audioInputStream = audioData.getAudioStream();
-            message("Waiting buffer count: " + zeroBufferCount);
             try
             {
-                if (audioInputStream != null)
-                    message("Initial audioInputStream bytes available " + audioInputStream.available());
-                hasStream = true;
+                if ((audioInputStream != null) && (audioInputStream.available() > 0))
+                    hasStream = true;
             }
             catch (IOException e)
             {
@@ -329,7 +327,6 @@ public class CodecPCM implements ICodec
     @Override
     public void cleanup()
     {
-        message("cleanup failed initialization for playId: " + playID);
         if (audioInputStream != null)
             try
             {

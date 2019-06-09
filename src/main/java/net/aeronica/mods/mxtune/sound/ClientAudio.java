@@ -321,7 +321,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
     
     private static void stopVanillaMusic()
     {
-        ModLogger.info("ClientAudio stopVanillaMusic - PAUSED on %d active sessions.", playIDAudioData.size());
+        ModLogger.debug("ClientAudio stopVanillaMusic - PAUSED on %d active sessions.", playIDAudioData.size());
         setVanillaMusicPaused(true);
         stopVanillaMusicTicker();
         setVanillaMusicTimer(Integer.MAX_VALUE);
@@ -329,7 +329,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
 
     private static void resumeVanillaMusic()
     {
-        ModLogger.info("ClientAudio resumeVanillaMusic - RESUMED");
+        ModLogger.debug("ClientAudio resumeVanillaMusic - RESUMED");
         setVanillaMusicTimer(100);
     }
        
@@ -376,7 +376,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
                     // Therefore the removal is queued for 250 milliseconds.
                     // e.g. the client tick setup to trigger once every 1/4 second.
                     queueAudioDataRemoval(entry.getKey());
-                    ModLogger.info("updateClientAudio: AudioData for playID queued for removal");
+                    ModLogger.debug("updateClientAudio: AudioData for playID queued for removal");
                 }
             }
         }
@@ -511,8 +511,8 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
     public static void event(SoundSetupEvent event) throws SoundSystemException
     {
         SoundSystemConfig.setCodec("nul", CodecPCM.class);
-        ModLogger.info("Sound Setup Event: associate the \"nul\" extension with CodecPCM.");
-        ModLogger.info("Sound Streaming Buffer Size: %d", SoundSystemConfig.getStreamingBufferSize());
+        ModLogger.debug("Sound Setup Event: associate the \"nul\" extension with CodecPCM.");
+        ModLogger.debug("Sound Streaming Buffer Size: %d", SoundSystemConfig.getStreamingBufferSize());
         configureSound();
     }
     

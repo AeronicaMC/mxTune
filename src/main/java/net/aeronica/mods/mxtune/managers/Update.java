@@ -239,7 +239,6 @@ public final class Update
         {
             Tuple<Integer, String> pm = getPatchAndMml(part);
             songParts.add(pm);
-            ModLogger.info("%d %s", pm.getFirst(), pm.getSecond());
         }
         return songParts;
     }
