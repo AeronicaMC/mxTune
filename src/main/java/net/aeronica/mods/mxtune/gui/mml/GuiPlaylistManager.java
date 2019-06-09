@@ -515,11 +515,11 @@ public class GuiPlaylistManager extends GuiScreen
                 break;
             case 2:
                 // to Day
-                guiDay.addAll(pathsToSongProxies(guiSongList.getSelectedRows(), guiDay.getList()));
+                guiDay.addAll(addSelectedSongsToSpecifiedPlayList(guiSongList.getSelectedRows(), guiDay.getList()));
                 break;
             case 3:
                 // to Night
-                guiNight.addAll(pathsToSongProxies(guiSongList.getSelectedRows(), guiNight.getList()));
+                guiNight.addAll(addSelectedSongsToSpecifiedPlayList(guiSongList.getSelectedRows(), guiNight.getList()));
                 break;
             case 4:
                 // delete Day
@@ -617,8 +617,8 @@ public class GuiPlaylistManager extends GuiScreen
         return null;
     }
 
-    // So crude: add unique songs only
-    private List<SongProxy> pathsToSongProxies(List<SongProxy> serverSongs, List<SongProxy> current)
+    // So crude and ugly: add unique songs only
+    private List<SongProxy> addSelectedSongsToSpecifiedPlayList(List<SongProxy> serverSongs, List<SongProxy> current)
     {
         List<SongProxy> songList = new ArrayList<>(current);
         for (SongProxy songProxyServer : serverSongs)
