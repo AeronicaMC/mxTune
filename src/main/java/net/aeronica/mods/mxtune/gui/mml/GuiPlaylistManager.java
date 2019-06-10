@@ -17,8 +17,6 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.gui.util.*;
 import net.aeronica.mods.mxtune.managers.ClientFileManager;
@@ -118,19 +116,13 @@ public class GuiPlaylistManager extends GuiScreen
     private Pattern patternPlaylistName = Pattern.compile("^\\s+|\\s+$|^\\[");
 
     /* MML Player */
-    GuiButtonMX buttonPlayStop;
+    private GuiButtonMX buttonPlayStop;
     private int playId = PlayIdSupplier.PlayType.INVALID;
     private boolean isPlaying = false;
     private int counter;
 
     // Uploading
     private boolean uploading = false;
-
-    // Mapping
-    private BiMap<Path, SongProxy> pathSongProxyBiMap = HashBiMap.create();
-    private BiMap<SongProxy, Path> songProxyPathBiMap;
-    private BiMap<Path, GUID> pathSongGuidBiMap = HashBiMap.create();
-    private BiMap<GUID, Path> songGuidPathBiMap;
 
     // TODO: Finnish updating string to use the lang file.
     public GuiPlaylistManager()
