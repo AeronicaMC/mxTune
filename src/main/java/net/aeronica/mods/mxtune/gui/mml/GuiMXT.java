@@ -258,9 +258,9 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         }
         boolean isOK = countOK == viewableTabCount;
         buttonPlayStop.enabled = isPlaying || isOK;
-        buttonDoneMode.enabled = isOK || Mode.CLIENT == mode;
+        buttonDoneMode.enabled = Mode.CLIENT == mode || (!textTitle.getText().isEmpty() && isOK);
         buttonPlayStop.displayString = isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play_all");
-        buttonSave.enabled = !textTitle.getText().isEmpty();
+        buttonSave.enabled = !textTitle.getText().isEmpty() && isOK;
 
         sourcesLink.visible = sourcesLink.displayString.matches("^(http(s)?:\\/\\/[a-zA-Z0-9\\-_]+\\.[a-zA-Z]+(.)+)+");
     }
