@@ -43,6 +43,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import static net.aeronica.mods.mxtune.config.ModConfig.isJAMPartyRightClickDisabled;
 import static net.aeronica.mods.mxtune.options.MusicOptionsUtil.*;
 
 public class GroupManager
@@ -342,6 +343,8 @@ public class GroupManager
     @SubscribeEvent
     public void onEntityInteractEvent(EntityInteract event)
     {
+        if (isJAMPartyRightClickDisabled()) return;
+
         if ((event.getTarget() instanceof EntityPlayer) && (event.getEntityLiving() instanceof EntityPlayer) && (event.getHand() == EnumHand.MAIN_HAND) && !event.getWorld().isRemote)
         {
             EntityPlayer playerInitiator = event.getEntityPlayer();

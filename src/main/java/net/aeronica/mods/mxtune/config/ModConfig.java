@@ -139,6 +139,10 @@ public class ModConfig
             @Name("More Debug Messages")
             @LangKey("config.mxtune.moreDebugMessages")
             public boolean moreDebugMessages = false;
+
+            @Name("Disable JAM Party Right Click")
+            @LangKey("config.mxtune.disableJAMPartyRightClick")
+            public boolean disableJAMPartyRightClick = false;
         }
     }
     
@@ -175,7 +179,9 @@ public class ModConfig
             }
         }
     }
-    
+
+    public static boolean isJAMPartyRightClickDisabled() { return ConfigGeneral.general.disableJAMPartyRightClick; }
+
     public static float getListenerRange() {return (float)ConfigGeneral.general.listenerRange;}
 
     public static float getGroupPlayAbortDistance() {return (float)ConfigGeneral.general.groupPlayAbortDistance;}

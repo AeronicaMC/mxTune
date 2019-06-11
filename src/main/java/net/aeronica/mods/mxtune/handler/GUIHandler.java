@@ -30,6 +30,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
+import static net.aeronica.mods.mxtune.config.ModConfig.isJAMPartyRightClickDisabled;
 import static net.aeronica.mods.mxtune.gui.GuiGuid.*;
 
 public class GUIHandler implements IGuiHandler
@@ -71,10 +72,10 @@ public class GUIHandler implements IGuiHandler
                 return new GuiInstrumentInventory(new ContainerInstrument(playerIn));
 
             case GUI_GROUP:
-                return new GuiGroup();
+                return isJAMPartyRightClickDisabled() ? null : new GuiGroup();
 
             case GUI_GROUP_JOIN:
-                return new GuiGroupJoin();
+                return isJAMPartyRightClickDisabled() ? null : new GuiGroupJoin();
 
             case GUI_MUSIC_OPTIONS:
                 return new GuiMusicOptions(null);
