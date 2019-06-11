@@ -143,7 +143,7 @@ public class GuiPlaylistManager extends GuiScreen
                 {
                     String name = entry.getTitle();
                     String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
-                    int color = selectedRowIndexes.contains(slotIdx) ? 0xFFFF00 : 0xADD8E6;
+                    int color = selectedRowIndexes.contains(slotIdx) ? 0xFFFF00 : isSelected(slotIdx) ? 0x0088FF : 0xADD8E6;
                     fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
                 } else
                 {
@@ -526,6 +526,8 @@ public class GuiPlaylistManager extends GuiScreen
             case 0:
                 // Open Music Library
                 stop();
+                textSearch.setText("");
+                cachedSearch = "";
                 guiSongList.unSelectAll();
                 mc.displayGuiScreen(new GuiMXT(this, GuiMXT.Mode.SERVER));
                 break;
