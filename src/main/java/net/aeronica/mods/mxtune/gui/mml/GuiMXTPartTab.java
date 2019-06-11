@@ -225,6 +225,8 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         return mxTunePart;
     }
 
+    int getDuration() { return duration;
+    }
     void updatePart()
     {
         List<MXTuneStaff> staves = new ArrayList<>();

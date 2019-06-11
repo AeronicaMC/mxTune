@@ -70,6 +70,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     private GuiLabelMX labelTitle;
     private GuiLabelMX labelAuthor;
     private GuiLabelMX labelSource;
+    private GuiLabelMX labelDuration;
     private GuiTextField textTitle;
     private String cachedTitle = "";
     private GuiTextField textAuthor;
@@ -78,6 +79,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     private String cachedSource = "";
     private GuiButtonExt buttonPlayStop;
     private GuiButtonExt buttonDoneMode;
+    private int durationTotal;
     private int ticks;
 
     // Links
@@ -91,6 +93,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     private GuiButtonExt buttonSave;
     private static final int PADDING = 4;
     private Mode mode;
+
     /* MML Player */
     private int playId = PlayIdSupplier.PlayType.INVALID;
 
@@ -194,6 +197,15 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         buttonList.add(buttonAddTab);
         buttonList.add(buttonMinusTab);
 
+        // Total Duration
+        String durationLabelName = I18n.format("mxtune.gui.label.total_duration");
+        int durationWidth = fontRenderer.getStringWidth(durationLabelName);
+        durationWidth += fontRenderer.getStringWidth(SheetMusicUtil.formatDuration(0));
+        durationWidth += fontRenderer.getStringWidth(" ");
+        labelDuration = new GuiLabelMX(fontRenderer,5, width - durationWidth - PADDING, tabButtonTop + 20 + PADDING + 2, durationWidth, singleLineHeight, -1);
+        labelDuration.setLabelName(I18n.format(durationLabelName));
+        labelDuration.setLabelText(SheetMusicUtil.formatDuration(durationTotal));
+
         int tabbedAreaTop = tabButtonTop + 20 + PADDING;
         for (int i = 0; i < MAX_TABS; i++)
         {
@@ -250,12 +262,17 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         buttonAddTab.enabled = viewableTabCount < MAX_TABS;
         buttonMinusTab.enabled = viewableTabCount > MIN_TABS;
 
-        // Play/Stop button state
+        // Play/Stop button state and duration total
         int countOK = 0;
+        int duration = 0;
         for (int i=0; i < viewableTabCount; i++)
         {
             countOK = childTabs[i].canPlay() ? countOK + 1 : countOK;
+            int partDuration = childTabs[i].getDuration();
+            duration = partDuration > duration ? partDuration : duration;
         }
+        durationTotal = duration;
+        labelDuration.setLabelText(SheetMusicUtil.formatDuration(durationTotal));
         boolean isOK = countOK == viewableTabCount;
         buttonPlayStop.enabled = isPlaying || isOK;
         buttonDoneMode.enabled = Mode.CLIENT == mode || (!textTitle.getText().isEmpty() && isOK);
@@ -672,6 +689,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         textAuthor.drawTextBox();
         labelSource.drawLabel(mc, mouseX, mouseY);
         textSource.drawTextBox();
+        labelDuration.drawLabel(mc, mouseX, mouseY);
         super.drawScreen(mouseX, mouseY, partialTicks);
         drawMarkers();
         childTabs[activeChildIndex].drawScreen(mouseX, mouseY, partialTicks);

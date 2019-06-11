@@ -239,6 +239,7 @@ mxtune.gui.button.create=*Write*
 mxtune.gui.button.upload=*Upload*
 mxtune.gui.button.plus=+
 mxtune.gui.button.minus=-
+mxtune.gui.label.total_duration=Total Duration:
 mxtune.gui.label.search=Search:
 mxtune.gui.label.title=Title:
 mxtune.gui.label.author=Author:
