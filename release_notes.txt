@@ -1,3 +1,68 @@
+2019-06-11 mxtune-1.12.2-0.7.0-beta.5
+
+Fixes:
+ * GitHub #1: Crash when Mechanical User tries to trade with Player
+   Corrected logic in the GroupManager EntityInteract event. If this does not solve the issue, then I also added a
+   General Config Option "Disable JAM Party Right Click" to prevent the event from firing. This also  disables the
+   JAM/Party management gui that is tied by default to the "J" key-bind. This disables multi-player music.
+
+Changes:
+ * Added client side config options to disable vanilla background music.
+
+ * The "Music Paper" gui for pasting MML has some new features. It can now import 3MLE .mml files. A Huge Thank You
+   to たんらる (https://twitter.com/fourthline) for allowing me to use the 3MLE reader code from fourthline/mmlTools.
+   If the .mml file contains multiple instrument parts, i.e. 2-n person JAMS then it will attempt create a tab for
+   each part. Ideally the Tracks Groups features was used when configuring the tracks in 3MLE.
+
+   In addition is can also import Maple Story 2 .ms2mml and .zip (zipped ms2mml multi-part tunes) see:
+     https://musicalnexus.net/maplebeats-solos/
+     https://musicalnexus.net/maplebeats-2-person-ensemble/
+     etc.
+
+   The gui allows saving the MML pastes and imports to a new file format used by mxTune with the extension .mxt.
+   These files are stored on the client. The location of the import and save folders can be found by using the
+   "Import" and "Open" buttons, then using the "Open Folder" button on file selector gui's. The actual location is
+   relative to the instance of the minecraft run folder: e.g.
+     %appdata%/.minecraft/mxtune/import
+     <mc run folder>/mxtune/library
+   If you make a lots of .mxt files you will probably want to back them up for re-use.
+   Making sheet music for JAMS is now easier than ever! The new gui will create a piece of sheet music for each
+   part/instrument when you click the *Write* button.
+
+   The gui supports up to 10 parts/instruments. One per tab. Each part can have up to 10 tracks: Melody + 9 chord lines.
+
+   The big MML paste box is gone. There are now two buttons. One for pasting the clipboard contents into the part,
+   and the other to copy the part to the clipboard. Just the basics. The MML now shows up with each track in it's own
+   text box. There can be up to 10 tracks. Melody + 9 chord.
+
+   Please note this is new and somewhat experimental. It is intended to make importing MML info mxTune easier. It is
+   not intended for use as a MML editor. Use 3MLE or other tools for that please.
+
+   Notes:
+     * The "Title" becomes the filename when you save.
+     * You can't save if the title is empty!
+     * You can't save/play invalid MML you will have to fix it.
+     * The parse error list remains a "feature" for now until I rewrite the MML parser. The parser has been improved
+       but will still find plenty of tunes with stupid MML like tied rests (Face palm), missing arguments etc. Clicking
+       or double clicking on the error will place the cursor near the error in the track.
+
+New Experimental Super Secret Stuff: (MML based Background Music)
+ * A new item called the "Staff of Music". Read the item hoover text. When in the Play list Manager gui hold down
+   the SHIFT key and mouse over the list boxes for more help. I'm not going to write more about using it here. If you
+   are curious DM "Aeronica / Rymor#6970" on the Forge, MMD, "Mod Dev Cafe", or "Faerun Heroes" Discord servers.
+
+ * A new command "/mxTuneServerUpdateAllowed <player name> <true|false>" that enables the "Staff of Music" to:
+     1) Upload mxt files to the server "Manage Music" and
+     2) Create play lists and apply them to either the WORLD (Dimension), or a CHUNK
+
+ * A new item called "Gui Test" - opens an client side mxt file manager. Similar to the new "Sheet Music" gui. It
+   is what it is, just an item use to open that gui for testing.
+
+ * To hear it in use (When the 1.12.2 demo server is up) visit Faerun Heroes - MMORPG
+   Discord: https://discord.gg/M3amU4d
+   Plant Minecraft Server Entry: https://www.planetminecraft.com/server/faerun-heroes-mmorpg/
+
+----
 2019-01-19 mxtune-1.12.1-0.6.0-beta.4
 Important information for existing worlds:
    ************************** BEFORE UPDATING TO THIS MXTUNE VERSION IN AN EXISTING WORLD ****************************
