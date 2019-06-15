@@ -33,10 +33,7 @@ import net.aeronica.mods.mxtune.network.bidirectional.GetBaseDataListsMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.SetServerSerializedDataMessage;
 import net.aeronica.mods.mxtune.network.server.PlayerSelectedPlayListMessage;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
-import net.aeronica.mods.mxtune.util.CallBackManager;
-import net.aeronica.mods.mxtune.util.GUID;
-import net.aeronica.mods.mxtune.util.ModLogger;
-import net.aeronica.mods.mxtune.util.SheetMusicUtil;
+import net.aeronica.mods.mxtune.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiLabel;
@@ -70,7 +67,7 @@ import static net.aeronica.mods.mxtune.gui.mml.SortHelper.SONG_PROXY_ORDERING;
 import static net.aeronica.mods.mxtune.gui.toasts.ModToastHelper.postPlayListManagerToast;
 import static net.aeronica.mods.mxtune.gui.util.ModGuiUtils.clearOnMouseLeftClicked;
 
-public class GuiPlaylistManager extends GuiScreen
+public class GuiPlaylistManager extends GuiScreen implements Notify
 {
     private static final String TITLE = I18n.format("mxtune.gui.guiPlayListManager.title");
     private static final int PADDING = 4;
@@ -687,43 +684,32 @@ public class GuiPlaylistManager extends GuiScreen
 
     private void initSongList()
     {
-        PacketDispatcher.sendToServer(new GetBaseDataListsMessage(CallBackManager.register(ClientFileManager.INSTANCE), RecordType.SONG_PROXY));
-        new Thread(() ->
-                   {
-                       try
-                       {
-                           Thread.sleep(1000);
-                       } catch (InterruptedException e)
-                       {
-                           Thread.currentThread().interrupt();
-                       }
-                       guiSongList.clear();
-                       guiSongList.addAll(ClientFileManager.getCachedServerSongList());
-                       guiSongList.sort(buttonSortSongs);
-                       updateState();
-                   }).start();
+        PacketDispatcher.sendToServer(new GetBaseDataListsMessage(CallBackManager.register(ClientFileManager.INSTANCE, this), RecordType.SONG_PROXY));
     }
 
     private void initPlayLists()
     {
-        PacketDispatcher.sendToServer(new GetBaseDataListsMessage(CallBackManager.register(ClientFileManager.INSTANCE), RecordType.PLAY_LIST));
-        new Thread(() ->
-                   {
-                       try
-                       {
-                           Thread.sleep(1000);
-                       } catch (InterruptedException e)
-                       {
-                           Thread.currentThread().interrupt();
-                       }
-                       guiPlayList.clear();
-                       guiPlayList.addAll(PLAYLIST_ORDERING.sortedCopy(ClientFileManager.getPlayLists()));
+        PacketDispatcher.sendToServer(new GetBaseDataListsMessage(CallBackManager.register(ClientFileManager.INSTANCE, this), RecordType.PLAY_LIST));
+    }
 
-                       if (uploading)
-                           uploading = false;
-
-                       updateState();
-                   }).start();
+    // receive notification of received responses to init playlist and song proxy lists
+    @Override
+    public void onNotify(RecordType recordType)
+    {
+        switch (recordType)
+        {
+            case SONG_PROXY:
+                guiSongList.clear();
+                guiSongList.addAll(ClientFileManager.getCachedServerSongList());
+                guiSongList.sort(buttonSortSongs);
+                break;
+            case PLAY_LIST:
+                guiPlayList.clear();
+                guiPlayList.addAll(PLAYLIST_ORDERING.sortedCopy(ClientFileManager.getPlayLists()));
+                break;
+            default:
+        }
+        updateState();
     }
 
     private void showSelectedPlaylistsPlaylists(PlayList selectedPlayList)

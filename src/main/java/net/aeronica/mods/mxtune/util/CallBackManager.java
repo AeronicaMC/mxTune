@@ -28,6 +28,7 @@ public class CallBackManager
     private static Timer timer;
     private static Map<UUID, CallBack>  callbacks = new HashMap<>();
     private static Map<UUID, TimerTask> tasks = new HashMap<>();
+    private static Map<UUID, Notify>    notified = new HashMap<>();
 
     private CallBackManager() { /* NOP */ }
 
@@ -47,6 +48,7 @@ public class CallBackManager
         }
         callbacks.clear();
         tasks.clear();
+        notified.clear();
     }
 
     public static UUID register(CallBack callBack)
@@ -62,6 +64,13 @@ public class CallBackManager
             callbacks.put(uuid, callback);
             scheduleTimeout(uuid, callback, timeout);
         }
+        return uuid;
+    }
+
+    public static UUID register(CallBack callBack, Notify notify)
+    {
+        UUID uuid = register(callBack, 30);
+        notified.put(uuid, notify);
         return uuid;
     }
 
@@ -103,9 +112,18 @@ public class CallBackManager
         return null;
     }
 
+    @Nullable
+    public static synchronized Notify getNotified(UUID uuid)
+    {
+        Notify notify = notified.get(uuid);
+        notified.remove(uuid);
+        return notify;
+    }
+
     private static synchronized void timedOut(UUID uuid, CallBack callBack, int timeout)
     {
         callbacks.remove(uuid);
+        notified.remove(uuid);
         tasks.remove(uuid);
         callBack.onFailure(new TextComponentTranslation("mxtune.error.network_timeout", timeout));
     }

@@ -25,6 +25,7 @@ import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.util.CallBack;
 import net.aeronica.mods.mxtune.util.CallBackManager;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.util.Notify;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.PacketBuffer;
@@ -128,13 +129,15 @@ public class GetBaseDataListsMessage<E extends BaseData> extends AbstractMessage
     private void handleClientSide()
     {
         CallBack callBack = CallBackManager.getCaller(callbackUuid);
+        if (callBack == null) return;
+        Notify notify = CallBackManager.getNotified(callbackUuid);
         if (!readError)
         {
-            if (callBack != null)
-                callBack.onResponse(listBaseData, recordType);
+            callBack.onResponse(listBaseData, recordType);
+            if (notify != null)
+                notify.onNotify(recordType);
         }
         else
-            if (callBack != null)
                 callBack.onFailure(message.appendText("/n").appendSibling(new TextComponentTranslation("mxtune.error.network_data_error", "CLIENT Read Error.")));
     }
 
