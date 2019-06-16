@@ -20,6 +20,7 @@ package net.aeronica.mods.mxtune.gui.mml;
 import net.aeronica.mods.mxtune.gui.hud.HudData;
 import net.aeronica.mods.mxtune.gui.hud.HudDataFactory;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
+import net.aeronica.mods.mxtune.items.ItemChunkTool;
 import net.aeronica.mods.mxtune.items.ItemStaffOfMusic;
 import net.aeronica.mods.mxtune.managers.ClientFileManager;
 import net.aeronica.mods.mxtune.managers.ClientPlayManager;
@@ -35,6 +36,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.client.renderer.debug.DebugRendererChunkBorder;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
@@ -52,7 +54,9 @@ public class GuiStaffOverlay extends Gui
     private Minecraft mc;
     private FontRenderer fontRenderer;
     private DebugRenderer.IDebugRenderer chunkBorder;
+    private boolean holdingTriggerItem;
     private boolean holdingStaffOfMusic;
+    private boolean holdingChunkTool;
 
 
     private static class GuiStaffOverlayHolder { private static final GuiStaffOverlay INSTANCE = new GuiStaffOverlay(); }
@@ -75,36 +79,39 @@ public class GuiStaffOverlay extends Gui
             return;
 
         EntityPlayerSP playerSP = this.mc.player;
+        Item heldItem = playerSP.getHeldItemMainhand().getItem();
         int width = event.getResolution().getScaledWidth();
         int height = event.getResolution().getScaledHeight() - HOT_BAR_CLEARANCE;
         HudData hudData = HudDataFactory.calcHudPositions(0, width, height);
 
-        holdingStaffOfMusic = playerSP.getHeldItemMainhand().getItem() instanceof ItemStaffOfMusic;
+        holdingStaffOfMusic = heldItem instanceof ItemStaffOfMusic;
+        holdingChunkTool = heldItem instanceof ItemChunkTool;
+        holdingTriggerItem =  holdingStaffOfMusic || holdingChunkTool;
 
         if (holdingStaffOfMusic)
-        {
-            renderHud(hudData, width, elementType);
-        }
+            renderHud(hudData, width, elementType, this::drawPlayListInfo, 6);
+        if (holdingChunkTool)
+            renderHud(hudData, width, elementType, this::drawChunkToolInfo, 3);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onEvent(RenderWorldLastEvent event)
     {
-        if (holdingStaffOfMusic && !mc.gameSettings.showDebugInfo)
+        if (holdingTriggerItem && !mc.gameSettings.showDebugInfo)
             chunkBorder.render(event.getPartialTicks(), 0);
     }
 
     public void setTexture(ResourceLocation texture) { this.mc.renderEngine.bindTexture(texture);}
 
-    private void renderHud(HudData hd, int width, RenderGameOverlayEvent.ElementType elementType)
+    private void renderHud(HudData hd, int width, RenderGameOverlayEvent.ElementType elementType, HudInfo hudInfo, int numLines)
     {
         int maxWidth = width - 4;
-        int maxHeight = (fontRenderer.FONT_HEIGHT + 2) * 6;
+        int maxHeight = (fontRenderer.FONT_HEIGHT + 2) * numLines;
 
         GL11.glPushMatrix();
         GL11.glTranslatef(hd.getPosX(), hd.getPosY(), 0F);
         if (elementType == RenderGameOverlayEvent.ElementType.TEXT)
-            drawPlayListInfo(hd, maxWidth, maxHeight);
+            hudInfo.drawHud(hd, maxWidth, maxHeight);
 
         int iconX = hd.quadX(maxWidth, 0, 2, maxWidth);
         int iconY = hd.quadY(maxHeight, 0, 2, maxHeight);
@@ -152,7 +159,7 @@ public class GuiStaffOverlay extends Gui
 
         renderLine(paddedText.toString(), y, hd, maxWidth, maxHeight, fontHeight);
 
-        String formattedText = I18n.format("mxtune.gui.guiStaffOverlay.play_list_name_chunk", worldPlaylistName,
+        String formattedText = I18n.format("mxtune.gui.guiStaffOverlay.play_list_name_world_chunk", worldPlaylistName,
                                            String.format("%+d", chunk.x), String.format("%+d", chunk.z),
                                            chunkPlaylistName);
         y += fontHeight;
@@ -175,6 +182,32 @@ public class GuiStaffOverlay extends Gui
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, isCtrlDown ? 0x00FF00 : 0x7FFFFF);
     }
 
+    private void drawChunkToolInfo(HudData hd, int maxWidth, int maxHeight)
+    {
+        int fontHeight = fontRenderer.FONT_HEIGHT + 2;
+        int y = fontHeight;
+
+        // Selected Playlist
+        PlayList selectedPlaylistToApply = ClientFileManager.getPlayList(MusicOptionsUtil.getSelectedPlayListGuid(mc.player));
+        String selectedPlaylistName = ModGuiUtils.getPlaylistName(selectedPlaylistToApply);
+
+        // Chunk Playlist
+        BlockPos pos = mc.player.getPosition();
+        Chunk chunk = mc.world.getChunk(pos);
+        GUID chunkPlayListGuid = ModChunkPlaylistHelper.getPlaylistGuid(chunk);
+        PlayList chunkPlaylists = ClientFileManager.getPlayList(chunkPlayListGuid);
+        String chunkPlaylistName = ModGuiUtils.getPlaylistName(chunkPlaylists);
+
+        String formattedText = I18n.format("mxtune.gui.guiStaffOverlay.selected_play_list_to_apply", selectedPlaylistName);
+        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0x7FFFFF);
+
+        formattedText = I18n.format("mxtune.gui.guiStaffOverlay.play_list_name_chunk",
+                                           String.format("%+d", chunk.x), String.format("%+d", chunk.z),
+                                           chunkPlaylistName);
+        y += fontHeight;
+        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight);
+    }
+
     private void renderLine(String formattedText, int y, HudData hd, int maxWidth, int maxHeight, int fontHeight)
     {
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0xFFFFFF);
@@ -190,5 +223,10 @@ public class GuiStaffOverlay extends Gui
     private void drawBox(int x, int y, int width, int height) {
         drawRect(x - 2, y - 2, x + width + 2, y + height + 2, 0x88222222);
         drawRect(x, y, x + width, y + height,0xCC444444);
+    }
+
+    private interface HudInfo
+    {
+        void drawHud(HudData hd, int maxWidth, int maxHeight);
     }
 }
