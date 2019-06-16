@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.handler;
 
 import net.aeronica.mods.mxtune.blocks.TileBandAmp;
 import net.aeronica.mods.mxtune.gui.*;
+import net.aeronica.mods.mxtune.gui.mml.GuiChunkTool;
 import net.aeronica.mods.mxtune.gui.mml.GuiMXT;
 import net.aeronica.mods.mxtune.gui.mml.GuiMusicLibrary;
 import net.aeronica.mods.mxtune.gui.mml.GuiPlaylistManager;
@@ -92,6 +93,9 @@ public class GUIHandler implements IGuiHandler
 
             case GUI_MXT_TEST:
                 return new GuiMXT(null, GuiMXT.Mode.CLIENT);
+
+            case GUI_CHUNK_TOOL:
+                return new GuiChunkTool();
 
         default:
             return null;

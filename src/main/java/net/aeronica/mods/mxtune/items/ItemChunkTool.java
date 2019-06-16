@@ -19,6 +19,7 @@ package net.aeronica.mods.mxtune.items;
 
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.gui.GuiGuid;
+import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
@@ -44,9 +45,10 @@ public class ItemChunkTool extends Item
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
     {
-        if (worldIn.isRemote)
+        boolean hasRights = MusicOptionsUtil.isMxTuneServerUpdateAllowed(playerIn);
+        if (worldIn.isRemote && hasRights)
         {
-                playerIn.openGui(MXTune.instance, GuiGuid.GUI_MXT_TEST, worldIn, 0, 0, 0);
+            playerIn.openGui(MXTune.instance, GuiGuid.GUI_CHUNK_TOOL, worldIn, 0, 0, 0);
         }
 
         return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
