@@ -91,7 +91,7 @@ public class GuiStaffOverlay extends Gui
         if (holdingStaffOfMusic)
             renderHud(hudData, width, elementType, this::drawPlayListInfo, 6);
         if (holdingChunkTool)
-            renderHud(hudData, width, elementType, this::drawChunkToolInfo, 3);
+            renderHud(hudData, width, elementType, this::drawChunkToolInfo, 6);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -191,21 +191,41 @@ public class GuiStaffOverlay extends Gui
         PlayList selectedPlaylistToApply = ClientFileManager.getPlayList(MusicOptionsUtil.getSelectedPlayListGuid(mc.player));
         String selectedPlaylistName = ModGuiUtils.getPlaylistName(selectedPlaylistToApply);
 
-        // Chunk Playlist
+        // This Chunk Playlist
         BlockPos pos = mc.player.getPosition();
         Chunk chunk = mc.world.getChunk(pos);
         GUID chunkPlayListGuid = ModChunkPlaylistHelper.getPlaylistGuid(chunk);
         PlayList chunkPlaylists = ClientFileManager.getPlayList(chunkPlayListGuid);
         String chunkPlaylistName = ModGuiUtils.getPlaylistName(chunkPlaylists);
 
+        // Chunk Start, End, Total
+        Chunk chunkStart = new Chunk(null, 5, 1);
+        Chunk chunkEnd = new Chunk(null, 6, 2);
+        int totalChunks = (Math.abs(chunkStart.x - chunkEnd.x) + 1) * (Math.abs(chunkStart.z - chunkEnd.z) + 1);
+
         String formattedText = I18n.format("mxtune.gui.guiStaffOverlay.selected_play_list_to_apply", selectedPlaylistName);
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0x7FFFFF);
 
-        formattedText = I18n.format("mxtune.gui.guiStaffOverlay.play_list_name_chunk",
+        formattedText = I18n.format("mxtune.gui.guiStaffOverlay.play_list_name_this_chunk",
                                            String.format("%+d", chunk.x), String.format("%+d", chunk.z),
                                            chunkPlaylistName);
         y += fontHeight;
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight);
+
+        formattedText = I18n.format("mxtune.gui.guiStaffOverlay.play_list_name_start_chunk",
+                                    String.format("%+d", chunkStart.x), String.format("%+d", chunkStart.z));
+        y += fontHeight;
+        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0x00FF21);
+
+        formattedText = I18n.format("mxtune.gui.guiStaffOverlay.play_list_name_end_chunk",
+                                    String.format("%+d", chunkEnd.x), String.format("%+d", chunkEnd.z));
+        y += fontHeight;
+        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0x0094FF);
+
+        formattedText = I18n.format("mxtune.gui.guiStaffOverlay.play_list_name_total_chunks",
+                                    String.format("%d", totalChunks));
+        y += fontHeight;
+        renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0xFF954F);
     }
 
     private void renderLine(String formattedText, int y, HudData hd, int maxWidth, int maxHeight, int fontHeight)
