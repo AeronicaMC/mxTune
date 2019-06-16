@@ -102,7 +102,7 @@ public class GetBaseDataListsMessage<E extends BaseData> extends AbstractMessage
             // Serialize data object to a byte array
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ObjectOutputStream out = new ObjectOutputStream(bos);
-            out.writeObject(listBaseData);
+            out.writeObject((Serializable)listBaseData);
             out.close();
 
             // Get the bytes of the serialized object
