@@ -158,7 +158,7 @@ public class GuiChunkTool extends GuiScreen implements Notify
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
-        drawDefaultBackground();
+        //drawDefaultBackground();
         drawGuiBackground();
 
         /* draw "TITLE" at the top right */

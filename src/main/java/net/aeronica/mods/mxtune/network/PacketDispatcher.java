@@ -82,6 +82,7 @@ public class PacketDispatcher
         registerMessage(BandAmpMessage.class);
         registerMessage(ByteArrayPartMessage.class);
         registerMessage(PlayerSelectedPlayListMessage.class);
+        registerMessage(ChunkToolMessage.class);
 
         /*
          * If you don't want to make a 'registerMessage' method, you can do it
