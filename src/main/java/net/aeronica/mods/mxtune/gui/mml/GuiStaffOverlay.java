@@ -212,8 +212,8 @@ public class GuiStaffOverlay extends Gui
 
         // Chunk Start, End, Total
         Operation op = MusicOptionsUtil.getChunkToolOperation(mc.player);
-        Chunk chunkStart = Operation.START == op ? chunk : MusicOptionsUtil.getChunkStart(mc.player);
-        Chunk chunkEnd = Operation.END == op ? chunk : MusicOptionsUtil.getChunkEnd(mc.player);
+        Chunk chunkStart = MusicOptionsUtil.getChunkStart(mc.player);
+        Chunk chunkEnd = MusicOptionsUtil.getChunkEnd(mc.player);
 
         int totalChunks = chunkStart != null && chunkEnd != null ? (Math.abs(chunkStart.x - chunkEnd.x) + 1) * (Math.abs(chunkStart.z - chunkEnd.z) + 1) : 0;
 

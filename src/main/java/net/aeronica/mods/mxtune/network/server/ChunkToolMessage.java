@@ -31,26 +31,26 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class ChunkToolMessage extends AbstractServerMessage<ChunkToolMessage>
 {
-    private boolean reset;
+    private Operation op;
 
     @SuppressWarnings("unused")
     public ChunkToolMessage() {/* Required by the PacketDispatcher */}
 
-    public ChunkToolMessage(boolean reset)
+    public ChunkToolMessage(Operation op)
     {
-        this.reset = reset;
+        this.op = op;
     }
     
     @Override
     protected void read(PacketBuffer buffer)
     {
-        reset = buffer.readBoolean();
+        op = buffer.readEnumValue(Operation.class);
     }
 
     @Override
     protected void write(PacketBuffer buffer)
     {
-        buffer.writeBoolean(reset);
+        buffer.writeEnumValue(op);
     }
 
     @Override
@@ -60,10 +60,9 @@ public class ChunkToolMessage extends AbstractServerMessage<ChunkToolMessage>
         {
             World world = player.world;
             Chunk chunk = world.getChunk(player.getPosition());
-            Operation operation = reset ? Operation.RESET : MusicOptionsUtil.getChunkToolOperation(player);
             if (chunk.isLoaded())
             {
-                switch (operation)
+                switch (op)
                 {
                     case START:
                         MusicOptionsUtil.setChunkStart(player, chunk);
@@ -71,15 +70,17 @@ public class ChunkToolMessage extends AbstractServerMessage<ChunkToolMessage>
                         break;
                     case END:
                         MusicOptionsUtil.setChunkEnd(player, chunk);
-                        MusicOptionsUtil.setChunkToolOperation(player, Operation.DO_IT);
+                        MusicOptionsUtil.setChunkToolOperation(player, Operation.APPLY);
                         break;
-                    case DO_IT:
+                    case APPLY:
                         apply(player);
+                        MusicOptionsUtil.setChunkToolOperation(player, Operation.START);
+                        break;
                     case RESET:
-                    default:
                         MusicOptionsUtil.setChunkToolOperation(player, Operation.START);
                         MusicOptionsUtil.setChunkStart(player, null);
                         MusicOptionsUtil.setChunkEnd(player, null);
+                    default:
                 }
             }
         }
@@ -126,6 +127,6 @@ public class ChunkToolMessage extends AbstractServerMessage<ChunkToolMessage>
 
     public enum Operation
     {
-        START, END, RESET, DO_IT
+        START, END, RESET, APPLY
     }
 }

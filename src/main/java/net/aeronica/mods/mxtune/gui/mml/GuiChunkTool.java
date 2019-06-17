@@ -142,11 +142,6 @@ public class GuiChunkTool extends GuiScreen implements Notify
     private void reloadState()
     {
         updateButtons();
-        Operation op = MusicOptionsUtil.getChunkToolOperation(player);
-        if (Operation.START == op)
-            actionPerformed(buttonStart);
-        if (Operation.END == op)
-            actionPerformed(buttonEnd);
     }
 
     private void updateState()
@@ -157,21 +152,20 @@ public class GuiChunkTool extends GuiScreen implements Notify
 
     private void updateButtons()
     {
-        Operation op = MusicOptionsUtil.getChunkToolOperation(player);
-        buttonStart.enabled = Operation.START == op;
-        buttonEnd.enabled = Operation.END == op;
-        buttonApply.enabled = Operation.DO_IT == op;
-        buttonReset.enabled = Operation.END == op || Operation.DO_IT == op;
+        buttonApply.enabled = MusicOptionsUtil.getChunkStart(player) != null &&
+                MusicOptionsUtil.getChunkEnd(player) != null &&
+                ClientFileManager.getPlayList(MusicOptionsUtil.getSelectedPlayListGuid(mc.player)) != null;
     }
 
     private void updateSelected()
     {
         PlayList selectedPlaylistToApply = ClientFileManager.getPlayList(MusicOptionsUtil.getSelectedPlayListGuid(mc.player));
-        guiPlayLists.stream().filter(selectedPlaylistToApply::equals).forEach(playList ->
-            {
-                guiPlayLists.setSelectedIndex(guiPlayLists.indexOf(playList));
-                guiPlayLists.resetScroll();
-            });
+        if (selectedPlaylistToApply != null)
+            guiPlayLists.stream().filter(selectedPlaylistToApply::equals).forEach(playList ->
+                {
+                    guiPlayLists.setSelectedIndex(guiPlayLists.indexOf(playList));
+                    guiPlayLists.resetScroll();
+                });
     }
 
     @Override
@@ -205,20 +199,19 @@ public class GuiChunkTool extends GuiScreen implements Notify
         {
             case 0:
                 // Starting Chunk
+                setOperation(Operation.START);
                 MusicOptionsUtil.setChunkStart(player, player.world.getChunk(player.getPosition()));
-                nextOperation();
                 break;
 
             case 1:
                 // Ending Chunk
+                setOperation(Operation.END);
                 MusicOptionsUtil.setChunkEnd(player, player.world.getChunk(player.getPosition()));
-                nextOperation();
                 break;
 
             case 2:
                 // Apply Playlist
-                nextOperation();
-                resetOperations();
+                setOperation(Operation.APPLY);
                 break;
 
             case 3:
@@ -255,16 +248,16 @@ public class GuiChunkTool extends GuiScreen implements Notify
         PacketDispatcher.sendToServer(new GetBaseDataListsMessage(CallBackManager.register(ClientFileManager.INSTANCE, this), RecordType.PLAY_LIST));
     }
 
-    private void resetOperations()
+    private void setOperation(Operation op)
     {
-        PacketDispatcher.sendToServer(new ChunkToolMessage(true));
-        MusicOptionsUtil.setChunkStart(player, null);
-        MusicOptionsUtil.setChunkEnd(player, null);
+        PacketDispatcher.sendToServer(new ChunkToolMessage(op));
     }
 
-    private void nextOperation()
+    private void resetOperations()
     {
-        PacketDispatcher.sendToServer(new ChunkToolMessage(false));
+        PacketDispatcher.sendToServer(new ChunkToolMessage(Operation.RESET));
+        MusicOptionsUtil.setChunkStart(player, null);
+        MusicOptionsUtil.setChunkEnd(player, null);
     }
 
     // receive notification of received responses to init playlist and song proxy lists
