@@ -52,6 +52,8 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nullable;
+
 import static net.aeronica.mods.mxtune.gui.hud.GuiJamOverlay.HOT_BAR_CLEARANCE;
 import static net.aeronica.mods.mxtune.network.server.ChunkToolMessage.Operation;
 
@@ -63,6 +65,8 @@ public class GuiStaffOverlay extends Gui
     private boolean holdingTriggerItem;
     private boolean holdingStaffOfMusic;
     private boolean holdingChunkTool;
+
+    private static final String DASHES = "--";
 
 
     private static class GuiStaffOverlayHolder { private static final GuiStaffOverlay INSTANCE = new GuiStaffOverlay(); }
@@ -201,8 +205,7 @@ public class GuiStaffOverlay extends Gui
         String selectedPlaylistName = ModGuiUtils.getPlaylistName(selectedPlaylistToApply);
 
         // This Chunk Playlist
-        BlockPos pos = mc.player.getPosition();
-        Chunk chunk = mc.world.getChunk(pos);
+        Chunk chunk = getThisChunk();
         GUID chunkPlayListGuid = ModChunkPlaylistHelper.getPlaylistGuid(chunk);
         PlayList chunkPlaylists = ClientFileManager.getPlayList(chunkPlayListGuid);
         String chunkPlaylistName = ModGuiUtils.getPlaylistName(chunkPlaylists);
@@ -218,20 +221,21 @@ public class GuiStaffOverlay extends Gui
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0x7FFFFF);
 
         formattedText = I18n.format("mxtune.gui.guiStaffOverlay.play_list_name_this_chunk",
-                                           String.format("%+d", chunk.x), String.format("%+d", chunk.z),
+                                    chunk != null ? String.format("%+d", chunk.x) : DASHES,
+                                    chunk != null ? String.format("%+d", chunk.z) : DASHES,
                                            chunkPlaylistName);
         y += fontHeight;
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight);
 
         formattedText = embolden(op, Operation.START, I18n.format("mxtune.gui.guiStaffOverlay.play_list_name_start_chunk",
-                                    chunkStart != null ? String.format("%+d", chunkStart.x) : "--",
-                                    chunkStart != null ? String.format("%+d", chunkStart.z) : "--"));
+                                    chunkStart != null ? String.format("%+d", chunkStart.x) : DASHES,
+                                    chunkStart != null ? String.format("%+d", chunkStart.z) : DASHES));
         y += fontHeight;
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0x00FF21);
 
         formattedText = embolden(op, Operation.END, I18n.format("mxtune.gui.guiStaffOverlay.play_list_name_end_chunk",
-                                    chunkEnd != null ? String.format("%+d", chunkEnd.x) : "--",
-                                    chunkEnd != null ? String.format("%+d", chunkEnd.z) : "--"));
+                                    chunkEnd != null ? String.format("%+d", chunkEnd.x) : DASHES,
+                                    chunkEnd != null ? String.format("%+d", chunkEnd.z) : DASHES));
         y += fontHeight;
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0x0094FF);
 
@@ -239,6 +243,20 @@ public class GuiStaffOverlay extends Gui
                                     String.format("%d", totalChunks));
         y += fontHeight;
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0xFF954F);
+    }
+
+    // A bit of silliness(or not) to shut-up some sonar-cloud null-implied analytics
+    @Nullable
+    private Chunk getThisChunk()
+    {
+        Chunk chunk;
+        if (mc != null && mc.world != null)
+        {
+            BlockPos pos = mc.player.getPosition();
+            chunk = mc.world.getChunk(pos);
+            return chunk;
+        } else
+            return null;
     }
 
     private String embolden(Operation op ,Operation opTest, String string)
@@ -287,58 +305,58 @@ public class GuiStaffOverlay extends Gui
         bufferbuilder.begin(3, DefaultVertexFormats.POSITION_COLOR);
 
         // Red Chunk verticals next chunk over
-//        for (int i = -16; i <= 32; i += 16)
-//        {
-//            for (int j = -16; j <= 32; j += 16)
-//            {
-//                bufferbuilder.pos(d5 + (double)i, d3, d6 + (double)j).color(1.0F, 0.0F, 0.0F, 0.0F).endVertex();
-//                bufferbuilder.pos(d5 + (double)i, d3, d6 + (double)j).color(1.0F, 0.0F, 0.0F, 0.5F).endVertex();
-//                bufferbuilder.pos(d5 + (double)i, d4, d6 + (double)j).color(1.0F, 0.0F, 0.0F, 0.5F).endVertex();
-//                bufferbuilder.pos(d5 + (double)i, d4, d6 + (double)j).color(1.0F, 0.0F, 0.0F, 0.0F).endVertex();
-//            }
-//        }
+        for (int i = -16; i <= 32; i += 16)
+        {
+            for (int j = -16; j <= 32; j += 16)
+            {
+                bufferbuilder.pos(d5 + (double)i, d3, d6 + (double)j).color(1.0F, 0.0F, 0.0F, 0.0F).endVertex();
+                bufferbuilder.pos(d5 + (double)i, d3, d6 + (double)j).color(1.0F, 0.0F, 0.0F, 0.5F).endVertex();
+                bufferbuilder.pos(d5 + (double)i, d4, d6 + (double)j).color(1.0F, 0.0F, 0.0F, 0.5F).endVertex();
+                bufferbuilder.pos(d5 + (double)i, d4, d6 + (double)j).color(1.0F, 0.0F, 0.0F, 0.0F).endVertex();
+            }
+        }
 
         // North-South Yellow Verticals
-//        for (int k = 2; k < 16; k += 2)
-//        {
-//            bufferbuilder.pos(d5 + (double)k, d3, d6).color(1.0F, 1.0F, 0.0F, 0.0F).endVertex();
-//            bufferbuilder.pos(d5 + (double)k, d3, d6).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
-//            bufferbuilder.pos(d5 + (double)k, d4, d6).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
-//            bufferbuilder.pos(d5 + (double)k, d4, d6).color(1.0F, 1.0F, 0.0F, 0.0F).endVertex();
-//            bufferbuilder.pos(d5 + (double)k, d3, d6 + 16.0D).color(1.0F, 1.0F, 0.0F, 0.0F).endVertex();
-//            bufferbuilder.pos(d5 + (double)k, d3, d6 + 16.0D).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
-//            bufferbuilder.pos(d5 + (double)k, d4, d6 + 16.0D).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
-//            bufferbuilder.pos(d5 + (double)k, d4, d6 + 16.0D).color(1.0F, 1.0F, 0.0F, 0.0F).endVertex();
-//        }
+        for (int k = 2; k < 16; k += 2)
+        {
+            bufferbuilder.pos(d5 + (double)k, d3, d6).color(1.0F, 1.0F, 0.0F, 0.0F).endVertex();
+            bufferbuilder.pos(d5 + (double)k, d3, d6).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
+            bufferbuilder.pos(d5 + (double)k, d4, d6).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
+            bufferbuilder.pos(d5 + (double)k, d4, d6).color(1.0F, 1.0F, 0.0F, 0.0F).endVertex();
+            bufferbuilder.pos(d5 + (double)k, d3, d6 + 16.0D).color(1.0F, 1.0F, 0.0F, 0.0F).endVertex();
+            bufferbuilder.pos(d5 + (double)k, d3, d6 + 16.0D).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
+            bufferbuilder.pos(d5 + (double)k, d4, d6 + 16.0D).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
+            bufferbuilder.pos(d5 + (double)k, d4, d6 + 16.0D).color(1.0F, 1.0F, 0.0F, 0.0F).endVertex();
+        }
 
         // East-West Yellow Verticals
-//        for (int l = 2; l < 16; l += 2)
-//        {
-//            bufferbuilder.pos(d5, d3, d6 + (double)l).color(1.0F, 1.0F, 0.0F, 0.0F).endVertex();
-//            bufferbuilder.pos(d5, d3, d6 + (double)l).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
-//            bufferbuilder.pos(d5, d4, d6 + (double)l).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
-//            bufferbuilder.pos(d5, d4, d6 + (double)l).color(1.0F, 1.0F, 0.0F, 0.0F).endVertex();
-//            bufferbuilder.pos(d5 + 16.0D, d3, d6 + (double)l).color(1.0F, 1.0F, 0.0F, 0.0F).endVertex();
-//            bufferbuilder.pos(d5 + 16.0D, d3, d6 + (double)l).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
-//            bufferbuilder.pos(d5 + 16.0D, d4, d6 + (double)l).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
-//            bufferbuilder.pos(d5 + 16.0D, d4, d6 + (double)l).color(1.0F, 1.0F, 0.0F, 0.0F).endVertex();
-//        }
+        for (int l = 2; l < 16; l += 2)
+        {
+            bufferbuilder.pos(d5, d3, d6 + (double)l).color(1.0F, 1.0F, 0.0F, 0.0F).endVertex();
+            bufferbuilder.pos(d5, d3, d6 + (double)l).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
+            bufferbuilder.pos(d5, d4, d6 + (double)l).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
+            bufferbuilder.pos(d5, d4, d6 + (double)l).color(1.0F, 1.0F, 0.0F, 0.0F).endVertex();
+            bufferbuilder.pos(d5 + 16.0D, d3, d6 + (double)l).color(1.0F, 1.0F, 0.0F, 0.0F).endVertex();
+            bufferbuilder.pos(d5 + 16.0D, d3, d6 + (double)l).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
+            bufferbuilder.pos(d5 + 16.0D, d4, d6 + (double)l).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
+            bufferbuilder.pos(d5 + 16.0D, d4, d6 + (double)l).color(1.0F, 1.0F, 0.0F, 0.0F).endVertex();
+        }
 
         // Yellow Horizontals
-//        for (int i1 = 0; i1 <= 256; i1 += 2)
-//        {
-//            double d7 = (double)i1 - d1;
-//            bufferbuilder.pos(d5, d7, d6).color(1.0F, 1.0F, 0.0F, 0.0F).endVertex();
-//            bufferbuilder.pos(d5, d7, d6).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
-//            bufferbuilder.pos(d5, d7, d6 + 16.0D).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
-//            bufferbuilder.pos(d5 + 16.0D, d7, d6 + 16.0D).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
-//            bufferbuilder.pos(d5 + 16.0D, d7, d6).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
-//            bufferbuilder.pos(d5, d7, d6).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
-//            bufferbuilder.pos(d5, d7, d6).color(1.0F, 1.0F, 0.0F, 0.0F).endVertex();
-//        }
+        for (int i1 = 0; i1 <= 256; i1 += 2)
+        {
+            double d7 = (double)i1 - d1;
+            bufferbuilder.pos(d5, d7, d6).color(1.0F, 1.0F, 0.0F, 0.0F).endVertex();
+            bufferbuilder.pos(d5, d7, d6).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
+            bufferbuilder.pos(d5, d7, d6 + 16.0D).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
+            bufferbuilder.pos(d5 + 16.0D, d7, d6 + 16.0D).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
+            bufferbuilder.pos(d5 + 16.0D, d7, d6).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
+            bufferbuilder.pos(d5, d7, d6).color(1.0F, 1.0F, 0.0F, 1.0F).endVertex();
+            bufferbuilder.pos(d5, d7, d6).color(1.0F, 1.0F, 0.0F, 0.0F).endVertex();
+        }
 
         tessellator.draw();
-        GlStateManager.glLineWidth(4.0F);
+        GlStateManager.glLineWidth(2.0F);
         bufferbuilder.begin(3, DefaultVertexFormats.POSITION_COLOR);
 
         for (int j1 = 0; j1 <= 16; j1 += 16)
