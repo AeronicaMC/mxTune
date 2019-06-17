@@ -18,6 +18,7 @@ package net.aeronica.mods.mxtune.options;
 
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.SyncPlayerMusicOptionsMessage;
+import net.aeronica.mods.mxtune.network.server.ChunkToolMessage;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.Miscellus;
@@ -25,6 +26,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 
@@ -35,15 +37,16 @@ import java.util.Objects;
 @SuppressWarnings("ConstantConditions")
 public class MusicOptionsUtil
 {
-    public static final byte SYNC_ALL = 0;
-    public static final byte SYNC_DISPLAY_HUD = 1;
-    public static final byte SYNC_MUTE_OPTION = 2;
-    public static final byte SYNC_S_PARAMS = 3;
-    public static final byte SYNC_WHITE_LIST = 4;
-    public static final byte SYNC_BLACK_LIST = 5;
-    public static final byte SYNC_MUSIC_OP = 6;
-    public static final byte SYNC_SELECTED_PLAY_LIST_GUID = 7;
-    public static final byte SYNC_CTRL_KEY_DOWN = 8;
+    public static final int SYNC_ALL = 0;
+    public static final int SYNC_DISPLAY_HUD = 1;
+    public static final int SYNC_MUTE_OPTION = 2;
+    public static final int SYNC_S_PARAMS = 3;
+    public static final int SYNC_WHITE_LIST = 4;
+    public static final int SYNC_BLACK_LIST = 5;
+    public static final int SYNC_MUSIC_OP = 6;
+    public static final int SYNC_SELECTED_PLAY_LIST_GUID = 7;
+    public static final int SYNC_CTRL_KEY_DOWN = 8;
+    public static final int SYNC_CHUNK_OPERATION = 9;
 
 
     @CapabilityInject(IPlayerMusicOptions.class)
@@ -181,6 +184,38 @@ public class MusicOptionsUtil
         return bardActionImpl;
     }
 
+    public static void setChunkToolOperation(EntityPlayer playerIn, ChunkToolMessage.Operation operation){
+        getImpl(playerIn).setChunkToolOperation(operation);
+        sync(playerIn, SYNC_CHUNK_OPERATION);
+    }
+
+    public static ChunkToolMessage.Operation getChunkToolOperation(EntityPlayer playerIn)
+    {
+        return getImpl(playerIn).getChunkToolOperation();
+    }
+
+    public static void setChunkStart(EntityPlayer playerIn, @Nullable Chunk chunkStart)
+    {
+        getImpl(playerIn).setChunkStart(chunkStart);
+    }
+
+    @Nullable
+    public static Chunk getChunkStart(EntityPlayer playerIn)
+    {
+        return getImpl(playerIn).getChunkStart();
+    }
+
+    public static void setChunkEnd(EntityPlayer playerIn, @Nullable Chunk chunkEnd)
+    {
+        getImpl(playerIn).setChunkEnd(chunkEnd);
+    }
+
+    @Nullable
+    public static Chunk getChunkEnd(EntityPlayer playerIn)
+    {
+        return getImpl(playerIn).getChunkEnd();
+    }
+
     /*
      * GuiHudAdjust positionHud temporary value for use when adjusting the Hud.
      */
@@ -297,11 +332,10 @@ public class MusicOptionsUtil
     /**
      * Sync the specified property ID for the specified player
      * to the client.
-     *
-     * @param playerIn synchronize this players music options
+     *  @param playerIn synchronize this players music options
      * @param propertyID to synchronize
      */
-    public static void sync(EntityPlayer playerIn, byte propertyID)
+    public static void sync(EntityPlayer playerIn, int propertyID)
     {
         if (!playerIn.getEntityWorld().isRemote)
         {

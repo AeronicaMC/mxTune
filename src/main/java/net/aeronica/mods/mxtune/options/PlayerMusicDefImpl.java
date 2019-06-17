@@ -17,20 +17,18 @@
 package net.aeronica.mods.mxtune.options;
 
 import net.aeronica.mods.mxtune.Reference;
+import net.aeronica.mods.mxtune.network.server.ChunkToolMessage;
 import net.aeronica.mods.mxtune.util.GUID;
+import net.minecraft.world.chunk.Chunk;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PlayerMusicDefImpl implements IPlayerMusicOptions
 {
-    /** Music Options*/
+    // Music Options
     private int muteOption;
-    /** HUD Options */
-    private boolean disableHud;
-    private int positionHud;
-    private float sizeHud;
-    /** Strings for passing parameters from server to client: for a GUI for example */
+    // Strings for passing parameters from server to client: for a GUI for example
     private String sParam1;
     private String sParam2;
     private String sParam3;
@@ -40,6 +38,14 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     private boolean mxTuneServerUpdateAllowed;
     private GUID selectedPlayListGuid;
     private boolean ctrlKeyDown;
+    // HUD Options
+    private boolean disableHud;
+    private int positionHud;
+    private float sizeHud;
+    // Chunk Tool
+    private ChunkToolMessage.Operation operation;
+    private Chunk chunkStart;
+    private Chunk chunkEnd;
 
     PlayerMusicDefImpl()
     {
@@ -56,6 +62,9 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
         this.mxTuneServerUpdateAllowed = false;
         this.selectedPlayListGuid = Reference.EMPTY_GUID;
         this.ctrlKeyDown = false;
+        this.operation = ChunkToolMessage.Operation.START;
+        this.chunkStart = null;
+        this.chunkEnd = null;
     }
 
     @Override
@@ -133,4 +142,22 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
 
     @Override
     public boolean isCtrlKeyDown() { return ctrlKeyDown; }
+
+    @Override
+    public void setChunkToolOperation(ChunkToolMessage.Operation operation) { this.operation = operation; }
+
+    @Override
+    public ChunkToolMessage.Operation getChunkToolOperation() { return operation; }
+
+    @Override
+    public void setChunkStart(Chunk chunkStart) { this.chunkStart = chunkStart; }
+
+    @Override
+    public Chunk getChunkStart() { return chunkStart; }
+
+    @Override
+    public void setChunkEnd(Chunk chunkEnd) { this.chunkEnd = chunkEnd; }
+
+    @Override
+    public Chunk getChunkEnd() { return chunkEnd; }
 }
