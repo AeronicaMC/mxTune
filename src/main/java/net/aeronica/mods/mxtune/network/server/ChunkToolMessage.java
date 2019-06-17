@@ -17,9 +17,12 @@
 package net.aeronica.mods.mxtune.network.server;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
+import net.aeronica.mods.mxtune.network.PacketDispatcher;
+import net.aeronica.mods.mxtune.network.client.ResetClientPlayEngine;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.world.caps.chunk.ModChunkPlaylistHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
@@ -84,6 +87,8 @@ public class ChunkToolMessage extends AbstractServerMessage<ChunkToolMessage>
 
     private void apply(EntityPlayer player)
     {
+        int errorCount = 0;
+
         World world = player.world;
         Chunk chunkStart = MusicOptionsUtil.getChunkStart(player);
         Chunk chunkEnd = MusicOptionsUtil.getChunkEnd(player);
@@ -102,9 +107,20 @@ public class ChunkToolMessage extends AbstractServerMessage<ChunkToolMessage>
             {
                 for(int z = minZ; z <= maxZ; z++)
                 {
-                    ModLogger.debug("  ChunkToolMessage: Update Chunk x: %+03d, z: %+03d", x, z);
+                    if (world.isChunkGeneratedAt(x, z))
+                    {
+                        Chunk chunk = world.getChunk(x, z);
+                        ModChunkPlaylistHelper.setPlaylistGuid(chunk, guidPlaylist);
+                        ModChunkPlaylistHelper.sync(player, chunk);
+                    } else
+                    {
+                        errorCount++;
+                        ModLogger.debug("  ChunkToolMessage: Not Loaded @ x: %+03d, z: %+03d", x, z);
+                    }
                 }
             }
+            ModLogger.debug("  ChunkToolMessage: Error count: %d", errorCount);
+            PacketDispatcher.sendToAll(new ResetClientPlayEngine());
         }
     }
 
