@@ -18,6 +18,7 @@
 package net.aeronica.mods.mxtune.gui.mml;
 
 import net.aeronica.mods.mxtune.Reference;
+import net.aeronica.mods.mxtune.gui.util.GuiButtonMX;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.aeronica.mods.mxtune.managers.ClientFileManager;
@@ -25,6 +26,7 @@ import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.aeronica.mods.mxtune.managers.records.RecordType;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.GetBaseDataListsMessage;
+import net.aeronica.mods.mxtune.network.server.ChunkToolMessage;
 import net.aeronica.mods.mxtune.network.server.PlayerSelectedPlayListMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.CallBackManager;
@@ -43,6 +45,7 @@ import org.lwjgl.opengl.GL11;
 import java.io.IOException;
 
 import static net.aeronica.mods.mxtune.gui.mml.SortHelper.PLAYLIST_ORDERING;
+import static net.aeronica.mods.mxtune.network.server.ChunkToolMessage.Operation;
 
 public class GuiChunkTool extends GuiScreen implements Notify
 {
@@ -55,7 +58,10 @@ public class GuiChunkTool extends GuiScreen implements Notify
 
     private GuiScrollingListOf<PlayList> guiPlayLists;
 
-    private GuiButton buttonMark;
+    private GuiButtonMX buttonStart;
+    private GuiButtonMX buttonEnd;
+    private GuiButtonMX buttonApply;
+    private GuiButtonMX buttonReset;
 
     private EntityPlayer player;
 
@@ -113,33 +119,49 @@ public class GuiChunkTool extends GuiScreen implements Notify
         //int entryHeight, int width, int height, int top, int bottom, int left)
         guiPlayLists.setLayout(fontRenderer.FONT_HEIGHT + 2, 90, 141,guiTop + 12, guiTop + 12 + 141, guiLeft + 12);
 
-        buttonList.clear();
-
         /* create button for leave and disable it initially */
-        int posX = guiLeft + 169;
-        int posY = guiTop + 112;
-        buttonMark = new GuiButton(0, posX, posY, 60, 20, "Leave");
+        int widthButtons = 75;
+        int posX = guiLeft + 154;
+        int posY = guiTop + 32;
+        buttonStart = new GuiButtonMX(0, posX, posY, widthButtons, 20, "Start");
+        buttonEnd = new GuiButtonMX(1, posX, buttonStart.y + buttonStart.height, widthButtons, 20, "End");
+        buttonApply = new GuiButtonMX(2, posX, buttonEnd.y + buttonEnd.height, widthButtons, 20, "Apply");
+        buttonReset = new GuiButtonMX(3, posX, buttonApply.y + buttonApply.height, widthButtons, 20, "Reset");
 
-        posX = guiLeft + 169;
-        posY = guiTop + 132;
-        GuiButton btnCancel = new GuiButton(2, posX, posY, 60, 20, "Cancel");
+        GuiButton buttonCancel = new GuiButton(4, posX, buttonReset.y + buttonReset.height * 2, widthButtons, 20, "Cancel");
         
-        buttonList.add(buttonMark);
-        buttonList.add(btnCancel);
+        buttonList.add(buttonStart);
+        buttonList.add(buttonEnd);
+        buttonList.add(buttonApply);
+        buttonList.add(buttonReset);
+        buttonList.add(buttonCancel);
         initPlayLists();
         reloadState();
     }
 
     private void reloadState()
     {
-        if (!isStateCached) return;
-
+        updateButtons();
+        Operation op = MusicOptionsUtil.getChunkToolOperation(player);
+        if (Operation.START == op)
+            actionPerformed(buttonStart);
+        if (Operation.END == op)
+            actionPerformed(buttonEnd);
     }
 
     private void updateState()
     {
         updateSelected();
-        isStateCached = true;
+        updateButtons();
+    }
+
+    private void updateButtons()
+    {
+        Operation op = MusicOptionsUtil.getChunkToolOperation(player);
+        buttonStart.enabled = Operation.START == op;
+        buttonEnd.enabled = Operation.END == op;
+        buttonApply.enabled = Operation.DO_IT == op;
+        buttonReset.enabled = Operation.END == op || Operation.DO_IT == op;
     }
 
     private void updateSelected()
@@ -158,7 +180,6 @@ public class GuiChunkTool extends GuiScreen implements Notify
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
-        //drawDefaultBackground();
         drawGuiBackground();
 
         /* draw "TITLE" at the top right */
@@ -182,17 +203,32 @@ public class GuiChunkTool extends GuiScreen implements Notify
 
         switch (guibutton.id)
         {
-        case 0:
-            /* Create Group */
-            break;
+            case 0:
+                // Starting Chunk
+                MusicOptionsUtil.setChunkStart(player, player.world.getChunk(player.getPosition()));
+                nextOperation();
+                break;
 
-        case 1:
-            /* Leave Group */
-            break;
+            case 1:
+                // Ending Chunk
+                MusicOptionsUtil.setChunkEnd(player, player.world.getChunk(player.getPosition()));
+                nextOperation();
+                break;
 
-        case 2:
-            /* Cancel remove the GUI */
-        default:
+            case 2:
+                // Apply Playlist
+                nextOperation();
+                resetOperations();
+                break;
+
+            case 3:
+                // Reset Chunks
+                resetOperations();
+                break;
+
+            case 4:
+                // Cancel remove the GUI
+            default:
         }
         mc.displayGuiScreen(null);
         mc.setIngameFocus();
@@ -207,7 +243,6 @@ public class GuiChunkTool extends GuiScreen implements Notify
         super.handleMouseInput();
     }
 
-    /* Gets the image for the background and renders it in the middle of the screen. */
     private void drawGuiBackground()
     {
         GL11.glColor4f(1F, 1F, 1F, 1F);
@@ -215,14 +250,21 @@ public class GuiChunkTool extends GuiScreen implements Notify
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 
-    private void sendRequest(int operation, Integer memberId)
-    {
-        // NOP
-    }
-
     private void initPlayLists()
     {
         PacketDispatcher.sendToServer(new GetBaseDataListsMessage(CallBackManager.register(ClientFileManager.INSTANCE, this), RecordType.PLAY_LIST));
+    }
+
+    private void resetOperations()
+    {
+        PacketDispatcher.sendToServer(new ChunkToolMessage(true));
+        MusicOptionsUtil.setChunkStart(player, null);
+        MusicOptionsUtil.setChunkEnd(player, null);
+    }
+
+    private void nextOperation()
+    {
+        PacketDispatcher.sendToServer(new ChunkToolMessage(false));
     }
 
     // receive notification of received responses to init playlist and song proxy lists
