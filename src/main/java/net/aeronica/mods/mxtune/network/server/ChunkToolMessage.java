@@ -18,6 +18,8 @@ package net.aeronica.mods.mxtune.network.server;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
+import net.aeronica.mods.mxtune.util.GUID;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
@@ -69,12 +71,38 @@ public class ChunkToolMessage extends AbstractServerMessage<ChunkToolMessage>
                         MusicOptionsUtil.setChunkToolOperation(player, Operation.DO_IT);
                         break;
                     case DO_IT:
-
+                        apply(player);
                     case RESET:
                     default:
                         MusicOptionsUtil.setChunkToolOperation(player, Operation.START);
                         MusicOptionsUtil.setChunkStart(player, null);
                         MusicOptionsUtil.setChunkEnd(player, null);
+                }
+            }
+        }
+    }
+
+    private void apply(EntityPlayer player)
+    {
+        World world = player.world;
+        Chunk chunkStart = MusicOptionsUtil.getChunkStart(player);
+        Chunk chunkEnd = MusicOptionsUtil.getChunkEnd(player);
+        if (chunkStart != null && chunkEnd != null && world != null && world.equals(chunkStart.getWorld()) && world.equals(chunkEnd.getWorld()))
+        {
+            GUID guidPlaylist = MusicOptionsUtil.getSelectedPlayListGuid(player);
+            int totalChunks = (Math.abs(chunkStart.x - chunkEnd.x) + 1) * (Math.abs(chunkStart.z - chunkEnd.z) + 1);
+            ModLogger.debug("ChunkToolMessage: Total Chunks: %d", totalChunks);
+            int minX = Math.min(chunkStart.x, chunkEnd.x);
+            int maxX = Math.max(chunkStart.x, chunkEnd.x);
+            int minZ = Math.min(chunkStart.z, chunkEnd.z);
+            int maxZ = Math.max(chunkStart.z, chunkEnd.z);
+            ModLogger.debug("ChunkToolMessage: x: %d to %d", minX, maxX);
+            ModLogger.debug("ChunkToolMessage: z: %d to %d", minZ, maxZ);
+            for(int x = minX; x <= maxX; x++)
+            {
+                for(int z = minZ; z <= maxZ; z++)
+                {
+                    ModLogger.debug("  ChunkToolMessage: Update Chunk x: %+03d, z: %+03d", x, z);
                 }
             }
         }
