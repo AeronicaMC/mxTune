@@ -17,6 +17,7 @@
 package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
+import net.aeronica.mods.mxtune.network.server.ChunkToolMessage;
 import net.aeronica.mods.mxtune.options.ClassifiedPlayer;
 import net.aeronica.mods.mxtune.options.IPlayerMusicOptions;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
@@ -40,7 +41,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     @CapabilityInject(IPlayerMusicOptions.class)
     private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = Miscellus.nonNullInjected();
 
-    private byte propertyID;
+    private int propertyID;
     private NBTTagCompound data;
     private boolean disableHud;
     private int positionHud;
@@ -54,13 +55,14 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     private boolean allowMusicOp;
     private GUID selectedAreaGuid;
     private boolean ctrlKeyDown;
+    private ChunkToolMessage.Operation operation;
 
     private byte[] byteBuffer = null;
 
     @SuppressWarnings("unused")
     public SyncPlayerMusicOptionsMessage() {/* Required by the PacketDispatcher */}
 
-    public SyncPlayerMusicOptionsMessage(IPlayerMusicOptions inst, byte propertyID)
+    public SyncPlayerMusicOptionsMessage(IPlayerMusicOptions inst, int propertyID)
     {
         this.propertyID = propertyID;
         switch (propertyID)
@@ -105,6 +107,10 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             case MusicOptionsUtil.SYNC_CTRL_KEY_DOWN:
                 this.ctrlKeyDown = inst.isCtrlKeyDown();
                 break;
+
+            case MusicOptionsUtil.SYNC_CHUNK_OPERATION:
+                this.operation = inst.getChunkToolOperation();
+                break;
             default:
         }
     }
@@ -112,7 +118,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     @Override
     protected void read(PacketBuffer buffer) throws IOException
     {
-        propertyID = buffer.readByte();
+        propertyID = buffer.readInt();
         switch (propertyID)
         {
             case MusicOptionsUtil.SYNC_ALL:
@@ -150,6 +156,9 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             case MusicOptionsUtil.SYNC_CTRL_KEY_DOWN:
                 this.ctrlKeyDown = buffer.readBoolean();
                 break;
+            case MusicOptionsUtil.SYNC_CHUNK_OPERATION:
+                this.operation = buffer.readEnumValue(ChunkToolMessage.Operation.class);
+                break;
             default:
         }
     }
@@ -157,7 +166,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     @Override
     protected void write(PacketBuffer buffer)
     {
-        buffer.writeByte(this.propertyID);
+        buffer.writeInt(this.propertyID);
         switch (this.propertyID)
         {
             case MusicOptionsUtil.SYNC_ALL:
@@ -193,6 +202,9 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                 break;
             case MusicOptionsUtil.SYNC_CTRL_KEY_DOWN:
                 buffer.writeBoolean(ctrlKeyDown);
+                break;
+            case MusicOptionsUtil.SYNC_CHUNK_OPERATION:
+                buffer.writeEnumValue(operation);
                 break;
             default:
         }
@@ -233,6 +245,9 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                         break;
                     case MusicOptionsUtil.SYNC_CTRL_KEY_DOWN:
                         instance.setCtrlKey(ctrlKeyDown);
+                        break;
+                    case MusicOptionsUtil.SYNC_CHUNK_OPERATION:
+                        instance.setChunkToolOperation(operation);
                         break;
                     default:
                 }
