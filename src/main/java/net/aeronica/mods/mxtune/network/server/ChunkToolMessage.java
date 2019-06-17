@@ -20,30 +20,32 @@ import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class ChunkToolMessage extends AbstractServerMessage<ChunkToolMessage>
 {
-    private Operation operation;
+    private boolean reset;
 
     @SuppressWarnings("unused")
     public ChunkToolMessage() {/* Required by the PacketDispatcher */}
 
-    public ChunkToolMessage(Operation operation)
+    public ChunkToolMessage(boolean reset)
     {
-        this.operation = operation;
+        this.reset = reset;
     }
     
     @Override
     protected void read(PacketBuffer buffer)
     {
-        operation = buffer.readEnumValue(Operation.class);
+        reset = buffer.readBoolean();
     }
 
     @Override
     protected void write(PacketBuffer buffer)
     {
-        buffer.writeEnumValue(operation);
+        buffer.writeBoolean(reset);
     }
 
     @Override
@@ -51,23 +53,35 @@ public class ChunkToolMessage extends AbstractServerMessage<ChunkToolMessage>
     {
         if (MusicOptionsUtil.isMxTuneServerUpdateAllowed(player))
         {
-            switch (operation)
+            World world = player.world;
+            Chunk chunk = world.getChunk(player.getPosition());
+            Operation operation = reset ? Operation.RESET : MusicOptionsUtil.getChunkToolOperation(player);
+            if (chunk.isLoaded())
             {
-                case NOP:
-                    break;
-                case START:
-                    break;
-                case END:
-                    break;
-                case DO_IT:
-                    break;
-                default:
+                switch (operation)
+                {
+                    case START:
+                        MusicOptionsUtil.setChunkStart(player, chunk);
+                        MusicOptionsUtil.setChunkToolOperation(player, Operation.END);
+                        break;
+                    case END:
+                        MusicOptionsUtil.setChunkEnd(player, chunk);
+                        MusicOptionsUtil.setChunkToolOperation(player, Operation.DO_IT);
+                        break;
+                    case DO_IT:
+
+                    case RESET:
+                    default:
+                        MusicOptionsUtil.setChunkToolOperation(player, Operation.START);
+                        MusicOptionsUtil.setChunkStart(player, null);
+                        MusicOptionsUtil.setChunkEnd(player, null);
+                }
             }
         }
     }
 
     public enum Operation
     {
-        NOP, START, END, DO_IT
+        START, END, RESET, DO_IT
     }
 }
