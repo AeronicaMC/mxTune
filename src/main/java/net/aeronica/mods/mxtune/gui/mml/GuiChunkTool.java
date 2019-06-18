@@ -226,6 +226,7 @@ public class GuiChunkTool extends GuiScreen implements Notify
                 break;
             default:
         }
+        updateState();
     }
 
     @Override
