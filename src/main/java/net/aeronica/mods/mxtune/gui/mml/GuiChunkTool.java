@@ -116,7 +116,7 @@ public class GuiChunkTool extends GuiScreen implements Notify
         Keyboard.enableRepeatEvents(false);
         this.guiLeft = (this.width - this.xSize) / 2;
         this.guiTop = (this.height - this.ySize) / 2;
-        //int entryHeight, int width, int height, int top, int bottom, int left)
+
         guiPlayLists.setLayout(fontRenderer.FONT_HEIGHT + 2, 90, 141,guiTop + 12, guiTop + 12 + 141, guiLeft + 12);
 
         /* create button for leave and disable it initially */
@@ -128,7 +128,7 @@ public class GuiChunkTool extends GuiScreen implements Notify
         buttonApply = new GuiButtonMX(2, posX, buttonEnd.y + buttonEnd.height, widthButtons, 20, "Apply");
         buttonReset = new GuiButtonMX(3, posX, buttonApply.y + buttonApply.height, widthButtons, 20, "Reset");
 
-        GuiButton buttonCancel = new GuiButton(4, posX, buttonReset.y + buttonReset.height * 2, widthButtons, 20, "Cancel");
+        GuiButton buttonCancel = new GuiButton(4, posX, buttonReset.y + buttonReset.height * 2, widthButtons, 20, I18n.format("gui.done"));
         
         buttonList.add(buttonStart);
         buttonList.add(buttonEnd);
@@ -220,11 +220,12 @@ public class GuiChunkTool extends GuiScreen implements Notify
                 break;
 
             case 4:
-                // Cancel remove the GUI
+                // Close remove the GUI
+                mc.displayGuiScreen(null);
+                mc.setIngameFocus();
+                break;
             default:
         }
-        mc.displayGuiScreen(null);
-        mc.setIngameFocus();
     }
 
     @Override
