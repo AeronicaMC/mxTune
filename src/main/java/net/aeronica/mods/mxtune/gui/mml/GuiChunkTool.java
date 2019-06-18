@@ -221,11 +221,12 @@ public class GuiChunkTool extends GuiScreen implements Notify
 
             case 4:
                 // Close remove the GUI
-                mc.displayGuiScreen(null);
-                mc.setIngameFocus();
+
                 break;
             default:
         }
+        mc.displayGuiScreen(null);
+        mc.setIngameFocus();
         updateState();
     }
 
