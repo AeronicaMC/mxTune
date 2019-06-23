@@ -42,6 +42,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 import static net.aeronica.mods.mxtune.gui.mml.SortHelper.PLAYLIST_ORDERING;
@@ -265,7 +266,7 @@ public class GuiChunkTool extends GuiScreen implements Notify
 
     // receive notification of received responses to init playlist and song proxy lists
     @Override
-    public void onNotify(RecordType recordType)
+    public void onNotify(@Nonnull RecordType recordType)
     {
         switch (recordType)
         {
