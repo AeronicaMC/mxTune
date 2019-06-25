@@ -18,11 +18,8 @@
 package net.aeronica.mods.mxtune.world.caps.chunk;
 
 import net.aeronica.mods.mxtune.Reference;
-import net.aeronica.mods.mxtune.network.PacketDispatcher;
-import net.aeronica.mods.mxtune.network.client.UpdateChunkMusicData;
 import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.NBTHelper;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -34,7 +31,6 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.world.ChunkWatchEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nonnull;
@@ -52,19 +48,6 @@ public class ModChunkPlaylistCap
     {
         CapabilityManager.INSTANCE.register(IModChunkPlaylist.class, new Storage(), new Factory());
         MinecraftForge.EVENT_BUS.register(ModChunkPlaylistCap.class);
-    }
-
-    // TODO: Review for better ways to sync this data.
-    @SubscribeEvent
-    public static void onEvent(final ChunkWatchEvent.Watch event)
-    {
-        final EntityPlayerMP player = event.getPlayer();
-        final Chunk chunk = event.getChunkInstance();
-
-        if (chunk != null && chunk.hasCapability(MOD_CHUNK_DATA, null))
-        {
-            PacketDispatcher.sendTo(new UpdateChunkMusicData(chunk.getPos().x, chunk.getPos().z, ModChunkPlaylistHelper.getPlaylistGuid(chunk)), player);
-        }
     }
 
     @SubscribeEvent

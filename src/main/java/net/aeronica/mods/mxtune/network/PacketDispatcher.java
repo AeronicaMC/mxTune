@@ -69,7 +69,6 @@ public class PacketDispatcher
         registerMessage(SendCSDChatMessage.class);
         registerMessage(PlayBlockMusicMessage.class);
         registerMessage(AudiblePingPlayerMessage.class);
-        registerMessage(UpdateChunkMusicData.class);
         registerMessage(UpdateWorldMusicData.class);
         registerMessage(StopPlayIDMessage.class);
         registerMessage(ResetClientPlayEngine.class);
@@ -82,6 +81,7 @@ public class PacketDispatcher
         registerMessage(BandAmpMessage.class);
         registerMessage(ByteArrayPartMessage.class);
         registerMessage(PlayerSelectedPlayListMessage.class);
+        registerMessage(UpdateChunkMusicData.class);
         registerMessage(ChunkToolMessage.class);
 
         /*
