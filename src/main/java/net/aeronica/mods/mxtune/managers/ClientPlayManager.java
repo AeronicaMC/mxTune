@@ -24,7 +24,6 @@ import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.GetServerDataMessage;
-import net.aeronica.mods.mxtune.network.client.UpdateChunkMusicData;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.sound.ClientAudio.Status;
 import net.aeronica.mods.mxtune.sound.IAudioStatusCallback;
@@ -191,51 +190,28 @@ public class ClientPlayManager implements IAudioStatusCallback
             if ((prevChunkRef != null && currentChunkRef.get() != prevChunkRef.get())
                     || (prevChunkRef == null && currentChunkRef.get() != null)
                     || !(ModChunkPlaylistHelper.getPlaylistGuid(currentChunkRef.get())).equals(currentPlaylistGUID))
-                requestUpdateOnChunkChange(currentChunkRef, prevChunkRef);
+                chunkChange(currentChunkRef, prevChunkRef);
 
         }
         updateTimeOfDay();
         changePlayListMusic(false);
     }
 
-    /**
-     * Requests a chunk playlist update when entering a different chunk
-     * @param current chunk reference
-     * @param previous chunk reference
-     */
-    private static void requestUpdateOnChunkChange(WeakReference<Chunk> current, WeakReference<Chunk> previous)
+    private static void chunkChange(WeakReference<Chunk> current, WeakReference<Chunk> previous)
     {
         Chunk currentChunk = getChunk(current);
         Chunk prevChunk = getChunk(previous);
-        if (!(
-            (currentChunk != null) && currentChunk.hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null) &&
-            (prevChunk != null) && prevChunk.hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null) &&
-            chunksEqual(currentChunk, prevChunk)
-        ))
+        if (currentChunk != null && currentChunk.hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null))
         {
-            PacketDispatcher.sendToServer(new UpdateChunkMusicData());
+            currentPlaylistGUID = ModChunkPlaylistHelper.getPlaylistGuid(currentChunk);
         }
-    }
-
-    private static boolean chunksEqual(@Nonnull Chunk a, @Nonnull Chunk b)
-    {
-        return a.getWorld() == b.getWorld() && a.x == b.x && a.z == b.z;
-    }
-
-    /**
-     * Called from UpdateChunkMusicData on receipt of data
-     */
-    public static void notifyChunkUpdate()
-    {
-        if (currentChunkRef != null && currentChunkRef.get() != null && currentChunkRef.get().hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null))
+        if (prevChunk != null && prevChunk.hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null))
         {
-            currentPlaylistGUID = ModChunkPlaylistHelper.getPlaylistGuid(currentChunkRef.get());
+            GUID prevPlayListGUID = ModChunkPlaylistHelper.getPlaylistGuid(prevChunk);
+            previousPlaylistGUID = prevPlayListGUID;
         }
         if (!currentPlaylistGUID.equals(previousPlaylistGUID))
-        {
             changePlayListMusic(true);
-            previousPlaylistGUID = GUID.fromString(currentPlaylistGUID.toString());
-        }
     }
 
     private static void changePlayListMusic(boolean chunkChanged)
