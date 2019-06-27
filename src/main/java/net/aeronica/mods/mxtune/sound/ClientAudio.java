@@ -195,13 +195,13 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
     private static BlockPos getBlockPos(Integer playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
-        return audioData.getBlockPos();
+        return (audioData != null) ? audioData.getBlockPos() : null;
     }
 
     private static SoundRange getSoundRange(Integer playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
-        return audioData.getSoundRange();
+        return audioData != null ? audioData.getSoundRange() :  SoundRange.NORMAL;
     }
     
     static boolean hasPlayID(Integer playID)
