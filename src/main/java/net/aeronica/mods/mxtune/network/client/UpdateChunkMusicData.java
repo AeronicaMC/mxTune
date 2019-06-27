@@ -17,19 +17,16 @@
 package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.MXTune;
-import net.aeronica.mods.mxtune.managers.ClientPlayManager;
-import net.aeronica.mods.mxtune.network.AbstractMessage;
-import net.aeronica.mods.mxtune.network.PacketDispatcher;
+import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.world.caps.chunk.ModChunkPlaylistHelper;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.relauncher.Side;
 
-public class UpdateChunkMusicData extends AbstractMessage<UpdateChunkMusicData>
+public class UpdateChunkMusicData extends AbstractClientMessage<UpdateChunkMusicData>
 {
     private int chunkX;
     private int chunkZ;
@@ -79,34 +76,12 @@ public class UpdateChunkMusicData extends AbstractMessage<UpdateChunkMusicData>
     @Override
     public void process(EntityPlayer player, Side side)
     {
-        if (side == Side.CLIENT)
-            processClient(player);
-        else
-            processServer(player);
-    }
-
-    private void processClient(EntityPlayer player)
-    {
         World world = MXTune.proxy.getClientWorld();
         if (world != null && world.isChunkGeneratedAt(chunkX, chunkZ))
         {
             Chunk chunk = world.getChunk(chunkX, chunkZ);
             if (chunk.hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null))
-            {
                 ModChunkPlaylistHelper.setPlaylistGuid(chunk, guid);
-                ClientPlayManager.notifyChunkUpdate();
-            }
-        }
-    }
-
-    private void processServer(EntityPlayer player)
-    {
-        World world = player.getEntityWorld();
-        Chunk chunk = world.getChunk(player.getPosition());
-        if (world.isChunkGeneratedAt(chunk.x, chunk.z))
-        {
-            if (chunk.hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null))
-                PacketDispatcher.sendTo(new UpdateChunkMusicData(chunk.getPos().x, chunk.getPos().z, ModChunkPlaylistHelper.getPlaylistGuid(chunk)), (EntityPlayerMP) player);
         }
     }
 }
