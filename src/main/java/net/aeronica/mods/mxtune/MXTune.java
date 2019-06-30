@@ -17,14 +17,9 @@
 package net.aeronica.mods.mxtune;
 
 import net.aeronica.mods.mxtune.advancements.ModCriteriaTriggers;
-import net.aeronica.mods.mxtune.blocks.TilePiano;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.cmds.CommandMxTuneServerUpdate;
 import net.aeronica.mods.mxtune.cmds.CommandSoundRange;
-import net.aeronica.mods.mxtune.datafixers.ItemInventoryWalker;
-import net.aeronica.mods.mxtune.datafixers.SheetMusicFixer;
-import net.aeronica.mods.mxtune.datafixers.TileEntityInventoryWalker;
-import net.aeronica.mods.mxtune.datafixers.TileIdFixer;
 import net.aeronica.mods.mxtune.handler.GUIHandler;
 import net.aeronica.mods.mxtune.managers.DurationTimer;
 import net.aeronica.mods.mxtune.managers.ServerFileManager;
@@ -38,12 +33,7 @@ import net.aeronica.mods.mxtune.util.MusicTab;
 import net.aeronica.mods.mxtune.world.caps.chunk.ModChunkPlaylistCap;
 import net.aeronica.mods.mxtune.world.caps.world.ModWorldPlaylistCap;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.util.datafix.FixTypes;
-import net.minecraft.util.datafix.walkers.ItemStackDataLists;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.CompoundDataFixer;
-import net.minecraftforge.common.util.ModFixs;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -93,18 +83,6 @@ public class MXTune
         proxy.initMML();
 
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, GUIHandler.getInstance());
-
-        CompoundDataFixer fixer = FMLCommonHandler.instance().getDataFixer();
-        ModFixs modFixer = fixer.init(Reference.MOD_ID, Reference.MXTUNE_DATA_FIXER_VERSION);
-        modFixer.registerFix(FixTypes.BLOCK_ENTITY, new TileIdFixer());
-        modFixer.registerFix(FixTypes.ITEM_INSTANCE, new SheetMusicFixer());
-
-        // Pedestal type capability te
-        fixer.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TilePiano.class, "Items"));
-        // Fix SheetMusic in ItemInstrument ItemInventory slot
-        fixer.registerWalker(FixTypes.ITEM_INSTANCE, new ItemInventoryWalker());
-        // Fix SheetMusItemStackHandler, ItemInstrument, ItemSheetMusic
-        fixer.registerWalker(FixTypes.BLOCK_ENTITY, new TileEntityInventoryWalker());
     }
 
     @Mod.EventHandler

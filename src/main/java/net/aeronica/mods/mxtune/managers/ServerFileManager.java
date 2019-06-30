@@ -53,8 +53,6 @@ public class ServerFileManager
     public static void start()
     {
         getOrGenerateServerID();
-        Update.renameAreasToPlaylists();
-        Update.convertSongToMxt();
         // stuffServer goes here when needed - test data
         new Thread(() ->
                    {

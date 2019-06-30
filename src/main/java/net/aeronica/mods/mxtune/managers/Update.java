@@ -42,6 +42,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Keep for reference and possible reuse for upcoming changes and fixes.
+ */
+@SuppressWarnings("unused")
 public final class Update
 {
     private static final Map<Integer, String> PACKED_PATCH_TO_NAME =
