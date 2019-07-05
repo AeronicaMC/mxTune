@@ -66,7 +66,7 @@ minecraft {
 }
 
 dependencies {
-	shadow "org.antlr:antlr4-runtime:4.5.2-1" // use ANTLR version 4
+	shadow "org.antlr:antlr4-runtime:4.7.2" // use ANTLR version 4
     // compile against the JEI API but do not include it at runtime
     deobfProvided "mezz.jei:jei_${config.minecraftVersion}:${config.jeiVersion}:api"
     // at runtime, use the full JEI jar

@@ -1,4 +1,4 @@
-// Generated from MML.g4 by ANTLR 4.5.2
+// Generated from MML.g4 by ANTLR 4.7.2
 
 package net.aeronica.libs.mml.core;
 

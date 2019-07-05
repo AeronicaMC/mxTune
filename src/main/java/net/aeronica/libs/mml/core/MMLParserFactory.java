@@ -16,7 +16,8 @@
  */
 package net.aeronica.libs.mml.core;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
 import java.io.IOException;
@@ -32,8 +33,8 @@ public class MMLParserFactory
         byte[] mmlBuf;
         mmlBuf = mml.getBytes(StandardCharsets.US_ASCII);
         InputStream is = new java.io.ByteArrayInputStream(mmlBuf);
-        ANTLRInputStream input;
-        input = new ANTLRInputStream(is);
+        CharStream input;
+        input = CharStreams.fromStream(is, StandardCharsets.US_ASCII);
         MMLLexer lexer = new MMLLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         return new MMLParser(tokens);
