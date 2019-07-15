@@ -320,6 +320,7 @@ mxtune.gui.guiPlayListManager.label.playlist_selector=Playlists
 mxtune.gui.guiPlayListManager.label.list_day=Day List
 mxtune.gui.guiPlayListManager.label.list_night=Night List
 mxtune.gui.guiPlayListManager.label.playlist_name=Playlist Name
+mxtune.gui.guiPlayListManager.label.playlist_title=Playlist Title
 mxtune.gui.guiPlayListManager.label.status_log=Status Log
 mxtune.gui.guiPlayListManager.button.to_day_list=To Day List
 mxtune.gui.guiPlayListManager.button.to_night_list=To Night List

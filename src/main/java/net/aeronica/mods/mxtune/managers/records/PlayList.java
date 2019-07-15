@@ -25,13 +25,15 @@ import java.util.List;
 
 public class PlayList extends BaseData
 {
-    private static final  String TAG_NAME = "name";
+    private static final String TAG_NAME = "name";
+    private static final String TAG_TITLE = "title";
     private static final String TAG_PLAY_LIST_DAY = "play_list_day";
     private static final String TAG_PLAY_LIST_NIGHT = "play_list_night";
     private static final String TAG_SONG_PREFIX = "song";
     private static final String TAG_SONG_COUNT = "song_count";
 
     private String name;
+    private String title;
     private List<SongProxy> playListDay;
     private List<SongProxy> playListNight;
 
@@ -39,6 +41,7 @@ public class PlayList extends BaseData
     {
         super();
         this.name = "";
+        this.title = "";
         playListDay = new ArrayList<>();
         playListNight = new ArrayList<>();
     }
@@ -46,6 +49,7 @@ public class PlayList extends BaseData
     public PlayList(String name)
     {
         this.name = name.trim();
+        this.title = "";
         playListDay = new ArrayList<>();
         playListNight = new ArrayList<>();
         guid = GUID.stringToSHA2Hash(this.name);
@@ -54,6 +58,7 @@ public class PlayList extends BaseData
     public PlayList(String name, List<SongProxy> playListDay, List<SongProxy> playListNight)
     {
         this.name = name.trim();
+        this.title = "";
         this.playListDay = new ArrayList<>();
         this.playListDay.addAll(playListDay);
         this.playListNight = new ArrayList<>();
@@ -89,6 +94,7 @@ public class PlayList extends BaseData
     {
         super.readFromNBT(compound);
         name = compound.getString(TAG_NAME);
+        title = compound.getString(TAG_TITLE);
 
         NBTTagCompound compoundPlayListDay = compound.getCompoundTag(TAG_PLAY_LIST_DAY);
         int songCount = compoundPlayListDay.getInteger(TAG_SONG_COUNT);
@@ -118,6 +124,7 @@ public class PlayList extends BaseData
     {
         super.writeToNBT(compound);
         compound.setString(TAG_NAME, name);
+        compound.setString(TAG_TITLE, title);
 
         NBTTagCompound compoundPlayListDay = new NBTTagCompound();
         int i = 0;
@@ -159,6 +166,16 @@ public class PlayList extends BaseData
     {
         this.name = name.trim();
         this.guid = GUID.stringToSHA2Hash(this.name);
+    }
+
+    public String getTitle()
+    {
+        return title;
+    }
+
+    public void setTitle(String title)
+    {
+        this.title = title.trim();
     }
 
     public List<SongProxy> getPlayListDay()

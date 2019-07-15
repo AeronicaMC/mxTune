@@ -99,6 +99,10 @@ public class GuiPlaylistManager extends GuiScreen implements Notify
     private GuiTextField textPlayListName;
     private String cachedPlayListName = "";
 
+    private GuiLabelMX labelPlayListTitle;
+    private GuiTextField textPlayListTitle;
+    private String cachedPlayListTitle;
+
     // Logging
     private GuiLabelMX labelLog;
     private GuiScrollingListOf<ITextComponent> guiLogList;
@@ -292,7 +296,8 @@ public class GuiPlaylistManager extends GuiScreen implements Notify
         // Right side
         int playListNameTop = listTop;
 
-        int playListTop = playListNameTop + buttonHeight + PADDING;
+        int playListTitleTop = playListNameTop + buttonHeight + PADDING;
+        int playListTop = playListTitleTop + buttonHeight + PADDING;
         int thirdsHeight = (guiBottom - playListNameTop - (buttonHeight * 3) - (PADDING * 5)) / 3;
         int playListListHeight = Math.max(thirdsHeight, entryPlayListHeight);
         int playListBottom = playListTop + thirdsHeight;
@@ -353,6 +358,13 @@ public class GuiPlaylistManager extends GuiScreen implements Notify
         textPlayListName = new GuiTextField(1, fontRenderer, leftPlayLists + labelPlayListNameWidth, playListNameTop, guiListWidth - labelPlayListNameWidth - 75 - PADDING, buttonHeight);
         buttonToServer = new GuiButtonMX(6, width - 75 - PADDING, playListNameTop, 75, buttonHeight, I18n.format("mxtune.gui.button.send"));
 
+        labelPlayListTitle = new GuiLabelMX(fontRenderer,4, selectButtonLeft, playListTitleTop + PADDING, guiListWidth, singleLineHeight, -1);
+        labelPlayListTitle.setLabelName(I18n.format("mxtune.gui.guiPlayListManager.label.playlist_title"));
+        int labelPlayListTitleWidth = fontRenderer.getStringWidth(labelPlayListTitle.getLabelName()) + PADDING;
+
+        textPlayListTitle = new GuiTextField(1, fontRenderer, leftPlayLists + labelPlayListNameWidth, playListTitleTop, guiListWidth - labelPlayListNameWidth, buttonHeight);
+        textPlayListTitle.setMaxStringLength(80);
+
         labelPlaylistDay = new GuiLabel(fontRenderer,5, leftPlayLists, dayLabelButtonTop + PADDING, guiListWidth, singleLineHeight, 0xFFFFFF);
         labelPlaylistDay.addLine("mxtune.gui.guiPlayListManager.label.list_day");
 
@@ -405,6 +417,7 @@ public class GuiPlaylistManager extends GuiScreen implements Notify
         if (!isStateCached) return;
         textSearch.setText(cachedSearch);
         textPlayListName.setText(cachedPlayListName);
+        textPlayListTitle.setText(cachedPlayListTitle);
         guiLogList.scrollToEnd();
         updateSongCountStatus();
         guiPlayList.resetScroll();
@@ -415,10 +428,13 @@ public class GuiPlaylistManager extends GuiScreen implements Notify
     private void updateState()
     {
         cachedPlayListName = textPlayListName.getText();
-
+        cachedPlayListTitle = textPlayListTitle.getText();
         buttonToServer.enabled = !(textPlayListName.getText().equals("") ||
                                            !globalMatcher(patternPlaylistName, textPlayListName.getText()) ||
                                            (guiDay.isEmpty() && guiNight.isEmpty() || uploading));
+        textPlayListTitle.setEnabled(buttonToServer.enabled);
+        textPlayListTitle.setVisible(buttonToServer.enabled);
+        labelPlayListTitle.setVisible(buttonToServer.enabled);
         cachedSortMode = buttonSortSongs.getSortMode();
 
         buttonPlayStop.displayString = isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play");
@@ -478,11 +494,13 @@ public class GuiPlaylistManager extends GuiScreen implements Notify
         labelSongList.drawLabel(mc, mouseX, mouseY);
         labelSearch.drawLabel(mc, mouseX, mouseY);
         labelPlaylistName.drawLabel(mc, mouseX, mouseY);
+        labelPlayListTitle.drawLabel(mc, mouseX, mouseY);
         labelPlayListList.drawLabel(mc, mouseX, mouseY);
         labelPlaylistDay.drawLabel(mc, mouseX, mouseY);
         labelPlaylistNight.drawLabel(mc, mouseX, mouseY);
         labelLog.drawLabel(mc, mouseX, mouseY);
         textPlayListName.drawTextBox();
+        textPlayListTitle.drawTextBox();
         textSearch.drawTextBox();
 
         guiSongList.drawScreen(mouseX, mouseY, partialTicks);
@@ -574,6 +592,7 @@ public class GuiPlaylistManager extends GuiScreen implements Notify
         if (keyCode != Keyboard.KEY_TAB)
         {
             textPlayListName.textboxKeyTyped(typedChar, keyCode);
+            textPlayListTitle.textboxKeyTyped(typedChar, keyCode);
             textSearch.textboxKeyTyped(typedChar, keyCode);
         }
 
@@ -598,6 +617,7 @@ public class GuiPlaylistManager extends GuiScreen implements Notify
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
         textPlayListName.mouseClicked(mouseX, mouseY, mouseButton);
+        textPlayListTitle.mouseClicked(mouseX, mouseY, mouseButton);
         textSearch.mouseClicked(mouseX, mouseY, mouseButton);
         clearOnMouseLeftClicked(textSearch, mouseX, mouseY, mouseButton);
         super.mouseClicked(mouseX, mouseY, mouseButton);
@@ -658,11 +678,13 @@ public class GuiPlaylistManager extends GuiScreen implements Notify
     {
         // TODO: Sync MXT Files!
 
-        String playListTitle = StringUtils.stripControlCodes(textPlayListName.getText()).trim();
-        if (playListTitle.isEmpty()) return;
+        String playListNameText = StringUtils.stripControlCodes(textPlayListName.getText()).trim();
+        String playListTitleText = StringUtils.stripControlCodes(textPlayListTitle.getText()).trim();
+        if (playListNameText.isEmpty()) return;
         uploading = true;
-        textPlayListName.setText(playListTitle);
+        textPlayListName.setText(playListNameText);
         PlayList playList = new PlayList(textPlayListName.getText(), guiDay.getList(), guiNight.getList());
+        playList.setTitle(playListTitleText);
         updateStatus(TextFormatting.GOLD + I18n.format("mxtune.gui.guiPlayListManager.log.upload_playlist", TextFormatting.RESET + textPlayListName.getText().trim()));
         PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(playList.getGUID(), RecordType.PLAY_LIST, playList));
 
@@ -724,6 +746,7 @@ public class GuiPlaylistManager extends GuiScreen implements Notify
             guiNight.clear();
             guiDay.addAll(SONG_PROXY_ORDERING.sortedCopy(selectedPlayList.getPlayListDay()));
             guiNight.addAll(SONG_PROXY_ORDERING.sortedCopy(selectedPlayList.getPlayListNight()));
+            textPlayListTitle.setText(selectedPlayList.getTitle());
             updateState();
         }
     }

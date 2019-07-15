@@ -35,6 +35,7 @@ import net.aeronica.mods.mxtune.world.caps.chunk.ModChunkPlaylistHelper;
 import net.aeronica.mods.mxtune.world.caps.world.ModWorldPlaylistHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.common.Mod;
@@ -194,7 +195,7 @@ public class ClientPlayManager implements IAudioStatusCallback
 
         }
         updateTimeOfDay();
-        changePlayListMusic(false);
+        changePlayListMusic(false, false);
     }
 
     private static void chunkChange(WeakReference<Chunk> current, WeakReference<Chunk> previous)
@@ -211,10 +212,10 @@ public class ClientPlayManager implements IAudioStatusCallback
             previousPlaylistGUID = prevPlayListGUID;
         }
         if (!currentPlaylistGUID.equals(previousPlaylistGUID))
-            changePlayListMusic(true);
+            changePlayListMusic(true, true);
     }
 
-    private static void changePlayListMusic(boolean chunkChanged)
+    private static void changePlayListMusic(boolean chunkChanged, boolean showTitle)
     {
         if (chunkChanged && currentPlayId != PlayType.INVALID)
         {
@@ -222,6 +223,9 @@ public class ClientPlayManager implements IAudioStatusCallback
             currentPlayId = PlayType.INVALID;
             resetTimer(0);
         }
+
+        if (showTitle)
+            postPlayListTitle(currentPlaylistGUID);
 
         // Normal Delayed Song Change if not chunkChanged
         if (!waiting(chunkChanged) && ClientFileManager.songAvailable(currentPlaylistGUID) && !Reference.NO_MUSIC_GUID.equals(currentPlaylistGUID) && currentPlayId == PlayType.INVALID)
@@ -273,6 +277,14 @@ public class ClientPlayManager implements IAudioStatusCallback
         return false;
     }
 
+    private static void postPlayListTitle(GUID playListGuid)
+    {
+        PlayList playList = ClientFileManager.getPlayList(playListGuid);
+        String title = playList != null ? playList.getTitle() : "";
+        if (!title.isEmpty())
+            mc.player.sendStatusMessage(new TextComponentString(title), true);
+    }
+
     private static void updateBiome()
     {
        // NOP
@@ -288,7 +300,7 @@ public class ClientPlayManager implements IAudioStatusCallback
             if (world.hasCapability(ModWorldPlaylistHelper.MOD_WORLD_DATA, null))
             {
                 currentPlaylistGUID = ModWorldPlaylistHelper.getPlaylistGuid(world);
-                changePlayListMusic(false);
+                changePlayListMusic(false, false);
             }
         }
     }
@@ -300,7 +312,7 @@ public class ClientPlayManager implements IAudioStatusCallback
         if (Reference.EMPTY_GUID.equals(currentPlaylistGUID) && currentPlayId == PlayType.INVALID || (lastDuskDawnTransition != night))
         {
             lastDuskDawnTransition = night;
-            changePlayListMusic(true);
+            changePlayListMusic(true, false);
         }
     }
 
@@ -459,7 +471,7 @@ public class ClientPlayManager implements IAudioStatusCallback
             if (currentPlayId == playId && (status == Status.ERROR || status == Status.DONE))
             {
                 invalidatePlayId();
-                changePlayListMusic(false);
+                changePlayListMusic(false, false);
                 resetTimer();
             }
         });
