@@ -24,7 +24,7 @@ import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
@@ -70,14 +70,14 @@ public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicM
     }
 
     @Override
-    public void process(EntityPlayer player, Side side)
+    public void process(PlayerEntity player, Side side)
     {
         if (side.isClient())
             handleClient(player);
     }
 
     @SideOnly(Side.CLIENT)
-    private void handleClient(EntityPlayer player)
+    private void handleClient(PlayerEntity player)
     {
         if (!midiUnavailableWarn(player) && ClientCSDMonitor.canMXTunesPlay())
         {

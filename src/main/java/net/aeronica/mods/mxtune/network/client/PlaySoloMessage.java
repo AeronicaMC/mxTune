@@ -21,7 +21,7 @@ import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.network.NetworkStringHelper;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -60,13 +60,13 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
     }
 
     @Override
-    public void process(EntityPlayer player, Side side)
+    public void process(PlayerEntity player, Side side)
     {
         if (!midiUnavailableWarn(player))
         {
             /* This is messy, but we want to ensure we return a valid player entity ID */
             Integer otherEntityID = getSoloMemberByPlayID(playID) == null ? player.getEntityId() : getSoloMemberByPlayID(playID);
-            if (playerNotMuted(player, (EntityPlayer) (player.getEntityWorld().getEntityByID(otherEntityID))))
+            if (playerNotMuted(player, (PlayerEntity) (player.getEntityWorld().getEntityByID(otherEntityID))))
             {
                 ModLogger.debug("musicText: " + musicText.substring(0, (musicText.length() >= 25 ? 25 : musicText.length())));
                 ModLogger.debug("playID:    " + playID);

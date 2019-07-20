@@ -8,8 +8,8 @@ import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.network.bidirectional.*;
 import net.aeronica.mods.mxtune.network.client.*;
 import net.aeronica.mods.mxtune.network.server.*;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -142,9 +142,9 @@ public class PacketDispatcher
 
     /**
      * Send this message to the specified player's client-side counterpart. See
-     * {@link SimpleNetworkWrapper#sendTo(IMessage, EntityPlayerMP)}
+     * {@link SimpleNetworkWrapper#sendTo(IMessage, ServerPlayerEntity)}
      */
-    public static final void sendTo(IMessage message, EntityPlayerMP player)
+    public static final void sendTo(IMessage message, ServerPlayerEntity player)
     {
         PacketDispatcher.dispatcher.sendTo(message, player);
     }
@@ -182,7 +182,7 @@ public class PacketDispatcher
      * provided. Shortcut to
      * {@link SimpleNetworkWrapper#sendToAllAround(IMessage, NetworkRegistry.TargetPoint)}
      */
-    public static final void sendToAllAround(IMessage message, EntityPlayer player, double range)
+    public static final void sendToAllAround(IMessage message, PlayerEntity player, double range)
     {
         PacketDispatcher.sendToAllAround(message, player.getEntityWorld().provider.getDimension(), player.posX, player.posY, player.posZ, range);
     }

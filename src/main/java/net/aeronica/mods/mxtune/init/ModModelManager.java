@@ -50,7 +50,7 @@ import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMap;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -116,7 +116,7 @@ public class ModModelManager
     
     public static List<Object> getTESRRenderer() {return tesrRenderer;}
     
-    private <T extends TileEntity> void registerTESR(Class<T> tile, TileEntitySpecialRenderer<T> renderer)
+    private <T extends TileEntity> void registerTESR(Class<T> tile, TileEntityRenderer<T> renderer)
     {
         ClientRegistry.bindTileEntitySpecialRenderer(tile, renderer);
         tesrRenderer.add(renderer);

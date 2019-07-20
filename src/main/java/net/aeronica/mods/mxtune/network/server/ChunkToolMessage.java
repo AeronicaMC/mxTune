@@ -23,7 +23,7 @@ import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.world.caps.chunk.ModChunkPlaylistHelper;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -54,7 +54,7 @@ public class ChunkToolMessage extends AbstractServerMessage<ChunkToolMessage>
     }
 
     @Override
-    public void process(EntityPlayer player, Side side)
+    public void process(PlayerEntity player, Side side)
     {
         if (MusicOptionsUtil.isMxTuneServerUpdateAllowed(player))
         {
@@ -86,7 +86,7 @@ public class ChunkToolMessage extends AbstractServerMessage<ChunkToolMessage>
         }
     }
 
-    private void apply(EntityPlayer player)
+    private void apply(PlayerEntity player)
     {
         int errorCount = 0;
 

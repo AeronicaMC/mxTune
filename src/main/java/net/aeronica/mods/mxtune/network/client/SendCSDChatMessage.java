@@ -20,7 +20,7 @@ import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.ClientStateDataMessage;
 import net.aeronica.mods.mxtune.status.CSDChatStatus;
 import net.aeronica.mods.mxtune.status.ClientStateData;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -47,7 +47,7 @@ public class SendCSDChatMessage extends AbstractClientMessage<SendCSDChatMessage
     }
 
     @Override
-    public void process(EntityPlayer player, Side side)
+    public void process(PlayerEntity player, Side side)
     {
         new CSDChatStatus(player, csd); 
     }

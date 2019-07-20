@@ -19,10 +19,10 @@ package net.aeronica.mods.mxtune.crafting;
 
 import com.google.gson.JsonObject;
 import net.aeronica.mods.mxtune.config.ModConfig;
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.JsonUtils;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper.ShapedPrimer;
 import net.minecraftforge.common.crafting.IRecipeFactory;
@@ -45,7 +45,7 @@ public class DisablableShapedOreRecipeFactory implements IRecipeFactory
         ShapedPrimer primer = new ShapedPrimer();
         primer.width = recipe.getRecipeWidth();
         primer.height = recipe.getRecipeHeight();
-        primer.mirrored = JsonUtils.getBoolean(json, "mirrored", true);
+        primer.mirrored = JSONUtils.getBoolean(json, "mirrored", true);
         primer.input = recipe.getIngredients();
         ResourceLocation group = recipe.getGroup().isEmpty() ? null : new ResourceLocation(recipe.getGroup());
         return new DisablableRecipe(group, recipe.getRecipeOutput(), primer); 
@@ -60,7 +60,7 @@ public class DisablableShapedOreRecipeFactory implements IRecipeFactory
 
         @Override
         @Nonnull
-        public ItemStack getCraftingResult(@Nonnull InventoryCrafting var1)
+        public ItemStack getCraftingResult(@Nonnull CraftingInventory var1)
         {
             return ModConfig.isRecipeEnabled(this.output) ? this.output.copy() : ItemStack.EMPTY;
         }

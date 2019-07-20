@@ -29,11 +29,11 @@ import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.MXTuneException;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.io.IOException;
@@ -45,7 +45,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
     private boolean errorResult = false;
     private boolean fileError = false;
     private RecordType recordType = RecordType.PLAY_LIST;
-    private NBTTagCompound dataCompound = new NBTTagCompound();
+    private CompoundNBT dataCompound = new CompoundNBT();
     private long ddddSigBits;
     private long ccccSigBits;
     private long bbbbSigBits;
@@ -94,7 +94,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
      * @param playId to use for the song or the INVALID id (default if not specified in the client request)
      * @param dataCompound provided data
      */
-    private GetServerDataMessage(GUID guidType, RecordType recordType, int playId, NBTTagCompound dataCompound, boolean errorResult)
+    private GetServerDataMessage(GUID guidType, RecordType recordType, int playId, CompoundNBT dataCompound, boolean errorResult)
     {
         this.recordType = recordType;
         ddddSigBits = guidType.getDdddSignificantBits();
@@ -134,7 +134,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
     }
 
     @Override
-    public void process(EntityPlayer player, Side side)
+    public void process(PlayerEntity player, Side side)
     {
         if (side.isClient())
         {
@@ -170,7 +170,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
      * Retrieve requested data and send it to the client.
      * @param playerIn the client.
      */
-    private void handleServerSide(EntityPlayer playerIn)
+    private void handleServerSide(PlayerEntity playerIn)
     {
         switch(recordType)
         {
@@ -182,13 +182,13 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
                 break;
             default:
         }
-        PacketDispatcher.sendTo(new GetServerDataMessage(dataTypeUuid, recordType, playId, dataCompound, fileError), (EntityPlayerMP) playerIn);
+        PacketDispatcher.sendTo(new GetServerDataMessage(dataTypeUuid, recordType, playId, dataCompound, fileError), (ServerPlayerEntity) playerIn);
     }
 
-    private NBTTagCompound getDataCompoundFromFile(String folder, GUID dataTypeGuid)
+    private CompoundNBT getDataCompoundFromFile(String folder, GUID dataTypeGuid)
     {
         Path path;
-        NBTTagCompound emptyData = new NBTTagCompound();
+        CompoundNBT emptyData = new CompoundNBT();
         Boolean fileExists = FileHelper.fileExists(folder, dataTypeGuid.toString() + FileHelper.EXTENSION_DAT, Side.SERVER);
         if (!fileExists)
         {
@@ -217,10 +217,10 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
      * @param dataTypeGuid The GUID of the resource.
      * @return The Song compound.
      */
-    private NBTTagCompound getDataCompoundFromMXTuneFile(String folder, GUID dataTypeGuid)
+    private CompoundNBT getDataCompoundFromMXTuneFile(String folder, GUID dataTypeGuid)
     {
         Path path;
-        NBTTagCompound emptyData = new NBTTagCompound();
+        CompoundNBT emptyData = new CompoundNBT();
         Boolean fileExists = FileHelper.fileExists(folder, dataTypeGuid.toString() + FileHelper.EXTENSION_MXT, Side.SERVER);
         if (!fileExists)
         {
@@ -236,7 +236,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
             path = FileHelper.getCacheFile(folder, dataTypeGuid.toString() + FileHelper.EXTENSION_MXT, Side.SERVER);
             mxTuneFile = MXTuneFileHelper.getMXTuneFile(path);
             if (mxTuneFile == null)
-                throw new MXTuneException(new TextComponentTranslation("mxtune.error.unexpected_data_error", path.toString()).getUnformattedComponentText());
+                throw new MXTuneException(new TranslationTextComponent("mxtune.error.unexpected_data_error", path.toString()).getUnformattedComponentText());
         } catch (MXTuneException | IOException e)
         {
             ModLogger.error(e);
@@ -246,7 +246,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
         fileError = false;
 
         Song song = MXTuneFileHelper.getSong(mxTuneFile);
-        NBTTagCompound songData = new NBTTagCompound();
+        CompoundNBT songData = new CompoundNBT();
         song.writeToNBT(songData);
         return songData;
     }

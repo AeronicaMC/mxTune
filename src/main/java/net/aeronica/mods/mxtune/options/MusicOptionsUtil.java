@@ -23,8 +23,8 @@ import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.Miscellus;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
@@ -54,127 +54,127 @@ public class MusicOptionsUtil
     
     private MusicOptionsUtil() {}
     
-    public static void setHudOptions(EntityPlayer playerIn, boolean disableHud, int positionHud, float sizeHud)
+    public static void setHudOptions(PlayerEntity playerIn, boolean disableHud, int positionHud, float sizeHud)
     {
         getImpl(playerIn).setHudOptions(disableHud, positionHud, sizeHud);
         sync(playerIn, SYNC_DISPLAY_HUD);
     }
 
-    public static boolean isHudDisabled(EntityPlayer playerIn)
+    public static boolean isHudDisabled(PlayerEntity playerIn)
     {
         return getImpl(playerIn).isHudDisabled();
     }
     
-    public static int getPositionHUD(EntityPlayer playerIn)
+    public static int getPositionHUD(PlayerEntity playerIn)
     {
         return getImpl(playerIn).getPositionHud();
     }
 
-    public static float getSizeHud(EntityPlayer playerIn)
+    public static float getSizeHud(PlayerEntity playerIn)
     {
         return getImpl(playerIn).getSizeHud();
     }
     
-    public static boolean isMuteAll(EntityPlayer playerIn)
+    public static boolean isMuteAll(PlayerEntity playerIn)
     {
         return getImpl(playerIn).getMuteOption() == MusicOptionsUtil.EnumMuteOptions.ALL.getIndex();
     }
 
-    public static void setMuteOption(EntityPlayer playerIn, int muteOptionIn)
+    public static void setMuteOption(PlayerEntity playerIn, int muteOptionIn)
     {
         getImpl(playerIn).setMuteOption(muteOptionIn);
         sync(playerIn, SYNC_MUTE_OPTION);
     }
 
-    private static MusicOptionsUtil.EnumMuteOptions getMuteOptionEnum(EntityPlayer playerIn)
+    private static MusicOptionsUtil.EnumMuteOptions getMuteOptionEnum(PlayerEntity playerIn)
     {
         return MusicOptionsUtil.EnumMuteOptions.byIndex(getImpl(playerIn).getMuteOption());
     }
     
-    public static int getMuteOption(EntityPlayer playerIn)
+    public static int getMuteOption(PlayerEntity playerIn)
     {
         return getImpl(playerIn).getMuteOption();
     }
     
-    public static void setSParams(EntityPlayer playerIn, String sParam1, String sParam2, String sParam3)
+    public static void setSParams(PlayerEntity playerIn, String sParam1, String sParam2, String sParam3)
     {
         getImpl(playerIn).setSParams(sParam1, sParam2, sParam3);
         sync(playerIn, SYNC_S_PARAMS);
     }
     
-    public static String getSParam1(EntityPlayer playerIn)
+    public static String getSParam1(PlayerEntity playerIn)
     {
         return getImpl(playerIn).getSParam1();
     }
 
     @SuppressWarnings("unused")
-    public static String getSParam2(EntityPlayer playerIn)
+    public static String getSParam2(PlayerEntity playerIn)
     {
         return getImpl(playerIn).getSParam2();
     }
 
     @SuppressWarnings("unused")
-    public static String getSParam3(EntityPlayer playerIn)
+    public static String getSParam3(PlayerEntity playerIn)
     {
         return getImpl(playerIn).getSParam3();
     }
     
-    public static void setBlackList(EntityPlayer playerIn, List<ClassifiedPlayer> blackList)
+    public static void setBlackList(PlayerEntity playerIn, List<ClassifiedPlayer> blackList)
     {
         getImpl(playerIn).setBlackList(blackList);
         sync(playerIn, SYNC_BLACK_LIST);
     }
 
-    public static List<ClassifiedPlayer> getBlackList(EntityPlayer playerIn)
+    public static List<ClassifiedPlayer> getBlackList(PlayerEntity playerIn)
     {
         return getImpl(playerIn).getBlackList();
     }
     
-    public static void setWhiteList(EntityPlayer playerIn, List<ClassifiedPlayer> whiteList)
+    public static void setWhiteList(PlayerEntity playerIn, List<ClassifiedPlayer> whiteList)
     {
         getImpl(playerIn).setWhiteList(whiteList);
         sync(playerIn, SYNC_WHITE_LIST);
     }
 
-    public static List<ClassifiedPlayer> getWhiteList(EntityPlayer playerIn)
+    public static List<ClassifiedPlayer> getWhiteList(PlayerEntity playerIn)
     {
         return getImpl(playerIn).getWhiteList();
     }
 
-    public static boolean isSoundRangeInfinityAllowed(EntityPlayer playerIn) { return getImpl(playerIn).isSoundRangeInfinityRangeAllowed(); }
+    public static boolean isSoundRangeInfinityAllowed(PlayerEntity playerIn) { return getImpl(playerIn).isSoundRangeInfinityRangeAllowed(); }
 
-    public static void setSoundRangeInfinityAllowed(EntityPlayer playerIn, boolean isAllowed) { getImpl(playerIn).setSoundRangeInfinityAllowed(isAllowed); }
+    public static void setSoundRangeInfinityAllowed(PlayerEntity playerIn, boolean isAllowed) { getImpl(playerIn).setSoundRangeInfinityAllowed(isAllowed); }
 
-    public static boolean isMxTuneServerUpdateAllowed(EntityPlayer playerIn) { return getImpl(playerIn).isMxTuneServerUpdateAllowed(); }
+    public static boolean isMxTuneServerUpdateAllowed(PlayerEntity playerIn) { return getImpl(playerIn).isMxTuneServerUpdateAllowed(); }
 
-    public static void setMxTuneServerUpdateAllowed(EntityPlayer playerIn, boolean isAllowed)
+    public static void setMxTuneServerUpdateAllowed(PlayerEntity playerIn, boolean isAllowed)
     {
         getImpl(playerIn).setMxTuneServerUpdateAllowed(isAllowed);
         sync(playerIn, SYNC_MUSIC_OP);
     }
 
-    public static void setSelectedPlayListGuid(EntityPlayer playerIn, GUID guidPlayList)
+    public static void setSelectedPlayListGuid(PlayerEntity playerIn, GUID guidPlayList)
     {
         getImpl(playerIn).setSelectedPlayListGuid(guidPlayList);
         sync(playerIn, SYNC_SELECTED_PLAY_LIST_GUID);
     }
 
-    public static GUID getSelectedPlayListGuid(EntityPlayer playerIn) { return getImpl(playerIn).getSelectedPlayListGuid(); }
+    public static GUID getSelectedPlayListGuid(PlayerEntity playerIn) { return getImpl(playerIn).getSelectedPlayListGuid(); }
 
 
-    public static void setCtrlKey(EntityPlayer playerIn, boolean isDown)
+    public static void setCtrlKey(PlayerEntity playerIn, boolean isDown)
     {
         getImpl(playerIn).setCtrlKey(isDown);
         sync(playerIn, SYNC_CTRL_KEY_DOWN);
     }
 
-    public static boolean isCtrlKeyDown(EntityPlayer playerIn)
+    public static boolean isCtrlKeyDown(PlayerEntity playerIn)
     {
         return getImpl(playerIn).isCtrlKeyDown();
     }
 
     @Nullable
-    private static IPlayerMusicOptions getImpl(EntityPlayer player)
+    private static IPlayerMusicOptions getImpl(PlayerEntity player)
     {
         IPlayerMusicOptions bardActionImpl;
         if (player.hasCapability(Objects.requireNonNull(MUSIC_OPTIONS), null))
@@ -184,34 +184,34 @@ public class MusicOptionsUtil
         return bardActionImpl;
     }
 
-    public static void setChunkToolOperation(EntityPlayer playerIn, ChunkToolMessage.Operation operation){
+    public static void setChunkToolOperation(PlayerEntity playerIn, ChunkToolMessage.Operation operation){
         getImpl(playerIn).setChunkToolOperation(operation);
         sync(playerIn, SYNC_CHUNK_OPERATION);
     }
 
-    public static ChunkToolMessage.Operation getChunkToolOperation(EntityPlayer playerIn)
+    public static ChunkToolMessage.Operation getChunkToolOperation(PlayerEntity playerIn)
     {
         return getImpl(playerIn).getChunkToolOperation();
     }
 
-    public static void setChunkStart(EntityPlayer playerIn, @Nullable Chunk chunkStart)
+    public static void setChunkStart(PlayerEntity playerIn, @Nullable Chunk chunkStart)
     {
         getImpl(playerIn).setChunkStart(chunkStart);
     }
 
     @Nullable
-    public static Chunk getChunkStart(EntityPlayer playerIn)
+    public static Chunk getChunkStart(PlayerEntity playerIn)
     {
         return getImpl(playerIn).getChunkStart();
     }
 
-    public static void setChunkEnd(EntityPlayer playerIn, @Nullable Chunk chunkEnd)
+    public static void setChunkEnd(PlayerEntity playerIn, @Nullable Chunk chunkEnd)
     {
         getImpl(playerIn).setChunkEnd(chunkEnd);
     }
 
     @Nullable
-    public static Chunk getChunkEnd(EntityPlayer playerIn)
+    public static Chunk getChunkEnd(PlayerEntity playerIn)
     {
         return getImpl(playerIn).getChunkEnd();
     }
@@ -234,7 +234,7 @@ public class MusicOptionsUtil
      * @param otherPlayer is the other person muted
      * @return true if muted
      */
-    public static boolean playerNotMuted(@Nullable EntityPlayer playerIn, @Nullable EntityPlayer otherPlayer)
+    public static boolean playerNotMuted(@Nullable PlayerEntity playerIn, @Nullable PlayerEntity otherPlayer)
     {
         boolean result = false;
         if (playerIn != null && otherPlayer != null)
@@ -261,7 +261,7 @@ public class MusicOptionsUtil
         return !result;
     }
 
-    private static boolean isPlayerInList(EntityPlayer playerIn, EntityPlayer otherPlayer, List<ClassifiedPlayer> playerList)
+    private static boolean isPlayerInList(PlayerEntity playerIn, PlayerEntity otherPlayer, List<ClassifiedPlayer> playerList)
     {
         boolean inList = false;
         if (!playerIn.equals(otherPlayer))
@@ -324,7 +324,7 @@ public class MusicOptionsUtil
      *
      * @param playerIn synchronize this players music options
      */
-    static void syncAll(EntityPlayer playerIn)
+    static void syncAll(PlayerEntity playerIn)
     {
         sync(playerIn, SYNC_ALL);
     }
@@ -335,11 +335,11 @@ public class MusicOptionsUtil
      *  @param playerIn synchronize this players music options
      * @param propertyID to synchronize
      */
-    public static void sync(EntityPlayer playerIn, int propertyID)
+    public static void sync(PlayerEntity playerIn, int propertyID)
     {
         if (!playerIn.getEntityWorld().isRemote)
         {
-            PacketDispatcher.sendTo(new SyncPlayerMusicOptionsMessage(playerIn.getCapability(Objects.requireNonNull(MUSIC_OPTIONS), null), propertyID), (EntityPlayerMP) playerIn);
+            PacketDispatcher.sendTo(new SyncPlayerMusicOptionsMessage(playerIn.getCapability(Objects.requireNonNull(MUSIC_OPTIONS), null), propertyID), (ServerPlayerEntity) playerIn);
         }
     }
 }

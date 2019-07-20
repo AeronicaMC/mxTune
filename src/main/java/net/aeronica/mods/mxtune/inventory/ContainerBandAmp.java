@@ -18,13 +18,13 @@ package net.aeronica.mods.mxtune.inventory;
 
 import net.aeronica.mods.mxtune.blocks.TileBandAmp;
 import net.aeronica.mods.mxtune.items.ItemInstrument;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.ClickType;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.ClickType;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -40,7 +40,7 @@ public class ContainerBandAmp extends Container
 {
     private TileBandAmp tileBandAmp;
 
-    public ContainerBandAmp(InventoryPlayer playerInv, World worldIn, int x, int y, int z) {
+    public ContainerBandAmp(PlayerInventory playerInv, World worldIn, int x, int y, int z) {
         this.tileBandAmp = (TileBandAmp) worldIn.getTileEntity(new BlockPos(x, y, z));
 
         IItemHandler inventory = Objects.requireNonNull(tileBandAmp).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
@@ -70,7 +70,7 @@ public class ContainerBandAmp extends Container
 
     @Nonnull
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
+    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index)
     {
 
         ItemStack itemStackCopy = ItemStack.EMPTY;
@@ -110,14 +110,14 @@ public class ContainerBandAmp extends Container
     }
 
     @Override
-    public boolean canInteractWith(@Nonnull EntityPlayer playerIn)
+    public boolean canInteractWith(@Nonnull PlayerEntity playerIn)
     {
         return this.tileBandAmp.isUsableByPlayer(playerIn);
     }
 
     @Nonnull
     @Override
-    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player)
+    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player)
     {
         // *** only allow owners to manage instruments ***
         ItemStack stack = ItemStack.EMPTY;
@@ -141,10 +141,10 @@ public class ContainerBandAmp extends Container
         this.tileBandAmp.setDuration(dur);
     }
 
-    private static int getDuration(List<Slot> inventory)
+    private static int getDuration(List<net.minecraft.inventory.container.Slot> inventory)
     {
         int duration = 0;
-        for (Slot slot: inventory)
+        for (net.minecraft.inventory.container.Slot slot: inventory)
         {
             ItemStack stackInSlot = slot.getStack();
             if((slot instanceof SlotBandAmp) && (stackInSlot.getItem() instanceof ItemInstrument))
@@ -159,7 +159,7 @@ public class ContainerBandAmp extends Container
         ItemStack sheetMusic = getSheetMusic(itemStack);
         if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
         {
-            NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
+            CompoundNBT contents = (CompoundNBT) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
             if (contents.hasKey(KEY_MML))
             {
                 int durationSheet = contents.getInteger(KEY_DURATION);

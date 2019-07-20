@@ -18,7 +18,7 @@
 package net.aeronica.mods.mxtune.util;
 
 import net.aeronica.mods.mxtune.Reference;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -125,6 +125,6 @@ public class CallBackManager
         callbacks.remove(uuid);
         notified.remove(uuid);
         tasks.remove(uuid);
-        callBack.onFailure(new TextComponentTranslation("mxtune.error.network_timeout", timeout));
+        callBack.onFailure(new TranslationTextComponent("mxtune.error.network_timeout", timeout));
     }
 }

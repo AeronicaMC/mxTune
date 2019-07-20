@@ -40,8 +40,8 @@ package net.aeronica.mods.mxtune.init;
 
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.items.*;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -58,7 +58,7 @@ public class ModItems
     public static final ItemMusicPaper ITEM_MUSIC_PAPER = registerItem(new ItemMusicPaper(), "music_paper");
     public static final ItemSheetMusic ITEM_SHEET_MUSIC = registerItem(new ItemSheetMusic(), "sheet_music");
     public static final ItemPiano ITEM_SPINET_PIANO = registerItem(new ItemPiano(), "spinet_piano");
-    public static final ItemBlock ITEM_BAND_AMP = (ItemBlock) registerItem((new ItemBlock(ModBlocks.BAND_AMP).setCreativeTab(MXTune.TAB_MUSIC)), "band_amp");
+    public static final BlockItem ITEM_BAND_AMP = (BlockItem) registerItem((new BlockItem(ModBlocks.BAND_AMP).setCreativeTab(MXTune.TAB_MUSIC)), "band_amp");
     public static final Item ITEM_PLACE_HOLDER = registerItem(new Item(), "place_holder");
     public static final ItemStaffOfMusic ITEM_STAFF_OF_MUSIC = registerItem(new ItemStaffOfMusic(), "staff_of_music");
     public static final ItemGuiTest ITEM_GUI_TEST = registerItem(new ItemGuiTest(), "gui_test");
@@ -111,8 +111,8 @@ public class ModItems
     private static <T extends Item> T registerItem(T item)
     {
         String simpleName = item.getClass().getSimpleName();
-        if (item instanceof ItemBlock) {
-            simpleName = ((ItemBlock) item).getBlock().getClass().getSimpleName();
+        if (item instanceof BlockItem) {
+            simpleName = ((BlockItem) item).getBlock().getClass().getSimpleName();
         }
         return registerItem(item, simpleName);
     }

@@ -17,7 +17,7 @@
 
 package net.aeronica.mods.mxtune.mxt;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 import java.io.Serializable;
 
@@ -37,14 +37,14 @@ public class MXTuneStaff implements Serializable
         this.mml = mml != null ? mml : "";
     }
 
-    public MXTuneStaff(int i, NBTTagCompound compound)
+    public MXTuneStaff(int i, CompoundNBT compound)
     {
         staff = i;
         mml = compound.getString(TAG_MML);
         meta = compound.getString(TAG_META);
     }
 
-    public void writeToNBT(NBTTagCompound compound)
+    public void writeToNBT(CompoundNBT compound)
     {
         compound.setString(TAG_MML, mml);
         compound.setString(TAG_META, meta);

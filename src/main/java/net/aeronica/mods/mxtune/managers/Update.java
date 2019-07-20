@@ -25,7 +25,7 @@ import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.mxt.MXTuneFile;
 import net.aeronica.mods.mxtune.mxt.MXTunePart;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Tuple;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -194,7 +194,7 @@ public final class Update
             error = false;
             // Create MXTuneFile from Song
             MXTuneFile mxTuneFile = new MXTuneFile();
-            NBTTagCompound songCompound = FileHelper.getCompoundFromFile(songFile);
+            CompoundNBT songCompound = FileHelper.getCompoundFromFile(songFile);
             Song song = new Song(songCompound);
             String mxtFileName = FileHelper.removeExtension(song.getFileName()) + FileHelper.EXTENSION_MXT;
             mxTuneFile.setTitle(song.getTitle());
@@ -207,7 +207,7 @@ public final class Update
             }
 
             // Write <songID>.mxt
-            NBTTagCompound compoundMxt = new NBTTagCompound();
+            CompoundNBT compoundMxt = new CompoundNBT();
             mxTuneFile.writeToNBT(compoundMxt);
             try
             {

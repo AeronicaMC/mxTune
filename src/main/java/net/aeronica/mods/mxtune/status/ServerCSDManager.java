@@ -20,8 +20,8 @@ import net.aeronica.mods.mxtune.managers.ServerFileManager;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.ClientStateDataMessage;
 import net.aeronica.mods.mxtune.network.client.SendCSDChatMessage;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,10 +47,10 @@ public class ServerCSDManager
      * Also sends the unique serverID to the client</p>
      * @param playerIn to be queried
      */
-    public static void queryClient(EntityPlayer playerIn)
+    public static void queryClient(PlayerEntity playerIn)
     {
         ClientStateDataMessage message = new ClientStateDataMessage(ServerFileManager.getServerID());
-        PacketDispatcher.sendTo(message, (EntityPlayerMP) playerIn);
+        PacketDispatcher.sendTo(message, (ServerPlayerEntity) playerIn);
     }
     
     /**
@@ -58,7 +58,7 @@ public class ServerCSDManager
      * @param playerIn the client
      * @param csd clint state data from client
      */
-    public static void updateState(EntityPlayer playerIn, ClientStateData csd)
+    public static void updateState(PlayerEntity playerIn, ClientStateData csd)
     {
         Integer playerID = playerIn.getEntityId();
         if(clientState.containsKey(playerID))
@@ -88,7 +88,7 @@ public class ServerCSDManager
      * @param playerIn can this client play?
      * @return A failure of a single test fails all.
      */
-    public static boolean canMXTunesPlay(EntityPlayer playerIn)
+    public static boolean canMXTunesPlay(PlayerEntity playerIn)
     {
         return canMXTunesPlay(playerIn.getEntityId());
     }
@@ -97,13 +97,13 @@ public class ServerCSDManager
      * <p>Sends the server side version of ClientStateData to the client to be displayed in chat.</p>
      * @param playerIn to be informed
      */
-    public static void sendErrorViaChat(EntityPlayer playerIn)
+    public static void sendErrorViaChat(PlayerEntity playerIn)
     {
         Integer playerID = playerIn.getEntityId();
         if (clientState.containsKey(playerID))
         {
             SendCSDChatMessage message =  new SendCSDChatMessage(clientState.get(playerID));
-            PacketDispatcher.sendTo(message, (EntityPlayerMP) playerIn);
+            PacketDispatcher.sendTo(message, (ServerPlayerEntity) playerIn);
         }
     }
 }

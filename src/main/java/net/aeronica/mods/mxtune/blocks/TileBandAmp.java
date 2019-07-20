@@ -24,15 +24,15 @@ import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.aeronica.mods.mxtune.world.IModLockableContainer;
 import net.aeronica.mods.mxtune.world.OwnerUUID;
 import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.LockCode;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -68,7 +68,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
 
     public TileBandAmp() { /* NOP */ }
 
-    public TileBandAmp(EnumFacing facing)
+    public TileBandAmp(Direction facing)
     {
         this.inventory =  new InstrumentStackHandler(MAX_SLOTS);
         this.facing = facing;
@@ -97,7 +97,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     private boolean isPlaying() { return (this.playID != null) && (this.playID > 0); }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag)
+    public void readFromNBT(CompoundNBT tag)
     {
         super.readFromNBT(tag);
         inventory = new InstrumentStackHandler(MAX_SLOTS);
@@ -119,7 +119,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag)
+    public CompoundNBT writeToNBT(CompoundNBT tag)
     {
         tag.merge(inventory.serializeNBT());
         tag.setBoolean(KEY_POWERED, previousInputPowerState);
@@ -184,8 +184,8 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     {
         Vec3i vec3i = pos.subtract(fromPos);
         ModLogger.debug("TileBandAmp: Powered from %s's %s face",
-                       blockIn.getBlockState().getBlock().getLocalizedName(),
-                       EnumFacing.getFacingFromVector(vec3i.getX(), vec3i.getY(), vec3i.getZ()));
+                        blockIn.getBlockState().getBlock().getLocalizedName(),
+                        Direction.getFacingFromVector(vec3i.getX(), vec3i.getY(), vec3i.getZ()));
     }
 
     /**
@@ -316,13 +316,13 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     }
 
     @Override
-    public boolean hasCapability(Capability<?> cap, @Nullable EnumFacing side)
+    public boolean hasCapability(Capability<?> cap, @Nullable Direction side)
     {
         return (isSidedInventoryAccessible(side) && (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)) || super.hasCapability(cap, side);
     }
 
     @Override
-    public <T> T getCapability(Capability<T> cap, @Nullable EnumFacing side)
+    public <T> T getCapability(Capability<T> cap, @Nullable Direction side)
     {
         if (isSidedInventoryAccessible(side) && (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY))
             return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(inventory);
@@ -339,7 +339,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
      * @param side of the inventory to be evaluated
      * @return result
      */
-    private boolean isSidedInventoryAccessible(@Nullable EnumFacing side)
+    private boolean isSidedInventoryAccessible(@Nullable Direction side)
     {
         EnumRelativeSide enumRelativeSide = EnumRelativeSide.getRelativeSide(side, getFacing());
         return ((((enumRelativeSide == EnumRelativeSide.TOP) && !isPlaying()) || ((enumRelativeSide == EnumRelativeSide.BOTTOM) && isPlaying())) && !isLocked());
@@ -374,7 +374,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     }
 
     @Override
-    public boolean isOwner(EntityPlayer entityPlayer)
+    public boolean isOwner(PlayerEntity entityPlayer)
     {
         return ownerUUID.getUUID().equals(entityPlayer.getPersistentID());
     }
@@ -412,14 +412,14 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     @Override
     public ITextComponent getDisplayName()
     {
-        return this.hasCustomName() ? new TextComponentString(this.getName()) : new TextComponentTranslation(this.getName());
+        return this.hasCustomName() ? new StringTextComponent(this.getName()) : new TranslationTextComponent(this.getName());
     }
 
     /**
      * @param player to be evaluated
      * @return true only for the owner of the TE
      */
-    public boolean isUsableByPlayer(EntityPlayer player)
+    public boolean isUsableByPlayer(PlayerEntity player)
     {
         if (this.world.getTileEntity(this.pos) != this)
         {

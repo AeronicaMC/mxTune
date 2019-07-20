@@ -17,12 +17,12 @@
 
 package net.aeronica.mods.mxtune.sound;
 
-import net.minecraft.client.audio.MovingSound;
 import net.minecraft.client.audio.SoundEventAccessor;
 import net.minecraft.client.audio.SoundHandler;
+import net.minecraft.client.audio.TickableSound;
 import net.minecraft.util.SoundCategory;
 
-public abstract class MxSound extends MovingSound
+public abstract class MxSound extends TickableSound
 {
     protected Integer playID;
     private SoundEventAccessor soundEventAccessor;

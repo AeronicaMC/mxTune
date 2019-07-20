@@ -42,7 +42,7 @@ package net.aeronica.mods.mxtune.entity;
 
 import net.aeronica.mods.mxtune.managers.PlayManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -159,10 +159,10 @@ public class EntitySittableBlock extends Entity
     }
 
     @Override
-    public void readEntityFromNBT(NBTTagCompound nbttagcompound) { /* NOP */ }
+    public void readEntityFromNBT(CompoundNBT nbttagcompound) { /* NOP */ }
 
     @Override
-    public void writeEntityToNBT(NBTTagCompound nbttagcompound) { /* NOP */ }
+    public void writeEntityToNBT(CompoundNBT nbttagcompound) { /* NOP */ }
 
     @Override
     public boolean shouldRiderSit() {return this.dataManager.get(SHOULD_SIT);}

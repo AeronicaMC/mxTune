@@ -18,15 +18,15 @@ package net.aeronica.mods.mxtune.status;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 public class CSDChatStatus
 {
     private ClientStateData csd;
-    private EntityPlayer playerIn;
-    public CSDChatStatus(EntityPlayer playerIn, ClientStateData csd)
+    private PlayerEntity playerIn;
+    public CSDChatStatus(PlayerEntity playerIn, ClientStateData csd)
     {
         this.csd = csd;
         this.playerIn = playerIn;
@@ -36,10 +36,10 @@ public class CSDChatStatus
     private void process()
     {
         if(!csd.isMidiAvailable())
-            playerIn.sendMessage(new TextComponentString("[" + Reference.MOD_NAME + "] " + TextFormatting.RED +I18n.format("mxtune.chat.msu.midiNotAvailable")));
+            playerIn.sendMessage(new StringTextComponent("[" + Reference.MOD_NAME + "] " + TextFormatting.RED +I18n.format("mxtune.chat.msu.midiNotAvailable")));
         if(!csd.isMasterVolumeOn())
-            playerIn.sendMessage(new TextComponentString("[" + Reference.MOD_NAME + "] " + TextFormatting.YELLOW +I18n.format("mxtune.chat.musicAndSound.masterVolumeOff")));
+            playerIn.sendMessage(new StringTextComponent("[" + Reference.MOD_NAME + "] " + TextFormatting.YELLOW +I18n.format("mxtune.chat.musicAndSound.masterVolumeOff")));
         if(!csd.isMxtuneVolumeOn())
-            playerIn.sendMessage(new TextComponentString("[" + Reference.MOD_NAME + "] " + TextFormatting.YELLOW +I18n.format("mxtune.chat.musicAndSound.recordVolumeOff")));
+            playerIn.sendMessage(new StringTextComponent("[" + Reference.MOD_NAME + "] " + TextFormatting.YELLOW +I18n.format("mxtune.chat.musicAndSound.recordVolumeOff")));
     }
 }

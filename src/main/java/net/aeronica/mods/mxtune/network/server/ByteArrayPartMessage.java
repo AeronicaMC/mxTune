@@ -19,7 +19,7 @@ package net.aeronica.mods.mxtune.network.server;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.network.MultiPacketSerializedObjectManager;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -66,7 +66,7 @@ public class ByteArrayPartMessage extends AbstractMessage.AbstractServerMessage<
     }
 
     @Override
-    public void process(EntityPlayer player, Side side)
+    public void process(PlayerEntity player, Side side)
     {
         MultiPacketSerializedObjectManager.addPacket(new SerializedObjectPacket(serialObjectId, packetId, bytes));
     }

@@ -25,7 +25,7 @@ import net.aeronica.mods.mxtune.status.ClientStateData;
 import net.aeronica.mods.mxtune.status.ServerCSDManager;
 import net.aeronica.mods.mxtune.util.CallBackManager;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -67,7 +67,7 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
     }
 
     @Override
-    public void process(EntityPlayer player, Side side)
+    public void process(PlayerEntity player, Side side)
     {
         if (side.isClient())
         {
@@ -78,7 +78,7 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
         }
     }
 
-    private void handleClientSide(EntityPlayer playerIn)
+    private void handleClientSide(PlayerEntity playerIn)
     {
         ClientCSDMonitor.collectAndSend();
         MIDISystemUtil.onPlayerLoggedInModStatus(playerIn);
@@ -86,7 +86,7 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
         PacketDispatcher.sendToServer(new GetBaseDataListsMessage(CallBackManager.register(ClientFileManager.INSTANCE), RecordType.PLAY_LIST));
     }
 
-    private void handleServerSide(EntityPlayer playerIn)
+    private void handleServerSide(PlayerEntity playerIn)
     {
         ServerCSDManager.updateState(playerIn, csd);
     }

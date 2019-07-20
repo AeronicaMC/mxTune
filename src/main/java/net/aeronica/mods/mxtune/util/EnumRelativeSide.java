@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.util;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 
 import javax.annotation.Nullable;
 
@@ -65,15 +65,15 @@ public enum EnumRelativeSide
      * @param facing horizontal EnumFacing property facing of the block
      * @return BACK, RIGHT, FRONT, LEFT, TOP, BOTTOM or ERROR if side and/or facing are null
      */
-    public static EnumRelativeSide getRelativeSide(@Nullable EnumFacing side, @Nullable EnumFacing facing)
+    public static EnumRelativeSide getRelativeSide(@Nullable Direction side, @Nullable Direction facing)
     {
         EnumRelativeSide enumRelativeSide;
 
         if (side == null || facing == null)
             enumRelativeSide = ERROR;
-        else if (side == EnumFacing.UP)
+        else if (side == Direction.UP)
             enumRelativeSide = TOP;
-        else if (side == EnumFacing.DOWN)
+        else if (side == Direction.DOWN)
             enumRelativeSide = BOTTOM;
         else
         {

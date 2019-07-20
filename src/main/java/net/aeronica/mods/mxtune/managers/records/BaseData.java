@@ -21,7 +21,7 @@ import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.NBTHelper;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -36,12 +36,12 @@ public abstract class BaseData implements Serializable, Comparable<GUID>
         guid = Reference.EMPTY_GUID;
     }
 
-    public void readFromNBT(NBTTagCompound compound)
+    public void readFromNBT(CompoundNBT compound)
     {
         guid = NBTHelper.getGuidFromCompound(compound);
     }
 
-    public void writeToNBT(NBTTagCompound compound)
+    public void writeToNBT(CompoundNBT compound)
     {
         NBTHelper.setGuidToCompound(compound, guid);
     }

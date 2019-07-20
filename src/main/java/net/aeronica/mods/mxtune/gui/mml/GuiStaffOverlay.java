@@ -30,17 +30,17 @@ import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.world.caps.chunk.ModChunkPlaylistHelper;
 import net.aeronica.mods.mxtune.world.caps.world.ModWorldPlaylistHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.debug.ChunkBorderDebugRenderer;
 import net.minecraft.client.renderer.debug.DebugRenderer;
-import net.minecraft.client.renderer.debug.DebugRendererChunkBorder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -57,7 +57,7 @@ import javax.annotation.Nullable;
 import static net.aeronica.mods.mxtune.gui.hud.GuiJamOverlay.HOT_BAR_CLEARANCE;
 import static net.aeronica.mods.mxtune.network.server.ChunkToolMessage.Operation;
 
-public class GuiStaffOverlay extends Gui
+public class GuiStaffOverlay extends AbstractGui
 {
     private Minecraft mc;
     private FontRenderer fontRenderer;
@@ -76,7 +76,7 @@ public class GuiStaffOverlay extends Gui
     {
         this.mc = Minecraft.getMinecraft();
         this.fontRenderer = this.mc.fontRenderer;
-        this.chunkBorder = new DebugRendererChunkBorder(mc);
+        this.chunkBorder = new ChunkBorderDebugRenderer(mc);
     }
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
@@ -88,7 +88,7 @@ public class GuiStaffOverlay extends Gui
         if (event.isCancelable() || (elementType != RenderGameOverlayEvent.ElementType.EXPERIENCE && elementType != RenderGameOverlayEvent.ElementType.TEXT))
             return;
 
-        EntityPlayerSP playerSP = this.mc.player;
+        ClientPlayerEntity playerSP = this.mc.player;
         Item heldItem = playerSP.getHeldItemMainhand().getItem();
         int width = event.getResolution().getScaledWidth();
         int height = event.getResolution().getScaledHeight() - HOT_BAR_CLEARANCE;
@@ -289,7 +289,7 @@ public class GuiStaffOverlay extends Gui
 
     private void render(float partialTicks, long finishTimeNano)
     {
-        EntityPlayer entityplayer = this.mc.player;
+        PlayerEntity entityplayer = this.mc.player;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         double d0 = entityplayer.lastTickPosX + (entityplayer.posX - entityplayer.lastTickPosX) * (double)partialTicks;

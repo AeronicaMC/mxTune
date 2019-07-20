@@ -22,10 +22,10 @@ import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.init.ModModelManager;
 import net.aeronica.mods.mxtune.render.PlacardRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
@@ -49,10 +49,10 @@ public class ClientEventHandler
 
     // Render Placards
     @SubscribeEvent
-    public static void onRenderPlayerEvent(RenderLivingEvent.Specials.Post<EntityLivingBase> event)
+    public static void onRenderPlayerEvent(RenderLivingEvent.Specials.Post<LivingEntity> event)
     {
         if (
-                (event.getEntity() instanceof EntityPlayer) &&
+                (event.getEntity() instanceof PlayerEntity) &&
                         !event.getEntity().isInvisible() &&
                         !mc.gameSettings.showDebugInfo &&
                         !mc.gameSettings.hideGUI &&
@@ -84,7 +84,7 @@ public class ClientEventHandler
     @SubscribeEvent
     public static void onEvent(EntityJoinWorldEvent event)
     {
-        if ((event.getEntity() instanceof EntityPlayerSP))
+        if ((event.getEntity() instanceof ClientPlayerEntity))
         {
             if (ModConfig.ConfigClient.windowTitle.showPlayerName)
                 Display.setTitle(String.format("Minecraft 1.12.2 %s", event.getEntity().getName()));

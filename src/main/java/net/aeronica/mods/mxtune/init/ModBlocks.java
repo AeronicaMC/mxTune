@@ -44,8 +44,8 @@ import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.blocks.TileBandAmp;
 import net.aeronica.mods.mxtune.blocks.TilePiano;
 import net.minecraft.block.Block;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
@@ -89,18 +89,18 @@ public class ModBlocks
         }
 
         /**
-         * Register this mod's {@link ItemBlock}s.
+         * Register this mod's {@link BlockItem}s.
          *
          * @param event The event
          */
         @SubscribeEvent
         public static void registerItemBlocks(RegistryEvent.Register<Item> event) {
-            final ItemBlock[] items = {
+            final BlockItem[] items = {
             };
 
             final IForgeRegistry<Item> registry = event.getRegistry();
 
-            for (final ItemBlock item : items) {
+            for (final BlockItem item : items) {
                 registry.register(item.setRegistryName(item.getBlock().getRegistryName()));
                 ITEM_BLOCKS.add(item);
             }

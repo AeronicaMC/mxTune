@@ -17,7 +17,7 @@
 
 package net.aeronica.mods.mxtune.managers.records;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 /**
  * A no MML version of the Song data class for use on the client to restrict memory usage.
@@ -41,18 +41,18 @@ public class SongProxy extends BaseData
 
     public SongProxy(Song song)
     {
-        NBTTagCompound compound = new NBTTagCompound();
+        CompoundNBT compound = new CompoundNBT();
         song.writeToNBT(compound);
         this.readFromNBT(compound);
     }
 
-    public SongProxy(NBTTagCompound compound)
+    public SongProxy(CompoundNBT compound)
     {
         this.readFromNBT(compound);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound compound)
+    public void readFromNBT(CompoundNBT compound)
     {
         super.readFromNBT(compound);
         title = compound.getString(TAG_TITLE);
@@ -60,7 +60,7 @@ public class SongProxy extends BaseData
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound compound)
+    public void writeToNBT(CompoundNBT compound)
     {
         super.writeToNBT(compound);
         compound.setString(TAG_TITLE, title);

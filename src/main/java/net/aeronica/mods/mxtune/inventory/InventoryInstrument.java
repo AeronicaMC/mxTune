@@ -17,12 +17,12 @@
 package net.aeronica.mods.mxtune.inventory;
 
 import net.aeronica.mods.mxtune.util.Miscellus;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 
@@ -53,7 +53,7 @@ public class InventoryInstrument implements IInventory
 		// Create a new NBT Tag Compound if one doesn't already exist, or you will crash
 		if (!this.stack.hasTagCompound())
 		{
-			this.stack.setTagCompound(new NBTTagCompound());
+			this.stack.setTagCompound(new CompoundNBT());
 		}
 
 		// Read the inventory contents from NBT
@@ -127,14 +127,14 @@ public class InventoryInstrument implements IInventory
 	/**
 	 * A custom method to read our inventory from an ItemStack's NBT compound
 	 */
-    private void readFromNBT(NBTTagCompound compound)
+    private void readFromNBT(CompoundNBT compound)
     {
 		// Gets the custom taglist we wrote to this compound, if any
-		NBTTagList items = compound.getTagList(ITEM_INVENTORY, 10);
+		ListNBT items = compound.getTagList(ITEM_INVENTORY, 10);
 
 		for (int i = 0; i < items.tagCount(); ++i)
 		{
-			NBTTagCompound item = items.getCompoundTagAt(i);
+			CompoundNBT item = items.getCompoundTagAt(i);
 			int slot = item.getInteger("Slot");
 
 			// Just double-checking that the saved slot index is within our inventory array bounds
@@ -147,17 +147,17 @@ public class InventoryInstrument implements IInventory
 	/**
 	 * A custom method to write our inventory to an ItemStack's NBT compound
 	 */
-    private void writeToNBT(NBTTagCompound compound)
+    private void writeToNBT(CompoundNBT compound)
     {
 		// Create a new NBT Tag List to store ItemStacks as NBT Tags
-		NBTTagList items = new NBTTagList();
+		ListNBT items = new ListNBT();
 
 		for (int i = 0; i < getSizeInventory(); ++i)
 		{
 			// Only write stacks that contain items
 			if (!getStackInSlot(i).isEmpty()) {
 				// Make a new NBT Tag Compound to write the ItemStack and slot index to
-				NBTTagCompound item = new NBTTagCompound();
+				CompoundNBT item = new CompoundNBT();
 				item.setInteger("Slot", i);
 				// Writes the ItemStack in slot(i) to the Tag Compound we just made
 				getStackInSlot(i).writeToNBT(item);
@@ -183,10 +183,10 @@ public class InventoryInstrument implements IInventory
 	public ItemStack removeStackFromSlot(int index) { return decrStackSize(index, stack.getCount()); }
 
 	@Override
-	public void openInventory(EntityPlayer player) { /* NOP */ }
+	public void openInventory(PlayerEntity player) { /* NOP */ }
 
 	@Override
-	public void closeInventory(EntityPlayer player) { /* NOP */ }
+	public void closeInventory(PlayerEntity player) { /* NOP */ }
 
 	@Override
 	public int getField(int id)  { return 0; }
@@ -204,5 +204,5 @@ public class InventoryInstrument implements IInventory
     public boolean isEmpty() { return false; }
 
     @Override
-    public boolean isUsableByPlayer(EntityPlayer player)  {return false; }
+    public boolean isUsableByPlayer(PlayerEntity player)  {return false; }
 }

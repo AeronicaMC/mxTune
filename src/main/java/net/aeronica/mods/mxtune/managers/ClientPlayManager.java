@@ -35,7 +35,7 @@ import net.aeronica.mods.mxtune.world.caps.chunk.ModChunkPlaylistHelper;
 import net.aeronica.mods.mxtune.world.caps.world.ModWorldPlaylistHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.common.Mod;
@@ -282,7 +282,7 @@ public class ClientPlayManager implements IAudioStatusCallback
         PlayList playList = ClientFileManager.getPlayList(playListGuid);
         String title = playList != null ? playList.getTitle() : "";
         if (!title.isEmpty())
-            mc.player.sendStatusMessage(new TextComponentString(title), true);
+            mc.player.sendStatusMessage(new StringTextComponent(title), true);
     }
 
     private static void updateBiome()

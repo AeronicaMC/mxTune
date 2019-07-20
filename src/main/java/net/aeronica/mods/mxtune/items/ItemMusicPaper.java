@@ -20,12 +20,12 @@ import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.gui.GuiGuid;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
@@ -41,14 +41,14 @@ public class ItemMusicPaper extends Item
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn)
     {
         if (worldIn.isRemote)
         {
             playerIn.openGui(MXTune.instance, GuiGuid.GUI_MUSIC_PAPER_PARSE, worldIn, (int) playerIn.posX, (int) playerIn.posY, (int) playerIn.posZ);
         }
         playerIn.setActiveHand(handIn);
-        return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
+        return new ActionResult<>(ActionResultType.SUCCESS, playerIn.getHeldItem(handIn));
     }
 
     @Override

@@ -20,7 +20,7 @@ package net.aeronica.mods.mxtune.mxt;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 import javax.annotation.Nullable;
 import java.nio.file.Path;
@@ -36,7 +36,7 @@ public class MXTuneFileHelper
         MXTuneFile mxTuneFile = null;
         if (path != null)
         {
-            NBTTagCompound compound = FileHelper.getCompoundFromFile(path);
+            CompoundNBT compound = FileHelper.getCompoundFromFile(path);
             if (compound != null)
             {
                 mxTuneFile = MXTuneFile.build(compound);
@@ -75,7 +75,7 @@ public class MXTuneFileHelper
 
     public static SongProxy getSongProxy(Song song)
     {
-        NBTTagCompound compound = new NBTTagCompound();
+        CompoundNBT compound = new CompoundNBT();
         song.writeToNBT(compound);
         return new SongProxy(compound);
     }

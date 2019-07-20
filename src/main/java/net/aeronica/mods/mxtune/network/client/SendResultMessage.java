@@ -19,10 +19,10 @@ package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.io.IOException;
@@ -30,7 +30,7 @@ import java.io.IOException;
 public class SendResultMessage extends AbstractMessage.AbstractClientMessage<SendResultMessage>
 {
     private boolean errorResult = false;
-    private ITextComponent component = new TextComponentTranslation("mxtune.no_error", "");
+    private ITextComponent component = new TranslationTextComponent("mxtune.no_error", "");
 
     @SuppressWarnings("unused")
     public SendResultMessage() { /* Required by the PacketDispatcher */ }
@@ -56,7 +56,7 @@ public class SendResultMessage extends AbstractMessage.AbstractClientMessage<Sen
     }
 
     @Override
-    public void process(EntityPlayer player, Side side)
+    public void process(PlayerEntity player, Side side)
     {
         ModLogger.debug("Error: %s, error %s", component.getFormattedText(), errorResult);
     }

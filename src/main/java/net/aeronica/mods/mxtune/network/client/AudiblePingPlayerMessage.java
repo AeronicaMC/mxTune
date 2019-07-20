@@ -17,7 +17,7 @@
 package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -47,7 +47,7 @@ public class AudiblePingPlayerMessage extends AbstractClientMessage<AudiblePingP
     }
 
     @Override
-    public void process(EntityPlayer player, Side side)
+    public void process(PlayerEntity player, Side side)
     {
         player.playSound(soundEvent, 1F, 1F);
     }

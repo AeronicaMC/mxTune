@@ -17,7 +17,7 @@
 
 package net.aeronica.mods.mxtune.gui.util;
 
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -36,13 +36,13 @@ public abstract class GuiScrollingMultiListOf<E> extends GuiScrollingListOf<E>
 {
     protected SortedSet<Integer> selectedRowIndexes = new TreeSet<>();
 
-    public <T extends GuiScreen> GuiScrollingMultiListOf(T gui, int entryHeight, int width, int height, int top, int bottom, int left)
+    public <T extends Screen> GuiScrollingMultiListOf(T gui, int entryHeight, int width, int height, int top, int bottom, int left)
     {
         super(gui, entryHeight, width, height, top, bottom, left);
         setHighlightSelected(false);
     }
 
-    public <T extends GuiScreen> GuiScrollingMultiListOf(T gui)
+    public <T extends Screen> GuiScrollingMultiListOf(T gui)
     {
         super(gui);
         this.gui = gui;

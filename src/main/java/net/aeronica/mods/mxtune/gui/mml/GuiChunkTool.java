@@ -32,11 +32,11 @@ import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.CallBackManager;
 import net.aeronica.mods.mxtune.util.Notify;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -48,7 +48,7 @@ import java.io.IOException;
 import static net.aeronica.mods.mxtune.gui.mml.SortHelper.PLAYLIST_ORDERING;
 import static net.aeronica.mods.mxtune.network.server.ChunkToolMessage.Operation;
 
-public class GuiChunkTool extends GuiScreen implements Notify
+public class GuiChunkTool extends Screen implements Notify
 {
     private static final ResourceLocation guiTexture = new ResourceLocation(Reference.MOD_ID, "textures/gui/manage_group.png");
     private int xSize = 239;
@@ -64,13 +64,13 @@ public class GuiChunkTool extends GuiScreen implements Notify
     private GuiButtonMX buttonApply;
     private GuiButtonMX buttonReset;
 
-    private EntityPlayer player;
+    private PlayerEntity player;
 
     public GuiChunkTool()
     {
-        mc = Minecraft.getMinecraft();
-        this.player = mc.player;
-        this.fontRenderer = mc.fontRenderer;
+        minecraft = Minecraft.getInstance();
+        this.player = minecraft.player;
+        this.font = minecraft.fontRenderer;
 
         guiPlayLists = new GuiScrollingListOf<PlayList>(this) {
             @Override
@@ -97,15 +97,15 @@ public class GuiChunkTool extends GuiScreen implements Notify
                 if (playList != null)
                 {
                     String playlistName = ModGuiUtils.getPlaylistName(playList);
-                    String trimmedName = fontRenderer.trimStringToWidth(playlistName, listWidth - 10);
+                    String trimmedName = font.trimStringToWidth(playlistName, listWidth - 10);
                     int color = isSelected(slotIdx) ? 0xFFFF00 : 0xAADDEE;
-                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
+                    font.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
                 } else
                 {
                     String name = "---GUID Conflict---";
-                    String trimmedName = fontRenderer.trimStringToWidth(name, listWidth - 10);
+                    String trimmedName = font.trimStringToWidth(name, listWidth - 10);
                     int color = 0xFF0000;
-                    fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
+                    font.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, color);
                 }
             }
         };
@@ -118,7 +118,7 @@ public class GuiChunkTool extends GuiScreen implements Notify
         this.guiLeft = (this.width - this.xSize) / 2;
         this.guiTop = (this.height - this.ySize) / 2;
 
-        guiPlayLists.setLayout(fontRenderer.FONT_HEIGHT + 2, 90, 141,guiTop + 12, guiTop + 12 + 141, guiLeft + 12);
+        guiPlayLists.setLayout(font.FONT_HEIGHT + 2, 90, 141,guiTop + 12, guiTop + 12 + 141, guiLeft + 12);
 
         /* create button for leave and disable it initially */
         int widthButtons = 75;
@@ -129,7 +129,7 @@ public class GuiChunkTool extends GuiScreen implements Notify
         buttonApply = new GuiButtonMX(2, posX, buttonEnd.y + buttonEnd.height, widthButtons, 20, "Apply");
         buttonReset = new GuiButtonMX(3, posX, buttonApply.y + buttonApply.height, widthButtons, 20, "Reset");
 
-        GuiButton buttonCancel = new GuiButton(4, posX, buttonReset.y + buttonReset.height * 2, widthButtons, 20, I18n.format("gui.done"));
+        Button buttonCancel = new Button(4, posX, buttonReset.y + buttonReset.height * 2, widthButtons, 20, I18n.format("gui.done"));
         
         buttonList.add(buttonStart);
         buttonList.add(buttonEnd);
@@ -155,12 +155,12 @@ public class GuiChunkTool extends GuiScreen implements Notify
     {
         buttonApply.enabled = MusicOptionsUtil.getChunkStart(player) != null &&
                 MusicOptionsUtil.getChunkEnd(player) != null &&
-                ClientFileManager.getPlayList(MusicOptionsUtil.getSelectedPlayListGuid(mc.player)) != null;
+                ClientFileManager.getPlayList(MusicOptionsUtil.getSelectedPlayListGuid(minecraft.player)) != null;
     }
 
     private void updateSelected()
     {
-        PlayList selectedPlaylistToApply = ClientFileManager.getPlayList(MusicOptionsUtil.getSelectedPlayListGuid(mc.player));
+        PlayList selectedPlaylistToApply = ClientFileManager.getPlayList(MusicOptionsUtil.getSelectedPlayListGuid(minecraft.player));
         if (selectedPlaylistToApply != null)
             guiPlayLists.stream().filter(selectedPlaylistToApply::equals).forEach(playList ->
                 {
@@ -179,10 +179,10 @@ public class GuiChunkTool extends GuiScreen implements Notify
 
         /* draw "TITLE" at the top right */
         String title = I18n.format("mxtune.gui.GuiChunkTool.title");
-        int posX = guiLeft + xSize - this.fontRenderer.getStringWidth(title) - 12;
+        int posX = guiLeft + xSize - this.font.getStringWidth(title) - 12;
         int posY = guiTop + 12;
-        this.fontRenderer.getStringWidth(title);
-        this.fontRenderer.drawString(title, posX, posY, 0x000000);
+        this.font.getStringWidth(title);
+        this.font.drawString(title, posX, posY, 0x000000);
 
         guiPlayLists.drawScreen(mouseX, mouseY, partialTicks);
 
@@ -191,7 +191,7 @@ public class GuiChunkTool extends GuiScreen implements Notify
     }
 
     @Override
-    protected void actionPerformed(GuiButton guibutton)
+    protected void actionPerformed(Button guibutton)
     {
         // if button is disabled ignore click
         if (!guibutton.enabled) { return; }
@@ -226,16 +226,16 @@ public class GuiChunkTool extends GuiScreen implements Notify
                 break;
             default:
         }
-        mc.displayGuiScreen(null);
-        mc.setIngameFocus();
+        minecraft.displayGuiScreen(null);
+        minecraft.setIngameFocus();
         updateState();
     }
 
     @Override
     public void handleMouseInput() throws IOException
     {
-        int mouseX = Mouse.getEventX() * width / mc.displayWidth;
-        int mouseY = height - Mouse.getEventY() * height / mc.displayHeight - 1;
+        int mouseX = Mouse.getEventX() * width / minecraft.displayWidth;
+        int mouseY = height - Mouse.getEventY() * height / minecraft.displayHeight - 1;
         guiPlayLists.handleMouseInput(mouseX, mouseY);
         super.handleMouseInput();
     }
@@ -243,7 +243,7 @@ public class GuiChunkTool extends GuiScreen implements Notify
     private void drawGuiBackground()
     {
         GL11.glColor4f(1F, 1F, 1F, 1F);
-        mc.renderEngine.bindTexture(guiTexture);
+        minecraft.renderEngine.bindTexture(guiTexture);
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
     }
 

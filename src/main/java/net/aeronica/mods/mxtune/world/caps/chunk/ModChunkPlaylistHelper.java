@@ -25,7 +25,7 @@ import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.MXTuneException;
 import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -74,7 +74,7 @@ public class ModChunkPlaylistHelper
         return chunkData;
     }
 
-    public static void sync(EntityPlayer entityPlayer, Chunk chunk)
+    public static void sync(PlayerEntity entityPlayer, Chunk chunk)
     {
         if (MXTune.proxy.getEffectiveSide() == Side.SERVER)
         {

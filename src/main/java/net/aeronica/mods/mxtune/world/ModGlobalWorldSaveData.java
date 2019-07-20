@@ -18,7 +18,7 @@
 package net.aeronica.mods.mxtune.world;
 
 import net.aeronica.mods.mxtune.Reference;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapStorage;
 import net.minecraft.world.storage.WorldSavedData;
@@ -81,7 +81,7 @@ public class ModGlobalWorldSaveData extends WorldSavedData
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound nbt)
+    public void readFromNBT(CompoundNBT nbt)
     {
             name = nbt.getString(KEY_NAME);
             number = nbt.getInteger(KEY_NUMBER);
@@ -90,7 +90,7 @@ public class ModGlobalWorldSaveData extends WorldSavedData
 
     // Remember to use markDirty()
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound)
+    public CompoundNBT writeToNBT(CompoundNBT compound)
     {
         compound.setString(KEY_NAME, name);
         compound.setInteger(KEY_NUMBER, number);

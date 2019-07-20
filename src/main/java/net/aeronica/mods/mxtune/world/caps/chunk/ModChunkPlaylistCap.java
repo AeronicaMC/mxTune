@@ -22,10 +22,10 @@ import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.UpdateChunkMusicData;
 import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.NBTHelper;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.MinecraftForge;
@@ -58,7 +58,7 @@ public class ModChunkPlaylistCap
     @SubscribeEvent
     public static void onEvent(final ChunkWatchEvent.Watch event)
     {
-        final EntityPlayerMP player = event.getPlayer();
+        final ServerPlayerEntity player = event.getPlayer();
         final Chunk chunk = event.getChunkInstance();
 
         if (chunk != null && chunk.hasCapability(MOD_CHUNK_DATA, null))
@@ -72,31 +72,31 @@ public class ModChunkPlaylistCap
     {
         if (event.getObject() != null)
         {
-            event.addCapability(new ResourceLocation(Reference.MOD_ID, "chunk_music"), new ICapabilitySerializable<NBTTagCompound>()
+            event.addCapability(new ResourceLocation(Reference.MOD_ID, "chunk_music"), new ICapabilitySerializable<CompoundNBT>()
             {
                 IModChunkPlaylist instance = MOD_CHUNK_DATA.getDefaultInstance();
 
                 @Override
-                public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing)
+                public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable Direction facing)
                 {
                     return capability == MOD_CHUNK_DATA;
                 }
 
                 @Nullable
                 @Override
-                public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing)
+                public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing)
                 {
                     return capability == MOD_CHUNK_DATA ? MOD_CHUNK_DATA.<T>cast(instance) : null;
                 }
 
                 @Override
-                public NBTTagCompound serializeNBT()
+                public CompoundNBT serializeNBT()
                 {
-                    return (NBTTagCompound) MOD_CHUNK_DATA.getStorage().writeNBT(MOD_CHUNK_DATA, instance, null);
+                    return (CompoundNBT) MOD_CHUNK_DATA.getStorage().writeNBT(MOD_CHUNK_DATA, instance, null);
                 }
 
                 @Override
-                public void deserializeNBT(NBTTagCompound nbt)
+                public void deserializeNBT(CompoundNBT nbt)
                 {
                     MOD_CHUNK_DATA.getStorage().readNBT(MOD_CHUNK_DATA, instance, null, nbt);
                 }
@@ -117,17 +117,17 @@ public class ModChunkPlaylistCap
     {
         @Nullable
         @Override
-        public NBTBase writeNBT(Capability<IModChunkPlaylist> capability, IModChunkPlaylist instance, EnumFacing side)
+        public NBTBase writeNBT(Capability<IModChunkPlaylist> capability, IModChunkPlaylist instance, Direction side)
         {
-            NBTTagCompound properties =  new NBTTagCompound();
+            CompoundNBT properties =  new CompoundNBT();
             NBTHelper.setGuidToCompound(properties, instance.getPlaylistGuid());
             return properties;
         }
 
         @Override
-        public void readNBT(Capability<IModChunkPlaylist> capability, IModChunkPlaylist instance, EnumFacing side, NBTBase nbt)
+        public void readNBT(Capability<IModChunkPlaylist> capability, IModChunkPlaylist instance, Direction side, NBTBase nbt)
         {
-            NBTTagCompound properties = (NBTTagCompound) nbt;
+            CompoundNBT properties = (CompoundNBT) nbt;
             instance.setPlaylistGuid(NBTHelper.getGuidFromCompound(properties));
         }
     }

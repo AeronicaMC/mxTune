@@ -20,10 +20,10 @@ import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.ClientStateDataMessage;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.minecraft.client.GameSettings;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreenOptionsSounds;
-import net.minecraft.client.settings.GameSettings;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.client.gui.screen.OptionsSoundsScreen;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -78,12 +78,12 @@ public class ClientCSDMonitor
     public static void detectAndSend()
     {
 
-        if (mc.currentScreen instanceof GuiScreenOptionsSounds && !inGui)
+        if (mc.currentScreen instanceof OptionsSoundsScreen && !inGui)
         {
             ModLogger.debug("Opened GuiScreenOptionsSounds");
             inGui=true;
         }
-        else if(!(mc.currentScreen instanceof GuiScreenOptionsSounds) && inGui)
+        else if(!(mc.currentScreen instanceof OptionsSoundsScreen) && inGui)
         {
             ModLogger.debug("Closed GuiScreenOptionsSounds");
             inGui=false;
@@ -106,7 +106,7 @@ public class ClientCSDMonitor
      * A Client side version to send the current status to the players chat.
      * @param playerIn to whom it concerns
      */
-    public static void sendErrorViaChat(EntityPlayer playerIn)
+    public static void sendErrorViaChat(PlayerEntity playerIn)
     {
         if (csd == null)
         {

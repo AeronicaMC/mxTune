@@ -20,12 +20,12 @@ import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.NBTHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
@@ -63,32 +63,32 @@ public class PlayerMusicOptionsCapability
         @SubscribeEvent
         public void onEntityConstruct(final AttachCapabilitiesEvent<Entity> event)
         {
-            if (event.getObject() instanceof EntityPlayer)
+            if (event.getObject() instanceof PlayerEntity)
             {
-                event.addCapability(new ResourceLocation(Reference.MOD_ID, "IPlayerMusicOptions"), new ICapabilitySerializable<NBTTagCompound>()
+                event.addCapability(new ResourceLocation(Reference.MOD_ID, "IPlayerMusicOptions"), new ICapabilitySerializable<CompoundNBT>()
                 {
                     final IPlayerMusicOptions optionsInst = MUSIC_OPTIONS.getDefaultInstance();
 
                     @Override
-                    public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing)
+                    public boolean hasCapability(Capability<?> capability, @Nullable Direction facing)
                     {
                         return capability == MUSIC_OPTIONS;
                     }
 
                     @SuppressWarnings("unchecked")
                     @Override
-                    public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing)
+                    public <T> T getCapability(Capability<T> capability, @Nullable Direction facing)
                     {
                         return capability == MUSIC_OPTIONS ? (T) optionsInst : null;
                     }
 
                     @Nullable
-                    public NBTTagCompound serializeNBT()
+                    public CompoundNBT serializeNBT()
                     {
-                        return (NBTTagCompound) MUSIC_OPTIONS.getStorage().writeNBT(MUSIC_OPTIONS, optionsInst, null);
+                        return (CompoundNBT) MUSIC_OPTIONS.getStorage().writeNBT(MUSIC_OPTIONS, optionsInst, null);
                     }
 
-                    public void deserializeNBT(NBTTagCompound nbt)
+                    public void deserializeNBT(CompoundNBT nbt)
                     {
                         MUSIC_OPTIONS.getStorage().readNBT(MUSIC_OPTIONS, optionsInst, null, nbt);
                     }
@@ -120,11 +120,11 @@ public class PlayerMusicOptionsCapability
         @SubscribeEvent
         public void onEntityJoinWorld(EntityJoinWorldEvent event)
         {
-            if (event.getEntity() instanceof EntityPlayerMP)
+            if (event.getEntity() instanceof ServerPlayerEntity)
             {
                 IPlayerMusicOptions inst = event.getEntity().getCapability(MUSIC_OPTIONS, null);
                 if (inst != null)
-                    MusicOptionsUtil.syncAll((EntityPlayer) event.getEntity());
+                    MusicOptionsUtil.syncAll((PlayerEntity) event.getEntity());
             }
         }
         
@@ -166,9 +166,9 @@ public class PlayerMusicOptionsCapability
 
 
         @Override
-        public NBTBase writeNBT(Capability<IPlayerMusicOptions> capability, IPlayerMusicOptions instance, EnumFacing side)
+        public NBTBase writeNBT(Capability<IPlayerMusicOptions> capability, IPlayerMusicOptions instance, Direction side)
         {
-            NBTTagCompound properties = new NBTTagCompound();
+            CompoundNBT properties = new CompoundNBT();
             properties.setBoolean(KEY_DISABLE_HUD, instance.isHudDisabled());
             properties.setInteger(KEY_POSITION_HUD, instance.getPositionHud());
             properties.setFloat(KEY_SIZE_HUD, instance.getSizeHud());
@@ -179,21 +179,21 @@ public class PlayerMusicOptionsCapability
             properties.setBoolean(KEY_SOUND_RANGE_INFINITY_ALLOWED, instance.isSoundRangeInfinityRangeAllowed());
             properties.setBoolean(KEY_MXTUNE_SERVER_UPDATE_ALLOWED, instance.isMxTuneServerUpdateAllowed());
             NBTHelper.setGuidToTag(instance.getSelectedPlayListGuid(), properties, KEY_SELECTED_PLAY_LIST_GUID);
-            NBTTagList listBlack = new NBTTagList();
+            ListNBT listBlack = new ListNBT();
             properties.setTag(KEY_LIST_BLACK, listBlack);
             for (int i=0; i<instance.getBlackList().size(); i++)
             {
-                NBTTagCompound entry = new NBTTagCompound();
+                CompoundNBT entry = new CompoundNBT();
                 entry.setLong(KEY_UUID_LEAST, instance.getBlackList().get(i).getUuid().getLeastSignificantBits());
                 entry.setLong(KEY_UUID_MOST, instance.getBlackList().get(i).getUuid().getMostSignificantBits());
                 entry.setString(KEY_PLAYER_NAME, instance.getBlackList().get(i).getPlayerName());
                 listBlack.appendTag(entry);
             }
-            NBTTagList listWhite = new NBTTagList();
+            ListNBT listWhite = new ListNBT();
             properties.setTag(KEY_LIST_WHITE, listWhite);
             for (int i=0; i<instance.getWhiteList().size(); i++)
             {
-                NBTTagCompound entry = new NBTTagCompound();
+                CompoundNBT entry = new CompoundNBT();
                 entry.setLong(KEY_UUID_LEAST, instance.getWhiteList().get(i).getUuid().getLeastSignificantBits());
                 entry.setLong(KEY_UUID_MOST, instance.getWhiteList().get(i).getUuid().getMostSignificantBits());
                 entry.setString(KEY_PLAYER_NAME, instance.getWhiteList().get(i).getPlayerName());
@@ -203,9 +203,9 @@ public class PlayerMusicOptionsCapability
         }
 
         @Override
-        public void readNBT(Capability<IPlayerMusicOptions> capability, IPlayerMusicOptions instance, EnumFacing side, NBTBase nbt)
+        public void readNBT(Capability<IPlayerMusicOptions> capability, IPlayerMusicOptions instance, Direction side, NBTBase nbt)
         {
-            NBTTagCompound properties = (NBTTagCompound) nbt;
+            CompoundNBT properties = (CompoundNBT) nbt;
             instance.setHudOptions(properties.getBoolean(KEY_DISABLE_HUD), properties.getInteger(KEY_POSITION_HUD), properties.getFloat(KEY_SIZE_HUD));
             instance.setMuteOption(properties.getInteger(KEY_MUTE_OPTION));
             instance.setSParams(properties.getString(KEY_S_PARAM_1), properties.getString(KEY_S_PARAM_2), properties.getString(KEY_S_PARAM_3));
@@ -214,12 +214,12 @@ public class PlayerMusicOptionsCapability
             instance.setSelectedPlayListGuid(NBTHelper.getGuidFromTag(properties, KEY_SELECTED_PLAY_LIST_GUID));
             if (properties.hasKey(KEY_LIST_BLACK, Constants.NBT.TAG_LIST))
             {
-                NBTTagList listBlack = properties.getTagList(KEY_LIST_BLACK, Constants.NBT.TAG_COMPOUND);
+                ListNBT listBlack = properties.getTagList(KEY_LIST_BLACK, Constants.NBT.TAG_COMPOUND);
                 int count = listBlack.tagCount();
                 List<ClassifiedPlayer> blackList = new ArrayList<>();
                 for (int i = 0; i < count; i++)
                 {
-                    NBTTagCompound entry = listBlack.getCompoundTagAt(i);
+                    CompoundNBT entry = listBlack.getCompoundTagAt(i);
                     ClassifiedPlayer plist = new ClassifiedPlayer();
                     plist.setPlayerName(entry.getString(KEY_PLAYER_NAME));
                     plist.setUuid(new UUID(entry.getLong(KEY_UUID_MOST), entry.getLong(KEY_UUID_LEAST)));
@@ -230,12 +230,12 @@ public class PlayerMusicOptionsCapability
             }
             if (properties.hasKey(KEY_LIST_WHITE, Constants.NBT.TAG_LIST))
             {
-                NBTTagList listWhite = properties.getTagList(KEY_LIST_WHITE, Constants.NBT.TAG_COMPOUND);
+                ListNBT listWhite = properties.getTagList(KEY_LIST_WHITE, Constants.NBT.TAG_COMPOUND);
                 int count = listWhite.tagCount();
                 List<ClassifiedPlayer> whiteList = new ArrayList<>();
                 for (int i = 0; i < count; i++)
                 {
-                    NBTTagCompound entry = listWhite.getCompoundTagAt(i);
+                    CompoundNBT entry = listWhite.getCompoundTagAt(i);
                     ClassifiedPlayer plist = new ClassifiedPlayer();
                     plist.setPlayerName(entry.getString(KEY_PLAYER_NAME));
                     plist.setUuid(new UUID(entry.getLong(KEY_UUID_MOST), entry.getLong(KEY_UUID_LEAST)));

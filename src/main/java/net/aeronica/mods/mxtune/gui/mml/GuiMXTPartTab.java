@@ -31,12 +31,12 @@ import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.aeronica.mods.mxtune.util.ValidDuration;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -47,7 +47,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.IntStream;
 
-public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
+public class GuiMXTPartTab extends Screen implements IAudioStatusCallback
 {
     // Localization Keys
     private static final String LABEL_INSTRUMENTS = I18n.format("mxtune.gui.musicPaperParse.labelInstruments");
@@ -62,7 +62,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
     // Content
     private MXTunePart mxTunePart = new MXTunePart();
-    private GuiTextField labelStatus;
+    private TextFieldWidget labelStatus;
     private GuiButtonExt buttonPlay;
     private GuiScrollingListOf<ParseErrorEntry> listBoxMMLError;
     private GuiScrollingListOf<Instrument> listBoxInstruments;
@@ -202,7 +202,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     void setPart(MXTunePart mxTunePart)
     {
         clearPart();
-        NBTTagCompound compound = new NBTTagCompound();
+        CompoundNBT compound = new CompoundNBT();
         mxTunePart.writeToNBT(compound);
         this.mxTunePart = new MXTunePart(compound);
         this.listBoxInstruments.setSelectedIndex(MIDISystemUtil.getInstrumentCachedIndexFromPackedPreset(mxTunePart.getPackedPatch()));
@@ -306,7 +306,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
         /* create Status line */
         int rightSideWidth = Math.max(width - posX - PADDING, 100);
-        labelStatus = new GuiTextField(2, fontRenderer, posX, posY , rightSideWidth, statusHeight);
+        labelStatus = new TextFieldWidget(2, fontRenderer, posX, posY , rightSideWidth, statusHeight);
         labelStatus.setFocused(false);
         labelStatus.setCanLoseFocus(true);
         labelStatus.setEnabled(true);
@@ -455,7 +455,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     }
 
     @Override
-    protected void actionPerformed(GuiButton guibutton)
+    protected void actionPerformed(Button guibutton)
     {
         /* if button is disabled ignore click */
         if (!guibutton.enabled) return;
@@ -503,7 +503,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     {
         clearPart();
         int i = 0;
-        List<String> lines = new ArrayList<>(Arrays.asList(GuiScreen.getClipboardString().replaceAll("MML@|;", "").split(",")));
+        List<String> lines = new ArrayList<>(Arrays.asList(Screen.getClipboardString().replaceAll("MML@|;", "").split(",")));
         Iterator<String> iterator = lines.iterator();
         while (iterator.hasNext())
         {
@@ -521,7 +521,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     {
         // Setting the clipboard to the empty string does nothing. If there are no lines use an 'empty' MML formatted string instead.
         String mml = getMMLClipBoardFormat();
-        GuiScreen.setClipboardString(mml.isEmpty() ? "MML@;" : mml);
+        Screen.setClipboardString(mml.isEmpty() ? "MML@;" : mml);
     }
 
     public String getMMLClipBoardFormat()

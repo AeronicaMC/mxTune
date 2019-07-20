@@ -52,12 +52,12 @@ import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.MusicTicker;
+import net.minecraft.client.audio.SoundEngine;
 import net.minecraft.client.audio.SoundHandler;
-import net.minecraft.client.audio.SoundManager;
-import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.PlayStreamingSourceEvent;
@@ -444,7 +444,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         if (sndSystem == null || sndSystem.randomNumberGenerator == null)
         {
             handler = Minecraft.getMinecraft().getSoundHandler();
-            SoundManager sndManager = handler.sndManager;
+            SoundEngine sndManager = handler.sndManager;
             sndSystem = sndManager.sndSystem;
             musicTicker = Minecraft.getMinecraft().getMusicTicker();
             setVanillaMusicPaused(false);
@@ -476,7 +476,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
     @SubscribeEvent
     public static void event(EntityJoinWorldEvent event)
     {
-        if (event.getEntity() instanceof EntityPlayerSP)
+        if (event.getEntity() instanceof ClientPlayerEntity)
         {
             cleanup();
             ClientPlayManager.reset();

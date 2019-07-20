@@ -19,7 +19,7 @@ package net.aeronica.mods.mxtune.crafting;
 
 import com.google.gson.JsonObject;
 import net.aeronica.mods.mxtune.config.ModConfig;
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
@@ -57,7 +57,7 @@ public class DisablableShapelessOreRecipeFactory implements IRecipeFactory
 
         @Override
         @Nonnull
-        public ItemStack getCraftingResult(@Nonnull InventoryCrafting var1)
+        public ItemStack getCraftingResult(@Nonnull CraftingInventory var1)
         {
             return ModConfig.isRecipeEnabled(this.output) ? this.output.copy() : ItemStack.EMPTY;
         }

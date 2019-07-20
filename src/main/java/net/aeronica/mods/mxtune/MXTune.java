@@ -32,7 +32,7 @@ import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.MusicTab;
 import net.aeronica.mods.mxtune.world.caps.chunk.ModChunkPlaylistCap;
 import net.aeronica.mods.mxtune.world.caps.world.ModWorldPlaylistCap;
-import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemGroup;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
@@ -58,7 +58,7 @@ public class MXTune
     @SidedProxy(clientSide = "net.aeronica.mods.mxtune.proxy.ClientProxy", serverSide = "net.aeronica.mods.mxtune.proxy.ServerProxy")
     public static ServerProxy proxy;
 
-    public static final CreativeTabs TAB_MUSIC = new MusicTab(CreativeTabs.getNextID(), Reference.MOD_NAME);
+    public static final ItemGroup TAB_MUSIC = new MusicTab(ItemGroup.getNextID(), Reference.MOD_NAME);
     
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)

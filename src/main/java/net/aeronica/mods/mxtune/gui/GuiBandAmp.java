@@ -28,12 +28,11 @@ import net.aeronica.mods.mxtune.network.server.BandAmpMessage;
 import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.aeronica.mods.mxtune.world.LockableHelper;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
@@ -42,10 +41,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import static net.aeronica.mods.mxtune.gui.util.GuiRedstoneButton.ArrowFaces;
 
 @SideOnly(Side.CLIENT)
-public class GuiBandAmp extends GuiContainer
+public class GuiBandAmp extends ContainerScreen
 {
     public static final ResourceLocation BG_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/band_amp.png");
-    private InventoryPlayer inventoryPlayer;
+    private PlayerInventory inventoryPlayer;
     private TileBandAmp tileBandAmp;
     private GuiLockButton lockButton;
     private GuiRedstoneButton rearInputButton;
@@ -59,7 +58,7 @@ public class GuiBandAmp extends GuiContainer
     private SoundRange soundRange;
     private SoundRange prevSoundRange;
 
-    public GuiBandAmp(Container container, InventoryPlayer inventoryPlayer, TileBandAmp tileBandAmp)
+    public GuiBandAmp(net.minecraft.inventory.container.Container container, PlayerInventory inventoryPlayer, TileBandAmp tileBandAmp)
     {
         super(container);
         this.inventoryPlayer = inventoryPlayer;
@@ -129,7 +128,7 @@ public class GuiBandAmp extends GuiContainer
     }
 
     @Override
-    protected void actionPerformed(GuiButton button)
+    protected void actionPerformed(Button button)
     {
         toggleLockButton(lockButton, button);
         toggleRedstoneButton(rearInputButton, button);
@@ -138,7 +137,7 @@ public class GuiBandAmp extends GuiContainer
         nextRangeButton(soundRangeButton, button);
     }
 
-    private void toggleLockButton(GuiLockButton lockIconButton, GuiButton buttonClicked)
+    private void toggleLockButton(GuiLockButton lockIconButton, Button buttonClicked)
     {
         if (buttonClicked.id == lockIconButton.id)
         {
@@ -148,7 +147,7 @@ public class GuiBandAmp extends GuiContainer
         }
     }
 
-    private void toggleRedstoneButton(GuiRedstoneButton guiRedstoneButton, GuiButton buttonClicked)
+    private void toggleRedstoneButton(GuiRedstoneButton guiRedstoneButton, Button buttonClicked)
     {
         if (buttonClicked.id == guiRedstoneButton.id)
         {
@@ -158,7 +157,7 @@ public class GuiBandAmp extends GuiContainer
         }
     }
 
-    private void nextRangeButton(GuiButton guiRangeButton, GuiButton buttonClicked)
+    private void nextRangeButton(Button guiRangeButton, Button buttonClicked)
     {
         if(buttonClicked.id == guiRangeButton.id)
         {

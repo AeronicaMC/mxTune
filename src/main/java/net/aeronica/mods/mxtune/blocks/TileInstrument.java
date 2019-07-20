@@ -16,12 +16,12 @@
  */
 package net.aeronica.mods.mxtune.blocks;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.block.BlockState;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
@@ -34,23 +34,23 @@ import javax.annotation.Nullable;
 public class TileInstrument extends TileEntity
 {
     protected ItemStackHandler inventory;
-    protected EnumFacing facing = EnumFacing.NORTH;
+    protected Direction facing = Direction.NORTH;
 
     public TileInstrument() {}
 
-    public TileInstrument(EnumFacing facing) {this.facing = facing;}
+    public TileInstrument(Direction facing) {this.facing = facing;}
 
-    public EnumFacing getFacing() {return facing;}
+    public Direction getFacing() {return facing;}
 
     @Override
-    public void readFromNBT(NBTTagCompound tag)
+    public void readFromNBT(CompoundNBT tag)
     {
         super.readFromNBT(tag);
-        facing = EnumFacing.byIndex(tag.getInteger("facing"));
+        facing = Direction.byIndex(tag.getInteger("facing"));
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag)
+    public CompoundNBT writeToNBT(CompoundNBT tag)
     {
         tag.setInteger("facing", facing.getIndex());
         return super.writeToNBT(tag);
@@ -78,9 +78,9 @@ public class TileInstrument extends TileEntity
      * 
      */
     @Override
-    public NBTTagCompound getUpdateTag()
+    public CompoundNBT getUpdateTag()
     {
-        NBTTagCompound tag = super.getUpdateTag();
+        CompoundNBT tag = super.getUpdateTag();
         return this.writeToNBT(tag);
     }
 
@@ -88,27 +88,27 @@ public class TileInstrument extends TileEntity
      Needed when block states can change
      */
     @Override
-    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState)
+    public boolean shouldRefresh(World world, BlockPos pos, BlockState oldState, BlockState newState)
     {
         return oldState.getBlock() != newState.getBlock();
     }
 
     @Override
-    public SPacketUpdateTileEntity getUpdatePacket()
+    public SUpdateTileEntityPacket getUpdatePacket()
     {
-        NBTTagCompound cmp = new NBTTagCompound();
+        CompoundNBT cmp = new CompoundNBT();
         writeToNBT(cmp);
-        return new SPacketUpdateTileEntity(pos, 1, cmp);
+        return new SUpdateTileEntityPacket(pos, 1, cmp);
     }
 
     @Override
-    public void onDataPacket(NetworkManager manager, SPacketUpdateTileEntity packet)
+    public void onDataPacket(NetworkManager manager, SUpdateTileEntityPacket packet)
     {
         readFromNBT(packet.getNbtCompound());
     }
 
     @Override
-    public <T> T getCapability(Capability<T> cap, @Nullable EnumFacing side)
+    public <T> T getCapability(Capability<T> cap, @Nullable Direction side)
     {
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) { return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(inventory); }
         return super.getCapability(cap, side);

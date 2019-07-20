@@ -4,8 +4,8 @@ import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.gui.hud.GuiHudAdjust;
 import net.aeronica.mods.mxtune.inventory.ContainerInstrument;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -14,7 +14,7 @@ import scala.Char;
 
 import java.io.IOException;
 
-public class GuiInstrumentInventory extends GuiContainer
+public class GuiInstrumentInventory extends ContainerScreen
 {
     private static final ResourceLocation inventoryTexture = new ResourceLocation(Reference.MOD_ID, "textures/gui/instrument_inventory.png");
     private static final String BUTTON_MUSIC_OPTIONS = I18n.format("mxtune.key.openMusicOptions");
@@ -40,15 +40,15 @@ public class GuiInstrumentInventory extends GuiContainer
 		super.initGui();
 		int xPos = guiLeft + xSize - 100 - 12;
 		int yPos = guiTop + 11 + 20;
-		GuiButton buttonMusicOptions = new GuiButton(0, xPos, yPos, 100,20,BUTTON_MUSIC_OPTIONS );
+		Button buttonMusicOptions = new Button(0, xPos, yPos, 100, 20, BUTTON_MUSIC_OPTIONS );
 		addButton(buttonMusicOptions);
 		yPos += 20;
-		GuiButton buttonAdjustHUD = new GuiButton(1, xPos, yPos, 100, 20,BUTTON_ADJ_HUD);
+		Button buttonAdjustHUD = new Button(1, xPos, yPos, 100, 20, BUTTON_ADJ_HUD);
 		addButton(buttonAdjustHUD);
 	}
 
     @Override
-    protected void actionPerformed(GuiButton button) throws IOException
+    protected void actionPerformed(Button button) throws IOException
     {
         switch (button.id)
         {

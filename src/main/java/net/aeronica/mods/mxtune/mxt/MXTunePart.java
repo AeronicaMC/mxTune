@@ -17,7 +17,7 @@
 
 package net.aeronica.mods.mxtune.mxt;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class MXTunePart implements Serializable
         transpose = 0;
     }
 
-    public MXTunePart(NBTTagCompound compound)
+    public MXTunePart(CompoundNBT compound)
     {
         instrumentName = compound.getString(TAG_INSTRUMENT);
         meta = compound.getString(TAG_META);
@@ -68,12 +68,12 @@ public class MXTunePart implements Serializable
         staves = new ArrayList<>();
         for(int i = 0; i < staffCount; i++)
         {
-            NBTTagCompound compoundStaff = compound.getCompoundTag(TAG_STAFF_PREFIX + i);
+            CompoundNBT compoundStaff = compound.getCompoundTag(TAG_STAFF_PREFIX + i);
             staves.add(new MXTuneStaff(i, compoundStaff));
         }
     }
 
-    public void writeToNBT(NBTTagCompound compound)
+    public void writeToNBT(CompoundNBT compound)
     {
         compound.setString(TAG_INSTRUMENT, instrumentName);
         compound.setString(TAG_META, meta);
@@ -84,7 +84,7 @@ public class MXTunePart implements Serializable
         int i = 0;
         for (MXTuneStaff staff : staves)
         {
-            NBTTagCompound compoundStaff = new NBTTagCompound();
+            CompoundNBT compoundStaff = new CompoundNBT();
             staff.writeToNBT(compoundStaff);
 
             compound.setTag(TAG_STAFF_PREFIX + i, compoundStaff);

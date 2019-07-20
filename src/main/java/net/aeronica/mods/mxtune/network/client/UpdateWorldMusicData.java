@@ -21,7 +21,7 @@ import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.world.caps.world.ModWorldPlaylistHelper;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -66,7 +66,7 @@ public class UpdateWorldMusicData extends AbstractClientMessage<UpdateWorldMusic
     }
 
     @Override
-    public void process(EntityPlayer player, Side side)
+    public void process(PlayerEntity player, Side side)
     {
         World world = MXTune.proxy.getClientWorld();
         if (world != null && world.hasCapability(ModWorldPlaylistHelper.MOD_WORLD_DATA, null))

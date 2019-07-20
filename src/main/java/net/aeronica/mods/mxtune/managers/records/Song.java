@@ -20,7 +20,7 @@ package net.aeronica.mods.mxtune.managers.records;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.aeronica.mods.mxtune.util.ValidDuration;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 public class Song extends BaseData
 {
@@ -50,13 +50,13 @@ public class Song extends BaseData
         guid = GUID.stringToSHA2Hash(this.title);
     }
 
-    public Song(NBTTagCompound compound)
+    public Song(CompoundNBT compound)
     {
         this.readFromNBT(compound);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound compound)
+    public void readFromNBT(CompoundNBT compound)
     {
         super.readFromNBT(compound);
         title = compound.getString(TAG_TITLE);
@@ -65,7 +65,7 @@ public class Song extends BaseData
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound compound)
+    public void writeToNBT(CompoundNBT compound)
     {
         super.writeToNBT(compound);
         compound.setString(TAG_TITLE, title);

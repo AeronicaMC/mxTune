@@ -21,10 +21,10 @@ import net.aeronica.mods.mxtune.managers.GroupHelper;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.ManageGroupMessage;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public class GuiGroup extends GuiScreen
+public class GuiGroup extends Screen
 {
     private static final ResourceLocation guiTexture = new ResourceLocation(Reference.MOD_ID, "textures/gui/manage_group.png");
     private int xSize = 239;
@@ -43,11 +43,11 @@ public class GuiGroup extends GuiScreen
     private int guiLeft;
     private int guiTop;
 
-    private GuiButton btnCreate;
-    private GuiButton btnLeave;
+    private Button btnCreate;
+    private Button btnLeave;
     private List<MemberButtons> memberButtons;
 
-    private EntityPlayer player;
+    private PlayerEntity player;
 
     @Override
     public void initGui()
@@ -64,16 +64,16 @@ public class GuiGroup extends GuiScreen
         /* create button for group creation and disable it initially */
         int posX = guiLeft + 169;
         int posY = guiTop + 92;
-        btnCreate = new GuiButton(0, posX, posY, 60, 20, "Create");
+        btnCreate = new Button(0, posX, posY, 60, 20, "Create");
 
         /* create button for leave and disable it initially */
         posX = guiLeft + 169;
         posY = guiTop + 112;
-        btnLeave = new GuiButton(1, posX, posY, 60, 20, "Leave");
+        btnLeave = new Button(1, posX, posY, 60, 20, "Leave");
 
         posX = guiLeft + 169;
         posY = guiTop + 132;
-        GuiButton btnCancel = new GuiButton(2, posX, posY, 60, 20, "Cancel");
+        Button btnCancel = new Button(2, posX, posY, 60, 20, "Cancel");
 
         /* create member buttons for delete and promote */
         initMembersButtons();
@@ -209,7 +209,7 @@ public class GuiGroup extends GuiScreen
     }
 
     @Override
-    protected void actionPerformed(GuiButton guibutton)
+    protected void actionPerformed(Button guibutton)
     {
         // if button is disabled ignore click
         if (!guibutton.enabled) { return; }
@@ -265,8 +265,8 @@ public class GuiGroup extends GuiScreen
 
     protected class MemberButtons
     {
-        GuiButton buttonRemove;
-        GuiButton buttonPromote;
+        Button buttonRemove;
+        Button buttonPromote;
         String memberName;
         Integer memberId;
     }
@@ -274,10 +274,10 @@ public class GuiGroup extends GuiScreen
     private MemberButtons memberButtons(int deleteId, int promoteId, int xPosition, int yPosition)
     {
         MemberButtons buttons = new MemberButtons();
-        buttons.buttonRemove = new GuiButton(deleteId, xPosition, yPosition, 10, 10, "D");
+        buttons.buttonRemove = new Button(deleteId, xPosition, yPosition, 10, 10, "D");
         buttons.buttonRemove.visible = false;
         buttons.buttonRemove.enabled = false;
-        buttons.buttonPromote = new GuiButton(promoteId, xPosition + 10, yPosition, 10, 10, "L");
+        buttons.buttonPromote = new Button(promoteId, xPosition + 10, yPosition, 10, 10, "L");
         buttons.buttonPromote.visible = false;
         buttons.buttonPromote.enabled = false;
         buttonList.add(buttons.buttonRemove);

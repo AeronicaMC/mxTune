@@ -27,15 +27,15 @@ import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.PlacedInstrumentUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Tuple;
@@ -57,7 +57,7 @@ import java.util.Set;
 
 import static net.aeronica.mods.mxtune.util.SheetMusicUtil.getSheetMusic;
 
-public class GuiJamOverlay extends Gui
+public class GuiJamOverlay extends AbstractGui
 {
     private static final String INSTRUMENT_INVENTORY_EMPTY = "["+I18n.format("mxtune.instrumentInventory.empty")+"]";
     private static final ResourceLocation TEXTURE_STATUS = new ResourceLocation(Reference.MOD_ID, "textures/gui/status_widgets.png");
@@ -103,7 +103,7 @@ public class GuiJamOverlay extends Gui
         }
     }
     
-    private boolean canRenderHud(EntityPlayer playerIn)
+    private boolean canRenderHud(PlayerEntity playerIn)
     {        
         if (inGuiHudAdjust())
             return true;
@@ -130,7 +130,7 @@ public class GuiJamOverlay extends Gui
 
         if (event.isCancelable() || (elementType != ElementType.EXPERIENCE && elementType != ElementType.TEXT))
             return;
-        EntityPlayerSP player = this.mc.player;
+        ClientPlayerEntity player = this.mc.player;
 
         int width = event.getResolution().getScaledWidth();
         int height = event.getResolution().getScaledHeight() - HOT_BAR_CLEARANCE;
@@ -222,7 +222,7 @@ public class GuiJamOverlay extends Gui
         }
     }
 
-    private List<GroupData> processGroup(EntityPlayer playerIn)
+    private List<GroupData> processGroup(PlayerEntity playerIn)
     {
         List<GroupData> groupData = new ArrayList<>();
         int index = 0;
@@ -422,7 +422,7 @@ public class GuiJamOverlay extends Gui
         return outputBuffer.toString();
     }
     
-    private void renderHud(HudData hd, EntityPlayer playerIn, ItemStack sheetMusic, ElementType elementType)
+    private void renderHud(HudData hd, PlayerEntity playerIn, ItemStack sheetMusic, ElementType elementType)
     {
         int maxWidth = 256;
         int maxHeight = 128;
@@ -446,7 +446,7 @@ public class GuiJamOverlay extends Gui
     }
     
     @SuppressWarnings("static-access")
-    private void renderMini(HudData hd, EntityPlayer playerIn, ElementType elementType)
+    private void renderMini(HudData hd, PlayerEntity playerIn, ElementType elementType)
     {
 
         GL11.glPushMatrix();
@@ -527,7 +527,7 @@ public class GuiJamOverlay extends Gui
         static {for (NOTATION value : values()) {META_LOOKUP[value.getMetadata()] = value;}}
     }
     
-    private void drawWidget(EntityPlayer playerIn, int posX, int posY, String musicTitle)
+    private void drawWidget(PlayerEntity playerIn, int posX, int posY, String musicTitle)
     {
         NOTATION eNOTATION;
         /* draw the widget background */

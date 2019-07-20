@@ -27,11 +27,11 @@ import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.CallBackManager;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.resources.IReloadableResourceManager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.IThreadListener;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -72,19 +72,19 @@ public class ClientProxy extends ServerProxy
     public Minecraft getMinecraft() { return Minecraft.getMinecraft() ;}
 
     @Override
-    public EntityPlayer getClientPlayer() { return Minecraft.getMinecraft().player; }
+    public PlayerEntity getClientPlayer() { return Minecraft.getMinecraft().player; }
 
     @Override
-    public EntityPlayer getPlayerByEntityID(int entityID)
+    public PlayerEntity getPlayerByEntityID(int entityID)
     {
-        return (EntityPlayer)  getClientPlayer().getEntityWorld().getEntityByID(entityID);
+        return (PlayerEntity)  getClientPlayer().getEntityWorld().getEntityByID(entityID);
     }
 
     @Override
-    public WorldClient getClientWorld() { return Minecraft.getMinecraft().world; }
+    public ClientWorld getClientWorld() { return Minecraft.getMinecraft().world; }
 
     @Override
-    public void spawnMusicParticles(EntityPlayer player) { /* Future */ }
+    public void spawnMusicParticles(PlayerEntity player) { /* Future */ }
 
     @Override
     public void registerEventHandlers() { super.registerEventHandlers(); }
@@ -110,18 +110,18 @@ public class ClientProxy extends ServerProxy
     }
 
     @Override
-    public boolean playerIsInCreativeMode(EntityPlayer player)
+    public boolean playerIsInCreativeMode(PlayerEntity player)
     {
-        if (player instanceof EntityPlayerMP)
+        if (player instanceof ServerPlayerEntity)
         {
-            EntityPlayerMP entityPlayerMP = (EntityPlayerMP) player;
+            ServerPlayerEntity entityPlayerMP = (ServerPlayerEntity) player;
             return entityPlayerMP.isCreative();
-        } else if (player instanceof EntityPlayerSP) { return Minecraft.getMinecraft().playerController.isInCreativeMode(); }
+        } else if (player instanceof ClientPlayerEntity) { return Minecraft.getMinecraft().playerController.isInCreativeMode(); }
         return false;
     }
 
     @Override
-    public EntityPlayer getPlayerEntity(MessageContext ctx)
+    public PlayerEntity getPlayerEntity(MessageContext ctx)
     {
         // Note that if you simply return 'Minecraft.getMinecraft().thePlayer',
         // your packets will not work as expected because you will be getting a

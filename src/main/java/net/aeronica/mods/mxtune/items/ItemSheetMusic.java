@@ -21,7 +21,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
@@ -49,10 +49,10 @@ public class ItemSheetMusic extends Item implements IMusic
     {
         if (stackIn.hasTagCompound())
         {
-            NBTTagCompound contents = stackIn.getTagCompound();
+            CompoundNBT contents = stackIn.getTagCompound();
             if (contents != null && contents.hasKey(KEY_SHEET_MUSIC))
             {
-                NBTTagCompound mml = contents.getCompoundTag(KEY_SHEET_MUSIC);
+                CompoundNBT mml = contents.getCompoundTag(KEY_SHEET_MUSIC);
                 if (mml.getString(KEY_MML).contains("MML@"))
                     tooltip.add(TextFormatting.GREEN + mml.getString(KEY_MML).substring(0, Math.min(25 , mml.getString(KEY_MML).length())));
                 else

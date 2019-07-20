@@ -19,7 +19,7 @@ package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.managers.ClientPlayManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -40,7 +40,7 @@ public class ResetClientPlayEngine extends AbstractMessage.AbstractClientMessage
     }
 
     @Override
-    public void process(EntityPlayer player, Side side)
+    public void process(PlayerEntity player, Side side)
     {
         // TODO: Make a more defined process that's more like full client audio chain reset.
         new Thread(() ->

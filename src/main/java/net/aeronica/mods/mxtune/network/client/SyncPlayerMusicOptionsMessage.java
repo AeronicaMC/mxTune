@@ -24,8 +24,8 @@ import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -42,7 +42,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = Miscellus.nonNullInjected();
 
     private int propertyID;
-    private NBTTagCompound data;
+    private CompoundNBT data;
     private boolean disableHud;
     private int positionHud;
     private float sizeHud;
@@ -68,8 +68,8 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         switch (propertyID)
         {
             case MusicOptionsUtil.SYNC_ALL:
-                this.data = new NBTTagCompound();
-                this.data = (NBTTagCompound) MUSIC_OPTIONS.writeNBT(inst, null);
+                this.data = new CompoundNBT();
+                this.data = (CompoundNBT) MUSIC_OPTIONS.writeNBT(inst, null);
                 break;
 
             case MusicOptionsUtil.SYNC_DISPLAY_HUD:
@@ -211,7 +211,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     }
 
     @Override
-    public void process(EntityPlayer player, Side side)
+    public void process(PlayerEntity player, Side side)
     {
         if (player.hasCapability(MUSIC_OPTIONS, null))
         {

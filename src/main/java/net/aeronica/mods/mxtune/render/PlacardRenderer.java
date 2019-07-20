@@ -20,9 +20,9 @@ import net.aeronica.mods.mxtune.Reference;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderLivingBase;
+import net.minecraft.client.renderer.entity.LivingRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
 
 public class PlacardRenderer
@@ -48,9 +48,9 @@ public class PlacardRenderer
 
     public void setPlacard(int index) {this.index = index;}
 
-    public void doRender(net.minecraftforge.client.event.RenderLivingEvent.Specials.Post<EntityLivingBase> event)
+    public void doRender(net.minecraftforge.client.event.RenderLivingEvent.Specials.Post<LivingEntity> event)
     {
-        RenderLivingBase<?> renderer = (RenderLivingBase<?>) event.getRenderer().getRenderManager().getEntityRenderObject(event.getEntity());
+        LivingRenderer<?> renderer = (LivingRenderer<?>) event.getRenderer().getRenderManager().getEntityRenderObject(event.getEntity());
         renderer.bindTexture(placardTextures);
 
         double d0 = event.getEntity().getDistanceSq(renderer.getRenderManager().renderViewEntity);

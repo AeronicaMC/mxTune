@@ -27,16 +27,16 @@ import net.aeronica.mods.mxtune.util.IVariant;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
@@ -76,7 +76,7 @@ public class ItemInstrument extends Item implements IInstrument
 
     @SideOnly(Side.CLIENT)
     @Override
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems)
+    public void getSubItems(ItemGroup tab, NonNullList<ItemStack> subItems)
     {
         if (isInCreativeTab(tab)) {
             final List<ItemStack> items = Stream.of(EnumType.values())
@@ -88,17 +88,17 @@ public class ItemInstrument extends Item implements IInstrument
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn)
     {
         ItemStack itemStackIn = playerIn.getHeldItem(handIn);
         if (!worldIn.isRemote)
         {
             // Server Side - Open the instrument inventory GuiInstInvAdjustRotations
-            if (playerIn.isSneaking() && handIn.equals(EnumHand.MAIN_HAND))
+            if (playerIn.isSneaking() && handIn.equals(Hand.MAIN_HAND))
             {
                 playerIn.openGui(MXTune.instance, GuiGuid.GUI_INSTRUMENT_INVENTORY, worldIn, 0, 0, 0);
             }
-            if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && handIn.equals(EnumHand.MAIN_HAND))
+            if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && handIn.equals(Hand.MAIN_HAND))
             {
                 if (ServerCSDManager.canMXTunesPlay(playerIn))
                 {
@@ -107,7 +107,7 @@ public class ItemInstrument extends Item implements IInstrument
                         int playID = PlayManager.playMusic(playerIn);
                         itemStackIn.setRepairCost(playID);
                         if (playID != PlayType.INVALID)
-                            ModCriteriaTriggers.PLAY_INSTRUMENT.trigger((EntityPlayerMP) playerIn, EnumType.byMetadata(itemStackIn.getMetadata()).getName());
+                            ModCriteriaTriggers.PLAY_INSTRUMENT.trigger((ServerPlayerEntity) playerIn, EnumType.byMetadata(itemStackIn.getMetadata()).getName());
                     }
                 } 
                 else
@@ -119,14 +119,14 @@ public class ItemInstrument extends Item implements IInstrument
         // return EnumActionResult.SUCCESS to activate on AIR only
         // return EnumActionResult.FAIL to activate unconditionally and skip vanilla processing
         // return EnumActionResult.PASS to activate on AIR, or let Vanilla process
-        return new ActionResult<>(EnumActionResult.SUCCESS, itemStackIn);
+        return new ActionResult<>(ActionResultType.SUCCESS, itemStackIn);
     }
 
     /**
      * Off-hand (shield-slot) instrument will allow sneak-right click to remove music from a placed instrument.
      */
     @Override
-    public boolean doesSneakBypassUse(ItemStack stack, net.minecraft.world.IBlockAccess world, BlockPos pos, EntityPlayer player)
+    public boolean doesSneakBypassUse(ItemStack stack, net.minecraft.world.IBlockAccess world, BlockPos pos, PlayerEntity player)
     {   
         return world.getBlockState(pos).getBlock() instanceof IPlacedInstrument;
     }
@@ -170,7 +170,7 @@ public class ItemInstrument extends Item implements IInstrument
     }
 
     @Override
-    public boolean onDroppedByPlayer(ItemStack stackIn, EntityPlayer playerIn)
+    public boolean onDroppedByPlayer(ItemStack stackIn, PlayerEntity playerIn)
     {
         if (!playerIn.getEntityWorld().isRemote)
         {
@@ -188,7 +188,7 @@ public class ItemInstrument extends Item implements IInstrument
      * This is where we decide how our item interacts with other entities
      */
     @Override
-    public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer playerIn, EntityLivingBase target, EnumHand hand)
+    public boolean itemInteractionForEntity(ItemStack stack, PlayerEntity playerIn, LivingEntity target, Hand hand)
     {
         return true;
     }

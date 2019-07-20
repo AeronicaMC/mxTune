@@ -20,8 +20,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import net.aeronica.mods.mxtune.init.ModEntities;
 import net.aeronica.mods.mxtune.managers.GroupManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -49,18 +49,18 @@ public class ServerProxy
 
     public Side getEffectiveSide() { return getPhysicalSide(); }
 
-    public EntityPlayer getClientPlayer() { return null; }
+    public PlayerEntity getClientPlayer() { return null; }
 
-    public EntityPlayer getPlayerByEntityID(int entityID)
+    public PlayerEntity getPlayerByEntityID(int entityID)
     {
-        return (EntityPlayer) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getEntityByID(entityID);
+        return (PlayerEntity) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getEntityByID(entityID);
     }
 
     public Minecraft getMinecraft() { return null; }
 
     public World getClientWorld() { return null; }
 
-    public void spawnMusicParticles(EntityPlayer player) { /* NOP */ }
+    public void spawnMusicParticles(PlayerEntity player) { /* NOP */ }
     
     public void registerEventHandlers()
     {
@@ -73,17 +73,17 @@ public class ServerProxy
 
     public void registerHUD() { /*  NOP */ }
 
-    public boolean playerIsInCreativeMode(EntityPlayer player)
+    public boolean playerIsInCreativeMode(PlayerEntity player)
     {
-        if (player instanceof EntityPlayerMP)
+        if (player instanceof ServerPlayerEntity)
         {
-            EntityPlayerMP entityPlayerMP = (EntityPlayerMP) player;
+            ServerPlayerEntity entityPlayerMP = (ServerPlayerEntity) player;
             return entityPlayerMP.isCreative();
         }
         return false;
     }
 
-    public EntityPlayer getPlayerEntity(MessageContext ctx) { return ctx.getServerHandler().player; }
+    public PlayerEntity getPlayerEntity(MessageContext ctx) { return ctx.getServerHandler().player; }
 
     public IThreadListener getThreadFromContext(MessageContext ctx) { return ctx.getServerHandler().player.getServer(); }
 

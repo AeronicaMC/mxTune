@@ -16,11 +16,11 @@
  */
 package net.aeronica.mods.mxtune.world;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.IWorldNameable;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.INameable;
 import net.minecraft.world.LockCode;
 
-public interface IModLockableContainer extends IWorldNameable
+public interface IModLockableContainer extends INameable
 {
     boolean isLocked();
 
@@ -30,7 +30,7 @@ public interface IModLockableContainer extends IWorldNameable
 
     boolean isOwner(OwnerUUID ownerUUID);
 
-    boolean isOwner(EntityPlayer entityPlayer);
+    boolean isOwner(PlayerEntity entityPlayer);
 
     void setOwner(OwnerUUID ownerUUID);
 

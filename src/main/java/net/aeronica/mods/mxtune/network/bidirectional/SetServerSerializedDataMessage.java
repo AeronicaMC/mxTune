@@ -30,10 +30,10 @@ import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.ResultMessage;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.io.IOException;
@@ -92,7 +92,7 @@ public class SetServerSerializedDataMessage extends AbstractMessage.AbstractServ
     }
 
     @Override
-    public void process(EntityPlayer player, Side side)
+    public void process(PlayerEntity player, Side side)
     {
         ResultMessage resultMessage = ResultMessage.NO_ERROR;
         if (MusicOptionsUtil.isMxTuneServerUpdateAllowed(player))
@@ -110,14 +110,14 @@ public class SetServerSerializedDataMessage extends AbstractMessage.AbstractServ
                     ModLogger.debug("MXT Serialized Test: pass %s", dataTypeUuid.equals(mxTuneFile.getGUID()));
                     break;
                 default:
-                    resultMessage = new ResultMessage(true, new TextComponentTranslation("mxtune.error.unexpected_type", recordType.name()));
+                    resultMessage = new ResultMessage(true, new TranslationTextComponent("mxtune.error.unexpected_type", recordType.name()));
             }
         }
         else
-            PacketDispatcher.sendTo(new SendResultMessage((new TextComponentTranslation("mxtune.warning.set_server_data_not_allowed")), true), (EntityPlayerMP) player);
+            PacketDispatcher.sendTo(new SendResultMessage((new TranslationTextComponent("mxtune.warning.set_server_data_not_allowed")), true), (ServerPlayerEntity) player);
 
         if (resultMessage.hasError())
-            PacketDispatcher.sendTo(new SendResultMessage(resultMessage.getMessage(), resultMessage.hasError()), (EntityPlayerMP) player);
+            PacketDispatcher.sendTo(new SendResultMessage(resultMessage.getMessage(), resultMessage.hasError()), (ServerPlayerEntity) player);
 
     }
 }

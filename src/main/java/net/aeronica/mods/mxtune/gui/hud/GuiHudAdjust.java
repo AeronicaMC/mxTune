@@ -24,10 +24,10 @@ import net.aeronica.mods.mxtune.network.server.HudOptionsMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import org.lwjgl.input.Keyboard;
@@ -38,16 +38,16 @@ import javax.annotation.Nullable;
 import java.awt.*;
 import java.io.IOException;
 
-public class GuiHudAdjust extends GuiScreen
+public class GuiHudAdjust extends Screen
 {
     private static final String TITLE = I18n.format("mxtune.gui.hudAdjust.title");
     private static final String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
-    private GuiScreen guiScreenOld;
+    private Screen guiScreenOld;
 
     private GuiButtonExt buttonCancel;
     private GuiSliderMX sliderHudSize;
 
-    private EntityPlayer playerIn;
+    private PlayerEntity playerIn;
     private boolean midiUnavailable;
     private int chosenHudPos;
     private int mouseX;
@@ -59,7 +59,7 @@ public class GuiHudAdjust extends GuiScreen
     private int prevHudPos;
     private float prevHudSize;
 
-    public GuiHudAdjust(@Nullable GuiScreen guiScreenIn)
+    public GuiHudAdjust(@Nullable Screen guiScreenIn)
     {
         this.guiScreenOld = guiScreenIn;
         this.mc = MXTune.proxy.getMinecraft();
@@ -110,7 +110,7 @@ public class GuiHudAdjust extends GuiScreen
     }
 
     @Override
-    protected void actionPerformed(GuiButton button) throws IOException
+    protected void actionPerformed(Button button) throws IOException
     {
         if (button.enabled)
         {

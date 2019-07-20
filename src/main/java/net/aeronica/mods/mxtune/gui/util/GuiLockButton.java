@@ -18,7 +18,7 @@
 package net.aeronica.mods.mxtune.gui.util;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -53,7 +53,7 @@ public class GuiLockButton extends GuiButtonMX
     {
         if (this.visible)
         {
-            mc.getTextureManager().bindTexture(GuiButton.BUTTON_TEXTURES);
+            mc.getTextureManager().bindTexture(Button.BUTTON_TEXTURES);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             boolean flag = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
             GuiLockButton.Icon guiLockButtonIcon;

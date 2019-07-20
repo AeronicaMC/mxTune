@@ -26,12 +26,12 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.IModel;
@@ -44,11 +44,11 @@ import org.lwjgl.opengl.GL11;
 import java.util.Objects;
 
 @SideOnly(Side.CLIENT)
-public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implements IReBakeModel
+public class RendererPiano extends TileEntityRenderer<TilePiano> implements IReBakeModel
 {
     private double xMusicOffset = 0D;
     private double zMusicOffset = 0D;
-    private EnumFacing facing = EnumFacing.NORTH;
+    private Direction facing = Direction.NORTH;
     private double xRackOffset = 0D;
     private double zRackOffset = 0D;
     private double xBenchOffset = 0D;
@@ -109,7 +109,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
     {
         /* Translations for the sheet music, music rack and bench */
         facing = te.getFacing();
-        if (facing.equals(EnumFacing.NORTH))
+        if (facing.equals(Direction.NORTH))
         {
             /* Sheet Music (Item) translations */
             xMusicOffset = 0.0D;
@@ -120,7 +120,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
             /* Bench (Block) translations */
             xBenchOffset = 1.375D;
             zBenchOffset = 0D;
-        } else if (facing.equals(EnumFacing.SOUTH))
+        } else if (facing.equals(Direction.SOUTH))
         {
             xMusicOffset = 0.0D;
             zMusicOffset = 0.5D;
@@ -128,7 +128,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
             zRackOffset = 1D;
             xBenchOffset = -0.375D;
             zBenchOffset = 1D;
-        } else if (facing.equals(EnumFacing.EAST))
+        } else if (facing.equals(Direction.EAST))
         {
             xMusicOffset = 0.5D;
             zMusicOffset = 0.0D;
@@ -137,7 +137,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
             xBenchOffset = 1D;
             zBenchOffset = 1.375D;
         }
-        if (facing.equals(EnumFacing.WEST))
+        if (facing.equals(Direction.WEST))
         {
             xMusicOffset = -0.5D;
             zMusicOffset = 0.0D;
@@ -205,7 +205,7 @@ public class RendererPiano extends TileEntitySpecialRenderer<TilePiano> implemen
     {
         GlStateManager.rotate(face[facing.getIndex()] - 90, 0, 1, 0);
         RenderHelper.disableStandardItemLighting();
-        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        this.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
         if (Minecraft.isAmbientOcclusionEnabled())
             GlStateManager.shadeModel(GL11.GL_SMOOTH);
         else

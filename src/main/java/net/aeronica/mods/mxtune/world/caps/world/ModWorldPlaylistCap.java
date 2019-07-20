@@ -20,9 +20,9 @@ package net.aeronica.mods.mxtune.world.caps.world;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.NBTHelper;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -55,31 +55,31 @@ public class ModWorldPlaylistCap
     {
         if (event.getObject() != null)
         {
-            event.addCapability(new ResourceLocation(Reference.MOD_ID, "world_music"), new ICapabilitySerializable<NBTTagCompound>()
+            event.addCapability(new ResourceLocation(Reference.MOD_ID, "world_music"), new ICapabilitySerializable<CompoundNBT>()
             {
                 IModWorldPlaylist instance = MOD_WORLD_DATA.getDefaultInstance();
 
                 @Override
-                public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing)
+                public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable Direction facing)
                 {
                     return capability == MOD_WORLD_DATA;
                 }
 
                 @Nullable
                 @Override
-                public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing)
+                public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing)
                 {
                     return capability == MOD_WORLD_DATA ? MOD_WORLD_DATA.<T>cast(instance) : null;
                 }
 
                 @Override
-                public NBTTagCompound serializeNBT()
+                public CompoundNBT serializeNBT()
                 {
-                    return (NBTTagCompound) MOD_WORLD_DATA.getStorage().writeNBT(MOD_WORLD_DATA, instance, null);
+                    return (CompoundNBT) MOD_WORLD_DATA.getStorage().writeNBT(MOD_WORLD_DATA, instance, null);
                 }
 
                 @Override
-                public void deserializeNBT(NBTTagCompound nbt)
+                public void deserializeNBT(CompoundNBT nbt)
                 {
                     MOD_WORLD_DATA.getStorage().readNBT(MOD_WORLD_DATA, instance, null, nbt);
                 }
@@ -100,17 +100,17 @@ public class ModWorldPlaylistCap
     {
         @Nullable
         @Override
-        public NBTBase writeNBT(Capability<IModWorldPlaylist> capability, IModWorldPlaylist instance, EnumFacing side)
+        public NBTBase writeNBT(Capability<IModWorldPlaylist> capability, IModWorldPlaylist instance, Direction side)
         {
-            NBTTagCompound properties =  new NBTTagCompound();
+            CompoundNBT properties =  new CompoundNBT();
             NBTHelper.setGuidToCompound(properties, instance.getPlaylistGuid());
             return properties;
         }
 
         @Override
-        public void readNBT(Capability<IModWorldPlaylist> capability, IModWorldPlaylist instance, EnumFacing side, NBTBase nbt)
+        public void readNBT(Capability<IModWorldPlaylist> capability, IModWorldPlaylist instance, Direction side, NBTBase nbt)
         {
-            NBTTagCompound properties = (NBTTagCompound) nbt;
+            CompoundNBT properties = (CompoundNBT) nbt;
             instance.setPlaylistGuid(NBTHelper.getGuidFromCompound(properties));
         }
     }

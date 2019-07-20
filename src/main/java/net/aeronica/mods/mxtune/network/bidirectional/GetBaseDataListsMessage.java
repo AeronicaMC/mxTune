@@ -26,11 +26,11 @@ import net.aeronica.mods.mxtune.util.CallBack;
 import net.aeronica.mods.mxtune.util.CallBackManager;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.Notify;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.io.*;
@@ -44,7 +44,7 @@ public class GetBaseDataListsMessage<E extends BaseData> extends AbstractMessage
     private byte[] byteBuffer = null;
     private long callbackUuidMSB = 0;
     private long callbackUuidLSB = 0;
-    private ITextComponent message = new TextComponentTranslation("mxtune.no_error", "");
+    private ITextComponent message = new TranslationTextComponent("mxtune.no_error", "");
     private UUID callbackUuid;
     private List<E> listBaseData;
     private boolean readError = false;
@@ -115,14 +115,14 @@ public class GetBaseDataListsMessage<E extends BaseData> extends AbstractMessage
     }
 
     @Override
-    public void process(EntityPlayer player, Side side)
+    public void process(PlayerEntity player, Side side)
     {
         if (side.isClient())
         {
             handleClientSide();
         } else
         {
-            handleServerSide((EntityPlayerMP) player);
+            handleServerSide((ServerPlayerEntity) player);
         }
     }
 
@@ -138,23 +138,23 @@ public class GetBaseDataListsMessage<E extends BaseData> extends AbstractMessage
                 notify.onNotify(recordType);
         }
         else
-                callBack.onFailure(message.appendText("/n").appendSibling(new TextComponentTranslation("mxtune.error.network_data_error", "CLIENT Read Error.")));
+                callBack.onFailure(message.appendText("/n").appendSibling(new TranslationTextComponent("mxtune.error.network_data_error", "CLIENT Read Error.")));
     }
 
     @SuppressWarnings("unchecked")
-    private void handleServerSide(EntityPlayerMP playerMP)
+    private void handleServerSide(ServerPlayerEntity playerMP)
     {
         switch (recordType)
         {
             case MXT:
                 break;
             case PLAY_LIST:
-                PacketDispatcher.sendTo(new GetBaseDataListsMessage(ServerFileManager.getPlayLists(), callbackUuid, recordType, new TextComponentTranslation("mxtune.no_error", "SERVER")), playerMP);
+                PacketDispatcher.sendTo(new GetBaseDataListsMessage(ServerFileManager.getPlayLists(), callbackUuid, recordType, new TranslationTextComponent("mxtune.no_error", "SERVER")), playerMP);
                 break;
             case SONG:
                 break;
             case SONG_PROXY:
-                PacketDispatcher.sendTo(new GetBaseDataListsMessage(ServerFileManager.getSongProxies(), callbackUuid, recordType, new TextComponentTranslation("mxtune.no_error", "SERVER")), playerMP);
+                PacketDispatcher.sendTo(new GetBaseDataListsMessage(ServerFileManager.getSongProxies(), callbackUuid, recordType, new TranslationTextComponent("mxtune.no_error", "SERVER")), playerMP);
                 break;
             default:
         }

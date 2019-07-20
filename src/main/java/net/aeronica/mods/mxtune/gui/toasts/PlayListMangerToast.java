@@ -18,12 +18,12 @@
 package net.aeronica.mods.mxtune.gui.toasts;
 
 import net.aeronica.mods.mxtune.init.ModItems;
-import net.minecraft.client.gui.toasts.GuiToast;
 import net.minecraft.client.gui.toasts.IToast;
+import net.minecraft.client.gui.toasts.ToastGui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 
 public class PlayListMangerToast implements IToast
@@ -35,7 +35,7 @@ public class PlayListMangerToast implements IToast
     public PlayListMangerToast() {/*  NOP */}
 
     @Override
-    public Visibility draw(GuiToast toastGui, long delta)
+    public Visibility draw(ToastGui toastGui, long delta)
     {
         if (this.firstShow)
         {
@@ -50,7 +50,7 @@ public class PlayListMangerToast implements IToast
         toastGui.getMinecraft().fontRenderer.drawString(I18n.format("mxtune.gui.button.upload"), 30, 7, -11534256);
         toastGui.getMinecraft().fontRenderer.drawString(I18n.format("mxtune.gui.guiPlayListManager.title"), 30, 18, -11534256);
         RenderHelper.enableGUIStandardItemLighting();
-        toastGui.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI((EntityLivingBase)null, this.itemStack, 8, 8);
+        toastGui.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI((LivingEntity)null, this.itemStack, 8, 8);
         return delta - this.firstDrawTime >= 5000L ? IToast.Visibility.HIDE : IToast.Visibility.SHOW;
     }
 }

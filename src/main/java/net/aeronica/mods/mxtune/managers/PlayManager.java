@@ -27,10 +27,10 @@ import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.*;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -66,7 +66,7 @@ public class PlayManager
      * @param playerIn who is playing
      * @return a unique play id
      */
-    public static int playMusic(EntityPlayer playerIn)
+    public static int playMusic(PlayerEntity playerIn)
     {
         return playMusic(playerIn, null, false);
     }
@@ -77,7 +77,7 @@ public class PlayManager
      * @param pos position of block instrument
      * @return a unique play id
      */
-    public static int playMusic(EntityPlayer playerIn, BlockPos pos)
+    public static int playMusic(PlayerEntity playerIn, BlockPos pos)
     {
         return playMusic(playerIn, pos, true);
     }
@@ -118,17 +118,17 @@ public class PlayManager
      * @param isPlaced true is this is a block instrument
      * @return a unique play id or null if unable to play
      */
-    public static int playMusic(EntityPlayer playerIn, BlockPos pos, boolean isPlaced)
+    public static int playMusic(PlayerEntity playerIn, BlockPos pos, boolean isPlaced)
     {
         if (MusicOptionsUtil.isMuteAll(playerIn))
             return PlayType.INVALID;
         ItemStack sheetMusic = getSheetMusic(pos, playerIn, isPlaced);
         if (!sheetMusic.isEmpty())
         {
-            NBTTagCompound contents = null;
+            CompoundNBT contents = null;
             if (sheetMusic.getTagCompound() != null)
             {
-                contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
+                contents = (CompoundNBT) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
             }
             if (contents != null && !contents.isEmpty())
             {
@@ -159,7 +159,7 @@ public class PlayManager
         return PlayType.INVALID;
     }
 
-    private static int playSolo(EntityPlayer playerIn, String mml, int duration, Integer playerID)
+    private static int playSolo(PlayerEntity playerIn, String mml, int duration, Integer playerID)
     {
         int playID = getNextPlayID();
         queue(playID, playerID, mml);
@@ -175,7 +175,7 @@ public class PlayManager
     }
     
     @SuppressWarnings("ConstantConditions")
-    private static int queueJam(EntityPlayer playerIn, String mml, int duration, Integer membersID)
+    private static int queueJam(PlayerEntity playerIn, String mml, int duration, Integer membersID)
     {
         int groupsPlayID = getGroupsPlayID(membersID);
         /* Queue members parts */
@@ -245,7 +245,7 @@ public class PlayManager
         return entityID != null && membersPlayID.containsKey(entityID);
     }
     
-    public static  <T extends EntityLivingBase> boolean isPlayerPlaying(T entityLivingIn)
+    public static  <T extends LivingEntity> boolean isPlayerPlaying(T entityLivingIn)
     {
         return isPlayerPlaying(entityLivingIn.getEntityId());
     }
@@ -268,7 +268,7 @@ public class PlayManager
         return members;
     }
         
-    public static <T extends EntityLivingBase> void stopPlayingPlayer(T entityLivingIn)
+    public static <T extends LivingEntity> void stopPlayingPlayer(T entityLivingIn)
     {
         stopPlayingPlayer(entityLivingIn.getEntityId());
     }
@@ -303,7 +303,7 @@ public class PlayManager
         syncStatus();
     }
     
-    private static int getPackedPreset(BlockPos pos, EntityPlayer playerIn, boolean isPlaced)
+    private static int getPackedPreset(BlockPos pos, PlayerEntity playerIn, boolean isPlaced)
     {
         int packedPreset = 0;
         if (isPlaced)
@@ -405,7 +405,7 @@ public class PlayManager
     private static Vec3d getMemberVector(Integer entityID)
     {
         Vec3d v3d;
-        EntityPlayer player = MXTune.proxy.getPlayerByEntityID(entityID);
+        PlayerEntity player = MXTune.proxy.getPlayerByEntityID(entityID);
         if (player != null)
             v3d = new Vec3d(player.posX, player.prevPosY, player.posZ);
         else

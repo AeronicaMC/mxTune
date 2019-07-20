@@ -38,7 +38,7 @@ package net.aeronica.mods.mxtune.util;
 
 import net.aeronica.mods.mxtune.entity.EntitySittableBlock;
 import net.minecraft.block.BlockLiquid;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -50,7 +50,7 @@ public class PlacedInstrumentUtil
 {    
     private PlacedInstrumentUtil() {/* NOP */}
     /** Gets a Block position under a players feet. works on blocks, half slabs, carpets. */
-    private static BlockPos blockUnderFoot(EntityPlayer playerIn)
+    private static BlockPos blockUnderFoot(PlayerEntity playerIn)
     {
         int x = (int) Math.floor(playerIn.posX);
         int y = (int) Math.floor(playerIn.posY - playerIn.getYOffset() - 0.6D);
@@ -59,7 +59,7 @@ public class PlacedInstrumentUtil
     }
 
     @SuppressWarnings("unused")
-    public static boolean standOnBlock(World worldIn, BlockPos posIn, EntityPlayer playerIn)
+    public static boolean standOnBlock(World worldIn, BlockPos posIn, PlayerEntity playerIn)
     {
         if (canPlaceEntity(worldIn, posIn))
         {
@@ -76,7 +76,7 @@ public class PlacedInstrumentUtil
     }
 
     @SuppressWarnings("unused")
-    public static boolean sitOnBlock(World worldIn, BlockPos posIn, EntityPlayer playerIn, double yOffset)
+    public static boolean sitOnBlock(World worldIn, BlockPos posIn, PlayerEntity playerIn, double yOffset)
     {
         if (canPlaceEntity(worldIn, posIn))
         {
@@ -88,7 +88,7 @@ public class PlacedInstrumentUtil
     }
 
     @SuppressWarnings("unused")
-    public static boolean sitOnBlock(World worldIn, BlockPos posIn, EntityPlayer playerIn, double xOffset, double yOffset, double zOffset)
+    public static boolean sitOnBlock(World worldIn, BlockPos posIn, PlayerEntity playerIn, double xOffset, double yOffset, double zOffset)
     {
         if (canPlaceEntity(worldIn, posIn))
         {
@@ -99,7 +99,7 @@ public class PlacedInstrumentUtil
         return true;
     }
 
-    public static boolean sitOnBlock(World worldIn, BlockPos posIn, EntityPlayer playerIn, double xOffset, double yOffset, double zOffset, float yaw)
+    public static boolean sitOnBlock(World worldIn, BlockPos posIn, PlayerEntity playerIn, double xOffset, double yOffset, double zOffset, float yaw)
     {
         if (canPlaceEntity(worldIn, posIn))
         {
@@ -111,7 +111,7 @@ public class PlacedInstrumentUtil
     }
 
     @SuppressWarnings("unused")
-    public static boolean sitOnBlockWithRotationOffset(World worldIn, BlockPos posIn, EntityPlayer playerIn, double yOffset, int metadata, double offset)
+    public static boolean sitOnBlockWithRotationOffset(World worldIn, BlockPos posIn, PlayerEntity playerIn, double yOffset, int metadata, double offset)
     {
         if (canPlaceEntity(worldIn, posIn))
         {
@@ -138,7 +138,7 @@ public class PlacedInstrumentUtil
         return true;
     }
 
-    public static boolean isPlayerSitting(World worldIn, EntityPlayer playerIn, BlockPos posIn)
+    public static boolean isPlayerSitting(World worldIn, PlayerEntity playerIn, BlockPos posIn)
     {
         int x = posIn.getX();
         int y = posIn.getY();
@@ -170,12 +170,12 @@ public class PlacedInstrumentUtil
      * @param playerIn the player of interest
      * @return true if playerIn is riding a placed instrument
      */
-    public static boolean isRiding(@Nullable EntityPlayer playerIn)
+    public static boolean isRiding(@Nullable PlayerEntity playerIn)
     {
         return (playerIn !=null) && !playerIn.isDead && (playerIn.getRidingEntity() instanceof EntitySittableBlock);
     }
     
-    public static BlockPos getRiddenBlock(EntityPlayer playerIn)
+    public static BlockPos getRiddenBlock(PlayerEntity playerIn)
     {
         return isRiding(playerIn) ? ((EntitySittableBlock)playerIn.getRidingEntity()).getBlockPos() : BlockPos.ORIGIN;
     }

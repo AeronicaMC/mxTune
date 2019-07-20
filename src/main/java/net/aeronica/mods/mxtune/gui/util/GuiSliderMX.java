@@ -18,11 +18,11 @@
 package net.aeronica.mods.mxtune.gui.util;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
-public class GuiSliderMX extends GuiButton
+public class GuiSliderMX extends Button
 {
     private float sliderValue;
     private float value;

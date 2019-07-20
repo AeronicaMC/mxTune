@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.world;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.concurrent.Immutable;
@@ -45,13 +45,13 @@ public class OwnerUUID
 
     public UUID getUUID() { return this.uuid; }
 
-    public void toNBT(NBTTagCompound nbt)
+    public void toNBT(CompoundNBT nbt)
     {
         nbt.setLong(OWNER_UUID_KEY_MSB, uuid.getMostSignificantBits());
         nbt.setLong(OWNER_UUID_KEY_LSB, uuid.getLeastSignificantBits());
     }
 
-    public static OwnerUUID fromNBT(NBTTagCompound nbt)
+    public static OwnerUUID fromNBT(CompoundNBT nbt)
     {
         if (nbt.hasKey(OWNER_UUID_KEY_MSB, Constants.NBT.TAG_LONG) && nbt.hasKey(OWNER_UUID_KEY_LSB, Constants.NBT.TAG_LONG))
         {

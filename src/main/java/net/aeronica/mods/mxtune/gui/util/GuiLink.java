@@ -19,13 +19,13 @@ package net.aeronica.mods.mxtune.gui.util;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.ForgeHooks;
 
 import javax.annotation.Nonnull;
 
-public class GuiLink extends GuiButton
+public class GuiLink extends Button
 {
     private final AlignText alignText;
 

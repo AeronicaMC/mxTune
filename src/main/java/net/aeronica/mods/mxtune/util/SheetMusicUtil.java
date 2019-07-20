@@ -29,10 +29,10 @@ import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.aeronica.mods.mxtune.sound.Midi2WavRenderer;
 import net.aeronica.mods.mxtune.sound.ModMidiException;
 import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
@@ -55,7 +55,7 @@ public enum SheetMusicUtil
         ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(stackIn);
         if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
         {
-            NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
+            CompoundNBT contents = (CompoundNBT) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
             if (!contents.isEmpty())
             {
                 return sheetMusic.getDisplayName();
@@ -64,7 +64,7 @@ public enum SheetMusicUtil
         return "";
     }
 
-    public static ItemStack getSheetMusic(BlockPos pos, EntityPlayer playerIn, boolean isPlaced)
+    public static ItemStack getSheetMusic(BlockPos pos, PlayerEntity playerIn, boolean isPlaced)
     {
         if (isPlaced)
         {
@@ -86,14 +86,14 @@ public enum SheetMusicUtil
     {
         if ((stackIn.getItem() instanceof IInstrument) && stackIn.getTagCompound() != null)
         {
-            NBTTagList items = stackIn.getTagCompound().getTagList(ITEM_INVENTORY, Constants.NBT.TAG_COMPOUND);
+            ListNBT items = stackIn.getTagCompound().getTagList(ITEM_INVENTORY, Constants.NBT.TAG_COMPOUND);
             if (items.tagCount() == 1)
             {
-                NBTTagCompound item = items.getCompoundTagAt(0);
+                CompoundNBT item = items.getCompoundTagAt(0);
                 ItemStack sheetMusic = new ItemStack(item);
                 if (sheetMusic.getItem() instanceof IMusic && sheetMusic.getTagCompound() != null)
                 {
-                    NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
+                    CompoundNBT contents = (CompoundNBT) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
                     if (contents.hasKey(KEY_MML))
                     {
                         return sheetMusic;
@@ -107,11 +107,11 @@ public enum SheetMusicUtil
     public static boolean writeSheetMusic(ItemStack sheetMusic, @Nonnull String musicTitle, @Nonnull String mml)
     {
         sheetMusic.setStackDisplayName(musicTitle);
-        NBTTagCompound compound = sheetMusic.getTagCompound();
+        CompoundNBT compound = sheetMusic.getTagCompound();
         ValidDuration validDuration = validateMML(mml);
         if (compound != null && (sheetMusic.getItem() instanceof IMusic) && validDuration.isValidMML() && validDuration.getDuration() > 0)
         {
-            NBTTagCompound contents = new NBTTagCompound();
+            CompoundNBT contents = new CompoundNBT();
             contents.setString(KEY_MML, mml);
             contents.setInteger(KEY_DURATION, validDuration.getDuration());
             compound.setTag(KEY_SHEET_MUSIC, contents);
@@ -197,7 +197,7 @@ public enum SheetMusicUtil
                 ItemStack sheetMusic = getSheetMusic(stackInSlot);
                 if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
                 {
-                    NBTTagCompound contents = (NBTTagCompound) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
+                    CompoundNBT contents = (CompoundNBT) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
                     if (contents.hasKey(KEY_MML))
                     {
                         String mml = contents.getString(KEY_MML);

@@ -22,11 +22,11 @@ import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
 import net.aeronica.mods.mxtune.network.NetworkStringHelper;
 import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -60,13 +60,13 @@ public class MusicTextMessage extends AbstractServerMessage<MusicTextMessage>
     }
 
     @Override
-    public void process(EntityPlayer player, Side side)
+    public void process(PlayerEntity player, Side side)
     {
         if (side.isServer())
             processServer(player);
     }
 
-    private void processServer(EntityPlayer player)
+    private void processServer(PlayerEntity player)
     {
         String mml = musicText.trim();
 
@@ -81,14 +81,14 @@ public class MusicTextMessage extends AbstractServerMessage<MusicTextMessage>
             }
             else
             {
-                player.sendStatusMessage(new TextComponentTranslation("mxtune.status.mml_server_side_validation_failure"), false);
+                player.sendStatusMessage(new TranslationTextComponent("mxtune.status.mml_server_side_validation_failure"), false);
                 Miscellus.audiblePingPlayer(player, SoundEvents.BLOCK_ANVIL_PLACE);
             }
             player.inventoryContainer.detectAndSendChanges();
         }
         else
         {
-            player.sendStatusMessage(new TextComponentTranslation("mxtune.status.mml_server_side_music_paper_supply_empty"), false);
+            player.sendStatusMessage(new TranslationTextComponent("mxtune.status.mml_server_side_music_paper_supply_empty"), false);
             Miscellus.audiblePingPlayer(player, SoundEvents.BLOCK_ANVIL_PLACE);
         }
     }

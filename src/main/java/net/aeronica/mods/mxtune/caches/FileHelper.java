@@ -27,9 +27,9 @@ import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.ServerWorld;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -69,7 +69,7 @@ public class FileHelper
     public static void initialize()
     {
         // The top level "world" save folder a.k.a. the "Over World"
-        WorldServer worldServer = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(0);
+        ServerWorld worldServer = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(0);
         File chunkDir = worldServer.getChunkSaveLocation();
         serverWorldFolder = Paths.get(chunkDir.getPath());
     }
@@ -193,7 +193,7 @@ public class FileHelper
         return resolve.toFile().exists();
     }
 
-    public static NBTTagCompound getCompoundFromFile(Path path)
+    public static CompoundNBT getCompoundFromFile(Path path)
     {
         if (path == null)
             throw new MXTuneRuntimeException("Missing cache file!");
@@ -204,7 +204,7 @@ public class FileHelper
         }
         catch (IOException e0)
         {
-            NBTTagCompound nbtTagCompound = new NBTTagCompound();
+            CompoundNBT nbtTagCompound = new CompoundNBT();
             try
             {
                 CompressedStreamTools.writeCompressed(nbtTagCompound, new FileOutputStream(path.toFile()));
@@ -217,7 +217,7 @@ public class FileHelper
         }
     }
 
-    public static void sendCompoundToFile(Path path, NBTTagCompound tagCompound)
+    public static void sendCompoundToFile(Path path, CompoundNBT tagCompound)
     {
         try
         {

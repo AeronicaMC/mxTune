@@ -29,17 +29,13 @@ import net.aeronica.mods.mxtune.world.caps.chunk.ModChunkPlaylistHelper;
 import net.aeronica.mods.mxtune.world.caps.world.ModWorldPlaylistHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
@@ -55,7 +51,7 @@ public class ItemStaffOfMusic extends Item
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn)
     {
         boolean hasRights = MusicOptionsUtil.isMxTuneServerUpdateAllowed(playerIn);
         if (worldIn.isRemote)
@@ -67,7 +63,7 @@ public class ItemStaffOfMusic extends Item
             else if (!hasRights)
                 notifyPlayer(playerIn, SoundEvents.BLOCK_GLASS_BREAK, "commands.mxtune.mxtune_server_update_not_allowed");
 
-            return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
+            return new ActionResult<>(ActionResultType.SUCCESS, playerIn.getHeldItem(handIn));
         }
         else
         {
@@ -104,13 +100,13 @@ public class ItemStaffOfMusic extends Item
                 notifyPlayer(playerIn, SoundEvents.BLOCK_GLASS_BREAK, "commands.mxtune.mxtune_server_update_not_allowed");
             }
         }
-        return new ActionResult<>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
+        return new ActionResult<>(ActionResultType.SUCCESS, playerIn.getHeldItem(handIn));
     }
 
-    private void notifyPlayer(EntityPlayer playerIn, SoundEvent soundEvent, String translationKey)
+    private void notifyPlayer(PlayerEntity playerIn, SoundEvent soundEvent, String translationKey)
     {
         Miscellus.audiblePingPlayer(playerIn, soundEvent);
-        playerIn.sendStatusMessage(new TextComponentTranslation(translationKey), true);
+        playerIn.sendStatusMessage(new TranslationTextComponent(translationKey), true);
     }
 
     @Override

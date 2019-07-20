@@ -21,7 +21,7 @@ import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.network.NetworkStringHelper;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -63,11 +63,11 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
     }
 
     @Override
-    public void process(EntityPlayer player, Side side)
+    public void process(PlayerEntity player, Side side)
     {
         if (!midiUnavailableWarn(player))
         {
-            EntityPlayer otherPlayer = (EntityPlayer) player.getEntityWorld().getEntityByID(getMembersGroupLeader(leaderID));
+            PlayerEntity otherPlayer = (PlayerEntity) player.getEntityWorld().getEntityByID(getMembersGroupLeader(leaderID));
             if (playerNotMuted(player, otherPlayer))
             {
                 ModLogger.debug("musicText:  " + jamMML.substring(0, Math.min(25, jamMML.length())));

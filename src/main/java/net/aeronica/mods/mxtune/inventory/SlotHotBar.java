@@ -16,12 +16,11 @@
  */
 package net.aeronica.mods.mxtune.inventory;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-public class SlotHotBar extends Slot
+public class SlotHotBar extends net.minecraft.inventory.container.Slot
 {
     SlotHotBar(IInventory inventory, int slotIndex, int xPos, int yPos)
     {
@@ -34,7 +33,7 @@ public class SlotHotBar extends Slot
      * it's own inventory and crashing the game
      */
     @Override
-    public boolean canTakeStack(EntityPlayer playerIn)
+    public boolean canTakeStack(PlayerEntity playerIn)
     {
         ItemStack is = playerIn.getHeldItemMainhand();
         if (!is.isEmpty())

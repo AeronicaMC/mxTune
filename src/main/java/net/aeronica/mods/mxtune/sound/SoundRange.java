@@ -1,7 +1,7 @@
 package net.aeronica.mods.mxtune.sound;
 
 import net.minecraft.client.audio.ISound;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -47,9 +47,9 @@ public enum SoundRange
 
     public static SoundRange getSoundRange(int index) { return SoundRange.values()[index % LENGTH]; }
 
-    public void toNBT(NBTTagCompound nbt) { nbt.setString(SOUND_RANGE_KEY, name()); }
+    public void toNBT(CompoundNBT nbt) { nbt.setString(SOUND_RANGE_KEY, name()); }
 
-    public static SoundRange fromNBT(NBTTagCompound nbt)
+    public static SoundRange fromNBT(CompoundNBT nbt)
     {
         SoundRange soundRange = NORMAL;
         if (nbt.hasKey(SOUND_RANGE_KEY, Constants.NBT.TAG_STRING))

@@ -27,7 +27,7 @@ import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -140,7 +140,7 @@ public enum  ClientFileManager implements CallBack
             case PLAY_LIST:
                 for (PlayList playList : (List<PlayList>) payload)
                 {
-                    NBTTagCompound compound = new NBTTagCompound();
+                    CompoundNBT compound = new CompoundNBT();
                     playList.writeToNBT(compound);
                     addPlayList(playList.getGUID(), compound, false);
                 }
@@ -178,7 +178,7 @@ public enum  ClientFileManager implements CallBack
         return playLists;
     }
 
-    public static void addPlayList(GUID guid, NBTTagCompound data, boolean error)
+    public static void addPlayList(GUID guid, CompoundNBT data, boolean error)
     {
         if (error)
         {
@@ -205,7 +205,7 @@ public enum  ClientFileManager implements CallBack
 
     // Songs
 
-    public static void addSong(GUID uuid, NBTTagCompound data, boolean error)
+    public static void addSong(GUID uuid, CompoundNBT data, boolean error)
     {
         if (error)
         {
@@ -294,7 +294,7 @@ public enum  ClientFileManager implements CallBack
 
         for (Path file : files)
         {
-            NBTTagCompound compound = FileHelper.getCompoundFromFile(file);
+            CompoundNBT compound = FileHelper.getCompoundFromFile(file);
             if (compound != null)
                 try
                 {
@@ -397,7 +397,7 @@ public enum  ClientFileManager implements CallBack
             try
             {
                 Path path = FileHelper.getCacheFile(pathMusic.toString(), guid.toString() + FileHelper.EXTENSION_DAT, Side.CLIENT);
-                NBTTagCompound compound = FileHelper.getCompoundFromFile(path);
+                CompoundNBT compound = FileHelper.getCompoundFromFile(path);
                 Song song = new Song();
                 song.readFromNBT(compound);
                 return song;

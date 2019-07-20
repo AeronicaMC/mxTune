@@ -18,12 +18,12 @@ package net.aeronica.mods.mxtune.util;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.init.ModItems;
-import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class MusicTab extends CreativeTabs
+public class MusicTab extends ItemGroup
 {
     public MusicTab(int id, String name) {super(id, name);}
 

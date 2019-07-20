@@ -19,7 +19,7 @@ package net.aeronica.mods.mxtune.network.client;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -48,7 +48,7 @@ public class StopPlayIDMessage extends AbstractClientMessage<StopPlayIDMessage>
     }
 
     @Override
-    public void process(EntityPlayer player, Side side)
+    public void process(PlayerEntity player, Side side)
     {
         ModLogger.debug("Remove Managed playID: %d", playID);
         ClientAudio.queueAudioDataRemoval(playID);

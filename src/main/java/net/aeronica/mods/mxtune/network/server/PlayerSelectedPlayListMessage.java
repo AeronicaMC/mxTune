@@ -20,7 +20,7 @@ package net.aeronica.mods.mxtune.network.server;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.GUID;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -62,7 +62,7 @@ public class PlayerSelectedPlayListMessage extends AbstractMessage.AbstractServe
     }
 
     @Override
-    public void process(EntityPlayer player, Side side)
+    public void process(PlayerEntity player, Side side)
     {
         MusicOptionsUtil.setSelectedPlayListGuid(player, selectedAreaGuid);
     }

@@ -31,8 +31,8 @@ import net.aeronica.mods.mxtune.Reference;
 import net.minecraft.advancements.ICriterionTrigger;
 import net.minecraft.advancements.PlayerAdvancements;
 import net.minecraft.advancements.critereon.AbstractCriterionInstance;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.JsonUtils;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.HashMap;
@@ -96,7 +96,7 @@ public class PlayInstrumentTrigger implements ICriterionTrigger<PlayInstrumentTr
         listeners.remove(playerAdvancementsIn);
     }
 
-    public void trigger(EntityPlayerMP player, String instrumentName)
+    public void trigger(ServerPlayerEntity player, String instrumentName)
     {
         Listeners ls = listeners.get(player.getAdvancements());
         if(ls != null)
@@ -106,7 +106,7 @@ public class PlayInstrumentTrigger implements ICriterionTrigger<PlayInstrumentTr
     @Override
     public Instance deserializeInstance(JsonObject json, JsonDeserializationContext context)
     {
-        String instrumentName = JsonUtils.getString(json, "instrument");
+        String instrumentName = JSONUtils.getString(json, "instrument");
 
         if(instrumentName == null)
             throw new JsonSyntaxException("Unknown instrument: '" + instrumentName + "'");

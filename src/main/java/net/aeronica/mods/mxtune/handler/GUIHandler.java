@@ -25,8 +25,7 @@ import net.aeronica.mods.mxtune.gui.mml.GuiPlaylistManager;
 import net.aeronica.mods.mxtune.inventory.ContainerBandAmp;
 import net.aeronica.mods.mxtune.inventory.ContainerInstrument;
 import net.aeronica.mods.mxtune.world.LockableHelper;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
@@ -42,7 +41,7 @@ public class GUIHandler implements IGuiHandler
     public static GUIHandler getInstance() {return GUIHandlerHolder.INSTANCE;}
 
     @Override
-    public Object getServerGuiElement(int guiID, EntityPlayer playerIn, World worldIn, int x, int y, int z)
+    public Object getServerGuiElement(int guiID, PlayerEntity playerIn, World worldIn, int x, int y, int z)
     {
         switch (guiID)
         {
@@ -62,7 +61,7 @@ public class GUIHandler implements IGuiHandler
     }
 
     @Override
-    public Object getClientGuiElement(int guiID, EntityPlayer playerIn, World worldIn, int x, int y, int z)
+    public Object getClientGuiElement(int guiID, PlayerEntity playerIn, World worldIn, int x, int y, int z)
     {
         switch (guiID)
         {
@@ -82,7 +81,7 @@ public class GUIHandler implements IGuiHandler
                 return new GuiMusicOptions(null);
 
             case GUI_BAND_AMP:
-                return new GuiBandAmp((Container) getServerGuiElement(guiID, playerIn, worldIn, x, y, z), playerIn.inventory,
+                return new GuiBandAmp((net.minecraft.inventory.container.Container) getServerGuiElement(guiID, playerIn, worldIn, x, y, z), playerIn.inventory,
                                       (TileBandAmp) worldIn.getTileEntity(new BlockPos(x, y, z)));
 
             case GUI_MUSIC_LIBRARY:

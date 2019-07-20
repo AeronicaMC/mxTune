@@ -25,7 +25,7 @@ import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -76,7 +76,7 @@ public class GroupHelper
         return GroupHelper.clientMembers.get(memberID);
     }
 
-    private static Set<Integer> getPlayersGroupMembers(EntityPlayer playerIn)
+    private static Set<Integer> getPlayersGroupMembers(PlayerEntity playerIn)
     {
         Integer groupID = GroupHelper.getMembersGroupID(playerIn.getEntityId());
         if(groupID != null)
@@ -236,7 +236,7 @@ public class GroupHelper
         Vec3d pos;
         for(int member: getMembersByPlayID(playID))
         {
-            EntityPlayer player = MXTune.proxy.getPlayerByEntityID(member);
+            PlayerEntity player = MXTune.proxy.getPlayerByEntityID(member);
             if(player == null)
                 continue;
             x = x + player.getPositionVector().x;
@@ -262,7 +262,7 @@ public class GroupHelper
      * @param playerIn get the scaled distance for this player
      * #return 0-1D, where 1 represents the critical stop.
      */
-    public static double getGroupMembersScaledDistance(EntityPlayer playerIn)
+    public static double getGroupMembersScaledDistance(PlayerEntity playerIn)
     {
         Set<Integer> members = getPlayersGroupMembers(playerIn);
         double abortDistance = ModConfig.getGroupPlayAbortDistance();
@@ -282,7 +282,7 @@ public class GroupHelper
     private static Vec3d getMemberVector(Integer entityID)
     {
         Vec3d v3d;
-        EntityPlayer player = (EntityPlayer) MXTune.proxy.getClientPlayer().getEntityWorld().getEntityByID(entityID);
+        PlayerEntity player = (PlayerEntity) MXTune.proxy.getClientPlayer().getEntityWorld().getEntityByID(entityID);
         if (player != null)
             v3d = new Vec3d(player.posX, player.prevPosY, player.posZ);
         else

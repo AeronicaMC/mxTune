@@ -20,7 +20,7 @@ import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
 import net.aeronica.mods.mxtune.options.ClassifiedPlayer;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -105,7 +105,7 @@ public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessa
     }
 
     @Override
-    public void process(EntityPlayer player, Side side)
+    public void process(PlayerEntity player, Side side)
     {
         if (canProcess)
         {

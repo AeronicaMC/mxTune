@@ -5,15 +5,15 @@
 package net.aeronica.mods.mxtune.gui.util;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiLabelMX extends Gui
+public class GuiLabelMX extends AbstractGui
 {
     private int width;
     private int height;

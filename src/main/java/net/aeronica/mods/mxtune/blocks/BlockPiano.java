@@ -25,19 +25,16 @@ import net.aeronica.mods.mxtune.inventory.IMusic;
 import net.aeronica.mods.mxtune.managers.PlayManager;
 import net.aeronica.mods.mxtune.status.ServerCSDManager;
 import net.aeronica.mods.mxtune.util.PlacedInstrumentUtil;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockHorizontal;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.EnumPushReaction;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.material.PushReaction;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -58,7 +55,7 @@ import java.util.Random;
 import static net.aeronica.libs.mml.core.MMLUtil.preset2PackedPreset;
 
 @SuppressWarnings("deprecation")
-public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
+public class BlockPiano extends HorizontalBlock implements IPlacedInstrument
 {
     public static final PropertyEnum<BlockPiano.EnumPartType> PART = PropertyEnum.create("part", BlockPiano.EnumPartType.class);
     public static final PropertyBool OCCUPIED = PropertyBool.create("occupied");
@@ -79,10 +76,10 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos posIn, IBlockState stateIn, EntityPlayer playerIn, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos posIn, BlockState stateIn, PlayerEntity playerIn, Hand hand, Direction side, float hitX, float hitY, float hitZ)
     {
         BlockPos pos = new BlockPos(posIn);
-        IBlockState state = stateIn;
+        BlockState state = stateIn;
 
         if (state.getValue(PART) == BlockPiano.EnumPartType.RIGHT)
         {
@@ -149,7 +146,7 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
                 if (ServerCSDManager.canMXTunesPlay(playerIn))
                 {
                     ((EntitySittableBlock) playerIn.getRidingEntity()).setPlayID(PlayManager.playMusic(playerIn, pos));
-                    ModCriteriaTriggers.PLAY_INSTRUMENT.trigger((EntityPlayerMP) playerIn, "spinet_piano");
+                    ModCriteriaTriggers.PLAY_INSTRUMENT.trigger((ServerPlayerEntity) playerIn, "spinet_piano");
                 }
                 else
                     ServerCSDManager.sendErrorViaChat(playerIn);
@@ -170,27 +167,27 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
         return preset2PackedPreset(12, 21);
     }
 
-    private boolean sitPiano(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn)
+    private boolean sitPiano(World worldIn, BlockPos pos, BlockState state, PlayerEntity playerIn)
     {
         double xOffset = 0D;
         double zOffset = 0D;
         float yaw = 0F;
-        if (state.getValue(FACING).equals(EnumFacing.NORTH))
+        if (state.getValue(FACING).equals(Direction.NORTH))
         {
             xOffset = 1.375D;
             zOffset = 0.0D;
             yaw = 90F;
-        } else if (state.getValue(FACING).equals(EnumFacing.SOUTH))
+        } else if (state.getValue(FACING).equals(Direction.SOUTH))
         {
             xOffset = -0.375D;
             zOffset = 1.0D;
             yaw = 270F;
-        } else if (state.getValue(FACING).equals(EnumFacing.EAST))
+        } else if (state.getValue(FACING).equals(Direction.EAST))
         {
             xOffset = 1.0D;
             zOffset = 1.375D;
             yaw = 180F;
-        } else if (state.getValue(FACING).equals(EnumFacing.WEST))
+        } else if (state.getValue(FACING).equals(Direction.WEST))
         {
             xOffset = 0.0D;
             zOffset = -0.375D;
@@ -200,17 +197,17 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
     }
 
     @Override
-    public boolean isFullCube(IBlockState state) {return false;}
+    public boolean isFullCube(BlockState state) {return false;}
 
     // Used to determine ambient occlusion and culling when rebuilding chunks for render
     @Override
-    public boolean isOpaqueCube(IBlockState state) {return false;}
+    public boolean isOpaqueCube(BlockState state) {return false;}
 
     // Called when a neighboring block changes.
     @Override
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
+    public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
-        EnumFacing enumfacing = state.getValue(FACING);
+        Direction enumfacing = state.getValue(FACING);
 
         if (state.getValue(PART) == BlockPiano.EnumPartType.RIGHT)
         {
@@ -231,37 +228,37 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
     }
 
     @Override
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean p_185477_7_)
+    public void addCollisionBoxToList(BlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean p_185477_7_)
     {
         List<AxisAlignedBB> list = Lists.newArrayList();
         list.add(PIANO_BODY_AABB);
         if (state.getValue(PART) == BlockPiano.EnumPartType.LEFT)
         {
-            if (state.getValue(FACING).equals(EnumFacing.NORTH))
+            if (state.getValue(FACING).equals(Direction.NORTH))
             {
                 list.add(MUSIC_RACK_AABB_NW);
-            } else if (state.getValue(FACING).equals(EnumFacing.SOUTH))
+            } else if (state.getValue(FACING).equals(Direction.SOUTH))
             {
                 list.add(MUSIC_RACK_AABB_SE);
-            } else if (state.getValue(FACING).equals(EnumFacing.EAST))
+            } else if (state.getValue(FACING).equals(Direction.EAST))
             {
                 list.add(MUSIC_RACK_AABB_NE);
-            } else if (state.getValue(FACING).equals(EnumFacing.WEST))
+            } else if (state.getValue(FACING).equals(Direction.WEST))
             {
                 list.add(MUSIC_RACK_AABB_SW);
             }
         } else
         {
-            if (state.getValue(FACING).equals(EnumFacing.NORTH))
+            if (state.getValue(FACING).equals(Direction.NORTH))
             {
                 list.add(MUSIC_RACK_AABB_SW);
-            } else if (state.getValue(FACING).equals(EnumFacing.SOUTH))
+            } else if (state.getValue(FACING).equals(Direction.SOUTH))
             {
                 list.add(MUSIC_RACK_AABB_NE);
-            } else if (state.getValue(FACING).equals(EnumFacing.EAST))
+            } else if (state.getValue(FACING).equals(Direction.EAST))
             {
                 list.add(MUSIC_RACK_AABB_NW);
-            } else if (state.getValue(FACING).equals(EnumFacing.WEST))
+            } else if (state.getValue(FACING).equals(Direction.WEST))
             {
                 list.add(MUSIC_RACK_AABB_SE);
             }
@@ -286,23 +283,23 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {return PIANO_BODY_AABB;}
+    public AxisAlignedBB getBoundingBox(BlockState state, IBlockAccess source, BlockPos pos) {return PIANO_BODY_AABB;}
 
     @Override
-    public EnumPushReaction getPushReaction(IBlockState state) {return EnumPushReaction.DESTROY;}
+    public PushReaction getPushReaction(BlockState state) {return PushReaction.DESTROY;}
 
     @SideOnly(Side.CLIENT)
     @Override
     public BlockRenderLayer getRenderLayer() {return BlockRenderLayer.CUTOUT;}
 
     @Override
-    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
+    public ItemStack getItem(World worldIn, BlockPos pos, BlockState state)
     {
         return new ItemStack(ModItems.ITEM_SPINET_PIANO);
     }
     
     @Override
-    public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player)
+    public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player)
     {
         if (player.capabilities.isCreativeMode && state.getValue(PART) == BlockPiano.EnumPartType.RIGHT)
         {
@@ -316,7 +313,7 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
     }
 
     @Override
-    public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
+    public void breakBlock(World worldIn, BlockPos pos, BlockState state)
     {
         TilePiano tile = (TilePiano) worldIn.getTileEntity(pos);
         if (state.getValue(PART) == BlockPiano.EnumPartType.LEFT && tile != null && !tile.getInventory().getStackInSlot(0).isEmpty())
@@ -330,14 +327,14 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
     // Get the Item that this Block should drop when harvested.
     @Nullable
     @Override
-    public Item getItemDropped(IBlockState state, Random rand, int fortune)
+    public Item getItemDropped(BlockState state, Random rand, int fortune)
     {
         return state.getValue(PART) == BlockPiano.EnumPartType.RIGHT ? null : ModItems.ITEM_SPINET_PIANO;
     }
 
     // Spawns this Block's drops into the World as EntityItems.
     @Override
-    public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, IBlockState state, float chance, int fortune)
+    public void dropBlockAsItemWithChance(World worldIn, BlockPos pos, BlockState state, float chance, int fortune)
     {
         if (state.getValue(PART) == BlockPiano.EnumPartType.LEFT   )
         {
@@ -347,9 +344,9 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
 
     // Convert the given metadata into a BlockState for this Block
     @Override
-    public IBlockState getStateFromMeta(int meta)
+    public BlockState getStateFromMeta(int meta)
     {
-        EnumFacing enumfacing = EnumFacing.byHorizontalIndex(meta);
+        Direction enumfacing = Direction.byHorizontalIndex(meta);
         return (meta & 8) > 0 ? this.getDefaultState().withProperty(PART, BlockPiano.EnumPartType.RIGHT).withProperty(FACING, enumfacing).withProperty(OCCUPIED, (meta & 4) > 0)
                 : this.getDefaultState().withProperty(PART, BlockPiano.EnumPartType.LEFT).withProperty(FACING, enumfacing);
     }
@@ -360,12 +357,12 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
      * connections.
      */
     @Override
-    public IBlockState getActualState(IBlockState stateIn, IBlockAccess worldIn, BlockPos pos)
+    public BlockState getActualState(BlockState stateIn, IBlockAccess worldIn, BlockPos pos)
     {
-        IBlockState stateOut = stateIn;
+        BlockState stateOut = stateIn;
         if (stateIn.getValue(PART) == BlockPiano.EnumPartType.LEFT)
         {
-            IBlockState iblockstate = worldIn.getBlockState(pos.offset(stateIn.getValue(FACING)));
+            BlockState iblockstate = worldIn.getBlockState(pos.offset(stateIn.getValue(FACING)));
 
             if (iblockstate.getBlock() == this)
             {
@@ -377,21 +374,21 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
 
     //Returns the blockstate with the given rotation from the passed blockstate. If inapplicable, returns the passed blockstate.
     @Override
-    public IBlockState withRotation(IBlockState state, Rotation rot)
+    public BlockState withRotation(BlockState state, Rotation rot)
     {
         return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
     }
 
     // Returns the blockstate with the given mirror of the passed blockstate. If inapplicable, returns the passed blockstate.
     @Override
-    public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
+    public BlockState withMirror(BlockState state, Mirror mirrorIn)
     {
         return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
     }
 
     /* Convert the BlockState into the correct metadata value */
     @Override
-    public int getMetaFromState(IBlockState state)
+    public int getMetaFromState(BlockState state)
     {
         int i = 0;
         i = i | state.getValue(FACING).getHorizontalIndex();
@@ -432,20 +429,20 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
     /* TileEntity stuff */
 
     @Override
-    public EnumBlockRenderType getRenderType(IBlockState state)
+    public BlockRenderType getRenderType(BlockState state)
     {
-        return EnumBlockRenderType.MODEL;
+        return BlockRenderType.MODEL;
     }
 
     @Override
-    public boolean hasTileEntity(IBlockState state)
+    public boolean hasTileEntity(BlockState state)
     {
         /* We only need one Tile Entity per piano. We will reference the LEFT block only. */
         return state.getValue(PART) == BlockPiano.EnumPartType.LEFT;
     }
 
     @Override
-    public TileEntity createTileEntity(World world, IBlockState state)
+    public TileEntity createTileEntity(World world, BlockState state)
     {
         return new TilePiano(state.getValue(FACING));
     }
@@ -467,7 +464,7 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
         float f = world.rand.nextFloat() * 0.8F + 0.1F;
         float f1 = world.rand.nextFloat() * 0.8F + 0.1F;
         float f2 = world.rand.nextFloat() * 0.8F + 0.1F;
-        EntityItem entityitem = new EntityItem(world, x + f, y + f1, z + f2, stack.copy());
+        ItemEntity entityitem = new ItemEntity(world, x + f, y + f1, z + f2, stack.copy());
         entityitem.motionX = world.rand.nextGaussian() * 0.05;
         entityitem.motionY = world.rand.nextGaussian() * 0.05 + 0.2;
         entityitem.motionZ = world.rand.nextGaussian() * 0.05;

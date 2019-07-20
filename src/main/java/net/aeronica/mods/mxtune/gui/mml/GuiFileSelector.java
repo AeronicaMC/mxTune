@@ -25,10 +25,10 @@ import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiLabel;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
@@ -53,13 +53,13 @@ import static net.aeronica.mods.mxtune.gui.mml.SortPathHelper.SortType;
 import static net.aeronica.mods.mxtune.gui.mml.SortPathHelper.updateSortButtons;
 import static net.aeronica.mods.mxtune.gui.util.ModGuiUtils.clearOnMouseLeftClicked;
 
-public class GuiFileSelector extends GuiScreen
+public class GuiFileSelector extends Screen
 {
     private static final String TITLE = I18n.format("mxtune.gui.guiFileSelector.title");
     private static final String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
     private int guiLeft;
     private int guiTop;
-    private GuiScreen guiScreenParent;
+    private Screen guiScreenParent;
     private boolean isStateCached;
     private int cachedSelectedIndex;
     private boolean midiUnavailable;
@@ -68,21 +68,21 @@ public class GuiFileSelector extends GuiScreen
     private Path selectedFile;
 
     private GuiLabel searchLabel;
-    private GuiTextField search;
+    private TextFieldWidget search;
     private boolean sorted = false;
     private SortType sortType = SortType.NORMAL;
     private String lastSearch = "";
     private SortType cachedSortType;
 
-    private GuiButton buttonCancel;
-    private List<GuiButton> safeButtonList;
+    private Button buttonCancel;
+    private List<Button> safeButtonList;
 
     private List<Path> fileList = new ArrayList<>();
     private boolean watcherStarted = false;
 
     private DirectoryWatcher watcher;
 
-    public GuiFileSelector(@Nullable GuiScreen guiScreenParent)
+    public GuiFileSelector(@Nullable Screen guiScreenParent)
     {
         this.guiScreenParent = guiScreenParent;
         mc = Minecraft.getMinecraft();
@@ -180,20 +180,20 @@ public class GuiFileSelector extends GuiScreen
         searchLabel = new GuiLabel(fontRenderer, 0, left, statusTop, searchLabelWidth, entryHeight + 2, 0xFFFFFF );
         searchLabel.addLine(searchLabelText);
         searchLabel.visible = true;
-        search = new GuiTextField(0, fontRenderer, left + searchLabelWidth, statusTop, guiListWidth - searchLabelWidth, entryHeight + 2);
+        search = new TextFieldWidget(0, fontRenderer, left + searchLabelWidth, statusTop, guiListWidth - searchLabelWidth, entryHeight + 2);
         search.setFocused(true);
         search.setCanLoseFocus(true);
 
         int buttonMargin = 1;
         int buttonWidth = 75;
         int x = left;
-        GuiButton normalSort = new GuiButton(SortType.NORMAL.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, I18n.format("fml.menu.mods.normal"));
+        Button normalSort = new Button(SortType.NORMAL.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, I18n.format("fml.menu.mods.normal"));
         normalSort.enabled = false;
         buttonList.add(normalSort);
         x += buttonWidth + buttonMargin;
-        buttonList.add(new GuiButton(SortType.A_TO_Z.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, "A-Z"));
+        buttonList.add(new Button(SortType.A_TO_Z.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, "A-Z"));
         x += buttonWidth + buttonMargin;
-        buttonList.add(new GuiButton(SortType.Z_TO_A.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, "Z-A"));
+        buttonList.add(new Button(SortType.Z_TO_A.getButtonID(), x, titleTop, buttonWidth - buttonMargin, 20, "Z-A"));
 
         int buttonTop = height - 25;
         int xOpen = (this.width /2) - 75 * 2;
@@ -204,8 +204,8 @@ public class GuiFileSelector extends GuiScreen
         buttonOpen.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiFileSelector.openFolder.help"));
         GuiButtonMX buttonRefresh = new GuiButtonMX(3, xRefresh, buttonTop, 75, 20, I18n.format("mxtune.gui.button.refresh"));
         buttonRefresh.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.guiFileSelector.refresh.help"));
-        GuiButton buttonDone = new GuiButton(0, xDone, buttonTop, 75, 20, I18n.format("mxtune.gui.button.select"));
-        buttonCancel = new GuiButton(1, xCancel, buttonTop, 75, 20, I18n.format("gui.cancel"));
+        Button buttonDone = new Button(0, xDone, buttonTop, 75, 20, I18n.format("mxtune.gui.button.select"));
+        buttonCancel = new Button(1, xCancel, buttonTop, 75, 20, I18n.format("gui.cancel"));
 
         buttonList.add(buttonDone);
         buttonList.add(buttonCancel);
@@ -275,7 +275,7 @@ public class GuiFileSelector extends GuiScreen
     }
 
     @Override
-    protected void actionPerformed(GuiButton button) throws IOException
+    protected void actionPerformed(Button button) throws IOException
     {
         if (button.enabled)
         {

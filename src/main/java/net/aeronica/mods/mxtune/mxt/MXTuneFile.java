@@ -21,7 +21,7 @@ import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.managers.records.BaseData;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +50,7 @@ public class MXTuneFile extends BaseData
         parts = new ArrayList<>();
     }
 
-    public static MXTuneFile build(NBTTagCompound compound)
+    public static MXTuneFile build(CompoundNBT compound)
     {
         MXTuneFile mxTuneFile = new MXTuneFile();
         mxTuneFile.readFromNBT(compound);
@@ -58,7 +58,7 @@ public class MXTuneFile extends BaseData
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound compound)
+    public void readFromNBT(CompoundNBT compound)
     {
         super.readFromNBT(compound);
         String mxtVersion = compound.getString(TAG_MXT_VERSION);
@@ -71,7 +71,7 @@ public class MXTuneFile extends BaseData
         parts = new ArrayList<>();
         for (int i = 0; i < partCount; i++)
         {
-            NBTTagCompound compoundPart = compound.getCompoundTag(TAG_PART_PREFIX + i);
+            CompoundNBT compoundPart = compound.getCompoundTag(TAG_PART_PREFIX + i);
             parts.add(new MXTunePart(compoundPart));
         }
 
@@ -80,7 +80,7 @@ public class MXTuneFile extends BaseData
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound compound)
+    public void writeToNBT(CompoundNBT compound)
     {
         super.writeToNBT(compound);
         compound.setString(TAG_MXT_VERSION, MXT_VERSION);
@@ -93,7 +93,7 @@ public class MXTuneFile extends BaseData
         int i = 0;
         for (MXTunePart part : parts)
         {
-            NBTTagCompound compoundPart = new NBTTagCompound();
+            CompoundNBT compoundPart = new CompoundNBT();
             part.writeToNBT(compoundPart);
 
             compound.setTag(TAG_PART_PREFIX + i, compoundPart);

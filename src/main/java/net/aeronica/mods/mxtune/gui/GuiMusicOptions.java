@@ -26,16 +26,15 @@ import net.aeronica.mods.mxtune.options.ClassifiedPlayer;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.client.network.NetworkPlayerInfo;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.network.play.ClientPlayNetHandler;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.GuiScrollingList;
@@ -48,9 +47,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class GuiMusicOptions extends GuiScreen
+public class GuiMusicOptions extends Screen
 {
-    private GuiScreen guiScreenOld;
+    private Screen guiScreenOld;
     private static final String TITLE = I18n.format("mxtune.gui.musicOptions.title");
     private static final String LABEL_WHITELIST = I18n.format("mxtune.gui.musicOptions.label.whitelist");
     private static final String LABEL_PLAYERS  = I18n.format("mxtune.gui.musicOptions.label.players");
@@ -64,7 +63,7 @@ public class GuiMusicOptions extends GuiScreen
     private GuiPlayerList listBoxWhite;
     private GuiPlayerList listBoxBlack;
 
-    private EntityPlayer player;
+    private PlayerEntity player;
     private int muteOption;
     private boolean midiUnavailable;
     private int guiListWidth;
@@ -81,7 +80,7 @@ public class GuiMusicOptions extends GuiScreen
     private int cachedSelectedWhiteIndex = -1;
     private int cachedSelectedBlackIndex = -1;
 
-    public GuiMusicOptions(@Nullable GuiScreen guiScreenIn)
+    public GuiMusicOptions(@Nullable Screen guiScreenIn)
     {
         this.mc = Minecraft.getMinecraft();
         player = mc.player;
@@ -203,7 +202,7 @@ public class GuiMusicOptions extends GuiScreen
     public void updateScreen() { /* NOP */ }
 
     @Override
-    protected void actionPerformed(GuiButton guibutton)
+    protected void actionPerformed(Button guibutton)
     {
         switch (guibutton.id)
         {
@@ -323,8 +322,8 @@ public class GuiMusicOptions extends GuiScreen
         @Override
         protected void drawBackground()
         {
-            Gui.drawRect(left - 1, top - 1, left + listWidth + 1, top + listHeight + 1, -6250336);
-            Gui.drawRect(left, top, left + listWidth, top + listHeight, -16777216);
+            AbstractGui.drawRect(left - 1, top - 1, left + listWidth + 1, top + listHeight + 1, -6250336);
+            AbstractGui.drawRect(left, top, left + listWidth, top + listHeight, -16777216);
         }
 
         @Override
@@ -352,18 +351,18 @@ public class GuiMusicOptions extends GuiScreen
     }
 
     
-    static class PlayerComparator implements Comparator<NetworkPlayerInfo>
+    static class PlayerComparator implements Comparator<net.minecraft.client.network.play.NetworkPlayerInfo>
     {
         private PlayerComparator() {}
 
         @Override
-        public int compare(NetworkPlayerInfo pCompare1, NetworkPlayerInfo pCompare2)
+        public int compare(net.minecraft.client.network.play.NetworkPlayerInfo pCompare1, net.minecraft.client.network.play.NetworkPlayerInfo pCompare2)
         {
             return ComparisonChain.start().compare(pCompare1.getGameProfile().getName(), pCompare2.getGameProfile().getName()).result();
         }
     }
 
-    private static final Ordering<NetworkPlayerInfo> ENTRY_ORDERING = Ordering.from(new GuiMusicOptions.PlayerComparator());
+    private static final Ordering<net.minecraft.client.network.play.NetworkPlayerInfo> ENTRY_ORDERING = Ordering.from(new GuiMusicOptions.PlayerComparator());
     
     static class PlayerListsComparator implements Comparator<ClassifiedPlayer>
     {
@@ -385,9 +384,9 @@ public class GuiMusicOptions extends GuiScreen
 
         if (!(this.mc.isIntegratedServerRunning() && this.mc.player.connection.getPlayerInfoMap().size() <= 1))
         {
-            NetHandlerPlayClient nethandlerplayclient = this.mc.player.connection;
-            List<NetworkPlayerInfo> list = ENTRY_ORDERING.sortedCopy(nethandlerplayclient.getPlayerInfoMap());
-            for (NetworkPlayerInfo networkplayerinfo : list)
+            ClientPlayNetHandler nethandlerplayclient = this.mc.player.connection;
+            List<net.minecraft.client.network.play.NetworkPlayerInfo> list = ENTRY_ORDERING.sortedCopy(nethandlerplayclient.getPlayerInfoMap());
+            for (net.minecraft.client.network.play.NetworkPlayerInfo networkplayerinfo : list)
             {
                 ClassifiedPlayer networkPlayer = new ClassifiedPlayer();
                 networkPlayer.setPlayerName(getPlayerName(networkplayerinfo));
@@ -434,7 +433,7 @@ public class GuiMusicOptions extends GuiScreen
         networkPlayers.addAll(tempPlayerList);
     }
     
-    private String getPlayerName(NetworkPlayerInfo networkPlayerInfoIn)
+    private String getPlayerName(net.minecraft.client.network.play.NetworkPlayerInfo networkPlayerInfoIn)
     {
         return networkPlayerInfoIn.getDisplayName() != null ? networkPlayerInfoIn.getDisplayName().getFormattedText() : ScorePlayerTeam.formatPlayerName(networkPlayerInfoIn.getPlayerTeam(), networkPlayerInfoIn.getGameProfile().getName());
     }

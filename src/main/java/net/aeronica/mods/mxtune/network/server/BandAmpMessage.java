@@ -22,12 +22,12 @@ import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.world.IModLockableContainer;
 import net.aeronica.mods.mxtune.world.OwnerUUID;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.LockCode;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -78,7 +78,7 @@ public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAm
     }
 
     @Override
-    public void process(EntityPlayer player, Side side)
+    public void process(PlayerEntity player, Side side)
     {
         if(player.world.isBlockLoaded(pos))
         {
@@ -88,7 +88,7 @@ public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAm
         }
     }
 
-    private void processLockButton(EntityPlayer player, TileEntity tileEntity)
+    private void processLockButton(PlayerEntity player, TileEntity tileEntity)
     {
         if(tileEntity instanceof IModLockableContainer)
         {
@@ -108,7 +108,7 @@ public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAm
         }
     }
 
-    private void processButtons(EntityPlayer entityPlayer, TileEntity tileEntity)
+    private void processButtons(PlayerEntity entityPlayer, TileEntity tileEntity)
     {
         // Process updates only for the owner
         if(tileEntity instanceof TileBandAmp && ((TileBandAmp) tileEntity).getOwner().getUUID().equals(entityPlayer.getPersistentID()))
@@ -120,7 +120,7 @@ public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAm
             if (soundRange == SoundRange.INFINITY && !MusicOptionsUtil.isSoundRangeInfinityAllowed(entityPlayer))
             {
                 tileBandAmp.setSoundRange(SoundRange.NORMAL);
-                entityPlayer.sendMessage(new TextComponentTranslation("mxtune.gui.bandAmp.soundRangeInfinityNotAllowed"));
+                entityPlayer.sendMessage(new TranslationTextComponent("mxtune.gui.bandAmp.soundRangeInfinityNotAllowed"));
                 audiblePingPlayer(entityPlayer, SoundEvents.BLOCK_NOTE_PLING);
             }
             else {

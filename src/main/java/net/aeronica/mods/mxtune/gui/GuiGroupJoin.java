@@ -22,10 +22,10 @@ import net.aeronica.mods.mxtune.managers.GroupHelper;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.ManageGroupMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
@@ -36,7 +36,7 @@ import java.util.Set;
 import static net.aeronica.mods.mxtune.managers.GroupHelper.MEMBER_ADD;
 import static net.aeronica.mods.mxtune.managers.GroupHelper.getLeaderOfGroup;
 
-public class GuiGroupJoin extends GuiScreen
+public class GuiGroupJoin extends Screen
 {
     private static final ResourceLocation guiTexture = new ResourceLocation(Reference.MOD_ID, "textures/gui/manage_group.png");
 
@@ -52,7 +52,7 @@ public class GuiGroupJoin extends GuiScreen
     /** Starting Y position for the Gui. Inconsistent use for Gui backgrounds. */
     private int guiTop;
 
-    private EntityPlayer player;
+    private PlayerEntity player;
     private Integer groupID;
 
     @Override
@@ -69,11 +69,11 @@ public class GuiGroupJoin extends GuiScreen
 
         int posX = guiLeft + 169;
         int posY = guiTop + 92;
-        GuiButton buttonYes = new GuiButton(0, posX, posY, 60, 20, I18n.format("gui.yes"));
+        Button buttonYes = new Button(0, posX, posY, 60, 20, I18n.format("gui.yes"));
 
         posX = guiLeft + 169;
         posY = guiTop + 112;
-        GuiButton buttonNo = new GuiButton(1, posX, posY, 60, 20, I18n.format("gui.no"));
+        Button buttonNo = new Button(1, posX, posY, 60, 20, I18n.format("gui.no"));
         
         buttonList.add(buttonYes);
         buttonList.add(buttonNo);
@@ -143,7 +143,7 @@ public class GuiGroupJoin extends GuiScreen
     }
 
     @Override
-    protected void actionPerformed(GuiButton guibutton)
+    protected void actionPerformed(Button guibutton)
     {
         switch (guibutton.id)
         {

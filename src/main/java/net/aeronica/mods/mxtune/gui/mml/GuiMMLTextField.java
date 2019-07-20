@@ -11,10 +11,9 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import net.aeronica.libs.mml.core.MMLAllowedCharacters;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiPageButtonList;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -24,7 +23,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiMMLTextField extends Gui
+public class GuiMMLTextField extends AbstractGui
 {
     private final int id;
     private final FontRenderer fontRenderer;
@@ -366,29 +365,29 @@ public class GuiMMLTextField extends Gui
         {
             return false;
         }
-        else if (GuiScreen.isKeyComboCtrlA(keyCode))
+        else if (Screen.isKeyComboCtrlA(keyCode))
         {
             this.setCursorPositionEnd();
             this.setSelectionPos(0);
             return true;
         }
-        else if (GuiScreen.isKeyComboCtrlC(keyCode))
+        else if (Screen.isKeyComboCtrlC(keyCode))
         {
-            GuiScreen.setClipboardString(this.getSelectedText());
+            Screen.setClipboardString(this.getSelectedText());
             return true;
         }
-        else if (GuiScreen.isKeyComboCtrlV(keyCode))
+        else if (Screen.isKeyComboCtrlV(keyCode))
         {
             if (this.isEnabled)
             {
-                this.writeText(GuiScreen.getClipboardString());
+                this.writeText(Screen.getClipboardString());
             }
 
             return true;
         }
-        else if (GuiScreen.isKeyComboCtrlX(keyCode))
+        else if (Screen.isKeyComboCtrlX(keyCode))
         {
-            GuiScreen.setClipboardString(this.getSelectedText());
+            Screen.setClipboardString(this.getSelectedText());
 
             if (this.isEnabled)
             {
@@ -403,7 +402,7 @@ public class GuiMMLTextField extends Gui
             {
                 case 14:
 
-                    if (GuiScreen.isCtrlKeyDown())
+                    if (Screen.isCtrlKeyDown())
                     {
                         if (this.isEnabled)
                         {
@@ -418,7 +417,7 @@ public class GuiMMLTextField extends Gui
                     return true;
                 case 199:
 
-                    if (GuiScreen.isShiftKeyDown())
+                    if (Screen.isShiftKeyDown())
                     {
                         this.setSelectionPos(0);
                     }
@@ -430,9 +429,9 @@ public class GuiMMLTextField extends Gui
                     return true;
                 case 203:
 
-                    if (GuiScreen.isShiftKeyDown())
+                    if (Screen.isShiftKeyDown())
                     {
-                        if (GuiScreen.isCtrlKeyDown())
+                        if (Screen.isCtrlKeyDown())
                         {
                             this.setSelectionPos(this.getNthWordFromPos(-1, this.getSelectionEnd()));
                         }
@@ -441,7 +440,7 @@ public class GuiMMLTextField extends Gui
                             this.setSelectionPos(this.getSelectionEnd() - 1);
                         }
                     }
-                    else if (GuiScreen.isCtrlKeyDown())
+                    else if (Screen.isCtrlKeyDown())
                     {
                         this.setCursorPosition(this.getNthWordFromCursor(-1));
                     }
@@ -453,9 +452,9 @@ public class GuiMMLTextField extends Gui
                     return true;
                 case 205:
 
-                    if (GuiScreen.isShiftKeyDown())
+                    if (Screen.isShiftKeyDown())
                     {
-                        if (GuiScreen.isCtrlKeyDown())
+                        if (Screen.isCtrlKeyDown())
                         {
                             this.setSelectionPos(this.getNthWordFromPos(1, this.getSelectionEnd()));
                         }
@@ -464,7 +463,7 @@ public class GuiMMLTextField extends Gui
                             this.setSelectionPos(this.getSelectionEnd() + 1);
                         }
                     }
-                    else if (GuiScreen.isCtrlKeyDown())
+                    else if (Screen.isCtrlKeyDown())
                     {
                         this.setCursorPosition(this.getNthWordFromCursor(1));
                     }
@@ -476,7 +475,7 @@ public class GuiMMLTextField extends Gui
                     return true;
                 case 207:
 
-                    if (GuiScreen.isShiftKeyDown())
+                    if (Screen.isShiftKeyDown())
                     {
                         this.setSelectionPos(this.text.length());
                     }
@@ -488,7 +487,7 @@ public class GuiMMLTextField extends Gui
                     return true;
                 case 211:
 
-                    if (GuiScreen.isCtrlKeyDown())
+                    if (Screen.isCtrlKeyDown())
                     {
                         if (this.isEnabled)
                         {
@@ -607,7 +606,7 @@ public class GuiMMLTextField extends Gui
             {
                 if (flag2)
                 {
-                    Gui.drawRect(k1, i1 - 1, k1 + 1, i1 + 1 + this.fontRenderer.FONT_HEIGHT, -3092272);
+                    AbstractGui.drawRect(k1, i1 - 1, k1 + 1, i1 + 1 + this.fontRenderer.FONT_HEIGHT, -3092272);
                 }
                 else
                 {

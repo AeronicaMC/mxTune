@@ -30,13 +30,13 @@ import net.aeronica.mods.mxtune.sound.IAudioStatusCallback;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiLabel;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.relauncher.Side;
@@ -58,24 +58,24 @@ import java.util.stream.Stream;
 
 import static net.aeronica.mods.mxtune.gui.util.ModGuiUtils.clearOnMouseLeftClicked;
 
-public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
+public class GuiMusicLibrary extends Screen implements IAudioStatusCallback
 {
     private static final String TITLE = I18n.format("mxtune.gui.guiMusicLibrary.title");
     private static final String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
-    private GuiScreen guiScreenParent;
+    private Screen guiScreenParent;
     private int guiLeft;
     private int guiTop;
     private boolean isStateCached;
     private boolean midiUnavailable;
 
-    private GuiButton buttonCancel;
-    private List<GuiButton> safeButtonList;
+    private Button buttonCancel;
+    private List<Button> safeButtonList;
     private GuiScrollingListOf<FileData> guiLibraryList;
     private List<Path> libraryFiles = new ArrayList<>();
 
     // Sort and Search
     private GuiLabel searchLabel;
-    private GuiTextField search;
+    private TextFieldWidget search;
     private boolean sorted = false;
     private SortFileDataHelper.SortType sortType = SortFileDataHelper.SortType.NATURAL;
     private String lastSearch = "";
@@ -92,7 +92,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
     private List<MXTunePart> tuneParts = new ArrayList<>();
 
     // playing
-    private GuiButton buttonPlay;
+    private Button buttonPlay;
     private boolean isPlaying = false;
     private int playId = PlayIdSupplier.PlayType.INVALID;
 
@@ -100,7 +100,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
     private boolean watcherStarted = false;
     private DirectoryWatcher watcher;
 
-    public GuiMusicLibrary(GuiScreen guiScreenParent)
+    public GuiMusicLibrary(Screen guiScreenParent)
     {
         this.guiScreenParent = guiScreenParent;
         mc = Minecraft.getMinecraft();
@@ -226,7 +226,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         searchLabel = new GuiLabel(fontRenderer, 0, left, statusTop, searchLabelWidth, entryHeight + 2, 0xFFFFFF );
         searchLabel.addLine(searchLabelText);
         searchLabel.visible = true;
-        search = new GuiTextField(0, fontRenderer, left + searchLabelWidth, statusTop, guiListWidth - searchLabelWidth, entryHeight + 2);
+        search = new TextFieldWidget(0, fontRenderer, left + searchLabelWidth, statusTop, guiListWidth - searchLabelWidth, entryHeight + 2);
         search.setFocused(true);
         search.setCanLoseFocus(true);
 
@@ -248,11 +248,11 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         int xSelect = xPlay + 75;
         int xCancel = xSelect + 75;
 
-        GuiButton buttonOpen = new GuiButton(2, xOpen, buttonTop, 75, 20, I18n.format("mxtune.gui.button.openFolder"));
-        GuiButton buttonRefresh = new GuiButton(3, xRefresh, buttonTop, 75, 20, I18n.format("mxtune.gui.button.refresh"));
-        buttonPlay = new GuiButton(3, xPlay, buttonTop, 75, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play"));
-        GuiButton buttonDone = new GuiButton(0, xSelect, buttonTop, 75, 20, I18n.format("mxtune.gui.button.select"));
-        buttonCancel = new GuiButton(1, xCancel, buttonTop, 75, 20, I18n.format("gui.cancel"));
+        Button buttonOpen = new Button(2, xOpen, buttonTop, 75, 20, I18n.format("mxtune.gui.button.openFolder"));
+        Button buttonRefresh = new Button(3, xRefresh, buttonTop, 75, 20, I18n.format("mxtune.gui.button.refresh"));
+        buttonPlay = new Button(3, xPlay, buttonTop, 75, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play"));
+        Button buttonDone = new Button(0, xSelect, buttonTop, 75, 20, I18n.format("mxtune.gui.button.select"));
+        buttonCancel = new Button(1, xCancel, buttonTop, 75, 20, I18n.format("gui.cancel"));
 
         buttonList.add(buttonOpen);
         buttonList.add(buttonRefresh);
@@ -327,7 +327,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
     }
 
     @Override
-    protected void actionPerformed(GuiButton button) throws IOException
+    protected void actionPerformed(Button button) throws IOException
     {
         if (button.enabled)
         {
@@ -477,7 +477,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
         if (guiLibraryList.isSelected(guiLibraryList.getSelectedIndex()))
         {
             Path path = guiLibraryList.get(guiLibraryList.getSelectedIndex()).path;
-            NBTTagCompound compound = FileHelper.getCompoundFromFile(path);
+            CompoundNBT compound = FileHelper.getCompoundFromFile(path);
             tuneParts.clear();
             if (compound != null)
             {

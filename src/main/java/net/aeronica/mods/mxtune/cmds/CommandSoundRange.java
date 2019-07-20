@@ -21,11 +21,10 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -54,7 +53,7 @@ public class CommandSoundRange extends CommandBase
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
         String playerName;
-        EntityPlayer entityPlayer;
+        PlayerEntity entityPlayer;
 
         if (args.length == 0 || args.length > 2)
             throw new WrongUsageException("commands.mxtune.soundRangeInfinityAllowed.usage");
@@ -67,7 +66,7 @@ public class CommandSoundRange extends CommandBase
         switch (args.length)
         {
             case 1:
-                sender.sendMessage((new TextComponentString(playerName)).appendText(": soundRangeInfinityAllowed = ").appendText(MusicOptionsUtil.isSoundRangeInfinityAllowed(entityPlayer) ? TRUE : FALSE));
+                sender.sendMessage((new StringTextComponent(playerName)).appendText(": soundRangeInfinityAllowed = ").appendText(MusicOptionsUtil.isSoundRangeInfinityAllowed(entityPlayer) ? TRUE : FALSE));
                 break;
 
             case 2:
@@ -82,14 +81,14 @@ public class CommandSoundRange extends CommandBase
         }
     }
 
-    private void setAndNotifySoundRangeInfinityAllowed(ICommandSender sender, EntityPlayer entityPlayer, String playerName, boolean isAllowed)
+    private void setAndNotifySoundRangeInfinityAllowed(ICommandSender sender, PlayerEntity entityPlayer, String playerName, boolean isAllowed)
     {
         MusicOptionsUtil.setSoundRangeInfinityAllowed(entityPlayer, isAllowed);
-        sender.sendMessage((new TextComponentString(playerName)).appendText(": soundRangeInfinityAllowed = ").appendText(MusicOptionsUtil.isSoundRangeInfinityAllowed(entityPlayer) ? TRUE : FALSE));
+        sender.sendMessage((new StringTextComponent(playerName)).appendText(": soundRangeInfinityAllowed = ").appendText(MusicOptionsUtil.isSoundRangeInfinityAllowed(entityPlayer) ? TRUE : FALSE));
         if (!sender.getName().equals(playerName))
         {
-            entityPlayer.sendMessage(new TextComponentString(sender.getName()).appendText(" set soundRangeInfinityAllowed = ").appendText(isAllowed ? TRUE : FALSE));
-            audiblePingPlayer(entityPlayer, SoundEvents.BLOCK_NOTE_PLING);
+            entityPlayer.sendMessage(new StringTextComponent(sender.getName()).appendText(" set soundRangeInfinityAllowed = ").appendText(isAllowed ? TRUE : FALSE));
+            audiblePingPlayer(entityPlayer, net.minecraft.util.SoundEvents.BLOCK_NOTE_PLING);
         }
     }
 

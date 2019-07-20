@@ -19,12 +19,12 @@ package net.aeronica.mods.mxtune.util;
 
 import net.minecraft.util.Tuple;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TranslationTextComponent;
 
 @SuppressWarnings("unchecked")
 public class ResultMessage extends Tuple
 {
-    public static final ResultMessage NO_ERROR = new ResultMessage(false, new TextComponentTranslation("mxtune.no_error"));
+    public static final ResultMessage NO_ERROR = new ResultMessage(false, new TranslationTextComponent("mxtune.no_error"));
 
     public ResultMessage(Boolean errorResult, ITextComponent message)
     {

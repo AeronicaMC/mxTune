@@ -16,9 +16,9 @@
  */
 package net.aeronica.mods.mxtune.blocks;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.block.BlockState;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraftforge.items.ItemStackHandler;
 
 public class TilePiano extends TileInstrument
@@ -26,14 +26,14 @@ public class TilePiano extends TileInstrument
     @SuppressWarnings("unused")
     public TilePiano() {/* NOP */}
 
-    TilePiano(EnumFacing facing)
+    TilePiano(Direction facing)
     {
         this.inventory = new SheetMusicStackHandler(1);
         this.facing = facing;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag)
+    public void readFromNBT(CompoundNBT tag)
     {
         super.readFromNBT(tag);
         inventory = new SheetMusicStackHandler(1);
@@ -41,7 +41,7 @@ public class TilePiano extends TileInstrument
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag)
+    public CompoundNBT writeToNBT(CompoundNBT tag)
     {
         tag.merge(inventory.serializeNBT());
         return super.writeToNBT(tag);
@@ -52,7 +52,7 @@ public class TilePiano extends TileInstrument
         markDirty();
         if (world != null && !world.isRemote && !this.isInvalid())
         {
-            IBlockState state = world.getBlockState(getPos());
+            BlockState state = world.getBlockState(getPos());
             /*
              * Sets the block state at a given location. Flag 1 will cause a
              * block update. Flag 2 will send the change to clients (you

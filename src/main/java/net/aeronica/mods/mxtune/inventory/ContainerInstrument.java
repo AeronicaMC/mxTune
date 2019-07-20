@@ -17,21 +17,20 @@
 package net.aeronica.mods.mxtune.inventory;
 
 import net.aeronica.mods.mxtune.items.ItemMusicPaper;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 
-public class ContainerInstrument extends Container
+public class ContainerInstrument extends net.minecraft.inventory.container.Container
 {
-    public ContainerInstrument(EntityPlayer playerIn)
+    public ContainerInstrument(PlayerEntity playerIn)
     {
         // The Item Inventory for this Container
         InventoryInstrument inventoryInstrument = new InventoryInstrument(playerIn.getHeldItemMainhand());
-        InventoryPlayer inventoryPlayer = playerIn.inventory;
+        PlayerInventory inventoryPlayer = playerIn.inventory;
 
         // ItemInventory
         addSlotToContainer(new SlotInstrument(inventoryInstrument, 0, 12, 8 + 2 * 18));
@@ -54,7 +53,7 @@ public class ContainerInstrument extends Container
 
     @Nonnull
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer player, int slotIndex)
+    public ItemStack transferStackInSlot(PlayerEntity player, int slotIndex)
     {
         Slot slot = this.getSlot(slotIndex);
         
@@ -92,5 +91,5 @@ public class ContainerInstrument extends Container
     }
     
     @Override
-    public boolean canInteractWith(@Nonnull EntityPlayer player) {return true;}
+    public boolean canInteractWith(@Nonnull PlayerEntity player) {return true;}
 }

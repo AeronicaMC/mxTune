@@ -18,8 +18,8 @@
 package net.aeronica.mods.mxtune.gui.util;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.gui.screen.Screen;
 import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implements List<E>, IHooverText
 {
     private final List<E> arrayList = new CopyOnWriteArrayList<>();
-    protected GuiScreen gui;
+    protected Screen gui;
     protected Minecraft mc;
     protected int entryHeight;
     private final List<String> hooverTexts = new ArrayList<>();
@@ -44,7 +44,7 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
     protected int guiLeft = 0;
     protected int guiTop = 0;
 
-    public <T extends GuiScreen> GuiScrollingListOf(T gui, int entryHeight, int width, int height, int top, int bottom, int left)
+    public <T extends Screen> GuiScrollingListOf(T gui, int entryHeight, int width, int height, int top, int bottom, int left)
     {
         super(gui.mc, width, height, top, bottom, left, entryHeight, gui.width, gui.height);
         this.gui = gui;
@@ -52,7 +52,7 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
         this.entryHeight = entryHeight;
     }
 
-    public <T extends GuiScreen> GuiScrollingListOf(T gui)
+    public <T extends Screen> GuiScrollingListOf(T gui)
     {
         super(gui.mc);
         this.gui = gui;
@@ -270,8 +270,8 @@ public abstract class GuiScrollingListOf<E> extends GuiScrollingListMX implement
     @Override
     protected void drawBackground()
     {
-        Gui.drawRect(left - 1, top - 1, left + listWidth + 1, top + listHeight + 1, -6250336);
-        Gui.drawRect(left, top, left + listWidth, top + listHeight, -16777216);
+        AbstractGui.drawRect(left - 1, top - 1, left + listWidth + 1, top + listHeight + 1, -6250336);
+        AbstractGui.drawRect(left, top, left + listWidth, top + listHeight, -16777216);
     }
 
     // Wrap ArrayList<E>

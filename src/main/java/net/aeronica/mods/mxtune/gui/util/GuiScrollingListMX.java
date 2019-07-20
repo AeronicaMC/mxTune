@@ -33,9 +33,9 @@
 package net.aeronica.mods.mxtune.gui.util;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -192,7 +192,7 @@ public abstract class GuiScrollingListMX
     }
 
     // FIXME: is this correct/still needed?
-    public void registerScrollButtons(List<GuiButton> buttons, int upActionID, int downActionID)
+    public void registerScrollButtons(List<Button> buttons, int upActionID, int downActionID)
     {
         this.scrollUpActionId = upActionID;
         this.scrollDownActionId = downActionID;
@@ -218,7 +218,7 @@ public abstract class GuiScrollingListMX
         }
     }
 
-    public void actionPerformed(GuiButton button)
+    public void actionPerformed(Button button)
     {
         if (button.enabled)
         {
@@ -347,7 +347,7 @@ public abstract class GuiScrollingListMX
         {
             GlStateManager.disableLighting();
             GlStateManager.disableFog();
-            this.client.renderEngine.bindTexture(Gui.OPTIONS_BACKGROUND);
+            this.client.renderEngine.bindTexture(AbstractGui.OPTIONS_BACKGROUND);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             final float scale = 32.0F;
             worldr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);

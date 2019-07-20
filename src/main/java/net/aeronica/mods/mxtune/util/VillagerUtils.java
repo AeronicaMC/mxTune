@@ -44,8 +44,8 @@
  */
 package net.aeronica.mods.mxtune.util;
 
-import net.minecraft.entity.passive.EntityVillager.ListItemForEmeralds;
-import net.minecraft.entity.passive.EntityVillager.PriceInfo;
+import net.minecraft.entity.merchant.villager.VillagerEntity.ListItemForEmeralds;
+import net.minecraft.entity.merchant.villager.VillagerEntity.PriceInfo;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerCareer;
 

@@ -25,8 +25,8 @@ import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.aeronica.mods.mxtune.mxt.MXTuneFile;
 import net.aeronica.mods.mxtune.mxt.MXTuneFileHelper;
 import net.aeronica.mods.mxtune.util.*;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.relauncher.Side;
 
 import java.io.IOException;
@@ -72,7 +72,7 @@ public class ServerFileManager
     private static void getOrGenerateServerID()
     {
         boolean fileExists = FileHelper.fileExists(SERVER_FOLDER, SERVER_ID_FILE, Side.SERVER);
-        NBTTagCompound compound;
+        CompoundNBT compound;
         Path serverDatFile;
         if (fileExists)
         {
@@ -95,7 +95,7 @@ public class ServerFileManager
             {
                 serverDatFile = FileHelper.getCacheFile(SERVER_FOLDER, SERVER_ID_FILE, Side.SERVER);
                 serverID = UUID.randomUUID();
-                compound = new NBTTagCompound();
+                compound = new CompoundNBT();
                 NBTHelper.setUuidToCompound(compound, serverID);
                 FileHelper.sendCompoundToFile(serverDatFile, compound);
             }
@@ -174,7 +174,7 @@ public class ServerFileManager
 
         for (Path pathPlayList : playListFiles)
         {
-            NBTTagCompound compound = FileHelper.getCompoundFromFile(pathPlayList);
+            CompoundNBT compound = FileHelper.getCompoundFromFile(pathPlayList);
             if (compound != null)
             {
                 PlayList playList = PlayList.build(compound);
@@ -212,7 +212,7 @@ public class ServerFileManager
                 String playListFileName = playList.getFileName();
                 try
                 {
-                    NBTTagCompound compound = new NBTTagCompound();
+                    CompoundNBT compound = new CompoundNBT();
                     playList.writeToNBT(compound);
                     Path path = FileHelper.getCacheFile(FileHelper.SERVER_PLAY_LISTS_FOLDER, playListFileName, Side.SERVER);
                     FileHelper.sendCompoundToFile(path, compound);
@@ -221,7 +221,7 @@ public class ServerFileManager
                 {
                     ModLogger.error(e);
                     ModLogger.warn(FORMAT_UNABLE_TO_CREATE, FileHelper.SERVER_PLAY_LISTS_FOLDER, playListFileName);
-                    errorResult = new ResultMessage(true, new TextComponentTranslation("mxtune.error.unable_to_create_file_folder", FileHelper.SERVER_PLAY_LISTS_FOLDER, playListFileName));
+                    errorResult = new ResultMessage(true, new TranslationTextComponent("mxtune.error.unable_to_create_file_folder", FileHelper.SERVER_PLAY_LISTS_FOLDER, playListFileName));
                 }
                 if (!errorResult.hasError())
                     synchronized (playLists)
@@ -253,7 +253,7 @@ public class ServerFileManager
                 String songFileName = mxTuneFile.getFileName();
                 try
                 {
-                    NBTTagCompound dataCompound = new NBTTagCompound();
+                    CompoundNBT dataCompound = new CompoundNBT();
                     mxTuneFile.writeToNBT(dataCompound);
                     Path path = FileHelper.getCacheFile(FileHelper.SERVER_MUSIC_FOLDER, songFileName, Side.SERVER);
                     FileHelper.sendCompoundToFile(path, dataCompound);
@@ -262,7 +262,7 @@ public class ServerFileManager
                 {
                     ModLogger.warn(e);
                     ModLogger.warn(FORMAT_UNABLE_TO_CREATE, FileHelper.SERVER_MUSIC_FOLDER, songFileName);
-                    errorResult = new ResultMessage(true, new TextComponentTranslation("mxtune.error.unable_to_create_file_folder",FileHelper.SERVER_MUSIC_FOLDER, songFileName));
+                    errorResult = new ResultMessage(true, new TranslationTextComponent("mxtune.error.unable_to_create_file_folder", FileHelper.SERVER_MUSIC_FOLDER, songFileName));
                 }
                 if (!errorResult.hasError())
                     synchronized (songProxyMap)
@@ -291,7 +291,7 @@ public class ServerFileManager
         {
             Song song = new Song(testData.getTitle(), testData.getMML());
 
-            NBTTagCompound songCompound = new NBTTagCompound();
+            CompoundNBT songCompound = new CompoundNBT();
             SongProxy songProxy = new SongProxy(songCompound);
             songProxies.add(songProxy);
 
@@ -314,7 +314,7 @@ public class ServerFileManager
         String playListFileName = "";
         try
         {
-            NBTTagCompound compound = new NBTTagCompound();
+            CompoundNBT compound = new CompoundNBT();
             PlayList playList = new PlayList(playListName, songProxies, songProxies);
             playListFileName = playList.getFileName();
             Path path = FileHelper.getCacheFile(FileHelper.SERVER_PLAY_LISTS_FOLDER, playListFileName, Side.SERVER);

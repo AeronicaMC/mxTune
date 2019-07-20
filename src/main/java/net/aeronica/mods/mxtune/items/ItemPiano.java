@@ -20,14 +20,14 @@ import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.init.ModBlocks;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -44,20 +44,20 @@ public class ItemPiano extends Item
     /** Called when a Block is right-clicked with this Item */
     @SuppressWarnings("deprecation")
     @Override
-    public EnumActionResult onItemUse(EntityPlayer playerIn, World worldIn, BlockPos posIn, EnumHand handIn, EnumFacing facingIn, float hitX, float hitY, float hitZ)
+    public ActionResultType onItemUse(PlayerEntity playerIn, World worldIn, BlockPos posIn, Hand handIn, Direction facingIn, float hitX, float hitY, float hitZ)
     {
         BlockPos pos = posIn;
         if (worldIn.isRemote)
         {
             /* Client side so just return */
-            return EnumActionResult.SUCCESS;
-        } else if (facingIn != EnumFacing.UP)
+            return ActionResultType.SUCCESS;
+        } else if (facingIn != Direction.UP)
         {
             /* Can't place the blocks this way */
-            return EnumActionResult.FAIL;
+            return ActionResultType.FAIL;
         } else
         {
-            IBlockState iblockstate = worldIn.getBlockState(pos);
+            BlockState iblockstate = worldIn.getBlockState(pos);
             Block block = iblockstate.getBlock();
             ItemStack stack = playerIn.getHeldItem(handIn);
             /* Looking at the ground or a replaceable block like grass. */
@@ -66,7 +66,7 @@ public class ItemPiano extends Item
 
             /* determine the direction the player is facing */
             int i = MathHelper.floor((double) (playerIn.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
-            EnumFacing enumfacing = EnumFacing.byHorizontalIndex(i);
+            Direction enumfacing = Direction.byHorizontalIndex(i);
             /* get the next block in line. */
             BlockPos blockpos = pos.offset(enumfacing);
 
@@ -80,26 +80,26 @@ public class ItemPiano extends Item
                 /* Disallow placing blocks on water or other unstable blocks */
                 if (flag2 && flag3 && worldIn.getBlockState(pos.down()).isFullCube() && worldIn.getBlockState(blockpos.down()).isFullCube())
                 {
-                    IBlockState iBlockState01 = ModBlocks.SPINET_PIANO.getDefaultState().withProperty(BlockPiano.OCCUPIED, Boolean.FALSE).withProperty(BlockPiano.FACING, enumfacing)
+                    BlockState iBlockState01 = ModBlocks.SPINET_PIANO.getDefaultState().withProperty(BlockPiano.OCCUPIED, Boolean.FALSE).withProperty(BlockPiano.FACING, enumfacing)
                             .withProperty(BlockPiano.PART, BlockPiano.EnumPartType.LEFT);
 
                     if (worldIn.setBlockState(pos, iBlockState01, 11))
                     {
-                        IBlockState iBlockState02 = iBlockState01.withProperty(BlockPiano.PART, BlockPiano.EnumPartType.RIGHT);
+                        BlockState iBlockState02 = iBlockState01.withProperty(BlockPiano.PART, BlockPiano.EnumPartType.RIGHT);
                         worldIn.setBlockState(blockpos, iBlockState02, 11);
                     }
 
                     SoundType soundtype = iBlockState01.getBlock().getSoundType();
                     worldIn.playSound(null, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
                     stack.setCount(stack.getCount()-1);
-                    return EnumActionResult.SUCCESS;
+                    return ActionResultType.SUCCESS;
                 } else
                 {
-                    return EnumActionResult.FAIL;
+                    return ActionResultType.FAIL;
                 }
             } else
             {
-                return EnumActionResult.FAIL;
+                return ActionResultType.FAIL;
             }
         }
     }

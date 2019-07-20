@@ -17,7 +17,7 @@
 
 package net.aeronica.mods.mxtune.util;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 import java.util.UUID;
 
@@ -35,7 +35,7 @@ public class NBTHelper
 
     // GUID NBT Helpers
 
-    public static GUID getGuidFromCompound(NBTTagCompound compound)
+    public static GUID getGuidFromCompound(CompoundNBT compound)
     {
         long dsb = compound.getLong(TAG_GUID_DSB);
         long csb = compound.getLong(TAG_GUID_CSB);
@@ -44,7 +44,7 @@ public class NBTHelper
         return new GUID(dsb, csb, bsb, asb);
     }
 
-    public static void setGuidToCompound(NBTTagCompound compound, GUID guid)
+    public static void setGuidToCompound(CompoundNBT compound, GUID guid)
     {
         compound.setLong(TAG_GUID_DSB, guid.getDdddSignificantBits());
         compound.setLong(TAG_GUID_CSB, guid.getCcccSignificantBits());
@@ -52,43 +52,43 @@ public class NBTHelper
         compound.setLong(TAG_GUID_ASB, guid.getAaaaSignificantBits());
     }
 
-    public static GUID getGuidFromTag(NBTTagCompound compound, String tagKey)
+    public static GUID getGuidFromTag(CompoundNBT compound, String tagKey)
     {
-        NBTTagCompound compoundTag = compound.getCompoundTag(tagKey);
+        CompoundNBT compoundTag = compound.getCompoundTag(tagKey);
         return getGuidFromCompound(compoundTag);
     }
 
-    public static void setGuidToTag(GUID guid, NBTTagCompound compound, String tagKey)
+    public static void setGuidToTag(GUID guid, CompoundNBT compound, String tagKey)
     {
-        NBTTagCompound tagCompound = new NBTTagCompound();
+        CompoundNBT tagCompound = new CompoundNBT();
         setGuidToCompound(tagCompound, guid);
         compound.setTag(tagKey, tagCompound);
     }
 
     // UUID NBT Helpers
 
-    public static UUID getUuidFromCompound(NBTTagCompound compound)
+    public static UUID getUuidFromCompound(CompoundNBT compound)
     {
         long msb = compound.getLong(TAG_UUID_MSB);
         long lsb = compound.getLong(TAG_UUID_LSB);
         return new UUID(msb, lsb);
     }
 
-    public static void setUuidToCompound(NBTTagCompound compound, UUID uuid)
+    public static void setUuidToCompound(CompoundNBT compound, UUID uuid)
     {
         compound.setLong(TAG_UUID_MSB, uuid.getMostSignificantBits());
         compound.setLong(TAG_UUID_LSB, uuid.getLeastSignificantBits());
     }
 
-    public static UUID getUuidFromTag(NBTTagCompound compound, String tagKey)
+    public static UUID getUuidFromTag(CompoundNBT compound, String tagKey)
     {
-        NBTTagCompound compoundTag = compound.getCompoundTag(tagKey);
+        CompoundNBT compoundTag = compound.getCompoundTag(tagKey);
         return getUuidFromCompound(compoundTag);
     }
 
-    public static void setUuidToTag(UUID uuid, NBTTagCompound compound, String tagKey)
+    public static void setUuidToTag(UUID uuid, CompoundNBT compound, String tagKey)
     {
-        NBTTagCompound tagCompound = new NBTTagCompound();
+        CompoundNBT tagCompound = new CompoundNBT();
         setUuidToCompound(tagCompound, uuid);
         compound.setTag(tagKey, tagCompound);
     }

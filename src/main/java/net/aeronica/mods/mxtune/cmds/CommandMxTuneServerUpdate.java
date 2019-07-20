@@ -21,11 +21,11 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -52,7 +52,7 @@ public class CommandMxTuneServerUpdate extends CommandBase
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
         String playerName;
-        EntityPlayer entityPlayer;
+        PlayerEntity entityPlayer;
 
         if (args.length == 0 || args.length > 2)
             throw new WrongUsageException("commands.mxtune.mxtune_server_update_allowed.usage");
@@ -66,7 +66,7 @@ public class CommandMxTuneServerUpdate extends CommandBase
         {
             case 1:
                 sender.sendMessage(
-                        (new TextComponentString(playerName))
+                        (new StringTextComponent(playerName))
                                            .appendText(": mxTuneServerUpdateAllowed = ")
                                            .appendText(isSoundRangeInfinityAllowed(entityPlayer) ? TRUE : FALSE));
                 break;
@@ -81,15 +81,15 @@ public class CommandMxTuneServerUpdate extends CommandBase
         }
     }
 
-    private void setAndNotifyMxTuneServerUpdateAllowed(ICommandSender sender, EntityPlayer entityPlayer, String playerName, boolean isAllowed)
+    private void setAndNotifyMxTuneServerUpdateAllowed(ICommandSender sender, PlayerEntity entityPlayer, String playerName, boolean isAllowed)
     {
         setMxTuneServerUpdateAllowed(entityPlayer, isAllowed);
-        sender.sendMessage((new TextComponentString(playerName))
+        sender.sendMessage((new StringTextComponent(playerName))
                                    .appendText(": mxTuneServerUpdateAllowed = ")
                                    .appendText(isMxTuneServerUpdateAllowed(entityPlayer) ? TRUE : FALSE));
         if (!sender.getName().equals(playerName))
         {
-            entityPlayer.sendMessage(new TextComponentString(sender.getName())
+            entityPlayer.sendMessage(new StringTextComponent(sender.getName())
                                              .appendText(" set mxTuneServerUpdateAllowed = ")
                                              .appendText(isAllowed ? TRUE : FALSE));
             audiblePingPlayer(entityPlayer, SoundEvents.BLOCK_NOTE_PLING);

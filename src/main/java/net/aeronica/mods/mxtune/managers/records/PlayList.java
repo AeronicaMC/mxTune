@@ -18,7 +18,7 @@
 package net.aeronica.mods.mxtune.managers.records;
 
 import net.aeronica.mods.mxtune.util.GUID;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +66,7 @@ public class PlayList extends BaseData
         guid = GUID.stringToSHA2Hash(this.name);
     }
 
-    public static PlayList build(NBTTagCompound compound)
+    public static PlayList build(CompoundNBT compound)
     {
         PlayList playList = new PlayList();
         playList.readFromNBT(compound);
@@ -90,49 +90,49 @@ public class PlayList extends BaseData
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound compound)
+    public void readFromNBT(CompoundNBT compound)
     {
         super.readFromNBT(compound);
         name = compound.getString(TAG_NAME);
         title = compound.getString(TAG_TITLE);
 
-        NBTTagCompound compoundPlayListDay = compound.getCompoundTag(TAG_PLAY_LIST_DAY);
+        CompoundNBT compoundPlayListDay = compound.getCompoundTag(TAG_PLAY_LIST_DAY);
         int songCount = compoundPlayListDay.getInteger(TAG_SONG_COUNT);
 
         playListDay = new ArrayList<>();
         for(int i = 0; i < songCount; i++)
         {
-            NBTTagCompound compoundSong = compoundPlayListDay.getCompoundTag(TAG_SONG_PREFIX + i);
+            CompoundNBT compoundSong = compoundPlayListDay.getCompoundTag(TAG_SONG_PREFIX + i);
             SongProxy songProxy = new SongProxy(compoundSong);
             playListDay.add(songProxy);
         }
 
-        NBTTagCompound compoundPlayListNight = compound.getCompoundTag(TAG_PLAY_LIST_NIGHT);
+        CompoundNBT compoundPlayListNight = compound.getCompoundTag(TAG_PLAY_LIST_NIGHT);
         songCount = compoundPlayListNight.getInteger(TAG_SONG_COUNT);
 
         playListNight = new ArrayList<>();
         for(int i = 0; i < songCount; i++)
         {
-            NBTTagCompound compoundSong = compoundPlayListNight.getCompoundTag(TAG_SONG_PREFIX + i);
+            CompoundNBT compoundSong = compoundPlayListNight.getCompoundTag(TAG_SONG_PREFIX + i);
             SongProxy songProxy = new SongProxy(compoundSong);
             playListNight.add(songProxy);
         }
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound compound)
+    public void writeToNBT(CompoundNBT compound)
     {
         super.writeToNBT(compound);
         compound.setString(TAG_NAME, name);
         compound.setString(TAG_TITLE, title);
 
-        NBTTagCompound compoundPlayListDay = new NBTTagCompound();
+        CompoundNBT compoundPlayListDay = new CompoundNBT();
         int i = 0;
         for (SongProxy songProxy : playListDay)
         {
             if (songProxy != null)
             {
-                NBTTagCompound compoundSong = new NBTTagCompound();
+                CompoundNBT compoundSong = new CompoundNBT();
                 songProxy.writeToNBT(compoundSong);
                 compoundPlayListDay.setTag(TAG_SONG_PREFIX + i, compoundSong);
                 i++;
@@ -141,13 +141,13 @@ public class PlayList extends BaseData
         compound.setTag(TAG_PLAY_LIST_DAY, compoundPlayListDay);
         compoundPlayListDay.setInteger(TAG_SONG_COUNT, i);
 
-        NBTTagCompound compoundPlayListNight = new NBTTagCompound();
+        CompoundNBT compoundPlayListNight = new CompoundNBT();
         i = 0;
         for (SongProxy songProxy : playListNight)
         {
             if (songProxy != null)
             {
-                NBTTagCompound compoundSong = new NBTTagCompound();
+                CompoundNBT compoundSong = new CompoundNBT();
                 songProxy.writeToNBT(compoundSong);
                 compoundPlayListNight.setTag(TAG_SONG_PREFIX + i, compoundSong);
                 i++;

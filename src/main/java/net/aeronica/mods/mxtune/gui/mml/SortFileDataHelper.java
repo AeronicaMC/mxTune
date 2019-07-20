@@ -17,7 +17,7 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
-import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.StringUtils;
 
 import javax.annotation.Nullable;
@@ -50,7 +50,7 @@ final class SortFileDataHelper
         public int getButtonID() { return buttonID; }
 
         @Nullable
-        public static SortType getSortTypeForButton(GuiButton button)
+        public static SortType getSortTypeForButton(Button button)
         {
             for (SortType t : values())
             {
@@ -74,9 +74,9 @@ final class SortFileDataHelper
         }
     }
 
-    static void updateSortButtons(@Nullable SortType sortType, List<GuiButton> buttonList)
+    static void updateSortButtons(@Nullable SortType sortType, List<Button> buttonList)
     {
-        for (GuiButton button : buttonList)
+        for (Button button : buttonList)
         {
             SortType type = SortType.getSortTypeForButton(button);
             if (type != null && type == sortType)

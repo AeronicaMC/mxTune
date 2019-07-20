@@ -21,8 +21,8 @@ import net.aeronica.mods.mxtune.gui.GuiGuid;
 import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.relauncher.Side;
@@ -49,7 +49,7 @@ public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
     }
 
     @Override
-    public void process(EntityPlayer player, Side side)
+    public void process(PlayerEntity player, Side side)
     {
         if (side.isServer())
         {
@@ -60,7 +60,7 @@ public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
         }
     }
 
-    private void handleClientSide(EntityPlayer playerSP)
+    private void handleClientSide(PlayerEntity playerSP)
     {
         if ("mxtune.key.openParty".equalsIgnoreCase(this.keyBindingDesc))
         {
@@ -72,13 +72,13 @@ public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
         }
     }
 
-    private void handleServerSide(EntityPlayer playerMP)
+    private void handleServerSide(PlayerEntity playerMP)
     {
         if ("ctrl-down".equalsIgnoreCase(keyBindingDesc))
             MusicOptionsUtil.setCtrlKey(playerMP, true);
         else if ("ctrl-up".equalsIgnoreCase(keyBindingDesc))
             MusicOptionsUtil.setCtrlKey(playerMP, false);
         else
-            PacketDispatcher.sendTo(new SendKeyMessage(this.keyBindingDesc), (EntityPlayerMP) playerMP);
+            PacketDispatcher.sendTo(new SendKeyMessage(this.keyBindingDesc), (ServerPlayerEntity) playerMP);
     }
 }

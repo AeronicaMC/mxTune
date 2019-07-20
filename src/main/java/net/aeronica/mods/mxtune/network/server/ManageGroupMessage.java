@@ -19,7 +19,7 @@ package net.aeronica.mods.mxtune.network.server;
 import net.aeronica.mods.mxtune.managers.GroupHelper;
 import net.aeronica.mods.mxtune.managers.GroupManager;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -62,7 +62,7 @@ public class ManageGroupMessage extends AbstractServerMessage<ManageGroupMessage
     }
 
     @Override
-    public void process(EntityPlayer player, Side side)
+    public void process(PlayerEntity player, Side side)
     {
         switch (operation)
         {
