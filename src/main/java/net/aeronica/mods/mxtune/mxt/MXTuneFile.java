@@ -65,13 +65,13 @@ public class MXTuneFile extends BaseData
         title = compound.getString(TAG_TITLE);
         author = compound.getString(TAG_AUTHOR);
         source = compound.getString(TAG_SOURCE);
-        duration = compound.getInteger(TAG_DURATION);
-        int partCount = compound.getInteger(TAG_PART_COUNT);
+        duration = compound.getInt(TAG_DURATION);
+        int partCount = compound.getInt(TAG_PART_COUNT);
 
         parts = new ArrayList<>();
         for (int i = 0; i < partCount; i++)
         {
-            CompoundNBT compoundPart = compound.getCompoundTag(TAG_PART_PREFIX + i);
+            CompoundNBT compoundPart = compound.getCompound(TAG_PART_PREFIX + i);
             parts.add(new MXTunePart(compoundPart));
         }
 
@@ -83,12 +83,12 @@ public class MXTuneFile extends BaseData
     public void writeToNBT(CompoundNBT compound)
     {
         super.writeToNBT(compound);
-        compound.setString(TAG_MXT_VERSION, MXT_VERSION);
-        compound.setString(TAG_TITLE, title);
-        compound.setString(TAG_AUTHOR, author);
-        compound.setString(TAG_SOURCE, source);
-        compound.setInteger(TAG_DURATION, duration);
-        compound.setInteger(TAG_PART_COUNT, parts.size());
+        compound.putString(TAG_MXT_VERSION, MXT_VERSION);
+        compound.putString(TAG_TITLE, title);
+        compound.putString(TAG_AUTHOR, author);
+        compound.putString(TAG_SOURCE, source);
+        compound.putInt(TAG_DURATION, duration);
+        compound.putInt(TAG_PART_COUNT, parts.size());
 
         int i = 0;
         for (MXTunePart part : parts)
@@ -96,7 +96,7 @@ public class MXTuneFile extends BaseData
             CompoundNBT compoundPart = new CompoundNBT();
             part.writeToNBT(compoundPart);
 
-            compound.setTag(TAG_PART_PREFIX + i, compoundPart);
+            compound.put(TAG_PART_PREFIX + i, compoundPart);
             i++;
         }
     }

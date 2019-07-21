@@ -24,11 +24,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
 
 public class ServerProxy
 {
@@ -45,9 +45,9 @@ public class ServerProxy
 
     public void initEntities() { ModEntities.init(); }
 
-    public Side getPhysicalSide()  { return Side.SERVER ;}
+    public Dist getPhysicalSide()  { return Dist.DEDICATED_SERVER ;}
 
-    public Side getEffectiveSide() { return getPhysicalSide(); }
+    public Dist getEffectiveSide() { return getPhysicalSide(); }
 
     public PlayerEntity getClientPlayer() { return null; }
 

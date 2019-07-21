@@ -105,7 +105,7 @@ public class PlayManager
                 DurationTimer.scheduleStop(playID, musicPlayer.getDuration());
                 ModLogger.debug("Block/TE MML Sub25: " + mml.substring(0, Math.min(25, mml.length())));
                 PlayBlockMusicMessage playBlockMusicMessage = new PlayBlockMusicMessage(playID, pos, mml, musicPlayer.getSoundRange());
-                PacketDispatcher.sendToAllAround(playBlockMusicMessage, worldIn.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), ModConfig.getListenerRange());
+                PacketDispatcher.sendToAllAround(playBlockMusicMessage, worldIn.getDimension().getType().getId(), pos.getX(), pos.getY(), pos.getZ(), ModConfig.getListenerRange());
             }
         }
         return playID;
@@ -126,16 +126,16 @@ public class PlayManager
         if (!sheetMusic.isEmpty())
         {
             CompoundNBT contents = null;
-            if (sheetMusic.getTagCompound() != null)
+            if (sheetMusic.getTag() != null)
             {
-                contents = (CompoundNBT) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
+                contents = (CompoundNBT) sheetMusic.getTag().getCompound(KEY_SHEET_MUSIC);
             }
             if (contents != null && !contents.isEmpty())
             {
                 Integer playerID = playerIn.getEntityId();
-                String title = sheetMusic.getDisplayName();
+                String title = sheetMusic.getDisplayName().getUnformattedComponentText();
                 String mml = contents.getString(KEY_MML);
-                int duration = contents.getInteger(KEY_DURATION);
+                int duration = contents.getInt(KEY_DURATION);
 
                 mml = mml.replace("MML@", "MML@I" + getPackedPreset(pos, playerIn, isPlaced));
                 ModLogger.debug("MML Title: " + title);

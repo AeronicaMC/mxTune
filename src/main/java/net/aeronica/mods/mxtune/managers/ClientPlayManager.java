@@ -37,12 +37,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.IChunk;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.extensions.IForgeChunk;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -55,12 +55,12 @@ import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType.BACKGROU
 import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType.INVALID;
 import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.getTypeForPlayId;
 
-@Mod.EventBusSubscriber(Side.CLIENT)
+@Mod.EventBusSubscriber(value=Dist.CLIENT, modid=Reference.MOD_ID)
 public class ClientPlayManager implements IAudioStatusCallback
 {
     private static final ClientPlayManager INSTANCE = new ClientPlayManager();
-    private static Minecraft mc = Minecraft.getMinecraft();
-    private static WeakReference<Chunk> currentChunkRef;
+    private static Minecraft mc = Minecraft.getInstance();
+    private static WeakReference<IChunk> currentChunkRef;
     private static int currentPlayId = INVALID;
     private static GUID currentPlaylistGUID = EMPTY_GUID;
     private static GUID previousPlaylistGUID = EMPTY_GUID;
@@ -115,7 +115,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     @SubscribeEvent
     public static void onEvent(TickEvent.ClientTickEvent event)
     {
-        if (ClientCSDMonitor.canMXTunesPlay() && (event.phase == TickEvent.Phase.END) && ((ticks++ % 10 == 0) || Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)))
+        if (ClientCSDMonitor.canMXTunesPlay() && (event.phase == TickEvent.Phase.END) && ((ticks++ % 10 == 0) /*||Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)*/))
         {
             // Poll twice per second
             updateChunk();
@@ -174,7 +174,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     }
 
     @Nullable
-    private static Chunk getChunk(WeakReference<Chunk> chunkRef)
+    private static IChunk getChunk(WeakReference<IChunk> chunkRef)
     {
         return chunkRef != null ? chunkRef.get() : null;
     }
@@ -183,10 +183,10 @@ public class ClientPlayManager implements IAudioStatusCallback
     {
         if (mc.world == null || mc.player == null) return;
 
-        Chunk chunk = mc.world.getChunk(mc.player.getPosition());
-        if (mc.world.isChunkGeneratedAt(chunk.x, chunk.z) && chunk.hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null))
+        IChunk chunk = mc.world.getChunk(mc.player.getPosition());
+        if (mc.world.chunkExists(chunk.getPos().x, chunk.getPos().z) && ((IForgeChunk)chunk).getCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA).isPresent())
         {
-            WeakReference<Chunk> prevChunkRef = currentChunkRef;
+            WeakReference<IChunk> prevChunkRef = currentChunkRef;
             currentChunkRef = new WeakReference<>(chunk);
             if ((prevChunkRef != null && currentChunkRef.get() != prevChunkRef.get())
                     || (prevChunkRef == null && currentChunkRef.get() != null)
@@ -198,15 +198,15 @@ public class ClientPlayManager implements IAudioStatusCallback
         changePlayListMusic(false, false);
     }
 
-    private static void chunkChange(WeakReference<Chunk> current, WeakReference<Chunk> previous)
+    private static void chunkChange(WeakReference<IChunk> current, WeakReference<IChunk> previous)
     {
-        Chunk currentChunk = getChunk(current);
-        Chunk prevChunk = getChunk(previous);
-        if (currentChunk != null && currentChunk.hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null))
+        IChunk currentChunk = getChunk(current);
+        IChunk prevChunk = getChunk(previous);
+        if (currentChunk != null && ((IForgeChunk)currentChunk).getCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA).isPresent())
         {
             currentPlaylistGUID = ModChunkPlaylistHelper.getPlaylistGuid(currentChunk);
         }
-        if (prevChunk != null && prevChunk.hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null))
+        if (prevChunk != null && ((IForgeChunk)prevChunk).getCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA).isPresent())
         {
             GUID prevPlayListGUID = ModChunkPlaylistHelper.getPlaylistGuid(prevChunk);
             previousPlaylistGUID = prevPlayListGUID;
@@ -297,7 +297,7 @@ public class ClientPlayManager implements IAudioStatusCallback
         if (Reference.EMPTY_GUID.equals(currentPlaylistGUID) && currentPlayId == PlayType.INVALID)
         {
             World world = mc.world;
-            if (world.hasCapability(ModWorldPlaylistHelper.MOD_WORLD_DATA, null))
+            if (world.getCapability(ModWorldPlaylistHelper.MOD_WORLD_DATA).isPresent())
             {
                 currentPlaylistGUID = ModWorldPlaylistHelper.getPlaylistGuid(world);
                 changePlayListMusic(false, false);
@@ -319,7 +319,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     private static void updateTimeOfDay()
     {
         // Day / Night
-        long time = mc.world.getWorldTime() % 24000;
+        long time = mc.world.getDayTime() % 24000;
         night = time > 13200 && time < 23200;
     }
 

@@ -61,25 +61,25 @@ public class MXTunePart implements Serializable
     {
         instrumentName = compound.getString(TAG_INSTRUMENT);
         meta = compound.getString(TAG_META);
-        packedPatch = compound.getInteger(TAG_PACKED_PATCH);
-        transpose = compound.getInteger(TAG_TRANSPOSE);
-        int staffCount = compound.getInteger(TAG_STAFF_COUNT);
+        packedPatch = compound.getInt(TAG_PACKED_PATCH);
+        transpose = compound.getInt(TAG_TRANSPOSE);
+        int staffCount = compound.getInt(TAG_STAFF_COUNT);
 
         staves = new ArrayList<>();
         for(int i = 0; i < staffCount; i++)
         {
-            CompoundNBT compoundStaff = compound.getCompoundTag(TAG_STAFF_PREFIX + i);
+            CompoundNBT compoundStaff = compound.getCompound(TAG_STAFF_PREFIX + i);
             staves.add(new MXTuneStaff(i, compoundStaff));
         }
     }
 
     public void writeToNBT(CompoundNBT compound)
     {
-        compound.setString(TAG_INSTRUMENT, instrumentName);
-        compound.setString(TAG_META, meta);
-        compound.setInteger(TAG_PACKED_PATCH, packedPatch);
-        compound.setInteger(TAG_TRANSPOSE, transpose);
-        compound.setInteger(TAG_STAFF_COUNT, staves.size());
+        compound.putString(TAG_INSTRUMENT, instrumentName);
+        compound.putString(TAG_META, meta);
+        compound.putInt(TAG_PACKED_PATCH, packedPatch);
+        compound.putInt(TAG_TRANSPOSE, transpose);
+        compound.putInt(TAG_STAFF_COUNT, staves.size());
 
         int i = 0;
         for (MXTuneStaff staff : staves)
@@ -87,7 +87,7 @@ public class MXTunePart implements Serializable
             CompoundNBT compoundStaff = new CompoundNBT();
             staff.writeToNBT(compoundStaff);
 
-            compound.setTag(TAG_STAFF_PREFIX + i, compoundStaff);
+            compound.put(TAG_STAFF_PREFIX + i, compoundStaff);
             i++;
         }
     }

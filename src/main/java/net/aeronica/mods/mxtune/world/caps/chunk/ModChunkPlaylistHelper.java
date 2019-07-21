@@ -27,9 +27,11 @@ import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.fml.relauncher.Side;
+
+import java.util.function.Consumer;
 
 public class ModChunkPlaylistHelper
 {
@@ -66,19 +68,21 @@ public class ModChunkPlaylistHelper
 
     private static IModChunkPlaylist getImpl(Chunk chunk) throws MXTuneException
     {
-        IModChunkPlaylist chunkData;
-        if (chunk.hasCapability(MOD_CHUNK_DATA, null))
-            chunkData =  chunk.getCapability(MOD_CHUNK_DATA, null);
-        else
-            throw new MXTuneException("IModChunkData capability is null");
+        Consumer<IModChunkPlaylist> chunkData = null;
+        chunk.getCapability(MOD_CHUNK_DATA)
+                .ifPresent(chunkData.accept(MOD_CHUNK_DATA.getDefaultInstance());
+//        if (chunk.getCapability(MOD_CHUNK_DATA).isPresent())
+//            chunk.getCapability(MOD_CHUNK_DATA).;
+//        else
+//            throw new MXTuneException("IModChunkData capability is null");
         return chunkData;
     }
 
     public static void sync(PlayerEntity entityPlayer, Chunk chunk)
     {
-        if (MXTune.proxy.getEffectiveSide() == Side.SERVER)
+        if (MXTune.proxy.getEffectiveSide() == Dist.DEDICATED_SERVER)
         {
-            PacketDispatcher.sendToDimension(new UpdateChunkMusicData(chunk.x, chunk.z, getPlaylistGuid(chunk)), entityPlayer.getEntityWorld().provider.getDimension());
+            PacketDispatcher.sendToDimension(new UpdateChunkMusicData(chunk.getPos().x, chunk.getPos().z, getPlaylistGuid(chunk)), entityPlayer.getEntityWorld().provider.getDimension());
         }
     }
 }

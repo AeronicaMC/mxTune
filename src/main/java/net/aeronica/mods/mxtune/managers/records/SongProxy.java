@@ -56,15 +56,15 @@ public class SongProxy extends BaseData
     {
         super.readFromNBT(compound);
         title = compound.getString(TAG_TITLE);
-        duration = compound.getInteger(TAG_DURATION);
+        duration = compound.getInt(TAG_DURATION);
     }
 
     @Override
     public void writeToNBT(CompoundNBT compound)
     {
         super.writeToNBT(compound);
-        compound.setString(TAG_TITLE, title);
-        compound.setInteger(TAG_DURATION, duration);
+        compound.putString(TAG_TITLE, title);
+        compound.putInt(TAG_DURATION, duration);
     }
 
     public String getTitle()

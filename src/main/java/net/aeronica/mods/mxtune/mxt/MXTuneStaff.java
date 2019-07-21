@@ -46,8 +46,8 @@ public class MXTuneStaff implements Serializable
 
     public void writeToNBT(CompoundNBT compound)
     {
-        compound.setString(TAG_MML, mml);
-        compound.setString(TAG_META, meta);
+        compound.putString(TAG_MML, mml);
+        compound.putString(TAG_META, meta);
     }
 
     public int getStaff()

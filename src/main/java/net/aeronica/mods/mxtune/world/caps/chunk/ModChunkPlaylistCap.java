@@ -24,7 +24,7 @@ import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.NBTHelper;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.chunk.Chunk;
@@ -33,9 +33,10 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.world.ChunkWatchEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -59,9 +60,9 @@ public class ModChunkPlaylistCap
     public static void onEvent(final ChunkWatchEvent.Watch event)
     {
         final ServerPlayerEntity player = event.getPlayer();
-        final Chunk chunk = event.getChunkInstance();
+        final Chunk chunk = event.getWorld().getChunk(event.getPos().x, event.getPos().z);
 
-        if (chunk != null && chunk.hasCapability(MOD_CHUNK_DATA, null))
+        if (chunk != null && chunk.getCapability(MOD_CHUNK_DATA)
         {
             PacketDispatcher.sendTo(new UpdateChunkMusicData(chunk.getPos().x, chunk.getPos().z, ModChunkPlaylistHelper.getPlaylistGuid(chunk)), player);
         }
@@ -74,20 +75,21 @@ public class ModChunkPlaylistCap
         {
             event.addCapability(new ResourceLocation(Reference.MOD_ID, "chunk_music"), new ICapabilitySerializable<CompoundNBT>()
             {
+                @Nonnull
+                @Override
+                public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap)
+                {
+                    return MOD_CHUNK_DATA.orEmpty(cap, (LazyOptional<IModChunkPlaylist>) instance);
+                }
+
                 IModChunkPlaylist instance = MOD_CHUNK_DATA.getDefaultInstance();
 
-                @Override
-                public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable Direction facing)
-                {
-                    return capability == MOD_CHUNK_DATA;
-                }
-
-                @Nullable
-                @Override
-                public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing)
-                {
-                    return capability == MOD_CHUNK_DATA ? MOD_CHUNK_DATA.<T>cast(instance) : null;
-                }
+//                @Nullable
+//                @Override
+//                public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing)
+//                {
+//                    return capability == MOD_CHUNK_DATA ? MOD_CHUNK_DATA.<T>cast(instance) : null;
+//                }
 
                 @Override
                 public CompoundNBT serializeNBT()
@@ -117,7 +119,7 @@ public class ModChunkPlaylistCap
     {
         @Nullable
         @Override
-        public NBTBase writeNBT(Capability<IModChunkPlaylist> capability, IModChunkPlaylist instance, Direction side)
+        public INBT writeNBT(Capability<IModChunkPlaylist> capability, IModChunkPlaylist instance, Direction side)
         {
             CompoundNBT properties =  new CompoundNBT();
             NBTHelper.setGuidToCompound(properties, instance.getPlaylistGuid());
@@ -125,7 +127,7 @@ public class ModChunkPlaylistCap
         }
 
         @Override
-        public void readNBT(Capability<IModChunkPlaylist> capability, IModChunkPlaylist instance, Direction side, NBTBase nbt)
+        public void readNBT(Capability<IModChunkPlaylist> capability, IModChunkPlaylist instance, Direction side, INBT nbt)
         {
             CompoundNBT properties = (CompoundNBT) nbt;
             instance.setPlaylistGuid(NBTHelper.getGuidFromCompound(properties));

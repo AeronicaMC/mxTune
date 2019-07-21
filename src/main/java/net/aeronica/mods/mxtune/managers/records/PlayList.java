@@ -96,24 +96,24 @@ public class PlayList extends BaseData
         name = compound.getString(TAG_NAME);
         title = compound.getString(TAG_TITLE);
 
-        CompoundNBT compoundPlayListDay = compound.getCompoundTag(TAG_PLAY_LIST_DAY);
-        int songCount = compoundPlayListDay.getInteger(TAG_SONG_COUNT);
+        CompoundNBT compoundPlayListDay = compound.getCompound(TAG_PLAY_LIST_DAY);
+        int songCount = compoundPlayListDay.getInt(TAG_SONG_COUNT);
 
         playListDay = new ArrayList<>();
         for(int i = 0; i < songCount; i++)
         {
-            CompoundNBT compoundSong = compoundPlayListDay.getCompoundTag(TAG_SONG_PREFIX + i);
+            CompoundNBT compoundSong = compoundPlayListDay.getCompound(TAG_SONG_PREFIX + i);
             SongProxy songProxy = new SongProxy(compoundSong);
             playListDay.add(songProxy);
         }
 
-        CompoundNBT compoundPlayListNight = compound.getCompoundTag(TAG_PLAY_LIST_NIGHT);
-        songCount = compoundPlayListNight.getInteger(TAG_SONG_COUNT);
+        CompoundNBT compoundPlayListNight = compound.getCompound(TAG_PLAY_LIST_NIGHT);
+        songCount = compoundPlayListNight.getInt(TAG_SONG_COUNT);
 
         playListNight = new ArrayList<>();
         for(int i = 0; i < songCount; i++)
         {
-            CompoundNBT compoundSong = compoundPlayListNight.getCompoundTag(TAG_SONG_PREFIX + i);
+            CompoundNBT compoundSong = compoundPlayListNight.getCompound(TAG_SONG_PREFIX + i);
             SongProxy songProxy = new SongProxy(compoundSong);
             playListNight.add(songProxy);
         }
@@ -123,8 +123,8 @@ public class PlayList extends BaseData
     public void writeToNBT(CompoundNBT compound)
     {
         super.writeToNBT(compound);
-        compound.setString(TAG_NAME, name);
-        compound.setString(TAG_TITLE, title);
+        compound.putString(TAG_NAME, name);
+        compound.putString(TAG_TITLE, title);
 
         CompoundNBT compoundPlayListDay = new CompoundNBT();
         int i = 0;
@@ -134,12 +134,12 @@ public class PlayList extends BaseData
             {
                 CompoundNBT compoundSong = new CompoundNBT();
                 songProxy.writeToNBT(compoundSong);
-                compoundPlayListDay.setTag(TAG_SONG_PREFIX + i, compoundSong);
+                compoundPlayListDay.put(TAG_SONG_PREFIX + i, compoundSong);
                 i++;
             }
         }
-        compound.setTag(TAG_PLAY_LIST_DAY, compoundPlayListDay);
-        compoundPlayListDay.setInteger(TAG_SONG_COUNT, i);
+        compound.put(TAG_PLAY_LIST_DAY, compoundPlayListDay);
+        compoundPlayListDay.putInt(TAG_SONG_COUNT, i);
 
         CompoundNBT compoundPlayListNight = new CompoundNBT();
         i = 0;
@@ -149,12 +149,12 @@ public class PlayList extends BaseData
             {
                 CompoundNBT compoundSong = new CompoundNBT();
                 songProxy.writeToNBT(compoundSong);
-                compoundPlayListNight.setTag(TAG_SONG_PREFIX + i, compoundSong);
+                compoundPlayListNight.put(TAG_SONG_PREFIX + i, compoundSong);
                 i++;
             }
         }
-        compound.setTag(TAG_PLAY_LIST_NIGHT, compoundPlayListNight);
-        compoundPlayListNight.setInteger(TAG_SONG_COUNT, i);
+        compound.put(TAG_PLAY_LIST_NIGHT, compoundPlayListNight);
+        compoundPlayListNight.putInt(TAG_SONG_COUNT, i);
     }
 
     public String getName()
