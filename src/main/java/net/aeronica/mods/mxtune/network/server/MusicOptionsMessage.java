@@ -49,7 +49,7 @@ public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessa
     
     @SuppressWarnings("unchecked")
     @Override
-    protected void read(PacketBuffer buffer)
+    protected void decode(PacketBuffer buffer)
     {
         this.muteOption = buffer.readInt();
         try {
@@ -76,7 +76,7 @@ public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessa
 
     @Override
     @SuppressWarnings("all")
-    protected void write(PacketBuffer buffer)
+    protected void encode(PacketBuffer buffer)
     {
         buffer.writeInt(this.muteOption);
         try {
@@ -105,7 +105,7 @@ public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessa
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         if (canProcess)
         {

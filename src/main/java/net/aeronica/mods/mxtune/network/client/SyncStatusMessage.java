@@ -41,7 +41,7 @@ public class SyncStatusMessage extends AbstractClientMessage<SyncStatusMessage>
     }
 
     @Override
-    protected void read(PacketBuffer buffer)
+    protected void decode(PacketBuffer buffer)
     {
         clientPlayStatuses = ByteBufUtils.readUTF8String(buffer);
         playIDMembers = ByteBufUtils.readUTF8String(buffer);
@@ -49,7 +49,7 @@ public class SyncStatusMessage extends AbstractClientMessage<SyncStatusMessage>
     }
 
     @Override
-    protected void write(PacketBuffer buffer)
+    protected void encode(PacketBuffer buffer)
     {
         ByteBufUtils.writeUTF8String(buffer, clientPlayStatuses);
         ByteBufUtils.writeUTF8String(buffer, playIDMembers);
@@ -57,7 +57,7 @@ public class SyncStatusMessage extends AbstractClientMessage<SyncStatusMessage>
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         synchronized (ClientAudio.THREAD_SYNC)
         {

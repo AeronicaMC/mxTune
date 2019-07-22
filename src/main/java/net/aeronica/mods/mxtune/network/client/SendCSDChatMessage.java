@@ -35,19 +35,19 @@ public class SendCSDChatMessage extends AbstractClientMessage<SendCSDChatMessage
     public SendCSDChatMessage(ClientStateData csd) {this.csd = csd;}
     
     @Override
-    protected void read(PacketBuffer buffer)
+    protected void decode(PacketBuffer buffer)
     {
         this.csd = ClientStateDataMessage.readCSD(buffer);
     }
 
     @Override
-    protected void write(PacketBuffer buffer)
+    protected void encode(PacketBuffer buffer)
     {
         ClientStateDataMessage.writeCSD(buffer, this.csd);
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         new CSDChatStatus(player, csd); 
     }

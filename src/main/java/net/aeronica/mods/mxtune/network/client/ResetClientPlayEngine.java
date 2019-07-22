@@ -28,19 +28,19 @@ public class ResetClientPlayEngine extends AbstractMessage.AbstractClientMessage
     public ResetClientPlayEngine() { /* Required by the PacketDispatcher */ }
 
     @Override
-    protected void read(PacketBuffer buffer)
+    protected void decode(PacketBuffer buffer)
     {
         // NOP
     }
 
     @Override
-    protected void write(PacketBuffer buffer)
+    protected void encode(PacketBuffer buffer)
     {
         // NOP
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         // TODO: Make a more defined process that's more like full client audio chain reset.
         new Thread(() ->

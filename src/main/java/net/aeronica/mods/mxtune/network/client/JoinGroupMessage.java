@@ -33,13 +33,13 @@ public class JoinGroupMessage extends AbstractClientMessage<JoinGroupMessage>
     public JoinGroupMessage( Integer groupID) {this.groupID = groupID; }
 
     @Override
-    protected void read(PacketBuffer buffer) { groupID = buffer.readInt(); }
+    protected void decode(PacketBuffer buffer) { groupID = buffer.readInt(); }
 
     @Override
-    protected void write(PacketBuffer buffer) { buffer.writeInt(groupID); }
+    protected void encode(PacketBuffer buffer) { buffer.writeInt(groupID); }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         player.openGui(MXTune.instance, GuiGuid.GUI_GROUP_JOIN, player.getEntityWorld(), (int) player.posX, (int) player.posY, (int) player.posZ);
     }

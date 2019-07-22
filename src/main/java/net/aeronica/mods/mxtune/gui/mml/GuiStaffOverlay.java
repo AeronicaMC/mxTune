@@ -17,6 +17,7 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.aeronica.mods.mxtune.gui.hud.HudData;
 import net.aeronica.mods.mxtune.gui.hud.HudDataFactory;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
@@ -34,7 +35,6 @@ import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.debug.ChunkBorderDebugRenderer;
 import net.minecraft.client.renderer.debug.DebugRenderer;
@@ -48,13 +48,14 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 
 import static net.aeronica.mods.mxtune.gui.hud.GuiJamOverlay.HOT_BAR_CLEARANCE;
+import static net.aeronica.mods.mxtune.gui.hud.GuiJamOverlay.drawRect;
 import static net.aeronica.mods.mxtune.network.server.ChunkToolMessage.Operation;
 
 public class GuiStaffOverlay extends AbstractGui
@@ -74,7 +75,7 @@ public class GuiStaffOverlay extends AbstractGui
 
     private GuiStaffOverlay()
     {
-        this.mc = Minecraft.getMinecraft();
+        this.mc = Minecraft.getInstance();
         this.fontRenderer = this.mc.fontRenderer;
         this.chunkBorder = new ChunkBorderDebugRenderer(mc);
     }
@@ -90,8 +91,8 @@ public class GuiStaffOverlay extends AbstractGui
 
         ClientPlayerEntity playerSP = this.mc.player;
         Item heldItem = playerSP.getHeldItemMainhand().getItem();
-        int width = event.getResolution().getScaledWidth();
-        int height = event.getResolution().getScaledHeight() - HOT_BAR_CLEARANCE;
+        int width = event.getWindow().getScaledWidth();
+        int height = event.getWindow().getScaledHeight() - HOT_BAR_CLEARANCE;
         HudData hudData = HudDataFactory.calcHudPositions(0, width, height);
 
         holdingStaffOfMusic = heldItem instanceof ItemStaffOfMusic;
@@ -109,12 +110,12 @@ public class GuiStaffOverlay extends AbstractGui
     {
         if (holdingTriggerItem && !mc.gameSettings.showDebugInfo)
         {
-            //chunkBorder.render(event.getPartialTicks(), 0);
+            //chunkBorder.render(0);
             render(event.getPartialTicks(), 0);
         }
     }
 
-    public void setTexture(ResourceLocation texture) { this.mc.renderEngine.bindTexture(texture);}
+    public void setTexture(ResourceLocation texture) { this.mc.getRenderManager().textureManager.bindTexture(texture);}
 
     private void renderHud(HudData hd, int width, RenderGameOverlayEvent.ElementType elementType, HudInfo hudInfo, int numLines)
     {
@@ -144,7 +145,7 @@ public class GuiStaffOverlay extends AbstractGui
 
         // Chunk Playlist
         BlockPos pos = mc.player.getPosition();
-        Chunk chunk = mc.world.getChunk(pos);
+        Chunk chunk = (Chunk) mc.world.getChunk(pos);
         GUID chunkPlayListGuid = ModChunkPlaylistHelper.getPlaylistGuid(chunk);
         PlayList chunkPlaylists = ClientFileManager.getPlayList(chunkPlayListGuid);
         String chunkPlaylistName = ModGuiUtils.getPlaylistName(chunkPlaylists);
@@ -173,7 +174,7 @@ public class GuiStaffOverlay extends AbstractGui
         renderLine(paddedText.toString(), y, hd, maxWidth, maxHeight, fontHeight);
 
         String formattedText = I18n.format("mxtune.gui.guiStaffOverlay.play_list_name_world_chunk", worldPlaylistName,
-                                           String.format("%+d", chunk.x), String.format("%+d", chunk.z),
+                                           String.format("%+d", chunk.getPos().x), String.format("%+d", chunk.getPos().z),
                                            chunkPlaylistName);
         y += fontHeight;
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight);
@@ -215,27 +216,27 @@ public class GuiStaffOverlay extends AbstractGui
         Chunk chunkStart = MusicOptionsUtil.getChunkStart(mc.player);
         Chunk chunkEnd = MusicOptionsUtil.getChunkEnd(mc.player);
 
-        int totalChunks = chunkStart != null && chunkEnd != null ? (Math.abs(chunkStart.x - chunkEnd.x) + 1) * (Math.abs(chunkStart.z - chunkEnd.z) + 1) : 0;
+        int totalChunks = chunkStart != null && chunkEnd != null ? (Math.abs(chunkStart.getPos().x - chunkEnd.getPos().x) + 1) * (Math.abs(chunkStart.getPos().z - chunkEnd.getPos().z) + 1) : 0;
 
         String formattedText = I18n.format("mxtune.gui.guiStaffOverlay.selected_play_list_to_apply", selectedPlaylistName);
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0x7FFFFF);
 
         formattedText = I18n.format("mxtune.gui.guiStaffOverlay.play_list_name_this_chunk",
-                                    chunk != null ? String.format("%+d", chunk.x) : DASHES,
-                                    chunk != null ? String.format("%+d", chunk.z) : DASHES,
+                                    chunk != null ? String.format("%+d", chunk.getPos().x) : DASHES,
+                                    chunk != null ? String.format("%+d", chunk.getPos().z) : DASHES,
                                            chunkPlaylistName);
         y += fontHeight;
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight);
 
         formattedText = embolden(op, Operation.START, I18n.format("mxtune.gui.guiStaffOverlay.play_list_name_start_chunk",
-                                    chunkStart != null ? String.format("%+d", chunkStart.x) : DASHES,
-                                    chunkStart != null ? String.format("%+d", chunkStart.z) : DASHES));
+                                    chunkStart != null ? String.format("%+d", chunkStart.getPos().x) : DASHES,
+                                    chunkStart != null ? String.format("%+d", chunkStart.getPos().z) : DASHES));
         y += fontHeight;
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0x00FF21);
 
         formattedText = embolden(op, Operation.END, I18n.format("mxtune.gui.guiStaffOverlay.play_list_name_end_chunk",
-                                    chunkEnd != null ? String.format("%+d", chunkEnd.x) : DASHES,
-                                    chunkEnd != null ? String.format("%+d", chunkEnd.z) : DASHES));
+                                    chunkEnd != null ? String.format("%+d", chunkEnd.getPos().x) : DASHES,
+                                    chunkEnd != null ? String.format("%+d", chunkEnd.getPos().z) : DASHES));
         y += fontHeight;
         renderLine(formattedText, y, hd, maxWidth, maxHeight, fontHeight, 0x0094FF);
 
@@ -253,7 +254,7 @@ public class GuiStaffOverlay extends AbstractGui
         if (mc != null && mc.world != null)
         {
             BlockPos pos = mc.player.getPosition();
-            chunk = mc.world.getChunk(pos);
+            chunk = (Chunk) mc.world.getChunk(pos);
             return chunk;
         } else
             return null;
@@ -289,19 +290,19 @@ public class GuiStaffOverlay extends AbstractGui
 
     private void render(float partialTicks, long finishTimeNano)
     {
-        PlayerEntity entityplayer = this.mc.player;
+        PlayerEntity playerEntity = this.mc.player;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
-        double d0 = entityplayer.lastTickPosX + (entityplayer.posX - entityplayer.lastTickPosX) * (double)partialTicks;
-        double d1 = entityplayer.lastTickPosY + (entityplayer.posY - entityplayer.lastTickPosY) * (double)partialTicks;
-        double d2 = entityplayer.lastTickPosZ + (entityplayer.posZ - entityplayer.lastTickPosZ) * (double)partialTicks;
+        double d0 = playerEntity.lastTickPosX + (playerEntity.posX - playerEntity.lastTickPosX) * (double)partialTicks;
+        double d1 = playerEntity.lastTickPosY + (playerEntity.posY - playerEntity.lastTickPosY) * (double)partialTicks;
+        double d2 = playerEntity.lastTickPosZ + (playerEntity.posZ - playerEntity.lastTickPosZ) * (double)partialTicks;
         double d3 = 0.0D - d1;
         double d4 = 256.0D - d1;
-        GlStateManager.disableTexture2D();
+        GlStateManager.disableTexture();
         GlStateManager.disableBlend();
-        double d5 = (double)(entityplayer.chunkCoordX << 4) - d0;
-        double d6 = (double)(entityplayer.chunkCoordZ << 4) - d2;
-        GlStateManager.glLineWidth(1.0F);
+        double d5 = (double)(playerEntity.chunkCoordX << 4) - d0;
+        double d6 = (double)(playerEntity.chunkCoordZ << 4) - d2;
+        GlStateManager.lineWidth(1.0F);
         bufferbuilder.begin(3, DefaultVertexFormats.POSITION_COLOR);
 
         // Red Chunk verticals next chunk over
@@ -356,7 +357,7 @@ public class GuiStaffOverlay extends AbstractGui
         }
 
         tessellator.draw();
-        GlStateManager.glLineWidth(2.0F);
+        GlStateManager.lineWidth(2.0F);
         bufferbuilder.begin(3, DefaultVertexFormats.POSITION_COLOR);
 
         for (int j1 = 0; j1 <= 16; j1 += 16)
@@ -383,9 +384,9 @@ public class GuiStaffOverlay extends AbstractGui
         }
 
         tessellator.draw();
-        GlStateManager.glLineWidth(1.0F);
+        GlStateManager.lineWidth(1.0F);
         GlStateManager.enableBlend();
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableTexture();
     }
 
 }

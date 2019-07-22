@@ -36,19 +36,19 @@ public class StopPlayIDMessage extends AbstractClientMessage<StopPlayIDMessage>
     }
     
     @Override
-    protected void read(PacketBuffer buffer)
+    protected void decode(PacketBuffer buffer)
     {
         playID = buffer.readInt();
     }
 
     @Override
-    protected void write(PacketBuffer buffer)
+    protected void encode(PacketBuffer buffer)
     {
         buffer.writeInt(playID);
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         ModLogger.debug("Remove Managed playID: %d", playID);
         ClientAudio.queueAudioDataRemoval(playID);

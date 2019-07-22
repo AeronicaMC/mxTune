@@ -18,90 +18,109 @@ package net.aeronica.mods.mxtune;
 
 import net.aeronica.mods.mxtune.advancements.ModCriteriaTriggers;
 import net.aeronica.mods.mxtune.caches.FileHelper;
-import net.aeronica.mods.mxtune.cmds.CommandMxTuneServerUpdate;
-import net.aeronica.mods.mxtune.cmds.CommandSoundRange;
-import net.aeronica.mods.mxtune.handler.GUIHandler;
+import net.aeronica.mods.mxtune.init.ModBlocks;
+import net.aeronica.mods.mxtune.init.ModNetwork;
 import net.aeronica.mods.mxtune.managers.DurationTimer;
 import net.aeronica.mods.mxtune.managers.ServerFileManager;
 import net.aeronica.mods.mxtune.network.MultiPacketSerializedObjectManager;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.options.PlayerMusicOptionsCapability;
 import net.aeronica.mods.mxtune.proxy.ServerProxy;
+import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.CallBackManager;
-import net.aeronica.mods.mxtune.util.ModLogger;
-import net.aeronica.mods.mxtune.util.MusicTab;
+import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.world.caps.chunk.ModChunkPlaylistCap;
 import net.aeronica.mods.mxtune.world.caps.world.ModWorldPlaylistCap;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.*;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLFingerprintViolationEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import static net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
-import static net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
-
-@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION,
-     acceptedMinecraftVersions = Reference.ACCEPTED_MINECRAFT_VERSIONS,
-     dependencies = Reference.DEPENDENTS, updateJSON = Reference.UPDATE,
-     certificateFingerprint = Reference.CERTIFICATE_FINGERPRINT)
-
-@SuppressWarnings("deprecation")
+@Mod(Reference.MOD_ID)
 public class MXTune
 {
-    @Mod.Instance(Reference.MOD_ID)
-    public static MXTune instance;
+    private static final Logger LOGGER = LogManager.getLogger(Reference.MOD_ID);
+    public static SimpleChannel network = ModNetwork.getNetworkChannel();
 
-    @SidedProxy(clientSide = "net.aeronica.mods.mxtune.proxy.ClientProxy", serverSide = "net.aeronica.mods.mxtune.proxy.ServerProxy")
+    //@SidedProxy(clientSide = "net.aeronica.mods.mxtune.proxy.ClientProxy", serverSide = "net.aeronica.mods.mxtune.proxy.ServerProxy")
     public static ServerProxy proxy;
 
-    public static final ItemGroup TAB_MUSIC = new MusicTab(ItemGroup.getNextID(), Reference.MOD_NAME);
-    
-    @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event)
+    public static final ItemGroup TAB_MUSIC =  new ItemGroup(Reference.MOD_ID) {
+        @Override
+        public ItemStack createIcon() {
+            return new ItemStack(ModBlocks.SPINET_PIANO);
+        }
+    };
+
+    public MXTune()
     {
+        // Register the setup method for modloading
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        // Register the doClientStuff method for modloading
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
+
+        // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
-        ModLogger.setLogger(event.getModLog());
+        MinecraftForge.EVENT_BUS.register(ClientAudio.class);
+    }
+
+    private void setup(final FMLCommonSetupEvent event)
+    {
+        // some preinit code
         ModCriteriaTriggers.init();
         ModWorldPlaylistCap.register();
         ModChunkPlaylistCap.register();
         PlayerMusicOptionsCapability.register();
         PacketDispatcher.registerPackets();
-        proxy.preInit();
         proxy.registerEventHandlers();
         proxy.initEntities();
+        LOGGER.info("HELLO FROM PREINIT");
     }
 
-    @Mod.EventHandler
-    public void init(FMLInitializationEvent event)
-    {
-        proxy.init();
-        proxy.registerKeyBindings();
-        proxy.initMML();
-
-        NetworkRegistry.INSTANCE.registerGuiHandler(instance, GUIHandler.getInstance());
+    private void doClientStuff(final FMLClientSetupEvent event) {
+        // do something that can only be done on the client
+        LOGGER.info("Got game settings {}", event.getMinecraftSupplier().get().gameSettings);
+        MIDISystemUtil.mxTuneInit();
     }
 
-    @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event)
-    {
-        proxy.postInit();
-        proxy.registerHUD();
-    }
+    // TODO: When ti intialize key bindings?
+//    @SubscribeEvent
+//    public void init(FMLInitializationEvent event)
+//    {
+//        proxy.registerKeyBindings();
+//
+//        // GUI Stuff is all broke.  New ways to do stuff!
+//        // NetworkRegistry.INSTANCE.registerGuiHandler(instance, GUIHandler.getInstance());
+//    }
 
-    @Mod.EventHandler
+    // TODO: GUI HUD stuff?
+//    @SubscribeEvent
+//    public void postInit(FMLPostInitializationEvent event)
+//    {
+//        proxy.registerHUD();
+//    }
+
+    @SubscribeEvent
     public void onEvent(FMLFingerprintViolationEvent event) {
-        FMLLog.warning("*** [mxTune] Invalid fingerprint detected! ***");
+        LOGGER.warn("*** [mxTune] Invalid fingerprint detected! ***");
     }
 
-    @Mod.EventHandler
+    @SubscribeEvent
     public void onEvent(FMLServerStartingEvent event)
     {
-        event.registerServerCommand(new CommandSoundRange());
-        event.registerServerCommand(new CommandMxTuneServerUpdate());
+        //event.getCommandDispatcher().register(); // The NEW way plus Brigadier!
+        //event.registerServerCommand(new CommandSoundRange());
+        //event.registerServerCommand(new CommandMxTuneServerUpdate());
         CallBackManager.start();
         MultiPacketSerializedObjectManager.start();
         DurationTimer.start();
@@ -109,7 +128,7 @@ public class MXTune
         ServerFileManager.start();
     }
 
-    @Mod.EventHandler
+    @SubscribeEvent
     public void onEvent(FMLServerStoppingEvent event)
     {
         DurationTimer.shutdown();
@@ -117,16 +136,16 @@ public class MXTune
         CallBackManager.shutdown();
         MultiPacketSerializedObjectManager.shutdown();
     }
-
-    @SubscribeEvent
-    void onEvent(ClientConnectedToServerEvent event)
-    {
-        proxy.clientConnect(event);
-    }
-
-    @SubscribeEvent
-    void onEvent(ClientDisconnectionFromServerEvent event)
-    {
-        proxy.clientDisconnect(event);
-    }
+    // TODO: Need a replacement for these
+//    @SubscribeEvent
+//    void onEvent(ClientConnectedToServerEvent event)
+//    {
+//        proxy.clientConnect(event);
+//    }
+//
+//    @SubscribeEvent
+//    void onEvent(ClientDisconnectionFromServerEvent event)
+//    {
+//        proxy.clientDisconnect(event);
+//    }
 }

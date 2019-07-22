@@ -17,7 +17,7 @@
 
 package net.aeronica.mods.mxtune.gui.hud;
 
-import net.aeronica.mods.mxtune.MXTune;
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.managers.GroupHelper;
@@ -31,7 +31,6 @@ import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
@@ -43,11 +42,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
-import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -78,7 +77,7 @@ public class GuiJamOverlay extends AbstractGui
     
     public GuiJamOverlay()
     {
-        this.mc = Minecraft.getMinecraft();
+        this.mc = Minecraft.getInstance();
         this.fontRenderer = this.mc.fontRenderer;
     }
 
@@ -91,7 +90,7 @@ public class GuiJamOverlay extends AbstractGui
     @SubscribeEvent
     public void onEvent(ClientTickEvent event)
     {
-        if (event.side == Side.CLIENT && event.phase == TickEvent.Phase.END)
+        if (event.side == LogicalSide.CLIENT && event.phase == TickEvent.Phase.END)
         {
             /* once per second second */
             if ((count++ % 20 == 0) && (hudTimer > 0)) {hudTimer--;}
@@ -132,8 +131,8 @@ public class GuiJamOverlay extends AbstractGui
             return;
         ClientPlayerEntity player = this.mc.player;
 
-        int width = event.getResolution().getScaledWidth();
-        int height = event.getResolution().getScaledHeight() - HOT_BAR_CLEARANCE;
+        int width = event.getWindow().getScaledWidth();
+        int height = event.getWindow().getScaledHeight() - HOT_BAR_CLEARANCE;
         partialTicks = event.getPartialTicks();
         HudData hudData = HudDataFactory.calcHudPositions((inGuiHudAdjust() ? MusicOptionsUtil.getAdjustPositionHud() : MusicOptionsUtil.getPositionHUD(player)), width, height);
 
@@ -241,7 +240,7 @@ public class GuiJamOverlay extends AbstractGui
             /* Always add the leader at the HEAD of the list */
             leaderID = GroupHelper.getLeaderOfGroup(groupID);
             //noinspection ConstantConditions
-            memberName = MXTune.proxy.getPlayerByEntityID(leaderID).getName();
+            memberName = mc.world.getEntityByID(leaderID).getName().getUnformattedComponentText();
             memberNameWidth = fontRenderer.getStringWidth(memberName);
             playStatus = GroupHelper.getIndex(leaderID);
             notePos = new Tuple<>(notePosMembers[index][0], notePosMembers[index][1]);
@@ -255,7 +254,7 @@ public class GuiJamOverlay extends AbstractGui
             {
                 if (groupID.equals(GroupHelper.getMembersGroupID(memberID)) && !memberID.equals(GroupHelper.getLeaderOfGroup(groupID)))
                 {
-                    memberName = MXTune.proxy.getPlayerByEntityID(memberID).getName();
+                    memberName = mc.world.getEntityByID(memberID).getName().getUnformattedComponentText();
                     memberNameWidth = fontRenderer.getStringWidth(memberName);
                     playStatus = GroupHelper.getIndex(memberID);
                     notePos = new Tuple<>(notePosMembers[index][0], notePosMembers[index][1]);
@@ -389,8 +388,8 @@ public class GuiJamOverlay extends AbstractGui
     
     private static String getMusicTitleRaw(ItemStack sheetMusic)
     {
-        if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
-            return sheetMusic.getDisplayName();
+        if (!sheetMusic.isEmpty() && sheetMusic.getTag() != null)
+            return sheetMusic.getDisplayName().getFormattedText();
 
         return "";
     }
@@ -464,7 +463,7 @@ public class GuiJamOverlay extends AbstractGui
             int iconY = hd.quadY(PLACARD_ICON_SIZE, 0, 2, PLACARD_ICON_SIZE);
             int index = GroupHelper.getIndex(playerIn.getEntityId());
             setTexture(TEXTURE_STATUS);
-            this.drawTexturedModalRect(iconX, iconY, PLACARD_ICON_BASE_U_OFFSET + index %
+            this.blit(iconX, iconY, PLACARD_ICON_BASE_U_OFFSET + index %
                     PLACARD_ICONS_PER_ROW * PLACARD_ICON_SIZE, PLACARD_ICON_BASE_V_OFFSET + index /
                     PLACARD_ICONS_PER_ROW * PLACARD_ICON_SIZE, PLACARD_ICON_SIZE, PLACARD_ICON_SIZE);
 
@@ -531,10 +530,10 @@ public class GuiJamOverlay extends AbstractGui
     {
         NOTATION eNOTATION;
         /* draw the widget background */
-        drawTexturedModalRect(posX, posY, 0, 0, WIDGET_WIDTH, WIDGET_HEIGHT);
+        blit(posX, posY, 0, 0, WIDGET_WIDTH, WIDGET_HEIGHT);
         
         /* alto clef */
-        drawTexturedModalRect(posX +14+4, posY +23, 0, 136, 28, 64);
+        blit(posX +14+4, posY +23, 0, 136, 28, 64);
         
         /* draw the notes/rests for members */
         List<GroupData> groupData = processGroup(playerIn);
@@ -550,9 +549,9 @@ public class GuiJamOverlay extends AbstractGui
                     eNOTATION = NOTATION.byMetadata(status);
                     int nX = eNOTATION.getX();
                     int nY = eNOTATION.getY();
-                    int x = posX + gd.notePos.getFirst();
-                    int y = posY + gd.notePos.getSecond();
-                    drawTexturedModalRect(x, y, nX, nY, 24, 16);
+                    int x = posX + gd.notePos.getA();
+                    int y = posY + gd.notePos.getB();
+                    blit(x, y, nX, nY, 24, 16);
                 }
             }
             else
@@ -564,7 +563,7 @@ public class GuiJamOverlay extends AbstractGui
                 int nY = eNOTATION.getY();
                 int x = posX + notePosMembers[0][0];
                 int y = posY + notePosMembers[0][1];
-                drawTexturedModalRect(x, y, nX, nY, 24, 16);
+                blit(x, y, nX, nY, 24, 16);
             }
         }
         
@@ -577,8 +576,8 @@ public class GuiJamOverlay extends AbstractGui
                 int oddEven = 1;
                 for (GroupData gd: groupData)
                 {
-                    int x = posX + gd.notePos.getFirst() +28;
-                    int y = posY + gd.notePos.getSecond() + 4;
+                    int x = posX + gd.notePos.getA() +28;
+                    int y = posY + gd.notePos.getB() + 4;
                     int textWidth = fontRenderer.getStringWidth(TextFormatting.BOLD +marquee(gd.getMemberName(), 10));
                     if (oddEven++ % 2 == 0) //noinspection NumericOverflow
                         drawRect(x-2, y-2, x+textWidth+2, y+10, 0xC89558 + (208 << 24));
@@ -591,7 +590,7 @@ public class GuiJamOverlay extends AbstractGui
                 GroupHelper.getIndex(playerIn.getEntityId());
                 int x = posX + notePosMembers[0][0] + 28;
                 int y = posY + notePosMembers[0][1] + 4;
-                String name = (playerIn.getDisplayName().getUnformattedText());
+                String name = (playerIn.getDisplayName().getFormattedText());
                 fontRenderer.drawString(TextFormatting.BOLD + marquee(name, 10), x, y, 0x543722);
             }
         }
@@ -614,7 +613,7 @@ public class GuiJamOverlay extends AbstractGui
         }
     }
     
-    public void setTexture(ResourceLocation texture) { this.mc.renderEngine.bindTexture(texture);}
+    public void setTexture(ResourceLocation texture) { this.mc.getRenderManager().textureManager.bindTexture(texture);}
     
     /**
      * Copied from the vanilla Gui class, but removed the GlStateManager blend enable/disable method calls.
@@ -646,15 +645,15 @@ public class GuiJamOverlay extends AbstractGui
         float f2 = (float)(color & 255) / 255.0F;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        GlStateManager.disableTexture2D();
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        GlStateManager.color(f, f1, f2, f3);
+        GlStateManager.disableTexture();
+        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        GlStateManager.color4f(f, f1, f2, f3);
         bufferBuilder.begin(7, DefaultVertexFormats.POSITION);
         bufferBuilder.pos((double)left, (double)bottom, 0.0D).endVertex();
         bufferBuilder.pos((double)right, (double)bottom, 0.0D).endVertex();
         bufferBuilder.pos((double)right, (double)top, 0.0D).endVertex();
         bufferBuilder.pos((double)left, (double)top, 0.0D).endVertex();
         tessellator.draw();
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableTexture();
     }
 }

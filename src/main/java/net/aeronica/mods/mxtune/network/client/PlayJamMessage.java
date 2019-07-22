@@ -47,7 +47,7 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
     }
     
     @Override
-    protected void read(PacketBuffer buffer)
+    protected void decode(PacketBuffer buffer)
     {
         leaderID = buffer.readInt();
         playID = buffer.readInt();
@@ -55,7 +55,7 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
     }
 
     @Override
-    protected void write(PacketBuffer buffer)
+    protected void encode(PacketBuffer buffer)
     {
         buffer.writeInt(leaderID);
         buffer.writeInt(playID);
@@ -63,7 +63,7 @@ public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         if (!midiUnavailableWarn(player))
         {

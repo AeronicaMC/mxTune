@@ -51,7 +51,7 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
     }
     
     @Override
-    protected void read(PacketBuffer buffer)
+    protected void decode(PacketBuffer buffer)
     {
         this.csd = readCSD(buffer);
         this.serverIdUuidMSB = buffer.readLong();
@@ -59,7 +59,7 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
     }
 
     @Override
-    protected void write(PacketBuffer buffer)
+    protected void encode(PacketBuffer buffer)
     {
         writeCSD(buffer, csd);
         buffer.writeLong(serverIdUuidMSB);
@@ -67,7 +67,7 @@ public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessa
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         if (side.isClient())
         {

@@ -35,19 +35,19 @@ public class AudiblePingPlayerMessage extends AbstractClientMessage<AudiblePingP
     }
     
     @Override
-    protected void read(PacketBuffer buffer)
+    protected void decode(PacketBuffer buffer)
     {
         soundEvent = SoundEvent.REGISTRY.getObjectById(buffer.readInt());
     }
 
     @Override
-    protected void write(PacketBuffer buffer)
+    protected void encode(PacketBuffer buffer)
     {
         buffer.writeInt(SoundEvent.REGISTRY.getIDForObject(soundEvent));
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         player.playSound(soundEvent, 1F, 1F);
     }

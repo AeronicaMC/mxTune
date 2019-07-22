@@ -62,10 +62,11 @@ public class ModChunkPlaylistCap
         final ServerPlayerEntity player = event.getPlayer();
         final Chunk chunk = event.getWorld().getChunk(event.getPos().x, event.getPos().z);
 
-        if (chunk != null && chunk.getCapability(MOD_CHUNK_DATA)
-        {
-            PacketDispatcher.sendTo(new UpdateChunkMusicData(chunk.getPos().x, chunk.getPos().z, ModChunkPlaylistHelper.getPlaylistGuid(chunk)), player);
-        }
+        chunk.getCapability(MOD_CHUNK_DATA).ifPresent(chunkPlaylist -> {
+            PacketDispatcher.sendTo(new UpdateChunkMusicData(chunk.getPos().x, chunk.getPos().z, chunkPlaylist.getPlaylistGuid()), player);
+        });
+
+
     }
 
     @SubscribeEvent

@@ -43,7 +43,7 @@ public class PlayerSelectedPlayListMessage extends AbstractMessage.AbstractServe
     }
 
     @Override
-    protected void read(PacketBuffer buffer)
+    protected void decode(PacketBuffer buffer)
     {
         ddddSigBits = buffer.readLong();
         ccccSigBits = buffer.readLong();
@@ -53,7 +53,7 @@ public class PlayerSelectedPlayListMessage extends AbstractMessage.AbstractServe
     }
 
     @Override
-    protected void write(PacketBuffer buffer)
+    protected void encode(PacketBuffer buffer)
     {
         buffer.writeLong(ddddSigBits);
         buffer.writeLong(ccccSigBits);
@@ -62,7 +62,7 @@ public class PlayerSelectedPlayListMessage extends AbstractMessage.AbstractServe
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         MusicOptionsUtil.setSelectedPlayListGuid(player, selectedAreaGuid);
     }

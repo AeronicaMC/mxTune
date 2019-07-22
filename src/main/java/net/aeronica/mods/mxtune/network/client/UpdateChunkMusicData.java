@@ -51,7 +51,7 @@ public class UpdateChunkMusicData extends AbstractClientMessage<UpdateChunkMusic
     }
 
     @Override
-    protected void read(PacketBuffer buffer)
+    protected void decode(PacketBuffer buffer)
     {
         chunkX = buffer.readInt();
         chunkZ = buffer.readInt();
@@ -63,7 +63,7 @@ public class UpdateChunkMusicData extends AbstractClientMessage<UpdateChunkMusic
     }
 
     @Override
-    protected void write(PacketBuffer buffer)
+    protected void encode(PacketBuffer buffer)
     {
         buffer.writeInt(chunkX);
         buffer.writeInt(chunkZ);
@@ -74,7 +74,7 @@ public class UpdateChunkMusicData extends AbstractClientMessage<UpdateChunkMusic
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         World world = MXTune.proxy.getClientWorld();
         if (world != null && world.isChunkGeneratedAt(chunkX, chunkZ))

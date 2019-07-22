@@ -16,63 +16,40 @@
  */
 package net.aeronica.mods.mxtune.proxy;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import net.aeronica.mods.mxtune.gui.hud.GuiJamOverlay;
 import net.aeronica.mods.mxtune.gui.mml.GuiStaffOverlay;
 import net.aeronica.mods.mxtune.handler.KeyHandler;
-import net.aeronica.mods.mxtune.managers.ClientFileManager;
-import net.aeronica.mods.mxtune.managers.ClientPlayManager;
-import net.aeronica.mods.mxtune.network.MultiPacketSerializedObjectManager;
-import net.aeronica.mods.mxtune.sound.ClientAudio;
-import net.aeronica.mods.mxtune.util.CallBackManager;
-import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.IThreadListener;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
-
-import static net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
-import static net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
+import net.minecraftforge.fml.LogicalSide;
 
 public class ClientProxy extends ServerProxy
 {
-    
-    @Override
-    public void preInit() { /*  NOP */ }
-
-    @Override
-    public void init() { /*  NOP */ }
-
-    @Override
-    public void postInit() { /*  NOP */ }
-
     @Override
     public void initEntities() { super.initEntities(); }
 
     @Override
-    public ListenableFuture<Object> addScheduledTask(Runnable runnableToSchedule)
+    public void addScheduledTask(Runnable runnableToSchedule)
     {
-        return Minecraft.getMinecraft().addScheduledTask(runnableToSchedule);
+        Minecraft.getInstance().runImmediately(runnableToSchedule);
     }
 
     @Override
-    public Side getPhysicalSide() { return Side.CLIENT; }
+    public LogicalSide getPhysicalSide() { return LogicalSide.CLIENT; }
+
+    // TODO: How to handle side stuff properly in 1.13+
+    @Override
+    public LogicalSide getEffectiveSide() { return getPhysicalSide(); } //FMLCommonHandler.instance().getEffectiveSide(); }
 
     @Override
-    public Side getEffectiveSide() { return FMLCommonHandler.instance().getEffectiveSide(); }
+    public Minecraft getMinecraft() { return Minecraft.getInstance() ;}
 
     @Override
-    public Minecraft getMinecraft() { return Minecraft.getMinecraft() ;}
-
-    @Override
-    public PlayerEntity getClientPlayer() { return Minecraft.getMinecraft().player; }
+    public PlayerEntity getClientPlayer() { return Minecraft.getInstance().player; }
 
     @Override
     public PlayerEntity getPlayerByEntityID(int entityID)
@@ -81,7 +58,7 @@ public class ClientProxy extends ServerProxy
     }
 
     @Override
-    public ClientWorld getClientWorld() { return Minecraft.getMinecraft().world; }
+    public ClientWorld getClientWorld() { return Minecraft.getInstance().world; }
 
     @Override
     public void spawnMusicParticles(PlayerEntity player) { /* Future */ }
@@ -93,13 +70,6 @@ public class ClientProxy extends ServerProxy
     public void registerKeyBindings()
     {
         MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());
-    }
-
-    @Override
-    public void initMML()
-    {
-        MIDISystemUtil.mxTuneInit();
-        ((IReloadableResourceManager) getMinecraft().getResourceManager()).registerReloadListener(ClientAudio.INSTANCE);
     }
 
     @Override
@@ -116,40 +86,23 @@ public class ClientProxy extends ServerProxy
         {
             ServerPlayerEntity entityPlayerMP = (ServerPlayerEntity) player;
             return entityPlayerMP.isCreative();
-        } else if (player instanceof ClientPlayerEntity) { return Minecraft.getMinecraft().playerController.isInCreativeMode(); }
+        } else if (player instanceof ClientPlayerEntity) { return Minecraft.getInstance().playerController.isInCreativeMode(); }
         return false;
     }
 
-    @Override
-    public PlayerEntity getPlayerEntity(MessageContext ctx)
-    {
-        // Note that if you simply return 'Minecraft.getMinecraft().thePlayer',
-        // your packets will not work as expected because you will be getting a
-        // client player even when you are on the server!
-        // Sounds absurd, but it's true.
-
-        // Solution is to double-check side before returning the player:
-        return (ctx.side.isClient() ? this.getClientPlayer() : super.getPlayerEntity(ctx));
-    }
-
-    @Override
-    public IThreadListener getThreadFromContext(MessageContext ctx)
-    {
-        return (ctx.side.isClient() ? this.getMinecraft() : super.getThreadFromContext(ctx));
-    }
-
-    @Override
-    public void clientConnect(ClientConnectedToServerEvent event)
-    {
-        CallBackManager.start();
-        ClientPlayManager.reset();
-    }
-
-    @Override
-    public void clientDisconnect(ClientDisconnectionFromServerEvent event)
-    {
-        CallBackManager.shutdown();
-        ClientFileManager.clearCache();
-        MultiPacketSerializedObjectManager.shutdown();
-    }
+    // TODO: Need a replacement for these
+//    @Override
+//    public void clientConnect(ClientConnectedToServerEvent event)
+//    {
+//        CallBackManager.start();
+//        ClientPlayManager.reset();
+//    }
+//
+//    @Override
+//    public void clientDisconnect(ClientDisconnectionFromServerEvent event)
+//    {
+//        CallBackManager.shutdown();
+//        ClientFileManager.clearCache();
+//        MultiPacketSerializedObjectManager.shutdown();
+//    }
 }

@@ -56,7 +56,7 @@ public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAm
     }
 
     @Override
-    protected void read(PacketBuffer buffer)
+    protected void decode(PacketBuffer buffer)
     {
         pos = buffer.readBlockPos();
         lockContainer = buffer.readBoolean();
@@ -67,7 +67,7 @@ public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAm
     }
 
     @Override
-    protected void write(PacketBuffer buffer)
+    protected void encode(PacketBuffer buffer)
     {
         buffer.writeBlockPos(pos);
         buffer.writeBoolean(lockContainer);
@@ -78,7 +78,7 @@ public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAm
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         if(player.world.isBlockLoaded(pos))
         {

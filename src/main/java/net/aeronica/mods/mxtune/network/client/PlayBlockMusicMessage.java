@@ -52,7 +52,7 @@ public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicM
     }
     
     @Override
-    protected void read(PacketBuffer buffer)
+    protected void decode(PacketBuffer buffer)
     {
         playID = buffer.readInt();
         blockPos = buffer.readBlockPos();
@@ -61,7 +61,7 @@ public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicM
     }
 
     @Override
-    protected void write(PacketBuffer buffer)
+    protected void encode(PacketBuffer buffer)
     {
         buffer.writeInt(playID);
         buffer.writeBlockPos(blockPos);
@@ -70,7 +70,7 @@ public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicM
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         if (side.isClient())
             handleClient(player);

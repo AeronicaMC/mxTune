@@ -10,6 +10,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.IThreadListener;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -61,7 +62,7 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
      * true, this method is guaranteed to be called on the main Minecraft thread
      * for this side.
      */
-    public abstract void process(PlayerEntity player, Side side);
+    public abstract void process(PlayerEntity player, Dist side);
 
     /**
      * If message is sent to the wrong side, an exception will be thrown during
@@ -69,7 +70,7 @@ public abstract class AbstractMessage<T extends AbstractMessage<T>> implements I
      * 
      * @return True if the message is allowed to be handled on the given side
      */
-    protected boolean isValidOnSide(Side side)
+    protected boolean isValidOnSide(Dist side)
     {
         return true; // default allows handling on both sides, i.e. a
                      // bidirectional packet

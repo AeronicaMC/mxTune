@@ -46,21 +46,21 @@ public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
     }
     
     @Override
-    protected void read(PacketBuffer buffer)
+    protected void decode(PacketBuffer buffer)
     {
         playID = buffer.readInt();
         musicText = stringHelper.readLongString(buffer);
     }
 
     @Override
-    protected void write(PacketBuffer buffer)
+    protected void encode(PacketBuffer buffer)
     {
         buffer.writeInt(playID);
         stringHelper.writeLongString(buffer, musicText);
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         if (!midiUnavailableWarn(player))
         {

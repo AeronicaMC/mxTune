@@ -37,19 +37,19 @@ public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
     public SendKeyMessage(String kb) {this.keyBindingDesc = kb;}
 
     @Override
-    protected void read(PacketBuffer buffer)
+    protected void decode(PacketBuffer buffer)
     {
         this.keyBindingDesc = ByteBufUtils.readUTF8String(buffer);
     }
 
     @Override
-    protected void write(PacketBuffer buffer)
+    protected void encode(PacketBuffer buffer)
     {
         ByteBufUtils.writeUTF8String(buffer, this.keyBindingDesc);
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         if (side.isServer())
         {

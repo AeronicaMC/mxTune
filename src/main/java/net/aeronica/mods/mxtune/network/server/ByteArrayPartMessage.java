@@ -45,7 +45,7 @@ public class ByteArrayPartMessage extends AbstractMessage.AbstractServerMessage<
     }
 
     @Override
-    protected void read(PacketBuffer buffer)
+    protected void decode(PacketBuffer buffer)
     {
         long msb = buffer.readLong();
         long lsb = buffer.readLong();
@@ -56,7 +56,7 @@ public class ByteArrayPartMessage extends AbstractMessage.AbstractServerMessage<
     }
 
     @Override
-    protected void write(PacketBuffer buffer)
+    protected void encode(PacketBuffer buffer)
     {
         buffer.writeLong(serialObjectId.getMostSignificantBits());
         buffer.writeLong(serialObjectId.getLeastSignificantBits());
@@ -66,7 +66,7 @@ public class ByteArrayPartMessage extends AbstractMessage.AbstractServerMessage<
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         MultiPacketSerializedObjectManager.addPacket(new SerializedObjectPacket(serialObjectId, packetId, bytes));
     }

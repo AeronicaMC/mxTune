@@ -42,21 +42,21 @@ public class SendResultMessage extends AbstractMessage.AbstractClientMessage<Sen
     }
 
     @Override
-    protected void read(PacketBuffer buffer) throws IOException
+    protected void decode(PacketBuffer buffer) throws IOException
     {
         this.component = ITextComponent.Serializer.jsonToComponent(buffer.readString(32767));
         this.errorResult = buffer.readBoolean();
     }
 
     @Override
-    protected void write(PacketBuffer buffer)
+    protected void encode(PacketBuffer buffer)
     {
         buffer.writeString(ITextComponent.Serializer.componentToJson(component));
         buffer.writeBoolean(errorResult);
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         ModLogger.debug("Error: %s, error %s", component.getFormattedText(), errorResult);
     }

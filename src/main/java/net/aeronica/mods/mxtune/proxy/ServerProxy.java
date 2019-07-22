@@ -16,44 +16,34 @@
  */
 package net.aeronica.mods.mxtune.proxy;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import net.aeronica.mods.mxtune.init.ModEntities;
 import net.aeronica.mods.mxtune.managers.GroupManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.IThreadListener;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.LogicalSide;
+
 
 public class ServerProxy
 {
-    public void preInit() { /*  NOP */ }
-
-    public void init() { /*  NOP */ }
-    
-    public void postInit() { /*  NOP */ }
-
-    public ListenableFuture<Object> addScheduledTask(Runnable runnableToSchedule)
+    public void addScheduledTask(Runnable runnableToSchedule)
     {
-        return FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(runnableToSchedule);
+        //FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(runnableToSchedule);
     }
 
     public void initEntities() { ModEntities.init(); }
 
-    public Dist getPhysicalSide()  { return Dist.DEDICATED_SERVER ;}
+    public LogicalSide getPhysicalSide()  { return LogicalSide.SERVER ;}
 
-    public Dist getEffectiveSide() { return getPhysicalSide(); }
+    public LogicalSide getEffectiveSide() { return getPhysicalSide(); }
 
     public PlayerEntity getClientPlayer() { return null; }
 
     public PlayerEntity getPlayerByEntityID(int entityID)
     {
-        return (PlayerEntity) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getEntityByID(entityID);
+        return  null; //(PlayerEntity) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getEntityByID(entityID);
     }
 
     public Minecraft getMinecraft() { return null; }
@@ -69,8 +59,6 @@ public class ServerProxy
 
     public void registerKeyBindings() { /* NOP */ }
 
-    public void initMML() { /*  NOP */ }
-
     public void registerHUD() { /*  NOP */ }
 
     public boolean playerIsInCreativeMode(PlayerEntity player)
@@ -83,17 +71,13 @@ public class ServerProxy
         return false;
     }
 
-    public PlayerEntity getPlayerEntity(MessageContext ctx) { return ctx.getServerHandler().player; }
-
-    public IThreadListener getThreadFromContext(MessageContext ctx) { return ctx.getServerHandler().player.getServer(); }
-
-    public void clientConnect(FMLNetworkEvent.ClientConnectedToServerEvent event)
-    {
-        // Override and use in ClientProxy Only
-    }
-
-    public void clientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event)
-    {
-        // Override and use in ClientProxy Only
-    }
+//    public void clientConnect(FMLNetworkEvent.ClientConnectedToServerEvent event)
+//    {
+//        // Override and use in ClientProxy Only
+//    }
+//
+//    public void clientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event)
+//    {
+//        // Override and use in ClientProxy Only
+//    }
 }

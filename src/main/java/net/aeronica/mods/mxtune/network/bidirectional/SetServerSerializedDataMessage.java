@@ -69,7 +69,7 @@ public class SetServerSerializedDataMessage extends AbstractMessage.AbstractServ
     }
 
     @Override
-    protected void read(PacketBuffer buffer) throws IOException
+    protected void decode(PacketBuffer buffer) throws IOException
     {
         this.recordType = buffer.readEnumValue(RecordType.class);
         this.baseData = NetworkSerializedHelper.readSerializedObject(buffer);
@@ -81,7 +81,7 @@ public class SetServerSerializedDataMessage extends AbstractMessage.AbstractServ
     }
 
     @Override
-    protected void write(PacketBuffer buffer) throws IOException
+    protected void encode(PacketBuffer buffer) throws IOException
     {
         buffer.writeEnumValue(recordType);
         NetworkSerializedHelper.writeSerializedObject(buffer, baseData);
@@ -92,7 +92,7 @@ public class SetServerSerializedDataMessage extends AbstractMessage.AbstractServ
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         ResultMessage resultMessage = ResultMessage.NO_ERROR;
         if (MusicOptionsUtil.isMxTuneServerUpdateAllowed(player))

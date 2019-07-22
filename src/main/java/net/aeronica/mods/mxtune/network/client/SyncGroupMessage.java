@@ -38,21 +38,21 @@ public class SyncGroupMessage extends AbstractClientMessage<SyncGroupMessage>
     }
 
     @Override
-    protected void read(PacketBuffer buffer)
+    protected void decode(PacketBuffer buffer)
     {
         this.groups = ByteBufUtils.readUTF8String(buffer);
         this.members = ByteBufUtils.readUTF8String(buffer);
     }
 
     @Override
-    protected void write(PacketBuffer buffer)
+    protected void encode(PacketBuffer buffer)
     {
         ByteBufUtils.writeUTF8String(buffer, groups);
         ByteBufUtils.writeUTF8String(buffer, members);
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         GroupHelper.setClientGroups(groups);
         GroupHelper.setClientMembers(members);

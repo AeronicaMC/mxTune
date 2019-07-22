@@ -69,7 +69,7 @@ public class GetBaseDataListsMessage<E extends BaseData> extends AbstractMessage
 
     @Override
     @SuppressWarnings("unchecked")
-    protected void read(PacketBuffer buffer)
+    protected void decode(PacketBuffer buffer)
     {
         recordType = buffer.readEnumValue(RecordType.class);
         callbackUuidMSB = buffer.readLong();
@@ -92,7 +92,7 @@ public class GetBaseDataListsMessage<E extends BaseData> extends AbstractMessage
     }
 
     @Override
-    protected void write(PacketBuffer buffer)
+    protected void encode(PacketBuffer buffer)
     {
         buffer.writeEnumValue(recordType);
         buffer.writeLong(callbackUuidMSB);
@@ -115,7 +115,7 @@ public class GetBaseDataListsMessage<E extends BaseData> extends AbstractMessage
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         if (side.isClient())
         {

@@ -46,21 +46,21 @@ public class MusicTextMessage extends AbstractServerMessage<MusicTextMessage>
     }
 
     @Override
-    protected void read(PacketBuffer buffer)
+    protected void decode(PacketBuffer buffer)
     {
         musicTitle = ByteBufUtils.readUTF8String(buffer);
         musicText = stringHelper.readLongString(buffer);
     }
 
     @Override
-    protected void write(PacketBuffer buffer)
+    protected void encode(PacketBuffer buffer)
     {
         ByteBufUtils.writeUTF8String(buffer, musicTitle);
         stringHelper.writeLongString(buffer, musicText);
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         if (side.isServer())
             processServer(player);

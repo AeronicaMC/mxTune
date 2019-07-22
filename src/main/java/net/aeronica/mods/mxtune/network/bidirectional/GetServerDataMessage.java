@@ -107,7 +107,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
     }
     
     @Override
-    protected void read(PacketBuffer buffer) throws IOException
+    protected void decode(PacketBuffer buffer) throws IOException
     {
         this.recordType = buffer.readEnumValue(RecordType.class);
         this.dataCompound = buffer.readCompoundTag();
@@ -121,7 +121,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
     }
 
     @Override
-    protected void write(PacketBuffer buffer)
+    protected void encode(PacketBuffer buffer)
     {
         buffer.writeEnumValue(recordType);
         buffer.writeCompoundTag(dataCompound);
@@ -134,7 +134,7 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         if (side.isClient())
         {

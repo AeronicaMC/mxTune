@@ -47,7 +47,7 @@ public class UpdateWorldMusicData extends AbstractClientMessage<UpdateWorldMusic
     }
 
     @Override
-    protected void read(PacketBuffer buffer)
+    protected void decode(PacketBuffer buffer)
     {
         ddddSigBits = buffer.readLong();
         ccccSigBits = buffer.readLong();
@@ -57,7 +57,7 @@ public class UpdateWorldMusicData extends AbstractClientMessage<UpdateWorldMusic
     }
 
     @Override
-    protected void write(PacketBuffer buffer)
+    protected void encode(PacketBuffer buffer)
     {
         buffer.writeLong(ddddSigBits);
         buffer.writeLong(ccccSigBits);
@@ -66,7 +66,7 @@ public class UpdateWorldMusicData extends AbstractClientMessage<UpdateWorldMusic
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         World world = MXTune.proxy.getClientWorld();
         if (world != null && world.hasCapability(ModWorldPlaylistHelper.MOD_WORLD_DATA, null))

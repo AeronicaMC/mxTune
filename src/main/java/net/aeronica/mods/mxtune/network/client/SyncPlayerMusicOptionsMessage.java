@@ -116,7 +116,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     }
 
     @Override
-    protected void read(PacketBuffer buffer) throws IOException
+    protected void decode(PacketBuffer buffer) throws IOException
     {
         propertyID = buffer.readInt();
         switch (propertyID)
@@ -164,7 +164,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     }
 
     @Override
-    protected void write(PacketBuffer buffer)
+    protected void encode(PacketBuffer buffer)
     {
         buffer.writeInt(this.propertyID);
         switch (this.propertyID)
@@ -211,7 +211,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     }
 
     @Override
-    public void process(PlayerEntity player, Side side)
+    public void handle(PlayerEntity player, Side side)
     {
         if (player.hasCapability(MUSIC_OPTIONS, null))
         {

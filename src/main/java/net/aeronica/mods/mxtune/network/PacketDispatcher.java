@@ -10,35 +10,39 @@ import net.aeronica.mods.mxtune.network.client.*;
 import net.aeronica.mods.mxtune.network.server.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
+
 
 /*
- * 
+ *
  * This class will house the SimpleNetworkWrapper instance, which I will name
- * 'dispatcher', as well as give us a logical place from which to register our
+ * 'channel', as well as give us a logical place from which to register our
  * packets. These two things could be done anywhere, however, even in your Main
  * class, but I will be adding other functionality (see below) that gives this
  * class a bit more utility.
- * 
+ *
  * While unnecessary, I'm going to turn this class into a 'wrapper' for
  * SimpleNetworkWrapper so that instead of writing
- * "PacketDispatcher.dispatcher.{method}" I can simply write
+ * "PacketDispatcher.channel.{method}" I can simply write
  * "PacketDispatcher.{method}" All this does is make it quicker to type and
- * slightly shorter; if you do not care about that, then make the 'dispatcher'
+ * slightly shorter; if you do not care about that, then make the 'channel'
  * field public instead of private, or, if you do not want to add a new class
  * just for one field and one static method that you could put anywhere, feel
  * free to put them wherever.
- * 
+ *
  * For further convenience, I have also added two extra sendToAllAround methods:
  * one which takes an EntityPlayer and one which takes coordinates.
  *
  */
 public class PacketDispatcher
 {
+    public static final ResourceLocation CHANNEL_NAME = new ResourceLocation(Reference.MOD_ID, "network");
+
+    public static final String NETWORK_VERSION = new ResourceLocation(Reference.MOD_ID, "1").toString();
     /*
      * a simple counter will allow us to get rid of 'magic' numbers used during
      * packet registration
@@ -50,7 +54,13 @@ public class PacketDispatcher
      * packets. Since I will be adding wrapper methods, this field is private,
      * but you should make it public if you plan on using it directly.
      */
-    private static final SimpleNetworkWrapper dispatcher = NetworkRegistry.INSTANCE.newSimpleChannel(Reference.MOD_ID);
+    private static final SimpleChannel channel = NetworkRegistry.ChannelBuilder.named(CHANNEL_NAME)
+            .clientAcceptedVersions(version -> true)
+            .serverAcceptedVersions(version -> true)
+            .networkProtocolVersion(() -> NETWORK_VERSION)
+            .simpleChannel();
+
+    private PacketDispatcher() { /* NOP */ }
 
     /**
      * Call this during pre-init or loading and register all of your packets
@@ -88,9 +98,9 @@ public class PacketDispatcher
          * If you don't want to make a 'registerMessage' method, you can do it
          * directly:
          */
-        // PacketDispatcher.dispatcher.registerMessage(SyncPlayerPropsMessage.class,
+        // PacketDispatcher.channel.registerMessage(SyncPlayerPropsMessage.class,
         // SyncPlayerPropsMessage.class, packetId++, Side.CLIENT);
-        // PacketDispatcher.dispatcher.registerMessage(OpenGuiMessage.class,
+        // PacketDispatcher.channel.registerMessage(OpenGuiMessage.class,
         // OpenGuiMessage.class, packetId++, Side.SERVER);
 
         // Bidirectional packets:
@@ -105,7 +115,7 @@ public class PacketDispatcher
     /**
      * Registers an {@link AbstractMessage} to the appropriate side(s)
      */
-    private static final <T extends AbstractMessage<T> & IMessageHandler<T, IMessage>> void registerMessage(Class<T> clazz)
+    private static final <T extends AbstractMessage<T> & IMessageHandler<T, PacketBuffer>> void registerMessage(Class<T> clazz)
     {
         /*
          * We can tell by the message class which side to register it on by
@@ -119,18 +129,34 @@ public class PacketDispatcher
          */
         if (AbstractMessage.AbstractClientMessage.class.isAssignableFrom(clazz))
         {
-            PacketDispatcher.dispatcher.registerMessage(clazz, clazz, packetId++, Side.CLIENT);
+            PacketDispatcher.channel.m(clazz, clazz, packetId++, Dist.CLIENT);
         } else if (AbstractMessage.AbstractServerMessage.class.isAssignableFrom(clazz))
         {
-            PacketDispatcher.dispatcher.registerMessage(clazz, clazz, packetId++, Side.SERVER);
-        } else
+//            public <MSG> IndexedMessageCodec.MessageHandler<MSG> registerMessage(int index, Class<MSG> messageType, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {
+//            return this.indexedCodec.addCodecIndex(index, messageType, encoder, decoder, messageConsumer);
+        }
+        try
+        {
+            PacketDispatcher.channel.messageBuilder(clazz, 1)
+                    .decoder(clazz.getMethod("decode", new Class<?>[]{PacketBuffer.class})::decode)
+                    .encoder(clazz::encode)
+                    .consumer(clazz::handle)
+                    .add();
+        } catch (NoSuchMethodException e)
+        {
+            e.printStackTrace();
+        } catch (SecurityException e)
+        {
+            e.printStackTrace();
+        }
+    } else
         {
             /*
              * hopefully you didn't forget to extend the right class, or you
              * will get registered on both sides
              */
-            PacketDispatcher.dispatcher.registerMessage(clazz, clazz, packetId, Side.CLIENT);
-            PacketDispatcher.dispatcher.registerMessage(clazz, clazz, packetId++, Side.SERVER);
+            PacketDispatcher.channel.registerMessage(clazz, clazz, packetId, Dist.CLIENT);
+            PacketDispatcher.channel.registerMessage(clazz, clazz, packetId++, Dist.DEDICATED_SERVER);
         }
     }
 
@@ -146,7 +172,7 @@ public class PacketDispatcher
      */
     public static final void sendTo(IMessage message, ServerPlayerEntity player)
     {
-        PacketDispatcher.dispatcher.sendTo(message, player);
+        PacketDispatcher.channel.sendTo(message, player);
     }
 
     /**
@@ -155,7 +181,7 @@ public class PacketDispatcher
      */
     public static void sendToAll(IMessage message)
     {
-        PacketDispatcher.dispatcher.sendToAll(message);
+        PacketDispatcher.channel.sendToAll(message);
     }
 
     /**
@@ -164,7 +190,7 @@ public class PacketDispatcher
      */
     public static final void sendToAllAround(IMessage message, NetworkRegistry.TargetPoint point)
     {
-        PacketDispatcher.dispatcher.sendToAllAround(message, point);
+        PacketDispatcher.channel.sendToAllAround(message, point);
     }
 
     /**
@@ -193,7 +219,7 @@ public class PacketDispatcher
      */
     public static final void sendToDimension(IMessage message, int dimensionId)
     {
-        PacketDispatcher.dispatcher.sendToDimension(message, dimensionId);
+        PacketDispatcher.channel.sendToDimension(message, dimensionId);
     }
 
     /**
@@ -202,6 +228,6 @@ public class PacketDispatcher
      */
     public static final void sendToServer(IMessage message)
     {
-        PacketDispatcher.dispatcher.sendToServer(message);
+        PacketDispatcher.channel.sendToServer(message);
     }
 }
