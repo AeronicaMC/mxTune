@@ -17,21 +17,16 @@
 
 package net.aeronica.mods.mxtune.world.caps.chunk;
 
-import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.UpdateChunkMusicData;
 import net.aeronica.mods.mxtune.util.GUID;
-import net.aeronica.mods.mxtune.util.MXTuneException;
 import net.aeronica.mods.mxtune.util.Miscellus;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
-
-import java.util.function.Consumer;
+import net.minecraftforge.common.util.LazyOptional;
 
 public class ModChunkPlaylistHelper
 {
@@ -40,49 +35,35 @@ public class ModChunkPlaylistHelper
 
     private ModChunkPlaylistHelper() { /* NOP */ }
 
-    public static void setPlaylistGuid(Chunk chunk, GUID guid)
+    public static void setPlaylistGuid(final Chunk chunk, final GUID guid)
     {
-        try
-        {
-            getImpl(chunk).setPlaylistGuid(guid);
-        }
-        catch (MXTuneException e)
-        {
-            ModLogger.error(e);
-        }
-        chunk.markDirty();
+        getImpl(chunk).ifPresent(IModChunkPlaylist -> {
+            IModChunkPlaylist.setPlaylistGuid(guid);
+            chunk.markDirty();
+        });
     }
 
-    public static GUID getPlaylistGuid(Chunk chunk)
+    public static GUID getPlaylistGuid(final Chunk chunk)
     {
-        try
-        {
-            return getImpl(chunk).getPlaylistGuid();
-        }
-        catch (MXTuneException e)
-        {
-            ModLogger.error(e);
-        }
-        return Reference.EMPTY_GUID;
+        return getImpl(chunk).map(chunkPlaylist ->
+            {
+                return chunkPlaylist.getPlaylistGuid();
+            }
+            ).orElseGet(() -> {
+            return Reference.EMPTY_GUID;
+        });
     }
 
-    private static IModChunkPlaylist getImpl(Chunk chunk) throws MXTuneException
+    public static LazyOptional<IModChunkPlaylist> getImpl(final Chunk chunk)
     {
-        Consumer<IModChunkPlaylist> chunkData = null;
-        chunk.getCapability(MOD_CHUNK_DATA)
-                .ifPresent(chunkData.accept(MOD_CHUNK_DATA.getDefaultInstance());
-//        if (chunk.getCapability(MOD_CHUNK_DATA).isPresent())
-//            chunk.getCapability(MOD_CHUNK_DATA).;
-//        else
-//            throw new MXTuneException("IModChunkData capability is null");
-        return chunkData;
+        return chunk.getCapability(MOD_CHUNK_DATA, null);
     }
 
     public static void sync(PlayerEntity entityPlayer, Chunk chunk)
     {
-        if (MXTune.proxy.getEffectiveSide() == Dist.DEDICATED_SERVER)
+        if (!chunk.getWorld().isRemote)
         {
-            PacketDispatcher.sendToDimension(new UpdateChunkMusicData(chunk.getPos().x, chunk.getPos().z, getPlaylistGuid(chunk)), entityPlayer.getEntityWorld().provider.getDimension());
+            PacketDispatcher.sendToDimension(new UpdateChunkMusicData(chunk.getPos().x, chunk.getPos().z, getPlaylistGuid(chunk)), entityPlayer.getEntityWorld().getDimension());
         }
     }
 }

@@ -17,87 +17,94 @@
 package net.aeronica.mods.mxtune.network.server;
 
 import net.aeronica.mods.mxtune.blocks.TileBandAmp;
-import net.aeronica.mods.mxtune.network.AbstractMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.world.IModLockableContainer;
 import net.aeronica.mods.mxtune.world.OwnerUUID;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.LockCode;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkEvent;
+
+import java.util.function.Supplier;
 
 import static net.aeronica.mods.mxtune.util.Miscellus.audiblePingPlayer;
 
-public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAmpMessage>
+public class BandAmpMessage
 {
-    private boolean lockContainer;
-    private BlockPos pos;
-    private boolean rearRedstoneInputEnabled;
-    private boolean leftRedstoneOutputEnabled;
-    private boolean rightRedstoneOutputEnabled;
-    private SoundRange soundRange;
+    private final boolean lockContainer;
+    private final BlockPos pos;
+    private final boolean rearRedstoneInputEnabled;
+    private final boolean leftRedstoneOutputEnabled;
+    private final boolean rightRedstoneOutputEnabled;
+    private final SoundRange soundRange;
 
-    @SuppressWarnings("unused")
-    public BandAmpMessage() {/* NOP */}
-
-    public BandAmpMessage(BlockPos pos, boolean lockContainer, boolean rearRedstoneInputEnabled, boolean leftRedstoneOutputEnabled, boolean rightRedstoneOutputEnabled, SoundRange soundRange)
+    public BandAmpMessage(BlockPos posIn, boolean lockContainerIn, boolean rearRedstoneInputEnabledIn, boolean leftRedstoneOutputEnabledIn, boolean rightRedstoneOutputEnabledIn, SoundRange soundRangeIn)
     {
-        this.pos = pos;
-        this.lockContainer = lockContainer;
-        this.rearRedstoneInputEnabled = rearRedstoneInputEnabled;
-        this.leftRedstoneOutputEnabled = leftRedstoneOutputEnabled;
-        this.rightRedstoneOutputEnabled = rightRedstoneOutputEnabled;
-        this.soundRange = soundRange;
+        this.pos = posIn;
+        this.lockContainer = lockContainerIn;
+        this.rearRedstoneInputEnabled = rearRedstoneInputEnabledIn;
+        this.leftRedstoneOutputEnabled = leftRedstoneOutputEnabledIn;
+        this.rightRedstoneOutputEnabled = rightRedstoneOutputEnabledIn;
+        this.soundRange = soundRangeIn;
     }
 
-    @Override
-    protected void decode(PacketBuffer buffer)
+    public static BandAmpMessage decode(final PacketBuffer buffer)
     {
-        pos = buffer.readBlockPos();
-        lockContainer = buffer.readBoolean();
-        rearRedstoneInputEnabled = buffer.readBoolean();
-        leftRedstoneOutputEnabled = buffer.readBoolean();
-        rightRedstoneOutputEnabled = buffer.readBoolean();
-        soundRange = buffer.readEnumValue(SoundRange.class);
+        final BlockPos pos = buffer.readBlockPos();
+        final boolean lockContainer = buffer.readBoolean();
+        final boolean rearRedstoneInputEnabled = buffer.readBoolean();
+        final boolean leftRedstoneOutputEnabled = buffer.readBoolean();
+        final boolean rightRedstoneOutputEnabled = buffer.readBoolean();
+        final SoundRange soundRange = buffer.readEnumValue(SoundRange.class);
+        return new BandAmpMessage(pos, lockContainer, rearRedstoneInputEnabled, leftRedstoneOutputEnabled, rightRedstoneOutputEnabled, soundRange);
     }
 
-    @Override
-    protected void encode(PacketBuffer buffer)
+    public static void encode(final BandAmpMessage message, final PacketBuffer buffer)
     {
-        buffer.writeBlockPos(pos);
-        buffer.writeBoolean(lockContainer);
-        buffer.writeBoolean(rearRedstoneInputEnabled);
-        buffer.writeBoolean(leftRedstoneOutputEnabled);
-        buffer.writeBoolean(rightRedstoneOutputEnabled);
-        buffer.writeEnumValue(soundRange);
+        buffer.writeBlockPos(message.pos);
+        buffer.writeBoolean(message.lockContainer);
+        buffer.writeBoolean(message.rearRedstoneInputEnabled);
+        buffer.writeBoolean(message.leftRedstoneOutputEnabled);
+        buffer.writeBoolean(message.rightRedstoneOutputEnabled);
+        buffer.writeEnumValue(message.soundRange);
     }
 
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static void handle(final BandAmpMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        if(player.world.isBlockLoaded(pos))
-        {
-            TileEntity tileEntity = player.world.getTileEntity(pos);
-            processLockButton(player, tileEntity);
-            processButtons(player, tileEntity);
-        }
+        ctx.get().enqueueWork(() ->
+            {
+                final ServerPlayerEntity player = ctx.get().getSender();
+                if (player == null) return;
+                final World world = player.world;
+                if (world.isRemote) return;
+
+                if(world.isAreaLoaded(message.pos, 1))
+                {
+                    TileEntity tileEntity = world.getTileEntity(message.pos);
+                    processLockButton(, player, tileEntity);
+                    processButtons(, player, tileEntity);
+                }
+            });
+        ctx.get().setPacketHandled(true);
     }
 
-    private void processLockButton(PlayerEntity player, TileEntity tileEntity)
+    private static void processLockButton(BandAmpMessage message, PlayerEntity player, TileEntity tileEntity)
     {
         if(tileEntity instanceof IModLockableContainer)
         {
             IModLockableContainer lockableContainer = (IModLockableContainer) tileEntity;
-            OwnerUUID ownerUUID = new OwnerUUID(player.getPersistentID());
+            OwnerUUID ownerUUID = new OwnerUUID(player.getUniqueID());
 
             if(lockableContainer.isOwner(ownerUUID))
             {
-                if(lockContainer)
+                if(message.lockContainer)
                 {
                     LockCode lockCode = new LockCode("Locked by Owner");
                     lockableContainer.setLockCode(lockCode);
@@ -108,23 +115,23 @@ public class BandAmpMessage extends AbstractMessage.AbstractServerMessage<BandAm
         }
     }
 
-    private void processButtons(PlayerEntity entityPlayer, TileEntity tileEntity)
+    private static void processButtons(BandAmpMessage message, PlayerEntity entityPlayer, TileEntity tileEntity)
     {
         // Process updates only for the owner
-        if(tileEntity instanceof TileBandAmp && ((TileBandAmp) tileEntity).getOwner().getUUID().equals(entityPlayer.getPersistentID()))
+        if(tileEntity instanceof TileBandAmp && ((TileBandAmp) tileEntity).getOwner().getUUID().equals(entityPlayer.getUniqueID()))
         {
             TileBandAmp tileBandAmp = (TileBandAmp) tileEntity;
-            tileBandAmp.setRearRedstoneInputEnabled(rearRedstoneInputEnabled);
-            tileBandAmp.setLeftRedstoneOutputEnabled(leftRedstoneOutputEnabled);
-            tileBandAmp.setRightRedstoneOutputEnabled(rightRedstoneOutputEnabled);
-            if (soundRange == SoundRange.INFINITY && !MusicOptionsUtil.isSoundRangeInfinityAllowed(entityPlayer))
+            tileBandAmp.setRearRedstoneInputEnabled(message.rearRedstoneInputEnabled);
+            tileBandAmp.setLeftRedstoneOutputEnabled(message.leftRedstoneOutputEnabled);
+            tileBandAmp.setRightRedstoneOutputEnabled(message.rightRedstoneOutputEnabled);
+            if (message.soundRange == SoundRange.INFINITY && !MusicOptionsUtil.isSoundRangeInfinityAllowed(entityPlayer))
             {
                 tileBandAmp.setSoundRange(SoundRange.NORMAL);
                 entityPlayer.sendMessage(new TranslationTextComponent("mxtune.gui.bandAmp.soundRangeInfinityNotAllowed"));
-                audiblePingPlayer(entityPlayer, SoundEvents.BLOCK_NOTE_PLING);
+                audiblePingPlayer(entityPlayer, SoundEvents.BLOCK_NOTE_BLOCK_PLING);
             }
             else {
-                tileBandAmp.setSoundRange(soundRange);
+                tileBandAmp.setSoundRange(message.soundRange);
             }
         }
     }
