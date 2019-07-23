@@ -17,6 +17,7 @@
 
 package net.aeronica.mods.mxtune.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.blocks.TileBandAmp;
 import net.aeronica.mods.mxtune.gui.util.GuiButtonMX;
@@ -28,20 +29,18 @@ import net.aeronica.mods.mxtune.network.server.BandAmpMessage;
 import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.aeronica.mods.mxtune.world.LockableHelper;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import static net.aeronica.mods.mxtune.gui.util.GuiRedstoneButton.ArrowFaces;
 
-@SideOnly(Side.CLIENT)
-public class GuiBandAmp extends ContainerScreen
+public class GuiBandAmp extends ContainerScreen implements Button.IPressable
 {
     public static final ResourceLocation BG_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/band_amp.png");
     private PlayerInventory inventoryPlayer;
@@ -60,16 +59,17 @@ public class GuiBandAmp extends ContainerScreen
 
     public GuiBandAmp(net.minecraft.inventory.container.Container container, PlayerInventory inventoryPlayer, TileBandAmp tileBandAmp)
     {
-        super(container);
+        super(container, inventoryPlayer, new TranslationTextComponent("test"));
         this.inventoryPlayer = inventoryPlayer;
         this.tileBandAmp = tileBandAmp;
+        this.minecraft = Minecraft.getInstance();
     }
 
     @Override
-    public void initGui()
+    public void init()
     {
-        super.initGui();
-        boolean isEnabled = LockableHelper.canLock(mc.player, tileBandAmp);
+        super.init();
+        boolean isEnabled = LockableHelper.canLock(minecraft.player, tileBandAmp);
         soundRange = tileBandAmp.getSoundRange();
         prevSoundRange = soundRange;
 
@@ -77,69 +77,72 @@ public class GuiBandAmp extends ContainerScreen
         lockButton.addHooverTexts(I18n.format("mxtune.gui.bandAmp.lockButton.help01"));
         lockButton.addHooverTexts(TextFormatting.GREEN + I18n.format("mxtune.gui.bandAmp.lockButton.help02"));
         lockButton.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.bandAmp.lockButton.help03"));
-        buttonList.add(lockButton);
+        children.add(lockButton);
         lockButton.setLocked(tileBandAmp.isLocked());
-        lockButton.enabled = isEnabled;
+        lockButton.active = isEnabled;
         prevLockState = lockButton.isLocked();
 
-        rearInputButton = new GuiRedstoneButton(101, guiLeft + 139, guiTop + 25, ArrowFaces.DOWN);
+        rearInputButton = new GuiRedstoneButton(guiLeft + 139, guiTop + 25, ArrowFaces.DOWN, this);
         rearInputButton.addHooverTexts(I18n.format("mxtune.gui.bandAmp.rearInputButton.help01"));
         rearInputButton.addHooverTexts(TextFormatting.GREEN + I18n.format("mxtune.gui.bandAmp.rearInputButton.help02"));
         rearInputButton.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.bandAmp.rearInputButton.help03"));
-        buttonList.add(rearInputButton);
+        children.add(rearInputButton);
         rearInputButton.setSignalEnabled(tileBandAmp.isRearRedstoneInputEnabled());
-        rearInputButton.enabled = isEnabled;
+        rearInputButton.active = isEnabled;
 
         prevRearInputButtonState = rearInputButton.isSignalEnabled();
 
-        leftOutputButton = new GuiRedstoneButton(102, guiLeft + 129, guiTop + 45, ArrowFaces.LEFT);
+        leftOutputButton = new GuiRedstoneButton(guiLeft + 129, guiTop + 45, ArrowFaces.LEFT, this);
         leftOutputButton.addHooverTexts(I18n.format("mxtune.gui.bandAmp.leftOutputButton.help01"));
         leftOutputButton.addHooverTexts(TextFormatting.GREEN + I18n.format("mxtune.gui.bandAmp.leftOutputButton.help02"));
         leftOutputButton.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.bandAmp.leftOutputButton.help03"));
-        buttonList.add(leftOutputButton);
+        children.add(leftOutputButton);
         leftOutputButton.setSignalEnabled(tileBandAmp.isLeftRedstoneOutputEnabled());
-        leftOutputButton.enabled = isEnabled;
+        leftOutputButton.active = isEnabled;
         prevLeftOutputButtonState = leftOutputButton.isSignalEnabled();
 
-        rightOutputButton = new GuiRedstoneButton(103, guiLeft + 149, guiTop + 45, ArrowFaces.RIGHT);
+        rightOutputButton = new GuiRedstoneButton(guiLeft + 149, guiTop + 45, ArrowFaces.RIGHT, this);
         rightOutputButton.addHooverTexts(I18n.format("mxtune.gui.bandAmp.rightOutputButton.help01"));
         rightOutputButton.addHooverTexts(TextFormatting.GREEN + I18n.format("mxtune.gui.bandAmp.rightOutputButton.help02"));
         rightOutputButton.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.bandAmp.rightOutputButton.help03"));
-        buttonList.add(rightOutputButton);
+        children.add(rightOutputButton);
         rightOutputButton.setSignalEnabled(tileBandAmp.isRightRedstoneOutputEnabled());
-        rightOutputButton.enabled = isEnabled;
+        rightOutputButton.active = isEnabled;
         prevRightOutputButtonState = rightOutputButton.isSignalEnabled();
 
-        soundRangeButton = new GuiButtonMX(104, guiLeft +6 , guiTop + 45, 40, 20, "");
-        soundRangeButton.displayString = I18n.format(soundRange.getLanguageKey());
+        soundRangeButton = new GuiButtonMX(guiLeft +6 , guiTop + 45, 40, 20, "", this);
+        soundRangeButton.setMessage(I18n.format(soundRange.getLanguageKey()));
         soundRangeButton.addHooverTexts(I18n.format("mxtune.gui.bandAmp.soundRangeButton.help01"));
         soundRangeButton.addHooverTexts(TextFormatting.GREEN + I18n.format("mxtune.gui.bandAmp.soundRangeButton.help02"));
         soundRangeButton.addHooverTexts(TextFormatting.YELLOW + I18n.format("mxtune.gui.bandAmp.soundRangeButton.help03"));
 
-        buttonList.add(soundRangeButton);
-        soundRangeButton.enabled = isEnabled;
+        children.add(soundRangeButton);
+        soundRangeButton.visible = isEnabled;
     }
 
     @Override
-    public void onGuiClosed()
+    public void onClose()
     {
-        super.onGuiClosed();
+        super.onClose();
         sendButtonChanges();
     }
 
     @Override
-    protected void actionPerformed(Button button)
+    public void onPress(Button button)
     {
-        toggleLockButton(lockButton, button);
-        toggleRedstoneButton(rearInputButton, button);
-        toggleRedstoneButton(leftOutputButton, button);
-        toggleRedstoneButton(rightOutputButton, button);
-        nextRangeButton(soundRangeButton, button);
+        if (button instanceof GuiButtonMX)
+        {
+            toggleLockButton(lockButton, button);
+            toggleRedstoneButton(rearInputButton, button);
+            toggleRedstoneButton(leftOutputButton, button);
+            toggleRedstoneButton(rightOutputButton, button);
+            nextRangeButton(soundRangeButton, button);
+        }
     }
 
     private void toggleLockButton(GuiLockButton lockIconButton, Button buttonClicked)
     {
-        if (buttonClicked.id == lockIconButton.id)
+        if (buttonClicked == lockIconButton)
         {
             boolean invertButton = !lockIconButton.isLocked();
             lockIconButton.setLocked(invertButton);
@@ -149,7 +152,7 @@ public class GuiBandAmp extends ContainerScreen
 
     private void toggleRedstoneButton(GuiRedstoneButton guiRedstoneButton, Button buttonClicked)
     {
-        if (buttonClicked.id == guiRedstoneButton.id)
+        if (buttonClicked == guiRedstoneButton)
         {
             boolean invertButton = !guiRedstoneButton.isSignalEnabled();
             guiRedstoneButton.setSignalEnabled(invertButton);
@@ -159,7 +162,7 @@ public class GuiBandAmp extends ContainerScreen
 
     private void nextRangeButton(Button guiRangeButton, Button buttonClicked)
     {
-        if(buttonClicked.id == guiRangeButton.id)
+        if(buttonClicked == guiRangeButton)
         {
             soundRange = SoundRange.nextRange(soundRange);
             sendButtonChanges();
@@ -168,7 +171,7 @@ public class GuiBandAmp extends ContainerScreen
 
     private void updateButtonStatus()
     {
-        boolean isOwnerManaged = LockableHelper.canLock(mc.player, tileBandAmp);
+        boolean isOwnerManaged = LockableHelper.canLock(minecraft.player, tileBandAmp);
         String ownerText = isOwnerManaged ? "" : I18n.format("mxtune.gui.button.ownerManaged");
 
         updateLockButtonStatus();
@@ -199,7 +202,7 @@ public class GuiBandAmp extends ContainerScreen
                                                 : I18n.format("mxtune.gui.bandAmp.rightOutputButton.disabled"))
                                                 + ownerText);
 
-        soundRangeButton.setStatusText(TextFormatting.AQUA + soundRangeButton.displayString
+        soundRangeButton.setStatusText(TextFormatting.AQUA + soundRangeButton.getStatusText()
                                                 + ownerText);
         updateSoundRangeButton();
     }
@@ -219,7 +222,7 @@ public class GuiBandAmp extends ContainerScreen
         soundRange = tileBandAmp.getSoundRange();
         if(prevSoundRange != soundRange)
         {
-            soundRangeButton.displayString = I18n.format(soundRange.getLanguageKey());
+            soundRangeButton.setMessage(I18n.format(soundRange.getLanguageKey()));
             prevSoundRange = soundRange;
         }
     }
@@ -246,29 +249,29 @@ public class GuiBandAmp extends ContainerScreen
     {
         updateButtonStatus();
         String name = I18n.format(tileBandAmp.getName());
-        fontRenderer.drawString(name, 8, 6, 0x404040);
+        font.drawString(name, 8, 6, 0x404040);
         String duration = SheetMusicUtil.formatDuration(tileBandAmp.getDuration());
-        int durationLength = fontRenderer.getStringWidth(duration) + 8;
-        fontRenderer.drawString(duration, xSize - durationLength, 6, 0x404040);
-        fontRenderer.drawString(inventoryPlayer.getDisplayName().getUnformattedText(), 8, ySize - 94, 0x404040);
+        int durationLength = font.getStringWidth(duration) + 8;
+        font.drawString(duration, xSize - durationLength, 6, 0x404040);
+        font.drawString(inventoryPlayer.getDisplayName().getFormattedText(), 8, ySize - 94, 0x404040);
     }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
     {
-        GlStateManager.color(1, 1, 1, 1);
-        mc.getTextureManager().bindTexture(BG_TEXTURE);
+        GlStateManager.color4f(1, 1, 1, 1);
+        minecraft.getTextureManager().bindTexture(BG_TEXTURE);
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
-        drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
+        blit(x, y, 0, 0, xSize, ySize);
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks)
+    public void render(int mouseX, int mouseY, float partialTicks)
     {
-        this.drawDefaultBackground();
-        super.drawScreen(mouseX, mouseY, partialTicks);
+        this.renderBackground();
+        super.render(mouseX, mouseY, partialTicks);
         this.renderHoveredToolTip(mouseX, mouseY);
-        ModGuiUtils.INSTANCE.drawHooveringHelp(this, buttonList, guiLeft, guiTop, mouseX, mouseY);
+        ModGuiUtils.INSTANCE.drawHooveringHelp(this, children, guiLeft, guiTop, mouseX, mouseY);
     }
 }

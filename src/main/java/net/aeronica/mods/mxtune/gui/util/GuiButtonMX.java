@@ -17,14 +17,14 @@
 
 package net.aeronica.mods.mxtune.gui.util;
 
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 @SuppressWarnings("unused")
 public class GuiButtonMX extends GuiButtonExt implements IHooverText
 {
@@ -33,15 +33,9 @@ public class GuiButtonMX extends GuiButtonExt implements IHooverText
 
     private String statusText = "";
 
-    public GuiButtonMX(int buttonId, int x, int y, String buttonText)
+    public GuiButtonMX(int x, int y, int widthIn, int heightIn, String buttonText, IPressable handler)
     {
-        super(buttonId, x, y, buttonText);
-        if(!buttonText.equals("")) hooverTexts.add(buttonText);
-    }
-
-    public GuiButtonMX(int buttonId, int x, int y, int widthIn, int heightIn, String buttonText)
-    {
-        super(buttonId, x, y, widthIn, heightIn, buttonText);
+        super(x, y, widthIn, heightIn, buttonText, handler);
         if(!buttonText.equals("")) hooverTexts.add(buttonText);
     }
 

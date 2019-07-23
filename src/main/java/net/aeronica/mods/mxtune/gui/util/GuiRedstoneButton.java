@@ -17,23 +17,21 @@
 
 package net.aeronica.mods.mxtune.gui.util;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.aeronica.mods.mxtune.gui.GuiBandAmp;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-import javax.annotation.Nonnull;
-
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class GuiRedstoneButton extends GuiButtonMX
 {
     private boolean signalEnabled;
     private ArrowFaces direction;
 
-    public GuiRedstoneButton(int buttonId, int x, int y, ArrowFaces direction)
+    public GuiRedstoneButton(int x, int y, ArrowFaces direction, IPressable handler)
     {
-        super(buttonId, x, y, 20, 20, "");
+        super(x, y, 20, 20, "", handler);
         this.direction = direction;
     }
 
@@ -51,18 +49,18 @@ public class GuiRedstoneButton extends GuiButtonMX
      * Draws this button to the screen.
      */
     @Override
-    public void drawButton(@Nonnull Minecraft mc, int mouseX, int mouseY, float partialTicks)
+    public void renderButton(int mouseX, int mouseY, float partialTicks)
     {
         if (this.visible)
         {
-            mc.getTextureManager().bindTexture(GuiBandAmp.BG_TEXTURE);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            Minecraft.getInstance().getTextureManager().bindTexture(GuiBandAmp.BG_TEXTURE);
+            GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             boolean flag = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
             GuiRedstoneButton.Icon guiRedstoneButtonIcon;
 
             if (this.signalEnabled)
             {
-                if (!this.enabled)
+                if (!this.active)
                 {
                     guiRedstoneButtonIcon = GuiRedstoneButton.Icon.SIGNAL_ENABLED_DISABLED;
                 }
@@ -75,7 +73,7 @@ public class GuiRedstoneButton extends GuiButtonMX
                     guiRedstoneButtonIcon = GuiRedstoneButton.Icon.SIGNAL_ENABLED;
                 }
             }
-            else if (!this.enabled)
+            else if (!this.active)
             {
                 guiRedstoneButtonIcon = GuiRedstoneButton.Icon.SIGNAL_DISABLED_DISABLED;
             }
@@ -88,11 +86,11 @@ public class GuiRedstoneButton extends GuiButtonMX
                 guiRedstoneButtonIcon = GuiRedstoneButton.Icon.SIGNAL_DISABLED_UNLOCKED;
             }
 
-            this.drawTexturedModalRect(this.x, this.y, guiRedstoneButtonIcon.getX() + direction.getXOffset(), guiRedstoneButtonIcon.getY(), this.width, this.height);
+            this.blit(this.x, this.y, guiRedstoneButtonIcon.getX() + direction.getXOffset(), guiRedstoneButtonIcon.getY(), this.width, this.height);
         }
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public enum Icon
     {
         SIGNAL_ENABLED(0, 166),
@@ -122,7 +120,7 @@ public class GuiRedstoneButton extends GuiButtonMX
         }
     }
 
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public enum ArrowFaces
     {
         UP(0),
