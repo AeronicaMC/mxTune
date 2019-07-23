@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.network.server;
 
-import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
+import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.ResetClientPlayEngine;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
@@ -24,69 +24,74 @@ import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.world.caps.chunk.ModChunkPlaylistHelper;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class ChunkToolMessage extends AbstractServerMessage<ChunkToolMessage>
+import java.util.function.Supplier;
+
+public class ChunkToolMessage implements IMessage
 {
-    private Operation op;
-
-    @SuppressWarnings("unused")
-    public ChunkToolMessage() {/* Required by the PacketDispatcher */}
+    private final Operation op;
 
     public ChunkToolMessage(Operation op)
     {
         this.op = op;
     }
-    
-    @Override
-    protected void decode(PacketBuffer buffer)
+
+    public static ChunkToolMessage decode(final PacketBuffer buffer)
     {
-        op = buffer.readEnumValue(Operation.class);
+        final Operation op = buffer.readEnumValue(Operation.class);
+        return new ChunkToolMessage(op);
     }
 
-    @Override
-    protected void encode(PacketBuffer buffer)
+    public static void encode(ChunkToolMessage message, PacketBuffer buffer)
     {
-        buffer.writeEnumValue(op);
+        buffer.writeEnumValue(message.op);
     }
 
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static void handle(final ChunkToolMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        if (MusicOptionsUtil.isMxTuneServerUpdateAllowed(player))
-        {
-            World world = player.world;
-            Chunk chunk = world.getChunk(player.getPosition());
-            if (chunk.isLoaded())
-            {
-                switch (op)
+        ServerPlayerEntity player = ctx.get().getSender();
+        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.SERVER)
+            ctx.get().enqueueWork(() ->
                 {
-                    case START:
-                        MusicOptionsUtil.setChunkStart(player, chunk);
-                        MusicOptionsUtil.setChunkToolOperation(player, Operation.END);
-                        break;
-                    case END:
-                        MusicOptionsUtil.setChunkEnd(player, chunk);
-                        MusicOptionsUtil.setChunkToolOperation(player, Operation.APPLY);
-                        break;
-                    case APPLY:
-                        apply(player);
-                        MusicOptionsUtil.setChunkToolOperation(player, Operation.START);
-                        break;
-                    case RESET:
-                        MusicOptionsUtil.setChunkToolOperation(player, Operation.START);
-                        MusicOptionsUtil.setChunkStart(player, null);
-                        MusicOptionsUtil.setChunkEnd(player, null);
-                    default:
-                }
-            }
-        }
+                    if (player != null && MusicOptionsUtil.isMxTuneServerUpdateAllowed(player))
+                    {
+                        World world = player.world;
+                        Chunk chunk = (Chunk) world.getChunk(player.getPosition());
+                        if (!chunk.isEmpty())
+                        {
+                            switch (message.op)
+                            {
+                                case START:
+                                    MusicOptionsUtil.setChunkStart(player, chunk);
+                                    MusicOptionsUtil.setChunkToolOperation(player, Operation.END);
+                                    break;
+                                case END:
+                                    MusicOptionsUtil.setChunkEnd(player, chunk);
+                                    MusicOptionsUtil.setChunkToolOperation(player, Operation.APPLY);
+                                    break;
+                                case APPLY:
+                                    apply(player);
+                                    MusicOptionsUtil.setChunkToolOperation(player, Operation.START);
+                                    break;
+                                case RESET:
+                                    MusicOptionsUtil.setChunkToolOperation(player, Operation.START);
+                                    MusicOptionsUtil.setChunkStart(player, null);
+                                    MusicOptionsUtil.setChunkEnd(player, null);
+                                default:
+                            }
+                        }
+                    }
+                });
+        ctx.get().setPacketHandled(true);
     }
 
-    private void apply(PlayerEntity player)
+    private static void apply(PlayerEntity player)
     {
         int errorCount = 0;
 
@@ -96,19 +101,19 @@ public class ChunkToolMessage extends AbstractServerMessage<ChunkToolMessage>
         if (chunkStart != null && chunkEnd != null && world != null && world.equals(chunkStart.getWorld()) && world.equals(chunkEnd.getWorld()))
         {
             GUID guidPlaylist = MusicOptionsUtil.getSelectedPlayListGuid(player);
-            int totalChunks = (Math.abs(chunkStart.x - chunkEnd.x) + 1) * (Math.abs(chunkStart.z - chunkEnd.z) + 1);
+            int totalChunks = (Math.abs(chunkStart.getPos().x - chunkEnd.getPos().x) + 1) * (Math.abs(chunkStart.getPos().z - chunkEnd.getPos().z) + 1);
             ModLogger.debug("ChunkToolMessage: Total Chunks: %d", totalChunks);
-            int minX = Math.min(chunkStart.x, chunkEnd.x);
-            int maxX = Math.max(chunkStart.x, chunkEnd.x);
-            int minZ = Math.min(chunkStart.z, chunkEnd.z);
-            int maxZ = Math.max(chunkStart.z, chunkEnd.z);
+            int minX = Math.min(chunkStart.getPos().x, chunkEnd.getPos().x);
+            int maxX = Math.max(chunkStart.getPos().x, chunkEnd.getPos().x);
+            int minZ = Math.min(chunkStart.getPos().z, chunkEnd.getPos().z);
+            int maxZ = Math.max(chunkStart.getPos().z, chunkEnd.getPos().z);
             ModLogger.debug("ChunkToolMessage: x: %d to %d", minX, maxX);
             ModLogger.debug("ChunkToolMessage: z: %d to %d", minZ, maxZ);
             for(int x = minX; x <= maxX; x++)
             {
                 for(int z = minZ; z <= maxZ; z++)
                 {
-                    if (world.isChunkGeneratedAt(x, z))
+                    if (world.chunkExists(x, z))
                     {
                         Chunk chunk = world.getChunk(x, z);
                         ModChunkPlaylistHelper.setPlaylistGuid(chunk, guidPlaylist);

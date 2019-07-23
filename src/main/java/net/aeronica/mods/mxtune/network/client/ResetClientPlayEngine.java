@@ -18,41 +18,42 @@
 package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.managers.ClientPlayManager;
-import net.aeronica.mods.mxtune.network.AbstractMessage;
-import net.minecraft.entity.player.PlayerEntity;
+import net.aeronica.mods.mxtune.network.IMessage;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class ResetClientPlayEngine extends AbstractMessage.AbstractClientMessage<ResetClientPlayEngine>
+import java.util.function.Supplier;
+
+public class ResetClientPlayEngine implements IMessage
 {
-    public ResetClientPlayEngine() { /* Required by the PacketDispatcher */ }
+    public ResetClientPlayEngine() { /* NOP */ }
 
-    @Override
-    protected void decode(PacketBuffer buffer)
+    public static ResetClientPlayEngine decode(final PacketBuffer buffer)
+    {
+        return new ResetClientPlayEngine();
+    }
+
+    public static void encode(final ResetClientPlayEngine message, final PacketBuffer buffer)
     {
         // NOP
     }
 
-    @Override
-    protected void encode(PacketBuffer buffer)
-    {
-        // NOP
-    }
-
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static void handle(final ResetClientPlayEngine message, final Supplier<NetworkEvent.Context> ctx)
     {
         // TODO: Make a more defined process that's more like full client audio chain reset.
-        new Thread(() ->
-                   {
-                       try
-                       {
-                           Thread.sleep(1000);
-                       } catch (InterruptedException e)
-                       {
-                           Thread.currentThread().interrupt();
-                       }
-                       ClientPlayManager.reset();
-                   }).start();
+        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT)
+            ctx.get().enqueueWork(() -> new Thread(() ->
+                {
+                    try
+                    {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e)
+                    {
+                        Thread.currentThread().interrupt();
+                    }
+                    ClientPlayManager.reset();
+                }).start());
+        ctx.get().setPacketHandled(true);
     }
 }

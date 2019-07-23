@@ -17,6 +17,7 @@
 package net.aeronica.mods.mxtune.network.server;
 
 import net.aeronica.mods.mxtune.blocks.TileBandAmp;
+import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.world.IModLockableContainer;
@@ -30,13 +31,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
 import static net.aeronica.mods.mxtune.util.Miscellus.audiblePingPlayer;
 
-public class BandAmpMessage
+public class BandAmpMessage implements IMessage
 {
     private final boolean lockContainer;
     private final BlockPos pos;
@@ -78,20 +80,21 @@ public class BandAmpMessage
 
     public static void handle(final BandAmpMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        ctx.get().enqueueWork(() ->
-            {
-                final ServerPlayerEntity player = ctx.get().getSender();
-                if (player == null) return;
-                final World world = player.world;
-                if (world.isRemote) return;
-
-                if(world.isAreaLoaded(message.pos, 1))
+        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.SERVER)
+            ctx.get().enqueueWork(() ->
                 {
-                    TileEntity tileEntity = world.getTileEntity(message.pos);
-                    processLockButton(message, player, tileEntity);
-                    processButtons(message, player, tileEntity);
-                }
-            });
+                    final ServerPlayerEntity player = ctx.get().getSender();
+                    if (player == null) return;
+                    final World world = player.world;
+                    if (world.isRemote) return;
+
+                    if(world.isAreaLoaded(message.pos, 1))
+                    {
+                        TileEntity tileEntity = world.getTileEntity(message.pos);
+                        processLockButton(message, player, tileEntity);
+                        processButtons(message, player, tileEntity);
+                    }
+                });
         ctx.get().setPacketHandled(true);
     }
 

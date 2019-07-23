@@ -21,7 +21,6 @@ import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.init.ModBlocks;
 import net.aeronica.mods.mxtune.managers.DurationTimer;
 import net.aeronica.mods.mxtune.managers.ServerFileManager;
-import net.aeronica.mods.mxtune.network.ModNetwork;
 import net.aeronica.mods.mxtune.network.MultiPacketSerializedObjectManager;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.options.PlayerMusicOptionsCapability;
@@ -50,7 +49,7 @@ import org.apache.logging.log4j.Logger;
 public class MXTune
 {
     private static final Logger LOGGER = LogManager.getLogger(Reference.MOD_ID);
-    public static SimpleChannel network = ModNetwork.getNetworkChannel();
+    private static SimpleChannel network = PacketDispatcher.getNetworkChannel();
 
     //@SidedProxy(clientSide = "net.aeronica.mods.mxtune.proxy.ClientProxy", serverSide = "net.aeronica.mods.mxtune.proxy.ServerProxy")
     public static ServerProxy proxy;
@@ -72,6 +71,7 @@ public class MXTune
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(ClientAudio.class);
+        LOGGER.debug("SimpleChannel: {}", network);
     }
 
     private void setup(final FMLCommonSetupEvent event)
@@ -81,7 +81,6 @@ public class MXTune
         ModWorldPlaylistCap.register();
         ModChunkPlaylistCap.register();
         PlayerMusicOptionsCapability.register();
-        PacketDispatcher.registerPackets();
         proxy.registerEventHandlers();
         proxy.initEntities();
         LOGGER.info("HELLO FROM PREINIT");
