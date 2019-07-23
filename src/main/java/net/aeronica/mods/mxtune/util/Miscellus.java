@@ -2,7 +2,7 @@ package net.aeronica.mods.mxtune.util;
 
 
 import net.aeronica.mods.mxtune.MXTune;
-import net.aeronica.mods.mxtune.config.ModConfig;
+import net.aeronica.mods.mxtune.config.MXTuneConfig;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.AudiblePingPlayerMessage;
 import net.minecraft.entity.player.PlayerEntity;
@@ -60,7 +60,7 @@ public class Miscellus
 
     public static boolean inDev()
     {
-        return ModConfig.moreDebugMessages() || (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
+        return MXTuneConfig.moreDebugMessages() || (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
     }
 
     /**

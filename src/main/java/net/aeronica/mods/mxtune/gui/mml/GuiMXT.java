@@ -18,7 +18,7 @@
 package net.aeronica.mods.mxtune.gui.mml;
 
 import net.aeronica.mods.mxtune.caches.FileHelper;
-import net.aeronica.mods.mxtune.config.ModConfig;
+import net.aeronica.mods.mxtune.config.MXTuneConfig;
 import net.aeronica.mods.mxtune.gui.util.GuiLabelMX;
 import net.aeronica.mods.mxtune.gui.util.GuiLink;
 import net.aeronica.mods.mxtune.gui.util.IHooverText;
@@ -159,7 +159,7 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
         sourcesLink = new GuiLink(10, PADDING, textY, cachedSource, GuiLink.AlignText.LEFT);
         sourcesLink.width = urlWidth;
         sourcesLink.height = singleLineHeight;
-        mmlLink = new GuiLink(11, width - PADDING , textY, ModConfig.getMmlLink(), GuiLink.AlignText.RIGHT);
+        mmlLink = new GuiLink(11, width - PADDING , textY, MXTuneConfig.getMmlLink(), GuiLink.AlignText.RIGHT);
         mmlLink.width = urlWidth;
         mmlLink.height = singleLineHeight;
         buttonList.add(sourcesLink);

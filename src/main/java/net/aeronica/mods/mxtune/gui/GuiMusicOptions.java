@@ -18,7 +18,7 @@ package net.aeronica.mods.mxtune.gui;
 
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
-import net.aeronica.mods.mxtune.config.ModConfig;
+import net.aeronica.mods.mxtune.config.MXTuneConfig;
 import net.aeronica.mods.mxtune.gui.hud.GuiHudAdjust;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.MusicOptionsMessage;
@@ -156,7 +156,7 @@ public class GuiMusicOptions extends Screen
     @Override
     public void onGuiClosed()
     {
-        ModConfig.RegistrationHandler.sync();
+        MXTuneConfig.RegistrationHandler.sync();
     }
 
     @Override
@@ -217,12 +217,12 @@ public class GuiMusicOptions extends Screen
             case 3:
                 /* done */
                 sendOptionsToServer(this.muteOption);
-                ModConfig.RegistrationHandler.sync();
+                MXTuneConfig.RegistrationHandler.sync();
                 mc.displayGuiScreen(guiScreenOld);
                 break;
             case 2:
                 /* cancel */
-                ModConfig.RegistrationHandler.sync();
+                MXTuneConfig.RegistrationHandler.sync();
                 mc.displayGuiScreen(guiScreenOld);
                 break;
             case 4:

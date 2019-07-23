@@ -22,7 +22,7 @@ import com.sun.media.sound.AudioSynthesizer;
 import net.aeronica.libs.mml.core.MMLUtil;
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.Reference;
-import net.aeronica.mods.mxtune.config.ModConfig;
+import net.aeronica.mods.mxtune.config.MXTuneConfig;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
@@ -172,7 +172,7 @@ public enum MIDISystemUtil
     
     public static void onPlayerLoggedInModStatus(PlayerEntity playerIn)
     {
-        if (ModConfig.showWelcomeStatusMessage())
+        if (MXTuneConfig.showWelcomeStatusMessage())
             for (StringTextComponent tcs: chatStatus)
                 playerIn.sendMessage(tcs);
     }

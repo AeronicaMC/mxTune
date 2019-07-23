@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.network.client;
 
-import net.aeronica.mods.mxtune.config.ModConfig;
+import net.aeronica.mods.mxtune.config.MXTuneConfig;
 import net.aeronica.mods.mxtune.managers.GroupHelper;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
 import net.aeronica.mods.mxtune.network.NetworkStringHelper;
@@ -87,7 +87,7 @@ public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicM
             GroupHelper.addServerManagedActivePlayID(playID);
             ClientAudio.play(playID, blockPos, musicText, soundRange);
         }
-        else if (ModConfig.showWelcomeStatusMessage())
+        else if (MXTuneConfig.showWelcomeStatusMessage())
             ClientCSDMonitor.sendErrorViaChat(player);
     }
 }

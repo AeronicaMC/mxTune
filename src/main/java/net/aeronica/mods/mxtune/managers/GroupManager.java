@@ -43,7 +43,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import static net.aeronica.mods.mxtune.config.ModConfig.isJAMPartyRightClickDisabled;
+import static net.aeronica.mods.mxtune.config.MXTuneConfig.isJAMPartyRightClickDisabled;
 import static net.aeronica.mods.mxtune.options.MusicOptionsUtil.*;
 
 public class GroupManager

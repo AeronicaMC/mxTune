@@ -16,40 +16,40 @@
  */
 package net.aeronica.mods.mxtune.handler;
 
-import net.aeronica.mods.mxtune.config.ModConfig;
+import net.aeronica.mods.mxtune.Reference;
+import net.aeronica.mods.mxtune.config.MXTuneConfig;
 import net.aeronica.mods.mxtune.init.IReBakeModel;
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.init.ModModelManager;
 import net.aeronica.mods.mxtune.render.PlacardRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import org.lwjgl.opengl.Display;
+import org.lwjgl.glfw.GLFW;
 
 import static net.aeronica.mods.mxtune.managers.GroupHelper.getClientMembers;
 import static net.aeronica.mods.mxtune.managers.GroupHelper.getIndex;
 
-@Mod.EventBusSubscriber(Side.CLIENT)
+@Mod.EventBusSubscriber(modid=Reference.MOD_ID, value=Dist.CLIENT)
 public class ClientEventHandler
 {
-    private static Minecraft mc = Minecraft.getMinecraft();
+    private static Minecraft mc = Minecraft.getInstance();
     private static PlacardRenderer placardRenderer = PlacardRenderer.getInstance();
 
     private ClientEventHandler() {}
 
     // Render Placards
     @SubscribeEvent
-    public static void onRenderPlayerEvent(RenderLivingEvent.Specials.Post<LivingEntity> event)
+    public static void onRenderPlayerEvent(RenderLivingEvent.Specials.Post event)
     {
         if (
                 (event.getEntity() instanceof PlayerEntity) &&
@@ -76,7 +76,7 @@ public class ClientEventHandler
     {
         if (event.getItemStack().getItem().equals(ModItems.ITEM_BAND_AMP))
         {
-            event.getToolTip().add(TextFormatting.GREEN + I18n.format("tile.mxtune:band_amp.help"));
+            event.getToolTip().add(new TranslationTextComponent(TextFormatting.GREEN + "tile.mxtune:band_amp.help"));
         }
     }
 
@@ -86,10 +86,16 @@ public class ClientEventHandler
     {
         if ((event.getEntity() instanceof ClientPlayerEntity))
         {
-            if (ModConfig.ConfigClient.windowTitle.showPlayerName)
-                Display.setTitle(String.format("Minecraft 1.12.2 %s", event.getEntity().getName()));
+            if (MXTuneConfig.CLIENT.showPlayerName.get())
+            {
+                long handle = mc.mainWindow.getHandle();
+                GLFW.glfwSetWindowTitle(handle, "Minecraft 1.14.3 - " + event.getEntity().getName());
+            }
             else
-                Display.setTitle("Minecraft 1.12.2");
+            {
+                long handle = mc.mainWindow.getHandle();
+                GLFW.glfwSetWindowTitle(handle, "Minecraft 1.14.3");
+            }
         }
     }
 }

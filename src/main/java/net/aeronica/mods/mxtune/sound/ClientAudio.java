@@ -43,59 +43,43 @@ package net.aeronica.mods.mxtune.sound;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.Reference;
-import net.aeronica.mods.mxtune.config.ModConfig;
+import net.aeronica.mods.mxtune.config.MXTuneConfig;
 import net.aeronica.mods.mxtune.managers.ClientPlayManager;
 import net.aeronica.mods.mxtune.managers.GroupHelper;
 import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.ISound;
-import net.minecraft.client.audio.MusicTicker;
-import net.minecraft.client.audio.SoundEngine;
-import net.minecraft.client.audio.SoundHandler;
+import net.minecraft.client.audio.*;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.PlayStreamingSourceEvent;
+import net.minecraftforge.client.event.sound.SoundLoadEvent;
 import net.minecraftforge.client.event.sound.SoundSetupEvent;
-import net.minecraftforge.client.resource.IResourceType;
-import net.minecraftforge.client.resource.ISelectiveResourceReloadListener;
-import net.minecraftforge.client.resource.VanillaResourceType;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.openal.AL;
-import org.lwjgl.openal.AL10;
-import org.lwjgl.openal.ALC10;
-import org.lwjgl.openal.ALC11;
-import paulscode.sound.SoundSystem;
-import paulscode.sound.SoundSystemConfig;
-import paulscode.sound.SoundSystemException;
 
-import javax.annotation.Nonnull;
 import javax.sound.sampled.AudioFormat;
-import java.nio.IntBuffer;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.Predicate;
 
-@SideOnly(Side.CLIENT)
-@Mod.EventBusSubscriber(Side.CLIENT)
-public enum ClientAudio implements ISelectiveResourceReloadListener
+@OnlyIn(Dist.CLIENT)
+@Mod.EventBusSubscriber(Dist.CLIENT)
+public enum ClientAudio
 {
     INSTANCE;
     public static final Object THREAD_SYNC = new Object();
-    private static Minecraft mc = Minecraft.getMinecraft();
+    private static Minecraft mc = Minecraft.getInstance();
     private static SoundHandler handler;
     private static SoundSystem sndSystem;
     private static MusicTicker musicTicker;
@@ -239,7 +223,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
 
     public static void playLocal(int playId, String musicText, IAudioStatusCallback callback)
     {
-        play(playId, Minecraft.getMinecraft().player.getPosition(), musicText, true, SoundRange.INFINITY, callback);
+        play(playId, mc.player.getPosition(), musicText, true, SoundRange.INFINITY, callback);
     }
 
     // Determine if audio is 3D spacial or background
@@ -268,7 +252,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
                 return;
             }
             executorService.execute(new ThreadedPlay(audioData, musicText));
-            MXTune.proxy.getMinecraft().getSoundHandler().playSound(new MovingMusic());
+            MXTune.proxy.getMinecraft().getSoundHandler().play(new MovingMusic());
             stopVanillaMusic();
         } else
         {
@@ -441,12 +425,12 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
 
     private static void init()
     {
-        if (sndSystem == null || sndSystem.randomNumberGenerator == null)
+        if (sndSystem == null)
         {
-            handler = Minecraft.getMinecraft().getSoundHandler();
+            handler = mc.getSoundHandler();
             SoundEngine sndManager = handler.sndManager;
             sndSystem = sndManager.sndSystem;
-            musicTicker = Minecraft.getMinecraft().getMusicTicker();
+            musicTicker = mc.getMusicTicker();
             setVanillaMusicPaused(false);
             playIDAudioData.clear();
             ClientPlayManager.reset();
@@ -462,15 +446,12 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         playIDQueue03.clear();
     }
 
-    @Override
-    public void onResourceManagerReload(@Nonnull IResourceManager resourceManager, @Nonnull Predicate<IResourceType> resourcePredicate)
+    @SubscribeEvent
+    public void onResourceManagerReload(SoundLoadEvent Event) // only called on sound reload. i.e. key-press F3+T
     {
-        if (resourcePredicate.test(VanillaResourceType.SOUNDS))
-        {
-            ModLogger.info("Restarting mxTune");
-            configureSound();
-            init();
-        }
+        cleanup();
+        ModLogger.info("Restarting mxTune");
+        init();
     }
 
     @SubscribeEvent
@@ -489,13 +470,13 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
     {
         cleanup();
         ClientPlayManager.reset();
-        ModLogger.debug("ClientAudio PlayerRespawnEvent: %s", event.player.getName());
+        ModLogger.debug("ClientAudio PlayerRespawnEvent: %s", event.getPlayer().getName());
     }
 
     @SubscribeEvent
     public static void event(ClientTickEvent event)
     {
-        if (event.side == Side.CLIENT && event.phase == TickEvent.Phase.END)
+        if (event.side == LogicalSide.CLIENT && event.phase == TickEvent.Phase.END)
         {
             /* once per tick but not if game is paused */
             if (!mc.isGamePaused())
@@ -508,12 +489,9 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
     }
     
     @SubscribeEvent
-    public static void event(SoundSetupEvent event) throws SoundSystemException
+    public static void event(SoundSetupEvent event) // never gets called
     {
-        SoundSystemConfig.setCodec("nul", CodecPCM.class);
-        ModLogger.debug("Sound Setup Event: associate the \"nul\" extension with CodecPCM.");
-        ModLogger.debug("Sound Streaming Buffer Size: %d", SoundSystemConfig.getStreamingBufferSize());
-        configureSound();
+        // NOP
     }
     
     @SubscribeEvent
@@ -522,7 +500,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         init();
         ResourceLocation soundLocation = e.getSound().getSoundLocation();
         /* Testing for a the PCM_PROXY sound. For playing MML though the MML->PCM ClientAudio chain */
-        if (soundLocation.equals(ModSoundEvents.PCM_PROXY.getSoundName()))
+        if (soundLocation.equals(ModSoundEvents.PCM_PROXY.getName()))
         {
             Integer playID = pollPlayIDQueue01();
             if (playID != null)
@@ -550,13 +528,13 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
                 }
             }
         }  else if (
-                        (ModConfig.isCreativeMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_CREATIVE.getSoundName())) ||
-                        (ModConfig.isCreditsMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_CREDITS.getSoundName())) ||
-                        (ModConfig.isDragonMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_DRAGON.getSoundName())) ||
-                        (ModConfig.isEndMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_END.getSoundName())) ||
-                        (ModConfig.isGameMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_GAME.getSoundName())) ||
-                        (ModConfig.isMenuMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_MENU.getSoundName())) ||
-                        (ModConfig.isNetherMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_NETHER.getSoundName())))
+                        (MXTuneConfig.isCreativeMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_CREATIVE.getName())) ||
+                        (MXTuneConfig.isCreditsMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_CREDITS.getName())) ||
+                        (MXTuneConfig.isDragonMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_DRAGON.getName())) ||
+                        (MXTuneConfig.isEndMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_END.getName())) ||
+                        (MXTuneConfig.isGameMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_GAME.getName())) ||
+                        (MXTuneConfig.isMenuMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_MENU.getName())) ||
+                        (MXTuneConfig.isNetherMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_NETHER.getName())))
             e.setResultSound(null);
     }
 
@@ -567,75 +545,12 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
     @SubscribeEvent
     public static void event(PlayStreamingSourceEvent e)
     {
-        if (e.getSound().getSoundLocation().equals(ModSoundEvents.PCM_PROXY.getSoundName()) &&
+        if (e.getSound().getSoundLocation().equals(ModSoundEvents.PCM_PROXY.getName()) &&
                 ClientAudio.peekPlayIDQueue03() != null)
         {
             Integer playID = ClientAudio.pollPlayIDQueue03();
-            ClientAudio.setUuid(playID, e.getUuid());
-            ClientAudio.setISound(playID, e.getSound());
-            ModLogger.debug("ClientAudio PlayStreamingSourceEvent: uuid: %s, ISound: %s", e.getUuid(), e.getSound());
+            // This will never get called since the consumer of the stream disqualifies non-ogg sound resources.
+            ModLogger.debug("ClientAudio PlayStreamingSourceEvent: ISound: %s", e.getSound());
         }
-    }
-
-    /*
-     * This section Poached from Dynamic Surroundings
-     */
-    private static void alErrorCheck() {
-        final int error = AL10.alGetError();
-        if (error != AL10.AL_NO_ERROR)
-            ModLogger.warn("OpenAL error: %d", error);
-    }
-
-    private static void configureSound() {
-        int totalChannels = -1;
-
-        try {
-            final boolean create = !AL.isCreated();
-            if (create)
-            {
-                AL.create();
-                alErrorCheck();
-            }
-
-            final IntBuffer ib = BufferUtils.createIntBuffer(1);
-            ALC10.alcGetInteger(AL.getDevice(), ALC11.ALC_MONO_SOURCES, ib);
-            alErrorCheck();
-            totalChannels = ib.get(0);
-
-            if (create)
-                AL.destroy();
-
-        } catch (final Throwable e) {
-            ModLogger.error(e);
-        }
-
-        int normalChannelCount = SoundSystemConfig.getNumberNormalChannels();
-        int streamChannelCount = SoundSystemConfig.getNumberStreamingChannels();
-
-        if (ModConfig.getAutoConfigureChannels() && (totalChannels > 64) && (streamChannelCount < DESIRED_STREAM_CHANNELS))
-        {
-            totalChannels = ((totalChannels + 1) * 3) / 4;
-            streamChannelCount = Math.min(Math.min(totalChannels / 5, MAX_STREAM_CHANNELS), DESIRED_STREAM_CHANNELS);
-            normalChannelCount = totalChannels - streamChannelCount;
-        }
-        else if ((totalChannels != -1) && ((normalChannelCount + streamChannelCount) >= 32))
-        {
-            // Try for at least 6 streaming channels if not using auto configure and we expect default SoundSystemConfig settings
-            while ( streamChannelCount < 6 )
-            {
-                if (normalChannelCount > 24)
-                {
-                    normalChannelCount--;
-                    streamChannelCount++;
-                }
-                else
-                    break;
-            }
-        }
-
-        ModLogger.info("Sound channels: %d normal, %d streaming (total avail: %s)", normalChannelCount, streamChannelCount,
-                totalChannels == -1 ? "UNKNOWN" : Integer.toString(totalChannels));
-        SoundSystemConfig.setNumberNormalChannels(normalChannelCount);
-        SoundSystemConfig.setNumberStreamingChannels(streamChannelCount);
     }
 }

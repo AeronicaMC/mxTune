@@ -16,13 +16,12 @@
  */
 package net.aeronica.mods.mxtune.render;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.aeronica.mods.mxtune.Reference;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.LivingRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
 
 public class PlacardRenderer
@@ -48,12 +47,13 @@ public class PlacardRenderer
 
     public void setPlacard(int index) {this.index = index;}
 
-    public void doRender(net.minecraftforge.client.event.RenderLivingEvent.Specials.Post<LivingEntity> event)
+    public void doRender(net.minecraftforge.client.event.RenderLivingEvent.Specials.Post event)
     {
-        LivingRenderer<?> renderer = (LivingRenderer<?>) event.getRenderer().getRenderManager().getEntityRenderObject(event.getEntity());
+        LivingRenderer<?,?> renderer = (LivingRenderer<?,?>) event.getRenderer().getRenderManager().getRenderer(event.getEntity());
+        if (renderer == null) return;
         renderer.bindTexture(placardTextures);
 
-        double d0 = event.getEntity().getDistanceSq(renderer.getRenderManager().renderViewEntity);
+        double d0 = event.getEntity().getDistanceSq(renderer.getRenderManager().pointedEntity);
         if (d0 <= (PLACARD_RANGE * PLACARD_RANGE))
         {
             double placardHeight = event.getEntity().isSneaking() ? 0.22d : 0.35d;
@@ -64,18 +64,18 @@ public class PlacardRenderer
             double f5 = (double) (PLACARD_ICON_BASE_V_OFFSET + index / PLACARD_ICONS_PER_ROW * PLACARD_ICON_SIZE + PLACARD_ICON_SIZE) / PLACARD_TEXTURE_SIZE;
 
             GlStateManager.pushMatrix();
-            GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            GlStateManager.normal3f(0.0F, 1.0F, 0.0F);
+            GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             GlStateManager.enableBlend();
             GlStateManager.disableLighting();
 
-            GlStateManager.translate(event.getX(), event.getY() + event.getEntity().height + placardHeight + 0.25D, event.getZ());
+            GlStateManager.translated(event.getX(), event.getY() + event.getEntity().getHeight() + placardHeight + 0.25D, event.getZ());
 
-            GlStateManager.rotate(-renderer.getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate((float) (renderer.getRenderManager().options.thirdPersonView == 2 ? -1 : 1) * renderer.getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
+            GlStateManager.rotatef(-renderer.getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
+            GlStateManager.rotatef((float) (renderer.getRenderManager().options.thirdPersonView == 2 ? -1 : 1) * renderer.getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
 
             float f11 = 0.5F;
-            GlStateManager.scale(f11, f11, f11);
+            GlStateManager.scalef(f11, f11, f11);
 
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferbuilder = tessellator.getBuffer();

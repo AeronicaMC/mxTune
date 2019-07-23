@@ -30,7 +30,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
-import static net.aeronica.mods.mxtune.config.ModConfig.isJAMPartyRightClickDisabled;
+import static net.aeronica.mods.mxtune.config.MXTuneConfig.isJAMPartyRightClickDisabled;
 import static net.aeronica.mods.mxtune.gui.GuiGuid.*;
 
 public class GUIHandler implements IGuiHandler

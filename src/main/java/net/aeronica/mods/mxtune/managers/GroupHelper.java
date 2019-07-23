@@ -22,7 +22,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Sets;
 import net.aeronica.mods.mxtune.MXTune;
-import net.aeronica.mods.mxtune.config.ModConfig;
+import net.aeronica.mods.mxtune.config.MXTuneConfig;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.PlayerEntity;
@@ -265,7 +265,7 @@ public class GroupHelper
     public static double getGroupMembersScaledDistance(PlayerEntity playerIn)
     {
         Set<Integer> members = getPlayersGroupMembers(playerIn);
-        double abortDistance = ModConfig.getGroupPlayAbortDistance();
+        double abortDistance = MXTuneConfig.getGroupPlayAbortDistance();
         double distance = 0D;
         double maxDistance = 0D;
         for (Integer memberA : members)

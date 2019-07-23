@@ -21,7 +21,7 @@ import com.google.common.collect.Sets;
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.blocks.IMusicPlayer;
 import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
-import net.aeronica.mods.mxtune.config.ModConfig;
+import net.aeronica.mods.mxtune.config.MXTuneConfig;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.*;
@@ -105,7 +105,7 @@ public class PlayManager
                 DurationTimer.scheduleStop(playID, musicPlayer.getDuration());
                 ModLogger.debug("Block/TE MML Sub25: " + mml.substring(0, Math.min(25, mml.length())));
                 PlayBlockMusicMessage playBlockMusicMessage = new PlayBlockMusicMessage(playID, pos, mml, musicPlayer.getSoundRange());
-                PacketDispatcher.sendToAllAround(playBlockMusicMessage, worldIn.getDimension().getType().getId(), pos.getX(), pos.getY(), pos.getZ(), ModConfig.getListenerRange());
+                PacketDispatcher.sendToAllAround(playBlockMusicMessage, worldIn.getDimension().getType().getId(), pos.getX(), pos.getY(), pos.getZ(), MXTuneConfig.getListenerRange());
             }
         }
         return playID;
@@ -170,7 +170,7 @@ public class PlayManager
         activePlayIDs.add(playID);
         syncStatus();
         PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playID, musicText);
-        PacketDispatcher.sendToAllAround(packetPlaySolo, playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, ModConfig.getListenerRange());
+        PacketDispatcher.sendToAllAround(packetPlaySolo, playerIn.dimension, playerIn.posX, playerIn.posY, playerIn.posZ, MXTuneConfig.getListenerRange());
         return playID;
     }
     
@@ -194,7 +194,7 @@ public class PlayManager
             syncStatus();
             resetGroupsPlayID(membersID);
             PlayJamMessage playJamMessage = new PlayJamMessage(membersID, groupsPlayID, musicText);
-            PacketDispatcher.sendToAllAround(playJamMessage, playerIn.dimension, pos.getX(), pos.getY(), pos.getZ(), ModConfig.getListenerRange());
+            PacketDispatcher.sendToAllAround(playJamMessage, playerIn.dimension, pos.getX(), pos.getY(), pos.getZ(), MXTuneConfig.getListenerRange());
         }
         return groupsPlayID;
     }

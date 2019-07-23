@@ -18,7 +18,7 @@ package net.aeronica.mods.mxtune.handler;
 
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.blocks.IMusicPlayer;
-import net.aeronica.mods.mxtune.config.ModConfig;
+import net.aeronica.mods.mxtune.config.MXTuneConfig;
 import net.aeronica.mods.mxtune.managers.PlayManager;
 import net.aeronica.mods.mxtune.world.IModLockableContainer;
 import net.aeronica.mods.mxtune.world.LockableHelper;
@@ -52,7 +52,7 @@ public class CommonEventHandler
     {
         /* Fired once every two seconds */
         if (event.side == Side.SERVER && event.phase == TickEvent.Phase.END && (count++ % 40 == 0)) {
-            PlayManager.testStopDistance(ModConfig.getGroupPlayAbortDistance());
+            PlayManager.testStopDistance(MXTuneConfig.getGroupPlayAbortDistance());
         }
     }
 
