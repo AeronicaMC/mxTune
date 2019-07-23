@@ -88,8 +88,8 @@ public class BandAmpMessage
                 if(world.isAreaLoaded(message.pos, 1))
                 {
                     TileEntity tileEntity = world.getTileEntity(message.pos);
-                    processLockButton(, player, tileEntity);
-                    processButtons(, player, tileEntity);
+                    processLockButton(message, player, tileEntity);
+                    processButtons(message, player, tileEntity);
                 }
             });
         ctx.get().setPacketHandled(true);
