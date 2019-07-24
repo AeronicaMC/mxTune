@@ -37,10 +37,9 @@ public class MXTuneConfig
         public final ConfigValue<String> site;
         public final BooleanValue showPlayerName;
 
-        private Client(final ForgeConfigSpec.Builder builder)
+        public Client(final ForgeConfigSpec.Builder builder)
         {
             builder.comment("Client Only Settings")
-                    .translation("config.mxtune.category.client")
                     .push("client");
 
             site = builder
@@ -125,10 +124,9 @@ public class MXTuneConfig
 
         public final BooleanValue disableJAMPartyRightClick;
 
-        private Common(final ForgeConfigSpec.Builder builder)
+        public Common(final ForgeConfigSpec.Builder builder)
         {
             builder.comment("Common Configuration")
-                    .translation("config.mxtune.category.general")
                     .push("common");
 
             showWelcomeStatusMessage = builder
