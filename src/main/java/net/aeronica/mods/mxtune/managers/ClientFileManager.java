@@ -29,6 +29,7 @@ import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nonnull;
@@ -191,7 +192,7 @@ public enum  ClientFileManager implements CallBack
         mapPlayLists.put(guid, playList);
         try
         {
-            path = FileHelper.getCacheFile(pathPlayLists.toString(), guid.toString() + FileHelper.EXTENSION_DAT, Side.CLIENT);
+            path = FileHelper.getCacheFile(pathPlayLists.toString(), guid.toString() + FileHelper.EXTENSION_DAT, LogicalSide.CLIENT);
         }
         catch (IOException e)
         {
@@ -219,12 +220,12 @@ public enum  ClientFileManager implements CallBack
             proxy.readFromNBT(data);
             mapSongProxies.put(uuid, proxy);
         }
-        Boolean fileExists = FileHelper.fileExists(pathMusic.toString(), uuid.toString() + FileHelper.EXTENSION_DAT, Side.CLIENT);
+        Boolean fileExists = FileHelper.fileExists(pathMusic.toString(), uuid.toString() + FileHelper.EXTENSION_DAT, LogicalSide.CLIENT);
         if (!fileExists)
         {
             try
             {
-                path = FileHelper.getCacheFile(pathMusic.toString(), uuid.toString() + FileHelper.EXTENSION_DAT, Side.CLIENT);
+                path = FileHelper.getCacheFile(pathMusic.toString(), uuid.toString() + FileHelper.EXTENSION_DAT, LogicalSide.CLIENT);
             } catch (IOException e)
             {
                 ModLogger.error(e);

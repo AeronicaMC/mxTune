@@ -26,14 +26,16 @@ package net.aeronica.mods.mxtune.caches;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.world.ServerWorld;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Util;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,6 +48,7 @@ import java.nio.file.Paths;
 
 public class FileHelper
 {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final String MOD_FOLDER = Reference.MOD_ID;
     private static final String CLIENT_FOLDER = MOD_FOLDER;
     public static final String CLIENT_MML_FOLDER = CLIENT_FOLDER + "/import_folder";
@@ -66,12 +69,13 @@ public class FileHelper
      * <p></p>
      * This needs to be called from the {@link FMLServerStartingEvent}
      */
-    public static void initialize()
+    public static void initialize(MinecraftServer server)
     {
         // The top level "world" save folder a.k.a. the "Over World"
-        ServerWorld worldServer = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(0);
-        File chunkDir = worldServer.getChunkSaveLocation();
+        //.getActiveAnvilConverter().getFile(server.getFolderName(), "serverconfig").toPath();
+        File chunkDir = server.getActiveAnvilConverter().getFile(server.getFolderName(), ".");
         serverWorldFolder = Paths.get(chunkDir.getPath());
+        LOGGER.debug("FileHelper: serverWorldFolder ()", serverWorldFolder.toString());
     }
 
     private FileHelper() { /* NOP */ }
@@ -134,10 +138,10 @@ public class FileHelper
      * Open an OS folder on the client side.
      * @param folder of interest
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void openFolder(String folder)
     {
-        OpenGlHelper.openFile(getDirectory(folder, Side.CLIENT).toFile());
+        Util.getOSType().openFile(getDirectory(folder, LogicalSide.CLIENT).toFile());
     }
 
     /**
@@ -149,7 +153,7 @@ public class FileHelper
      * @param side Side.SERVER or Side CLIENT
      * @return the Path of the folder on the specified side
      */
-    public static Path getDirectory(String folder, Side side)
+    public static Path getDirectory(String folder, LogicalSide side)
     {
         return getDirectory(folder, side, true);
     }
@@ -164,16 +168,16 @@ public class FileHelper
      * @param fixDirectory Recreates the directory if true
      * @return the Path of the folder on the specified side
      */
-    public static Path getDirectory(String folder, Side side, boolean fixDirectory)
+    public static Path getDirectory(String folder, LogicalSide side, boolean fixDirectory)
     {
-        String sidedPath = side == Side.SERVER ? serverWorldFolder.toString() : ".";
+        String sidedPath = side == LogicalSide.SERVER ? serverWorldFolder.toString() : ".";
         Path loc = Paths.get(sidedPath, folder);
         if (fixDirectory)
             fixDirectory(loc);
         return loc;
     }
 
-    public static Path getCacheFile(String folder, String filename, Side sideIn) throws IOException
+    public static Path getCacheFile(String folder, String filename, LogicalSide sideIn) throws IOException
     {
         Path dir = getDirectory(folder, sideIn);
         Path cacheFile = dir.resolve(filename);
@@ -186,7 +190,7 @@ public class FileHelper
         return cacheFile;
     }
 
-    public static boolean fileExists(String folder, String filename, Side sideIn)
+    public static boolean fileExists(String folder, String filename, LogicalSide sideIn)
     {
         Path dir = getDirectory(folder, sideIn);
         Path resolve = dir.resolve(filename);

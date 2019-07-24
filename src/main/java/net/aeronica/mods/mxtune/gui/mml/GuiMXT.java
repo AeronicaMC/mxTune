@@ -39,6 +39,7 @@ import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.aeronica.mods.mxtune.util.ValidDuration;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -47,8 +48,8 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
-import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nonnull;
@@ -115,8 +116,8 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
     public GuiMXT(Screen guiScreenParent, Mode mode)
     {
         this.guiScreenParent = guiScreenParent;
-        this.mc = Minecraft.getMinecraft();
-        this.fontRenderer = mc.fontRenderer;
+        this.minecraft = Minecraft.getInstance();
+        this.font = minecraft.fontRenderer;
         this.mode = mode;
         for (int i = 0; i < MAX_TABS; i++)
         {
@@ -126,99 +127,99 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
     }
 
     @Override
-    public void initGui()
+    public void init()
     {
         hooverTexts.clear();
-        int singleLineHeight = mc.fontRenderer.FONT_HEIGHT + 2;
+        int singleLineHeight = minecraft.fontRenderer.FONT_HEIGHT + 2;
         int titleWidth = width - PADDING * 2;
 
-        labelMXTFileName = new GuiLabelMX(fontRenderer, 0, PADDING, PADDING, titleWidth, singleLineHeight, -1);
+        labelMXTFileName = new GuiLabelMX(font, 0, PADDING, PADDING, titleWidth, singleLineHeight, -1);
         setDisplayedFilename(cachedMXTFilename, TextFormatting.AQUA);
         int buttonWidth = Math.max(((width * 2 / 3) - PADDING * 2) / 6, 65);
         int buttonY = labelMXTFileName.getY() + labelMXTFileName.getHeight();
 
         GuiButtonExt buttonNew = new GuiButtonExt(0, PADDING, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.new"));
-        GuiButtonExt buttonImport = new GuiButtonExt(1, buttonNew.x + buttonNew.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.import"));
-        GuiButtonExt buttonOpen = new GuiButtonExt(2, buttonImport.x + buttonImport.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.open"));
-        buttonSave = new GuiButtonExt(3, buttonOpen.x + buttonOpen.width, buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.save"));
-        buttonDoneMode = new GuiButtonExt(4, buttonSave.x + buttonSave.width, buttonY, buttonWidth, 20, getDoneButtonNameByMode());
-        GuiButtonExt buttonCancel = new GuiButtonExt(5, buttonDoneMode.x + buttonDoneMode.width, buttonY, buttonWidth, 20, I18n.format("gui.cancel"));
+        GuiButtonExt buttonImport = new GuiButtonExt(1, buttonNew.x + buttonNew.getWidth(), buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.import"));
+        GuiButtonExt buttonOpen = new GuiButtonExt(2, buttonImport.x + buttonImport.getWidth(), buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.open"));
+        buttonSave = new GuiButtonExt(3, buttonOpen.x + buttonOpen.getWidth(), buttonY, buttonWidth, 20, I18n.format("mxtune.gui.button.save"));
+        buttonDoneMode = new GuiButtonExt(4, buttonSave.x + buttonSave.getWidth(), buttonY, buttonWidth, 20, getDoneButtonNameByMode());
+        GuiButtonExt buttonCancel = new GuiButtonExt(5, buttonDoneMode.x + buttonDoneMode.getWidth(), buttonY, buttonWidth, 20, I18n.format("gui.cancel"));
         if (mode == Mode.CLIENT)
             buttonCancel.visible = false;
 
-        buttonList.add(buttonNew);
-        buttonList.add(buttonImport);
-        buttonList.add(buttonOpen);
-        buttonList.add(buttonSave);
-        buttonList.add(buttonDoneMode);
-        buttonList.add(buttonCancel);
+        children.add(buttonNew);
+        children.add(buttonImport);
+        children.add(buttonOpen);
+        children.add(buttonSave);
+        children.add(buttonDoneMode);
+        children.add(buttonCancel);
 
         // Links
-        int textY = buttonDoneMode.y + buttonDoneMode.height + PADDING;
+        int textY = buttonDoneMode.y + buttonDoneMode.getHeight() + PADDING;
         int urlWidth = width / 2 - PADDING;
         sourcesLink = new GuiLink(10, PADDING, textY, cachedSource, GuiLink.AlignText.LEFT);
-        sourcesLink.width = urlWidth;
-        sourcesLink.height = singleLineHeight;
+        sourcesLink.setWidth(urlWidth);
+        sourcesLink.setHeight(singleLineHeight);
         mmlLink = new GuiLink(11, width - PADDING , textY, MXTuneConfig.getMmlLink(), GuiLink.AlignText.RIGHT);
-        mmlLink.width = urlWidth;
-        mmlLink.height = singleLineHeight;
-        buttonList.add(sourcesLink);
-        buttonList.add(mmlLink);
+        mmlLink.setWidth(urlWidth);
+        mmlLink.setHeight(singleLineHeight);
+        children.add(sourcesLink);
+        children.add(mmlLink);
 
         // Text fields
-        textY = sourcesLink.y + sourcesLink.height + PADDING;
+        textY = sourcesLink.y + sourcesLink.getHeight() + PADDING;
         String labelTitleText = I18n.format("mxtune.gui.label.title");
-        int labelTitleWidth = fontRenderer.getStringWidth(labelTitleText);
+        int labelTitleWidth = font.getStringWidth(labelTitleText);
         String labelAuthorText = I18n.format("mxtune.gui.label.author");
-        int labelAuthorWidth = fontRenderer.getStringWidth(labelAuthorText);
-        labelTitle = new GuiLabelMX(fontRenderer, 1, PADDING, textY, labelTitleWidth, fontRenderer.FONT_HEIGHT + 2, -1);
+        int labelAuthorWidth = font.getStringWidth(labelAuthorText);
+        labelTitle = new GuiLabelMX(font, 1, PADDING, textY, labelTitleWidth, font.FONT_HEIGHT + 2, -1);
         labelTitle.setLabelName(labelTitleText);
-        textTitle = new TextFieldWidget(1, fontRenderer, labelTitle.getX() + labelTitleWidth + PADDING, textY, width / 2 - labelTitle.getWidth() - PADDING, fontRenderer.FONT_HEIGHT + 2);
+        textTitle = new TextFieldWidget(1, font, labelTitle.getX() + labelTitleWidth + PADDING, textY, width / 2 - labelTitle.getWidth() - PADDING, font.FONT_HEIGHT + 2);
         textTitle.setMaxStringLength(80);
         textTitle.setCanLoseFocus(true);
-        labelAuthor = new GuiLabelMX(fontRenderer, 2, textTitle.x + textTitle.width + PADDING, textY, labelAuthorWidth, fontRenderer.FONT_HEIGHT + 2, -1);
+        labelAuthor = new GuiLabelMX(font, 2, textTitle.x + textTitle.getWidth() + PADDING, textY, labelAuthorWidth, font.FONT_HEIGHT + 2, -1);
         labelAuthor.setLabelName(labelAuthorText);
-        textAuthor = new TextFieldWidget(2, fontRenderer, labelAuthor.getX() + labelAuthorWidth + PADDING, textY, width - labelAuthor.getX() - labelAuthor.getWidth() - PADDING * 2, fontRenderer.FONT_HEIGHT + 2);
+        textAuthor = new TextFieldWidget(2, font, labelAuthor.getX() + labelAuthorWidth + PADDING, textY, width - labelAuthor.getX() - labelAuthor.getWidth() - PADDING * 2, font.FONT_HEIGHT + 2);
         textAuthor.setMaxStringLength(80);
         textAuthor.setCanLoseFocus(true);
-        textY = textTitle.y + textTitle.height + PADDING;
+        textY = textTitle.y + textTitle.getHeight() + PADDING;
         String labelSourceText = I18n.format("mxtune.gui.label.source");
-        int labelSourceWidth = fontRenderer.getStringWidth(labelSourceText);
-        labelSource = new GuiLabelMX(fontRenderer, 3, PADDING, textY, labelSourceWidth, fontRenderer.FONT_HEIGHT + 2, -1);
+        int labelSourceWidth = font.getStringWidth(labelSourceText);
+        labelSource = new GuiLabelMX(font, 3, PADDING, textY, labelSourceWidth, font.FONT_HEIGHT + 2, -1);
         labelSource.setLabelName(labelSourceText);
-        textSource = new TextFieldWidget(3, fontRenderer, labelSource.getX() + labelSource.getWidth() + PADDING, textY, width - labelSource.getX() - labelSource.getWidth() - PADDING * 2, fontRenderer.FONT_HEIGHT + 2);
+        textSource = new TextFieldWidget(3, font, labelSource.getX() + labelSource.getWidth() + PADDING, textY, width - labelSource.getX() - labelSource.getWidth() - PADDING * 2, font.FONT_HEIGHT + 2);
         textSource.setMaxStringLength(320);
         textSource.setCanLoseFocus(true);
 
         // Button tabs
-        int tabButtonTop = textSource.y +  textSource.height + PADDING * 2;
+        int tabButtonTop = textSource.y +  textSource.getHeight() + PADDING * 2;
         buttonAddTab = new GuiButtonExt(250, PADDING, tabButtonTop, 40, 20, I18n.format("mxtune.gui.button.plus"));
-        buttonMinusTab = new GuiButtonExt(251, buttonAddTab.x + buttonAddTab.width, tabButtonTop, 40, 20, I18n.format("mxtune.gui.button.minus"));
-        buttonList.add(buttonAddTab);
-        buttonList.add(buttonMinusTab);
+        buttonMinusTab = new GuiButtonExt(251, buttonAddTab.x + buttonAddTab.getWidth(), tabButtonTop, 40, 20, I18n.format("mxtune.gui.button.minus"));
+        children.add(buttonAddTab);
+        children.add(buttonMinusTab);
 
         // Total Duration
         String durationLabelName = I18n.format("mxtune.gui.label.total_duration");
-        int durationWidth = fontRenderer.getStringWidth(durationLabelName);
-        durationWidth += fontRenderer.getStringWidth(SheetMusicUtil.formatDuration(0));
-        durationWidth += fontRenderer.getStringWidth(" ");
-        labelDuration = new GuiLabelMX(fontRenderer,5, width - durationWidth - PADDING, tabButtonTop + 20 + PADDING + 2, durationWidth, singleLineHeight, -1);
+        int durationWidth = font.getStringWidth(durationLabelName);
+        durationWidth += font.getStringWidth(SheetMusicUtil.formatDuration(0));
+        durationWidth += font.getStringWidth(" ");
+        labelDuration = new GuiLabelMX(font,5, width - durationWidth - PADDING, tabButtonTop + 20 + PADDING + 2, durationWidth, singleLineHeight, -1);
         labelDuration.setLabelName(I18n.format(durationLabelName));
         labelDuration.setLabelText(SheetMusicUtil.formatDuration(durationTotal));
 
         int tabbedAreaTop = tabButtonTop + 20 + PADDING;
         for (int i = 0; i < MAX_TABS; i++)
         {
-            buttonNames[i] = new GuiButtonExt(TAB_BTN_IDX + i, buttonMinusTab.x + buttonMinusTab.width + PADDING + 20 * i, tabButtonTop, 20, 20, String.format("%d", i + 1));
-            buttonList.add(buttonNames[i]);
+            buttonNames[i] = new GuiButtonExt(TAB_BTN_IDX + i, buttonMinusTab.x + buttonMinusTab.getWidth() + PADDING + 20 * i, tabButtonTop, 20, 20, String.format("%d", i + 1));
+            children.add(buttonNames[i]);
             childTabs[i].setLayout(tabbedAreaTop, height - PADDING);
             childTabs[i].initGui();
         }
 
         // Play/Stop
         buttonPlayStop = new GuiButtonExt(6, width - PADDING - 100, tabbedAreaTop - 24, 100, 20, isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play_all"));
-        buttonPlayStop.enabled = false;
-        buttonList.add(buttonPlayStop);
+        buttonPlayStop.active = false;
+        children.add(buttonPlayStop);
         reloadState();
         getSelection();
     }
@@ -245,22 +246,28 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
         cachedAuthor = textAuthor.getText();
         cachedSource = textSource.getText();
         cachedIsPlaying = isPlaying;
-        sourcesLink.displayString = cachedSource;
+        sourcesLink.setMessage(cachedSource);
         isStateCached = true;
     }
 
     private void updateButtons()
     {
-        for (Button button : buttonList)
-            if (button.id >= TAB_BTN_IDX && button.id < (MAX_TABS + TAB_BTN_IDX))
+        for (IGuiEventListener guiListener : children)
+        {
+            if (guiListener instanceof Button)
             {
-                button.enabled = (activeChildIndex + TAB_BTN_IDX) != button.id;
-                button.visible = (button.id) < (viewableTabCount + TAB_BTN_IDX);
-                if (activeChildIndex >= viewableTabCount)
-                    activeChildIndex = viewableTabCount - 1;
+                Button button = (Button) guiListener;
+                if ((button.id >= TAB_BTN_IDX && button.id < (MAX_TABS + TAB_BTN_IDX))
+                {
+                    button.active = (activeChildIndex + TAB_BTN_IDX) != button.id;
+                    button.visible = (button.id) < (viewableTabCount + TAB_BTN_IDX);
+                    if (activeChildIndex >= viewableTabCount)
+                        activeChildIndex = viewableTabCount - 1;
+                }
             }
-        buttonAddTab.enabled = viewableTabCount < MAX_TABS;
-        buttonMinusTab.enabled = viewableTabCount > MIN_TABS;
+        }
+        buttonAddTab.active = viewableTabCount < MAX_TABS;
+        buttonMinusTab.active = viewableTabCount > MIN_TABS;
 
         // Play/Stop button state and duration total
         int countOK = 0;
@@ -274,27 +281,27 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
         durationTotal = duration;
         labelDuration.setLabelText(SheetMusicUtil.formatDuration(durationTotal));
         boolean isOK = countOK == viewableTabCount;
-        buttonPlayStop.enabled = isPlaying || isOK;
-        buttonDoneMode.enabled = Mode.CLIENT == mode || (!textTitle.getText().isEmpty() && isOK);
-        buttonPlayStop.displayString = isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play_all");
-        buttonSave.enabled = !textTitle.getText().isEmpty() && isOK;
+        buttonPlayStop.active = isPlaying || isOK;
+        buttonDoneMode.active = Mode.CLIENT == mode || (!textTitle.getText().isEmpty() && isOK);
+        buttonPlayStop.setMessage(isPlaying ? I18n.format("mxtune.gui.button.stop") : I18n.format("mxtune.gui.button.play_all"));
+        buttonSave.active = !textTitle.getText().isEmpty() && isOK;
 
-        sourcesLink.visible = sourcesLink.displayString.matches("^(http(s)?:\\/\\/[a-zA-Z0-9\\-_]+\\.[a-zA-Z]+(.)+)+");
+        sourcesLink.visible = sourcesLink.getMessage().matches("^(http(s)?:\\/\\/[a-zA-Z0-9\\-_]+\\.[a-zA-Z]+(.)+)+");
     }
 
     private void updateTabbedButtonNames()
     {
-        int prevWidth = buttonMinusTab.x + buttonMinusTab.width;
-        int staticButtonWidth = buttonMinusTab.width + buttonAddTab.width + buttonPlayStop.width +  PADDING * 3;
+        int prevWidth = buttonMinusTab.x + buttonMinusTab.getWidth();
+        int staticButtonWidth = buttonMinusTab.getWidth() + buttonAddTab.getWidth() + buttonPlayStop.getWidth() +  PADDING * 3;
         for (int i = 0; i < viewableTabCount; i++)
         {
             GuiButtonExt gb = buttonNames[i];
             String name = getButtonName(i);
-            int nameWidth = fontRenderer.getStringWidth(name) + PADDING * 4;
+            int nameWidth = font.getStringWidth(name) + PADDING * 4;
             gb.x = prevWidth + PADDING;
-            gb.displayString = name;
+            gb.setMessage(name);
             int limitedWidth = Math.min((width - staticButtonWidth) / viewableTabCount, Math.max(20, nameWidth));
-            gb.width = limitedWidth;
+            gb.setWidth(limitedWidth);
             prevWidth += limitedWidth;
         }
     }
@@ -311,7 +318,7 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
         for (int i = 0; i < viewableTabCount; i++)
         {
             GuiButtonExt gb = buttonNames[i];
-            if (!gb.enabled)
+            if (!gb.active)
                 drawBox(gb, -1);
            if (!childTabs[i].canPlay())
                 drawLine(gb, 0xFFFF2222);
@@ -320,23 +327,23 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
 
     private void drawBox(GuiButtonExt gb, int color)
     {
-        drawHorizontalLine(gb.x, gb.x + gb.width - 1, gb.y, color);
-        drawHorizontalLine(gb.x, gb.x + gb.width - 1, gb.y + gb.height - 1, color);
-        drawVerticalLine(gb.x, gb.y, gb.y + gb.height - 1, color);
-        drawVerticalLine(gb.x + gb.width - 1, gb.y, gb.y + gb.height - 1, color);
+        hLine(gb.x, gb.x + gb.getWidth() - 1, gb.y, color);
+        hLine(gb.x, gb.x + gb.getWidth() - 1, gb.y + gb.getHeight() - 1, color);
+        vLine(gb.x, gb.y, gb.y + gb.getHeight() - 1, color);
+        vLine(gb.x + gb.getWidth() - 1, gb.y, gb.y + gb.getHeight() - 1, color);
     }
 
     private void drawLine(GuiButtonExt gb, int color)
     {
-        drawRect(gb.x + 1, gb.y + gb.height + 1, gb.x +1 + gb.width - 2, gb.y + gb.height + 3, color);
+        hLine(gb.x + 1, gb.y + gb.getHeight() + 1, gb.x + 1 + gb.getHeight() - 2, gb.y + gb.getHeight() + 3);
     }
 
     @Override
-    public void updateScreen()
+    public void tick()
     {
-        textTitle.updateCursorCounter();
-        textAuthor.updateCursorCounter();
-        textSource.updateCursorCounter();
+        textTitle.tick();
+        textAuthor.tick();
+        textSource.tick();
         childTabs[activeChildIndex].updateScreen();
         if (ticks++ % 5 == 0) updateButtons();
     }
@@ -362,7 +369,7 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
         if (button.id >= TAB_BTN_IDX && button.id < TAB_BTN_IDX + MAX_TABS)
         {
             this.activeChildIndex = button.id - TAB_BTN_IDX;
-            this.childTabs[activeChildIndex].onResize(mc, width, height);
+            this.childTabs[activeChildIndex].onResize(minecraft, width, height);
         }
         switch (button.id)
         {
@@ -431,7 +438,7 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
     {
         stop();
         updateState();
-        mc.displayGuiScreen(new ConfirmScreen(this, "New File! This will clear all fields and parts!", "Confirm?", 0));
+        minecraft.displayGuiScreen(new ConfirmScreen(this, "New File! This will clear all fields and parts!", "Confirm?", 0));
     }
 
     private void importAction()
@@ -440,7 +447,7 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
         ActionGet.INSTANCE.clear();
         ActionGet.INSTANCE.setFileImport();
         viewableTabCount = MIN_TABS;
-        mc.displayGuiScreen(new GuiFileSelector(this));
+        minecraft.displayGuiScreen(new GuiFileSelector(this));
     }
 
     private void openAction()
@@ -449,7 +456,7 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
         ActionGet.INSTANCE.clear();
         ActionGet.INSTANCE.setFileOpen();
         viewableTabCount = MIN_TABS;
-        mc.displayGuiScreen(new GuiMusicLibrary(this));
+        minecraft.displayGuiScreen(new GuiMusicLibrary(this));
     }
 
     private void saveAction()
@@ -468,7 +475,7 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
             mxTuneFile.writeToNBT(compound);
             try
             {
-                FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.CLIENT_LIB_FOLDER, fileName + FileHelper.EXTENSION_MXT, Side.CLIENT), compound);
+                FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.CLIENT_LIB_FOLDER, fileName + FileHelper.EXTENSION_MXT, LogicalSide.CLIENT), compound);
             }
             catch (IOException e)
             {
@@ -480,14 +487,14 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
 
     private boolean uploadMxt()
     {
-        if (!textTitle.getText().trim().equals("") && buttonPlayStop.enabled)
+        if (!textTitle.getText().trim().equals("") && buttonPlayStop.active)
         {
             createMxt();
             PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(mxTuneFile.getGUID(), RecordType.MXT, mxTuneFile));
             return true;
         }
         else
-            Miscellus.audiblePingPlayer(mc.player, net.minecraft.util.SoundEvents.BLOCK_ANVIL_PLACE);
+            Miscellus.audiblePingPlayer(minecraft.player, net.minecraft.util.SoundEvents.BLOCK_ANVIL_PLACE);
         return false;
     }
 
@@ -513,7 +520,7 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
 
     private boolean makeSheetMusic()
     {
-        if (!textTitle.getText().trim().equals("") && buttonPlayStop.enabled)
+        if (!textTitle.getText().trim().equals("") && buttonPlayStop.active)
         {
             String title = this.textTitle.getText();
             for (int i = 0; i < viewableTabCount; i++)
@@ -526,7 +533,7 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
             return true;
         }
         else
-            Miscellus.audiblePingPlayer(mc.player, net.minecraft.util.SoundEvents.BLOCK_ANVIL_PLACE);
+            Miscellus.audiblePingPlayer(minecraft.player, net.minecraft.util.SoundEvents.BLOCK_ANVIL_PLACE);
         return false;
     }
 
@@ -538,15 +545,15 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
         switch (mode)
         {
             case CLIENT:
-                mc.displayGuiScreen(new ConfirmScreen(this, "Have you saved changes?", "Do you still want to exit?", 4));
+                minecraft.displayGuiScreen(new ConfirmScreen(this, "Have you saved changes?", "Do you still want to exit?", 4));
                 break;
             case SERVER:
                 if (uploadMxt())
-                    mc.displayGuiScreen(guiScreenParent);
+                    minecraft.displayGuiScreen(guiScreenParent);
                 break;
             case SHEET_MUSIC:
                 if (makeSheetMusic())
-                    mc.displayGuiScreen(guiScreenParent);
+                    minecraft.displayGuiScreen(guiScreenParent);
                 break;
                 default:
         }
@@ -555,7 +562,7 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
     private void cancelAction()
     {
         stop();
-        mc.displayGuiScreen(guiScreenParent);
+        minecraft.displayGuiScreen(guiScreenParent);
     }
 
     private void getSelection()
@@ -627,7 +634,7 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
         }
         else
         {
-            Miscellus.audiblePingPlayer(mc.player, SoundEvents.BLOCK_GLASS_BREAK);
+            Miscellus.audiblePingPlayer(minecraft.player, SoundEvents.BLOCK_GLASS_BREAK);
         }
     }
 
@@ -640,14 +647,14 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
                 // NewAction
                 if (result)
                     fileNew();
-                mc.displayGuiScreen(this);
+                minecraft.displayGuiScreen(this);
                 break;
             case 4:
                 // Done! Unsaved Changes! Go back and save?
                 if (result)
-                    mc.displayGuiScreen(guiScreenParent);
+                    minecraft.displayGuiScreen(guiScreenParent);
                 else
-                    mc.displayGuiScreen(this);
+                    minecraft.displayGuiScreen(this);
                 break;
             default:
         }
@@ -655,19 +662,19 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
     }
 
     @Override
-    protected void keyTyped(char typedChar, int keyCode) throws IOException
+    protected boolean charTyped(char typedChar, int keyCode) throws IOException
     {
         if (keyCode == Keyboard.KEY_ESCAPE)
         {
             // Unsaved warning! Exit Yes or No
-            return;
+            return this.getFocused() != null && this.getFocused().charTyped(typedChar, keyCode);
         }
         childTabs[activeChildIndex].keyTyped(typedChar, keyCode);
-        textTitle.textboxKeyTyped(typedChar, keyCode);
-        textAuthor.textboxKeyTyped(typedChar, keyCode);
-        textSource.textboxKeyTyped(typedChar, keyCode);
+        textTitle.charTyped(typedChar, keyCode);
+        textAuthor.charTyped(typedChar, keyCode);
+        textSource.charTyped(typedChar, keyCode);
         updateState();
-        super.keyTyped(typedChar, keyCode);
+        super.charTyped(typedChar, keyCode);
     }
 
     @Override
@@ -677,20 +684,20 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks)
+    public void render(int mouseX, int mouseY, float partialTicks)
     {
-        drawDefaultBackground();
+        renderBackground();
         // update tabbed button names here!
         updateTabbedButtonNames();
-        labelMXTFileName.drawLabel(mc, mouseX, mouseY);
-        labelTitle.drawLabel(mc, mouseX, mouseY);
-        textTitle.drawTextBox();
-        labelAuthor.drawLabel(mc, mouseX, mouseY);
-        textAuthor.drawTextBox();
-        labelSource.drawLabel(mc, mouseX, mouseY);
-        textSource.drawTextBox();
-        labelDuration.drawLabel(mc, mouseX, mouseY);
-        super.drawScreen(mouseX, mouseY, partialTicks);
+        labelMXTFileName.drawLabel(minecraft, mouseX, mouseY);
+        labelTitle.drawLabel(minecraft, mouseX, mouseY);
+        textTitle.render(mouseX, mouseX, partialTicks);
+        labelAuthor.drawLabel(minecraft, mouseX, mouseY);
+        textAuthor.render(mouseX, mouseX, partialTicks);
+        labelSource.drawLabel(minecraft, mouseX, mouseY);
+        textSource.render(mouseX, mouseX, partialTicks);
+        labelDuration.drawLabel(minecraft, mouseX, mouseY);
+        super.render(mouseX, mouseY, partialTicks);
         drawMarkers();
         childTabs[activeChildIndex].drawScreen(mouseX, mouseY, partialTicks);
         ModGuiUtils.INSTANCE.drawHooveringHelp(this, hooverTexts, 0, 0, mouseX, mouseY);
@@ -717,10 +724,10 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
     }
 
     @Override
-    public void onResize(@Nonnull Minecraft mcIn, int w, int h)
+    public void init(@Nonnull Minecraft mcIn, int w, int h)
     {
-        super.onResize(mcIn, w, h);
-        childTabs[activeChildIndex].onResize(mcIn, w, h);
+        super.init(mcIn, w, h);
+        childTabs[activeChildIndex].init(mcIn, w, h);
     }
 
     private void setDisplayedFilename(@Nullable String name, TextFormatting textFormatting)
@@ -773,7 +780,7 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
     @Override
     public void statusCallBack(ClientAudio.Status status, int playId)
     {
-        Minecraft.getMinecraft().addScheduledTask(() -> {
+        Minecraft.getInstance().execute(() -> {
             if (this.playId == playId && (status == ClientAudio.Status.ERROR || status == ClientAudio.Status.DONE))
             {
                 ModLogger.debug("AudioStatus event received: %s, playId: %s", status, playId);

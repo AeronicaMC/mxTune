@@ -123,7 +123,7 @@ public class MXTune
         CallBackManager.start();
         MultiPacketSerializedObjectManager.start();
         DurationTimer.start();
-        FileHelper.initialize();
+        FileHelper.initialize(event.getServer());
         ServerFileManager.start();
     }
 
