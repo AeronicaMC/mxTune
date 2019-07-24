@@ -17,21 +17,19 @@
 package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.managers.GroupHelper;
-import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
+import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class SyncStatusMessage extends AbstractClientMessage<SyncStatusMessage>
+import java.util.function.Supplier;
+
+public class SyncStatusMessage implements IMessage
 {
-    private String clientPlayStatuses;
-    private String playIDMembers;
-    private String activePlayIDs;
-
-    @SuppressWarnings("unused")
-    public SyncStatusMessage() {/* Required by the PacketDispatcher */}
+    private final String clientPlayStatuses;
+    private final String playIDMembers;
+    private final String activePlayIDs;
 
     public SyncStatusMessage(String clientPlayStatuses, String playIDMembers, String activePlayIDs)
     {
@@ -40,30 +38,33 @@ public class SyncStatusMessage extends AbstractClientMessage<SyncStatusMessage>
         this.activePlayIDs = activePlayIDs;
     }
 
-    @Override
-    protected void decode(PacketBuffer buffer)
+    public static SyncStatusMessage decode(PacketBuffer buffer)
     {
-        clientPlayStatuses = ByteBufUtils.readUTF8String(buffer);
-        playIDMembers = ByteBufUtils.readUTF8String(buffer);
-        activePlayIDs = ByteBufUtils.readUTF8String(buffer);
+        String clientPlayStatuses = buffer.readString();
+        String playIDMembers = buffer.readString();
+        String activePlayIDs = buffer.readString();
+        return new SyncStatusMessage(clientPlayStatuses, playIDMembers, activePlayIDs);
     }
 
-    @Override
-    protected void encode(PacketBuffer buffer)
+    public static void encode(final SyncStatusMessage message, final PacketBuffer buffer)
     {
-        ByteBufUtils.writeUTF8String(buffer, clientPlayStatuses);
-        ByteBufUtils.writeUTF8String(buffer, playIDMembers);
-        ByteBufUtils.writeUTF8String(buffer, activePlayIDs);
+        buffer.writeString(message.clientPlayStatuses);
+        buffer.writeString(message.playIDMembers);
+        buffer.writeString(message.activePlayIDs);
     }
 
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static void handle(final SyncStatusMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        synchronized (ClientAudio.THREAD_SYNC)
-        {
-            GroupHelper.setClientPlayStatuses(clientPlayStatuses);
-            GroupHelper.setPlayIDMembers(playIDMembers);
-            GroupHelper.setActiveServerManagedPlayIDs(activePlayIDs);
-        }
+        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT)
+            ctx.get().enqueueWork(() ->
+                {
+                  synchronized (ClientAudio.THREAD_SYNC)
+                  {
+                      GroupHelper.setClientPlayStatuses(message.clientPlayStatuses);
+                      GroupHelper.setPlayIDMembers(message.playIDMembers);
+                      GroupHelper.setActiveServerManagedPlayIDs(message.activePlayIDs);
+                  }
+                });
+        ctx.get().setPacketHandled(true);
     }
 }

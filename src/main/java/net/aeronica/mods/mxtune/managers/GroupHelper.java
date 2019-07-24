@@ -27,8 +27,8 @@ import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.common.thread.EffectiveSide;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -125,10 +125,9 @@ public class GroupHelper
     // This is a workaround to force the playID into the active list on the client side presuming a network order
     // incident occurred and the playID is either not present, AND/OR a race condition, or threading issue made it not
     // available.
-    @SideOnly(Side.CLIENT)
     public static void addServerManagedActivePlayID(int playId)
     {
-        if (playId != PlayIdSupplier.PlayType.INVALID)
+        if (playId != PlayIdSupplier.PlayType.INVALID && EffectiveSide.get() == LogicalSide.CLIENT)
             activeServerManagedPlayIDs.add(playId);
     }
 
@@ -316,8 +315,7 @@ public class GroupHelper
         return membersPlayID;
     }
 
-    @Nullable
-    public static Integer getSoloMemberByPlayID(Integer playID)
+    public static int getSoloMemberByPlayID(Integer playID)
     {
         for(Integer someMember: GroupHelper.membersPlayID.keySet())
         {
@@ -326,7 +324,7 @@ public class GroupHelper
                 return someMember;
             }
         }
-        return null;
+        return -1;
     }
     
     public static void setPlayIDMembers(String playIDMembers)

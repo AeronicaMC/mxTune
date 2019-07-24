@@ -18,7 +18,7 @@
 package net.aeronica.mods.mxtune.network;
 
 import net.aeronica.mods.mxtune.Reference;
-import net.aeronica.mods.mxtune.network.client.ResetClientPlayEngine;
+import net.aeronica.mods.mxtune.network.client.*;
 import net.aeronica.mods.mxtune.network.server.BandAmpMessage;
 import net.aeronica.mods.mxtune.network.server.ChunkToolMessage;
 import net.minecraft.entity.player.PlayerEntity;
@@ -55,25 +55,58 @@ public class PacketDispatcher
 
     private static void registerMessages(SimpleChannel channel)
     {
-        // To Server
+        /*
+         * Send to Server
+         */
         channel.messageBuilder(BandAmpMessage.class, packetId++)
                 .decoder(BandAmpMessage::decode)
                 .encoder(BandAmpMessage::encode)
                 .consumer(BandAmpMessage::handle)
                 .add();
 
-        // To Server
         channel.messageBuilder(ChunkToolMessage.class, packetId++)
                 .decoder(ChunkToolMessage::decode)
                 .encoder(ChunkToolMessage::encode)
                 .consumer(ChunkToolMessage::handle)
                 .add();
 
-        // To All Clients
+        /*
+         * Send to Client(s)
+         */
         channel.messageBuilder(ResetClientPlayEngine.class, packetId++)
                 .decoder(ResetClientPlayEngine::decode)
                 .encoder(ResetClientPlayEngine::encode)
                 .consumer(ResetClientPlayEngine::handle)
+                .add();
+
+        channel.messageBuilder(StopPlayIDMessage.class, packetId++)
+                .decoder(StopPlayIDMessage::decode)
+                .encoder(StopPlayIDMessage::encode)
+                .consumer(StopPlayIDMessage::handle)
+                .add();
+
+        channel.messageBuilder(PlayJamMessage.class, packetId++)
+                .decoder(PlayJamMessage::decode)
+                .encoder(PlayJamMessage::encode)
+                .consumer(PlayJamMessage::handle)
+                .add();
+
+        channel.messageBuilder(SyncStatusMessage.class, packetId++)
+                .decoder(SyncStatusMessage::decode)
+                .encoder(SyncStatusMessage::encode)
+                .consumer(SyncStatusMessage::handle)
+                .add();
+
+        channel.messageBuilder(PlaySoloMessage.class, packetId++)
+                .decoder(PlaySoloMessage::decode)
+                .encoder(PlaySoloMessage::encode)
+                .consumer(PlaySoloMessage::handle)
+                .add();
+
+        channel.messageBuilder(PlayBlockMusicMessage.class, packetId++)
+                .decoder(PlayBlockMusicMessage::decode)
+                .encoder(PlayBlockMusicMessage::encode)
+                .consumer(PlayBlockMusicMessage::handle)
                 .add();
     }
 
@@ -107,7 +140,7 @@ public class PacketDispatcher
      * Send this message to everyone within a certain range of a point. See
      * {@link SimpleChannel#send(PacketDistributor.PacketTarget, Object)}
      */
-    public static void sendToAllAround(IMessage message, PacketDistributor.TargetPoint point)
+    private static void sendToAllAround(IMessage message, PacketDistributor.TargetPoint point)
     {
         PacketDispatcher.modChannel.send(PacketDistributor.NEAR.with(()->point), message);
     }

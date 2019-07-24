@@ -18,76 +18,73 @@ package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.config.MXTuneConfig;
 import net.aeronica.mods.mxtune.managers.GroupHelper;
-import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
+import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.network.NetworkStringHelper;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
-import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.network.NetworkEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.function.Supplier;
 
 import static net.aeronica.mods.mxtune.util.MIDISystemUtil.midiUnavailableWarn;
 
-public class PlayBlockMusicMessage extends AbstractClientMessage<PlayBlockMusicMessage>
+public class PlayBlockMusicMessage implements IMessage
 {
-    private Integer playID;
-    private BlockPos blockPos;
-    private String musicText;
-    private SoundRange soundRange;
-    private NetworkStringHelper stringHelper = new NetworkStringHelper();
+    private static final Logger LOGGER = LogManager.getLogger();
+    private final int playID;
+    private final BlockPos blockPos;
+    private final String musicText;
+    private final SoundRange soundRange;
 
-    @SuppressWarnings("unused")
-    public PlayBlockMusicMessage() {/* Required by the PacketDispatcher */}
-
-    public PlayBlockMusicMessage(Integer playID, BlockPos blockPos, String musicText, SoundRange soundRange)
+    public PlayBlockMusicMessage(final int playID, final BlockPos blockPos, final String musicText, final SoundRange soundRange)
     {
         this.playID = playID;
         this.blockPos = blockPos;
         this.musicText = musicText;
         this.soundRange = soundRange;
     }
-    
-    @Override
-    protected void decode(PacketBuffer buffer)
+
+    public static PlayBlockMusicMessage decode(PacketBuffer buffer)
     {
-        playID = buffer.readInt();
-        blockPos = buffer.readBlockPos();
-        musicText = stringHelper.readLongString(buffer);
-        soundRange = buffer.readEnumValue(SoundRange.class);
+        final int playID = buffer.readInt();
+        final BlockPos blockPos = buffer.readBlockPos();
+        final String musicText = NetworkStringHelper.readLongString(buffer);
+        final SoundRange soundRange = buffer.readEnumValue(SoundRange.class);
+        return new PlayBlockMusicMessage(playID, blockPos, musicText, soundRange);
     }
 
-    @Override
-    protected void encode(PacketBuffer buffer)
+    public static void encode(final PlayBlockMusicMessage message, final PacketBuffer buffer)
     {
-        buffer.writeInt(playID);
-        buffer.writeBlockPos(blockPos);
-        stringHelper.writeLongString(buffer, musicText);
-        buffer.writeEnumValue(soundRange);
+        buffer.writeInt(message.playID);
+        buffer.writeBlockPos(message.blockPos);
+        NetworkStringHelper.writeLongString(buffer, message.musicText);
+        buffer.writeEnumValue(message.soundRange);
     }
 
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static void handle(final PlayBlockMusicMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        if (side.isClient())
-            handleClient(player);
-    }
-
-    @SideOnly(Side.CLIENT)
-    private void handleClient(PlayerEntity player)
-    {
-        if (!midiUnavailableWarn(player) && ClientCSDMonitor.canMXTunesPlay())
-        {
-            ModLogger.debug("musicText:  " + musicText.substring(0, Math.min(25, musicText.length())));
-            ModLogger.debug("playID:     " + playID);
-            ModLogger.debug("SoundRange: " + soundRange);
-            GroupHelper.addServerManagedActivePlayID(playID);
-            ClientAudio.play(playID, blockPos, musicText, soundRange);
-        }
-        else if (MXTuneConfig.showWelcomeStatusMessage())
-            ClientCSDMonitor.sendErrorViaChat(player);
+        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT)
+            ctx.get().enqueueWork(() ->
+                {
+                    ServerPlayerEntity player = ctx.get().getSender();
+                    if (player != null && !midiUnavailableWarn(player) && ClientCSDMonitor.canMXTunesPlay())
+                    {
+                        LOGGER.debug("musicText:  {}", message.musicText.substring(0, Math.min(25, message.musicText.length())));
+                        LOGGER.debug("playID:     {}", message.playID);
+                        LOGGER.debug("SoundRange: {}", message.soundRange);
+                        GroupHelper.addServerManagedActivePlayID(message.playID);
+                        ClientAudio.play(message.playID, message.blockPos, message.musicText, message.soundRange);
+                    }
+                    else if (MXTuneConfig.showWelcomeStatusMessage())
+                        ClientCSDMonitor.sendErrorViaChat(player);
+                });
+        ctx.get().setPacketHandled(true);
     }
 }

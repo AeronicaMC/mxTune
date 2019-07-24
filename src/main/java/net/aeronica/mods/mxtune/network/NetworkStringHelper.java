@@ -17,15 +17,17 @@
 
 package net.aeronica.mods.mxtune.network;
 
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.network.PacketBuffer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class NetworkStringHelper
 {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final int MAX_STRING_BUFFER = 16384;
     private static final String EMPTY_STRING = "";
 
-    public NetworkStringHelper() { /* NOP */ }
+    private NetworkStringHelper() { /* NOP */ }
 
     /**
      * For Server to Client use a network buffer is limited to about 1MB (1048576).
@@ -34,7 +36,7 @@ public class NetworkStringHelper
      * @param buffer The vanilla netty packet wrapper.
      * @param stringIn The string to be transferred.
      */
-    public void writeLongString(PacketBuffer buffer, String stringIn)
+    public static void writeLongString(PacketBuffer buffer, String stringIn)
     {
         int totalLength = stringIn.length();
         int index = 0;
@@ -52,7 +54,7 @@ public class NetworkStringHelper
         } while (end < totalLength);
     }
 
-    public String readLongString(PacketBuffer buffer)
+    public static String readLongString(PacketBuffer buffer)
     {
         StringBuilder buildString = new StringBuilder();
 
@@ -70,8 +72,8 @@ public class NetworkStringHelper
         }
         else
         {
-            ModLogger.error("StringHelper#readLongString received data error: expected length: %d, actual: %d", expectedLength, receivedString.length());
-            ModLogger.error("StringHelper#readLongString received data error: expected hash: %d, actual: %d", expectedHashCode, receivedString.hashCode());
+            LOGGER.error("StringHelper#readLongString received data error: expected length: {}, actual: {}", expectedLength, receivedString.length());
+            LOGGER.error("StringHelper#readLongString received data error: expected hash: {}, actual: {}", expectedHashCode, receivedString.hashCode());
             return EMPTY_STRING;
         }
     }

@@ -16,41 +16,48 @@
  */
 package net.aeronica.mods.mxtune.network.client;
 
-import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
+import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
-import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.network.NetworkEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-public class StopPlayIDMessage extends AbstractClientMessage<StopPlayIDMessage>
+import java.util.function.Supplier;
+
+public class StopPlayIDMessage implements IMessage
 {
-    private Integer playID;
+    private static final Logger LOGGER = LogManager.getLogger();
+    private final int playID;
 
-    @SuppressWarnings("unused")
-    public StopPlayIDMessage() {/* Required by the PacketDispatcher */}
-
-    public StopPlayIDMessage(Integer playID)
+    public StopPlayIDMessage(int playID)
     {
         this.playID = playID;
     }
     
-    @Override
-    protected void decode(PacketBuffer buffer)
+
+    public static StopPlayIDMessage decode(final PacketBuffer buffer)
     {
-        playID = buffer.readInt();
+        int playID = buffer.readInt();
+        return new StopPlayIDMessage(playID);
     }
 
-    @Override
-    protected void encode(PacketBuffer buffer)
+
+    public static void encode(final StopPlayIDMessage message, final PacketBuffer buffer)
     {
-        buffer.writeInt(playID);
+        buffer.writeInt(message.playID);
     }
 
-    @Override
-    public void handle(PlayerEntity player, Side side)
+
+    public static void handle(final StopPlayIDMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        ModLogger.debug("Remove Managed playID: %d", playID);
-        ClientAudio.queueAudioDataRemoval(playID);
+        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT)
+            ctx.get().enqueueWork(() ->
+                {
+                    LOGGER.debug("Remove Managed playID: {}", message.playID);
+                    ClientAudio.queueAudioDataRemoval(message.playID);
+                });
+        ctx.get().setPacketHandled(true);
     }
 }

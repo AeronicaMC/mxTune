@@ -17,64 +17,70 @@
 package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.managers.GroupHelper;
-import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
+import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.network.NetworkStringHelper;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.network.NetworkEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.function.Supplier;
 
 import static net.aeronica.mods.mxtune.managers.GroupHelper.getMembersGroupLeader;
 import static net.aeronica.mods.mxtune.options.MusicOptionsUtil.playerNotMuted;
 import static net.aeronica.mods.mxtune.util.MIDISystemUtil.midiUnavailableWarn;
 
-public class PlayJamMessage extends AbstractClientMessage<PlayJamMessage>
+public class PlayJamMessage implements IMessage
 {
-    private Integer leaderID;
-    private Integer playID;
-    private String jamMML;
-    private NetworkStringHelper stringHelper = new NetworkStringHelper();
+    private static final Logger LOGGER = LogManager.getLogger();
+    private final int leaderID;
+    private final int playID;
+    private final String jamMML;
 
-    @SuppressWarnings("unused")
-    public PlayJamMessage() {/* Required by the PacketDispatcher */}
-
-    public PlayJamMessage(Integer leaderID, Integer playID, String jamMML)
+    public PlayJamMessage(final int leaderID, final int playID, String jamMML)
     {
         this.leaderID = leaderID;
         this.playID = playID;
         this.jamMML = jamMML;
     }
-    
-    @Override
-    protected void decode(PacketBuffer buffer)
+
+    public static PlayJamMessage decode(final PacketBuffer buffer)
     {
-        leaderID = buffer.readInt();
-        playID = buffer.readInt();
-        jamMML = stringHelper.readLongString(buffer);
+        final int leaderID = buffer.readInt();
+        final int playID = buffer.readInt();
+        final String jamMML = NetworkStringHelper.readLongString(buffer);
+        return new PlayJamMessage(leaderID, playID, jamMML);
     }
 
-    @Override
-    protected void encode(PacketBuffer buffer)
+    public static void encode(final PlayJamMessage message, final PacketBuffer buffer)
     {
-        buffer.writeInt(leaderID);
-        buffer.writeInt(playID);
-        stringHelper.writeLongString(buffer, jamMML);
+        buffer.writeInt(message.leaderID);
+        buffer.writeInt(message.playID);
+        NetworkStringHelper.writeLongString(buffer, message.jamMML);
     }
 
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static void handle(final PlayJamMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        if (!midiUnavailableWarn(player))
-        {
-            PlayerEntity otherPlayer = (PlayerEntity) player.getEntityWorld().getEntityByID(getMembersGroupLeader(leaderID));
-            if (playerNotMuted(player, otherPlayer))
-            {
-                ModLogger.debug("musicText:  " + jamMML.substring(0, Math.min(25, jamMML.length())));
-                ModLogger.debug("playID:     " + playID);
-                GroupHelper.addServerManagedActivePlayID(playID);
-                ClientAudio.play(playID, jamMML);
-            }
-        }
+        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT)
+            ctx.get().enqueueWork(() ->
+                {
+                    ServerPlayerEntity player = ctx.get().getSender();
+                    if (player != null && !midiUnavailableWarn(player))
+                    {
+                        PlayerEntity otherPlayer = (PlayerEntity) player.getEntityWorld().getEntityByID(getMembersGroupLeader(message.leaderID));
+                        if (playerNotMuted(player, otherPlayer))
+                        {
+                            LOGGER.debug("musicText: {}" ,message.jamMML.substring(0, Math.min(25, message.jamMML.length())));
+                            LOGGER.debug("playID:    {}", message.playID);
+                            GroupHelper.addServerManagedActivePlayID(message.playID);
+                            ClientAudio.play(message.playID, message.jamMML);
+                        }
+                    }
+                });
+        ctx.get().setPacketHandled(true);
     }
 }
