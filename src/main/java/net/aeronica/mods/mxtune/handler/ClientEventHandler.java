@@ -25,6 +25,7 @@ import net.aeronica.mods.mxtune.render.PlacardRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.SharedConstants;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -44,6 +45,7 @@ public class ClientEventHandler
 {
     private static Minecraft mc = Minecraft.getInstance();
     private static PlacardRenderer placardRenderer = PlacardRenderer.getInstance();
+    private static boolean lastShowPlayerNameState;
 
     private ClientEventHandler() {}
 
@@ -86,15 +88,17 @@ public class ClientEventHandler
     {
         if ((event.getEntity() instanceof ClientPlayerEntity))
         {
+            ClientPlayerEntity player = (ClientPlayerEntity) event.getEntity();
+            String windowTitle = String.format("Minecraft %s", SharedConstants.getVersion().getName());
+
             if (MXTuneConfig.CLIENT.showPlayerName.get())
+                windowTitle = String.format("Minecraft %s - %s", SharedConstants.getVersion().getName(), player.getScoreboardName());
+
+            if (lastShowPlayerNameState != MXTuneConfig.CLIENT.showPlayerName.get())
             {
                 long handle = mc.mainWindow.getHandle();
-                GLFW.glfwSetWindowTitle(handle, "Minecraft 1.14.3 - " + event.getEntity().getName());
-            }
-            else
-            {
-                long handle = mc.mainWindow.getHandle();
-                GLFW.glfwSetWindowTitle(handle, "Minecraft 1.14.3");
+                GLFW.glfwSetWindowTitle(handle, windowTitle);
+                lastShowPlayerNameState = MXTuneConfig.CLIENT.showPlayerName.get();
             }
         }
     }
