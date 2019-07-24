@@ -35,6 +35,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.util.Constants;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
@@ -53,12 +54,12 @@ public enum SheetMusicUtil
     public static String getMusicTitle(ItemStack stackIn)
     {
         ItemStack sheetMusic = SheetMusicUtil.getSheetMusic(stackIn);
-        if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
+        if (!sheetMusic.isEmpty() && sheetMusic.getTag() != null)
         {
-            CompoundNBT contents = (CompoundNBT) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
+            CompoundNBT contents = sheetMusic.getTag().getCompound(KEY_SHEET_MUSIC);
             if (!contents.isEmpty())
             {
-                return sheetMusic.getDisplayName();
+                return sheetMusic.getDisplayName().getUnformattedComponentText();
             }
         }
         return "";
@@ -84,17 +85,17 @@ public enum SheetMusicUtil
     
     public static ItemStack getSheetMusic(ItemStack stackIn)
     {
-        if ((stackIn.getItem() instanceof IInstrument) && stackIn.getTagCompound() != null)
+        if ((stackIn.getItem() instanceof IInstrument) && stackIn.getTag() != null)
         {
-            ListNBT items = stackIn.getTagCompound().getTagList(ITEM_INVENTORY, Constants.NBT.TAG_COMPOUND);
-            if (items.tagCount() == 1)
+            ListNBT items = stackIn.getTag().getList(ITEM_INVENTORY, Constants.NBT.TAG_COMPOUND);
+            if (items.size() == 1)
             {
-                CompoundNBT item = items.getCompoundTagAt(0);
-                ItemStack sheetMusic = new ItemStack(item);
-                if (sheetMusic.getItem() instanceof IMusic && sheetMusic.getTagCompound() != null)
+                CompoundNBT item = items.getCompound(0);
+                ItemStack sheetMusic = ItemStack.read(item);
+                if (sheetMusic.getItem() instanceof IMusic && sheetMusic.getTag() != null)
                 {
-                    CompoundNBT contents = (CompoundNBT) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
-                    if (contents.hasKey(KEY_MML))
+                    CompoundNBT contents = sheetMusic.getTag().getCompound(KEY_SHEET_MUSIC);
+                    if (contents.contains(KEY_MML))
                     {
                         return sheetMusic;
                     }
@@ -106,15 +107,15 @@ public enum SheetMusicUtil
 
     public static boolean writeSheetMusic(ItemStack sheetMusic, @Nonnull String musicTitle, @Nonnull String mml)
     {
-        sheetMusic.setStackDisplayName(musicTitle);
-        CompoundNBT compound = sheetMusic.getTagCompound();
+        sheetMusic.setDisplayName(new StringTextComponent(musicTitle));
+        CompoundNBT compound = sheetMusic.getTag();
         ValidDuration validDuration = validateMML(mml);
         if (compound != null && (sheetMusic.getItem() instanceof IMusic) && validDuration.isValidMML() && validDuration.getDuration() > 0)
         {
             CompoundNBT contents = new CompoundNBT();
-            contents.setString(KEY_MML, mml);
-            contents.setInteger(KEY_DURATION, validDuration.getDuration());
-            compound.setTag(KEY_SHEET_MUSIC, contents);
+            contents.putString(KEY_MML, mml);
+            contents.putInt(KEY_DURATION, validDuration.getDuration());
+            compound.put(KEY_SHEET_MUSIC, contents);
             return true;
         }
         return false;
@@ -195,10 +196,10 @@ public enum SheetMusicUtil
                 ItemInstrument instrument = (ItemInstrument) stackInSlot.getItem();
                 int patch = instrument.getPatch(stackInSlot);
                 ItemStack sheetMusic = getSheetMusic(stackInSlot);
-                if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
+                if (!sheetMusic.isEmpty() && sheetMusic.getTag() != null)
                 {
-                    CompoundNBT contents = (CompoundNBT) sheetMusic.getTagCompound().getTag(KEY_SHEET_MUSIC);
-                    if (contents.hasKey(KEY_MML))
+                    CompoundNBT contents = sheetMusic.getTag().getCompound(KEY_SHEET_MUSIC);
+                    if (contents.contains(KEY_MML))
                     {
                         String mml = contents.getString(KEY_MML);
                         mml = mml.replace("MML@", "MML@I" + patch);

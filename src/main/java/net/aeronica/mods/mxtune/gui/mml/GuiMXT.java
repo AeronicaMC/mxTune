@@ -257,7 +257,7 @@ public class GuiMXT extends Screen implements IAudioStatusCallback
             if (guiListener instanceof Button)
             {
                 Button button = (Button) guiListener;
-                if ((button.id >= TAB_BTN_IDX && button.id < (MAX_TABS + TAB_BTN_IDX))
+                if ((button.id >= TAB_BTN_IDX && button.id < (MAX_TABS + TAB_BTN_IDX)))
                 {
                     button.active = (activeChildIndex + TAB_BTN_IDX) != button.id;
                     button.visible = (button.id) < (viewableTabCount + TAB_BTN_IDX);
