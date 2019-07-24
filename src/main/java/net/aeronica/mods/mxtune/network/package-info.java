@@ -17,7 +17,7 @@
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package net.aeronica.mods.mxtune.inventory;
+package net.aeronica.mods.mxtune.network;
 
 import mcp.MethodsReturnNonnullByDefault;
 
