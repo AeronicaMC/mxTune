@@ -73,7 +73,6 @@ public class MXTune
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register(ClientAudio.class);
         LOGGER.debug("SimpleChannel: {}", network);
     }
 
@@ -93,6 +92,7 @@ public class MXTune
         // do something that can only be done on the client
         LOGGER.info("Got game settings {}", event.getMinecraftSupplier().get().gameSettings);
         MIDISystemUtil.mxTuneInit();
+        MinecraftForge.EVENT_BUS.register(ClientAudio.class);
     }
 
     // TODO: When ti intialize key bindings?
