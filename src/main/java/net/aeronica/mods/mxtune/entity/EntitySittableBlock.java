@@ -40,12 +40,18 @@
  */
 package net.aeronica.mods.mxtune.entity;
 
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.managers.PlayManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityClassification;
+import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.network.play.server.SSpawnObjectPacket;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -53,29 +59,23 @@ import javax.annotation.Nullable;
 
 public class EntitySittableBlock extends Entity
 {
-
+    public static final EntityType<Entity> SITTABLE_BLOCK_ENTITY_TYPE = EntityType.Builder.create(EntityClassification.MISC).build(new ResourceLocation(Reference.MOD_ID, "sittable").toString());
     private static final DataParameter<Boolean> SHOULD_SIT = EntityDataManager.createKey(EntitySittableBlock.class, DataSerializers.BOOLEAN);
     private static final DataParameter<BlockPos> BLOCK_POS = EntityDataManager.createKey(EntitySittableBlock.class, DataSerializers.BLOCK_POS);
     private static final DataParameter<Integer> PLAY_ID = EntityDataManager.createKey(EntitySittableBlock.class, DataSerializers.VARINT);
 
     private BlockPos blockPos;
     private float yaw;
-    
-    public EntitySittableBlock(World world)
+
+    public EntitySittableBlock(World worldIn)
     {
-        super(world);
-        blockPos = BlockPos.ORIGIN;
-        this.noClip = true;
-        this.height = 0.0001F;
-        this.width = 0.0001F;
-        this.dataManager.set(SHOULD_SIT, Boolean.TRUE);
-        this.dataManager.set(BLOCK_POS,blockPos);
+        super(SITTABLE_BLOCK_ENTITY_TYPE, worldIn);
     }
 
     /** Allow riding standing up if shouldRiderSit is false */
     public EntitySittableBlock(World world, BlockPos posIn, double yOffset, boolean shouldRiderSit)
     {
-        this(world);
+        super(SITTABLE_BLOCK_ENTITY_TYPE, world);
         this.blockPos = posIn;
         setPosition(posIn.getX() + 0.5D, posIn.getY() + yOffset, posIn.getZ() + 0.5D);
         this.dataManager.set(SHOULD_SIT, shouldRiderSit);
@@ -84,7 +84,7 @@ public class EntitySittableBlock extends Entity
 
     public EntitySittableBlock(World world, BlockPos posIn, double xOffset, double yOffset, double zOffset)
     {
-        this(world);
+        super(SITTABLE_BLOCK_ENTITY_TYPE, world);
         this.blockPos = posIn;
         setPosition(posIn.getX() + xOffset, posIn.getY() + yOffset, posIn.getZ() + zOffset);
         this.dataManager.set(SHOULD_SIT, Boolean.TRUE);
@@ -93,7 +93,7 @@ public class EntitySittableBlock extends Entity
 
     public EntitySittableBlock(World world, BlockPos posIn, double xOffset, double yOffset, double zOffset, float yaw)
     {
-        this(world);
+        super(SITTABLE_BLOCK_ENTITY_TYPE, world);
         this.blockPos = posIn;
         this.yaw = yaw;
         this.setPositionAndRotation(posIn.getX() + xOffset, posIn.getY() + yOffset, posIn.getZ() + zOffset, yaw, 0);
@@ -103,7 +103,7 @@ public class EntitySittableBlock extends Entity
 
     public EntitySittableBlock(World world, BlockPos posIn, double yOffset, int rotation, double rotationOffset)
     {
-        this(world);
+        super(SITTABLE_BLOCK_ENTITY_TYPE, world);
         this.blockPos = posIn;
         setPositionConsideringRotation(posIn.getX() + 0.5D, posIn.getY() + yOffset, posIn.getZ() + 0.5D, rotation, rotationOffset);
         this.dataManager.set(SHOULD_SIT, Boolean.TRUE);
@@ -134,35 +134,29 @@ public class EntitySittableBlock extends Entity
     }
 
     @Override
-    public double getMountedYOffset() {return this.height * 0.0D;}
+    public double getMountedYOffset() {return this.getHeight() * 0.0D;}
 
     @Override
     protected boolean shouldSetPosAfterLoading() {return false;}
 
     @Override
-    public void onEntityUpdate()
+    public void baseTick()
     {
-        if (!this.world.isRemote && ((this.getPassengers().isEmpty() && !this.isDead) || ( this.world.isAirBlock(blockPos))))
+        if (!this.world.isRemote && ((this.getPassengers().isEmpty() && !this.isAlive()) || ( this.world.isAirBlock(blockPos))))
         {
-            this.setDead();
+            this.remove();
             world.updateComparatorOutputLevel(getPosition(), world.getBlockState(getPosition()).getBlock());
             PlayManager.stopPlayID(dataManager.get(PLAY_ID));
         }
     }
 
     @Override
-    protected void entityInit()
+    protected void registerData()
     {
         this.dataManager.register(SHOULD_SIT, Boolean.TRUE);
         this.dataManager.register(BLOCK_POS, blockPos);
         this.dataManager.register(PLAY_ID, -1);
     }
-
-    @Override
-    public void readEntityFromNBT(CompoundNBT nbttagcompound) { /* NOP */ }
-
-    @Override
-    public void writeEntityToNBT(CompoundNBT nbttagcompound) { /* NOP */ }
 
     @Override
     public boolean shouldRiderSit() {return this.dataManager.get(SHOULD_SIT);}
@@ -187,7 +181,48 @@ public class EntitySittableBlock extends Entity
     {
         return (this.dataManager.get(BLOCK_POS)).toImmutable();
     }
-    
+
+    @Override
+    public boolean writeUnlessRemoved(CompoundNBT compound)
+    {
+        return false;
+    }
+
+    @Override
+    public boolean writeUnlessPassenger(CompoundNBT compound)
+    {
+        return false;
+    }
+
+    @Override
+    public CompoundNBT writeWithoutTypeId(CompoundNBT compound)
+    {
+        return new CompoundNBT();
+    }
+
+    @Override
+    public IPacket<?> createSpawnPacket()
+    {
+        return new SSpawnObjectPacket(this);
+    }
+
+    @Override
+    public void read(CompoundNBT compound)
+    {
+    }
+
+    @Override
+    protected void readAdditional(CompoundNBT compound)
+    {
+        // NOP
+    }
+
+    @Override
+    protected void writeAdditional(CompoundNBT compound)
+    {
+        // NOP
+    }
+
     @Override
     public boolean equals(Object otherEntity)
     {
