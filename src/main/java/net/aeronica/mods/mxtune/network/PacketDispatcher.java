@@ -187,6 +187,30 @@ public class PacketDispatcher
                 .encoder(SendResultMessage::encode)
                 .consumer(SendResultMessage::handle)
                 .add();
+
+        channel.messageBuilder(SendCSDChatMessage.class, packetId++)
+                .decoder(SendCSDChatMessage::decode)
+                .encoder(SendCSDChatMessage::encode)
+                .consumer(SendCSDChatMessage::handle)
+                .add();
+
+        channel.messageBuilder(AudiblePingPlayerMessage.class, packetId++)
+                .decoder(AudiblePingPlayerMessage::decode)
+                .encoder(AudiblePingPlayerMessage::encode)
+                .consumer(AudiblePingPlayerMessage::handle)
+                .add();
+
+        channel.messageBuilder(JoinGroupMessage.class, packetId++)
+                .decoder(JoinGroupMessage::decode)
+                .encoder(JoinGroupMessage::encode)
+                .consumer(JoinGroupMessage::handle)
+                .add();
+
+        channel.messageBuilder(SyncGroupMessage.class, packetId++)
+                .decoder(SyncGroupMessage::decode)
+                .encoder(SyncGroupMessage::encode)
+                .consumer(SyncGroupMessage::handle)
+                .add();
     }
 
     private PacketDispatcher() { /* NOP */ }

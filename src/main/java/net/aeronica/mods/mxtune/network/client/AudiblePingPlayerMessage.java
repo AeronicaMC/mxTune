@@ -16,39 +16,41 @@
  */
 package net.aeronica.mods.mxtune.network.client;
 
-import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
-import net.minecraft.entity.player.PlayerEntity;
+import net.aeronica.mods.mxtune.network.IMessage;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.SoundEvent;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraft.util.SoundEvents;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.registries.ForgeRegistries;
 
-public class AudiblePingPlayerMessage extends AbstractClientMessage<AudiblePingPlayerMessage>
+import java.util.function.Supplier;
+
+public class AudiblePingPlayerMessage implements IMessage
 {
-    private SoundEvent soundEvent;
+    private final SoundEvent soundEvent;
 
-    @SuppressWarnings("unused")
-    public AudiblePingPlayerMessage() {/* Required by the PacketDispatcher */}
-
-    public AudiblePingPlayerMessage(SoundEvent soundEvent)
+    public AudiblePingPlayerMessage(final SoundEvent soundEvent)
     {
         this.soundEvent = soundEvent;
     }
-    
-    @Override
-    protected void decode(PacketBuffer buffer)
+
+    public static AudiblePingPlayerMessage decode(PacketBuffer buffer)
     {
-        soundEvent = SoundEvent.REGISTRY.getObjectById(buffer.readInt());
+        SoundEvent soundEvent = ForgeRegistries.SOUND_EVENTS.getValue(buffer.readResourceLocation());
+        return new AudiblePingPlayerMessage(soundEvent != null ? soundEvent : SoundEvents.BLOCK_NOTE_BLOCK_PLING);
     }
 
-    @Override
-    protected void encode(PacketBuffer buffer)
+    public static void encode(final AudiblePingPlayerMessage message, final PacketBuffer buffer)
     {
-        buffer.writeInt(SoundEvent.REGISTRY.getIDForObject(soundEvent));
+        buffer.writeResourceLocation(ForgeRegistries.SOUND_EVENTS.getKey(message.soundEvent));
     }
 
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static void handle(final AudiblePingPlayerMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        player.playSound(soundEvent, 1F, 1F);
+        ServerPlayerEntity player = ctx.get().getSender();
+        if (player != null && ctx.get().getDirection().getReceptionSide().isClient())
+            ctx.get().enqueueWork(() -> player.playSound(message.soundEvent, 1F, 1F));
+        ctx.get().setPacketHandled(true);
     }
 }

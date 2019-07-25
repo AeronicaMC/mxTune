@@ -101,7 +101,7 @@ public class ServerCSDManager
         Integer playerID = player.getEntityId();
         if (clientState.containsKey(playerID))
         {
-            PacketDispatcher.sendTo(SendCSDChatMessage(clientState.get(playerID)), (ServerPlayerEntity) player);
+            PacketDispatcher.sendTo(new SendCSDChatMessage(clientState.get(playerID)), (ServerPlayerEntity) player);
         }
     }
 }

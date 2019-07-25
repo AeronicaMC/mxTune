@@ -17,45 +17,44 @@
 package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.managers.GroupHelper;
-import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
-import net.minecraft.entity.player.PlayerEntity;
+import net.aeronica.mods.mxtune.network.IMessage;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class SyncGroupMessage extends AbstractClientMessage<SyncGroupMessage>
+import java.util.function.Supplier;
+
+public class SyncGroupMessage implements IMessage
 {
-    private String groups;
-    private String members;
+    private final String groups;
+    private final String members;
 
-    @SuppressWarnings("unused")
-    public SyncGroupMessage() {/* Required by the PacketDispatcher */}
-
-    public SyncGroupMessage(String groups, String members)
+    public SyncGroupMessage(final String groups, final String members)
     {
         this.groups = groups;
         this.members = members;
     }
 
-    @Override
-    protected void decode(PacketBuffer buffer)
+    public static SyncGroupMessage decode(final PacketBuffer buffer)
     {
-        this.groups = ByteBufUtils.readUTF8String(buffer);
-        this.members = ByteBufUtils.readUTF8String(buffer);
+        String groups = buffer.readString();
+        String members = buffer.readString();
+        return new SyncGroupMessage(groups, members);
     }
 
-    @Override
-    protected void encode(PacketBuffer buffer)
+    public static void encode(final SyncGroupMessage message, final PacketBuffer buffer)
     {
-        ByteBufUtils.writeUTF8String(buffer, groups);
-        ByteBufUtils.writeUTF8String(buffer, members);
+        buffer.writeString(message.groups);
+        buffer.writeString(message.members);
     }
 
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static void handle(final SyncGroupMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        GroupHelper.setClientGroups(groups);
-        GroupHelper.setClientMembers(members);
-        GroupHelper.setGroupsMembers(members);
+        if (ctx.get().getDirection().getReceptionSide().isClient()) ctx.get().enqueueWork(() ->
+            {
+              GroupHelper.setClientGroups(message.groups);
+              GroupHelper.setClientMembers(message.members);
+              GroupHelper.setGroupsMembers(message.members);
+            });
+        ctx.get().setPacketHandled(true);
     }
 }

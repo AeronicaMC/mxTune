@@ -16,31 +16,39 @@
  */
 package net.aeronica.mods.mxtune.network.client;
 
-import net.aeronica.mods.mxtune.MXTune;
-import net.aeronica.mods.mxtune.gui.GuiGuid;
-import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
-import net.minecraft.entity.player.PlayerEntity;
+import net.aeronica.mods.mxtune.network.IMessage;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.NetworkHooks;
 
-public class JoinGroupMessage extends AbstractClientMessage<JoinGroupMessage>
+import java.util.function.Supplier;
+
+public class JoinGroupMessage implements IMessage
 {
-    private int groupID;
+    private final int groupID;
 
-    @SuppressWarnings("unused")
-    public JoinGroupMessage() { /* Required by the PacketDispatcher */ }
+    public JoinGroupMessage(final int groupID) {this.groupID = groupID; }
 
-    public JoinGroupMessage( Integer groupID) {this.groupID = groupID; }
-
-    @Override
-    protected void decode(PacketBuffer buffer) { groupID = buffer.readInt(); }
-
-    @Override
-    protected void encode(PacketBuffer buffer) { buffer.writeInt(groupID); }
-
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static JoinGroupMessage decode(final PacketBuffer buffer)
     {
-        player.openGui(MXTune.instance, GuiGuid.GUI_GROUP_JOIN, player.getEntityWorld(), (int) player.posX, (int) player.posY, (int) player.posZ);
+        int groupID = buffer.readInt();
+        return new JoinGroupMessage(groupID);
+    }
+
+    public static void encode(final JoinGroupMessage message, final PacketBuffer buffer)
+    {
+        buffer.writeInt(message.groupID);
+    }
+
+    public static void handle(final JoinGroupMessage message, final Supplier<NetworkEvent.Context> ctx)
+    {
+        ServerPlayerEntity player = ctx.get().getSender();
+        if (player != null && ctx.get().getDirection().getReceptionSide().isClient())
+            ctx.get().enqueueWork(()->{
+                // TODO: FIXME:
+                NetworkHooks.openGui(player, /* GuiGuid.GUI_GROUP_JOIN */);
+            });
+        ctx.get().setPacketHandled(true);
     }
 }

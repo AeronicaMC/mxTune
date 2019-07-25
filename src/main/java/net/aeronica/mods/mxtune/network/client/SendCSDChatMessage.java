@@ -16,40 +16,38 @@
  */
 package net.aeronica.mods.mxtune.network.client;
 
-import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
+import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.network.bidirectional.ClientStateDataMessage;
 import net.aeronica.mods.mxtune.status.CSDChatStatus;
 import net.aeronica.mods.mxtune.status.ClientStateData;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class SendCSDChatMessage extends AbstractClientMessage<SendCSDChatMessage>
+import java.util.function.Supplier;
+
+public class SendCSDChatMessage implements IMessage
 {
-
-    private ClientStateData csd;
-
-    @SuppressWarnings("unused")
-    public SendCSDChatMessage() {/* Required by the PacketDispatcher */}
+    private final ClientStateData csd;
     
-    public SendCSDChatMessage(ClientStateData csd) {this.csd = csd;}
-    
-    @Override
-    protected void decode(PacketBuffer buffer)
+    public SendCSDChatMessage(final ClientStateData csd) {this.csd = csd;}
+
+    public static SendCSDChatMessage decode(final PacketBuffer buffer)
     {
-        this.csd = ClientStateDataMessage.readCSD(buffer);
+        ClientStateData csd = ClientStateDataMessage.readCSD(buffer);
+        return new SendCSDChatMessage(csd);
     }
 
-    @Override
-    protected void encode(PacketBuffer buffer)
+    public static void encode(final SendCSDChatMessage message, final PacketBuffer buffer)
     {
-        ClientStateDataMessage.writeCSD(buffer, this.csd);
+        ClientStateDataMessage.writeCSD(buffer, message.csd);
     }
 
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static void handle(final SendCSDChatMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        new CSDChatStatus(player, csd); 
+        ServerPlayerEntity player = ctx.get().getSender();
+        if (player != null && ctx.get().getDirection().getReceptionSide().isClient())
+            ctx.get().enqueueWork(() -> new CSDChatStatus(player, message.csd));
+        ctx.get().setPacketHandled(true);
     }
-
 }

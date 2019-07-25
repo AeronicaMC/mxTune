@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.network.client;
 
-import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
+import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.network.server.ChunkToolMessage;
 import net.aeronica.mods.mxtune.options.ClassifiedPlayer;
 import net.aeronica.mods.mxtune.options.IPlayerMusicOptions;
@@ -24,45 +24,41 @@ import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.io.*;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
-public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPlayerMusicOptionsMessage>
+public class SyncPlayerMusicOptionsMessage implements IMessage
 {
     @CapabilityInject(IPlayerMusicOptions.class)
     private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = Miscellus.nonNullInjected();
 
-    private int propertyID;
+    private final int propertyID;
     private CompoundNBT data;
-    private boolean disableHud;
-    private int positionHud;
-    private float sizeHud;
-    private int muteOption;
-    private String sParam1;
-    private String sParam2;
-    private String sParam3;
-    private List<ClassifiedPlayer> blackList;
-    private List<ClassifiedPlayer> whiteList;
-    private boolean allowMusicOp;
-    private GUID selectedAreaGuid;
-    private boolean ctrlKeyDown;
-    private ChunkToolMessage.Operation operation;
+    private final boolean disableHud;
+    private final int positionHud;
+    private final float sizeHud;
+    private final int muteOption;
+    private final String sParam1;
+    private final String sParam2;
+    private final String sParam3;
+    private final List<ClassifiedPlayer> blackList;
+    private final List<ClassifiedPlayer> whiteList;
+    private final boolean allowMusicOp;
+    private final GUID selectedAreaGuid;
+    private final boolean ctrlKeyDown;
+    private final ChunkToolMessage.Operation operation;
 
-    private byte[] byteBuffer = null;
-
-    @SuppressWarnings("unused")
-    public SyncPlayerMusicOptionsMessage() {/* Required by the PacketDispatcher */}
-
-    public SyncPlayerMusicOptionsMessage(IPlayerMusicOptions inst, int propertyID)
+    public SyncPlayerMusicOptionsMessage(final IPlayerMusicOptions inst, final int propertyID)
     {
         this.propertyID = propertyID;
         switch (propertyID)
@@ -115,112 +111,112 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
         }
     }
 
-    @Override
-    protected void decode(PacketBuffer buffer) throws IOException
+    public static SyncPlayerMusicOptionsMessage decode(final PacketBuffer buffer)
     {
-        propertyID = buffer.readInt();
+        int propertyID = buffer.readInt();
         switch (propertyID)
         {
             case MusicOptionsUtil.SYNC_ALL:
-                this.data = buffer.readCompoundTag();
+                 CompoundNBT data = buffer.readCompoundTag();
                 break;
             case MusicOptionsUtil.SYNC_DISPLAY_HUD:
-                this.disableHud = buffer.readBoolean();
-                this.positionHud = buffer.readInt();
-                this.sizeHud = buffer.readFloat();
+                boolean disableHud = buffer.readBoolean();
+                int  positionHud = buffer.readInt();
+                float sizeHud = buffer.readFloat();
                 break;
             case MusicOptionsUtil.SYNC_MUTE_OPTION:
-                this.muteOption = buffer.readInt();
+                int muteOption = buffer.readInt();
                 break;
             case MusicOptionsUtil.SYNC_S_PARAMS:
-                this.sParam1 = ByteBufUtils.readUTF8String(buffer);
-                this.sParam2 = ByteBufUtils.readUTF8String(buffer);
-                this.sParam3 = ByteBufUtils.readUTF8String(buffer);
+                String sParam1 = buffer.readString();
+                String sParam2 = buffer.readString();
+                String sParam3 = buffer.readString();
                 break;
             case MusicOptionsUtil.SYNC_WHITE_LIST:
-                this.whiteList = readPlayerList(buffer);
+                List<ClassifiedPlayer> whiteList = readPlayerList(buffer);
                 break;
             case MusicOptionsUtil.SYNC_BLACK_LIST:
-                this.blackList = readPlayerList(buffer);
+                List<ClassifiedPlayer> blackList = readPlayerList(buffer);
                 break;
             case MusicOptionsUtil.SYNC_MUSIC_OP:
-                this.allowMusicOp = buffer.readBoolean();
+                boolean allowMusicOp = buffer.readBoolean();
                 break;
             case MusicOptionsUtil.SYNC_SELECTED_PLAY_LIST_GUID:
                 long ddddSigBits = buffer.readLong();
                 long ccccSigBits = buffer.readLong();
                 long bbbbSigBits = buffer.readLong();
                 long aaaaSigBits = buffer.readLong();
-                selectedAreaGuid = new GUID(ddddSigBits, ccccSigBits, bbbbSigBits, aaaaSigBits);
+                GUID selectedAreaGuid = new GUID(ddddSigBits, ccccSigBits, bbbbSigBits, aaaaSigBits);
                 break;
             case MusicOptionsUtil.SYNC_CTRL_KEY_DOWN:
-                this.ctrlKeyDown = buffer.readBoolean();
+                boolean ctrlKeyDown = buffer.readBoolean();
                 break;
             case MusicOptionsUtil.SYNC_CHUNK_OPERATION:
-                this.operation = buffer.readEnumValue(ChunkToolMessage.Operation.class);
+                ChunkToolMessage.Operation operation = buffer.readEnumValue(ChunkToolMessage.Operation.class);
                 break;
             default:
         }
+        return new SyncPlayerMusicOptionsMessage();
     }
 
-    @Override
-    protected void encode(PacketBuffer buffer)
+    public static void encode(final SyncPlayerMusicOptionsMessage message, final PacketBuffer buffer)
     {
-        buffer.writeInt(this.propertyID);
-        switch (this.propertyID)
+        buffer.writeInt(message.propertyID);
+        switch (message.propertyID)
         {
             case MusicOptionsUtil.SYNC_ALL:
-                buffer.writeCompoundTag(this.data);
+                buffer.writeCompoundTag(message.data);
                 break;
             case MusicOptionsUtil.SYNC_DISPLAY_HUD:
-                buffer.writeBoolean(this.disableHud);
-                buffer.writeInt(this.positionHud);
-                buffer.writeFloat(this.sizeHud);
+                buffer.writeBoolean(message.disableHud);
+                buffer.writeInt(message.positionHud);
+                buffer.writeFloat(message.sizeHud);
                 break;
             case MusicOptionsUtil.SYNC_MUTE_OPTION:
-                buffer.writeInt(this.muteOption);
+                buffer.writeInt(message.muteOption);
                 break;
             case MusicOptionsUtil.SYNC_S_PARAMS:
-                ByteBufUtils.writeUTF8String(buffer, this.sParam1);
-                ByteBufUtils.writeUTF8String(buffer, this.sParam2);
-                ByteBufUtils.writeUTF8String(buffer, this.sParam3);
+                buffer.writeString(message.sParam1);
+                buffer.writeString(message.sParam2);
+                buffer.writeString(message.sParam3);
                 break;
             case MusicOptionsUtil.SYNC_WHITE_LIST:
-                writePlayerList(buffer, this.whiteList);
+                writePlayerList(buffer, message.whiteList);
                 break;
             case MusicOptionsUtil.SYNC_BLACK_LIST:
-                writePlayerList(buffer, this.blackList);
+                writePlayerList(buffer, message.blackList);
                 break;
             case MusicOptionsUtil.SYNC_MUSIC_OP:
-                buffer.writeBoolean(allowMusicOp);
+                buffer.writeBoolean(message.allowMusicOp);
                 break;
             case MusicOptionsUtil.SYNC_SELECTED_PLAY_LIST_GUID:
-                buffer.writeLong(selectedAreaGuid.getDdddSignificantBits());
-                buffer.writeLong(selectedAreaGuid.getCcccSignificantBits());
-                buffer.writeLong(selectedAreaGuid.getBbbbSignificantBits());
-                buffer.writeLong(selectedAreaGuid.getAaaaSignificantBits());
+                buffer.writeLong(message.selectedAreaGuid.getDdddSignificantBits());
+                buffer.writeLong(message.selectedAreaGuid.getCcccSignificantBits());
+                buffer.writeLong(message.selectedAreaGuid.getBbbbSignificantBits());
+                buffer.writeLong(message.selectedAreaGuid.getAaaaSignificantBits());
                 break;
             case MusicOptionsUtil.SYNC_CTRL_KEY_DOWN:
-                buffer.writeBoolean(ctrlKeyDown);
+                buffer.writeBoolean(message.ctrlKeyDown);
                 break;
             case MusicOptionsUtil.SYNC_CHUNK_OPERATION:
-                buffer.writeEnumValue(operation);
+                buffer.writeEnumValue(message.operation);
                 break;
             default:
         }
     }
 
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static void handle(final SyncPlayerMusicOptionsMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
+        ServerPlayerEntity player = ctx.get().getSender();
+        if (player != null && ctx.get().getDirection().getReceptionSide().isClient())
         if (player.hasCapability(MUSIC_OPTIONS, null))
         {
-            final IPlayerMusicOptions instance = player.getCapability(MUSIC_OPTIONS, null);
+            final LazyOptional<IPlayerMusicOptions> instance = player.getCapability(MUSIC_OPTIONS, null);
             if (instance != null)
                 switch (this.propertyID)
                 {
                     case MusicOptionsUtil.SYNC_ALL:
-                        MUSIC_OPTIONS.readNBT(instance, null, data);
+                        MUSIC_OPTIONS.readNBT(instance, null, message.data);
                         break;
                     case MusicOptionsUtil.SYNC_DISPLAY_HUD:
                         instance.setHudOptions(disableHud, positionHud, sizeHud);
@@ -255,9 +251,10 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     }
 
     @SuppressWarnings("unchecked")
-    private List<ClassifiedPlayer> readPlayerList(PacketBuffer buffer)
+    private static List<ClassifiedPlayer> readPlayerList(PacketBuffer buffer)
     {
         List<ClassifiedPlayer> playerList = Collections.emptyList();
+        byte[] byteBuffer;
         try{
             // Deserialize data object from a byte array
             byteBuffer = buffer.readByteArray();
@@ -273,8 +270,9 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     }
 
     @SuppressWarnings("all")
-    private void writePlayerList(PacketBuffer buffer, List<ClassifiedPlayer> playerListIn)
+    private static void writePlayerList(PacketBuffer buffer, List<ClassifiedPlayer> playerListIn)
     {
+        byte[] byteBuffer = null;
         try{
             // Serialize data object to a byte array
             ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
