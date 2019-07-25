@@ -16,9 +16,9 @@
  */
 package net.aeronica.mods.mxtune.network.client;
 
+import net.aeronica.mods.mxtune.caps.chunk.ModChunkPlaylistHelper;
 import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.util.GUID;
-import net.aeronica.mods.mxtune.world.caps.chunk.ModChunkPlaylistHelper;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;

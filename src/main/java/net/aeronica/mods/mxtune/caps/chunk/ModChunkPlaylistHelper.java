@@ -15,9 +15,8 @@
  *   limitations under the License.
  */
 
-package net.aeronica.mods.mxtune.world.caps.chunk;
+package net.aeronica.mods.mxtune.caps.chunk;
 
-import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.UpdateChunkMusicData;
 import net.aeronica.mods.mxtune.util.GUID;
@@ -38,17 +37,20 @@ public class ModChunkPlaylistHelper
 
     public static void setPlaylistGuid(final Chunk chunk, final GUID guid)
     {
-        getImpl(chunk).ifPresent(IModChunkPlaylist -> {
-            IModChunkPlaylist.setPlaylistGuid(guid);
-            chunk.markDirty();
-        });
+        getImpl((Chunk) chunk).orElseGet(null).setPlaylistGuid(guid);
+        chunk.markDirty();
+//        getImpl(chunk).ifPresent(IModChunkPlaylist -> {
+//            IModChunkPlaylist.setPlaylistGuid(guid);
+//            chunk.markDirty();
+//        });
     }
 
     public static GUID getPlaylistGuid(final IChunk chunk)
     {
-        return getImpl((Chunk) chunk)
-            .map(IModChunkPlaylist::getPlaylistGuid
-                ).orElseGet(()-> Reference.EMPTY_GUID);
+        return getImpl((Chunk) chunk).orElseGet(null).getPlaylistGuid();
+//        return getImpl((Chunk) chunk)
+//            .map(IModChunkPlaylist::getPlaylistGuid
+//                ).orElseGet(()-> Reference.EMPTY_GUID);
     }
 
     public static LazyOptional<IModChunkPlaylist> getImpl(final Chunk chunk)

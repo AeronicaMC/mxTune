@@ -15,9 +15,10 @@
  *   limitations under the License.
  */
 
-package net.aeronica.mods.mxtune.world.caps.chunk;
+package net.aeronica.mods.mxtune.caps.chunk;
 
 import net.aeronica.mods.mxtune.Reference;
+import net.aeronica.mods.mxtune.caps.SerializableCapabilityProvider;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.UpdateChunkMusicData;
 import net.aeronica.mods.mxtune.util.Miscellus;
@@ -28,31 +29,33 @@ import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.world.ChunkWatchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.Callable;
 
+@Mod.EventBusSubscriber(modid = Reference.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModChunkPlaylistCap
 {
+    private static final Logger LOGGER = LogManager.getLogger();
+
     @CapabilityInject(IModChunkPlaylist.class)
     private static final Capability<IModChunkPlaylist> MOD_CHUNK_DATA = Miscellus.nonNullInjected();
+    private static final ResourceLocation ID = new ResourceLocation(Reference.MOD_ID, "chunk_music");
 
     private ModChunkPlaylistCap() { /* NOP */ }
 
     public static void register()
     {
-        CapabilityManager.INSTANCE.register(IModChunkPlaylist.class, new Storage(), new Factory());
-        MinecraftForge.EVENT_BUS.register(ModChunkPlaylistCap.class);
+        CapabilityManager.INSTANCE.register(IModChunkPlaylist.class, new Storage(), ModChunkPlaylistImpl::new);
     }
 
     // TODO: Review for better ways to sync this data.
@@ -62,49 +65,17 @@ public class ModChunkPlaylistCap
         final ServerPlayerEntity player = event.getPlayer();
         final Chunk chunk = event.getWorld().getChunk(event.getPos().x, event.getPos().z);
 
-        chunk.getCapability(MOD_CHUNK_DATA).ifPresent(chunkPlaylist -> {
-            PacketDispatcher.sendTo(new UpdateChunkMusicData(chunk.getPos().x, chunk.getPos().z, chunkPlaylist.getPlaylistGuid()), player);
-        });
-
-
+        chunk.getCapability(MOD_CHUNK_DATA).ifPresent(
+                chunkPlaylist -> PacketDispatcher.sendTo(
+                        new UpdateChunkMusicData(event.getPos().x, event.getPos().z, chunkPlaylist.getPlaylistGuid()), player));
     }
 
     @SubscribeEvent
     public static void onEvent(AttachCapabilitiesEvent<Chunk> event)
     {
-        if (event.getObject() != null)
-        {
-            event.addCapability(new ResourceLocation(Reference.MOD_ID, "chunk_music"), new ICapabilitySerializable<CompoundNBT>()
-            {
-                @Nonnull
-                @Override
-                public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap)
-                {
-                    return MOD_CHUNK_DATA.orEmpty(cap, (LazyOptional<IModChunkPlaylist>) instance);
-                }
-
-                IModChunkPlaylist instance = MOD_CHUNK_DATA.getDefaultInstance();
-
-//                @Nullable
-//                @Override
-//                public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing)
-//                {
-//                    return capability == MOD_CHUNK_DATA ? MOD_CHUNK_DATA.<T>cast(instance) : null;
-//                }
-
-                @Override
-                public CompoundNBT serializeNBT()
-                {
-                    return (CompoundNBT) MOD_CHUNK_DATA.getStorage().writeNBT(MOD_CHUNK_DATA, instance, null);
-                }
-
-                @Override
-                public void deserializeNBT(CompoundNBT nbt)
-                {
-                    MOD_CHUNK_DATA.getStorage().readNBT(MOD_CHUNK_DATA, instance, null, nbt);
-                }
-            });
-        }
+        final ModChunkPlaylistImpl chunkPlaylist = new ModChunkPlaylistImpl(event.getObject());
+        event.addCapability(ID, new SerializableCapabilityProvider<>(MOD_CHUNK_DATA, null, chunkPlaylist));
+        LOGGER.debug("ModChunkPlaylistCap AttachCapabilitiesEvent {}", event.getObject());
     }
 
     private static class Factory implements Callable<IModChunkPlaylist>

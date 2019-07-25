@@ -16,11 +16,11 @@
  */
 package net.aeronica.mods.mxtune.network.client;
 
+import net.aeronica.mods.mxtune.caps.player.ClassifiedPlayer;
+import net.aeronica.mods.mxtune.caps.player.IPlayerMusicOptions;
+import net.aeronica.mods.mxtune.caps.player.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.network.server.ChunkToolMessage;
-import net.aeronica.mods.mxtune.options.ClassifiedPlayer;
-import net.aeronica.mods.mxtune.options.IPlayerMusicOptions;
-import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.ModLogger;

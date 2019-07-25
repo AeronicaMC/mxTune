@@ -18,8 +18,8 @@
 package net.aeronica.mods.mxtune.items;
 
 import net.aeronica.mods.mxtune.MXTune;
+import net.aeronica.mods.mxtune.caps.player.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.gui.GuiGuid;
-import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;

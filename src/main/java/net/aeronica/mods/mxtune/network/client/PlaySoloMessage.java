@@ -29,8 +29,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.function.Supplier;
 
+import static net.aeronica.mods.mxtune.caps.player.MusicOptionsUtil.playerNotMuted;
 import static net.aeronica.mods.mxtune.managers.GroupHelper.getSoloMemberByPlayID;
-import static net.aeronica.mods.mxtune.options.MusicOptionsUtil.playerNotMuted;
 import static net.aeronica.mods.mxtune.util.MIDISystemUtil.midiUnavailableWarn;
 
 public class PlaySoloMessage implements IMessage

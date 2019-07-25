@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.cmds;
 
-import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
+import net.aeronica.mods.mxtune.caps.player.MusicOptionsUtil;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;

@@ -31,7 +31,7 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
-import static net.aeronica.mods.mxtune.options.MusicOptionsUtil.*;
+import static net.aeronica.mods.mxtune.caps.player.MusicOptionsUtil.*;
 import static net.aeronica.mods.mxtune.util.Miscellus.audiblePingPlayer;
 
 public class CommandMxTuneServerUpdate extends CommandBase

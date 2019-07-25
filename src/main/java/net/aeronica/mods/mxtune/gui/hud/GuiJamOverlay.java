@@ -19,9 +19,9 @@ package net.aeronica.mods.mxtune.gui.hud;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.aeronica.mods.mxtune.Reference;
+import net.aeronica.mods.mxtune.caps.player.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.managers.GroupHelper;
-import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.util.Miscellus;

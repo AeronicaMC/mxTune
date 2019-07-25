@@ -18,6 +18,8 @@
 package net.aeronica.mods.mxtune.gui.mml;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import net.aeronica.mods.mxtune.caps.chunk.ModChunkPlaylistHelper;
+import net.aeronica.mods.mxtune.caps.player.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.gui.hud.HudData;
 import net.aeronica.mods.mxtune.gui.hud.HudDataFactory;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
@@ -26,9 +28,7 @@ import net.aeronica.mods.mxtune.items.ItemStaffOfMusic;
 import net.aeronica.mods.mxtune.managers.ClientFileManager;
 import net.aeronica.mods.mxtune.managers.ClientPlayManager;
 import net.aeronica.mods.mxtune.managers.records.PlayList;
-import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.GUID;
-import net.aeronica.mods.mxtune.world.caps.chunk.ModChunkPlaylistHelper;
 import net.aeronica.mods.mxtune.world.caps.world.ModWorldPlaylistHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;

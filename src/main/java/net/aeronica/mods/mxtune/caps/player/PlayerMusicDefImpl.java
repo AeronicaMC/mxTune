@@ -1,5 +1,22 @@
 /*
  * Aeronica's mxTune MOD
+ * Copyright 2019, Paul Boese a.k.a. Aeronica
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
+/*
+ * Aeronica's mxTune MOD
  * Copyright 2018, Paul Boese a.k.a. Aeronica
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,11 +31,12 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package net.aeronica.mods.mxtune.options;
+package net.aeronica.mods.mxtune.caps.player;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.network.server.ChunkToolMessage;
 import net.aeronica.mods.mxtune.util.GUID;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.world.chunk.Chunk;
 
 import java.util.ArrayList;
@@ -26,6 +44,7 @@ import java.util.List;
 
 public class PlayerMusicDefImpl implements IPlayerMusicOptions
 {
+    private LivingEntity livingEntity;
     // Music Options
     private int muteOption;
     // Strings for passing parameters from server to client: for a GUI for example
@@ -47,8 +66,9 @@ public class PlayerMusicDefImpl implements IPlayerMusicOptions
     private Chunk chunkStart;
     private Chunk chunkEnd;
 
-    PlayerMusicDefImpl()
+    PlayerMusicDefImpl(LivingEntity livingEntity)
     {
+        this.livingEntity = livingEntity;
         this.muteOption = 0;
         this.disableHud = false;
         this.positionHud = 0;

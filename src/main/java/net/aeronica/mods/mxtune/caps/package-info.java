@@ -1,6 +1,6 @@
 /*
  * Aeronica's mxTune MOD
- * Copyright 2019, Paul Boese a.k.a. Aeronica
+ * Copyright 2018, Paul Boese a.k.a. Aeronica
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -14,30 +14,10 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
+package net.aeronica.mods.mxtune.caps;
 
-package net.aeronica.mods.mxtune.world.caps.chunk;
+import mcp.MethodsReturnNonnullByDefault;
 
-import net.aeronica.mods.mxtune.Reference;
-import net.aeronica.mods.mxtune.util.GUID;
-
-public class ModChunkPlaylistImpl implements IModChunkPlaylist
-{
-    private GUID guid;
-
-    public ModChunkPlaylistImpl()
-    {
-        guid = Reference.EMPTY_GUID;
-    }
-
-    @Override
-    public GUID getPlaylistGuid()
-    {
-        return guid;
-    }
-
-    @Override
-    public void setPlaylistGuid(GUID guid)
-    {
-        this.guid = guid;
-    }
-}
+import javax.annotation.ParametersAreNonnullByDefault;

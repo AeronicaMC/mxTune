@@ -18,12 +18,12 @@ package net.aeronica.mods.mxtune.gui;
 
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
+import net.aeronica.mods.mxtune.caps.player.ClassifiedPlayer;
+import net.aeronica.mods.mxtune.caps.player.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.config.MXTuneConfig;
 import net.aeronica.mods.mxtune.gui.hud.GuiHudAdjust;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.MusicOptionsMessage;
-import net.aeronica.mods.mxtune.options.ClassifiedPlayer;
-import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;

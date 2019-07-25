@@ -15,7 +15,7 @@
  *   limitations under the License.
  */
 
-package net.aeronica.mods.mxtune.world.caps.chunk;
+package net.aeronica.mods.mxtune.caps.chunk;
 
 import net.aeronica.mods.mxtune.util.GUID;
 
