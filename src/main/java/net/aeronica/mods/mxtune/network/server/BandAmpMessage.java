@@ -31,7 +31,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -80,7 +79,7 @@ public class BandAmpMessage implements IMessage
 
     public static void handle(final BandAmpMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.SERVER)
+        if (ctx.get().getDirection().getReceptionSide().isServer())
             ctx.get().enqueueWork(() ->
                 {
                     final ServerPlayerEntity player = ctx.get().getSender();

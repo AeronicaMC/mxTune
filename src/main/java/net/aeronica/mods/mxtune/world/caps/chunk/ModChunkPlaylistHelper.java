@@ -24,6 +24,7 @@ import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.Miscellus;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.IChunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.util.LazyOptional;
@@ -43,15 +44,11 @@ public class ModChunkPlaylistHelper
         });
     }
 
-    public static GUID getPlaylistGuid(final Chunk chunk)
+    public static GUID getPlaylistGuid(final IChunk chunk)
     {
-        return getImpl(chunk).map(chunkPlaylist ->
-            {
-                return chunkPlaylist.getPlaylistGuid();
-            }
-            ).orElseGet(() -> {
-            return Reference.EMPTY_GUID;
-        });
+        return getImpl((Chunk) chunk)
+            .map(IModChunkPlaylist::getPlaylistGuid
+                ).orElseGet(()-> Reference.EMPTY_GUID);
     }
 
     public static LazyOptional<IModChunkPlaylist> getImpl(final Chunk chunk)

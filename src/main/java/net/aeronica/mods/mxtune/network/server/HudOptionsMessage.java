@@ -16,47 +16,47 @@
  */
 package net.aeronica.mods.mxtune.network.server;
 
-import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
+import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class HudOptionsMessage extends AbstractServerMessage<HudOptionsMessage>
+import java.util.function.Supplier;
+
+public class HudOptionsMessage implements IMessage
 {
-    private int positionHud;
-    private boolean disableHud;
-    private float sizeHud;
-
-    @SuppressWarnings("unused")
-    public HudOptionsMessage() {/* Required by the PacketDispatcher */}
+    private final int positionHud;
+    private final boolean disableHud;
+    private final float sizeHud;
     
-    public HudOptionsMessage(int positionHud, boolean disableHud, float sizeHud)
+    public HudOptionsMessage(final int positionHud, final boolean disableHud, final float sizeHud)
     {
         this.positionHud = positionHud;
         this.disableHud = disableHud;
         this.sizeHud = sizeHud;
     }
-    
-    @Override
-    protected void decode(PacketBuffer buffer)
+
+    public static HudOptionsMessage decode(final PacketBuffer buffer)
     {
-        positionHud = buffer.readInt();
-        disableHud = buffer.readBoolean();
-        sizeHud = buffer.readFloat();
+        int positionHud = buffer.readInt();
+        boolean disableHud = buffer.readBoolean();
+        float sizeHud = buffer.readFloat();
+        return new HudOptionsMessage(positionHud, disableHud, sizeHud);
     }
 
-    @Override
-    protected void encode(PacketBuffer buffer)
+    public static void encode(final HudOptionsMessage message, final PacketBuffer buffer)
     {
-        buffer.writeInt(positionHud);
-        buffer.writeBoolean(disableHud);
-        buffer.writeFloat(sizeHud);
+        buffer.writeInt(message.positionHud);
+        buffer.writeBoolean(message.disableHud);
+        buffer.writeFloat(message.sizeHud);
     }
 
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static void handle(final HudOptionsMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        MusicOptionsUtil.setHudOptions(player, disableHud, positionHud, sizeHud);
+        ServerPlayerEntity player = ctx.get().getSender();
+        if (player != null && ctx.get().getDirection().getReceptionSide().isServer())
+            ctx.get().enqueueWork(()->
+                MusicOptionsUtil.setHudOptions(player, message.disableHud, message.positionHud, message.sizeHud));
     }
 }

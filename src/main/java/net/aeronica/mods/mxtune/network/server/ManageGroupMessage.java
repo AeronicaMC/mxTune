@@ -18,67 +18,66 @@ package net.aeronica.mods.mxtune.network.server;
 
 import net.aeronica.mods.mxtune.managers.GroupHelper;
 import net.aeronica.mods.mxtune.managers.GroupManager;
-import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
-import net.minecraft.entity.player.PlayerEntity;
+import net.aeronica.mods.mxtune.network.IMessage;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class ManageGroupMessage extends AbstractServerMessage<ManageGroupMessage>
+import java.util.function.Supplier;
+
+public class ManageGroupMessage implements IMessage
 {
-    private int operation;
-    private Integer groupID;
-    private Integer memberID;
-
-    @SuppressWarnings("unused")
-    public ManageGroupMessage() {/* Required by the PacketDispatcher */}
+    private final int operation;
+    private final int groupID;
+    private final int memberID;
 
     // TODO: Queue the group/member information server side, and only send a true/false or cmd/index as appropriate.
     // Store in the MusicOptions capability. The management commands will need to be rethought and
     // actions based on server side state. Client should only send action requests with owner validation.
     // i.e. only the leader can make those changes. The GroupManger does some validation already but it needs to be
     // reviewed.
-    public ManageGroupMessage(int operation, Integer groupID, Integer memberName)
+    public ManageGroupMessage(final int operation, final int groupID, final int memberName)
     {
         this.operation = operation;
         this.groupID = groupID;
         this.memberID = memberName;
     }
 
-    @Override
-    protected void decode(PacketBuffer buffer)
+    public static ManageGroupMessage decode(final PacketBuffer buffer)
     {
-        operation = buffer.readInt();
-        groupID = buffer.readInt();
-        memberID = buffer.readInt();
+        int operation = buffer.readInt();
+        int groupID = buffer.readInt();
+        int memberID = buffer.readInt();
+        return new ManageGroupMessage(operation, groupID, memberID);
     }
 
-    @Override
-    protected void encode(PacketBuffer buffer)
+    public static void encode(final ManageGroupMessage message, final PacketBuffer buffer)
     {
-        if (groupID == null) groupID = -1;
-        buffer.writeInt(operation);
-        buffer.writeInt(groupID);
-        buffer.writeInt(memberID);
+        buffer.writeInt(message.operation);
+        buffer.writeInt(message.groupID);
+        buffer.writeInt(message.memberID);
     }
 
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static void handle(final ManageGroupMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        switch (operation)
-        {
-        case GroupHelper.GROUP_ADD:
-            GroupManager.addGroup(memberID);
-            break;
-        case GroupHelper.MEMBER_ADD:
-            GroupManager.addMember(groupID, memberID);
-            break;
-        case GroupHelper.MEMBER_REMOVE:
-            GroupManager.removeMember(memberID);
-            break;
-        case GroupHelper.MEMBER_PROMOTE:
-            GroupManager.setLeader(memberID);
-            break;
-        default:
-        }
+        if (ctx.get().getDirection().getReceptionSide().isServer())
+            ctx.get().enqueueWork(()->{
+                switch (message.operation)
+                {
+                    case GroupHelper.GROUP_ADD:
+                        GroupManager.addGroup(message.memberID);
+                        break;
+                    case GroupHelper.MEMBER_ADD:
+                        GroupManager.addMember(message.groupID, message.memberID);
+                        break;
+                    case GroupHelper.MEMBER_REMOVE:
+                        GroupManager.removeMember(message.memberID);
+                        break;
+                    case GroupHelper.MEMBER_PROMOTE:
+                        GroupManager.setLeader(message.memberID);
+                        break;
+                    default:
+                }
+            });
+        ctx.get().setPacketHandled(true);
     }
 }

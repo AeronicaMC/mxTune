@@ -23,7 +23,6 @@ import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -61,7 +60,7 @@ public class PlaySoloMessage implements IMessage
 
     public static void handle(final PlaySoloMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT)
+        if (ctx.get().getDirection().getReceptionSide().isClient())
             ctx.get().enqueueWork(() ->
                 {
                     ServerPlayerEntity player = ctx.get().getSender();

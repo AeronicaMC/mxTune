@@ -18,9 +18,11 @@
 package net.aeronica.mods.mxtune.network;
 
 import net.aeronica.mods.mxtune.Reference;
+import net.aeronica.mods.mxtune.network.bidirectional.ClientStateDataMessage;
+import net.aeronica.mods.mxtune.network.bidirectional.GetBaseDataListsMessage;
+import net.aeronica.mods.mxtune.network.bidirectional.GetServerDataMessage;
 import net.aeronica.mods.mxtune.network.client.*;
-import net.aeronica.mods.mxtune.network.server.BandAmpMessage;
-import net.aeronica.mods.mxtune.network.server.ChunkToolMessage;
+import net.aeronica.mods.mxtune.network.server.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
@@ -32,11 +34,8 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 public class PacketDispatcher
 {
     private static final ResourceLocation CHANNEL_NAME = new ResourceLocation(Reference.MOD_ID, "network");
-
     private static final String NETWORK_VERSION = new ResourceLocation(Reference.MOD_ID, "1").toString();
-
     private static SimpleChannel modChannel;
-
     private static int packetId = 1;
 
     public static SimpleChannel getNetworkChannel()
@@ -68,6 +67,48 @@ public class PacketDispatcher
                 .decoder(ChunkToolMessage::decode)
                 .encoder(ChunkToolMessage::encode)
                 .consumer(ChunkToolMessage::handle)
+                .add();
+
+        channel.messageBuilder(PlayerSelectedPlayListMessage.class, packetId++)
+                .decoder(PlayerSelectedPlayListMessage::decode)
+                .encoder(PlayerSelectedPlayListMessage::encode)
+                .consumer(PlayerSelectedPlayListMessage::handle)
+                .add();
+
+        channel.messageBuilder(ByteArrayPartMessage.class, packetId++)
+                .decoder(ByteArrayPartMessage::decode)
+                .encoder(ByteArrayPartMessage::encode)
+                .consumer(ByteArrayPartMessage::handle)
+                .add();
+
+        channel.messageBuilder(HudOptionsMessage.class, packetId++)
+                .decoder(HudOptionsMessage::decode)
+                .encoder(HudOptionsMessage::encode)
+                .consumer(HudOptionsMessage::handle)
+                .add();
+
+        channel.messageBuilder(ManageGroupMessage.class, packetId++)
+                .decoder(ManageGroupMessage::decode)
+                .encoder(ManageGroupMessage::encode)
+                .consumer(ManageGroupMessage::handle)
+                .add();
+
+        channel.messageBuilder(MusicOptionsMessage.class, packetId++)
+                .decoder(MusicOptionsMessage::decode)
+                .encoder(MusicOptionsMessage::encode)
+                .consumer(MusicOptionsMessage::handle)
+                .add();
+
+        channel.messageBuilder(MusicTextMessage.class, packetId++)
+                .decoder(MusicTextMessage::decode)
+                .encoder(MusicTextMessage::encode)
+                .consumer(MusicTextMessage::handle)
+                .add();
+
+        channel.messageBuilder(SetServerSerializedDataMessage.class, packetId++)
+                .decoder(SetServerSerializedDataMessage::decode)
+                .encoder(SetServerSerializedDataMessage::encode)
+                .consumer(SetServerSerializedDataMessage::handle)
                 .add();
 
         /*
@@ -107,6 +148,44 @@ public class PacketDispatcher
                 .decoder(PlayBlockMusicMessage::decode)
                 .encoder(PlayBlockMusicMessage::encode)
                 .consumer(PlayBlockMusicMessage::handle)
+                .add();
+
+        channel.messageBuilder(UpdateChunkMusicData.class, packetId++)
+                .decoder(UpdateChunkMusicData::decode)
+                .encoder(UpdateChunkMusicData::encode)
+                .consumer(UpdateChunkMusicData::handle)
+                .add();
+
+        channel.messageBuilder(UpdateWorldMusicData.class, packetId++)
+                .decoder(UpdateWorldMusicData::decode)
+                .encoder(UpdateWorldMusicData::encode)
+                .consumer(UpdateWorldMusicData::handle)
+                .add();
+        /*
+         * Bi-Directional
+         */
+        channel.messageBuilder(GetServerDataMessage.class, packetId++)
+                .decoder(GetServerDataMessage::decode)
+                .encoder(GetServerDataMessage::encode)
+                .consumer(GetServerDataMessage::handle)
+                .add();
+
+        channel.messageBuilder(ClientStateDataMessage.class, packetId++)
+                .decoder(ClientStateDataMessage::decode)
+                .encoder(ClientStateDataMessage::encode)
+                .consumer(ClientStateDataMessage::handle)
+                .add();
+
+        channel.messageBuilder(GetBaseDataListsMessage.class, packetId++)
+                .decoder(GetBaseDataListsMessage::decode)
+                .encoder(GetBaseDataListsMessage::encode)
+                .consumer(GetBaseDataListsMessage::handle)
+                .add();
+
+        channel.messageBuilder(SendResultMessage.class, packetId++)
+                .decoder(SendResultMessage::decode)
+                .encoder(SendResultMessage::encode)
+                .consumer(SendResultMessage::handle)
                 .add();
     }
 

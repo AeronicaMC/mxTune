@@ -18,26 +18,24 @@ package net.aeronica.mods.mxtune.network.server;
 
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.items.ItemMusicPaper;
-import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
+import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.network.NetworkStringHelper;
 import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class MusicTextMessage extends AbstractServerMessage<MusicTextMessage>
+import java.util.function.Supplier;
+
+
+public class MusicTextMessage implements IMessage
 {
-    private String musicTitle;
-    private String musicText;
-    private NetworkStringHelper stringHelper = new NetworkStringHelper();
-
-    @SuppressWarnings("unused")
-    public MusicTextMessage() {/* Required by the PacketDispatcher */}
+    private final String musicTitle;
+    private final String musicText;
 
     public MusicTextMessage(String musicTitle, String musicText)
     {
@@ -45,51 +43,45 @@ public class MusicTextMessage extends AbstractServerMessage<MusicTextMessage>
         this.musicText = musicText;
     }
 
-    @Override
-    protected void decode(PacketBuffer buffer)
+    public static MusicTextMessage decode(PacketBuffer buffer)
     {
-        musicTitle = ByteBufUtils.readUTF8String(buffer);
-        musicText = stringHelper.readLongString(buffer);
+        String musicTitle = buffer.readString();
+        String musicText = NetworkStringHelper.readLongString(buffer);
+        return new MusicTextMessage(musicTitle, musicText);
     }
 
-    @Override
-    protected void encode(PacketBuffer buffer)
+    public static void encode(final MusicTextMessage message, final PacketBuffer buffer)
     {
-        ByteBufUtils.writeUTF8String(buffer, musicTitle);
-        stringHelper.writeLongString(buffer, musicText);
+        buffer.writeString(message.musicTitle);
+        NetworkStringHelper.writeLongString(buffer, message.musicText);
     }
 
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static void handle(final MusicTextMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        if (side.isServer())
-            processServer(player);
-    }
-
-    private void processServer(PlayerEntity player)
-    {
-        String mml = musicText.trim();
-
-        if (!player.getHeldItemMainhand().isEmpty() && player.getHeldItemMainhand().getItem() instanceof ItemMusicPaper)
-        {
-            ItemStack sheetMusic = new ItemStack(ModItems.ITEM_SHEET_MUSIC);
-            if (SheetMusicUtil.writeSheetMusic(sheetMusic, musicTitle, mml))
+        ServerPlayerEntity player = ctx.get().getSender();
+        if (player != null && ctx.get().getDirection().getReceptionSide().isServer()) ctx.get().enqueueWork(()->{
+            if (!player.getHeldItemMainhand().isEmpty() && player.getHeldItemMainhand().getItem() instanceof ItemMusicPaper)
             {
-                player.inventory.decrStackSize(player.inventory.currentItem, 1);
-                if (!player.inventory.addItemStackToInventory(sheetMusic.copy()))
-                    player.dropItem(sheetMusic, false, false);
+                ItemStack sheetMusic = new ItemStack(ModItems.ITEM_SHEET_MUSIC);
+                if (SheetMusicUtil.writeSheetMusic(sheetMusic,message.musicTitle, message.musicText))
+                {
+                    player.inventory.decrStackSize(player.inventory.currentItem, 1);
+                    if (!player.inventory.addItemStackToInventory(sheetMusic.copy()))
+                        player.dropItem(sheetMusic, false, false);
+                }
+                else
+                {
+                    player.sendStatusMessage(new TranslationTextComponent("mxtune.status.mml_server_side_validation_failure"), false);
+                    Miscellus.audiblePingPlayer(player, SoundEvents.BLOCK_ANVIL_PLACE);
+                }
+                player.container.detectAndSendChanges();
             }
             else
             {
-                player.sendStatusMessage(new TranslationTextComponent("mxtune.status.mml_server_side_validation_failure"), false);
+                player.sendStatusMessage(new TranslationTextComponent("mxtune.status.mml_server_side_music_paper_supply_empty"), false);
                 Miscellus.audiblePingPlayer(player, SoundEvents.BLOCK_ANVIL_PLACE);
             }
-            player.inventoryContainer.detectAndSendChanges();
-        }
-        else
-        {
-            player.sendStatusMessage(new TranslationTextComponent("mxtune.status.mml_server_side_music_paper_supply_empty"), false);
-            Miscellus.audiblePingPlayer(player, SoundEvents.BLOCK_ANVIL_PLACE);
-        }
+        });
+        ctx.get().setPacketHandled(true);
     }
 }

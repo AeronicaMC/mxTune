@@ -19,16 +19,12 @@ package net.aeronica.mods.mxtune.network.client;
 import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.function.Supplier;
 
 public class StopPlayIDMessage implements IMessage
 {
-    private static final Logger LOGGER = LogManager.getLogger();
     private final int playID;
 
     public StopPlayIDMessage(int playID)
@@ -52,12 +48,8 @@ public class StopPlayIDMessage implements IMessage
 
     public static void handle(final StopPlayIDMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT)
-            ctx.get().enqueueWork(() ->
-                {
-                    LOGGER.debug("Remove Managed playID: {}", message.playID);
-                    ClientAudio.queueAudioDataRemoval(message.playID);
-                });
+        if (ctx.get().getDirection().getReceptionSide().isClient())
+            ctx.get().enqueueWork(()->ClientAudio.queueAudioDataRemoval(message.playID));
         ctx.get().setPacketHandled(true);
     }
 }

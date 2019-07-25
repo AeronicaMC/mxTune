@@ -16,30 +16,28 @@
  */
 package net.aeronica.mods.mxtune.network.client;
 
-import net.aeronica.mods.mxtune.MXTune;
-import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
+import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.world.caps.chunk.ModChunkPlaylistHelper;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class UpdateChunkMusicData extends AbstractClientMessage<UpdateChunkMusicData>
+import java.util.function.Supplier;
+
+public class UpdateChunkMusicData implements IMessage
 {
-    private int chunkX;
-    private int chunkZ;
-    private GUID guid;
-    private long ddddSigBits;
-    private long ccccSigBits;
-    private long bbbbSigBits;
-    private long aaaaSigBits;
+    private final int chunkX;
+    private final int chunkZ;
+    private final GUID guid;
+    private final long ddddSigBits;
+    private final long ccccSigBits;
+    private final long bbbbSigBits;
+    private final long aaaaSigBits;
 
-    @SuppressWarnings("unused")
-    public UpdateChunkMusicData() {/* Required by the PacketDispatcher */}
-
-    public UpdateChunkMusicData(int chunkX, int chunkZ, GUID guid)
+    public UpdateChunkMusicData(final int chunkX, final int chunkZ, final GUID guid)
     {
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
@@ -50,38 +48,41 @@ public class UpdateChunkMusicData extends AbstractClientMessage<UpdateChunkMusic
         aaaaSigBits = guid.getAaaaSignificantBits();
     }
 
-    @Override
-    protected void decode(PacketBuffer buffer)
+    public static UpdateChunkMusicData decode(final PacketBuffer buffer)
     {
-        chunkX = buffer.readInt();
-        chunkZ = buffer.readInt();
-        ddddSigBits = buffer.readLong();
-        ccccSigBits = buffer.readLong();
-        bbbbSigBits = buffer.readLong();
-        aaaaSigBits = buffer.readLong();
-        guid = new GUID(ddddSigBits, ccccSigBits, bbbbSigBits, aaaaSigBits);
+        int chunkX = buffer.readInt();
+        int chunkZ = buffer.readInt();
+        long ddddSigBits = buffer.readLong();
+        long ccccSigBits = buffer.readLong();
+        long bbbbSigBits = buffer.readLong();
+        long aaaaSigBits = buffer.readLong();
+        GUID guid = new GUID(ddddSigBits, ccccSigBits, bbbbSigBits, aaaaSigBits);
+        return new UpdateChunkMusicData(chunkX, chunkZ, guid);
     }
 
-    @Override
-    protected void encode(PacketBuffer buffer)
+    public static void encode(final UpdateChunkMusicData message, final PacketBuffer buffer)
     {
-        buffer.writeInt(chunkX);
-        buffer.writeInt(chunkZ);
-        buffer.writeLong(ddddSigBits);
-        buffer.writeLong(ccccSigBits);
-        buffer.writeLong(bbbbSigBits);
-        buffer.writeLong(aaaaSigBits);
+        buffer.writeInt(message.chunkX);
+        buffer.writeInt(message.chunkZ);
+        buffer.writeLong(message.ddddSigBits);
+        buffer.writeLong(message.ccccSigBits);
+        buffer.writeLong(message.bbbbSigBits);
+        buffer.writeLong(message.aaaaSigBits);
     }
 
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static void handle(final UpdateChunkMusicData message, final Supplier<NetworkEvent.Context> ctx)
     {
-        World world = MXTune.proxy.getClientWorld();
-        if (world != null && world.isChunkGeneratedAt(chunkX, chunkZ))
-        {
-            Chunk chunk = world.getChunk(chunkX, chunkZ);
-            if (chunk.hasCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA, null))
-                ModChunkPlaylistHelper.setPlaylistGuid(chunk, guid);
-        }
+        if (ctx.get().getDirection().getReceptionSide().isClient())
+            ctx.get().enqueueWork(() ->
+                {
+                    ServerPlayerEntity player = ctx.get().getSender();
+                    World world = player != null ? player.getEntityWorld() : null;
+                    if (world != null && world.chunkExists(message.chunkX, message.chunkZ))
+                    {
+                        Chunk chunk = world.getChunk(message.chunkX, message.chunkZ);
+                        ModChunkPlaylistHelper.setPlaylistGuid(chunk, message.guid);
+                    }
+                });
+        ctx.get().setPacketHandled(true);
     }
 }

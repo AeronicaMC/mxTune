@@ -174,9 +174,9 @@ public class ClientPlayManager implements IAudioStatusCallback
     }
 
     @Nullable
-    private static IChunk getChunk(WeakReference<IChunk> chunkRef)
+    private static IChunk getChunk(@Nullable WeakReference<IChunk> chunkRef)
     {
-        return chunkRef != null ? chunkRef.get() : null;
+        return chunkRef.get();
     }
 
     private static void updateChunk()
@@ -198,7 +198,7 @@ public class ClientPlayManager implements IAudioStatusCallback
         changePlayListMusic(false, false);
     }
 
-    private static void chunkChange(WeakReference<IChunk> current, WeakReference<IChunk> previous)
+    private static void chunkChange(@Nullable WeakReference<IChunk> current, @Nullable WeakReference<IChunk> previous)
     {
         IChunk currentChunk = getChunk(current);
         IChunk prevChunk = getChunk(previous);
@@ -208,8 +208,7 @@ public class ClientPlayManager implements IAudioStatusCallback
         }
         if (prevChunk != null && ((IForgeChunk)prevChunk).getCapability(ModChunkPlaylistHelper.MOD_CHUNK_DATA).isPresent())
         {
-            GUID prevPlayListGUID = ModChunkPlaylistHelper.getPlaylistGuid(prevChunk);
-            previousPlaylistGUID = prevPlayListGUID;
+            previousPlaylistGUID = ModChunkPlaylistHelper.getPlaylistGuid(prevChunk);;
         }
         if (!currentPlaylistGUID.equals(previousPlaylistGUID))
             changePlayListMusic(true, true);
@@ -437,9 +436,9 @@ public class ClientPlayManager implements IAudioStatusCallback
     {
         int normalizedDelay = (delay) / 2;
         int normalizedCounter = Math.min(normalizedDelay, counter / 2);
-        int time = ((int) mc.world.getWorldTime() + 30000) % 24000;
+        int time = ((int) mc.world.getDayTime() + 30000) % 24000;
         int hour = (time / 1000) % 24;
-        int minute = (int) ((float) time / 16.666666) % 60 ;
+        int minute = (int) ((float) time / 16.666666) % 60;
 
         return String.format("World Time: %02d:%02d %s, Waiting: %s, Delay: %03d, timer: %03d", hour, minute, night ? "night" : "day",
                              waiting(false), normalizedDelay, normalizedCounter);
@@ -467,7 +466,7 @@ public class ClientPlayManager implements IAudioStatusCallback
     @Override
     public void statusCallBack(Status status, int playId)
     {
-        Minecraft.getMinecraft().addScheduledTask(() -> {
+        Minecraft.getInstance().enqueue(() -> {
             if (currentPlayId == playId && (status == Status.ERROR || status == Status.DONE))
             {
                 invalidatePlayId();

@@ -17,47 +17,43 @@
 
 package net.aeronica.mods.mxtune.network.client;
 
-import net.aeronica.mods.mxtune.network.AbstractMessage;
+import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-import java.io.IOException;
+import java.util.Objects;
+import java.util.function.Supplier;
 
-public class SendResultMessage extends AbstractMessage.AbstractClientMessage<SendResultMessage>
+public class SendResultMessage implements IMessage
 {
-    private boolean errorResult = false;
-    private ITextComponent component = new TranslationTextComponent("mxtune.no_error", "");
+    private final boolean errorResult;
+    private final ITextComponent component;
 
-    @SuppressWarnings("unused")
-    public SendResultMessage() { /* Required by the PacketDispatcher */ }
-
-    public SendResultMessage(ITextComponent component, Boolean errorResult)
+    public SendResultMessage(final ITextComponent component, final Boolean errorResult)
     {
         this.component = component;
         this.errorResult = errorResult;
     }
 
-    @Override
-    protected void decode(PacketBuffer buffer) throws IOException
+    public static SendResultMessage decode(final PacketBuffer buffer)
     {
-        this.component = ITextComponent.Serializer.jsonToComponent(buffer.readString(32767));
-        this.errorResult = buffer.readBoolean();
+        ITextComponent component = ITextComponent.Serializer.fromJson(buffer.readString(32767));
+        boolean errorResult = buffer.readBoolean();
+        return new SendResultMessage(Objects.requireNonNull(component), errorResult);
     }
 
-    @Override
-    protected void encode(PacketBuffer buffer)
+    public static void encode(final SendResultMessage message, final PacketBuffer buffer)
     {
-        buffer.writeString(ITextComponent.Serializer.componentToJson(component));
-        buffer.writeBoolean(errorResult);
+        buffer.writeString(ITextComponent.Serializer.toJson(message.component));
+        buffer.writeBoolean(message.errorResult);
     }
 
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static void handle(final SendResultMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        ModLogger.debug("Error: %s, error %s", component.getFormattedText(), errorResult);
+        if (ctx.get().getDirection().getReceptionSide().isClient())
+            ctx.get().enqueueWork(()->ModLogger.debug("Error: %s, error %s", message.component.getFormattedText(), message.errorResult));
+        ctx.get().setPacketHandled(true);
     }
 }

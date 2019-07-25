@@ -16,69 +16,71 @@
  */
 package net.aeronica.mods.mxtune.network.bidirectional;
 
-import net.aeronica.mods.mxtune.MXTune;
-import net.aeronica.mods.mxtune.gui.GuiGuid;
-import net.aeronica.mods.mxtune.network.AbstractMessage;
+import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.NetworkHooks;
 
-public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
+import java.util.Objects;
+import java.util.function.Supplier;
+
+public class SendKeyMessage implements IMessage
 {
-    private String keyBindingDesc;
+    private final String keyBindingDesc;
 
-    @SuppressWarnings("unused")
-    public SendKeyMessage() {/* Required by the PacketDispatcher */}
+    public SendKeyMessage(final String kb) { this.keyBindingDesc = kb; }
 
-    public SendKeyMessage(String kb) {this.keyBindingDesc = kb;}
-
-    @Override
-    protected void decode(PacketBuffer buffer)
+    public static SendKeyMessage decode(PacketBuffer buffer)
     {
-        this.keyBindingDesc = ByteBufUtils.readUTF8String(buffer);
+        String keyBindingDesc = buffer.readString();
+        return new SendKeyMessage(keyBindingDesc);
     }
 
-    @Override
-    protected void encode(PacketBuffer buffer)
+    public static void encode(final SendKeyMessage message, final PacketBuffer buffer)
     {
-        ByteBufUtils.writeUTF8String(buffer, this.keyBindingDesc);
+        buffer.writeString(message.keyBindingDesc);
     }
 
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static void handle(final SendKeyMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        if (side.isServer())
+        ServerPlayerEntity player = ctx.get().getSender();
+        if (ctx.get().getDirection().getReceptionSide().isClient())
         {
-            handleServerSide(player);
+            handleClientSide(message, ctx, Objects.requireNonNull(player));
         } else
         {
-            handleClientSide(player);
+            handleServerSide(message, ctx, Objects.requireNonNull(player));
         }
     }
 
-    private void handleClientSide(PlayerEntity playerSP)
+    private static void handleClientSide(final SendKeyMessage message, final Supplier<NetworkEvent.Context> ctx, ServerPlayerEntity player)
     {
-        if ("mxtune.key.openParty".equalsIgnoreCase(this.keyBindingDesc))
-        {
-            playerSP.openGui(MXTune.instance, GuiGuid.GUI_GROUP, playerSP.getEntityWorld(), 0, 0, 0);
-        }
-        if ("mxtune.key.openMusicOptions".equalsIgnoreCase(this.keyBindingDesc))
-        {
-            playerSP.openGui(MXTune.instance, GuiGuid.GUI_MUSIC_OPTIONS, playerSP.getEntityWorld(), 0, 0, 0);
-        }
+        ctx.get().enqueueWork(()->{
+            if ("mxtune.key.openParty".equalsIgnoreCase(message.keyBindingDesc))
+            {
+                NetworkHooks.openGui(player, );
+            }
+            if ("mxtune.key.openMusicOptions".equalsIgnoreCase(message.keyBindingDesc))
+            {
+                NetworkHooks.openGui(player, );
+            }
+        });
+        ctx.get().setPacketHandled(true);
     }
 
-    private void handleServerSide(PlayerEntity playerMP)
+    private static void handleServerSide(final SendKeyMessage message, final Supplier<NetworkEvent.Context> ctx, final ServerPlayerEntity player)
     {
-        if ("ctrl-down".equalsIgnoreCase(keyBindingDesc))
-            MusicOptionsUtil.setCtrlKey(playerMP, true);
-        else if ("ctrl-up".equalsIgnoreCase(keyBindingDesc))
-            MusicOptionsUtil.setCtrlKey(playerMP, false);
-        else
-            PacketDispatcher.sendTo(new SendKeyMessage(this.keyBindingDesc), (ServerPlayerEntity) playerMP);
+        ctx.get().enqueueWork(()->{
+            if ("ctrl-down".equalsIgnoreCase(message.keyBindingDesc))
+                MusicOptionsUtil.setCtrlKey(player, true);
+            else if ("ctrl-up".equalsIgnoreCase(message.keyBindingDesc))
+                MusicOptionsUtil.setCtrlKey(player, false);
+            else
+                PacketDispatcher.sendTo(new SendKeyMessage(message.keyBindingDesc), player);
+        });
+        ctx.get().setPacketHandled(true);
     }
 }

@@ -17,27 +17,25 @@
 
 package net.aeronica.mods.mxtune.network.client;
 
-import net.aeronica.mods.mxtune.MXTune;
-import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
+import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.world.caps.world.ModWorldPlaylistHelper;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class UpdateWorldMusicData extends AbstractClientMessage<UpdateWorldMusicData>
+import java.util.function.Supplier;
+
+public class UpdateWorldMusicData implements IMessage
 {
-    private GUID guid;
-    private long ddddSigBits;
-    private long ccccSigBits;
-    private long bbbbSigBits;
-    private long aaaaSigBits;
+    private final GUID guid;
+    private final long ddddSigBits;
+    private final long ccccSigBits;
+    private final long bbbbSigBits;
+    private final long aaaaSigBits;
 
-    @SuppressWarnings("unused")
-    public UpdateWorldMusicData() {/* Required by the PacketDispatcher */}
-
-    public UpdateWorldMusicData(GUID guid)
+    public UpdateWorldMusicData(final GUID guid)
     {
         this.guid = guid;
         ddddSigBits = guid.getDdddSignificantBits();
@@ -46,30 +44,33 @@ public class UpdateWorldMusicData extends AbstractClientMessage<UpdateWorldMusic
         aaaaSigBits = guid.getAaaaSignificantBits();
     }
 
-    @Override
-    protected void decode(PacketBuffer buffer)
+    public static UpdateWorldMusicData decode(final PacketBuffer buffer)
     {
-        ddddSigBits = buffer.readLong();
-        ccccSigBits = buffer.readLong();
-        bbbbSigBits = buffer.readLong();
-        aaaaSigBits = buffer.readLong();
-        guid = new GUID(ddddSigBits, ccccSigBits, bbbbSigBits, aaaaSigBits);
+        long ddddSigBits = buffer.readLong();
+        long ccccSigBits = buffer.readLong();
+        long bbbbSigBits = buffer.readLong();
+        long aaaaSigBits = buffer.readLong();
+        GUID guid = new GUID(ddddSigBits, ccccSigBits, bbbbSigBits, aaaaSigBits);
+        return new UpdateWorldMusicData(guid);
     }
 
-    @Override
-    protected void encode(PacketBuffer buffer)
+    public static void encode(final UpdateWorldMusicData message, final PacketBuffer buffer)
     {
-        buffer.writeLong(ddddSigBits);
-        buffer.writeLong(ccccSigBits);
-        buffer.writeLong(bbbbSigBits);
-        buffer.writeLong(aaaaSigBits);
+        buffer.writeLong(message.ddddSigBits);
+        buffer.writeLong(message.ccccSigBits);
+        buffer.writeLong(message.bbbbSigBits);
+        buffer.writeLong(message.aaaaSigBits);
     }
 
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static void handle(final UpdateWorldMusicData message, final Supplier<NetworkEvent.Context> ctx)
     {
-        World world = MXTune.proxy.getClientWorld();
-        if (world != null && world.hasCapability(ModWorldPlaylistHelper.MOD_WORLD_DATA, null))
-            ModWorldPlaylistHelper.setPlaylistGuid(world, guid);
+        if (ctx.get().getDirection().getReceptionSide().isClient())
+            ctx.get().enqueueWork(()->{
+                ServerPlayerEntity player = ctx.get().getSender();
+                World world = player != null ? player.getEntityWorld() : null;
+                if (world != null)
+                    ModWorldPlaylistHelper.setPlaylistGuid(world, message.guid);
+            });
+        ctx.get().setPacketHandled(true);
     }
 }

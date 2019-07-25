@@ -20,7 +20,6 @@ package net.aeronica.mods.mxtune.network.client;
 import net.aeronica.mods.mxtune.managers.ClientPlayManager;
 import net.aeronica.mods.mxtune.network.IMessage;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -42,7 +41,7 @@ public class ResetClientPlayEngine implements IMessage
     public static void handle(final ResetClientPlayEngine message, final Supplier<NetworkEvent.Context> ctx)
     {
         // TODO: Make a more defined process that's more like full client audio chain reset.
-        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT)
+        if (ctx.get().getDirection().getReceptionSide().isClient())
             ctx.get().enqueueWork(() -> new Thread(() ->
                 {
                     try

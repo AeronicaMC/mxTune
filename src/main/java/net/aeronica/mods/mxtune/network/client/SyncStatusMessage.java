@@ -20,7 +20,6 @@ import net.aeronica.mods.mxtune.managers.GroupHelper;
 import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -55,7 +54,7 @@ public class SyncStatusMessage implements IMessage
 
     public static void handle(final SyncStatusMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT)
+        if (ctx.get().getDirection().getReceptionSide().isClient())
             ctx.get().enqueueWork(() ->
                 {
                   synchronized (ClientAudio.THREAD_SYNC)

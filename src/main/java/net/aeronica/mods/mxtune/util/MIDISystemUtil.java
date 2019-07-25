@@ -28,8 +28,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.sound.midi.*;
 import java.io.IOException;
@@ -39,7 +37,6 @@ import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("restriction")
-@SideOnly(Side.CLIENT)
 public enum MIDISystemUtil
 {
     ;

@@ -18,77 +18,91 @@ package net.aeronica.mods.mxtune.network.bidirectional;
 
 import net.aeronica.mods.mxtune.managers.ClientFileManager;
 import net.aeronica.mods.mxtune.managers.records.RecordType;
-import net.aeronica.mods.mxtune.network.AbstractMessage;
+import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.status.ClientStateData;
 import net.aeronica.mods.mxtune.status.ServerCSDManager;
 import net.aeronica.mods.mxtune.util.CallBackManager;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.UUID;
+import java.util.function.Supplier;
 
-public class ClientStateDataMessage extends AbstractMessage<ClientStateDataMessage>
+public class ClientStateDataMessage implements IMessage
 {
-    private ClientStateData csd = new ClientStateData();
-    private long serverIdUuidMSB = 0;
-    private long serverIdUuidLSB = 0;
+    private final ClientStateData csd;
+    private final long serverIdUuidMSB;
+    private final long serverIdUuidLSB;
 
-    public ClientStateDataMessage() { /* Required by the PacketDispatcher */ }
-
-    public ClientStateDataMessage(UUID serverID)
+    public ClientStateDataMessage(final UUID serverID)
     {
-        serverIdUuidMSB = serverID.getMostSignificantBits();
-        serverIdUuidLSB = serverID.getLeastSignificantBits();
+        this.csd = new ClientStateData();
+        this.serverIdUuidMSB = serverID.getMostSignificantBits();
+        this.serverIdUuidLSB = serverID.getLeastSignificantBits();
     }
 
-    public ClientStateDataMessage(ClientStateData csd)
+    public ClientStateDataMessage(final ClientStateData csd)
     {
         this.csd = csd;
-    }
-    
-    @Override
-    protected void decode(PacketBuffer buffer)
-    {
-        this.csd = readCSD(buffer);
-        this.serverIdUuidMSB = buffer.readLong();
-        this.serverIdUuidLSB = buffer.readLong();
+        this.serverIdUuidMSB = 0;
+        this.serverIdUuidLSB = 0;
     }
 
-    @Override
-    protected void encode(PacketBuffer buffer)
+    private ClientStateDataMessage(final ClientStateData csd, final UUID serverID)
     {
-        writeCSD(buffer, csd);
-        buffer.writeLong(serverIdUuidMSB);
-        buffer.writeLong(serverIdUuidLSB);
+        this.csd = csd;
+        this.serverIdUuidMSB = serverID.getMostSignificantBits();
+        this.serverIdUuidLSB = serverID.getLeastSignificantBits();
     }
 
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static ClientStateDataMessage decode(PacketBuffer buffer)
     {
-        if (side.isClient())
+        ClientStateData csd = readCSD(buffer);
+        long serverIdUuidMSB = buffer.readLong();
+        long serverIdUuidLSB = buffer.readLong();
+        UUID uuid = new UUID(serverIdUuidMSB, serverIdUuidLSB);
+        return new ClientStateDataMessage(csd, uuid);
+    }
+
+    public static void encode(final ClientStateDataMessage message, final PacketBuffer buffer)
+    {
+        writeCSD(buffer, message.csd);
+        buffer.writeLong(message.serverIdUuidMSB);
+        buffer.writeLong(message.serverIdUuidLSB);
+    }
+
+    public static void handle(final ClientStateDataMessage message, final Supplier<NetworkEvent.Context> ctx)
+    {
+        ServerPlayerEntity player = ctx.get().getSender();
+        if (ctx.get().getDirection().getReceptionSide().isClient())
         {
-            handleClientSide(player);
+            handleClientSide(player, message, ctx);
         } else
         {
-            handleServerSide(player);
+            handleServerSide(player, message, ctx);
         }
     }
 
-    private void handleClientSide(PlayerEntity playerIn)
+    private static void handleClientSide(final ServerPlayerEntity playerIn, final ClientStateDataMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        ClientCSDMonitor.collectAndSend();
-        MIDISystemUtil.onPlayerLoggedInModStatus(playerIn);
-        ClientFileManager.setCachedServerID(serverIdUuidMSB, serverIdUuidLSB);
-        PacketDispatcher.sendToServer(new GetBaseDataListsMessage(CallBackManager.register(ClientFileManager.INSTANCE), RecordType.PLAY_LIST));
+        ctx.get().enqueueWork(()->
+            {
+              ClientCSDMonitor.collectAndSend();
+              MIDISystemUtil.onPlayerLoggedInModStatus(playerIn);
+              ClientFileManager.setCachedServerID(message.serverIdUuidMSB, message.serverIdUuidLSB);
+              PacketDispatcher.sendToServer(new GetBaseDataListsMessage(CallBackManager.register(ClientFileManager.INSTANCE), RecordType.PLAY_LIST));
+            });
+        ctx.get().setPacketHandled(true);
     }
 
-    private void handleServerSide(PlayerEntity playerIn)
+    private static void handleServerSide(final ServerPlayerEntity playerIn, final ClientStateDataMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        ServerCSDManager.updateState(playerIn, csd);
+        ctx.get().enqueueWork(()->ServerCSDManager.updateState(playerIn, message.csd));
+        ctx.get().setPacketHandled(true);
     }
 
     public static ClientStateData readCSD(PacketBuffer buffer)

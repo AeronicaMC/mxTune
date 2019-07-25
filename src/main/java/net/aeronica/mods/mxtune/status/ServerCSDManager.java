@@ -45,12 +45,11 @@ public class ServerCSDManager
      * <p>Asks the client for a copy of the current ClientStateData.
      * Typically done when the client logs into the server.
      * Also sends the unique serverID to the client</p>
-     * @param playerIn to be queried
+     * @param player to be queried
      */
-    public static void queryClient(PlayerEntity playerIn)
+    public static void queryClient(PlayerEntity player)
     {
-        ClientStateDataMessage message = new ClientStateDataMessage(ServerFileManager.getServerID());
-        PacketDispatcher.sendTo(message, (ServerPlayerEntity) playerIn);
+        PacketDispatcher.sendTo(new ClientStateDataMessage(ServerFileManager.getServerID()), (ServerPlayerEntity) player);
     }
     
     /**
@@ -95,15 +94,14 @@ public class ServerCSDManager
 
     /**
      * <p>Sends the server side version of ClientStateData to the client to be displayed in chat.</p>
-     * @param playerIn to be informed
+     * @param player to be informed
      */
-    public static void sendErrorViaChat(PlayerEntity playerIn)
+    public static void sendErrorViaChat(PlayerEntity player)
     {
-        Integer playerID = playerIn.getEntityId();
+        Integer playerID = player.getEntityId();
         if (clientState.containsKey(playerID))
         {
-            SendCSDChatMessage message =  new SendCSDChatMessage(clientState.get(playerID));
-            PacketDispatcher.sendTo(message, (ServerPlayerEntity) playerIn);
+            PacketDispatcher.sendTo(SendCSDChatMessage(clientState.get(playerID)), (ServerPlayerEntity) player);
         }
     }
 }

@@ -28,7 +28,6 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -56,7 +55,7 @@ public class ChunkToolMessage implements IMessage
     public static void handle(final ChunkToolMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
         ServerPlayerEntity player = ctx.get().getSender();
-        if (ctx.get().getDirection().getReceptionSide() == LogicalSide.SERVER)
+        if (ctx.get().getDirection().getReceptionSide().isServer())
             ctx.get().enqueueWork(() ->
                 {
                     if (player != null && MusicOptionsUtil.isMxTuneServerUpdateAllowed(player))

@@ -16,84 +16,79 @@
  */
 package net.aeronica.mods.mxtune.network.server;
 
-import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractServerMessage;
+import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.options.ClassifiedPlayer;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
-public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessage>
+public class MusicOptionsMessage implements IMessage
 {
     
-    private int muteOption;
-    private List<ClassifiedPlayer> blackList;
-    private List<ClassifiedPlayer> whiteList;
-    private byte[] byteBuffer = null;
-    private boolean canProcess = true;
-
-    @SuppressWarnings("unused")
-    public MusicOptionsMessage() {/* Required by the PacketDispatcher */}
+    private final int muteOption;
+    private final List<ClassifiedPlayer> blackList;
+    private final List<ClassifiedPlayer> whiteList;
     
-    public MusicOptionsMessage(int muteOption, List<ClassifiedPlayer> blackList, List<ClassifiedPlayer> whiteList)
+    public MusicOptionsMessage(final int muteOption, final List<ClassifiedPlayer> blackList, final List<ClassifiedPlayer> whiteList)
     {
         this.muteOption = muteOption;
         this.blackList = blackList;
         this.whiteList = whiteList;
     }
-    
+
     @SuppressWarnings("unchecked")
-    @Override
-    protected void decode(PacketBuffer buffer)
+    public static MusicOptionsMessage decode(PacketBuffer buffer)
     {
-        this.muteOption = buffer.readInt();
+        List<ClassifiedPlayer> whiteListIn = new ArrayList<>();
+        List<ClassifiedPlayer> blackListIn = new ArrayList<>();
+        int muteOption = buffer.readInt();
         try {
             // Deserialize data object from a byte array
-            byteBuffer = buffer.readByteArray();
+            byte[] byteBuffer = buffer.readByteArray();
             ByteArrayInputStream bis = new ByteArrayInputStream(byteBuffer) ;
             ObjectInputStream in = new ObjectInputStream(bis);
-            whiteList =  (ArrayList<ClassifiedPlayer>) in.readObject();
+            whiteListIn = (ArrayList<ClassifiedPlayer>) in.readObject();
             in.close();
 
             // Deserialize data object from a byte array
             byteBuffer = buffer.readByteArray();
             bis = new ByteArrayInputStream(byteBuffer);
             in = new ObjectInputStream(bis);
-            blackList =  (ArrayList<ClassifiedPlayer>) in.readObject();
+            blackListIn = (ArrayList<ClassifiedPlayer>) in.readObject();
             in.close();
         } catch (ClassNotFoundException | IOException e)
         {
-            canProcess = false;
             ModLogger.error(e);
         }
-
+        return new MusicOptionsMessage(muteOption, blackListIn, whiteListIn);
     }
 
-    @Override
     @SuppressWarnings("all")
-    protected void encode(PacketBuffer buffer)
+    public static void encode(final MusicOptionsMessage message, final PacketBuffer buffer)
     {
-        buffer.writeInt(this.muteOption);
+        buffer.writeInt(message.muteOption);
         try {
             // Serialize data object to a byte array
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ObjectOutputStream out = new ObjectOutputStream(bos);
-            out.writeObject((Serializable) whiteList);
+            out.writeObject((Serializable) message.whiteList);
             out.close();
 
             // Get the bytes of the serialized object
-            byteBuffer = bos.toByteArray();
+            byte[] byteBuffer = bos.toByteArray();
             buffer.writeByteArray(byteBuffer);
 
             // Serialize data object to a byte array
             bos = new ByteArrayOutputStream();
             out = new ObjectOutputStream(bos);
-            out.writeObject((Serializable) blackList);
+            out.writeObject((Serializable) message.blackList);
             out.close();
 
             // Get the bytes of the serialized object
@@ -104,14 +99,15 @@ public class MusicOptionsMessage extends AbstractServerMessage<MusicOptionsMessa
         }
     }
 
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static void handle(final MusicOptionsMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        if (canProcess)
-        {
-            MusicOptionsUtil.setMuteOption(player, muteOption);
-            MusicOptionsUtil.setBlackList(player, blackList);
-            MusicOptionsUtil.setWhiteList(player, whiteList);
-        }
+        ServerPlayerEntity player = ctx.get().getSender();
+        if (player != null && ctx.get().getDirection().getReceptionSide().isServer())
+            ctx.get().enqueueWork(()->{
+                MusicOptionsUtil.setMuteOption(player, message.muteOption);
+                MusicOptionsUtil.setBlackList(player, message.blackList);
+                MusicOptionsUtil.setWhiteList(player, message.whiteList);
+            });
+        ctx.get().setPacketHandled(true);
     }
 }

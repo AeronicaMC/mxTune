@@ -17,53 +17,54 @@
 
 package net.aeronica.mods.mxtune.network.server;
 
-import net.aeronica.mods.mxtune.network.AbstractMessage;
+import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
 import net.aeronica.mods.mxtune.util.GUID;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PlayerSelectedPlayListMessage extends AbstractMessage.AbstractServerMessage<PlayerSelectedPlayListMessage>
+import java.util.function.Supplier;
+
+public class PlayerSelectedPlayListMessage implements IMessage
 {
-    private GUID selectedAreaGuid;
-    private long ddddSigBits;
-    private long ccccSigBits;
-    private long bbbbSigBits;
-    private long aaaaSigBits;
-
-    public PlayerSelectedPlayListMessage() { /* Required by the Packet Dispatcher */}
+    private final GUID selectedAreaGuid;
+    private final long ddddSigBits;
+    private final long ccccSigBits;
+    private final long bbbbSigBits;
+    private final long aaaaSigBits;
 
     public PlayerSelectedPlayListMessage(GUID selectedAreaGuid)
     {
-        ddddSigBits = selectedAreaGuid.getDdddSignificantBits();
-        ccccSigBits = selectedAreaGuid.getCcccSignificantBits();
-        bbbbSigBits = selectedAreaGuid.getBbbbSignificantBits();
-        aaaaSigBits = selectedAreaGuid.getAaaaSignificantBits();
+        this.selectedAreaGuid = selectedAreaGuid;
+        this.ddddSigBits = selectedAreaGuid.getDdddSignificantBits();
+        this.ccccSigBits = selectedAreaGuid.getCcccSignificantBits();
+        this.bbbbSigBits = selectedAreaGuid.getBbbbSignificantBits();
+        this.aaaaSigBits = selectedAreaGuid.getAaaaSignificantBits();
     }
 
-    @Override
-    protected void decode(PacketBuffer buffer)
+    public static PlayerSelectedPlayListMessage decode(final PacketBuffer buffer)
     {
-        ddddSigBits = buffer.readLong();
-        ccccSigBits = buffer.readLong();
-        bbbbSigBits = buffer.readLong();
-        aaaaSigBits = buffer.readLong();
-        selectedAreaGuid = new GUID(ddddSigBits, ccccSigBits, bbbbSigBits, aaaaSigBits);
+        long ddddSigBits = buffer.readLong();
+        long ccccSigBits = buffer.readLong();
+        long bbbbSigBits = buffer.readLong();
+        long aaaaSigBits = buffer.readLong();
+        GUID selectedAreaGuid = new GUID(ddddSigBits, ccccSigBits, bbbbSigBits, aaaaSigBits);
+        return new PlayerSelectedPlayListMessage(selectedAreaGuid);
     }
 
-    @Override
-    protected void encode(PacketBuffer buffer)
+    public static void encode(final PlayerSelectedPlayListMessage message, final PacketBuffer buffer)
     {
-        buffer.writeLong(ddddSigBits);
-        buffer.writeLong(ccccSigBits);
-        buffer.writeLong(bbbbSigBits);
-        buffer.writeLong(aaaaSigBits);
+        buffer.writeLong(message.ddddSigBits);
+        buffer.writeLong(message.ccccSigBits);
+        buffer.writeLong(message.bbbbSigBits);
+        buffer.writeLong(message.aaaaSigBits);
     }
 
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static void handle(final PlayerSelectedPlayListMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        MusicOptionsUtil.setSelectedPlayListGuid(player, selectedAreaGuid);
+        ServerPlayerEntity player = ctx.get().getSender();
+        if (player != null && ctx.get().getDirection().getReceptionSide().isServer())
+            ctx.get().enqueueWork(()->MusicOptionsUtil.setSelectedPlayListGuid(player, message.selectedAreaGuid));
     }
 }

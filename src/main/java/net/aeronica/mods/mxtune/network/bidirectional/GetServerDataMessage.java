@@ -24,37 +24,39 @@ import net.aeronica.mods.mxtune.managers.records.RecordType;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.mxt.MXTuneFile;
 import net.aeronica.mods.mxtune.mxt.MXTuneFileHelper;
-import net.aeronica.mods.mxtune.network.AbstractMessage;
+import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.MXTuneException;
-import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.network.NetworkEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.function.Supplier;
 
-public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
+public class GetServerDataMessage implements IMessage
 {
-    private boolean errorResult = false;
-    private boolean fileError = false;
-    private RecordType recordType = RecordType.PLAY_LIST;
-    private CompoundNBT dataCompound = new CompoundNBT();
-    private long ddddSigBits;
-    private long ccccSigBits;
-    private long bbbbSigBits;
-    private long aaaaSigBits;
-    private GUID dataTypeUuid;
-    private int playId = PlayType.INVALID;
+    private static final Logger LOGGER = LogManager.getLogger();
+    private final RecordType recordType;
+    private final CompoundNBT dataCompound;
+    private final long ddddSigBits;
+    private final long ccccSigBits;
+    private final long bbbbSigBits;
+    private final long aaaaSigBits;
+    private final GUID dataTypeUuid;
+    private boolean errorResult;
+    private final int playId;
 
-    @SuppressWarnings("unused")
-    public GetServerDataMessage() { /* Required by the PacketDispatcher */ }
+    private static boolean fileError = false;
 
     /**
      * Client Request for data recordType
@@ -64,10 +66,14 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
     public GetServerDataMessage(GUID guidType, RecordType recordType)
     {
         this.recordType = recordType;
-        ddddSigBits = guidType.getDdddSignificantBits();
-        ccccSigBits = guidType.getCcccSignificantBits();
-        bbbbSigBits = guidType.getBbbbSignificantBits();
-        aaaaSigBits = guidType.getAaaaSignificantBits();
+        this.dataCompound = new CompoundNBT();
+        this.ddddSigBits = guidType.getDdddSignificantBits();
+        this.ccccSigBits = guidType.getCcccSignificantBits();
+        this.bbbbSigBits = guidType.getBbbbSignificantBits();
+        this.aaaaSigBits = guidType.getAaaaSignificantBits();
+        this.dataTypeUuid = new GUID(ddddSigBits, ccccSigBits,bbbbSigBits, aaaaSigBits);
+        this.errorResult = false;
+        this.playId = PlayType.INVALID;
     }
 
     /**
@@ -80,10 +86,13 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
     public GetServerDataMessage(GUID guidType, RecordType recordType, int playId)
     {
         this.recordType = recordType;
-        ddddSigBits = guidType.getDdddSignificantBits();
-        ccccSigBits = guidType.getCcccSignificantBits();
-        bbbbSigBits = guidType.getBbbbSignificantBits();
-        aaaaSigBits = guidType.getAaaaSignificantBits();
+        this.dataCompound = new CompoundNBT();
+        this.ddddSigBits = guidType.getDdddSignificantBits();
+        this.ccccSigBits = guidType.getCcccSignificantBits();
+        this.bbbbSigBits = guidType.getBbbbSignificantBits();
+        this.aaaaSigBits = guidType.getAaaaSignificantBits();
+        this.dataTypeUuid = new GUID(ddddSigBits, ccccSigBits,bbbbSigBits, aaaaSigBits);
+        this.errorResult = false;
         this.playId = playId;
     }
 
@@ -94,116 +103,123 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
      * @param playId to use for the song or the INVALID id (default if not specified in the client request)
      * @param dataCompound provided data
      */
-    private GetServerDataMessage(GUID guidType, RecordType recordType, int playId, CompoundNBT dataCompound, boolean errorResult)
+    private GetServerDataMessage(final GUID guidType, final RecordType recordType, final int playId, @Nullable final CompoundNBT dataCompound, final boolean errorResult)
     {
         this.recordType = recordType;
-        ddddSigBits = guidType.getDdddSignificantBits();
-        ccccSigBits = guidType.getCcccSignificantBits();
-        bbbbSigBits = guidType.getBbbbSignificantBits();
-        aaaaSigBits = guidType.getAaaaSignificantBits();
-        this.playId = playId;
         this.dataCompound = dataCompound;
+        this.ddddSigBits = guidType.getDdddSignificantBits();
+        this.ccccSigBits = guidType.getCcccSignificantBits();
+        this.bbbbSigBits = guidType.getBbbbSignificantBits();
+        this.aaaaSigBits = guidType.getAaaaSignificantBits();
+        this.dataTypeUuid = new GUID(ddddSigBits, ccccSigBits,bbbbSigBits, aaaaSigBits);
         this.errorResult = errorResult;
-    }
-    
-    @Override
-    protected void decode(PacketBuffer buffer) throws IOException
-    {
-        this.recordType = buffer.readEnumValue(RecordType.class);
-        this.dataCompound = buffer.readCompoundTag();
-        ddddSigBits = buffer.readLong();
-        ccccSigBits = buffer.readLong();
-        bbbbSigBits = buffer.readLong();
-        aaaaSigBits = buffer.readLong();
-        this.errorResult = buffer.readBoolean();
-        this.playId = buffer.readInt();
-        dataTypeUuid = new GUID(ddddSigBits, ccccSigBits,bbbbSigBits, aaaaSigBits);
+        this.playId = playId;
     }
 
-    @Override
-    protected void encode(PacketBuffer buffer)
+    public static GetServerDataMessage decode(PacketBuffer buffer)
     {
-        buffer.writeEnumValue(recordType);
-        buffer.writeCompoundTag(dataCompound);
-        buffer.writeLong(ddddSigBits);
-        buffer.writeLong(ccccSigBits);
-        buffer.writeLong(bbbbSigBits);
-        buffer.writeLong(aaaaSigBits);
-        buffer.writeBoolean(errorResult);
-        buffer.writeInt(playId);
+        RecordType recordType = buffer.readEnumValue(RecordType.class);
+        CompoundNBT dataCompound = buffer.readCompoundTag();
+        long ddddSigBits = buffer.readLong();
+        long ccccSigBits = buffer.readLong();
+        long bbbbSigBits = buffer.readLong();
+        long aaaaSigBits = buffer.readLong();
+        boolean errorResult = buffer.readBoolean();
+        int playId = buffer.readInt();
+        GUID dataTypeUuid = new GUID(ddddSigBits, ccccSigBits,bbbbSigBits, aaaaSigBits);
+        return new GetServerDataMessage(dataTypeUuid, recordType, playId, dataCompound, errorResult);
     }
 
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static void encode(final GetServerDataMessage message, final PacketBuffer buffer)
     {
-        if (side.isClient())
-        {
-            handleClientSide();
-        } else
-        {
-            handleServerSide(player);
-        }
+        buffer.writeEnumValue(message.recordType);
+        buffer.writeCompoundTag(message.dataCompound);
+        buffer.writeLong(message.ddddSigBits);
+        buffer.writeLong(message.ccccSigBits);
+        buffer.writeLong(message.bbbbSigBits);
+        buffer.writeLong(message.aaaaSigBits);
+        buffer.writeBoolean(message.errorResult);
+        buffer.writeInt(message.playId);
+    }
+
+    public static void handle(final GetServerDataMessage message, final Supplier<NetworkEvent.Context> ctx)
+    {
+        if (ctx.get().getDirection().getReceptionSide().isClient())
+            handleClientSide(message, ctx);
+        else
+            handleServerSide(message, ctx);
     }
 
     /**
      * Data received from server. errorResult = true if retrieval failed.
      */
-    private void handleClientSide()
+    private static void handleClientSide(final GetServerDataMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        if (errorResult)
-            ModLogger.warn(recordType + " file: " + dataTypeUuid.toString() + FileHelper.EXTENSION_DAT + " does not exist on the server");
-        switch(recordType)
-        {
-            case PLAY_LIST:
-                ClientFileManager.addPlayList(dataTypeUuid, dataCompound, errorResult);
-                break;
-            case SONG:
-                ClientFileManager.addSong(dataTypeUuid, dataCompound, errorResult);
-                ClientPlayManager.playMusic(dataTypeUuid, playId);
-                break;
-
-            default:
-        }
+        ctx.get().enqueueWork(() ->
+            {
+                if (message.errorResult)
+                    LOGGER.warn("{} file: {}.{}  does not exist on the server", message.recordType, message.dataTypeUuid.toString(), FileHelper.EXTENSION_DAT);
+                switch(message.recordType)
+                {
+                    case PLAY_LIST:
+                        ClientFileManager.addPlayList(message.dataTypeUuid, message.dataCompound, message.errorResult);
+                        break;
+                    case SONG:
+                        ClientFileManager.addSong(message.dataTypeUuid, message.dataCompound, message.errorResult);
+                        ClientPlayManager.playMusic(message.dataTypeUuid, message.playId);
+                        break;
+                    default:
+                }
+            });
+        ctx.get().setPacketHandled(true);
     }
 
     /**
      * Retrieve requested data and send it to the client.
-     * @param playerIn the client.
+     * @param message from the client.
+     * @param ctx network event context
      */
-    private void handleServerSide(PlayerEntity playerIn)
+    private static void handleServerSide(final GetServerDataMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        switch(recordType)
-        {
-            case PLAY_LIST:
-                dataCompound = getDataCompoundFromFile(FileHelper.SERVER_PLAY_LISTS_FOLDER, dataTypeUuid);
-                break;
-            case SONG:
-                dataCompound = getDataCompoundFromMXTuneFile(FileHelper.SERVER_MUSIC_FOLDER, dataTypeUuid);
-                break;
-            default:
-        }
-        PacketDispatcher.sendTo(new GetServerDataMessage(dataTypeUuid, recordType, playId, dataCompound, fileError), (ServerPlayerEntity) playerIn);
+        ServerPlayerEntity player = ctx.get().getSender();
+        if (player != null)
+            ctx.get().enqueueWork(() ->
+                {
+                    CompoundNBT dataCompound = null;
+                    switch(message.recordType)
+                    {
+                        case PLAY_LIST:
+                            dataCompound = getDataCompoundFromFile(FileHelper.SERVER_PLAY_LISTS_FOLDER, message.dataTypeUuid);
+                            break;
+                        case SONG:
+                            dataCompound = getDataCompoundFromMXTuneFile(FileHelper.SERVER_MUSIC_FOLDER, message.dataTypeUuid);
+                            break;
+                        default:
+                    }
+                    PacketDispatcher.sendTo(new GetServerDataMessage(message.dataTypeUuid, message.recordType, message.playId, dataCompound, fileError), (ServerPlayerEntity) player);
+                });
+        ctx.get().setPacketHandled(true);
     }
 
-    private CompoundNBT getDataCompoundFromFile(String folder, GUID dataTypeGuid)
+    private static CompoundNBT getDataCompoundFromFile(String folder, GUID dataTypeGuid)
     {
         Path path;
         CompoundNBT emptyData = new CompoundNBT();
-        Boolean fileExists = FileHelper.fileExists(folder, dataTypeGuid.toString() + FileHelper.EXTENSION_DAT, Side.SERVER);
+        Boolean fileExists = FileHelper.fileExists(folder, dataTypeGuid.toString() + FileHelper.EXTENSION_DAT, LogicalSide.SERVER);
         if (!fileExists)
         {
             path = Paths.get(folder, dataTypeGuid.toString() + FileHelper.EXTENSION_DAT);
-            ModLogger.warn(path.toString() + " not found!");
+            LOGGER.warn("{} not found!", path.toString());
             fileError = true;
             return emptyData;
         }
 
         try
         {
-            path = FileHelper.getCacheFile(folder, dataTypeGuid.toString() + FileHelper.EXTENSION_DAT, Side.SERVER);
+            path = FileHelper.getCacheFile(folder, dataTypeGuid.toString() + FileHelper.EXTENSION_DAT, LogicalSide.SERVER);
         } catch (IOException e)
         {
-            ModLogger.error(e);
+            LOGGER.error(e);
             fileError = true;
             return emptyData;
         }
@@ -217,15 +233,15 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
      * @param dataTypeGuid The GUID of the resource.
      * @return The Song compound.
      */
-    private CompoundNBT getDataCompoundFromMXTuneFile(String folder, GUID dataTypeGuid)
+    private static CompoundNBT getDataCompoundFromMXTuneFile(String folder, GUID dataTypeGuid)
     {
         Path path;
         CompoundNBT emptyData = new CompoundNBT();
-        Boolean fileExists = FileHelper.fileExists(folder, dataTypeGuid.toString() + FileHelper.EXTENSION_MXT, Side.SERVER);
+        Boolean fileExists = FileHelper.fileExists(folder, dataTypeGuid.toString() + FileHelper.EXTENSION_MXT, LogicalSide.SERVER);
         if (!fileExists)
         {
             path = Paths.get(folder, dataTypeGuid.toString() + FileHelper.EXTENSION_MXT);
-            ModLogger.warn(path.toString() + " not found!");
+            LOGGER.warn("{} not found!", path.toString());
             fileError = true;
             return emptyData;
         }
@@ -233,13 +249,13 @@ public class GetServerDataMessage extends AbstractMessage<GetServerDataMessage>
         MXTuneFile mxTuneFile;
         try
         {
-            path = FileHelper.getCacheFile(folder, dataTypeGuid.toString() + FileHelper.EXTENSION_MXT, Side.SERVER);
+            path = FileHelper.getCacheFile(folder, dataTypeGuid.toString() + FileHelper.EXTENSION_MXT, LogicalSide.SERVER);
             mxTuneFile = MXTuneFileHelper.getMXTuneFile(path);
             if (mxTuneFile == null)
                 throw new MXTuneException(new TranslationTextComponent("mxtune.error.unexpected_data_error", path.toString()).getUnformattedComponentText());
         } catch (MXTuneException | IOException e)
         {
-            ModLogger.error(e);
+            LOGGER.error(e);
             fileError = true;
             return emptyData;
         }

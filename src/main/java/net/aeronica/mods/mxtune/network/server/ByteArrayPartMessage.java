@@ -17,57 +17,54 @@
 
 package net.aeronica.mods.mxtune.network.server;
 
-import net.aeronica.mods.mxtune.network.AbstractMessage;
+import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.network.MultiPacketSerializedObjectManager;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import static net.aeronica.mods.mxtune.network.MultiPacketSerializedObjectManager.SerializedObjectPacket;
 
-public class ByteArrayPartMessage extends AbstractMessage.AbstractServerMessage<ByteArrayPartMessage>
+public class ByteArrayPartMessage implements IMessage
 {
-    private UUID serialObjectId;
-
+    private final UUID serialObjectId;
     // part
-    private int packetId;
-    private byte[] bytes;
+    private final int packetId;
+    private final byte[] bytes;
 
-    public ByteArrayPartMessage() { /* Required by the packetDispatcher */ }
-
-    public ByteArrayPartMessage(UUID serialObjectId, int packetId, byte[] bytes)
+    public ByteArrayPartMessage(final UUID serialObjectId, final int packetId, final byte[] bytes)
     {
         this.serialObjectId = serialObjectId;
         this.packetId = packetId;
         this.bytes = bytes;
     }
 
-    @Override
-    protected void decode(PacketBuffer buffer)
+    public static ByteArrayPartMessage decode(final PacketBuffer buffer)
     {
         long msb = buffer.readLong();
         long lsb = buffer.readLong();
-        serialObjectId = new UUID(msb, lsb);
+        UUID serialObjectId = new UUID(msb, lsb);
         // Packet Id and data
-        packetId = buffer.readInt();
-        bytes = buffer.readByteArray();
+        int packetId = buffer.readInt();
+        byte[] bytes = buffer.readByteArray();
+        return new ByteArrayPartMessage(serialObjectId, packetId, bytes);
     }
 
-    @Override
-    protected void encode(PacketBuffer buffer)
+    public static void encode(final ByteArrayPartMessage message, final PacketBuffer buffer)
     {
-        buffer.writeLong(serialObjectId.getMostSignificantBits());
-        buffer.writeLong(serialObjectId.getLeastSignificantBits());
+        buffer.writeLong(message.serialObjectId.getMostSignificantBits());
+        buffer.writeLong(message.serialObjectId.getLeastSignificantBits());
         // Part
-        buffer.writeInt(packetId);
-        buffer.writeByteArray(bytes);
+        buffer.writeInt(message.packetId);
+        buffer.writeByteArray(message.bytes);
     }
 
-    @Override
-    public void handle(PlayerEntity player, Side side)
+    public static void handle(final ByteArrayPartMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
-        MultiPacketSerializedObjectManager.addPacket(new SerializedObjectPacket(serialObjectId, packetId, bytes));
+        if (ctx.get().getDirection().getReceptionSide().isServer())
+            ctx.get().enqueueWork(()->
+                MultiPacketSerializedObjectManager.addPacket(new SerializedObjectPacket(message.serialObjectId, message.packetId, message.bytes)));
     }
 }
