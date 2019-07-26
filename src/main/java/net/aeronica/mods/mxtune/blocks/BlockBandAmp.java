@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/*
 package net.aeronica.mods.mxtune.blocks;
 
 import net.aeronica.mods.mxtune.MXTune;
@@ -77,15 +79,9 @@ public class BlockBandAmp extends HorizontalBlock implements IMusicPlayer
         return 10;
     }
 
-    /**
-     * Get the Item that this Block should drop when harvested.
-     */
     @Override
     public Item getItemDropped(BlockState state, Random rand, int fortune) { return ModItems.ITEM_BAND_AMP; }
 
-    /**
-     * Called when the block is right clicked by a player.
-     */
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, BlockState state, PlayerEntity playerIn, Hand hand, Direction facing, float hitX, float hitY, float hitZ)
     {
@@ -164,7 +160,7 @@ public class BlockBandAmp extends HorizontalBlock implements IMusicPlayer
         }
     }
 
-    /** Pulse the output power state once when playing stops and only for a valid playID. i.e. playID > 0 */
+    // Pulse the output power state once when playing stops and only for a valid playID. i.e. playID > 0
     private void onePulseOutputState(World worldIn, BlockPos pos, BlockState state, TileBandAmp tileBandAmp)
     {
         if(!state.getValue(POWERED) && tileBandAmp.lastPlayIDSuccess())
@@ -176,9 +172,7 @@ public class BlockBandAmp extends HorizontalBlock implements IMusicPlayer
             setOutputPowerState(worldIn, pos, state, false);
     }
 
-    /**
-     * React to a redstone powered neighbor block
-     */
+    // React to a redstone powered neighbor block
     @Override
     public void neighborChanged(BlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
@@ -228,7 +222,8 @@ public class BlockBandAmp extends HorizontalBlock implements IMusicPlayer
     @Override
     public int getLightValue(BlockState state)
     {
-        return /* MinecraftForgeClient.getRenderLayer() == BlockRenderLayer.SOLID && state.getValue(PLAYING) ? 15 : */ super.getLightValue(state);
+        // return MinecraftForgeClient.getRenderLayer() == BlockRenderLayer.SOLID && state.getValue(PLAYING) ? 15 : super.getLightValue(state);
+        return super.getLightValue(state);
     }
 
     @Override
@@ -330,10 +325,10 @@ public class BlockBandAmp extends HorizontalBlock implements IMusicPlayer
         super.breakBlock(worldIn, pos, state);
     }
 
-    /**
-     * Spawns the block's drops in the world. By the time this is called the Block has possibly been set to air via
-     * Block.removedByPlayer. If the te has a custom name the returned itemBlock will receive the custom name.
-     */
+
+     // Spawns the block's drops in the world. By the time this is called the Block has possibly been set to air via
+     // Block.removedByPlayer. If the te has a custom name the returned itemBlock will receive the custom name.
+
     @Override
     public void harvestBlock(World worldIn, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack)
     {
@@ -419,3 +414,5 @@ public class BlockBandAmp extends HorizontalBlock implements IMusicPlayer
         return blockState.getWeakPower(blockAccess, pos, side);
     }
 }
+
+*/

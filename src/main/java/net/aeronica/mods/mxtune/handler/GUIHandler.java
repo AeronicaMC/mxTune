@@ -16,8 +16,10 @@
  */
 package net.aeronica.mods.mxtune.handler;
 
-import net.aeronica.mods.mxtune.blocks.TileBandAmp;
-import net.aeronica.mods.mxtune.gui.*;
+import net.aeronica.mods.mxtune.gui.GuiGroup;
+import net.aeronica.mods.mxtune.gui.GuiGroupJoin;
+import net.aeronica.mods.mxtune.gui.GuiInstrumentInventory;
+import net.aeronica.mods.mxtune.gui.GuiMusicOptions;
 import net.aeronica.mods.mxtune.gui.mml.GuiChunkTool;
 import net.aeronica.mods.mxtune.gui.mml.GuiMXT;
 import net.aeronica.mods.mxtune.gui.mml.GuiMusicLibrary;
@@ -26,7 +28,6 @@ import net.aeronica.mods.mxtune.inventory.ContainerBandAmp;
 import net.aeronica.mods.mxtune.inventory.ContainerInstrument;
 import net.aeronica.mods.mxtune.world.LockableHelper;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 
@@ -80,9 +81,9 @@ public class GUIHandler implements IGuiHandler
             case GUI_MUSIC_OPTIONS:
                 return new GuiMusicOptions(null);
 
-            case GUI_BAND_AMP:
-                return new GuiBandAmp((net.minecraft.inventory.container.Container) getServerGuiElement(guiID, playerIn, worldIn, x, y, z), playerIn.inventory,
-                                      (TileBandAmp) worldIn.getTileEntity(new BlockPos(x, y, z)));
+//            case GUI_BAND_AMP:
+//                return new GuiBandAmp((net.minecraft.inventory.container.Container) getServerGuiElement(guiID, playerIn, worldIn, x, y, z), playerIn.inventory,
+//                                      (TileBandAmp) worldIn.getTileEntity(new BlockPos(x, y, z)));
 
             case GUI_MUSIC_LIBRARY:
                 return new GuiMusicLibrary(null);

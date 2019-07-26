@@ -14,18 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/*
 package net.aeronica.mods.mxtune.blocks;
 
 import com.google.common.base.Function;
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.init.IReBakeModel;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
@@ -34,16 +36,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.model.TRSRTransformation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Objects;
 
-@SideOnly(Side.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class RendererPiano extends TileEntityRenderer<TilePiano> implements IReBakeModel
 {
     private double xMusicOffset = 0D;
@@ -53,7 +55,7 @@ public class RendererPiano extends TileEntityRenderer<TilePiano> implements IReB
     private double zRackOffset = 0D;
     private double xBenchOffset = 0D;
     private double zBenchOffset = 0D;
-    /** Ordering index for D-U-N-S-W-E */
+    // Ordering index for D-U-N-S-W-E
     private float[] face = {0, 0, 90, 270, 180, 0, 0, 0};
     private IBakedModel bakedRackModel;
     private IBakedModel bakedBenchModel;
@@ -67,7 +69,7 @@ public class RendererPiano extends TileEntityRenderer<TilePiano> implements IReB
     
     private IBakedModel getRackBakedModel()
     {
-        /* Since we cannot bake in preInit() we do lazy baking of the model as soon as we need it for rendering */
+        // Since we cannot bake in preInit() we do lazy baking of the model as soon as we need it for rendering
         if (bakedRackModel == null)
         {
             IModel rackModel;
@@ -79,7 +81,7 @@ public class RendererPiano extends TileEntityRenderer<TilePiano> implements IReB
                 throw new MXTuneRuntimeException(e);
             }
             bakedRackModel = rackModel.bake(TRSRTransformation.identity(), DefaultVertexFormats.BLOCK,
-                                            (Function<ResourceLocation, TextureAtlasSprite>) location -> Minecraft.getMinecraft()
+                                            (Function<ResourceLocation, TextureAtlasSprite>) location -> Minecraft.getInstance()
                         .getTextureMapBlocks().getAtlasSprite(Objects.requireNonNull(location).toString()));
         }
         return bakedRackModel;
@@ -98,7 +100,7 @@ public class RendererPiano extends TileEntityRenderer<TilePiano> implements IReB
                 throw new MXTuneRuntimeException(e);
             }
             bakedBenchModel = benchModel.bake(TRSRTransformation.identity(), DefaultVertexFormats.BLOCK,
-                                              (Function<ResourceLocation, TextureAtlasSprite>) location -> Minecraft.getMinecraft()
+                                              (Function<ResourceLocation, TextureAtlasSprite>) location -> Minecraft.getInstance()
                        .getTextureMapBlocks().getAtlasSprite(Objects.requireNonNull(location).toString()));
         }
         return bakedBenchModel;
@@ -107,17 +109,17 @@ public class RendererPiano extends TileEntityRenderer<TilePiano> implements IReB
     @Override
     public void render(TilePiano te, double x, double y, double z, float partialTicks, int destroyStage, float alpha)
     {
-        /* Translations for the sheet music, music rack and bench */
+        // Translations for the sheet music, music rack and bench
         facing = te.getFacing();
         if (facing.equals(Direction.NORTH))
         {
-            /* Sheet Music (Item) translations */
+            // Sheet Music (Item) translations
             xMusicOffset = 0.0D;
             zMusicOffset = -0.5D;
-            /* Rack (Block) translations */
+            // Rack (Block) translations
             xRackOffset = 0.5D;
             zRackOffset = 0D;
-            /* Bench (Block) translations */
+            // Bench (Block) translations
             xBenchOffset = 1.375D;
             zBenchOffset = 0D;
         } else if (facing.equals(Direction.SOUTH))
@@ -150,27 +152,27 @@ public class RendererPiano extends TileEntityRenderer<TilePiano> implements IReB
         GlStateManager.pushAttrib();
         GlStateManager.pushMatrix();
 
-        /* Translate to the location of our tile entity */
+        // Translate to the location of our tile entity
         GlStateManager.disableRescaleNormal();
 
         GlStateManager.pushMatrix();
-        GlStateManager.translate(x + xBenchOffset, y, z + zBenchOffset);
+        GlStateManager.translated(x + xBenchOffset, y, z + zBenchOffset);
 
         renderBench(te);
 
         GlStateManager.popMatrix();
         GlStateManager.pushMatrix();
-        GlStateManager.translate(x + xRackOffset, y + 1, z + zRackOffset);
+        GlStateManager.translated(x + xRackOffset, y + 1, z + zRackOffset);
         
         renderRack(te);
 
         GlStateManager.popMatrix();
-        GlStateManager.translate(x + xMusicOffset, y + 1.250, z + zMusicOffset);
+        GlStateManager.translated(x + xMusicOffset, y + 1.250, z + zMusicOffset);
 
         renderSheetMusic(te);
 
         GlStateManager.popMatrix();
-        GlStateManager.popAttrib();
+        GlStateManager.popAttributes();
     }
 
     private void renderRack(TileInstrument te)
@@ -180,7 +182,7 @@ public class RendererPiano extends TileEntityRenderer<TilePiano> implements IReB
         World world = te.getWorld();
         Tessellator tessellator = Tessellator.getInstance();
         tessellator.getBuffer().begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
-        Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelRenderer().renderModel(world, getRackBakedModel(), world.getBlockState(te.getPos()), te.getPos(),
+        Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelRenderer().renderModel(world, getRackBakedModel(), world.getBlockState(te.getPos()), te.getPos(),
                 Tessellator.getInstance().getBuffer(), true);
         tessellator.draw();
         RenderHelper.enableStandardItemLighting();
@@ -194,7 +196,7 @@ public class RendererPiano extends TileEntityRenderer<TilePiano> implements IReB
         Tessellator tessellator = Tessellator.getInstance();
         tessellator.getBuffer().begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
         World world = te.getWorld();
-        Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelRenderer().renderModel(world, getBenchBakedModel(), world.getBlockState(te.getPos()), te.getPos(),
+        Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelRenderer().renderModel(world, getBenchBakedModel(), world.getBlockState(te.getPos()), te.getPos(),
                 Tessellator.getInstance().getBuffer(), true);
         tessellator.draw();
         RenderHelper.enableStandardItemLighting();
@@ -203,15 +205,15 @@ public class RendererPiano extends TileEntityRenderer<TilePiano> implements IReB
 
     private void renderCommon(TileInstrument te)
     {
-        GlStateManager.rotate(face[facing.getIndex()] - 90, 0, 1, 0);
+        GlStateManager.rotated(face[facing.getIndex()] - 90, 0, 1, 0);
         RenderHelper.disableStandardItemLighting();
         this.bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
         if (Minecraft.isAmbientOcclusionEnabled())
             GlStateManager.shadeModel(GL11.GL_SMOOTH);
         else
             GlStateManager.shadeModel(GL11.GL_FLAT);
-        /* Translate back to local view coordinates so that we can do the actual rendering here */
-        GlStateManager.translate(-te.getPos().getX() - .5, -te.getPos().getY(), -te.getPos().getZ() - .5);
+        // Translate back to local view coordinates so that we can do the actual rendering here
+        GlStateManager.translated(-te.getPos().getX() - .5, -te.getPos().getY(), -te.getPos().getZ() - .5);
     }
 
     private void renderSheetMusic(TileInstrument te)
@@ -223,14 +225,16 @@ public class RendererPiano extends TileEntityRenderer<TilePiano> implements IReB
             GlStateManager.enableLighting();
             GlStateManager.pushMatrix();
 
-            /* Translate to the center of the block and .9 points higher */
-            GlStateManager.translate(.5, 0, .5);
-            GlStateManager.rotate(face[facing.getIndex()], 0, 1, 0);
-            GlStateManager.scale(.4f, .4f, .4f);
+            / Translate to the center of the block and .9 points higher
+            GlStateManager.translated(.5, 0, .5);
+            GlStateManager.rotated(face[facing.getIndex()], 0, 1, 0);
+            GlStateManager.scalef(.4f, .4f, .4f);
 
-            Minecraft.getMinecraft().getRenderItem().renderItem(stack, ItemCameraTransforms.TransformType.NONE);
+            Minecraft.getInstance().getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.NONE);
 
             GlStateManager.popMatrix();
         }
     }
 }
+
+*/

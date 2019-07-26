@@ -17,6 +17,7 @@
 
 package net.aeronica.mods.mxtune.caps.chunk;
 
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.UpdateChunkMusicData;
 import net.aeronica.mods.mxtune.util.GUID;
@@ -26,7 +27,8 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.util.LazyOptional;
+
+import static net.aeronica.mods.mxtune.caps.chunk.ModChunkPlaylistCap.getChunkCap;
 
 public class ModChunkPlaylistHelper
 {
@@ -37,7 +39,7 @@ public class ModChunkPlaylistHelper
 
     public static void setPlaylistGuid(final Chunk chunk, final GUID guid)
     {
-        getImpl((Chunk) chunk).orElseGet(null).setPlaylistGuid(guid);
+        getChunkCap((Chunk) chunk).orElse(null).setPlaylistGuid(guid);
         chunk.markDirty();
 //        getImpl(chunk).ifPresent(IModChunkPlaylist -> {
 //            IModChunkPlaylist.setPlaylistGuid(guid);
@@ -47,15 +49,10 @@ public class ModChunkPlaylistHelper
 
     public static GUID getPlaylistGuid(final IChunk chunk)
     {
-        return getImpl((Chunk) chunk).orElseGet(null).getPlaylistGuid();
-//        return getImpl((Chunk) chunk)
-//            .map(IModChunkPlaylist::getPlaylistGuid
-//                ).orElseGet(()-> Reference.EMPTY_GUID);
-    }
-
-    public static LazyOptional<IModChunkPlaylist> getImpl(final Chunk chunk)
-    {
-        return chunk.getCapability(MOD_CHUNK_DATA, null);
+        //return getImpl((Chunk) chunk).orElse(null).getPlaylistGuid();
+        return getChunkCap((Chunk) chunk)
+            .map(IModChunkPlaylist::getPlaylistGuid
+                ).orElseGet(()-> Reference.EMPTY_GUID);
     }
 
     public static void sync(PlayerEntity entityPlayer, Chunk chunk)

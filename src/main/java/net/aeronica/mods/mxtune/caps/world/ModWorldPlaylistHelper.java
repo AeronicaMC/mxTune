@@ -15,19 +15,18 @@
  *   limitations under the License.
  */
 
-package net.aeronica.mods.mxtune.world.caps.world;
+package net.aeronica.mods.mxtune.caps.world;
 
-import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.UpdateWorldMusicData;
 import net.aeronica.mods.mxtune.util.GUID;
-import net.aeronica.mods.mxtune.util.MXTuneException;
 import net.aeronica.mods.mxtune.util.Miscellus;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
+
+import static net.aeronica.mods.mxtune.caps.world.ModWorldPlaylistCap.getWorldCap;
 
 public class ModWorldPlaylistHelper
 {
@@ -38,42 +37,16 @@ public class ModWorldPlaylistHelper
 
     public static void setPlaylistGuid(World world, GUID guid)
     {
-        try
-        {
-            getImpl(world).setPlaylistGuid(guid);
-        }
-        catch (MXTuneException e)
-        {
-            ModLogger.error(e);
-        }
-        // mark dirty?
+        getWorldCap(world).ifPresent(playlist->playlist.setPlaylistGuid(guid));
     }
 
     public static GUID getPlaylistGuid(World world)
     {
-        try
-        {
-            return getImpl(world).getPlaylistGuid();
-        }
-        catch (MXTuneException e)
-        {
-            ModLogger.error(e);
-        }
-        return Reference.EMPTY_GUID;
-    }
-
-    private static IModWorldPlaylist getImpl(World world) throws MXTuneException
-    {
-        IModWorldPlaylist worldData;
-        if (world.hasCapability(MOD_WORLD_DATA, null))
-            worldData =  world.getCapability(MOD_WORLD_DATA, null);
-        else
-            throw new MXTuneException("IModWorldData capability is null");
-        return worldData;
+        return getWorldCap(world).orElse(null).getPlaylistGuid();
     }
 
     public static void sync(PlayerEntity entityPlayer, World world)
     {
-        PacketDispatcher.sendToDimension(new UpdateWorldMusicData(getPlaylistGuid(world)), entityPlayer.getEntityWorld().provider.getDimension());
+        PacketDispatcher.sendToDimension(new UpdateWorldMusicData(getPlaylistGuid(world)), entityPlayer.getEntityWorld().getDimension());
     }
 }

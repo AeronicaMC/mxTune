@@ -16,22 +16,24 @@
  */
 package net.aeronica.mods.mxtune.handler;
 
-import net.aeronica.mods.mxtune.MXTune;
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.blocks.IMusicPlayer;
 import net.aeronica.mods.mxtune.config.MXTuneConfig;
 import net.aeronica.mods.mxtune.managers.PlayManager;
 import net.aeronica.mods.mxtune.world.IModLockableContainer;
 import net.aeronica.mods.mxtune.world.LockableHelper;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
-import net.minecraftforge.fml.relauncher.Side;
 
-@Mod.EventBusSubscriber()
+@Mod.EventBusSubscriber(modid=Reference.MOD_ID, bus=Mod.EventBusSubscriber.Bus.MOD)
 public class CommonEventHandler
 {
     private CommonEventHandler() { /* NOP */ }
@@ -41,7 +43,7 @@ public class CommonEventHandler
     @SubscribeEvent
     public static void onEvent(PlayerContainerEvent.Open event)
     {
-        if(MXTune.proxy.getEffectiveSide() == Side.SERVER)
+        if(!event.getEntityPlayer().getEntityWorld().isRemote)
             PlayManager.stopPlayingPlayer(event.getEntityLiving());
     }
     
@@ -51,7 +53,7 @@ public class CommonEventHandler
     public static void onEvent(ServerTickEvent event)
     {
         /* Fired once every two seconds */
-        if (event.side == Side.SERVER && event.phase == TickEvent.Phase.END && (count++ % 40 == 0)) {
+        if (event.side == LogicalSide.SERVER && event.phase == TickEvent.Phase.END && (count++ % 40 == 0)) {
             PlayManager.testStopDistance(MXTuneConfig.getGroupPlayAbortDistance());
         }
     }
@@ -61,16 +63,15 @@ public class CommonEventHandler
     @SubscribeEvent
     public static void onEvent(BlockEvent.BreakEvent event)
     {
-        if(event.getWorld().isRemote) return;
+        if(event.getWorld().isRemote()) return;
         if(event.getState().getBlock() instanceof IMusicPlayer)
         {
+            PlayerEntity player = event.getPlayer();
             TileEntity tileEntity = event.getWorld().getTileEntity(event.getPos());
-            if(tileEntity instanceof IModLockableContainer)
-            {
-                boolean isCreativeMode = event.getPlayer() != null && event.getPlayer().capabilities.isCreativeMode;
-                if (LockableHelper.isBreakable(event.getPlayer(), tileEntity.getWorld(), event.getPos()) && !isCreativeMode)
-                    event.setCanceled(true);
-            }
+            World world = (World) event.getWorld();
+            if(player != null && world != null && (tileEntity instanceof IModLockableContainer) &&
+                    LockableHelper.isBreakable(player, world, event.getPos()) && !player.isCreative())
+                event.setCanceled(true);
         }
     }
 }

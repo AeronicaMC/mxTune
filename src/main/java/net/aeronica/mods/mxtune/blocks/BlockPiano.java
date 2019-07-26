@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/*
 package net.aeronica.mods.mxtune.blocks;
 
 import com.google.common.collect.Lists;
@@ -106,12 +108,12 @@ public class BlockPiano extends HorizontalBlock implements IPlacedInstrument
 
             if (playerIn.isSneaking() && !isOccupied)
             {
-                /* Remove music from the piano */
+                //Remove music from the piano
                 ItemStack itemStack = tile.getInventory().getStackInSlot(0);
                 tile.getInventory().setStackInSlot(0, ItemStack.EMPTY);
                 if (!playerIn.inventory.addItemStackToInventory(itemStack))
                 {
-                    /* Not possible. Throw item in the world */
+                    //Not possible. Throw item in the world
                     if (!itemStack.isEmpty())
                         spawnEntityItem(worldIn, itemStack, pos);
                 } else
@@ -124,20 +126,17 @@ public class BlockPiano extends HorizontalBlock implements IPlacedInstrument
                 return sitPiano(worldIn, pos, state, playerIn);
             } else if (!playerIn.isRiding() && !invHasItem)
             {
-                /* Place music on the piano */
+                // Place music on the piano
                 if (playerHasMusic)
                 {
-                    /*
-                     * There is no item in the music rack and the player is
-                     * holding an item. We move that item into the music rack
-                     */
+                     // There is no item in the music rack and the player is
+                     // holding an item. We move that item into the music rack
                     tile.getInventory().setStackInSlot(0, playerIn.getHeldItem(hand));
                     playerIn.inventory.setInventorySlotContents(playerIn.inventory.currentItem, ItemStack.EMPTY);
 
-                    /*
-                     * Make sure the client knows about the changes in the
-                     * player inventory
-                     */
+
+                     // Make sure the client knows about the changes in the
+                     // player inventory
                     tile.syncToClient();
                     playerIn.openContainer.detectAndSendChanges();
                 }
@@ -351,11 +350,9 @@ public class BlockPiano extends HorizontalBlock implements IPlacedInstrument
                 : this.getDefaultState().withProperty(PART, BlockPiano.EnumPartType.LEFT).withProperty(FACING, enumfacing);
     }
 
-    /*
-     * Get the actual Block state of this Block at the given position. This
-     * applies properties not visible in the metadata, such as fence
-     * connections.
-     */
+     // Get the actual Block state of this Block at the given position. This
+     // applies properties not visible in the metadata, such as fence
+     // connections.
     @Override
     public BlockState getActualState(BlockState stateIn, IBlockAccess worldIn, BlockPos pos)
     {
@@ -386,7 +383,7 @@ public class BlockPiano extends HorizontalBlock implements IPlacedInstrument
         return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
     }
 
-    /* Convert the BlockState into the correct metadata value */
+    // Convert the BlockState into the correct metadata value
     @Override
     public int getMetaFromState(BlockState state)
     {
@@ -426,7 +423,7 @@ public class BlockPiano extends HorizontalBlock implements IPlacedInstrument
         public String getName() {return this.name;}
     }
 
-    /* TileEntity stuff */
+    // TileEntity stuff
 
     @Override
     public BlockRenderType getRenderType(BlockState state)
@@ -437,7 +434,7 @@ public class BlockPiano extends HorizontalBlock implements IPlacedInstrument
     @Override
     public boolean hasTileEntity(BlockState state)
     {
-        /* We only need one Tile Entity per piano. We will reference the LEFT block only. */
+        // We only need one Tile Entity per piano. We will reference the LEFT block only.
         return state.getValue(PART) == BlockPiano.EnumPartType.LEFT;
     }
 
@@ -447,11 +444,10 @@ public class BlockPiano extends HorizontalBlock implements IPlacedInstrument
         return new TilePiano(state.getValue(FACING));
     }
 
-    /*
-     * Stuff for utility class e.g.
-     * https://github.com/sinkillerj/ProjectE/blob/MC19/src/main/java/moze_intel
-     * /projecte/utils/WorldHelper.java
-     */
+
+     // Stuff for utility class e.g.
+     // https://github.com/sinkillerj/ProjectE/blob/MC19/src/main/java/moze_intel
+     // projecte/utils/WorldHelper.java
     static void spawnEntityItem(World world, ItemStack stack, BlockPos pos)
     {
         spawnEntityItem(world, stack, pos.getX(), pos.getY(), pos.getZ());
@@ -471,3 +467,5 @@ public class BlockPiano extends HorizontalBlock implements IPlacedInstrument
         world.spawnEntity(entityitem);
     }
 }
+
+*/

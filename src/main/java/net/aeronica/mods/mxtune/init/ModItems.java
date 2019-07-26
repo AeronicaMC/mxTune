@@ -38,13 +38,13 @@
 //        SOFTWARE.
 package net.aeronica.mods.mxtune.init;
 
-import net.aeronica.mods.mxtune.MXTune;
+import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.items.*;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.HashSet;
@@ -54,19 +54,19 @@ import java.util.Set;
 
 public class ModItems
 {
-    public static final ItemInstrument ITEM_INSTRUMENT = registerItem(new ItemInstrument(), "instrument");
+//    public static final ItemInstrument ITEM_INSTRUMENT = registerItem(new ItemInstrument(), "instrument");
     public static final ItemMusicPaper ITEM_MUSIC_PAPER = registerItem(new ItemMusicPaper(), "music_paper");
     public static final ItemSheetMusic ITEM_SHEET_MUSIC = registerItem(new ItemSheetMusic(), "sheet_music");
-    public static final ItemPiano ITEM_SPINET_PIANO = registerItem(new ItemPiano(), "spinet_piano");
-    public static final BlockItem ITEM_BAND_AMP = (BlockItem) registerItem((new BlockItem(ModBlocks.BAND_AMP).setCreativeTab(MXTune.TAB_MUSIC)), "band_amp");
-    public static final Item ITEM_PLACE_HOLDER = registerItem(new Item(), "place_holder");
+//    public static final ItemPiano ITEM_SPINET_PIANO = registerItem(new ItemPiano(), "spinet_piano");
+//    public static final BlockItem ITEM_BAND_AMP = (BlockItem) registerItem((new BlockItem(ModBlocks.BAND_AMP).setCreativeTab(MXTune.TAB_MUSIC)), "band_amp");
+    public static final Item ITEM_PLACE_HOLDER = registerItem(new ItemGuiTest(), "place_holder");
     public static final ItemStaffOfMusic ITEM_STAFF_OF_MUSIC = registerItem(new ItemStaffOfMusic(), "staff_of_music");
     public static final ItemGuiTest ITEM_GUI_TEST = registerItem(new ItemGuiTest(), "gui_test");
     public static final ItemChunkTool ITEM_CHUNK_TOOL = registerItem(new ItemChunkTool(), "chunk_tool");
 
     private ModItems() { /* NOP */ }
 
-    @Mod.EventBusSubscriber
+    @Mod.EventBusSubscriber(modid=Reference.MOD_ID, bus=Mod.EventBusSubscriber.Bus.MOD)
     public static class RegistrationHandler
     {
         static final Set<Item> ITEMS = new HashSet<>();
@@ -79,13 +79,10 @@ public class ModItems
          * @param event The event
          */
         @SubscribeEvent
-        public static void registerItems(RegistryEvent.Register<Item> event) {
+        public static void event(RegistryEvent.Register<Item> event) {
             final Item[] items = {
-                    ITEM_INSTRUMENT,
                     ITEM_MUSIC_PAPER,
                     ITEM_SHEET_MUSIC,
-                    ITEM_SPINET_PIANO,
-                    ITEM_BAND_AMP,
                     ITEM_PLACE_HOLDER,
                     ITEM_STAFF_OF_MUSIC,
                     ITEM_GUI_TEST,
@@ -103,7 +100,7 @@ public class ModItems
     private static <T extends Item> T registerItem(T item, String name)
     {
         item.setRegistryName(name.toLowerCase(Locale.US));
-        item.setTranslationKey(Objects.requireNonNull(item.getRegistryName()).toString());
+        item.setRegistryName(Objects.requireNonNull(item.getRegistryName()).toString());
         return item;
     }
 

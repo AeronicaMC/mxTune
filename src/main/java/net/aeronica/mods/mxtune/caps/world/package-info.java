@@ -14,9 +14,10 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
+
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package net.aeronica.mods.mxtune.world.caps.world;
+package net.aeronica.mods.mxtune.caps.world;
 
 import mcp.MethodsReturnNonnullByDefault;
 

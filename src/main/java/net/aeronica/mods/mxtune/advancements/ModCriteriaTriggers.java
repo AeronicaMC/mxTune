@@ -21,19 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
+/*
 package net.aeronica.mods.mxtune.advancements;
 
 import net.aeronica.mods.mxtune.advancements.criterion.PlayInstrumentTrigger;
 import net.minecraft.advancements.CriteriaTriggers;
 
-/**
- * Copied and adapted to my needs from code by:
- * @author Pokefenn, ljfa
- * </br><a href="https://github.com/TeamTotemic/Totemic">https://github.com/TeamTotemic/Totemic</a>
- */
 public class ModCriteriaTriggers
 {
-    private ModCriteriaTriggers() {/* NOP */}
+    private ModCriteriaTriggers()
+    {
+        // NOP
+    }
 
     public static final PlayInstrumentTrigger PLAY_INSTRUMENT = new PlayInstrumentTrigger();
 
@@ -42,3 +42,5 @@ public class ModCriteriaTriggers
         CriteriaTriggers.register(PLAY_INSTRUMENT);
     }
 }
+
+*/

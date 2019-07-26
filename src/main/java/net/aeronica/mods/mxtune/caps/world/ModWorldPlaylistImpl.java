@@ -15,18 +15,27 @@
  *   limitations under the License.
  */
 
-package net.aeronica.mods.mxtune.world.caps.world;
+package net.aeronica.mods.mxtune.caps.world;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.util.GUID;
+import net.minecraft.world.World;
 
 public class ModWorldPlaylistImpl implements IModWorldPlaylist
 {
     private GUID guid;
+    private final World world;
 
     public ModWorldPlaylistImpl()
     {
         guid = Reference.EMPTY_GUID;
+        world = null;
+    }
+
+    public ModWorldPlaylistImpl(World world)
+    {
+        guid = Reference.EMPTY_GUID;
+        this.world = world;
     }
 
     @Override

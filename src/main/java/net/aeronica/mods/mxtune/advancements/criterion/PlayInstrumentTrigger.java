@@ -21,6 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
+/*
 package net.aeronica.mods.mxtune.advancements.criterion;
 
 import com.google.common.collect.ImmutableList;
@@ -30,7 +32,6 @@ import com.google.gson.JsonSyntaxException;
 import net.aeronica.mods.mxtune.Reference;
 import net.minecraft.advancements.ICriterionTrigger;
 import net.minecraft.advancements.PlayerAdvancements;
-import net.minecraft.advancements.critereon.AbstractCriterionInstance;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
@@ -38,13 +39,7 @@ import net.minecraft.util.ResourceLocation;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
-/**
- * Copied and adapted to my needs from code by:
- * @author Pokefenn, ljfa
- * </br><a href="https://github.com/TeamTotemic/Totemic">https://github.com/TeamTotemic/Totemic</a>
- */
 public class PlayInstrumentTrigger implements ICriterionTrigger<PlayInstrumentTrigger.Instance>
 {
     private static final ResourceLocation ID = new ResourceLocation(Reference.MOD_ID, "play_instrument");
@@ -149,3 +144,5 @@ public class PlayInstrumentTrigger implements ICriterionTrigger<PlayInstrumentTr
         }
     }
 }
+
+*/

@@ -14,6 +14,8 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
+
+/*
 package net.aeronica.mods.mxtune.blocks;
 
 import net.aeronica.mods.mxtune.items.ItemInstrument;
@@ -66,7 +68,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     private int updateCount;
     private int prevUpdateCount;
 
-    public TileBandAmp() { /* NOP */ }
+    public TileBandAmp() { }
 
     public TileBandAmp(Direction facing)
     {
@@ -102,17 +104,17 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         super.readFromNBT(tag);
         inventory = new InstrumentStackHandler(MAX_SLOTS);
         inventory.deserializeNBT(tag);
-        duration = tag.getInteger(KEY_DURATION);
+        duration = tag.getInt(KEY_DURATION);
         previousInputPowerState = tag.getBoolean(KEY_POWERED);
-        code = LockCode.fromNBT(tag);
+        code = LockCode.read(tag);
         ownerUUID = OwnerUUID.fromNBT(tag);
         rearRedstoneInputEnabled = tag.getBoolean(KEY_REAR_RS_INPUT_ENABLED);
         leftRedstoneOutputEnabled = tag.getBoolean(KEY_LEFT_RS_OUTPUT_ENABLED);
         rightRedstoneOutputEnabled = tag.getBoolean(KEY_RIGHT_RS_OUTPUT_ENABLED);
-        updateCount = tag.getInteger(KEY_UPDATE_COUNT);
+        updateCount = tag.getInt(KEY_UPDATE_COUNT);
         soundRange = SoundRange.fromNBT(tag);
 
-        if (tag.hasKey(KEY_CUSTOM_NAME, 8))
+        if (tag.contains(KEY_CUSTOM_NAME, 8))
         {
             bandAmpCustomName = tag.getString(KEY_CUSTOM_NAME);
         }
@@ -122,22 +124,22 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     public CompoundNBT writeToNBT(CompoundNBT tag)
     {
         tag.merge(inventory.serializeNBT());
-        tag.setBoolean(KEY_POWERED, previousInputPowerState);
-        tag.setInteger(KEY_DURATION, duration);
-        tag.setBoolean(KEY_REAR_RS_INPUT_ENABLED, rearRedstoneInputEnabled);
-        tag.setBoolean(KEY_LEFT_RS_OUTPUT_ENABLED, leftRedstoneOutputEnabled);
-        tag.setBoolean(KEY_RIGHT_RS_OUTPUT_ENABLED, rightRedstoneOutputEnabled);
-        tag.setInteger(KEY_UPDATE_COUNT, updateCount);
+        tag.putBoolean(KEY_POWERED, previousInputPowerState);
+        tag.putInt(KEY_DURATION, duration);
+        tag.putBoolean(KEY_REAR_RS_INPUT_ENABLED, rearRedstoneInputEnabled);
+        tag.putBoolean(KEY_LEFT_RS_OUTPUT_ENABLED, leftRedstoneOutputEnabled);
+        tag.putBoolean(KEY_RIGHT_RS_OUTPUT_ENABLED, rightRedstoneOutputEnabled);
+        tag.putInt(KEY_UPDATE_COUNT, updateCount);
         soundRange.toNBT(tag);
         ownerUUID.toNBT(tag);
 
         if (code != null)
         {
-            code.toNBT(tag);
+            code.write(tag);
         }
         if (hasCustomName())
         {
-            tag.setString(KEY_CUSTOM_NAME, bandAmpCustomName);
+            tag.putString(KEY_CUSTOM_NAME, bandAmpCustomName);
         }
         return super.writeToNBT(tag);
     }
@@ -178,27 +180,21 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         return SheetMusicUtil.getInventoryInstrumentBlockMML(this);
     }
 
-    /** This does nothing but log the side that's powered */
+    // This does nothing but log the side that's powered
     @SuppressWarnings("unused")
     void logInputPower(BlockPos pos, Block blockIn, BlockPos fromPos)
     {
         Vec3i vec3i = pos.subtract(fromPos);
         ModLogger.debug("TileBandAmp: Powered from %s's %s face",
-                        blockIn.getBlockState().getBlock().getLocalizedName(),
+                        blockIn.getDefaultState().getBlockState().getBlock().getNameTextComponent().getUnformattedComponentText(),
                         Direction.getFacingFromVector(vec3i.getX(), vec3i.getY(), vec3i.getZ()));
     }
 
-    /**
-     * @return the previousInputPowerState
-     */
     boolean getPreviousInputState()
     {
         return previousInputPowerState;
     }
 
-    /**
-     * @param previousRedStoneState the previousInputPowerState to set
-     */
     void setPreviousInputState(boolean previousRedStoneState)
     {
         this.previousInputPowerState = previousRedStoneState;
@@ -259,7 +255,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         if (world != null && !world.isRemote)
         {
             ModLogger.debug("TileBandAmp: %s, SEND updateCount: %02d", getPos(), updateCount);
-            world.markBlockRangeForRenderUpdate(pos, pos);
+            world.markForRerender(pos);
         }
     }
 
@@ -280,11 +276,6 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         markDirty();
     }
 
-    /**
-     * Intended to be called from your Block#randomDisplayTick method.
-     * Useful for ensuing Redstone Dust connects/disconnects from your block when it's side(s) connection
-     * properties are changed. Relies on seeing a change in the UPDATE_COUNT property
-     */
     void clientSideNotify()
     {
         if(world.isRemote)
@@ -329,25 +320,15 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         return super.getCapability(cap, side);
     }
 
-    /**
-     * <p>No access if locked</p>
-     * <p>When unlocked:</p>
-     * <ul>
-     *     <li>Not playing: Instruments can be loaded from the top</li>
-     *     <li>Playing: Instruments can be removed from the bottom</li>
-     * </ul>
-     * @param side of the inventory to be evaluated
-     * @return result
-     */
     private boolean isSidedInventoryAccessible(@Nullable Direction side)
     {
         EnumRelativeSide enumRelativeSide = EnumRelativeSide.getRelativeSide(side, getFacing());
         return ((((enumRelativeSide == EnumRelativeSide.TOP) && !isPlaying()) || ((enumRelativeSide == EnumRelativeSide.BOTTOM) && isPlaying())) && !isLocked());
     }
 
-    /*
-     Lockable
-     */
+
+     // Lockable
+
     @Override
     public boolean isLocked()
     {
@@ -389,9 +370,8 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     @Override
     public OwnerUUID getOwner() { return ownerUUID; }
 
-    /*
-     Nameable
-    */
+    // Nameable
+
     @Override
     public String getName()
     {
@@ -415,10 +395,6 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         return this.hasCustomName() ? new StringTextComponent(this.getName()) : new TranslationTextComponent(this.getName());
     }
 
-    /**
-     * @param player to be evaluated
-     * @return true only for the owner of the TE
-     */
     public boolean isUsableByPlayer(PlayerEntity player)
     {
         if (this.world.getTileEntity(this.pos) != this)
@@ -431,3 +407,4 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         }
     }
 }
+*/

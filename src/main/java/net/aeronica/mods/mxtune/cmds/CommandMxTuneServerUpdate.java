@@ -15,6 +15,7 @@
  *   limitations under the License.
  */
 
+/*
 package net.aeronica.mods.mxtune.cmds;
 
 import net.minecraft.command.CommandBase;
@@ -106,3 +107,4 @@ public class CommandMxTuneServerUpdate extends CommandBase
         return Collections.emptyList();
     }
 }
+*/

@@ -14,7 +14,7 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-
+/*
 package net.aeronica.mods.mxtune.crafting;
 
 import com.google.gson.JsonObject;
@@ -31,11 +31,10 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import javax.annotation.Nonnull;
 
-/**
- * Disableable Shaped Ore Recipe
- * @author Aeronica
- *
- */
+
+ // Disableable Shaped Ore Recipe
+ // @author Aeronica
+
 public class DisablableShapedOreRecipeFactory implements IRecipeFactory
 {
     @Override
@@ -72,3 +71,4 @@ public class DisablableShapedOreRecipeFactory implements IRecipeFactory
         }                
     }
 }
+*/

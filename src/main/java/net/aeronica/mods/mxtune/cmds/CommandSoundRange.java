@@ -14,6 +14,7 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
+/*
 package net.aeronica.mods.mxtune.cmds;
 
 import net.aeronica.mods.mxtune.caps.player.MusicOptionsUtil;
@@ -92,9 +93,8 @@ public class CommandSoundRange extends CommandBase
         }
     }
 
-    /**
-     * Get a list of options for when the user presses the TAB key
-     */
+
+    // Get a list of options for when the user presses the TAB key
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
     {
@@ -106,3 +106,4 @@ public class CommandSoundRange extends CommandBase
         return Collections.emptyList();
     }
 }
+*/

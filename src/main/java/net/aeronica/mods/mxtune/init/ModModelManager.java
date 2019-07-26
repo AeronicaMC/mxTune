@@ -38,33 +38,24 @@
 //        SOFTWARE.
 package net.aeronica.mods.mxtune.init;
 
-import net.aeronica.mods.mxtune.blocks.BlockBandAmp;
-import net.aeronica.mods.mxtune.blocks.BlockPiano;
-import net.aeronica.mods.mxtune.blocks.RendererPiano;
-import net.aeronica.mods.mxtune.blocks.TilePiano;
-import net.aeronica.mods.mxtune.items.ItemInstrument;
-import net.aeronica.mods.mxtune.util.IVariant;
+import net.aeronica.mods.mxtune.Reference;
 import net.minecraft.block.Block;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.client.renderer.ItemMeshDefinition;
-import net.minecraft.client.renderer.block.model.ModelBakery;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @SuppressWarnings("unused")
-@Mod.EventBusSubscriber(Side.CLIENT)
+@Mod.EventBusSubscriber(modid=Reference.MOD_ID, value=Dist.CLIENT, bus=Mod.EventBusSubscriber.Bus.MOD)
 public class ModModelManager
 {
     public static final ModModelManager INSTANCE =  new ModModelManager();
@@ -74,26 +65,7 @@ public class ModModelManager
     public static void registerAllModels(ModelRegistryEvent event)
     {
         INSTANCE.registerTileRenderer();
-        INSTANCE.registerBlockModels();
         INSTANCE.registerItemModels();
-    }
-    
-    private void registerBlockModels( /* NOP */ )
-    {
-        ModelLoader.setCustomStateMapper(ModBlocks.SPINET_PIANO,
-                                         new StateMap.Builder().ignore(
-                                                 (IProperty[]) new IProperty[]
-                                                         {
-                                                                 BlockPiano.OCCUPIED
-                                                         }).build());
-        ModelLoader.setCustomStateMapper(ModBlocks.BAND_AMP,
-                                         new StateMap.Builder().ignore(
-                                                 (IProperty[]) new IProperty[]
-                                                         {
-                                                                 BlockBandAmp.POWERED,
-                                                                 BlockBandAmp.UPDATE_COUNT
-                                                         }).build());
-        registerItemModel(ModBlocks.SPINET_PIANO);
     }
     
     private void registerTileRenderer() {
@@ -105,9 +77,6 @@ public class ModModelManager
      */
     private void registerItemModels()
     {
-        // Register variant Item models
-        registerVariantItemModels(ModItems.ITEM_INSTRUMENT, "instrument", ItemInstrument.EnumType.values());
-
         // Then register items with default model names
         ModItems.RegistrationHandler.ITEMS.stream().filter(item -> !itemsRegistered.contains(item)).forEach(this::registerItemModel);
     }
@@ -132,136 +101,5 @@ public class ModModelManager
      */
     private final Set<Item> itemsRegistered = new HashSet<>();
 
-    /**
-     * Register a single model for an {@link Item}.
-     * <p>
-     * Uses the registry name as the domain/path and {@code "inventory"} as the variant.
-     *
-     * @param item The Item
-     */
-    private void registerItemModel(Item item)
-    {
-        registerItemModel(item, Objects.requireNonNull(item.getRegistryName()).toString());
-    }
 
-    /**
-     * Register a single model for an {@link Item}.
-     * <p>
-     * Uses {@code modelLocation} as the domain/path and {@link "inventory"} as the variant.
-     *
-     * @param item          The Item
-     * @param modelLocation The model location
-     */
-    private void registerItemModel(Item item, String modelLocation)
-    {
-        final ModelResourceLocation fullModelLocation = new ModelResourceLocation(modelLocation, "inventory");
-        registerItemModel(item, fullModelLocation);
-    }
-
-    /**
-     * Register a single model for an {@link Item}.
-     * <p>
-     * Uses {@code fullModelLocation} as the domain, path and variant.
-     *
-     * @param item              The Item
-     * @param fullModelLocation The full model location
-     */
-    private void registerItemModel(Item item, ModelResourceLocation fullModelLocation)
-    {
-        ModelBakery.registerItemVariants(item, fullModelLocation); // Ensure the custom model is loaded and prevent the default model from being loaded
-        registerItemModel(item, MeshDefinitionFix.create(stack -> fullModelLocation));
-    }
-
-    /**
-     * Register an {@link ItemMeshDefinition} for an {@link Item}.
-     *
-     * @param item           The Item
-     * @param meshDefinition The ItemMeshDefinition
-     */
-    private void registerItemModel(Item item, ItemMeshDefinition meshDefinition)
-    {
-        itemsRegistered.add(item);
-        ModelLoader.setCustomMeshDefinition(item, meshDefinition);
-    }
-
-    /**
-     * Register a model for each metadata value of an {@link Item} corresponding to the values in {@code values}.
-     * <p>
-     * Uses the registry name as the domain/path and {@code "[unlocalizedName]_[valueName]"} for the item/model json.
-     * <p>
-     * Uses {@link IVariant#getMeta()} to determine the metadata of each value.
-     *
-     * @param item        The Item
-     * @param values      The values
-     * @param <T>         The value type
-     */
-    private <T extends IVariant> void registerItemModelsWithSubtypes(Item item, T[] values)
-    {
-        for (T value : values) {
-            registerItemModelForMetaAndType(item, value.getMeta(), value.getName());
-        }
-    }
-    
-    /**
-     * Register a model for a metadata value an {@link Item}.
-     * <p>
-     * Uses the registry name as the domain/path and {@code type} as the variant.
-     *
-     * @param item     The Item
-     * @param metadata The metadata
-     * @param type  The type
-     */
-    private void registerItemModelForMetaAndType(Item item, int metadata, String type)
-    {
-        registerItemModelForMeta(item, metadata, new ModelResourceLocation(new ResourceLocation(Objects.requireNonNull(item.getRegistryName()).toString() + "_" + type), "inventory"));
-    }
-
-    
-    /**
-     * Register a model for each metadata value of an {@link Item} corresponding to the values in {@code values}.
-     * <p>
-     * Uses the registry name as the domain/path and {@code "[variantName]=[valueName]"} as the variant.
-     * <p>
-     * Uses {@link IVariant#getMeta()} to determine the metadata of each value.
-     *
-     * @param item        The Item
-     * @param variantName The variant name
-     * @param values      The values
-     * @param <T>         The value type
-     */
-    private <T extends IVariant> void registerVariantItemModels(Item item, String variantName, T[] values)
-    {
-        for (T value : values) {
-            registerItemModelForMeta(item, value.getMeta(), variantName + "=" + value.getName());
-        }
-    }
-
-    /**
-     * Register a model for a metadata value an {@link Item}.
-     * <p>
-     * Uses the registry name as the domain/path and {@code variant} as the variant.
-     *
-     * @param item     The Item
-     * @param metadata The metadata
-     * @param variant  The variant
-     */
-    private void registerItemModelForMeta(Item item, int metadata, String variant)
-    {
-        registerItemModelForMeta(item, metadata, new ModelResourceLocation(item.getRegistryName(), variant));
-    }
-
-    /**
-     * Register a model for a metadata value of an {@link Item}.
-     * <p>
-     * Uses {@code modelResourceLocation} as the domain, path and variant.
-     *
-     * @param item                  The Item
-     * @param metadata              The metadata
-     * @param modelResourceLocation The full model location
-     */
-    private void registerItemModelForMeta(Item item, int metadata, ModelResourceLocation modelResourceLocation)
-    {
-        itemsRegistered.add(item);
-        ModelLoader.setCustomModelResourceLocation(item, metadata, modelResourceLocation);
-    }
 }

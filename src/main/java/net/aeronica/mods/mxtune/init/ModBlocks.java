@@ -39,8 +39,6 @@
 package net.aeronica.mods.mxtune.init;
 
 import net.aeronica.mods.mxtune.Reference;
-import net.aeronica.mods.mxtune.blocks.BlockBandAmp;
-import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.blocks.TileBandAmp;
 import net.aeronica.mods.mxtune.blocks.TilePiano;
 import net.minecraft.block.Block;
@@ -49,8 +47,8 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -61,12 +59,12 @@ import java.util.Set;
 
 public class ModBlocks
 {
-    public static final BlockPiano SPINET_PIANO = RegistrationHandler.registerBlock(new BlockPiano(), "spinet_piano");
-    static final BlockBandAmp BAND_AMP = RegistrationHandler.registerBlock(new BlockBandAmp(), "band_amp");
+//    public static final BlockPiano SPINET_PIANO = RegistrationHandler.registerBlock(new BlockPiano(), "spinet_piano");
+//    static final BlockBandAmp BAND_AMP = RegistrationHandler.registerBlock(new BlockBandAmp(), "band_amp");
 
     private ModBlocks() {}
     
-    @Mod.EventBusSubscriber
+    @Mod.EventBusSubscriber(modid=Reference.MOD_ID, bus=Mod.EventBusSubscriber.Bus.MOD)
     public static class RegistrationHandler {
         private static final Set<Item> ITEM_BLOCKS = new HashSet<>();
         private RegistrationHandler() { /* NOP */ }

@@ -20,6 +20,7 @@ package net.aeronica.mods.mxtune.init;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.caps.chunk.ModChunkPlaylistCap;
 import net.aeronica.mods.mxtune.caps.player.PlayerMusicOptionsCapability;
+import net.aeronica.mods.mxtune.caps.world.ModWorldPlaylistCap;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
@@ -33,8 +34,9 @@ public class ModCapabilities
      * Register the capabilities.
      */
     @SubscribeEvent
-    public static void registerCapabilities(final FMLCommonSetupEvent event) {
+    public static void event(final FMLCommonSetupEvent event) {
         PlayerMusicOptionsCapability.register();
         ModChunkPlaylistCap.register();
+        ModWorldPlaylistCap.register();
     }
 }

@@ -19,6 +19,7 @@ package net.aeronica.mods.mxtune.managers;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.caps.chunk.ModChunkPlaylistHelper;
+import net.aeronica.mods.mxtune.caps.world.ModWorldPlaylistHelper;
 import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.aeronica.mods.mxtune.managers.records.RecordType;
 import net.aeronica.mods.mxtune.managers.records.Song;
@@ -32,7 +33,6 @@ import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
-import net.aeronica.mods.mxtune.world.caps.world.ModWorldPlaylistHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.StringTextComponent;

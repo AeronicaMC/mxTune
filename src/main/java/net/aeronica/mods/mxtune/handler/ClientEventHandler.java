@@ -40,7 +40,7 @@ import org.lwjgl.glfw.GLFW;
 import static net.aeronica.mods.mxtune.managers.GroupHelper.getClientMembers;
 import static net.aeronica.mods.mxtune.managers.GroupHelper.getIndex;
 
-@Mod.EventBusSubscriber(modid=Reference.MOD_ID, value=Dist.CLIENT)
+@Mod.EventBusSubscriber(modid=Reference.MOD_ID, value=Dist.CLIENT, bus=Mod.EventBusSubscriber.Bus.MOD)
 public class ClientEventHandler
 {
     private static Minecraft mc = Minecraft.getInstance();

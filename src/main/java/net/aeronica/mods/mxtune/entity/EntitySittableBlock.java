@@ -72,7 +72,7 @@ public class EntitySittableBlock extends Entity
         super(SITTABLE_BLOCK_ENTITY_TYPE, worldIn);
     }
 
-    /** Allow riding standing up if shouldRiderSit is false */
+    // Allow riding standing up if shouldRiderSit is false
     public EntitySittableBlock(World world, BlockPos posIn, double yOffset, boolean shouldRiderSit)
     {
         super(SITTABLE_BLOCK_ENTITY_TYPE, world);

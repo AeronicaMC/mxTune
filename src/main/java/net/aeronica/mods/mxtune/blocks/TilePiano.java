@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/*
 package net.aeronica.mods.mxtune.blocks;
 
 import net.minecraft.block.BlockState;
@@ -24,7 +26,7 @@ import net.minecraftforge.items.ItemStackHandler;
 public class TilePiano extends TileInstrument
 {
     @SuppressWarnings("unused")
-    public TilePiano() {/* NOP */}
+    public TilePiano() { }
 
     TilePiano(Direction facing)
     {
@@ -53,13 +55,6 @@ public class TilePiano extends TileInstrument
         if (world != null && !world.isRemote && !this.isInvalid())
         {
             BlockState state = world.getBlockState(getPos());
-            /*
-             * Sets the block state at a given location. Flag 1 will cause a
-             * block update. Flag 2 will send the change to clients (you
-             * almost always want this). Flag 4 prevents the block from
-             * being re-rendered, if this is a client world. Flags can be
-             * added together.
-             */
             world.notifyBlockUpdate(getPos(), state, state, 3);
         }
     }
@@ -76,3 +71,4 @@ public class TilePiano extends TileInstrument
         }
     }
 }
+*/
