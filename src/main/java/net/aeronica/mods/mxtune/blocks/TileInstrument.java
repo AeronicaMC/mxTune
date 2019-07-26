@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/*
+
 package net.aeronica.mods.mxtune.blocks;
 
 import net.minecraft.block.BlockState;
@@ -23,6 +23,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -38,24 +39,31 @@ public class TileInstrument extends TileEntity
     protected ItemStackHandler inventory;
     protected Direction facing = Direction.NORTH;
 
-    public TileInstrument() {}
 
-    public TileInstrument(Direction facing) {this.facing = facing;}
+    public TileInstrument(TileEntityType<?> tileEntityTypeIn)
+    {
+        super(tileEntityTypeIn);
+    }
+
+    public TileInstrument(Direction facing)
+    {
+        this.facing = facing;
+    }
 
     public Direction getFacing() {return facing;}
 
     @Override
     public void readFromNBT(CompoundNBT tag)
     {
-        super.readFromNBT(tag);
-        facing = Direction.byIndex(tag.getInteger("facing"));
+        super.read(tag);
+        facing = Direction.byIndex(tag.getInt("facing"));
     }
 
     @Override
     public CompoundNBT writeToNBT(CompoundNBT tag)
     {
-        tag.setInteger("facing", facing.getIndex());
-        return super.writeToNBT(tag);
+        tag.putInt("facing", facing.getIndex());
+        return super.write(tag);
     }
 
     @Override
@@ -95,5 +103,3 @@ public class TileInstrument extends TileEntity
     
     public IItemHandlerModifiable getInventory() {return inventory;}
 }
-
-*/

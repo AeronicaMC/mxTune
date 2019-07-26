@@ -60,10 +60,7 @@ public class ModLogger
 
     public static void debug(String format, Object... data)
     {
-        if (Miscellus.inDev())
-            log(Level.INFO, MOD_MARKER, format, data);
-        else
-            log(Level.DEBUG, MOD_MARKER, format, data);
+        log(Level.DEBUG, MOD_MARKER, format, data);
     }
 
     public static void warn(String format, Object... data) {log(Level.WARN, MOD_MARKER, format, data);}
@@ -84,10 +81,7 @@ public class ModLogger
      */
     public static <T extends Throwable> void debug(T e)
     {
-        if (Miscellus.inDev())
-            log(Level.INFO, e);
-        else
-            log(Level.DEBUG, e);
+        log(Level.DEBUG, e);
     }
 
     /**

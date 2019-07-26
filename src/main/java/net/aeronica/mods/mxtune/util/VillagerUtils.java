@@ -42,12 +42,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+/*
 package net.aeronica.mods.mxtune.util;
 
-import net.minecraft.entity.merchant.villager.VillagerEntity.ListItemForEmeralds;
-import net.minecraft.entity.merchant.villager.VillagerEntity.PriceInfo;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerCareer;
 
 public class VillagerUtils
 {
@@ -65,3 +63,4 @@ public class VillagerUtils
 
 }
 
+*/

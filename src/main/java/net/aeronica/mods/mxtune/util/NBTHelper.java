@@ -46,15 +46,15 @@ public class NBTHelper
 
     public static void setGuidToCompound(CompoundNBT compound, GUID guid)
     {
-        compound.setLong(TAG_GUID_DSB, guid.getDdddSignificantBits());
-        compound.setLong(TAG_GUID_CSB, guid.getCcccSignificantBits());
-        compound.setLong(TAG_GUID_BSB, guid.getBbbbSignificantBits());
-        compound.setLong(TAG_GUID_ASB, guid.getAaaaSignificantBits());
+        compound.putLong(TAG_GUID_DSB, guid.getDdddSignificantBits());
+        compound.putLong(TAG_GUID_CSB, guid.getCcccSignificantBits());
+        compound.putLong(TAG_GUID_BSB, guid.getBbbbSignificantBits());
+        compound.putLong(TAG_GUID_ASB, guid.getAaaaSignificantBits());
     }
 
     public static GUID getGuidFromTag(CompoundNBT compound, String tagKey)
     {
-        CompoundNBT compoundTag = compound.getCompoundTag(tagKey);
+        CompoundNBT compoundTag = compound.getCompound(tagKey);
         return getGuidFromCompound(compoundTag);
     }
 
@@ -62,7 +62,7 @@ public class NBTHelper
     {
         CompoundNBT tagCompound = new CompoundNBT();
         setGuidToCompound(tagCompound, guid);
-        compound.setTag(tagKey, tagCompound);
+        compound.put(tagKey, tagCompound);
     }
 
     // UUID NBT Helpers
@@ -76,13 +76,13 @@ public class NBTHelper
 
     public static void setUuidToCompound(CompoundNBT compound, UUID uuid)
     {
-        compound.setLong(TAG_UUID_MSB, uuid.getMostSignificantBits());
-        compound.setLong(TAG_UUID_LSB, uuid.getLeastSignificantBits());
+        compound.putLong(TAG_UUID_MSB, uuid.getMostSignificantBits());
+        compound.putLong(TAG_UUID_LSB, uuid.getLeastSignificantBits());
     }
 
     public static UUID getUuidFromTag(CompoundNBT compound, String tagKey)
     {
-        CompoundNBT compoundTag = compound.getCompoundTag(tagKey);
+        CompoundNBT compoundTag = compound.getCompound(tagKey);
         return getUuidFromCompound(compoundTag);
     }
 
@@ -90,6 +90,6 @@ public class NBTHelper
     {
         CompoundNBT tagCompound = new CompoundNBT();
         setUuidToCompound(tagCompound, uuid);
-        compound.setTag(tagKey, tagCompound);
+        compound.put(tagKey, tagCompound);
     }
 }

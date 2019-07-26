@@ -67,9 +67,9 @@ public class PlacedInstrumentUtil
             /* Standing on Fluids or Air is not allowed */
             if ((worldIn.getBlockState(underFoot).getBlock() instanceof BlockLiquid) || worldIn.isAirBlock(underFoot))
                 return false;
-            double blockHeight = worldIn.getBlockState(underFoot).getBoundingBox(Miscellus.nonNullInjected(), underFoot).maxY;
+            double blockHeight = worldIn.getBlockState(underFoot).g.getBoundingBox(Miscellus.nonNullInjected(), underFoot).maxY;
             EntitySittableBlock sittableBlock = new EntitySittableBlock(worldIn, underFoot, blockHeight + 6 * 0.0625F, false);
-            worldIn.spawnEntity(sittableBlock);
+            worldIn.addEntity(sittableBlock);
             playerIn.startRiding(sittableBlock, true);
         }
         return true;
@@ -81,7 +81,7 @@ public class PlacedInstrumentUtil
         if (canPlaceEntity(worldIn, posIn))
         {
             EntitySittableBlock sittableBlock = new EntitySittableBlock(worldIn, posIn, yOffset, true);
-            worldIn.spawnEntity(sittableBlock);
+            worldIn.addEntity(sittableBlock);
             playerIn.startRiding(sittableBlock, true);
         }
         return true;
@@ -93,7 +93,7 @@ public class PlacedInstrumentUtil
         if (canPlaceEntity(worldIn, posIn))
         {
             EntitySittableBlock sittableBlock = new EntitySittableBlock(worldIn, posIn, xOffset, yOffset, zOffset);
-            worldIn.spawnEntity(sittableBlock);
+            worldIn.addEntity(sittableBlock);
             playerIn.startRiding(sittableBlock, true);
         }
         return true;
@@ -104,7 +104,7 @@ public class PlacedInstrumentUtil
         if (canPlaceEntity(worldIn, posIn))
         {
             EntitySittableBlock sittableBlock = new EntitySittableBlock(worldIn, posIn, xOffset, yOffset, zOffset, yaw);
-            worldIn.spawnEntity(sittableBlock);
+            worldIn.addEntity(sittableBlock);
             playerIn.startRiding(sittableBlock, true);
         }
         return true;
@@ -116,7 +116,7 @@ public class PlacedInstrumentUtil
         if (canPlaceEntity(worldIn, posIn))
         {
             EntitySittableBlock sittableBlock = new EntitySittableBlock(worldIn, posIn, yOffset, metadata, offset);
-            worldIn.spawnEntity(sittableBlock);
+            worldIn.addEntity(sittableBlock);
             playerIn.startRiding(sittableBlock);
         }
         return true;
@@ -172,11 +172,11 @@ public class PlacedInstrumentUtil
      */
     public static boolean isRiding(@Nullable PlayerEntity playerIn)
     {
-        return (playerIn !=null) && !playerIn.isDead && (playerIn.getRidingEntity() instanceof EntitySittableBlock);
+        return (playerIn !=null) && playerIn.isAlive() && (playerIn.getRidingEntity() instanceof EntitySittableBlock);
     }
     
     public static BlockPos getRiddenBlock(PlayerEntity playerIn)
     {
-        return isRiding(playerIn) ? ((EntitySittableBlock)playerIn.getRidingEntity()).getBlockPos() : BlockPos.ORIGIN;
+        return isRiding(playerIn) ? ((EntitySittableBlock)playerIn.getRidingEntity()).getBlockPos() : BlockPos.ZERO;
     }
 }

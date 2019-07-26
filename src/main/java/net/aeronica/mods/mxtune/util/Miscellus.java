@@ -1,15 +1,11 @@
 package net.aeronica.mods.mxtune.util;
 
 
-import net.aeronica.mods.mxtune.MXTune;
-import net.aeronica.mods.mxtune.config.MXTuneConfig;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.AudiblePingPlayerMessage;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.SoundEvent;
-import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -52,15 +48,10 @@ public class Miscellus
 
     public static void audiblePingPlayer(PlayerEntity entityPlayer, SoundEvent soundEvent)
     {
-        if (MXTune.proxy.getEffectiveSide() == Side.SERVER)
+        if (!entityPlayer.getEntityWorld().isRemote)
             PacketDispatcher.sendTo(new AudiblePingPlayerMessage(soundEvent), (ServerPlayerEntity) entityPlayer);
         else
             entityPlayer.playSound(soundEvent, 1F, 1F);
-    }
-
-    public static boolean inDev()
-    {
-        return MXTuneConfig.moreDebugMessages() || (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
     }
 
     /**

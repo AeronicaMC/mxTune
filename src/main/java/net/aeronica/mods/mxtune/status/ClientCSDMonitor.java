@@ -25,8 +25,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.OptionsSoundsScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundCategory;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * ClientStateMonitor<p>
@@ -37,12 +35,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * @author Paul Boese aka Aeronica
  *
  */
-@SideOnly(Side.CLIENT)
+
 public class ClientCSDMonitor
 {
     private static ClientStateData csd = null;
-    private static Minecraft mc = Minecraft.getMinecraft();
-    private static GameSettings gameSettings = Minecraft.getMinecraft().gameSettings;
+    private static Minecraft mc = Minecraft.getInstance();
+    private static GameSettings gameSettings = Minecraft.getInstance().gameSettings;
 
     ClientCSDMonitor() { /* NOP */ }
 

@@ -33,11 +33,11 @@ public class ResultMessage extends Tuple
 
     public Boolean hasError()
     {
-        return (Boolean) super.getFirst();
+        return (Boolean) super.getA();
     }
 
     public ITextComponent getMessage()
     {
-        return ((ITextComponent) super.getSecond());
+        return ((ITextComponent) super.getB());
     }
 }

@@ -30,11 +30,11 @@ public class ValidDuration extends Tuple
 
     public Boolean isValidMML()
     {
-        return (Boolean) super.getFirst();
+        return (Boolean) super.getA();
     }
 
     public Integer getDuration()
     {
-        return (Integer) super.getSecond();
+        return (Integer) super.getB();
     }
 }
