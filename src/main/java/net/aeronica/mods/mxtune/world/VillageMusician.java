@@ -14,28 +14,34 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
+/*
 package net.aeronica.mods.mxtune.world;
 
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.aeronica.mods.mxtune.util.VillagerUtils;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.merchant.villager.VillagerProfession;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerCareer;
-import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession;
 
 public class VillageMusician
 {
-    private VillageMusician() { /* NOP */ }
+    private VillageMusician()
+    {
+        // NOP
+    }
 
     @EventBusSubscriber
     public static class RegistrationHandler
     {
-        private RegistrationHandler() { /* NOP */ }
+        private RegistrationHandler()
+    {
+        // NOP
+    }
 
         @SubscribeEvent
         public static void registerVillagers(final RegistryEvent.Register<VillagerProfession> event)
@@ -63,3 +69,4 @@ public class VillageMusician
         }
     }
 }
+*/
