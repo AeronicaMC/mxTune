@@ -47,13 +47,13 @@ public class OwnerUUID
 
     public void toNBT(CompoundNBT nbt)
     {
-        nbt.setLong(OWNER_UUID_KEY_MSB, uuid.getMostSignificantBits());
-        nbt.setLong(OWNER_UUID_KEY_LSB, uuid.getLeastSignificantBits());
+        nbt.putLong(OWNER_UUID_KEY_MSB, uuid.getMostSignificantBits());
+        nbt.putLong(OWNER_UUID_KEY_LSB, uuid.getLeastSignificantBits());
     }
 
     public static OwnerUUID fromNBT(CompoundNBT nbt)
     {
-        if (nbt.hasKey(OWNER_UUID_KEY_MSB, Constants.NBT.TAG_LONG) && nbt.hasKey(OWNER_UUID_KEY_LSB, Constants.NBT.TAG_LONG))
+        if (nbt.contains(OWNER_UUID_KEY_MSB, Constants.NBT.TAG_LONG) && nbt.contains(OWNER_UUID_KEY_LSB, Constants.NBT.TAG_LONG))
         {
             long msb = nbt.getLong(OWNER_UUID_KEY_MSB);
             long lsb = nbt.getLong(OWNER_UUID_KEY_LSB);
