@@ -18,7 +18,6 @@ package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.config.MXTuneConfig;
 import net.aeronica.mods.mxtune.managers.GroupHelper;
-import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.network.NetworkStringHelper;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.sound.SoundRange;
@@ -34,7 +33,7 @@ import java.util.function.Supplier;
 
 import static net.aeronica.mods.mxtune.util.MIDISystemUtil.midiUnavailableWarn;
 
-public class PlayBlockMusicMessage implements IMessage
+public class PlayBlockMusicMessage
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private final int playID;

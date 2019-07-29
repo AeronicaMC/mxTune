@@ -27,7 +27,6 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -52,9 +51,9 @@ public class GuiGroup extends Screen
     @Override
     public void initGui()
     {
-        Keyboard.enableRepeatEvents(false);
+        minecraft.keyboardListener.enableRepeatEvents(false);
 
-        this.player = mc.player;
+        this.player = minecraft.player;
 
         this.guiLeft = (this.width - this.xSize) / 2;
         this.guiTop = (this.height - this.ySize) / 2;

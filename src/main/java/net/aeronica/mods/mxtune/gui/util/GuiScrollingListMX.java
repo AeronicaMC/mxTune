@@ -32,16 +32,14 @@
  */
 package net.aeronica.mods.mxtune.gui.util;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraftforge.fml.client.config.GuiUtils;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
@@ -220,7 +218,7 @@ public abstract class GuiScrollingListMX
 
     public void actionPerformed(Button button)
     {
-        if (button.enabled)
+        if (button.active)
         {
             if (button.id == this.scrollUpActionId)
             {
@@ -336,7 +334,7 @@ public abstract class GuiScrollingListMX
         double scaleW = client.displayWidth / res.getScaledWidth_double();
         double scaleH = client.displayHeight / res.getScaledHeight_double();
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        GL11.glScissor((int)(left      * scaleW), (int)(client.displayHeight - (bottom * scaleH)),
+        GL11.glScissor((int)(left      * scaleW), (int)(client.mainWindow.getHeight() - (bottom * scaleH)),
                        (int)(listWidth * scaleW), (int)(viewHeight * scaleH));
 
         if (this.client.world != null)
@@ -347,8 +345,8 @@ public abstract class GuiScrollingListMX
         {
             GlStateManager.disableLighting();
             GlStateManager.disableFog();
-            this.client.renderEngine.bindTexture(AbstractGui.OPTIONS_BACKGROUND);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            this.client.getTextureManager().bindTexture(AbstractGui.BACKGROUND_LOCATION);
+            GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             final float scale = 32.0F;
             worldr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
             worldr.pos(this.left,  this.bottom, 0.0D).tex(this.left  / scale, (this.bottom + (int)this.scrollDistance) / scale).color(0x20, 0x20, 0x20, 0xFF).endVertex();
@@ -375,8 +373,8 @@ public abstract class GuiScrollingListMX
                 {
                     int min = this.left;
                     int max = entryRight;
-                    GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-                    GlStateManager.disableTexture2D();
+                    GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+                    GlStateManager.disableTexture();
                     worldr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
                     worldr.pos(min,     slotTop + slotBuffer + (double) 2, 0).tex(0, 1).color(0x80, 0x80, 0x80, 0xFF).endVertex();
                     worldr.pos(max,     slotTop + slotBuffer + (double) 2, 0).tex(1, 1).color(0x80, 0x80, 0x80, 0xFF).endVertex();
@@ -387,14 +385,14 @@ public abstract class GuiScrollingListMX
                     worldr.pos(max - (double) 1, slotTop              - (double) 1, 0).tex(1, 0).color(0x00, 0x00, 0x00, 0xFF).endVertex();
                     worldr.pos(min + (double) 1, slotTop              - (double) 1, 0).tex(0, 0).color(0x00, 0x00, 0x00, 0xFF).endVertex();
                     tess.draw();
-                    GlStateManager.enableTexture2D();
+                    GlStateManager.enableTexture();
                 }
 
                 this.drawSlot(slotIdx, entryRight, slotTop, slotBuffer, tess);
             }
         }
 
-        GlStateManager.disableDepth();
+        GlStateManager.disableDepthTest()
 
         int extraHeight = (this.getContentHeight() + border) - viewHeight;
         if (extraHeight > 0)
@@ -417,7 +415,7 @@ public abstract class GuiScrollingListMX
                 barTop = this.top;
             }
 
-            GlStateManager.disableTexture2D();
+            GlStateManager.disableTexture();
             worldr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
             worldr.pos(scrollBarLeft,  this.bottom, 0.0D).tex(0.0D, 1.0D).color(0x00, 0x00, 0x00, 0xFF).endVertex();
             worldr.pos(scrollBarRight, this.bottom, 0.0D).tex(1.0D, 1.0D).color(0x00, 0x00, 0x00, 0xFF).endVertex();
@@ -439,9 +437,9 @@ public abstract class GuiScrollingListMX
         }
 
         this.drawScreen(mouseX, mouseY);
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableTexture();
         GlStateManager.shadeModel(GL11.GL_FLAT);
-        GlStateManager.enableAlpha();
+        GlStateManager.enableAlphaTest();
         GlStateManager.disableBlend();
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }

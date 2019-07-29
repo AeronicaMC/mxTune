@@ -19,7 +19,6 @@ package net.aeronica.mods.mxtune.network.client;
 import net.aeronica.mods.mxtune.caps.player.ClassifiedPlayer;
 import net.aeronica.mods.mxtune.caps.player.IPlayerMusicOptions;
 import net.aeronica.mods.mxtune.caps.player.MusicOptionsUtil;
-import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.network.server.ChunkToolMessage;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.Miscellus;
@@ -37,7 +36,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class SyncPlayerMusicOptionsMessage implements IMessage
+public class SyncPlayerMusicOptionsMessage
 {
     @CapabilityInject(IPlayerMusicOptions.class)
     private static final Capability<IPlayerMusicOptions> MUSIC_OPTIONS = Miscellus.nonNullInjected();

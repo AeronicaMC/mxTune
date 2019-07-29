@@ -17,17 +17,18 @@
 package net.aeronica.mods.mxtune.network.bidirectional;
 
 import net.aeronica.mods.mxtune.caps.player.MusicOptionsUtil;
-import net.aeronica.mods.mxtune.network.IMessage;
+import net.aeronica.mods.mxtune.gui.GuiGroup;
+import net.aeronica.mods.mxtune.gui.GuiMusicOptions;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkHooks;
 
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class SendKeyMessage implements IMessage
+public class SendKeyMessage
 {
     private final String keyBindingDesc;
 
@@ -58,14 +59,15 @@ public class SendKeyMessage implements IMessage
 
     private static void handleClientSide(final SendKeyMessage message, final Supplier<NetworkEvent.Context> ctx, ServerPlayerEntity player)
     {
+        Minecraft mc = Minecraft.getInstance();
         ctx.get().enqueueWork(()->{
             if ("mxtune.key.openParty".equalsIgnoreCase(message.keyBindingDesc))
             {
-                NetworkHooks.openGui(player, );
+                mc.enqueue(()->mc.displayGuiScreen(new GuiGroup()));
             }
             if ("mxtune.key.openMusicOptions".equalsIgnoreCase(message.keyBindingDesc))
             {
-                NetworkHooks.openGui(player, );
+                mc.enqueue(()->mc.displayGuiScreen(new GuiMusicOptions(null)));
             }
         });
         ctx.get().setPacketHandled(true);

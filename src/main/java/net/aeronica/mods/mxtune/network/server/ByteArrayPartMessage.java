@@ -17,7 +17,6 @@
 
 package net.aeronica.mods.mxtune.network.server;
 
-import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.network.MultiPacketSerializedObjectManager;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -27,7 +26,7 @@ import java.util.function.Supplier;
 
 import static net.aeronica.mods.mxtune.network.MultiPacketSerializedObjectManager.SerializedObjectPacket;
 
-public class ByteArrayPartMessage implements IMessage
+public class ByteArrayPartMessage
 {
     private final UUID serialObjectId;
     // part

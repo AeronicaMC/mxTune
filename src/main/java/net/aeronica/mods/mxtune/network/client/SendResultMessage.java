@@ -17,7 +17,6 @@
 
 package net.aeronica.mods.mxtune.network.client;
 
-import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.ITextComponent;
@@ -26,7 +25,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class SendResultMessage implements IMessage
+public class SendResultMessage
 {
     private final boolean errorResult;
     private final ITextComponent component;

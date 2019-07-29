@@ -25,7 +25,6 @@ import net.aeronica.mods.mxtune.gui.hud.GuiHudAdjust;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.server.MusicOptionsMessage;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -37,6 +36,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.client.GuiScrollingList;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import org.lwjgl.input.Keyboard;
@@ -82,8 +82,7 @@ public class GuiMusicOptions extends Screen
 
     public GuiMusicOptions(@Nullable Screen guiScreenIn)
     {
-        this.mc = Minecraft.getMinecraft();
-        player = mc.player;
+        super(new TranslationTextComponent(""));
         this.guiScreenOld = guiScreenIn;
         muteOption = MusicOptionsUtil.getMuteOption(player);
         midiUnavailable = MIDISystemUtil.midiUnavailable();
@@ -91,11 +90,12 @@ public class GuiMusicOptions extends Screen
     }
 
     @Override
-    public void initGui()
+    public void init()
     {
-        this.buttonList.clear();
-        guiListWidth = mc.fontRenderer.getStringWidth("MWMWMWMWMWMWMWMW") + 10 + 12;
-        entryHeight = mc.fontRenderer.FONT_HEIGHT + 2;
+        player = minecraft.player;
+        this.children.clear();
+        guiListWidth = minecraft.fontRenderer.getStringWidth("MWMWMWMWMWMWMWMW") + 10 + 12;
+        entryHeight = minecraft.fontRenderer.FONT_HEIGHT + 2;
         int y = (height - 100) / 3;
         int left = (width - ((guiListWidth * 3) + 24 + 24)) / 2;
         int listHeight = height - 32 - 100 + 4;
@@ -123,15 +123,15 @@ public class GuiMusicOptions extends Screen
         y += 22;
         GuiButtonExt buttonAdjHud = new GuiButtonExt(4, left, y, buttonWidth, 20, BUTTON_ADJ_HUD);
 
-        this.buttonList.add(buttonWhiteToPlayers);
-        this.buttonList.add(buttonPlayersToWhite);
-        this.buttonList.add(buttonPlayersToBlack);
-        this.buttonList.add(buttonBlackToPlayers);
+        this.children.add(buttonWhiteToPlayers);
+        this.children.add(buttonPlayersToWhite);
+        this.children.add(buttonPlayersToBlack);
+        this.children.add(buttonBlackToPlayers);
         
-        this.buttonList.add(buttonMuteOption);
-        this.buttonList.add(buttonCancel);
-        this.buttonList.add(buttonDone);
-        this.buttonList.add(buttonAdjHud);
+        this.children.add(buttonMuteOption);
+        this.children.add(buttonCancel);
+        this.children.add(buttonDone);
+        this.children.add(buttonAdjHud);
         
         reloadState();
     }
@@ -165,31 +165,31 @@ public class GuiMusicOptions extends Screen
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
-        drawDefaultBackground();
+        renderBackground();
         String localTITLE;
         if (midiUnavailable)
             localTITLE = TITLE + " - " + TextFormatting.RED + MIDI_NOT_AVAILABLE;
         else
             localTITLE = TITLE;
         /* draw "TITLE" at the top/right column middle */
-        int posX = (this.width - mc.fontRenderer.getStringWidth(localTITLE)) / 2 ;
+        int posX = (this.width - minecraft.fontRenderer.getStringWidth(localTITLE)) / 2 ;
         int posY = 10;
-        mc.fontRenderer.drawStringWithShadow(localTITLE, posX, posY, 0xD3D3D3);
+        minecraft.fontRenderer.drawStringWithShadow(localTITLE, posX, posY, 0xD3D3D3);
         
         /* draw list names - Whitelist */
-        posX = (this.listBoxWhite.getRight() - guiListWidth / 2) - (mc.fontRenderer.getStringWidth(LABEL_WHITELIST) / 2);
+        posX = (this.listBoxWhite.getRight() - guiListWidth / 2) - (minecraft.fontRenderer.getStringWidth(LABEL_WHITELIST) / 2);
         posY = 20;
-        mc.fontRenderer.drawStringWithShadow(LABEL_WHITELIST, posX, posY, 0xD3D3D3);
+        minecraft.fontRenderer.drawStringWithShadow(LABEL_WHITELIST, posX, posY, 0xD3D3D3);
 
         /* Players list */
-        posX = this.listBoxPlayers.getRight() - guiListWidth / 2 - (mc.fontRenderer.getStringWidth(LABEL_PLAYERS) / 2);
+        posX = this.listBoxPlayers.getRight() - guiListWidth / 2 - (minecraft.fontRenderer.getStringWidth(LABEL_PLAYERS) / 2);
         posY = 20;
-        mc.fontRenderer.drawStringWithShadow(LABEL_PLAYERS, posX, posY, 0xD3D3D3);
+        minecraft.fontRenderer.drawStringWithShadow(LABEL_PLAYERS, posX, posY, 0xD3D3D3);
 
         /* Blacklist */
-        posX = this.listBoxBlack.getRight() - guiListWidth / 2 - (mc.fontRenderer.getStringWidth(LABEL_BLACKLIST) / 2);
+        posX = this.listBoxBlack.getRight() - guiListWidth / 2 - (minecraft.fontRenderer.getStringWidth(LABEL_BLACKLIST) / 2);
         posY = 20;
-        mc.fontRenderer.drawStringWithShadow(LABEL_BLACKLIST, posX, posY, 0xD3D3D3);
+        minecraft.fontRenderer.drawStringWithShadow(LABEL_BLACKLIST, posX, posY, 0xD3D3D3);
 
         
         listBoxWhite.drawScreen(mouseX, mouseY, partialTicks);
@@ -199,7 +199,7 @@ public class GuiMusicOptions extends Screen
     }
 
     @Override
-    public void updateScreen() { /* NOP */ }
+    public void tick() { /* NOP */ }
 
     @Override
     protected void actionPerformed(Button guibutton)
@@ -218,17 +218,17 @@ public class GuiMusicOptions extends Screen
                 /* done */
                 sendOptionsToServer(this.muteOption);
                 MXTuneConfig.RegistrationHandler.sync();
-                mc.displayGuiScreen(guiScreenOld);
+                minecraft.displayGuiScreen(guiScreenOld);
                 break;
             case 2:
                 /* cancel */
                 MXTuneConfig.RegistrationHandler.sync();
-                mc.displayGuiScreen(guiScreenOld);
+                minecraft.displayGuiScreen(guiScreenOld);
                 break;
             case 4:
                 /* Adjust HUD */
                 sendOptionsToServer(this.muteOption);
-                this.mc.displayGuiScreen(new GuiHudAdjust(this));
+                this.minecraft.displayGuiScreen(new GuiHudAdjust(this));
                 break;
             case 11:
                 // Whitelist to NetPlayerList
@@ -291,7 +291,7 @@ public class GuiMusicOptions extends Screen
         GuiPlayerList(GuiMusicOptions parent, List<ClassifiedPlayer> playerListIn, int width, int height, int top, int bottom, int left)
         {
             super(parent.mc, width, height, top, bottom, left, parent.entryHeight, parent.width, parent.height);
-            fontRenderer = parent.mc.fontRenderer;
+            fontRenderer = parent.minecraft.fontRenderer;
             this.parent = parent;
             this.classifiedPlayers = playerListIn;
         }
@@ -342,7 +342,7 @@ public class GuiMusicOptions extends Screen
         private static void drawPing(GuiMusicOptions parent, int x, int sWidth, int y, ClassifiedPlayer playerInfo)
         {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            parent.mc.getTextureManager().bindTexture(ICONS);
+            parent.minecraft.getTextureManager().bindTexture(ICONS);
             int offset = playerInfo.isOnline() ? 0 : 5;
             parent.zLevel += 100.0F;
             parent.drawTexturedModalRect(sWidth + x - 11, y, 0, 176 + offset * 8, 10, 8);
@@ -382,9 +382,9 @@ public class GuiMusicOptions extends Screen
         whiteListedPlayers = MusicOptionsUtil.getWhiteList(player);
         blackListedPlayers = MusicOptionsUtil.getBlackList(player);
 
-        if (!(this.mc.isIntegratedServerRunning() && this.mc.player.connection.getPlayerInfoMap().size() <= 1))
+        if (!(this.minecraft.isIntegratedServerRunning() && this.minecraft.player.connection.getPlayerInfoMap().size() <= 1))
         {
-            ClientPlayNetHandler nethandlerplayclient = this.mc.player.connection;
+            ClientPlayNetHandler nethandlerplayclient = this.minecraft.player.connection;
             List<net.minecraft.client.network.play.NetworkPlayerInfo> list = ENTRY_ORDERING.sortedCopy(nethandlerplayclient.getPlayerInfoMap());
             for (net.minecraft.client.network.play.NetworkPlayerInfo networkplayerinfo : list)
             {

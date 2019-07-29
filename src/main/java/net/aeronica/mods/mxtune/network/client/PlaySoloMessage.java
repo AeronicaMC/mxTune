@@ -17,7 +17,6 @@
 package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.managers.GroupHelper;
-import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.network.NetworkStringHelper;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,7 +32,7 @@ import static net.aeronica.mods.mxtune.caps.player.MusicOptionsUtil.playerNotMut
 import static net.aeronica.mods.mxtune.managers.GroupHelper.getSoloMemberByPlayID;
 import static net.aeronica.mods.mxtune.util.MIDISystemUtil.midiUnavailableWarn;
 
-public class PlaySoloMessage implements IMessage
+public class PlaySoloMessage
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private final int playID;

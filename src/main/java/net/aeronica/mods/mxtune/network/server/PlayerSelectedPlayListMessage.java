@@ -18,7 +18,6 @@
 package net.aeronica.mods.mxtune.network.server;
 
 import net.aeronica.mods.mxtune.caps.player.MusicOptionsUtil;
-import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -26,7 +25,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class PlayerSelectedPlayListMessage implements IMessage
+public class PlayerSelectedPlayListMessage
 {
     private final GUID selectedAreaGuid;
     private final long ddddSigBits;

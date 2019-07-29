@@ -16,7 +16,6 @@
  */
 package net.aeronica.mods.mxtune.network.client;
 
-import net.aeronica.mods.mxtune.network.IMessage;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -24,7 +23,7 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import java.util.function.Supplier;
 
-public class JoinGroupMessage implements IMessage
+public class JoinGroupMessage
 {
     private final int groupID;
 

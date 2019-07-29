@@ -16,14 +16,13 @@
  */
 package net.aeronica.mods.mxtune.network.client;
 
-import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class StopPlayIDMessage implements IMessage
+public class StopPlayIDMessage
 {
     private final int playID;
 

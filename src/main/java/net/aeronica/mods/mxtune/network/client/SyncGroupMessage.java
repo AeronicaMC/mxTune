@@ -17,13 +17,12 @@
 package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.managers.GroupHelper;
-import net.aeronica.mods.mxtune.network.IMessage;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class SyncGroupMessage implements IMessage
+public class SyncGroupMessage
 {
     private final String groups;
     private final String members;

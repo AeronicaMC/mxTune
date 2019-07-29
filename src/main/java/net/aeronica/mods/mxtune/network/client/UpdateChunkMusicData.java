@@ -17,7 +17,6 @@
 package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.caps.chunk.ModChunkPlaylistHelper;
-import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -27,7 +26,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class UpdateChunkMusicData implements IMessage
+public class UpdateChunkMusicData
 {
     private final int chunkX;
     private final int chunkZ;

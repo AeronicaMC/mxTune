@@ -18,7 +18,6 @@ package net.aeronica.mods.mxtune.network.server;
 
 import net.aeronica.mods.mxtune.caps.chunk.ModChunkPlaylistHelper;
 import net.aeronica.mods.mxtune.caps.player.MusicOptionsUtil;
-import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.ResetClientPlayEngine;
 import net.aeronica.mods.mxtune.util.GUID;
@@ -32,7 +31,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class ChunkToolMessage implements IMessage
+public class ChunkToolMessage
 {
     private final Operation op;
 

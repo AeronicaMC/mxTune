@@ -24,7 +24,6 @@ import net.aeronica.mods.mxtune.managers.records.RecordType;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.mxt.MXTuneFile;
 import net.aeronica.mods.mxtune.mxt.MXTuneFileHelper;
-import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.MXTuneException;
@@ -43,7 +42,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.function.Supplier;
 
-public class GetServerDataMessage implements IMessage
+public class GetServerDataMessage
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private final RecordType recordType;

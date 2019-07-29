@@ -17,14 +17,13 @@
 package net.aeronica.mods.mxtune.network.server;
 
 import net.aeronica.mods.mxtune.caps.player.MusicOptionsUtil;
-import net.aeronica.mods.mxtune.network.IMessage;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class HudOptionsMessage implements IMessage
+public class HudOptionsMessage
 {
     private final int positionHud;
     private final boolean disableHud;

@@ -16,7 +16,6 @@
  */
 package net.aeronica.mods.mxtune.network.client;
 
-import net.aeronica.mods.mxtune.network.IMessage;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.SoundEvent;
@@ -26,7 +25,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.function.Supplier;
 
-public class AudiblePingPlayerMessage implements IMessage
+public class AudiblePingPlayerMessage
 {
     private final SoundEvent soundEvent;
 

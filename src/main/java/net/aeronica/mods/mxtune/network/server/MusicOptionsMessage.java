@@ -18,7 +18,6 @@ package net.aeronica.mods.mxtune.network.server;
 
 import net.aeronica.mods.mxtune.caps.player.ClassifiedPlayer;
 import net.aeronica.mods.mxtune.caps.player.MusicOptionsUtil;
-import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -29,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class MusicOptionsMessage implements IMessage
+public class MusicOptionsMessage
 {
     
     private final int muteOption;

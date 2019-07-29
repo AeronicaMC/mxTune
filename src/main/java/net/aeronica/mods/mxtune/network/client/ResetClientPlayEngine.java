@@ -18,13 +18,12 @@
 package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.managers.ClientPlayManager;
-import net.aeronica.mods.mxtune.network.IMessage;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class ResetClientPlayEngine implements IMessage
+public class ResetClientPlayEngine
 {
     public ResetClientPlayEngine() { /* NOP */ }
 

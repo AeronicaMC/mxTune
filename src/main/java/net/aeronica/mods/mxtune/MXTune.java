@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune;
 
-import net.aeronica.mods.mxtune.advancements.ModCriteriaTriggers;
+
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.caps.chunk.ModChunkPlaylistCap;
 import net.aeronica.mods.mxtune.caps.player.PlayerMusicOptionsCapability;
@@ -43,7 +43,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLFingerprintViolationEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,7 +50,6 @@ import org.apache.logging.log4j.Logger;
 public class MXTune
 {
     private static final Logger LOGGER = LogManager.getLogger(Reference.MOD_ID);
-    private static SimpleChannel network = PacketDispatcher.getNetworkChannel();
 
     //@SidedProxy(clientSide = "net.aeronica.mods.mxtune.proxy.ClientProxy", serverSide = "net.aeronica.mods.mxtune.proxy.ServerProxy")
     public static ServerProxy proxy;
@@ -76,9 +74,10 @@ public class MXTune
         LOGGER.debug("SimpleChannel: {}", network);
     }
 
-    private void setup(final FMLCommonSetupEvent event)
+    private void commonSetup(final FMLCommonSetupEvent event)
     {
         // some preinit code
+        PacketDispatcher.register();
         ModCriteriaTriggers.init();
         ModWorldPlaylistCap.register();
         ModChunkPlaylistCap.register();

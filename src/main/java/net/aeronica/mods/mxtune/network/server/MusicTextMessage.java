@@ -18,7 +18,6 @@ package net.aeronica.mods.mxtune.network.server;
 
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.items.ItemMusicPaper;
-import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.network.NetworkStringHelper;
 import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
@@ -32,7 +31,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import java.util.function.Supplier;
 
 
-public class MusicTextMessage implements IMessage
+public class MusicTextMessage
 {
     private final String musicTitle;
     private final String musicText;

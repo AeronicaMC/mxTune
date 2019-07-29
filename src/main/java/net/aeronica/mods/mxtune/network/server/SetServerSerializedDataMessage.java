@@ -39,7 +39,6 @@ import net.aeronica.mods.mxtune.managers.ServerFileManager;
 import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.aeronica.mods.mxtune.managers.records.RecordType;
 import net.aeronica.mods.mxtune.mxt.MXTuneFile;
-import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.network.NetworkSerializedHelper;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.SendResultMessage;
@@ -55,7 +54,7 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class SetServerSerializedDataMessage implements IMessage
+public class SetServerSerializedDataMessage
 {
     private final RecordType recordType;
     private final Serializable baseData;

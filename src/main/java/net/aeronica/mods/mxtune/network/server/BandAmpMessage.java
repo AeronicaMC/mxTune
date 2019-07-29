@@ -18,7 +18,6 @@ package net.aeronica.mods.mxtune.network.server;
 
 import net.aeronica.mods.mxtune.blocks.TileBandAmp;
 import net.aeronica.mods.mxtune.caps.player.MusicOptionsUtil;
-import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.world.IModLockableContainer;
 import net.aeronica.mods.mxtune.world.OwnerUUID;
@@ -37,7 +36,7 @@ import java.util.function.Supplier;
 
 import static net.aeronica.mods.mxtune.util.Miscellus.audiblePingPlayer;
 
-public class BandAmpMessage implements IMessage
+public class BandAmpMessage
 {
     private final boolean lockContainer;
     private final BlockPos pos;

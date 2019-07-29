@@ -20,7 +20,6 @@ package net.aeronica.mods.mxtune.network.bidirectional;
 import net.aeronica.mods.mxtune.managers.ServerFileManager;
 import net.aeronica.mods.mxtune.managers.records.BaseData;
 import net.aeronica.mods.mxtune.managers.records.RecordType;
-import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.util.CallBack;
 import net.aeronica.mods.mxtune.util.CallBackManager;
@@ -38,7 +37,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class GetBaseDataListsMessage<E extends BaseData> implements IMessage
+public class GetBaseDataListsMessage<E extends BaseData>
 {
     private final RecordType recordType;
     private final long callbackUuidMSB;

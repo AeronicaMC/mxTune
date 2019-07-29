@@ -18,7 +18,6 @@ package net.aeronica.mods.mxtune.network.bidirectional;
 
 import net.aeronica.mods.mxtune.managers.ClientFileManager;
 import net.aeronica.mods.mxtune.managers.records.RecordType;
-import net.aeronica.mods.mxtune.network.IMessage;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.status.ClientStateData;
@@ -32,7 +31,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class ClientStateDataMessage implements IMessage
+public class ClientStateDataMessage
 {
     private final ClientStateData csd;
     private final long serverIdUuidMSB;

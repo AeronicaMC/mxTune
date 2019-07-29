@@ -18,13 +18,12 @@ package net.aeronica.mods.mxtune.network.server;
 
 import net.aeronica.mods.mxtune.managers.GroupHelper;
 import net.aeronica.mods.mxtune.managers.GroupManager;
-import net.aeronica.mods.mxtune.network.IMessage;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class ManageGroupMessage implements IMessage
+public class ManageGroupMessage
 {
     private final int operation;
     private final int groupID;
