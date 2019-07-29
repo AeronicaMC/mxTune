@@ -47,7 +47,7 @@ public class ItemStaffOfMusic extends Item
     public ItemStaffOfMusic()
     {
         this.setMaxStackSize(1);
-        this.setCreativeTab(MXTune.TAB_MUSIC);
+        this.setCreativeTab(MXTune.TAB);
     }
 
     @Override

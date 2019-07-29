@@ -37,7 +37,7 @@ public class ItemMusicPaper extends Item
     public ItemMusicPaper()
     {
         this.setMaxStackSize(16);
-        this.setCreativeTab(MXTune.TAB_MUSIC);
+        this.setCreativeTab(MXTune.TAB);
     }
 
     @Override

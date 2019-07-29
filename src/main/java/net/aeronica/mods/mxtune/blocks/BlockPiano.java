@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/*
+
 package net.aeronica.mods.mxtune.blocks;
 
 import com.google.common.collect.Lists;
@@ -468,4 +468,3 @@ public class BlockPiano extends HorizontalBlock implements IPlacedInstrument
     }
 }
 
-*/

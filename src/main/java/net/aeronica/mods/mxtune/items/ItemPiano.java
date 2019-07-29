@@ -38,7 +38,7 @@ public class ItemPiano extends Item
     public ItemPiano()
     {
         setMaxStackSize(1);
-        setCreativeTab(MXTune.TAB_MUSIC);
+        setCreativeTab(MXTune.TAB);
     }
 
     /** Called when a Block is right-clicked with this Item */

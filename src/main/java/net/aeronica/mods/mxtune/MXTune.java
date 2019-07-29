@@ -17,12 +17,13 @@
 package net.aeronica.mods.mxtune;
 
 
+import net.aeronica.mods.mxtune.blocks.BlockBandAmp;
+import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.caps.chunk.ModChunkPlaylistCap;
 import net.aeronica.mods.mxtune.caps.player.PlayerMusicOptionsCapability;
 import net.aeronica.mods.mxtune.caps.world.ModWorldPlaylistCap;
 import net.aeronica.mods.mxtune.config.MXTuneConfig;
-import net.aeronica.mods.mxtune.init.ModBlocks;
 import net.aeronica.mods.mxtune.managers.DurationTimer;
 import net.aeronica.mods.mxtune.managers.ServerFileManager;
 import net.aeronica.mods.mxtune.network.MultiPacketSerializedObjectManager;
@@ -31,9 +32,14 @@ import net.aeronica.mods.mxtune.proxy.ServerProxy;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.CallBackManager;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
+import net.aeronica.mods.mxtune.util.Miscellus;
+import net.minecraft.block.Block;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -43,6 +49,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLFingerprintViolationEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.ObjectHolder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -54,10 +61,10 @@ public class MXTune
     //@SidedProxy(clientSide = "net.aeronica.mods.mxtune.proxy.ClientProxy", serverSide = "net.aeronica.mods.mxtune.proxy.ServerProxy")
     public static ServerProxy proxy;
 
-    public static final ItemGroup TAB_MUSIC =  new ItemGroup(Reference.MOD_ID) {
+    public static final ItemGroup TAB =  new ItemGroup(Reference.MOD_ID) {
         @Override
         public ItemStack createIcon() {
-            return new ItemStack(ModBlocks.SPINET_PIANO);
+            return new ItemStack(ObjectHolders.SPINET_PIANO);
         }
     };
 
@@ -65,13 +72,12 @@ public class MXTune
     {
         MXTuneConfig.register(ModLoadingContext.get());
         // Register the setup method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
         // Register the doClientStuff method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
-        LOGGER.debug("SimpleChannel: {}", network);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
@@ -87,7 +93,7 @@ public class MXTune
         LOGGER.info("HELLO FROM PREINIT");
     }
 
-    private void doClientStuff(final FMLClientSetupEvent event) {
+    private void clientSetup(final FMLClientSetupEvent event) {
         // do something that can only be done on the client
         LOGGER.info("Got game settings {}", event.getMinecraftSupplier().get().gameSettings);
         MIDISystemUtil.mxTuneInit();
@@ -137,6 +143,23 @@ public class MXTune
         CallBackManager.shutdown();
         MultiPacketSerializedObjectManager.shutdown();
     }
+
+    @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
+    public static class RegistryEvents {
+        @SubscribeEvent
+        public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent) {
+            blockRegistryEvent.getRegistry().register(new BlockPiano().setRegistryName("spinet_piano"));
+            blockRegistryEvent.getRegistry().register(new BlockBandAmp().setRegistryName("band_amp"));
+        }
+
+        @SubscribeEvent
+        public static void onItemsRegistry(final RegistryEvent.Register<Item> itemRegistryEvent)
+        {
+            Item.Properties properties = new Item.Properties().maxStackSize(1).group(TAB);
+
+            itemRegistryEvent.getRegistry().register(new BlockItem(ObjectHolders.BAND_AMP, properties).setRegistryName("band_amp"));
+        }
+    }
     // TODO: Need a replacement for these
 //    @SubscribeEvent
 //    void onEvent(ClientConnectedToServerEvent event)
@@ -149,4 +172,11 @@ public class MXTune
 //    {
 //        proxy.clientDisconnect(event);
 //    }
+
+    @ObjectHolder(Reference.MOD_ID)
+    public static class ObjectHolders
+    {
+        public static final BlockPiano SPINET_PIANO = Miscellus.nonNullInjected();
+        public static final BlockBandAmp BAND_AMP = Miscellus.nonNullInjected();
+    }
 }

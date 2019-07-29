@@ -63,7 +63,7 @@ public class ItemInstrument extends Item implements IInstrument
         setHasSubtypes(true);
         setMaxStackSize(1);
         setMaxDamage(0);
-        setCreativeTab(MXTune.TAB_MUSIC);
+        setCreativeTab(MXTune.TAB);
     }
 
     @Override

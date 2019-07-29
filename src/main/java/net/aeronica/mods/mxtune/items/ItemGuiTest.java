@@ -38,7 +38,7 @@ public class ItemGuiTest extends Item
     public ItemGuiTest()
     {
         this.setMaxStackSize(1);
-        this.setCreativeTab(MXTune.TAB_MUSIC);
+        this.setCreativeTab(MXTune.TAB);
     }
 
     @Override

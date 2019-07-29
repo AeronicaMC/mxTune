@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/*
+
 package net.aeronica.mods.mxtune.blocks;
 
 import net.aeronica.mods.mxtune.MXTune;
@@ -70,7 +70,7 @@ public class BlockBandAmp extends HorizontalBlock implements IMusicPlayer
         this.setHardness(2.0F);
         this.disableStats();
         this.needsRandomTick = true;
-        this.setCreativeTab(MXTune.TAB_MUSIC);
+        this.setCreativeTab(MXTune.TAB);
     }
 
     @Override
@@ -415,4 +415,3 @@ public class BlockBandAmp extends HorizontalBlock implements IMusicPlayer
     }
 }
 
-*/

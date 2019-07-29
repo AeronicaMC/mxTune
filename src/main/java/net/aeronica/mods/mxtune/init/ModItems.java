@@ -58,7 +58,7 @@ public class ModItems
     public static final ItemMusicPaper ITEM_MUSIC_PAPER = registerItem(new ItemMusicPaper(), "music_paper");
     public static final ItemSheetMusic ITEM_SHEET_MUSIC = registerItem(new ItemSheetMusic(), "sheet_music");
 //    public static final ItemPiano ITEM_SPINET_PIANO = registerItem(new ItemPiano(), "spinet_piano");
-//    public static final BlockItem ITEM_BAND_AMP = (BlockItem) registerItem((new BlockItem(ModBlocks.BAND_AMP).setCreativeTab(MXTune.TAB_MUSIC)), "band_amp");
+//    public static final BlockItem ITEM_BAND_AMP = (BlockItem) registerItem((new BlockItem(ModBlocks.BAND_AMP).setCreativeTab(MXTune.TAB)), "band_amp");
     public static final Item ITEM_PLACE_HOLDER = registerItem(new ItemGuiTest(), "place_holder");
     public static final ItemStaffOfMusic ITEM_STAFF_OF_MUSIC = registerItem(new ItemStaffOfMusic(), "staff_of_music");
     public static final ItemGuiTest ITEM_GUI_TEST = registerItem(new ItemGuiTest(), "gui_test");

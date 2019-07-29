@@ -39,7 +39,7 @@ public class ItemChunkTool extends Item
     public ItemChunkTool()
     {
         this.setMaxStackSize(1);
-        this.setCreativeTab(MXTune.TAB_MUSIC);
+        this.setCreativeTab(MXTune.TAB);
     }
 
     @Override
