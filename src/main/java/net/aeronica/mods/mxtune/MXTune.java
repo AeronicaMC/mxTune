@@ -171,7 +171,7 @@ public class MXTune
     @ObjectHolder(Reference.MOD_ID)
     public static class ObjectHolders
     {
-        public static final BlockPiano SPINET_PIANO = Miscellus.nonNullInjected();
-        public static final BlockBandAmp BAND_AMP = Miscellus.nonNullInjected();
+        public static final Block SPINET_PIANO = Miscellus.nonNullInjected();
+        public static final Block BAND_AMP = Miscellus.nonNullInjected();
     }
 }
