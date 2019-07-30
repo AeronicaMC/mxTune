@@ -24,6 +24,7 @@ import net.aeronica.mods.mxtune.caps.chunk.ModChunkPlaylistCap;
 import net.aeronica.mods.mxtune.caps.player.PlayerMusicOptionsCapability;
 import net.aeronica.mods.mxtune.caps.world.ModWorldPlaylistCap;
 import net.aeronica.mods.mxtune.config.MXTuneConfig;
+import net.aeronica.mods.mxtune.handler.KeyHandler;
 import net.aeronica.mods.mxtune.managers.DurationTimer;
 import net.aeronica.mods.mxtune.managers.ServerFileManager;
 import net.aeronica.mods.mxtune.network.MultiPacketSerializedObjectManager;
@@ -45,7 +46,6 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLFingerprintViolationEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -71,9 +71,7 @@ public class MXTune
     public MXTune()
     {
         MXTuneConfig.register(ModLoadingContext.get());
-        // Register the setup method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
-        // Register the doClientStuff method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
 
         // Register ourselves for server and other game events we are interested in
@@ -82,9 +80,8 @@ public class MXTune
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
-        // some preinit code
         PacketDispatcher.register();
-        ModCriteriaTriggers.init();
+        //ModCriteriaTriggers.init();
         ModWorldPlaylistCap.register();
         ModChunkPlaylistCap.register();
         PlayerMusicOptionsCapability.register();
@@ -96,6 +93,7 @@ public class MXTune
     private void clientSetup(final FMLClientSetupEvent event) {
         // do something that can only be done on the client
         LOGGER.info("Got game settings {}", event.getMinecraftSupplier().get().gameSettings);
+        MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());
         MIDISystemUtil.mxTuneInit();
         MinecraftForge.EVENT_BUS.register(ClientAudio.class);
     }
@@ -116,11 +114,6 @@ public class MXTune
 //    {
 //        proxy.registerHUD();
 //    }
-
-    @SubscribeEvent
-    public void onEvent(FMLFingerprintViolationEvent event) {
-        LOGGER.warn("*** [mxTune] Invalid fingerprint detected! ***");
-    }
 
     @SubscribeEvent
     public void onEvent(FMLServerStartingEvent event)
@@ -145,9 +138,11 @@ public class MXTune
     }
 
     @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
-    public static class RegistryEvents {
+    public static class RegistryEvents
+    {
         @SubscribeEvent
-        public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent) {
+        public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent)
+        {
             blockRegistryEvent.getRegistry().register(new BlockPiano().setRegistryName("spinet_piano"));
             blockRegistryEvent.getRegistry().register(new BlockBandAmp().setRegistryName("band_amp"));
         }
@@ -160,7 +155,7 @@ public class MXTune
             itemRegistryEvent.getRegistry().register(new BlockItem(ObjectHolders.BAND_AMP, properties).setRegistryName("band_amp"));
         }
     }
-    // TODO: Need a replacement for these
+    // TODO: Need a replacement for these?
 //    @SubscribeEvent
 //    void onEvent(ClientConnectedToServerEvent event)
 //    {

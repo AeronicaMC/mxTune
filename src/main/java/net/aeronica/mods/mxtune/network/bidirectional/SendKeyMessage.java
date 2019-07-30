@@ -17,10 +17,7 @@
 package net.aeronica.mods.mxtune.network.bidirectional;
 
 import net.aeronica.mods.mxtune.caps.player.MusicOptionsUtil;
-import net.aeronica.mods.mxtune.gui.GuiGroup;
-import net.aeronica.mods.mxtune.gui.GuiMusicOptions;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -59,15 +56,16 @@ public class SendKeyMessage
 
     private static void handleClientSide(final SendKeyMessage message, final Supplier<NetworkEvent.Context> ctx, ServerPlayerEntity player)
     {
-        Minecraft mc = Minecraft.getInstance();
         ctx.get().enqueueWork(()->{
             if ("mxtune.key.openParty".equalsIgnoreCase(message.keyBindingDesc))
             {
-                mc.enqueue(()->mc.displayGuiScreen(new GuiGroup()));
+                assert true : "Must setup a screen handler";
+                //mc.enqueue(()->mc.displayGuiScreen(new GuiGroup()));
             }
             if ("mxtune.key.openMusicOptions".equalsIgnoreCase(message.keyBindingDesc))
             {
-                mc.enqueue(()->mc.displayGuiScreen(new GuiMusicOptions(null)));
+                assert true : "Must setup a screen handler";
+                //mc.enqueue(()->mc.displayGuiScreen(new GuiMusicOptions(null)));
             }
         });
         ctx.get().setPacketHandled(true);

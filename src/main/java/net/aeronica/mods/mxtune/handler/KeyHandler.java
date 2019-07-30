@@ -46,7 +46,7 @@ public class KeyHandler
     public void tick(InputEvent.KeyInputEvent event)
     {
         int key = event.getKey();
-        boolean isDown = event.getAction() == GLFW.GLFW_PRESS;
+        boolean isDown = event.getAction() == (GLFW.GLFW_PRESS & GLFW.GLFW_REPEAT);
         if (keyOpenPartyGUI.isPressed())
         {
             PacketDispatcher.sendToServer(new SendKeyMessage(keyOpenPartyGUI.getKeyDescription()));
@@ -56,14 +56,14 @@ public class KeyHandler
             PacketDispatcher.sendToServer(new SendKeyMessage(keyOpenMusicOptionsGUI.getKeyDescription()));
         }
         event.getKey();
-        if (isDown && (key == GLFW.GLFW_KEY_LEFT_CONTROL) && !ctrlKeyDown)
-        {
-            PacketDispatcher.sendToServer(new SendKeyMessage("ctrl-down"));
-            ctrlKeyDown = !ctrlKeyDown;
-        }
-        if (!isDown && (key == GLFW.GLFW_KEY_LEFT_CONTROL) && ctrlKeyDown)
+        if (isDown && (key == GLFW.GLFW_KEY_LEFT_CONTROL) && ctrlKeyDown)
         {
             PacketDispatcher.sendToServer(new SendKeyMessage("ctrl-up"));
+            ctrlKeyDown = !ctrlKeyDown;
+        }
+        if (!isDown && (key == GLFW.GLFW_KEY_LEFT_CONTROL) && !ctrlKeyDown)
+        {
+            PacketDispatcher.sendToServer(new SendKeyMessage("ctrl-down"));
             ctrlKeyDown = !ctrlKeyDown;
         }
     }
