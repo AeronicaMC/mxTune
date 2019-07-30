@@ -80,6 +80,7 @@ public class PlayerMusicOptionsCapability
                 // final LivingEntityModCap livingEntityModCap = new LivingEntityModCap((LivingEntity) event.getObject());
                 final IPlayerMusicOptions playerMusicOptions = new PlayerMusicDefImpl((LivingEntity) event.getObject());
                 event.addCapability(ID, new SerializableCapabilityProvider<>(MUSIC_OPTIONS, null, playerMusicOptions));
+                event.addListener(()->getOptionsCap((LivingEntity) event.getObject()).invalidate());
                 LOGGER.debug("PlayerMusicOptionsCapability");
             }
         }

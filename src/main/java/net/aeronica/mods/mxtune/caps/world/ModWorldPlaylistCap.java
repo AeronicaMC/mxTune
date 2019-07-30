@@ -81,6 +81,7 @@ public class ModWorldPlaylistCap
     {
         final ModWorldPlaylistImpl worldPlaylist = new ModWorldPlaylistImpl(event.getObject());
         event.addCapability(ID, new SerializableCapabilityProvider<>(MOD_WORLD_DATA, null, worldPlaylist));
+        event.addListener(()->getWorldCap(event.getObject()).invalidate());
         LOGGER.debug("ModWorldPlaylistCap AttachCapabilitiesEvent {}", event.getObject());
     }
 

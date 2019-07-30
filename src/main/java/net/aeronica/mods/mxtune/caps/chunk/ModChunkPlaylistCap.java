@@ -79,6 +79,7 @@ public class ModChunkPlaylistCap
     {
         final ModChunkPlaylistImpl chunkPlaylist = new ModChunkPlaylistImpl(event.getObject());
         event.addCapability(ID, new SerializableCapabilityProvider<>(MOD_CHUNK_DATA, null, chunkPlaylist));
+        event.addListener(()->getChunkCap(event.getObject()).invalidate());
         LOGGER.debug("ModChunkPlaylistCap AttachCapabilitiesEvent {}", event.getObject());
     }
 
