@@ -73,6 +73,11 @@ dependencies {
     runtime "mezz.jei:jei_${config.minecraftVersion}:${config.jeiVersion}"
 }
 
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.compilerArgs.addAll(['-Xlint:unchecked', '-Xlint:deprecation'])
+}
+
 shadowJar {
     // only include compile time dependencies
     configurations = [project.configurations.compile]
