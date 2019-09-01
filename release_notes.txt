@@ -1,3 +1,16 @@
+2019-06-11 mxtune-1.12.2-0.7.0-beta.6
+
+Fixes:
+ * CF #19: Client Crash - CME- mxtune.util.MXTuneRuntimeException: java.util.ConcurrentModificationException
+   Added a synchronized block around the ModelLoaderRegistry#getModel method call in the spinet piano renderer.
+
+Additions:
+ * Add a title field to the PlayList class record. Update the playlist
+   management GUI to allow adding/editing/saving the title. Update the
+   ClientPlayManager class to display the playlist title as an onscreen
+   notification when the player enters a chunk (chunk playlist change).
+
+----
 2019-06-11 mxtune-1.12.2-0.7.0-beta.5
 
 Fixes:
