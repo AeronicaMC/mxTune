@@ -1,4 +1,11 @@
-2019-06-11 mxtune-1.12.2-0.7.0-beta.6
+2019-09-15 mxtune-1.12.2-0.7.0-beta.7
+Fixes:
+ * GitHub #3: NullPointerException in Jam Overlay: java.lang.NullPointerException
+   at net.aeronica.mods.mxtune.gui.hud.GuiJamOverlay.processGroup(GuiJamOverlay.java:258)
+   Properly check for null entity when using World#getEntityByID.
+
+----
+2019-09-01 mxtune-1.12.2-0.7.0-beta.6
 
 Fixes:
  * CF #19: Client Crash - CME- mxtune.util.MXTuneRuntimeException: java.util.ConcurrentModificationException
