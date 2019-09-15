@@ -30,6 +30,8 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 
+import javax.annotation.Nullable;
+
 public class ServerProxy
 {
     public void preInit() { /*  NOP */ }
@@ -51,6 +53,7 @@ public class ServerProxy
 
     public EntityPlayer getClientPlayer() { return null; }
 
+    @Nullable
     public EntityPlayer getPlayerByEntityID(int entityID)
     {
         return (EntityPlayer) FMLCommonHandler.instance().getMinecraftServerInstance().getEntityWorld().getEntityByID(entityID);

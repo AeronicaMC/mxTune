@@ -236,12 +236,13 @@ public class GuiJamOverlay extends Gui
 
         groupID = GroupHelper.getMembersGroupID(playerIn.getEntityId());
         // Only draw if player is a member of a group
-        if (groupID != null)
+        if (groupID != -1)
         {
             /* Always add the leader at the HEAD of the list */
             leaderID = GroupHelper.getLeaderOfGroup(groupID);
-            //noinspection ConstantConditions
-            memberName = MXTune.proxy.getPlayerByEntityID(leaderID).getName();
+
+            EntityPlayer entityLeader = MXTune.proxy.getPlayerByEntityID(leaderID);
+            memberName = (entityLeader != null) ? entityLeader.getName() : "***Error***";
             memberNameWidth = fontRenderer.getStringWidth(memberName);
             playStatus = GroupHelper.getIndex(leaderID);
             notePos = new Tuple<>(notePosMembers[index][0], notePosMembers[index][1]);
@@ -253,9 +254,10 @@ public class GuiJamOverlay extends Gui
             Set<Integer> set = GroupHelper.getClientMembers().keySet();
             for (Integer memberID : set)
             {
-                if (groupID.equals(GroupHelper.getMembersGroupID(memberID)) && !memberID.equals(GroupHelper.getLeaderOfGroup(groupID)))
+                EntityPlayer entityMember = MXTune.proxy.getPlayerByEntityID(memberID);
+                if (groupID.equals(GroupHelper.getMembersGroupID(memberID)) && !memberID.equals(GroupHelper.getLeaderOfGroup(groupID)) && entityMember != null)
                 {
-                    memberName = MXTune.proxy.getPlayerByEntityID(memberID).getName();
+                    memberName = entityMember.getName();
                     memberNameWidth = fontRenderer.getStringWidth(memberName);
                     playStatus = GroupHelper.getIndex(memberID);
                     notePos = new Tuple<>(notePosMembers[index][0], notePosMembers[index][1]);
@@ -542,7 +544,7 @@ public class GuiJamOverlay extends Gui
         if (GroupHelper.getClientGroups() != null || GroupHelper.getClientMembers() != null)
         {
             /* Only draw if player is a member of a group */
-            if (GroupHelper.getMembersGroupID(playerIn.getEntityId()) != null)
+            if (GroupHelper.getMembersGroupID(playerIn.getEntityId()) != -1)
             {
                 for (GroupData gd: groupData)
                 {
@@ -572,7 +574,7 @@ public class GuiJamOverlay extends Gui
         if (GroupHelper.getClientGroups() != null || GroupHelper.getClientMembers() != null)
         {
             /* Only draw if player is a member of a group */
-            if (GroupHelper.getMembersGroupID(playerIn.getEntityId()) != null)
+            if (GroupHelper.getMembersGroupID(playerIn.getEntityId()) != -1)
             {
                 int oddEven = 1;
                 for (GroupData gd: groupData)

@@ -24,16 +24,16 @@ import java.util.Set;
 public class Group
 {
     public static final Group EMPTY = new Group();
-    private Integer groupID;
+    private int groupID;
     private int playID;
     private int maxDuration;
-    private Integer leaderEntityID;
+    private int leaderEntityID;
     private Set<Member> members;
 
     // The EMPTY group
     private Group() { this.members = Collections.unmodifiableSet(Collections.emptySet()); }
 
-    public Group(Integer groupID, Integer leaderEntityID)
+    public Group(int groupID, int leaderEntityID)
     {
         this.groupID = groupID;
         this.leaderEntityID = leaderEntityID;
@@ -42,14 +42,14 @@ public class Group
         playID = PlayIdSupplier.PlayType.INVALID;
     }
 
-    public Integer getGroupID() { return groupID; }
+    public int getGroupID() { return groupID; }
 
     void setLeaderEntityID(Integer leaderEntityID)
     {
         this.leaderEntityID = leaderEntityID;
     }
 
-    Integer getLeaderEntityID() { return leaderEntityID; }
+    int getLeaderEntityID() { return leaderEntityID; }
 
     Set<Member> getMembers() { return members; }
 

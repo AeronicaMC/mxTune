@@ -38,6 +38,8 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 
+import javax.annotation.Nullable;
+
 import static net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import static net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 
@@ -74,6 +76,7 @@ public class ClientProxy extends ServerProxy
     @Override
     public EntityPlayer getClientPlayer() { return Minecraft.getMinecraft().player; }
 
+    @Nullable
     @Override
     public EntityPlayer getPlayerByEntityID(int entityID)
     {

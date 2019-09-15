@@ -59,32 +59,31 @@ public class GroupHelper
     private GroupHelper() { /* NOP */ }
 
     /* GroupManager Client Status Methods */
-    @Nullable
-    public static Integer getLeaderOfGroup(Integer leaderID)
+    public static int getLeaderOfGroup(int leaderID)
     {
-        return GroupHelper.clientGroups.get(leaderID);
+        Integer leader = GroupHelper.clientGroups.get(leaderID);
+        return (leader != null) ? leader : -1;
     }
 
-    public static int getMembersGroupLeader(@Nullable Integer memberID){
-        Integer leaderId = getLeaderOfGroup(getMembersGroupID(memberID));
-        return leaderId != null ? leaderId : -1;
+    public static int getMembersGroupLeader(int memberID){
+        return getLeaderOfGroup(getMembersGroupID(memberID));
     }
 
-    @Nullable
-    public static Integer getMembersGroupID(@Nullable Integer memberID)
+    public static int getMembersGroupID(int memberID)
     {
-        return GroupHelper.clientMembers.get(memberID);
+        Integer groupID = GroupHelper.clientMembers.get(memberID);
+        return (groupID != null) ? GroupHelper.clientMembers.get(memberID) : -1;
     }
 
     private static Set<Integer> getPlayersGroupMembers(EntityPlayer playerIn)
     {
-        Integer groupID = GroupHelper.getMembersGroupID(playerIn.getEntityId());
-        if(groupID != null)
+        int groupID = GroupHelper.getMembersGroupID(playerIn.getEntityId());
+        if(groupID != -1)
         {
             Set<Integer> members = Sets.newHashSet();
             for (Integer group: groupsMembers.keySet())
             {
-                if(groupID.intValue() == group)
+                if(group != null && groupID == group)
                     members.addAll(groupsMembers.get(group));
             }       
             return members;

@@ -16,6 +16,7 @@
  */
 package net.aeronica.mods.mxtune.gui;
 
+import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.managers.GroupHelper;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
@@ -32,7 +33,6 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 public class GuiGroup extends GuiScreen
@@ -101,7 +101,7 @@ public class GuiGroup extends GuiScreen
 
         drawGroupMembers();
         /* Create and Leave buttons should always reflect group membership */
-        btnLeave.enabled = GroupHelper.getMembersGroupID(player.getEntityId()) != null;
+        btnLeave.enabled = GroupHelper.getMembersGroupID(player.getEntityId()) != -1;
         btnCreate.enabled = !btnLeave.enabled;
 
         /* draw the things in the controlList (buttons) */
@@ -157,14 +157,14 @@ public class GuiGroup extends GuiScreen
     {
         int posX = guiLeft + 12;
         int posY = guiTop + 12;
-        Integer groupID;
+        int groupID;
 
         clearMembersButtons();
         if (GroupHelper.getClientGroups() != null || GroupHelper.getClientMembers() != null)
         {
             groupID = GroupHelper.getMembersGroupID(player.getEntityId());
-            Integer leaderID = GroupHelper.getLeaderOfGroup(groupID);
-            if (groupID != null && leaderID != null)
+            int leaderID = GroupHelper.getLeaderOfGroup(groupID);
+            if (groupID != -1 && leaderID != -1)
             {
                 // Always put the leader at the TOP of the list
                 drawLeader(leaderID, posX, posY);
@@ -177,8 +177,12 @@ public class GuiGroup extends GuiScreen
 
     private void drawLeader(Integer leaderID, int posX, int posY)
     {
-        String leaderName = Objects.requireNonNull(this.mc.world.getEntityByID(leaderID)).getName();
-        this.fontRenderer.drawStringWithShadow(TextFormatting.YELLOW + leaderName, posX, posY, 16777215);
+        EntityPlayer entityLeader = MXTune.proxy.getPlayerByEntityID(leaderID);
+        if (entityLeader != null)
+        {
+            String leaderName = entityLeader.getName();
+            this.fontRenderer.drawStringWithShadow(TextFormatting.YELLOW + leaderName, posX, posY, 16777215);
+        }
     }
 
     private void drawMembers(Integer groupID, Integer leaderID, int posX, int posYIn)
@@ -188,9 +192,10 @@ public class GuiGroup extends GuiScreen
         Set<Integer> members = GroupHelper.getClientMembers().keySet();
         for (Integer memberId : members)
         {
-            if (groupID.equals(GroupHelper.getMembersGroupID(memberId)) && !memberId.equals(leaderID))
+            EntityPlayer entityMember = MXTune.proxy.getPlayerByEntityID(memberId);
+            if (groupID.equals(GroupHelper.getMembersGroupID(memberId)) && !memberId.equals(leaderID) && entityMember != null)
             {
-                String memberName = Objects.requireNonNull(this.mc.world.getEntityByID(memberId)).getName();
+                String memberName = entityMember.getName();
                 this.fontRenderer.drawStringWithShadow(memberName, posX, posY, 16777215);
                 memberButtons.get(i).memberName = memberName;
                 memberButtons.get(i).memberId = memberId;

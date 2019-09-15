@@ -120,11 +120,14 @@ public class GuiGroupJoin extends GuiScreen
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     private void drawLeader(int posX, int posY)
     {
-        String leaderName = MXTune.proxy.getPlayerByEntityID(getLeaderOfGroup(groupID)).getName();
-        this.fontRenderer.drawStringWithShadow(TextFormatting.YELLOW + leaderName, posX, posY, 16777215);
+        EntityPlayer entityPlayer = MXTune.proxy.getPlayerByEntityID(getLeaderOfGroup(groupID));
+        if (entityPlayer != null)
+        {
+            String leaderName = entityPlayer.getName();
+            this.fontRenderer.drawStringWithShadow(TextFormatting.YELLOW + leaderName, posX, posY, 16777215);
+        }
     }
 
     private void drawMembers(int posX, int posYIn)
@@ -133,9 +136,10 @@ public class GuiGroupJoin extends GuiScreen
         Set<Integer> members = GroupHelper.getClientMembers().keySet();
         for (Integer memberID : members)
         {
-            if (groupID.equals(GroupHelper.getMembersGroupID(memberID)) && !memberID.equals(GroupHelper.getLeaderOfGroup(groupID)))
+            EntityPlayer entityMember = MXTune.proxy.getPlayerByEntityID(memberID);
+            if (groupID.equals(GroupHelper.getMembersGroupID(memberID)) && !memberID.equals(GroupHelper.getLeaderOfGroup(groupID)) && entityMember != null)
             {
-                String memberName = MXTune.proxy.getPlayerByEntityID(memberID).getName();
+                String memberName = entityMember.getName();
                 this.fontRenderer.drawStringWithShadow(memberName, posX, posY, 16777215);
                 posY += 10;
             }
@@ -162,7 +166,7 @@ public class GuiGroupJoin extends GuiScreen
         cleanup();
     }
 
-    protected void cleanup()
+    private void cleanup()
     {
         mc.displayGuiScreen(null);
         mc.setIngameFocus();

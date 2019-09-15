@@ -19,12 +19,12 @@ package net.aeronica.mods.mxtune.managers;
 
 public class Member
 {
-    private final Integer memberID;
+    private final int memberID;
 
-    Member(Integer memberID)
+    Member(int memberID)
     {
         this.memberID = memberID;
     }
 
-    Integer getMemberID() { return memberID; }
+    int getMemberID() { return memberID; }
 }
