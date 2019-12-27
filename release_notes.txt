@@ -1,4 +1,9 @@
-2019-09-15 mxtune-1.12.2-0.7.0-beta.8
+2019-12-27 mxtune-1.12.2-0.7.0-beta.9
+Update to forge 14.23.5.2847
+Previous forge version fails to build in a CI environment. e.g. ./gradlew setupCIWorkspace -s
+
+----
+2019-12-27 mxtune-1.12.2-0.7.0-beta.8
 Update to forge 14.23.5.2846
 
 ----
