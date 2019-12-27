@@ -24,7 +24,7 @@ jdk:
 - openjdk8
 before_install:
 - chmod +x gradlew
-install: ./gradlew --refresh-dependencies setupCIWorkspace
+install: ./gradlew setupCIWorkspace -s
 script:
 - "./gradlew clean build sonarqube --stacktrace"
 notifications:
