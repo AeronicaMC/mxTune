@@ -94,7 +94,7 @@ public class MMLToMIDI extends MMLTransformBase
             }
         } catch (InvalidMidiDataException e)
         {
-            MML_LOGGER.error("MMLToMIDI#processMObjects failed: {}", e);
+            MML_LOGGER.error("MMLToMIDI#processMObjects failed.", e);
         }
     }
 
