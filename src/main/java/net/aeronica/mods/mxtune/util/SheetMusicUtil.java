@@ -192,7 +192,7 @@ public enum SheetMusicUtil
             ItemStack stackInSlot = musicPlayer.getInventory().getStackInSlot(slot);
             if (!stackInSlot.isEmpty() && stackInSlot.getItem() instanceof ItemInstrument)
             {
-                ItemInstrument instrument = (ItemInstrument) stackInSlot.getItem();
+                IInstrument instrument = (IInstrument) stackInSlot.getItem();
                 int patch = instrument.getPatch(stackInSlot);
                 ItemStack sheetMusic = getSheetMusic(stackInSlot);
                 if (!sheetMusic.isEmpty() && sheetMusic.getTagCompound() != null)
