@@ -1,6 +1,6 @@
 package net.aeronica.libs.mml.core;
 
-public class StructTiedNotes
+public class TiedNote
 {
     int midiNote;
     long startingTicks;

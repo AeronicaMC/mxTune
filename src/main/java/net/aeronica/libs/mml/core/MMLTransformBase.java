@@ -154,8 +154,8 @@ public abstract class MMLTransformBase extends MMLBaseListener
     {
         partState.setTied(false);
 
-        List<StructTiedNotes> tiedNotes = new ArrayList<>();
-        StructTiedNotes tiedNote = null;
+        List<TiedNote> tiedNotes = new ArrayList<>();
+        TiedNote tiedNote = null;
 
         boolean isTied = false;
         long lengthTicks = 0;
@@ -183,7 +183,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
             // Initial LEFT
             if (!isTied)
             {
-                tiedNote = new StructTiedNotes();
+                tiedNote = new TiedNote();
                 lengthTicks = 0;
 
                 tiedNote.volume = getMMLVolume(ctxL);
@@ -231,7 +231,7 @@ public abstract class MMLTransformBase extends MMLBaseListener
             // LAST LONELY RIGHT NOTE
             if (ctxR == null) return;
 
-            tiedNote = new StructTiedNotes();
+            tiedNote = new TiedNote();
             tiedNote.startingTicks = getStartTicks(ctxR);
             lengthTicks = getNoteRestLength(ctxR);
             tiedNote.volume = getMMLVolume(ctxR);
