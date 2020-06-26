@@ -17,7 +17,6 @@
 package net.aeronica.mods.mxtune.inventory;
 
 import net.aeronica.mods.mxtune.blocks.TileBandAmp;
-import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
@@ -37,7 +36,7 @@ public class SlotBandAmp extends SlotItemHandler
     @Override
     public boolean isItemValid(@Nonnull ItemStack stack)
     {
-        return super.isItemValid(stack) && (stack.getItem() instanceof ItemInstrument);
+        return super.isItemValid(stack) && (stack.getItem() instanceof IInstrument);
     }
 
     @Override

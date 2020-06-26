@@ -25,7 +25,6 @@ import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
 import net.aeronica.mods.mxtune.blocks.TileInstrument;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.inventory.IMusic;
-import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.aeronica.mods.mxtune.sound.Midi2WavRenderer;
 import net.aeronica.mods.mxtune.sound.ModMidiException;
 import net.minecraft.block.Block;
@@ -190,7 +189,7 @@ public enum SheetMusicUtil
         for (int slot = 0; slot < musicPlayer.getInventory().getSlots(); slot++)
         {
             ItemStack stackInSlot = musicPlayer.getInventory().getStackInSlot(slot);
-            if (!stackInSlot.isEmpty() && stackInSlot.getItem() instanceof ItemInstrument)
+            if (!stackInSlot.isEmpty() && stackInSlot.getItem() instanceof IInstrument)
             {
                 IInstrument instrument = (IInstrument) stackInSlot.getItem();
                 int patch = instrument.getPatch(stackInSlot);

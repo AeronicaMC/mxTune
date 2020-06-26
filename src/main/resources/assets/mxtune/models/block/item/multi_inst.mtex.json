@@ -1,0 +1,31 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "mxtune:items/lute",
+    "layer1": "mxtune:items/ukulele",
+    "layer2": "mxtune:items/mandolin",
+    "layer3": "mxtune:items/whistle",
+    "layer4": "mxtune:items/roncadora",
+    "layer5": "mxtune:items/flute",
+    "layer6": "mxtune:items/chalumeau",
+    "layer7": "mxtune:items/tuba",
+    "layer8": "mxtune:items/lyre",
+    "layer9": "mxtune:items/electric_guitar",
+    "layer10": "mxtune:items/violin",
+    "layer11": "mxtune:items/cello",
+    "layer12": "mxtune:items/harp",
+    "layer13": "mxtune:items/tuned_flute",
+    "layer14": "mxtune:items/tuned_whistle",
+    "layer15": "mxtune:items/bass_drum",
+    "layer16": "mxtune:items/snare_drum",
+    "layer17": "mxtune:items/cymbels",
+    "layer18": "mxtune:items/hand_chimes",
+    "layer19": "mxtune:items/recorder",
+    "layer20": "mxtune:items/trumpet",
+    "layer21": "mxtune:items/harpsichord",
+    "layer22": "mxtune:items/harpsichord_coupled",
+    "layer23": "mxtune:items/standard_set",
+    "layer24": "mxtune:items/orchestra_set",
+    "layer25": "mxtune:items/piano"
+  }
+}

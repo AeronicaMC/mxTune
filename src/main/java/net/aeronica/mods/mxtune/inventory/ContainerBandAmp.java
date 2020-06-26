@@ -17,7 +17,6 @@
 package net.aeronica.mods.mxtune.inventory;
 
 import net.aeronica.mods.mxtune.blocks.TileBandAmp;
-import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ClickType;
@@ -147,7 +146,7 @@ public class ContainerBandAmp extends Container
         for (Slot slot: inventory)
         {
             ItemStack stackInSlot = slot.getStack();
-            if((slot instanceof SlotBandAmp) && (stackInSlot.getItem() instanceof ItemInstrument))
+            if((slot instanceof SlotBandAmp) && (stackInSlot.getItem() instanceof IInstrument))
                duration = getDuration(stackInSlot, duration);
         }
         return duration;

@@ -653,7 +653,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
     private void selectInstrument()
     {
-        int index = listBoxInstruments.getSelectedIndex() >= 0 ? listBoxInstruments.getSelectedIndex() : 0;
+        int index = Math.max(listBoxInstruments.getSelectedIndex(), 0);
         mxTunePart.setPackedPatch(MIDISystemUtil.getPackedPresetFromInstrumentCacheIndex(index));
         mxTunePart.setInstrumentName(I18n.format(listBoxInstruments.get(index).getName()));
     }
@@ -685,7 +685,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         
         mml = mml.replace("MML@", "MML@i" + packedPreset);
         ModLogger.debug("GuiMusicPaperParse.mmlPlay() name: %s, bank %05d, program %03d, packed %08d", inst.getName(), inst.getPatch().getBank() >> 7, inst.getPatch().getProgram(), packedPreset);
-        ModLogger.debug("GuiMusicPaperParse.mmlPlay(): %s", mml.substring(0, mml.length() >= 25 ? 25 : mml.length()));
+        ModLogger.debug("GuiMusicPaperParse.mmlPlay(): %s", mml.substring(0, Math.min(mml.length(), 25)));
 
         playId = PlayIdSupplier.PlayType.PERSONAL.getAsInt();
         ClientAudio.playLocal(playId, mml, this);

@@ -22,6 +22,7 @@ import net.aeronica.mods.mxtune.gui.mml.GuiStaffOverlay;
 import net.aeronica.mods.mxtune.handler.KeyHandler;
 import net.aeronica.mods.mxtune.managers.ClientFileManager;
 import net.aeronica.mods.mxtune.managers.ClientPlayManager;
+import net.aeronica.mods.mxtune.model.ModelLoader;
 import net.aeronica.mods.mxtune.network.MultiPacketSerializedObjectManager;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.CallBackManager;
@@ -33,6 +34,7 @@ import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.IThreadListener;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -47,7 +49,10 @@ public class ClientProxy extends ServerProxy
 {
     
     @Override
-    public void preInit() { /*  NOP */ }
+    public void preInit()
+    {
+        ModelLoaderRegistry.registerLoader(ModelLoader.INSTANCE);
+    }
 
     @Override
     public void init() { /*  NOP */ }

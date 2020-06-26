@@ -61,7 +61,7 @@ public class ItemMultiInst extends Item implements IInstrument
 
     @Override
     public String getTranslationKey(ItemStack stack) {
-        return super.getTranslationKey(stack) + "." + "[TBD]"; // TODO: get translation key from SoundFont
+        return super.getTranslationKey(stack) + "." + ItemInstrument.EnumType.byMetadata(stack.getItemDamage()).getName();
     }
 
     @Override
@@ -76,6 +76,7 @@ public class ItemMultiInst extends Item implements IInstrument
             // Server Side - Open the instrument inventory GuiInstInvAdjustRotations
             if (playerIn.isSneaking() && handIn.equals(EnumHand.MAIN_HAND))
             {
+                itemStackIn.setItemDamage((itemStackIn.getItemDamage()+1)%EnumType.values().length);
                 playerIn.openGui(MXTune.instance, GuiGuid.GUI_INSTRUMENT_INVENTORY, worldIn, 0, 0, 0);
             }
             if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && handIn.equals(EnumHand.MAIN_HAND))
@@ -197,7 +198,7 @@ public class ItemMultiInst extends Item implements IInstrument
     @Override
     public int getPatch(ItemStack itemStack)
     {
-        return 0; // TODO: Setup new enum based on SoundFont. Write an ENUM generator?
+        return ItemInstrument.EnumType.byMetadata(itemStack.getItemDamage()).getPatch();
     }
 
     public enum EnumType implements IVariant

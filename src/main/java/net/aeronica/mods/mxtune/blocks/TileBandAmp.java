@@ -16,7 +16,7 @@
  */
 package net.aeronica.mods.mxtune.blocks;
 
-import net.aeronica.mods.mxtune.items.ItemInstrument;
+import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.sound.SoundRange;
 import net.aeronica.mods.mxtune.util.EnumRelativeSide;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -308,7 +308,7 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate)
         {
-            if ((stack.getItem() instanceof ItemInstrument))
+            if ((stack.getItem() instanceof IInstrument))
                 return super.insertItem(slot, stack, simulate);
             else
                 return stack;

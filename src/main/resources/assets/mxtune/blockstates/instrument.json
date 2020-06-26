@@ -6,7 +6,9 @@
 	"variants": {
 		"instrument": {
 			"lute": {
-				"model": "mxtune:item/lute"
+				"textures": {
+					"layer0": "mxtune:items/lute"
+				}
 			},
 			"ukulele": {
 				"textures": {
@@ -34,7 +36,9 @@
 				}
 			},
 			"chalumeau": {
-				"model": "mxtune:item/chalumeau"
+				"textures": {
+					"layer0": "mxtune:items/chalumeau"
+				}
 			},
 			"tuba": {
 				"textures": {
@@ -47,7 +51,9 @@
 				}
 			},			
 			"electric_guitar": {
-				"model": "mxtune:item/electric_guitar"
+				"textures": {
+					"layer0": "mxtune:items/electric_guitar"
+				}
 			},
 			"violin": {
 				"textures": {
