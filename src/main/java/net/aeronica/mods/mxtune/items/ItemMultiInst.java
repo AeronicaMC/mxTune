@@ -61,7 +61,7 @@ public class ItemMultiInst extends Item implements IInstrument
 
     @Override
     public String getTranslationKey(ItemStack stack) {
-        return super.getTranslationKey(stack) + "." + ItemInstrument.EnumType.byMetadata(stack.getItemDamage()).getName();
+        return EnumType.byMetadata(stack.getItemDamage()).getName();
     }
 
     @Override
@@ -203,32 +203,32 @@ public class ItemMultiInst extends Item implements IInstrument
 
     public enum EnumType implements IVariant
     {
-        LUTE(0, "lute", preset2PackedPreset(12, 0)),
-        UKULELE(1, "ukulele", preset2PackedPreset(12, 1)),
-        MANDOLIN(2, "mandolin", preset2PackedPreset(12, 2)),
-        WHISTLE(3, "whistle", preset2PackedPreset(12, 3)),
-        RONCADORA(4, "roncadora", preset2PackedPreset(12, 4)),
-        FLUTE(5, "flute", preset2PackedPreset(12, 5)),
-        CHALUMEAU(6, "chalumeau", preset2PackedPreset(12, 6)),
-        TUBA(7, "tuba", preset2PackedPreset(12, 18)),
-        LYRE(8, "lyre", preset2PackedPreset(12, 19)),
-        ELECTRIC_GUITAR(9, "electric_guitar", preset2PackedPreset(12, 20)),
-        VIOLIN(10, "violin", preset2PackedPreset(12, 22)),
-        CELLO(11, "cello", preset2PackedPreset(12, 23)),
-        HARP(12, "harp", preset2PackedPreset(12, 24)),
-        TUNED_FLUTE(13, "tuned_flute", preset2PackedPreset(12, 55)),
-        TUNED_WHISTLE(14, "tuned_whistle", preset2PackedPreset(12, 56)),
-        BASS_DRUM(15, "bass_drum", preset2PackedPreset(12, 66)),
-        SNARE_DRUM(16, "snare_drum", preset2PackedPreset(12, 67)),
-        CYMBELS(17, "cymbels", preset2PackedPreset(12, 68)),
-        HAND_CHIMES(18, "hand_chimes", preset2PackedPreset(12, 77)),
-        RECORDER(19, "recorder", 74),
-        TRUMPET(20, "trumpet", 56),
-        HARPSICHORD(21, "harpsichord", 6),
-        HARPSICHORD_COUPLED(22, "harpsichord_coupled", preset2PackedPreset(1, 6)),
-        STANDARD_SET(23, "standard_set", preset2PackedPreset(128, 0)),
-        ORCHESTRA_SET(24, "orchestra_set", preset2PackedPreset(128, 48)),
-        PIANO(25, "piano", preset2PackedPreset(12, 21)),
+        LUTE(0, "mxtune.sm.lute", preset2PackedPreset(12, 0)),
+        UKULELE(1, "mxtune.sm.ukulele", preset2PackedPreset(12, 1)),
+        MANDOLIN(2, "mxtune.sm.mandolin", preset2PackedPreset(12, 2)),
+        WHISTLE(3, "mxtune.sm.whistle", preset2PackedPreset(12, 3)),
+        RONCADORA(4, "mxtune.sm.roncadora", preset2PackedPreset(12, 4)),
+        FLUTE(5, "mxtune.sm.roncadora", preset2PackedPreset(12, 5)),
+        CHALUMEAU(6, "mxtune.sm.chalameu", preset2PackedPreset(12, 6)),
+        TUBA(7, "mxtune.sm.tuba", preset2PackedPreset(12, 18)),
+        LYRE(8, "mxtune.sm.lyre", preset2PackedPreset(12, 19)),
+        ELECTRIC_GUITAR(9, "mxtune.sm.eguitar", preset2PackedPreset(12, 20)),
+        VIOLIN(10, "mxtune.sm.violin", preset2PackedPreset(12, 22)),
+        CELLO(11, "mxtune.sm.cello", preset2PackedPreset(12, 23)),
+        HARP(12, "mxtune.sm.harp", preset2PackedPreset(12, 24)),
+        TUNED_FLUTE(13, "mxtune.sm.tnflute", preset2PackedPreset(12, 55)),
+        TUNED_WHISTLE(14, "mxtune.sm.tnwhistle", preset2PackedPreset(12, 56)),
+        BASS_DRUM(15, "mxtune.sm.bdrum", preset2PackedPreset(12, 66)),
+        SNARE_DRUM(16, "mxtune.sm.snare", preset2PackedPreset(12, 67)),
+        CYMBELS(17, "mxtune.sm.cymbals", preset2PackedPreset(12, 68)),
+        HAND_CHIMES(18, "mxtune.sm.hchime", preset2PackedPreset(12, 77)),
+        RECORDER(19, "mxtune.sg.recorder", 74),
+        TRUMPET(20, "mxtune.sg.trumpet", 56),
+        HARPSICHORD(21, "mxtune.sg.hrpsicd", 6),
+        HARPSICHORD_COUPLED(22, "mxtune.sg.chrpsicd", preset2PackedPreset(1, 6)),
+        STANDARD_SET(23, "mxtune.sg.stdset", preset2PackedPreset(128, 0)),
+        ORCHESTRA_SET(24, "mxtune.sg.orchset", preset2PackedPreset(128, 48)),
+        PIANO(25, "mxtune.sm.piano", preset2PackedPreset(12, 21)),
         ;
 
         @Override

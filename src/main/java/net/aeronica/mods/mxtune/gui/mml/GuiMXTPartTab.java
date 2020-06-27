@@ -155,7 +155,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
                 Instrument instrument = !isEmpty() && slotIdx < getSize() && slotIdx >= 0 ? get(slotIdx) : null;
                 if (instrument != null)
                 {
-                    String s = fontRenderer.trimStringToWidth(I18n.format(instrument.getName()), listWidth - 10);
+                    String s = fontRenderer.trimStringToWidth(I18n.format(instrument.getName() + ".name"), listWidth - 10);
                     int color = isSelected(slotIdx) ? 0xFFFF00 : 0xAADDEE;
                     fontRenderer.drawString(s, left + 3, slotTop, color);
                 }
