@@ -675,6 +675,12 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     @SuppressWarnings("restriction")
     private boolean mmlPlay(String mmlIn)
     {
+        /*
+         ** TODO: add in the optional transform using the soundfont proxy class SoundFontProxy.
+         ** Don't use raw javax.sound.midi.Instrument! Instead use the proxy class that will supply
+         ** additional data that will allow midi note transforms. This will allow shrinking the soundfont while
+         ** covering various MML/Game instrument variations.
+         */
         String mml = mmlIn;
         int packedPreset;
         Instrument inst = listBoxInstruments.get();
@@ -682,7 +688,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
             packedPreset = MMLUtil.instrument2PackedPreset(inst);
         else
             return false;
-        
+
         mml = mml.replace("MML@", "MML@i" + packedPreset);
         ModLogger.debug("GuiMusicPaperParse.mmlPlay() name: %s, bank %05d, program %03d, packed %08d", inst.getName(), inst.getPatch().getBank() >> 7, inst.getPatch().getProgram(), packedPreset);
         ModLogger.debug("GuiMusicPaperParse.mmlPlay(): %s", mml.substring(0, Math.min(mml.length(), 25)));
