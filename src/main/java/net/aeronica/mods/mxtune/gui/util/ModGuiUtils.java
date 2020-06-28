@@ -73,4 +73,9 @@ public class ModGuiUtils
         else
             return I18n.format("mxtune.info.playlist.null_playlist");
     }
+
+    public static String getLocalizedInstrumentName(String id)
+    {
+        return I18n.format("item.mxtune:multi_inst." + id + ".name");
+    }
 }

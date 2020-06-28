@@ -23,8 +23,8 @@ import net.aeronica.mods.mxtune.gui.GuiGuid;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.managers.PlayManager;
 import net.aeronica.mods.mxtune.status.ServerCSDManager;
-import net.aeronica.mods.mxtune.util.IVariant;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
+import net.aeronica.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -43,7 +43,6 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static net.aeronica.libs.mml.core.MMLUtil.preset2PackedPreset;
 import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType;
 
 /**
@@ -61,7 +60,7 @@ public class ItemMultiInst extends Item implements IInstrument
 
     @Override
     public String getTranslationKey(ItemStack stack) {
-        return EnumType.byMetadata(stack.getItemDamage()).getName();
+        return super.getTranslationKey(stack) + "." + SoundFontProxyManager.getName(stack.getItemDamage());
     }
 
     @Override
@@ -76,7 +75,7 @@ public class ItemMultiInst extends Item implements IInstrument
             // Server Side - Open the instrument inventory GuiInstInvAdjustRotations
             if (playerIn.isSneaking() && handIn.equals(EnumHand.MAIN_HAND))
             {
-                itemStackIn.setItemDamage((itemStackIn.getItemDamage()+1)%EnumType.values().length);
+                itemStackIn.setItemDamage((itemStackIn.getItemDamage()+1)%SoundFontProxyManager.soundFontProxyMapByIndex.size());
                 playerIn.openGui(MXTune.instance, GuiGuid.GUI_INSTRUMENT_INVENTORY, worldIn, 0, 0, 0);
             }
             if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && handIn.equals(EnumHand.MAIN_HAND))
@@ -88,7 +87,7 @@ public class ItemMultiInst extends Item implements IInstrument
                         int playID = PlayManager.playMusic(playerIn);
                         itemStackIn.setRepairCost(playID);
                         if (playID != PlayType.INVALID)
-                            ModCriteriaTriggers.PLAY_INSTRUMENT.trigger((EntityPlayerMP) playerIn, EnumType.byMetadata(itemStackIn.getMetadata()).getName());
+                            ModCriteriaTriggers.PLAY_INSTRUMENT.trigger((EntityPlayerMP) playerIn, SoundFontProxyManager.getName(itemStackIn.getMetadata()));
                     }
                 } 
                 else
@@ -97,9 +96,6 @@ public class ItemMultiInst extends Item implements IInstrument
                 }
             }
         }
-        // return EnumActionResult.SUCCESS to activate on AIR only
-        // return EnumActionResult.FAIL to activate unconditionally and skip vanilla processing
-        // return EnumActionResult.PASS to activate on AIR, or let Vanilla process
         return new ActionResult<>(EnumActionResult.SUCCESS, itemStackIn);
     }
 
@@ -198,77 +194,6 @@ public class ItemMultiInst extends Item implements IInstrument
     @Override
     public int getPatch(ItemStack itemStack)
     {
-        return ItemInstrument.EnumType.byMetadata(itemStack.getItemDamage()).getPatch();
-    }
-
-    public enum EnumType implements IVariant
-    {
-        LUTE(0, "mxtune.sm.lute", preset2PackedPreset(12, 0)),
-        UKULELE(1, "mxtune.sm.ukulele", preset2PackedPreset(12, 1)),
-        MANDOLIN(2, "mxtune.sm.mandolin", preset2PackedPreset(12, 2)),
-        WHISTLE(3, "mxtune.sm.whistle", preset2PackedPreset(12, 3)),
-        RONCADORA(4, "mxtune.sm.roncadora", preset2PackedPreset(12, 4)),
-        FLUTE(5, "mxtune.sm.roncadora", preset2PackedPreset(12, 5)),
-        CHALUMEAU(6, "mxtune.sm.chalameu", preset2PackedPreset(12, 6)),
-        TUBA(7, "mxtune.sm.tuba", preset2PackedPreset(12, 18)),
-        LYRE(8, "mxtune.sm.lyre", preset2PackedPreset(12, 19)),
-        ELECTRIC_GUITAR(9, "mxtune.sm.eguitar", preset2PackedPreset(12, 20)),
-        VIOLIN(10, "mxtune.sm.violin", preset2PackedPreset(12, 22)),
-        CELLO(11, "mxtune.sm.cello", preset2PackedPreset(12, 23)),
-        HARP(12, "mxtune.sm.harp", preset2PackedPreset(12, 24)),
-        TUNED_FLUTE(13, "mxtune.sm.tnflute", preset2PackedPreset(12, 55)),
-        TUNED_WHISTLE(14, "mxtune.sm.tnwhistle", preset2PackedPreset(12, 56)),
-        BASS_DRUM(15, "mxtune.sm.bdrum", preset2PackedPreset(12, 66)),
-        SNARE_DRUM(16, "mxtune.sm.snare", preset2PackedPreset(12, 67)),
-        CYMBELS(17, "mxtune.sm.cymbals", preset2PackedPreset(12, 68)),
-        HAND_CHIMES(18, "mxtune.sm.hchime", preset2PackedPreset(12, 77)),
-        RECORDER(19, "mxtune.sg.recorder", 74),
-        TRUMPET(20, "mxtune.sg.trumpet", 56),
-        HARPSICHORD(21, "mxtune.sg.hrpsicd", 6),
-        HARPSICHORD_COUPLED(22, "mxtune.sg.chrpsicd", preset2PackedPreset(1, 6)),
-        STANDARD_SET(23, "mxtune.sg.stdset", preset2PackedPreset(128, 0)),
-        ORCHESTRA_SET(24, "mxtune.sg.orchset", preset2PackedPreset(128, 48)),
-        PIANO(25, "mxtune.sm.piano", preset2PackedPreset(12, 21)),
-        ;
-
-        @Override
-        public String toString() {return this.name;}
-
-        public static EnumType byMetadata(int metaIn)
-        {
-            int metaLocal = metaIn;
-            if (metaLocal < 0 || metaLocal >= META_LOOKUP.length) {metaLocal = 0;}
-            return META_LOOKUP[metaLocal];
-        }
-
-        public String getName() {return this.name;}
-
-        public int getPatch() {return this.patch;}
-
-        private final int meta;
-        private final String name;
-        private final int patch;
-        private static final EnumType[] META_LOOKUP = new EnumType[values().length];
-
-        EnumType(int metaIn, String nameIn, int patchIn)
-        {
-            this.meta = metaIn;
-            this.name = nameIn;
-            this.patch = patchIn;
-        }
-
-        static
-        {
-            for (EnumType value : values())
-            {
-                META_LOOKUP[value.getMeta()] = value;
-            }
-        }
-
-        @Override
-        public int getMeta()
-        {
-            return meta;
-        }
+        return SoundFontProxyManager.getPackedPreset(itemStack.getItemDamage());
     }
 }

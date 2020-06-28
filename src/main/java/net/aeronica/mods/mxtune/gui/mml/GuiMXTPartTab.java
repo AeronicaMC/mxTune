@@ -20,16 +20,14 @@ package net.aeronica.mods.mxtune.gui.mml;
 import net.aeronica.libs.mml.core.*;
 import net.aeronica.mods.mxtune.gui.util.GuiLabelMX;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
+import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
 import net.aeronica.mods.mxtune.mxt.MXTunePart;
 import net.aeronica.mods.mxtune.mxt.MXTuneStaff;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.sound.ClientAudio.Status;
 import net.aeronica.mods.mxtune.sound.IAudioStatusCallback;
-import net.aeronica.mods.mxtune.util.MIDISystemUtil;
-import net.aeronica.mods.mxtune.util.ModLogger;
-import net.aeronica.mods.mxtune.util.SheetMusicUtil;
-import net.aeronica.mods.mxtune.util.ValidDuration;
+import net.aeronica.mods.mxtune.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -65,7 +63,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private GuiTextField labelStatus;
     private GuiButtonExt buttonPlay;
     private GuiScrollingListOf<ParseErrorEntry> listBoxMMLError;
-    private GuiScrollingListOf<Instrument> listBoxInstruments;
+    private GuiScrollingListOf<SoundFontProxy> listBoxInstruments;
 
     // MIDI Channel Settings
 //    private GuiCheckBox enableVolume;
@@ -137,7 +135,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         Arrays.fill(cachedTextLines, "");
         initPartNames();
 
-        listBoxInstruments = new GuiScrollingListOf<Instrument>(this)
+        listBoxInstruments = new GuiScrollingListOf<SoundFontProxy>(this)
         {
             @Override
             protected void selectedClickedCallback(int selectedIndex)
@@ -152,16 +150,16 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
             @Override
             protected void drawSlot(int slotIdx, int entryRight, int slotTop, int slotBuffer, Tessellator tess)
             {
-                Instrument instrument = !isEmpty() && slotIdx < getSize() && slotIdx >= 0 ? get(slotIdx) : null;
-                if (instrument != null)
+                SoundFontProxy soundFontProxy = !isEmpty() && slotIdx < getSize() && slotIdx >= 0 ? get(slotIdx) : null;
+                if (soundFontProxy != null)
                 {
-                    String s = fontRenderer.trimStringToWidth(I18n.format(instrument.getName() + ".name"), listWidth - 10);
+                    String s = fontRenderer.trimStringToWidth(ModGuiUtils.getLocalizedInstrumentName(soundFontProxy.id), listWidth - 10);
                     int color = isSelected(slotIdx) ? 0xFFFF00 : 0xAADDEE;
                     fontRenderer.drawString(s, left + 3, slotTop, color);
                 }
             }
         };
-        listBoxInstruments.addAll(MIDISystemUtil.getInstrumentCacheCopy());
+        listBoxInstruments.addAll(SoundFontProxyManager.soundFontProxyMapByIndex.values());
 
         listBoxMMLError = new GuiScrollingListOf<ParseErrorEntry>(this)
         {
@@ -205,7 +203,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         NBTTagCompound compound = new NBTTagCompound();
         mxTunePart.writeToNBT(compound);
         this.mxTunePart = new MXTunePart(compound);
-        this.listBoxInstruments.setSelectedIndex(MIDISystemUtil.getInstrumentCachedIndexFromPackedPreset(mxTunePart.getPackedPatch()));
+        this.listBoxInstruments.setSelectedIndex(SoundFontProxyManager.getIndexById(mxTunePart.getInstrumentName()));
         listBoxInstruments.resetScroll();
         Iterator<MXTuneStaff> iterator = mxTunePart.getStaves().iterator();
         int i = 0;
@@ -267,9 +265,9 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     {
         buttonList.clear();
 
-        for (Instrument in : listBoxInstruments)
+        for (SoundFontProxy in : listBoxInstruments)
         {
-            int stringWidth = fontRenderer.getStringWidth(I18n.format(in.getName()));
+            int stringWidth = fontRenderer.getStringWidth(ModGuiUtils.getLocalizedInstrumentName(in.id));
             instListWidth = Math.max(instListWidth, stringWidth + 10);
         }
         instListWidth = Math.min(instListWidth, 150);
@@ -654,8 +652,8 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private void selectInstrument()
     {
         int index = Math.max(listBoxInstruments.getSelectedIndex(), 0);
-        mxTunePart.setPackedPatch(MIDISystemUtil.getPackedPresetFromInstrumentCacheIndex(index));
-        mxTunePart.setInstrumentName(I18n.format(listBoxInstruments.get(index).getName()));
+        mxTunePart.setPackedPatch(listBoxInstruments.get(index).packed_preset);
+        mxTunePart.setInstrumentName(listBoxInstruments.get(index).id);
     }
 
     /** Table Flip!
@@ -683,14 +681,14 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
          */
         String mml = mmlIn;
         int packedPreset;
-        Instrument inst = listBoxInstruments.get();
-        if (inst != null)
-            packedPreset = MMLUtil.instrument2PackedPreset(inst);
+        SoundFontProxy soundFontProxy = listBoxInstruments.get();
+        if (soundFontProxy != null)
+            packedPreset = soundFontProxy.packed_preset;
         else
             return false;
 
         mml = mml.replace("MML@", "MML@i" + packedPreset);
-        ModLogger.debug("GuiMusicPaperParse.mmlPlay() name: %s, bank %05d, program %03d, packed %08d", inst.getName(), inst.getPatch().getBank() >> 7, inst.getPatch().getProgram(), packedPreset);
+        ModLogger.debug("GuiMusicPaperParse.mmlPlay() name: %s, packed %08d", soundFontProxy.id, soundFontProxy.packed_preset);
         ModLogger.debug("GuiMusicPaperParse.mmlPlay(): %s", mml.substring(0, Math.min(mml.length(), 25)));
 
         playId = PlayIdSupplier.PlayType.PERSONAL.getAsInt();

@@ -35,8 +35,7 @@ import net.aeronica.libs.mml.core.MMLUtil;
 import net.aeronica.mods.mxtune.mxt.MXTuneFile;
 import net.aeronica.mods.mxtune.mxt.MXTunePart;
 import net.aeronica.mods.mxtune.mxt.MXTuneStaff;
-import net.aeronica.mods.mxtune.util.MIDISystemUtil;
-import net.minecraft.client.resources.I18n;
+import net.aeronica.mods.mxtune.util.SoundFontProxyManager;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 
 import javax.annotation.Nullable;
@@ -190,7 +189,7 @@ public final class MMLFile
             }
             int packedPreset = MMLUtil.preset2PackedPreset(12, program);
             String meta = String.format("%s, program %d", track.getTrackName(), program);
-            MXTunePart mxTunePart = new MXTunePart(I18n.format(MIDISystemUtil.getPatchNameKey(MMLUtil.packedPreset2Patch(packedPreset))), meta, packedPreset, staves);
+            MXTunePart mxTunePart = new MXTunePart(SoundFontProxyManager.getName(SoundFontProxyManager.getIndexForFirstMatchingPackedPreset(packedPreset)), meta, packedPreset, staves);
             mxTuneFile.getParts().add(mxTunePart);
         }
     }

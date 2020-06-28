@@ -303,7 +303,8 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     {
         String number = String.format("%d", index + 1);
         MXTunePart part = childTabs[index].getPart();
-        return (part != null) && (!part.getInstrumentName().equals("")) ? number + ": " + childTabs[index].getPart().getInstrumentName() : number;
+        String localizedInstrumentName = ModGuiUtils.getLocalizedInstrumentName(childTabs[index].getPart().getInstrumentName());
+        return (part != null) && (!part.getInstrumentName().equals("")) ? number + ": " + localizedInstrumentName : number;
     }
 
     private void drawMarkers()
