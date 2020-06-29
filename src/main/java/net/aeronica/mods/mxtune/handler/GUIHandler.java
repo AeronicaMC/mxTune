@@ -50,6 +50,10 @@ public class GUIHandler implements IGuiHandler
                 // Use the player's held item to create the inventory
                 return new ContainerInstrument(playerIn);
 
+            case GUI_MULTI_INST_INVENTORY:
+                // Use the player's held item to create the inventory
+                return new ContainerInstrument(playerIn);
+
             case GUI_BAND_AMP:
                 if (!LockableHelper.isLocked(playerIn, worldIn, x, y, z))
                     return new ContainerBandAmp(playerIn.inventory, worldIn, x, y, z);
@@ -71,6 +75,9 @@ public class GUIHandler implements IGuiHandler
 
             case GUI_INSTRUMENT_INVENTORY:
                 return new GuiInstrumentInventory(new ContainerInstrument(playerIn));
+
+            case GUI_MULTI_INST_INVENTORY:
+                return new GuiMultiInstInventory(new ContainerInstrument(playerIn));
 
             case GUI_GROUP:
                 return isJAMPartyRightClickDisabled() ? null : new GuiGroup();
