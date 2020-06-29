@@ -21,6 +21,7 @@ public class GuiMultiInstInventory extends GuiContainer
     private static final String BUTTON_ADJ_HUD = I18n.format("mxtune.gui.musicOptions.adjHud");
 
 	private int theInvItemSlot;
+	GuiButton buttonChangeInstrument;
 
 	public GuiMultiInstInventory(ContainerInstrument containerInstrument)
 	{
@@ -49,7 +50,7 @@ public class GuiMultiInstInventory extends GuiContainer
 		yPos = guiTop + 5;
 		xPos = guiLeft + 5;
 		String instName = mc.player.getHeldItemMainhand().getDisplayName();
-		GuiButton buttonChangeInstrument = new GuiButton(2, xPos, yPos, xSize - 10, 20, instName);
+		buttonChangeInstrument = new GuiButton(2, xPos, yPos, xSize - 10, 20, instName);
 		addButton(buttonChangeInstrument);
 	}
 
@@ -65,7 +66,8 @@ public class GuiMultiInstInventory extends GuiContainer
                 mc.displayGuiScreen(new GuiHudAdjust(this));
                 break;
 			case 2:
-				// TODO: create instrument select gui.
+				// TODO: create instrument select gui and open it from here...
+				// mc.displayGuiScreen(new XXX(this));
 				break;
             default:
         }
@@ -93,6 +95,7 @@ public class GuiMultiInstInventory extends GuiContainer
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		if (mc.player.getHeldItemMainhand().equals(ItemStack.EMPTY))
 			return;
+		buttonChangeInstrument.displayString = mc.player.getHeldItemMainhand().getDisplayName();
 		this.fontRenderer.drawString(I18n.format("container.inventory"), 12, this.ySize - 96 + 4, 4210752);
 		super.drawGuiContainerForegroundLayer(par1, par2);
 	}

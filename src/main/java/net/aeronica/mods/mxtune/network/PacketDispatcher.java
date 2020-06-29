@@ -83,6 +83,7 @@ public class PacketDispatcher
         registerMessage(ByteArrayPartMessage.class);
         registerMessage(PlayerSelectedPlayListMessage.class);
         registerMessage(ChunkToolMessage.class);
+        registerMessage(SetMultiInstMessage.class);
 
         /*
          * If you don't want to make a 'registerMessage' method, you can do it
