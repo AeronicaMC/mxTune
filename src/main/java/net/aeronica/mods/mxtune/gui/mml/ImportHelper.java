@@ -80,7 +80,7 @@ public class ImportHelper
             if (staves.isEmpty()) return null;
             MXTuneFile mxTuneFile = new MXTuneFile();
             mxTuneFile.setTitle(title);
-            MXTunePart part = new MXTunePart("Acoustic Piano", "", 0, staves);
+            MXTunePart part = new MXTunePart("piano_acoustic", "", 0, staves);
             mxTuneFile.getParts().add(part);
             return mxTuneFile;
         } else
@@ -113,7 +113,7 @@ public class ImportHelper
                         List<MXTuneStaff> staves = getStaves(ms2MmlReader.getMML());
                         if (!staves.isEmpty())
                         {
-                            MXTunePart part = new MXTunePart("Acoustic Piano", title, 0, staves);
+                            MXTunePart part = new MXTunePart("piano_acoustic", title, 0, staves);
                             mxTuneFile.getParts().add(part);
                             count++;
                         }
