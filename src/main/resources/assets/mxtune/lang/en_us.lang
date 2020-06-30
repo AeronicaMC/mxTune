@@ -352,6 +352,7 @@ mxtune.gui.guiMXT.pan.left=Pan Left
 mxtune.gui.guiMXT.pan.Right=Pan Right
 mxtune.gui.guiMXT.reverb=Reverb
 mxtune.gui.guiMXT.Chorus=Chorus
+mxtune.gui.GuiGuiMultiInstChooser.title=Instrument Chooser
 mxtune.info.last_song_line_01=Last Song Playlist: '%s'-%s, Song Duration: %s
 mxtune.info.last_song_line_02=Last Song Title: '%s'
 mxtune.info.night=Night

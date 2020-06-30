@@ -75,7 +75,6 @@ public class ItemMultiInst extends Item implements IInstrument
             // Server Side - Open the instrument inventory GuiInstInvAdjustRotations
             if (playerIn.isSneaking() && handIn.equals(EnumHand.MAIN_HAND))
             {
-                itemStackIn.setItemDamage((itemStackIn.getItemDamage()+1)%SoundFontProxyManager.soundFontProxyMapByIndex.size());
                 playerIn.openGui(MXTune.instance, GuiGuid.GUI_MULTI_INST_INVENTORY, worldIn, 0, 0, 0);
             }
             if (!playerIn.isSneaking() && itemStackIn.hasTagCompound() && handIn.equals(EnumHand.MAIN_HAND))

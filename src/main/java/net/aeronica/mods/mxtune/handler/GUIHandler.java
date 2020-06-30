@@ -18,10 +18,7 @@ package net.aeronica.mods.mxtune.handler;
 
 import net.aeronica.mods.mxtune.blocks.TileBandAmp;
 import net.aeronica.mods.mxtune.gui.*;
-import net.aeronica.mods.mxtune.gui.mml.GuiChunkTool;
-import net.aeronica.mods.mxtune.gui.mml.GuiMXT;
-import net.aeronica.mods.mxtune.gui.mml.GuiMusicLibrary;
-import net.aeronica.mods.mxtune.gui.mml.GuiPlaylistManager;
+import net.aeronica.mods.mxtune.gui.mml.*;
 import net.aeronica.mods.mxtune.inventory.ContainerBandAmp;
 import net.aeronica.mods.mxtune.inventory.ContainerInstrument;
 import net.aeronica.mods.mxtune.world.LockableHelper;
@@ -78,6 +75,9 @@ public class GUIHandler implements IGuiHandler
 
             case GUI_MULTI_INST_INVENTORY:
                 return new GuiMultiInstInventory(new ContainerInstrument(playerIn));
+
+            case GUI_MULTI_INST_CHOOSER:
+                return new GuiGuiMultiInstChooser(null);
 
             case GUI_GROUP:
                 return isJAMPartyRightClickDisabled() ? null : new GuiGroup();

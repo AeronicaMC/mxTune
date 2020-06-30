@@ -31,4 +31,5 @@ public class GuiGuid
     public static final int GUI_MXT_TEST = 8;
     public static final int GUI_CHUNK_TOOL = 9;
     public static final int GUI_MULTI_INST_INVENTORY = 10;
+    public static final int GUI_MULTI_INST_CHOOSER = 11;
 }

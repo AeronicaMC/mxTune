@@ -28,8 +28,8 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class GuiButtonMX extends GuiButtonExt implements IHooverText
 {
-    private List<String> hooverTexts = new ArrayList<>();
-    private List<String> hooverTextsCopy = new ArrayList<>();
+    private final List<String> hooverTexts = new ArrayList<>();
+    private final List<String> hooverTextsCopy = new ArrayList<>();
 
     private String statusText = "";
 

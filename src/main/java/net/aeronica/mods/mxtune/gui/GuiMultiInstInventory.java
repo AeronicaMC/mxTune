@@ -2,6 +2,7 @@ package net.aeronica.mods.mxtune.gui;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.gui.hud.GuiHudAdjust;
+import net.aeronica.mods.mxtune.gui.mml.GuiGuiMultiInstChooser;
 import net.aeronica.mods.mxtune.inventory.ContainerInstrument;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -20,7 +21,7 @@ public class GuiMultiInstInventory extends GuiContainer
     private static final String BUTTON_MUSIC_OPTIONS = I18n.format("mxtune.key.openMusicOptions");
     private static final String BUTTON_ADJ_HUD = I18n.format("mxtune.gui.musicOptions.adjHud");
 
-	private int theInvItemSlot;
+	private final int theInvItemSlot;
 	GuiButton buttonChangeInstrument;
 
 	public GuiMultiInstInventory(ContainerInstrument containerInstrument)
@@ -47,10 +48,10 @@ public class GuiMultiInstInventory extends GuiContainer
 		GuiButton buttonAdjustHUD = new GuiButton(1, xPos, yPos, 100, 20,BUTTON_ADJ_HUD);
 		addButton(buttonAdjustHUD);
 
-		yPos = guiTop + 5;
-		xPos = guiLeft + 5;
+		yPos = guiTop + 6;
+		xPos = guiLeft + 12;
 		String instName = mc.player.getHeldItemMainhand().getDisplayName();
-		buttonChangeInstrument = new GuiButton(2, xPos, yPos, xSize - 10, 20, instName);
+		buttonChangeInstrument = new GuiButton(2, xPos, yPos, xSize - 24, 20, instName);
 		addButton(buttonChangeInstrument);
 	}
 
@@ -66,8 +67,7 @@ public class GuiMultiInstInventory extends GuiContainer
                 mc.displayGuiScreen(new GuiHudAdjust(this));
                 break;
 			case 2:
-				// TODO: create instrument select gui and open it from here...
-				// mc.displayGuiScreen(new XXX(this));
+				mc.displayGuiScreen(new GuiGuiMultiInstChooser(this));
 				break;
             default:
         }
