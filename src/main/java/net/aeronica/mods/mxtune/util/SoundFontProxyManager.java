@@ -26,7 +26,6 @@ import com.google.gson.reflect.TypeToken;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Locale;
@@ -38,9 +37,18 @@ public class SoundFontProxyManager
     public static final String RESOURCE = "/assets/mxtune/synth/soundfont_proxy.json";
     public static ImmutableMap<Integer, SoundFontProxy> soundFontProxyMapByIndex;
     public static ImmutableMap<String, SoundFontProxy> soundFontProxyMapById;
+    private static final SoundFontProxy SOUND_FONT_PROXY_DEFAULT;
 
     static
     {
+        // default 49: piano_acoustic
+        SOUND_FONT_PROXY_DEFAULT = new SoundFontProxy();
+        SOUND_FONT_PROXY_DEFAULT.index = 49;
+        SOUND_FONT_PROXY_DEFAULT.packed_preset = 0;
+        SOUND_FONT_PROXY_DEFAULT.id = "piano_acoustic";
+        SOUND_FONT_PROXY_DEFAULT.general_midi = true;
+        SOUND_FONT_PROXY_DEFAULT.maple_story_2 = true;
+
         try
         {
             LOGGER.debug("Loading {}", RESOURCE);
@@ -74,17 +82,16 @@ public class SoundFontProxyManager
 
     public SoundFontProxyManager INSTANCE = new SoundFontProxyManager();
 
-    @Nullable
     public static SoundFontProxy getProxy(int index)
     {
         // default 49: piano
-        return soundFontProxyMapByIndex.getOrDefault(index, soundFontProxyMapByIndex.get(49));
+        return soundFontProxyMapByIndex.getOrDefault(index, SOUND_FONT_PROXY_DEFAULT);
     }
 
     public static SoundFontProxy getProxy(String id)
     {
         // default 49: piano
-        return soundFontProxyMapById.getOrDefault(id.toLowerCase(Locale.ROOT).trim(), soundFontProxyMapById.get("piano_acoustic"));
+        return soundFontProxyMapById.getOrDefault(id.toLowerCase(Locale.ROOT).trim(), SOUND_FONT_PROXY_DEFAULT);
     }
 
     public static int getPackedPreset(int index)
