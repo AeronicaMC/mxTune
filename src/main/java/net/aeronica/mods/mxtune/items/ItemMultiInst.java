@@ -116,7 +116,7 @@ public class ItemMultiInst extends Item implements IInstrument
     {
         if (!worldIn.isRemote)
         {         
-            Integer playID = stackIn.getRepairCost();
+            int playID = stackIn.getRepairCost();
             if (!isSelected && (PlayManager.hasPlayID(playID)||PlayManager.isActivePlayID(playID)))
             {
                 PlayManager.stopPlayID(playID);
@@ -135,7 +135,7 @@ public class ItemMultiInst extends Item implements IInstrument
     {
         if (!worldIn.isRemote)
         {
-            Integer playID = stackIn.getRepairCost();
+            int playID = stackIn.getRepairCost();
             if (PlayManager.hasPlayID(playID)||PlayManager.isActivePlayID(playID))
             {
                 PlayManager.stopPlayID(playID);
@@ -150,7 +150,7 @@ public class ItemMultiInst extends Item implements IInstrument
     {
         if (!playerIn.getEntityWorld().isRemote)
         {
-            Integer playID = stackIn.getRepairCost();
+            int playID = stackIn.getRepairCost();
             if (PlayManager.hasPlayID(playID)||PlayManager.isActivePlayID(playID))
             {
                 PlayManager.stopPlayID(playID);
