@@ -45,11 +45,9 @@ public class GuiGuiMultiInstChooser extends GuiScreen
     private final int ySize = 164;
     private int guiLeft;
     private int guiTop;
-    private GuiScreen guiScreenOld;
+    private final GuiScreen guiScreenOld;
 
-    private GuiScrollingListOf<SoundFontProxy> guiInstruments;
-
-    private GuiButtonMX buttonDone;
+    private final GuiScrollingListOf<SoundFontProxy> guiInstruments;
 
     public GuiGuiMultiInstChooser(@Nullable GuiScreen guiScreenIn)
     {
@@ -120,7 +118,7 @@ public class GuiGuiMultiInstChooser extends GuiScreen
         int widthButtons = 50;
         int posX = guiLeft + xSize - widthButtons - 10;
         int posY = guiTop + ySize - 20 - 10;
-        buttonDone = new GuiButtonMX(0, posX, posY, widthButtons, 20, I18n.format("gui.done"));
+        GuiButtonMX buttonDone = new GuiButtonMX(0, posX, posY, widthButtons, 20, I18n.format("gui.done"));
 
         buttonList.add(buttonDone);
         guiInstruments.addAll(SoundFontProxyManager.soundFontProxyMapByIndex.values());
@@ -171,15 +169,21 @@ public class GuiGuiMultiInstChooser extends GuiScreen
 
         /* draw "TITLE" at the top right */
         String title = I18n.format("mxtune.gui.GuiGuiMultiInstChooser.title");
-        int posX = (xSize - guiInstruments.getRight())/2 + (xSize - this.fontRenderer.getStringWidth(title)/2);
+        int posX = ((guiInstruments.getRight()) + (guiLeft + xSize))/2 - this.fontRenderer.getStringWidth(title)/2;
         int posY = guiTop + 10;
         this.fontRenderer.getStringWidth(title);
         this.fontRenderer.drawString(title, posX, posY, 0x000000);
 
         guiInstruments.drawScreen(mouseX, mouseY, partialTicks);
 
-        /* draw the things in the controlList (buttons) */
+        // draw the things in the controlList (buttons)
         super.drawScreen(mouseX, mouseY, partialTicks);
+
+        // draw instrument - yes the coordinate system funky for this method. Gotta wrap my head around it and fix it.
+        int scale = 2;
+        posX = ((guiInstruments.getRight()) + (guiLeft + xSize))/2 - (16*scale/2);
+        posY+= 12;
+        ModGuiUtils.drawItem(this.itemRender, mc.player.getHeldItemMainhand(), posX/scale, posY/scale, scale);
     }
 
     @Override
@@ -196,8 +200,6 @@ public class GuiGuiMultiInstChooser extends GuiScreen
             default:
         }
         mc.displayGuiScreen(guiScreenOld);
-//        mc.setIngameFocus();
-//        updateState();
     }
 
     @Override

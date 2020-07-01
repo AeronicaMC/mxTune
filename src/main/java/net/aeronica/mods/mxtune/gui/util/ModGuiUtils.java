@@ -21,7 +21,12 @@ import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;
 
 import javax.annotation.Nullable;
@@ -40,6 +45,28 @@ public class ModGuiUtils
         int rectWidth = width;
         int rectHeight = height;
         return pointX >= rectX - 1 && pointX < rectX + rectWidth + 1 && pointY >= rectY - 1 && pointY < rectY + rectHeight + 1;
+    }
+
+    public static void drawItem(RenderItem itemRenderer, ItemStack stack, int xPos, int yPos, int scale)
+    {
+        RenderHelper.enableGUIStandardItemLighting();
+        GlStateManager.pushMatrix();
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.enableRescaleNormal();
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+
+        GlStateManager.enableLighting();
+        GlStateManager.enableDepth();
+        GlStateManager.scale(scale,scale,1);
+        itemRenderer.renderItemAndEffectIntoGUI(stack, xPos, yPos);
+        GlStateManager.disableLighting();
+        GlStateManager.disableDepth();
+
+        GlStateManager.popMatrix();
+        GlStateManager.enableLighting();
+        GlStateManager.enableDepth();
+        RenderHelper.enableStandardItemLighting();
     }
 
     public <T extends GuiScreen, S extends Object>  void drawHooveringHelp(T guiScreen, List<S> hooverTexts, int guiLeft, int guiTop, int mouseX, int mouseY)

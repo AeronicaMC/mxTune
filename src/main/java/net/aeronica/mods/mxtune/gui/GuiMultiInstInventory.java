@@ -3,6 +3,7 @@ package net.aeronica.mods.mxtune.gui;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.gui.hud.GuiHudAdjust;
 import net.aeronica.mods.mxtune.gui.mml.GuiGuiMultiInstChooser;
+import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.aeronica.mods.mxtune.inventory.ContainerInstrument;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -98,6 +99,12 @@ public class GuiMultiInstInventory extends GuiContainer
 		buttonChangeInstrument.displayString = mc.player.getHeldItemMainhand().getDisplayName();
 		this.fontRenderer.drawString(I18n.format("container.inventory"), 12, this.ySize - 96 + 4, 4210752);
 		super.drawGuiContainerForegroundLayer(par1, par2);
+
+		// draw instrument - yes the coordinate system funky for this method. Gotta wrap my head around it and fix it.
+		int scale = 2;
+		int posX = xSize - 133 - (16*scale/2);
+		int posY = ySize - 116 - (16*scale/2);
+		ModGuiUtils.drawItem(this.itemRender, mc.player.getHeldItemMainhand(), posX/scale, posY/scale, scale);
 	}
 
 	@Override
