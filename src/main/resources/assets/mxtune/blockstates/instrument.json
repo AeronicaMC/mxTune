@@ -82,12 +82,12 @@
 			},
 			"bass_drum": {
 				"textures": {
-					"layer0": "mxtune:items/bass_drum_mabinogi"
+					"layer0": "mxtune:items/drum_bass_mabinogi"
 				}
 			},
 			"snare_drum": {
 				"textures": {
-					"layer0": "mxtune:items/snare_drum_mabinogi"
+					"layer0": "mxtune:items/drum_snare_mabinogi"
 				}
 			},
 			"cymbels": {
