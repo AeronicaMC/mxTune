@@ -37,6 +37,7 @@ public class SoundFontProxyManager
     public static final String RESOURCE = "/assets/mxtune/synth/soundfont_proxy.json";
     public static ImmutableMap<Integer, SoundFontProxy> soundFontProxyMapByIndex;
     public static ImmutableMap<String, SoundFontProxy> soundFontProxyMapById;
+    public static final String INSTRUMENT_DEFAULT_ID = "piano";
     private static final SoundFontProxy SOUND_FONT_PROXY_DEFAULT;
 
     static
@@ -45,7 +46,7 @@ public class SoundFontProxyManager
         SOUND_FONT_PROXY_DEFAULT = new SoundFontProxy();
         SOUND_FONT_PROXY_DEFAULT.index = 49;
         SOUND_FONT_PROXY_DEFAULT.packed_preset = 0;
-        SOUND_FONT_PROXY_DEFAULT.id = "piano";
+        SOUND_FONT_PROXY_DEFAULT.id = INSTRUMENT_DEFAULT_ID;
         SOUND_FONT_PROXY_DEFAULT.general_midi = true;
         SOUND_FONT_PROXY_DEFAULT.maple_story_2 = true;
 

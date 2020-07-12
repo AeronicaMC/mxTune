@@ -37,6 +37,8 @@ import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import static net.aeronica.mods.mxtune.util.SoundFontProxyManager.INSTRUMENT_DEFAULT_ID;
+
 public class ImportHelper
 {
     private static final int MAX_STAVES = 10;
@@ -80,7 +82,7 @@ public class ImportHelper
             if (staves.isEmpty()) return null;
             MXTuneFile mxTuneFile = new MXTuneFile();
             mxTuneFile.setTitle(title);
-            MXTunePart part = new MXTunePart("piano", "", 0, staves);
+            MXTunePart part = new MXTunePart(INSTRUMENT_DEFAULT_ID, "", 0, staves);
             mxTuneFile.getParts().add(part);
             return mxTuneFile;
         } else
@@ -113,7 +115,7 @@ public class ImportHelper
                         List<MXTuneStaff> staves = getStaves(ms2MmlReader.getMML());
                         if (!staves.isEmpty())
                         {
-                            MXTunePart part = new MXTunePart("piano", title, 0, staves);
+                            MXTunePart part = new MXTunePart(INSTRUMENT_DEFAULT_ID, title, 0, staves);
                             mxTuneFile.getParts().add(part);
                             count++;
                         }
