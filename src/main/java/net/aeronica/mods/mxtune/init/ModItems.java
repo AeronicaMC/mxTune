@@ -54,7 +54,6 @@ import java.util.Set;
 
 public class ModItems
 {
-    public static final ItemInstrument ITEM_INSTRUMENT = registerItem(new ItemInstrument(), "instrument");
     public static final ItemMusicPaper ITEM_MUSIC_PAPER = registerItem(new ItemMusicPaper(), "music_paper");
     public static final ItemSheetMusic ITEM_SHEET_MUSIC = registerItem(new ItemSheetMusic(), "sheet_music");
     public static final ItemPiano ITEM_SPINET_PIANO = registerItem(new ItemPiano(), "spinet_piano");
@@ -82,7 +81,6 @@ public class ModItems
         @SubscribeEvent
         public static void registerItems(RegistryEvent.Register<Item> event) {
             final Item[] items = {
-                    ITEM_INSTRUMENT,
                     ITEM_MUSIC_PAPER,
                     ITEM_SHEET_MUSIC,
                     ITEM_SPINET_PIANO,

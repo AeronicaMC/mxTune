@@ -17,7 +17,6 @@
 package net.aeronica.mods.mxtune.world;
 
 import net.aeronica.mods.mxtune.init.ModItems;
-import net.aeronica.mods.mxtune.items.ItemInstrument;
 import net.aeronica.mods.mxtune.util.VillagerUtils;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -53,10 +52,6 @@ public class VillageMusician
             VillagerUtils.addSellTrade(musicianCareer, new ItemStack(ModItems.ITEM_MUSIC_PAPER, 1), 1, 2);
             VillagerUtils.addSellTrade(musicianCareer, new ItemStack(Blocks.CLAY, 1), 1, 2);
             VillagerUtils.addSellTrade(2, musicianCareer, new ItemStack(Items.REDSTONE, 1), 2, 4);
-            VillagerUtils.addSellTrade(3, musicianCareer, new ItemStack(ModItems.ITEM_INSTRUMENT, 1, ItemInstrument.EnumType.TUNED_WHISTLE.getMeta()), 2, 4);
-            VillagerUtils.addSellTrade(3, musicianCareer, new ItemStack(ModItems.ITEM_INSTRUMENT, 1, ItemInstrument.EnumType.TUNED_FLUTE.getMeta()), 3, 6);
-            VillagerUtils.addSellTrade(4, musicianCareer, new ItemStack(ModItems.ITEM_INSTRUMENT, 1, ItemInstrument.EnumType.ELECTRIC_GUITAR.getMeta()), 3, 6);
-            VillagerUtils.addSellTrade(4, musicianCareer, new ItemStack(ModItems.ITEM_INSTRUMENT, 1, ItemInstrument.EnumType.HAND_CHIMES.getMeta()), 3, 6);
             VillagerUtils.addSellTrade(5, musicianCareer, new ItemStack(ModItems.ITEM_SPINET_PIANO), 6, 10);
             VillagerUtils.addSellTrade(5, musicianCareer, new ItemStack(ModItems.ITEM_BAND_AMP), 8, 12);
             return musician;

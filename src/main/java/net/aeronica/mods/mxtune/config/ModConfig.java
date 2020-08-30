@@ -68,7 +68,7 @@ public class ModConfig
         {
             @Name("Site Links")
             @LangKey("config.mxtune.mmlLink")
-            public String site = "https://mabibeats.com/";
+            public String site = "https://archeagemmllibrary.com/";
         }
 
         public static class WindowTitle
@@ -159,15 +159,7 @@ public class ModConfig
         public static Map<String, Boolean> recipeToggles;
 
         private static final String[] modItemRecipeNames = {
-                "band_amp", "bass_drum",
-                "cello", "chalumeau",
-                "cymbels", "electric_guitar", "flute", "hand_chimes",
-                "harp", "harpsichord", "harpsichord_coupled", "lute",
-                "lyre", "mandolin", "music_paper", "orchestra_set",
-                "piano", "recorder", "roncadora", "snare_drum",
-                "spinet_piano", "standard_set", "trumpet", "tuba",
-                "tuned_flute", "tuned_whistle", "ukulele",
-                "violin", "whistle"
+                "band_amp", "spinet_piano", "multi_inst"
         };
         
         static

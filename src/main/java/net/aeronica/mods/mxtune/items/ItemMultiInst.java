@@ -27,6 +27,7 @@ import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.aeronica.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -36,9 +37,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -65,6 +69,16 @@ public class ItemMultiInst extends Item implements IInstrument
 
     @Override
     public boolean getShareTag() {return true;}
+
+    @SuppressWarnings("unchecked")
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems)
+    {
+        if (isInCreativeTab(tab) && !SoundFontProxyManager.soundFontProxyMapByIndex.isEmpty()) {
+            SoundFontProxyManager.soundFontProxyMapByIndex.keySet().forEach(key-> subItems.add(key, new ItemStack(this, 1, key)));
+        }
+    }
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn)
@@ -185,9 +199,9 @@ public class ItemMultiInst extends Item implements IInstrument
     {
         String musicTitle = SheetMusicUtil.getMusicTitle(stackIn);
         if (!musicTitle.isEmpty())
-            tooltip.add(TextFormatting.GREEN + I18n.format("item.mxtune:instrument.title") + ": " + musicTitle);
+            tooltip.add(TextFormatting.GREEN + I18n.format("item.mxtune:multi_inst.title") + ": " + musicTitle);
         
-        tooltip.add(TextFormatting.RESET + I18n.format("item.mxtune:instrument.help"));
+        tooltip.add(TextFormatting.RESET + I18n.format("item.mxtune:multi_inst.help"));
     }
 
     @Override

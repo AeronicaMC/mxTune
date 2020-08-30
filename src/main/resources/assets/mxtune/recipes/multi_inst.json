@@ -1,23 +1,23 @@
 {
   "result": {
-    "item": "mxtune:instrument",
-    "data": 15
+    "item": "mxtune:multi_inst",
+    "data": 28
   },
   "pattern": [
-    "PPL",
-    "PIL",
-    "PPL"
+    "   ",
+    "PBP",
+    "SSS"
   ],
   "type": "mxtune:disablable_ore_shaped",
   "key": {
     "P": {
       "item": "#PLANKWOOD"
     },
-    "I": {
-      "item": "#INGOTIRON"
+    "B": {
+      "item": "#BONE"
     },
-    "L": {
-      "item": "#LEATHER"
+    "S": {
+      "item": "#SUGARCANE"
     }
   }
 }

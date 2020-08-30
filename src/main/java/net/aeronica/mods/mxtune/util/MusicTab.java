@@ -36,7 +36,7 @@ public class MusicTab extends CreativeTabs
 
     @Override
     @SideOnly(Side.CLIENT)
-    public ItemStack getIcon() {return new ItemStack(ModItems.ITEM_INSTRUMENT, 1, 1);}
+    public ItemStack getIcon() {return new ItemStack(ModItems.ITEM_MULTI_INST, 1, 28);}
 
     @Override
     public ItemStack createIcon() {return ItemStack.EMPTY;}
