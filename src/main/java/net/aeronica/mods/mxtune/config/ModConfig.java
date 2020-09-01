@@ -159,7 +159,7 @@ public class ModConfig
         public static Map<String, Boolean> recipeToggles;
 
         private static final String[] modItemRecipeNames = {
-                "band_amp", "spinet_piano", "multi_inst"
+                "band_amp", "spinet_piano", "flute_pan"
         };
         
         static
@@ -209,7 +209,7 @@ public class ModConfig
     {
         // strip off "item." or "tile." and "instrument." to get the raw item name without domain and item base names
         String itemName = stackIn.getTranslationKey().replaceFirst("(item.|tile.)" + Reference.MOD_ID + ":", "");
-        itemName = itemName.replaceFirst("instrument.", "");
+        itemName = itemName.replaceFirst("multi_inst.", "");
         boolean enableState = !ConfigRecipes.recipeToggles.containsKey(itemName) || (ConfigRecipes.recipeToggles.get(itemName) && !itemName.contains(":"));
         ModLogger.debug("Recipe Enabled? %s %s", itemName, enableState);
         return enableState;
