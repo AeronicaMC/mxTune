@@ -17,6 +17,9 @@
 package net.aeronica.mods.mxtune.proxy;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import net.aeronica.mods.mxtune.entity.EntityTimpaniFx;
+import net.aeronica.mods.mxtune.entity.living.EntityGoldenSkeleton;
+import net.aeronica.mods.mxtune.entity.living.EntityTimpani;
 import net.aeronica.mods.mxtune.gui.hud.GuiJamOverlay;
 import net.aeronica.mods.mxtune.gui.mml.GuiStaffOverlay;
 import net.aeronica.mods.mxtune.handler.KeyHandler;
@@ -24,6 +27,8 @@ import net.aeronica.mods.mxtune.managers.ClientFileManager;
 import net.aeronica.mods.mxtune.managers.ClientPlayManager;
 import net.aeronica.mods.mxtune.model.ModelLoader;
 import net.aeronica.mods.mxtune.network.MultiPacketSerializedObjectManager;
+import net.aeronica.mods.mxtune.render.RenderGoldenSkeleton;
+import net.aeronica.mods.mxtune.render.RenderTimpani;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.CallBackManager;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
@@ -33,9 +38,12 @@ import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Items;
 import net.minecraft.util.IThreadListener;
+import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
@@ -52,6 +60,8 @@ public class ClientProxy extends ServerProxy
     public void preInit()
     {
         ModelLoaderRegistry.registerLoader(ModelLoader.INSTANCE);
+        RenderingRegistry.registerEntityRenderingHandler(EntityGoldenSkeleton.class, RenderGoldenSkeleton.FACTORY);
+        RenderingRegistry.registerEntityRenderingHandler(EntityTimpani.class, RenderTimpani.FACTORY);
     }
 
     @Override
@@ -159,5 +169,10 @@ public class ClientProxy extends ServerProxy
         CallBackManager.shutdown();
         ClientFileManager.clearCache();
         MultiPacketSerializedObjectManager.shutdown();
+    }
+
+    @Override
+    public void spawnTimpaniParticle(World world, double x, double y, double z) {
+        Minecraft.getMinecraft().effectRenderer.addEffect(new EntityTimpaniFx(world, x, y, z, Items.BREAD, Items.BREAD.getMetadata(0)));
     }
 }

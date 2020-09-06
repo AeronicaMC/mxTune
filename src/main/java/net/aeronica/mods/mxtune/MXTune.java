@@ -59,7 +59,7 @@ public class MXTune
     public static ServerProxy proxy;
 
     public static final CreativeTabs TAB_MUSIC = new MusicTab(CreativeTabs.getNextID(), Reference.MOD_NAME);
-    
+
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {

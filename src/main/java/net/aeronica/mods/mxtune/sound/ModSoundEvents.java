@@ -29,6 +29,14 @@ public class ModSoundEvents
 {
     @ObjectHolder("pcm-proxy")
     public static final SoundEvent PCM_PROXY = registerSound("pcm-proxy");
+    public static final SoundEvent ENTITY_TINY_TIMPANI_SQUISH = registerSound("entity.tiny.timpani.squish");
+    public static final SoundEvent ENTITY_MEDIUM_TIMPANI_SQUISH = registerSound("entity.medium.timpani.squish");
+    public static final SoundEvent ENTITY_LARGE_TIMPANI_SQUISH = registerSound("entity.large.timpani.squish");
+    public static final SoundEvent ENTITY_TIMPANI_JUMP = registerSound("entity.timpani.jump");
+    public static final SoundEvent ENTITY_TINY_TIMPANI_HURT = registerSound("entity.small.timpani.hurt");
+    public static final SoundEvent ENTITY_TINY_TIMPANI_DEATH = registerSound("entity.small.timpani.death");
+    public static final SoundEvent ENTITY_TIMPANI_HURT = registerSound("entity.timpani.hurt");
+    public static final SoundEvent ENTITY_TIMPANI_DEATH = registerSound("entity.timpani.death");
 
     private ModSoundEvents() { /* NOP */ }
 
@@ -53,7 +61,15 @@ public class ModSoundEvents
         @SubscribeEvent
         public static void registerSoundEvents(final RegistryEvent.Register<SoundEvent> event) {
             event.getRegistry().registerAll(
-                    PCM_PROXY
+                    PCM_PROXY,
+                    ENTITY_TINY_TIMPANI_SQUISH,
+                    ENTITY_MEDIUM_TIMPANI_SQUISH,
+                    ENTITY_LARGE_TIMPANI_SQUISH,
+                    ENTITY_TIMPANI_JUMP,
+                    ENTITY_TINY_TIMPANI_HURT,
+                    ENTITY_TINY_TIMPANI_DEATH,
+                    ENTITY_TIMPANI_HURT,
+                    ENTITY_TIMPANI_DEATH
             );
         }
     }

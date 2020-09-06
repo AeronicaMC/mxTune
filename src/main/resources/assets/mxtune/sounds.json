@@ -1,12 +1,23 @@
 {
-	"pcm-proxy": 
-	{
-		"sounds": 
-		[
-			{
-				"name": "mxtune:pcm-proxy",
-				"stream": true
-			}
-		]
-	}
+	"pcm-proxy": { "sounds": [{"name": "mxtune:pcm-proxy", "stream": true}]},
+	"entity.tiny.timpani.squish":   {"sounds": [{"name": "mxtune:entity/timpani/timpani_53", "stream": false}]},
+	"entity.medium.timpani.squish": {"sounds": [{"name": "mxtune:entity/timpani/timpani_46", "stream": false}]},
+	"entity.large.timpani.squish":  {"sounds": [{"name": "mxtune:entity/timpani/timpani_41", "stream": false}]},
+	"entity.timpani.jump":  {"sounds": [
+		"mxtune:entity/timpani/pedal_squeak1",
+		"mxtune:entity/timpani/pedal_squeak2",
+		"mxtune:entity/timpani/pedal_squeak3"
+	]},
+	"entity.small.timpani.hurt":  {"sounds": [
+		"mxtune:entity/timpani/small_hurt"
+	]},
+	"entity.small.timpani.death":  {"sounds": [
+		"mxtune:entity/timpani/small_death"
+	]},
+	"entity.timpani.hurt":  {"sounds": [
+		"mxtune:entity/timpani/hurt"
+	]},
+	"entity.timpani.death":  {"sounds": [
+		"mxtune:entity/timpani/death"
+	]}
 }

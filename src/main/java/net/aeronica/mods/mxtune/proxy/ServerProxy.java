@@ -99,4 +99,6 @@ public class ServerProxy
     {
         // Override and use in ClientProxy Only
     }
+
+    public void spawnTimpaniParticle(World world, double x, double y, double z) { /* NOP */ }
 }
