@@ -94,7 +94,7 @@ public class EntityTimpani extends EntitySlime
     @Override
     protected ResourceLocation getLootTable()
     {
-        return this.isSmallSlime() ? LootTableList.EMPTY : LootTableList.ENTITIES_MAGMA_CUBE;
+        return this.isSmallSlime() ? LootTableList.EMPTY : LootTableList.EMPTY;
     }
 
     /**

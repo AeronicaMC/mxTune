@@ -42,6 +42,7 @@ import net.aeronica.mods.mxtune.blocks.BlockBandAmp;
 import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.blocks.RendererPiano;
 import net.aeronica.mods.mxtune.blocks.TilePiano;
+import net.aeronica.mods.mxtune.items.ItemIngredients;
 import net.aeronica.mods.mxtune.util.IVariant;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
@@ -104,6 +105,9 @@ public class ModModelManager
      */
     private void registerItemModels()
     {
+        // Register variant Item models
+        registerVariantItemModels(ModItems.ITEM_INGREDIENTS, "ingredient", ItemIngredients.EnumType.values());
+
         // Then register items with default model names
         ModItems.RegistrationHandler.ITEMS.stream().filter(item -> !itemsRegistered.contains(item)).forEach(this::registerItemModel);
     }

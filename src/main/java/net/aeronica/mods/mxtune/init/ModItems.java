@@ -63,6 +63,7 @@ public class ModItems
     public static final ItemGuiTest ITEM_GUI_TEST = registerItem(new ItemGuiTest(), "gui_test");
     public static final ItemChunkTool ITEM_CHUNK_TOOL = registerItem(new ItemChunkTool(), "chunk_tool");
     public static final ItemMultiInst ITEM_MULTI_INST = registerItem(new ItemMultiInst(), "multi_inst");
+    public static final ItemIngredients ITEM_INGREDIENTS = registerItem(new ItemIngredients(), "ingredient");
 
     private ModItems() { /* NOP */ }
 
@@ -89,7 +90,8 @@ public class ModItems
                     ITEM_STAFF_OF_MUSIC,
                     ITEM_GUI_TEST,
                     ITEM_CHUNK_TOOL,
-                    ITEM_MULTI_INST
+                    ITEM_MULTI_INST,
+                    ITEM_INGREDIENTS,
             };
 
             final IForgeRegistry<Item> registry = event.getRegistry();

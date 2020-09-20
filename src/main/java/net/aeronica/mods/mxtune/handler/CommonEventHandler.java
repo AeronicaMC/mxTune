@@ -19,10 +19,15 @@ package net.aeronica.mods.mxtune.handler;
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.blocks.IMusicPlayer;
 import net.aeronica.mods.mxtune.config.ModConfig;
+import net.aeronica.mods.mxtune.entity.living.EntityGoldenSkeleton;
+import net.aeronica.mods.mxtune.entity.living.EntityTimpani;
+import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.managers.PlayManager;
 import net.aeronica.mods.mxtune.world.IModLockableContainer;
 import net.aeronica.mods.mxtune.world.LockableHelper;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -31,11 +36,14 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
+import java.util.Random;
+
 @Mod.EventBusSubscriber()
 public class CommonEventHandler
 {
     private CommonEventHandler() { /* NOP */ }
     private static int count = 0;
+    private static Random RANDOM = new Random();
 
     // Stops a playing player if they open any non-player inventory.
     @SubscribeEvent
@@ -71,6 +79,25 @@ public class CommonEventHandler
                 if (LockableHelper.isBreakable(event.getPlayer(), tileEntity.getWorld(), event.getPos()) && !isCreativeMode)
                     event.setCanceled(true);
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onEvent(LivingDropsEvent event)
+    {
+        if(event.getEntityLiving() instanceof EntityGoldenSkeleton)
+        {
+            if(RANDOM.nextInt(2) == 0)
+                event.getEntityLiving().entityDropItem(new ItemStack(ModItems.ITEM_INGREDIENTS, 1, 0), 0.0f);
+            if(RANDOM.nextInt(2) == 0)
+                event.getEntityLiving().entityDropItem(new ItemStack(ModItems.ITEM_INGREDIENTS, 1, 0), 0.0f);
+        }
+
+        if(event.getEntityLiving() instanceof EntityTimpani)
+        {
+            if(!((EntityTimpani)event.getEntityLiving()).isSmallSlime())
+                if(RANDOM.nextInt(3) == 0)
+                    event.getEntityLiving().entityDropItem(new ItemStack(ModItems.ITEM_INGREDIENTS, 1, 1), 0.0f);
         }
     }
 }

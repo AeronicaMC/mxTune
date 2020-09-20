@@ -5,16 +5,18 @@
   },
   "pattern": [
     "   ",
-    "PBP",
+    "MBM",
     "SSS"
   ],
   "type": "mxtune:disablable_ore_shaped",
   "key": {
-    "P": {
-      "item": "#PLANKWOOD"
+    "M": {
+      "item": "mxtune:ingredient",
+      "data": 1
     },
     "B": {
-      "item": "#BONE"
+      "item": "mxtune:ingredient",
+      "data": 0
     },
     "S": {
       "item": "#SUGARCANE"

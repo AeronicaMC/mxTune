@@ -12,13 +12,13 @@
         "recipe": "mxtune:multi_inst"
       }
     },
-    "has_planks": {
+    "has_membrane": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "type": "forge:ore_dict",
-            "ore": "plankWood"
+            "item": "mxtune:ingredient",
+            "data": 1
           }
         ]
       }
@@ -28,8 +28,8 @@
       "conditions": {
         "items": [
           {
-            "type": "forge:ore_dict",
-            "ore": "bone"
+            "item": "mxtune:ingredient",
+            "data": 0
           }
         ]
       }
@@ -48,10 +48,10 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
-      "has_planks",
+      "has_membrane",
       "has_bone",
-      "has_sugarcane"
+      "has_sugarcane",
+      "has_the_recipe"
     ]
   ]
 }
