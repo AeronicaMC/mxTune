@@ -1,6 +1,7 @@
 package net.aeronica.mods.mxtune.entity.living;
 
 import net.aeronica.mods.mxtune.MXTune;
+import net.aeronica.mods.mxtune.init.ModLootTables;
 import net.aeronica.mods.mxtune.sound.ModSoundEvents;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -94,7 +95,7 @@ public class EntityTimpani extends EntitySlime
     @Override
     protected ResourceLocation getLootTable()
     {
-        return this.isSmallSlime() ? LootTableList.EMPTY : LootTableList.EMPTY;
+        return this.isSmallSlime() ? LootTableList.EMPTY : ModLootTables.ENTITY_TIMPANI_OF_DOOM;
     }
 
     /**

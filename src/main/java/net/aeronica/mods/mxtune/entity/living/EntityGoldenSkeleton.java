@@ -1,6 +1,7 @@
 package net.aeronica.mods.mxtune.entity.living;
 
 import net.aeronica.mods.mxtune.entity.living.ai.EntityGSAIAttackRangedBow;
+import net.aeronica.mods.mxtune.init.ModLootTables;
 import net.minecraft.block.Block;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.*;
@@ -29,7 +30,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
-import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -110,7 +110,7 @@ public class EntityGoldenSkeleton extends EntityMob implements IRangedAttackMob
     @Nullable
     protected ResourceLocation getLootTable()
     {
-        return LootTableList.ENTITIES_SKELETON;
+        return ModLootTables.ENTITY_GOLDEN_SKELETON;
     }
 
     protected SoundEvent getAmbientSound()
