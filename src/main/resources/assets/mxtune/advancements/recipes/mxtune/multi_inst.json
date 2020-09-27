@@ -12,29 +12,7 @@
         "recipe": "mxtune:multi_inst"
       }
     },
-    "has_membrane": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "item": "mxtune:ingredient",
-            "data": 1
-          }
-        ]
-      }
-    }, 
-    "has_bone": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "item": "mxtune:ingredient",
-            "data": 0
-          }
-        ]
-      }
-    },
-    "has_sugarcane": {
+   "has_sugarcane": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -48,8 +26,6 @@
   },
   "requirements": [
     [
-      "has_membrane",
-      "has_bone",
       "has_sugarcane",
       "has_the_recipe"
     ]

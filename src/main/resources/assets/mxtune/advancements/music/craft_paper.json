@@ -17,12 +17,7 @@
             "conditions": {
                 "items": [
                     {
-                        "type": "forge:ore_dict",
-                        "ore": "dyeBlack"
-                    },
-                    {
-                        "type": "forge:ore_dict",
-                        "ore": "paper"
+                        "item": "mxtune:music_paper"
                     }
                 ]
             }

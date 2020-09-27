@@ -2,7 +2,8 @@
     "display":
     {
         "icon": {
-            "item": "mxtune:spinet_piano"
+            "item": "mxtune:multi_inst",
+            "data": 50
         },
         "title": {
             "translate": "advancements.mxtune:music.root.title"

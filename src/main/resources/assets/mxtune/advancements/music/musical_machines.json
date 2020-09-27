@@ -10,7 +10,7 @@
             "translate": "advancements.mxtune:music.musical_machines.description"
         }
     },
-    "parent": "mxtune:music/craft_paper",
+    "parent": "mxtune:music/root",
     "criteria": {
         "get_redstone": {
             "trigger": "minecraft:inventory_changed",
