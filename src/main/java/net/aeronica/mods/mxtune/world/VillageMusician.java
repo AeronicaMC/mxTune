@@ -18,7 +18,6 @@ package net.aeronica.mods.mxtune.world;
 
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.util.VillagerUtils;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.RegistryEvent;
@@ -47,11 +46,13 @@ public class VillageMusician
             VillagerProfession musician = new VillagerProfession("mxtune:musician", "mxtune:textures/entity/musican.png",
                                                                  "minecraft:textures/entity/zombie_villager/zombie_villager.png");
             VillagerCareer musicianCareer = new VillagerCareer(musician, "mxtune:musician");
-            VillagerUtils.addSellTrade(musicianCareer, new ItemStack(Items.LEATHER, 1), 1, 2);
-            VillagerUtils.addSellTrade(musicianCareer, new ItemStack(Items.STRING, 1), 1, 2);
-            VillagerUtils.addSellTrade(musicianCareer, new ItemStack(ModItems.ITEM_MUSIC_PAPER, 1), 1, 2);
-            VillagerUtils.addSellTrade(musicianCareer, new ItemStack(Blocks.CLAY, 1), 1, 2);
+            VillagerUtils.addSellTrade(musicianCareer, new ItemStack(Items.PAPER, 2), 1, 2);
+            VillagerUtils.addSellTrade(musicianCareer, new ItemStack(Items.DYE, 1, 0), 1, 2);
+            VillagerUtils.addSellTrade(musicianCareer, new ItemStack(ModItems.ITEM_MUSIC_PAPER, 3), 2, 3);
+            VillagerUtils.addSellTrade(2, musicianCareer, new ItemStack(ModItems.ITEM_INGREDIENTS, 1, 0), 3, 5);
+            VillagerUtils.addSellTrade(2, musicianCareer, new ItemStack(ModItems.ITEM_INGREDIENTS, 1, 1), 3, 5);
             VillagerUtils.addSellTrade(2, musicianCareer, new ItemStack(Items.REDSTONE, 1), 2, 4);
+            VillagerUtils.addSellTrade(3, musicianCareer, new ItemStack(ModItems.ITEM_MULTI_INST, 1, 28), 4, 8);
             VillagerUtils.addSellTrade(5, musicianCareer, new ItemStack(ModItems.ITEM_SPINET_PIANO), 6, 10);
             VillagerUtils.addSellTrade(5, musicianCareer, new ItemStack(ModItems.ITEM_BAND_AMP), 8, 12);
             return musician;
