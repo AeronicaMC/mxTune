@@ -34,7 +34,7 @@
         {
           "type": "item",
           "name": "mxtune:ingredient",
-          "weight": 1,
+          "weight": 70,
           "functions": [
             {
               "function": "minecraft:set_data",
@@ -46,15 +46,32 @@
                 "min": 0,
                 "max": 2
               }
-            },
+            }
+          ]
+        },
+        {
+          "type": "item",
+          "name": "mxtune:sheet_music",
+          "weight": 30,
+          "functions": [
             {
-              "function": "looting_enchant",
+              "function": "set_count",
               "count": {
                 "min": 0,
                 "max": 1
               }
             }
           ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "killed_by_player"
+        },
+        {
+          "condition": "random_chance_with_looting",
+          "chance": 0.50,
+          "looting_multiplier": 0.1
         }
       ]
     }

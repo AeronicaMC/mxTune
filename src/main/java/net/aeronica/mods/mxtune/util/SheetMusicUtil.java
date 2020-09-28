@@ -23,6 +23,7 @@ import net.aeronica.libs.mml.core.ParseErrorListener;
 import net.aeronica.mods.mxtune.blocks.IMusicPlayer;
 import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
 import net.aeronica.mods.mxtune.blocks.TileInstrument;
+import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.inventory.IMusic;
 import net.aeronica.mods.mxtune.sound.Midi2WavRenderer;
@@ -207,5 +208,16 @@ public enum SheetMusicUtil
             }
         }
         return buildMML.toString();
+    }
+
+    public static ItemStack createSheetMusic(String title, String mml)
+    {
+        ItemStack sheetMusic = new ItemStack(ModItems.ITEM_SHEET_MUSIC);
+        if (SheetMusicUtil.writeSheetMusic(sheetMusic, title, mml))
+        {
+            return sheetMusic;
+        }
+        else
+            return new ItemStack(ModItems.ITEM_MUSIC_PAPER);
     }
 }

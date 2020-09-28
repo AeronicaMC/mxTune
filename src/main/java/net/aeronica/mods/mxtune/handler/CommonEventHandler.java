@@ -16,13 +16,19 @@
  */
 package net.aeronica.mods.mxtune.handler;
 
+import net.aeronica.libs.mml.core.TestData;
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.blocks.IMusicPlayer;
 import net.aeronica.mods.mxtune.config.ModConfig;
+import net.aeronica.mods.mxtune.entity.living.EntityGoldenSkeleton;
+import net.aeronica.mods.mxtune.entity.living.EntityTimpani;
+import net.aeronica.mods.mxtune.items.ItemSheetMusic;
 import net.aeronica.mods.mxtune.managers.PlayManager;
+import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.aeronica.mods.mxtune.world.IModLockableContainer;
 import net.aeronica.mods.mxtune.world.LockableHelper;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -74,6 +80,22 @@ public class CommonEventHandler
                 if (LockableHelper.isBreakable(event.getPlayer(), tileEntity.getWorld(), event.getPos()) && !isCreativeMode)
                     event.setCanceled(true);
             }
+        }
+    }
+
+    // Add Title/MML to Sheet Music Drops for Mod Mobs
+    @SubscribeEvent
+    public static void onEvent(LivingDropsEvent event)
+    {
+        if (event.getEntityLiving() instanceof EntityGoldenSkeleton || event.getEntityLiving() instanceof EntityTimpani)
+        {
+            event.getDrops().forEach(p ->
+                {
+                if (p.getItem().getItem() instanceof ItemSheetMusic)
+                    {
+                        p.setItem(SheetMusicUtil.createSheetMusic("Bach", TestData.MML2.getMML()));
+                    }
+                });
         }
     }
 }
