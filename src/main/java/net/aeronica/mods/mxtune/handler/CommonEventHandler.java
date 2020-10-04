@@ -16,7 +16,6 @@
  */
 package net.aeronica.mods.mxtune.handler;
 
-import net.aeronica.libs.mml.core.TestData;
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.blocks.IMusicPlayer;
 import net.aeronica.mods.mxtune.config.ModConfig;
@@ -24,6 +23,7 @@ import net.aeronica.mods.mxtune.entity.living.EntityGoldenSkeleton;
 import net.aeronica.mods.mxtune.entity.living.EntityTimpani;
 import net.aeronica.mods.mxtune.items.ItemSheetMusic;
 import net.aeronica.mods.mxtune.managers.PlayManager;
+import net.aeronica.mods.mxtune.util.SheetMusicSongs;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.aeronica.mods.mxtune.world.IModLockableContainer;
 import net.aeronica.mods.mxtune.world.LockableHelper;
@@ -89,11 +89,15 @@ public class CommonEventHandler
     {
         if (event.getEntityLiving() instanceof EntityGoldenSkeleton || event.getEntityLiving() instanceof EntityTimpani)
         {
-            event.getDrops().forEach(p ->
+            event.getDrops().forEach(drop ->
                 {
-                if (p.getItem().getItem() instanceof ItemSheetMusic)
+                if (drop.getItem().getItem() instanceof ItemSheetMusic)
                     {
-                        p.setItem(SheetMusicUtil.createSheetMusic("Bach", TestData.MML2.getMML()));
+                        Random rand = event.getEntityLiving().getEntityWorld().rand;
+                        int selection = rand.nextInt(SheetMusicSongs.values().length+1);
+                        drop.setItem(SheetMusicUtil.createSheetMusic(
+                                SheetMusicSongs.getMML(selection).getTitle(),
+                                SheetMusicSongs.getMML(selection).getMML()));
                     }
                 });
         }
