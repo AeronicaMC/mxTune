@@ -44,7 +44,6 @@ public class CommonEventHandler
 {
     private CommonEventHandler() { /* NOP */ }
     private static int count = 0;
-    private static Random RANDOM = new Random();
 
     // Stops a playing player if they open any non-player inventory.
     @SubscribeEvent
