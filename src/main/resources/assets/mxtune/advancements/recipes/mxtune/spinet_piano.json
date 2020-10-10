@@ -6,12 +6,13 @@
     ]
   },
   "criteria": {
-    "has_iron_bars": {
+    "has_planks": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:iron_bars"
+            "type": "forge:ore_dict",
+            "ore": "plankWood"
           }
         ]
       }
@@ -25,7 +26,7 @@
   },
   "requirements": [
     [
-      "has_iron_bars",
+      "has_planks",
       "has_the_recipe"
     ]
   ]

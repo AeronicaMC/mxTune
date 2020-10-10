@@ -1,0 +1,26 @@
+{
+    "display": {
+        "icon": {
+            "item": "mxtune:spinet_piano"
+        },
+        "title": {
+            "translate": "advancements.mxtune:music.craft_spinet_piano.title"
+        },
+        "description": {
+            "translate": "advancements.mxtune:music.craft_spinet_piano.description"
+        }
+    },
+    "parent": "mxtune:music/craft_flute_pan",
+    "criteria": {
+        "get_spinet_piano": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "mxtune:spinet_piano"
+                    }
+                ]
+            }
+        }
+    }
+}

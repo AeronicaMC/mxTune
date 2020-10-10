@@ -4,7 +4,7 @@
   },
   "pattern": [
     "PRP",
-    "PFP",
+    "BFM",
     "PPP"
   ],
   "type": "mxtune:disablable_ore_shaped",
@@ -17,6 +17,14 @@
     },
     "F": {
       "item": "minecraft:iron_bars"
+    },
+    "M": {
+      "item": "mxtune:ingredient",
+      "data": 1
+    },
+    "B": {
+      "item": "mxtune:ingredient",
+      "data": 0
     }
   }
 }

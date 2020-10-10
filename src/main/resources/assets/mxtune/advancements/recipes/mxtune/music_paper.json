@@ -6,13 +6,13 @@
     ]
   },
   "criteria": {
-    "has_reeds": {
+    "has_paper": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
             "type": "forge:ore_dict",
-            "ore": "sugarcane"
+            "ore": "paper"
           }
         ]
       }
@@ -26,7 +26,7 @@
   },
   "requirements": [
     [
-      "has_reeds",
+      "has_paper",
       "has_the_recipe"
     ]
   ]
