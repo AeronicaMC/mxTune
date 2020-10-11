@@ -252,6 +252,9 @@ public class GuiBandAmp extends GuiContainer
         int durationLength = fontRenderer.getStringWidth(duration) + 8;
         fontRenderer.drawString(duration, xSize - durationLength, 6, 0x404040);
         fontRenderer.drawString(inventoryPlayer.getDisplayName().getUnformattedText(), 8, ySize - 94, 0x404040);
+        String helpText = I18n.format("mxtune.gui.bandAmp.sneakHelp");
+        int helpLength = fontRenderer.getStringWidth(helpText) + 8;
+        fontRenderer.drawString(helpText, xSize - helpLength, ySize - 94, 0x404040);
     }
 
     @Override

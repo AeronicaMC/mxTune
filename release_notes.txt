@@ -1,3 +1,15 @@
+TBD mxtune-1.12.2-0.8.0-beta.10
+NOTE: Backup your WORLDS before updating to this version. Instruments have changed. This affects MXT BG Music too.
+ * This means you will need to open the inventory on your hand-held instruments and select the timbre.
+ * For MXT BG music you will have to open, re-select the instruments and re-save/upload.
+Changes:
+ * Band Amp - Change Sneak-RIGHT-Click behavior depending on lock state. Update hoover helps.
+ * All hand-held instruments are now ALL-IN-ONE Multi-Instruments.
+ * Added "Gold Bone" and "Timpanic Membrane" ingredients and updated recipes and advancements
+ * Added "Golden Skeleton" and "Timpani of Doom" mobs that can drop the above ingredients and sometimes sheet music.
+ * The rare ingredients are also available from the musician villager.
+
+----
 2019-12-27 mxtune-1.12.2-0.7.0-beta.9
 Update to forge 14.23.5.2847
 Previous forge version fails to build in a CI environment. e.g. ./gradlew setupCIWorkspace -s

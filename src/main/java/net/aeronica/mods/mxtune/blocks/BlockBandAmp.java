@@ -45,11 +45,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ChunkCache;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.IWorldNameable;
-import net.minecraft.world.World;
+import net.minecraft.world.*;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -96,18 +94,23 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
     {
         if (!worldIn.isRemote)
         {
-            if (playerIn.isSneaking() || LockableHelper.isLocked(playerIn, worldIn, pos))
+            if (invertSneakIfLocked(playerIn, worldIn, pos) || LockableHelper.isLocked(playerIn, worldIn, pos))
             {
                 boolean isPlaying = canPlayOrStopMusic(worldIn, pos, false);
                 setPlayingState(worldIn, pos, state, isPlaying);
                 worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
             }
-            else if (!playerIn.isSneaking() && playerIn.capabilities.allowEdit)
+            else if (!invertSneakIfLocked(playerIn, worldIn, pos)  && playerIn.capabilities.allowEdit)
             {
                 playerIn.openGui(MXTune.instance, GuiGuid.GUI_BAND_AMP, worldIn, pos.getX(), pos.getY(), pos.getZ());
             }
         }
         return true;
+    }
+
+    private boolean invertSneakIfLocked(EntityPlayer playerIn, World worldIn, BlockPos pos)
+    {
+        return LockableHelper.isLocked(FakePlayerFactory.getMinecraft((WorldServer)worldIn), worldIn, pos) != playerIn.isSneaking();
     }
 
     private boolean canPlayOrStopMusic(World worldIn, BlockPos pos, Boolean stop)
