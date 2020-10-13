@@ -3,15 +3,18 @@ package net.aeronica.mods.mxtune.entity.living;
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.init.ModLootTables;
 import net.aeronica.mods.mxtune.sound.ModSoundEvents;
-import net.minecraft.entity.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IEntityLivingData;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAIFindEntityNearest;
 import net.minecraft.entity.ai.EntityAIFindEntityNearestPlayer;
 import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.monster.EntityIronGolem;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Biomes;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,18 +26,15 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.storage.loot.LootTableList;
 
 import javax.annotation.Nullable;
 
-public class EntityTimpani extends EntityLiving implements IMob
+public class EntityTimpani extends EntityMob implements IMob
 {
     private static final DataParameter<Integer> TIMPANI_SIZE = EntityDataManager.createKey(EntityTimpani.class, DataSerializers.VARINT);
     public float squishAmount;
@@ -187,28 +187,7 @@ public class EntityTimpani extends EntityLiving implements IMob
     @Override
     public boolean getCanSpawnHere()
     {
-        BlockPos blockpos = new BlockPos(MathHelper.floor(this.posX), 0, MathHelper.floor(this.posZ));
-        Chunk chunk = this.world.getChunk(blockpos);
-
-        if (!this.world.getWorldInfo().getTerrainType().handleSlimeSpawnReduction(rand, world))
-        {
-            if (this.world.getDifficulty() != EnumDifficulty.PEACEFUL)
-            {
-                Biome biome = this.world.getBiome(blockpos);
-
-                if (biome == Biomes.JUNGLE_EDGE && this.posY > 30.0D && this.posY < 150.0D)
-                {
-                    return super.getCanSpawnHere();
-                }
-
-                if (this.rand.nextInt(10) == 0 && chunk.getRandomWithSeed(987234911L).nextInt(10) == 0 && this.posY < 40.0D)
-                {
-                    return super.getCanSpawnHere();
-                }
-            }
-
-        }
-        return false;
+        return this.world.getDifficulty() != EnumDifficulty.PEACEFUL && this.isValidLightLevel() && super.getCanSpawnHere();
     }
 
     /**

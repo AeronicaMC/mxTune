@@ -85,9 +85,15 @@ public class EntityGoldenSkeleton extends EntityMob implements IRangedAttackMob
     }
 
     @Override
+    public boolean getCanSpawnHere()
+    {
+        return this.world.getDifficulty() != EnumDifficulty.PEACEFUL && this.isValidLightLevel() && super.getCanSpawnHere();
+    }
+
+    @Override
     protected boolean canDespawn()
     {
-        return false;
+        return true;
     }
     
     protected void applyEntityAttributes()

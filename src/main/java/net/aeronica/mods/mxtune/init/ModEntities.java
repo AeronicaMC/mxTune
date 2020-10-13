@@ -37,8 +37,8 @@ public enum ModEntities
     {
         EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID, "mountableblock"), EntitySittableBlock.class, "mountableblock", getEntityID(), MXTune.instance,80, 1, false);
         EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID, "mob_golden_skeleton"), EntityGoldenSkeleton.class, "mxtune:mob_golden_skeleton", getEntityID(), MXTune.instance, 64, 1, true, 0x000000, 0xE6BA50);
+        EntityRegistry.addSpawn(EntityGoldenSkeleton.class, 10, 2, 3, EnumCreatureType.MONSTER, Biomes.PLAINS, Biomes.FROZEN_RIVER, Biomes.DESERT);
         EntityRegistry.registerModEntity(new ResourceLocation(Reference.MOD_ID, "mob_timpani"), EntityTimpani.class, "mxtune:mob_timpani", getEntityID(), MXTune.instance, 64, 1, true, 0x000000, 0xFF5121);
-        EntityRegistry.addSpawn(EntityTimpani.class, 10, 3, 5, EnumCreatureType.MONSTER, Biomes.PLAINS, Biomes.FROZEN_RIVER);
-        EntityRegistry.addSpawn(EntityGoldenSkeleton.class, 10, 1, 2, EnumCreatureType.MONSTER, Biomes.PLAINS, Biomes.FROZEN_RIVER);
+        EntityRegistry.addSpawn(EntityTimpani.class, 10, 2, 4, EnumCreatureType.MONSTER, Biomes.PLAINS, Biomes.FROZEN_RIVER, Biomes.DESERT);
     }
 }
