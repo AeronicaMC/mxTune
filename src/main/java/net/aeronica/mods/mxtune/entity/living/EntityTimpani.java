@@ -36,7 +36,7 @@ import javax.annotation.Nullable;
 
 public class EntityTimpani extends EntityLiving implements IMob
 {
-    private static final DataParameter<Integer> TIMPANI_SIZE = EntityDataManager.<Integer>createKey(EntityTimpani.class, DataSerializers.VARINT);
+    private static final DataParameter<Integer> TIMPANI_SIZE = EntityDataManager.createKey(EntityTimpani.class, DataSerializers.VARINT);
     public float squishAmount;
     public float squishFactor;
     public float prevSquishFactor;
@@ -63,16 +63,16 @@ public class EntityTimpani extends EntityLiving implements IMob
     protected void entityInit()
     {
         super.entityInit();
-        this.dataManager.register(TIMPANI_SIZE, Integer.valueOf(1));
+        this.dataManager.register(TIMPANI_SIZE, 1);
     }
 
     protected void setTimpaniSize(int size, boolean resetHealth)
     {
-        this.dataManager.set(TIMPANI_SIZE, Integer.valueOf(size));
+        this.dataManager.set(TIMPANI_SIZE, size);
         this.setSize(0.51000005F * (float)size, 0.51000005F * (float)size);
         this.setPosition(this.posX, this.posY, this.posZ);
-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue((double)(size * size));
-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue((double)(0.2F + 0.1F * (float)size));
+        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(size * size);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.2F + 0.1F * (float)size);
 
         if (resetHealth)
         {
@@ -80,7 +80,7 @@ public class EntityTimpani extends EntityLiving implements IMob
         }
 
         this.experienceValue = size;
-        this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue((double)(size * 3));
+        this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(size * 3);
     }
 
     /**
@@ -88,7 +88,7 @@ public class EntityTimpani extends EntityLiving implements IMob
      */
     public int getTimpaniSize()
     {
-        return ((Integer)this.dataManager.get(TIMPANI_SIZE)).intValue();
+        return this.dataManager.get(TIMPANI_SIZE);
     }
 
     /**
@@ -180,6 +180,7 @@ public class EntityTimpani extends EntityLiving implements IMob
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.20000000298023224D);
     }
 
+
     /**
      * Checks if the entity's current position is a valid location to spawn this entity.
      */
@@ -189,17 +190,13 @@ public class EntityTimpani extends EntityLiving implements IMob
         BlockPos blockpos = new BlockPos(MathHelper.floor(this.posX), 0, MathHelper.floor(this.posZ));
         Chunk chunk = this.world.getChunk(blockpos);
 
-        if (this.world.getWorldInfo().getTerrainType().handleSlimeSpawnReduction(rand, world))
-        {
-            return false;
-        }
-        else
+        if (!this.world.getWorldInfo().getTerrainType().handleSlimeSpawnReduction(rand, world))
         {
             if (this.world.getDifficulty() != EnumDifficulty.PEACEFUL)
             {
                 Biome biome = this.world.getBiome(blockpos);
 
-                if (biome == Biomes.PLAINS && this.posY > 50.0D && this.posY < 70.0D && this.rand.nextFloat() < 0.5F && this.rand.nextFloat() < this.world.getCurrentMoonPhaseFactor() && this.world.getLightFromNeighbors(new BlockPos(this)) <= this.rand.nextInt(8))
+                if (biome == Biomes.JUNGLE_EDGE && this.posY > 30.0D && this.posY < 150.0D)
                 {
                     return super.getCanSpawnHere();
                 }
@@ -210,8 +207,8 @@ public class EntityTimpani extends EntityLiving implements IMob
                 }
             }
 
-            return false;
         }
+        return false;
     }
 
     /**
@@ -222,28 +219,6 @@ public class EntityTimpani extends EntityLiving implements IMob
     {
         return this.world.checkNoEntityCollision(this.getEntityBoundingBox(), this) && this.world.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty() && !this.world.containsAnyLiquid(this.getEntityBoundingBox());
     }
-    
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    public int getBrightnessForRender(float partialTicks)
-//    {
-//        return 15728880;
-//    }
-//
-//    /**
-//     * Gets how bright this entity is.
-//     */
-//    @Override
-//    public float getBrightness(float partialTicks)
-//    {
-//        return 1.0F;
-//    }
-
-//    @Override
-//    protected EnumParticleTypes getParticleType()
-//    {
-//        return EnumParticleTypes.NOTE;
-//    }
 
     protected net.aeronica.mods.mxtune.entity.living.EntityTimpani createInstance()
     {
@@ -276,7 +251,7 @@ public class EntityTimpani extends EntityLiving implements IMob
     @Override
     protected void jump()
     {
-        this.motionY = (double)(0.22F + (float)this.getTimpaniSize() * 0.1F);
+        this.motionY = 0.22F + (float)this.getTimpaniSize() * 0.1F;
         this.isAirBorne = true;
         net.minecraftforge.common.ForgeHooks.onLivingJump(this);
     }
@@ -284,7 +259,7 @@ public class EntityTimpani extends EntityLiving implements IMob
     @Override
     protected void handleJumpLava()
     {
-        this.motionY = (double)(0.22F + (float)this.getTimpaniSize() * 0.05F);
+        this.motionY = 0.22F + (float)this.getTimpaniSize() * 0.05F;
         this.isAirBorne = true;
     }
 
@@ -573,6 +548,7 @@ public class EntityTimpani extends EntityLiving implements IMob
         /**
          * Keep ticking a continuous task that has already been started
          */
+        @SuppressWarnings("ConstantConditions")
         public void updateTask()
         {
             this.timpani.faceEntity(this.timpani.getAttackTarget(), 10.0F, 10.0F);
@@ -677,9 +653,9 @@ public class EntityTimpani extends EntityLiving implements IMob
 
     static class TimpaniMoveHelper extends EntityMoveHelper
     {
+        private final EntityTimpani timpani;
         private float yRot;
         private int jumpDelay;
-        private final EntityTimpani timpani;
         private boolean isAggressive;
 
         public TimpaniMoveHelper(EntityTimpani timpaniIn)
