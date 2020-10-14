@@ -39,7 +39,7 @@ import java.util.Calendar;
 public class EntityGoldenSkeleton extends EntityMob implements IRangedAttackMob
 {
 
-    private static final DataParameter<Boolean> SWINGING_ARMS = EntityDataManager.<Boolean>createKey(net.aeronica.mods.mxtune.entity.living.EntityGoldenSkeleton.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> SWINGING_ARMS = EntityDataManager.createKey(net.aeronica.mods.mxtune.entity.living.EntityGoldenSkeleton.class, DataSerializers.BOOLEAN);
     private final EntityGSAIAttackRangedBow aiArrowAttack = new EntityGSAIAttackRangedBow(this, 1.0D, 20, 15.0F);
     private final EntityAIAttackMelee aiAttackOnCollide = new EntityAIAttackMelee(this, 1.2D, false) {
         /**
@@ -64,7 +64,9 @@ public class EntityGoldenSkeleton extends EntityMob implements IRangedAttackMob
     {
         super(worldIn);
         this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
-        this.setArrowCountInEntity(256);   
+        this.setArrowCountInEntity(256);
+        this.setSize(0.6F, 1.99F);
+        this.setCombatTask();
     }
 
     @SuppressWarnings({
@@ -73,8 +75,8 @@ public class EntityGoldenSkeleton extends EntityMob implements IRangedAttackMob
     protected void initEntityAI()
     {
         this.tasks.addTask(1, new EntityAISwimming(this));
-//        this.tasks.addTask(2, new EntityAIRestrictSun(this));
-//        this.tasks.addTask(3, new EntityAIFleeSun(this, 1.0D));
+        this.tasks.addTask(2, new EntityAIRestrictSun(this));
+        this.tasks.addTask(3, new EntityAIFleeSun(this, 1.0D));
         this.tasks.addTask(3, new EntityAIAvoidEntity(this, EntityWolf.class, 6.0F, 1.0D, 1.2D));
         this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 1.0D));
         this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
@@ -82,12 +84,6 @@ public class EntityGoldenSkeleton extends EntityMob implements IRangedAttackMob
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false, new Class[0]));
         this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
         this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityIronGolem.class, true));
-    }
-
-    @Override
-    public boolean getCanSpawnHere()
-    {
-        return this.world.getDifficulty() != EnumDifficulty.PEACEFUL && this.isValidLightLevel() && super.getCanSpawnHere();
     }
 
     @Override
@@ -114,21 +110,19 @@ public class EntityGoldenSkeleton extends EntityMob implements IRangedAttackMob
     }
 
     @Nullable
+    @Override
     protected ResourceLocation getLootTable()
     {
         return ModLootTables.ENTITY_GOLDEN_SKELETON;
     }
 
+    @Override
     protected SoundEvent getAmbientSound()
     {
         return SoundEvents.ENTITY_SKELETON_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound()
-    {
-        return SoundEvents.ENTITY_SKELETON_HURT;
-    }
-
+    @Override
     protected SoundEvent getDeathSound()
     {
         return SoundEvents.ENTITY_SKELETON_DEATH;
@@ -248,7 +242,7 @@ public class EntityGoldenSkeleton extends EntityMob implements IRangedAttackMob
         {
             Calendar calendar = this.world.getCurrentDate();
 
-            if (calendar.get(2) + 1 == 10 && calendar.get(5) == 31 && this.rand.nextFloat() < 0.25F)
+            if (calendar.get(Calendar.MONTH) + 1 == 10 && calendar.get(Calendar.DATE) == 31 && this.rand.nextFloat() < 0.25F)
             {
                 this.setItemStackToSlot(EntityEquipmentSlot.HEAD, new ItemStack(this.rand.nextFloat() < 0.1F ? Blocks.LIT_PUMPKIN : Blocks.PUMPKIN));
                 this.inventoryArmorDropChances[EntityEquipmentSlot.HEAD.getIndex()] = 0.0F;
@@ -297,7 +291,7 @@ public class EntityGoldenSkeleton extends EntityMob implements IRangedAttackMob
         double d0 = target.posX - this.posX;
         double d1 = target.getEntityBoundingBox().minY + (double)(target.height / 3.0F) - entityarrow.posY;
         double d2 = target.posZ - this.posZ;
-        double d3 = (double) MathHelper.sqrt(d0 * d0 + d2 * d2);
+        double d3 = MathHelper.sqrt(d0 * d0 + d2 * d2);
         entityarrow.shoot(d0, d1 + d3 * 0.20000000298023224D, d2, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
         this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         this.world.spawnEntity(entityarrow);

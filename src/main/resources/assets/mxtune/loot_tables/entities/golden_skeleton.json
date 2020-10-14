@@ -70,7 +70,7 @@
         },
         {
           "condition": "random_chance_with_looting",
-          "chance": 0.50,
+          "chance": 0.60,
           "looting_multiplier": 0.1
         }
       ]

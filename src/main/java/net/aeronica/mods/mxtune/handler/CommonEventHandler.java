@@ -23,15 +23,12 @@ import net.aeronica.mods.mxtune.entity.living.EntityGoldenSkeleton;
 import net.aeronica.mods.mxtune.entity.living.EntityTimpani;
 import net.aeronica.mods.mxtune.items.ItemSheetMusic;
 import net.aeronica.mods.mxtune.managers.PlayManager;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicSongs;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.aeronica.mods.mxtune.world.IModLockableContainer;
 import net.aeronica.mods.mxtune.world.LockableHelper;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -105,14 +102,14 @@ public class CommonEventHandler
         }
     }
 
-    @SubscribeEvent
-    public static void onEvent(LivingSpawnEvent event)
-    {
-        if (event.getWorld().isRemote) return;
-        EntityLivingBase livingBase = event.getEntityLiving();
-        if ((livingBase instanceof EntityTimpani) || (livingBase instanceof EntityGoldenSkeleton))
-        {
-            ModLogger.info("\t %s, %s", livingBase.world.getBiome(livingBase.getPosition()), livingBase);
-        }
-    }
+//    @SubscribeEvent
+//    public static void onEvent(LivingSpawnEvent event)
+//    {
+//        if (event.getWorld().isRemote) return;
+//        EntityLivingBase livingBase = event.getEntityLiving();
+//        if ((livingBase instanceof EntityTimpani) || (livingBase instanceof EntityGoldenSkeleton))
+//        {
+//            ModLogger.info("\t %s, %s, %s", livingBase.world.getBiome(livingBase.getPosition()).getBiomeName(), livingBase, ((EntityLiving) livingBase).getCanSpawnHere());
+//        }
+//    }
 }

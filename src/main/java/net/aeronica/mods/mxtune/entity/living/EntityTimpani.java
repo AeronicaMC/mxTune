@@ -3,16 +3,13 @@ package net.aeronica.mods.mxtune.entity.living;
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.init.ModLootTables;
 import net.aeronica.mods.mxtune.sound.ModSoundEvents;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.IEntityLivingData;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAIFindEntityNearest;
 import net.minecraft.entity.ai.EntityAIFindEntityNearestPlayer;
 import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.monster.EntityIronGolem;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
@@ -26,6 +23,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.EnumDifficulty;
@@ -34,7 +32,7 @@ import net.minecraft.world.storage.loot.LootTableList;
 
 import javax.annotation.Nullable;
 
-public class EntityTimpani extends EntityMob implements IMob
+public class EntityTimpani extends EntityLiving implements IMob
 {
     private static final DataParameter<Integer> TIMPANI_SIZE = EntityDataManager.createKey(EntityTimpani.class, DataSerializers.VARINT);
     public float squishAmount;
@@ -180,14 +178,14 @@ public class EntityTimpani extends EntityMob implements IMob
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.20000000298023224D);
     }
 
-
     /**
-     * Checks if the entity's current position is a valid location to spawn this entity.
+     * Checks if the entity's current position is a valid location to spawn this entity. Not light restricted.
      */
     @Override
     public boolean getCanSpawnHere()
     {
-        return this.world.getDifficulty() != EnumDifficulty.PEACEFUL && this.isValidLightLevel() && super.getCanSpawnHere();
+        IBlockState iblockstate = this.world.getBlockState((new BlockPos(this)).down());
+        return (this.world.getDifficulty() != EnumDifficulty.PEACEFUL) && (iblockstate.canEntitySpawn(this));
     }
 
     /**
