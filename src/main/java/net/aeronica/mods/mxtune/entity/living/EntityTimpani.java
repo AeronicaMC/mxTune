@@ -10,6 +10,7 @@ import net.minecraft.entity.ai.EntityAIFindEntityNearest;
 import net.minecraft.entity.ai.EntityAIFindEntityNearestPlayer;
 import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.entity.monster.EntityIronGolem;
+import net.minecraft.entity.monster.EntitySnowman;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
@@ -50,11 +51,11 @@ public class EntityTimpani extends EntityLiving implements IMob
     protected void initEntityAI()
     {
         this.tasks.addTask(1, new EntityTimpani.AITimpaniFloat(this));
-        this.tasks.addTask(2, new EntityTimpani.AISlimeAttack(this));
+        this.tasks.addTask(2, new EntityTimpani.AITimpaniAttack(this));
         this.tasks.addTask(3, new EntityTimpani.AITimpaniFaceRandom(this));
         this.tasks.addTask(5, new EntityTimpani.AITimpaniHop(this));
-        this.targetTasks.addTask(1, new EntityAIFindEntityNearestPlayer(this));
-        this.targetTasks.addTask(3, new EntityAIFindEntityNearest(this, EntityIronGolem.class));
+        this.targetTasks.addTask(2, new EntityAIFindEntityNearestPlayer(this));
+        this.targetTasks.addTask(3, new EntityAIFindEntityNearest(this, EntitySnowman.class));
     }
 
     @Override
@@ -456,12 +457,12 @@ public class EntityTimpani extends EntityLiving implements IMob
         return this.getTimpaniSize() > 0;
     }
 
-    static class AISlimeAttack extends EntityAIBase
+    static class AITimpaniAttack extends EntityAIBase
     {
         private final EntityTimpani timpani;
         private int growTieredTimer;
 
-        public AISlimeAttack(EntityTimpani timpaniIn)
+        public AITimpaniAttack(EntityTimpani timpaniIn)
         {
             this.timpani = timpaniIn;
             this.setMutexBits(2);
@@ -482,10 +483,20 @@ public class EntityTimpani extends EntityLiving implements IMob
             {
                 return false;
             }
+            else if (isDaylight() && (timpani.getRevengeTarget() == null)) // Passive by day except if hurt
+            {
+                return false;
+            }
             else
             {
                 return !(entitylivingbase instanceof EntityPlayer) || !((EntityPlayer)entitylivingbase).capabilities.disableDamage;
             }
+        }
+
+        private boolean isDaylight()
+        {
+            long time = this.timpani.getEntityWorld().getWorldTime() % 24000;
+            return !(time > 13200 && time < 23200);
         }
 
         /**
