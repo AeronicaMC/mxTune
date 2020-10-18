@@ -207,6 +207,6 @@ public class ItemMultiInst extends Item implements IInstrument
     @Override
     public int getPatch(ItemStack itemStack)
     {
-        return SoundFontProxyManager.getPackedPreset(itemStack.getItemDamage());
+        return itemStack.getItemDamage();
     }
 }

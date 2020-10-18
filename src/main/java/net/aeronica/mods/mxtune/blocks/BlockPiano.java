@@ -25,6 +25,7 @@ import net.aeronica.mods.mxtune.inventory.IMusic;
 import net.aeronica.mods.mxtune.managers.PlayManager;
 import net.aeronica.mods.mxtune.status.ServerCSDManager;
 import net.aeronica.mods.mxtune.util.PlacedInstrumentUtil;
+import net.aeronica.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
@@ -54,8 +55,6 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-
-import static net.aeronica.libs.mml.core.MMLUtil.preset2PackedPreset;
 
 @SuppressWarnings("deprecation")
 public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
@@ -167,7 +166,7 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
     @Override
     public int getPatch()
     {
-        return preset2PackedPreset(12, 21);
+        return SoundFontProxyManager.getIndexById("piano_mabinogi");
     }
 
     private boolean sitPiano(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn)

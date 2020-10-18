@@ -137,7 +137,7 @@ public class PlayManager
                 String mml = contents.getString(KEY_MML);
                 int duration = contents.getInteger(KEY_DURATION);
 
-                mml = mml.replace("MML@", "MML@I" + getPackedPreset(pos, playerIn, isPlaced));
+                mml = mml.replace("MML@", "MML@I" + getPresetIndex(pos, playerIn, isPlaced));
                 ModLogger.debug("MML Title: " + title);
                 ModLogger.debug("MML Sub25: " + mml.substring(0, Math.min(25, mml.length())));
 
@@ -303,22 +303,22 @@ public class PlayManager
         syncStatus();
     }
     
-    private static int getPackedPreset(BlockPos pos, EntityPlayer playerIn, boolean isPlaced)
+    private static int getPresetIndex(BlockPos pos, EntityPlayer playerIn, boolean isPlaced)
     {
-        int packedPreset = 0;
+        int presetIndex = 0;
         if (isPlaced)
         {
             if (playerIn.getEntityWorld().getBlockState(pos).getBlock() instanceof IPlacedInstrument)
             {
                 IPlacedInstrument placedInst = (IPlacedInstrument) playerIn.getEntityWorld().getBlockState(pos).getBlock();
-                packedPreset =  placedInst.getPatch();
+                presetIndex =  placedInst.getPatch();
             }
         } else
         {
             IInstrument inst = (IInstrument) playerIn.getHeldItemMainhand().getItem();
-            packedPreset =  inst.getPatch(playerIn.getHeldItemMainhand());
+            presetIndex =  inst.getPatch(playerIn.getHeldItemMainhand());
         }
-        return packedPreset;
+        return presetIndex;
     }
     
     private static void syncStatus()

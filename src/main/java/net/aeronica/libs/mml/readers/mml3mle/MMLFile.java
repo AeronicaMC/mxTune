@@ -189,7 +189,8 @@ public final class MMLFile
             }
             int packedPreset = MMLUtil.preset2PackedPreset(12, program);
             String meta = String.format("%s, program %d", track.getTrackName(), program);
-            MXTunePart mxTunePart = new MXTunePart(SoundFontProxyManager.getName(SoundFontProxyManager.getIndexForFirstMatchingPackedPreset(packedPreset)), meta, packedPreset, staves);
+            int indexPreset = SoundFontProxyManager.getIndexForFirstMatchingPackedPreset(packedPreset);
+            MXTunePart mxTunePart = new MXTunePart(SoundFontProxyManager.getName(indexPreset), meta, packedPreset, staves);
             mxTuneFile.getParts().add(mxTunePart);
         }
     }

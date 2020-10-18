@@ -1,5 +1,7 @@
 package net.aeronica.libs.mml.core;
 
+import net.aeronica.mods.mxtune.util.SoundFontProxyManager;
+
 import javax.sound.midi.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -112,7 +114,7 @@ public class MMLToMIDI extends MMLTransformBase
 
     private void addInstrument(MObject mmo, Track track, int ch, long ticksOffset) throws InvalidMidiDataException
     {
-        Patch preset = packedPreset2Patch(mmo.getInstrument());
+        Patch preset = packedPreset2Patch(SoundFontProxyManager.getPackedPreset(mmo.getInstrument()));
         int bank =  preset.getBank();
         int programPreset = preset.getProgram();
         /* Detect a percussion set */

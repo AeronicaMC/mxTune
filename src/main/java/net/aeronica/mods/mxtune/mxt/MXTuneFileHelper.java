@@ -20,6 +20,7 @@ package net.aeronica.mods.mxtune.mxt;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
+import net.aeronica.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.Nullable;
@@ -50,7 +51,11 @@ public class MXTuneFileHelper
         StringBuilder builder = new StringBuilder();
         for (MXTunePart part : mxTuneFile.getParts())
         {
-            builder.append("MML@I=").append(part.getPackedPatch());
+            // FIXME: World/Chunk music still using packed preset, must move the String "instrument_id" and use
+            // FIXME: the SoundFontProxyManager methods to get index and packedPatch as needed.
+            // FIXME: A Server side conversion of the mxt files may be needed.
+            //builder.append("MML@I=").append(SoundFontProxyManager.getIndexById(part.getInstrumentName()));
+            builder.append("MML@I=").append(SoundFontProxyManager.getIndexForFirstMatchingPackedPreset(part.getPackedPatch()));
             Iterator<MXTuneStaff> iterator = part.getStaves().iterator();
             while (iterator.hasNext())
             {

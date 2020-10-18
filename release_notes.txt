@@ -9,6 +9,12 @@ Changes:
  * Added "Golden Skeleton" and "Timpani of Doom" mobs that can drop the above ingredients and sometimes sheet music.
  * The rare ingredients are also available from the musician villager.
 
+Internal:
+ * MML - Instruments are now passed as the SoundFontProxy ID (int). This allows for handling Mabinogi and
+         Maple Story 2 drum kits using a note re-mapper instead of making a custom soundfont instrument.
+         This will cause issues for World/Chunk music MXT files. Songs will need to be updated to use the
+         new SoundFontProxy instrument names and then re-saved/re-uploaded. (Faerun Heros take note!)
+
 ----
 2019-12-27 mxtune-1.12.2-0.7.0-beta.9
 Update to forge 14.23.5.2847

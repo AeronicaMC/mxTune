@@ -34,10 +34,7 @@ import net.aeronica.mods.mxtune.network.bidirectional.SetServerSerializedDataMes
 import net.aeronica.mods.mxtune.network.server.MusicTextMessage;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.sound.IAudioStatusCallback;
-import net.aeronica.mods.mxtune.util.Miscellus;
-import net.aeronica.mods.mxtune.util.ModLogger;
-import net.aeronica.mods.mxtune.util.SheetMusicUtil;
-import net.aeronica.mods.mxtune.util.ValidDuration;
+import net.aeronica.mods.mxtune.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -758,7 +755,14 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         {
             childTabs[i].updatePart();
             MXTunePart part = childTabs[i].getPart();
-            builder.append("MML@I=").append(part.getPackedPatch());
+
+            // FIXME: World/Chunk music still using packed preset, must move the String "instrument_id" and use
+            // FIXME: the SoundFontProxyManager methods to get index and packedPatch as needed.
+            // FIXME: A Server side conversion of the mxt files may be needed.
+            //builder.append("MML@I=").append(SoundFontProxyManager.getIndexById(part.getInstrumentName()));
+            builder.append("MML@I=").append(SoundFontProxyManager.getIndexForFirstMatchingPackedPreset(part.getPackedPatch()));
+
+            //builder.append("MML@I=").append(part.getPackedPatch());
             Iterator<MXTuneStaff> iterator = part.getStaves().iterator();
             while (iterator.hasNext())
             {

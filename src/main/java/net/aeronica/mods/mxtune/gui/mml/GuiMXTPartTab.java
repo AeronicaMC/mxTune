@@ -680,14 +680,14 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
          ** covering various MML/Game instrument variations.
          */
         String mml = mmlIn;
-        int packedPreset;
+        int soundFontProxyIndex;
         SoundFontProxy soundFontProxy = listBoxInstruments.get();
         if (soundFontProxy != null)
-            packedPreset = soundFontProxy.packed_preset;
+            soundFontProxyIndex = soundFontProxy.index;
         else
             return false;
 
-        mml = mml.replace("MML@", "MML@i" + packedPreset);
+        mml = mml.replace("MML@", "MML@i" + soundFontProxyIndex);
         ModLogger.debug("GuiMusicPaperParse.mmlPlay() name: %s, packed %08d", soundFontProxy.id, soundFontProxy.packed_preset);
         ModLogger.debug("GuiMusicPaperParse.mmlPlay(): %s", mml.substring(0, Math.min(mml.length(), 25)));
 
