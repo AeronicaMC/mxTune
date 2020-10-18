@@ -517,7 +517,8 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
             for (int i = 0; i < viewableTabCount; i++)
             {
                 childTabs[i].updatePart();
-                String titleAndInstrument = formatTitle(title, i, viewableTabCount, childTabs[i].getPart().getInstrumentName());
+                String instrumentName = I18n.format("item.mxtune:multi_inst." + childTabs[i].getPart().getInstrumentName() + ".name");
+                String titleAndInstrument = formatTitle(title, i, viewableTabCount, instrumentName);
                 String mml = childTabs[i].getMMLClipBoardFormat();
                 PacketDispatcher.sendToServer(new MusicTextMessage(titleAndInstrument, mml));
             }
