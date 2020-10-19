@@ -1,0 +1,33 @@
+{
+  "parent": "mxtune:recipes/root",
+  "rewards": {
+    "recipes": [
+      "mxtune:gold_nugget"
+    ]
+  },
+  "criteria": {
+    "has_gold_bone": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "mxtune:ingredient",
+            "data": 0
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "mxtune:gold_nugget"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_gold_bone",
+      "has_the_recipe"
+    ]
+  ]
+}
