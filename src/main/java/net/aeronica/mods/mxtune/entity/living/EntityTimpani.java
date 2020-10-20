@@ -70,8 +70,8 @@ public class EntityTimpani extends EntityLiving implements IMob
         this.dataManager.set(TIMPANI_SIZE, size);
         this.setSize(0.51000005F * (float)size, 0.51000005F * (float)size);
         this.setPosition(this.posX, this.posY, this.posZ);
-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(size * size);
-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.2F + 0.1F * (float)size);
+        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue((double)size * size);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.2F + 0.1F * (double)size);
 
         if (resetHealth)
         {
@@ -79,7 +79,7 @@ public class EntityTimpani extends EntityLiving implements IMob
         }
 
         this.experienceValue = size;
-        this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(size * 3);
+        this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue((double)size * 3);
     }
 
     /**
