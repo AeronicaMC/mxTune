@@ -29,6 +29,7 @@ import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.sound.IAudioStatusCallback;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiLabel;
@@ -148,7 +149,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
                 if (!isEmpty() && slotIdx >= 0 && slotIdx < size() && get(slotIdx) != null)
                 {
                     MXTunePart tunePart = get(slotIdx);
-                    String translatedName = I18n.format("item.mxtune:multi_inst." + tunePart.getInstrumentName() + ".name");
+                    String translatedName = I18n.format(SoundFontProxyManager.getLangKeyName(tunePart.getInstrumentName()));
                     String trimmedName = fontRenderer.trimStringToWidth(translatedName, listWidth - 10);
                     fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, 0xADD8E6);
                 }

@@ -71,8 +71,8 @@ public class MML2PCM
         for (int preset: mmlToMIDI.getPresets())
         {
             Patch patchPreset = MMLUtil.packedPreset2Patch(SoundFontProxyManager.getPackedPreset(preset));
-            String name = I18n.format("item.mxtune:multi_inst." + SoundFontProxyManager.getName(preset) + ".name");
-            ModLogger.debug("MML2PCM preset: bank: %3d, program %3d, name %s", patchPreset.getBank(),
+            String name = I18n.format(SoundFontProxyManager.getLangKeyName(preset));
+            ModLogger.debug("MML2PCM preset: %3d, bank: %3d, program: %3d, name: %s", preset, patchPreset.getBank(),
                            patchPreset.getProgram(), name);
         }
 
