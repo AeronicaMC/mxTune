@@ -21,6 +21,7 @@ import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.cmds.CommandMxTuneServerUpdate;
 import net.aeronica.mods.mxtune.cmds.CommandSoundRange;
 import net.aeronica.mods.mxtune.handler.GUIHandler;
+import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.managers.DurationTimer;
 import net.aeronica.mods.mxtune.managers.ServerFileManager;
 import net.aeronica.mods.mxtune.network.MultiPacketSerializedObjectManager;
@@ -33,6 +34,9 @@ import net.aeronica.mods.mxtune.util.MusicTab;
 import net.aeronica.mods.mxtune.world.caps.chunk.ModChunkPlaylistCap;
 import net.aeronica.mods.mxtune.world.caps.world.ModWorldPlaylistCap;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
@@ -83,6 +87,8 @@ public class MXTune
         proxy.initMML();
 
         NetworkRegistry.INSTANCE.registerGuiHandler(instance, GUIHandler.getInstance());
+        FurnaceRecipes.instance().addSmelting(new ItemStack(ModItems.ITEM_MUSIC_PAPER).getItem(), new ItemStack(Items.PAPER, 1), 1);
+        FurnaceRecipes.instance().addSmelting(new ItemStack(ModItems.ITEM_INGREDIENTS, 1, 1).getItem(), new ItemStack(Items.COAL, 1, 1), 1);
     }
 
     @Mod.EventHandler
