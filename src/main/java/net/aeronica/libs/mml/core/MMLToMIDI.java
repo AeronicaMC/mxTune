@@ -20,7 +20,7 @@ public class MMLToMIDI extends MMLTransformBase
     // No problem :D, but will make it 160 because we can!
     private static final int MAX_TRACKS = 160;
     private Sequence sequence;
-    private Set<Integer> packedPresets = new HashSet<>();
+    private Set<Integer> presets = new HashSet<>();
     private int channel;
     private int track;
 
@@ -35,9 +35,9 @@ public class MMLToMIDI extends MMLTransformBase
 
     public Sequence getSequence() {return sequence;}
     
-    public List<Integer> getPackedPresets()
+    public List<Integer> getPresets()
     {
-        return new ArrayList<>(packedPresets);
+        return new ArrayList<>(presets);
     }
 
     @Override
@@ -131,7 +131,7 @@ public class MMLToMIDI extends MMLTransformBase
         track.add(createBankSelectEventMSB(ch, bank, mmo.getStartingTicks() + ticksOffset-2L));
         track.add(createBankSelectEventLSB(ch, bank, mmo.getStartingTicks() + ticksOffset-1L));
         track.add(createProgramChangeEvent(ch, programPreset, mmo.getStartingTicks() + ticksOffset));
-        packedPresets.add(mmo.getInstrument());
+        presets.add(mmo.getInstrument());
     }
 
     private void addNote(MObject mmo, Track[] tracks, int track, int channel, long ticksOffset) throws InvalidMidiDataException

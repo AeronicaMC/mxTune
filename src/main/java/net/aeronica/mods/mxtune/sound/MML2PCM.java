@@ -20,9 +20,9 @@ import net.aeronica.libs.mml.core.MMLParser;
 import net.aeronica.libs.mml.core.MMLParserFactory;
 import net.aeronica.libs.mml.core.MMLToMIDI;
 import net.aeronica.libs.mml.core.MMLUtil;
-import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
+import net.aeronica.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.client.resources.I18n;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
@@ -68,10 +68,10 @@ public class MML2PCM
         // ANTLR4 MML Parser END
 
         // Log bank and program per instrument
-        for (int packedPreset: mmlToMIDI.getPackedPresets())
+        for (int preset: mmlToMIDI.getPresets())
         {
-            Patch patchPreset = MMLUtil.packedPreset2Patch(packedPreset);
-            String name = I18n.format(MIDISystemUtil.getPatchNameKey(patchPreset));
+            Patch patchPreset = MMLUtil.packedPreset2Patch(SoundFontProxyManager.getPackedPreset(preset));
+            String name = I18n.format("item.mxtune:multi_inst." + SoundFontProxyManager.getName(preset) + ".name");
             ModLogger.debug("MML2PCM preset: bank: %3d, program %3d, name %s", patchPreset.getBank(),
                            patchPreset.getProgram(), name);
         }
