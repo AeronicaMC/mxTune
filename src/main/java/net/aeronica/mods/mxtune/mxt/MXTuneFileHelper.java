@@ -54,8 +54,10 @@ public class MXTuneFileHelper
             // FIXME: World/Chunk music still using packed preset, must move the String "instrument_id" and use
             // FIXME: the SoundFontProxyManager methods to get index and packedPatch as needed.
             // FIXME: A Server side conversion of the mxt files may be needed.
-            //builder.append("MML@I=").append(SoundFontProxyManager.getIndexById(part.getInstrumentName()));
-            builder.append("MML@I=").append(SoundFontProxyManager.getIndexForFirstMatchingPackedPreset(part.getPackedPatch()));
+            // TODO: Create MXT UPDATER that can run on the client/mxtune/library library and server WORLD/mxtune/music.
+            // TODO:   Execute ONCE per client and selected WORLD. Now is a good time to check update the MXT Version
+            builder.append("MML@I=").append(SoundFontProxyManager.getIndexById(part.getInstrumentName()));
+            //builder.append("MML@I=").append(SoundFontProxyManager.getIndexForFirstMatchingPackedPreset(part.getPackedPatch()));
             Iterator<MXTuneStaff> iterator = part.getStaves().iterator();
             while (iterator.hasNext())
             {
