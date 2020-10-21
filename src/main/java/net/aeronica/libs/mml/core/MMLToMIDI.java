@@ -134,6 +134,7 @@ public class MMLToMIDI extends MMLTransformBase
 
     private void addNote(MObject mmo, Track[] tracks, int track, int channel, long ticksOffset) throws InvalidMidiDataException
     {
+        // MML_LOGGER.info("{}, {}", mmo.getMidiNote(), mmo.getText());
         tracks[track].add(createNoteOnEvent(channel, smartClampMIDI(mmo.getMidiNote()), mmo.getNoteVolume(), mmo.getStartingTicks() + ticksOffset));
         tracks[track].add(createNoteOffEvent(channel, smartClampMIDI(mmo.getMidiNote()), mmo.getNoteVolume(), mmo.getStartingTicks() + mmo.getLengthTicks() + ticksOffset - 1));
     }

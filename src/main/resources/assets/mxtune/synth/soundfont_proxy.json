@@ -111,14 +111,14 @@
     "id": "drum_set_mabinogi",
     "packed_preset": 16384,
     "mabinogi": true,
-    "transform": "mapped"
+    "transform": "41=36|43=45|45=38|47=37|48=31|50=40|52=48|53=50|55=46|57=42|59=44|60=49|62=57|64=51|65=59|"
   },
   {
     "index": 17,
     "id": "drum_set_ms2",
     "packed_preset": 16384,
     "maple_story_2": true,
-    "transform": "mapped"
+    "transform": ""
   },
   {
     "index": 18,
