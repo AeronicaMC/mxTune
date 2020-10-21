@@ -1,7 +1,5 @@
 package net.aeronica.libs.mml.core;
 
-import net.aeronica.mods.mxtune.util.SoundFontProxyManager;
-
 import javax.sound.midi.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -20,7 +18,7 @@ public class MMLToMIDI extends MMLTransformBase
     // No problem :D, but will make it 160 because we can!
     private static final int MAX_TRACKS = 160;
     private Sequence sequence;
-    private Set<Integer> presets = new HashSet<>();
+    private Set<Integer> packedPresets = new HashSet<>();
     private int channel;
     private int track;
 
@@ -35,9 +33,9 @@ public class MMLToMIDI extends MMLTransformBase
 
     public Sequence getSequence() {return sequence;}
     
-    public List<Integer> getPresets()
+    public List<Integer> getPackedPresets()
     {
-        return new ArrayList<>(presets);
+        return new ArrayList<>(packedPresets);
     }
 
     @Override
@@ -114,7 +112,7 @@ public class MMLToMIDI extends MMLTransformBase
 
     private void addInstrument(MObject mmo, Track track, int ch, long ticksOffset) throws InvalidMidiDataException
     {
-        Patch preset = packedPreset2Patch(SoundFontProxyManager.getPackedPreset(mmo.getInstrument()));
+        Patch preset = packedPreset2Patch(mmo.getInstrument());
         int bank =  preset.getBank();
         int programPreset = preset.getProgram();
         /* Detect a percussion set */
@@ -131,7 +129,7 @@ public class MMLToMIDI extends MMLTransformBase
         track.add(createBankSelectEventMSB(ch, bank, mmo.getStartingTicks() + ticksOffset-2L));
         track.add(createBankSelectEventLSB(ch, bank, mmo.getStartingTicks() + ticksOffset-1L));
         track.add(createProgramChangeEvent(ch, programPreset, mmo.getStartingTicks() + ticksOffset));
-        presets.add(mmo.getInstrument());
+        packedPresets.add(mmo.getInstrument());
     }
 
     private void addNote(MObject mmo, Track[] tracks, int track, int channel, long ticksOffset) throws InvalidMidiDataException

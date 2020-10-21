@@ -35,6 +35,7 @@ public enum TestData {
     					      "MML@i1541r1r.v13>f+r.d8rg8rc8r8<a+2.r2r8>er1.r<<a8r2>d8rer1.r>f+r.d8rg8rc8r8<a+.a.<a+r1r.>>cr.ddc+8r<a2.&a8r1r1r1.v11c<a+r2r8>>cr1.r.ee8e2.&e8r<e.d+2&d+8c.c.r1r8>cr1rv9er2.c.r2.d+l8rd2.&dr4.v14<cccc4rf+4r4.dr2cccc4r1r4d+rd+er2d+rd+er2>d+rd+ed+rd+ed+rd+er2f2&ff+r4c-r2.rd2&dc+r2<f4e4r4>f2&ff+r4<br2.rb2&br2r>d4c4r4f2&ff+r4<br2.ra+2&a+rn61l4a.g+gf+r1r1r.g.ga2,l1.rrrrrrrr2.v13a+2r1r1r4b4b4a+8rrrrrrr4.v11d4.c2&c8rrrrrr4.v14d4rrrrr2.l8r>c2&cdr1r4<a+2&a+a+r1r4>c2&cdr1r4<f2&fr1r4.>c2&cdr1r1n58f2.&f,;"+
     						  "MML@i1542v10n29c<cb+<f+n50an50gn50dn50gl8>a+>cdcl4<a+<c>b+<g>b+<c>b+<e>b+f8rf+8r2f8ra+.<cf>b+cb+<f+n50an50gn50dn50g8>d8g.d8gggg+g+aa>ccn31dn24c<fc<f>a+v8>d.c2&c8c<a+<g>ga+a+d+d+<a+8>f8g+fd>ddccc<a+<g>ga+a+eel8<f>cfa4gf4a+gaa+4a+g+f+l4fa+g<g>a+a+d+d+g+fa+n34d+a+eb+fb+g>d<ca+faa+<f<a+r.v11l8>>dddd4r<d4eff+g4r4.>cccc4r<c4dd+ef4r4>cr4cr2cr4cr2cr4cr4.cr4.cr2l4c<a+an50gn50dn50gn50c>b+<f>ba+<cb+a+an50gn50d>>d<c+<g+c+>ba+<a+agrb+8a+8an50gn50dn50en50a>>c+c<ba+d+a8rg8r.f8r.f8r.f8r.c<c8b+fc<f,rv11<arar>crcrn46rcrl8<<gaa+al4gr>a+ra+ra+ra+<f8rf+8r2g8r>c.r2arar>crcrn46rcr1<<a+a+bb>ccaarbra+r2.gv8a+.a+2&a+8dr2.gg<ffr1>a+a+a+a+dr2.ggc+c+r1r1rdr2gg<ffa+r2.v9d+>g<en46fn46g>b<c>g<f>f<a+r2.l8rv12dddd4r1r4.cccc4r1r4cr4cr2cr4cr2cr4cr4.cr4.cr2l4fd+d>b+rbrbra+ra+rc+cr<fd+d>b+rbrbr2.c+cr1<f8d+8d>b+rbrbra+ra+ac+c<fa+8ra+8r.a8r.g+8r.g8,l1.rrrrrrrrrr2.v9l4<frer1v7e.d+2&d+8r1r1r1eed+d+l1.rrrrrr4v9e4rrrrrrrr2r2.v11l4f+rfrfrfrer1.rf+rfrfr1r1.rf+rfrfrere;"+
     					      "MML@i1554v10n29c<cb+<f+n50an50gn50dn50gl8>a+>cdcl4<a+<c>b+<g>b+<c>b+<e>b+f8rf+8r2f8ra+.<cf>b+cb+<f+n50an50gn50dn50g8>d8g.d8gggg+g+aa>ccn31dn24c<fc<f>a+v7>d.c2&c8c<a+<g>ga+a+d+d+<a+8>f8g+fd>ddccc<a+<g>ga+a+eel8<f>cfa4gf4a+gaa+4a+g+f+l4fa+g<g>a+a+d+d+g+fa+n34v9d+a+eb+fb+g>d<ca+faa+<f<a+r.v13l8>>dddd4r<d4eff+g4r4.>cccc4r<c4dd+ef4r4>cr4cr2cr4cr2cr4cr4.cr4.cr2l4c<a+an50gn50dn50gn50c>b+<f>ba+<cb+a+an50gn50d>>d<c+<g+c+>ba+<a+agrb+8a+8an50gn50dn50en50a>>c+c<ba+d+a8rg8r.f8r.f8r.f8r.c<c8b+fc<f,rv9<frfrf+rf+rgrf+r1rerererer1r1rfrfrf+rf+rgrf+r1r1.ddrgrgr2.cv7g.f+2&f+8r1ccr1.ggf+f+r1cc<f+f+r1r1r1>ccr1.rv9d+rgrfrfrd+rd+l1.rrrrrrr2.v11l4argrgrgrgr1.rargrgr1r1.rargrgrgrgd,;"),
+	MML15(15, "Drum Kit Test", "MML@i16384v15t120o2FGAB>CDEFGAB>CDEF;"),
 	;
 
 	private int index;
@@ -83,7 +84,7 @@ public enum TestData {
 	}
 
 	public static void main(String[] args) {
-		MML_LOGGER.info(TestData.MML5);
+		MML_LOGGER.info(TestData.MML15);
 		MML_LOGGER.info(TestData.getMML(6));
 	}
 }

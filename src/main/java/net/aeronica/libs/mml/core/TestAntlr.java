@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 
 public class TestAntlr
 {
-    private static String mmlString = TestData.MML4.getMML();
+    private static String mmlString = TestData.MML15.getMML();
 
     public static InputStream init()
     {
