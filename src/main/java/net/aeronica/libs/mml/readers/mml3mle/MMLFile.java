@@ -179,6 +179,7 @@ public final class MMLFile
         for (Extension3mleTrack track : trackList)
         {
             int program = track.getInstrument() - 1; // 3MLEのInstruments番号は1がスタート.
+            MMLUtil.MML_LOGGER.info("Program: {}", program);
             String[] text = new String[MMLUtil.MAX_TRACKS];
             List<MXTuneStaff> staves = new ArrayList<>();
             for (int i = 0; i < track.getTrackCount(); i++)
