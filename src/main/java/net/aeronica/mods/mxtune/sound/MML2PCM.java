@@ -21,7 +21,6 @@ import net.aeronica.libs.mml.core.MMLParserFactory;
 import net.aeronica.libs.mml.core.MMLToMIDI;
 import net.aeronica.libs.mml.core.MMLUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
-import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.aeronica.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.client.resources.I18n;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -55,7 +54,7 @@ public class MML2PCM
         }
         catch (IOException e)
         {
-            ModLogger.debug("MMLParserFactory.getMMLParser() IOException in %s, Error: %s", SheetMusicUtil.class.getSimpleName(), e);
+            ModLogger.debug("MMLParserFactory.getMMLParser() IOException in %s, Error: %s", MML2PCM.class.getSimpleName(), e);
             audioData.setStatus(ERROR);
             return false;
         }
