@@ -18,7 +18,6 @@ package net.aeronica.mods.mxtune.util;
 
 import net.aeronica.libs.mml.core.MMLParser;
 import net.aeronica.libs.mml.core.MMLParserFactory;
-import net.aeronica.libs.mml.core.MMLToMIDI;
 import net.aeronica.libs.mml.core.ParseErrorListener;
 import net.aeronica.mods.mxtune.blocks.IMusicPlayer;
 import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
@@ -26,6 +25,7 @@ import net.aeronica.mods.mxtune.blocks.TileInstrument;
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.inventory.IMusic;
+import net.aeronica.mods.mxtune.sound.MMLToMIDI;
 import net.aeronica.mods.mxtune.sound.Midi2WavRenderer;
 import net.aeronica.mods.mxtune.sound.ModMidiException;
 import net.minecraft.block.Block;

@@ -18,7 +18,6 @@ package net.aeronica.mods.mxtune.sound;
 
 import net.aeronica.libs.mml.core.MMLParser;
 import net.aeronica.libs.mml.core.MMLParserFactory;
-import net.aeronica.libs.mml.core.MMLToMIDI;
 import net.aeronica.libs.mml.core.MMLUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SoundFontProxyManager;
