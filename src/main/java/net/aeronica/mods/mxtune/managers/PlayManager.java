@@ -26,6 +26,7 @@ import net.aeronica.mods.mxtune.inventory.IInstrument;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.*;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
+import net.aeronica.mods.mxtune.util.MapListHelper;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -324,11 +325,11 @@ public class PlayManager
     private static void syncStatus()
     {
         /* server side */
-        GroupHelper.setClientPlayStatuses(GroupHelper.serializeIntIntMap(membersQueuedStatus));
-        GroupHelper.setPlayIDMembers(GroupHelper.serializeIntIntMap(membersPlayID));
-        GroupHelper.setActiveServerManagedPlayIDs(GroupHelper.serializeIntegerSet(activePlayIDs));
+        GroupHelper.setClientPlayStatuses(MapListHelper.serializeIntIntMap(membersQueuedStatus));
+        GroupHelper.setPlayIDMembers(MapListHelper.serializeIntIntMap(membersPlayID));
+        GroupHelper.setActiveServerManagedPlayIDs(MapListHelper.serializeIntegerSet(activePlayIDs));
         /* client side */
-        PacketDispatcher.sendToAll(new SyncStatusMessage(GroupHelper.serializeIntIntMap(membersQueuedStatus), GroupHelper.serializeIntIntMap(membersPlayID), GroupHelper.serializeIntegerSet(activePlayIDs)));
+        PacketDispatcher.sendToAll(new SyncStatusMessage(MapListHelper.serializeIntIntMap(membersQueuedStatus), MapListHelper.serializeIntIntMap(membersPlayID), MapListHelper.serializeIntegerSet(activePlayIDs)));
     }
 
     private static void queue(int playID, Integer memberID, String mml)

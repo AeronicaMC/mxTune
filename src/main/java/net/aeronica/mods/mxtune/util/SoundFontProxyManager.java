@@ -38,6 +38,12 @@ public class SoundFontProxyManager
     public static ImmutableMap<Integer, SoundFontProxy> soundFontProxyMapByIndex;
     public static ImmutableMap<String, SoundFontProxy> soundFontProxyMapById;
     public static final String INSTRUMENT_DEFAULT_ID = "piano";
+
+    public static SoundFontProxy getSoundFontProxyDefault()
+    {
+        return SOUND_FONT_PROXY_DEFAULT;
+    }
+
     private static final SoundFontProxy SOUND_FONT_PROXY_DEFAULT;
 
     static

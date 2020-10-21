@@ -17,21 +17,23 @@
 
 package net.aeronica.mods.mxtune.managers;
 
-import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Sets;
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
-import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.util.MapListHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 public class GroupHelper
@@ -103,7 +105,7 @@ public class GroupHelper
     
     public static void setClientMembers(String members)
     {
-        GroupHelper.clientMembers = deserializeIntIntMap(members);
+        GroupHelper.clientMembers = MapListHelper.deserializeIntIntMap(members);
     }
     
     public static Map<Integer, Integer> getClientGroups()
@@ -113,12 +115,12 @@ public class GroupHelper
     
     public static void setClientGroups(String groups)
     {
-        GroupHelper.clientGroups = deserializeIntIntMap(groups);
+        GroupHelper.clientGroups = MapListHelper.deserializeIntIntMap(groups);
     }
     
     public static void setGroupsMembers(String members)
     {
-        GroupHelper.groupsMembers = deserializeIntIntListMultimapSwapped(members);
+        GroupHelper.groupsMembers = MapListHelper.deserializeIntIntListMultimapSwapped(members);
     }
 
     // This is a workaround to force the playID into the active list on the client side presuming a network order
@@ -307,7 +309,7 @@ public class GroupHelper
 
     public static void setClientPlayStatuses(String clientPlayStatuses)
     {
-        GroupHelper.membersQueuedStatus = deserializeIntIntMap(clientPlayStatuses);
+        GroupHelper.membersQueuedStatus = MapListHelper.deserializeIntIntMap(clientPlayStatuses);
     }
         
     public static Map<Integer, Integer> getPlayIDMembers()
@@ -330,7 +332,7 @@ public class GroupHelper
     
     public static void setPlayIDMembers(String playIDMembers)
     {
-        GroupHelper.membersPlayID = deserializeIntIntMap(playIDMembers);
+        GroupHelper.membersPlayID = MapListHelper.deserializeIntIntMap(playIDMembers);
     }
 
     /**
@@ -339,7 +341,7 @@ public class GroupHelper
      */
     public static void setActiveServerManagedPlayIDs(String setIntString)
     {
-        Set<Integer> receivedSet = deserializeIntegerSet(setIntString);
+        Set<Integer> receivedSet = MapListHelper.deserializeIntegerSet(setIntString);
 
         activeServerManagedPlayIDs.addAll(receivedSet);
 
@@ -347,137 +349,5 @@ public class GroupHelper
             if (!receivedSet.contains(integer))
                 activeServerManagedPlayIDs.remove(integer);
     }
-    
-    /* Serialization and deserialization methods */
-    private static Map<Integer, Integer> deserializeIntIntMap(String mapIntString)
-    {       
-        try
-        {
-            Map<String, String> inStringString = Splitter.on('|').omitEmptyStrings().withKeyValueSeparator("=").split(mapIntString);
-            Map<Integer, Integer> outIntInt = new HashMap<>();
-            for (Map.Entry<String,String> entry: inStringString.entrySet())
-            {
-                outIntInt.put(Integer.valueOf(entry.getKey()), Integer.valueOf(entry.getValue()));
-            }
-            return outIntInt;
-        } catch (IllegalArgumentException e)
-        {
-            ModLogger.error(e);
-            return Collections.emptyMap();
-        }
-    }
 
-    @SuppressWarnings("unused")
-    static String serializeIntIntMap(HashMap<Integer, Integer> mapIntInt)
-    {
-        StringBuilder serializedIntIntMap = new StringBuilder();
-        try
-        {
-            Set<Integer> keys = mapIntInt.keySet();
-            for (Integer integer : keys)
-            {
-                serializedIntIntMap.append(integer).append("=").append(mapIntInt.get(integer)).append("|");
-            }
-        } catch (Exception e)
-        {
-            ModLogger.error(e);
-        }
-        return serializedIntIntMap.toString();
-    }
-    
-    /**
-     * This was created specifically to make the groupsMembers ListMultimap
-     * without duplicating network traffic to send a complementary structure.
-     * @param hashTableString string to deserialize
-     * @return a ListMultimap where the keys and values have been swapped.
-     */
-    private static ListMultimap<Integer, Integer> deserializeIntIntListMultimapSwapped(String hashTableString)
-    {
-        try
-        {
-            Map<String, String> inStringString = Splitter.on('|').omitEmptyStrings().withKeyValueSeparator("=").split(hashTableString);
-            ListMultimap<Integer, Integer> outListMultimapIntInt = ArrayListMultimap.create();
-            for (Map.Entry<String,String> entry: inStringString.entrySet())
-            {
-                outListMultimapIntInt.put(Integer.valueOf(entry.getValue()), Integer.valueOf(entry.getKey()));
-            }
-            return outListMultimapIntInt;
-        } catch (IllegalArgumentException e)
-        {
-            ModLogger.error(e);
-            return ArrayListMultimap.create();
-        }
-    }
-
-    @SuppressWarnings("unused")
-    public static Map<Integer, String> deserializeIntStrMap(String mapIntString)
-    {       
-        try
-        {
-            Map<String, String> inStringString = Splitter.on('|').omitEmptyStrings().withKeyValueSeparator("=").split(mapIntString);
-            Map<Integer, String> outIntString = new HashMap<>();
-            for (Map.Entry<String,String> entry: inStringString.entrySet())
-            {
-                outIntString.put(Integer.valueOf(entry.getKey()), entry.getValue());
-            }
-            return outIntString;
-        } catch (IllegalArgumentException e)
-        {
-            ModLogger.error(e);
-            return Collections.emptyMap();
-        }
-    }
-
-    @SuppressWarnings("unused")
-    static String serializeIntStrMap(HashMap<Integer, String> mapIntStr)
-    {
-        StringBuilder serializedIntStrMap = new StringBuilder();
-        try
-        {
-            Set<Integer> keys = mapIntStr.keySet();
-            for (Integer integer : keys)
-            {
-                serializedIntStrMap.append(integer).append("=").append(mapIntStr.get(integer)).append("|");
-            }
-        } catch (Exception e)
-        {
-            ModLogger.error(e);
-        }
-        return serializedIntStrMap.toString();
-    }
-
-    private static Set<Integer> deserializeIntegerSet(String setIntString)
-    {
-        Iterable<String> inString = Splitter.on(',').omitEmptyStrings().split(setIntString);
-        Set<Integer> deserializedSet = new HashSet<>();
-        try
-        {
-            for (String id: inString)
-            {
-                if (id != null && !id.isEmpty())
-                    deserializedSet.add(Integer.valueOf(id));
-            }
-        } catch (Exception e)
-        {
-            ModLogger.error(e);
-        }
-        return deserializedSet;
-    }
-
-    @SuppressWarnings("all")
-    static String serializeIntegerSet(Set<Integer> setIntegers)
-    {
-        StringBuilder serializedSet = new StringBuilder();
-        try
-        {
-            for (Integer integer : setIntegers)
-            {
-                serializedSet.append(integer).append(",");
-            }
-        } catch (Exception e)
-        {
-            ModLogger.error(e);
-        }
-        return serializedSet.toString();        
-    }
 }
