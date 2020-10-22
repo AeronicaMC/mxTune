@@ -756,14 +756,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         {
             childTabs[i].updatePart();
             MXTunePart part = childTabs[i].getPart();
-
-            // FIXME: World/Chunk music still using packed preset, must move the String "instrument_id" and use
-            // FIXME: the SoundFontProxyManager methods to get index and packedPatch as needed.
-            // FIXME: A Server side conversion of the mxt files may be needed.
             builder.append("MML@I=").append(SoundFontProxyManager.getIndexById(part.getInstrumentName()));
-            //builder.append("MML@I=").append(SoundFontProxyManager.getIndexForFirstMatchingPackedPreset(part.getPackedPatch()));
-
-            //builder.append("MML@I=").append(part.getPackedPatch());
             Iterator<MXTuneStaff> iterator = part.getStaves().iterator();
             while (iterator.hasNext())
             {

@@ -20,6 +20,7 @@ package net.aeronica.mods.mxtune.mxt;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.managers.records.Song;
 import net.aeronica.mods.mxtune.managers.records.SongProxy;
+import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -43,6 +44,7 @@ public class MXTuneFileHelper
                 mxTuneFile = MXTuneFile.build(compound);
             }
         }
+        ModLogger.debug("MXTuneFileHelper#getMXTuneFile version: %s", mxTuneFile == null ? "** file read failure **" : mxTuneFile.getMxtVersion());
         return mxTuneFile;
     }
 
@@ -51,13 +53,14 @@ public class MXTuneFileHelper
         StringBuilder builder = new StringBuilder();
         for (MXTunePart part : mxTuneFile.getParts())
         {
-            // FIXME: World/Chunk music still using packed preset, must move the String "instrument_id" and use
-            // FIXME: the SoundFontProxyManager methods to get index and packedPatch as needed.
-            // FIXME: A Server side conversion of the mxt files may be needed.
-            // TODO: Create MXT UPDATER that can run on the client/mxtune/library library and server WORLD/mxtune/music.
-            // TODO:   Execute ONCE per client and selected WORLD. Now is a good time to check update the MXT Version
-            builder.append("MML@I=").append(SoundFontProxyManager.getIndexById(part.getInstrumentName()));
-            //builder.append("MML@I=").append(SoundFontProxyManager.getIndexForFirstMatchingPackedPreset(part.getPackedPatch()));
+            // Check the MXT Version and deal with the legacy packed patch and the new SoundFontProxy id
+            if (mxTuneFile.getMxtVersion().equalsIgnoreCase("1.0.0"))
+                builder.append("MML@I=").append(SoundFontProxyManager.getIndexForFirstMatchingPackedPreset(part.getPackedPatch()));
+            else if (mxTuneFile.getMxtVersion().equalsIgnoreCase("2.0.0"))
+                builder.append("MML@I=").append(SoundFontProxyManager.getIndexById(part.getInstrumentName()));
+            else
+                builder.append("MML@");
+
             Iterator<MXTuneStaff> iterator = part.getStaves().iterator();
             while (iterator.hasNext())
             {

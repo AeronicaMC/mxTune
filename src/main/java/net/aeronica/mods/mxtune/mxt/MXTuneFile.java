@@ -28,7 +28,7 @@ import java.util.List;
 
 public class MXTuneFile extends BaseData
 {
-    private static final String MXT_VERSION = "1.0.0";
+    private static final String MXT_VERSION = "2.0.0";
     private static final String TAG_TITLE = "title";
     private static final String TAG_AUTHOR = "author";
     private static final String TAG_SOURCE = "source";
@@ -38,6 +38,7 @@ public class MXTuneFile extends BaseData
     private static final String TAG_MXT_VERSION = "mxtVersion";
     private static final String ERROR_MSG_MXT_VERSION = "Unsupported mxTune file version! expected %s, found %s, Title: %s";
 
+    private String mxtVersion = "";
     private String title = "";
     private String author = "";
     private String source = "";
@@ -61,7 +62,7 @@ public class MXTuneFile extends BaseData
     public void readFromNBT(NBTTagCompound compound)
     {
         super.readFromNBT(compound);
-        String mxtVersion = compound.getString(TAG_MXT_VERSION);
+        mxtVersion = compound.getString(TAG_MXT_VERSION);
         title = compound.getString(TAG_TITLE);
         author = compound.getString(TAG_AUTHOR);
         source = compound.getString(TAG_SOURCE);
@@ -99,6 +100,11 @@ public class MXTuneFile extends BaseData
             compound.setTag(TAG_PART_PREFIX + i, compoundPart);
             i++;
         }
+    }
+
+    public String getMxtVersion()
+    {
+        return mxtVersion;
     }
 
     public String getTitle()
