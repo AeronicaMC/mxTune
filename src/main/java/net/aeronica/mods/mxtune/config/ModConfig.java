@@ -68,7 +68,7 @@ public class ModConfig
         {
             @Name("Site Links")
             @LangKey("config.mxtune.mmlLink")
-            public String site = "https://archeagemmllibrary.com/";
+            public String site = "https://musicalnexus.net/";
         }
 
         public static class WindowTitle
