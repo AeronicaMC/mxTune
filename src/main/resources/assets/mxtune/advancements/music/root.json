@@ -3,7 +3,7 @@
     {
         "icon": {
             "item": "mxtune:multi_inst",
-            "data": 50
+            "data": 49
         },
         "title": {
             "translate": "advancements.mxtune:music.root.title"

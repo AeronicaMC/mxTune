@@ -2,7 +2,7 @@
     "display": {
         "icon": {
             "item": "mxtune:multi_inst",
-            "data": 28
+            "data": 27
         },
         "title": {
             "translate": "advancements.mxtune:music.craft_flute_pan.title"
@@ -19,7 +19,7 @@
                 "items": [
                     {
                         "item": "mxtune:multi_inst",
-                        "data": 28
+                        "data": 27
                     }
                 ]
             }
