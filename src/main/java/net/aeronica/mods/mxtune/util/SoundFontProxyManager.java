@@ -50,7 +50,7 @@ public class SoundFontProxyManager
     {
         // default 49: piano_acoustic
         SOUND_FONT_PROXY_DEFAULT = new SoundFontProxy();
-        SOUND_FONT_PROXY_DEFAULT.index = 49;
+        SOUND_FONT_PROXY_DEFAULT.index = 50;
         SOUND_FONT_PROXY_DEFAULT.packed_preset = 0;
         SOUND_FONT_PROXY_DEFAULT.id = INSTRUMENT_DEFAULT_ID;
         SOUND_FONT_PROXY_DEFAULT.general_midi = true;
