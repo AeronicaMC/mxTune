@@ -27,7 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.InputStreamReader;
-import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 @SuppressWarnings("unused")
@@ -48,7 +48,7 @@ public class SoundFontProxyManager
 
     static
     {
-        // default 49: piano_acoustic
+        // default 50: piano_acoustic
         SOUND_FONT_PROXY_DEFAULT = new SoundFontProxy();
         SOUND_FONT_PROXY_DEFAULT.index = 50;
         SOUND_FONT_PROXY_DEFAULT.packed_preset = 0;
@@ -56,14 +56,17 @@ public class SoundFontProxyManager
         SOUND_FONT_PROXY_DEFAULT.general_midi = true;
         SOUND_FONT_PROXY_DEFAULT.maple_story_2 = true;
 
+        ImmutableMap.Builder<Integer, SoundFontProxy> builderByIndex = ImmutableMap.builder();
+        ImmutableMap.Builder<String, SoundFontProxy> builderById = ImmutableMap.builder();
+
         try
         {
             LOGGER.debug("Loading {}", RESOURCE);
-            Reader reader = new InputStreamReader(SoundFontProxy.class.getResourceAsStream(RESOURCE));
+            InputStreamReader reader = new InputStreamReader(SoundFontProxyManager.class.getResourceAsStream(RESOURCE), StandardCharsets.UTF_8);
             JsonParser parser = new JsonParser();
             JsonArray elements = parser.parse(reader).getAsJsonArray();
-            ImmutableMap.Builder<Integer, SoundFontProxy> builderByIndex = ImmutableMap.builder();
-            ImmutableMap.Builder<String, SoundFontProxy> builderById = ImmutableMap.builder();
+            reader.close();
+
             Gson gson = new Gson();
 
             for (JsonElement element : elements)
@@ -76,14 +79,13 @@ public class SoundFontProxyManager
             soundFontProxyMapByIndex = builderByIndex.build();
             soundFontProxyMapById = builderById.build();
 
-            if (0 == soundFontProxyMapByIndex.size())
+            if (soundFontProxyMapByIndex.isEmpty())
             {
                 throw new MXTuneException("Failure to load soundfont_proxy json!");
             }
         } catch (Exception e)
         {
-            for (StackTraceElement se: e.getStackTrace())
-                LOGGER.error(se);
+            e.printStackTrace();
             throw new MXTuneRuntimeException(e);
         }
         LOGGER.debug("Loaded {} records from {}", soundFontProxyMapByIndex.size(), RESOURCE);
@@ -177,6 +179,6 @@ public class SoundFontProxyManager
             if (sp.packed_preset == packedPreset)
                 return sp.index;
         }
-        return 52; // default piano_mabinogi
+        return 53; // default piano_mabinogi
     }
 }
