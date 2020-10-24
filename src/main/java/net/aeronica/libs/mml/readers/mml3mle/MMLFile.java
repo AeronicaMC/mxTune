@@ -188,10 +188,11 @@ public final class MMLFile
                 staves.add(new MXTuneStaff(i, text[i]));
                 MMLUtil.MML_LOGGER.info("text[{}]= {}", i, text[i]);
             }
-            int packedPreset = MMLUtil.preset2PackedPreset(12, program);
+
             String meta = String.format("%s, program %d", track.getTrackName(), program);
-            int indexPreset = SoundFontProxyManager.getIndexForFirstMatchingPackedPreset(packedPreset);
-            MXTunePart mxTunePart = new MXTunePart(SoundFontProxyManager.getName(indexPreset), meta, packedPreset, staves);
+            String soundProxyID = MapInstruments.getSoundFontProxyName(program);
+            int packedPreset = SoundFontProxyManager.getPackedPreset(soundProxyID);
+            MXTunePart mxTunePart = new MXTunePart(soundProxyID, meta, packedPreset, staves);
             mxTuneFile.getParts().add(mxTunePart);
         }
     }
