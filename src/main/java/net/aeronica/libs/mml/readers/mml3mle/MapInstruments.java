@@ -34,7 +34,7 @@ public class MapInstruments
         builderByIndex.put(3, "whistle_mabinogi");
         builderByIndex.put(4, "roncadora_mabinogi");
         builderByIndex.put(5, "flute_mabinogi");
-        builderByIndex.put(6, "orchestra_hit"); // Torch
+        builderByIndex.put(6, "chalumeau_mabinogi"); // Chalumeau
         builderByIndex.put(7, "ocarina"); // C-Bottle
         builderByIndex.put(8, "ocarina"); // D-Bottle
         builderByIndex.put(9, "ocarina"); // E-Bottle
