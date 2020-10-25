@@ -59,7 +59,7 @@ public class GuiFileSelector extends GuiScreen
     private static final String MIDI_NOT_AVAILABLE = I18n.format("mxtune.chat.msu.midiNotAvailable");
     private int guiLeft;
     private int guiTop;
-    private GuiScreen guiScreenParent;
+    private final GuiScreen guiScreenParent;
     private boolean isStateCached;
     private int cachedSelectedIndex;
     private boolean midiUnavailable;
