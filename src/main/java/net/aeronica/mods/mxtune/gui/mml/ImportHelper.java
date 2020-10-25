@@ -19,12 +19,14 @@ package net.aeronica.mods.mxtune.gui.mml;
 
 import com.google.common.io.Files;
 import net.aeronica.libs.mml.readers.mml3mle.MMLFile;
+import net.aeronica.libs.mml.readers.ms2mml.MapMS2Instruments;
 import net.aeronica.libs.mml.readers.ms2mml.Ms2MmlReader;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.mxt.MXTuneFile;
 import net.aeronica.mods.mxtune.mxt.MXTunePart;
 import net.aeronica.mods.mxtune.mxt.MXTuneStaff;
 import net.aeronica.mods.mxtune.util.ModLogger;
+import net.aeronica.mods.mxtune.util.SoundFontProxyManager;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -82,7 +84,7 @@ public class ImportHelper
             if (staves.isEmpty()) return null;
             MXTuneFile mxTuneFile = new MXTuneFile();
             mxTuneFile.setTitle(title);
-            MXTunePart part = new MXTunePart(INSTRUMENT_DEFAULT_ID, "", 0, staves);
+            MXTunePart part = new MXTunePart(INSTRUMENT_DEFAULT_ID, "piano", 0, staves);
             mxTuneFile.getParts().add(part);
             return mxTuneFile;
         } else
@@ -112,10 +114,13 @@ public class ImportHelper
                     if (ms2MmlReader.parseStream(is))
                     {
                         title = FileHelper.removeExtension(entry.getName());
+                        String soundFontProxyID = MapMS2Instruments.getSoundFontProxyNameFromMeta(title);
+                        int packedPatch = SoundFontProxyManager.getPackedPreset(soundFontProxyID);
                         List<MXTuneStaff> staves = getStaves(ms2MmlReader.getMML());
+                        ModLogger.debug("  Part: packedPatch %05d, sfpId: %s, meta: %s", packedPatch, soundFontProxyID, title);
                         if (!staves.isEmpty())
                         {
-                            MXTunePart part = new MXTunePart(INSTRUMENT_DEFAULT_ID, title, 0, staves);
+                            MXTunePart part = new MXTunePart(soundFontProxyID, title, packedPatch, staves);
                             mxTuneFile.getParts().add(part);
                             count++;
                         }
@@ -135,7 +140,7 @@ public class ImportHelper
     {
         final List<MXTuneStaff> staves = new ArrayList<>();
         int i = 0;
-        for (String mml : data.replaceAll("MML@|;", "").split(","))
+        for (String mml : data.replaceAll("MML@|MML|;", "").split(","))
         {
             if (i < MAX_STAVES)
                 staves.add(new MXTuneStaff(i++, mml));
