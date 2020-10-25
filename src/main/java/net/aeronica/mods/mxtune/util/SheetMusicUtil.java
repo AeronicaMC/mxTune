@@ -220,4 +220,9 @@ public enum SheetMusicUtil
         else
             return new ItemStack(ModItems.ITEM_MUSIC_PAPER);
     }
+
+    public static ItemStack createSheetMusic(SheetMusicSongs sheetMusicSong)
+    {
+        return createSheetMusic(sheetMusicSong.getTitle(), sheetMusicSong.getMML());
+    }
 }

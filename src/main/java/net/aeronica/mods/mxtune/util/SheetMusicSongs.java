@@ -26,7 +26,7 @@ public enum SheetMusicSongs
 	 */
 	private static Map<Integer, SheetMusicSongs> codeToMMLMapping;
 
-	public static SheetMusicSongs getMML(int i) {
+	public static SheetMusicSongs getSong(int i) {
 		if (codeToMMLMapping == null) {
 			initMapping();
 		}

@@ -94,9 +94,7 @@ public class CommonEventHandler
                     {
                         Random rand = event.getEntityLiving().getEntityWorld().rand;
                         int selection = rand.nextInt(SheetMusicSongs.values().length);
-                        drop.setItem(SheetMusicUtil.createSheetMusic(
-                                SheetMusicSongs.getMML(selection).getTitle(),
-                                SheetMusicSongs.getMML(selection).getMML()));
+                        drop.setItem(SheetMusicUtil.createSheetMusic(SheetMusicSongs.getSong(selection)));
                     }
                 });
         }
