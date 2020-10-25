@@ -93,7 +93,7 @@ public class CommonEventHandler
                 if (drop.getItem().getItem() instanceof ItemSheetMusic)
                     {
                         Random rand = event.getEntityLiving().getEntityWorld().rand;
-                        int selection = rand.nextInt(SheetMusicSongs.values().length+1);
+                        int selection = rand.nextInt(SheetMusicSongs.values().length);
                         drop.setItem(SheetMusicUtil.createSheetMusic(
                                 SheetMusicSongs.getMML(selection).getTitle(),
                                 SheetMusicSongs.getMML(selection).getMML()));
