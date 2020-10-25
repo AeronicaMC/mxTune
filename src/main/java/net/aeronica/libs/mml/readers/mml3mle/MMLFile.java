@@ -190,7 +190,7 @@ public final class MMLFile
             }
 
             String meta = String.format("%s, program %d", track.getTrackName(), program);
-            String soundProxyID = MapInstruments.getSoundFontProxyName(program);
+            String soundProxyID = Map3MLEInstruments.getSoundFontProxyName(program);
             int packedPreset = SoundFontProxyManager.getPackedPreset(soundProxyID);
             MXTunePart mxTunePart = new MXTunePart(soundProxyID, meta, packedPreset, staves);
             mxTuneFile.getParts().add(mxTunePart);

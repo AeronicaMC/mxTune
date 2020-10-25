@@ -19,7 +19,7 @@ package net.aeronica.libs.mml.readers.mml3mle;
 
 import com.google.common.collect.ImmutableMap;
 
-public class MapInstruments
+public class Map3MLEInstruments
 {
     public static ImmutableMap<Integer, String> program2ID;
 
@@ -54,7 +54,7 @@ public class MapInstruments
         builderByIndex.put(23, "cello_mabinogi"); // Cello
         builderByIndex.put(24, "harp_mabinogi"); // Harp
         // Percussion
-        builderByIndex.put(66, "bass_drum_mabinogi"); // Bass Drum
+        builderByIndex.put(66, "drum_bass_mabinogi"); // Bass Drum
         builderByIndex.put(67, "drum_snare_mabinogi"); // Snare Drum
         builderByIndex.put(68, "cymbals_mabinogi"); // Cymbals
         builderByIndex.put(69, "celesta"); // C-Handbell
