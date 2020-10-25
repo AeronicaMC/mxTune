@@ -1,19 +1,26 @@
-TBD mxtune-1.12.2-0.8.0-beta.10
-NOTE: Backup your WORLDS before updating to this version. Instruments have changed. This affects MXT BG Music too.
+2020-10-25 mxtune-1.12.2-0.8.0-beta.10
+NOTE: Backup your WORLDS before updating to this version. Instruments have changed.
  * This means you will need to open the inventory on your hand-held instruments and select the timbre.
- * For MXT BG music you will have to open, re-select the instruments and re-save/upload.
 Changes:
  * Band Amp - Change Sneak-RIGHT-Click behavior depending on lock state. Update hoover helps.
  * All hand-held instruments are now ALL-IN-ONE Multi-Instruments.
  * Added "Gold Bone" and "Timpanic Membrane" ingredients and updated recipes and advancements
  * Added "Golden Skeleton" and "Timpani of Doom" mobs that can drop the above ingredients and sometimes sheet music.
  * The rare ingredients are also available from the musician villager.
+ * Advancements and Recipes have been changed, but I'm not finished. Expect more changes.
+ * Importing MML Improvements
+   * 3MLE .mml files: Improved program/instrument mapping to mxTune instruments.
+   * Maple Story 2 / Musical Nexus ZIPPED ms2mml part files: Part names now map to mxTune instruments. e.g.:
+       p1-pickbassguitar.out.ms2mml
+       p2-cello.out.ms2mml
+       p3-harpsichord.out.ms2mml
+       p4-piano.out.ms2mml
+       p5-tomtom.out.ms2mml
+       p6-violin.out.ms2mml
 
 Internal:
- * MML - Instruments are now passed as the SoundFontProxy ID (int). This allows for handling Mabinogi and
-         Maple Story 2 drum kits using a note re-mapper instead of making a custom soundfont instrument.
-         This will cause issues for World/Chunk music MXT files. Songs will need to be updated to use the
-         new SoundFontProxy instrument names and then re-saved/re-uploaded. (Faerun Heros take note!)
+ * MML - Instruments are now passed as the SoundFontProxy ID (int). This allows for handling the Mabinogi
+         drum kit using a note re-mapper instead of making a custom soundfont instrument.
 
 ----
 2019-12-27 mxtune-1.12.2-0.7.0-beta.9
