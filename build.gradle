@@ -66,6 +66,12 @@ minecraft {
 }
 
 dependencies {
+    // These 3 compileOnly lines are for travis CI and sonarcloud using openjdk11. it provides the missing
+    // javax/jakarta/net-beans xml related stuff removed from java 10+
+    compileOnly 'com.sun.activation:javax.activation:1.2.0'
+    compileOnly 'javax.xml.bind:jaxb-api:2.3.0'
+    compileOnly 'com.sun.xml.bind:jaxb-core:2.3.0'
+
 	shadow "org.antlr:antlr4-runtime:4.7.2" // use ANTLR version 4
     // compile against the JEI API but do not include it at runtime
     deobfProvided "mezz.jei:jei_${config.minecraftVersion}:${config.jeiVersion}:api"
