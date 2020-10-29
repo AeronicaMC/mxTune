@@ -20,10 +20,6 @@ apply plugin: 'org.sonarqube'
 apply plugin: 'java'
 apply plugin: 'com.github.johnrengelman.shadow'
 
-compileJava {
-    sourceCompatibility = "1.8"
-    targetCompatibility = "1.8"
-}
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 
 ext.buildProperties = file "build.properties"
@@ -71,7 +67,6 @@ minecraft {
 
 dependencies {
 	shadow "org.antlr:antlr4-runtime:4.7.2" // use ANTLR version 4
-    shadow "com.sun.xml.bind:jaxb-impl:2.3.0"
     // compile against the JEI API but do not include it at runtime
     deobfProvided "mezz.jei:jei_${config.minecraftVersion}:${config.jeiVersion}:api"
     // at runtime, use the full JEI jar

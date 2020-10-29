@@ -21,7 +21,7 @@ addons:
 git:
   depth: false # Allows Git operations
 jdk:
-- openjdk11
+- openjdk8
 before_install:
 - chmod +x gradlew
 install: ./gradlew setupCIWorkspace -s
