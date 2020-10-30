@@ -21,11 +21,11 @@ addons:
 git:
   depth: false # Allows Git operations
 jdk:
-- openjdk11
+- openjdk8
 before_install:
 - chmod +x gradlew
 install: ./gradlew setupCIWorkspace -s
 script:
-- "./gradlew clean build sonarqube --stacktrace"
+- "./gradlew clean build sonarqube --stacktrace -Dsonar.scanner.force-deprecated-java-version=true"
 notifications:
   email: false
