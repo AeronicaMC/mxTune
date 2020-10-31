@@ -2,7 +2,6 @@ name: Build
 on:
   push:
     branches:
-      - master
       - 1.12
   pull_request:
     types: [opened, synchronize, reopened]
@@ -31,6 +30,7 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
             ~/.m2/repository
+            .gradle
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
       - name: Grant execute permission for gradlew
