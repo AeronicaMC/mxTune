@@ -98,6 +98,6 @@ public class GuiLink extends GuiButton
      */
     public ITextComponent getLinkComponent()
     {
-        return ForgeHooks.newChatWithLinks(this.displayString, false);
+        return ForgeHooks.newChatWithLinks(this.displayString, false).getSiblings().get(0);
     }
 }
