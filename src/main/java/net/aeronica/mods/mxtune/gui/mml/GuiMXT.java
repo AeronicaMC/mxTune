@@ -59,8 +59,8 @@ import java.util.stream.IntStream;
 
 public class GuiMXT extends GuiScreen implements IAudioStatusCallback
 {
-    private List<IHooverText> hooverTexts = new ArrayList<>();
-    private GuiScreen guiScreenParent;
+    private final List<IHooverText> hooverTexts = new ArrayList<>();
+    private final GuiScreen guiScreenParent;
     private boolean isStateCached;
     private GuiLabelMX labelMXTFileName;
     private String cachedMXTFilename;
@@ -89,7 +89,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     private boolean cachedIsPlaying;
     private GuiButtonExt buttonSave;
     private static final int PADDING = 4;
-    private Mode mode;
+    private final Mode mode;
 
     /* MML Player */
     private int playId = PlayIdSupplier.PlayType.INVALID;
@@ -98,12 +98,12 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     private static final int MAX_TABS = 10;
     private static final int MIN_TABS = 1;
     private static final int TAB_BTN_IDX = 200;
-    private GuiMXTPartTab[] childTabs = new GuiMXTPartTab[MAX_TABS];
+    private final GuiMXTPartTab[] childTabs = new GuiMXTPartTab[MAX_TABS];
     private int activeChildIndex;
     private int cachedActiveChildIndex;
     private GuiButtonExt buttonAddTab;
     private GuiButtonExt buttonMinusTab;
-    private GuiButtonExt[] buttonNames = new GuiButtonExt[MAX_TABS];
+    private final GuiButtonExt[] buttonNames = new GuiButtonExt[MAX_TABS];
 
     // Tab limits - allow limiting the viewable tabs
     private int viewableTabCount = MIN_TABS;
@@ -394,11 +394,11 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
                 break;
             case 10:
                 // Source Link
-                handleComponentClick(sourcesLink.getLinkComponent());
+                this.handleComponentClick(sourcesLink.getLinkComponent());
                 break;
             case 11:
                 // MML Link
-                handleComponentClick(mmlLink.getLinkComponent());
+                this.handleComponentClick(mmlLink.getLinkComponent());
                 break;
             case 250:
                 // Add Tab
