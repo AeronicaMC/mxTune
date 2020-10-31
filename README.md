@@ -12,7 +12,7 @@ This mod adds musical instruments that allow you to play music in MML format. Th
 [![Versions on CurseForge](http://cf.way2muchnoise.eu/versions/245356.svg)](https://minecraft.curseforge.com/projects/mxtune/files)
 [![Downloads](http://cf.way2muchnoise.eu/245356.svg)](https://minecraft.curseforge.com/projects/mxtune/files)
 
-[![Build Status](https://api.travis-ci.org/Aeronica/mxTune.svg?branch=1.12)](https://travis-ci.org/Aeronica/mxTune)
+[![Build Status](https://github.com/AeronicaMC/mxTune/workflows/Build/badge.svg)](https://github.com/AeronicaMC/mxTune/actions?query=workflow%3ABuild)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=net.aeronica.mods.mxtune%3AmxTune&metric=alert_status)](https://sonarcloud.io/dashboard?id=net.aeronica.mods.mxtune%3AmxTune)
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=net.aeronica.mods.mxtune%3AmxTune&metric=sqale_index)](https://sonarcloud.io/dashboard?id=net.aeronica.mods.mxtune%3AmxTune)
 
