@@ -150,7 +150,8 @@ sonarqube {
     properties {
         property "sonar.organization", "aeronicamc"
         property "sonar.projectKey", "AeronicaMC_mxTune"
-        property "sonar.branch.name", "${config.projectBranch}"
+        property "sonar.branch.name", "1.12"
+        //property "sonar.branch.name", "${config.projectBranch}"
         //property "sonar.coverage.exclusions", "**/*"
         property "sonar.host.url", "https://sonarcloud.io"
     }
