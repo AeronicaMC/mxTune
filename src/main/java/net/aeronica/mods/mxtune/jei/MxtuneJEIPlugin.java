@@ -33,5 +33,7 @@ public class MxtuneJEIPlugin implements IModPlugin
         // Visual items only, not for recipes
         ingredientBlacklist.addIngredientToBlacklist(new ItemStack(ModItems.ITEM_SHEET_MUSIC));
         ingredientBlacklist.addIngredientToBlacklist(new ItemStack(ModItems.ITEM_PLACE_HOLDER));
+        ingredientBlacklist.addIngredientToBlacklist(new ItemStack(ModItems.ITEM_INGREDIENTS, 1, 0));
+        ingredientBlacklist.addIngredientToBlacklist(new ItemStack(ModItems.ITEM_INGREDIENTS, 1, 1));
     }
 }
