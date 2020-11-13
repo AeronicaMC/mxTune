@@ -1,13 +1,16 @@
-package net.aeronica.libs.mml.core;
+package net.aeronica.libs.mml.util;
 
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static net.aeronica.libs.mml.core.MMLUtil.MML_LOGGER;
 
-public enum TestData {
-    MML0(0, "Mario", "MML@i1537v13r4>e32r16.d+32r16.d16c16r8.<<g8r4r16>>e16r8.d16c32r16.e16r4.c16.d32e8e8d8c8e8f8g8a8r8c8c8<a8g8>c16c16r4<f8g8a8b16r8.>>g32r16.g32r8.r32<e16r8.d16c32r16.e16r4.c16.d32e8e8d8c8a8g8>c8<e16d32r16.c8.c8d8e8c16c16r4f8e8c8d8r16>g32r8r32<g32r4r16.a8b8>c8<b32r8r32g8r8.f8r8g16f16r8e8f8f+8g8r8a8b8>c8<b32r8r32g8r8.>d+8d8r8c8r2<e16r8.d16c32r16.e16r4.c16.d32e8e8d8c8e8f8g8a8r8c8c8<a8g8>c16c16r4<f8g8a8b16r8.>>g32r16.g32r8.r32<e16r8.d16c32r16.e16r4.c16.d32e8e8d8c8a8g8>c8<e16d32r16.c8.c8d8e8c16c16r4f8e8c8d8r16>g32r8r32<g32r4r16.a8b8>c8<b32r8r32g8r8.f8r8g16f16r8e8f8f+8g8r8a8b8>c8<b32r8r32g8r8.>d+8d8r8c8,v10r1r4.e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8d8e8f8f+8r2r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8d8e8f8f+8r2r8c8r8c8r8c8r8c8r8a8r8a8<e8f8f+8g8f8>c8<f8>c8<e8>c8<e8>c8<g+8>d+8<g+8>d+8g32r32g32r32f32r16.e32r16.d32r8.r32e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8d8e8f8f+8r2r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8d8e8f8f+8r2r8c8r8c8r8c8r8c8r8a8r8a8<e8f8f+8g8f8>c8<f8>c8<e8>c8<e8>c8<g+8>d+8<g+8>d+8g32r32g32r32f32r16.e32r16.d32r16.c2.,v10r1o2g8.&g32r32>c8r16.<g32>c8r8c8r8c8r8c8r8c8r8c8r8a8r8f8r8f8r8e8r8e8r8d8e8f8f+8r2c8r16.<g32>c8r8c8r8c8r8c8r8c8r8c8r8a8r8f8r8f8r8e8r8e8r8d8e8f8f+8r2f8r8f8r8e8r8e8r8d8r8d8r8e8f8f+8g8r1r1c8r16.<g32>c8r8c8r8c8r8c8r8c8r8c8r8a8r8f8r8f8r8e8r8e8r8d8e8f8f+8r2c8r16.<g32>c8r8c8r8c8r8c8r8c8r8c8r8a8r8f8r8f8r8e8r8e8r8d8e8f8f+8r2f8r8f8r8e8r8e8r8d8r8d8r8e8f8f+8g8;"),
+public enum TestData
+{
+    MML0(0, "Mario", "MML@i6v13r4>e32r16.d+32r16.d16c16r8.<<g8r4r16>>e16r8.d16c32r16.e16r4.c16.d32e8e8d8c8e8f8g8a8r8c8c8<a8g8>c16c16r4<f8g8a8b16r8.>>g32r16.g32r8.r32<e16r8.d16c32r16.e16r4.c16.d32e8e8d8c8a8g8>c8<e16d32r16.c8.c8d8e8c16c16r4f8e8c8d8r16>g32r8r32<g32r4r16.a8b8>c8<b32r8r32g8r8.f8r8g16f16r8e8f8f+8g8r8a8b8>c8<b32r8r32g8r8.>d+8d8r8c8r2<e16r8.d16c32r16.e16r4.c16.d32e8e8d8c8e8f8g8a8r8c8c8<a8g8>c16c16r4<f8g8a8b16r8.>>g32r16.g32r8.r32<e16r8.d16c32r16.e16r4.c16.d32e8e8d8c8a8g8>c8<e16d32r16.c8.c8d8e8c16c16r4f8e8c8d8r16>g32r8r32<g32r4r16.a8b8>c8<b32r8r32g8r8.f8r8g16f16r8e8f8f+8g8r8a8b8>c8<b32r8r32g8r8.>d+8d8r8c8,v10r1r4.e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8d8e8f8f+8r2r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8d8e8f8f+8r2r8c8r8c8r8c8r8c8r8a8r8a8<e8f8f+8g8f8>c8<f8>c8<e8>c8<e8>c8<g+8>d+8<g+8>d+8g32r32g32r32f32r16.e32r16.d32r8.r32e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8d8e8f8f+8r2r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8r8e8d8e8f8f+8r2r8c8r8c8r8c8r8c8r8a8r8a8<e8f8f+8g8f8>c8<f8>c8<e8>c8<e8>c8<g+8>d+8<g+8>d+8g32r32g32r32f32r16.e32r16.d32r16.c2.,v10r1o2g8.&g32r32>c8r16.<g32>c8r8c8r8c8r8c8r8c8r8c8r8a8r8f8r8f8r8e8r8e8r8d8e8f8f+8r2c8r16.<g32>c8r8c8r8c8r8c8r8c8r8c8r8a8r8f8r8f8r8e8r8e8r8d8e8f8f+8r2f8r8f8r8e8r8e8r8d8r8d8r8e8f8f+8g8r1r1c8r16.<g32>c8r8c8r8c8r8c8r8c8r8c8r8a8r8f8r8f8r8e8r8e8r8d8e8f8f+8r2c8r16.<g32>c8r8c8r8c8r8c8r8c8r8c8r8a8r8f8r8f8r8e8r8e8r8d8e8f8f+8r2f8r8f8r8e8r8e8r8d8r8d8r8e8f8f+8g8;"),
 	MML1(1, "Fruits Basket duet", "MML@i1541t69r1v13>b2l8.agf+8e1b4.a16g16agf+e1l16r<bbb>cdd8.cc8c-c8r8<aaab>cd8.c<b8ab8r4b>ef+g8.f+e8a8.g4gf+ed&d2r4c-cdd8.cc8c-c8r8.<aab>cd8.c<b8ab8r4b>ef+g8.f+e8.a8g4&gf+ef+&f+4rbbbbggeecc<ba>cf+araaaaf+f+dd<aaaagb>gr8ggg8f+f+8.eed+8b+b8.a8a8gg8f+e4.rbbbbggeec<ba8>cf+araaaaf+f+d8c-da8gf+g&g4r8>d8c8<ba8g8.g8f+g&g1r4dd+ff8.d+d+8dd+8r4cdd+f8.d+d8cd8r4dgaa+8.ag8b+8.a+4&a+agf&f2r4dd+ff8.d+d+8dd+8r4cdd+f8.d+d8cd8r4dgaa+8.ag8b+8.a1g1r2.rbbbbggeecc<ba>cf+araaaaf+f+dd<aaaagb>gr8ggg8f+f+8.eed+8b+b8.a8a8gg8f+e4.rbbbbggeec<ba8>cf+araaaaf+f+d8c-da8gf+g&g4r8>d8c8<ba8g8.g8f+g&g1r4c-cdd8.cc8c-c8r4<ab>cd8.c<b8ab8r4b>ef+g8.f+e8a8.g4&gf+ed&d2r4c-cdd8.cc8c-c8r4<ab>cd8.c<b8ab8r4b>ef+g8.f+e8a8.g2f+2g1&g1r8br8.f+r8.gr8.dr8.er8.<ar8.br8.>dr8.br8.f+r8.gr8.dr8.er8.<ar8.br8.gr8.>br8.f+r8.gr8.dr8.er8.<ar8.br8.>d,v11r1g2l2.f+rg2f+l1rrrrrl16>degg8.ee8de8.l1.rrrrrrrrrl2rr.r8.v10fg4.l16agf4.>c4.cdd+8d4c4<a+2l1b+grl2.b>e4d<g4a2f+2g2g+2b>e4da4g1gr8l16c-cd1l8d<ab>cc4<bag2gef+gb4.l16b+ba4.b>cd1l8d<ab>cc4af+g2.rl16f+ed2.r<c<bag1.&g4&gv8c<bag2,l64g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g;"+
 	        "MML@I1536t69l64g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&g&gr2v14l8>ec-ec-c<ab+an63bn63bn63bn63b>ec-ec-c<ab+an63bn63b>d+2<gc-gc-gcgcf+<an54a>acacgc-gc-a<a>a<a>e<a>e<an54an54a>gc-gc-gcgcf+<an54a>acacgc-gc-a<a>a<a>e<a>e<an54an54a>g<a>g<an54an54an54an54a>gc-gc-acacacacgc-gc-g+c-g+c-g<a>g<an54an54an54an54a>gc-gc-g<a>g<a>g<a>g<a>gc-gc-gc-gc-a+d>d<fa+d+a+d+acacb+cb+ca+da+dgcgca+ca+cacacfn46fn46a+d+a+d+acacb+cb+ca+da+dgcgcacacadadb+db+dbdbd>e<e>e<e>e<e>e<eg<a>g<an54an54an54an54a>gc-gc-acacacacgc-gc-g+c-g+c-g<a>g<an54an54an54an54a>gc-gc-g<a>g<a>g<a>g<a>gc-gc-gc-gc-gc-gc-gcgcf+<an54a>acacgc-gc-a<a>a<a>e<a>e<an54an54a>gc-gc-gcgcf+<an54a>acacgc-gc-g<a>g<a>g<a>g<an54an54a>gc-gc-gc-gc-gc-gc-gc-gc-gc-gc-gc-gc-v13gc-v12gc-v11gc-v10gc-v9gc-gc-gc-gc-gc-gc-gc-gc-gc-gc-gc-gc-gc-gc-gc-g<b1,v14r1>gg8.&g32<a64>d64f+f+g+g+g+g+8.&g+32c-64e64ggf+f+g+g+8.&g32c-64e64g+2<ddeeddd+d+eec+c+ccccddeeddd+d+eec+c+ccccccccddeef+f+d+d+eeeeccccddeeccccddddfa+ggfff+f+ggeeffffddggfff+f+ggeefff+f+ggggaag+g+ccccddeef+f+d+d+eeeeccccddeeccccddddddeeddd+d+eec+c+ccccddeeddd+d+eec+c+ddddddddddddddddv13dv12dv11dv10dv9dddddddddddddddd1,v14r1l2cde1<cde1gcdd+ec+dd<g>cdd+ec+dd<a>dc-ef+c-ee<a>dc-e<a>d<g4.d8g4.g16a16a+>d+ff+gcffn34d+ff+gcfd<gg>e<ea>dc-ef+c-ee<a>dc-e<a>d<g4.d8g>gcdd+ec+dd<g>cdd+ec+ddl4.<gd8gd8gd8gd8l2ggggv9gggg;"),
 	MML2(2, "Bach", "MML@i75t120o5l8d2e-de-cd4r<gaa>dc<b-g>dd<b-g>e-2d2c4.<b-16a16b->cd4g4.c+d2c4d4rc+d4rdcccd16c16<b-b-b->c16<b-16a4.>d4.c4.<ab-4a2b-4rab-4r>c<aa>d4<gg>c4<f+f+g4.a16g16f.g16gab->cd4rdc+4d2c4d4rc+d4rdcccd16c16<b-b-b->c16<b-16aaab-16a16ggga16g16fa>d2c+4d4f4e-2d2c2<b-2a4b-2rab-4r>de-e-e-f16e-16ddde-16d16cccd16c16<b->cde-<a4.>d4.c4.<b-16a16b-4a2b-4rab-4r>c<aab-4gga4f+f+g2f+4g2a-ga-fg4rcddgfe-ca-2g2f4.de-4d2e-fg4f+4a4>d2e-de-cd4r<gaa>dc<b-g>dd<b-g>e-2d2c2<b-4a2.r>dcccd16c16<b-ag2f+4g2.rf+g1,l8o4r1r1r1r1r1r1r1r1d2e-de-cd4r<gaa>dc<b-g>dd<b-g>e-2g2c2<b-a16g16a2g2b-ab-ga4rdeeagfdaafdb-2a2g2f4e2d4rdge<aa>d4>rdcccd16c16<b-b-b->c16<b-16aaab-16a16ggga16g16f4<b->de-cf<fb-4>b-2a2g2f+4g4r4d2e-de-cd4r<gaa>dc<b-g>dd<b-g>e-2d2c2<b-4a2g4r4r2>e-fga-<b2>c4r>c<b-b-b->c16<b16a-a-a-b-16a16g4rcfdg<g>c4r>c4ccd16c16<b-ab-g>c4r<fb-ab-4>c4d2rdd4r<gfffg16f16e-e-e-f16e-16d4r>dcccd16c16<b-b-b->c16<b-16a4>d4<gab-a16g16a4d4e-e-e-f16e-16d2<g1,o4l2r1r1r1r1l8g2b-ab-ga4rdeeagfdaafdb-2a2g2f+4g2f+4g2f4g4rf+g4rgfffg16f16e-e-e-f16e-16ddd4c2<b->cd4g4rb-a4a4g4g4a4raa4g2a4f4g4e4f4d4c4d4rfe4e4a4b-2a2g2f2e-4.f16e-16d4cd16e-16dcd4d4c2<b-2a2g4>g2f+4g4g4f4g4dc4d4rf+4g4rgfffg16f16e-e-e-f16e-16ddde-16d16cccd16c16d<fe-ef4rb->e-4r<a-4.g4g4r>e-ddde-16d16cccd16c16b4c2b4cde-4d4f+4a4gb->c<b->c<aff+g4e-4d2rab-grb-aaab-16a16ggga16g16f+4g2f4d4g2f+4d4d2rc<b4>c4.d16c16<b-ab1<;"),
@@ -35,9 +38,9 @@ public enum TestData {
     					      "MML@i1541r1r.v13>f+r.d8rg8rc8r8<a+2.r2r8>er1.r<<a8r2>d8rer1.r>f+r.d8rg8rc8r8<a+.a.<a+r1r.>>cr.ddc+8r<a2.&a8r1r1r1.v11c<a+r2r8>>cr1.r.ee8e2.&e8r<e.d+2&d+8c.c.r1r8>cr1rv9er2.c.r2.d+l8rd2.&dr4.v14<cccc4rf+4r4.dr2cccc4r1r4d+rd+er2d+rd+er2>d+rd+ed+rd+ed+rd+er2f2&ff+r4c-r2.rd2&dc+r2<f4e4r4>f2&ff+r4<br2.rb2&br2r>d4c4r4f2&ff+r4<br2.ra+2&a+rn61l4a.g+gf+r1r1r.g.ga2,l1.rrrrrrrr2.v13a+2r1r1r4b4b4a+8rrrrrrr4.v11d4.c2&c8rrrrrr4.v14d4rrrrr2.l8r>c2&cdr1r4<a+2&a+a+r1r4>c2&cdr1r4<f2&fr1r4.>c2&cdr1r1n58f2.&f,;"+
     						  "MML@i1542v10n29c<cb+<f+n50an50gn50dn50gl8>a+>cdcl4<a+<c>b+<g>b+<c>b+<e>b+f8rf+8r2f8ra+.<cf>b+cb+<f+n50an50gn50dn50g8>d8g.d8gggg+g+aa>ccn31dn24c<fc<f>a+v8>d.c2&c8c<a+<g>ga+a+d+d+<a+8>f8g+fd>ddccc<a+<g>ga+a+eel8<f>cfa4gf4a+gaa+4a+g+f+l4fa+g<g>a+a+d+d+g+fa+n34d+a+eb+fb+g>d<ca+faa+<f<a+r.v11l8>>dddd4r<d4eff+g4r4.>cccc4r<c4dd+ef4r4>cr4cr2cr4cr2cr4cr4.cr4.cr2l4c<a+an50gn50dn50gn50c>b+<f>ba+<cb+a+an50gn50d>>d<c+<g+c+>ba+<a+agrb+8a+8an50gn50dn50en50a>>c+c<ba+d+a8rg8r.f8r.f8r.f8r.c<c8b+fc<f,rv11<arar>crcrn46rcrl8<<gaa+al4gr>a+ra+ra+ra+<f8rf+8r2g8r>c.r2arar>crcrn46rcr1<<a+a+bb>ccaarbra+r2.gv8a+.a+2&a+8dr2.gg<ffr1>a+a+a+a+dr2.ggc+c+r1r1rdr2gg<ffa+r2.v9d+>g<en46fn46g>b<c>g<f>f<a+r2.l8rv12dddd4r1r4.cccc4r1r4cr4cr2cr4cr2cr4cr4.cr4.cr2l4fd+d>b+rbrbra+ra+rc+cr<fd+d>b+rbrbr2.c+cr1<f8d+8d>b+rbrbra+ra+ac+c<fa+8ra+8r.a8r.g+8r.g8,l1.rrrrrrrrrr2.v9l4<frer1v7e.d+2&d+8r1r1r1eed+d+l1.rrrrrr4v9e4rrrrrrrr2r2.v11l4f+rfrfrfrer1.rf+rfrfr1r1.rf+rfrfrere;"+
     					      "MML@i1554v10n29c<cb+<f+n50an50gn50dn50gl8>a+>cdcl4<a+<c>b+<g>b+<c>b+<e>b+f8rf+8r2f8ra+.<cf>b+cb+<f+n50an50gn50dn50g8>d8g.d8gggg+g+aa>ccn31dn24c<fc<f>a+v7>d.c2&c8c<a+<g>ga+a+d+d+<a+8>f8g+fd>ddccc<a+<g>ga+a+eel8<f>cfa4gf4a+gaa+4a+g+f+l4fa+g<g>a+a+d+d+g+fa+n34v9d+a+eb+fb+g>d<ca+faa+<f<a+r.v13l8>>dddd4r<d4eff+g4r4.>cccc4r<c4dd+ef4r4>cr4cr2cr4cr2cr4cr4.cr4.cr2l4c<a+an50gn50dn50gn50c>b+<f>ba+<cb+a+an50gn50d>>d<c+<g+c+>ba+<a+agrb+8a+8an50gn50dn50en50a>>c+c<ba+d+a8rg8r.f8r.f8r.f8r.c<c8b+fc<f,rv9<frfrf+rf+rgrf+r1rerererer1r1rfrfrf+rf+rgrf+r1r1.ddrgrgr2.cv7g.f+2&f+8r1ccr1.ggf+f+r1cc<f+f+r1r1r1>ccr1.rv9d+rgrfrfrd+rd+l1.rrrrrrr2.v11l4argrgrgrgr1.rargrgr1r1.rargrgrgrgd,;"),
-	MML15(15, "Drum Kit Test", "MML@i16384v15t120o2FGAB>CDEFGAB>CDEF;"),
 	;
 
+	private static final Logger LOGGER = LogManager.getLogger();
 	private int index;
 	private String title;
 	private String mml;
@@ -54,7 +57,8 @@ public enum TestData {
 	 */
 	private static Map<Integer, TestData> codeToMMLMapping;
 
-	public static TestData getMML(int i) {
+	public static
+	TestData getMML(int i) {
 		if (codeToMMLMapping == null) {
 			initMapping();
 		}
@@ -84,7 +88,7 @@ public enum TestData {
 	}
 
 	public static void main(String[] args) {
-		MML_LOGGER.info(TestData.MML15);
-		MML_LOGGER.info(TestData.getMML(6));
+		LOGGER.info(TestData.MML5);
+		LOGGER.info(TestData.getMML(6));
 	}
 }

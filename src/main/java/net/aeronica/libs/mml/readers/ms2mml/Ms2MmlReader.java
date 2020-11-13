@@ -17,7 +17,7 @@
 
 package net.aeronica.libs.mml.readers.ms2mml;
 
-import net.aeronica.libs.mml.core.MMLAllowedCharacters;
+import net.aeronica.libs.mml.parser.MMLAllowedCharacters;
 import net.aeronica.libs.mml.readers.AbstractMmlFileReader;
 
 import javax.annotation.Nonnull;
@@ -29,7 +29,6 @@ import java.nio.file.Path;
 
 public class Ms2MmlReader extends AbstractMmlFileReader
 {
-
     public Ms2MmlReader() { /* NOP*/ }
 
     @Override

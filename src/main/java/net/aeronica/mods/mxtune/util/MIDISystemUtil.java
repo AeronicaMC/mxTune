@@ -19,7 +19,7 @@ package net.aeronica.mods.mxtune.util;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.sun.media.sound.AudioSynthesizer;
-import net.aeronica.libs.mml.core.MMLUtil;
+import net.aeronica.libs.mml.parser.MMLUtil;
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.config.ModConfig;

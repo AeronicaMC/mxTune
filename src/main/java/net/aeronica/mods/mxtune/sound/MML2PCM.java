@@ -16,27 +16,24 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
-import net.aeronica.libs.mml.core.MMLParser;
-import net.aeronica.libs.mml.core.MMLParserFactory;
-import net.aeronica.libs.mml.core.MMLUtil;
+import net.aeronica.libs.mml.parser.MMLParser;
+import net.aeronica.libs.mml.parser.MMLParserFactory;
+import net.aeronica.libs.mml.parser.MMLUtil;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.client.resources.I18n;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Patch;
 import javax.sound.sampled.AudioInputStream;
-import java.io.IOException;
 
 import static net.aeronica.mods.mxtune.sound.ClientAudio.Status.ERROR;
 import static net.aeronica.mods.mxtune.sound.ClientAudio.Status.READY;
 
 public class MML2PCM
 {
-    private AudioData audioData;
-    private String mmlText;
+    private final AudioData audioData;
+    private final String mmlText;
 
     MML2PCM(AudioData audioData, String mmlText)
     {
@@ -47,26 +44,12 @@ public class MML2PCM
     public boolean process()
     {
         MMLParser mmlParser;
-        try
-        {
-            mmlParser = MMLParserFactory.getMMLParser(mmlText);
-        }
-        catch (IOException e)
-        {
-            ModLogger.debug("MMLParserFactory.getMMLParser() IOException in %s, Error: %s", MML2PCM.class.getSimpleName(), e);
-            audioData.setStatus(ERROR);
-            return false;
-        }
-        mmlParser.setBuildParseTree(true);
-        ParseTree tree = mmlParser.band();
 
-        ParseTreeWalker walker = new ParseTreeWalker();
-        MMLToMIDI mmlToMIDI = new MMLToMIDI();
-        walker.walk(mmlToMIDI, tree);
-        // ANTLR4 MML Parser END
-
+        mmlParser = MMLParserFactory.getMMLParser(mmlText);
+        MMLToMIDI toMIDI = new MMLToMIDI();
+        toMIDI.processMObjects(mmlParser.getMmlObjects());
         // Log bank and program per instrument
-        for (int preset: mmlToMIDI.getPresets())
+        for (int preset: toMIDI.getPresets())
         {
             Patch patchPreset = MMLUtil.packedPreset2Patch(SoundFontProxyManager.getPackedPreset(preset));
             String name = I18n.format(SoundFontProxyManager.getLangKeyName(preset));
@@ -78,7 +61,7 @@ public class MML2PCM
         try
         {
             Midi2WavRenderer mw = new Midi2WavRenderer();
-            AudioInputStream pcmStream = mw.createPCMStream(mmlToMIDI.getSequence(), audioData.getAudioFormat());
+            AudioInputStream pcmStream = mw.createPCMStream(toMIDI.getSequence(), audioData.getAudioFormat());
             audioData.setAudioStream(pcmStream);
         } catch (ModMidiException | MidiUnavailableException e)
         {

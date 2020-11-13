@@ -17,7 +17,7 @@
 
 package net.aeronica.mods.mxtune.managers;
 
-import net.aeronica.libs.mml.core.TestData;
+import net.aeronica.libs.mml.util.TestData;
 import net.aeronica.mods.mxtune.caches.FileHelper;
 import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.aeronica.mods.mxtune.managers.records.Song;

@@ -77,7 +77,6 @@ dependencies {
     compileOnly 'javax.xml.bind:jaxb-api:2.3.0'
     compileOnly 'com.sun.xml.bind:jaxb-core:2.3.0'
 
-	shadow "org.antlr:antlr4-runtime:4.7.2" // use ANTLR version 4
     // compile against the JEI API but do not include it at runtime
     deobfProvided "mezz.jei:jei_${config.minecraftVersion}:${config.jeiVersion}:api"
     // at runtime, use the full JEI jar
@@ -93,7 +92,6 @@ shadowJar {
     // only include compile time dependencies
     configurations = [project.configurations.compile]
 	archiveName = tasks.jar.archiveName
-	relocate 'org.antlr.v4.runtime', 'net.aeronica.shadowedlibs.org.antlr.v4.runtime'
     // relocate 'de.johni0702.minecraft.gui', 'net.aeronica.shadowedlibs.de.johni0702.minecraft.gui'
     // relocate 'assets/jgui', 'assets/mxtune/jgui'
 }

@@ -1,53 +1,87 @@
+/*
+ * Aeronica's mxTune MOD
+ * Copyright 2020, Paul Boese a.k.a. Aeronica
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
+/*
+ * MIT License
+ *
+ * Copyright (c) 2020 Paul Boese a.k.a. Aeronica
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package net.aeronica.mods.mxtune.sound;
 
-import net.aeronica.libs.mml.core.MMLTransformBase;
-import net.aeronica.libs.mml.core.MObject;
+import net.aeronica.libs.mml.parser.MMLObject;
 import net.aeronica.mods.mxtune.util.MapListHelper;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SoundFontProxyManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import javax.sound.midi.*;
-import java.nio.ByteBuffer;
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.Patch;
+import javax.sound.midi.Sequence;
+import javax.sound.midi.Track;
 import java.util.*;
 
-import static net.aeronica.libs.mml.core.MMLUtil.*;
+import static net.aeronica.libs.mml.midi.MIDIHelper.*;
+import static net.aeronica.libs.mml.parser.MMLUtil.*;
 
-public class MMLToMIDI extends MMLTransformBase
+public class MMLToMIDI
 {
-    private static final double PPQ = 480.0;
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final int TICKS_OFFSET = 10;
-    // 8 players with 10 parts each = 80 parts.
-    // 12 slots with 10 parts each = 120 parts.
-    // No problem :D, but will make it 160 because we can!
-    private static final int MAX_TRACKS = 160;
+
     private Sequence sequence;
-    private Set<Integer> presets = new HashSet<>();
+    private final Set<Integer> presets = new HashSet<>();
     private int channel;
     private int track;
     private String currentTransform = "";
     private Map<Integer,Integer> noteTranslations = new HashMap<>();
 
-    public MMLToMIDI() {/* NOP */}
-
-    @Override
-    public long durationTicks(int mmlNoteLength, boolean dottedLEN)
-    {
-        double dot = dottedLEN ? 15.0d : 10.0d;
-        return (long) (((4.0d / (double) mmlNoteLength) * dot / 10.0d) * PPQ);
-    }
+    public MMLToMIDI() { /* NOP */ }
 
     public Sequence getSequence() {return sequence;}
     
+    @SuppressWarnings("unused")
     public List<Integer> getPresets()
     {
         return new ArrayList<>(presets);
     }
-
-    @Override
-    public void processMObjects(List<MObject> mmlObjects)
+    
+    public void processMObjects(List<MMLObject> mmlObjects)
     {
         channel = 0;
-        track = 0;
+        track = 1;
         long ticksOffset = TICKS_OFFSET;
         int currentTempo;
 
@@ -60,13 +94,15 @@ public class MMLToMIDI extends MMLTransformBase
             }
             Track[] tracks = sequence.getTracks();
 
-            for (MObject mmo: mmlObjects)
+            for (MMLObject mmo: mmlObjects)
             {
                 switch (mmo.getType())
                 {
-                    case INST_BEGIN:
+                    case SUSTAIN:
+                    case INIT:
                     case REST:
                     case DONE:
+                        addText(mmo, tracks, track, channel, ticksOffset);
                         break;
 
                     case TEMPO:
@@ -76,28 +112,32 @@ public class MMLToMIDI extends MMLTransformBase
 
                     case INST:
                         addInstrument(mmo, tracks[track], channel, ticksOffset);
+                        addText(mmo, tracks, track, channel, ticksOffset);
                         break;
 
                     case PART:
                         nextTrack();
+                        addText(mmo, tracks, track, channel, ticksOffset);
                         break;
 
                     case NOTE:
                         addNote(mmo, tracks, track, channel, ticksOffset);
+                        addText(mmo, tracks, track, channel, ticksOffset);
                         break;
 
-                    case INST_END:
+                    case STOP:
                         nextTrack();
                         nextChannel();
+                        addText(mmo, tracks, track, channel, ticksOffset);
                         break;
 
                     default:
-                        MML_LOGGER.debug("MMLToMIDI#processMObjects Impossible?! An undefined enum?");
+                        LOGGER.debug("MMLToMIDI#processMObjects Impossible?! An undefined enum?");
                 }
             }
         } catch (InvalidMidiDataException e)
         {
-            MML_LOGGER.error("MMLToMIDI#processMObjects failed.", e);
+            LOGGER.error(e);
         }
     }
 
@@ -113,7 +153,7 @@ public class MMLToMIDI extends MMLTransformBase
         if (channel > 15) channel = 15;
     }
 
-    private void addInstrument(MObject mmo, Track track, int ch, long ticksOffset) throws InvalidMidiDataException
+    private void addInstrument(MMLObject mmo, Track track, int ch, long ticksOffset) throws InvalidMidiDataException
     {
         Patch preset = packedPreset2Patch(SoundFontProxyManager.getPackedPreset(mmo.getInstrument()));
         updateCurrentSoundFontProxy(mmo.getInstrument());
@@ -136,13 +176,6 @@ public class MMLToMIDI extends MMLTransformBase
         presets.add(mmo.getInstrument());
     }
 
-    private void addNote(MObject mmo, Track[] tracks, int track, int channel, long ticksOffset) throws InvalidMidiDataException
-    {
-        int midiNote = transformNote(mmo.getMidiNote());
-        tracks[track].add(createNoteOnEvent(channel, smartClampMIDI(midiNote), mmo.getNoteVolume(), mmo.getStartingTicks() + ticksOffset));
-        tracks[track].add(createNoteOffEvent(channel, smartClampMIDI(midiNote), mmo.getNoteVolume(), mmo.getStartingTicks() + mmo.getLengthTicks() + ticksOffset - 1));
-    }
-
     private void updateCurrentSoundFontProxy(int preset)
     {
         if (SoundFontProxyManager.hasTransform(preset))
@@ -156,7 +189,6 @@ public class MMLToMIDI extends MMLTransformBase
             currentTransform = "";
             noteTranslations.clear();
         }
-
     }
 
     private int transformNote(int midiNote)
@@ -167,56 +199,21 @@ public class MMLToMIDI extends MMLTransformBase
             return midiNote;
     }
 
-    private MidiEvent createProgramChangeEvent(int channel, int value, long tick) throws InvalidMidiDataException
+    private void addNote(MMLObject mmo, Track[] tracks, int track, int channel, long ticksOffset) throws InvalidMidiDataException
     {
-        ShortMessage msg = new ShortMessage();
-        msg.setMessage(ShortMessage.PROGRAM_CHANGE, channel, value, 0);
-        return new MidiEvent(msg, tick);
+        int midiNote = transformNote(mmo.getMidiNote());
+        if (mmo.doNoteOn())
+            tracks[track].add(createNoteOnEvent(channel, smartClampMIDI(midiNote), mmo.getNoteVolume(), mmo.getStartingTicks() + ticksOffset));
+        if (mmo.doNoteOff())
+            tracks[track].add(createNoteOffEvent(channel, smartClampMIDI(midiNote), mmo.getNoteVolume(), mmo.getStartingTicks() + mmo.getLengthTicks() + ticksOffset));
     }
 
-    private MidiEvent createBankSelectEventMSB(int channel, int value, long tick) throws InvalidMidiDataException
+    private void addText(MMLObject mmo, Track[] tracks, int track, int channel, long ticksOffset) throws InvalidMidiDataException
     {
-        ShortMessage msg = new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, 0, value >> 7);
-        return new MidiEvent(msg, tick);
-    }
-    
-    private MidiEvent createBankSelectEventLSB(int channel, int value, long tick) throws InvalidMidiDataException
-    {
-        ShortMessage msg = new ShortMessage(ShortMessage.CONTROL_CHANGE, channel, 32, value & 0x7F);
-        return new MidiEvent(msg, tick);
-    }
-    
-    private MidiEvent createNoteOnEvent(int channel, int pitch, int velocity, long tick) throws InvalidMidiDataException
-    {
-        ShortMessage msg = new ShortMessage();
-        msg.setMessage(ShortMessage.NOTE_ON, channel, pitch, velocity);
-        return new MidiEvent(msg, tick);
-    }
-
-    private MidiEvent createNoteOffEvent(int channel, int pitch, int velocity, long tick) throws InvalidMidiDataException
-    {
-        ShortMessage msg = new ShortMessage();
-        msg.setMessage(ShortMessage.NOTE_OFF, channel, pitch, velocity);
-        return new MidiEvent(msg, tick);
-    }
-
-    private MidiEvent createTempoMetaEvent(int tempo, long tick) throws InvalidMidiDataException
-    {
-        MetaMessage msg = new MetaMessage();
-        byte[] data = ByteBuffer.allocate(4).putInt(1000000 * 60 / tempo).array();
-        data[0] = data[1];
-        data[1] = data[2];
-        data[2] = data[3];
-        msg.setMessage(0x51, data, 3);
-        return new MidiEvent(msg, tick);
-    }
-
-    @SuppressWarnings("unused")
-    private MidiEvent createTextMetaEvent(String text, long tick) throws InvalidMidiDataException
-    {
-        MetaMessage msg = new MetaMessage();
-        byte[] data = text.getBytes();
-        msg.setMessage(0x01, data, data.length);
-        return new MidiEvent(msg, tick);
+        String onOff = String.format("%s%s", mmo.doNoteOn() ? "^" : "-", mmo.doNoteOff() ? "v" : "-");
+        String pitch = mmo.getType() == MMLObject.Type.NOTE ? String.format("%s(%03d)", onOff, mmo.getMidiNote()) : "--(---)";
+        String text = String.format("{t=% 8d l=% 8d}[T:%02d C:%02d %s %s]{ %s }", mmo.getStartingTicks(),
+                                    mmo.getLengthTicks(), track, channel, mmo.getType().name(), pitch, mmo.getText());
+        tracks[0].add(createTextMetaEvent(text, mmo.getStartingTicks() + ticksOffset));
     }
 }

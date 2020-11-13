@@ -16,9 +16,8 @@
  */
 package net.aeronica.mods.mxtune.util;
 
-import net.aeronica.libs.mml.core.MMLParser;
-import net.aeronica.libs.mml.core.MMLParserFactory;
-import net.aeronica.libs.mml.core.ParseErrorListener;
+import net.aeronica.libs.mml.parser.MMLParser;
+import net.aeronica.libs.mml.parser.MMLParserFactory;
 import net.aeronica.mods.mxtune.blocks.IMusicPlayer;
 import net.aeronica.mods.mxtune.blocks.IPlacedInstrument;
 import net.aeronica.mods.mxtune.blocks.TileInstrument;
@@ -36,11 +35,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 
 public enum SheetMusicUtil
 {
@@ -129,39 +125,23 @@ public enum SheetMusicUtil
      */
     public static ValidDuration validateMML(@Nonnull String mml)
     {
-        ParseErrorListener parseErrorListener = new ParseErrorListener();
         int seconds = 0;
-        MMLParser parser;
-        try
+        MMLParser parser = MMLParserFactory.getMMLParser(mml);
+        MMLToMIDI toMIDI = new MMLToMIDI();
+        toMIDI.processMObjects(parser.getMmlObjects());
+
+        try (Midi2WavRenderer midi2WavRenderer = new Midi2WavRenderer())
         {
-             parser = MMLParserFactory.getMMLParser(mml);
-        }
-        catch (IOException e)
+            // sequence in seconds plus 4 a second buffer. Same as the MIDI2WaveRenderer class.
+            seconds = (int) (midi2WavRenderer.getSequenceInSeconds(toMIDI.getSequence()) + 4);
+        } catch (ModMidiException e)
         {
-            ModLogger.debug("MMLParserFactory.getMMLParser() IOException in %s, Error: %s", SheetMusicUtil.class.getSimpleName(), e);
+            ModLogger.debug("ValidateMML Error: %s in %s", e, SheetMusicUtil.class.getSimpleName());
             return ValidDuration.INVALID;
         }
-        parser.removeErrorListeners();
-        parser.addErrorListener(parseErrorListener);
-        parser.setBuildParseTree(true);
-        ParseTree tree = parser.band();
-        ParseTreeWalker walker = new ParseTreeWalker();
-        MMLToMIDI mmlTrans = new MMLToMIDI();
-        walker.walk(mmlTrans, tree);
-        if (parseErrorListener.getParseErrorEntries().isEmpty())
-        {
-            try (Midi2WavRenderer midi2WavRenderer = new Midi2WavRenderer())
-            {
-                // sequence in seconds plus 4 a second buffer. Same as the MIDI2WaveRenderer class.
-                seconds = (int) (midi2WavRenderer.getSequenceInSeconds(mmlTrans.getSequence()) + 4);
-            } catch (ModMidiException e)
-            {
-                ModLogger.debug("ValidateMML Error: %s in %s", e, SheetMusicUtil.class.getSimpleName());
-                return ValidDuration.INVALID;
-            }
-        }
-        ModLogger.debug("ValidateMML: valid: %s, length: %d", parseErrorListener.getParseErrorEntries().isEmpty(), seconds);
-        return new ValidDuration(parseErrorListener.getParseErrorEntries().isEmpty(), seconds);
+
+        ModLogger.debug("ValidateMML: length: %d", seconds);
+        return new ValidDuration(seconds > 4, seconds);
     }
 
     public static String formatDuration(int seconds)

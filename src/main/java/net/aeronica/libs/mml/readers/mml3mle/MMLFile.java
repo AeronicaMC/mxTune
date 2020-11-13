@@ -31,12 +31,14 @@
 
 package net.aeronica.libs.mml.readers.mml3mle;
 
-import net.aeronica.libs.mml.core.MMLUtil;
+import net.aeronica.libs.mml.parser.MMLUtil;
 import net.aeronica.mods.mxtune.mxt.MXTuneFile;
 import net.aeronica.mods.mxtune.mxt.MXTunePart;
 import net.aeronica.mods.mxtune.mxt.MXTuneStaff;
 import net.aeronica.mods.mxtune.util.SoundFontProxyManager;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -56,6 +58,7 @@ import java.util.zip.CRC32;
  */
 public final class MMLFile
 {
+    private static final Logger LOGGER = LogManager.getLogger();
     private final MXTuneFile mxTuneFile = new MXTuneFile();
     private String encoding = "Shift_JIS";
 
@@ -70,7 +73,7 @@ public final class MMLFile
             return new MMLFile().parse(getFile(path));
         } catch (MMLParseException e)
         {
-            MMLUtil.MML_LOGGER.error(e);
+            LOGGER.error(e);
         }
         return null;
     }
@@ -101,12 +104,12 @@ public final class MMLFile
                 is = new FileInputStream(path.toFile());
             } catch (FileNotFoundException e)
             {
-                MMLUtil.MML_LOGGER.error(e.getLocalizedMessage());
+                LOGGER.error(e.getLocalizedMessage());
             }
             return is;
         }
         else
-            MMLUtil.MML_LOGGER.error("Path is null in AbstractMmlFileReader#getFile");
+            LOGGER.error("Path is null in AbstractMmlFileReader#getFile");
         return null;
     }
 
@@ -132,10 +135,10 @@ public final class MMLFile
             bz2istream.close();
         } catch (IOException e)
         {
-            MMLUtil.MML_LOGGER.error(e);
+            LOGGER.error(e);
         }
 
-        MMLUtil.MML_LOGGER.info("byte[] decode: dataLength {}, readLength {}", dataLength, readLength);
+        LOGGER.debug("byte[] decode: dataLength {}, readLength {}", dataLength, readLength);
         int i = 0;
         while (i < dataLength)
         {
@@ -146,7 +149,7 @@ public final class MMLFile
                     out.append(String.format("%02x ", data[i++]));
                 else break;
             }
-            MMLUtil.MML_LOGGER.info(out.toString());
+            LOGGER.debug(out.toString());
         }
         return data;
     }
@@ -179,14 +182,14 @@ public final class MMLFile
         for (Extension3mleTrack track : trackList)
         {
             int program = track.getInstrument() - 1; // 3MLEのInstruments番号は1がスタート.
-            MMLUtil.MML_LOGGER.info("Program: {}", program);
+            LOGGER.debug("Program: {}", program);
             String[] text = new String[MMLUtil.MAX_TRACKS];
             List<MXTuneStaff> staves = new ArrayList<>();
             for (int i = 0; i < track.getTrackCount(); i++)
             {
                 text[i] = mmlParts.pop();
                 staves.add(new MXTuneStaff(i, text[i]));
-                MMLUtil.MML_LOGGER.info("text[{}]= {}", i, text[i]);
+                LOGGER.debug("text[{}]= {}", i, text[i]);
             }
 
             String meta = String.format("%s, program %d", track.getTrackName(), program);
@@ -276,8 +279,8 @@ public final class MMLFile
         long skipped = istream.skip(37);
         int len = readLEIntValue(istream);
         long lenSkipped = istream.skip(len);
-        MMLUtil.MML_LOGGER.debug("parseHeader: skipping 37 bytes. Actual={}, OK={}. Skipping {} bytes to track data.", skipped, 37 == skipped, len);
-        MMLUtil.MML_LOGGER.debug("parseHeader: skipping {} bytes. Actual={}, OK={}", len, lenSkipped, len == lenSkipped);
+        LOGGER.debug("parseHeader: skipping 37 bytes. Actual={}, OK={}. Skipping {} bytes to track data.", skipped, 37 == skipped, len);
+        LOGGER.debug("parseHeader: skipping {} bytes. Actual={}, OK={}", len, lenSkipped, len == lenSkipped);
     }
 
     private void parseTrack(LinkedList<Extension3mleTrack> trackList, ByteArrayInputStream istream)
@@ -295,8 +298,8 @@ public final class MMLFile
         int group = istream.read();
         skips += istream.skip(13);
         String trackName = readString(istream);
-        MMLUtil.MML_LOGGER.debug("parseTrack: skips expected 32, skips actual {}, OK={}", skips, 32 == skips);
-        MMLUtil.MML_LOGGER.info("{} {} {}", trackNo, instrument, trackName);
+        LOGGER.debug("parseTrack: skips expected 32, skips actual {}, OK={}", skips, 32 == skips);
+        LOGGER.debug("{} {} {}", trackNo, instrument, trackName);
 
         Extension3mleTrack lastTrack = trackList.getLast();
         if ((lastTrack.getGroup() != group) || (lastTrack.getInstrument() != instrument) || (lastTrack.getPanpot() != panpot) || (lastTrack.isLimit()))
@@ -318,7 +321,7 @@ public final class MMLFile
             istream.read(b);
         } catch (IOException e)
         {
-            MMLUtil.MML_LOGGER.error(e);
+            LOGGER.error(e);
         }
         return ByteBuffer.wrap(b).order(ByteOrder.LITTLE_ENDIAN).getInt();
     }
@@ -330,8 +333,8 @@ public final class MMLFile
         int tickOffset = readLEIntValue(istream);
         skips += istream.skip(4);
         String name = readString(istream);
-        MMLUtil.MML_LOGGER.debug("parseMarker: skips expected 11, skips actual {}, OK={}", skips, 11 == skips);
-        MMLUtil.MML_LOGGER.info("Marker {}={}", name, tickOffset);
+        LOGGER.debug("parseMarker: skips expected 11, skips actual {}, OK={}", skips, 11 == skips);
+        LOGGER.debug("Marker {}={}", name, tickOffset);
     }
 
     private String readString(InputStream istream)
@@ -347,7 +350,7 @@ public final class MMLFile
             return new String(ostream.toByteArray(), encoding);
         } catch (IOException e)
         {
-            MMLUtil.MML_LOGGER.error(e);
+            LOGGER.error(e);
         }
         return "";
     }
@@ -362,11 +365,11 @@ public final class MMLFile
             List<Extension3mleTrack> trackList = mmlFile.parse3mleExtension(str);
             for (Extension3mleTrack track : trackList)
             {
-                MMLUtil.MML_LOGGER.info(track);
+                LOGGER.debug(track);
             }
         } catch (MMLParseException e)
         {
-            MMLUtil.MML_LOGGER.error(e);
+            LOGGER.error(e);
         }
     }
 }

@@ -1,9 +1,9 @@
-package net.aeronica.libs.mml.core;
+package net.aeronica.libs.mml.parser;
 
 /*
  * MML Object builder class
  */
-public class MObject
+public class MMLObject
 {
 
     private final Type type;
@@ -18,8 +18,12 @@ public class MObject
     private final int tempo;
     private final int minVolume;
     private final int maxVolume;
+    private final boolean sustain;
+    private final boolean tied;
+    private boolean doNoteOn = true;
+    private boolean doNoteOff = true;
     
-    public MObject(MObjectBuilder builder)
+    public MMLObject(Builder builder)
     {
         this.type = builder.type;
         this.longestPartTicks = builder.longestPartTicks;
@@ -33,6 +37,8 @@ public class MObject
         this.tempo = builder.tempo;
         this.minVolume = builder.minVolume;
         this.maxVolume = builder.maxVolume;
+        this.sustain = builder.sustain;
+        this.tied = builder.tied;
     }
 
     public Type getType() {return type;}
@@ -47,8 +53,14 @@ public class MObject
     public int getTempo() {return tempo;}
     public int getMinVolume() {return minVolume;}
     public int getMaxVolume() {return maxVolume;}
+    public boolean isTied() {return tied;}
+
+    public void setDoNoteOn(boolean state) {doNoteOn = state;}
+    public void setDoNoteOff(boolean state) {doNoteOff = state;}
+    public boolean doNoteOn() {return doNoteOn;}
+    public boolean doNoteOff() {return doNoteOff;}
     
-    public static class MObjectBuilder
+    public static class Builder
     {
         private final Type type;
         private long longestPartTicks;
@@ -62,77 +74,87 @@ public class MObject
         private int tempo;
         private int minVolume;
         private int maxVolume;
+        private boolean sustain;
+        private boolean tied;
         
-        public MObjectBuilder(Type type)
+        public Builder(Type type)
         {
             this.type = type;
         }        
-        public MObjectBuilder longestPartTicks(long longestPartTicks)
+        public Builder longestPartTicks(long longestPartTicks)
         {
             this.longestPartTicks = longestPartTicks;
             return this;
         }
-        public MObjectBuilder instrument(int instrument)
+        public Builder instrument(int instrument)
         {
             this.instrument = instrument;
             return this;
         }        
-        public MObjectBuilder startingTicks(long startingTicks)
+        public Builder startingTicks(long startingTicks)
         {
             this.startingTicks = startingTicks;
             return this;
         }
-        public MObjectBuilder cumulativeTicks(long cumulativeTicks)
+        public Builder cumulativeTicks(long cumulativeTicks)
         {
             this.cumulativeTicks = cumulativeTicks;
             return this;
         }
-        public MObjectBuilder text(String text)
+        public Builder text(String text)
         {
             this.text = text;
             return this;
         }
-        public MObjectBuilder midiNote(int midiNote)
+        public Builder midiNote(int midiNote)
         {
             this.midiNote = midiNote;
             return this;
         }        
-        public MObjectBuilder lengthTicks(long lengthTicks)
+        public Builder lengthTicks(long lengthTicks)
         {
             this.lengthTicks = lengthTicks;
             return this;
         }
-        public MObjectBuilder volume(int volume)
+        public Builder volume(int volume)
         {
             this.volume = volume;
             return this;
         }
-        public MObjectBuilder tempo(int tempo)
+        public Builder tempo(int tempo)
         {
             this.tempo = tempo;
             return this;
         }
-        public  MObjectBuilder minVolume(int minVolume)
+        public Builder minVolume(int minVolume)
         {
             this.minVolume = minVolume;
             return this;
         }
-        public  MObjectBuilder maxVolume(int maxVolume)
+        public Builder maxVolume(int maxVolume)
         {
             this.maxVolume = maxVolume;
             return this;
         }
-        public MObject build() {
-            MObject mObject = new MObject(this);
-            validateMObject(mObject);
-            return mObject;
+        public Builder sustain(boolean sustain)
+        {
+            this.sustain = sustain;
+            return this;
         }
-        public void validateMObject(MObject mObject)
+        public Builder tied(boolean tied)
+        {
+            this.tied = tied;
+            return this;
+        }
+        public MMLObject build() {
+            MMLObject mmlObj = new MMLObject(this);
+            validateMMLObject(mmlObj);
+            return mmlObj;
+        }
+        public void validateMMLObject(MMLObject mmlObj)
         {
             // basic validations
         }
     }
-    
-    public enum Type { INST_BEGIN, TEMPO, INST, PART, NOTE, REST, INST_END, DONE }
-    
+    public enum Type {INIT, TEMPO, SUSTAIN, INST, PART, NOTE, REST, STOP, DONE }
 }

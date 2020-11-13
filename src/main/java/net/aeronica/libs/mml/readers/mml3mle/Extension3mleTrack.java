@@ -16,7 +16,8 @@
 
 package net.aeronica.libs.mml.readers.mml3mle;
 
-import net.aeronica.libs.mml.core.MMLUtil;
+
+import net.aeronica.libs.mml.parser.MMLUtil;
 
 /**
  * "[3MLE EXTENSION]" Track

@@ -9,7 +9,7 @@ package net.aeronica.mods.mxtune.gui.mml;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import net.aeronica.libs.mml.core.MMLAllowedCharacters;
+import net.aeronica.libs.mml.parser.MMLAllowedCharacters;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;

@@ -18,7 +18,7 @@
 package net.aeronica.libs.mml.readers.ms2mml;
 
 import com.google.common.io.Files;
-import net.aeronica.libs.mml.core.MMLAllowedCharacters;
+import net.aeronica.libs.mml.parser.MMLAllowedCharacters;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -13,7 +13,8 @@
 
 package net.aeronica.libs.mml.readers.mml3mle;
 
-import net.aeronica.libs.mml.core.MMLUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -29,6 +30,7 @@ import java.util.List;
  */
 public final class SectionContents
 {
+    private static final Logger LOGGER = LogManager.getLogger();
     private final String name;
     private final StringBuilder buffer = new StringBuilder();
 
@@ -94,7 +96,7 @@ public final class SectionContents
                     }
                 });
         } catch (UnsupportedEncodingException e) {
-            MMLUtil.MML_LOGGER.error(e);
+            LOGGER.error(e);
         }
 
         return contentsList;
