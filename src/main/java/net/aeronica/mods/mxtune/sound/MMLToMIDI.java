@@ -205,7 +205,7 @@ public class MMLToMIDI
         if (mmo.doNoteOn())
             tracks[track].add(createNoteOnEvent(channel, smartClampMIDI(midiNote), mmo.getNoteVolume(), mmo.getStartingTicks() + ticksOffset));
         if (mmo.doNoteOff())
-            tracks[track].add(createNoteOffEvent(channel, smartClampMIDI(midiNote), mmo.getNoteVolume(), mmo.getStartingTicks() + mmo.getLengthTicks() + ticksOffset));
+            tracks[track].add(createNoteOffEvent(channel, smartClampMIDI(midiNote), mmo.getNoteVolume(), mmo.getStartingTicks() + mmo.getLengthTicks() + ticksOffset - 1));
     }
 
     private void addText(MMLObject mmo, Track[] tracks, int track, int channel, long ticksOffset) throws InvalidMidiDataException
