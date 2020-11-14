@@ -3,13 +3,11 @@ package net.aeronica.libs.mml.parser;
 import net.aeronica.libs.mml.util.DataByteBuffer;
 import net.aeronica.libs.mml.util.IndexBuffer;
 
-@SuppressWarnings("SwitchStatementWithTooFewBranches")
 public class MMLLexer
 {
     private int    position     = 0;
     private int    elementIndex = 0;
 
-    @SuppressWarnings("incomplete-switch")
     public void parse(DataByteBuffer buffer, IndexBuffer elementBuffer)
     {
         this.position = 0;
@@ -20,22 +18,22 @@ public class MMLLexer
             switch (buffer.data[position])
             {
                 case 'i':
-                case 'I': { setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_INSTRUMENT, this.position); } break;
+                case 'I': setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_INSTRUMENT, this.position); break;
                 case 'p':
-                case 'P': { setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_PERFORM, this.position); } break;
+                case 'P': setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_PERFORM, this.position); break;
                 case 's':
-                case 'S': { setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_SUSTAIN, this.position); } break;
+                case 'S': setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_SUSTAIN, this.position); break;
                 case 't':
-                case 'T': { setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_TEMPO, this.position); } break;
+                case 'T': setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_TEMPO, this.position); break;
                 case 'o':
-                case 'O': { setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_OCTAVE, this.position); } break;
+                case 'O': setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_OCTAVE, this.position); break;
                 case 'v':
-                case 'V': { setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_VOLUME, this.position); } break;
+                case 'V': setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_VOLUME, this.position); break;
                 case 'l':
-                case 'L': { setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_LENGTH, this.position); } break;
+                case 'L': setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_LENGTH, this.position); break;
 
-                case '>': { setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_OCTAVE_UP, this.position); } break;
-                case '<': { setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_OCTAVE_DOWN, this.position); } break;
+                case '>': setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_OCTAVE_UP, this.position); break;
+                case '<': setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_OCTAVE_DOWN, this.position); break;
 
                 case 'a':
                 case 'b':
@@ -50,21 +48,21 @@ public class MMLLexer
                 case 'D':
                 case 'E':
                 case 'F':
-                case 'G': { setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_NOTE, this.position); } break;
+                case 'G': setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_NOTE, this.position); break;
 
                 case '+':
-                case '#': { parseSharp(buffer, elementBuffer); elementIndex++; } break;
-                case '-': { parseFlat(buffer, elementBuffer); elementIndex++; } break;
+                case '#': parseSharp(buffer, elementBuffer); break;
+                case '-': parseFlat(buffer, elementBuffer); break;
 
                 case 'n':
-                case 'N': { setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_MIDI, this.position); } break;
+                case 'N': setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_MIDI, this.position); break;
 
-                case '.': { parseDot(buffer, elementBuffer); elementIndex++; } break;
+                case '.': parseDot(buffer, elementBuffer); break;
 
-                case '&': { parseTie(buffer, elementBuffer); elementIndex++; } break;
+                case '&': parseTie(buffer, elementBuffer); break;
 
                 case 'r':
-                case 'R': { setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_REST, this.position); } break;
+                case 'R': setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_REST, this.position); break;
 
                 case '0':
                 case '1':
@@ -75,11 +73,12 @@ public class MMLLexer
                 case '6':
                 case '7':
                 case '8':
-                case '9': { parseNumberToken(buffer, elementBuffer); elementIndex++; } break;
+                case '9': parseNumberToken(buffer, elementBuffer); break;
 
-                case 'M': { parseMMLBegin(buffer, elementBuffer); elementIndex++;  break;}
-                case ',': { parseChord(buffer, elementBuffer); elementIndex++;  break;}
-                case ';': { parseEnd(buffer, elementBuffer); elementIndex++;  break;}
+                case 'M': parseMMLBegin(buffer, elementBuffer); break;
+                case ',': parseChord(buffer, elementBuffer); break;
+                case ';': parseEnd(buffer, elementBuffer); break;
+                default: /* NOP -Ignore ALL other characters- */
             }
         }
         elementBuffer.count = this.elementIndex;
@@ -89,30 +88,24 @@ public class MMLLexer
     {
         int tempPos = this.position;
         tempPos++;
-        if (!(tempPos >= buffer.data.length))
-            if (buffer.data[tempPos] == 'M')
+        if (tempPos < buffer.data.length && buffer.data[tempPos] == 'M')
+        {
+            tempPos++;
+            if (tempPos < buffer.data.length && buffer.data[tempPos] == 'L')
             {
                 tempPos++;
-                if (!(tempPos >= buffer.data.length))
+                if (tempPos < buffer.data.length && buffer.data[tempPos] == '@')
                 {
-                    if (buffer.data[tempPos] == 'L')
+                    tempPos++;
+                    if (tempPos < buffer.data.length)
                     {
-                        tempPos++;
-                        if (!(tempPos >= buffer.data.length))
-                        {
-                            if (buffer.data[tempPos] == '@')
-                            {
-                                tempPos++;
-                                if (!(tempPos >= buffer.data.length))
-                                {
-                                    setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_BEGIN, this.position, tempPos - this.position);
-                                    this.position = tempPos - 1; // -1 because the outer for-loop adds 1 to the position too
-                                }
-                            }
-                        }
+                        setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_BEGIN, this.position, tempPos - this.position);
+                        this.position = tempPos - 1; // -1 because the outer for-loop adds 1 to the position too
                     }
                 }
             }
+        }
+        elementIndex++;
     }
 
     private void parseNumberToken(DataByteBuffer buffer, IndexBuffer elementBuffer) {
@@ -133,11 +126,12 @@ public class MMLLexer
                 case '8':
                 case '9': break;
 
-                default    :  { isEndOfNumberFound = true; }
+                default: isEndOfNumberFound = true;
             }
         }
         setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_NUMBER, this.position, tempPos - this.position);
         this.position = tempPos -1; // -1 because the outer for-loop adds 1 to the position too
+        elementIndex++;
     }
 
     private void parseSharp(DataByteBuffer buffer, IndexBuffer elementBuffer) {
@@ -155,6 +149,7 @@ public class MMLLexer
         }
         setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_SHARP, this.position, tempPos - this.position);
         this.position = tempPos -1; // -1 because the outer for-loop adds 1 to the position too
+        elementIndex++;
     }
 
     private void parseFlat(DataByteBuffer buffer, IndexBuffer elementBuffer) {
@@ -163,14 +158,14 @@ public class MMLLexer
         while(!isEndOfRunFound) {
             tempPos++;
             if (tempPos >= buffer.data.length) break;
-            switch(buffer.data[tempPos]){
-                case '-': break;
-
-                default    :  { isEndOfRunFound = true; }
+            if (buffer.data[tempPos] != '-')
+            {
+                isEndOfRunFound = true;
             }
         }
         setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_FLAT, this.position, tempPos - this.position);
         this.position = tempPos -1; // -1 because the outer for-loop adds 1 to the position too
+        elementIndex++;
     }
 
     private void parseDot(DataByteBuffer buffer, IndexBuffer elementBuffer) {
@@ -179,14 +174,14 @@ public class MMLLexer
         while(!isEndOfRunFound) {
             tempPos++;
             if (tempPos >= buffer.data.length) break;
-            switch(buffer.data[tempPos]){
-                case '.': break;
-
-                default    :  { isEndOfRunFound = true; }
+            if (buffer.data[tempPos] != '.')
+            {
+                isEndOfRunFound = true;
             }
         }
         setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_DOT, this.position, tempPos - this.position);
         this.position = tempPos -1; // -1 because the outer for-loop adds 1 to the position too
+        elementIndex++;
     }
 
     private void parseTie(DataByteBuffer buffer, IndexBuffer elementBuffer) {
@@ -195,14 +190,14 @@ public class MMLLexer
         while(!isEndOfRunFound) {
             tempPos++;
             if (tempPos >= buffer.data.length) break;
-            switch(buffer.data[tempPos]){
-                case '&': break;
-
-                default    :  { isEndOfRunFound = true; }
+            if (buffer.data[tempPos] != '&')
+            {
+                isEndOfRunFound = true;
             }
         }
         setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_TIE, this.position, tempPos - this.position);
         this.position = tempPos -1; // -1 because the outer for-loop adds 1 to the position too
+        elementIndex++;
     }
 
     private void parseChord(DataByteBuffer buffer, IndexBuffer elementBuffer) {
@@ -211,14 +206,14 @@ public class MMLLexer
         while(!isEndOfRunFound) {
             tempPos++;
             if (tempPos >= buffer.data.length) break;
-            switch(buffer.data[tempPos]){
-                case ',': break;
-
-                default    :  { isEndOfRunFound = true; }
+            if (buffer.data[tempPos] != ',')
+            {
+                isEndOfRunFound = true;
             }
         }
         setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_CHORD, this.position, tempPos - this.position);
         this.position = tempPos -1; // -1 because the outer for-loop adds 1 to the position too
+        elementIndex++;
     }
 
     private void parseEnd(DataByteBuffer buffer, IndexBuffer elementBuffer) {
@@ -227,14 +222,14 @@ public class MMLLexer
         while(!isEndOfRunFound) {
             tempPos++;
             if (tempPos >= buffer.data.length) break;
-            switch(buffer.data[tempPos]){
-                case ';': break;
-
-                default    :  { isEndOfRunFound = true; }
+            if (buffer.data[tempPos] != ';')
+            {
+                isEndOfRunFound = true;
             }
         }
         setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_END, this.position, tempPos - this.position);
         this.position = tempPos -1; // -1 because the outer for-loop adds 1 to the position too
+        elementIndex++;
     }
 
     private void setElementDataLength(IndexBuffer elementBuffer, int index, byte type, int position) {

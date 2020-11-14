@@ -4,6 +4,8 @@ package net.aeronica.libs.mml.parser;
  */
 public class ElementTypes
 {
+    private ElementTypes() { /* NOP */ }
+
     public static final byte MML_INSTRUMENT = 1;    // [iI]<0-99999> Instrument Command in packed preset format
     public static final byte MML_LENGTH = 2;        // [lL] Length Command
     public static final byte MML_OCTAVE = 3;        // [oO]<1-8> Octave Command
