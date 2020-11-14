@@ -33,7 +33,7 @@ import java.util.zip.ZipFile;
 
 public class TestMs2Mml
 {
-    private static Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public static String viewMs2Mml(InputStream is) throws JAXBException
     {

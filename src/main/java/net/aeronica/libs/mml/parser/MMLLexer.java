@@ -144,7 +144,7 @@ public class MMLLexer
                 case '+':
                 case '#': break;
 
-                default    :  { isEndOfRunFound = true; }
+                default: isEndOfRunFound = true;
             }
         }
         setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_SHARP, this.position, tempPos - this.position);
@@ -159,9 +159,7 @@ public class MMLLexer
             tempPos++;
             if (tempPos >= buffer.data.length) break;
             if (buffer.data[tempPos] != '-')
-            {
                 isEndOfRunFound = true;
-            }
         }
         setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_FLAT, this.position, tempPos - this.position);
         this.position = tempPos -1; // -1 because the outer for-loop adds 1 to the position too
@@ -175,9 +173,7 @@ public class MMLLexer
             tempPos++;
             if (tempPos >= buffer.data.length) break;
             if (buffer.data[tempPos] != '.')
-            {
                 isEndOfRunFound = true;
-            }
         }
         setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_DOT, this.position, tempPos - this.position);
         this.position = tempPos -1; // -1 because the outer for-loop adds 1 to the position too
@@ -191,9 +187,7 @@ public class MMLLexer
             tempPos++;
             if (tempPos >= buffer.data.length) break;
             if (buffer.data[tempPos] != '&')
-            {
                 isEndOfRunFound = true;
-            }
         }
         setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_TIE, this.position, tempPos - this.position);
         this.position = tempPos -1; // -1 because the outer for-loop adds 1 to the position too
@@ -207,9 +201,7 @@ public class MMLLexer
             tempPos++;
             if (tempPos >= buffer.data.length) break;
             if (buffer.data[tempPos] != ',')
-            {
                 isEndOfRunFound = true;
-            }
         }
         setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_CHORD, this.position, tempPos - this.position);
         this.position = tempPos -1; // -1 because the outer for-loop adds 1 to the position too
@@ -223,9 +215,7 @@ public class MMLLexer
             tempPos++;
             if (tempPos >= buffer.data.length) break;
             if (buffer.data[tempPos] != ';')
-            {
                 isEndOfRunFound = true;
-            }
         }
         setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_END, this.position, tempPos - this.position);
         this.position = tempPos -1; // -1 because the outer for-loop adds 1 to the position too

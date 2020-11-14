@@ -33,7 +33,7 @@ public class ObjectFactory {
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: net.aeronica.libs.mml.readers.ms2mml
      * 
      */
-    public ObjectFactory() {
+    public ObjectFactory() { /* NOP */
     }
 
     /**

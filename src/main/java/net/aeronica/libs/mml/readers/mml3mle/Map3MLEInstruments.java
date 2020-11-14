@@ -21,7 +21,9 @@ import com.google.common.collect.ImmutableMap;
 
 public class Map3MLEInstruments
 {
-    public static ImmutableMap<Integer, String> program2ID;
+    private static final ImmutableMap<Integer, String> program2ID;
+
+    private Map3MLEInstruments() { /* NOP */ }
 
     static
     {

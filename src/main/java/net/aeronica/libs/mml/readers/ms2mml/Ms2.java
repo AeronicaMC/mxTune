@@ -118,7 +118,7 @@ public class Ms2 {
      */
     public List<Ms2.Chord> getChord() {
         if (chord == null) {
-            chord = new ArrayList<Ms2.Chord>();
+            chord = new ArrayList<>();
         }
         return this.chord;
     }

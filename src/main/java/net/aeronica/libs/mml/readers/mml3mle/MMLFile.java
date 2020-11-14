@@ -140,6 +140,7 @@ public final class MMLFile
 
         LOGGER.debug("byte[] decode: dataLength {}, readLength {}", dataLength, readLength);
         int i = 0;
+        String line;
         while (i < dataLength)
         {
             StringBuilder out = new StringBuilder();
@@ -149,7 +150,8 @@ public final class MMLFile
                     out.append(String.format("%02x ", data[i++]));
                 else break;
             }
-            LOGGER.debug(out.toString());
+            line = out.toString();
+            LOGGER.debug(line);
         }
         return data;
     }

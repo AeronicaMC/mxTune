@@ -23,7 +23,7 @@ import java.util.Locale;
 
 public class MapMS2Instruments
 {
-    public static ImmutableMap<String, String> ms2name2ID;
+    private static final ImmutableMap<String, String> ms2name2ID;
     private MapMS2Instruments() {/* NOP */}
 
     static

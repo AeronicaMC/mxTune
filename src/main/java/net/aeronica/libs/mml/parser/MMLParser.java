@@ -77,31 +77,31 @@ public class MMLParser
                 case MML_PERFORM:
                 case MML_SUSTAIN:
                 case MML_TEMPO:
-                case MML_VOLUME: { doCommand(navigator); }
+                case MML_VOLUME: doCommand(navigator);
                 break;
-                case MML_LENGTH: { doLength(navigator); }
+                case MML_LENGTH: doLength(navigator);
                 break;
                 case MML_OCTAVE_UP:
-                case MML_OCTAVE_DOWN: { doOctaveUpDown(navigator); }
+                case MML_OCTAVE_DOWN: doOctaveUpDown(navigator);
                 break;
-                case MML_MIDI: { doMIDI(navigator); }
+                case MML_MIDI: doMIDI(navigator);
                 break;
-                case MML_NOTE: { doNote(navigator); }
+                case MML_NOTE: doNote(navigator);
                 break;
                 case MML_NUMBER:
                 case MML_FLAT:
                 case MML_SHARP:
-                case MML_DOT: { navigator.next(); }
+                case MML_DOT: navigator.next();
                 break;
-                case MML_TIE: { doTie(navigator); }
+                case MML_TIE: doTie(navigator);
                 break;
-                case MML_REST: { doRest(navigator); }
+                case MML_REST: doRest(navigator);
                 break;
-                case MML_BEGIN: { doBegin(navigator); }
+                case MML_BEGIN: doBegin(navigator);
                 break;
-                case MML_CHORD: { doChord(navigator); }
+                case MML_CHORD: doChord(navigator);
                 break;
-                case MML_END: { doEnd(navigator); }
+                case MML_END: doEnd(navigator);
                 break;
                 default: /* Because SonarCloud says I need a default: */
             }
