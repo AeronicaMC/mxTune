@@ -98,11 +98,14 @@ public class MMLToMIDI
             {
                 switch (mmo.getType())
                 {
-                    case SUSTAIN:
                     case INIT:
                     case REST:
                     case DONE:
                         addText(mmo, tracks, track, channel, ticksOffset);
+                        break;
+
+                    case SUSTAIN:
+                        setSustain(mmo, tracks, track, channel, ticksOffset);
                         break;
 
                     case TEMPO:
@@ -215,5 +218,11 @@ public class MMLToMIDI
         String text = String.format("{t=% 8d l=% 8d}[T:%02d C:%02d %s %s]{ %s }", mmo.getStartingTicks(),
                                     mmo.getLengthTicks(), track, channel, mmo.getType().name(), pitch, mmo.getText());
         tracks[0].add(createTextMetaEvent(text, mmo.getStartingTicks() + ticksOffset));
+    }
+
+    private void setSustain(MMLObject mmo, Track[] tracks, int track, int channel, long ticksOffset) throws InvalidMidiDataException
+    {
+        int sustain = mmo.doSustain() ? 127 : 0;
+        tracks[track].add(createControlChangeEvent(channel, 64, sustain, mmo.getStartingTicks() + ticksOffset));
     }
 }

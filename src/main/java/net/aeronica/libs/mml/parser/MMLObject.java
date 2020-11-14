@@ -59,6 +59,7 @@ public class MMLObject
     public void setDoNoteOff(boolean state) {doNoteOff = state;}
     public boolean doNoteOn() {return doNoteOn;}
     public boolean doNoteOff() {return doNoteOff;}
+    public boolean doSustain() {return  sustain;}
     
     public static class Builder
     {

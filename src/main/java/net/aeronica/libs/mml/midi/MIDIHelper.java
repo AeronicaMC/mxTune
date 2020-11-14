@@ -37,6 +37,13 @@ public class MIDIHelper
         /* NOP */
     }
 
+    public static MidiEvent createControlChangeEvent(int channel, int controller, int value, long tick) throws InvalidMidiDataException
+    {
+        ShortMessage msg = new ShortMessage();
+        msg.setMessage(ShortMessage.CONTROL_CHANGE, channel, controller & 0x7F, value & 0x7F);
+        return new MidiEvent(msg, tick);
+    }
+
     public static MidiEvent createProgramChangeEvent(int channel, int value, long tick) throws InvalidMidiDataException
     {
         ShortMessage msg = new ShortMessage();
