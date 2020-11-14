@@ -1,4 +1,4 @@
-XXXX-XX-XX mxtune-1.12.2-1.0.0-rc.1
+2020-11-14 mxtune-1.12.2-1.0.0-rc.1
 Changes:
  * Removed the ANTLR based MML Parser. The new parser does not generate errors for badly written MML.
    Because of this all of the parse error related text boxes have been removed from the MXT GUI. This
