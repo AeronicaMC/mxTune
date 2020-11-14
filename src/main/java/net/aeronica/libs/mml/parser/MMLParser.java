@@ -103,6 +103,7 @@ public class MMLParser
                 break;
                 case MML_END: { doEnd(navigator); }
                 break;
+                default: /* Because SonarCloud says I need a default: */
             }
         } while (navigator.hasNext());
 
@@ -116,6 +117,13 @@ public class MMLParser
         processTiedNotes();
     }
 
+    /**
+     * This is the second pass in tied note processing. The first pass identifies the NEXT notes in a tied run.
+     * The second pass starts at the end of the list and disables the noteOff and or noteOn message for
+     * each note in a tied run depending if it's the first, middle or last note(s) of the tie.
+     * <br><br/><p>
+     * i.e. first(noteOn), &GT middle(none) &LT, last(NoteOff)</p>
+     */
     private void processTiedNotes()
     {
         boolean lastTied = false;
@@ -130,25 +138,16 @@ public class MMLParser
                 {
                     lastTied = true;
                     mo.setDoNoteOn(false);
-                    mo.setDoNoteOff(true);
                 }
                 else if (mo.isTied() && lastTied) // Mid tie
                 {
-                    lastTied = true;
                     mo.setDoNoteOn(false);
                     mo.setDoNoteOff(false);
                 }
                 else if (!mo.isTied() && lastTied) // Begin tie
                 {
                     lastTied = false;
-                    mo.setDoNoteOn(true);
                     mo.setDoNoteOff(false);
-                }
-                else if (!mo.isTied() && !lastTied)
-                {
-                    lastTied = false;
-                    mo.setDoNoteOn(true);
-                    mo.setDoNoteOff(true);
                 }
             }
         }
