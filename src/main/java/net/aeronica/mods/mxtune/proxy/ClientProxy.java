@@ -39,7 +39,9 @@ import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.util.IThreadListener;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.MinecraftForge;
@@ -173,6 +175,11 @@ public class ClientProxy extends ServerProxy
 
     @Override
     public void spawnTimpaniParticle(World world, double x, double y, double z) {
-        Minecraft.getMinecraft().effectRenderer.addEffect(new EntityTimpaniFx(world, x, y, z, Items.BREAD, Items.BREAD.getMetadata(0)));
+        Item item;
+        if (world.getBiome(new BlockPos(x,y,z)).isSnowyBiome())
+            item = Items.SNOWBALL;
+        else
+            item = Items.COOKED_BEEF;
+            Minecraft.getMinecraft().effectRenderer.addEffect(new EntityTimpaniFx(world, x, y, z, item, item.getMetadata(0)));
     }
 }

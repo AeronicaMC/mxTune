@@ -2,7 +2,11 @@ XXXX-XX-XX mxtune-1.12.2-1.0.0-rc.1
 Changes:
  * Removed the ANTLR based MML Parser. The new parser does not generate errors for badly written MML.
    Because of this all of the parse error related text boxes have been removed from the MXT GUI. This
-   reduces the size of the final jar by about 1MB since the ANTLR runtime jar is no longer shadowed in.
+   reduces the size of the final jar by about 1MB since the ANTLR runtime jar is no longer used.
+ * MML: Enable the Maple Story 2 sustain command. 's1' to turn and or 's0' to turn off.
+ * Timpani of Doom: jump particle effect is now white in snowy biomes else brown.
+Fixes:
+ * Web links in the MXT GUI work again.
 
 ----
 2020-10-25 mxtune-1.12.2-0.8.0-beta.10
