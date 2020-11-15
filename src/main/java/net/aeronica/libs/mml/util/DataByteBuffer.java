@@ -35,10 +35,8 @@ public class DataByteBuffer
         this.length = data.length;
     }
 
-    public byte getByte(int index) throws ArrayIndexOutOfBoundsException
+    public byte getByte(int index)
     {
-        if (index > this.length-1 || index < 0)
-            throw new ArrayIndexOutOfBoundsException();
         return data[index];
     }
 
