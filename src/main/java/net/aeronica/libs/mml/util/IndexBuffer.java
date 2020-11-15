@@ -31,7 +31,7 @@ public class IndexBuffer
     private int[] length = null;
     private byte[] type = null; /* assuming there can be max 256 different token or element types (1 byte / type) */
 
-    public int count = 0;  // the number of tokens / elements in the IndexBuffer.
+    private int count = 0;  // the number of tokens / elements in the IndexBuffer.
 
     private IndexBuffer()
     {

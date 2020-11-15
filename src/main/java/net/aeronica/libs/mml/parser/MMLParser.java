@@ -242,6 +242,7 @@ public class MMLParser
                     case MML_VOLUME:
                         partState.setVolume(value);
                         break;
+                    default: /* NOP */
                 }
             }
         }

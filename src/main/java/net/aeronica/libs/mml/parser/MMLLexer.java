@@ -106,7 +106,7 @@ public class MMLLexer
                 default: /* NOP -Ignore ALL other characters- */
             }
         }
-        elementBuffer.count = this.elementIndex;
+        elementBuffer.setCount(this.elementIndex);
     }
 
     private void parseMMLBegin(DataByteBuffer buffer, IndexBuffer elementBuffer)

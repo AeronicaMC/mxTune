@@ -45,7 +45,7 @@ public class MMLNavigator
 
     public boolean hasNext()
     {
-        return this.elementIndex < this.elementBuffer.count;
+        return this.elementIndex < this.elementBuffer.getCount();
     }
 
     public void next()
