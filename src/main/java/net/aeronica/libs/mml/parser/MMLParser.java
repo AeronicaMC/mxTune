@@ -26,6 +26,7 @@ package net.aeronica.libs.mml.parser;
 import net.aeronica.libs.mml.util.DataByteBuffer;
 import net.aeronica.libs.mml.util.IndexBuffer;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,10 +59,8 @@ public class MMLParser
 
     private void parse()
     {
-        DataByteBuffer dataBuffer = new DataByteBuffer();
-        dataBuffer.data = mmlString.getBytes();
-        dataBuffer.length = dataBuffer.data.length;
-        IndexBuffer elementBuffer = new IndexBuffer(dataBuffer.data.length, true);
+        DataByteBuffer dataBuffer = new DataByteBuffer(mmlString.getBytes(StandardCharsets.US_ASCII));
+        IndexBuffer elementBuffer = new IndexBuffer(dataBuffer.getLength(), true);
 
         MMLLexer parser = new MMLLexer();
         parser.parse(dataBuffer, elementBuffer);

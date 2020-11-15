@@ -1,3 +1,6 @@
+YYYY-MM-DD mxtune-1.12.2-1.0.0-rc.x
+
+----
 2020-11-14 mxtune-1.12.2-1.0.0-rc.1
 Changes:
  * Removed the ANTLR based MML Parser. The new parser does not generate errors for badly written MML.

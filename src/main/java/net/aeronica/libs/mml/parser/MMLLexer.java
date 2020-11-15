@@ -1,3 +1,26 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2020 Paul Boese a.k.a. Aeronica
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package net.aeronica.libs.mml.parser;
 
 import net.aeronica.libs.mml.util.DataByteBuffer;
@@ -5,17 +28,19 @@ import net.aeronica.libs.mml.util.IndexBuffer;
 
 public class MMLLexer
 {
-    private int    position     = 0;
-    private int    elementIndex = 0;
+    private int position = 0;
+    private int elementIndex = 0;
+
+    public MMLLexer() { /* NOP */ }
 
     public void parse(DataByteBuffer buffer, IndexBuffer elementBuffer)
     {
         this.position = 0;
         this.elementIndex = 0;
 
-        for(; position < buffer.length; position++)
+        for(; position < buffer.getLength(); position++)
         {
-            switch (buffer.data[position])
+            switch (buffer.getByte(position))
             {
                 case 'i':
                 case 'I': setElementDataLength(elementBuffer, elementIndex++, ElementTypes.MML_INSTRUMENT, this.position); break;
@@ -88,16 +113,16 @@ public class MMLLexer
     {
         int tempPos = this.position;
         tempPos++;
-        if (tempPos < buffer.data.length && buffer.data[tempPos] == 'M')
+        if (tempPos < buffer.getLength() && buffer.getByte(tempPos) == 'M')
         {
             tempPos++;
-            if (tempPos < buffer.data.length && buffer.data[tempPos] == 'L')
+            if (tempPos < buffer.getLength() && buffer.getByte(tempPos) == 'L')
             {
                 tempPos++;
-                if (tempPos < buffer.data.length && buffer.data[tempPos] == '@')
+                if (tempPos < buffer.getLength() && buffer.getByte(tempPos) == '@')
                 {
                     tempPos++;
-                    if (tempPos < buffer.data.length)
+                    if (tempPos < buffer.getLength())
                     {
                         setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_BEGIN, this.position, tempPos - this.position);
                         this.position = tempPos - 1; // -1 because the outer for-loop adds 1 to the position too
@@ -113,8 +138,8 @@ public class MMLLexer
         boolean isEndOfNumberFound = false;
         while(!isEndOfNumberFound) {
             tempPos++;
-            if (tempPos >= buffer.data.length) break;
-            switch(buffer.data[tempPos]){
+            if (tempPos >= buffer.getLength()) break;
+            switch(buffer.getByte(tempPos)){
                 case '0':
                 case '1':
                 case '2':
@@ -139,8 +164,8 @@ public class MMLLexer
         boolean isEndOfRunFound = false;
         while(!isEndOfRunFound) {
             tempPos++;
-            if (tempPos >= buffer.data.length) break;
-            switch(buffer.data[tempPos]){
+            if (tempPos >= buffer.getLength()) break;
+            switch(buffer.getByte(tempPos)){
                 case '+':
                 case '#': break;
 
@@ -157,8 +182,8 @@ public class MMLLexer
         boolean isEndOfRunFound = false;
         while(!isEndOfRunFound) {
             tempPos++;
-            if (tempPos >= buffer.data.length) break;
-            if (buffer.data[tempPos] != '-')
+            if (tempPos >= buffer.getLength()) break;
+            if (buffer.getByte(tempPos) != '-')
                 isEndOfRunFound = true;
         }
         setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_FLAT, this.position, tempPos - this.position);
@@ -171,8 +196,8 @@ public class MMLLexer
         boolean isEndOfRunFound = false;
         while(!isEndOfRunFound) {
             tempPos++;
-            if (tempPos >= buffer.data.length) break;
-            if (buffer.data[tempPos] != '.')
+            if (tempPos >= buffer.getLength()) break;
+            if (buffer.getByte(tempPos) != '.')
                 isEndOfRunFound = true;
         }
         setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_DOT, this.position, tempPos - this.position);
@@ -185,8 +210,8 @@ public class MMLLexer
         boolean isEndOfRunFound = false;
         while(!isEndOfRunFound) {
             tempPos++;
-            if (tempPos >= buffer.data.length) break;
-            if (buffer.data[tempPos] != '&')
+            if (tempPos >= buffer.getLength()) break;
+            if (buffer.getByte(tempPos) != '&')
                 isEndOfRunFound = true;
         }
         setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_TIE, this.position, tempPos - this.position);
@@ -199,8 +224,8 @@ public class MMLLexer
         boolean isEndOfRunFound = false;
         while(!isEndOfRunFound) {
             tempPos++;
-            if (tempPos >= buffer.data.length) break;
-            if (buffer.data[tempPos] != ',')
+            if (tempPos >= buffer.getLength()) break;
+            if (buffer.getByte(tempPos) != ',')
                 isEndOfRunFound = true;
         }
         setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_CHORD, this.position, tempPos - this.position);
@@ -213,8 +238,8 @@ public class MMLLexer
         boolean isEndOfRunFound = false;
         while(!isEndOfRunFound) {
             tempPos++;
-            if (tempPos >= buffer.data.length) break;
-            if (buffer.data[tempPos] != ';')
+            if (tempPos >= buffer.getLength()) break;
+            if (buffer.getByte(tempPos) != ';')
                 isEndOfRunFound = true;
         }
         setElementData(elementBuffer, this.elementIndex, ElementTypes.MML_END, this.position, tempPos - this.position);
@@ -223,14 +248,14 @@ public class MMLLexer
     }
 
     private void setElementDataLength(IndexBuffer elementBuffer, int index, byte type, int position) {
-        elementBuffer.type    [index] = type;
-        elementBuffer.position[index] = position;
-        elementBuffer.length  [index] = 1;
+        elementBuffer.setType(index, type);
+        elementBuffer.setPosition(index, position);
+        elementBuffer.setLength(index, 1);
     }
 
     private void setElementData(IndexBuffer elementBuffer, int index, byte type, int position, int length) {
-        elementBuffer.type    [index] = type;
-        elementBuffer.position[index] = position;
-        elementBuffer.length  [index] = length;
+        elementBuffer.setType(index, type);
+        elementBuffer.setPosition(index, position);
+        elementBuffer.setLength(index, length);
     }
 }

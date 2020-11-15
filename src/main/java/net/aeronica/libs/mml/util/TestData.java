@@ -41,9 +41,9 @@ public enum TestData
 	;
 
 	private static final Logger LOGGER = LogManager.getLogger();
-	private int index;
-	private String title;
-	private String mml;
+	private final int index;
+	private final String title;
+	private final String mml;
 
 	TestData(int index, String title, String mml) {
 		this.index = index;
