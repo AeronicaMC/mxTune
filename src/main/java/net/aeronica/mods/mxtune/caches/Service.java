@@ -26,6 +26,8 @@
 
 package net.aeronica.mods.mxtune.caches;
 
+import net.aeronica.mods.mxtune.util.MXTuneException;
+
 /**
  * Interface definition for services.
  */
@@ -33,7 +35,7 @@ public interface Service {
     /**
      * Starts the service. This method blocks until the service has completely started.
      */
-    void start() throws Exception;
+    void start() throws MXTuneException;
 
     /**
      * Stops the service. This method blocks until the service has completely shut down.
