@@ -60,6 +60,7 @@ public class MMLToMIDI
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final int TICKS_OFFSET = 10;
+    private static final Offset OFFSET = new Offset();
 
     private Sequence sequence;
     private final Set<Integer> presets = new HashSet<>();
@@ -72,18 +73,15 @@ public class MMLToMIDI
 
     public Sequence getSequence() {return sequence;}
     
-    @SuppressWarnings("unused")
     public List<Integer> getPresets()
     {
         return new ArrayList<>(presets);
     }
-    
+
     public void processMObjects(List<MMLObject> mmlObjects)
     {
         channel = 0;
         track = 1;
-        long ticksOffset = TICKS_OFFSET;
-        int currentTempo;
 
         try
         {
@@ -101,37 +99,38 @@ public class MMLToMIDI
                     case INIT:
                     case REST:
                     case DONE:
-                        addText(mmo, tracks, track, channel, ticksOffset);
+                        addText(mmo, tracks, track, channel);
                         break;
 
                     case SUSTAIN:
-                        setSustain(mmo, tracks, track, channel, ticksOffset);
+                        setSustain(mmo, tracks, track, channel);
+                        addText(mmo, tracks, track, channel);
                         break;
 
                     case TEMPO:
-                        currentTempo = mmo.getTempo();
-                        tracks[0].add(createTempoMetaEvent(currentTempo, mmo.getStartingTicks() + ticksOffset));
+                        setTempo(mmo, tracks);
+                        addText(mmo, tracks, track, channel);
                         break;
 
                     case INST:
-                        addInstrument(mmo, tracks[track], channel, ticksOffset);
-                        addText(mmo, tracks, track, channel, ticksOffset);
+                        addInstrument(mmo, tracks, track, channel);
+                        addText(mmo, tracks, track, channel);
                         break;
 
                     case PART:
                         nextTrack();
-                        addText(mmo, tracks, track, channel, ticksOffset);
+                        addText(mmo, tracks, track, channel);
                         break;
 
                     case NOTE:
-                        addNote(mmo, tracks, track, channel, ticksOffset);
-                        addText(mmo, tracks, track, channel, ticksOffset);
+                        addNote(mmo, tracks, track, channel);
+                        addText(mmo, tracks, track, channel);
                         break;
 
                     case STOP:
                         nextTrack();
                         nextChannel();
-                        addText(mmo, tracks, track, channel, ticksOffset);
+                        addText(mmo, tracks, track, channel);
                         break;
 
                     default:
@@ -156,7 +155,7 @@ public class MMLToMIDI
         if (channel > 15) channel = 15;
     }
 
-    private void addInstrument(MMLObject mmo, Track track, int ch, long ticksOffset) throws InvalidMidiDataException
+    private void addInstrument(MMLObject mmo, Track[] tracks, int track, int ch) throws InvalidMidiDataException
     {
         Patch preset = packedPreset2Patch(SoundFontProxyManager.getPackedPreset(mmo.getInstrument()));
         updateCurrentSoundFontProxy(mmo.getInstrument());
@@ -173,9 +172,10 @@ public class MMLToMIDI
             /* Convert the preset bank to the Bank Select bank */
             bank = bank << 7;
         }
-        track.add(createBankSelectEventMSB(ch, bank, mmo.getStartingTicks() + ticksOffset-2L));
-        track.add(createBankSelectEventLSB(ch, bank, mmo.getStartingTicks() + ticksOffset-1L));
-        track.add(createProgramChangeEvent(ch, programPreset, mmo.getStartingTicks() + ticksOffset));
+        long startingTicks = OFFSET.apply(mmo.getStartingTicks());
+        tracks[track].add(createBankSelectEventMSB(ch, bank, startingTicks-2L));
+        tracks[track].add(createBankSelectEventLSB(ch, bank, startingTicks-1L));
+        tracks[track].add(createProgramChangeEvent(ch, programPreset, startingTicks));
         presets.add(mmo.getInstrument());
     }
 
@@ -202,27 +202,37 @@ public class MMLToMIDI
             return midiNote;
     }
 
-    private void addNote(MMLObject mmo, Track[] tracks, int track, int channel, long ticksOffset) throws InvalidMidiDataException
+    private void addNote(MMLObject mmo, Track[] tracks, int track, int channel) throws InvalidMidiDataException
     {
         int midiNote = transformNote(mmo.getMidiNote());
         if (mmo.doNoteOn())
-            tracks[track].add(createNoteOnEvent(channel, smartClampMIDI(midiNote), mmo.getNoteVolume(), mmo.getStartingTicks() + ticksOffset));
+            tracks[track].add(createNoteOnEvent(channel, smartClampMIDI(midiNote), mmo.getNoteVolume(), OFFSET.apply(mmo.getStartingTicks())));
         if (mmo.doNoteOff())
-            tracks[track].add(createNoteOffEvent(channel, smartClampMIDI(midiNote), mmo.getNoteVolume(), mmo.getStartingTicks() + mmo.getLengthTicks() + ticksOffset - 1));
+            tracks[track].add(createNoteOffEvent(channel, smartClampMIDI(midiNote), mmo.getNoteVolume(), OFFSET.apply(mmo.getStartingTicks() + mmo.getLengthTicks() - 1)));
     }
 
-    private void addText(MMLObject mmo, Track[] tracks, int track, int channel, long ticksOffset) throws InvalidMidiDataException
+    private void addText(MMLObject mmo, Track[] tracks, int track, int channel) throws InvalidMidiDataException
     {
         String onOff = String.format("%s%s", mmo.doNoteOn() ? "^" : "-", mmo.doNoteOff() ? "v" : "-");
         String pitch = mmo.getType() == MMLObject.Type.NOTE ? String.format("%s(%03d)", onOff, mmo.getMidiNote()) : "--(---)";
         String text = String.format("{t=% 8d l=% 8d}[T:%02d C:%02d %s %s]{ %s }", mmo.getStartingTicks(),
                                     mmo.getLengthTicks(), track, channel, mmo.getType().name(), pitch, mmo.getText());
-        tracks[0].add(createTextMetaEvent(text, mmo.getStartingTicks() + ticksOffset));
+        tracks[0].add(createTextMetaEvent(text, OFFSET.apply(mmo.getStartingTicks())));
     }
 
-    private void setSustain(MMLObject mmo, Track[] tracks, int track, int channel, long ticksOffset) throws InvalidMidiDataException
+    private void setTempo(MMLObject mmo, Track[] tracks) throws InvalidMidiDataException
+    {
+        tracks[0].add(createTempoMetaEvent(mmo.getTempo(), OFFSET.apply(mmo.getStartingTicks())));
+    }
+
+    private void setSustain(MMLObject mmo, Track[] tracks, int track, int channel) throws InvalidMidiDataException
     {
         int sustain = mmo.doSustain() ? 127 : 0;
-        tracks[track].add(createControlChangeEvent(channel, 64, sustain, mmo.getStartingTicks() + ticksOffset));
+        tracks[track].add(createControlChangeEvent(channel, 64, sustain, OFFSET.apply(mmo.getStartingTicks())));
+    }
+
+    private static class Offset
+    {
+        long apply(long ticks) { return ticks + TICKS_OFFSET; }
     }
 }
