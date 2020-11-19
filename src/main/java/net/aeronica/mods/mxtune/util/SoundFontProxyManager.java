@@ -85,7 +85,7 @@ public class SoundFontProxyManager
             }
         } catch (Exception e)
         {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
             throw new MXTuneRuntimeException(e);
         }
         LOGGER.debug("Loaded {} records from {}", soundFontProxyMapByIndex.size(), RESOURCE);
