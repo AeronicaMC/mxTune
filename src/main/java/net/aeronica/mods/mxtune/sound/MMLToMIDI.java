@@ -52,6 +52,7 @@ import javax.sound.midi.Patch;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Track;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static net.aeronica.libs.mml.midi.MIDIHelper.*;
 import static net.aeronica.libs.mml.parser.MMLUtil.*;
@@ -60,7 +61,7 @@ public class MMLToMIDI
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final int TICKS_OFFSET = 10;
-    private static final Offset OFFSET = new Offset();
+    private static final Offset OFFSET = new Offset(TICKS_OFFSET);
 
     private Sequence sequence;
     private final Set<Integer> presets = new HashSet<>();
@@ -208,7 +209,7 @@ public class MMLToMIDI
         if (mmo.doNoteOn())
             tracks[track].add(createNoteOnEvent(channel, smartClampMIDI(midiNote), mmo.getNoteVolume(), OFFSET.apply(mmo.getStartingTicks())));
         if (mmo.doNoteOff())
-            tracks[track].add(createNoteOffEvent(channel, smartClampMIDI(midiNote), mmo.getNoteVolume(), OFFSET.apply(mmo.getStartingTicks() + mmo.getLengthTicks() - 1)));
+            tracks[track].add(createNoteOffEvent(channel, smartClampMIDI(midiNote), mmo.getNoteVolume(), OFFSET.apply(mmo.getStartingTicks(), mmo.getLengthTicks(), -1L)));
     }
 
     private void addText(MMLObject mmo, Track[] tracks, int track, int channel) throws InvalidMidiDataException
@@ -233,6 +234,20 @@ public class MMLToMIDI
 
     private static class Offset
     {
-        long apply(long ticks) { return ticks + TICKS_OFFSET; }
+        private final long offset;
+
+        public Offset(long offset) { this.offset = offset; }
+
+        /**
+         * Sum ticks and apply an offset
+         * @param ticks vararg list of longs
+         * @return sum of arguments plus an offset
+         */
+        long apply(Long... ticks)
+        {
+            AtomicReference<Long> value = new AtomicReference<>(0L);
+            Arrays.asList(ticks).forEach(p-> value.updateAndGet(v -> v + p));
+            return value.get() + offset;
+        }
     }
 }
