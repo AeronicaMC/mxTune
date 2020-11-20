@@ -60,8 +60,8 @@ import static net.aeronica.libs.mml.parser.MMLUtil.*;
 public class MMLToMIDI
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final int TICKS_OFFSET = 10;
-    private static final Offset OFFSET = new Offset(TICKS_OFFSET);
+    private static final int OFFSET = 10;
+    private static final TicksOffset TICKS_OFFSET = new TicksOffset(OFFSET);
 
     private Sequence sequence;
     private final Set<Integer> presets = new HashSet<>();
@@ -173,7 +173,7 @@ public class MMLToMIDI
             /* Convert the preset bank to the Bank Select bank */
             bank = bank << 7;
         }
-        long startingTicks = OFFSET.apply(mmo.getStartingTicks());
+        long startingTicks = TICKS_OFFSET.apply(mmo.getStartingTicks());
         tracks[track].add(createBankSelectEventMSB(ch, bank, startingTicks-2L));
         tracks[track].add(createBankSelectEventLSB(ch, bank, startingTicks-1L));
         tracks[track].add(createProgramChangeEvent(ch, programPreset, startingTicks));
@@ -207,9 +207,9 @@ public class MMLToMIDI
     {
         int midiNote = transformNote(mmo.getMidiNote());
         if (mmo.doNoteOn())
-            tracks[track].add(createNoteOnEvent(channel, smartClampMIDI(midiNote), mmo.getNoteVolume(), OFFSET.apply(mmo.getStartingTicks())));
+            tracks[track].add(createNoteOnEvent(channel, smartClampMIDI(midiNote), mmo.getNoteVolume(), TICKS_OFFSET.apply(mmo.getStartingTicks())));
         if (mmo.doNoteOff())
-            tracks[track].add(createNoteOffEvent(channel, smartClampMIDI(midiNote), mmo.getNoteVolume(), OFFSET.apply(mmo.getStartingTicks(), mmo.getLengthTicks(), -1L)));
+            tracks[track].add(createNoteOffEvent(channel, smartClampMIDI(midiNote), mmo.getNoteVolume(), TICKS_OFFSET.apply(mmo.getStartingTicks(), mmo.getLengthTicks(), -1L)));
     }
 
     private void addText(MMLObject mmo, Track[] tracks, int track, int channel) throws InvalidMidiDataException
@@ -218,25 +218,25 @@ public class MMLToMIDI
         String pitch = mmo.getType() == MMLObject.Type.NOTE ? String.format("%s(%03d)", onOff, mmo.getMidiNote()) : "--(---)";
         String text = String.format("{t=% 8d l=% 8d}[T:%02d C:%02d %s %s]{ %s }", mmo.getStartingTicks(),
                                     mmo.getLengthTicks(), track, channel, mmo.getType().name(), pitch, mmo.getText());
-        tracks[0].add(createTextMetaEvent(text, OFFSET.apply(mmo.getStartingTicks())));
+        tracks[0].add(createTextMetaEvent(text, TICKS_OFFSET.apply(mmo.getStartingTicks())));
     }
 
     private void setTempo(MMLObject mmo, Track[] tracks) throws InvalidMidiDataException
     {
-        tracks[0].add(createTempoMetaEvent(mmo.getTempo(), OFFSET.apply(mmo.getStartingTicks())));
+        tracks[0].add(createTempoMetaEvent(mmo.getTempo(), TICKS_OFFSET.apply(mmo.getStartingTicks())));
     }
 
     private void setSustain(MMLObject mmo, Track[] tracks, int track, int channel) throws InvalidMidiDataException
     {
         int sustain = mmo.doSustain() ? 127 : 0;
-        tracks[track].add(createControlChangeEvent(channel, 64, sustain, OFFSET.apply(mmo.getStartingTicks())));
+        tracks[track].add(createControlChangeEvent(channel, 64, sustain, TICKS_OFFSET.apply(mmo.getStartingTicks())));
     }
 
-    private static class Offset
+    private static class TicksOffset
     {
         private final long offset;
 
-        public Offset(long offset) { this.offset = offset; }
+        public TicksOffset(long offset) { this.offset = offset; }
 
         /**
          * Sum ticks and apply an offset
