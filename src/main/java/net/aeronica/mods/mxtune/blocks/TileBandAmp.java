@@ -41,6 +41,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType.INVALID;
 import static net.aeronica.mods.mxtune.util.SheetMusicUtil.KEY_DURATION;
 
 public class TileBandAmp extends TileInstrument implements IModLockableContainer, IMusicPlayer
@@ -53,8 +54,8 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     private static final String KEY_RIGHT_RS_OUTPUT_ENABLED = "rightRedstoneOutputEnabled";
     private static final String KEY_UPDATE_COUNT = "updateCount";
     private boolean previousInputPowerState;
-    private Integer playID;
-    private Integer lastPlayID;
+    private int playID;
+    private int lastPlayID;
     private LockCode code = LockCode.EMPTY_CODE;
     private OwnerUUID ownerUUID = OwnerUUID.EMPTY_UUID;
     private SoundRange soundRange = SoundRange.NORMAL;
@@ -72,19 +73,19 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
     {
         this.inventory =  new InstrumentStackHandler(MAX_SLOTS);
         this.facing = facing;
-        this.playID = -1;
+        this.playID = INVALID;
     }
 
     @Override
     public void onLoad()
     {
         clearLastPlayID();
-        setPlayID(-1);
+        setPlayID(INVALID);
     }
 
-    public Integer getPlayID() { return playID; }
+    public int getPlayID() { return playID; }
 
-    public void setPlayID(@Nullable Integer playID)
+    public void setPlayID(int playID)
     {
         this.playID = playID;
         if (isPlaying()) this.lastPlayID = this.playID;
@@ -92,9 +93,9 @@ public class TileBandAmp extends TileInstrument implements IModLockableContainer
 
     boolean lastPlayIDSuccess() { return this.lastPlayID > 0; }
 
-    void clearLastPlayID() { this.lastPlayID = -1; }
+    void clearLastPlayID() { this.lastPlayID = INVALID; }
 
-    private boolean isPlaying() { return (this.playID != null) && (this.playID > 0); }
+    private boolean isPlaying() { return this.playID > 0; }
 
     @Override
     public void readFromNBT(NBTTagCompound tag)

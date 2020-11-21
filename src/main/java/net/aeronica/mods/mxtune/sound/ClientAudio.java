@@ -83,6 +83,7 @@ import paulscode.sound.SoundSystemConfig;
 import paulscode.sound.SoundSystemException;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.sound.sampled.AudioFormat;
 import java.nio.IntBuffer;
 import java.util.*;
@@ -95,7 +96,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
 {
     INSTANCE;
     public static final Object THREAD_SYNC = new Object();
-    private static Minecraft mc = Minecraft.getMinecraft();
+    private static final Minecraft mc = Minecraft.getMinecraft();
     private static SoundHandler handler;
     private static SoundSystem sndSystem;
     private static MusicTicker musicTicker;
@@ -106,16 +107,16 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
     /* PCM Signed Stereo little endian */
     private static final AudioFormat audioFormatStereo = new AudioFormat(48000, 16, 2, true, false);
     /* Used to track which player/groups queued up music to be played by PlayID */
-    private static Queue<Integer> playIDQueue01 = new ConcurrentLinkedQueue<>(); // Polled in ClientAudio#PlaySoundEvent
-    private static Queue<Integer> playIDQueue02 = new ConcurrentLinkedQueue<>(); // Polled in CodecPCM
-    private static Queue<Integer> playIDQueue03 = new ConcurrentLinkedQueue<>(); // Polled in ClientAudio#playStreamingSourceEvent
+    private static final Queue<Integer> playIDQueue01 = new ConcurrentLinkedQueue<>(); // Polled in ClientAudio#PlaySoundEvent
+    private static final Queue<Integer> playIDQueue02 = new ConcurrentLinkedQueue<>(); // Polled in CodecPCM
+    private static final Queue<Integer> playIDQueue03 = new ConcurrentLinkedQueue<>(); // Polled in ClientAudio#playStreamingSourceEvent
     private static final Map<Integer, AudioData> playIDAudioData = new ConcurrentHashMap<>();
 
     private static ExecutorService executorService = null;
     private static ThreadFactory threadFactory = null;
 
     private static int counter = 0;
-    private static Queue<Integer> delayedAudioDataRemovalQueue = new ConcurrentLinkedDeque<>();
+    private static final Queue<Integer> delayedAudioDataRemovalQueue = new ConcurrentLinkedDeque<>();
 
     private static boolean vanillaMusicPaused = false;
 
@@ -144,27 +145,36 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
     {
         WAITING, READY, ERROR, DONE
     }
-    
+
+    /*
+     * The net.aeronica.mods.mxtune.sound package is the only place where a PlayID can be null.
+     * This is due mostly to the Queue semantics where if the PlayID does not exist a null is returned.
+     */
+
     private static synchronized void addPlayIDQueue(int playID)
     {
         if (playIDQueue01.add(playID) && playIDQueue02.add(playID)) {playIDQueue03.add(playID);}
     }
-    
+
+    @Nullable
     private static Integer pollPlayIDQueue01()
     {
         return playIDQueue01.poll();
     }
 
+    @Nullable
     static Integer pollPlayIDQueue02()
     {
         return playIDQueue02.poll();
     }
 
+    @Nullable
     private static Integer pollPlayIDQueue03()
     {
         return playIDQueue03.poll();
     }
-    
+
+    @Nullable
     private static Integer peekPlayIDQueue03()
     {
         return playIDQueue03.peek();
@@ -192,6 +202,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
             audioData.setISound(iSound);
     }
 
+    @Nullable
     private static BlockPos getBlockPos(Integer playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
@@ -203,13 +214,13 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         AudioData audioData = playIDAudioData.get(playID);
         return audioData != null ? audioData.getSoundRange() :  SoundRange.NORMAL;
     }
-    
+
     static boolean hasPlayID(Integer playID)
     {
-        return (!playIDAudioData.isEmpty() && playID != null) && playIDAudioData.containsKey(playID);
+        return (!playIDAudioData.isEmpty() && playID != PlayIdSupplier.PlayType.INVALID) && playIDAudioData.containsKey(playID);
     }
     
-    private static boolean isClientPlayer(Integer playID)
+    private static boolean isClientPlayer(int playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
         return audioData != null && audioData.isClientPlayer();
@@ -220,7 +231,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
      * @param playID unique submission identifier.
      * @param musicText MML string
      */
-    public static void play(Integer playID, String musicText)
+    public static void play(int playID, String musicText)
     {
         play(playID, null, musicText, GroupHelper.isClientPlaying(playID), SoundRange.NORMAL, null);
     }

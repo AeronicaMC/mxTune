@@ -27,7 +27,7 @@ public class MovingMusic extends MxSound
      * Implements ISound<br></br>
      * For musical machines carried or used in the world
      */
-    MovingMusic(Integer playID)
+    MovingMusic(int playID)
     {
         super(playID, SoundCategory.PLAYERS);
         Vec3d pos = GroupHelper.getMedianPos(playID);

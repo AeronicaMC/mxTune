@@ -55,6 +55,7 @@ import javax.annotation.Nullable;
 import java.util.Random;
 
 import static net.aeronica.mods.mxtune.blocks.BlockPiano.spawnEntityItem;
+import static net.aeronica.mods.mxtune.managers.PlayIdSupplier.PlayType.INVALID;
 
 @SuppressWarnings("deprecation")
 public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
@@ -122,12 +123,12 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
             if (PlayManager.isActivePlayID(tileBandAmp.getPlayID()))
             {
                 PlayManager.stopPlayID(tileBandAmp.getPlayID());
-                tileBandAmp.setPlayID(-1);
+                tileBandAmp.setPlayID(INVALID);
                 return false;
             }
             if (!stop)
             {
-                Integer playID = PlayManager.playMusic(worldIn, pos);
+                int playID = PlayManager.playMusic(worldIn, pos);
                 tileBandAmp.setPlayID(playID);
             }
         }
@@ -148,7 +149,7 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
                     if (!PlayManager.isActivePlayID(tileBandAmp.getPlayID()))
                     {
                         setPlayingState(worldIn, pos, state, false);
-                        tileBandAmp.setPlayID(-1);
+                        tileBandAmp.setPlayID(INVALID);
                     }
 
                     worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));

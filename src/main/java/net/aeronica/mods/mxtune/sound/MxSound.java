@@ -24,10 +24,10 @@ import net.minecraft.util.SoundCategory;
 
 public abstract class MxSound extends MovingSound
 {
-    protected Integer playID;
+    protected int playID;
     private SoundEventAccessor soundEventAccessor;
 
-    MxSound(Integer playID, SoundCategory soundCategory)
+    MxSound(int playID, SoundCategory soundCategory)
     {
         super(ModSoundEvents.PCM_PROXY, soundCategory);
         this.playID = playID;
@@ -59,7 +59,7 @@ public abstract class MxSound extends MovingSound
     @Override
     public void update()
     {
-        if (this.playID != null && ClientAudio.hasPlayID(playID))
+        if (ClientAudio.hasPlayID(playID))
         {
             onUpdate();
         }

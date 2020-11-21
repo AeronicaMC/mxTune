@@ -294,14 +294,14 @@ public class GroupHelper
     public static boolean isClientPlaying(Integer playID)
     {
         Set<Integer> members = GroupHelper.getMembersByPlayID(playID);
-        return ((members != null) && !members.isEmpty()) && members.contains(MXTune.proxy.getClientPlayer().getEntityId());
+        return (!members.isEmpty()) && members.contains(MXTune.proxy.getClientPlayer().getEntityId());
     }
 
     @SuppressWarnings("unused")
-    public static boolean playerHasPlayID(Integer entityID, Integer playID)
+    public static boolean playerHasPlayID(Integer entityID, int playID)
     {
         Set<Integer> members = GroupHelper.getMembersByPlayID(playID);
-        return (members != null && !members.isEmpty()) && members.contains(entityID);
+        return (!members.isEmpty()) && members.contains(entityID);
     }
 
     @SuppressWarnings("unused")
@@ -318,7 +318,7 @@ public class GroupHelper
     }
 
     @Nullable
-    public static Integer getSoloMemberByPlayID(Integer playID)
+    public static Integer getSoloMemberByPlayID(int playID)
     {
         for(Integer someMember: GroupHelper.membersPlayID.keySet())
         {
@@ -342,12 +342,8 @@ public class GroupHelper
     public static void setActiveServerManagedPlayIDs(String setIntString)
     {
         Set<Integer> receivedSet = MapListHelper.deserializeIntegerSet(setIntString);
-
         activeServerManagedPlayIDs.addAll(receivedSet);
-
-        for (Integer integer : activeServerManagedPlayIDs)
-            if (!receivedSet.contains(integer))
-                activeServerManagedPlayIDs.remove(integer);
+        activeServerManagedPlayIDs.removeIf(playID -> !receivedSet.contains(playID));
     }
 
 }

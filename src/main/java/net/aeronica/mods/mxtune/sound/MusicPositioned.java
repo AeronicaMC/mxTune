@@ -25,7 +25,7 @@ import net.minecraft.util.math.BlockPos;
  */
 public class MusicPositioned extends MxSound
 {
-    public MusicPositioned(Integer playID, BlockPos pos, SoundRange soundRange)
+    public MusicPositioned(int playID, BlockPos pos, SoundRange soundRange)
     {
         super(playID,SoundCategory.RECORDS);
         this.xPosF = (float)pos.getX()+0.5F;
@@ -38,7 +38,7 @@ public class MusicPositioned extends MxSound
     @Override
     public void update()
     {
-        if (this.playID != null && ClientAudio.hasPlayID(playID))
+        if (ClientAudio.hasPlayID(playID))
         {
             // Override ModSoundVolume updates
         }

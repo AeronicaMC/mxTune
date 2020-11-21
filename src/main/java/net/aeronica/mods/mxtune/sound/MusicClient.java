@@ -24,7 +24,7 @@ import net.minecraft.util.SoundCategory;
  */
 public class MusicClient extends MxSound
 {
-    public MusicClient(Integer playID)
+    public MusicClient(int playID)
     {
         super(playID, SoundCategory.MUSIC);
         category = getSoundCategory(playID);

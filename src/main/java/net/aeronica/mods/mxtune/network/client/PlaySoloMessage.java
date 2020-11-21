@@ -32,14 +32,14 @@ import static net.aeronica.mods.mxtune.util.MIDISystemUtil.midiUnavailableWarn;
 public class PlaySoloMessage extends AbstractClientMessage<PlaySoloMessage>
 {
 
-    private Integer playID;
+    private int playID;
     private String musicText;
     private NetworkStringHelper stringHelper = new NetworkStringHelper();
 
     @SuppressWarnings("unused")
     public PlaySoloMessage() {/* Required by the PacketDispatcher */}
     
-    public PlaySoloMessage(Integer playID, String musicText)
+    public PlaySoloMessage(int playID, String musicText)
     {
         this.playID = playID;
         this.musicText = musicText;
