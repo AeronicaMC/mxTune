@@ -21,6 +21,7 @@ import net.aeronica.mods.mxtune.sound.ClientAudio.Status;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.util.math.BlockPos;
 
+import javax.annotation.Nullable;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 
@@ -47,7 +48,7 @@ public class AudioData
     private int fadeTicks;
     private int fadeCounter;
 
-    AudioData(Integer playId, BlockPos blockPos, boolean isClientPlayer, SoundRange soundRange, IAudioStatusCallback callback)
+    AudioData(Integer playId, @Nullable BlockPos blockPos, boolean isClientPlayer, SoundRange soundRange, IAudioStatusCallback callback)
     {
         this.playId = playId;
         this.playType = PlayIdSupplier.getTypeForPlayId(playId);
@@ -56,6 +57,7 @@ public class AudioData
         this.soundRange = soundRange;
         this.status = Status.WAITING;
         this.callback = callback;
+        this.uuid = "";
     }
 
     public synchronized AudioFormat getAudioFormat()

@@ -392,7 +392,8 @@ public class CodecPCM implements ICodec
      * @return New array.
      */
     @SuppressWarnings("unused") // Forge
-    private static byte[] trimArray(byte[] array, int maxLength)
+    @Nullable
+    private static byte[] trimArray(@Nullable byte[] array, int maxLength)
     {
         byte[] trimmedArray = null;
         if (array != null && array.length > maxLength)

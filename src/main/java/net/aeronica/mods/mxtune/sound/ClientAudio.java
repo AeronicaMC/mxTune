@@ -202,11 +202,10 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
             audioData.setISound(iSound);
     }
 
-    @Nullable
     private static BlockPos getBlockPos(Integer playID)
     {
         AudioData audioData = playIDAudioData.get(playID);
-        return (audioData != null) ? audioData.getBlockPos() : null;
+        return (audioData != null) ? audioData.getBlockPos() : BlockPos.ORIGIN;
     }
 
     private static SoundRange getSoundRange(Integer playID)
@@ -243,7 +242,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
      * @param musicText MML string
      * @param soundRange defines the attenuation: NATURAL or INFINITY respectively
      */
-    public static void play(Integer playID, BlockPos pos, String musicText, SoundRange soundRange)
+    public static void play(Integer playID, @Nullable BlockPos pos, String musicText, SoundRange soundRange)
     {
         play(playID, pos, musicText, false, soundRange, null);
     }
@@ -263,7 +262,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         else audioData.setAudioFormat(audioFormat3D);
     }
 
-    private static void play(int playID, BlockPos pos, String musicText, boolean isClient, SoundRange soundRange, IAudioStatusCallback callback)
+    private static void play(int playID, @Nullable BlockPos pos, String musicText, boolean isClient, SoundRange soundRange, @Nullable IAudioStatusCallback callback)
     {
         startThreadFactory();
         if(ClientCSDMonitor.canMXTunesPlay() && playID != PlayIdSupplier.PlayType.INVALID)
@@ -292,7 +291,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         synchronized (SoundSystemConfig.THREAD_SYNC)
         {
             AudioData audioData = playIDAudioData.get(playID);
-            if (sndSystem != null && audioData != null && audioData.getUuid() != null)
+            if (sndSystem != null && audioData != null && !audioData.getUuid().isEmpty())
             {
                 audioData.setStatus(Status.DONE);
                 sndSystem.fadeOut(audioData.getUuid(), null, 100);
