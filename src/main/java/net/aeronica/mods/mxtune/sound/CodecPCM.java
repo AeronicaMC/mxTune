@@ -23,6 +23,7 @@ import paulscode.sound.SoundBuffer;
 import paulscode.sound.SoundSystemConfig;
 import paulscode.sound.SoundSystemLogger;
 
+import javax.annotation.Nullable;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -90,13 +91,13 @@ public class CodecPCM implements ICodec
 
     private static final int SAMPLE_SIZE = 11025 * 4;
 
-    private byte[] noiseBuffer = new byte[SAMPLE_SIZE];
-    private byte[] zeroBuffer = new byte[SAMPLE_SIZE];
+    private final byte[] noiseBuffer = new byte[SAMPLE_SIZE];
+    private final byte[] zeroBuffer = new byte[SAMPLE_SIZE];
 
     private boolean hasStream = false;
     private int zeroBufferCount = 0;
 
-    private Random randInt;
+    private final Random randInt;
 
     private Integer playID = null;
     private AudioData audioData = null;
@@ -104,7 +105,7 @@ public class CodecPCM implements ICodec
     /**
      * Processes status messages, warnings, and error messages.
      */
-    private SoundSystemLogger logger;
+    private final SoundSystemLogger logger;
 
     public CodecPCM()
     {
@@ -141,7 +142,7 @@ public class CodecPCM implements ICodec
     }
 
     @Override
-    public boolean initialize(URL url)
+    public boolean initialize(@Nullable URL url)
     {
         initialized(SET, false);
         if (playID == null)
