@@ -1,20 +1,33 @@
 {
   "forge_marker": 1,
   "defaults": {
+    "model": "forge:multi-layer",
+    "custom":
+    {
+      "base": "mxtune:band_amp#off",
+      "Solid": "mxtune:band_amp#on",
+      "Translucent": "mxtune:band_amp#overlay"
+    }
   },
   "variants": {
     "normal": [{}],
-    "inventory": [{
-      "transform": "forge:default-block",
-      "model": "mxtune:band_amp"
-    }],
-    "facing=north,playing=false": { "model": "mxtune:band_amp", "transform": "identity"                   },
-    "facing=south,playing=false": { "model": "mxtune:band_amp", "transform": { "rotation": { "y": 180 } } },
-    "facing=east,playing=false":  { "model": "mxtune:band_amp", "transform": { "rotation": { "y": 270 } } },
-    "facing=west,playing=false":  { "model": "mxtune:band_amp", "transform": { "rotation": { "y": 90  } } },
-    "facing=north,playing=true": { "model": "mxtune:band_amp_playing", "transform": "identity"                   },
-    "facing=south,playing=true": { "model": "mxtune:band_amp_playing", "transform": { "rotation": { "y": 180 } } },
-    "facing=east,playing=true":  { "model": "mxtune:band_amp_playing", "transform": { "rotation": { "y": 270 } } },
-    "facing=west,playing=true":  { "model": "mxtune:band_amp_playing", "transform": { "rotation": { "y": 90  } } }
+    "inventory": [{ "model": "mxtune:band_amp" }],
+    "overlay": [{ "model": "mxtune:band_amp_playing_overlay"}],
+    "on": [{ "model": "mxtune:band_amp_playing" }],
+    "off": [{ "model": "mxtune:band_amp" }],
+    "playing": {
+      "false": {
+        "custom": {
+          "Solid": "mxtune:band_amp#off"
+        }
+      },
+      "true": {}
+    },
+    "facing": {
+      "north": { },
+      "south": {"y": 180},
+      "west": {"y": 270},
+      "east": {"y": 90}
+    }
   }
 }

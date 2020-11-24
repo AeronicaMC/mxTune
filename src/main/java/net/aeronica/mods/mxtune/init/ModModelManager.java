@@ -38,11 +38,11 @@
 //        SOFTWARE.
 package net.aeronica.mods.mxtune.init;
 
-import net.aeronica.mods.mxtune.blocks.BlockBandAmp;
 import net.aeronica.mods.mxtune.blocks.BlockPiano;
 import net.aeronica.mods.mxtune.blocks.RendererPiano;
 import net.aeronica.mods.mxtune.blocks.TilePiano;
 import net.aeronica.mods.mxtune.items.ItemIngredients;
+import net.aeronica.mods.mxtune.model.StateMapperBandAmp;
 import net.aeronica.mods.mxtune.util.IVariant;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
@@ -86,13 +86,15 @@ public class ModModelManager
                                                          {
                                                                  BlockPiano.OCCUPIED
                                                          }).build());
-        ModelLoader.setCustomStateMapper(ModBlocks.BAND_AMP,
-                                         new StateMap.Builder().ignore(
-                                                 (IProperty[]) new IProperty[]
-                                                         {
-                                                                 BlockBandAmp.POWERED,
-                                                                 BlockBandAmp.UPDATE_COUNT
-                                                         }).build());
+        ModelLoader.setCustomStateMapper(ModBlocks.BAND_AMP, new StateMapperBandAmp());
+
+//        ModelLoader.setCustomStateMapper(ModBlocks.BAND_AMP,
+//                                         new StateMap.Builder().ignore(
+//                                                 (IProperty[]) new IProperty[]
+//                                                         {
+//                                                                 BlockBandAmp.POWERED,
+//                                                                 BlockBandAmp.UPDATE_COUNT
+//                                                         }).build());
         registerItemModel(ModBlocks.SPINET_PIANO);
     }
     
