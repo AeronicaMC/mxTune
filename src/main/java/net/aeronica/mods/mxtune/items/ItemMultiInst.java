@@ -95,7 +95,7 @@ public class ItemMultiInst extends Item implements IInstrument
             {
                 if (ServerCSDManager.canMXTunesPlay(playerIn))
                 {
-                    if (!PlayManager.isPlayerPlaying(playerIn))
+                    if (PlayManager.playerNotPlaying(playerIn))
                     {
                         int playID = PlayManager.playMusic(playerIn);
                         itemStackIn.setRepairCost(playID);
