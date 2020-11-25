@@ -96,17 +96,20 @@ public class PlayManager
         if (worldIn.getBlockState(pos).getBlock() instanceof IMusicPlayer)
         {
             musicPlayer = (IMusicPlayer) worldIn.getTileEntity(pos);
-            String mml = musicPlayer != null ? musicPlayer.getMML() : "";
-            if (mml.contains(KEY_MML))
+            if (musicPlayer != null)
             {
-                playID = getNextPlayID();
-                activePlayIDs.add(playID);
-                syncStatus();
+                String mml = musicPlayer.getMML();
+                if (mml.contains(KEY_MML))
+                {
+                    playID = getNextPlayID();
+                    activePlayIDs.add(playID);
+                    syncStatus();
 
-                DurationTimer.scheduleStop(playID, musicPlayer.getDuration());
-                ModLogger.debug("Block/TE MML Sub25: " + mml.substring(0, Math.min(25, mml.length())));
-                PlayBlockMusicMessage playBlockMusicMessage = new PlayBlockMusicMessage(playID, pos, mml, musicPlayer.getSoundRange());
-                PacketDispatcher.sendToAllAround(playBlockMusicMessage, worldIn.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), ModConfig.getListenerRange());
+                    DurationTimer.scheduleStop(playID, musicPlayer.getDuration());
+                    ModLogger.debug("Block/TE MML Sub25: " + mml.substring(0, Math.min(25, mml.length())));
+                    PlayBlockMusicMessage playBlockMusicMessage = new PlayBlockMusicMessage(playID, pos, mml, musicPlayer.getSoundRange());
+                    PacketDispatcher.sendToAllAround(playBlockMusicMessage, worldIn.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), ModConfig.getListenerRange());
+                }
             }
         }
         return playID;
