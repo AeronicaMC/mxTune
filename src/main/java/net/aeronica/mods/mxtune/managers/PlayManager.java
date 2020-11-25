@@ -96,7 +96,7 @@ public class PlayManager
         if (worldIn.getBlockState(pos).getBlock() instanceof IMusicPlayer)
         {
             musicPlayer = (IMusicPlayer) worldIn.getTileEntity(pos);
-            String mml = musicPlayer.getMML();
+            String mml = musicPlayer != null ? musicPlayer.getMML() : "";
             if (mml.contains(KEY_MML))
             {
                 playID = getNextPlayID();
@@ -175,7 +175,6 @@ public class PlayManager
         return playID;
     }
     
-    @SuppressWarnings("ConstantConditions")
     private static int queueJam(EntityPlayer playerIn, String mml, int duration, Integer membersID)
     {
         int groupsPlayID = getGroupsPlayID(membersID);
@@ -235,10 +234,9 @@ public class PlayManager
         return playID;
     }
 
-    @Nullable
-    private static Integer getPlayersPlayID(Integer entityID)
+    private static int getPlayersPlayID(Integer entityID)
     {
-        return (entityID != null) ? membersPlayID.get(entityID) : null;
+        return (entityID != null) ? membersPlayID.getOrDefault(entityID, PlayType.INVALID) : PlayType.INVALID;
     }
     
     private static boolean isPlayerPlaying(Integer entityID)
@@ -246,9 +244,9 @@ public class PlayManager
         return entityID != null && membersPlayID.containsKey(entityID);
     }
     
-    public static  <T extends EntityLivingBase> boolean isPlayerPlaying(T entityLivingIn)
+    public static  <T extends EntityLivingBase> boolean playerNotPlaying(T entityLivingIn)
     {
-        return isPlayerPlaying(entityLivingIn.getEntityId());
+        return !isPlayerPlaying(entityLivingIn.getEntityId());
     }
 
     public static boolean isActivePlayID(@Nullable Integer playID) { return playID != null && activePlayIDs.contains(playID); }
@@ -263,7 +261,7 @@ public class PlayManager
         Set<Integer> members = Sets.newHashSet();
         if (playID != PlayType.INVALID)
             for (Integer someMember : membersPlayID.keySet())
-                if (membersPlayID.get(someMember).equals(playID))
+                if (membersPlayID.getOrDefault(someMember, PlayType.INVALID).equals(playID))
                     members.add(someMember);
 
         return members;
@@ -421,7 +419,7 @@ public class PlayManager
      */
     static void purgeMember(Integer memberID)
     {
-        Integer playID = getPlayersPlayID(memberID);
+        int playID = getPlayersPlayID(memberID);
         if (memberID != null)
         {
             if (membersPlayID.containsKey(memberID))

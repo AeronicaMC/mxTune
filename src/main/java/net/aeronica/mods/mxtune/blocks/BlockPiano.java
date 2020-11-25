@@ -101,7 +101,7 @@ public class BlockPiano extends BlockHorizontal implements IPlacedInstrument
             boolean invHasItem = !tile.getInventory().getStackInSlot(0).isEmpty();
             boolean invIsMusic = invHasItem && (tile.getInventory().getStackInSlot(0).getItem() instanceof IMusic) &&
                     tile.getInventory().getStackInSlot(0).hasDisplayName();
-            boolean canPlay = playerIn.isRiding() && invIsMusic && PlacedInstrumentUtil.isPlayerSitting(worldIn, playerIn, pos) && !PlayManager.isPlayerPlaying(playerIn);
+            boolean canPlay = playerIn.isRiding() && invIsMusic && PlacedInstrumentUtil.isPlayerSitting(worldIn, playerIn, pos) && PlayManager.playerNotPlaying(playerIn);
             boolean playerHasItem = !playerIn.getHeldItem(hand).isEmpty();
             boolean playerHasMusic = playerHasItem && (playerIn.getHeldItem(hand).getItem() instanceof IMusic) && 
                     playerIn.getHeldItem(hand).hasDisplayName();
