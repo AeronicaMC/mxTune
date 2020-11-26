@@ -17,6 +17,7 @@
 package net.aeronica.mods.mxtune.blocks;
 
 import net.aeronica.mods.mxtune.MXTune;
+import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.gui.GuiGuid;
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.managers.PlayManager;
@@ -230,12 +231,13 @@ public class BlockBandAmp extends BlockHorizontal implements IMusicPlayer
         }
     }
 
-    // TODO: Complete Emissive blockstate and models for BandAmp
     @SideOnly(Side.CLIENT)
     @Override
     public int getLightValue(IBlockState state)
     {
-        return MinecraftForgeClient.getRenderLayer() == BlockRenderLayer.SOLID && state.getValue(PLAYING) ? 15 : super.getLightValue(state);
+        return MinecraftForgeClient.getRenderLayer() == BlockRenderLayer.SOLID &&
+                       state.getValue(PLAYING) &&
+                       ModConfig.isBandAmpFullBrightEffectEnabled() ? 15 : super.getLightValue(state);
     }
 
     @Override

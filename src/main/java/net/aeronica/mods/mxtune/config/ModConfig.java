@@ -119,6 +119,10 @@ public class ModConfig
         @Comment("General Configuration")
         @LangKey("config.mxtune.generalConfig")
         public static final General general = new General();
+
+        @Comment("Instrument Options")
+        @LangKey("config.mxtune.generalConfig.instrumentOptions")
+        public static final InstrumentOptions instrumentOptions = new InstrumentOptions();
         
         public static class General
         {
@@ -143,6 +147,13 @@ public class ModConfig
             @Name("Disable JAM Party Right Click")
             @LangKey("config.mxtune.disableJAMPartyRightClick")
             public boolean disableJAMPartyRightClick = false;
+        }
+
+        public static class InstrumentOptions
+        {
+            @Name("Enable Band Amp Full-Bright effect when playing")
+            @LangKey("config.mxtune.enableBandAmpFullBrightEffect")
+            public boolean enableBandAmpFullBrightEffect = true;
         }
     }
     
@@ -199,6 +210,8 @@ public class ModConfig
     public static boolean isNetherMusicDisabled() {return ConfigClient.vanillaMusic.disableNetherMusic;}
 
     public static String getMmlLink() {return ConfigClient.links.site;}
+
+    public static boolean isBandAmpFullBrightEffectEnabled() {return ConfigGeneral.instrumentOptions.enableBandAmpFullBrightEffect;}
 
     /**
      * Will only allow this mods recipes to be disabled
