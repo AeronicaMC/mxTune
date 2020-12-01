@@ -425,6 +425,13 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         viewableTabCount = (viewableTabCount - 1) >= MIN_TABS ? viewableTabCount - 1 : viewableTabCount;
     }
 
+    private void firstTab()
+    {
+        activeChildIndex = 0;
+        childTabs[activeChildIndex].updateScreen();
+        updateState();
+    }
+
     private void newAction()
     {
         stop();
@@ -588,20 +595,21 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         textSource.setText("");
         IntStream.range(0, MAX_TABS).forEach(i -> childTabs[i].clearPart());
         viewableTabCount = MIN_TABS;
-        activeChildIndex = 0;
-        updateState();
+        firstTab();
     }
 
     private void fileImport()
     {
         mxTuneFile = ActionGet.INSTANCE.getMxTuneFile();
         getMXTFileData();
+        firstTab();
     }
 
     private void fileOpen()
     {
         mxTuneFile = MXTuneFileHelper.getMXTuneFile(ActionGet.INSTANCE.getPath());
         getMXTFileData();
+        firstTab();
     }
 
     private void getMXTFileData()
