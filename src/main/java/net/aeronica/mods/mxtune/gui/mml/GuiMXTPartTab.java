@@ -17,6 +17,7 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
+import net.aeronica.libs.mml.parser.MMLAllowedCharacters;
 import net.aeronica.mods.mxtune.gui.util.GuiLabelMX;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
@@ -473,12 +474,15 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     {
         clearPart();
         int i = 0;
-        List<String> lines = new ArrayList<>(Arrays.asList(GuiScreen.getClipboardString().replaceAll("MML@|;", "").split(",")));
+        ModLogger.debug("%s", GuiScreen.getClipboardString());
+        String clip = new String(GuiScreen.getClipboardString());
+        List<String> lines = new ArrayList<>(Arrays.asList(clip.replaceAll("MML@|;", "").split(",")));
         Iterator<String> iterator = lines.iterator();
         while (iterator.hasNext())
         {
             if (viewableLineCount < MAX_MML_LINES)
             {
+                mmlTextLines[i].setText(MMLAllowedCharacters.filterAllowedCharacters(iterator.next()));
                 mmlTextLines[i++].setCursorPositionZero();
                 if (iterator.hasNext())addLine();
             } else
