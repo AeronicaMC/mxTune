@@ -1,3 +1,6 @@
+XXXX-XX-XX mxtune-1.12.2-1.0.0-rc.x
+
+----
 2020-12-01 mxtune-1.12.2-1.0.0-rc.2
 Changes:
  * Added a ful-bright emissive light effect to the Band Amp when it plays music.
