@@ -24,7 +24,7 @@ import net.minecraftforge.items.ItemStackHandler;
 public class TilePiano extends TileInstrument
 {
     @SuppressWarnings("unused")
-    private TilePiano() {/* NOP */}
+    public TilePiano() {/* NOP */}
 
     TilePiano(EnumFacing facing)
     {

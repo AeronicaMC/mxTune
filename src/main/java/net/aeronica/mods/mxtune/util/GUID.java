@@ -17,6 +17,7 @@
 
 package net.aeronica.mods.mxtune.util;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
@@ -115,7 +116,7 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
         try
         {
             md = MessageDigest.getInstance("SHA-256");
-            md.update(phrase.getBytes());
+            md.update(phrase.getBytes(StandardCharsets.UTF_8));
             return new GUID(md.digest());
         }
         catch (NoSuchAlgorithmException e)
