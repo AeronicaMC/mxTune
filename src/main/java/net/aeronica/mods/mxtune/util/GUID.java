@@ -27,6 +27,7 @@ import java.util.Objects;
  * hexadecimal strings. It's Useful for use as file names. It's less useful than java.util.UUID in many respects, but
  * I've noted at least one UUID collision which prompted me to make this class.
  */
+@Deprecated
 public class GUID implements java.io.Serializable, Comparable<GUID>
 {
     private static final long serialVersionUID = -4856826361193249489L;
@@ -42,6 +43,7 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
      * Private constructor which uses a byte array to construct the new GUID.
      * Requires exactly 32 bytes. The perfect size to hold all 256 bits needed to store a SHA2 hash.
      */
+    @Deprecated
     private GUID(byte[] data)
     {
         long dsb = 0;
@@ -79,6 +81,7 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
      * @param  aaaaSigBits
      *         The least significant bits of the {@code GUID}
      */
+    @Deprecated
     public GUID(long ddddSigBits, long ccccSigBits, long bbbbSigBits, long aaaaSigBits) {
         this.ddddSigBits = ddddSigBits;
         this.ccccSigBits = ccccSigBits;
@@ -100,6 +103,7 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
      *          described in {@link #toString}
      *
      */
+    @Deprecated
     public static GUID fromString(String name)
     {
         return new GUID(hexStringToByteArray(name));
@@ -110,6 +114,7 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
      * @param phrase to hash.
      * @return A GUID that represents the SHA256 hash for phrase.
      */
+    @Deprecated
     public static GUID stringToSHA2Hash(String phrase)
     {
         MessageDigest md;
@@ -133,6 +138,7 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
      *
      * @return  The Aaaa (LSB) significant 64 bits of this GUID's 256 bit value
      */
+    @Deprecated
     public long getAaaaSignificantBits() {
         return aaaaSigBits;
     }
@@ -142,6 +148,7 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
      *
      * @return  The Bbbb significant 64 bits of this GUID's 256 bit value
      */
+    @Deprecated
     public long getBbbbSignificantBits() {
         return bbbbSigBits;
     }
@@ -151,6 +158,7 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
      *
      * @return  The Cccc significant 64 bits of this GUID's 256 bit value
      */
+    @Deprecated
     public long getCcccSignificantBits() {
         return ccccSigBits;
     }
@@ -160,6 +168,7 @@ public class GUID implements java.io.Serializable, Comparable<GUID>
      *
      * @return  The Dddd (MSB) significant 64 bits of this GUID's 256 bit value
      */
+    @Deprecated
     public long getDdddSignificantBits() {
         return ddddSigBits;
     }
