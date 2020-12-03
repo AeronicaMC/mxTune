@@ -1,3 +1,6 @@
+XXXX-XX-XX mxtune-1.12.2-1.0.0-rc.X
+
+----
 2020-12-03 mxtune-1.12.2-1.0.0-rc.3
 Fixes:
  * Fix a major issue where invalid MML can cause an infinite loop causing the client to freeze.
