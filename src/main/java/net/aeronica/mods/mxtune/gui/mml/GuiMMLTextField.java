@@ -9,7 +9,6 @@ package net.aeronica.mods.mxtune.gui.mml;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import net.aeronica.libs.mml.parser.MMLAllowedCharacters;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -146,7 +145,7 @@ public class GuiMMLTextField extends Gui
     public void writeText(String textToWrite)
     {
         String s = "";
-        String s1 = MMLAllowedCharacters.filterAllowedCharacters(textToWrite);
+        String s1 = textToWrite;
         int i = this.cursorPosition < this.selectionEnd ? this.cursorPosition : this.selectionEnd;
         int j = this.cursorPosition < this.selectionEnd ? this.selectionEnd : this.cursorPosition;
         int k = this.maxStringLength - this.text.length() - (i - j);
@@ -502,20 +501,8 @@ public class GuiMMLTextField extends Gui
 
                     return true;
                 default:
-
-                    if (MMLAllowedCharacters.isAllowedCharacter(typedChar))
-                    {
-                        if (this.isEnabled)
-                        {
-                            this.writeText(Character.toString(typedChar));
-                        }
-
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    this.writeText(Character.toString(typedChar));
+                    return true;
             }
         }
     }

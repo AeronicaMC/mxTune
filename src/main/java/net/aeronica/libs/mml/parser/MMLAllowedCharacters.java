@@ -23,6 +23,7 @@
  */
 package net.aeronica.libs.mml.parser;
 
+@Deprecated
 public class MMLAllowedCharacters
 {
     // Lexer rules - US_ASCII
@@ -45,6 +46,7 @@ public class MMLAllowedCharacters
     private static final String MML_CHARACTERS = "abcdefgABCDEFGrR<>+#-.,&0123456789nNopstvOPSTVlLM@;";
     private MMLAllowedCharacters() {/* NOP */}
 
+    @Deprecated
     public static boolean isAllowedCharacter(char character)
     {
         char[] ca = MML_CHARACTERS.toCharArray();
@@ -56,6 +58,7 @@ public class MMLAllowedCharacters
     }
 
     /** Filter string by only keeping those characters for which isAllowedCharacter() returns true. */
+    @Deprecated
     public static String filterAllowedCharacters(String input)
     {
         StringBuilder stringbuilder = new StringBuilder();

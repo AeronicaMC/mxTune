@@ -17,7 +17,6 @@
 
 package net.aeronica.libs.mml.readers.ms2mml;
 
-import net.aeronica.libs.mml.parser.MMLAllowedCharacters;
 import net.aeronica.libs.mml.readers.AbstractMmlFileReader;
 
 import javax.annotation.Nonnull;
@@ -69,7 +68,7 @@ public class Ms2MmlReader extends AbstractMmlFileReader
             if (ms2 != null)
             {
                 StringBuilder builder = new StringBuilder("MML@");
-                String melodyValue = MMLAllowedCharacters.filterAllowedCharacters(ms2.melody);
+                String melodyValue = ms2.melody;
                 if (!melodyValue.equals(""))
                     builder.append(melodyValue);
 
@@ -77,7 +76,7 @@ public class Ms2MmlReader extends AbstractMmlFileReader
                 {
                     for (Ms2.Chord chord : ms2.chord)
                     {
-                        String chordValue = MMLAllowedCharacters.filterAllowedCharacters(chord.value);
+                        String chordValue = chord.value;
                         if ((chordValue.equals("")))
                             continue;
                         builder.append(",");

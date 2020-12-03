@@ -17,7 +17,6 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
-import net.aeronica.libs.mml.parser.MMLAllowedCharacters;
 import net.aeronica.mods.mxtune.gui.util.GuiLabelMX;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
@@ -47,6 +46,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.IntStream;
+
+import static net.aeronica.mods.mxtune.Reference.MAX_MML_PART_LENGTH;
 
 public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 {
@@ -92,7 +93,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     private static final int MAX_MML_LINES = 10;
     private static final int MIN_MML_LINES = 1;
     private static final int MML_LINE_IDX = 200;
-    private final GuiMMLTextField[] mmlTextLines = new GuiMMLTextField[MAX_MML_LINES];
+    private final GuiTextField[] mmlTextLines = new GuiTextField[MAX_MML_LINES];
     private final GuiLabelMX[] mmlLabelLines = new GuiLabelMX[MAX_MML_LINES];
     private final String[] cachedTextLines = new String[MAX_MML_LINES];
     private final int[] cachedCursorPos = new int[MAX_MML_LINES];
@@ -310,10 +311,10 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         {
             mmlLabelLines[i] = new GuiLabelMX(fontRenderer, i, posX, posY, labelWidth, entryHeight, 0xFFFFFF);
             mmlLabelLines[i].setLabelText(lineNames[i]);
-            mmlTextLines[i] = new GuiMMLTextField( i + MML_LINE_IDX, fontRenderer, textX, posY, linesRightSideWidth, fontRenderer.FONT_HEIGHT + 2);
+            mmlTextLines[i] = new GuiTextField( i + MML_LINE_IDX, fontRenderer, textX, posY, linesRightSideWidth, fontRenderer.FONT_HEIGHT + 2);
             mmlTextLines[i].setFocused(false);
             mmlTextLines[i].setCanLoseFocus(true);
-            mmlTextLines[i].setMaxStringLength(10000);
+            mmlTextLines[i].setMaxStringLength(MAX_MML_PART_LENGTH);
             posY += entryHeight + PADDING;
         }
 
@@ -326,7 +327,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     {
         int posX = buttonCopyToClipBoard.x + buttonCopyToClipBoard.width + PADDING;
         int rightSideWidth = Math.max(width - posX - PADDING, 100);
-        GuiMMLTextField mmlTextField = mmlTextLines[viewableLines - 1];
+        GuiTextField mmlTextField = mmlTextLines[viewableLines - 1];
     }
 
     private void reloadState()
@@ -368,7 +369,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
 
     private void updateStatusText()
     {
-        labelStatus.setText(I18n.format("mxtune.gui.guiMXT.textStatus", String.format("%05d", totalCharacters), SheetMusicUtil.formatDuration(duration) ,mxTunePart != null ? mxTunePart.getMeta() : ""));
+        labelStatus.setText(I18n.format("mxtune.gui.guiMXT.textStatus", String.format("%06d", totalCharacters), SheetMusicUtil.formatDuration(duration) ,mxTunePart != null ? mxTunePart.getMeta() : ""));
     }
 
     private void updateButtonState()
@@ -475,14 +476,16 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         clearPart();
         int i = 0;
         ModLogger.debug("%s", GuiScreen.getClipboardString());
-        String clip = new String(GuiScreen.getClipboardString());
+        String clip = GuiScreen.getClipboardString();
+        if (clip.isEmpty())
+            return;
         List<String> lines = new ArrayList<>(Arrays.asList(clip.replaceAll("MML@|;", "").split(",")));
         Iterator<String> iterator = lines.iterator();
         while (iterator.hasNext())
         {
             if (viewableLineCount < MAX_MML_LINES)
             {
-                mmlTextLines[i].setText(MMLAllowedCharacters.filterAllowedCharacters(iterator.next()));
+                mmlTextLines[i].setText(iterator.next());
                 mmlTextLines[i++].setCursorPositionZero();
                 if (iterator.hasNext())addLine();
             } else

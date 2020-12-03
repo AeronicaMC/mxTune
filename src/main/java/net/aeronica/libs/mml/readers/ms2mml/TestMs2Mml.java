@@ -18,7 +18,6 @@
 package net.aeronica.libs.mml.readers.ms2mml;
 
 import com.google.common.io.Files;
-import net.aeronica.libs.mml.parser.MMLAllowedCharacters;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -42,12 +41,12 @@ public class TestMs2Mml
         Ms2 ms2 = (Ms2) unmarshaller.unmarshal(is);
 
         StringBuilder builder =  new StringBuilder("MML@");
-        builder.append(MMLAllowedCharacters.filterAllowedCharacters(ms2.melody));
-        LOGGER.info("Melody {}", MMLAllowedCharacters.filterAllowedCharacters(ms2.melody));
+        builder.append(ms2.melody);
+        LOGGER.info("Melody {}", ms2.melody);
         if (ms2.chord != null)
             for (Ms2.Chord chord : ms2.chord)
             {
-                String chordValue = MMLAllowedCharacters.filterAllowedCharacters(chord.value);
+                String chordValue = chord.value;
                 if((chordValue.equals("")))
                     continue;
                 builder.append(",");
