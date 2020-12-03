@@ -87,11 +87,6 @@ public class MMLParser
                 break;
                 case MML_NOTE: doNote(navigator);
                 break;
-                case MML_NUMBER:
-                case MML_FLAT:
-                case MML_SHARP:
-                case MML_DOT: navigator.next();
-                break;
                 case MML_TIE: doTie(navigator);
                 break;
                 case MML_REST: doRest(navigator);
