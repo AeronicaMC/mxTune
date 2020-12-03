@@ -36,4 +36,5 @@ public class Reference
     static final String UPDATE = "https://gist.githubusercontent.com/Aeronica/dbc2619e0011d5bdbe7a162d0c6aa82b/raw/update.json";
     static final String CERTIFICATE_FINGERPRINT = "999640c365a8443393a1a21df2c0ede9488400e9";
     public static final int MXTUNE_DATA_FIXER_VERSION = 2;
+    public static final int MAX_MML_PART_LENGTH = 12000;
 }
