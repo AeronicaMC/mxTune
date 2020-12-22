@@ -57,6 +57,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static net.aeronica.mods.mxtune.Reference.*;
+
 public class GuiMXT extends GuiScreen implements IAudioStatusCallback
 {
     private final List<IHooverText> hooverTexts = new ArrayList<>();
@@ -171,12 +173,12 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         labelTitle = new GuiLabelMX(fontRenderer, 1, PADDING, textY, labelTitleWidth, fontRenderer.FONT_HEIGHT + 2, -1);
         labelTitle.setLabelName(labelTitleText);
         textTitle = new GuiTextField(1, fontRenderer, labelTitle.getX() + labelTitleWidth + PADDING, textY, width / 2 - labelTitle.getWidth() - PADDING, fontRenderer.FONT_HEIGHT + 2);
-        textTitle.setMaxStringLength(80);
+        textTitle.setMaxStringLength(MXT_SONG_TITLE_LENGTH);
         textTitle.setCanLoseFocus(true);
         labelAuthor = new GuiLabelMX(fontRenderer, 2, textTitle.x + textTitle.width + PADDING, textY, labelAuthorWidth, fontRenderer.FONT_HEIGHT + 2, -1);
         labelAuthor.setLabelName(labelAuthorText);
         textAuthor = new GuiTextField(2, fontRenderer, labelAuthor.getX() + labelAuthorWidth + PADDING, textY, width - labelAuthor.getX() - labelAuthor.getWidth() - PADDING * 2, fontRenderer.FONT_HEIGHT + 2);
-        textAuthor.setMaxStringLength(80);
+        textAuthor.setMaxStringLength(MXT_SONG_AUTHOR_LENGTH);
         textAuthor.setCanLoseFocus(true);
         textY = textTitle.y + textTitle.height + PADDING;
         String labelSourceText = I18n.format("mxtune.gui.label.source");
@@ -184,7 +186,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         labelSource = new GuiLabelMX(fontRenderer, 3, PADDING, textY, labelSourceWidth, fontRenderer.FONT_HEIGHT + 2, -1);
         labelSource.setLabelName(labelSourceText);
         textSource = new GuiTextField(3, fontRenderer, labelSource.getX() + labelSource.getWidth() + PADDING, textY, width - labelSource.getX() - labelSource.getWidth() - PADDING * 2, fontRenderer.FONT_HEIGHT + 2);
-        textSource.setMaxStringLength(320);
+        textSource.setMaxStringLength(MXT_SONG_SOURCE_LENGTH);
         textSource.setCanLoseFocus(true);
 
         // Button tabs

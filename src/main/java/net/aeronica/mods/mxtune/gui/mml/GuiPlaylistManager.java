@@ -62,6 +62,8 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static net.aeronica.mods.mxtune.Reference.MXT_TAG_DISPLAY_NAME_LENGTH;
+import static net.aeronica.mods.mxtune.Reference.MXT_TAG_NAME_LENGTH;
 import static net.aeronica.mods.mxtune.gui.mml.SortHelper.PLAYLIST_ORDERING;
 import static net.aeronica.mods.mxtune.gui.mml.SortHelper.SONG_PROXY_ORDERING;
 import static net.aeronica.mods.mxtune.gui.toasts.ModToastHelper.postPlayListManagerToast;
@@ -356,6 +358,7 @@ public class GuiPlaylistManager extends GuiScreen implements Notify
         int labelPlayListNameWidth = fontRenderer.getStringWidth(labelPlaylistName.getLabelName()) + PADDING;
 
         textPlayListName = new GuiTextField(1, fontRenderer, leftPlayLists + labelPlayListNameWidth, playListNameTop, guiListWidth - labelPlayListNameWidth - 75 - PADDING, buttonHeight);
+        textPlayListName.setMaxStringLength(MXT_TAG_NAME_LENGTH);
         buttonToServer = new GuiButtonMX(6, width - 75 - PADDING, playListNameTop, 75, buttonHeight, I18n.format("mxtune.gui.button.send"));
 
         labelPlayListTitle = new GuiLabelMX(fontRenderer,4, selectButtonLeft, playListTitleTop + PADDING, guiListWidth, singleLineHeight, -1);
@@ -363,7 +366,7 @@ public class GuiPlaylistManager extends GuiScreen implements Notify
         int labelPlayListTitleWidth = fontRenderer.getStringWidth(labelPlayListTitle.getLabelName()) + PADDING;
 
         textPlayListTitle = new GuiTextField(1, fontRenderer, leftPlayLists + labelPlayListNameWidth, playListTitleTop, guiListWidth - labelPlayListNameWidth, buttonHeight);
-        textPlayListTitle.setMaxStringLength(80);
+        textPlayListTitle.setMaxStringLength(MXT_TAG_DISPLAY_NAME_LENGTH);
 
         labelPlaylistDay = new GuiLabel(fontRenderer,5, leftPlayLists, dayLabelButtonTop + PADDING, guiListWidth, singleLineHeight, 0xFFFFFF);
         labelPlaylistDay.addLine("mxtune.gui.guiPlayListManager.label.list_day");
