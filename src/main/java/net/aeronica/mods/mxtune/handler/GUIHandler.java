@@ -43,10 +43,6 @@ public class GUIHandler implements IGuiHandler
     {
         switch (guiID)
         {
-            case GUI_INSTRUMENT_INVENTORY:
-                // Use the player's held item to create the inventory
-                return new ContainerInstrument(playerIn);
-
             case GUI_MULTI_INST_INVENTORY:
                 // Use the player's held item to create the inventory
                 return new ContainerInstrument(playerIn);
@@ -69,9 +65,6 @@ public class GUIHandler implements IGuiHandler
         {
             case GUI_MUSIC_PAPER_PARSE:
                 return new GuiMXT(null, GuiMXT.Mode.SHEET_MUSIC);
-
-            case GUI_INSTRUMENT_INVENTORY:
-                return new GuiInstrumentInventory(new ContainerInstrument(playerIn));
 
             case GUI_MULTI_INST_INVENTORY:
                 return new GuiMultiInstInventory(new ContainerInstrument(playerIn));
