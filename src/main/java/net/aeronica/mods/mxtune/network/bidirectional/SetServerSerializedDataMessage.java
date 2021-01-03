@@ -41,7 +41,7 @@ import java.io.Serializable;
 
 public class SetServerSerializedDataMessage extends AbstractMessage.AbstractServerMessage<SetServerSerializedDataMessage>
 {
-    private RecordType recordType = RecordType.PLAY_LIST.PLAY_LIST;
+    private RecordType recordType = RecordType.PLAY_LIST;
     private Serializable baseData;
     private long ddddSigBits;
     private long ccccSigBits;
