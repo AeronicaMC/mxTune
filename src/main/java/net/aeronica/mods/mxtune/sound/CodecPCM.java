@@ -155,8 +155,17 @@ public class CodecPCM implements ICodec
             }
             else
             {
-                audioData = getAudioData(playID);
-                myAudioFormat = audioData.getAudioFormat();
+                try
+                {
+                    audioData = getAudioData(playID);
+                    myAudioFormat = audioData.getAudioFormat();
+                } catch (Exception e)
+                {
+                    errorMessage("AudioData instance for playID does not exist!");
+                    cleanup();
+                    printStackTrace(e);
+                    return false;
+                }
             }
         }
 

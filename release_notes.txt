@@ -1,4 +1,6 @@
-XXXX-XX-XX mxtune-1.12.2-1.0.0-rc.X
+2021-01-16 mxtune-1.12.2-1.0.1
+First Release Version and fix for a rare null pointer exception.
+ * Fix rare NPE in PCMCodec.class.
 
 ----
 2020-12-03 mxtune-1.12.2-1.0.0-rc.3
