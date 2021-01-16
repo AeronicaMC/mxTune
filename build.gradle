@@ -52,8 +52,8 @@ repositories {
     }
 }
 
-// version = "${config.modVersionMajor}.${config.modVersionMinor}.${config.modVersionRev}-${config.versionType}.${config.typeVersion}"
-version = "${config.modVersionMajor}.${config.modVersionMinor}.${config.modVersionRev}"
+version = "${config.modVersionMajor}.${config.modVersionMinor}.${config.modVersionRev}-${config.versionType}.${config.typeVersion}"
+// version = "${config.modVersionMajor}.${config.modVersionMinor}.${config.modVersionRev}"
 group = "net.aeronica.mods.mxtune"
 archivesBaseName = "mxtune-${config.minecraftVersion}"
 
