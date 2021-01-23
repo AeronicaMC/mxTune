@@ -25,12 +25,15 @@ import net.minecraft.util.SoundCategory;
 public abstract class MxSound extends MovingSound
 {
     protected int playID;
+    protected AudioData audioData;
     private SoundEventAccessor soundEventAccessor;
 
-    MxSound(int playID, SoundCategory soundCategory)
+    MxSound(AudioData audioData, SoundCategory soundCategory)
     {
         super(ModSoundEvents.PCM_PROXY, soundCategory);
-        this.playID = playID;
+        this.audioData = audioData;
+        this.playID = audioData.getPlayId();
+        this.audioData.setISound(this);
         this.sound = new PCMSound();
         this.volume = 1F;
         this.pitch = 1F;

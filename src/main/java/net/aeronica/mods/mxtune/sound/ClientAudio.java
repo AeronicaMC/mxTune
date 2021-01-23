@@ -41,7 +41,6 @@
 package net.aeronica.mods.mxtune.sound;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.config.ModConfig;
 import net.aeronica.mods.mxtune.managers.ClientPlayManager;
@@ -50,7 +49,6 @@ import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.audio.SoundManager;
@@ -107,9 +105,8 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
     /* PCM Signed Stereo little endian */
     private static final AudioFormat audioFormatStereo = new AudioFormat(48000, 16, 2, true, false);
     /* Used to track which player/groups queued up music to be played by PlayID */
-    private static final Queue<Integer> playIDQueue01 = new ConcurrentLinkedQueue<>(); // Polled in ClientAudio#PlaySoundEvent
-    private static final Queue<Integer> playIDQueue02 = new ConcurrentLinkedQueue<>(); // Polled in CodecPCM
-    private static final Queue<Integer> playIDQueue03 = new ConcurrentLinkedQueue<>(); // Polled in ClientAudio#playStreamingSourceEvent
+    private static final Queue<Integer> playIDQueuePCM = new ConcurrentLinkedQueue<>(); // Polled in CodecPCM
+    private static final Queue<Integer> playIDQueueStreamEvent = new ConcurrentLinkedQueue<>(); // Polled in ClientAudio#playStreamingSourceEvent
     private static final Map<Integer, AudioData> playIDAudioData = new ConcurrentHashMap<>();
 
     private static ExecutorService executorService = null;
@@ -153,31 +150,25 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
 
     private static synchronized void addPlayIDQueue(int playID)
     {
-        if (playIDQueue01.add(playID) && playIDQueue02.add(playID)) {playIDQueue03.add(playID);}
+        if (playIDQueuePCM.add(playID)) {playIDQueueStreamEvent.add(playID);}
     }
 
     @Nullable
-    private static Integer pollPlayIDQueue01()
+    static Integer pollPlayIDQueuePCM()
     {
-        return playIDQueue01.poll();
+        return playIDQueuePCM.poll();
     }
 
     @Nullable
-    static Integer pollPlayIDQueue02()
+    private static Integer pollPlayIDQueueStreamEvent()
     {
-        return playIDQueue02.poll();
+        return playIDQueueStreamEvent.poll();
     }
 
     @Nullable
-    private static Integer pollPlayIDQueue03()
+    private static Integer peekPlayIDQueueStreamEvent()
     {
-        return playIDQueue03.poll();
-    }
-
-    @Nullable
-    private static Integer peekPlayIDQueue03()
-    {
-        return playIDQueue03.peek();
+        return playIDQueueStreamEvent.peek();
     }
 
     static AudioData getAudioData(Integer playID)
@@ -195,34 +186,9 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
             audioData.setUuid(uuid);
     }
 
-    private static synchronized void setISound(Integer playID, ISound iSound)
-    {
-        AudioData audioData = playIDAudioData.get(playID);
-        if (audioData != null)
-            audioData.setISound(iSound);
-    }
-
-    private static BlockPos getBlockPos(Integer playID)
-    {
-        AudioData audioData = playIDAudioData.get(playID);
-        return (audioData != null) ? audioData.getBlockPos() : BlockPos.ORIGIN;
-    }
-
-    private static SoundRange getSoundRange(Integer playID)
-    {
-        AudioData audioData = playIDAudioData.get(playID);
-        return audioData != null ? audioData.getSoundRange() :  SoundRange.NORMAL;
-    }
-
     static boolean hasPlayID(Integer playID)
     {
         return (!playIDAudioData.isEmpty() && playID != PlayIdSupplier.PlayType.INVALID) && playIDAudioData.containsKey(playID);
-    }
-    
-    private static boolean isClientPlayer(int playID)
-    {
-        AudioData audioData = playIDAudioData.get(playID);
-        return audioData != null && audioData.isClientPlayer();
     }
 
     /**
@@ -277,8 +243,13 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
                 ModLogger.warn("ClientAudio#play: playID: %s has already been submitted", playID);
                 return;
             }
+            if (isClient)
+                mc.getSoundHandler().playSound(new MusicClient(audioData)); // Players instruments or BGM
+            else if (pos == null)
+                mc.getSoundHandler().playSound(new MovingMusic(audioData)); // Other players instruments
+            else
+                mc.getSoundHandler().playSound(new MusicPositioned(audioData)); // Block in-world instruments
             executorService.execute(new ThreadedPlay(audioData, musicText));
-            MXTune.proxy.getMinecraft().getSoundHandler().playSound(new MovingMusic());
             stopVanillaMusic();
         } else
         {
@@ -467,9 +438,8 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
     {
         setVanillaMusicPaused(false);
         playIDAudioData.keySet().forEach(ClientAudio::queueAudioDataRemoval);
-        playIDQueue01.clear();
-        playIDQueue02.clear();
-        playIDQueue03.clear();
+        playIDQueuePCM.clear();
+        playIDQueueStreamEvent.clear();
     }
 
     @Override
@@ -531,42 +501,14 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
     {
         init();
         ResourceLocation soundLocation = e.getSound().getSoundLocation();
-        /* Testing for a the PCM_PROXY sound. For playing MML though the MML->PCM ClientAudio chain */
-        if (soundLocation.equals(ModSoundEvents.PCM_PROXY.getSoundName()))
-        {
-            Integer playID = pollPlayIDQueue01();
-            if (playID != null)
-            {
-                if (isClientPlayer(playID))
-                {
-                    // ** ThePlayer [this client] **
-                    // hears their own music without any 3D distance effects applied.
-                    e.setResultSound(new MusicClient(playID));
-                }
-                else if (getBlockPos(playID) == null)
-                {
-                    // ** The MUSIC the OTHER players are playing **
-                    // Moving music source for hand held or worn instruments
-                    // The Spinet Piano although a placed instrument still needs a player to sit on it is
-                    // included here.
-                    e.setResultSound(new MovingMusic(playID));
-                }
-                else
-                {
-                    // ** Musical Machines - Juke Boxes, Band Amp, Yet-to-be-announced stuff... **
-                    e.setResultSound(new MusicPositioned(playID, getBlockPos(playID), getSoundRange(playID)));
-                    ModLogger.debug("PlaySoundEvent MusicPositioned playID: %d, pos: %s, isPlayer: %s",
-                                   playID, getBlockPos(playID), isClientPlayer(playID));
-                }
-            }
-        }  else if (
-                        (ModConfig.isCreativeMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_CREATIVE.getSoundName())) ||
-                        (ModConfig.isCreditsMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_CREDITS.getSoundName())) ||
-                        (ModConfig.isDragonMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_DRAGON.getSoundName())) ||
-                        (ModConfig.isEndMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_END.getSoundName())) ||
-                        (ModConfig.isGameMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_GAME.getSoundName())) ||
-                        (ModConfig.isMenuMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_MENU.getSoundName())) ||
-                        (ModConfig.isNetherMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_NETHER.getSoundName())))
+        if (
+                (ModConfig.isCreativeMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_CREATIVE.getSoundName())) ||
+                (ModConfig.isCreditsMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_CREDITS.getSoundName())) ||
+                (ModConfig.isDragonMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_DRAGON.getSoundName())) ||
+                (ModConfig.isEndMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_END.getSoundName())) ||
+                (ModConfig.isGameMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_GAME.getSoundName())) ||
+                (ModConfig.isMenuMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_MENU.getSoundName())) ||
+                (ModConfig.isNetherMusicDisabled() && soundLocation.equals(SoundEvents.MUSIC_NETHER.getSoundName())))
             e.setResultSound(null);
     }
 
@@ -578,11 +520,10 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
     public static void event(PlayStreamingSourceEvent e)
     {
         if (e.getSound().getSoundLocation().equals(ModSoundEvents.PCM_PROXY.getSoundName()) &&
-                ClientAudio.peekPlayIDQueue03() != null)
+                ClientAudio.peekPlayIDQueueStreamEvent() != null)
         {
-            Integer playID = ClientAudio.pollPlayIDQueue03();
+            Integer playID = ClientAudio.pollPlayIDQueueStreamEvent();
             ClientAudio.setUuid(playID, e.getUuid());
-            ClientAudio.setISound(playID, e.getSound());
             ModLogger.debug("ClientAudio PlayStreamingSourceEvent: uuid: %s, ISound: %s", e.getUuid(), e.getSound());
         }
     }

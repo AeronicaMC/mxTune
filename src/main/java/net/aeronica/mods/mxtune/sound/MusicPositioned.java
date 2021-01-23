@@ -17,7 +17,6 @@
 package net.aeronica.mods.mxtune.sound;
 
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
 
 /**
  * Implements ISound<br></br>
@@ -25,14 +24,14 @@ import net.minecraft.util.math.BlockPos;
  */
 public class MusicPositioned extends MxSound
 {
-    public MusicPositioned(int playID, BlockPos pos, SoundRange soundRange)
+    public MusicPositioned(AudioData audioData)
     {
-        super(playID,SoundCategory.RECORDS);
-        this.xPosF = (float)pos.getX()+0.5F;
-        this.yPosF = (float)pos.getY()+0.5F;
-        this.zPosF = (float)pos.getZ()+0.5F;
-        this.volume = soundRange.getRange();
-        this.attenuationType = soundRange.getAttenuationType();
+        super(audioData, SoundCategory.RECORDS);
+        this.xPosF = (float)audioData.getBlockPos().getX()+0.5F;
+        this.yPosF = (float)audioData.getBlockPos().getY()+0.5F;
+        this.zPosF = (float)audioData.getBlockPos().getZ()+0.5F;
+        this.volume = audioData.getSoundRange().getRange();
+        this.attenuationType = audioData.getSoundRange().getAttenuationType();
     }
 
     @Override

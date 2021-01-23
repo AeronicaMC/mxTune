@@ -24,10 +24,10 @@ import net.minecraft.util.SoundCategory;
  */
 public class MusicClient extends MxSound
 {
-    public MusicClient(int playID)
+    public MusicClient(AudioData audioData)
     {
-        super(playID, SoundCategory.MUSIC);
-        category = getSoundCategory(playID);
+        super(audioData, SoundCategory.MUSIC);
+        category = getSoundCategory(audioData.getPlayId());
         attenuationType = AttenuationType.NONE;
     }
 

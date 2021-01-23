@@ -147,7 +147,7 @@ public class CodecPCM implements ICodec
         initialized(SET, false);
         if (playID == null)
         {
-            playID = pollPlayIDQueue02();
+            playID = pollPlayIDQueuePCM();
             if (playID == null || playID == PlayType.INVALID)
             {
                 errorMessage("playID not initialized");
