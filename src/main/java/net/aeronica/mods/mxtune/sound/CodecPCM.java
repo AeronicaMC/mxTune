@@ -207,6 +207,7 @@ public class CodecPCM implements ICodec
 		return initialized(GET, XXX);
 	}
 
+	@Nullable
 	@Override
     public SoundBuffer read()
     {
@@ -219,7 +220,7 @@ public class CodecPCM implements ICodec
 
         int bufferSize;
         byte[] readBuffer = new byte[SoundSystemConfig.getStreamingBufferSize()];
-        byte[] outputBuffer = Miscellus.nonNullInjected();
+        byte[] outputBuffer = new byte[0];
         try
         {
             if (hasStream && (audioInputStream != null))
@@ -254,7 +255,7 @@ public class CodecPCM implements ICodec
             audioDataSetStatus(Status.ERROR);
             return null;
         }
-        if (!reverseBytes && outputBuffer != null)
+        if (!reverseBytes && outputBuffer.length > 0)
             reverseBytes(outputBuffer, 0, outputBuffer.length);
         return new SoundBuffer(outputBuffer, myAudioFormat);
 	}
@@ -277,7 +278,7 @@ public class CodecPCM implements ICodec
             audioInputStream = audioData.getAudioStream();
             try
             {
-                if ((audioInputStream != null) && (audioInputStream.available() > 0))
+                if (audioInputStream.available() > 0)
                     hasStream = true;
             }
             catch (IOException e)
@@ -299,6 +300,7 @@ public class CodecPCM implements ICodec
      * system will not call this again unless the sound is
      * invalidated.
      * */
+	@Nullable
     @Override
     public SoundBuffer readAll()
     {
@@ -323,7 +325,7 @@ public class CodecPCM implements ICodec
             outputBuffer = Miscellus.appendByteArrays(outputBuffer, noiseBuffer, SAMPLE_SIZE);
         }
         errorMessage("ReadAll NOT Supported! Always use stream = true. You have been warned.");
-        if (!reverseBytes && outputBuffer != null)
+        if (!reverseBytes)
             reverseBytes(outputBuffer, 0, outputBuffer.length);
         return new SoundBuffer(outputBuffer, myAudioFormat);
     }
@@ -400,7 +402,7 @@ public class CodecPCM implements ICodec
      * @param maxLength Maximum size this array may be.
      * @return New array.
      */
-    @SuppressWarnings("unused") // Forge
+    @SuppressWarnings("unused")
     @Nullable
     private static byte[] trimArray(@Nullable byte[] array, int maxLength)
     {
@@ -453,7 +455,7 @@ public class CodecPCM implements ICodec
      * @param twoBytesData For stereo sounds.
      * @return byte array containing the converted data.
      */
-    @SuppressWarnings("unused") // Forge
+    @SuppressWarnings("unused")
     private static byte[] convertAudioBytes(byte[] audioBytes, boolean twoBytesData)
     {
         ByteBuffer dest = ByteBuffer.allocateDirect(audioBytes.length);
@@ -510,6 +512,7 @@ public class CodecPCM implements ICodec
         logger.printStackTrace(e, 1);
     }
 
+    @SuppressWarnings("unused")
     private void message(String message)
     {
         logger.message("[mxtune]: CodecPCM " + message, 1);
