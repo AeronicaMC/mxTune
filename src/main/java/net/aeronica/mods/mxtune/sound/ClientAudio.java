@@ -70,7 +70,6 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
@@ -88,7 +87,6 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Predicate;
 
-@SideOnly(Side.CLIENT)
 @Mod.EventBusSubscriber(Side.CLIENT)
 public enum ClientAudio implements ISelectiveResourceReloadListener
 {
@@ -249,7 +247,7 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
                 mc.getSoundHandler().playSound(new MovingMusic(audioData)); // Other players instruments
             else
                 mc.getSoundHandler().playSound(new MusicPositioned(audioData)); // Block in-world instruments
-            executorService.execute(new ThreadedPlay(audioData, musicText));
+            executorService.execute(new CreatePCMAudioStreamFromMML(audioData, musicText));
             stopVanillaMusic();
         } else
         {
@@ -270,12 +268,12 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         }
     }
     
-    private static class ThreadedPlay implements Runnable
+    private static class CreatePCMAudioStreamFromMML implements Runnable
     {
         private final AudioData audioData;
         private final String musicText;
 
-        ThreadedPlay(AudioData audioData, String musicText)
+        CreatePCMAudioStreamFromMML(AudioData audioData, String musicText)
         {
             this.audioData = audioData;
             this.musicText = musicText;
