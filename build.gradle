@@ -2,7 +2,6 @@
 // For those who want the bleeding edge
 buildscript {
     repositories {
-        jcenter()
         maven {
             name = "forge"
             url = "https://files.minecraftforge.net/maven"
@@ -12,6 +11,7 @@ buildscript {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
 		classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
 		classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0'
+        classpath 'org.eclipse.jgit:org.eclipse.jgit:5.10.0.202012080955-r'
     }
 }
 
@@ -36,7 +36,6 @@ buildProperties.withReader {
 }
 
 repositories {
-    jcenter()
     maven {
         url 'https://oss.sonatype.org/content/repositories/snapshots'
     }
