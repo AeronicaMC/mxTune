@@ -42,12 +42,12 @@ repositories {
     maven {
         // location of the maven that hosts JEI files
         name = "Progwml6 maven"
-        url = "http://dvs1.progwml6.com/files/maven"
+        url = "https://dvs1.progwml6.com/files/maven"
     }
     maven {
         // location of a maven mirror for JEI files, as a fallback
         name = "ModMaven"
-        url = "modmaven.k-4u.nl"
+        url = "https://modmaven.k-4u.nl"
     }
 }
 
