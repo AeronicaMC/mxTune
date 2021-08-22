@@ -42,7 +42,6 @@ package net.aeronica.mods.mxtune.sound;
 
 import net.aeronica.libs.mml.parser.MMLObject;
 import net.aeronica.mods.mxtune.util.MapListHelper;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SoundFontProxyManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -187,7 +186,7 @@ public class MMLToMIDI
             currentTransform = SoundFontProxyManager.getTransform(preset);
             noteTranslations.clear();
             noteTranslations = MapListHelper.deserializeIntIntMap(currentTransform);
-            ModLogger.debug("Transform: %s", noteTranslations.entrySet());
+            LOGGER.debug("Transform: {}", noteTranslations.entrySet());
         } else
         {
             currentTransform = "";

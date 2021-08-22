@@ -15,9 +15,10 @@
  *   limitations under the License.
  */
 
-package net.aeronica.mods.mxtune.managers.records;
+@ParametersAreNonnullByDefault
+@MethodsReturnNonnullByDefault
+package net.aeronica.mods.mxtune.config;
 
-public enum RecordType
-{
-    MXT, PLAY_LIST, SONG, SONG_PROXY
-}
+import mcp.MethodsReturnNonnullByDefault;
+
+import javax.annotation.ParametersAreNonnullByDefault;

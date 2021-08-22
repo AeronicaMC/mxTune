@@ -25,16 +25,18 @@ package net.aeronica.mods.mxtune.caches;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.util.MXTuneRuntimeException;
-import net.aeronica.mods.mxtune.util.ModLogger;
-import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Util;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -46,6 +48,7 @@ import java.nio.file.Paths;
 
 public class FileHelper
 {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final String MOD_FOLDER = Reference.MOD_ID;
     private static final String CLIENT_FOLDER = MOD_FOLDER;
     public static final String CLIENT_MML_FOLDER = CLIENT_FOLDER + "/import_folder";
@@ -66,12 +69,14 @@ public class FileHelper
      * <p></p>
      * This needs to be called from the {@link FMLServerStartingEvent}
      */
-    public static void initialize()
+    public static void initialize(MinecraftServer server)
     {
         // The top level "world" save folder a.k.a. the "Over World"
-        WorldServer worldServer = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(0);
-        File chunkDir = worldServer.getChunkSaveLocation();
+        //.getActiveAnvilConverter().getFile(server.getFolderName(), "serverconfig").toPath();
+        //File chunkDir = server.getActiveAnvilConverter().getFile(server.getFolderName(), "");
+        File chunkDir = server.getServerDirectory();
         serverWorldFolder = Paths.get(chunkDir.getPath());
+        LOGGER.debug("FileHelper: serverWorldFolder {}", serverWorldFolder.toString());
     }
 
     private FileHelper() { /* NOP */ }
@@ -115,8 +120,8 @@ public class FileHelper
                 Files.createDirectories(dir);
             } catch (IOException e)
             {
-                ModLogger.error(e);
-                ModLogger.warn("Unable to recreate folder, it exists but is not a directory: %s", (Object) dir);
+                LOGGER.error(e);
+                LOGGER.warn("Unable to recreate folder, it exists but is not a directory: {}", (Object) dir);
             }
         else
             try
@@ -125,8 +130,8 @@ public class FileHelper
 
             } catch (IOException e)
             {
-                ModLogger.error(e);
-                ModLogger.warn("Unable to create folder: %s", (Object) dir);
+                LOGGER.error(e);
+                LOGGER.warn("Unable to create folder: {}", (Object) dir);
             }
     }
 
@@ -134,10 +139,10 @@ public class FileHelper
      * Open an OS folder on the client side.
      * @param folder of interest
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void openFolder(String folder)
     {
-        OpenGlHelper.openFile(getDirectory(folder, Side.CLIENT).toFile());
+        Util.getPlatform().openFile(getDirectory(folder, LogicalSide.CLIENT).toFile());
     }
 
     /**
@@ -149,7 +154,7 @@ public class FileHelper
      * @param side Side.SERVER or Side CLIENT
      * @return the Path of the folder on the specified side
      */
-    public static Path getDirectory(String folder, Side side)
+    public static Path getDirectory(String folder, LogicalSide side)
     {
         return getDirectory(folder, side, true);
     }
@@ -164,16 +169,16 @@ public class FileHelper
      * @param fixDirectory Recreates the directory if true
      * @return the Path of the folder on the specified side
      */
-    public static Path getDirectory(String folder, Side side, boolean fixDirectory)
+    public static Path getDirectory(String folder, LogicalSide side, boolean fixDirectory)
     {
-        String sidedPath = side == Side.SERVER ? serverWorldFolder.toString() : ".";
+        String sidedPath = side == LogicalSide.SERVER ? serverWorldFolder.toString() : ".";
         Path loc = Paths.get(sidedPath, folder);
         if (fixDirectory)
             fixDirectory(loc);
         return loc;
     }
 
-    public static Path getCacheFile(String folder, String filename, Side sideIn) throws IOException
+    public static Path getCacheFile(String folder, String filename, LogicalSide sideIn) throws IOException
     {
         Path dir = getDirectory(folder, sideIn);
         Path cacheFile = dir.resolve(filename);
@@ -186,14 +191,15 @@ public class FileHelper
         return cacheFile;
     }
 
-    public static boolean fileExists(String folder, String filename, Side sideIn)
+    public static boolean fileExists(String folder, String filename, LogicalSide sideIn)
     {
         Path dir = getDirectory(folder, sideIn);
         Path resolve = dir.resolve(filename);
         return resolve.toFile().exists();
     }
 
-    public static NBTTagCompound getCompoundFromFile(Path path)
+    @Nullable
+    public static CompoundNBT getCompoundFromFile(@Nullable Path path)
     {
         if (path == null)
             throw new MXTuneRuntimeException("Missing cache file!");
@@ -204,26 +210,26 @@ public class FileHelper
         }
         catch (IOException e0)
         {
-            NBTTagCompound nbtTagCompound = new NBTTagCompound();
+            CompoundNBT nbtTagCompound = new CompoundNBT();
             try
             {
                 CompressedStreamTools.writeCompressed(nbtTagCompound, new FileOutputStream(path.toFile()));
                 return getCompoundFromFile(path);
             } catch (IOException e1)
             {
-                ModLogger.error(e1);
+                LOGGER.error(e1);
                 return null;
             }
         }
     }
 
-    public static void sendCompoundToFile(Path path, NBTTagCompound tagCompound)
+    public static void sendCompoundToFile(Path path, CompoundNBT tagCompound)
     {
         try
         {
             CompressedStreamTools.writeCompressed(tagCompound, new FileOutputStream(path.toFile()));
         } catch(IOException e) {
-            ModLogger.error(e);
+            LOGGER.error(e);
         }
     }
 }

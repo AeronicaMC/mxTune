@@ -24,7 +24,6 @@ package net.aeronica.mods.mxtune.sound;
 import com.sun.media.sound.AudioSynthesizer;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 
-import javax.annotation.Nullable;
 import javax.sound.midi.*;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -87,7 +86,6 @@ public class Midi2WavRenderer implements Receiver
     /**
      * Find available AudioSynthesizer.
      */
-    @Nullable
     private AudioSynthesizer findAudioSynthesizer() throws MidiUnavailableException
     {
         // First check if default synthesizer is AudioSynthesizer.
@@ -125,7 +123,7 @@ public class Midi2WavRenderer implements Receiver
     /**
      * Send entry MIDI Sequence into Receiver using timestamps.
      */
-    private double send(@Nullable Sequence seq, @Nullable Receiver receiver) throws ModMidiException
+    private double send(Sequence seq, Receiver recv) throws ModMidiException
     {
         if (seq == null) return 0D;
 
@@ -155,7 +153,7 @@ public class Midi2WavRenderer implements Receiver
                 break;
             tracksPos[selectedTrack]++;
             if (selectedEvent == null)
-                throw new ModMidiException("Null MidiEvent in 'send' method: " +seq);
+                throw new ModMidiException("Null MidiEvent in \'send\' method: " +seq);
             long tick = selectedEvent.getTick();
             if ((int)divisionType == (int)Sequence.PPQ)
                 currentTime += ((tick - lastTick) * mpq) / seqResolution;
@@ -171,8 +169,8 @@ public class Midi2WavRenderer implements Receiver
                                 | ((data[1] & 0xff) << 8) | (data[2] & 0xff);
                     }
             } else {
-                if (receiver != null)
-                    receiver.send(msg, currentTime);
+                if (recv != null)
+                    recv.send(msg, currentTime);
             }
         }
         return currentTime / 1000000.0;

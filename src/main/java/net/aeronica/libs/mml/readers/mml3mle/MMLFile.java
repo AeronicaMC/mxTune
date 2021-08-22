@@ -32,9 +32,6 @@
 package net.aeronica.libs.mml.readers.mml3mle;
 
 import net.aeronica.libs.mml.parser.MMLUtil;
-import net.aeronica.mods.mxtune.mxt.MXTuneFile;
-import net.aeronica.mods.mxtune.mxt.MXTunePart;
-import net.aeronica.mods.mxtune.mxt.MXTuneStaff;
 import net.aeronica.mods.mxtune.util.SoundFontProxyManager;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.logging.log4j.LogManager;
@@ -59,60 +56,60 @@ import java.util.zip.CRC32;
 public final class MMLFile
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final MXTuneFile mxTuneFile = new MXTuneFile();
+//    private final MXTuneFile mxTuneFile = new MXTuneFile();
     private String encoding = "Shift_JIS";
 
     // channel sections
     private LinkedList<String> mmlParts = new LinkedList<>();
     private List<Extension3mleTrack> trackList = null;
 
-    public static MXTuneFile parse(Path path)
-    {
-        try
-        {
-            return new MMLFile().parse(getFile(path));
-        } catch (MMLParseException e)
-        {
-            LOGGER.error(e);
-        }
-        return null;
-    }
-
-    public MXTuneFile parse(InputStream istream) throws MMLParseException
-    {
-        List<SectionContents> contentsList = SectionContents.makeSectionContentsByInputStream(istream, encoding);
-        if (contentsList.isEmpty())
-        {
-            throw (new MMLParseException("no contents"));
-        }
-        parseSection(contentsList);
-        if ((trackList == null) || trackList.isEmpty())
-        {
-            throw new MMLParseException("no track");
-        }
-        createTrack();
-        return mxTuneFile;
-    }
-
-    private static FileInputStream getFile(@Nullable Path path)
-    {
-        FileInputStream is = null;
-        if (path != null)
-        {
-            try
-            {
-                is = new FileInputStream(path.toFile());
-            } catch (FileNotFoundException e)
-            {
-                LOGGER.error(e.getLocalizedMessage());
-            }
-            return is;
-        }
-        else
-            LOGGER.error("Path is null in AbstractMmlFileReader#getFile");
-        return null;
-    }
-
+//    public static MXTuneFile parse(Path path)
+//    {
+//        try
+//        {
+//            return new MMLFile().parse(getFile(path));
+//        } catch (MMLParseException e)
+//        {
+//            LOGGER.error(e);
+//        }
+//        return null;
+//    }
+//
+//    public MXTuneFile parse(InputStream istream) throws MMLParseException
+//    {
+//        List<SectionContents> contentsList = SectionContents.makeSectionContentsByInputStream(istream, encoding);
+//        if (contentsList.isEmpty())
+//        {
+//            throw (new MMLParseException("no contents"));
+//        }
+//        parseSection(contentsList);
+//        if ((trackList == null) || trackList.isEmpty())
+//        {
+//            throw new MMLParseException("no track");
+//        }
+//        createTrack();
+//        return mxTuneFile;
+//    }
+//
+//    private static FileInputStream getFile(@Nullable Path path)
+//    {
+//        FileInputStream is = null;
+//        if (path != null)
+//        {
+//            try
+//            {
+//                is = new FileInputStream(path.toFile());
+//            } catch (FileNotFoundException e)
+//            {
+//                LOGGER.error(e.getLocalizedMessage());
+//            }
+//            return is;
+//        }
+//        else
+//            LOGGER.error("Path is null in AbstractMmlFileReader#getFile");
+//        return null;
+//    }
+//
     private static byte[] decode(String dSection, long c) throws MMLParseException
     {
         CRC32 crc = new CRC32();
@@ -156,65 +153,65 @@ public final class MMLFile
         return data;
     }
 
-    private void parseSection(List<SectionContents> contentsList) throws MMLParseException
-    {
-        for (SectionContents contents : contentsList)
-        {
-            if (contents.getName().equals("[3MLE EXTENSION]"))
-            {
-                trackList = parse3mleExtension(contents.getContents());
-            }
-            else if (contents.getName().matches("\\[Channel[0-9]*\\]"))
-            {
-                mmlParts.add(contents.getContents()
-                    .replaceAll("//.*\n", "\n")
-                    .replaceAll("/\\*/?([^/]|[^*]/)*\\*/", "")
-                    .replaceAll("[ \t\n]", ""));
-            }
-            else if (contents.getName().equals("[Settings]"))
-            {
-                parseSettings(contents.getContents());
-            }
-        }
-
-    }
-
-    private void createTrack()
-    {
-        for (Extension3mleTrack track : trackList)
-        {
-            int program = track.getInstrument() - 1; // 3MLEのInstruments番号は1がスタート.
-            LOGGER.debug("Program: {}", program);
-            String[] text = new String[MMLUtil.MAX_TRACKS];
-            List<MXTuneStaff> staves = new ArrayList<>();
-            for (int i = 0; i < track.getTrackCount(); i++)
-            {
-                text[i] = mmlParts.pop();
-                staves.add(new MXTuneStaff(i, text[i]));
-                LOGGER.debug("text[{}]= {}", i, text[i]);
-            }
-
-            String meta = String.format("%s, program %d", track.getTrackName(), program);
-            String soundProxyID = Map3MLEInstruments.getSoundFontProxyName(program);
-            int packedPreset = SoundFontProxyManager.getPackedPreset(soundProxyID);
-            MXTunePart mxTunePart = new MXTunePart(soundProxyID, meta, packedPreset, staves);
-            mxTuneFile.getParts().add(mxTunePart);
-        }
-    }
-
-    /**
-     * parse [Settings] contents
-     *
-     * @param contents
-     */
-    private void parseSettings(String contents)
-    {
-        TextParser.text(contents)
-                .pattern("Title=", mxTuneFile::setTitle)
-                .pattern("Source=", mxTuneFile::setSource)
-                .pattern("Encoding=", t -> this.encoding = t)
-                .parse();
-    }
+//    private void parseSection(List<SectionContents> contentsList) throws MMLParseException
+//    {
+//        for (SectionContents contents : contentsList)
+//        {
+//            if (contents.getName().equals("[3MLE EXTENSION]"))
+//            {
+//                trackList = parse3mleExtension(contents.getContents());
+//            }
+//            else if (contents.getName().matches("\\[Channel[0-9]*\\]"))
+//            {
+//                mmlParts.add(contents.getContents()
+//                    .replaceAll("//.*\n", "\n")
+//                    .replaceAll("/\\*/?([^/]|[^*]/)*\\*/", "")
+//                    .replaceAll("[ \t\n]", ""));
+//            }
+//            else if (contents.getName().equals("[Settings]"))
+//            {
+//                parseSettings(contents.getContents());
+//            }
+//        }
+//
+//    }
+//
+//    private void createTrack()
+//    {
+//        for (Extension3mleTrack track : trackList)
+//        {
+//            int program = track.getInstrument() - 1; // 3MLEのInstruments番号は1がスタート.
+//            LOGGER.debug("Program: {}", program);
+//            String[] text = new String[MMLUtil.MAX_TRACKS];
+//            List<MXTuneStaff> staves = new ArrayList<>();
+//            for (int i = 0; i < track.getTrackCount(); i++)
+//            {
+//                text[i] = mmlParts.pop();
+//                staves.add(new MXTuneStaff(i, text[i]));
+//                LOGGER.debug("text[{}]= {}", i, text[i]);
+//            }
+//
+//            String meta = String.format("%s, program %d", track.getTrackName(), program);
+//            String soundProxyID = Map3MLEInstruments.getSoundFontProxyName(program);
+//            int packedPreset = SoundFontProxyManager.getPackedPreset(soundProxyID);
+//            MXTunePart mxTunePart = new MXTunePart(soundProxyID, meta, packedPreset, staves);
+//            mxTuneFile.getParts().add(mxTunePart);
+//        }
+//    }
+//
+//    /**
+//     * parse [Settings] contents
+//     *
+//     * @param contents
+//     */
+//    private void parseSettings(String contents)
+//    {
+//        TextParser.text(contents)
+//                .pattern("Title=", mxTuneFile::setTitle)
+//                .pattern("Source=", mxTuneFile::setSource)
+//                .pattern("Encoding=", t -> this.encoding = t)
+//                .parse();
+//    }
 
     /**
      * [3MLE EXTENSION] をパースし, トラック構成情報を取得します.

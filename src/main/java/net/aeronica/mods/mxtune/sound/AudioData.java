@@ -16,8 +16,8 @@
  */
 package net.aeronica.mods.mxtune.sound;
 
+
 import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
-import net.aeronica.mods.mxtune.sound.ClientAudio.Status;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.util.math.BlockPos;
 
@@ -28,17 +28,16 @@ import javax.sound.sampled.AudioInputStream;
 import static net.aeronica.mods.mxtune.sound.ClientAudio.Status.DONE;
 import static net.aeronica.mods.mxtune.sound.ClientAudio.Status.ERROR;
 
+
 public class AudioData
 {
     private final int playId;
     private final BlockPos blockPos;
     private final boolean isClientPlayer;
-    private final SoundRange soundRange;
     private AudioInputStream audioStream;
     private AudioFormat audioFormat;
-    private String uuid;
     private ISound iSound;
-    private Status status;
+    private ClientAudio.Status status;
     private final PlayIdSupplier.PlayType playType;
     private final IAudioStatusCallback callback;
 
@@ -48,16 +47,14 @@ public class AudioData
     private int fadeTicks;
     private int fadeCounter;
 
-    AudioData(int playId, @Nullable BlockPos blockPos, boolean isClientPlayer, SoundRange soundRange, @Nullable IAudioStatusCallback callback)
+    AudioData(int playId, @Nullable BlockPos blockPos, boolean isClientPlayer, @Nullable IAudioStatusCallback callback)
     {
         this.playId = playId;
         this.playType = PlayIdSupplier.getTypeForPlayId(playId);
         this.blockPos = blockPos;
         this.isClientPlayer = isClientPlayer;
-        this.soundRange = soundRange;
-        this.status = Status.WAITING;
+        this.status = ClientAudio.Status.WAITING;
         this.callback = callback;
-        this.uuid = "";
     }
 
     public synchronized AudioFormat getAudioFormat()
@@ -73,12 +70,12 @@ public class AudioData
         }
     }
 
-    public synchronized Status getStatus()
+    public synchronized ClientAudio.Status getStatus()
     {
         return status;
     }
 
-    public void setStatus(Status status)
+    public void setStatus(ClientAudio.Status status)
     {
         synchronized (this)
         {
@@ -96,6 +93,7 @@ public class AudioData
         return playId;
     }
 
+    @Nullable
     BlockPos getBlockPos()
     {
         return blockPos;
@@ -105,8 +103,6 @@ public class AudioData
     {
         return isClientPlayer;
     }
-
-    SoundRange getSoundRange() { return soundRange; }
 
     synchronized AudioInputStream getAudioStream()
     {
@@ -121,16 +117,7 @@ public class AudioData
         }
     }
 
-    public String getUuid()
-    {
-        return uuid;
-    }
-
-    public void setUuid(String uuid)
-    {
-        this.uuid = uuid;
-    }
-
+    @Nullable
     synchronized ISound getISound()
     {
         return iSound;

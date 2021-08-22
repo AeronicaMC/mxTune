@@ -19,9 +19,10 @@ package net.aeronica.mods.mxtune.sound;
 import net.aeronica.libs.mml.parser.MMLParser;
 import net.aeronica.libs.mml.parser.MMLParserFactory;
 import net.aeronica.libs.mml.parser.MMLUtil;
-import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.client.resources.I18n;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Patch;
@@ -32,6 +33,7 @@ import static net.aeronica.mods.mxtune.sound.ClientAudio.Status.READY;
 
 public class MML2PCM
 {
+    private static final Logger LOGGER = LogManager.getLogger();
     private final AudioData audioData;
     private final String mmlText;
 
@@ -52,8 +54,9 @@ public class MML2PCM
         for (int preset: toMIDI.getPresets())
         {
             Patch patchPreset = MMLUtil.packedPreset2Patch(SoundFontProxyManager.getPackedPreset(preset));
-            String name = I18n.format(SoundFontProxyManager.getLangKeyName(preset));
-            ModLogger.debug("MML2PCM preset: %3d, bank: %3d, program: %3d, name: %s", preset, patchPreset.getBank(),
+            // FIXME: Language Format
+            String name = I18n.get(SoundFontProxyManager.getLangKeyName(preset));
+            LOGGER.debug("MML2PCM preset: {}, bank: {}, program: {}, name: {}", preset, patchPreset.getBank(),
                            patchPreset.getProgram(), name);
         }
 
@@ -66,7 +69,7 @@ public class MML2PCM
         } catch (ModMidiException | MidiUnavailableException e)
         {
             audioData.setStatus(ERROR);
-            ModLogger.error("MIDI to PCM process: ", e);
+            LOGGER.error("MIDI to PCM process: ", e);
             return false;
         }
         audioData.setStatus(READY);

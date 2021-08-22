@@ -1,49 +1,47 @@
-/*
- * Aeronica's mxTune MOD
- * Copyright 2018, Paul Boese a.k.a. Aeronica
- *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
- */
 package net.aeronica.mods.mxtune.sound;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3d;
+import org.apache.logging.log4j.LogManager;
 
-/**
- * Implements ISound<br></br>
- * For musical machines placed in the world
- */
 public class MusicPositioned extends MxSound
 {
-    public MusicPositioned(AudioData audioData)
+    private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger();
+    private Minecraft mc = Minecraft.getInstance();
+    private int counter;
+    private float lastDistance;
+
+    MusicPositioned(AudioData audioData)
     {
         super(audioData, SoundCategory.RECORDS);
-        this.xPosF = (float)audioData.getBlockPos().getX()+0.5F;
-        this.yPosF = (float)audioData.getBlockPos().getY()+0.5F;
-        this.zPosF = (float)audioData.getBlockPos().getZ()+0.5F;
-        this.volume = audioData.getSoundRange().getRange();
-        this.attenuationType = audioData.getSoundRange().getAttenuationType();
+        this.attenuation = AttenuationType.LINEAR;
+        BlockPos blockPos = audioData.getBlockPos();
+        if (blockPos != null)
+        {
+            this.x = blockPos.getX();
+            this.y = blockPos.getY();
+            this.z = blockPos.getZ();
+            this.volume = 4.0F;
+        }
     }
 
     @Override
-    public void update()
+    protected void onUpdate()
     {
-        if (ClientAudio.hasPlayID(playID))
+        if (audioData != null && audioData.getBlockPos() != null && mc.player != null)
         {
-            // Override ModSoundVolume updates
-        }
-        else
-        {
-            this.setDonePlaying();
+            Vector3d vec3d = new Vector3d(mc.player.blockPosition().getX(), mc.player.blockPosition().getY(), mc.player.blockPosition().getZ());
+            BlockPos blockPos = audioData.getBlockPos();
+            float distance = (float) vec3d.distanceTo(new Vector3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+            this.volume = (float) MathHelper.clamp(MathHelper.lerp(MathHelper.clamp((4 / (distance + .001)), 0.0F, 1F), -1, 4), 0, 4);
+            if ((counter++ % 20 == 0) && (distance != lastDistance))
+            {
+                LOGGER.debug("PosSound {}, dist {}, volume {}", audioData.getBlockPos(), distance, volume);
+                lastDistance = distance;
+            }
         }
     }
 }
