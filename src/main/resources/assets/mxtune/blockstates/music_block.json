@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "mxtune:block/music_block" }
+  }
+}

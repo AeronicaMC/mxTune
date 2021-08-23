@@ -17,18 +17,20 @@
 package net.aeronica.mods.mxtune;
 
 
-import net.aeronica.mods.mxtune.blocks.InvTestBlock;
-import net.aeronica.mods.mxtune.blocks.InvTestContainer;
-import net.aeronica.mods.mxtune.blocks.InvTestTile;
-import net.aeronica.mods.mxtune.blocks.MusicBlock;
+import net.aeronica.mods.mxtune.blocks.*;
 import net.aeronica.mods.mxtune.caches.FileHelper;
+import net.aeronica.mods.mxtune.caps.LivingEntityModCapProvider;
 import net.aeronica.mods.mxtune.config.MXTuneConfig;
 import net.aeronica.mods.mxtune.items.GuiTestItem;
 import net.aeronica.mods.mxtune.items.MusicItem;
+import net.aeronica.mods.mxtune.network.PacketDispatcher;
+import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.util.AntiNull;
+import net.aeronica.mods.mxtune.util.KeyHandler;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.*;
 import net.minecraft.tileentity.TileEntityType;
@@ -74,15 +76,15 @@ public class MXTune
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
-//        PacketDispatcher.register();
-//        LivingEntityModCapProvider.register();
+        PacketDispatcher.register();
+        LivingEntityModCapProvider.register();
     }
 
     private void clientSetup(final FMLClientSetupEvent event)
     {
-//        ScreenManager.register(ObjectHolders.INV_TEST_CONTAINER, InvTestScreen::new);
-//        MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());
-//        MinecraftForge.EVENT_BUS.register(ClientAudio.class);
+        ScreenManager.register(ObjectHolders.INV_TEST_CONTAINER, InvTestScreen::new);
+        MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());
+        MinecraftForge.EVENT_BUS.register(ClientAudio.class);
     }
 
     @SubscribeEvent

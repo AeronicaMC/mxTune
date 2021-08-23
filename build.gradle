@@ -115,7 +115,7 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:1.16.5-36.2.0'
 
-    shadow 'org.antlr:antlr4-runtime:4.7.2' // use ANTLR version 4
+//    shadow 'org.antlr:antlr4-runtime:4.7.2' // use ANTLR version 4
 
     // compile against the JEI API but do not include it at runtime
     ////compileOnly fg.deobf("mezz.jei:jei-1.15.2:6.0.0.3:api")
@@ -138,7 +138,7 @@ shadowJar {
     configurations = [project.configurations.shadow]
 
     classifier '' // Replace the default JAR
-    relocate 'org.antlr.v4.runtime', 'net.aeronica.mods.mxtune.shadowlibs.org.antlr.v4.runtime'
+//    relocate 'org.antlr.v4.runtime', 'net.aeronica.mods.mxtune.shadowlibs.org.antlr.v4.runtime'
 }
 
 reobf {
