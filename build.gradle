@@ -30,6 +30,7 @@ repositories {
     }
 }
 
+group = 'aeronicamc'
 version = '0.0.0'
 archivesBaseName = 'mxtune-1.16.5'
 java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 8 to end users, so your mod should target Java 8.
