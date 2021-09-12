@@ -114,7 +114,7 @@ public final class LivingEntityModCapProvider
         @SubscribeEvent
         public static void playerChangeDimension(final PlayerEvent.PlayerChangedDimensionEvent event)
         {
-            getLivingEntityModCap(event.getPlayer()).ifPresent(ILivingEntityModCap::synchronise);
+            getLivingEntityModCap(event.getPlayer()).ifPresent(ILivingEntityModCap::synchronize);
             LOGGER.debug("LivingEntityModCapProvider#PlayerChangedDimensionEvent: {}", event.getPlayer());
         }
     }

@@ -39,7 +39,7 @@ public class MusicItem extends Item
                 });
             else
             {
-                LivingEntityModCapProvider.getLivingEntityModCap(playerIn).ifPresent(ILivingEntityModCap::synchronise);
+                LivingEntityModCapProvider.getLivingEntityModCap(playerIn).ifPresent(ILivingEntityModCap::synchronize);
             }
 
         } else if (!playerIn.isShiftKeyDown())

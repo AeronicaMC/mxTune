@@ -6,5 +6,5 @@ public interface ILivingEntityModCap
 
     int getPlayId();
 
-    void synchronise();
+    void synchronize();
 }

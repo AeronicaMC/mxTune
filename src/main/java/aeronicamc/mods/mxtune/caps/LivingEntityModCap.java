@@ -23,7 +23,7 @@ public class LivingEntityModCap implements ILivingEntityModCap
     public void setPlayId(int playId)
     {
         this.playId = playId;
-        synchronise();
+        synchronize();
     }
 
     @Override
@@ -34,7 +34,7 @@ public class LivingEntityModCap implements ILivingEntityModCap
 
 
     @Override
-    public void synchronise()
+    public void synchronize()
     {
         if (entity == null) return;
         World world = entity.level;
