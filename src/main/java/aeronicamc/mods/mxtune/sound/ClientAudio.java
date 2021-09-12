@@ -21,11 +21,12 @@ import java.util.concurrent.*;
 
 public class ClientAudio
 {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(ClientAudio.class);
     public static final Object THREAD_SYNC = new Object();
-    private static Minecraft mc = Minecraft.getInstance();
+    private static final Minecraft mc = Minecraft.getInstance();
     private static SoundEngine soundEngine;
     private static SoundHandler soundHandler;
+    private static MusicTicker musicTicker;
     private static int counter;
     private static final Queue<Integer> delayedAudioDataRemovalQueue = new ConcurrentLinkedDeque<>();
 
@@ -40,6 +41,8 @@ public class ClientAudio
 
     private static ExecutorService executorService = null;
     private static ThreadFactory threadFactory = null;
+
+    private static boolean vanillaMusicPaused = false;
 
     private ClientAudio() { /* NOP */ }
 
@@ -68,6 +71,8 @@ public class ClientAudio
             soundEngine = se;
             soundHandler = soundEngine.soundManager;
         }
+        if (musicTicker == null)
+            musicTicker = mc.getMusicManager();
     }
 
     public enum Status
@@ -80,7 +85,6 @@ public class ClientAudio
         playIDQueue01.add(playID);
     }
 
-    @SuppressWarnings("all")
     private static int pollPlayIDQueue01()
     {
         return playIDQueue01.peek() == null ? PlayIdSupplier.INVALID : playIDQueue01.poll();
@@ -147,9 +151,8 @@ public class ClientAudio
 
     public static void playLocal(int playId, String musicText, @Nullable IAudioStatusCallback callback)
     {
-        play(playId, mc.player.blockPosition(), musicText, true, callback);
+        play(playId, mc.player == null ? null : mc.player.blockPosition(), musicText, true, callback);
     }
-
 
     // Determine if audio is 3D spacial or background
     // Players playing solo, or in JAMS hear their own audio without 3D effects or falloff.
@@ -179,6 +182,7 @@ public class ClientAudio
             else
                 mc.getSoundManager().play(new MusicPositioned(audioData));
             executorService.execute(new ThreadedPlay(audioData, musicText));
+            stopVanillaMusic();
         } else
         {
             LOGGER.warn("ClientAudio#play(Integer playID, BlockPos pos, String musicText): playID is null!");
@@ -294,14 +298,14 @@ public class ClientAudio
     {
         if (soundEngine != null)
         {
-            if(playIDAudioData.isEmpty() )
+            if(isVanillaMusicPaused() && playIDAudioData.isEmpty() )
             {
-                //resumeVanillaMusic();
-                //setVanillaMusicPaused(false);
+                resumeVanillaMusic();
+                setVanillaMusicPaused(false);
             } else if (!playIDAudioData.isEmpty())
             {
                 // don't allow the timer to counter down while ClientAudio sessions are playing
-                //setVanillaMusicTimer(Integer.MAX_VALUE);
+                setVanillaMusicTimer(Integer.MAX_VALUE);
             }
             // Remove inactive playIDs
             removeQueuedAudioData();
@@ -334,6 +338,46 @@ public class ClientAudio
     {
         stop(playId);
         delayedAudioDataRemovalQueue.add(playId);
+    }
+
+    private static void stopVanillaMusicTicker()
+    {
+        if (musicTicker.currentMusic != null)
+        {
+            soundHandler.stop(musicTicker.currentMusic);
+            musicTicker.currentMusic = null;
+            musicTicker.nextSongDelay = 0;
+        }
+    }
+
+    private static void stopVanillaMusic()
+    {
+        LOGGER.debug("ClientAudio stopVanillaMusic - PAUSED on {} active sessions.", playIDAudioData.size());
+        setVanillaMusicPaused(true);
+        stopVanillaMusicTicker();
+        setVanillaMusicTimer(Integer.MAX_VALUE);
+    }
+
+    private static void resumeVanillaMusic()
+    {
+        LOGGER.debug("ClientAudio resumeVanillaMusic - RESUMED");
+        setVanillaMusicTimer(100);
+    }
+
+    private static void setVanillaMusicTimer(int value)
+    {
+        if (musicTicker != null)
+            musicTicker.nextSongDelay = value;
+    }
+
+    private static void setVanillaMusicPaused(boolean flag)
+    {
+        vanillaMusicPaused = flag;
+    }
+
+    private static boolean isVanillaMusicPaused()
+    {
+        return vanillaMusicPaused;
     }
 
     @SubscribeEvent
