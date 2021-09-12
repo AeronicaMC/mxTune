@@ -410,13 +410,6 @@ public class ClientAudio
     }
 
     @SubscribeEvent
-    public static void event(SoundEvent.SoundSourceEvent event)
-    {
-        if (event.getSound().getLocation().equals(ModSoundEvents.PCM_PROXY.getRegistryName()))
-            LOGGER.debug("SoundSourceEvent", event.getName());
-    }
-
-    @SubscribeEvent
     public static void event(PlaySoundEvent event)
     {
         // Gets called often so pretty much guarantees ClientAudio will get initialized.
@@ -424,12 +417,18 @@ public class ClientAudio
     }
 
     @SubscribeEvent
+    public static void event(PlaySoundSourceEvent event)
+    {
+        // This will never get called since the consumer of the disqualifies non-ogg sound resources.
+        if (event.getSound().getLocation().equals(ModSoundEvents.PCM_PROXY.getRegistryName()))
+            LOGGER.debug("PlaySoundSourceEvent {}", event.getSound().getLocation());
+    }
+
+    @SubscribeEvent
     public static void event(PlayStreamingSourceEvent event)
     {
+        // This will never get called since the consumer of the stream disqualifies non-ogg sound resources.
         if (event.getSound().getLocation().equals(ModSoundEvents.PCM_PROXY.getRegistryName()))
-        {
-            // This will never get called since the consumer of the stream disqualifies non-ogg sound resources.
-            LOGGER.debug("pcm-proxy PlayStreamingSourceEvent");
-        }
+            LOGGER.debug("PlayStreamingSourceEvent {}", event.getSound().getLocation());
     }
 }
