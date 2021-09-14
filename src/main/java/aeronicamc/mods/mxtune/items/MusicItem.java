@@ -35,7 +35,7 @@ public class MusicItem extends Item
         {
             if (!playerIn.isShiftKeyDown())
                 LivingEntityModCapProvider.getLivingEntityModCap(playerIn).ifPresent(livingCap -> {
-                    livingCap.setPlayId((int) worldIn.getDayTime());
+                    livingCap.setPlayId(rand.nextInt());
                 });
             else
             {
