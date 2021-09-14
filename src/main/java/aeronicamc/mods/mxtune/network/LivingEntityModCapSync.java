@@ -33,6 +33,7 @@ public class LivingEntityModCapSync
 
     public static void encode(final LivingEntityModCapSync message, final PacketBuffer buffer)
     {
+        LOGGER.debug("LivingEntityModCapSync#encode playId: {}", message.playId);
         buffer.writeInt(message.playId);
     }
 
