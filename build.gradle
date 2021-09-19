@@ -1,16 +1,19 @@
 buildscript {
     repositories {
         maven { url = 'https://maven.minecraftforge.net' }
-        maven { url = "https://plugins.gradle.org/m2/" }
+        maven { url = 'https://maven.parchmentmc.org' }
+        maven { url = 'https://plugins.gradle.org/m2/' }
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath 'org.parchmentmc:librarian:1.+'
         classpath "com.github.jengelman.gradle.plugins:shadow:4.0.4"
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: 'maven-publish'
 apply plugin: "com.github.johnrengelman.shadow"
 
@@ -30,14 +33,15 @@ repositories {
     }
 }
 
+version = "${version_mod}"
 group = 'aeronicamc'
-version = '0.0.0'
-archivesBaseName = 'mxtune-1.16.5'
+archivesBaseName = "mxtune-${version_mc}"
 java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 8 to end users, so your mod should target Java 8.
 project.logger.info('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
 minecraft {
-    mappings channel: 'official', version: '1.16.5'
+    // mappings channel: 'official', version: '1.16.5'
+    mappings channel: "${mappings_channel}", version: "${mappings_version}-${version_mc}"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
     
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -107,14 +111,14 @@ dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.16.5-36.2.4'
+    minecraft "net.minecraftforge:forge:${version_mc}-${version_forge}"
 
 //    shadow 'org.antlr:antlr4-runtime:4.7.2' // use ANTLR version 4
 
     // compile against the JEI API but do not include it at runtime
-    //compileOnly fg.deobf("mezz.jei:jei-1.16.5:7.7.1.121:api")
+    //compileOnly fg.deobf("mezz.jei:jei-${version_mc}:${jei_version}:api")
     // at runtime, use the full JEI jar
-    //runtimeOnly fg.deobf("mezz.jei:jei-1.16.5:7.7.1.121")
+    //runtimeOnly fg.deobf("mezz.jei:${version_mc}:${jei_version}")
 
     // For more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
