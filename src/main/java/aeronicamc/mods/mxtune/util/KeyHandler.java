@@ -18,7 +18,7 @@ package aeronicamc.mods.mxtune.util;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
-import aeronicamc.mods.mxtune.network.SendKeyMessage;
+import aeronicamc.mods.mxtune.network.messages.SendKeyMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.event.InputEvent;

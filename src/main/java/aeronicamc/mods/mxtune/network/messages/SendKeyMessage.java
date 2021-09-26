@@ -14,9 +14,10 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package aeronicamc.mods.mxtune.network;
+package aeronicamc.mods.mxtune.network.messages;
 
 import aeronicamc.mods.mxtune.gui.Handler;
+import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -26,25 +27,30 @@ import org.apache.logging.log4j.Logger;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class SendKeyMessage
+public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final String keyBindingDesc;
+    private String keyBindingDesc = "";
+
+    public SendKeyMessage() { /* NOP */ }
 
     public SendKeyMessage(final String kb) { this.keyBindingDesc = kb; }
 
-    public static SendKeyMessage decode(final PacketBuffer buffer)
+    @Override
+    public SendKeyMessage decode(final PacketBuffer buffer)
     {
         String keyBindingDesc = buffer.readUtf(64);
         return new SendKeyMessage(keyBindingDesc);
     }
 
-    public static void encode(final SendKeyMessage message, final PacketBuffer buffer)
+    @Override
+    public void encode(final SendKeyMessage message, final PacketBuffer buffer)
     {
         buffer.writeUtf(message.keyBindingDesc, 64);
     }
 
-    public static void handle(final SendKeyMessage message, final Supplier<NetworkEvent.Context> ctx)
+    @Override
+    public  void handle(final SendKeyMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
         ServerPlayerEntity player = ctx.get().getSender();
         if (ctx.get().getDirection().getReceptionSide().isClient())

@@ -1,44 +1,45 @@
 package aeronicamc.mods.mxtune.network;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.network.messages.AbstractMessage;
+import aeronicamc.mods.mxtune.network.messages.LivingEntityModCapSync;
+import aeronicamc.mods.mxtune.network.messages.OpenScreenMessage;
+import aeronicamc.mods.mxtune.network.messages.SendKeyMessage;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
-
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class PacketDispatcher
 {
     private static final ResourceLocation CHANNEL_NAME = new ResourceLocation(Reference.MOD_ID, "network");
     private static final String NETWORK_VERSION = new ResourceLocation(Reference.MOD_ID, "1").toString();
     private static int packetId = 0;
-    private static SimpleChannel HANDLER  = NetworkRegistry.ChannelBuilder.named(CHANNEL_NAME)
-        .clientAcceptedVersions(version -> true)
-        .serverAcceptedVersions(version -> true)
-        .networkProtocolVersion(() -> NETWORK_VERSION)
-        .simpleChannel();
+    private static SimpleChannel channel;
 
     public static void register()
     {
+        channel = NetworkRegistry.ChannelBuilder
+                .named(CHANNEL_NAME)
+                .clientAcceptedVersions(version -> true)
+                .serverAcceptedVersions(version -> true)
+                .networkProtocolVersion(() -> NETWORK_VERSION)
+                .simpleChannel();
+
         // Bidirectional
-        registerMessage(SendKeyMessage.class, SendKeyMessage::encode, SendKeyMessage::decode, SendKeyMessage::handle);
+        registerMessage(SendKeyMessage.class, new SendKeyMessage());
         // To Client(s)
-        registerMessage(LivingEntityModCapSync.class, LivingEntityModCapSync::encode, LivingEntityModCapSync::decode, LivingEntityModCapSync::handle);
-        registerMessage(OpenScreenMessage.class, OpenScreenMessage::encode, OpenScreenMessage::decode, OpenScreenMessage::handle);
+        registerMessage(LivingEntityModCapSync.class, new LivingEntityModCapSync());
+        registerMessage(OpenScreenMessage.class, new OpenScreenMessage());
     }
 
-    private static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> handler)
+    private static <MSG extends AbstractMessage<MSG>> void registerMessage(Class<MSG> messageType, AbstractMessage<MSG> message)
     {
-        HANDLER.registerMessage(packetId++, messageType, encoder, decoder, handler);
+        channel.registerMessage(packetId++, messageType, message::encode, message::decode, message::handle);
     }
 
     private PacketDispatcher() { /* NOP */ }
@@ -49,7 +50,7 @@ public class PacketDispatcher
      */
     public static <MSG> void sendTo(MSG message, ServerPlayerEntity player)
     {
-        HANDLER.send(PacketDistributor.PLAYER.with(()->player), message);
+        channel.send(PacketDistributor.PLAYER.with(()->player), message);
     }
 
     /**
@@ -58,7 +59,7 @@ public class PacketDispatcher
      */
     public static <MSG> void sendToAll(MSG message)
     {
-        HANDLER.send(PacketDistributor.ALL.with(null), message);
+        channel.send(PacketDistributor.ALL.with(null), message);
     }
 
     /**
@@ -67,7 +68,7 @@ public class PacketDispatcher
      */
     public static <MSG> void sendToAllAround(MSG message, PacketDistributor.TargetPoint point)
     {
-        HANDLER.send(PacketDistributor.NEAR.with(()->point), message);
+        channel.send(PacketDistributor.NEAR.with(()->point), message);
     }
 
     /**
@@ -96,7 +97,7 @@ public class PacketDispatcher
      */
     public static <MSG> void sendToDimension(MSG message, RegistryKey<World> dimension)
     {
-        HANDLER.send(PacketDistributor.DIMENSION.with(()->dimension), message);
+        channel.send(PacketDistributor.DIMENSION.with(()->dimension), message);
     }
 
     /**
@@ -105,7 +106,7 @@ public class PacketDispatcher
      */
     public static <MSG> void sendToServer(MSG message)
     {
-        HANDLER.sendToServer(message);
+        channel.sendToServer(message);
     }
 
 }

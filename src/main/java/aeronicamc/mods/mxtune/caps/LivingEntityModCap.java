@@ -1,8 +1,8 @@
 package aeronicamc.mods.mxtune.caps;
 
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
-import aeronicamc.mods.mxtune.network.LivingEntityModCapSync;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
+import aeronicamc.mods.mxtune.network.messages.LivingEntityModCapSync;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.world.World;
@@ -31,7 +31,6 @@ public class LivingEntityModCap implements ILivingEntityModCap
     {
         return playId;
     }
-
 
     @Override
     public void synchronize()

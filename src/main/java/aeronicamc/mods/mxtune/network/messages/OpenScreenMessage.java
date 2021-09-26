@@ -1,4 +1,4 @@
-package aeronicamc.mods.mxtune.network;
+package aeronicamc.mods.mxtune.network.messages;
 
 import aeronicamc.mods.mxtune.gui.Handler;
 import net.minecraft.network.PacketBuffer;
@@ -6,27 +6,32 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class OpenScreenMessage
+public class OpenScreenMessage extends AbstractMessage<OpenScreenMessage>
 {
-    private final SM screen;
+    private SM screen = null;
+
+    public OpenScreenMessage() { /* NOP */ }
 
     public OpenScreenMessage(SM screen)
     {
         this.screen = screen;
     }
 
-    public static OpenScreenMessage decode(final PacketBuffer buffer)
+    @Override
+    public OpenScreenMessage decode(final PacketBuffer buffer)
     {
         final SM screen = buffer.readEnum(SM.class);
         return new OpenScreenMessage(screen);
     }
 
-    public static void encode(final OpenScreenMessage message, final PacketBuffer buffer)
+    @Override
+    public void encode(final OpenScreenMessage message, final PacketBuffer buffer)
     {
         buffer.writeEnum(message.screen);
     }
 
-    public static void handle(final OpenScreenMessage message, final Supplier<NetworkEvent.Context> ctx)
+    @Override
+    public void handle(final OpenScreenMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
         if (ctx.get().getDirection().getReceptionSide().isClient())
             ctx.get().enqueueWork(() ->

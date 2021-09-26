@@ -1,7 +1,7 @@
 package aeronicamc.mods.mxtune.items;
 
-import aeronicamc.mods.mxtune.network.OpenScreenMessage;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
+import aeronicamc.mods.mxtune.network.messages.OpenScreenMessage;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
