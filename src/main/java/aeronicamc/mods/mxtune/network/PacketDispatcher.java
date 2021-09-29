@@ -21,6 +21,8 @@ public class PacketDispatcher
     private static int packetId = 0;
     private static SimpleChannel channel;
 
+    private PacketDispatcher() { /* NOP */ }
+
     public static void register()
     {
         channel = NetworkRegistry.ChannelBuilder
@@ -42,13 +44,11 @@ public class PacketDispatcher
         channel.registerMessage(packetId++, messageType, message::encode, message::decode, message::handle);
     }
 
-    private PacketDispatcher() { /* NOP */ }
-
     /**
      * Send this message to the specified player's client-side counterpart. See
      * {@link SimpleChannel#send(PacketDistributor.PacketTarget, Object)}
      */
-    public static <MSG> void sendTo(MSG message, ServerPlayerEntity player)
+    public static <MSG extends AbstractMessage<MSG>> void sendTo(MSG message, ServerPlayerEntity player)
     {
         channel.send(PacketDistributor.PLAYER.with(()->player), message);
     }
@@ -57,7 +57,7 @@ public class PacketDispatcher
      * Send this message to everyone. See
      * {@link SimpleChannel#send(PacketDistributor.PacketTarget, Object)}
      */
-    public static <MSG> void sendToAll(MSG message)
+    public static <MSG extends AbstractMessage<MSG>> void sendToAll(MSG message)
     {
         channel.send(PacketDistributor.ALL.with(null), message);
     }
@@ -66,7 +66,7 @@ public class PacketDispatcher
      * Send this message to everyone within a certain range of a point. See
      * {@link SimpleChannel#send(PacketDistributor.PacketTarget, Object)}
      */
-    public static <MSG> void sendToAllAround(MSG message, PacketDistributor.TargetPoint point)
+    public static <MSG extends AbstractMessage<MSG>> void sendToAllAround(MSG message, PacketDistributor.TargetPoint point)
     {
         channel.send(PacketDistributor.NEAR.with(()->point), message);
     }
@@ -76,7 +76,7 @@ public class PacketDispatcher
      * the same dimension. Shortcut to
      * {@link PacketDispatcher#sendToAllAround(MSG, PacketDistributor.TargetPoint)}
      */
-    public static <MSG> void sendToAllAround(MSG message, RegistryKey<World> dimension, double x, double y, double z, double range)
+    public static <MSG extends AbstractMessage<MSG>> void sendToAllAround(MSG message, RegistryKey<World> dimension, double x, double y, double z, double range)
     {
         sendToAllAround(message, new PacketDistributor.TargetPoint(x, y, z, range, dimension));
     }
@@ -86,7 +86,7 @@ public class PacketDispatcher
      * provided. Shortcut to
      * {@link PacketDispatcher#sendToAllAround(MSG, PlayerEntity, double)}
      */
-    public static <MSG> void sendToAllAround(MSG message, PlayerEntity player, double range)
+    public static <MSG extends AbstractMessage<MSG>> void sendToAllAround(MSG message, PlayerEntity player, double range)
     {
         sendToAllAround(message, player.getCommandSenderWorld().dimension(), player.blockPosition().getX(), player.blockPosition().getY(), player.blockPosition().getY(), range);
     }
@@ -95,7 +95,7 @@ public class PacketDispatcher
      * Send this message to everyone within the supplied dimension. See
      * {@link SimpleChannel#send(PacketDistributor.PacketTarget, Object)}
      */
-    public static <MSG> void sendToDimension(MSG message, RegistryKey<World> dimension)
+    public static <MSG extends AbstractMessage<MSG>> void sendToDimension(MSG message, RegistryKey<World> dimension)
     {
         channel.send(PacketDistributor.DIMENSION.with(()->dimension), message);
     }
@@ -104,7 +104,7 @@ public class PacketDispatcher
      * Send this message to the server. See
      * {@link SimpleChannel#sendToServer(Object)}
      */
-    public static <MSG> void sendToServer(MSG message)
+    public static <MSG extends AbstractMessage<MSG>> void sendToServer(MSG message)
     {
         channel.sendToServer(message);
     }
