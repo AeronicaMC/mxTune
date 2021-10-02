@@ -96,7 +96,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
             ideaModule "${project.name}.main"
 
-            args '--mod', 'mxtune', '--all', '--output', file('src/generated/resources/')
+            args '--mod', 'mxtune', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
                 mxtune {
