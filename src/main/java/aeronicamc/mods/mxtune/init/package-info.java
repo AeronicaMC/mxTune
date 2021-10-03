@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package aeronicamc.mods.mxtune.util;
+package aeronicamc.mods.mxtune.init;
 
 import mcp.MethodsReturnNonnullByDefault;
 
