@@ -1,7 +1,8 @@
 package aeronicamc.mods.mxtune.blocks;
 
 
-import aeronicamc.mods.mxtune.MXTune;
+import aeronicamc.mods.mxtune.init.ModBlocks;
+import aeronicamc.mods.mxtune.init.ModContainers;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -25,7 +26,7 @@ public class InvTestContainer extends Container
 
     public InvTestContainer(int windowId, World world, BlockPos pos, PlayerInventory playerInventory , PlayerEntity playerEntity)
     {
-        super(MXTune.ObjectHolders.INV_TEST_CONTAINER, windowId);
+        super(ModContainers.INV_TEST_CONTAINER.get(), windowId);
         final int guiX = 10;
         final int guiY = 70;
         this.playerEntity = playerEntity;
@@ -59,7 +60,7 @@ public class InvTestContainer extends Container
     @Override
     public boolean stillValid(PlayerEntity playerIn) {
         boolean tileNotNull = tileEntity != null && tileEntity.getLevel() != null;
-        return tileNotNull && stillValid(IWorldPosCallable.create(tileEntity.getLevel(), tileEntity.getBlockPos()), playerEntity, MXTune.ObjectHolders.INV_TEST_BLOCK);
+        return tileNotNull && stillValid(IWorldPosCallable.create(tileEntity.getLevel(), tileEntity.getBlockPos()), playerEntity, ModBlocks.INV_TEST_BLOCK.get());
     }
 
     // Transfer the item in test slot to-from any other open slot
