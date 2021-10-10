@@ -21,6 +21,7 @@ public class ModDataProviders
         if (event.includeClient())
         {
             // TODO
+            dataGenerator.addProvider(new MXTuneItemModelProvider(dataGenerator, Reference.MOD_ID, existingFileHelper));
         }
 
         if (event.includeServer())
