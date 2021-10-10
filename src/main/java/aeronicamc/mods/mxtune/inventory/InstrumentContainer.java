@@ -25,14 +25,16 @@ public class InstrumentContainer extends Container
 
         this.addSlot(new SlotInstrument(instrumentInventory, 0, 12, 8 + 2 * 18));
 
+        // Player Inventory
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 9; j++) {
                 this.addSlot(new Slot(playerInventory, j + i * 9 + 9, j * 18 + 12, i * 18 + 84));
             }
         }
 
+        // Player HotBar
         for (int i = 0; i < 9; i++) {
-            this.addSlot(new Slot(playerInventory, i, i * 18 + 12, 142));
+            this.addSlot(new SlotHotBar(playerInventory, i, i * 18 + 12, 142));
         }
 
     }

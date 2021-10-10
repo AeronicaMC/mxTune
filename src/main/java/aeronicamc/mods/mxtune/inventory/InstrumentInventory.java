@@ -16,7 +16,6 @@ import javax.annotation.Nonnull;
 
 public class InstrumentInventory implements IInventory
 {
-    private static final int INV_SIZE = 1;
     public final NonNullList<ItemStack> inventory = NonNullList.withSize(1, ItemStack.EMPTY);
     private final ItemStack stack;
 
