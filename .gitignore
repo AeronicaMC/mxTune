@@ -35,6 +35,7 @@ bin
 build
 out
 run
+src/generated
 mcmodsrepo
 minecraft
 mc10_2
