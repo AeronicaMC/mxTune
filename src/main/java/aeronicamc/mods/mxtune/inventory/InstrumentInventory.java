@@ -27,7 +27,7 @@ public class InstrumentInventory implements IInventory
             this.stack.setTag(new CompoundNBT());
 
         assert this.stack.getTag() != null;
-        this.writeToNBT(this.stack.getTag());
+        this.readFromNBT(this.stack.getTag());
     }
 
     @Override
@@ -134,7 +134,7 @@ public class InstrumentInventory implements IInventory
             {
                 CompoundNBT item = new CompoundNBT();
                 item.putInt("slot", i);
-                getItem(i).setTag(item);
+                getItem(i).save(item);
                 items.add(item);
             }
         }
