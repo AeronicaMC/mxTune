@@ -32,7 +32,6 @@ import aeronicamc.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -57,7 +56,7 @@ public class MXTune
     public static final ItemGroup ITEM_GROUP = new ItemGroup(Reference.MOD_ID) {
         @Override
         public ItemStack makeIcon() {
-            return new ItemStack(Items.SKELETON_SKULL);
+            return new ItemStack(ModItems.SHEET_MUSIC.get());
         }
     };
 

@@ -15,7 +15,7 @@ public class TestScreen extends Screen
 
     public TestScreen(Screen lastScreen)
     {
-        super(new TranslationTextComponent("screen.fourteen.test.title"));
+        super(new TranslationTextComponent("screen.mxtune.test.title"));
         this.lastScreen = lastScreen;
     }
 
@@ -23,7 +23,7 @@ public class TestScreen extends Screen
     public void init()
     {
         super.init();
-        this.addButton(new Button(this.width / 2 - 100, (this.height / 6 + 168) - 20, 200, 20, new TranslationTextComponent("gui.fourteen.open"), (done) -> {
+        this.addButton(new Button(this.width / 2 - 100, (this.height / 6 + 168) - 20, 200, 20, new TranslationTextComponent("gui.mxtune.open"), (done) -> {
             this.minecraft.setScreen(new TestScreen(this));
             ++depth;
         }));

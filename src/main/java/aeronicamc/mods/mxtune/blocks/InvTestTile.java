@@ -117,7 +117,7 @@ public class InvTestTile extends TileEntity implements INamedContainerProvider, 
 
     @Override
     public ITextComponent getDisplayName() {
-        return new TranslationTextComponent("block.fourteen.inv_test_block");
+        return new TranslationTextComponent("block.mxtune.inv_test_block");
     }
 
     @Nullable

@@ -26,7 +26,7 @@ public abstract class MxSound extends TickableSound
         this.y = 0F;
         this.z = 0F;
         this.attenuation = AttenuationType.LINEAR;
-        this.soundEventAccessor = new SoundEventAccessor(this.sound.getLocation(), "subtitle.fourteen.pcm-proxy");
+        this.soundEventAccessor = new SoundEventAccessor(this.sound.getLocation(), "subtitle.mxtune.pcm-proxy");
     }
 
     @Override
