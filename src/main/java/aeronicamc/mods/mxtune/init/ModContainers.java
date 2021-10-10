@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.init;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.blocks.InvTestContainer;
+import aeronicamc.mods.mxtune.inventory.InstrumentContainer;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
@@ -44,6 +45,10 @@ public class ModContainers
 
     public static final RegistryObject<ContainerType<InvTestContainer>> INV_TEST_CONTAINER = CONTAINER_TYPES.register("inv_test_container",
            () -> new ContainerType<>(new InvTestContainer.Factory())
+    );
+
+    public static final RegistryObject<ContainerType<InstrumentContainer>> INSTRUMENT_CONTAINER = CONTAINER_TYPES.register("instrument_container",
+           () -> new ContainerType<>(new InstrumentContainer.Factory())
     );
 
     /**

@@ -27,7 +27,7 @@ public class InstrumentContainer extends Container
 
     public InstrumentContainer(int windowId, World world, BlockPos pos, PlayerInventory playerInventory , PlayerEntity playerEntity)
     {
-        super(ModContainers.INV_TEST_CONTAINER.get(), windowId);
+        super(ModContainers.INSTRUMENT_CONTAINER.get(), windowId);
         final int guiX = 10;
         final int guiY = 70;
         this.playerEntity = playerEntity;

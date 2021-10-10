@@ -3,6 +3,8 @@ package aeronicamc.mods.mxtune.init;
 import aeronicamc.mods.mxtune.MXTune;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.items.GuiTestItem;
+import aeronicamc.mods.mxtune.items.ItemMusicPaper;
+import aeronicamc.mods.mxtune.items.ItemSheetMusic;
 import aeronicamc.mods.mxtune.items.MusicItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -13,8 +15,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 /**
  *
- Licenses for assets can be found in ASSETS_LICENSE.txt. All other files are licensed under the terms below:
-
  The MIT License (MIT)
 
  Test Mod 3 - Copyright (c) 2015-2021 Choonster
@@ -49,6 +49,12 @@ public class ModItems
 
     public static final RegistryObject<GuiTestItem> GUI_TEST_ITEM = ITEMS.register("gui_test_item",
         () -> new GuiTestItem(defaultItemProperties().stacksTo(1)));
+
+    public static final RegistryObject<ItemMusicPaper> MUSIC_PAPER = ITEMS.register("music_paper",
+        () -> new ItemMusicPaper(defaultItemProperties().stacksTo(16)));
+
+    public static final RegistryObject<ItemSheetMusic> SHEET_MUSIC = ITEMS.register("sheet_music",
+        () -> new ItemSheetMusic(defaultItemProperties().stacksTo(1)));
 
     /**
      * Gets an {@link Item.Properties} instance with the {@link ItemGroup} set to {@link MXTune#ITEM_GROUP}.
