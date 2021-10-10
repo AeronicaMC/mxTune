@@ -2,10 +2,7 @@ package aeronicamc.mods.mxtune.init;
 
 import aeronicamc.mods.mxtune.MXTune;
 import aeronicamc.mods.mxtune.Reference;
-import aeronicamc.mods.mxtune.items.GuiTestItem;
-import aeronicamc.mods.mxtune.items.ItemMusicPaper;
-import aeronicamc.mods.mxtune.items.ItemSheetMusic;
-import aeronicamc.mods.mxtune.items.MusicItem;
+import aeronicamc.mods.mxtune.items.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -55,6 +52,9 @@ public class ModItems
 
     public static final RegistryObject<ItemSheetMusic> SHEET_MUSIC = ITEMS.register("sheet_music",
         () -> new ItemSheetMusic(defaultItemProperties().stacksTo(1)));
+
+    public static final RegistryObject<ItemMultiInst> MULTI_INST = ITEMS.register("multi_inst",
+        () -> new ItemMultiInst(defaultItemProperties().stacksTo(1)));
 
     /**
      * Gets an {@link Item.Properties} instance with the {@link ItemGroup} set to {@link MXTune#ITEM_GROUP}.

@@ -31,6 +31,9 @@ public class MXTuneItemModelProvider extends ItemModelProvider
 
         withExistingParent(ModItems.MUSIC_PAPER.getId().getPath(), mcLoc("handheld"))
                 .texture("layer0", "item/music_paper");
+
+        withExistingParent(ModItems.MULTI_INST.getId().getPath(), mcLoc("handheld"))
+                .texture("layer0", "item/multi_inst");
     }
 
 }
