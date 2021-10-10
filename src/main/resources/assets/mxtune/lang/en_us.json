@@ -1,10 +1,12 @@
 {
-  "itemGroup.mxtune": "Fourteen",
+  "itemGroup.mxtune": "mxTune",
   "block.mxtune.music_block": "Music Block",
   "block.mxtune.inv_test_block": "Inventory Test Block",
   "container.inv_test_block.more": "More...",
   "item.mxtune.music_item": "Music Item",
   "item.mxtune.gui_test_item": "GUI Test Item",
+  "item.mxtune.music_paper": "Music Paper",
+  "item.mxtune.sheet_music": "Sheet Music",
   "subtitle.mxtune.pcm-proxy": "Music Plays",
   "mxtune.msu.no_sound_bank_loaded": "No Soundbank Loaded",
   "screen.mxtune.test.title": "Test",
