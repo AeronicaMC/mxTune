@@ -7,6 +7,9 @@
   "item.mxtune.gui_test_item": "GUI Test Item",
   "item.mxtune.music_paper": "Music Paper",
   "item.mxtune.sheet_music": "Sheet Music",
+  "item.mxtune.sheet_music.duration": "Duration %s",
+  "item.mxtune.multi_inst": "Multi Instrument",
+  "item.mxtune.multi_inst.title": "Title: %s",
   "subtitle.mxtune.pcm-proxy": "Music Plays",
   "mxtune.msu.no_sound_bank_loaded": "No Soundbank Loaded",
   "screen.mxtune.test.title": "Test",
@@ -100,5 +103,6 @@
   "mxtune.sg.stdset": "Standard Set",
   "mxtune.sg.orchset": "Orchestra Set",
   "mxtune.key.openParty": "Open Party",
-  "mxtune.key.openMusicOptions": "Music Options"
+  "mxtune.key.openMusicOptions": "Music Options",
+  "mxtune.status.mml_server_side_validation_failure": "Server side music validation error"
 }

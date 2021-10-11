@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.items;
 
 import aeronicamc.mods.mxtune.inventory.InstrumentContainer;
 import aeronicamc.mods.mxtune.util.IInstrument;
+import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,6 +19,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
@@ -58,12 +60,6 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, @Nullable World pLevel, List<ITextComponent> pTooltip, ITooltipFlag pFlag)
-    {
-        super.appendHoverText(pStack, pLevel, pTooltip, pFlag);
-    }
-
-    @Override
     public int getUseDuration(ItemStack pStack) // getMaxItemUseDuration
     {
         return 72000;
@@ -85,6 +81,16 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
     public ITextComponent getDisplayName()
     {
         return new StringTextComponent("What's dis?");
+    }
+
+    @Override
+    public void appendHoverText(ItemStack pStack, @Nullable World pLevel, List<ITextComponent> pTooltip, ITooltipFlag pFlag)
+    {
+        String musicTitle = SheetMusicHelper.getMusicTitle(pStack);
+        if (!musicTitle.isEmpty())
+            {
+                pTooltip.add(new TranslationTextComponent("item.mxtune.multi_inst.title",musicTitle));
+            }
     }
 
     @Nullable
