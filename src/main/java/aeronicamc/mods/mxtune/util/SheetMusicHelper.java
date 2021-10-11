@@ -43,6 +43,17 @@ public enum SheetMusicHelper
         return "";
     }
 
+    public static boolean hasMML(ItemStack pStack)
+    {
+        CompoundNBT contents = pStack.getTag();
+        if (contents != null && contents.contains(KEY_SHEET_MUSIC))
+        {
+            CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
+            return sm.getString(KEY_MML).contains("MML@") && sm.getInt(KEY_DURATION) > 0;
+        }
+        return false;
+    }
+
     public static ItemStack getSheetMusic(BlockPos pos, PlayerEntity playerIn, boolean isPlaced)
     {
         return ItemStack.EMPTY; // TODO: rewrite tile instrument inventory slot queries

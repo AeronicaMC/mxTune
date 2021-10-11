@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.items;
 
 import aeronicamc.mods.mxtune.util.IMusic;
+import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -39,12 +40,6 @@ public class ItemSheetMusic extends Item implements IMusic
     @Override
     public boolean hasMML(ItemStack pStack)
     {
-        CompoundNBT contents = pStack.getTag();
-        if (contents != null && contents.contains(KEY_SHEET_MUSIC))
-        {
-            CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
-            return sm.getString(KEY_MML).contains("MML@") && sm.getInt(KEY_DURATION) > 0;
-        }
-        return false;
+        return SheetMusicHelper.hasMML(pStack);
     }
 }
