@@ -1,7 +1,7 @@
 package aeronicamc.mods.mxtune.inventory;
 
-import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.util.IInstrument;
+import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
@@ -110,7 +110,7 @@ public class InstrumentInventory implements IInventory
 
     private void readFromNBT(@ Nonnull CompoundNBT compound)
     {
-        ListNBT items = compound.getList(Reference.ITEM_INVENTORY, Constants.NBT.TAG_COMPOUND);
+        ListNBT items = compound.getList(SheetMusicHelper.ITEM_INVENTORY, Constants.NBT.TAG_COMPOUND);
 
         for (int i = 0; i < items.size(); ++i)
         {
@@ -137,6 +137,6 @@ public class InstrumentInventory implements IInventory
                 items.add(item);
             }
         }
-        compound.put(Reference.ITEM_INVENTORY, items);
+        compound.put(SheetMusicHelper.ITEM_INVENTORY, items);
     }
 }

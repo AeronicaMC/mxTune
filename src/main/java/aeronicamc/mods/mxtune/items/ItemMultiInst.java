@@ -3,6 +3,7 @@ package aeronicamc.mods.mxtune.items;
 import aeronicamc.mods.mxtune.inventory.InstrumentContainer;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,6 +29,10 @@ import java.util.List;
 
 public class ItemMultiInst extends Item implements IInstrument, INamedContainerProvider
 {
+    private final static ITextComponent SHIFT_HELP = new TranslationTextComponent("item.mxtune.multi_inst.shift");
+    private final static ITextComponent HELP_01 = new TranslationTextComponent("item.mxtune.multi_inst.shift.help01");
+    private final static ITextComponent HELP_02 = new TranslationTextComponent("item.mxtune.multi_inst.shift.help02");
+
     public ItemMultiInst(Properties pProperties)
     {
         super(pProperties);
@@ -86,11 +91,19 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable World pLevel, List<ITextComponent> pTooltip, ITooltipFlag pFlag)
     {
-        String musicTitle = SheetMusicHelper.getMusicTitle(pStack);
-        if (!musicTitle.isEmpty())
-            {
-                pTooltip.add(new TranslationTextComponent("item.mxtune.multi_inst.title",musicTitle));
-            }
+        ItemStack iMusic = SheetMusicHelper.getIMusicFromIInstrument(pStack);
+        pTooltip.add(SheetMusicHelper.getFormattedMusicTitle(iMusic));
+        pTooltip.add(SheetMusicHelper.getFormattedMusicDuration(iMusic));
+        if (Screen.hasShiftDown())
+        {
+            pTooltip.add(HELP_01);
+            pTooltip.add(HELP_02);
+        }
+        else
+        {
+            pTooltip.add(SHIFT_HELP);
+        }
+
     }
 
     @Nullable

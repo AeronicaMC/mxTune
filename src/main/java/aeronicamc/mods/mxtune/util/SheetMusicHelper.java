@@ -11,42 +11,69 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
-import static aeronicamc.mods.mxtune.Reference.*;
+import static aeronicamc.mods.mxtune.Reference.MOD_ID;
 import static net.minecraftforge.common.util.Constants.NBT;
 
 public enum SheetMusicHelper
 {
     ;
     private static final Logger LOGGER = LogManager.getLogger(SheetMusicHelper.class);
+    public static final String KEY_SHEET_MUSIC = "sheet_music";
+    public static final String KEY_DURATION = "duration";
+    public static final String KEY_MML = "mml";
+    public static final String ITEM_INVENTORY = MOD_ID + ":item_inventory";
+    private final static ITextComponent SHEET_MUSIC_EMPTY =
+            new TranslationTextComponent("item.mxtune.sheet_music.empty")
+                    .withStyle(TextFormatting.ITALIC)
+                    .withStyle(TextFormatting.RED);
+    private final static ITextComponent SHEET_MUSIC_DURATION_ERROR =
+            new TranslationTextComponent("item.mxtune.sheet_music.duration_error")
+                    .withStyle(TextFormatting.RED);
+
+
     /**
-     * getMusicTitle(ItemStack pStack)
-     * @param pStack Sheet music ItemStack
-     * @return translation id
+     * Returns the TITLE from the handheld IMusic item.
+     * e.g. Returns TITLE from ItemSheetMusic
+     * @param sheetMusicStack IInstrument music ItemStack
+     * @return hoover name of the IMusic ItemStack
      */
-    public static String getMusicTitle(ItemStack pStack)
+    public static ITextComponent getFormattedMusicTitle(ItemStack sheetMusicStack)
     {
-        ItemStack sheetMusic = SheetMusicHelper.getSheetMusic(pStack);
-        if (!sheetMusic.isEmpty() && sheetMusic.hasTag() && sheetMusic.getTag() != null)
+        CompoundNBT contents = sheetMusicStack.getTag();
+        if (contents != null && contents.contains(KEY_SHEET_MUSIC))
         {
-            CompoundNBT contents = (CompoundNBT) sheetMusic.getTag().get(KEY_SHEET_MUSIC);
-            if (contents != null && !contents.isEmpty())
-            {
-                return sheetMusic.getHoverName().getString();
-            }
+            return new StringTextComponent(sheetMusicStack.getHoverName().getString()).withStyle(TextFormatting.GOLD);
         }
-        return "";
+        return SHEET_MUSIC_EMPTY;
     }
 
-    public static boolean hasMML(ItemStack pStack)
+    public static ITextComponent getFormattedMusicDuration(ItemStack sheetMusicStack)
     {
-        CompoundNBT contents = pStack.getTag();
+        CompoundNBT contents = sheetMusicStack.getTag();
         if (contents != null && contents.contains(KEY_SHEET_MUSIC))
+        {
+            CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
+            if ((sm.getString(KEY_MML).contains("MML@") && sm.getInt(KEY_DURATION) > 0))
+            {
+                return new StringTextComponent(formatDuration(sm.getInt(KEY_DURATION))).withStyle(TextFormatting.YELLOW);
+            }
+        }
+        return SHEET_MUSIC_DURATION_ERROR;
+    }
+
+    public static boolean hasMML(ItemStack sheetMusicStack)
+    {
+        CompoundNBT contents = sheetMusicStack.getTag();
+        if (contents != null && sheetMusicStack.getItem() instanceof IMusic && contents.contains(KEY_SHEET_MUSIC))
         {
             CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
             return sm.getString(KEY_MML).contains("MML@") && sm.getInt(KEY_DURATION) > 0;
@@ -54,16 +81,23 @@ public enum SheetMusicHelper
         return false;
     }
 
-    public static ItemStack getSheetMusic(BlockPos pos, PlayerEntity playerIn, boolean isPlaced)
+    public static ItemStack getIMusicFromIPlacedInstrument(BlockPos pos, PlayerEntity playerIn, boolean isPlaced)
     {
         return ItemStack.EMPTY; // TODO: rewrite tile instrument inventory slot queries
     }
 
-    public static ItemStack getSheetMusic(ItemStack stackIn)
+    /**
+     * Returns the IMusic stack of 1 from an IInstrument Stack of 1
+     * e.g. ItemSheetMusic from an ItemMultiInst
+     * Validates the existance of keys only
+     * @param iInstStack of handheld IInstrument inventory
+     * @return ItemStack of handheld IMusic
+     */
+    public static ItemStack getIMusicFromIInstrument(ItemStack iInstStack)
     {
-        if ((stackIn.getItem() instanceof IInstrument) && stackIn.getTag() != null)
+        if ((iInstStack.getItem() instanceof IInstrument) && iInstStack.getTag() != null)
         {
-            ListNBT items = stackIn.getTag().getList(ITEM_INVENTORY, NBT.TAG_COMPOUND);
+            ListNBT items = iInstStack.getTag().getList(ITEM_INVENTORY, NBT.TAG_COMPOUND);
             if (items.size() == 1)
             {
                 CompoundNBT item = items.getCompound(0);
@@ -106,7 +140,7 @@ public enum SheetMusicHelper
      */
     public static ValidDuration validateMML(@Nullable String mml)
     {
-        int seconds = 0;
+        int seconds;
         if (mml == null)
             return ValidDuration.INVALID;
         MMLParser parser = MMLParserFactory.getMMLParser(mml);
@@ -153,4 +187,6 @@ public enum SheetMusicHelper
 //    {
 //        return createSheetMusic(sheetMusicSong.getTitle(), sheetMusicSong.getMML());
 //    }
+
+
 }
