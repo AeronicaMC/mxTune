@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.util;
 
 import aeronicamc.libs.mml.parser.MMLParser;
 import aeronicamc.libs.mml.parser.MMLParserFactory;
+import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.sound.MMLToMIDI;
 import aeronicamc.mods.mxtune.sound.Midi2WavRenderer;
 import aeronicamc.mods.mxtune.sound.ModMidiException;
@@ -13,6 +14,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.annotation.Nullable;
 
 import static aeronicamc.mods.mxtune.Reference.*;
 import static net.minecraftforge.common.util.Constants.NBT;
@@ -34,7 +37,7 @@ public enum SheetMusicHelper
             CompoundNBT contents = (CompoundNBT) sheetMusic.getTag().get(KEY_SHEET_MUSIC);
             if (contents != null && !contents.isEmpty())
             {
-                return sheetMusic.getDescriptionId();
+                return sheetMusic.getHoverName().getString();
             }
         }
         return "";
@@ -90,9 +93,11 @@ public enum SheetMusicHelper
      * @return a ValidDuration with 'isValidMML' set true for valid MML else false, and 'getDuration' the length of the tune in seconds<B></B>
      * for valid MML, else 0.
      */
-    public static ValidDuration validateMML(String mml)
+    public static ValidDuration validateMML(@Nullable String mml)
     {
         int seconds = 0;
+        if (mml == null)
+            return ValidDuration.INVALID;
         MMLParser parser = MMLParserFactory.getMMLParser(mml);
         MMLToMIDI toMIDI = new MMLToMIDI();
         toMIDI.processMObjects(parser.getMmlObjects());
@@ -122,16 +127,16 @@ public enum SheetMusicHelper
         return seconds < 0 ? "-" + positive : positive;
     }
 
-//    public static ItemStack createSheetMusic(String title, String mml)
-//    {
-//        ItemStack sheetMusic = new ItemStack(ModItems.ITEM_SHEET_MUSIC);
-//        if (SheetMusicHelper.writeSheetMusic(sheetMusic, title, mml))
-//        {
-//            return sheetMusic;
-//        }
-//        else
-//            return new ItemStack(ModItems.ITEM_MUSIC_PAPER);
-//    }
+    public static ItemStack createSheetMusic(String title, String mml)
+    {
+        ItemStack sheetMusic = new ItemStack(ModItems.SHEET_MUSIC.get());
+        if (SheetMusicHelper.writeSheetMusic(sheetMusic, title, mml))
+        {
+            return sheetMusic;
+        }
+        else
+            return new ItemStack(ModItems.MUSIC_PAPER.get());
+    }
 
 //    public static ItemStack createSheetMusic(SheetMusicSongs sheetMusicSong)
 //    {

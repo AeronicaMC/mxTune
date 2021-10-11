@@ -1,10 +1,7 @@
 package aeronicamc.mods.mxtune.network;
 
 import aeronicamc.mods.mxtune.Reference;
-import aeronicamc.mods.mxtune.network.messages.AbstractMessage;
-import aeronicamc.mods.mxtune.network.messages.LivingEntityModCapSync;
-import aeronicamc.mods.mxtune.network.messages.OpenScreenMessage;
-import aeronicamc.mods.mxtune.network.messages.SendKeyMessage;
+import aeronicamc.mods.mxtune.network.messages.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.RegistryKey;
@@ -37,6 +34,8 @@ public class PacketDispatcher
         // To Client(s)
         registerMessage(LivingEntityModCapSync.class, new LivingEntityModCapSync());
         registerMessage(OpenScreenMessage.class, new OpenScreenMessage());
+        // To Server
+        registerMessage(CreateSheetMusicMessage.class, new CreateSheetMusicMessage());
     }
 
     private static <MSG extends AbstractMessage<MSG>> void registerMessage(Class<MSG> messageType, AbstractMessage<MSG> message)
