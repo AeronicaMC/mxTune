@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.inventory;
 
 import aeronicamc.mods.mxtune.util.IMusic;
+import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
@@ -15,9 +16,7 @@ public class SlotInstrument extends Slot
     @Override
     public boolean mayPlace(ItemStack pStack)
     {
-        assert pStack.getTag() != null;
-        return !pStack.isEmpty() && ((pStack.getItem() instanceof IMusic))
-                /* && pStack.hasTag() && pStack.getTag().contains(KEY_SHEET_MUSIC)*/;
+        return (pStack.getItem() instanceof IMusic) && SheetMusicHelper.hasMML(pStack);
     }
 
     @Override
