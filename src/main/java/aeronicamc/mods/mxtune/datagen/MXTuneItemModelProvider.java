@@ -25,15 +25,13 @@ public class MXTuneItemModelProvider extends ItemModelProvider
     @Override
     protected void registerModels()
     {
-//        getBuilder(ModItems.MUSIC_PAPER.getId().getPath())
-//                .parent(new ModelFile.UncheckedModelFile("item/handheld"))
-//                .texture("layer0", modLoc("item/music_paper"));
+        withExistingParent(ModItems.MULTI_INST.getId().getPath(), mcLoc("generated"))
+                .texture("layer0", "item/multi_inst");
 
-        withExistingParent(ModItems.MUSIC_PAPER.getId().getPath(), mcLoc("handheld"))
+        withExistingParent(ModItems.MUSIC_PAPER.getId().getPath(), mcLoc("generated"))
                 .texture("layer0", "item/music_paper");
 
-        withExistingParent(ModItems.MULTI_INST.getId().getPath(), mcLoc("handheld"))
-                .texture("layer0", "item/multi_inst");
+        withExistingParent(ModItems.SHEET_MUSIC.getId().getPath(), mcLoc("generated"))
+                .texture("layer0", "item/sheet_music");
     }
-
 }
