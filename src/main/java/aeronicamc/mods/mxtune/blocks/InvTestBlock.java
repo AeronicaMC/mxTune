@@ -162,7 +162,7 @@ public class InvTestBlock extends Block
                 }
 
                 if (j - i > 0) {
-                    tooltip.add(new StringTextComponent(new TranslationTextComponent("container.inv_test_block.more", j - i).getString() + (TextFormatting.ITALIC)));
+                    tooltip.add(new StringTextComponent(new TranslationTextComponent("container.mxtune.inv_test_block.more", j - i).getString() + (TextFormatting.ITALIC)));
                 }
             }
         }
