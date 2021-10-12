@@ -20,7 +20,6 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
-import static aeronicamc.mods.mxtune.Reference.MOD_ID;
 import static net.minecraftforge.common.util.Constants.NBT;
 
 public enum SheetMusicHelper
@@ -30,7 +29,6 @@ public enum SheetMusicHelper
     public static final String KEY_SHEET_MUSIC = "sheet_music";
     public static final String KEY_DURATION = "duration";
     public static final String KEY_MML = "mml";
-    public static final String ITEM_INVENTORY = MOD_ID + ":item_inventory";
     private final static ITextComponent SHEET_MUSIC_EMPTY =
             new TranslationTextComponent("item.mxtune.sheet_music.empty")
                     .withStyle(TextFormatting.ITALIC)
@@ -97,7 +95,7 @@ public enum SheetMusicHelper
     {
         if ((iInstStack.getItem() instanceof IInstrument) && iInstStack.getTag() != null)
         {
-            ListNBT items = iInstStack.getTag().getList(ITEM_INVENTORY, NBT.TAG_COMPOUND);
+            ListNBT items = iInstStack.getTag().getList("Items", NBT.TAG_COMPOUND);
             if (items.size() == 1)
             {
                 CompoundNBT item = items.getCompound(0);

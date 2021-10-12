@@ -1,22 +1,17 @@
 package aeronicamc.mods.mxtune.inventory;
 
 import aeronicamc.mods.mxtune.util.IInstrument;
-import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
-import net.minecraftforge.common.util.Constants;
-
-import javax.annotation.Nonnull;
 
 public class InstrumentInventory implements IInventory
 {
-    public final NonNullList<ItemStack> inventory = NonNullList.withSize(1, ItemStack.EMPTY);
+    public final NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
     private final ItemStack stack;
 
     public InstrumentInventory(ItemStack stack)
@@ -26,13 +21,13 @@ public class InstrumentInventory implements IInventory
             this.stack.setTag(new CompoundNBT());
 
         assert this.stack.getTag() != null;
-        this.readFromNBT(this.stack.getTag());
+        ItemStackHelper.loadAllItems(stack.getTag(), items);
     }
 
     @Override
     public int getContainerSize()
     {
-        return inventory.size();
+        return items.size();
     }
 
     @Override
@@ -50,24 +45,24 @@ public class InstrumentInventory implements IInventory
     @Override
     public ItemStack getItem(int slot)
     {
-        return inventory.get(slot);
+        return items.get(slot);
     }
 
     @Override
     public ItemStack removeItem(int pIndex, int pCount)
     {
-        return ItemStackHelper.removeItem(inventory, pIndex, pCount);
+        return ItemStackHelper.removeItem(items, pIndex, pCount);
     }
 
     @Override
     public ItemStack removeItemNoUpdate(int pIndex)
     {
-        ItemStack itemstack = this.inventory.get(pIndex);
+        ItemStack itemstack = this.items.get(pIndex);
         if (itemstack.isEmpty()) {
             return ItemStack.EMPTY;
         } else
         {
-            this.inventory.set(pIndex, ItemStack.EMPTY);
+            this.items.set(pIndex, ItemStack.EMPTY);
             return itemstack;
         }
     }
@@ -75,7 +70,7 @@ public class InstrumentInventory implements IInventory
     @Override
     public void setItem(int slot, ItemStack pStack)
     {
-        inventory.set(slot, pStack);
+        items.set(slot, pStack);
         if (!pStack.isEmpty() && pStack.getCount() > this.getMaxStackSize())
         {
             pStack.setCount(this.getMaxStackSize());
@@ -92,7 +87,7 @@ public class InstrumentInventory implements IInventory
                 this.setItem(i, ItemStack.EMPTY);
         }
         assert this.stack.getTag() != null;
-        this.writeToNBT(this.stack.getTag());
+        ItemStackHelper.saveAllItems(stack.getTag(), items);
     }
 
     @Override
@@ -104,39 +99,7 @@ public class InstrumentInventory implements IInventory
     @Override
     public void clearContent()
     {
-        this.inventory.clear();
+        this.items.clear();
         this.setChanged();
-    }
-
-    private void readFromNBT(@ Nonnull CompoundNBT compound)
-    {
-        ListNBT items = compound.getList(SheetMusicHelper.ITEM_INVENTORY, Constants.NBT.TAG_COMPOUND);
-
-        for (int i = 0; i < items.size(); ++i)
-        {
-            CompoundNBT item = items.getCompound(i);
-            int slot = item.getInt("slot");
-            if (slot >= 0 && slot < getContainerSize())
-            {
-                setItem(slot, ItemStack.of(item));
-            }
-        }
-    }
-
-    private void writeToNBT(CompoundNBT compound)
-    {
-        ListNBT items = new ListNBT();
-
-        for (int i = 0; i < getContainerSize(); ++i)
-        {
-            if (!getItem(i).isEmpty())
-            {
-                CompoundNBT item = new CompoundNBT();
-                item.putInt("slot", i);
-                getItem(i).save(item);
-                items.add(item);
-            }
-        }
-        compound.put(SheetMusicHelper.ITEM_INVENTORY, items);
     }
 }
