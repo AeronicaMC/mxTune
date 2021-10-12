@@ -41,7 +41,6 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
     @Override
     public ActionResult<ItemStack> use(World pLevel, PlayerEntity pPlayer, Hand pHand)
     {
-        ItemStack stack = pPlayer.getItemInHand(pHand);
         if (!pLevel.isClientSide)
         {
             if (pPlayer.isCrouching() && pHand.equals(Hand.MAIN_HAND))
@@ -73,7 +72,7 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
     @Override
     public ActionResultType interactLivingEntity(ItemStack pStack, PlayerEntity pPlayer, LivingEntity pTarget, Hand pHand)
     {
-        return ActionResultType.SUCCESS;
+        return ActionResultType.PASS;
     }
 
     @Override
@@ -103,7 +102,6 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
         {
             pTooltip.add(SHIFT_HELP);
         }
-
     }
 
     @Nullable
