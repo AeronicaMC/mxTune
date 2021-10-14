@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.network;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.network.messages.*;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.RegistryKey;
@@ -11,6 +12,7 @@ import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
+@SuppressWarnings("unused")
 public class PacketDispatcher
 {
     private static final ResourceLocation CHANNEL_NAME = new ResourceLocation(Reference.MOD_ID, "network");
@@ -97,6 +99,29 @@ public class PacketDispatcher
     public static <MSG extends AbstractMessage<MSG>> void sendToDimension(MSG message, RegistryKey<World> dimension)
     {
         channel.send(PacketDistributor.DIMENSION.with(()->dimension), message);
+    }
+
+    /**
+     * Send this message to the tracking entity. see
+     * {@link SimpleChannel#send(PacketDistributor.PacketTarget, Object)}
+     * @param message custom message
+     * @param entity the tracking entity
+     */
+    public static <MSG extends AbstractMessage<MSG>> void sendToTrackingEntity(MSG message, Entity entity)
+    {
+        channel.send(PacketDistributor.TRACKING_ENTITY.with(()->entity), message);
+    }
+
+    /**
+     * Send this message to the tracking entity and self. see
+     * {@link SimpleChannel#send(PacketDistributor.PacketTarget, Object)}
+     * @param message custom message
+     * @param entity the tracking entity
+     * https://forums.minecraftforge.net/topic/103538-solved116-how-to-sync-other-players-capability-and-update-it-in-own-client/?tab=comments#comment-464260
+     */
+    public static <MSG extends AbstractMessage<MSG>> void sendToTrackingEntityAndSelf(MSG message, Entity entity)
+    {
+        channel.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(()->entity), message);
     }
 
     /**
