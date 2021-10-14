@@ -56,8 +56,9 @@ minecraft {
             ideaModule "${project.name}.main"
 
             // program arguments
-            args '--username', project.findProperty('net.aeronica.mc.logon')
-            args '--password', project.findProperty('net.aeronica.mc.password')
+            args '--username', 'Player01'
+            // args '--username', project.findProperty('net.aeronica.mc.logon')
+            // args '--password', project.findProperty('net.aeronica.mc.password')
 
             mods {
                 mxtune {

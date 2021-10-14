@@ -40,7 +40,7 @@ public class InstrumentScreen extends ContainerScreen<InstrumentContainer>
 
     @Override
     protected void renderLabels(MatrixStack matrixStack , int mouseX, int mouseY) {
-        this.font.draw(matrixStack, menu.getName().getContents(), 10, 8, TextColor.DARK_GRAY);
-        this.font.draw(matrixStack, this.inventory.getDisplayName().getContents() + "Test", 10, 72, TextColor.DARK_GRAY);
+        this.font.draw(matrixStack, menu.getName().getContents(), 10, 8, TextColorFg.DARK_GRAY);
+        this.font.draw(matrixStack, this.inventory.getDisplayName().getContents() + "Test", 10, 72, TextColorFg.DARK_GRAY);
     }
 }
