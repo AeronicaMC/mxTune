@@ -22,10 +22,7 @@ import aeronicamc.mods.mxtune.caches.FileHelper;
 import aeronicamc.mods.mxtune.caps.LivingEntityModCapProvider;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.gui.InstrumentScreen;
-import aeronicamc.mods.mxtune.init.ModBlocks;
-import aeronicamc.mods.mxtune.init.ModContainers;
-import aeronicamc.mods.mxtune.init.ModItems;
-import aeronicamc.mods.mxtune.init.ModTileEntities;
+import aeronicamc.mods.mxtune.init.*;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
 import aeronicamc.mods.mxtune.util.KeyHandler;
@@ -43,6 +40,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -71,6 +69,7 @@ public class MXTune
         ModItems.registerToModEventBus(modEventBus);
         ModContainers.registerToModEventBus(modEventBus);
         ModTileEntities.registerToModEventBus(modEventBus);
+        ModSoundEvents.registerToModEventBus(modEventBus);
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
@@ -105,6 +104,11 @@ public class MXTune
     @SubscribeEvent
     public void event(FMLServerStartingEvent event) {
         FileHelper.initialize(event.getServer());
+    }
+
+    @SubscribeEvent
+    public void event(FMLServerStoppingEvent event) {
+        // placeholder
     }
 
     @SubscribeEvent

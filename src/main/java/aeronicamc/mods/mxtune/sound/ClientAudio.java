@@ -1,8 +1,9 @@
 package aeronicamc.mods.mxtune.sound;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.*;
 import net.minecraft.util.Util;
@@ -420,7 +421,7 @@ public class ClientAudio
     public static void event(PlaySoundSourceEvent event)
     {
         // This will never get called since the consumer of the disqualifies non-ogg sound resources.
-        if (event.getSound().getLocation().equals(ModSoundEvents.PCM_PROXY.getRegistryName()))
+        if (event.getSound().getLocation().equals(ModSoundEvents.PCM_PROXY.getId()))
             LOGGER.debug("PlaySoundSourceEvent {}", event.getSound().getLocation());
     }
 
@@ -428,7 +429,7 @@ public class ClientAudio
     public static void event(PlayStreamingSourceEvent event)
     {
         // This will never get called since the consumer of the stream disqualifies non-ogg sound resources.
-        if (event.getSound().getLocation().equals(ModSoundEvents.PCM_PROXY.getRegistryName()))
+        if (event.getSound().getLocation().equals(ModSoundEvents.PCM_PROXY.getId()))
             LOGGER.debug("PlayStreamingSourceEvent {}", event.getSound().getLocation());
     }
 }
