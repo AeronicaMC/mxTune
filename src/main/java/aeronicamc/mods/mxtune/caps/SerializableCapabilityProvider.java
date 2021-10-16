@@ -3,10 +3,19 @@ package aeronicamc.mods.mxtune.caps;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.Capability.IStorage;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
 
+/**
+ * A simple implementation of {@link ICapabilityProvider} and {@link INBTSerializable} that supports a single {@link Capability} handler instance.
+ * <p>
+ * Uses the {@link Capability}'s {@link IStorage} to serialise/deserialise NBT.
+ *
+ * @author Choonster
+ */
 public class SerializableCapabilityProvider<HANDLER> extends SimpleCapabilityProvider<HANDLER> implements INBTSerializable<INBT>
 {
     /**
