@@ -9,22 +9,29 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @SuppressWarnings("unused")
-public final class ServerPlayManager
+public final class PlayManager
 {
-    private static final Logger LOGGER = LogManager.getLogger(ServerPlayManager.class.getSimpleName());
+    private static final Logger LOGGER = LogManager.getLogger(PlayManager.class.getSimpleName());
 
-    private ServerPlayManager()
+    private PlayManager()
     {
         /* NOP */
     }
 
-    @Mod.EventBusSubscriber(modid = Reference.MOD_ID, value = {Dist.DEDICATED_SERVER})
+    @Mod.EventBusSubscriber(modid = Reference.MOD_ID, value = {Dist.DEDICATED_SERVER, Dist.CLIENT})
     private static class EventHandler
     {
         @SubscribeEvent
         public static void event(PlayerEvent.StartTracking event)
         {
-            LOGGER.debug("Tracking {}", event.getTarget());
+            LOGGER.debug("{} Start Tracking {}", event.getPlayer(), event.getTarget());
+            LOGGER.debug("Listeners {}", event.getListenerList());
+        }
+
+        @SubscribeEvent
+        public static void event(PlayerEvent.StopTracking event)
+        {
+            LOGGER.debug("{} Stop Tracking {}", event.getPlayer(), event.getTarget());
             LOGGER.debug("Listeners {}", event.getListenerList());
         }
     }
