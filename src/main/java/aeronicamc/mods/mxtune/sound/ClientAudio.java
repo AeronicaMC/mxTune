@@ -134,9 +134,9 @@ public class ClientAudio
      * @param playID unique submission identifier.
      * @param musicText MML string
      */
-    public static void play(Integer playID, String musicText)
+    public static void play(int playID, int entityId, String musicText)
     {
-        play(playID, null, musicText, false, null);
+        play(playID, entityId, null, musicText, false, null);
     }
 
     /**
@@ -147,12 +147,12 @@ public class ClientAudio
      */
     public static void play(Integer playID, BlockPos pos, String musicText)
     {
-        play(playID, pos, musicText, false, null);
+        play(playID, 0, pos, musicText, false, null);
     }
 
     public static void playLocal(int playId, String musicText, @Nullable IAudioStatusCallback callback)
     {
-        play(playId, mc.player == null ? null : mc.player.blockPosition(), musicText, true, callback);
+        play(playId, 0 ,mc.player == null ? null : mc.player.blockPosition(), musicText, true, callback);
     }
 
     // Determine if audio is 3D spacial or background
@@ -164,7 +164,7 @@ public class ClientAudio
         else audioData.setAudioFormat(audioFormat3D);
     }
 
-    private static void play(int playID, @Nullable BlockPos pos, String musicText, boolean isClient, @Nullable IAudioStatusCallback callback)
+    private static void play(int playID, int entityId, @Nullable BlockPos pos, String musicText, boolean isClient, @Nullable IAudioStatusCallback callback)
     {
         startThreadFactory();
         if(playID != PlayIdSupplier.INVALID)
@@ -178,10 +178,25 @@ public class ClientAudio
                 LOGGER.warn("ClientAudio#play: playID: {} has already been submitted", playID);
                 return;
             }
-            if (isClient)
+            if (isClient || (mc.player != null && (mc.player.getId() == entityId)))
+            {
+                // This CLIENT Player: The Player
                 mc.getSoundManager().play(new MusicClient(audioData));
+            }
+            else if (pos == null) {
+                // Other players instruments
+                if ((mc.player != null) && (mc.player.level.getEntity(entityId) != null))
+                {
+                    mc.getSoundManager().play(new MovingMusic(
+                            audioData,
+                            Objects.requireNonNull(mc.player.level.getEntity(entityId))));
+                }
+            }
             else
+            {
+                // Placed Musical Machines. e.g. Record Player, etc.
                 mc.getSoundManager().play(new MusicPositioned(audioData));
+            }
             executorService.execute(new ThreadedPlay(audioData, musicText));
             stopVanillaMusic();
         } else

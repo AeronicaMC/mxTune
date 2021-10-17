@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.items;
 
 import aeronicamc.mods.mxtune.inventory.InstrumentContainer;
+import aeronicamc.mods.mxtune.managers.PlayManager;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.client.gui.screen.Screen;
@@ -41,11 +42,21 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
     @Override
     public ActionResult<ItemStack> use(World pLevel, PlayerEntity pPlayer, Hand pHand)
     {
-        if (!pLevel.isClientSide)
+        if (!pLevel.isClientSide())
         {
+            ItemStack itemStackIn = pPlayer.getItemInHand(pHand);
+            int repairCost = itemStackIn.getBaseRepairCost();
             if (pPlayer.isCrouching() && pHand.equals(Hand.MAIN_HAND))
             {
                 NetworkHooks.openGui((ServerPlayerEntity) pPlayer, this, pPlayer.blockPosition());
+            }
+            else if (!pPlayer.isCrouching() && pHand.equals(Hand.MAIN_HAND))
+            {
+                if ((repairCost <= 0) || !PlayManager.isActivePlayID(repairCost))
+                {
+                    int playID = PlayManager.playMusic(pPlayer);
+                    itemStackIn.setRepairCost(playID);
+                }
             }
         }
         return ActionResult.pass(pPlayer.getItemInHand(pHand));

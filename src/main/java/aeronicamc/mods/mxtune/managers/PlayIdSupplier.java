@@ -15,6 +15,7 @@ public class PlayIdSupplier
         PERSONAL(300000, 399999) {@Override protected PlayIdSource next(PlayIdSource playIdSource) { return playIdSource;}},
         PLAYERS(200000, 299999) {@Override protected PlayIdSource next(PlayIdSource playIdSource) { return playIdSource;}},
         BACKGROUND(100000, 199999) {@Override protected PlayIdSource next(PlayIdSource playIdSource) { return playIdSource;}},
+        UNDEFINED(-1, 0) {@Override protected PlayIdSource next(PlayIdSource playIdSource) { return playIdSource;}},
         ;
 
         int start;
@@ -30,7 +31,6 @@ public class PlayIdSupplier
             this.playType = this;
         }
 
-        @Nullable
         private PlayType getTypeForPlayId(int playId)
         {
             for (PlayType type : values())
@@ -38,7 +38,7 @@ public class PlayIdSupplier
                 if (playId >= type.start && playId <= type.end)
                     return type;
             }
-            return null;
+            return PlayType.UNDEFINED;
         }
 
         protected abstract PlayIdSource next(PlayIdSource playIdSource);
@@ -54,7 +54,7 @@ public class PlayIdSupplier
         {
             PlayType p1 = getTypeForPlayId(playId1);
             PlayType p2 = getTypeForPlayId(playId2);
-            return p1 != null && p2 != null ? compare(p1, p2) : null;
+            return p1 != PlayType.UNDEFINED && p2 != PlayType.UNDEFINED ? compare(p1, p2) : null;
         }
 
         @Override
@@ -100,6 +100,6 @@ public class PlayIdSupplier
 
     public static PlayType getTypeForPlayId(int playId)
     {
-        return PlayType.EVENT.getTypeForPlayId(playId);
+        return ((playId >= 100000) && (playId <= 499999)) ? PlayType.EVENT.getTypeForPlayId(playId) : PlayType.UNDEFINED;
     }
 }

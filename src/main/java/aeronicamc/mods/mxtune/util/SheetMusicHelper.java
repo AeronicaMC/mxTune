@@ -54,7 +54,23 @@ public enum SheetMusicHelper
         return SHEET_MUSIC_EMPTY;
     }
 
+    public static String getMusicTitleAsString(ItemStack sheetMusicStack)
+    {
+        return getFormattedMusicTitle(sheetMusicStack).plainCopy().getString();
+    }
+
     public static ITextComponent getFormattedMusicDuration(ItemStack sheetMusicStack)
+    {
+        int duration = getMusicDuration(sheetMusicStack);
+        if (duration > 0)
+        {
+            return new StringTextComponent(formatDuration(duration)).withStyle(TextFormatting.YELLOW);
+        }
+
+        return SHEET_MUSIC_DURATION_ERROR;
+    }
+
+    public static int getMusicDuration(ItemStack sheetMusicStack)
     {
         CompoundNBT contents = sheetMusicStack.getTag();
         if (contents != null && contents.contains(KEY_SHEET_MUSIC))
@@ -62,10 +78,23 @@ public enum SheetMusicHelper
             CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
             if ((sm.getString(KEY_MML).contains("MML@") && sm.getInt(KEY_DURATION) > 0))
             {
-                return new StringTextComponent(formatDuration(sm.getInt(KEY_DURATION))).withStyle(TextFormatting.YELLOW);
+                return sm.getInt(KEY_DURATION);
             }
         }
-        return SHEET_MUSIC_DURATION_ERROR;
+
+        return 0;
+    }
+
+    public static String getMusic(ItemStack sheetMusicStack)
+    {
+        if (hasMML(sheetMusicStack))
+        {
+            CompoundNBT contents = sheetMusicStack.getTag();
+            assert contents != null;
+            CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
+            return sm.getString(KEY_MML);
+        }
+        return "MML@;";
     }
 
     public static boolean hasMML(ItemStack sheetMusicStack)

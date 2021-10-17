@@ -23,6 +23,7 @@ import aeronicamc.mods.mxtune.caps.LivingEntityModCapProvider;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.gui.InstrumentScreen;
 import aeronicamc.mods.mxtune.init.*;
+import aeronicamc.mods.mxtune.managers.DurationTimer;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
 import aeronicamc.mods.mxtune.util.KeyHandler;
@@ -76,7 +77,7 @@ public class MXTune
         if (FMLEnvironment.dist == Dist.CLIENT)
         {
             MIDISystemUtil.mxTuneInit();
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(this::modloadingComplete);
+            FMLJavaModLoadingContext.get().getModEventBus().addListener(this::modLoadingComplete);
         }
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
@@ -96,7 +97,7 @@ public class MXTune
         MinecraftForge.EVENT_BUS.register(ClientAudio.class);
     }
 
-    private void modloadingComplete(FMLLoadCompleteEvent event)
+    private void modLoadingComplete(FMLLoadCompleteEvent event)
     {
         // placeholder
     }
@@ -104,11 +105,12 @@ public class MXTune
     @SubscribeEvent
     public void event(FMLServerStartingEvent event) {
         FileHelper.initialize(event.getServer());
+        DurationTimer.start();
     }
 
     @SubscribeEvent
     public void event(FMLServerStoppingEvent event) {
-        // placeholder
+        DurationTimer.shutdown();
     }
 
     @SubscribeEvent

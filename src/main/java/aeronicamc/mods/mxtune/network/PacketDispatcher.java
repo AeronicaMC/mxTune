@@ -36,6 +36,8 @@ public class PacketDispatcher
         // To Client(s)
         registerMessage(LivingEntityModCapSync.class, new LivingEntityModCapSync());
         registerMessage(OpenScreenMessage.class, new OpenScreenMessage());
+        registerMessage(PlaySoloMessage.class, new PlaySoloMessage());
+        registerMessage(StopPlayIdMessage.class, new StopPlayIdMessage());
         // To Server
         registerMessage(CreateSheetMusicMessage.class, new CreateSheetMusicMessage());
     }

@@ -10,7 +10,7 @@ import org.apache.logging.log4j.LogManager;
 public class MusicPositioned extends MxSound
 {
     private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger();
-    private Minecraft mc = Minecraft.getInstance();
+    private final Minecraft mc = Minecraft.getInstance();
     private int counter;
     private float lastDistance;
 
@@ -33,13 +33,12 @@ public class MusicPositioned extends MxSound
     {
         if (audioData != null && audioData.getBlockPos() != null && mc.player != null)
         {
-            Vector3d vec3d = new Vector3d(mc.player.blockPosition().getX(), mc.player.blockPosition().getY(), mc.player.blockPosition().getZ());
-            BlockPos blockPos = audioData.getBlockPos();
-            float distance = (float) vec3d.distanceTo(new Vector3d(blockPos.getX(), blockPos.getY(), blockPos.getZ()));
-            this.volume = (float) MathHelper.clamp(MathHelper.lerp(MathHelper.clamp((4 / (distance + .001)), 0.0F, 1F), -1, 4), 0, 4);
+            Vector3d thePlayerVec3d = new Vector3d(mc.player.getX(), mc.player.getY(), mc.player.getZ());
+            float distance = (float) thePlayerVec3d.distanceTo(new Vector3d(this.x, this.y, this.z));
+            this.volume = (float) MathHelper.clamp(Math.log((1.0D - ((1.0D/16.0D)*(distance))) + 1.0D)*1.6D, 0.0D, 1.0D);
             if ((counter++ % 20 == 0) && (distance != lastDistance))
             {
-                LOGGER.debug("PosSound {}, dist {}, volume {}", audioData.getBlockPos(), distance, volume);
+                LOGGER.debug("dist {}, volume {}", distance, volume);
                 lastDistance = distance;
             }
         }
