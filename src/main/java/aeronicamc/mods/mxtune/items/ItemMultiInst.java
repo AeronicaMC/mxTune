@@ -1,11 +1,13 @@
 package aeronicamc.mods.mxtune.items;
 
 import aeronicamc.mods.mxtune.inventory.InstrumentContainer;
+import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.managers.PlayManager;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -45,21 +47,74 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
         if (!pLevel.isClientSide())
         {
             ItemStack itemStackIn = pPlayer.getItemInHand(pHand);
-            int repairCost = itemStackIn.getBaseRepairCost();
+            int playId = itemStackIn.getBaseRepairCost();
             if (pPlayer.isCrouching() && pHand.equals(Hand.MAIN_HAND))
             {
                 NetworkHooks.openGui((ServerPlayerEntity) pPlayer, this, pPlayer.blockPosition());
             }
             else if (!pPlayer.isCrouching() && pHand.equals(Hand.MAIN_HAND))
             {
-                if ((repairCost <= 0) || !PlayManager.isActivePlayID(repairCost))
+                if ((playId <= 0) || !PlayManager.isActivePlayId(playId))
                 {
-                    int playID = PlayManager.playMusic(pPlayer);
-                    itemStackIn.setRepairCost(playID);
+                    playId = PlayManager.playMusic(pPlayer);
+                    itemStackIn.setRepairCost(playId);
                 }
             }
         }
         return ActionResult.pass(pPlayer.getItemInHand(pHand));
+    }
+
+    // Stop playing if active and the item is no longer selected.
+    @Override
+    public void inventoryTick(ItemStack pStack, World pLevel, Entity pEntity, int pItemSlot, boolean pIsSelected)
+    {
+        if (!pLevel.isClientSide())
+        {
+            int playId = pStack.getBaseRepairCost();
+            if (!pIsSelected && PlayManager.isActivePlayId(playId))
+            {
+                PlayManager.stopPlayId(playId);
+                pStack.setRepairCost(PlayIdSupplier.INVALID);
+            }
+        }
+    }
+
+    // Stop playing if dropped
+    @Override
+    public boolean onDroppedByPlayer(ItemStack pStack, PlayerEntity pPlayer)
+    {
+        if (!pPlayer.level.isClientSide())
+        {
+            int playId = pStack.getBaseRepairCost();
+            if (PlayManager.isActivePlayId(playId))
+            {
+                PlayManager.stopPlayId(playId);
+                pStack.setRepairCost(PlayIdSupplier.INVALID);
+            }
+        }
+        return true;
+    }
+
+    // Stop playing is moved from inventory into the world
+    @Override
+    public int getEntityLifespan(ItemStack pStack, World pLevel)
+    {
+        if (!pLevel.isClientSide())
+        {
+            int playId = pStack.getBaseRepairCost();
+            if (PlayManager.isActivePlayId(playId))
+            {
+                PlayManager.stopPlayId(playId);
+                pStack.setRepairCost(PlayIdSupplier.INVALID);
+            }
+        }
+        return super.getEntityLifespan(pStack, pLevel);
+    }
+
+    @Override
+    public void onCraftedBy(ItemStack pStack, World pLevel, PlayerEntity pPlayer)
+    {
+        pStack.setRepairCost(PlayIdSupplier.INVALID);
     }
 
     @Override
