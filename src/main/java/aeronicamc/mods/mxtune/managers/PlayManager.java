@@ -7,7 +7,6 @@ import aeronicamc.mods.mxtune.network.messages.PlaySoloMessage;
 import aeronicamc.mods.mxtune.network.messages.StopPlayIdMessage;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
-import com.google.common.collect.Sets;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -18,6 +17,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -25,7 +25,7 @@ import java.util.Set;
 public final class PlayManager
 {
     private static final Logger LOGGER = LogManager.getLogger(PlayManager.class.getSimpleName());
-    private static final Set<Integer> activePlayIDs = Sets.newHashSet();
+    private static final Set<Integer> activePlayIds = new HashSet<>();
 
     private PlayManager()
     {
@@ -77,13 +77,13 @@ public final class PlayManager
 
     private static int playSolo(PlayerEntity playerIn, String mml, int duration, Integer playerID)
     {
-        int playID = getNextPlayID();
+        int playId = getNextPlayID();
 
-        DurationTimer.scheduleStop(playID, duration);
-        activePlayIDs.add(playID);
-        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playID, playerIn.getId() , mml);
+        DurationTimer.scheduleStop(playId, duration);
+        addActivePlayId(playId);
+        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, playerIn.getId() , mml);
         PacketDispatcher.sendToTrackingEntityAndSelf(packetPlaySolo, playerIn);
-        return playID;
+        return playId;
     }
 
     private static int getPresetIndex(BlockPos pos, PlayerEntity playerIn, boolean isPlaced)
@@ -104,21 +104,27 @@ public final class PlayManager
         return presetIndex;
     }
 
-    public static void stopPlayID(int playID)
+    public static void stopPlayId(int playId)
     {
-        removeActivePlayID(playID);
-        PacketDispatcher.sendToAll(new StopPlayIdMessage(playID));
+        removeActivePlayId(playId);
+        PacketDispatcher.sendToAll(new StopPlayIdMessage(playId));
     }
 
-    private static void removeActivePlayID(int playID)
+    private static void addActivePlayId(int playId)
     {
-        if ((playID != PlayIdSupplier.INVALID) && !activePlayIDs.isEmpty())
-            activePlayIDs.remove(playID);
+        if ((playId != PlayIdSupplier.INVALID))
+            activePlayIds.add(playId);
     }
 
-    public static boolean isActivePlayID(int playID)
+    private static void removeActivePlayId(int playId)
     {
-        return (playID >= 0) && activePlayIDs.contains(playID);
+        if ((playId != PlayIdSupplier.INVALID) && !activePlayIds.isEmpty())
+            activePlayIds.remove(playId);
+    }
+
+    public static boolean isActivePlayId(int playId)
+    {
+        return (playId >= 0) && activePlayIds.contains(playId);
     }
 
     @Mod.EventBusSubscriber(modid = Reference.MOD_ID, value = {Dist.DEDICATED_SERVER, Dist.CLIENT})

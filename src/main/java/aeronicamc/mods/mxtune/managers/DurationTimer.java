@@ -60,7 +60,7 @@ public class DurationTimer
         if (timer != null)
         {
             LOGGER.debug("A scheduled stop was sent for playID: {} that had a duration of {}", playID, formatDuration(duration));
-            PlayManager.stopPlayID(playID);
+            PlayManager.stopPlayId(playID);
         }
     }
 }
