@@ -1,6 +1,6 @@
 /*
  * Aeronica's mxTune MOD
- * Copyright 2019, Paul Boese a.k.a. Aeronica
+ * Copyright 2021, Paul Boese a.k.a. Aeronica
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.

@@ -1,23 +1,22 @@
 package aeronicamc.mods.mxtune.managers;
 
-import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.blocks.IPlacedInstrument;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.PlaySoloMessage;
 import aeronicamc.mods.mxtune.network.messages.StopPlayIdMessage;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -26,6 +25,7 @@ public final class PlayManager
 {
     private static final Logger LOGGER = LogManager.getLogger(PlayManager.class.getSimpleName());
     private static final Set<Integer> activePlayIds = new HashSet<>();
+    private static final Map<Integer, Integer> livingEntitiesPlayId = new HashMap<>();
 
     private PlayManager()
     {
@@ -78,9 +78,10 @@ public final class PlayManager
     private static int playSolo(PlayerEntity playerIn, String mml, int duration, Integer playerID)
     {
         int playId = getNextPlayID();
+        int livingEntityId = playerIn.getId();
 
         DurationTimer.scheduleStop(playId, duration);
-        addActivePlayId(playId);
+        addActivePlayId(livingEntityId, playId);
         PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, playerIn.getId() , mml);
         PacketDispatcher.sendToTrackingEntityAndSelf(packetPlaySolo, playerIn);
         return playId;
@@ -110,16 +111,48 @@ public final class PlayManager
         PacketDispatcher.sendToAll(new StopPlayIdMessage(playId));
     }
 
-    private static void addActivePlayId(int playId)
+    public static <T extends LivingEntity> void stopPlayingLivingEntity(T pLivingEntity)
+    {
+        stopPlayingLivingEntity(pLivingEntity.getId());
+    }
+
+    // TODO: Fix here and in ItemMultiInst. Stops playing but starts again.
+    private static void stopPlayingLivingEntity(Integer entityId)
+    {
+        if (isLivingEntityPlaying(entityId))
+        {
+            stopPlayId(livingEntitiesPlayId.get(entityId));
+        }
+    }
+
+    private static int getLivingEntityPlayId(@Nullable Integer livingEntityId)
+    {
+        return (livingEntityId != null) ? livingEntitiesPlayId.getOrDefault(livingEntityId, PlayIdSupplier.INVALID) : PlayIdSupplier.INVALID;
+    }
+
+    private static boolean isLivingEntityPlaying(@Nullable Integer entityId)
+    {
+        return entityId != null && livingEntitiesPlayId.containsKey(entityId);
+    }
+
+    private static void addActivePlayId(int livingEntityId, int playId)
     {
         if ((playId != PlayIdSupplier.INVALID))
+        {
             activePlayIds.add(playId);
+            if (livingEntitiesPlayId.containsKey(livingEntityId))
+                livingEntitiesPlayId.replace(livingEntityId, playId);
+            else
+                livingEntitiesPlayId.putIfAbsent(livingEntityId, playId);
+        }
     }
 
     private static void removeActivePlayId(int playId)
     {
         if ((playId != PlayIdSupplier.INVALID) && !activePlayIds.isEmpty())
+        {
             activePlayIds.remove(playId);
+        }
     }
 
     public static boolean isActivePlayId(int playId)
@@ -127,21 +160,4 @@ public final class PlayManager
         return (playId >= 0) && activePlayIds.contains(playId);
     }
 
-    @Mod.EventBusSubscriber(modid = Reference.MOD_ID, value = {Dist.DEDICATED_SERVER, Dist.CLIENT})
-    private static class EventHandler
-    {
-        @SubscribeEvent
-        public static void event(PlayerEvent.StartTracking event)
-        {
-            //LOGGER.debug("{} Start Tracking {}", event.getPlayer(), event.getTarget());
-            //LOGGER.debug("Listeners {}", event.getListenerList());
-        }
-
-        @SubscribeEvent
-        public static void event(PlayerEvent.StopTracking event)
-        {
-            //LOGGER.debug("{} Stop Tracking {}", event.getPlayer(), event.getTarget());
-            //LOGGER.debug("Listeners {}", event.getListenerList());
-        }
-    }
 }
