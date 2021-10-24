@@ -116,7 +116,6 @@ public final class PlayManager
         stopPlayingLivingEntity(pLivingEntity.getId());
     }
 
-    // TODO: Fix here and in ItemMultiInst. Stops playing but starts again.
     private static void stopPlayingLivingEntity(Integer entityId)
     {
         if (isLivingEntityPlaying(entityId))

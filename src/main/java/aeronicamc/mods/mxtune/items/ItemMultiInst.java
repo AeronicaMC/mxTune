@@ -17,6 +17,8 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -95,7 +97,7 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
         return true;
     }
 
-    // Stop playing is moved from inventory into the world
+    // Stop playing when moved from inventory into the world
     @Override
     public int getEntityLifespan(ItemStack pStack, World pLevel)
     {
@@ -139,6 +141,18 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
     public ActionResultType interactLivingEntity(ItemStack pStack, PlayerEntity pPlayer, LivingEntity pTarget, Hand pHand)
     {
         return ActionResultType.PASS;
+    }
+
+    // Prevent the item from activating [this.use(...)] when clicking a block with a TileEntity
+    @Override
+    public ActionResultType useOn(ItemUseContext pContext)
+    {
+        TileEntity tileEntity = pContext.getLevel().getBlockEntity(pContext.getClickedPos());
+
+        if (tileEntity != null && tileEntity.getBlockState().hasTileEntity())
+            return ActionResultType.SUCCESS;
+
+        return super.useOn(pContext);
     }
 
     @Override
