@@ -184,8 +184,9 @@ public final class PlayManager
         tune07.start();
 
         Thread.sleep(2000);
-
         tune01.cancel();
+        Thread.sleep(4000);
+        tune04.cancel();
 
         System.in.read();
         executor.shutdown();
