@@ -245,22 +245,22 @@ public final class PlayManager
             }
         }
 
-        public int getDurationSeconds()
+        synchronized int getDurationSeconds()
         {
             return durationSeconds;
         }
 
-        public boolean isDone()
+        synchronized boolean isDone()
         {
             return done;
         }
 
-        public int getCounter()
+        synchronized int getCounter()
         {
             return counter.get();
         }
 
-        public String getSong()
+        synchronized String getSong()
         {
             return song;
         }
