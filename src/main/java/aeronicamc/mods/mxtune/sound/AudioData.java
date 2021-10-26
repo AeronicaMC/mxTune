@@ -54,12 +54,12 @@ public class AudioData
         this.callback = callback;
     }
 
-    public synchronized AudioFormat getAudioFormat()
+    synchronized AudioFormat getAudioFormat()
     {
         return audioFormat;
     }
 
-    public void setAudioFormat(AudioFormat audioFormat)
+    void setAudioFormat(AudioFormat audioFormat)
     {
         synchronized (this)
         {
@@ -67,12 +67,12 @@ public class AudioData
         }
     }
 
-    public synchronized ClientAudio.Status getStatus()
+    synchronized ClientAudio.Status getStatus()
     {
         return status;
     }
 
-    public void setStatus(ClientAudio.Status status)
+    void setStatus(ClientAudio.Status status)
     {
         synchronized (this)
         {
@@ -85,18 +85,18 @@ public class AudioData
         }
     }
 
-    public int getPlayId()
+    synchronized int getPlayId()
     {
         return playId;
     }
 
     @Nullable
-    BlockPos getBlockPos()
+    synchronized BlockPos getBlockPos()
     {
         return blockPos;
     }
 
-    boolean isClientPlayer()
+    synchronized boolean isClientPlayer()
     {
         return isClientPlayer;
     }
@@ -128,46 +128,52 @@ public class AudioData
         }
     }
 
-    public PlayIdSupplier.PlayType getPlayType()
+    synchronized PlayIdSupplier.PlayType getPlayType()
     {
         return playType;
     }
 
-    public void updateVolumeFade()
+    void updateVolumeFade()
     {
-        if (isFading)
+        synchronized (this)
         {
-            fadeCounter--;
-            if (fadeCounter > 0)
+            if (isFading)
             {
-                volumeFade = (float) fadeCounter / fadeTicks;
-            }
-            else
-            {
-                isFading = false;
-                volumeFade = 0F;
+                fadeCounter--;
+                if (fadeCounter > 0)
+                {
+                    volumeFade = (float) fadeCounter / fadeTicks;
+                }
+                else
+                {
+                    isFading = false;
+                    volumeFade = 0F;
+                }
             }
         }
     }
 
-    public void startFadeOut(int seconds)
+    void startFadeOut(int seconds)
     {
-        // If a fade out is already in progress we will not change it.
-        if (!isFading && status != ClientAudio.Status.ERROR && status != ClientAudio.Status.DONE)
+        synchronized (this)
         {
-            fadeTicks = Math.max(Math.abs(seconds * 20), 1);
-            fadeCounter = fadeTicks;
-            volumeFade = 1F;
-            isFading = true;
+            // If a fade out is already in progress we will not change it.
+            if (!isFading && status != ClientAudio.Status.ERROR && status != ClientAudio.Status.DONE)
+            {
+                fadeTicks = Math.max(Math.abs(seconds * 20), 1);
+                fadeCounter = fadeTicks;
+                volumeFade = 1F;
+                isFading = true;
+            }
         }
     }
 
-    public float getFadeMultiplier()
+    synchronized float getFadeMultiplier()
     {
         return volumeFade;
     }
 
-    public boolean isFading()
+    synchronized boolean isFading()
     {
         return isFading;
     }
