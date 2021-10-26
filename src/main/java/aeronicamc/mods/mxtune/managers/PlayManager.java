@@ -164,17 +164,16 @@ public final class PlayManager
     // Testing Server Side Tune Management
     public static void main(String[] args) throws Exception
     {
+        ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(2);
+        ExecutorService executor = Executors.newCachedThreadPool();
 
-
-        ScheduledExecutorService executor = Executors.newScheduledThreadPool(5);
-
-        ActiveTune tune01 = new ActiveTune(executor, "Song for YOU", 10);
-        ActiveTune tune02 = new ActiveTune(executor, "You are MINE", 5);
-        ActiveTune tune03 = new ActiveTune(executor, "Water is HOT", 7);
-        ActiveTune tune04 = new ActiveTune(executor, "Pound is UP!", 12);
-        ActiveTune tune05 = new ActiveTune(executor, "Lover Blinds", 8);
-        ActiveTune tune06 = new ActiveTune(executor, "Pork Bellies", 9);
-        ActiveTune tune07 = new ActiveTune(executor, "Bu Boo Ba Bu", 10);
+        ActiveTune tune01 = new ActiveTune(scheduledThreadPool, executor, "Song for YOU", 10);
+        ActiveTune tune02 = new ActiveTune(scheduledThreadPool, executor,"You are MINE", 5);
+        ActiveTune tune03 = new ActiveTune(scheduledThreadPool, executor,"Water is HOT", 7);
+        ActiveTune tune04 = new ActiveTune(scheduledThreadPool, executor,"Pound is UP!", 12);
+        ActiveTune tune05 = new ActiveTune(scheduledThreadPool, executor,"Lover Blinds", 8);
+        ActiveTune tune06 = new ActiveTune(scheduledThreadPool, executor,"Pork Bellies", 9);
+        ActiveTune tune07 = new ActiveTune(scheduledThreadPool, executor,"Bu Boo Ba Bu", 10);
         tune01.start();
         tune02.start();
         tune03.start();
@@ -190,30 +189,34 @@ public final class PlayManager
 
         System.in.read();
         executor.shutdown();
+        scheduledThreadPool.shutdown();
     }
 
     public static class ActiveTune
     {
         ScheduledFuture<?> future;
         final AtomicInteger counter = new AtomicInteger();
-        final ScheduledExecutorService service;
+        final ScheduledExecutorService scheduledThreadPool;
+        final ExecutorService executor;
         boolean done;
 
         String song;
         int durationSeconds;
 
-        public ActiveTune(ScheduledExecutorService service, String song, int durationSeconds)
+        public ActiveTune(ScheduledExecutorService scheduledThreadPool, ExecutorService executor,String song, int durationSeconds)
         {
-            this.service = service;
+            this.scheduledThreadPool = scheduledThreadPool;
+            this.executor = executor;
             this.song = song;
             this.durationSeconds = durationSeconds;
         }
 
         public void start()
         {
-            Thread thread = new Thread(() -> counter(service));
-            thread.setName(song);
-            thread.start();
+            executor.execute(() -> counter(scheduledThreadPool));
+//            Thread thread = new Thread(() -> counter(scheduledThreadPool));
+//            thread.setName(song);
+//            thread.start();
         }
 
         public void cancel()
