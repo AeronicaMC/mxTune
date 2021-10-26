@@ -218,8 +218,12 @@ public final class PlayManager
 
         public void cancel()
         {
-            System.out.println(song + ": Cancelled at " + getCounter() + " seconds of " + getDurationSeconds());
-            future.cancel(true);
+            synchronized (this)
+            {
+                System.out.println(song + ": Cancelled at " + getCounter() + " seconds of " + getDurationSeconds());
+                future.cancel(true);
+                done = true;
+            }
         }
 
         private void counter(ScheduledExecutorService service)
@@ -239,9 +243,12 @@ public final class PlayManager
             }
             finally
             {
-                System.out.println(song + ": Done!" );
                 future.cancel(true);
-                done = true;
+                if (!done)
+                {
+                    System.out.println(song + ": Done!" );
+                    done = true;
+                }
             }
         }
 
