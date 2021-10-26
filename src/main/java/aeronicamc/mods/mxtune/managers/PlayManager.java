@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 @SuppressWarnings("unused")
@@ -159,4 +161,107 @@ public final class PlayManager
         return (playId >= 0) && activePlayIds.contains(playId);
     }
 
+    // Testing Server Side Tune Management
+    public static void main(String[] args) throws Exception
+    {
+
+
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(5);
+
+        ActiveTune tune01 = new ActiveTune(executor, "Song for YOU", 10);
+        ActiveTune tune02 = new ActiveTune(executor, "You are MINE", 5);
+        ActiveTune tune03 = new ActiveTune(executor, "Water is HOT", 7);
+        ActiveTune tune04 = new ActiveTune(executor, "Pound is UP!", 12);
+        ActiveTune tune05 = new ActiveTune(executor, "Lover Blinds", 8);
+        ActiveTune tune06 = new ActiveTune(executor, "Pork Bellies", 9);
+        ActiveTune tune07 = new ActiveTune(executor, "Bu Boo Ba Bu", 10);
+        tune01.start();
+        tune02.start();
+        tune03.start();
+        tune04.start();
+        tune05.start();
+        tune06.start();
+        tune07.start();
+
+        Thread.sleep(2000);
+
+        tune01.cancel();
+
+        System.in.read();
+        executor.shutdown();
+    }
+
+    public static class ActiveTune
+    {
+        ScheduledFuture<?> future;
+        final AtomicInteger counter = new AtomicInteger();
+        final ScheduledExecutorService service;
+        boolean done;
+
+        String song;
+        int durationSeconds;
+
+        public ActiveTune(ScheduledExecutorService service, String song, int durationSeconds)
+        {
+            this.service = service;
+            this.song = song;
+            this.durationSeconds = durationSeconds;
+        }
+
+        public void start()
+        {
+            Thread thread = new Thread(() -> counter(service));
+            thread.setName(song);
+            thread.start();
+        }
+
+        public void cancel()
+        {
+            System.out.println(song + ": Cancelled at " + getCounter() + " seconds of " + getDurationSeconds());
+            future.cancel(true);
+        }
+
+        private void counter(ScheduledExecutorService service)
+        {
+            CountDownLatch lock = new CountDownLatch(durationSeconds);
+            future = service.scheduleAtFixedRate(() -> {
+                System.out.println(song + ": " + counter.incrementAndGet());
+                lock.countDown();
+            }, 500, 1000, TimeUnit.MILLISECONDS);
+            try
+            {
+                lock.await(durationSeconds * 1000, TimeUnit.MILLISECONDS);
+            }
+            catch (InterruptedException e)
+            {
+                System.out.println("Oops: " + e.getLocalizedMessage());
+            }
+            finally
+            {
+                System.out.println(song + ": Done!" );
+                future.cancel(true);
+                done = true;
+            }
+        }
+
+        public int getDurationSeconds()
+        {
+            return durationSeconds;
+        }
+
+        public boolean isDone()
+        {
+            return done;
+        }
+
+        public int getCounter()
+        {
+            return counter.get();
+        }
+
+        public String getSong()
+        {
+            return song;
+        }
+    }
 }
