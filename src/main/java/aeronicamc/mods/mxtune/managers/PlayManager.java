@@ -1,11 +1,13 @@
 package aeronicamc.mods.mxtune.managers;
 
+import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.blocks.IPlacedInstrument;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.PlaySoloMessage;
 import aeronicamc.mods.mxtune.network.messages.StopPlayIdMessage;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -164,8 +166,20 @@ public final class PlayManager
     // Testing Server Side Tune Management
     public static void main(String[] args) throws Exception
     {
-        ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(2);
-        ExecutorService executor = Executors.newCachedThreadPool();
+        ThreadFactory threadFactoryScheduled = new ThreadFactoryBuilder()
+            .setNameFormat(Reference.MOD_NAME + " ActiveTune-%d")
+            .setDaemon(true)
+            .setPriority(Thread.NORM_PRIORITY)
+            .build();
+
+        ThreadFactory threadFactoryCounter = new ThreadFactoryBuilder()
+            .setNameFormat(Reference.MOD_NAME + " ActiveTuneCounter-%d")
+            .setDaemon(true)
+            .setPriority(Thread.NORM_PRIORITY)
+            .build();
+        ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(2, threadFactoryScheduled);
+
+        ExecutorService executor = Executors.newCachedThreadPool(threadFactoryCounter);
 
         ActiveTune tune01 = new ActiveTune(scheduledThreadPool, executor, "Song for YOU", 10);
         ActiveTune tune02 = new ActiveTune(scheduledThreadPool, executor,"You are MINE", 5);
@@ -173,7 +187,7 @@ public final class PlayManager
         ActiveTune tune04 = new ActiveTune(scheduledThreadPool, executor,"Pound is UP!", 12);
         ActiveTune tune05 = new ActiveTune(scheduledThreadPool, executor,"Lover Blinds", 8);
         ActiveTune tune06 = new ActiveTune(scheduledThreadPool, executor,"Pork Bellies", 9);
-        ActiveTune tune07 = new ActiveTune(scheduledThreadPool, executor,"Bu Boo Ba Bu", 10);
+        ActiveTune tune07 = new ActiveTune(scheduledThreadPool, executor,"Bu Boo Ba Bu", 66);
         tune01.start();
         tune02.start();
         tune03.start();
