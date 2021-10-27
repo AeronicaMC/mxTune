@@ -9,7 +9,6 @@ import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.MXTuneException;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -165,16 +164,15 @@ public final class PlayManager
         }
     }
 
-    public static void sendPlayersTuneTo(@Nullable ServerPlayerEntity playerIn, @Nullable Integer listeningPlayerId)
+    public static void sendPlayersTuneTo(@Nullable ServerPlayerEntity playerIn, @Nullable ServerPlayerEntity listeningPlayerId)
     {
         if (listeningPlayerId != null && hasActivePlayId(playerIn))
         {
             // TODO: make sendPlayersTuneTo work based on ActiveTune song progress - dis below be ugly
             int playId = livingEntitiesPlayId.getOrDefault(playerIn.getId(), PlayIdSupplier.INVALID);
-            PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, playerIn.getId() ,activePlayIdsSong.getOrDefault(playId, ""));
-            Entity entity = playerIn.level.getEntity(listeningPlayerId);
-            if (entity != null)
-                PacketDispatcher.sendTo(packetPlaySolo, (ServerPlayerEntity) entity);
+            PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, playerIn.getId() ,activePlayIdsSong.getOrDefault(playId, "@MMLv15t120abcdefg;"));
+            PacketDispatcher.sendToTrackingEntity(packetPlaySolo, listeningPlayerId);
+            LOGGER.debug("sendPlayersTuneTo {}", listeningPlayerId.getDisplayName().getString());
         }
 
     }
