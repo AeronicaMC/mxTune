@@ -2,7 +2,6 @@ package aeronicamc.mods.mxtune.caps;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.util.AntiNull;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.INBT;
@@ -63,14 +62,14 @@ public final class LivingEntityModCapProvider
     private static class EventHandler
     {
         @SubscribeEvent
-        public static void event(final AttachCapabilitiesEvent<Entity> event)
+        public static void event(final AttachCapabilitiesEvent<PlayerEntity> event)
         {
-            if (event.getObject() instanceof PlayerEntity)
+            if (event.getObject() != null)
             {
-                final LivingEntityModCap livingEntityModCap = new LivingEntityModCap((PlayerEntity) event.getObject());
+                final LivingEntityModCap livingEntityModCap = new LivingEntityModCap(event.getObject());
                 event.addCapability(ID, new SerializableCapabilityProvider<>(LIVING_ENTITY_MOD_CAP_CAPABILITY, null, livingEntityModCap));
                 event.addListener(()->getLivingEntityModCap((LivingEntity) event.getObject()).invalidate());
-                LOGGER.debug("AttachCapabilitiesEvent: {}", (Entity)((event.getObject())));
+                LOGGER.debug("AttachCapabilitiesEvent: {}", (event.getObject()));
             }
         }
 
