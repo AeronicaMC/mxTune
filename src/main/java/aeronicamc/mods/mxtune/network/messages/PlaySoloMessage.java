@@ -2,13 +2,18 @@ package aeronicamc.mods.mxtune.network.messages;
 
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.function.Supplier;
 
 public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
 {
+    private static final Logger LOGGER = LogManager.getLogger(PlaySoloMessage.class);
     private int playId = PlayIdSupplier.INVALID;
     private int entityId;
     private String musicText = "";
@@ -44,6 +49,10 @@ public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
     {
         if (ctx.get().getDirection().getReceptionSide().isClient())
         {
+            assert Minecraft.getInstance().player != null;
+            PlayerEntity sender = (PlayerEntity) Minecraft.getInstance().player.level.getEntity(message.entityId);
+            String senderName = sender != null ? sender.getDisplayName().getString() : "-error-";
+            LOGGER.debug("From: {} to: {}", senderName, Minecraft.getInstance().player.getDisplayName().getString());
             ctx.get().enqueueWork(() ->
                 ClientAudio.play(message.playId, message.entityId, message.musicText));
         }
