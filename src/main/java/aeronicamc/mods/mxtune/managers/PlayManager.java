@@ -6,16 +6,20 @@ import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.PlaySoloMessage;
 import aeronicamc.mods.mxtune.network.messages.StopPlayIdMessage;
 import aeronicamc.mods.mxtune.util.IInstrument;
+import aeronicamc.mods.mxtune.util.MXTuneException;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -30,6 +34,7 @@ public final class PlayManager
     private static final Logger LOGGER = LogManager.getLogger(PlayManager.class.getSimpleName());
     private static final Set<Integer> activePlayIds = new HashSet<>();
     private static final Map<Integer, Integer> livingEntitiesPlayId = new HashMap<>();
+    private static final Map<Integer, String> activePlayIdsSong = new HashMap<>();
 
     private PlayManager()
     {
@@ -59,7 +64,7 @@ public final class PlayManager
      * @param isPlaced true is this is a block instrument
      * @return a unique play id or null if unable to play
      */
-    public static int playMusic(PlayerEntity playerIn, BlockPos pos, boolean isPlaced)
+    public static int playMusic(PlayerEntity playerIn, @Nullable BlockPos pos, boolean isPlaced)
     {
         ItemStack sheetMusic = SheetMusicHelper.getIMusicFromIInstrument(playerIn.getMainHandItem().getStack());
         if (!sheetMusic.isEmpty())
@@ -85,7 +90,7 @@ public final class PlayManager
         int livingEntityId = playerIn.getId();
 
         DurationTimer.scheduleStop(playId, duration);
-        addActivePlayId(livingEntityId, playId);
+        addActivePlayId(livingEntityId, playId, mml);
         PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, playerIn.getId() , mml);
         PacketDispatcher.sendToTrackingEntityAndSelf(packetPlaySolo, playerIn);
         return playId;
@@ -138,11 +143,12 @@ public final class PlayManager
         return entityId != null && livingEntitiesPlayId.containsKey(entityId);
     }
 
-    private static void addActivePlayId(int livingEntityId, int playId)
+    private static void addActivePlayId(int livingEntityId, int playId, String mml)
     {
         if ((playId != PlayIdSupplier.INVALID))
         {
             activePlayIds.add(playId);
+            activePlayIdsSong.putIfAbsent(playId, mml);
             if (livingEntitiesPlayId.containsKey(livingEntityId))
                 livingEntitiesPlayId.replace(livingEntityId, playId);
             else
@@ -155,7 +161,27 @@ public final class PlayManager
         if ((playId != PlayIdSupplier.INVALID) && !activePlayIds.isEmpty())
         {
             activePlayIds.remove(playId);
+            activePlayIdsSong.remove(playId);
         }
+    }
+
+    public static void sendPlayersTuneTo(@Nullable ServerPlayerEntity playerIn, @Nullable Integer listeningPlayerId)
+    {
+        if (listeningPlayerId != null && hasActivePlayId(playerIn))
+        {
+            // TODO: make sendPlayersTuneTo work based on ActiveTune song progress - dis below be ugly
+            int playId = livingEntitiesPlayId.getOrDefault(playerIn.getId(), PlayIdSupplier.INVALID);
+            PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, playerIn.getId() ,activePlayIdsSong.getOrDefault(playId, ""));
+            Entity entity = playerIn.level.getEntity(listeningPlayerId);
+            if (entity != null)
+                PacketDispatcher.sendTo(packetPlaySolo, (ServerPlayerEntity) entity);
+        }
+
+    }
+
+    public static boolean hasActivePlayId(@Nullable ServerPlayerEntity playerIn)
+    {
+        return playerIn != null && livingEntitiesPlayId.containsKey(playerIn.getId());
     }
 
     public static boolean isActivePlayId(int playId)
@@ -166,93 +192,110 @@ public final class PlayManager
     // Testing Server Side Tune Management
     public static void main(String[] args) throws Exception
     {
-        ThreadFactory threadFactoryScheduled = new ThreadFactoryBuilder()
-            .setNameFormat(Reference.MOD_NAME + " ActiveTune-%d")
-            .setDaemon(true)
-            .setPriority(Thread.NORM_PRIORITY)
-            .build();
-
-        ThreadFactory threadFactoryCounter = new ThreadFactoryBuilder()
-            .setNameFormat(Reference.MOD_NAME + " ActiveTuneCounter-%d")
-            .setDaemon(true)
-            .setPriority(Thread.NORM_PRIORITY)
-            .build();
-        ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(2, threadFactoryScheduled);
-
-        ExecutorService executor = Executors.newCachedThreadPool(threadFactoryCounter);
-
-        ActiveTune tune01 = new ActiveTune(scheduledThreadPool, executor, "Song for YOU", 10);
-        ActiveTune tune02 = new ActiveTune(scheduledThreadPool, executor,"You are MINE", 5);
-        ActiveTune tune03 = new ActiveTune(scheduledThreadPool, executor,"Water is HOT", 7);
-        ActiveTune tune04 = new ActiveTune(scheduledThreadPool, executor,"Pound is UP!", 12);
-        ActiveTune tune05 = new ActiveTune(scheduledThreadPool, executor,"Lover Blinds", 8);
-        ActiveTune tune06 = new ActiveTune(scheduledThreadPool, executor,"Pork Bellies", 9);
-        ActiveTune tune07 = new ActiveTune(scheduledThreadPool, executor,"Bu Boo Ba Bu", 66);
-        tune01.start();
-        tune02.start();
-        tune03.start();
-        tune04.start();
-        tune05.start();
-        tune06.start();
-        tune07.start();
+        ActiveTune tune01 = ActiveTune.newActiveTune("Song for YOU", 10).start();
+        ActiveTune tune02 = ActiveTune.newActiveTune("You are MINE", 5).start();
+        ActiveTune tune03 = ActiveTune.newActiveTune("Water is HOT", 7).start();
+        ActiveTune tune04 = ActiveTune.newActiveTune("Pound is UP!", 12).start();
+        ActiveTune tune05 = ActiveTune.newActiveTune("Bu Boo Ba Bu", 16).start();
 
         Thread.sleep(2000);
         tune01.cancel();
         Thread.sleep(4000);
         tune04.cancel();
 
-        System.in.read();
-        executor.shutdown();
-        scheduledThreadPool.shutdown();
+        try
+        {
+            switch (System.in.read())
+            {
+                case 'x':
+                case 'X':
+                default:
+                    break;
+            }
+        }
+        catch (IOException e)
+        {
+            throw new MXTuneException("Ignored IO Exception: " + e.getLocalizedMessage());
+        }
+        finally
+        {
+            ActiveTune.shutdown();
+        }
     }
 
     public static class ActiveTune
     {
-        ScheduledFuture<?> future;
-        final AtomicInteger counter = new AtomicInteger();
-        final ScheduledExecutorService scheduledThreadPool;
-        final ExecutorService executor;
-        boolean done;
+        private static final ThreadFactory threadFactoryScheduled = new ThreadFactoryBuilder()
+                .setNameFormat(Reference.MOD_NAME + " ActiveTune-Scheduled-Counters-%d")
+                .setDaemon(true)
+                .setPriority(Thread.NORM_PRIORITY)
+                .build();
+        private static final ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(2, threadFactoryScheduled);
 
-        String song;
-        int durationSeconds;
+        private static final ThreadFactory threadFactoryPool = new ThreadFactoryBuilder()
+                .setNameFormat(Reference.MOD_NAME + " ActiveTune-pool-%d")
+                .setDaemon(true)
+                .setPriority(Thread.NORM_PRIORITY)
+                .build();
+        private static final ExecutorService executor = Executors.newCachedThreadPool(threadFactoryPool);
 
-        public ActiveTune(ScheduledExecutorService scheduledThreadPool, ExecutorService executor,String song, int durationSeconds)
+        private ScheduledFuture<?> future;
+        private final AtomicInteger secondsElapsed = new AtomicInteger();
+        private boolean done;
+
+        private final String song;
+        private final int tuneDuration;
+
+        private ActiveTune()
         {
-            this.scheduledThreadPool = scheduledThreadPool;
-            this.executor = executor;
-            this.song = song;
-            this.durationSeconds = durationSeconds;
+            this.song = "";
+            this.tuneDuration = 0;
         }
 
-        public void start()
+
+        private ActiveTune(String song, int tuneDuration)
         {
-            executor.execute(() -> counter(scheduledThreadPool));
-//            Thread thread = new Thread(() -> counter(scheduledThreadPool));
-//            thread.setName(song);
-//            thread.start();
+            this.song = song;
+            this.tuneDuration = tuneDuration;
+        }
+
+        public static ActiveTune newActiveTune(String song, int tuneDuration)
+        {
+            return new ActiveTune(song, tuneDuration);
+        }
+
+        private static void shutdown()
+        {
+            executor.shutdown();
+            scheduledThreadPool.shutdown();
+        }
+
+        public ActiveTune start()
+        {
+            executor.execute(this::counter);
+            return this;
         }
 
         public void cancel()
         {
             synchronized (this)
             {
-                System.out.println(song + ": Cancelled at " + getCounter() + " seconds of " + getDurationSeconds());
+                System.out.println(song + ": Cancelled at " + getSecondsElapsed() + " seconds of " + getTuneDuration());
                 future.cancel(true);
                 done = true;
             }
         }
 
-        private void counter(ScheduledExecutorService service)
+        private void counter()
         {
-            CountDownLatch lock = new CountDownLatch(durationSeconds);
-            future = service.scheduleAtFixedRate(() -> {
-                System.out.println(song + ": " + counter.incrementAndGet());
+            CountDownLatch lock = new CountDownLatch(tuneDuration);
+            future = scheduledThreadPool.scheduleAtFixedRate(() -> {
+                System.out.println(song + ": " + secondsElapsed.incrementAndGet());
                 lock.countDown();
             }, 500, 1000, TimeUnit.MILLISECONDS);
             try
             {
-                lock.await(durationSeconds * 1000, TimeUnit.MILLISECONDS);
+                lock.await(tuneDuration * 1000, TimeUnit.MILLISECONDS);
             }
             catch (InterruptedException e)
             {
@@ -269,9 +312,9 @@ public final class PlayManager
             }
         }
 
-        synchronized int getDurationSeconds()
+        synchronized int getTuneDuration()
         {
-            return durationSeconds;
+            return tuneDuration;
         }
 
         synchronized boolean isDone()
@@ -279,9 +322,9 @@ public final class PlayManager
             return done;
         }
 
-        synchronized int getCounter()
+        synchronized int getSecondsElapsed()
         {
-            return counter.get();
+            return secondsElapsed.get();
         }
 
         synchronized String getSong()
