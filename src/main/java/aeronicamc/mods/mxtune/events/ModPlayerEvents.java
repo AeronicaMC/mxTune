@@ -17,9 +17,9 @@ public class ModPlayerEvents
     @SubscribeEvent
     public static void event(PlayerEvent.StartTracking event)
     {
-        if (!event.getPlayer().level.isClientSide() && event.getEntityLiving() instanceof ServerPlayerEntity)
+        if (!event.getPlayer().level.isClientSide() && event.getTarget() instanceof ServerPlayerEntity)
         {
-            PlayManager.sendPlayersTuneTo((ServerPlayerEntity) event.getPlayer(), event.getEntityLiving().getId());
+            PlayManager.sendPlayersTuneTo((ServerPlayerEntity) event.getPlayer(), (ServerPlayerEntity) event.getTarget());
             LOGGER.debug("{} Start Tracking {}", event.getPlayer(), event.getTarget());
         }
         //LOGGER.debug("{} Start Tracking {}", event.getPlayer(), event.getTarget());
