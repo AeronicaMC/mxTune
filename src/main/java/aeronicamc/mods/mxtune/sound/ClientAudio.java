@@ -164,6 +164,16 @@ public class ClientAudio
         else audioData.setAudioFormat(audioFormat3D);
     }
 
+    /**
+     * The all-in-one #play(...) method of the {@link ClientAudio} class.
+     * @param playID The unique server identifier for each music submission. see {@link PlayIdSupplier}
+     * @param entityId The unique entity id of the music source. Generally another player.
+     * @param pos the {@link BlockPos} of a placed instrument of music machine in the world
+     * @param musicText The MML {@link <A=https://en.wikipedia.org/wiki/MML>MML</A>} to be played
+     * @param isClient if true, the local client player hears their own music in stereo else other players in 3D audio.
+     * @param callback An optional callback that is fired when {@link Status} changes related to {@link AudioData}
+     *                 interactions with various classes in the mxTune audio chain.
+     */
     private static void play(int playID, int entityId, @Nullable BlockPos pos, String musicText, boolean isClient, @Nullable IAudioStatusCallback callback)
     {
         startThreadFactory();
@@ -266,9 +276,10 @@ public class ClientAudio
 
 
     /**
-     *
+     * A helper method used to force the vanilla {@link SoundEngine} to use our {@link IAudioStream}
+     * class {@link PCMAudioStream} codec instead of the default {@link OggAudioStream} codec.
      * @return the IAudioStream from the newly created PCMAudioStream
-     * @param audioData
+     * @param audioData {@link AudioData} data and settings related to a music submission.
      */
     private static CompletableFuture<IAudioStream> submitStream(AudioData audioData)
     {
@@ -276,7 +287,13 @@ public class ClientAudio
     }
 
     /**
-     * Try to create a
+     * Try to submit our PCMAudio to the vanilla {@link SoundEngine} by looking for the mxTune {@link ISound}
+     * {@link MxSound} and the associated {@link Sound} {@link PCMSound} dummy resource in the vanilla
+     * SoundEngines {@link ChannelManager.Entry} map. When we find it submit the stream using our custom
+     * {@link ClientAudio#submitStream(AudioData)} method.
+     *
+     * This method is called 4 times a second in our subscribed {@link TickEvent.ClientTickEvent} to ensure
+     * submissions are handled in a timely manner.
      */
     private static void initializeCodec()
     {
@@ -287,8 +304,8 @@ public class ClientAudio
                 AudioData audioData = getAudioData(pollPlayIDQueue01());
                 if (audioData.getISound() != null)
                 {
-                    ISound sound = audioData.getISound();
-                    ChannelManager.Entry entry = soundEngine.instanceToChannel.get(sound);
+                    ISound iSound = audioData.getISound();
+                    ChannelManager.Entry entry = soundEngine.instanceToChannel.get(iSound);
                     if (entry != null)
                     {
                         submitStream(audioData).thenAccept(iAudioStream -> entry.execute(soundSource ->
@@ -297,13 +314,13 @@ public class ClientAudio
                                 soundSource.play();
                             }));
                         int playId = audioData.getPlayId();
-                        LOGGER.debug("initializeCodec: PlayID {}, ISound {}", playId, sound.getLocation());
+                        LOGGER.debug("initializeCodec: playId: {}, ISound: {}", playId, iSound.getLocation());
                     }
                     else
                     {
                         int playId = audioData.getPlayId();
                         playIDAudioData.remove(playId);
-                        LOGGER.debug("initializeCodec: failed - Queue 3: {}", playId);
+                        LOGGER.debug("initializeCodec: failed - playIDQueue01: {}", playId);
                     }
                 }
             }
