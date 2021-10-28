@@ -19,7 +19,7 @@ public class ModPlayerEvents
     {
         if (!event.getPlayer().level.isClientSide() && event.getTarget() instanceof ServerPlayerEntity)
         {
-            PlayManager.sendPlayersTuneTo((ServerPlayerEntity) event.getPlayer(), (ServerPlayerEntity) event.getTarget());
+            PlayManager.sendPlayersTuneTo((ServerPlayerEntity) event.getPlayer(), event.getTarget());
             LOGGER.debug("{} Start Tracking {}", event.getPlayer(), event.getTarget());
         }
         //LOGGER.debug("{} Start Tracking {}", event.getPlayer(), event.getTarget());
@@ -37,6 +37,6 @@ public class ModPlayerEvents
     public static void event(PlayerContainerEvent.Open event)
     {
         if(!event.getEntityLiving().getCommandSenderWorld().isClientSide())
-            PlayManager.stopPlayingLivingEntity(event.getEntityLiving());
+            PlayManager.stopPlayingEntity(event.getEntityLiving());
     }
 }

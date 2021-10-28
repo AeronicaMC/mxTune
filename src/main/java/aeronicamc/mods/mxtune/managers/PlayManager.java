@@ -9,7 +9,7 @@ import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.MXTuneException;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -32,7 +32,7 @@ public final class PlayManager
 {
     private static final Logger LOGGER = LogManager.getLogger(PlayManager.class.getSimpleName());
     private static final Set<Integer> activePlayIds = new HashSet<>();
-    private static final Map<Integer, Integer> livingEntitiesPlayId = new HashMap<>();
+    private static final Map<Integer, Integer> entityIdToPlayId = new HashMap<>();
     private static final Map<Integer, String> activePlayIdsSong = new HashMap<>();
 
     private PlayManager()
@@ -119,39 +119,39 @@ public final class PlayManager
         PacketDispatcher.sendToAll(new StopPlayIdMessage(playId));
     }
 
-    public static <T extends LivingEntity> void stopPlayingLivingEntity(T pLivingEntity)
+    public static <T extends Entity> void stopPlayingEntity(T pEntity)
     {
-        stopPlayingLivingEntity(pLivingEntity.getId());
+        stopPlayingEntity(pEntity.getId());
     }
 
-    private static void stopPlayingLivingEntity(Integer entityId)
+    private static void stopPlayingEntity(Integer entityId)
     {
-        if (isLivingEntityPlaying(entityId))
+        if (isEntityPlaying(entityId))
         {
-            stopPlayId(livingEntitiesPlayId.get(entityId));
+            stopPlayId(entityIdToPlayId.get(entityId));
         }
     }
 
-    private static int getLivingEntityPlayId(@Nullable Integer livingEntityId)
+    private static int getEntitiesPlayId(@Nullable Integer entityId)
     {
-        return (livingEntityId != null) ? livingEntitiesPlayId.getOrDefault(livingEntityId, PlayIdSupplier.INVALID) : PlayIdSupplier.INVALID;
+        return (entityId != null) ? entityIdToPlayId.getOrDefault(entityId, PlayIdSupplier.INVALID) : PlayIdSupplier.INVALID;
     }
 
-    private static boolean isLivingEntityPlaying(@Nullable Integer entityId)
+    private static boolean isEntityPlaying(@Nullable Integer entityId)
     {
-        return entityId != null && livingEntitiesPlayId.containsKey(entityId);
+        return entityId != null && entityIdToPlayId.containsKey(entityId);
     }
 
-    private static void addActivePlayId(int livingEntityId, int playId, String mml)
+    private static void addActivePlayId(int entityId, int playId, String mml)
     {
         if ((playId != PlayIdSupplier.INVALID))
         {
             activePlayIds.add(playId);
             activePlayIdsSong.putIfAbsent(playId, mml);
-            if (livingEntitiesPlayId.containsKey(livingEntityId))
-                livingEntitiesPlayId.replace(livingEntityId, playId);
+            if (entityIdToPlayId.containsKey(entityId))
+                entityIdToPlayId.replace(entityId, playId);
             else
-                livingEntitiesPlayId.putIfAbsent(livingEntityId, playId);
+                entityIdToPlayId.putIfAbsent(entityId, playId);
         }
     }
 
@@ -164,22 +164,22 @@ public final class PlayManager
         }
     }
 
-    public static void sendPlayersTuneTo(@Nullable ServerPlayerEntity playerIn, @Nullable ServerPlayerEntity listeningPlayerId)
+    public static void sendPlayersTuneTo(@Nullable ServerPlayerEntity listeningPlayer, @Nullable Entity soundSourceEntity)
     {
-        if (listeningPlayerId != null && hasActivePlayId(playerIn))
+        if (listeningPlayer != null && hasActivePlayId(soundSourceEntity))
         {
             // TODO: make sendPlayersTuneTo work based on ActiveTune song progress - dis below be ugly
-            int playId = livingEntitiesPlayId.getOrDefault(playerIn.getId(), PlayIdSupplier.INVALID);
-            PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, playerIn.getId() ,activePlayIdsSong.getOrDefault(playId, "@MMLv15t120abcdefg;"));
-            PacketDispatcher.sendToTrackingEntity(packetPlaySolo, listeningPlayerId);
-            LOGGER.debug("sendPlayersTuneTo {}", listeningPlayerId.getDisplayName().getString());
+            int playId = entityIdToPlayId.getOrDefault(soundSourceEntity.getId(), PlayIdSupplier.INVALID);
+            PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, soundSourceEntity.getId() ,activePlayIdsSong.getOrDefault(playId, "@MMLv15t120abcdefg;"));
+            PacketDispatcher.sendTo(packetPlaySolo, listeningPlayer);
+            LOGGER.debug("sendPlayersTuneTo {}", listeningPlayer.getDisplayName().getString());
         }
 
     }
 
-    public static boolean hasActivePlayId(@Nullable ServerPlayerEntity playerIn)
+    public static boolean hasActivePlayId(@Nullable Entity pEntity)
     {
-        return playerIn != null && livingEntitiesPlayId.containsKey(playerIn.getId());
+        return pEntity != null && entityIdToPlayId.containsKey(pEntity.getId());
     }
 
     public static boolean isActivePlayId(int playId)

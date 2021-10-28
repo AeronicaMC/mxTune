@@ -51,7 +51,7 @@ public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
         {
             assert Minecraft.getInstance().player != null;
             PlayerEntity sender = (PlayerEntity) Minecraft.getInstance().player.level.getEntity(message.entityId);
-            String senderName = sender != null ? sender.getDisplayName().getString() : "-error-";
+            String senderName = sender != null ? sender.getDisplayName().getString() : "--Server--";
             LOGGER.debug("From: {} to: {}", senderName, Minecraft.getInstance().player.getDisplayName().getString());
             ctx.get().enqueueWork(() ->
                 ClientAudio.play(message.playId, message.entityId, message.musicText));
