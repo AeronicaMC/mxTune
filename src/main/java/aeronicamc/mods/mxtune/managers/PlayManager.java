@@ -26,6 +26,8 @@ import java.util.Set;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static aeronicamc.mods.mxtune.util.SheetMusicHelper.formatDuration;
+
 
 @SuppressWarnings("unused")
 public final class PlayManager
@@ -190,11 +192,11 @@ public final class PlayManager
     // Testing Server Side Tune Management
     public static void main(String[] args) throws Exception
     {
-        ActiveTune tune01 = ActiveTune.newActiveTune("Song for YOU", 10).start();
-        ActiveTune tune02 = ActiveTune.newActiveTune("You are MINE", 5).start();
-        ActiveTune tune03 = ActiveTune.newActiveTune("Water is HOT", 7).start();
-        ActiveTune tune04 = ActiveTune.newActiveTune("Pound is UP!", 12).start();
-        ActiveTune tune05 = ActiveTune.newActiveTune("Bu Boo Ba Bu", 16).start();
+        ActiveTune tune01 = ActiveTune.newActiveTune(1,"Song for YOU", 10).start();
+        ActiveTune tune02 = ActiveTune.newActiveTune(2,"You are MINE", 5).start();
+        ActiveTune tune03 = ActiveTune.newActiveTune(3,"Water is HOT", 7).start();
+        ActiveTune tune04 = ActiveTune.newActiveTune(4,"Pound is UP!", 12).start();
+        ActiveTune tune05 = ActiveTune.newActiveTune(5,"Bu Boo Ba Bu", 16).start();
 
         Thread.sleep(2000);
         tune01.cancel();
@@ -242,25 +244,27 @@ public final class PlayManager
         private final AtomicInteger secondsElapsed = new AtomicInteger();
         private boolean done;
 
-        private final String song;
-        private final int tuneDuration;
+        private final String mml;
+        private final int playId;
+        private final int durationSeconds;
 
         private ActiveTune()
         {
-            this.song = "";
-            this.tuneDuration = 0;
+            this.playId = PlayIdSupplier.INVALID;
+            this.mml = "";
+            this.durationSeconds = 0;
         }
 
-
-        private ActiveTune(String song, int tuneDuration)
+        private ActiveTune(int playId, String mml, int durationSeconds)
         {
-            this.song = song;
-            this.tuneDuration = tuneDuration;
+            this.playId = playId;
+            this.mml = mml;
+            this.durationSeconds = durationSeconds;
         }
 
-        public static ActiveTune newActiveTune(String song, int tuneDuration)
+        public static ActiveTune newActiveTune(int playId, String mml, int durationSeconds)
         {
-            return new ActiveTune(song, tuneDuration);
+            return new ActiveTune(playId, mml, durationSeconds);
         }
 
         private static void shutdown()
@@ -279,8 +283,9 @@ public final class PlayManager
         {
             synchronized (this)
             {
-
-                LOGGER2.info("Song: {} Cancelled at {} seconds of {}", song,getSecondsElapsed(), getTuneDuration());
+                LOGGER2.info("A scheduled or requested cancel was sent for playId: {} that had a duration of {}", playId, formatDuration(durationSeconds));
+                LOGGER2.info("Time elapsed: {}", formatDuration(secondsElapsed.get()));
+                //PlayManager.stopPlayId(playId);
                 future.cancel(true);
                 done = true;
             }
@@ -288,14 +293,14 @@ public final class PlayManager
 
         private void counter()
         {
-            CountDownLatch lock = new CountDownLatch(tuneDuration);
+            CountDownLatch lock = new CountDownLatch(durationSeconds);
             future = scheduledThreadPool.scheduleAtFixedRate(() -> {
-                LOGGER2.info("Song: {} {}", song,  secondsElapsed.incrementAndGet());
+                LOGGER2.info("Song: {} {}", mml, secondsElapsed.incrementAndGet());
                 lock.countDown();
             }, 500, 1000, TimeUnit.MILLISECONDS);
             try
             {
-                lock.await(tuneDuration * 1000, TimeUnit.MILLISECONDS);
+                lock.await(durationSeconds * 1000, TimeUnit.MILLISECONDS);
             }
             catch (InterruptedException e)
             {
@@ -303,18 +308,14 @@ public final class PlayManager
             }
             finally
             {
-                future.cancel(true);
                 if (!done)
-                {
-                    LOGGER2.info("Song: {} done", song);
-                    done = true;
-                }
+                    cancel();
             }
         }
 
-        synchronized int getTuneDuration()
+        synchronized int getDurationSeconds()
         {
-            return tuneDuration;
+            return durationSeconds;
         }
 
         synchronized boolean isDone()
@@ -327,9 +328,9 @@ public final class PlayManager
             return secondsElapsed.get();
         }
 
-        synchronized String getSong()
+        synchronized String getMml()
         {
-            return song;
+            return mml;
         }
     }
 }
