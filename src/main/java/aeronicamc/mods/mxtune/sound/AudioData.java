@@ -29,6 +29,7 @@ import javax.sound.sampled.AudioInputStream;
 public class AudioData
 {
     private final int playId;
+    private final int secondsToSkip;
     private final BlockPos blockPos;
     private final boolean isClientPlayer;
     private AudioInputStream audioStream;
@@ -44,9 +45,10 @@ public class AudioData
     private int fadeTicks;
     private int fadeCounter;
 
-    AudioData(int playId, @Nullable BlockPos blockPos, boolean isClientPlayer, @Nullable IAudioStatusCallback callback)
+    AudioData(int playId, int secondsToSkip, @Nullable BlockPos blockPos, boolean isClientPlayer, @Nullable IAudioStatusCallback callback)
     {
         this.playId = playId;
+        this.secondsToSkip = secondsToSkip;
         this.playType = PlayIdSupplier.getTypeForPlayId(playId);
         this.blockPos = blockPos;
         this.isClientPlayer = isClientPlayer;
@@ -88,6 +90,11 @@ public class AudioData
     synchronized int getPlayId()
     {
         return playId;
+    }
+
+    synchronized long getSecondsToSkip()
+    {
+        return secondsToSkip;
     }
 
     @Nullable

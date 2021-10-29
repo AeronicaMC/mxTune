@@ -15,6 +15,7 @@ public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
 {
     private static final Logger LOGGER = LogManager.getLogger(PlaySoloMessage.class);
     private int playId = PlayIdSupplier.INVALID;
+    private int secondsToSkip;
     private int entityId;
     private String musicText = "";
 
@@ -27,10 +28,19 @@ public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
         this.musicText = musicText;
     }
 
+    public PlaySoloMessage(int playId, int secondsToSkip, int entityId, String musicText)
+    {
+        this.playId = playId;
+        this.secondsToSkip = secondsToSkip;
+        this.entityId = entityId;
+        this.musicText = musicText;
+    }
+
     @Override
     public void encode(PlaySoloMessage message, PacketBuffer buffer)
     {
         buffer.writeInt(message.playId);
+        buffer.writeInt(message.secondsToSkip);
         buffer.writeInt(message.entityId);
         buffer.writeUtf(message.musicText);
     }
@@ -39,9 +49,10 @@ public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
     public PlaySoloMessage decode(PacketBuffer buffer)
     {
         final int playId = buffer.readInt();
+        final int secondsToSkip = buffer.readInt();
         final int entityId = buffer.readInt();
         final String mml = buffer.readUtf();
-        return new PlaySoloMessage(playId, entityId, mml);
+        return new PlaySoloMessage(playId, secondsToSkip, entityId, mml);
     }
 
     @Override
@@ -54,7 +65,7 @@ public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
             String senderName = sender != null ? sender.getDisplayName().getString() : "--Server--";
             LOGGER.debug("From: {} to: {}", senderName, Minecraft.getInstance().player.getDisplayName().getString());
             ctx.get().enqueueWork(() ->
-                ClientAudio.play(message.playId, message.entityId, message.musicText));
+                ClientAudio.play(message.playId, message.secondsToSkip, message.entityId, message.musicText));
         }
         ctx.get().setPacketHandled(true);
     }

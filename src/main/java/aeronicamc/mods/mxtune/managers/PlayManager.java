@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @SuppressWarnings("unused")
 public final class PlayManager
 {
-    private static final Logger LOGGER = LogManager.getLogger(PlayManager.class.getSimpleName());
+    private static final Logger LOGGER = LogManager.getLogger(PlayManager.class);
     private static final Set<Integer> activePlayIds = new HashSet<>();
     private static final Map<Integer, Integer> entityIdToPlayId = new HashMap<>();
     private static final Map<Integer, String> activePlayIdsSong = new HashMap<>();
@@ -170,7 +170,7 @@ public final class PlayManager
         {
             // TODO: make sendPlayersTuneTo work based on ActiveTune song progress - dis below be ugly
             int playId = entityIdToPlayId.getOrDefault(soundSourceEntity.getId(), PlayIdSupplier.INVALID);
-            PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, soundSourceEntity.getId() ,activePlayIdsSong.getOrDefault(playId, "@MMLv15t120abcdefg;"));
+            PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, 0, soundSourceEntity.getId() ,activePlayIdsSong.getOrDefault(playId, "@MMLv15t120abcdefg;"));
             PacketDispatcher.sendTo(packetPlaySolo, listeningPlayer);
             LOGGER.debug("sendPlayersTuneTo {}", listeningPlayer.getDisplayName().getString());
         }
@@ -223,6 +223,7 @@ public final class PlayManager
 
     public static class ActiveTune
     {
+        private static final Logger LOGGER2 = LogManager.getLogger(ActiveTune.class.getSimpleName());
         private static final ThreadFactory threadFactoryScheduled = new ThreadFactoryBuilder()
                 .setNameFormat(Reference.MOD_NAME + " ActiveTune-Scheduled-Counters-%d")
                 .setDaemon(true)
@@ -278,7 +279,8 @@ public final class PlayManager
         {
             synchronized (this)
             {
-                System.out.println(song + ": Cancelled at " + getSecondsElapsed() + " seconds of " + getTuneDuration());
+
+                LOGGER2.info("Song: {} Cancelled at {} seconds of {}", song,getSecondsElapsed(), getTuneDuration());
                 future.cancel(true);
                 done = true;
             }
@@ -288,7 +290,7 @@ public final class PlayManager
         {
             CountDownLatch lock = new CountDownLatch(tuneDuration);
             future = scheduledThreadPool.scheduleAtFixedRate(() -> {
-                System.out.println(song + ": " + secondsElapsed.incrementAndGet());
+                LOGGER2.info("Song: {} {}", song,  secondsElapsed.incrementAndGet());
                 lock.countDown();
             }, 500, 1000, TimeUnit.MILLISECONDS);
             try
@@ -297,14 +299,14 @@ public final class PlayManager
             }
             catch (InterruptedException e)
             {
-                System.out.println("Oops: " + e.getLocalizedMessage());
+                LOGGER2.info("Oops: {}", e.getLocalizedMessage());
             }
             finally
             {
                 future.cancel(true);
                 if (!done)
                 {
-                    System.out.println(song + ": Done!" );
+                    LOGGER2.info("Song: {} done", song);
                     done = true;
                 }
             }

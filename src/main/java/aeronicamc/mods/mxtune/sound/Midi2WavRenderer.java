@@ -21,25 +21,39 @@
  */
 package aeronicamc.mods.mxtune.sound;
 
-import com.sun.media.sound.AudioSynthesizer;
 import aeronicamc.mods.mxtune.util.MIDISystemUtil;
+import com.sun.media.sound.AudioSynthesizer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import javax.sound.midi.*;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/*
+/**
  * user: Paul Boese aka Aeronica
- * removed the JFugue specific pattern signature methods
+ * <Li>removed the JFugue specific pattern signature methods.</Li>
+ * <Li>Added an option to skip forward N seconds of audio.</Li>
+ * <P>ref: {@link <A="https://stackoverflow.com/questions/52595473/java-start-audio-playback-at-x-position">Java: Start Audio Playback at X Position</A></P>}
  */
 @SuppressWarnings("restriction")
 public class Midi2WavRenderer implements Receiver
 {
+    private static final Logger LOGGER = LogManager.getLogger(Midi2WavRenderer.class);
+    private final AudioData audioData;
+
     public Midi2WavRenderer()
     {
-        /* The Constructor of course */
+        audioData = null;
+    }
+
+    public Midi2WavRenderer(AudioData audioData)
+    {
+        this.audioData = audioData;
     }
 
     /**
@@ -65,9 +79,9 @@ public class Midi2WavRenderer implements Receiver
         p.put("max polyphony", "1024");
         AudioInputStream outputStream = audioSynthesizer.openStream(format, p);
 
-        Soundbank defaultSoundbank = audioSynthesizer.getDefaultSoundbank();
-        if (defaultSoundbank != null)
-            audioSynthesizer.unloadAllInstruments(defaultSoundbank);
+        Soundbank defaultSoundBank = audioSynthesizer.getDefaultSoundbank();
+        if (defaultSoundBank != null)
+            audioSynthesizer.unloadAllInstruments(defaultSoundBank);
         
         audioSynthesizer.loadAllInstruments(mxTuneSoundBank);
 
@@ -80,12 +94,28 @@ public class Midi2WavRenderer implements Receiver
         outputStream = new AudioInputStream(outputStream, outputStream.getFormat(), len);
 
         receiver.close();
+        long secondsToSkip = audioData != null && audioData.getSecondsToSkip() != 0 ? audioData.getSecondsToSkip() : 0L;
+        long savedBytesToSkip;
+        long bytesToSkip = savedBytesToSkip = format.getFrameSize() * ((int)format.getFrameRate()) * secondsToSkip;
+        try
+        {
+            long justSkipped;
+            while (bytesToSkip > 0 && (justSkipped = outputStream.skip(bytesToSkip)) > 0)
+            {
+                bytesToSkip -= justSkipped;
+            }
+            LOGGER.debug("Skipped {} seconds or {} bytes.", secondsToSkip, savedBytesToSkip);
+        } catch (IOException e)
+        {
+            LOGGER.error(e);
+        }
         return outputStream;
     }
 
     /**
      * Find available AudioSynthesizer.
      */
+    @Nullable
     private AudioSynthesizer findAudioSynthesizer() throws MidiUnavailableException
     {
         // First check if default synthesizer is AudioSynthesizer.
@@ -123,7 +153,7 @@ public class Midi2WavRenderer implements Receiver
     /**
      * Send entry MIDI Sequence into Receiver using timestamps.
      */
-    private double send(Sequence seq, Receiver recv) throws ModMidiException
+    private double send(@Nullable Sequence seq, @Nullable Receiver recv) throws ModMidiException
     {
         if (seq == null) return 0D;
 
@@ -153,7 +183,7 @@ public class Midi2WavRenderer implements Receiver
                 break;
             tracksPos[selectedTrack]++;
             if (selectedEvent == null)
-                throw new ModMidiException("Null MidiEvent in \'send\' method: " +seq);
+                throw new ModMidiException("Null MidiEvent in 'send' method: " +seq);
             long tick = selectedEvent.getTick();
             if ((int)divisionType == (int)Sequence.PPQ)
                 currentTime += ((tick - lastTick) * mpq) / seqResolution;

@@ -132,11 +132,12 @@ public class ClientAudio
     /**
      * For players.
      * @param playID unique submission identifier.
+     * @param secondsToSkip seconds to skip forward in the music.
      * @param musicText MML string
      */
-    public static void play(int playID, int entityId, String musicText)
+    public static void play(int playID, int secondsToSkip, int entityId, String musicText)
     {
-        play(playID, entityId, null, musicText, false, null);
+        play(playID, secondsToSkip, entityId, null, musicText, false, null);
     }
 
     /**
@@ -147,12 +148,12 @@ public class ClientAudio
      */
     public static void play(Integer playID, BlockPos pos, String musicText)
     {
-        play(playID, 0, pos, musicText, false, null);
+        play(playID, 0, 0, pos, musicText, false, null);
     }
 
     public static void playLocal(int playId, String musicText, @Nullable IAudioStatusCallback callback)
     {
-        play(playId, 0 ,mc.player == null ? null : mc.player.blockPosition(), musicText, true, callback);
+        play(playId, 0, 0 , mc.player == null ? null : mc.player.blockPosition(), musicText, true, callback);
     }
 
     // Determine if audio is 3D spacial or background
@@ -167,20 +168,20 @@ public class ClientAudio
     /**
      * The all-in-one #play(...) method of the {@link ClientAudio} class.
      * @param playID The unique server identifier for each music submission. see {@link PlayIdSupplier}
+     * @param secondsToSkip seconds to skip forward in the music.
      * @param entityId The unique entity id of the music source. Generally another player.
      * @param pos the {@link BlockPos} of a placed instrument of music machine in the world
-     * @param musicText The MML {@link <A=https://en.wikipedia.org/wiki/MML>MML</A>} to be played
+     * @param musicText The MML {@link <A="https://en.wikipedia.org/wiki/MML">MML</A>} to be played
      * @param isClient if true, the local client player hears their own music in stereo else other players in 3D audio.
      * @param callback An optional callback that is fired when {@link Status} changes related to {@link AudioData}
-     *                 interactions with various classes in the mxTune audio chain.
      */
-    private static void play(int playID, int entityId, @Nullable BlockPos pos, String musicText, boolean isClient, @Nullable IAudioStatusCallback callback)
+    private static void play(int playID, int secondsToSkip, int entityId, @Nullable BlockPos pos, String musicText, boolean isClient, @Nullable IAudioStatusCallback callback)
     {
         startThreadFactory();
         if(playID != PlayIdSupplier.INVALID)
         {
             addPlayIDQueue(playID);
-            AudioData audioData = new AudioData(playID, pos, isClient, callback);
+            AudioData audioData = new AudioData(playID, secondsToSkip, pos, isClient, callback);
             setAudioFormat(audioData);
             AudioData result = playIDAudioData.putIfAbsent(playID, audioData);
             if (result != null)
