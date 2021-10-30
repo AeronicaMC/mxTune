@@ -169,7 +169,6 @@ public final class PlayManager
     {
         if (listeningPlayer != null && hasActivePlayId(soundSourceEntity))
         {
-            // TODO: make sendPlayersTuneTo work based on ActiveTune song progress - dis below be ugly
             ActiveTune activeTune = entityIdToActiveTune.get(soundSourceEntity.getId());
             int playId = activeTune.getPlayId();
             PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, activeTune.getSecondsElapsed() , soundSourceEntity.getId() ,activeTune.getMml());
