@@ -60,7 +60,7 @@ public class ModSoundEvents
     /**
      * Registers a sound event.
      *
-     * @param soundName The sound event's name, without the testmod3 prefix
+     * @param soundName The sound event's name, without the mxtune prefix
      * @return A RegistryObject reference to the SoundEvent
      */
     private static RegistryObject<SoundEvent> registerSoundEvent(final String soundName) {
