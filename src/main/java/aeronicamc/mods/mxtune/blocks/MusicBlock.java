@@ -36,7 +36,7 @@ public class MusicBlock extends Block
             // worldIn.playSound(null, pos, SoundEvents.BLOCK_NOTE_BLOCK_COW_BELL, SoundCategory.BLOCKS, 1F, 2F);
         } else
         {
-            ClientAudio.play(PlayIdSupplier.PlayType.PLAYERS.getAsInt(), pos, TestData.getMML(rand.nextInt(TestData.values().length)).getMML());
+            ClientAudio.play(PlayIdSupplier.PlayType.BACKGROUND.getAsInt(), pos, TestData.getMML(rand.nextInt(TestData.values().length)).getMML());
         }
         return ActionResultType.SUCCESS;
     }
