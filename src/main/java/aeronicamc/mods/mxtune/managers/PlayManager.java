@@ -32,8 +32,8 @@ public final class PlayManager
 {
     private static final Logger LOGGER = LogManager.getLogger(PlayManager.class);
     private static final Set<Integer> activePlayIds = new HashSet<>();
-    private static final Map<Integer, ActiveTune> entityIdToPlayId = new HashMap<>();
-    private static final Map<Integer, String> activePlayIdsSong = new HashMap<>();
+    private static final Map<Integer, ActiveTune> entityIdToActiveTune = new HashMap<>();
+    private static final Map<Integer, Integer> playIdToEntityId = new HashMap<>();
 
     private PlayManager()
     {
@@ -68,14 +68,13 @@ public final class PlayManager
         ItemStack sheetMusic = SheetMusicHelper.getIMusicFromIInstrument(playerIn.getMainHandItem().getStack());
         if (!sheetMusic.isEmpty())
         {
-
             Integer playerID = playerIn.getId();
             String title = SheetMusicHelper.getMusicTitleAsString(sheetMusic);
             String mml = SheetMusicHelper.getMusic(sheetMusic);
             int duration = SheetMusicHelper.getMusicDuration(sheetMusic);
 
             //mml = mml.replace("MML@", "MML@I" + getPresetIndex(pos, playerIn, isPlaced));
-            LOGGER.debug("MML Title: {}", title);
+            LOGGER.debug("MML Title: {} Duration: {}", title, duration);
             LOGGER.debug("MML Sub25: {}", mml.substring(0, Math.min(25, mml.length())));
 
             return playSolo(playerIn, mml, duration, playerID);
@@ -86,11 +85,10 @@ public final class PlayManager
     private static int playSolo(PlayerEntity playerIn, String mml, int duration, Integer playerID)
     {
         int playId = getNextPlayID();
-        int livingEntityId = playerIn.getId();
+        int entityId = playerIn.getId();
 
-        DurationTimer.scheduleStop(playId, duration);
-        addActivePlayId(livingEntityId, playId, mml, duration);
-        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, playerIn.getId() , mml);
+        addActivePlayId(entityId, playId, mml, duration);
+        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, entityId , mml);
         PacketDispatcher.sendToTrackingEntityAndSelf(packetPlaySolo, playerIn);
         return playId;
     }
@@ -130,18 +128,18 @@ public final class PlayManager
     {
         if (isEntityPlaying(entityId))
         {
-            stopPlayId(entityIdToPlayId.get(entityId).getPlayId());
+            stopPlayId(entityIdToActiveTune.get(entityId).getPlayId());
         }
     }
 
     private static int getEntitiesPlayId(@Nullable Integer entityId)
     {
-        return (entityId != null) ? entityIdToPlayId.get(entityId).getPlayId() : PlayIdSupplier.INVALID;
+        return (entityId != null) ? entityIdToActiveTune.get(entityId).getPlayId() : PlayIdSupplier.INVALID;
     }
 
     private static boolean isEntityPlaying(@Nullable Integer entityId)
     {
-        return entityId != null && entityIdToPlayId.containsKey(entityId);
+        return entityId != null && entityIdToActiveTune.containsKey(entityId);
     }
 
     private static void addActivePlayId(int entityId, int playId, String mml, int durationSeconds)
@@ -149,11 +147,11 @@ public final class PlayManager
         if ((playId != PlayIdSupplier.INVALID))
         {
             activePlayIds.add(playId);
-            activePlayIdsSong.putIfAbsent(playId, mml);
-            if (entityIdToPlayId.containsKey(entityId))
-                entityIdToPlayId.replace(entityId, ActiveTune.newActiveTune(playId, mml, durationSeconds).start());
+            playIdToEntityId.put(playId, entityId);
+            if (entityIdToActiveTune.containsKey(entityId))
+                entityIdToActiveTune.replace(entityId, ActiveTune.newActiveTune(entityId, playId, mml, durationSeconds).start());
             else
-                entityIdToPlayId.putIfAbsent(entityId, ActiveTune.newActiveTune(playId, mml, durationSeconds).start());
+                entityIdToActiveTune.putIfAbsent(entityId, ActiveTune.newActiveTune(entityId, playId, mml, durationSeconds).start());
         }
     }
 
@@ -161,9 +159,9 @@ public final class PlayManager
     {
         if ((playId != PlayIdSupplier.INVALID) && !activePlayIds.isEmpty())
         {
+            entityIdToActiveTune.remove(playIdToEntityId.get(playId));
             activePlayIds.remove(playId);
-            activePlayIdsSong.remove(playId);
-
+            playIdToEntityId.remove(playId);
         }
     }
 
@@ -172,17 +170,17 @@ public final class PlayManager
         if (listeningPlayer != null && hasActivePlayId(soundSourceEntity))
         {
             // TODO: make sendPlayersTuneTo work based on ActiveTune song progress - dis below be ugly
-            ActiveTune activeTune = entityIdToPlayId.get(soundSourceEntity.getId());
+            ActiveTune activeTune = entityIdToActiveTune.get(soundSourceEntity.getId());
             int playId = activeTune.getPlayId();
-            PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, activeTune.getSecondsElapsed(), soundSourceEntity.getId() ,activePlayIdsSong.getOrDefault(playId, activeTune.getMml()));
+            PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, activeTune.getSecondsElapsed() , soundSourceEntity.getId() ,activeTune.getMml());
             PacketDispatcher.sendTo(packetPlaySolo, listeningPlayer);
-            LOGGER.debug("sendPlayersTuneTo {}", listeningPlayer.getDisplayName().getString());
+            LOGGER.debug("sendPlayersTuneTo {} starting at {}", listeningPlayer.getDisplayName().getString(), SheetMusicHelper.formatDuration(activeTune.getSecondsElapsed()));
         }
     }
 
     public static boolean hasActivePlayId(@Nullable Entity pEntity)
     {
-        return pEntity != null && entityIdToPlayId.containsKey(pEntity.getId());
+        return pEntity != null && entityIdToActiveTune.containsKey(pEntity.getId());
     }
 
     public static boolean isActivePlayId(int playId)
@@ -208,9 +206,11 @@ public final class PlayManager
         private static final ExecutorService executor = Executors.newCachedThreadPool(threadFactoryPool);
 
         private ScheduledFuture<?> future;
-        private final AtomicInteger secondsElapsed = new AtomicInteger();
+        private final AtomicInteger secondsElapsedAI = new AtomicInteger();
+        private int secondsElapsed;
         private boolean done;
 
+        protected final int entityId;
         protected final int playId;
         protected final String mml;
         protected final int durationSeconds;
@@ -222,21 +222,23 @@ public final class PlayManager
 
         private ActiveTune()
         {
+            this.entityId = 0;
             this.playId = PlayIdSupplier.INVALID;
             this.mml = "";
             this.durationSeconds = 0;
         }
 
-        private ActiveTune(int playId, String mml, int durationSeconds)
+        private ActiveTune(int entityId, int playId, String mml, int durationSeconds)
         {
+            this.entityId= entityId;
             this.playId = playId;
             this.mml = mml;
             this.durationSeconds = durationSeconds;
         }
 
-        public static ActiveTune newActiveTune(int playId, String mml, int durationSeconds)
+        public static ActiveTune newActiveTune(int entityId, int playId, String mml, int durationSeconds)
         {
-            return new ActiveTune(playId, mml, durationSeconds);
+            return new ActiveTune(entityId, playId, mml, durationSeconds);
         }
 
         private static void shutdown()
@@ -256,7 +258,7 @@ public final class PlayManager
             synchronized (this)
             {
                 LOGGER2.debug("A scheduled or requested cancel was sent for playId: {} that had a duration of {}", playId, formatDuration(durationSeconds));
-                LOGGER2.debug("Time elapsed: {}", formatDuration(secondsElapsed.get()));
+                LOGGER2.debug("Time elapsed: {}", formatDuration(secondsElapsedAI.get()));
                 PlayManager.stopPlayId(playId);
                 future.cancel(true);
                 done = true;
@@ -267,7 +269,7 @@ public final class PlayManager
         {
             CountDownLatch lock = new CountDownLatch(durationSeconds);
             future = scheduledThreadPool.scheduleAtFixedRate(() -> {
-                //LOGGER2.debug("Song: {} {}", mml, secondsElapsed.incrementAndGet());
+                secondsElapsed = secondsElapsedAI.incrementAndGet();
                 lock.countDown();
             }, 500, 1000, TimeUnit.MILLISECONDS);
             try
@@ -285,6 +287,11 @@ public final class PlayManager
             }
         }
 
+        synchronized int getEntityId()
+        {
+            return entityId;
+        }
+
         synchronized int getDurationSeconds()
         {
             return durationSeconds;
@@ -297,7 +304,7 @@ public final class PlayManager
 
         synchronized int getSecondsElapsed()
         {
-            return secondsElapsed.get();
+            return secondsElapsed + 1;
         }
 
         synchronized String getMml()

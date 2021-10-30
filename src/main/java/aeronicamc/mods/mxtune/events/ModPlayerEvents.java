@@ -22,15 +22,15 @@ public class ModPlayerEvents
             PlayManager.sendPlayersTuneTo((ServerPlayerEntity) event.getPlayer(), event.getTarget());
             LOGGER.debug("{} Start Tracking {}", event.getPlayer(), event.getTarget());
         }
-        //LOGGER.debug("{} Start Tracking {}", event.getPlayer(), event.getTarget());
-        //LOGGER.debug("Listeners {}", event.getListenerList());
     }
 
     @SubscribeEvent
     public static void event(PlayerEvent.StopTracking event)
     {
-        //LOGGER.debug("{} Stop Tracking {}", event.getPlayer(), event.getTarget());
-        //LOGGER.debug("Listeners {}", event.getListenerList());
+        if (!event.getPlayer().level.isClientSide() && event.getTarget() instanceof ServerPlayerEntity)
+        {
+            LOGGER.debug("{} Stop Tracking {}", event.getPlayer(), event.getTarget());
+        }
     }
 
     @SubscribeEvent
