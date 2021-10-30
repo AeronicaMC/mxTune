@@ -9,7 +9,7 @@ import org.apache.logging.log4j.LogManager;
 
 public class MusicPositioned extends MxSound
 {
-    private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger();
+    private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(MusicPositioned.class.getSimpleName());
     private final Minecraft mc = Minecraft.getInstance();
     private int counter;
     private float lastDistance;
@@ -24,7 +24,8 @@ public class MusicPositioned extends MxSound
             this.x = blockPos.getX();
             this.y = blockPos.getY();
             this.z = blockPos.getZ();
-            this.volume = 4.0F;
+            this.stopped = false;
+            this.volume = 1.0F;
         }
     }
 
@@ -35,11 +36,11 @@ public class MusicPositioned extends MxSound
         {
             Vector3d thePlayerVec3d = new Vector3d(mc.player.getX(), mc.player.getY(), mc.player.getZ());
             float distance = (float) thePlayerVec3d.distanceTo(new Vector3d(this.x, this.y, this.z));
-            this.volume = (float) MathHelper.clamp(Math.log((1.0D - ((1.0D/16.0D)*(distance))) + 1.0D)*1.6D, 0.0D, 1.0D);
+            this.volume = 1.0F - MathHelper.clamp(distance / 32.0F, 0.0F, 1.0F);
             if ((counter++ % 20 == 0) && (distance != lastDistance))
             {
-                LOGGER.debug("dist {}, volume {}", distance, volume);
-                lastDistance = distance;
+                LOGGER.debug("dist {}, volume {}", String.format("%03.3f", distance), String.format("%1.3f", volume));
+                this.lastDistance = distance;
             }
         }
     }

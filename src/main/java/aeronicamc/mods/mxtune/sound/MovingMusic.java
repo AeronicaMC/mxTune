@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 public class MovingMusic extends MxSound
 {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(MovingMusic.class.getSimpleName());
     private final Minecraft mc = Minecraft.getInstance();
     private final Entity entity;
     private int counter;
@@ -36,7 +36,7 @@ public class MovingMusic extends MxSound
     @Override
     public void onUpdate()
     {
-        if (audioData == null || !entity.isAlive() || stopped)
+        if (this.audioData == null || !this.entity.isAlive() || isStopped())
         {
             this.stopped = true;
             ClientAudio.queueAudioDataRemoval(playID);
@@ -49,12 +49,11 @@ public class MovingMusic extends MxSound
 
             Vector3d vec3d = new Vector3d(mc.player.getX(), mc.player.getY(), mc.player.getZ());
             float distance = (float) vec3d.distanceTo(new Vector3d(entity.getX(), entity.getY(), entity.getZ()));
-            double log = (MathHelper.clamp(Math.log((1.0D - ((1.0D/16.0D)*(distance))) + 1.0D)*1.6D, 0.0D, 1.0D));
-            this.volume = (float) MathHelper.clamp(log, 0.0d, 1.0d);
+            this.volume = 1.0F - MathHelper.clamp(distance / 24.0F, 0.0F, 1.0F);
             if ((counter++ % 20 == 0) && (distance != lastDistance))
             {
-                LOGGER.debug("log {}, dist {}, volume {}", log, distance, volume);
-                lastDistance = distance;
+                LOGGER.debug("dist {}, volume {}", String.format("%03.3f", distance), String.format("%1.3f", volume));
+                this.lastDistance = distance;
             }
         }
     }
