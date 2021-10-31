@@ -63,17 +63,17 @@ public final class PlayManager
 
     /**
      * For playing music from a block, e.g. Band Amp.
-     * @param pLevel the world of course
-     * @param pBlockPos position of block instrument
+     * @param world the world of course
+     * @param blockPos position of block instrument
      * @return a unique play id
      */
-    public static int playMusic(World pLevel, BlockPos pBlockPos)
+    public static int playMusic(World world, BlockPos blockPos)
     {
         int playId = PlayIdSupplier.INVALID;
         IMusicPlayer musicPlayer;
-        if (pLevel.getBlockState(pBlockPos).getBlock() instanceof IMusicPlayer)
+        if (world.getBlockState(blockPos).getBlock() instanceof IMusicPlayer)
         {
-            musicPlayer = (IMusicPlayer) pLevel.getBlockEntity(pBlockPos);
+            musicPlayer = (IMusicPlayer) world.getBlockEntity(blockPos);
             if (musicPlayer != null)
             {
                 String musicText = musicPlayer.getMML();
@@ -84,9 +84,9 @@ public final class PlayManager
                     {
                         playId = getNextPlayID();
                         int duration = validDuration.getDuration();
-                        addActivePlayId(0, pBlockPos, playId, musicText, duration);
-                        PlayBlockMusicMessage playBlockMusicMessage = new PlayBlockMusicMessage(playId, pBlockPos , musicText);
-                        PacketDispatcher.sendToAllAround(playBlockMusicMessage, pLevel, pBlockPos,64.0D);
+                        addActivePlayId(0, blockPos, playId, musicText, duration);
+                        PlayBlockMusicMessage playBlockMusicMessage = new PlayBlockMusicMessage(playId, blockPos , musicText);
+                        PacketDispatcher.sendToAllAround(playBlockMusicMessage, world.dimension(), blockPos, 64.0D);
                     }
                 }
             }

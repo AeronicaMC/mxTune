@@ -99,13 +99,13 @@ public class PacketDispatcher
     /**
      * Sends a message to everyone within a certain range of the block
      * @param message a custom message
-     * @param world the world to send it too
+     * @param dimension<World> the world to send it too
      * @param blockPos the position in the world to
      * @param range around the position
      */
-    public static <MSG extends AbstractMessage<MSG>> void sendToAllAround(MSG message, World world, BlockPos blockPos, double range)
+    public static <MSG extends AbstractMessage<MSG>> void sendToAllAround(MSG message, RegistryKey<World> dimension, BlockPos blockPos, double range)
     {
-        sendToAllAround(message, world.dimension(), blockPos.getX(), blockPos.getY(), blockPos.getY(), range);
+        sendToAllAround(message, dimension, blockPos.getX(), blockPos.getY(), blockPos.getY(), range);
     }
 
     /**
