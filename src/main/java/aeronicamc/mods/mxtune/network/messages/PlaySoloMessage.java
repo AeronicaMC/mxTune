@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.network.messages;
 
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
+import aeronicamc.mods.mxtune.network.NetworkLongUtfHelper;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,6 +15,7 @@ import java.util.function.Supplier;
 public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
 {
     private static final Logger LOGGER = LogManager.getLogger(PlaySoloMessage.class);
+    private final NetworkLongUtfHelper stringHelper = new NetworkLongUtfHelper();
     private int playId = PlayIdSupplier.INVALID;
     private int secondsToSkip;
     private int entityId;
@@ -42,7 +44,7 @@ public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
         buffer.writeInt(message.playId);
         buffer.writeInt(message.secondsToSkip);
         buffer.writeInt(message.entityId);
-        buffer.writeUtf(message.musicText);
+        stringHelper.writeLongUtf(buffer, message.musicText);
     }
 
     @Override
@@ -51,7 +53,7 @@ public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
         final int playId = buffer.readInt();
         final int secondsToSkip = buffer.readInt();
         final int entityId = buffer.readInt();
-        final String mml = buffer.readUtf();
+        final String mml = stringHelper.readLongUtf(buffer);
         return new PlaySoloMessage(playId, secondsToSkip, entityId, mml);
     }
 

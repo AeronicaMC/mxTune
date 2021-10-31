@@ -39,6 +39,7 @@ public class PacketDispatcher
         registerMessage(OpenScreenMessage.class, new OpenScreenMessage());
         registerMessage(PlaySoloMessage.class, new PlaySoloMessage());
         registerMessage(StopPlayIdMessage.class, new StopPlayIdMessage());
+        registerMessage(PlayBlockMusicMessage.class, new PlayBlockMusicMessage());
         // To Server
         registerMessage(CreateSheetMusicMessage.class, new CreateSheetMusicMessage());
     }

@@ -190,6 +190,11 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
 
     public void setPlayId(int playId)
     {
-        this.playId = playId;
+        this.lastPlayId = this.playId;
+        if (this.playId != playId)
+        {
+            this.playId = playId;
+            this.setChanged();
+        }
     }
 }
