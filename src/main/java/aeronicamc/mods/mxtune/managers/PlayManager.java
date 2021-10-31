@@ -69,6 +69,7 @@ public final class PlayManager
      */
     public static int playMusic(World world, BlockPos blockPos)
     {
+        // TODO: see if I can attach a music playing entity to the tile entity and use that as the music source.
         int playId = PlayIdSupplier.INVALID;
         IMusicPlayer musicPlayer;
         if (world.getBlockState(blockPos).getBlock() instanceof IMusicPlayer)
