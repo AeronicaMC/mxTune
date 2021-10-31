@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.init;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.blocks.InvTestTile;
+import aeronicamc.mods.mxtune.blocks.MusicBlockTile;
 import aeronicamc.mods.mxtune.util.AntiNull;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
@@ -47,10 +48,17 @@ public class ModTileEntities
 
     private static boolean isInitialized;
 
-    public static final RegistryObject<TileEntityType<InvTestTile>> INV_TEST_TILE = registerTileEntityType("inv_test_tile",
-        InvTestTile::new,
-        ModBlocks.INV_TEST_BLOCK
-    );
+    public static final RegistryObject<TileEntityType<InvTestTile>>
+            INV_TEST_TILE = registerTileEntityType("inv_test_tile",
+                                                   InvTestTile::new,
+                                                   ModBlocks.INV_TEST_BLOCK
+                                                  );
+
+    public static final RegistryObject<TileEntityType<MusicBlockTile>>
+            INV_MUSIC_BLOCK = registerTileEntityType("inv_music_block",
+                                                     MusicBlockTile::new,
+                                                     ModBlocks.MUSIC_BLOCK
+                                                    );
 
     /**
      * Registers a tile entity type with the specified tile entity factory and valid block.

@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.util;
 
 import aeronicamc.libs.mml.parser.MMLParser;
 import aeronicamc.libs.mml.parser.MMLParserFactory;
+import aeronicamc.mods.mxtune.blocks.IMusicPlayer;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.sound.MMLToMIDI;
 import aeronicamc.mods.mxtune.sound.Midi2WavRenderer;
@@ -10,6 +11,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -95,6 +97,37 @@ public enum SheetMusicHelper
             return sm.getString(KEY_MML);
         }
         return "MML@;";
+    }
+
+    public static String getMusicFromIMusicPlayer(TileEntity pTileEntity)
+    {
+        if (!(pTileEntity instanceof IMusicPlayer)) return "";
+        StringBuilder buildMML = new StringBuilder();
+        IMusicPlayer musicPlayer = (IMusicPlayer) pTileEntity;
+        int slotCount = musicPlayer.getInventory() != null ? musicPlayer.getInventory().getSlots() : 0;
+        for (int slot = 0; slot < slotCount; slot++)
+        {
+            ItemStack stackInSlot = musicPlayer.getInventory().getStackInSlot(slot);
+            if (!stackInSlot.isEmpty() && stackInSlot.getItem() instanceof IInstrument)
+            {
+                IInstrument instrument = (IInstrument) stackInSlot.getItem();
+                int patch = instrument.getPatch(stackInSlot);
+                ItemStack sheetMusic = getIMusicFromIInstrument(stackInSlot);
+                if (!sheetMusic.isEmpty() && sheetMusic.getTag() != null)
+                {
+                    CompoundNBT contents = (CompoundNBT) sheetMusic.getTag().get(KEY_SHEET_MUSIC);
+                    if (contents != null && contents.contains(KEY_MML, NBT.TAG_STRING))
+                    {
+                        String mml = contents.getString(KEY_MML);
+                        mml = mml.replace("MML@", "MML@I" + patch);
+                        buildMML.append(mml);
+                    }
+                }
+            }
+        }
+
+
+        return buildMML.toString();
     }
 
     public static boolean hasMML(ItemStack sheetMusicStack)

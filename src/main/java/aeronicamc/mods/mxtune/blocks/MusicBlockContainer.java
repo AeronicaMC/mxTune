@@ -17,11 +17,11 @@ import net.minecraftforge.fml.network.IContainerFactory;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class InvTestContainer extends genericContainer
+public class MusicBlockContainer extends genericContainer
 {
-    public InvTestContainer(int windowId, World world, BlockPos pos, PlayerInventory playerInventory , PlayerEntity playerEntity)
+    public MusicBlockContainer(int windowId, World world, BlockPos pos, PlayerInventory playerInventory , PlayerEntity playerEntity)
     {
-        super(ModContainers.INV_TEST_CONTAINER.get(), windowId, world, pos, playerInventory, playerEntity);
+        super(ModContainers.MUSIC_BLOCK_CONTAINER.get(), windowId, world, pos, playerInventory, playerEntity);
         final int guiX = 10;
         final int guiY = 70;
         this.playerEntity = playerEntity;
@@ -48,30 +48,30 @@ public class InvTestContainer extends genericContainer
     public ITextComponent getName()
     {
         if ((tileEntity != null) && (tileEntity.getLevel() != null) && tileEntity.getLevel().isClientSide)
-            return ((InvTestTile)tileEntity).getName();
+            return ((MusicBlockTile)tileEntity).getName();
         return new StringTextComponent("");
     }
 
     @Override
     public boolean stillValid(PlayerEntity playerIn) {
         boolean tileNotNull = tileEntity != null && tileEntity.getLevel() != null;
-        return tileNotNull && stillValid(IWorldPosCallable.create(tileEntity.getLevel(), tileEntity.getBlockPos()), playerEntity, ModBlocks.INV_TEST_BLOCK.get());
+        return tileNotNull && stillValid(IWorldPosCallable.create(tileEntity.getLevel(), tileEntity.getBlockPos()), playerEntity, ModBlocks.MUSIC_BLOCK.get());
     }
 
-    public static class Factory implements IContainerFactory<InvTestContainer>
+    public static class Factory implements IContainerFactory<MusicBlockContainer>
     {
         @Override
-        public InvTestContainer create(final int windowId, final PlayerInventory inv, final PacketBuffer data) {
+        public MusicBlockContainer create(final int windowId, final PlayerInventory inv, final PacketBuffer data) {
             final BlockPos pos = data.readBlockPos();
             final World world = inv.player.getCommandSenderWorld();
             final TileEntity tileEntity = world.getBlockEntity(pos);
             final PlayerEntity player = inv.player;
 
-            if (!(tileEntity instanceof InvTestTile)) {
+            if (!(tileEntity instanceof MusicBlockTile)) {
                 throw new IllegalStateException("Invalid block at " + pos);
             }
 
-            return new InvTestContainer(windowId, world, pos, inv, player);
+            return new MusicBlockContainer(windowId, world, pos, inv, player);
         }
     }
 }

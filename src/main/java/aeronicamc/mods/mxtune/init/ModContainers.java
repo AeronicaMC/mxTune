@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.init;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.blocks.InvTestContainer;
+import aeronicamc.mods.mxtune.blocks.MusicBlockContainer;
 import aeronicamc.mods.mxtune.inventory.InstrumentContainer;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -43,13 +44,20 @@ public class ModContainers
 
     private static boolean isInitialized;
 
-    public static final RegistryObject<ContainerType<InvTestContainer>> INV_TEST_CONTAINER = CONTAINER_TYPES.register("inv_test_container",
-           () -> new ContainerType<>(new InvTestContainer.Factory())
-    );
+    public static final RegistryObject<ContainerType<InvTestContainer>>
+            INV_TEST_CONTAINER = CONTAINER_TYPES.register("inv_test_container",
+                                                          () -> new ContainerType<>(new InvTestContainer.Factory())
+                                                         );
 
-    public static final RegistryObject<ContainerType<InstrumentContainer>> INSTRUMENT_CONTAINER = CONTAINER_TYPES.register("instrument_container",
-           () -> new ContainerType<>(new InstrumentContainer.Factory())
-    );
+    public static final RegistryObject<ContainerType<MusicBlockContainer>>
+            MUSIC_BLOCK_CONTAINER = CONTAINER_TYPES.register("music_block_container",
+                                                                 () -> new ContainerType<>(new MusicBlockContainer.Factory())
+                                                                );
+
+    public static final RegistryObject<ContainerType<InstrumentContainer>>
+            INSTRUMENT_CONTAINER = CONTAINER_TYPES.register("instrument_container",
+                                                            () -> new ContainerType<>(new InstrumentContainer.Factory())
+                                                           );
 
     /**
      * Registers the {@link DeferredRegister} instance with the mod event bus.

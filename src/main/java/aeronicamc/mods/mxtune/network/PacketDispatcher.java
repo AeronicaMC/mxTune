@@ -7,6 +7,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -92,6 +93,18 @@ public class PacketDispatcher
     public static <MSG extends AbstractMessage<MSG>> void sendToAllAround(MSG message, PlayerEntity player, double range)
     {
         sendToAllAround(message, player.getCommandSenderWorld().dimension(), player.blockPosition().getX(), player.blockPosition().getY(), player.blockPosition().getY(), range);
+    }
+
+    /**
+     * Sends a message to everyone within a certain range of the block
+     * @param message a custom message
+     * @param world the world to send it too
+     * @param blockPos the position in the world to
+     * @param range around the position
+     */
+    public static <MSG extends AbstractMessage<MSG>> void sendToAllAround(MSG message, World world, BlockPos blockPos, double range)
+    {
+        sendToAllAround(message, world.dimension(), blockPos.getX(), blockPos.getY(), blockPos.getY(), range);
     }
 
     /**

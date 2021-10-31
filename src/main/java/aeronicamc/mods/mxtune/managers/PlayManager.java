@@ -1,18 +1,21 @@
 package aeronicamc.mods.mxtune.managers;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.blocks.IMusicPlayer;
 import aeronicamc.mods.mxtune.blocks.IPlacedInstrument;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.PlaySoloMessage;
 import aeronicamc.mods.mxtune.network.messages.StopPlayIdMessage;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
+import aeronicamc.mods.mxtune.util.ValidDuration;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -57,6 +60,40 @@ public final class PlayManager
     }
 
     /**
+     * For playing music from a block, e.g. Band Amp.
+     * @param pLevel the world of course
+     * @param pBlockPos position of block instrument
+     * @return a unique play id
+     */
+    public static int playMusic(World pLevel, BlockPos pBlockPos)
+    {
+        int playId = PlayIdSupplier.INVALID;
+        IMusicPlayer musicPlayer;
+        if (pLevel.getBlockState(pBlockPos).getBlock() instanceof IMusicPlayer)
+        {
+            musicPlayer = (IMusicPlayer) pLevel.getBlockEntity(pBlockPos);
+            if (musicPlayer != null)
+            {
+                String musicText = musicPlayer.getMML();
+                if (musicText.contains("MML@"))
+                {
+                    ValidDuration validDuration = SheetMusicHelper.validateMML(musicText);
+                    if (validDuration.isValidMML())
+                    {
+                        playId = getNextPlayID();
+                        int duration = validDuration.getDuration();
+                        addActivePlayId(0, playId, musicText, duration);
+                        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, 0 ,musicText);
+                        PacketDispatcher.sendToAllAround(packetPlaySolo, pLevel, pBlockPos,64);
+                    }
+                }
+            }
+        }
+        return playId;
+    }
+
+
+    /**
      * For playing music
      * @param playerIn who is playing
      * @param pos position of block instrument
@@ -88,7 +125,7 @@ public final class PlayManager
         int entityId = playerIn.getId();
 
         addActivePlayId(entityId, playId, mml, duration);
-        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, entityId , mml);
+        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, entityId ,mml);
         PacketDispatcher.sendToTrackingEntityAndSelf(packetPlaySolo, playerIn);
         return playId;
     }
@@ -240,19 +277,19 @@ public final class PlayManager
             return new ActiveTune(entityId, playId, mml, durationSeconds);
         }
 
-        private static void shutdown()
+        public static void shutdown()
         {
             executor.shutdown();
             scheduledThreadPool.shutdown();
         }
 
-        public ActiveTune start()
+        ActiveTune start()
         {
             executor.execute(this::counter);
             return this;
         }
 
-        public void cancel()
+        void cancel()
         {
             synchronized (this)
             {
