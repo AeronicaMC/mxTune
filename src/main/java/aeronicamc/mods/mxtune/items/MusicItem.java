@@ -33,7 +33,7 @@ public class MusicItem extends Item
     @Override
     public ActionResult<ItemStack> use(@Nonnull World worldIn, @Nonnull PlayerEntity playerIn, @Nonnull Hand handIn)
     {
-        if (!worldIn.isClientSide)
+        if (!worldIn.isClientSide())
         {
             if (!playerIn.isShiftKeyDown())
             {
@@ -43,8 +43,8 @@ public class MusicItem extends Item
                      });
                 SittableEntity sittableEntity = new SittableEntity(worldIn, blockUnderFoot(playerIn), 0D, false);
                 boolean added = worldIn.addFreshEntity(sittableEntity);
-                playerIn.startRiding(sittableEntity, true);
-                LOGGER.debug("sittable added: {}, hasRider: {}", added, sittableEntity.hasPassenger(playerIn));
+                boolean riding = playerIn.startRiding(sittableEntity, false);
+                LOGGER.debug("sittable added: {}, hasRider: {}", added, riding);
             }
             else
             {
@@ -66,7 +66,7 @@ public class MusicItem extends Item
     private static BlockPos blockUnderFoot(PlayerEntity playerIn)
     {
         int x = (int) Math.floor(playerIn.getX());
-        int y = (int) Math.floor(playerIn.getY() - playerIn.getBoundingBox().minY - 0.6D);
+        int y = (int) Math.floor(playerIn.getY());
         int z = (int) Math.floor(playerIn.getZ());
         return new BlockPos(x, y, z);
     }

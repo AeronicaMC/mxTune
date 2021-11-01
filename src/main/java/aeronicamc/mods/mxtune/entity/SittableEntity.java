@@ -8,10 +8,9 @@ import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.network.play.server.SSpawnObjectPacket;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import javax.annotation.Nullable;
 
 import static aeronicamc.mods.mxtune.init.ModEntities.SITTABLE_ENTITY;
 
@@ -20,9 +19,9 @@ public class SittableEntity extends Entity
     private static final DataParameter<Boolean> SHOULD_SIT = EntityDataManager.defineId(SittableEntity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<BlockPos> BLOCK_POS = EntityDataManager.defineId(SittableEntity.class, DataSerializers.BLOCK_POS);
     private static final DataParameter<Integer> PLAY_ID = EntityDataManager.defineId(SittableEntity.class, DataSerializers.INT);
-    private final BlockPos pos;
+    private BlockPos pos;
 
-    public SittableEntity(EntityType<?> entityType, World level)
+    public SittableEntity(final EntityType<? extends SittableEntity> entityType, World level)
     {
         super(entityType, level);
         pos = BlockPos.ZERO;
@@ -30,13 +29,14 @@ public class SittableEntity extends Entity
         this.entityData.set(BLOCK_POS, pos);
     }
 
-    public SittableEntity(World level, BlockPos blockPos, double yOffset, boolean shouldRiderSit)
+    public SittableEntity(final World level, BlockPos blockPos, double yOffset, boolean shouldRiderSit)
     {
         super(SITTABLE_ENTITY.get(), level);
         pos = blockPos;
         setPos(pos.getX() + 0.5D, pos.getY() + yOffset, pos.getZ() + 0.5D);
         this.entityData.set(SHOULD_SIT, shouldRiderSit);
         this.entityData.set(BLOCK_POS, pos);
+        this.noCulling = true;
     }
 
     @Override
@@ -63,6 +63,51 @@ public class SittableEntity extends Entity
     }
 
     /**
+     * Called to update the entity's position/logic.
+     */
+    @Override
+    public void tick()
+    {
+        super.tick();
+        if(pos == null)
+        {
+            pos = this.getBlockPos();
+        }
+        if(!this.level.isClientSide())
+        {
+            if(this.getPassengers().isEmpty() || this.level.isEmptyBlock(pos))
+            {
+                this.remove();
+                level.updateNeighborsAt(getBlockPos(), level.getBlockState(getBlockPos()).getBlock());
+            }
+        }
+    }
+
+    /**
+     * Handles updating while riding another entity
+     */
+    @Override
+    public void rideTick()
+    {
+        super.rideTick();
+    }
+
+    /**
+     * Returns the Y Offset of this entity.
+     */
+    @Override
+    public double getMyRidingOffset()
+    {
+        return 0.0D;
+    }
+
+    @Override
+    protected boolean canRide(Entity pEntity)
+    {
+        return true;
+    }
+
+    /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      *
      * @param pCompound
@@ -79,10 +124,9 @@ public class SittableEntity extends Entity
 
     }
 
-    @Nullable
     @Override
     public IPacket<?> getAddEntityPacket()
     {
-        return null;
+        return new SSpawnObjectPacket(this);
     }
 }
