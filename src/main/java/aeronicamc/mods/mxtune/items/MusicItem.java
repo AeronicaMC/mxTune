@@ -41,10 +41,7 @@ public class MusicItem extends Item
                      {
                          livingCap.setPlayId(rand.nextInt());
                      });
-                SittableEntity sittableEntity = new SittableEntity(worldIn, blockUnderFoot(playerIn), 0D, false);
-                boolean added = worldIn.addFreshEntity(sittableEntity);
-                boolean riding = playerIn.startRiding(sittableEntity, false);
-                LOGGER.debug("sittable added: {}, hasRider: {}", added, riding);
+
             }
             else
             {
@@ -60,7 +57,7 @@ public class MusicItem extends Item
         {
             ClientAudio.stop(lastPlayID);
         }
-        return super.use(worldIn, playerIn, handIn);
+        return SittableEntity.create(worldIn, playerIn.blockPosition(),0.0D, playerIn, handIn);
     }
 
     private static BlockPos blockUnderFoot(PlayerEntity playerIn)

@@ -27,6 +27,7 @@ import aeronicamc.mods.mxtune.init.*;
 import aeronicamc.mods.mxtune.managers.DurationTimer;
 import aeronicamc.mods.mxtune.managers.PlayManager;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
+import aeronicamc.mods.mxtune.render.SittableRenderer;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
 import aeronicamc.mods.mxtune.util.KeyHandler;
 import aeronicamc.mods.mxtune.util.MIDISystemUtil;
@@ -38,6 +39,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -100,6 +102,7 @@ public class MXTune
         ScreenManager.register(ModContainers.INSTRUMENT_CONTAINER.get(), InstrumentScreen::new);
         MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());
         MinecraftForge.EVENT_BUS.register(ClientAudio.class);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.SITTABLE_ENTITY.get(), SittableRenderer::new);
     }
 
     private void modLoadingComplete(FMLLoadCompleteEvent event)

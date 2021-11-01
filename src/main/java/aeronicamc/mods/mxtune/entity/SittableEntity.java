@@ -1,65 +1,48 @@
 package aeronicamc.mods.mxtune.entity;
 
-import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
+import aeronicamc.mods.mxtune.init.ModEntities;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.network.play.server.SSpawnObjectPacket;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 
-import static aeronicamc.mods.mxtune.init.ModEntities.SITTABLE_ENTITY;
+import javax.annotation.Nonnull;
+import java.util.List;
 
 public class SittableEntity extends Entity
 {
-    private static final DataParameter<Boolean> SHOULD_SIT = EntityDataManager.defineId(SittableEntity.class, DataSerializers.BOOLEAN);
-    private static final DataParameter<BlockPos> BLOCK_POS = EntityDataManager.defineId(SittableEntity.class, DataSerializers.BLOCK_POS);
-    private static final DataParameter<Integer> PLAY_ID = EntityDataManager.defineId(SittableEntity.class, DataSerializers.INT);
-    private BlockPos pos;
+    private BlockPos source;
 
-    public SittableEntity(final EntityType<? extends SittableEntity> entityType, World level)
+    public SittableEntity(World level)
     {
-        super(entityType, level);
-        pos = BlockPos.ZERO;
-        this.entityData.set(SHOULD_SIT, Boolean.TRUE);
-        this.entityData.set(BLOCK_POS, pos);
+        super(ModEntities.SITTABLE_ENTITY.get(), level);
+        this.noCulling = true;
     }
 
-    public SittableEntity(final World level, BlockPos blockPos, double yOffset, boolean shouldRiderSit)
+    public SittableEntity(World level, BlockPos source, double yOffset)
     {
-        super(SITTABLE_ENTITY.get(), level);
-        pos = blockPos;
-        setPos(pos.getX() + 0.5D, pos.getY() + yOffset, pos.getZ() + 0.5D);
-        this.entityData.set(SHOULD_SIT, shouldRiderSit);
-        this.entityData.set(BLOCK_POS, pos);
-        this.noCulling = true;
+        this(level);
+        this.source = source;
+        this.setPos(source.getX() + 0.5, source.getY() + yOffset, source.getZ() + 0.5);
+
     }
 
     @Override
     protected void defineSynchedData()
     {
-        this.entityData.define(SHOULD_SIT, Boolean.TRUE);
-        this.entityData.define(BLOCK_POS, pos);
-        this.entityData.define(PLAY_ID, PlayIdSupplier.INVALID);
+
     }
 
-    public void setPlayId(int playID)
+    public BlockPos getSource()
     {
-        entityData.set(PLAY_ID, playID);
-    }
-
-    public int getPlayId()
-    {
-        return entityData.get(PLAY_ID);
-    }
-
-    public BlockPos getBlockPos()
-    {
-        return (this.entityData.get(BLOCK_POS)).immutable();
+        return source;
     }
 
     /**
@@ -69,27 +52,18 @@ public class SittableEntity extends Entity
     public void tick()
     {
         super.tick();
-        if(pos == null)
+        if(this.source == null)
         {
-            pos = this.getBlockPos();
+            this.source = this.blockPosition();
         }
-        if(!this.level.isClientSide())
+        if(!this.level.isClientSide)
         {
-            if(this.getPassengers().isEmpty() || this.level.isEmptyBlock(pos))
+            if(this.getPassengers().isEmpty() || this.level.isEmptyBlock(this.source))
             {
                 this.remove();
-                level.updateNeighborsAt(getBlockPos(), level.getBlockState(getBlockPos()).getBlock());
+                this.level.updateNeighbourForOutputSignal(blockPosition(), this.level.getBlockState(blockPosition()).getBlock());
             }
         }
-    }
-
-    /**
-     * Handles updating while riding another entity
-     */
-    @Override
-    public void rideTick()
-    {
-        super.rideTick();
     }
 
     /**
@@ -127,6 +101,21 @@ public class SittableEntity extends Entity
     @Override
     public IPacket<?> getAddEntityPacket()
     {
-        return new SSpawnObjectPacket(this);
+        return NetworkHooks.getEntitySpawningPacket(this);
+    }
+
+    public static ActionResult<ItemStack> create(@Nonnull World level, @Nonnull BlockPos pos, double yOffset, @Nonnull PlayerEntity player, @Nonnull Hand hand)
+    {
+        if(!level.isClientSide())
+        {
+            List<SittableEntity> sittableEntities = level.getEntitiesOfClass(SittableEntity.class, new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.0, pos.getZ() + 1.0));
+            if(sittableEntities.isEmpty())
+            {
+                SittableEntity seat = new SittableEntity(level, pos, yOffset);
+                level.addFreshEntity(seat);
+                player.startRiding(seat, false);
+            }
+        }
+        return ActionResult.pass(player.getItemInHand(hand));
     }
 }
