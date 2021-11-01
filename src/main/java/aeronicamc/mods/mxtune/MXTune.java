@@ -70,6 +70,7 @@ public class MXTune
 
         ModBlocks.registerToModEventBus(modEventBus);
         ModItems.registerToModEventBus(modEventBus);
+        ModEntities.registerToModEventBus(modEventBus);
         ModContainers.registerToModEventBus(modEventBus);
         ModTileEntities.registerToModEventBus(modEventBus);
         ModSoundEvents.registerToModEventBus(modEventBus);
@@ -87,6 +88,7 @@ public class MXTune
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
+        ModEntities.extendEntityClassification();
         PacketDispatcher.register();
         LivingEntityModCapProvider.register();
     }

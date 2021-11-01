@@ -3,6 +3,7 @@ package aeronicamc.mods.mxtune.items;
 import aeronicamc.libs.mml.util.TestData;
 import aeronicamc.mods.mxtune.caps.ILivingEntityModCap;
 import aeronicamc.mods.mxtune.caps.LivingEntityModCapProvider;
+import aeronicamc.mods.mxtune.entity.SittableEntity;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,6 +11,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,9 +36,16 @@ public class MusicItem extends Item
         if (!worldIn.isClientSide)
         {
             if (!playerIn.isShiftKeyDown())
-                LivingEntityModCapProvider.getLivingEntityModCap(playerIn).ifPresent(livingCap -> {
-                    livingCap.setPlayId(rand.nextInt());
-                });
+            {
+                LivingEntityModCapProvider.getLivingEntityModCap(playerIn).ifPresent(livingCap ->
+                     {
+                         livingCap.setPlayId(rand.nextInt());
+                     });
+                SittableEntity sittableEntity = new SittableEntity(worldIn, blockUnderFoot(playerIn), 0D, false);
+                boolean added = worldIn.addFreshEntity(sittableEntity);
+                playerIn.startRiding(sittableEntity, true);
+                LOGGER.debug("sittable added: {}, hasRider: {}", added, sittableEntity.hasPassenger(playerIn));
+            }
             else
             {
                 LivingEntityModCapProvider.getLivingEntityModCap(playerIn).ifPresent(ILivingEntityModCap::synchronize);
@@ -52,6 +61,14 @@ public class MusicItem extends Item
             ClientAudio.stop(lastPlayID);
         }
         return super.use(worldIn, playerIn, handIn);
+    }
+
+    private static BlockPos blockUnderFoot(PlayerEntity playerIn)
+    {
+        int x = (int) Math.floor(playerIn.getX());
+        int y = (int) Math.floor(playerIn.getY() - playerIn.getBoundingBox().minY - 0.6D);
+        int z = (int) Math.floor(playerIn.getZ());
+        return new BlockPos(x, y, z);
     }
 
     private String getRandomMML()
