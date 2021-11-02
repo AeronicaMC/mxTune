@@ -142,7 +142,7 @@ public class SittableEntity extends Entity
         {
             VoxelShape voxelShape = world.getBlockState(underfoot).getShape(world, underfoot);
             double blockHeight = voxelShape.bounds().maxY;
-            SittableEntity stand = new SittableEntity(world, underfoot, 0);
+            SittableEntity stand = new SittableEntity(world, playerIn.blockPosition(), 0.0625D);
             world.addFreshEntity(stand);
             playerIn.startRiding(stand, true);
             //stand.addPassenger(playerIn);
@@ -154,7 +154,7 @@ public class SittableEntity extends Entity
     private static BlockPos blockUnderFoot(PlayerEntity playerIn)
     {
         int x = (int) Math.floor(playerIn.getX());
-        int y = (int) Math.floor(playerIn.getY() - 0.6D);
+        int y = (int) Math.floor(playerIn.getY() - playerIn.getMyRidingOffset() - 0.6D);
         int z = (int) Math.floor(playerIn.getZ());
         return new BlockPos(x,y,z);
     }
