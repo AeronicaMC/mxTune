@@ -11,7 +11,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,7 +40,10 @@ public class MusicItem extends Item
                      {
                          livingCap.setPlayId(rand.nextInt());
                      });
-
+                if (!playerIn.isPassenger())
+                {
+                    SittableEntity.standOnBlock(worldIn, playerIn.blockPosition(), playerIn, 0D);
+                }
             }
             else
             {
@@ -57,15 +59,7 @@ public class MusicItem extends Item
         {
             ClientAudio.stop(lastPlayID);
         }
-        return SittableEntity.create(worldIn, playerIn.blockPosition(),0.0D, playerIn, handIn);
-    }
-
-    private static BlockPos blockUnderFoot(PlayerEntity playerIn)
-    {
-        int x = (int) Math.floor(playerIn.getX());
-        int y = (int) Math.floor(playerIn.getY());
-        int z = (int) Math.floor(playerIn.getZ());
-        return new BlockPos(x, y, z);
+        return ActionResult.pass(playerIn.getItemInHand(handIn));
     }
 
     private String getRandomMML()

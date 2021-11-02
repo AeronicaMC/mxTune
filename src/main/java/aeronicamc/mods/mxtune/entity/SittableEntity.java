@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.entity;
 
 import aeronicamc.mods.mxtune.init.ModEntities;
+import net.minecraft.block.AirBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -11,6 +12,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
@@ -24,6 +26,7 @@ public class SittableEntity extends Entity
     {
         super(ModEntities.SITTABLE_ENTITY.get(), level);
         this.noCulling = true;
+        this.noPhysics = true;
     }
 
     public SittableEntity(World level, BlockPos source, double yOffset)
@@ -31,7 +34,6 @@ public class SittableEntity extends Entity
         this(level);
         this.source = source;
         this.setPos(source.getX() + 0.5, source.getY() + yOffset, source.getZ() + 0.5);
-
     }
 
     @Override
@@ -82,6 +84,17 @@ public class SittableEntity extends Entity
     }
 
     /**
+     * Used in model rendering to determine if the entity riding this entity should be in the 'sitting' position.
+     *
+     * @return false to prevent an entity that is mounted to this entity from displaying the 'sitting' animation.
+     */
+    @Override
+    public boolean shouldRiderSit()
+    {
+        return true;
+    }
+
+    /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      *
      * @param pCompound
@@ -114,8 +127,33 @@ public class SittableEntity extends Entity
                 SittableEntity seat = new SittableEntity(level, pos, yOffset);
                 level.addFreshEntity(seat);
                 player.startRiding(seat, false);
+                seat.addPassenger(player);
             }
         }
         return ActionResult.pass(player.getItemInHand(hand));
+    }
+
+    public static boolean standOnBlock(World world, BlockPos pos, PlayerEntity playerIn, double yOffSet)
+    {
+        BlockPos underfoot = blockUnderFoot(playerIn);
+        List<SittableEntity> sittableEntities = world.getEntitiesOfClass(SittableEntity.class, new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.0, pos.getZ() + 1.0));
+        if (sittableEntities.isEmpty() && (!(world.getBlockState(underfoot).getBlock() instanceof IFluidBlock)) && !(world.getBlockState(underfoot).getBlock() instanceof AirBlock))
+        {
+            double blockHeight = world.getBlockState(underfoot).getShape(world, underfoot).bounds().maxY;
+            SittableEntity stand = new SittableEntity(world, pos, blockHeight);
+            world.addFreshEntity(stand);
+            playerIn.startRiding(stand, false);
+            stand.addPassenger(playerIn);
+            return true;
+        }
+        return false;
+    }
+
+    private static BlockPos blockUnderFoot(PlayerEntity playerIn)
+    {
+        int x = (int) Math.floor(playerIn.getX());
+        int y = (int) Math.floor(playerIn.getY() - 0.6D);
+        int z = (int) Math.floor(playerIn.getZ());
+        return new BlockPos(x,y,z);
     }
 }
