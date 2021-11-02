@@ -11,6 +11,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -139,11 +140,12 @@ public class SittableEntity extends Entity
         List<SittableEntity> sittableEntities = world.getEntitiesOfClass(SittableEntity.class, new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.0, pos.getZ() + 1.0));
         if (sittableEntities.isEmpty() && (!(world.getBlockState(underfoot).getBlock() instanceof IFluidBlock)) && !(world.getBlockState(underfoot).getBlock() instanceof AirBlock))
         {
-            double blockHeight = world.getBlockState(underfoot).getShape(world, underfoot).bounds().maxY;
-            SittableEntity stand = new SittableEntity(world, pos, blockHeight);
+            VoxelShape voxelShape = world.getBlockState(underfoot).getShape(world, underfoot);
+            double blockHeight = voxelShape.bounds().maxY;
+            SittableEntity stand = new SittableEntity(world, underfoot, 0);
             world.addFreshEntity(stand);
-            playerIn.startRiding(stand, false);
-            stand.addPassenger(playerIn);
+            playerIn.startRiding(stand, true);
+            //stand.addPassenger(playerIn);
             return true;
         }
         return false;
