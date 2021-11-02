@@ -5,7 +5,6 @@ import aeronicamc.mods.mxtune.caps.ILivingEntityModCap;
 import aeronicamc.mods.mxtune.caps.LivingEntityModCapProvider;
 import aeronicamc.mods.mxtune.entity.SittableEntity;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
-import aeronicamc.mods.mxtune.sound.ClientAudio;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -54,10 +53,10 @@ public class MusicItem extends Item
         {
             int newPlayId = PlayIdSupplier.PlayType.BACKGROUND.getAsInt();
             lastPlayID = newPlayId;
-            ClientAudio.playLocal(newPlayId, getRandomMML(), null);
+            //ClientAudio.playLocal(newPlayId, getRandomMML(), null);
         } else
         {
-            ClientAudio.stop(lastPlayID);
+            //ClientAudio.stop(lastPlayID);
         }
         return ActionResult.pass(playerIn.getItemInHand(handIn));
     }

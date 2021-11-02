@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.entity;
 
 import aeronicamc.mods.mxtune.init.ModEntities;
 import net.minecraft.block.AirBlock;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -13,14 +14,16 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.World;
-import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.network.NetworkHooks;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
 public class SittableEntity extends Entity
 {
+    private static final Logger LOGGER = LogManager.getLogger(SittableEntity.class.getSimpleName());
     private BlockPos source;
 
     public SittableEntity(World level)
@@ -128,7 +131,7 @@ public class SittableEntity extends Entity
                 SittableEntity seat = new SittableEntity(level, pos, yOffset);
                 level.addFreshEntity(seat);
                 player.startRiding(seat, false);
-                seat.addPassenger(player);
+                //seat.addPassenger(player);
             }
         }
         return ActionResult.pass(player.getItemInHand(hand));
@@ -136,17 +139,25 @@ public class SittableEntity extends Entity
 
     public static boolean standOnBlock(World world, BlockPos pos, PlayerEntity playerIn, double yOffSet)
     {
-        BlockPos underfoot = blockUnderFoot(playerIn);
-        List<SittableEntity> sittableEntities = world.getEntitiesOfClass(SittableEntity.class, new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.0, pos.getZ() + 1.0));
-        if (sittableEntities.isEmpty() && (!(world.getBlockState(underfoot).getBlock() instanceof IFluidBlock)) && !(world.getBlockState(underfoot).getBlock() instanceof AirBlock))
+        if (!world.isClientSide())
         {
-            VoxelShape voxelShape = world.getBlockState(underfoot).getShape(world, underfoot);
-            double blockHeight = voxelShape.bounds().maxY;
-            SittableEntity stand = new SittableEntity(world, playerIn.blockPosition(), 0.0625D);
-            world.addFreshEntity(stand);
-            playerIn.startRiding(stand, true);
-            //stand.addPassenger(playerIn);
-            return true;
+            BlockPos blockPosFeet = blockUnderFoot(playerIn);
+            BlockState blockStateBelowFoot =  world.getBlockState(blockPosFeet);
+            String className = blockStateBelowFoot.getBlock().getClass().getSimpleName();
+            VoxelShape voxelShape = world.getBlockState(blockPosFeet).getShape(world, blockPosFeet);
+            double blockHeight = !voxelShape.isEmpty() ? voxelShape.bounds().maxY : 0;
+            LOGGER.debug("bpuf: {}, bstate: {}, bclass: {}, blockHeight: {}", blockPosFeet, blockStateBelowFoot, className, blockHeight);
+
+
+            List<SittableEntity> sittableEntities = world.getEntitiesOfClass(SittableEntity.class, new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.0, pos.getZ() + 1.0));
+            if (sittableEntities.isEmpty() && !((blockStateBelowFoot.getBlock() instanceof AirBlock | !(blockStateBelowFoot.getFluidState().isEmpty()))))
+            {
+                SittableEntity stand = new SittableEntity(world, blockUnderFoot(playerIn), blockHeight + playerIn.getMyRidingOffset());
+                world.addFreshEntity(stand);
+                playerIn.startRiding(stand, true);
+                //stand.addPassenger(playerIn);
+                return true;
+            }
         }
         return false;
     }
@@ -154,7 +165,7 @@ public class SittableEntity extends Entity
     private static BlockPos blockUnderFoot(PlayerEntity playerIn)
     {
         int x = (int) Math.floor(playerIn.getX());
-        int y = (int) Math.floor(playerIn.getY() - playerIn.getMyRidingOffset() - 0.6D);
+        int y = (int) Math.floor(playerIn.getY() - 0.4);
         int z = (int) Math.floor(playerIn.getZ());
         return new BlockPos(x,y,z);
     }
