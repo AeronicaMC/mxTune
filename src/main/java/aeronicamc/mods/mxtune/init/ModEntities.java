@@ -38,6 +38,6 @@ public class ModEntities
 
     public static void extendEntityClassification()
     {
-            EntityClassification.create(MXTUNE_SOUND_SOURCE, "mxtune_sound_source",-1, false, false, 72);
+            EntityClassification.create(MXTUNE_SOUND_SOURCE, "mxtune_sound_source",-1, true, true, 64);
     }
 }
