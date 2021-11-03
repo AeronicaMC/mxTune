@@ -36,6 +36,7 @@ public class SittableEntity extends Entity
         super(ModEntities.SITTABLE_ENTITY.get(), level);
         this.noCulling = true;
         this.noPhysics = true;
+        this.setInvulnerable(true);
         this.entityData.set(SHOULD_SIT, Boolean.TRUE);
     }
 
@@ -65,19 +66,18 @@ public class SittableEntity extends Entity
     public void tick()
     {
         super.tick();
-        if(this.source == null)
-        {
-            this.source = this.blockPosition();
-        }
-        if(!this.level.isClientSide)
+
+        if(!this.level.isClientSide())
         {
             boolean hasPlayId = PlayManager.hasActivePlayId(this);
-            if(/*this.getPassengers().isEmpty() || */ this.level.isEmptyBlock(this.source) || !hasPlayId);
+            if (!this.isAlive() || this.level.isEmptyBlock(this.source) || !hasPlayId)
             {
+                if (PlayManager.hasActivePlayId(this))
+                    PlayManager.stopPlayingEntity(this);
                 LOGGER.debug("SittableEntity has playId: {}", hasPlayId);
                 LOGGER.debug("SittableEntity {} removed from world.", this.getId());
                 LOGGER.debug("SittableEntity {} @Block is Air: {}.", this.getId(), this.level.isEmptyBlock(this.source));
-                this.remove();
+                this.remove(true);
                 this.level.updateNeighbourForOutputSignal(blockPosition(), this.level.getBlockState(blockPosition()).getBlock());
             }
         }
