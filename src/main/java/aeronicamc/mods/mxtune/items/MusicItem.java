@@ -41,7 +41,7 @@ public class MusicItem extends Item
                      });
                 if (!playerIn.isPassenger())
                 {
-                    SittableEntity.standOnBlock(worldIn, playerIn.blockPosition(), playerIn, 0D);
+                    SittableEntity.standOnBlock(worldIn, playerIn.blockPosition(), playerIn, 0D, false);
                 }
             }
             else

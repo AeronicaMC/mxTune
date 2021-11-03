@@ -8,6 +8,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -24,6 +27,7 @@ import java.util.List;
 public class SittableEntity extends Entity
 {
     private static final Logger LOGGER = LogManager.getLogger(SittableEntity.class.getSimpleName());
+    private static final DataParameter<Boolean> SHOULD_SIT = EntityDataManager.defineId(SittableEntity.class, DataSerializers.BOOLEAN);
     private BlockPos source;
 
     public SittableEntity(World level)
@@ -31,19 +35,21 @@ public class SittableEntity extends Entity
         super(ModEntities.SITTABLE_ENTITY.get(), level);
         this.noCulling = true;
         this.noPhysics = true;
+        this.entityData.set(SHOULD_SIT, Boolean.TRUE);
     }
 
-    public SittableEntity(World level, BlockPos source, double yOffset)
+    public SittableEntity(World level, BlockPos source, double yOffset, boolean shouldSit)
     {
         this(level);
         this.source = source;
         this.setPos(source.getX() + 0.5, source.getY() + yOffset, source.getZ() + 0.5);
+        this.entityData.set(SHOULD_SIT, shouldSit);
     }
 
     @Override
     protected void defineSynchedData()
     {
-
+        this.entityData.define(SHOULD_SIT, Boolean.TRUE);
     }
 
     public BlockPos getSource()
@@ -78,7 +84,7 @@ public class SittableEntity extends Entity
     @Override
     public double getMyRidingOffset()
     {
-        return 0.0D;
+        return 0D;
     }
 
     @Override
@@ -95,7 +101,7 @@ public class SittableEntity extends Entity
     @Override
     public boolean shouldRiderSit()
     {
-        return true;
+        return entityData.get(SHOULD_SIT);
     }
 
     /**
@@ -128,16 +134,15 @@ public class SittableEntity extends Entity
             List<SittableEntity> sittableEntities = level.getEntitiesOfClass(SittableEntity.class, new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.0, pos.getZ() + 1.0));
             if(sittableEntities.isEmpty())
             {
-                SittableEntity seat = new SittableEntity(level, pos, yOffset);
+                SittableEntity seat = new SittableEntity(level, pos, yOffset, true);
                 level.addFreshEntity(seat);
                 player.startRiding(seat, false);
-                //seat.addPassenger(player);
             }
         }
         return ActionResult.pass(player.getItemInHand(hand));
     }
 
-    public static boolean standOnBlock(World world, BlockPos pos, PlayerEntity playerIn, double yOffSet)
+    public static boolean standOnBlock(World world, BlockPos pos, PlayerEntity playerIn, double yOffSet, boolean shouldSit)
     {
         if (!world.isClientSide())
         {
@@ -152,10 +157,10 @@ public class SittableEntity extends Entity
             List<SittableEntity> sittableEntities = world.getEntitiesOfClass(SittableEntity.class, new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.0, pos.getZ() + 1.0));
             if (sittableEntities.isEmpty() && !((blockStateBelowFoot.getBlock() instanceof AirBlock | !(blockStateBelowFoot.getFluidState().isEmpty()))))
             {
-                SittableEntity stand = new SittableEntity(world, blockUnderFoot(playerIn), blockHeight + playerIn.getMyRidingOffset());
+                double ridingOffset = shouldSit ? -1 * 0.0625D : playerIn.getMyRidingOffset();
+                SittableEntity stand = new SittableEntity(world, blockUnderFoot(playerIn), blockHeight - ridingOffset, shouldSit);
                 world.addFreshEntity(stand);
                 playerIn.startRiding(stand, true);
-                //stand.addPassenger(playerIn);
                 return true;
             }
         }

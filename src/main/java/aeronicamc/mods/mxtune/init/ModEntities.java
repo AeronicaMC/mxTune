@@ -18,7 +18,7 @@ public class ModEntities
 
     private static boolean isInitialized;
 
-    public static final RegistryObject<EntityType<SittableEntity>> SITTABLE_ENTITY = register("sittable_entity", EntityType.Builder.<SittableEntity>of((type, world) -> new SittableEntity(world), EntityClassification.MISC).sized(0.0F, 0.0F).setCustomClientFactory((spawnEntity, world) -> new SittableEntity(world)));
+    public static final RegistryObject<EntityType<SittableEntity>> SITTABLE_ENTITY = register("sittable_entity", EntityType.Builder.<SittableEntity>of((type, world) -> new SittableEntity(world), EntityClassification.byName(MXTUNE_SOUND_SOURCE)).sized(0.0F, 0.0F).setCustomClientFactory((spawnEntity, world) -> new SittableEntity(world)));
 
     private static <T extends Entity> RegistryObject<EntityType<T>> register(String name, EntityType.Builder<T> builder)
     {
