@@ -3,6 +3,7 @@ package aeronicamc.mods.mxtune.managers;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.blocks.IMusicPlayer;
 import aeronicamc.mods.mxtune.blocks.IPlacedInstrument;
+import aeronicamc.mods.mxtune.entity.SittableEntity;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.PlayBlockMusicMessage;
 import aeronicamc.mods.mxtune.network.messages.PlaySoloMessage;
@@ -85,9 +86,11 @@ public final class PlayManager
                     {
                         playId = getNextPlayID();
                         int duration = validDuration.getDuration();
-                        addActivePlayId(0, blockPos, playId, musicText, duration);
+                        SittableEntity musicSource = new SittableEntity(world, blockPos, 0.5D, false);
+                        world.addFreshEntity(musicSource);
+                        addActivePlayId(musicSource.getId(), blockPos, playId, musicText, duration);
                         PlayBlockMusicMessage playBlockMusicMessage = new PlayBlockMusicMessage(playId, blockPos , musicText);
-                        PacketDispatcher.sendToAllAround(playBlockMusicMessage, world.dimension(), blockPos, 64.0D);
+                        PacketDispatcher.sendToTrackingEntity(playBlockMusicMessage, musicSource);
                     }
                 }
             }

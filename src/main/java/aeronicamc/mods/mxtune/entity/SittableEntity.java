@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.entity;
 
 import aeronicamc.mods.mxtune.init.ModEntities;
+import aeronicamc.mods.mxtune.managers.PlayManager;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -70,8 +71,12 @@ public class SittableEntity extends Entity
         }
         if(!this.level.isClientSide)
         {
-            if(this.getPassengers().isEmpty() || this.level.isEmptyBlock(this.source))
+            boolean hasPlayId = PlayManager.hasActivePlayId(this);
+            if(/*this.getPassengers().isEmpty() || */ this.level.isEmptyBlock(this.source) || !hasPlayId);
             {
+                LOGGER.debug("SittableEntity has playId: {}", hasPlayId);
+                LOGGER.debug("SittableEntity {} removed from world.", this.getId());
+                LOGGER.debug("SittableEntity {} @Block is Air: {}.", this.getId(), this.level.isEmptyBlock(this.source));
                 this.remove();
                 this.level.updateNeighbourForOutputSignal(blockPosition(), this.level.getBlockState(blockPosition()).getBlock());
             }
