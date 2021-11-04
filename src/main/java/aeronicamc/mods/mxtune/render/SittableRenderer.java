@@ -1,11 +1,11 @@
 package aeronicamc.mods.mxtune.render;
 
-import aeronicamc.mods.mxtune.entity.SittableEntity;
+import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.util.ResourceLocation;
 
-public class SittableRenderer extends EntityRenderer<SittableEntity>
+public class SittableRenderer extends EntityRenderer<MusicSourceEntity>
 {
     public SittableRenderer(EntityRendererManager rendererManager)
     {
@@ -18,7 +18,7 @@ public class SittableRenderer extends EntityRenderer<SittableEntity>
      * @param pEntity
      */
     @Override
-    public ResourceLocation getTextureLocation(SittableEntity pEntity)
+    public ResourceLocation getTextureLocation(MusicSourceEntity pEntity)
     {
         return null;
     }

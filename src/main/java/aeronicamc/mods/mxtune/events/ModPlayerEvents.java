@@ -1,7 +1,7 @@
 package aeronicamc.mods.mxtune.events;
 
 import aeronicamc.mods.mxtune.Reference;
-import aeronicamc.mods.mxtune.entity.SittableEntity;
+import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
 import aeronicamc.mods.mxtune.managers.PlayManager;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
@@ -18,9 +18,9 @@ public class ModPlayerEvents
     @SubscribeEvent
     public static void event(PlayerEvent.StartTracking event)
     {
-        if (!event.getPlayer().level.isClientSide() && ((event.getTarget() instanceof ServerPlayerEntity) || event.getTarget() instanceof SittableEntity))
+        if (!event.getPlayer().level.isClientSide() && ((event.getTarget() instanceof ServerPlayerEntity) || event.getTarget() instanceof MusicSourceEntity))
         {
-            PlayManager.sendPlayersTuneTo((ServerPlayerEntity) event.getPlayer(), event.getTarget());
+            PlayManager.sendMusicTo((ServerPlayerEntity) event.getPlayer(), event.getTarget());
             LOGGER.debug("{} Start Tracking {}", event.getPlayer(), event.getTarget());
         }
     }
@@ -28,7 +28,7 @@ public class ModPlayerEvents
     @SubscribeEvent
     public static void event(PlayerEvent.StopTracking event)
     {
-        if (!event.getPlayer().level.isClientSide() && ((event.getTarget() instanceof ServerPlayerEntity) || event.getTarget() instanceof SittableEntity))
+        if (!event.getPlayer().level.isClientSide() && ((event.getTarget() instanceof ServerPlayerEntity) || event.getTarget() instanceof MusicSourceEntity))
         {
             LOGGER.debug("{} Stop Tracking {}", event.getPlayer(), event.getTarget());
         }

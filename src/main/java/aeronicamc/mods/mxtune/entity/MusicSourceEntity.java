@@ -1,19 +1,17 @@
 package aeronicamc.mods.mxtune.entity;
 
+import aeronicamc.mods.mxtune.blocks.IMusicPlayer;
 import aeronicamc.mods.mxtune.init.ModEntities;
 import aeronicamc.mods.mxtune.managers.PlayManager;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
@@ -22,29 +20,27 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
-public class SittableEntity extends Entity
+public class MusicSourceEntity extends Entity
 {
-    private static final Logger LOGGER = LogManager.getLogger(SittableEntity.class.getSimpleName());
-    private static final DataParameter<Boolean> SHOULD_SIT = EntityDataManager.defineId(SittableEntity.class, DataSerializers.BOOLEAN);
+    private static final Logger LOGGER = LogManager.getLogger(MusicSourceEntity.class.getSimpleName());
+    private static final DataParameter<Boolean> SHOULD_SIT = EntityDataManager.defineId(MusicSourceEntity.class, DataSerializers.BOOLEAN);
     private BlockPos source;
 
-    public SittableEntity(World level)
+    public MusicSourceEntity(World level)
     {
-        super(ModEntities.SITTABLE_ENTITY.get(), level);
+        super(ModEntities.MUSIC_SOURCE.get(), level);
         this.noCulling = true;
         this.noPhysics = true;
-        this.setInvulnerable(true);
         this.entityData.set(SHOULD_SIT, Boolean.TRUE);
     }
 
-    public SittableEntity(World level, BlockPos source, double yOffset, boolean shouldSit)
+    public MusicSourceEntity(World level, BlockPos source, boolean shouldSit)
     {
         this(level);
         this.source = source;
-        this.setPos(source.getX() + 0.5, source.getY() + yOffset, source.getZ() + 0.5);
+        this.setPos(source.getX() + 0.5, source.getY() + 0.5, source.getZ() + 0.5);
         this.entityData.set(SHOULD_SIT, shouldSit);
     }
 
@@ -67,17 +63,22 @@ public class SittableEntity extends Entity
     {
         super.tick();
 
+        if (source == null) // fix for saved entity music source so they don't NPE on a tick.
+        {
+            source = this.blockPosition();
+        }
+
         if(!this.level.isClientSide())
         {
             boolean hasPlayId = PlayManager.hasActivePlayId(this);
-            if (!this.isAlive() || this.level.isEmptyBlock(this.source) || !hasPlayId)
+            if (!this.isAlive() || this.level.isEmptyBlock(this.source) || !(this.level.getBlockState(this.source).getBlock() instanceof IMusicPlayer) || !hasPlayId)
             {
                 if (PlayManager.hasActivePlayId(this))
                     PlayManager.stopPlayingEntity(this);
                 LOGGER.debug("SittableEntity has playId: {}", hasPlayId);
                 LOGGER.debug("SittableEntity {} removed from world.", this.getId());
                 LOGGER.debug("SittableEntity {} @Block is Air: {}.", this.getId(), this.level.isEmptyBlock(this.source));
-                this.remove(true);
+                this.remove();
                 this.level.updateNeighbourForOutputSignal(blockPosition(), this.level.getBlockState(blockPosition()).getBlock());
             }
         }
@@ -95,7 +96,7 @@ public class SittableEntity extends Entity
     @Override
     protected boolean canRide(Entity pEntity)
     {
-        return true;
+        return false;
     }
 
     /**
@@ -109,11 +110,6 @@ public class SittableEntity extends Entity
         return entityData.get(SHOULD_SIT);
     }
 
-    /**
-     * (abstract) Protected helper method to read subclass entity data from NBT.
-     *
-     * @param pCompound
-     */
     @Override
     protected void readAdditionalSaveData(CompoundNBT pCompound)
     {
@@ -132,22 +128,8 @@ public class SittableEntity extends Entity
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
-    public static ActionResult<ItemStack> create(@Nonnull World level, @Nonnull BlockPos pos, double yOffset, @Nonnull PlayerEntity player, @Nonnull Hand hand)
-    {
-        if(!level.isClientSide())
-        {
-            List<SittableEntity> sittableEntities = level.getEntitiesOfClass(SittableEntity.class, new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.0, pos.getZ() + 1.0));
-            if(sittableEntities.isEmpty())
-            {
-                SittableEntity seat = new SittableEntity(level, pos, yOffset, true);
-                level.addFreshEntity(seat);
-                player.startRiding(seat, false);
-            }
-        }
-        return ActionResult.pass(player.getItemInHand(hand));
-    }
-
-    public static boolean standOnBlock(World world, BlockPos pos, PlayerEntity playerIn, double yOffSet, boolean shouldSit)
+    // Not needed in this class.  Save for use elsewhere.
+    public static void standOnBlock(World world, BlockPos pos, PlayerEntity playerIn, double yOffSet, boolean shouldSit)
     {
         if (!world.isClientSide())
         {
@@ -158,18 +140,15 @@ public class SittableEntity extends Entity
             double blockHeight = !voxelShape.isEmpty() ? voxelShape.bounds().maxY : 0;
             LOGGER.debug("bpuf: {}, bstate: {}, bclass: {}, blockHeight: {}", blockPosFeet, blockStateBelowFoot, className, blockHeight);
 
-
-            List<SittableEntity> sittableEntities = world.getEntitiesOfClass(SittableEntity.class, new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.0, pos.getZ() + 1.0));
+            List<MusicSourceEntity> sittableEntities = world.getEntitiesOfClass(MusicSourceEntity.class, new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.0, pos.getZ() + 1.0));
             if (sittableEntities.isEmpty() && !((blockStateBelowFoot.getBlock() instanceof AirBlock | !(blockStateBelowFoot.getFluidState().isEmpty()))))
             {
                 double ridingOffset = shouldSit ? -1 * 0.0625D : playerIn.getMyRidingOffset();
-                SittableEntity stand = new SittableEntity(world, blockUnderFoot(playerIn), blockHeight - ridingOffset, shouldSit);
+                MusicSourceEntity stand = new MusicSourceEntity(world, blockUnderFoot(playerIn), shouldSit);
                 world.addFreshEntity(stand);
                 playerIn.startRiding(stand, true);
-                return true;
             }
         }
-        return false;
     }
 
     private static BlockPos blockUnderFoot(PlayerEntity playerIn)

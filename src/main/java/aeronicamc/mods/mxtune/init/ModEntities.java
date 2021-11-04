@@ -1,7 +1,7 @@
 package aeronicamc.mods.mxtune.init;
 
 import aeronicamc.mods.mxtune.Reference;
-import aeronicamc.mods.mxtune.entity.SittableEntity;
+import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
@@ -14,11 +14,11 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class ModEntities
 {
     private static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, Reference.MOD_ID);
-    public static final String MXTUNE_SOUND_SOURCE = "MXTUNE_SOUND_SOURCE";
+    public static final String MXTUNE_MUSIC_SOURCE = "MXTUNE_MUSIC_SOURCE";
 
     private static boolean isInitialized;
 
-    public static final RegistryObject<EntityType<SittableEntity>> SITTABLE_ENTITY = register("sittable_entity", EntityType.Builder.<SittableEntity>of((type, world) -> new SittableEntity(world), EntityClassification.byName(MXTUNE_SOUND_SOURCE)).sized(0.0F, 0.0F).setCustomClientFactory((spawnEntity, world) -> new SittableEntity(world)));
+    public static final RegistryObject<EntityType<MusicSourceEntity>> MUSIC_SOURCE = register("music_source", EntityType.Builder.<MusicSourceEntity>of((type, world) -> new MusicSourceEntity(world), EntityClassification.byName(MXTUNE_MUSIC_SOURCE)).sized(0.0F, 0.0F).setCustomClientFactory((spawnEntity, world) -> new MusicSourceEntity(world)));
 
     private static <T extends Entity> RegistryObject<EntityType<T>> register(String name, EntityType.Builder<T> builder)
     {
@@ -38,6 +38,6 @@ public class ModEntities
 
     public static void extendEntityClassification()
     {
-        EntityClassification.create(MXTUNE_SOUND_SOURCE, "mxtune_sound_source",-1, true, true, 64);
+        EntityClassification.create(MXTUNE_MUSIC_SOURCE, "mxtune_sound_source", -1, true, true, 64);
     }
 }

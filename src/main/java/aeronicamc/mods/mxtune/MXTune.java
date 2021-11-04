@@ -24,8 +24,7 @@ import aeronicamc.mods.mxtune.caps.LivingEntityModCapProvider;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.gui.InstrumentScreen;
 import aeronicamc.mods.mxtune.init.*;
-import aeronicamc.mods.mxtune.managers.DurationTimer;
-import aeronicamc.mods.mxtune.managers.PlayManager;
+import aeronicamc.mods.mxtune.managers.ActiveTune;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.render.SittableRenderer;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
@@ -102,7 +101,7 @@ public class MXTune
         ScreenManager.register(ModContainers.INSTRUMENT_CONTAINER.get(), InstrumentScreen::new);
         MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());
         MinecraftForge.EVENT_BUS.register(ClientAudio.class);
-        RenderingRegistry.registerEntityRenderingHandler(ModEntities.SITTABLE_ENTITY.get(), SittableRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.MUSIC_SOURCE.get(), SittableRenderer::new);
     }
 
     private void modLoadingComplete(FMLLoadCompleteEvent event)
@@ -113,13 +112,12 @@ public class MXTune
     @SubscribeEvent
     public void event(FMLServerStartingEvent event) {
         FileHelper.initialize(event.getServer());
-        DurationTimer.start();
+        ActiveTune.initialize();
     }
 
     @SubscribeEvent
     public void event(FMLServerStoppingEvent event) {
-        DurationTimer.shutdown();
-        PlayManager.ActiveTune.shutdown();
+        ActiveTune.shutdown();
     }
 
     @SubscribeEvent
