@@ -24,7 +24,7 @@ import java.util.List;
 
 public class MusicSourceEntity extends Entity
 {
-    private static final Logger LOGGER = LogManager.getLogger(MusicSourceEntity.class.getSimpleName());
+    private static final Logger LOGGER = LogManager.getLogger(MusicSourceEntity.class);
     private static final DataParameter<Boolean> SHOULD_SIT = EntityDataManager.defineId(MusicSourceEntity.class, DataSerializers.BOOLEAN);
     private BlockPos source;
 

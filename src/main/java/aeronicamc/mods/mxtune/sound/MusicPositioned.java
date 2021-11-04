@@ -9,7 +9,7 @@ import org.apache.logging.log4j.LogManager;
 
 public class MusicPositioned extends MxSound
 {
-    private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(MusicPositioned.class.getSimpleName());
+    private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(MusicPositioned.class);
     private final Minecraft mc = Minecraft.getInstance();
     private int counter;
     private float lastDistance;

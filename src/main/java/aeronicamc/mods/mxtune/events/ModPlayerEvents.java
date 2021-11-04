@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public class ModPlayerEvents
 {
-    private static final Logger LOGGER = LogManager.getLogger(ModPlayerEvents.class.getSimpleName());
+    private static final Logger LOGGER = LogManager.getLogger(ModPlayerEvents.class);
     @SubscribeEvent
     public static void event(PlayerEvent.StartTracking event)
     {

@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
 
 public final class LivingEntityModCapProvider
 {
-    private static final Logger LOGGER = LogManager.getLogger(LivingEntityModCapProvider.class.getSimpleName());
+    private static final Logger LOGGER = LogManager.getLogger(LivingEntityModCapProvider.class);
 
     @CapabilityInject(ILivingEntityModCap.class)
     public static final Capability<ILivingEntityModCap> LIVING_ENTITY_MOD_CAP_CAPABILITY = AntiNull.nonNullInjected();

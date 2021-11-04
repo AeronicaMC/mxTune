@@ -14,7 +14,7 @@ import static aeronicamc.mods.mxtune.util.SheetMusicHelper.formatDuration;
 
 public class ActiveTune
 {
-    private static final Logger LOGGER2 = LogManager.getLogger(ActiveTune.class.getSimpleName());
+    private static final Logger LOGGER2 = LogManager.getLogger(ActiveTune.class);
 
     private static ScheduledExecutorService scheduledThreadPool = null;
     private static ExecutorService executor = null;

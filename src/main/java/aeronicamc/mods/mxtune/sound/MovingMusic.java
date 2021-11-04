@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 public class MovingMusic extends MxSound
 {
-    private static final Logger LOGGER = LogManager.getLogger(MovingMusic.class.getSimpleName());
+    private static final Logger LOGGER = LogManager.getLogger(MovingMusic.class);
     private final Minecraft mc = Minecraft.getInstance();
     private final Entity entity;
     private int counter;

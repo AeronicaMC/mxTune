@@ -30,7 +30,7 @@ import java.util.Set;
 public final class PlayManager
 {
     public static final Object THREAD_SYNC = new Object();
-    private static final Logger LOGGER = LogManager.getLogger(PlayManager.class.getSimpleName());
+    private static final Logger LOGGER = LogManager.getLogger(PlayManager.class);
     private static final Set<Integer> activePlayIds = new HashSet<>();
     private static final Map<Integer, ActiveTune> playIdToActiveTune = new HashMap<>();
     private static final Map<Integer, Integer> playIdToEntityId = new HashMap<>();
