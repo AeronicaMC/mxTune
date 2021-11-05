@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.init;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
+import aeronicamc.mods.mxtune.entity.RootedEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
@@ -18,7 +19,10 @@ public class ModEntities
 
     private static boolean isInitialized;
 
-    public static final RegistryObject<EntityType<MusicSourceEntity>> MUSIC_SOURCE = register("music_source", EntityType.Builder.<MusicSourceEntity>of((type, world) -> new MusicSourceEntity(world), EntityClassification.byName(MXTUNE_MUSIC_SOURCE)).sized(0.0F, 0.0F).setCustomClientFactory((spawnEntity, world) -> new MusicSourceEntity(world)));
+    public static final RegistryObject<EntityType<MusicSourceEntity>> MUSIC_SOURCE = register("music_source", EntityType.Builder.<MusicSourceEntity>of((type, world) -> new MusicSourceEntity(world), EntityClassification.MISC).sized(0.0F, 0.0F).setCustomClientFactory((spawnEntity, world) -> new MusicSourceEntity(world)));
+
+    public static final RegistryObject<EntityType<RootedEntity>> ROOTED_SOURCE = register("rooted_source", EntityType.Builder.<RootedEntity>of((type, world) -> new RootedEntity(world), EntityClassification.MISC).sized(0.0F, 0.0F).setCustomClientFactory((spawnEntity, world) -> new RootedEntity(world)));
+
 
     private static <T extends Entity> RegistryObject<EntityType<T>> register(String name, EntityType.Builder<T> builder)
     {

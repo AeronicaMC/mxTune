@@ -26,7 +26,8 @@ import aeronicamc.mods.mxtune.gui.InstrumentScreen;
 import aeronicamc.mods.mxtune.init.*;
 import aeronicamc.mods.mxtune.managers.ActiveTune;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
-import aeronicamc.mods.mxtune.render.SittableRenderer;
+import aeronicamc.mods.mxtune.render.MusicSourceRenderer;
+import aeronicamc.mods.mxtune.render.RootedRenderer;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
 import aeronicamc.mods.mxtune.util.KeyHandler;
 import aeronicamc.mods.mxtune.util.MIDISystemUtil;
@@ -101,7 +102,8 @@ public class MXTune
         ScreenManager.register(ModContainers.INSTRUMENT_CONTAINER.get(), InstrumentScreen::new);
         MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());
         MinecraftForge.EVENT_BUS.register(ClientAudio.class);
-        RenderingRegistry.registerEntityRenderingHandler(ModEntities.MUSIC_SOURCE.get(), SittableRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.MUSIC_SOURCE.get(), MusicSourceRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.ROOTED_SOURCE.get(), RootedRenderer::new);
     }
 
     private void modLoadingComplete(FMLLoadCompleteEvent event)
