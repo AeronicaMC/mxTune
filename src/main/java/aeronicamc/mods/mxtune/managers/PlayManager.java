@@ -4,7 +4,6 @@ import aeronicamc.mods.mxtune.blocks.IMusicPlayer;
 import aeronicamc.mods.mxtune.blocks.IPlacedInstrument;
 import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
-import aeronicamc.mods.mxtune.network.messages.PlayBlockMusicMessage;
 import aeronicamc.mods.mxtune.network.messages.PlaySoloMessage;
 import aeronicamc.mods.mxtune.network.messages.StopPlayIdMessage;
 import aeronicamc.mods.mxtune.util.IInstrument;
@@ -84,8 +83,8 @@ public final class PlayManager
                         MusicSourceEntity musicSource = new MusicSourceEntity(world, blockPos, false);
                         world.addFreshEntity(musicSource);
                         addActivePlayId(musicSource.getId(), blockPos, playId, musicText, duration);
-                        PlayBlockMusicMessage playBlockMusicMessage = new PlayBlockMusicMessage(playId, blockPos , musicText);
-                        PacketDispatcher.sendToTrackingEntity(playBlockMusicMessage, musicSource);
+//                        PlayBlockMusicMessage playBlockMusicMessage = new PlayBlockMusicMessage(playId, blockPos , musicText);
+//                        PacketDispatcher.sendToTrackingEntity(playBlockMusicMessage, musicSource);
                     }
                 }
             }
