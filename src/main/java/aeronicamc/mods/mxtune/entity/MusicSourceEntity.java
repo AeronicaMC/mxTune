@@ -9,9 +9,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
@@ -25,7 +22,6 @@ import java.util.List;
 public class MusicSourceEntity extends Entity
 {
     private static final Logger LOGGER = LogManager.getLogger(MusicSourceEntity.class);
-    private static final DataParameter<Boolean> SHOULD_SIT = EntityDataManager.defineId(MusicSourceEntity.class, DataSerializers.BOOLEAN);
     private BlockPos source;
 
     public MusicSourceEntity(World level)
@@ -33,7 +29,6 @@ public class MusicSourceEntity extends Entity
         super(ModEntities.MUSIC_SOURCE.get(), level);
         this.noCulling = true;
         this.noPhysics = true;
-        this.entityData.set(SHOULD_SIT, Boolean.TRUE);
     }
 
     public MusicSourceEntity(World level, BlockPos source, boolean shouldSit)
@@ -41,13 +36,12 @@ public class MusicSourceEntity extends Entity
         this(level);
         this.source = source;
         this.setPos(source.getX() + 0.5, source.getY() + 0.5, source.getZ() + 0.5);
-        this.entityData.set(SHOULD_SIT, shouldSit);
     }
 
     @Override
     protected void defineSynchedData()
     {
-        this.entityData.define(SHOULD_SIT, Boolean.TRUE);
+
     }
 
     public BlockPos getSource()
@@ -107,7 +101,7 @@ public class MusicSourceEntity extends Entity
     @Override
     public boolean shouldRiderSit()
     {
-        return entityData.get(SHOULD_SIT);
+        return false;
     }
 
     @Override
