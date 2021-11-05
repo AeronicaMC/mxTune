@@ -59,7 +59,7 @@ public class ClientAudio
             threadFactory = new ThreadFactoryBuilder()
                     .setNameFormat(Reference.MOD_ID + " ClientAudio-%d")
                     .setDaemon(true)
-                    .setPriority(Thread.NORM_PRIORITY)
+                    .setPriority(Thread.MAX_PRIORITY)
                     .build();
             executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE, threadFactory);
         }
