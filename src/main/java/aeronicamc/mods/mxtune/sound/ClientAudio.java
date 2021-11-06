@@ -96,6 +96,7 @@ public class ClientAudio
         return playIDQueue01.peek() == null ? PlayIdSupplier.INVALID : playIDQueue01.peek();
     }
 
+    @Nullable
     private static AudioData getAudioData(Integer playID)
     {
         synchronized (THREAD_SYNC)
@@ -303,7 +304,7 @@ public class ClientAudio
             synchronized (soundEngine.instanceToChannel)
             {
                 AudioData audioData = getAudioData(pollPlayIDQueue01());
-                if (audioData.getISound() != null)
+                if (audioData != null && audioData.getISound() != null)
                 {
                     ISound iSound = audioData.getISound();
                     ChannelManager.Entry entry = soundEngine.instanceToChannel.get(iSound);
