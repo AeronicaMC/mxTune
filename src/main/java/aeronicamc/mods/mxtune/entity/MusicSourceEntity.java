@@ -67,11 +67,10 @@ public class MusicSourceEntity extends Entity
             boolean hasPlayId = PlayManager.hasActivePlayId(this);
             if (!this.isAlive() || this.level.isEmptyBlock(this.source) || !(this.level.getBlockState(this.source).getBlock() instanceof IMusicPlayer) || !hasPlayId)
             {
-                if (PlayManager.hasActivePlayId(this))
-                    PlayManager.stopPlayingEntity(this);
-                LOGGER.debug("SittableEntity has playId: {}", hasPlayId);
-                LOGGER.debug("SittableEntity {} removed from world.", this.getId());
-                LOGGER.debug("SittableEntity {} @Block is Air: {}.", this.getId(), this.level.isEmptyBlock(this.source));
+                PlayManager.stopPlayingEntity(this);
+                LOGGER.debug("has playId: {}", hasPlayId);
+                LOGGER.debug("{} removed from world.", this.getId());
+                LOGGER.debug("{} @Block is Air: {}.", this.getId(), this.level.isEmptyBlock(this.source));
                 this.remove();
                 this.level.updateNeighbourForOutputSignal(blockPosition(), this.level.getBlockState(blockPosition()).getBlock());
             }
