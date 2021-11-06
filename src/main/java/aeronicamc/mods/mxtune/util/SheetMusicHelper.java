@@ -99,10 +99,11 @@ public enum SheetMusicHelper
         return "MML@;";
     }
 
-    public static String getMusicFromIMusicPlayer(TileEntity pTileEntity)
+    public static MusicProperties getMusicFromIMusicPlayer(TileEntity pTileEntity)
     {
-        if (!(pTileEntity instanceof IMusicPlayer)) return "";
+        if (!(pTileEntity instanceof IMusicPlayer)) return MusicProperties.INVALID;
         StringBuilder buildMML = new StringBuilder();
+        int duration = 0;
         IMusicPlayer musicPlayer = (IMusicPlayer) pTileEntity;
         int slotCount = musicPlayer.getInventory() != null ? musicPlayer.getInventory().getSlots() : 0;
         for (int slot = 0; slot < slotCount; slot++)
@@ -121,13 +122,13 @@ public enum SheetMusicHelper
                         String mml = contents.getString(KEY_MML);
                         mml = mml.replace("MML@", "MML@I" + patch);
                         buildMML.append(mml);
+                        duration = Math.max(duration, contents.getInt(KEY_DURATION));
                     }
+
                 }
             }
         }
-
-
-        return buildMML.toString();
+        return new MusicProperties(buildMML.toString(), duration);
     }
 
     public static boolean hasMML(ItemStack sheetMusicStack)

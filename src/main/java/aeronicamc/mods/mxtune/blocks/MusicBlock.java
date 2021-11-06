@@ -64,16 +64,26 @@ public class MusicBlock extends Block implements IMusicPlayer
     @Override
     public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
     {
-        if (!worldIn.isClientSide)
+        ActionResultType actionResultType = ActionResultType.FAIL;
+        if (!worldIn.isClientSide())
         {
-            if (!player.isCrouching())
+            if (!player.isShiftKeyDown())
             {
                 TileEntity tileEntity = worldIn.getBlockEntity(pos);
                 if (tileEntity instanceof MusicBlockTile)
                 {
-                    boolean isPlaying = canPlayOrStopMusic(worldIn, pos, false);
-                    setPlayingState(worldIn, pos, state, isPlaying);
-                    worldIn.updateNeighborsAt(pos, this);
+                    MusicBlockTile musicBlockTile = (MusicBlockTile) tileEntity;
+                    // Server side: prevent runaway activation.
+                    // Limits activation to a single use even if held.
+                    // It's a shame to use ITickableTileEntity#ticks for this,
+                    // but I have not found another solution yet.
+                    if (!musicBlockTile.isUseHeld())
+                    {
+                        boolean isPlaying = canPlayOrStopMusic(worldIn, pos, false);
+                        setPlayingState(worldIn, pos, state, isPlaying);
+                        worldIn.updateNeighborsAt(pos, this);
+                    }
+                    musicBlockTile.useHeldCounterUpdate(true);
                 }
             }
             else
@@ -88,8 +98,26 @@ public class MusicBlock extends Block implements IMusicPlayer
                     throw new IllegalStateException("Our named container provider is missing!");
                 }
             }
+            return ActionResultType.SUCCESS;
         }
-        return ActionResultType.sidedSuccess(worldIn.isClientSide);
+        else
+        {
+            // Client side: limit players arm to a single swing when held
+            TileEntity tileEntity = worldIn.getBlockEntity(pos);
+            if (tileEntity instanceof MusicBlockTile)
+            {
+                MusicBlockTile musicBlockTile = (MusicBlockTile) tileEntity;
+                if (!musicBlockTile.isUseHeld())
+                {
+                    actionResultType = ActionResultType.CONSUME;
+                }
+                else
+                    actionResultType =  ActionResultType.PASS;
+
+                musicBlockTile.useHeldCounterUpdate(true);
+            }
+            return actionResultType;
+        }
     }
 
     private boolean canPlayOrStopMusic(World worldIn, BlockPos pos, Boolean stop)

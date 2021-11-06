@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.blocks;
 
 import aeronicamc.mods.mxtune.init.ModTileEntities;
+import aeronicamc.mods.mxtune.util.MusicProperties;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,6 +11,7 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.INameable;
@@ -22,18 +24,24 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class MusicBlockTile extends TileEntity implements INamedContainerProvider, INameable, IMusicPlayer
+public class MusicBlockTile extends TileEntity implements INamedContainerProvider, INameable, IMusicPlayer, ITickableTileEntity
 {
+    private static final Logger LOGGER = LogManager.getLogger(MusicBlockTile.class);
     private ITextComponent customName;
     private final LazyOptional<IItemHandler> handler = LazyOptional.of(this::createHandler);
 
     private int playId;
     private int lastPlayId;
     private int durationSeconds;
+
+    private int counter;
+    private int useHeldCounter;
 
     public MusicBlockTile()
     {
@@ -62,6 +70,16 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
 //                return super.insertItem(slot, stack, simulate);
 //            }
         };
+    }
+
+    @Override
+    public void tick()
+    {
+        if (level != null && counter++ % 5 == 0)
+        {
+            useHeldCounterUpdate(false);
+            //LOGGER.info("...tick... {} isUseHeld: {}", useHeldCounter, isUseHeld());
+        }
     }
 
     @Override
@@ -172,15 +190,9 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
     }
 
     @Override
-    public String getMML()
+    public MusicProperties getMusicProperties()
     {
         return SheetMusicHelper.getMusicFromIMusicPlayer(this);
-    }
-
-    @Override
-    public int getDuration()
-    {
-        return durationSeconds;
     }
 
     public int getPlayId()
@@ -196,5 +208,18 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
             this.playId = playId;
             this.setChanged();
         }
+    }
+
+    public boolean isUseHeld()
+    {
+        return  useHeldCounter > 0;
+    }
+
+    public void useHeldCounterUpdate(boolean countUp)
+    {
+        if (countUp)
+            useHeldCounter = (useHeldCounter += 5) > 1 ? 5 : useHeldCounter;
+        else
+            useHeldCounter = --useHeldCounter < -1 ? -1 : useHeldCounter;
     }
 }

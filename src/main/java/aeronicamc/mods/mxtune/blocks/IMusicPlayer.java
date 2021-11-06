@@ -1,14 +1,13 @@
 package aeronicamc.mods.mxtune.blocks;
 
+import aeronicamc.mods.mxtune.util.MusicProperties;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 
 public interface IMusicPlayer
 {
-    default String getMML() { /* implement in TE */  return ""; }
-
-    default int getDuration() { /* implement in TE */ return 0; }
+    default MusicProperties getMusicProperties() { return MusicProperties.INVALID; }
 
 //    default SoundRange getSoundRange() { /* implement in TE */ return SoundRange.NORMAL; }
 

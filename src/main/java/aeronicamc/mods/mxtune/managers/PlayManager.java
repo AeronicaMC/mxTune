@@ -8,8 +8,8 @@ import aeronicamc.mods.mxtune.network.messages.PlayBlockMusicMessage;
 import aeronicamc.mods.mxtune.network.messages.PlaySoloMessage;
 import aeronicamc.mods.mxtune.network.messages.StopPlayIdMessage;
 import aeronicamc.mods.mxtune.util.IInstrument;
+import aeronicamc.mods.mxtune.util.MusicProperties;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
-import aeronicamc.mods.mxtune.util.ValidDuration;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -65,7 +65,6 @@ public final class PlayManager
      */
     public static int playMusic(World world, BlockPos blockPos)
     {
-        // TODO: see if I can attach a music playing entity to the tile entity and use that as the music source.
         int playId = PlayIdSupplier.INVALID;
         IMusicPlayer musicPlayer;
         if (world.getBlockState(blockPos).getBlock() instanceof IMusicPlayer)
@@ -73,18 +72,16 @@ public final class PlayManager
             musicPlayer = (IMusicPlayer) world.getBlockEntity(blockPos);
             if (musicPlayer != null)
             {
-                String musicText = musicPlayer.getMML();
-                if (musicText.contains("MML@"))
+                MusicProperties musicProperties = musicPlayer.getMusicProperties();
+                if (musicProperties.getMusicText().contains("MML@"))
                 {
-                    ValidDuration validDuration = SheetMusicHelper.validateMML(musicText);
-                    if (validDuration.isValidMML())
+                    if (musicProperties.getDuration() >= 4)
                     {
                         playId = getNextPlayID();
-                        int duration = validDuration.getDuration();
                         MusicSourceEntity musicSource = new MusicSourceEntity(world, blockPos, false);
                         world.addFreshEntity(musicSource);
-                        addActivePlayId(musicSource.getId(), blockPos, playId, musicText, duration);
-                        PlayBlockMusicMessage playBlockMusicMessage = new PlayBlockMusicMessage(playId, blockPos , musicText);
+                        addActivePlayId(musicSource.getId(), blockPos, playId, musicProperties.getMusicText(), musicProperties.getDuration());
+                        PlayBlockMusicMessage playBlockMusicMessage = new PlayBlockMusicMessage(playId, blockPos , musicProperties.getMusicText());
                         PacketDispatcher.sendToTrackingEntity(playBlockMusicMessage, musicSource);
                     }
                 }
