@@ -89,11 +89,7 @@ public class MusicBlock extends Block implements IMusicPlayer
                 }
             }
         }
-        else
-        {
-            // ClientAudio.play(PlayIdSupplier.PlayType.BACKGROUND.getAsInt(), pos, TestData.getMML(rand.nextInt(TestData.values().length)).getMML());
-        }
-        return ActionResultType.SUCCESS;
+        return ActionResultType.sidedSuccess(worldIn.isClientSide);
     }
 
     private boolean canPlayOrStopMusic(World worldIn, BlockPos pos, Boolean stop)
