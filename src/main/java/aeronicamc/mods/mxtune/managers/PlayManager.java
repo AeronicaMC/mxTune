@@ -4,6 +4,7 @@ import aeronicamc.mods.mxtune.blocks.IMusicPlayer;
 import aeronicamc.mods.mxtune.blocks.IPlacedInstrument;
 import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
+import aeronicamc.mods.mxtune.network.messages.PlayBlockMusicMessage;
 import aeronicamc.mods.mxtune.network.messages.PlaySoloMessage;
 import aeronicamc.mods.mxtune.network.messages.StopPlayIdMessage;
 import aeronicamc.mods.mxtune.util.IInstrument;
@@ -83,8 +84,8 @@ public final class PlayManager
                         MusicSourceEntity musicSource = new MusicSourceEntity(world, blockPos, false);
                         world.addFreshEntity(musicSource);
                         addActivePlayId(musicSource.getId(), blockPos, playId, musicText, duration);
-//                        PlayBlockMusicMessage playBlockMusicMessage = new PlayBlockMusicMessage(playId, blockPos , musicText);
-//                        PacketDispatcher.sendToTrackingEntity(playBlockMusicMessage, musicSource);
+                        PlayBlockMusicMessage playBlockMusicMessage = new PlayBlockMusicMessage(playId, blockPos , musicText);
+                        PacketDispatcher.sendToTrackingEntity(playBlockMusicMessage, musicSource);
                     }
                 }
             }
@@ -229,12 +230,13 @@ public final class PlayManager
     {
         synchronized (THREAD_SYNC)
         {
-            if (listeningPlayer != null && hasActivePlayId(soundSourceEntity))
+            if ((listeningPlayer != null) && (soundSourceEntity != null) && hasActivePlayId(soundSourceEntity))
             {
                 ActiveTune activeTune = getActiveTuneByEntityId(soundSourceEntity);
-                if (activeTune != null)
+                if (activeTune != null && listeningPlayer.level.getServer() != null)
                 {
                     int playId = activeTune.getPlayId();
+
                     PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, activeTune.getSecondsElapsed(), soundSourceEntity.getId(), activeTune.getMusicText());
                     PacketDispatcher.sendTo(packetPlaySolo, listeningPlayer);
                     LOGGER.debug("sendMusicTo {} starting at {}", listeningPlayer.getDisplayName().getString(), SheetMusicHelper.formatDuration(activeTune.getSecondsElapsed()));
