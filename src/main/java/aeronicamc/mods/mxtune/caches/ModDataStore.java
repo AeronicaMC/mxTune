@@ -70,7 +70,7 @@ public class ModDataStore
        for (TestData c : TestData.values())
        {
            if (idToMusicText.putIfAbsent(c.getIndex(), c.getMML()) != null)
-               LOGGER.warn("Duplicate record: {}", c.getIndex(), c.getMML().substring(0, Math.min(24, c.getMML().length())));
+               LOGGER.warn("Duplicate record: {}, musicText: {}", String.format("%02d", c.getIndex()), c.getMML().substring(0, Math.min(24, c.getMML().length())));
        }
        mvStore.commit();
        idToMusicText.replace(1, "-removed-");
