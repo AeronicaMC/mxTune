@@ -20,6 +20,7 @@ package aeronicamc.mods.mxtune;
 import aeronicamc.mods.mxtune.blocks.InvTestScreen;
 import aeronicamc.mods.mxtune.blocks.MusicBlockScreen;
 import aeronicamc.mods.mxtune.caches.FileHelper;
+import aeronicamc.mods.mxtune.caches.ModDataStore;
 import aeronicamc.mods.mxtune.caps.LivingEntityModCapProvider;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.gui.InstrumentScreen;
@@ -115,11 +116,13 @@ public class MXTune
     public void event(FMLServerStartingEvent event) {
         FileHelper.initialize(event.getServer());
         ActiveTune.initialize();
+        ModDataStore.start();
     }
 
     @SubscribeEvent
     public void event(FMLServerStoppingEvent event) {
         ActiveTune.shutdown();
+        ModDataStore.shutdown();
     }
 
     @SubscribeEvent

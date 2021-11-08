@@ -29,6 +29,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Util;
+import net.minecraft.world.storage.FolderName;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.LogicalSide;
@@ -73,13 +74,18 @@ public class FileHelper
     {
         // The top level "world" save folder a.k.a. the "Over World"
         //.getActiveAnvilConverter().getFile(server.getFolderName(), "serverconfig").toPath();
-        //File chunkDir = server.getActiveAnvilConverter().getFile(server.getFolderName(), "");
-        File chunkDir = server.getServerDirectory();
+        // File chunkDir = server.getActiveAnvilConverter().getFile(server.getFolderName(), "");
+        File chunkDir = server.getWorldPath(new FolderName("")).toFile();
         serverWorldFolder = Paths.get(chunkDir.getPath());
         LOGGER.debug("FileHelper: serverWorldFolder {}", serverWorldFolder.toString());
     }
 
     private FileHelper() { /* NOP */ }
+
+    private static Path getServerWorldFolder()
+    {
+        return serverWorldFolder;
+    }
 
     public static PathMatcher getMmlMatcher(Path path)
     {
@@ -171,7 +177,7 @@ public class FileHelper
      */
     public static Path getDirectory(String folder, LogicalSide side, boolean fixDirectory)
     {
-        String sidedPath = side == LogicalSide.SERVER ? serverWorldFolder.toString() : ".";
+        String sidedPath = side == LogicalSide.SERVER ? getServerWorldFolder().toString() : ".";
         Path loc = Paths.get(sidedPath, folder);
         if (fixDirectory)
             fixDirectory(loc);
