@@ -91,7 +91,7 @@ public enum SheetMusicHelper
     @Nullable
     public static Integer getMusicTextKey(ItemStack sheetMusicStack)
     {
-        if (hasMML(sheetMusicStack))
+        if (hasMusicText(sheetMusicStack))
         {
             CompoundNBT contents = sheetMusicStack.getTag();
             if (contents != null && contents.contains(KEY_SHEET_MUSIC))
@@ -143,13 +143,13 @@ public enum SheetMusicHelper
         return new MusicProperties(buildMML.toString(), duration);
     }
 
-    public static boolean hasMML(ItemStack sheetMusicStack)
+    public static boolean hasMusicText(ItemStack sheetMusicStack)
     {
         CompoundNBT contents = sheetMusicStack.getTag();
         if (contents != null && sheetMusicStack.getItem() instanceof IMusic && contents.contains(KEY_SHEET_MUSIC))
         {
             CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
-            return sm.getString(KEY_MUSIC_TEXT_KEY).contains("MML@") && sm.getInt(KEY_DURATION) > 0;
+            return sm.getInt(KEY_DURATION) > 0;
         }
         return false;
     }
