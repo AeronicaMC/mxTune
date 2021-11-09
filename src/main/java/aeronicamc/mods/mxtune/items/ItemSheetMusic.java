@@ -25,7 +25,7 @@ public class ItemSheetMusic extends Item implements IMusic
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable World pLevel, List<ITextComponent> pTooltip, ITooltipFlag pFlag)
     {
-        if (hasMML(pStack))
+        if (hasMusicText(pStack))
         {
             String itemName = pTooltip.get(0).getString();
             pTooltip.clear();
@@ -35,8 +35,8 @@ public class ItemSheetMusic extends Item implements IMusic
     }
 
     @Override
-    public boolean hasMML(ItemStack pStack)
+    public boolean hasMusicText(ItemStack pStack)
     {
-        return SheetMusicHelper.hasMML(pStack);
+        return SheetMusicHelper.hasMusicText(pStack);
     }
 }

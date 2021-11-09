@@ -9,4 +9,4 @@ import net.minecraft.item.ItemStack;
  * 
  */
 public interface IMusic
-{public boolean hasMML(ItemStack itemStackIn);}
+{public boolean hasMusicText(ItemStack itemStackIn);}

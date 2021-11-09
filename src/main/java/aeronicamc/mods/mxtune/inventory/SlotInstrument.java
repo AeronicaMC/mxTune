@@ -16,7 +16,7 @@ public class SlotInstrument extends Slot
     @Override
     public boolean mayPlace(ItemStack pStack)
     {
-        return (pStack.getItem() instanceof IMusic) && SheetMusicHelper.hasMML(pStack);
+        return (pStack.getItem() instanceof IMusic) && SheetMusicHelper.hasMusicText(pStack);
     }
 
     @Override
