@@ -166,4 +166,23 @@ public class MusicBlock extends Block implements IMusicPlayer
             }
         }
     }
+
+    @Override
+    public void onRemove(BlockState pState, World pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving)
+    {
+        if (!pLevel.isClientSide())
+        {
+            TileEntity tileEntity = pLevel.getBlockEntity(pPos);
+            if (tileEntity instanceof MusicBlockTile)
+            {
+                MusicBlockTile musicBlockTile = (MusicBlockTile) tileEntity;
+                if (PlayManager.isActivePlayId(musicBlockTile.getPlayId()))
+                {
+                    PlayManager.stopPlayId(musicBlockTile.getPlayId());
+                    musicBlockTile.setPlayId(INVALID);
+                }
+            }
+        }
+        super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
+    }
 }
