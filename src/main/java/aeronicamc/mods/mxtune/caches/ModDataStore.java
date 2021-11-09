@@ -54,8 +54,8 @@ public class ModDataStore
                 LOGGER.debug("MVStore version: {}, file: {}", mvStore.getCurrentVersion(), mvStore.getFileStore());
         }
         initializeIndex();
-        testPut();
-        testGet();
+//        testPut();
+//        testGet();
     }
 
     public static void shutdown()
@@ -64,12 +64,12 @@ public class ModDataStore
             mvStore.close();
     }
 
-    public static MVStore getMvStore()
+    private static MVStore getMvStore()
     {
         return mvStore;
     }
 
-    public static void testPut()
+    private static void testPut()
     {
         MVMap<Integer, String> indexToMusicText = mvStore.openMap("MusicTexts");
         for (TestData c : TestData.values())
@@ -85,7 +85,7 @@ public class ModDataStore
 
 
 
-    public static void testGet()
+    private static void testGet()
     {
         int index = 0;
 
@@ -99,7 +99,7 @@ public class ModDataStore
         LOGGER.debug("Contains -removed-? {}", indexToMusicText.containsValue("-removed-"));
     }
 
-    public static void initializeIndex()
+    private static void initializeIndex()
     {
         if (mvStore != null)
         {
