@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.managers;
 
 import aeronicamc.mods.mxtune.blocks.IMusicPlayer;
 import aeronicamc.mods.mxtune.blocks.IPlacedInstrument;
+import aeronicamc.mods.mxtune.caches.ModDataStore;
 import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.PlayBlockMusicMessage;
@@ -105,25 +106,26 @@ public final class PlayManager
         {
             Integer playerID = playerIn.getId();
             String title = SheetMusicHelper.getMusicTitleAsString(sheetMusic);
-            String mml = SheetMusicHelper.getMusic(sheetMusic);
+            Integer musicTextKey = SheetMusicHelper.getMusicTextKey(sheetMusic);
+            String musicText = ModDataStore.getMusicText(musicTextKey);
             int duration = SheetMusicHelper.getMusicDuration(sheetMusic);
 
             //mml = mml.replace("MML@", "MML@I" + getPresetIndex(pos, playerIn, isPlaced));
             LOGGER.debug("MML Title: {} Duration: {}", title, duration);
-            LOGGER.debug("MML Sub25: {}", mml.substring(0, Math.min(25, mml.length())));
+            LOGGER.debug("MML Sub25: {}", musicText.substring(0, Math.min(25, musicText.length())));
 
-            return playSolo(playerIn, mml, duration, playerID);
+            return playSolo(playerIn, musicText, duration, playerID);
         }
         return PlayIdSupplier.INVALID;
     }
 
-    private static int playSolo(PlayerEntity playerIn, String mml, int duration, Integer playerID)
+    private static int playSolo(PlayerEntity playerIn, String musicText, int duration, Integer playerID)
     {
         int playId = getNextPlayID();
         int entityId = playerIn.getId();
 
-        addActivePlayId(entityId, null, playId, mml, duration);
-        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, entityId ,mml);
+        addActivePlayId(entityId, null, playId, musicText, duration);
+        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, entityId , musicText);
         PacketDispatcher.sendToTrackingEntityAndSelf(packetPlaySolo, playerIn);
         return playId;
     }
@@ -190,7 +192,7 @@ public final class PlayManager
         }
     }
 
-    private static void addActivePlayId(int entityId, @Nullable BlockPos blockPos, int playId, String mml, int durationSeconds)
+    private static void addActivePlayId(int entityId, @Nullable BlockPos blockPos, int playId, String musicText, int durationSeconds)
     {
         if ((playId != PlayIdSupplier.INVALID))
         {
@@ -203,11 +205,11 @@ public final class PlayManager
                     entityIdToPlayId.putIfAbsent(entityId, playId);
 
                 playIdToEntityId.put(playId, entityId);
-                playIdToActiveTune.putIfAbsent(playId, ActiveTune.newActiveTune(entityId, playId, mml, durationSeconds).start());
+                playIdToActiveTune.putIfAbsent(playId, ActiveTune.newActiveTune(entityId, playId, musicText, durationSeconds).start());
             }
             else if (blockPos != null)
             {
-                playIdToActiveTune.putIfAbsent(playId, ActiveTune.newActiveTune(blockPos, playId, mml, durationSeconds).start());
+                playIdToActiveTune.putIfAbsent(playId, ActiveTune.newActiveTune(blockPos, playId, musicText, durationSeconds).start());
             }
         }
     }

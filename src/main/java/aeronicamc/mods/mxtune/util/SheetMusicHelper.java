@@ -3,6 +3,7 @@ package aeronicamc.mods.mxtune.util;
 import aeronicamc.libs.mml.parser.MMLParser;
 import aeronicamc.libs.mml.parser.MMLParserFactory;
 import aeronicamc.mods.mxtune.blocks.IMusicPlayer;
+import aeronicamc.mods.mxtune.caches.ModDataStore;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.sound.MMLToMIDI;
 import aeronicamc.mods.mxtune.sound.Midi2WavRenderer;
@@ -28,9 +29,9 @@ public enum SheetMusicHelper
 {
     ;
     private static final Logger LOGGER = LogManager.getLogger(SheetMusicHelper.class);
-    public static final String KEY_SHEET_MUSIC = "sheet_music";
-    public static final String KEY_DURATION = "duration";
-    public static final String KEY_MML = "mml";
+    public static final String KEY_SHEET_MUSIC = "SheetMusic";
+    public static final String KEY_DURATION = "Duration";
+    public static final String KEY_MUSIC_TEXT_KEY = "MusicTextKey";
     private final static ITextComponent SHEET_MUSIC_EMPTY =
             new TranslationTextComponent("item.mxtune.sheet_music.empty")
                     .withStyle(TextFormatting.ITALIC)
@@ -78,7 +79,7 @@ public enum SheetMusicHelper
         if (contents != null && contents.contains(KEY_SHEET_MUSIC))
         {
             CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
-            if ((sm.getString(KEY_MML).contains("MML@") && sm.getInt(KEY_DURATION) > 0))
+            if ((sm.contains(KEY_MUSIC_TEXT_KEY) && sm.getInt(KEY_DURATION) > 0))
             {
                 return sm.getInt(KEY_DURATION);
             }
@@ -87,16 +88,19 @@ public enum SheetMusicHelper
         return 0;
     }
 
-    public static String getMusic(ItemStack sheetMusicStack)
+    @Nullable
+    public static Integer getMusicTextKey(ItemStack sheetMusicStack)
     {
         if (hasMML(sheetMusicStack))
         {
             CompoundNBT contents = sheetMusicStack.getTag();
-            assert contents != null;
-            CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
-            return sm.getString(KEY_MML);
+            if (contents != null && contents.contains(KEY_SHEET_MUSIC))
+            {
+                CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
+                return sm.contains(KEY_MUSIC_TEXT_KEY) ? sm.getInt(KEY_MUSIC_TEXT_KEY) : null;
+            }
         }
-        return "MML@;";
+        return null;
     }
 
     public static MusicProperties getMusicFromIMusicPlayer(TileEntity pTileEntity)
@@ -117,11 +121,19 @@ public enum SheetMusicHelper
                 if (!sheetMusic.isEmpty() && sheetMusic.getTag() != null)
                 {
                     CompoundNBT contents = (CompoundNBT) sheetMusic.getTag().get(KEY_SHEET_MUSIC);
-                    if (contents != null && contents.contains(KEY_MML, NBT.TAG_STRING))
+                    if (contents != null && contents.contains(KEY_MUSIC_TEXT_KEY, NBT.TAG_INT))
                     {
-                        String mml = contents.getString(KEY_MML);
-                        mml = mml.replace("MML@", "MML@I" + patch);
-                        buildMML.append(mml);
+                        int keyMusicTextKey = contents.getInt(KEY_MUSIC_TEXT_KEY);
+                        String musicText = ModDataStore.getMusicText(keyMusicTextKey);
+                        if (musicText != null && musicText.contains("MML@"))
+                        {
+                            musicText = musicText.replace("MML@", "MML@I" + patch);
+                        }
+                        else
+                        {
+                            musicText = "";
+                        }
+                        buildMML.append(musicText);
                         duration = Math.max(duration, contents.getInt(KEY_DURATION));
                     }
 
@@ -137,7 +149,7 @@ public enum SheetMusicHelper
         if (contents != null && sheetMusicStack.getItem() instanceof IMusic && contents.contains(KEY_SHEET_MUSIC))
         {
             CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
-            return sm.getString(KEY_MML).contains("MML@") && sm.getInt(KEY_DURATION) > 0;
+            return sm.getString(KEY_MUSIC_TEXT_KEY).contains("MML@") && sm.getInt(KEY_DURATION) > 0;
         }
         return false;
     }
@@ -166,7 +178,7 @@ public enum SheetMusicHelper
                 if (sheetMusic.getItem() instanceof IMusic && sheetMusic.getTag() != null)
                 {
                     CompoundNBT contents = (CompoundNBT) sheetMusic.getTag().get(KEY_SHEET_MUSIC);
-                    if (contents != null && contents.contains(KEY_MML))
+                    if (contents != null && contents.contains(KEY_MUSIC_TEXT_KEY))
                     {
                         return sheetMusic;
                     }
@@ -176,18 +188,22 @@ public enum SheetMusicHelper
         return ItemStack.EMPTY;
     }
 
-    public static boolean writeSheetMusic(ItemStack sheetMusic, String musicTitle, String mml)
+    public static boolean writeSheetMusic(ItemStack sheetMusic, String musicTitle, String musicText)
     {
         sheetMusic.setHoverName(new StringTextComponent(musicTitle));
         CompoundNBT compound = sheetMusic.getTag();
-        ValidDuration validDuration = validateMML(mml);
+        ValidDuration validDuration = validateMML(musicText);
         if (compound != null && (sheetMusic.getItem() instanceof IMusic) && validDuration.isValidMML() && validDuration.getDuration() > 0)
         {
-            CompoundNBT contents = new CompoundNBT();
-            contents.putString(KEY_MML, mml);
-            contents.putInt(KEY_DURATION, validDuration.getDuration());
-            compound.put(KEY_SHEET_MUSIC, contents);
-            return true;
+            Integer musicTextKey = ModDataStore.addMusicText(musicText);
+            if (musicTextKey != null)
+            {
+                CompoundNBT contents = new CompoundNBT();
+                contents.putInt(KEY_MUSIC_TEXT_KEY, musicTextKey);
+                contents.putInt(KEY_DURATION, validDuration.getDuration());
+                compound.put(KEY_SHEET_MUSIC, contents);
+                return true;
+            }
         }
         return false;
     }

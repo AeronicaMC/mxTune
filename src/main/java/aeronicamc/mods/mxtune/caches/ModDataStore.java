@@ -75,7 +75,7 @@ public class ModDataStore
         for (TestData c : TestData.values())
         {
            Integer index;
-           if ((index = addSheetMusic(c.getMML())) == null)
+           if ((index = addMusicText(c.getMML())) == null)
                LOGGER.warn("Duplicate record: {}, musicText: {}", String.format("%02d", index), c.getMML().substring(0, Math.min(24, c.getMML().length())));
         }
         removeSheetMusic(2);
@@ -125,7 +125,7 @@ public class ModDataStore
     @Nullable
     private static Integer nextKey()
     {
-        Integer newKey = null;
+        Integer newKey;
         if (mvStore != null)
         {
             MVMap<String, Set<Integer>> indexToReUsableKey = mvStore.openMap("ReUsableMusicIndices");
@@ -133,15 +133,18 @@ public class ModDataStore
             if (keySet.isEmpty())
             {
                 newKey = nextIndex.getAndIncrement();
+                return newKey;
             }
             else
             {
                 Iterator<Integer> iterator = keySet.iterator();
                 newKey = iterator.next();
                 iterator.remove();
+                return newKey;
             }
         }
-        return newKey;
+        else
+            return null;
     }
 
 
@@ -162,9 +165,9 @@ public class ModDataStore
     }
 
     @Nullable
-    public static Integer addSheetMusic(String musicText)
+    public static Integer addMusicText(String musicText)
     {
-        Integer key = null;
+        Integer key;
         if (mvStore != null)
         {
             key = nextKey();
@@ -177,8 +180,9 @@ public class ModDataStore
             {
                 indexToMusicText.put(key, musicText);
             }
+            return key;
         }
-        return key;
+        return null;
     }
 
     @Nullable
