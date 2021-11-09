@@ -2,9 +2,15 @@ package aeronicamc.mods.mxtune.events;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
+import aeronicamc.mods.mxtune.items.ItemSheetMusic;
 import aeronicamc.mods.mxtune.managers.PlayManager;
+import aeronicamc.mods.mxtune.util.IInstrument;
+import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
+import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -39,5 +45,24 @@ public class ModPlayerEvents
     {
         if(!event.getEntityLiving().getCommandSenderWorld().isClientSide())
             PlayManager.stopPlayingEntity(event.getEntityLiving());
+    }
+
+    @SubscribeEvent
+    public static void event(PlayerDestroyItemEvent event)
+    {
+        if (!event.getEntityLiving().level.isClientSide())
+        {
+            ItemStack itemStack = event.getOriginal();
+            Item item = !itemStack.isEmpty() ? itemStack.getItem() : null;
+            if (item == null) return;
+            if (item instanceof ItemSheetMusic && SheetMusicHelper.hasMML(itemStack))
+            {
+                //ModDataStore.removeMusic(itemStack);
+            }
+            else if (item instanceof IInstrument)
+            {
+
+            }
+        }
     }
 }

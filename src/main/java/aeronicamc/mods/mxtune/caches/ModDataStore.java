@@ -8,8 +8,13 @@ import org.apache.logging.log4j.Logger;
 import org.h2.mvstore.MVMap;
 import org.h2.mvstore.MVStore;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static aeronicamc.mods.mxtune.caches.FileHelper.SERVER_FOLDER;
 import static aeronicamc.mods.mxtune.caches.FileHelper.getCacheFile;
@@ -26,6 +31,7 @@ public class ModDataStore
 
     private static final String SERVER_DATA_STORE_FILENAME = "music.mv";
     private static MVStore mvStore;
+    private static final AtomicInteger nextIndex = new AtomicInteger();
 
     public static void start()
     {
@@ -38,7 +44,7 @@ public class ModDataStore
         }
         catch (IOException e)
         {
-            LOGGER.error("Big OOPS here! Out of disk space? No write permissions?");
+            LOGGER.error("Big OOPS here! Out of disk space?");
             LOGGER.error(e);
             throw new MXTuneRuntimeException("Unable to create mxtune data store.", e);
         }
@@ -47,6 +53,7 @@ public class ModDataStore
             if (mvStore != null)
                 LOGGER.debug("MVStore version: {}, file: {}", mvStore.getCurrentVersion(), mvStore.getFileStore());
         }
+        initializeIndex();
         testPut();
         testGet();
     }
@@ -64,29 +71,116 @@ public class ModDataStore
 
     public static void testPut()
     {
-        int index = 0;
-
-       MVMap<Integer, String> idToMusicText = mvStore.openMap("MusicTexts");
-       for (TestData c : TestData.values())
-       {
-           if (idToMusicText.putIfAbsent(c.getIndex(), c.getMML()) != null)
-               LOGGER.warn("Duplicate record: {}, musicText: {}", String.format("%02d", c.getIndex()), c.getMML().substring(0, Math.min(24, c.getMML().length())));
-       }
-       mvStore.commit();
-       idToMusicText.replace(1, "-removed-");
+        MVMap<Integer, String> indexToMusicText = mvStore.openMap("MusicTexts");
+        for (TestData c : TestData.values())
+        {
+           Integer index;
+           if ((index = addSheetMusic(c.getMML())) == null)
+               LOGGER.warn("Duplicate record: {}, musicText: {}", String.format("%02d", index), c.getMML().substring(0, Math.min(24, c.getMML().length())));
+        }
+        removeSheetMusic(2);
+        removeSheetMusic(5);
+        printReusableKeys();
     }
+
+
 
     public static void testGet()
     {
         int index = 0;
 
-        MVMap<Integer, String> idToMusicText = mvStore.openMap("MusicTexts");
-        for (Map.Entry<Integer, String> c : idToMusicText.entrySet())
+        MVMap<Integer, String> indexToMusicText = mvStore.openMap("MusicTexts");
+        for (Map.Entry<Integer, String> c : indexToMusicText.entrySet())
         {
             LOGGER.debug("id: {}, musicText: {}", String.format("%02d", c.getKey()), c.getValue().substring(0, Math.min(24, c.getValue().length())));
         }
 
-        LOGGER.debug("Last key: {}", idToMusicText.lastKey());
-        LOGGER.debug("Contains -removed-? {}", idToMusicText.containsValue("-removed-"));
+        LOGGER.debug("Last key: {}", indexToMusicText.lastKey());
+        LOGGER.debug("Contains -removed-? {}", indexToMusicText.containsValue("-removed-"));
+        printReusableKeys();
+    }
+
+    public static void initializeIndex()
+    {
+        if (mvStore != null)
+        {
+            MVMap<Integer, String> indexToMusicText = mvStore.openMap("MusicTexts");
+            nextIndex.set(indexToMusicText.lastKey() == null ? 0 : indexToMusicText.lastKey());
+            MVMap<String, Set<Integer>> indexToReUsableKey = mvStore.openMap("ReUsableMusicIndices");
+            if (indexToReUsableKey.isEmpty()){
+                indexToReUsableKey.put("ReUsableKeys", new HashSet<>());
+            }
+            Set<Integer> keySet = indexToReUsableKey.get("ReUsableKeys");
+            keySet.forEach( key -> LOGGER.debug(" available key: {}", key));
+        }
+    }
+
+    private static void printReusableKeys()
+    {
+        if (mvStore != null)
+        {
+            MVMap<String, Set<Integer>> indexToReUsableKey = mvStore.openMap("ReUsableMusicIndices");
+            Set<Integer> keySet = indexToReUsableKey.get("ReUsableKeys");
+            keySet.forEach(key -> LOGGER.debug(" available key: {}", key));
+        }
+    }
+
+    @Nullable
+    private static Integer nextKey()
+    {
+        Integer newKey = null;
+        if (mvStore != null)
+        {
+            MVMap<String, Set<Integer>> indexToReUsableKey = mvStore.openMap("ReUsableMusicIndices");
+            Set<Integer> keySet = indexToReUsableKey.get("ReUsableKeys");
+            if (keySet.isEmpty())
+            {
+                newKey = nextIndex.getAndIncrement();
+            }
+            else
+            {
+                Iterator<Integer> iterator = keySet.iterator();
+                newKey = iterator.next();
+                iterator.remove();
+            }
+        }
+        return newKey;
+    }
+
+
+    public static void removeSheetMusic(@Nullable Integer musicIndex)
+    {
+        if (musicIndex != null && mvStore != null)
+        {
+            MVMap<String, Set<Integer>> indexToReUsableKey = mvStore.openMap("ReUsableMusicIndices");
+            MVMap<Integer, String> indexToMusicText = mvStore.openMap("MusicTexts");
+            Set<Integer> keySet = indexToReUsableKey.get("ReUsableKeys");
+            if (indexToMusicText.containsKey(musicIndex))
+            {
+                indexToMusicText.replace(musicIndex, "-removed-");
+                keySet.add(musicIndex);
+                mvStore.commit();
+            }
+        }
+    }
+
+    @Nullable
+    public static Integer addSheetMusic(String musicText)
+    {
+        Integer key = null;
+        if (mvStore != null)
+        {
+            key = nextKey();
+            MVMap<Integer, String> indexToMusicText = mvStore.openMap("MusicTexts");
+            if (indexToMusicText.containsKey(key))
+            {
+                indexToMusicText.replace(key, musicText);
+            }
+            else
+            {
+                indexToMusicText.put(key, musicText);
+            }
+        }
+        return key;
     }
 }

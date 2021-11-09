@@ -244,6 +244,11 @@ public enum SheetMusicHelper
             return new ItemStack(ModItems.MUSIC_PAPER.get());
     }
 
+    public static int getMusicIndex(ItemStack itemStack)
+    {
+        return 0;
+    }
+
 //    public static ItemStack createSheetMusic(SheetMusicSongs sheetMusicSong)
 //    {
 //        return createSheetMusic(sheetMusicSong.getTitle(), sheetMusicSong.getMML());
