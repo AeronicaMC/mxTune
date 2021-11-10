@@ -123,6 +123,8 @@ dependencies {
     implementation fg.deobf("curse.maven:${jei_version}")
     implementation fg.deobf("curse.maven:${config_menus_forge}")
     implementation fg.deobf("curse.maven:${better_mods_button}")
+    implementation fg.deobf("curse.maven:${ftb_library_forge}")
+    implementation fg.deobf("curse.maven:${architectury_forge}")
 
     implementation 'com.h2database:h2-mvstore:1.4.200'
     // For more info...
