@@ -50,20 +50,19 @@ public class ModDataStore
         }
         finally
         {
-            if (mvStore != null)
-                LOGGER.debug("MVStore version: {}, file: {}", mvStore.getCurrentVersion(), mvStore.getFileStore());
+            if (getMvStore() != null)
+                LOGGER.debug("MVStore version: {}, file: {}", getMvStore().getCurrentVersion(), getMvStore().getFileStore());
         }
         initializeIndex();
-//        testPut();
-//        testGet();
     }
 
     public static void shutdown()
     {
-        if (mvStore != null)
-            mvStore.close();
+        if (getMvStore() != null)
+            getMvStore().close();
     }
 
+    @Nullable
     private static MVStore getMvStore()
     {
         return mvStore;
@@ -71,7 +70,6 @@ public class ModDataStore
 
     private static void testPut()
     {
-        MVMap<Integer, String> indexToMusicText = mvStore.openMap("MusicTexts");
         for (TestData c : TestData.values())
         {
            Integer index;
@@ -83,29 +81,28 @@ public class ModDataStore
         printReusableKeys();
     }
 
-
-
     private static void testGet()
     {
-        int index = 0;
-
-        MVMap<Integer, String> indexToMusicText = mvStore.openMap("MusicTexts");
-        for (Map.Entry<Integer, String> c : indexToMusicText.entrySet())
+        if (getMvStore() != null)
         {
-            LOGGER.debug("id: {}, musicText: {}", String.format("%02d", c.getKey()), c.getValue().substring(0, Math.min(24, c.getValue().length())));
-        }
+            MVMap<Integer, String> indexToMusicText = getMvStore().openMap("MusicTexts");
+            for (Map.Entry<Integer, String> c : indexToMusicText.entrySet())
+            {
+                LOGGER.debug("id: {}, musicText: {}", String.format("%02d", c.getKey()), c.getValue().substring(0, Math.min(24, c.getValue().length())));
+            }
 
-        LOGGER.debug("Last key: {}", indexToMusicText.lastKey());
-        LOGGER.debug("Contains -removed-? {}", indexToMusicText.containsValue("-removed-"));
+            LOGGER.debug("Last key: {}", indexToMusicText.lastKey());
+            LOGGER.debug("Contains -removed-? {}", indexToMusicText.containsValue("-removed-"));
+        }
     }
 
     private static void initializeIndex()
     {
-        if (mvStore != null)
+        if (getMvStore() != null)
         {
-            MVMap<Integer, String> indexToMusicText = mvStore.openMap("MusicTexts");
+            MVMap<Integer, String> indexToMusicText = getMvStore().openMap("MusicTexts");
             nextIndex.set(indexToMusicText.lastKey() == null ? 0 : indexToMusicText.lastKey());
-            MVMap<String, Set<Integer>> indexToReUsableKey = mvStore.openMap("ReUsableMusicIndices");
+            MVMap<String, Set<Integer>> indexToReUsableKey = getMvStore().openMap("ReUsableMusicIndices");
             if (indexToReUsableKey.isEmpty()){
                 indexToReUsableKey.putIfAbsent("ReUsableKeys", new HashSet<>());
             }
@@ -114,9 +111,9 @@ public class ModDataStore
 
     private static void printReusableKeys()
     {
-        if (mvStore != null)
+        if (getMvStore() != null)
         {
-            MVMap<String, Set<Integer>> indexToReUsableKey = mvStore.openMap("ReUsableMusicIndices");
+            MVMap<String, Set<Integer>> indexToReUsableKey = getMvStore().openMap("ReUsableMusicIndices");
             Set<Integer> keySet = indexToReUsableKey.get("ReUsableKeys");
             keySet.forEach(key -> LOGGER.debug(" available key: {}", key));
         }
@@ -126,52 +123,51 @@ public class ModDataStore
     private static Integer nextKey()
     {
         Integer newKey;
-        if (mvStore != null)
+        if (getMvStore() != null)
         {
-            MVMap<String, Set<Integer>> indexToReUsableKey = mvStore.openMap("ReUsableMusicIndices");
+            MVMap<String, Set<Integer>> indexToReUsableKey = getMvStore().openMap("ReUsableMusicIndices");
             Set<Integer> keySet = indexToReUsableKey.get("ReUsableKeys");
             if (keySet.isEmpty())
             {
                 newKey = nextIndex.getAndIncrement();
-                return newKey;
             }
             else
             {
                 Iterator<Integer> iterator = keySet.iterator();
                 newKey = iterator.next();
                 iterator.remove();
-                return newKey;
             }
+            return newKey;
         }
         else
             return null;
     }
 
-
     public static void removeSheetMusic(@Nullable Integer musicIndex)
     {
-        if (musicIndex != null && mvStore != null)
+        if (musicIndex != null && getMvStore() != null)
         {
-            MVMap<String, Set<Integer>> indexToReUsableKey = mvStore.openMap("ReUsableMusicIndices");
-            MVMap<Integer, String> indexToMusicText = mvStore.openMap("MusicTexts");
+            MVMap<String, Set<Integer>> indexToReUsableKey = getMvStore().openMap("ReUsableMusicIndices");
+            MVMap<Integer, String> indexToMusicText = getMvStore().openMap("MusicTexts");
             Set<Integer> keySet = indexToReUsableKey.get("ReUsableKeys");
             if (indexToMusicText.containsKey(musicIndex))
             {
                 indexToMusicText.replace(musicIndex, "-removed-");
                 keySet.add(musicIndex);
-                mvStore.commit();
+                getMvStore().commit();
             }
         }
+        printReusableKeys();
     }
 
     @Nullable
     public static Integer addMusicText(String musicText)
     {
         Integer key;
-        if (mvStore != null)
+        if (getMvStore() != null)
         {
             key = nextKey();
-            MVMap<Integer, String> indexToMusicText = mvStore.openMap("MusicTexts");
+            MVMap<Integer, String> indexToMusicText = getMvStore().openMap("MusicTexts");
             if (indexToMusicText.containsKey(key))
             {
                 indexToMusicText.replace(key, musicText);
@@ -180,6 +176,7 @@ public class ModDataStore
             {
                 indexToMusicText.put(key, musicText);
             }
+            printReusableKeys();
             return key;
         }
         return null;
@@ -189,11 +186,9 @@ public class ModDataStore
     public static String getMusicText(int key)
     {
         String musicText = null;
-        MVMap<Integer, String> indexToMusicText;
-        if (mvStore != null)
+        if (getMvStore() != null)
         {
-            musicText = (indexToMusicText = mvStore.openMap("MusicTexts")).get(key);
-
+            musicText = (String) getMvStore().openMap("MusicTexts").get(key);
         }
         return musicText;
     }
