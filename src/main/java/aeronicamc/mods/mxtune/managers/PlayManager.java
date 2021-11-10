@@ -248,6 +248,29 @@ public final class PlayManager
         }
     }
 
+    public static void stopListeningTo(@Nullable ServerPlayerEntity listeningPlayer, @Nullable Entity soundSourceEntity)
+    {
+        synchronized (THREAD_SYNC)
+        {
+            if ((listeningPlayer != null) && (soundSourceEntity != null) && hasActivePlayId(soundSourceEntity))
+            {
+                ActiveTune activeTune = getActiveTuneByEntityId(soundSourceEntity);
+                if (activeTune != null && listeningPlayer.level.getServer() != null)
+                {
+                    int playId = activeTune.getPlayId();
+
+                    StopPlayIdMessage stopPlayIdMessage = new StopPlayIdMessage(playId);
+                    PacketDispatcher.sendTo(stopPlayIdMessage, listeningPlayer);
+                    LOGGER.debug("{} stopListeningTo {}", listeningPlayer.getDisplayName().getString(), soundSourceEntity.getName().getString());
+                }
+                else
+                {
+                    LOGGER.warn("stopListeningTo -ERROR- No playId: {} for this Entity: {}", getEntitiesPlayId(soundSourceEntity.getId()), soundSourceEntity);
+                }
+            }
+        }
+    }
+
     public static boolean hasActivePlayId(@Nullable Entity pEntity)
     {
         synchronized (THREAD_SYNC)

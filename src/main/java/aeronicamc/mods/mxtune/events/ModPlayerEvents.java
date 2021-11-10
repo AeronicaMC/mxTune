@@ -20,8 +20,8 @@ public class ModPlayerEvents
     {
         if (!event.getPlayer().level.isClientSide() && ((event.getTarget() instanceof ServerPlayerEntity) || event.getTarget() instanceof MusicSourceEntity))
         {
-            PlayManager.sendMusicTo((ServerPlayerEntity) event.getPlayer(), event.getTarget());
             LOGGER.debug("{} Start Tracking {}", event.getPlayer(), event.getTarget());
+            PlayManager.sendMusicTo((ServerPlayerEntity) event.getPlayer(), event.getTarget());
         }
     }
 
@@ -31,6 +31,7 @@ public class ModPlayerEvents
         if (!event.getPlayer().level.isClientSide() && ((event.getTarget() instanceof ServerPlayerEntity) || event.getTarget() instanceof MusicSourceEntity))
         {
             LOGGER.debug("{} Stop Tracking {}", event.getPlayer(), event.getTarget());
+            PlayManager.stopListeningTo((ServerPlayerEntity) event.getPlayer(), event.getTarget());
         }
     }
 
