@@ -3,13 +3,8 @@ package aeronicamc.mods.mxtune.events;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
 import aeronicamc.mods.mxtune.managers.PlayManager;
-import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.EntityLeaveWorldEvent;
-import net.minecraftforge.event.entity.item.ItemExpireEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
-import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -47,43 +42,4 @@ public class ModPlayerEvents
             PlayManager.stopPlayingEntity(event.getEntityLiving());
     }
 
-    @SubscribeEvent
-    public static void event(PlayerDestroyItemEvent event)
-    {
-        if(!event.getEntity().level.isClientSide())
-        {
-            // As in break a tool from use
-            LOGGER.debug("Player Destroy Item Event: What Item? {}", event.getOriginal());
-        }
-
-    }
-
-    @SubscribeEvent
-    public static void event(ItemExpireEvent event)
-    {
-        if(!event.getEntity().level.isClientSide())
-        {
-            // When the entity item has expired.
-            LOGGER.debug("Item Expire Event: What Item? {}", event.getEntityItem());
-        }
-
-    }
-
-    @SubscribeEvent
-    public static void event(EntityJoinWorldEvent event)
-    {
-        if (!event.getWorld().isClientSide() && event.getEntity() instanceof ItemEntity)
-        {
-            LOGGER.debug("Entity Join World Event {}", ((ItemEntity) event.getEntity()).getItem());
-        }
-    }
-
-    @SubscribeEvent
-    public static void event(EntityLeaveWorldEvent event)
-    {
-        if (!event.getWorld().isClientSide() && (event.getEntity() instanceof ItemEntity))
-        {
-            LOGGER.debug("Entity Leave World Event {}", ((ItemEntity) event.getEntity()).getItem());
-        }
-    }
 }
