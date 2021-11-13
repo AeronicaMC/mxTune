@@ -64,7 +64,6 @@ public class MusicBlock extends Block implements IMusicPlayer
     @Override
     public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
     {
-        ActionResultType actionResultType = ActionResultType.FAIL;
         if (!worldIn.isClientSide())
         {
             if (!player.isShiftKeyDown())
@@ -98,26 +97,8 @@ public class MusicBlock extends Block implements IMusicPlayer
                     throw new IllegalStateException("Our named container provider is missing!");
                 }
             }
-            return ActionResultType.SUCCESS;
         }
-        else
-        {
-            // Client side: limit players arm to a single swing when held
-            TileEntity tileEntity = worldIn.getBlockEntity(pos);
-            if (tileEntity instanceof MusicBlockTile)
-            {
-                MusicBlockTile musicBlockTile = (MusicBlockTile) tileEntity;
-                if (!musicBlockTile.isUseHeld())
-                {
-                    actionResultType = ActionResultType.CONSUME;
-                }
-                else
-                    actionResultType =  ActionResultType.PASS;
-
-                musicBlockTile.useHeldCounterUpdate(true);
-            }
-            return actionResultType;
-        }
+        return ActionResultType.SUCCESS;
     }
 
     private boolean canPlayOrStopMusic(World worldIn, BlockPos pos, Boolean stop)
