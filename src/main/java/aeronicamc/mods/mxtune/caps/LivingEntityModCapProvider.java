@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.caps;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.util.AntiNull;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.INBT;
@@ -48,6 +49,9 @@ public final class LivingEntityModCapProvider
             @Override
             public void readNBT(final Capability<ILivingEntityModCap> capability, final ILivingEntityModCap instance, final Direction side, final INBT nbt)
             {
+                if (!(instance instanceof LivingEntityModCap))
+                    throw new IllegalArgumentException("Can not deserialize to an instance that isn't the default implementation");
+
                 instance.setPlayId(((IntNBT) nbt).getAsInt());
             }
         }, () -> new LivingEntityModCap(null));
@@ -62,13 +66,14 @@ public final class LivingEntityModCapProvider
     private static class EventHandler
     {
         @SubscribeEvent
-        public static void event(final AttachCapabilitiesEvent<PlayerEntity> event)
+        public static void event(final AttachCapabilitiesEvent<Entity> event)
         {
-            if (event.getObject() != null)
+            if (event.getObject() instanceof PlayerEntity)
             {
-                final LivingEntityModCap livingEntityModCap = new LivingEntityModCap(event.getObject());
+                final PlayerEntity playerEntity = (PlayerEntity) event.getObject();
+                final LivingEntityModCap livingEntityModCap = new LivingEntityModCap(playerEntity);
                 event.addCapability(ID, new SerializableCapabilityProvider<>(LIVING_ENTITY_MOD_CAP_CAPABILITY, null, livingEntityModCap));
-                event.addListener(()->getLivingEntityModCap((LivingEntity) event.getObject()).invalidate());
+                event.addListener(() -> getLivingEntityModCap(playerEntity).invalidate());
                 LOGGER.debug("AttachCapabilitiesEvent: {}", (event.getObject()));
             }
         }
