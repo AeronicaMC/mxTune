@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.util;
 
 import aeronicamc.libs.mml.parser.MMLParser;
 import aeronicamc.libs.mml.parser.MMLParserFactory;
+import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.blocks.IMusicPlayer;
 import aeronicamc.mods.mxtune.caches.ModDataStore;
 import aeronicamc.mods.mxtune.init.ModItems;
@@ -144,7 +145,8 @@ public enum SheetMusicHelper
     }
 
     /**
-     * Client side test used in the HooverText methods
+     * Client side
+     * Used in the HooverText methods
      * @param sheetMusicStack to be tested
      * @return true if the ItemStack has music
      */
@@ -154,9 +156,21 @@ public enum SheetMusicHelper
         if (contents != null && sheetMusicStack.getItem() instanceof IMusic && contents.contains(KEY_SHEET_MUSIC))
         {
             CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
-            return (sm.getInt(KEY_DURATION) > 0);
+            return sm.contains(KEY_DURATION) && (sm.getInt(KEY_DURATION) > 0);
         }
         return false;
+    }
+
+    @Nullable
+    public static Integer getMusicIndex(ItemStack sheetMusicStack)
+    {
+        CompoundNBT contents = sheetMusicStack.getTag();
+        if (contents != null && sheetMusicStack.getItem() instanceof IMusic && contents.contains(KEY_SHEET_MUSIC))
+        {
+            CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
+            return sm.contains(KEY_MUSIC_TEXT_KEY) ? (sm.getInt(KEY_MUSIC_TEXT_KEY)) : null;
+        }
+        return null;
     }
 
     public static ItemStack getIMusicFromIPlacedInstrument(BlockPos pos, PlayerEntity playerIn, boolean isPlaced)
@@ -165,9 +179,10 @@ public enum SheetMusicHelper
     }
 
     /**
+     * Server Side
      * Returns the IMusic stack of 1 from an IInstrument Stack of 1
      * e.g. ItemSheetMusic from an ItemMultiInst
-     * Validates the existance of keys only
+     * Validates the existence of keys only
      * @param iInstStack of handheld IInstrument inventory
      * @return ItemStack of handheld IMusic
      */
@@ -193,8 +208,18 @@ public enum SheetMusicHelper
         return ItemStack.EMPTY;
     }
 
+    /**
+     * Server Side
+     * Updates a new Sheet Music ItemStack. Adds the title, duration and keystore id to the it and stores
+     * the data to an on-disk data store.
+     * @param sheetMusic ItemStack reference to be updated.
+     * @param musicTitle becomes the Sheet Music display name
+     * @param musicText MML to be saved to disk
+     * @return true on success.
+     */
     public static boolean writeSheetMusic(ItemStack sheetMusic, String musicTitle, String musicText)
     {
+        musicTitle = musicTitle.substring(0, Math.min(musicTitle.length(), Reference.MXT_SONG_TITLE_LENGTH));
         sheetMusic.setHoverName(new StringTextComponent(musicTitle));
         CompoundNBT compound = sheetMusic.getTag();
         ValidDuration validDuration = validateMML(musicText);
@@ -214,8 +239,8 @@ public enum SheetMusicHelper
     }
 
     /**
+     * Client and Server side
      * Validate the supplied MML and return it's length in seconds.
-     *
      * @param mml to be validated and its duration in seconds calculated.
      * @return a ValidDuration with 'isValidMML' set true for valid MML else false, and 'getDuration' the length of the tune in seconds<B></B>
      * for valid MML, else 0.
@@ -265,15 +290,9 @@ public enum SheetMusicHelper
             return new ItemStack(ModItems.MUSIC_PAPER.get());
     }
 
-    public static int getMusicIndex(ItemStack itemStack)
-    {
-        return 0;
-    }
-
 //    public static ItemStack createSheetMusic(SheetMusicSongs sheetMusicSong)
 //    {
 //        return createSheetMusic(sheetMusicSong.getTitle(), sheetMusicSong.getMML());
 //    }
-
 
 }
