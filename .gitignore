@@ -35,6 +35,9 @@ bin
 build
 out
 run
+run01
+run02
+run03
 src/generated
 mcmodsrepo
 minecraft
