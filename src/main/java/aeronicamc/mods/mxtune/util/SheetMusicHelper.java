@@ -149,7 +149,7 @@ public enum SheetMusicHelper
         if (contents != null && sheetMusicStack.getItem() instanceof IMusic && contents.contains(KEY_SHEET_MUSIC))
         {
             CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
-            return sm.getInt(KEY_DURATION) > 0;
+            return (sm.getInt(KEY_DURATION) > 0) && (ModDataStore.getMusicText(sm.getInt(KEY_MUSIC_TEXT_KEY)) != null);
         }
         return false;
     }
