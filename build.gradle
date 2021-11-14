@@ -64,8 +64,6 @@ minecraft {
 
             // program arguments
             args '--username', 'Player01'
-            // args '--username', project.findProperty('net.aeronica.mc.logon')
-            // args '--password', project.findProperty('net.aeronica.mc.password')
 
             mods {
                 mxtune {
