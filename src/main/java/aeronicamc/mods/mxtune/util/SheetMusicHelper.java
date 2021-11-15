@@ -5,6 +5,7 @@ import aeronicamc.libs.mml.parser.MMLParserFactory;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.blocks.IMusicPlayer;
 import aeronicamc.mods.mxtune.caches.ModDataStore;
+import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.sound.MMLToMIDI;
 import aeronicamc.mods.mxtune.sound.Midi2WavRenderer;
@@ -23,6 +24,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import static net.minecraftforge.common.util.Constants.NBT;
 
@@ -87,6 +91,24 @@ public enum SheetMusicHelper
         }
 
         return 0;
+    }
+
+    public static ITextComponent getFormattedSheetMusicDaysLeft(ItemStack sheetMusicStack)
+    {
+        return new TranslationTextComponent("item.mxtune.sheet_music.days_left", getSheetMusicDaysLeft(sheetMusicStack));
+    }
+
+    public static long getSheetMusicDaysLeft(ItemStack sheetMusicStack)
+    {
+        String keyDateTimeString = getMusicTextKey(sheetMusicStack);
+        if (keyDateTimeString != null)
+        {
+            LocalDateTime keyDateTime = LocalDateTime.parse(keyDateTimeString);
+            LocalDateTime keyPlusDaysLeft = keyDateTime.plusDays(MXTuneConfig.getSheetMusicLifeInDays());
+            LocalDateTime now = LocalDateTime.now(ZoneId.of("GMT0"));
+            return Duration.between(now, keyPlusDaysLeft).getSeconds() / 86400;
+        }
+        return 9999;
     }
 
     @Nullable
