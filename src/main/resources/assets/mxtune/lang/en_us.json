@@ -11,6 +11,7 @@
   "item.mxtune.music_paper": "Music Paper",
   "item.mxtune.sheet_music": "Sheet Music",
   "item.mxtune.sheet_music.days_left": "Days left: %s",
+  "item.mxtune.sheet_music.days_left_error": "Days left: nn",
   "item.mxtune.sheet_music.duration_error": "h:mm:ss",
   "item.mxtune.sheet_music.empty": " - Empty - ",
   "item.mxtune.multi_inst": "Multi Instrument",

@@ -44,6 +44,9 @@ public enum SheetMusicHelper
     private final static ITextComponent SHEET_MUSIC_DURATION_ERROR =
             new TranslationTextComponent("item.mxtune.sheet_music.duration_error")
                     .withStyle(TextFormatting.RED);
+    private final static ITextComponent SHEET_MUSIC_DAYS_LEFT_ERROR =
+            new TranslationTextComponent("item.mxtune.sheet_music.days_left_error")
+                    .withStyle(TextFormatting.RED);
 
 
     /**
@@ -95,7 +98,13 @@ public enum SheetMusicHelper
 
     public static ITextComponent getFormattedSheetMusicDaysLeft(ItemStack sheetMusicStack)
     {
-        return new TranslationTextComponent("item.mxtune.sheet_music.days_left", getSheetMusicDaysLeft(sheetMusicStack));
+        long daysLeft = getSheetMusicDaysLeft(sheetMusicStack);
+        if (daysLeft != 99999)
+            return new TranslationTextComponent("item.mxtune.sheet_music.days_left", getSheetMusicDaysLeft(sheetMusicStack))
+                .withStyle(TextFormatting.GRAY)
+                .withStyle(TextFormatting.ITALIC);
+        else
+            return SHEET_MUSIC_DAYS_LEFT_ERROR;
     }
 
     public static long getSheetMusicDaysLeft(ItemStack sheetMusicStack)
@@ -108,7 +117,7 @@ public enum SheetMusicHelper
             LocalDateTime now = LocalDateTime.now(ZoneId.of("GMT0"));
             return Duration.between(now, keyPlusDaysLeft).getSeconds() / 86400;
         }
-        return 9999;
+        return 99999;
     }
 
     @Nullable

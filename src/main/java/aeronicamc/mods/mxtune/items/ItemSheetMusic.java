@@ -6,8 +6,6 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -28,12 +26,11 @@ public class ItemSheetMusic extends Item implements IMusic
     {
         if (hasMusicText(pStack))
         {
-            String itemName = pTooltip.get(0).getString();
             pTooltip.clear();
-            pTooltip.add(new StringTextComponent(itemName).withStyle(TextFormatting.GOLD));
-            pTooltip.add(getFormattedSheetMusicDaysLeft(pStack));
+            pTooltip.add(SheetMusicHelper.getFormattedMusicTitle(pStack));
         }
         pTooltip.add(getFormattedMusicDuration(pStack));
+        pTooltip.add(getFormattedSheetMusicDaysLeft(pStack));
     }
 
     @Override
