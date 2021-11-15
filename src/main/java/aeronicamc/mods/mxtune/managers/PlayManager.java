@@ -106,7 +106,7 @@ public final class PlayManager
         {
             Integer playerID = playerIn.getId();
             String title = SheetMusicHelper.getMusicTitleAsString(sheetMusic);
-            Integer musicTextKey = SheetMusicHelper.getMusicTextKey(sheetMusic);
+            String musicTextKey = SheetMusicHelper.getMusicTextKey(sheetMusic);
             String musicText = ModDataStore.getMusicText(musicTextKey);
             int duration = SheetMusicHelper.getMusicDuration(sheetMusic);
 

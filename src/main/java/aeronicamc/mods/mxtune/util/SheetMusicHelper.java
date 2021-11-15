@@ -90,7 +90,7 @@ public enum SheetMusicHelper
     }
 
     @Nullable
-    public static Integer getMusicTextKey(ItemStack sheetMusicStack)
+    public static String getMusicTextKey(ItemStack sheetMusicStack)
     {
         if (hasMusicText(sheetMusicStack))
         {
@@ -98,7 +98,7 @@ public enum SheetMusicHelper
             if (contents != null && contents.contains(KEY_SHEET_MUSIC))
             {
                 CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
-                return sm.contains(KEY_MUSIC_TEXT_KEY) ? sm.getInt(KEY_MUSIC_TEXT_KEY) : null;
+                return sm.contains(KEY_MUSIC_TEXT_KEY) && !sm.getString(KEY_MUSIC_TEXT_KEY).isEmpty() ? sm.getString(KEY_MUSIC_TEXT_KEY) : null;
             }
         }
         return null;
@@ -122,9 +122,9 @@ public enum SheetMusicHelper
                 if (!sheetMusic.isEmpty() && sheetMusic.getTag() != null)
                 {
                     CompoundNBT contents = (CompoundNBT) sheetMusic.getTag().get(KEY_SHEET_MUSIC);
-                    if (contents != null && contents.contains(KEY_MUSIC_TEXT_KEY, NBT.TAG_INT))
+                    if (contents != null && contents.contains(KEY_MUSIC_TEXT_KEY, NBT.TAG_STRING))
                     {
-                        int keyMusicTextKey = contents.getInt(KEY_MUSIC_TEXT_KEY);
+                        String keyMusicTextKey = contents.getString(KEY_MUSIC_TEXT_KEY);
                         String musicText = ModDataStore.getMusicText(keyMusicTextKey);
                         if (musicText != null && musicText.contains("MML@"))
                         {
@@ -162,13 +162,13 @@ public enum SheetMusicHelper
     }
 
     @Nullable
-    public static Integer getMusicIndex(ItemStack sheetMusicStack)
+    public static String getMusicIndex(ItemStack sheetMusicStack)
     {
         CompoundNBT contents = sheetMusicStack.getTag();
         if (contents != null && sheetMusicStack.getItem() instanceof IMusic && contents.contains(KEY_SHEET_MUSIC))
         {
             CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
-            return sm.contains(KEY_MUSIC_TEXT_KEY) ? (sm.getInt(KEY_MUSIC_TEXT_KEY)) : null;
+            return sm.contains(KEY_MUSIC_TEXT_KEY) ? (sm.getString(KEY_MUSIC_TEXT_KEY)) : null;
         }
         return null;
     }
@@ -225,11 +225,11 @@ public enum SheetMusicHelper
         ValidDuration validDuration = validateMML(musicText);
         if (compound != null && (sheetMusic.getItem() instanceof IMusic) && validDuration.isValidMML() && validDuration.getDuration() > 0)
         {
-            Integer musicTextKey = ModDataStore.addMusicText(musicText);
+            String musicTextKey = ModDataStore.addMusicText(musicText);
             if (musicTextKey != null)
             {
                 CompoundNBT contents = new CompoundNBT();
-                contents.putInt(KEY_MUSIC_TEXT_KEY, musicTextKey);
+                contents.putString(KEY_MUSIC_TEXT_KEY, musicTextKey);
                 contents.putInt(KEY_DURATION, validDuration.getDuration());
                 compound.put(KEY_SHEET_MUSIC, contents);
                 return true;

@@ -10,11 +10,11 @@ import org.h2.mvstore.MVStore;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static aeronicamc.mods.mxtune.caches.FileHelper.SERVER_FOLDER;
 import static aeronicamc.mods.mxtune.caches.FileHelper.getCacheFile;
@@ -30,8 +30,9 @@ public class ModDataStore
     private static final Logger LOGGER = LogManager.getLogger(ModDataStore.class);
 
     private static final String SERVER_DATA_STORE_FILENAME = "music.mv";
+    private static final ZoneId ROOT_ZONE = ZoneId.of("GMT0");
+    private static LocalDateTime lastDateTime = LocalDateTime.now(ROOT_ZONE);
     private static MVStore mvStore;
-    private static final AtomicInteger nextIndex = new AtomicInteger();
 
     public static void start()
     {
@@ -55,9 +56,7 @@ public class ModDataStore
             if (getMvStore() != null)
                 LOGGER.debug("MVStore version: {}, file: {}", getMvStore().getCurrentVersion(), getMvStore().getFileStore());
         }
-        initializeIndex();
         testGet();
-        printReusableKeys();
     }
 
     public static void shutdown()
@@ -76,13 +75,10 @@ public class ModDataStore
     {
         for (TestData c : TestData.values())
         {
-           Integer index;
+           String index;
            if ((index = addMusicText(c.getMML())) == null)
-               LOGGER.warn("Duplicate record: {}, musicText: {}", String.format("%02d", index), c.getMML().substring(0, Math.min(24, c.getMML().length())));
+               LOGGER.warn("Duplicate record: {}, musicText: {}", String.format("%s", index), c.getMML().substring(0, Math.min(24, c.getMML().length())));
         }
-        removeSheetMusic(2);
-        removeSheetMusic(5);
-        printReusableKeys();
     }
 
     private static void testGet()
@@ -90,115 +86,132 @@ public class ModDataStore
         if (getMvStore() != null)
         {
             MVStore.TxCounter using = getMvStore().registerVersionUsage();
-            MVMap<Integer, String> indexToMusicText = getMvStore().openMap("MusicTexts");
-            for (Map.Entry<Integer, String> c : indexToMusicText.entrySet())
+            MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
+            for (Map.Entry<LocalDateTime, String> c : indexToMusicText.entrySet())
             {
-                LOGGER.debug("id: {}, musicText: {}", String.format("%02d", c.getKey()), c.getValue().substring(0, Math.min(24, c.getValue().length())));
+                LOGGER.debug("id: {}, musicText: {}", String.format("%s", c.getKey()), c.getValue().substring(0, Math.min(24, c.getValue().length())));
             }
 
             LOGGER.debug("Last key: {}", indexToMusicText.lastKey());
-            LOGGER.debug("Contains -removed-? {}", indexToMusicText.containsValue("-removed-"));
             getMvStore().deregisterVersionUsage(using);
         }
     }
 
-    private static void initializeIndex()
+    private static LocalDateTime nextKey()
     {
-        if (getMvStore() != null)
-        {
-            MVMap<Integer, String> indexToMusicText = getMvStore().openMap("MusicTexts");
-            nextIndex.set(indexToMusicText.lastKey() == null ? 0 : indexToMusicText.lastKey() + 1);
-            MVMap<String, Set<Integer>> indexToReUsableKey = getMvStore().openMap("ReUsableMusicIndices");
-            if (indexToReUsableKey.isEmpty()){
-                indexToReUsableKey.putIfAbsent("ReUsableKeys", new HashSet<>());
-            }
-        }
+        LocalDateTime now;
+        do {
+            now = LocalDateTime.now(ROOT_ZONE);
+        } while (now.equals(lastDateTime));
+        lastDateTime = now;
+        return now;
     }
 
-    private static void printReusableKeys()
+    public static void removeSheetMusic(String musicIndex)
     {
-        if (getMvStore() != null)
+        LocalDateTime localDateTime = null;
+        try
         {
-            MVMap<String, Set<Integer>> indexToReUsableKey = getMvStore().openMap("ReUsableMusicIndices");
-            Set<Integer> keySet = indexToReUsableKey.get("ReUsableKeys");
-            keySet.forEach(key -> LOGGER.debug(" available key: {}", key));
+            localDateTime = LocalDateTime.parse(musicIndex);
+        }
+        catch (DateTimeParseException e)
+        {
+            LOGGER.warn("Invalid SheetMusic musicIndex. Can't remove SheetMusic mapping");
+        }
+        finally
+        {
+            if (getMvStore() != null && localDateTime != null)
+            {
+                MVStore.TxCounter using = getMvStore().registerVersionUsage();
+                MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
+                try
+                {
+                    indexToMusicText.remove(localDateTime);
+                }
+                catch (ClassCastException | UnsupportedOperationException | NullPointerException e)
+                {
+                    LOGGER.error("removeSheetMusic: " + localDateTime.toString(), e);
+                }
+                getMvStore().deregisterVersionUsage(using);
+            }
         }
     }
 
     @Nullable
-    private static Integer nextKey()
+    public static String addMusicText(String musicText)
     {
-        Integer newKey;
-        if (getMvStore() != null)
-        {
-            MVMap<String, Set<Integer>> indexToReUsableKey = getMvStore().openMap("ReUsableMusicIndices");
-            Set<Integer> keySet = indexToReUsableKey.get("ReUsableKeys");
-            if (keySet.isEmpty())
-            {
-                newKey = nextIndex.getAndIncrement();
-            }
-            else
-            {
-                Iterator<Integer> iterator = keySet.iterator();
-                newKey = iterator.next();
-                iterator.remove();
-            }
-            return newKey;
-        }
-        else
-            return null;
-    }
-
-    public static void removeSheetMusic(@Nullable Integer musicIndex)
-    {
-        if (musicIndex != null && getMvStore() != null)
-        {
-            MVMap<String, Set<Integer>> indexToReUsableKey = getMvStore().openMap("ReUsableMusicIndices");
-            MVMap<Integer, String> indexToMusicText = getMvStore().openMap("MusicTexts");
-            Set<Integer> keySet = indexToReUsableKey.get("ReUsableKeys");
-            if (indexToMusicText.containsKey(musicIndex))
-            {
-                indexToMusicText.replace(musicIndex, "-removed-");
-                keySet.add(musicIndex);
-                getMvStore().commit();
-            }
-        }
-        printReusableKeys();
-    }
-
-    @Nullable
-    public static Integer addMusicText(String musicText)
-    {
-        Integer key;
+        LocalDateTime key = null;
         if (getMvStore() != null)
         {
             key = nextKey();
-            MVMap<Integer, String> indexToMusicText = getMvStore().openMap("MusicTexts");
-            if (indexToMusicText.containsKey(key))
-            {
-                indexToMusicText.replace(key, musicText);
-            }
-            else
+            MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
+            try
             {
                 indexToMusicText.put(key, musicText);
+                getMvStore().commit();
             }
-            printReusableKeys();
-            return key;
+            catch (UnsupportedOperationException | ClassCastException | NullPointerException | IllegalArgumentException e)
+            {
+                LOGGER.error("addMusicText: key: " + key.toString() + ", musicText: " + "", e);
+            }
         }
-        return null;
+        return key != null ? key.toString() : null;
     }
 
     @Nullable
-    public static String getMusicText(int key)
+    public static String getMusicText(String key)
     {
         String musicText = null;
         if (getMvStore() != null)
         {
-            musicText = (String) getMvStore().openMap("MusicTexts").get(key);
-            if (musicText != null && musicText.equals("-removed-"))
-                musicText = null;
+            MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
+            LocalDateTime localDateTime = LocalDateTime.parse(key);
+            try
+            {
+                musicText = indexToMusicText.get(localDateTime);
+            }
+            catch (ClassCastException | NullPointerException e)
+            {
+                LOGGER.error("getMusicText error or key : " + key, e);
+            }
         }
         return musicText;
+    }
+
+    public static void main(String[] args) throws Exception
+    {
+        LocalDate localDate = LocalDate.now(ROOT_ZONE);
+        LOGGER.info("local date:      {}", localDate.toString());
+        LocalDate future = localDate.plusDays(30);
+        LOGGER.info("future date:     {}", future.toString());
+        LOGGER.info("Difference:      {}" , localDate.isBefore(future));
+        LOGGER.info("----");
+
+//        for (String zoneId : ZoneId.getAvailableZoneIds())
+//        {
+//            LOGGER.info(zoneId);
+//        }
+//        LOGGER.info("----");
+
+        LocalDateTime localDateTime = LocalDateTime.now(ROOT_ZONE);
+        LOGGER.info("local date Time: {}", localDateTime.toString());
+        LOGGER.info("----");
+
+        int i;
+        for (i=0 ; i<10; i++)
+        {
+            LOGGER.info("Unique Timestamp:    {}", getNextDateTime());
+        }
+    }
+
+    private static LocalDateTime getNextDateTime()
+    {
+        LocalDateTime now;
+        do {
+            now = LocalDateTime.now(ROOT_ZONE);
+        } while (now.equals(lastDateTime));
+        lastDateTime = now;
+        return now;
     }
 
 }
