@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.caches;
 
 import aeronicamc.libs.mml.util.TestData;
+import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.util.MXTuneRuntimeException;
 import net.minecraftforge.fml.LogicalSide;
 import org.apache.logging.log4j.LogManager;
@@ -10,10 +11,11 @@ import org.h2.mvstore.MVStore;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.time.LocalDate;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Map;
 
 import static aeronicamc.mods.mxtune.caches.FileHelper.SERVER_FOLDER;
@@ -31,6 +33,7 @@ public class ModDataStore
 
     private static final String SERVER_DATA_STORE_FILENAME = "music.mv";
     private static final ZoneId ROOT_ZONE = ZoneId.of("GMT0");
+    private static final ArrayList<LocalDateTime> reapDateTimeKeyList = new ArrayList<>();
     private static LocalDateTime lastDateTime = LocalDateTime.now(ROOT_ZONE);
     private static MVStore mvStore;
 
@@ -54,15 +57,18 @@ public class ModDataStore
         finally
         {
             if (getMvStore() != null)
-                LOGGER.debug("MVStore version: {}, file: {}", getMvStore().getCurrentVersion(), getMvStore().getFileStore());
+                LOGGER.debug("MVStore Started. Commit Version: {}, file: {}", getMvStore().getCurrentVersion(), getMvStore().getFileStore());
         }
         testGet();
+        long count = reapSheetMusic(true);
     }
 
     public static void shutdown()
     {
         if (getMvStore() != null)
             getMvStore().close();
+        mvStore = null;
+        LOGGER.debug("MVStore Shutdown.");
     }
 
     @Nullable
@@ -137,6 +143,57 @@ public class ModDataStore
         }
     }
 
+    private static synchronized ArrayList<LocalDateTime> getReapDateTimeKeyList()
+    {
+        return reapDateTimeKeyList;
+    }
+
+    private static boolean canReapSheetMusic(LocalDateTime localDateTime)
+    {
+        LocalDateTime keyPlusDaysLeft = localDateTime.plusDays(MXTuneConfig.getSheetMusicLifeInDays());
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("GMT0"));
+        return Math.max((Duration.between(now, keyPlusDaysLeft).getSeconds() / 86400), 0) <= 0;
+    }
+
+    private static long reapSheetMusic(boolean whatIf)
+    {
+        getReapDateTimeKeyList().clear();
+        long reapCount = 0;
+        if (getMvStore() != null)
+        {
+            MVStore.TxCounter using = getMvStore().registerVersionUsage();
+            MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
+            for (Map.Entry<LocalDateTime, String> entry : indexToMusicText.entrySet())
+            {
+                if (canReapSheetMusic(entry.getKey()))
+                    getReapDateTimeKeyList().add(entry.getKey());
+            }
+            getMvStore().deregisterVersionUsage(using);
+            reapCount = getReapDateTimeKeyList().size();
+            if (!getReapDateTimeKeyList().isEmpty() && !whatIf)
+            {
+                // List and Reap
+                for(LocalDateTime entry : getReapDateTimeKeyList())
+                {
+                    LOGGER.info("Reap SheetMusic key: {}", entry);
+                    indexToMusicText.remove(entry);
+                }
+                LOGGER.info("Reaped {} entries", getReapDateTimeKeyList().size());
+            }
+            else
+            {
+                // whatIf is true: List only
+                for(LocalDateTime entry : getReapDateTimeKeyList())
+                {
+                    LOGGER.info("Can Reap SheetMusic key: {}", entry);
+                }
+                LOGGER.info("{} entries could be reaped", getReapDateTimeKeyList().size());
+            }
+            getReapDateTimeKeyList().clear();
+        }
+        return reapCount;
+    }
+
     @Nullable
     public static String addMusicText(String musicText)
     {
@@ -176,42 +233,6 @@ public class ModDataStore
             }
         }
         return musicText;
-    }
-
-    public static void main(String[] args) throws Exception
-    {
-        LocalDate localDate = LocalDate.now(ROOT_ZONE);
-        LOGGER.info("local date:      {}", localDate.toString());
-        LocalDate future = localDate.plusDays(30);
-        LOGGER.info("future date:     {}", future.toString());
-        LOGGER.info("Difference:      {}" , localDate.isBefore(future));
-        LOGGER.info("----");
-
-//        for (String zoneId : ZoneId.getAvailableZoneIds())
-//        {
-//            LOGGER.info(zoneId);
-//        }
-//        LOGGER.info("----");
-
-        LocalDateTime localDateTime = LocalDateTime.now(ROOT_ZONE);
-        LOGGER.info("local date Time: {}", localDateTime.toString());
-        LOGGER.info("----");
-
-        int i;
-        for (i=0 ; i<10; i++)
-        {
-            LOGGER.info("Unique Timestamp:    {}", getNextDateTime());
-        }
-    }
-
-    private static LocalDateTime getNextDateTime()
-    {
-        LocalDateTime now;
-        do {
-            now = LocalDateTime.now(ROOT_ZONE);
-        } while (now.equals(lastDateTime));
-        lastDateTime = now;
-        return now;
     }
 
 }
