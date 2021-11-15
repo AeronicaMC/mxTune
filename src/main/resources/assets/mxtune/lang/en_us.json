@@ -1,4 +1,7 @@
 {
+  "config.mxtune.client.mml_Link": "MML Site Link",
+  "config.mxtune.server.listener_range": "Listener Range",
+  "config.mxtune.server.sheet_music_life_in_days": "Sheet Music Life in Days",
   "itemGroup.mxtune": "mxTune",
   "block.mxtune.music_block": "Music Block",
   "block.mxtune.inv_test_block": "Inventory Test Block",
