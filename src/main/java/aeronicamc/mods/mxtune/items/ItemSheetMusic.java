@@ -35,15 +35,15 @@ public class ItemSheetMusic extends Item implements IMusic
             String itemName = pTooltip.get(0).getString();
             // TODO: Need a SheetMusicHelper method to getDaysLeft( itemStack )
             // FIXME: The days left calculation is incorrect.
-            String dateTimeString = getMusicTextKey(pStack);
-            assert dateTimeString != null;
-            LocalDateTime localDateTime = LocalDateTime.parse(dateTimeString);
+            String keyDateTimeString = getMusicTextKey(pStack);
+            assert keyDateTimeString != null;
+            LocalDateTime keyDateTime = LocalDateTime.parse(keyDateTimeString);
+            LocalDateTime keyPlusDaysLeft = keyDateTime.plusDays(MXTuneConfig.getSheetMusicLifeInDays());
             LocalDateTime now = LocalDateTime.now(ZoneId.of("GMT0"));
-            LocalDateTime future = now.plusDays(MXTuneConfig.getSheetMusicLifeInDays());
-            long days = Duration.between(localDateTime, future).getSeconds() / 86400;
+            long days = Duration.between(now, keyPlusDaysLeft).getSeconds() / 86400;
             pTooltip.clear();
             pTooltip.add(new StringTextComponent(itemName).withStyle(TextFormatting.GOLD));
-            pTooltip.add(new StringTextComponent(String.format("Days left: %d", Math.min(days, 0))));
+            pTooltip.add(new StringTextComponent(String.format("Days left: %d", Math.max(days, 0))));
         }
         pTooltip.add(getFormattedMusicDuration(pStack));
     }
