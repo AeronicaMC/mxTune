@@ -3,6 +3,7 @@ package aeronicamc.mods.mxtune.blocks;
 
 import aeronicamc.mods.mxtune.init.ModBlocks;
 import aeronicamc.mods.mxtune.init.ModContainers;
+import aeronicamc.mods.mxtune.inventory.SlotMusicBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Slot;
@@ -15,7 +16,6 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.IContainerFactory;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
 
 public class MusicBlockContainer extends genericContainer
 {
@@ -30,7 +30,7 @@ public class MusicBlockContainer extends genericContainer
         if (tileEntity != null)
         {
             tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(
-                    h -> addSlot(new SlotItemHandler(h, 0, 64, 24)));
+                    h -> addSlot(new SlotMusicBlock(h, (MusicBlockTile) tileEntity, 0, 64, 24)));
         } else
             throw new IllegalStateException("Invalid tile entity at " + pos);
 
