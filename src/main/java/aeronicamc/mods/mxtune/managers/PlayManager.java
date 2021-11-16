@@ -21,6 +21,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -46,7 +48,6 @@ public final class PlayManager
     {
         return PlayIdSupplier.PlayType.PLAYERS.getAsInt();
     }
-
 
     /**
      * For playing music from an Item
@@ -125,7 +126,7 @@ public final class PlayManager
         int entityId = playerIn.getId();
 
         addActivePlayId(entityId, null, playId, musicText, duration);
-        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, entityId , musicText);
+        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, LocalDateTime.now(ZoneId.of("GMT0")).toString(), 0, entityId , musicText);
         PacketDispatcher.sendToTrackingEntityAndSelf(packetPlaySolo, playerIn);
         return playId;
     }
@@ -156,6 +157,10 @@ public final class PlayManager
             {
                 entry.getValue().cancel();
             }
+            entityIdToPlayId.clear();
+            playIdToActiveTune.clear();
+            activePlayIds.clear();
+            playIdToEntityId.clear();
         }
     }
 
@@ -247,7 +252,7 @@ public final class PlayManager
                 {
                     int playId = activeTune.getPlayId();
 
-                    PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, activeTune.getSecondsElapsed(), soundSourceEntity.getId(), activeTune.getMusicText());
+                    PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, LocalDateTime.now(ZoneId.of("GMT0")).toString(), activeTune.getSecondsElapsed(), soundSourceEntity.getId(), activeTune.getMusicText());
                     PacketDispatcher.sendTo(packetPlaySolo, listeningPlayer);
                     LOGGER.debug("sendMusicTo {} starting at {}", listeningPlayer.getDisplayName().getString(), SheetMusicHelper.formatDuration(activeTune.getSecondsElapsed()));
                 }
