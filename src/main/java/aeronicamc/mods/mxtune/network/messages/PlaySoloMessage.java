@@ -10,6 +10,9 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.function.Supplier;
 
 public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
@@ -20,6 +23,7 @@ public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
     private int secondsToSkip;
     private int entityId;
     private String musicText = "";
+    private String dateTimeServer = "";
 
     public PlaySoloMessage() { /* NOP */ }
 
@@ -30,9 +34,10 @@ public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
         this.musicText = musicText;
     }
 
-    public PlaySoloMessage(int playId, int secondsToSkip, int entityId, String musicText)
+    public PlaySoloMessage(int playId, String dateTimeServer, int secondsToSkip, int entityId, String musicText)
     {
         this.playId = playId;
+        this.dateTimeServer = dateTimeServer;
         this.secondsToSkip = secondsToSkip;
         this.entityId = entityId;
         this.musicText = musicText;
@@ -42,6 +47,7 @@ public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
     public void encode(PlaySoloMessage message, PacketBuffer buffer)
     {
         buffer.writeInt(message.playId);
+        buffer.writeUtf(message.dateTimeServer);
         buffer.writeInt(message.secondsToSkip);
         buffer.writeInt(message.entityId);
         stringHelper.writeLongUtf(buffer, message.musicText);
@@ -51,10 +57,11 @@ public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
     public PlaySoloMessage decode(PacketBuffer buffer)
     {
         final int playId = buffer.readInt();
+        final String dateTimeServer = buffer.readUtf();
         final int secondsToSkip = buffer.readInt();
         final int entityId = buffer.readInt();
         final String mml = stringHelper.readLongUtf(buffer);
-        return new PlaySoloMessage(playId, secondsToSkip, entityId, mml);
+        return new PlaySoloMessage(playId, dateTimeServer, secondsToSkip, entityId, mml);
     }
 
     @Override
@@ -65,7 +72,11 @@ public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
             assert Minecraft.getInstance().player != null;
             Entity sender = Minecraft.getInstance().player.level.getEntity(message.entityId);
             String senderName = sender != null ? sender.getDisplayName().getString() : "--Server--";
-            LOGGER.debug("From: {} to: {}", senderName, Minecraft.getInstance().player.getDisplayName().getString());
+            LocalDateTime dateTimeClient = LocalDateTime.now(ZoneId.of("GMT0"));
+            // LocalDateTime dateTimeServer = message.secondsToSkip > 0 ? LocalDateTime.parse(message.dateTimeServer) : dateTimeClient;
+            LocalDateTime dateTimeServer = LocalDateTime.parse(message.dateTimeServer);
+            long transitMS = Duration.between(dateTimeServer, dateTimeClient).toMillis();
+            LOGGER.debug("TransitMS: {}, From: {} to: {}", transitMS, senderName, Minecraft.getInstance().player.getDisplayName().getString());
             ctx.get().enqueueWork(() ->
                 ClientAudio.play(message.playId, message.secondsToSkip, message.entityId, message.musicText));
         }

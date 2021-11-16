@@ -152,7 +152,7 @@ public class ActiveTune
 
     synchronized int getSecondsElapsed()
     {
-        return secondsElapsed + 1;
+        return secondsElapsed;
     }
 
     synchronized String getMusicText()
