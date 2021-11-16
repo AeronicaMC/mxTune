@@ -27,6 +27,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
@@ -34,6 +35,8 @@ import java.util.List;
 
 public class ItemMultiInst extends Item implements IInstrument, INamedContainerProvider
 {
+    private final static String KEY_PLAY_ID = "MXTunePlayId";
+    private final static String KEY_PATCH = "MXTunePatch";
     private final static ITextComponent SHIFT_HELP = new TranslationTextComponent("item.mxtune.multi_inst.shift");
     private final static ITextComponent HELP_01 = new TranslationTextComponent("item.mxtune.multi_inst.shift.help01");
     private final static ITextComponent HELP_02 = new TranslationTextComponent("item.mxtune.multi_inst.shift.help02");
@@ -49,7 +52,7 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
         if (!pLevel.isClientSide())
         {
             ItemStack itemStackIn = pPlayer.getItemInHand(pHand);
-            int playId = itemStackIn.getBaseRepairCost();
+            int playId = getPlayId(itemStackIn);
             if (pPlayer.isCrouching() && pHand.equals(Hand.MAIN_HAND))
             {
                 NetworkHooks.openGui((ServerPlayerEntity) pPlayer, this, pPlayer.blockPosition());
@@ -58,12 +61,40 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
             {
                 if ((playId <= 0) || !PlayManager.isActivePlayId(playId))
                 {
-                    playId = PlayManager.playMusic(pPlayer);
-                    itemStackIn.setRepairCost(playId);
+                    setPlayId(itemStackIn, PlayManager.playMusic(pPlayer));
                 }
             }
         }
         return ActionResult.pass(pPlayer.getItemInHand(pHand));
+    }
+
+    /**
+     * Get this stack's playId, or INVALID (-1) if no playId is defined.
+     */
+    private int getPlayId(ItemStack pStack) {
+        return pStack.hasTag() && pStack.getTag() != null && pStack.getTag().contains(KEY_PLAY_ID, Constants.NBT.TAG_INT) ? pStack.getTag().getInt(KEY_PLAY_ID) : PlayIdSupplier.INVALID;
+    }
+
+    /**
+     * Set this stack's playId.
+     */
+    private void setPlayId(ItemStack pStack, int pCost) {
+        pStack.getOrCreateTag().putInt(KEY_PLAY_ID, pCost);
+    }
+
+    /**
+     * Get this stack's patch, or 0 if no patch is defined.
+     */
+    @Override
+    public int getPatch(ItemStack pStack) {
+        return pStack.hasTag() && pStack.getTag() != null && pStack.getTag().contains(KEY_PATCH, Constants.NBT.TAG_INT) ? pStack.getTag().getInt(KEY_PATCH) : 0;
+    }
+
+    /**
+     * Set this stack's playId.
+     */
+    private void setPatch(ItemStack pStack, int patch) {
+        pStack.getOrCreateTag().putInt(KEY_PATCH, patch);
     }
 
     // Stop playing if active and the item is no longer selected.
@@ -72,11 +103,11 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
     {
         if (!pLevel.isClientSide())
         {
-            int playId = pStack.getBaseRepairCost();
+            int playId = getPlayId(pStack);
             if (!pIsSelected && PlayManager.isActivePlayId(playId))
             {
                 PlayManager.stopPlayId(playId);
-                pStack.setRepairCost(PlayIdSupplier.INVALID);
+                setPlayId(pStack, PlayIdSupplier.INVALID);
             }
         }
     }
@@ -87,11 +118,11 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
     {
         if (!pPlayer.level.isClientSide())
         {
-            int playId = pStack.getBaseRepairCost();
+            int playId = getPlayId(pStack);
             if (PlayManager.isActivePlayId(playId))
             {
                 PlayManager.stopPlayId(playId);
-                pStack.setRepairCost(PlayIdSupplier.INVALID);
+                setPlayId(pStack, PlayIdSupplier.INVALID);
             }
         }
         return true;
@@ -103,11 +134,11 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
     {
         if (!pLevel.isClientSide())
         {
-            int playId = pStack.getBaseRepairCost();
+            int playId = getPlayId(pStack);
             if (PlayManager.isActivePlayId(playId))
             {
                 PlayManager.stopPlayId(playId);
-                pStack.setRepairCost(PlayIdSupplier.INVALID);
+                setPlayId(pStack, PlayIdSupplier.INVALID);
             }
         }
         return super.getEntityLifespan(pStack, pLevel);
@@ -116,7 +147,7 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
     @Override
     public void onCraftedBy(ItemStack pStack, World pLevel, PlayerEntity pPlayer)
     {
-        pStack.setRepairCost(PlayIdSupplier.INVALID);
+        setPlayId(pStack, PlayIdSupplier.INVALID);
     }
 
     @Override
@@ -153,12 +184,6 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
             return ActionResultType.SUCCESS;
 
         return super.useOn(pContext);
-    }
-
-    @Override
-    public int getPatch(ItemStack itemStack)
-    {
-        return itemStack.getDamageValue();
     }
 
     @Override

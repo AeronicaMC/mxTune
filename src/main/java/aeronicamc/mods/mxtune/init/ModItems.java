@@ -54,7 +54,7 @@ public class ModItems
         () -> new ItemSheetMusic(defaultItemProperties().stacksTo(1)));
 
     public static final RegistryObject<ItemMultiInst> MULTI_INST = ITEMS.register("multi_inst",
-        () -> new ItemMultiInst(defaultItemProperties().stacksTo(1)));
+        () -> new ItemMultiInst(defaultItemProperties().stacksTo(1).setNoRepair()));
 
     /**
      * Gets an {@link Item.Properties} instance with the {@link ItemGroup} set to {@link MXTune#ITEM_GROUP}.
