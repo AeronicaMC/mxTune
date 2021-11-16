@@ -148,6 +148,17 @@ public final class PlayManager
         return presetIndex;
     }
 
+    public static void stopAll()
+    {
+        synchronized (THREAD_SYNC)
+        {
+            for (Map.Entry<Integer, ActiveTune> entry : playIdToActiveTune.entrySet())
+            {
+                entry.getValue().cancel();
+            }
+        }
+    }
+
     public static void stopPlayId(int playId)
     {
         synchronized (THREAD_SYNC)

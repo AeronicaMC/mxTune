@@ -26,6 +26,7 @@ import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.gui.InstrumentScreen;
 import aeronicamc.mods.mxtune.init.*;
 import aeronicamc.mods.mxtune.managers.ActiveTune;
+import aeronicamc.mods.mxtune.managers.PlayManager;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.render.MusicSourceRenderer;
 import aeronicamc.mods.mxtune.render.RootedRenderer;
@@ -122,6 +123,7 @@ public class MXTune
     @SubscribeEvent
     public void event(FMLServerStoppingEvent event) {
         ActiveTune.shutdown();
+        PlayManager.stopAll();
         ModDataStore.shutdown();
     }
 

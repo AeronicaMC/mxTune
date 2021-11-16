@@ -66,9 +66,10 @@ public class ActiveTune
 
     public static void shutdown()
     {
+        isInitialized = false;
         executor.shutdown();
         scheduledThreadPool.shutdown();
-        isInitialized = false;
+        LOGGER2.debug("ActiveStore Shutdown.");
     }
 
     public static void initialize()
@@ -89,6 +90,7 @@ public class ActiveTune
                     .build();
             executor = Executors.newCachedThreadPool(threadFactoryPool);
             isInitialized = true;
+            LOGGER2.debug("ActiveTune initialized.");
         }
     }
 
@@ -104,7 +106,8 @@ public class ActiveTune
         {
             LOGGER2.debug("A scheduled or requested cancel was sent for playId: {} that had a duration of {}", playId, formatDuration(durationSeconds));
             LOGGER2.debug("Time elapsed: {}", formatDuration(secondsElapsedAI.get()));
-            PlayManager.stopPlayId(playId);
+            if (isInitialized)
+                PlayManager.stopPlayId(playId);
             future.cancel(true);
             done = true;
         }
