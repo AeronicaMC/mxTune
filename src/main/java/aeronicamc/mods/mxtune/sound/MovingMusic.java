@@ -38,7 +38,7 @@ public class MovingMusic extends MxSound
     {
         if (this.audioData == null || !this.entity.isAlive() || isStopped())
         {
-            this.stopped = true;
+            setDonePlaying();
             ClientAudio.queueAudioDataRemoval(playID);
             LOGGER.debug("MovingMusic playID {} done", playID);
         } else if (mc.player != null)
