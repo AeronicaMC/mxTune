@@ -69,16 +69,17 @@ public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
     {
         if (ctx.get().getDirection().getReceptionSide().isClient())
         {
-            assert Minecraft.getInstance().player != null;
-            Entity sender = Minecraft.getInstance().player.level.getEntity(message.entityId);
-            String senderName = sender != null ? sender.getDisplayName().getString() : "--Server--";
-            LocalDateTime dateTimeClient = LocalDateTime.now(ZoneId.of("GMT0"));
-            // LocalDateTime dateTimeServer = message.secondsToSkip > 0 ? LocalDateTime.parse(message.dateTimeServer) : dateTimeClient;
-            LocalDateTime dateTimeServer = LocalDateTime.parse(message.dateTimeServer);
-            long transitMS = Duration.between(dateTimeServer, dateTimeClient).toMillis();
-            LOGGER.debug("TransitMS: {}, From: {} to: {}", transitMS, senderName, Minecraft.getInstance().player.getDisplayName().getString());
-            ctx.get().enqueueWork(() ->
-                ClientAudio.play(message.playId, message.secondsToSkip, message.entityId, message.musicText));
+            ctx.get().enqueueWork(() -> {
+                assert Minecraft.getInstance().player != null;
+                Entity sender = Minecraft.getInstance().player.level.getEntity(message.entityId);
+                String senderName = sender != null ? sender.getDisplayName().getString() : "--Server--";
+                LocalDateTime dateTimeClient = LocalDateTime.now(ZoneId.of("GMT0"));
+                LocalDateTime dateTimeServer = message.secondsToSkip > 0 ? LocalDateTime.parse(message.dateTimeServer) : dateTimeClient;
+                //LocalDateTime dateTimeServer = LocalDateTime.parse(message.dateTimeServer);
+                int transitMS = (int) Duration.between(dateTimeServer, dateTimeClient).toMillis();
+                LOGGER.info("In transit: {} ms, From: {} to: {}", transitMS, senderName, Minecraft.getInstance().player.getDisplayName().getString());
+                ClientAudio.play(message.playId, Math.round(((float)message.secondsToSkip) + (((float)transitMS) /1000F)), message.entityId, message.musicText);
+        });
         }
         ctx.get().setPacketHandled(true);
     }
