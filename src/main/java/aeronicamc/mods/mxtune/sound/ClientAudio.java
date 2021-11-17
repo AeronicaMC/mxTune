@@ -131,12 +131,14 @@ public class ClientAudio
     }
 
     /**
-     * For players.
-     * @param playID unique submission identifier.
+     * For players and source entities.
      * @param secondsToSkip seconds to skip forward in the music.
+     * @param netTransitTime time in milliseconds for server packet to reach the client.
+     * @param playID unique submission identifier.
+     * @param entityId the id of the music source.
      * @param musicText MML string
      */
-    public static void play(int playID, int secondsToSkip, int entityId, String musicText)
+    public static void play(int secondsToSkip, long netTransitTime, int playID, int entityId, String musicText)
     {
         play(playID, secondsToSkip, entityId, null, musicText, false, null);
     }
@@ -182,7 +184,7 @@ public class ClientAudio
         if(playID != PlayIdSupplier.INVALID)
         {
             addPlayIDQueue(playID);
-            AudioData audioData = new AudioData(playID, secondsToSkip, pos, isClient, callback);
+            AudioData audioData = new AudioData(secondsToSkip, 0, playID, pos, isClient, callback);
             setAudioFormat(audioData);
             AudioData result = playIDAudioData.putIfAbsent(playID, audioData);
             if (result != null)

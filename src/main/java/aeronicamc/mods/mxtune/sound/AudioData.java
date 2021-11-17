@@ -39,18 +39,29 @@ public class AudioData
     private ClientAudio.Status status;
     private final PlayIdSupplier.PlayType playType;
     private final IAudioStatusCallback callback;
+    private final long netTransitTime;
+    private final LoggedTimer loggedTimer = new LoggedTimer();
 
-    // Fadeout volume - Not fully utilized. Using Paul's SoundSystem fadeOut method in tandem
+    // TODO: Fadeout volume - Not fully implemented.
     private float volumeFade = 1F;
     private boolean isFading;
     private int fadeTicks;
     private int fadeCounter;
-    private LoggedTimer loggedTimer = new LoggedTimer();
 
-    AudioData(int playId, int secondsToSkip, @Nullable BlockPos blockPos, boolean isClientPlayer, @Nullable IAudioStatusCallback callback)
+    /**
+     * All the data needed to generate and manage the audio stream except the musicText which is passed to the parser only.
+     * @param secondsToSkip forward in the audio stream.
+     * @param netTransitTime in milliseconds for server packet to reach the client.
+     * @param playId for this stream.
+     * @param blockPos of the audio source.
+     * @param isClientPlayer the audio source. Used stereo vs 3D audio selection and ISound type.
+     * @param callback is optional and is used to notify a class that implements the {@link IAudioStatusCallback}
+     */
+    AudioData(int secondsToSkip, long netTransitTime, int playId, @Nullable BlockPos blockPos, boolean isClientPlayer, @Nullable IAudioStatusCallback callback)
     {
-        this.playId = playId;
         this.secondsToSkip = secondsToSkip;
+        this.netTransitTime = netTransitTime;
+        this.playId = playId;
         this.playType = PlayIdSupplier.getTypeForPlayId(playId);
         this.blockPos = blockPos;
         this.isClientPlayer = isClientPlayer;
@@ -68,7 +79,7 @@ public class AudioData
         synchronized (this)
         {
             this.audioFormat = audioFormat;
-            loggedTimer.start("AudioData");
+            loggedTimer.start("Generate AudioData");
         }
     }
 
@@ -90,15 +101,16 @@ public class AudioData
         }
     }
 
-    synchronized int getPlayId()
-    {
-        return playId;
-    }
-
     synchronized long getSecondsToSkip()
     {
         loggedTimer.stop();
-        return secondsToSkip > 0 ? Math.round(((float)secondsToSkip) + ((float)loggedTimer.getTimeElapsed() / 1000f)) : 0L;
+        return secondsToSkip > 0 ? Math.round(
+            ((double)secondsToSkip) + (((double)loggedTimer.getTimeElapsed() + (double) netTransitTime) / 1000f)) : 0L;
+    }
+
+    synchronized int getPlayId()
+    {
+        return playId;
     }
 
     @Nullable

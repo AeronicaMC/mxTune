@@ -75,10 +75,9 @@ public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
                 String senderName = sender != null ? sender.getDisplayName().getString() : "--Server--";
                 LocalDateTime dateTimeClient = LocalDateTime.now(ZoneId.of("GMT0"));
                 LocalDateTime dateTimeServer = message.secondsToSkip > 0 ? LocalDateTime.parse(message.dateTimeServer) : dateTimeClient;
-                //LocalDateTime dateTimeServer = LocalDateTime.parse(message.dateTimeServer);
-                int transitMS = (int) Duration.between(dateTimeServer, dateTimeClient).toMillis();
-                LOGGER.info("In transit: {} ms, From: {} to: {}", transitMS, senderName, Minecraft.getInstance().player.getDisplayName().getString());
-                ClientAudio.play(message.playId, Math.round(((float)message.secondsToSkip) + (((float)transitMS) /1000F)), message.entityId, message.musicText);
+                long netTransitTime = Duration.between(dateTimeServer, dateTimeClient).toMillis();
+                LOGGER.info("In transit: {} ms, From: {} to: {}", netTransitTime, senderName, Minecraft.getInstance().player.getDisplayName().getString());
+                ClientAudio.play(message.secondsToSkip, netTransitTime, message.playId, message.entityId, message.musicText);
         });
         }
         ctx.get().setPacketHandled(true);
