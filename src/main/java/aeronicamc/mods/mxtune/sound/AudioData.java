@@ -18,6 +18,7 @@ package aeronicamc.mods.mxtune.sound;
 
 
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
+import aeronicamc.mods.mxtune.util.LoggedTimer;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.util.math.BlockPos;
 
@@ -44,6 +45,7 @@ public class AudioData
     private boolean isFading;
     private int fadeTicks;
     private int fadeCounter;
+    private LoggedTimer loggedTimer = new LoggedTimer();
 
     AudioData(int playId, int secondsToSkip, @Nullable BlockPos blockPos, boolean isClientPlayer, @Nullable IAudioStatusCallback callback)
     {
@@ -66,6 +68,7 @@ public class AudioData
         synchronized (this)
         {
             this.audioFormat = audioFormat;
+            loggedTimer.start("AudioData");
         }
     }
 
@@ -94,7 +97,8 @@ public class AudioData
 
     synchronized long getSecondsToSkip()
     {
-        return secondsToSkip;
+        loggedTimer.stop();
+        return secondsToSkip > 0 ? Math.round(((float)secondsToSkip) + ((float)loggedTimer.getTimeElapsed() / 1000f)) : 0L;
     }
 
     @Nullable
