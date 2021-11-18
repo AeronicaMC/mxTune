@@ -3,7 +3,6 @@ package aeronicamc.mods.mxtune.init;
 import aeronicamc.mods.mxtune.MXTune;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.items.*;
-import aeronicamc.mods.mxtune.util.SoundFontProxy;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -65,13 +64,11 @@ public class ModItems
 
     private static void registerMultiInst()
     {
-        for (Map.Entry<Integer, SoundFontProxy> entry : soundFontProxyMapByIndex.entrySet())
-        {
-            MULTI_INST.put(entry.getValue().index, ITEMS.register(
-                    entry.getValue().id, () -> new ItemMultiInst(defaultItemProperties()
-                        .stacksTo(1).setNoRepair().defaultDurability(entry.getValue().index))
-                                                                 ));
-        }
+        soundFontProxyMapByIndex.forEach(
+            (key, value) -> MULTI_INST.put(value.index, ITEMS.register(
+                value.id, () -> new ItemMultiInst(defaultItemProperties()
+                    .stacksTo(1).setNoRepair().defaultDurability(value.index))
+         )));
     }
 
     /**

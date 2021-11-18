@@ -2,15 +2,11 @@ package aeronicamc.mods.mxtune.datagen;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.init.ModItems;
-import aeronicamc.mods.mxtune.items.ItemMultiInst;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.LanguageProvider;
-import net.minecraftforge.fml.RegistryObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
-
-import java.util.Map;
 
 public class MXTuneLanguageProvider extends LanguageProvider
 {
@@ -48,10 +44,9 @@ public class MXTuneLanguageProvider extends LanguageProvider
 
     private void AddMultiInst(LanguageProvider provider)
     {
-        for (Map.Entry<Integer, RegistryObject<ItemMultiInst>> entry : ModItems.MULTI_INST.entrySet())
-        {
-            provider.add(entry.getValue().get(), convertSnakeCaseToTitleCase(SoundFontProxyManager.getName(entry.getKey())));
-        }
+        ModItems.MULTI_INST.forEach(
+            (key, value) -> provider.add(value.get(),
+                convertSnakeCaseToTitleCase(SoundFontProxyManager.getName(key))));
     }
 
     private String convertSnakeCaseToTitleCase(String input)
