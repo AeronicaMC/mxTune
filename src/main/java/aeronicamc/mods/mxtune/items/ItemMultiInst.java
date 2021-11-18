@@ -215,8 +215,11 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
     {
         ItemStack iMusic = SheetMusicHelper.getIMusicFromIInstrument(pStack);
         pTooltip.add(SheetMusicHelper.getFormattedMusicTitle(iMusic));
-        pTooltip.add(SheetMusicHelper.getFormattedMusicDuration(iMusic));
-        pTooltip.add(SheetMusicHelper.getFormattedSheetMusicDaysLeft(iMusic));
+        if (SheetMusicHelper.hasMusicText(SheetMusicHelper.getIMusicFromIInstrument(pStack)))
+        {
+            pTooltip.add(SheetMusicHelper.getFormattedMusicDuration(iMusic));
+            pTooltip.add(SheetMusicHelper.getFormattedSheetMusicDaysLeft(iMusic));
+        }
         if (Screen.hasShiftDown())
         {
             pTooltip.add(HELP_01);
