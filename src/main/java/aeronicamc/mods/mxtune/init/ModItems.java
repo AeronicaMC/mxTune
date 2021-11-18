@@ -3,12 +3,18 @@ package aeronicamc.mods.mxtune.init;
 import aeronicamc.mods.mxtune.MXTune;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.items.*;
+import aeronicamc.mods.mxtune.util.SoundFontProxy;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static aeronicamc.mods.mxtune.util.SoundFontProxyManager.soundFontProxyMapByIndex;
 
 /**
  *
@@ -53,8 +59,20 @@ public class ModItems
     public static final RegistryObject<ItemSheetMusic> SHEET_MUSIC = ITEMS.register("sheet_music",
         () -> new ItemSheetMusic(defaultItemProperties().stacksTo(1)));
 
-    public static final RegistryObject<ItemMultiInst> MULTI_INST = ITEMS.register("multi_inst",
-        () -> new ItemMultiInst(defaultItemProperties().stacksTo(1).setNoRepair()));
+    public static final Map<Integer, RegistryObject<ItemMultiInst>> MULTI_INST = new HashMap<>();
+
+    static { registerMultiInst(); }
+
+    private static void registerMultiInst()
+    {
+        for (Map.Entry<Integer, SoundFontProxy> entry : soundFontProxyMapByIndex.entrySet())
+        {
+            MULTI_INST.put(entry.getValue().index, ITEMS.register(
+                    entry.getValue().id, () -> new ItemMultiInst(defaultItemProperties()
+                        .stacksTo(1).setNoRepair().defaultDurability(entry.getValue().index))
+                                                                 ));
+        }
+    }
 
     /**
      * Gets an {@link Item.Properties} instance with the {@link ItemGroup} set to {@link MXTune#ITEM_GROUP}.

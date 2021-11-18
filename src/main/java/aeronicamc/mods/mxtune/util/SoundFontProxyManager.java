@@ -137,12 +137,12 @@ public class SoundFontProxyManager
 
     public static String getLangKeyName(int index)
     {
-        return String.format("item.mxtune:multi_inst.%s.name", getProxy(index).id);
+        return String.format("item.mxtune.%s", getProxy(index).id);
     }
 
     public static String getLangKeyName(String id)
     {
-        return String.format("item.mxtune:multi_inst.%s.name", getProxy(id).id);
+        return String.format("item.mxtune.%s", getProxy(id).id);
     }
 
     public static boolean hasTransform(String id)

@@ -5,6 +5,7 @@ import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.managers.PlayManager;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
+import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -36,7 +37,6 @@ import java.util.List;
 public class ItemMultiInst extends Item implements IInstrument, INamedContainerProvider
 {
     private final static String KEY_PLAY_ID = "MXTunePlayId";
-    private final static String KEY_PATCH = "MXTunePatch";
     private final static ITextComponent SHIFT_HELP = new TranslationTextComponent("item.mxtune.multi_inst.shift");
     private final static ITextComponent HELP_01 = new TranslationTextComponent("item.mxtune.multi_inst.shift.help01");
     private final static ITextComponent HELP_02 = new TranslationTextComponent("item.mxtune.multi_inst.shift.help02");
@@ -87,14 +87,7 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
      */
     @Override
     public int getPatch(ItemStack pStack) {
-        return pStack.hasTag() && pStack.getTag() != null && pStack.getTag().contains(KEY_PATCH, Constants.NBT.TAG_INT) ? pStack.getTag().getInt(KEY_PATCH) : 0;
-    }
-
-    /**
-     * Set this stack's playId.
-     */
-    private void setPatch(ItemStack pStack, int patch) {
-        pStack.getOrCreateTag().putInt(KEY_PATCH, patch);
+        return pStack.getMaxDamage();
     }
 
     // Stop playing if active and the item is no longer selected.
@@ -157,13 +150,13 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
     }
 
     @Override
-    public String getDescriptionId(ItemStack pStack) // getTranslationKey
+    public String getDescriptionId(ItemStack pStack)
     {
-        return super.getDescriptionId(pStack); // "." + SoundFontProxyManager.getName(pStack.getItemDamage());
+        return SoundFontProxyManager.getLangKeyName(pStack.getMaxDamage());
     }
 
     @Override
-    public int getUseDuration(ItemStack pStack) // getMaxItemUseDuration
+    public int getUseDuration(ItemStack pStack)
     {
         return 72000;
     }
@@ -184,6 +177,31 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
             return ActionResultType.SUCCESS;
 
         return super.useOn(pContext);
+    }
+
+    /**
+     * Gets the title name of the book
+     *
+     * @param pStack
+     */
+    @Override
+    public ITextComponent getName(ItemStack pStack)
+    {
+        return new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(pStack.getMaxDamage()));
+    }
+
+    /**
+     * Allow the item one last chance to modify its name used for the tool highlight
+     * useful for adding something extra that can't be removed by a user in the
+     * displayed name, such as a mode of operation.
+     *
+     * @param item        the ItemStack for the item.
+     * @param displayName the name that will be displayed unless it is changed in
+     */
+    @Override
+    public ITextComponent getHighlightTip(ItemStack item, ITextComponent displayName)
+    {
+        return new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(item.getMaxDamage()));
     }
 
     @Override
