@@ -25,7 +25,6 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
@@ -204,10 +203,14 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
         return new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(item.getMaxDamage()));
     }
 
+    /**
+     * Container Title
+     * @return the translated container title. Not really useful since we can't tie it to a stack.
+     */
     @Override
     public ITextComponent getDisplayName()
     {
-        return new StringTextComponent("What's dis?");
+        return new TranslationTextComponent("container.inventory");
     }
 
     @Override
