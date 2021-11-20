@@ -2,6 +2,9 @@ package aeronicamc.mods.mxtune.gui;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.inventory.InstrumentContainer;
+import aeronicamc.mods.mxtune.network.PacketDispatcher;
+import aeronicamc.mods.mxtune.network.messages.ChooseInstrumentMessage;
+import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -10,6 +13,8 @@ import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Objects;
 
@@ -17,15 +22,14 @@ public class InstrumentScreen extends ContainerScreen<InstrumentContainer>
 {
     private final ResourceLocation GUI = new ResourceLocation(Reference.MOD_ID, "textures/gui/multi_inst_inventory.png");
 
-    private final int theInvItemSlot;
     Button buttonChangeInstrument;
+    int instIndex;
 
     public InstrumentScreen(InstrumentContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
         minecraft = Minecraft.getInstance();
         assert minecraft.player != null;
-        theInvItemSlot = minecraft.player.inventory.selected;
         this.imageWidth = 166;
         this.imageWidth = 184;
     }
@@ -37,13 +41,24 @@ public class InstrumentScreen extends ContainerScreen<InstrumentContainer>
         int xPos = leftPos + imageWidth - 100 -12;
         int yPos = topPos + 11 + 20;
 
-        Button buttonMusicOptions;
+        addButton(new Button(xPos, yPos, 100, 20, new StringTextComponent("Music Options"), (done) ->
+        {
+
+        }));
 
         yPos = topPos + 6;
         xPos = leftPos + 12;
+        assert minecraft != null;
+        assert minecraft.player != null;
         buttonChangeInstrument = new Button(xPos, yPos, imageWidth - 24, 20, minecraft.player.getMainHandItem().getHoverName(), (done) ->
         {
-            System.out.println("BOOP");
+            instIndex = minecraft.player.getMainHandItem().getMaxDamage();
+            if (++instIndex >= SoundFontProxyManager.soundFontProxyMapByIndex.size())
+            {
+                instIndex = 0;
+            }
+            PacketDispatcher.sendToServer(new ChooseInstrumentMessage(instIndex));
+            buttonChangeInstrument.setMessage(new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(instIndex)));
         });
         this.addButton(buttonChangeInstrument);
     }

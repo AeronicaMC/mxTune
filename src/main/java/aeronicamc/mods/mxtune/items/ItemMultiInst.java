@@ -102,6 +102,7 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
                 setPlayId(pStack, PlayIdSupplier.INVALID);
             }
         }
+        super.inventoryTick(pStack, pLevel, pEntity, pItemSlot, pIsSelected);
     }
 
     // Stop playing if dropped

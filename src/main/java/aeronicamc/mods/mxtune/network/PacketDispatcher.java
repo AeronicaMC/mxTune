@@ -42,6 +42,7 @@ public class PacketDispatcher
         registerMessage(PlayBlockMusicMessage.class, new PlayBlockMusicMessage());
         // To Server
         registerMessage(CreateSheetMusicMessage.class, new CreateSheetMusicMessage());
+        registerMessage(ChooseInstrumentMessage.class, new ChooseInstrumentMessage());
     }
 
     private static <MSG extends AbstractMessage<MSG>> void registerMessage(Class<MSG> messageType, AbstractMessage<MSG> message)
