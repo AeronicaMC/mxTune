@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.network.messages;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.items.ItemMultiInst;
+import aeronicamc.mods.mxtune.util.Misc;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -32,7 +33,7 @@ public class ChooseInstrumentMessage extends AbstractMessage<ChooseInstrumentMes
     @Override
     public void encode(ChooseInstrumentMessage message, PacketBuffer buffer)
     {
-        buffer.writeInt(this.index);
+        buffer.writeInt(message.index);
     }
 
     @Override
@@ -52,16 +53,12 @@ public class ChooseInstrumentMessage extends AbstractMessage<ChooseInstrumentMes
                 assert sPlayer != null;
                 if (!sPlayer.getMainHandItem().isEmpty() && sPlayer.getMainHandItem().getItem() instanceof ItemMultiInst)
                 {
-                    ItemStack orig = sPlayer.getMainHandItem();
-                    int instIndex = sPlayer.getMainHandItem().getMaxDamage();
-                    if (++instIndex >= SoundFontProxyManager.soundFontProxyMapByIndex.size())
-                    {
-                        instIndex = 0;
-                    }
-                    ItemStack repl = Objects.requireNonNull(ForgeRegistries.ITEMS.getValue(new ResourceLocation(Reference.MOD_ID, SoundFontProxyManager.getName(instIndex)))).getDefaultInstance().copy();
-                    CompoundNBT origNBT = orig.serializeNBT();
-                    repl.deserializeNBT(origNBT);
-                    sPlayer.setItemInHand(Hand.MAIN_HAND, repl);
+                    int index = Misc.clamp(0, SoundFontProxyManager.soundFontProxyMapByIndex.size(), message.index);
+                    ItemStack selected = sPlayer.getMainHandItem();
+                    ItemStack newInst = Objects.requireNonNull(ForgeRegistries.ITEMS.getValue(new ResourceLocation(Reference.MOD_ID, SoundFontProxyManager.getName(index)))).getDefaultInstance().copy();
+                    CompoundNBT transfer = selected.serializeNBT();
+                    newInst.deserializeNBT(transfer);
+                    sPlayer.setItemInHand(Hand.MAIN_HAND, newInst);
                 }
             });
         ctx.get().setPacketHandled(true);
