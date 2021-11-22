@@ -36,7 +36,7 @@ public class GuiTestItem extends Item
             }
             else
             {
-                // nop
+                PacketDispatcher.sendTo(new OpenScreenMessage(OpenScreenMessage.SM.TEST_TWO), (ServerPlayerEntity) playerIn);
             }
 
         } else if (!playerIn.isShiftKeyDown())

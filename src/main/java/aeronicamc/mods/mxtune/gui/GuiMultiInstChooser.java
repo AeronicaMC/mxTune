@@ -1,6 +1,8 @@
 package aeronicamc.mods.mxtune.gui;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.util.SoundFontProxy;
+import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -19,6 +21,8 @@ public class GuiMultiInstChooser extends Screen
     private int guiLeft;
     private int guiTop;
     private final Screen parent;
+    SoundFontProxyWidget widget;
+    SoundFontProxyWidget.List list;
 
     protected GuiMultiInstChooser(Screen parent)
     {
@@ -30,15 +34,37 @@ public class GuiMultiInstChooser extends Screen
     public void init(Minecraft pMinecraft, int pWidth, int pHeight)
     {
         super.init(pMinecraft, pWidth, pHeight);
+        assert minecraft != null;
         this.width = pWidth;
         this.height = pHeight;
         this.guiLeft = (this.width - this.imageWidth) / 2;
         this.guiTop = (this.height - this.imageHeight) / 2;
 
-        this.addButton(new Button(this.width / 2 - 100, this.height / 6 + 168, 200, 20, new TranslationTextComponent("gui.done"), (done) -> {
-            assert this.minecraft != null;
+        /* create button for leave and disable it initially */
+        int widthButtons = 50;
+        int posX = guiLeft + imageWidth - widthButtons - 10;
+        int posY = guiTop + imageHeight - 20 - 10;
+
+        this.addButton(new Button(posX, posY, widthButtons, 20, new TranslationTextComponent("gui.done"), (done) -> {
             this.minecraft.setScreen(this.parent);
         }));
+
+        int instListWidth = 95;
+        for (SoundFontProxy in : SoundFontProxyManager.soundFontProxyMapByIndex.values())
+        {
+
+            int stringWidth = minecraft.font.width(new TranslationTextComponent(String.format("item.mxtune.%s", in.id)).getString());
+            instListWidth = Math.max(instListWidth, stringWidth + 10);
+        }
+        instListWidth = Math.min(instListWidth, 128);
+        widget = new SoundFontProxyWidget(minecraft, instListWidth, 144, guiTop + 10, guiTop + 144, font.lineHeight + 4);
+        widget.setLeftPos(guiLeft + 10);
+        widget.setRenderBackground(false);
+
+        this.list = new SoundFontProxyWidget.List(this.minecraft, instListWidth, 144, guiTop + 10, guiTop + 144, font.lineHeight + 4);
+        this.list.setRenderBackground(false);
+        this.list.setLeftPos(guiLeft + 10);
+        this.children.add(this.list);
     }
 
     @Override
@@ -55,6 +81,7 @@ public class GuiMultiInstChooser extends Screen
     @Override
     public void renderBackground(MatrixStack pMatrixStack)
     {
+        super.renderBackground(pMatrixStack);
         RenderSystem.clearColor(1.0F, 1.0F, 1.0F, 1.0F);
         Objects.requireNonNull(this.minecraft).getTextureManager().bind(GUI_TEXTURE);
         int relX = (this.width - this.imageWidth) / 2;
@@ -66,7 +93,8 @@ public class GuiMultiInstChooser extends Screen
     public void render(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks)
     {
         this.renderBackground(pMatrixStack);
-
+        widget.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
+        list.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
         super.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
     }
 }

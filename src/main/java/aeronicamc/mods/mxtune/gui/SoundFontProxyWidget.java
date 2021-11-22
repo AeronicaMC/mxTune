@@ -16,7 +16,7 @@ public class SoundFontProxyWidget extends ExtendedList<SoundFontProxyWidget.List
         super(minecraft, pWidth, pHeight, pY0, pY1, pItemHeight);
     }
 
-    public class List extends ExtendedList<SoundFontProxyWidget.List.Entry>
+    public static class List extends ExtendedList<SoundFontProxyWidget.List.Entry>
     {
         public List(Minecraft minecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight)
         {
@@ -52,8 +52,8 @@ public class SoundFontProxyWidget extends ExtendedList<SoundFontProxyWidget.List
             @Override
             public void render(MatrixStack pMatrixStack, int pIndex, int pTop, int pLeft, int pWidth, int pHeight, int pMouseX, int pMouseY, boolean pIsMouseOver, float pPartialTicks)
             {
-                String s = new TranslationTextComponent(String.format("item.mxtune.%s", soundFontProxy.id)).toString();
-                minecraft.font.drawShadow(pMatrixStack, s, (float)(List.this.width / 2 - minecraft.font.width(s) / 2), (float)(pTop + 1), 16777215, true);
+                String s = new TranslationTextComponent(String.format("item.mxtune.%s", soundFontProxy.id)).getString();
+                minecraft.font.drawShadow(pMatrixStack, s, (float)(list.getLeft() + 2), (float)(pTop + 1), 16777215, true);
             }
         }
     }
