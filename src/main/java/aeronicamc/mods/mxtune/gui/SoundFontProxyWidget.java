@@ -5,56 +5,88 @@ import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.list.ExtendedList;
+import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
-public class SoundFontProxyWidget extends ExtendedList<SoundFontProxyWidget.List.Entry>
+public class SoundFontProxyWidget extends ExtendedList<SoundFontProxyWidget.Entry>
 {
-    SoundFontProxyWidget.List list;
+    private int rowWidth;
+    private int scrollBarPosition;
 
-    public SoundFontProxyWidget(Minecraft minecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight)
+    public SoundFontProxyWidget(Minecraft minecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight, int pLeft)
     {
         super(minecraft, pWidth, pHeight, pY0, pY1, pItemHeight);
+        super.setLeftPos(pLeft);
+        super.setRenderTopAndBottom(false);
+        super.setRenderSelection(true);
+        super.setRenderBackground(true);
     }
 
-    public static class List extends ExtendedList<SoundFontProxyWidget.List.Entry>
+    @Override
+    protected int getScrollbarPosition()
     {
-        public List(Minecraft minecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight)
+        return x0 + width - 5;
+    }
+
+    @Override
+    public int getRowWidth()
+    {
+        return rowWidth - 1;
+    }
+
+    public void setRowWidth(int rowWidth)
+    {
+        this.rowWidth = rowWidth;
+    }
+
+    public SoundFontProxyWidget init()
+    {
+        for (SoundFontProxy soundFontProxy: SoundFontProxyManager.soundFontProxyMapById.values())
         {
-            super(minecraft, pWidth, pHeight, pY0, pY1, pItemHeight);
-            for (SoundFontProxy soundFontProxy: SoundFontProxyManager.soundFontProxyMapById.values())
+            SoundFontProxyWidget.Entry entry = new  SoundFontProxyWidget.Entry(soundFontProxy);
+            super.addEntry(entry);
+            assert minecraft.player != null;
+            if (soundFontProxy.index == minecraft.player.getMainHandItem().getMaxDamage())
             {
-                SoundFontProxyWidget.List.Entry entry = new  SoundFontProxyWidget.List.Entry(soundFontProxy);
-                this.addEntry(entry);
-                assert minecraft.player != null;
-                if (soundFontProxy.index == minecraft.player.getMainHandItem().getMaxDamage())
-                    this.setSelected(entry);
+                super.setSelected(entry);
             }
-            if (this.getSelected() != null) {
-                this.centerScrollOn(this.getSelected());
-            }
+        }
+        if (super.getSelected() != null)
+        {
+            super.centerScrollOn(super.getSelected());
+        }
+        return this;
+    }
+
+    @Override
+    protected void renderBackground(MatrixStack pMatrixStack)
+    {
+        super.renderBackground(pMatrixStack);
+    }
+
+    public class Entry extends ExtendedList.AbstractListEntry<SoundFontProxyWidget.Entry>
+    {
+        SoundFontProxy soundFontProxy;
+
+        public Entry(SoundFontProxy soundFontProxy)
+        {
+            this.soundFontProxy = soundFontProxy;
         }
 
         @Override
-        protected void renderBackground(MatrixStack pMatrixStack)
+        public void render(MatrixStack pMatrixStack, int pIndex, int pTop, int pLeft, int pWidth, int pHeight, int pMouseX, int pMouseY, boolean pIsMouseOver, float pPartialTicks)
         {
-            super.renderBackground(pMatrixStack);
-        }
-
-        public class Entry extends ExtendedList.AbstractListEntry<SoundFontProxyWidget.List.Entry>
-        {
-            SoundFontProxy soundFontProxy;
-
-            public Entry(SoundFontProxy soundFontProxy)
+            if (pIsMouseOver)
             {
-                this.soundFontProxy = soundFontProxy;
+                fill(pMatrixStack, pLeft - 2, pTop - 2, pLeft - 5 + width, pTop + itemHeight - 1, 0xA0A0A0A0);
             }
 
-            @Override
-            public void render(MatrixStack pMatrixStack, int pIndex, int pTop, int pLeft, int pWidth, int pHeight, int pMouseX, int pMouseY, boolean pIsMouseOver, float pPartialTicks)
-            {
-                String s = new TranslationTextComponent(String.format("item.mxtune.%s", soundFontProxy.id)).getString();
-                minecraft.font.drawShadow(pMatrixStack, s, (float)(list.getLeft() + 2), (float)(pTop + 1), 16777215, true);
-            }
+            ITextComponent message = new TranslationTextComponent(String.format("item.mxtune.%s", soundFontProxy.id));
+            IReorderingProcessor ireorderingprocessor = message.getVisualOrderText();
+            minecraft.font.drawShadow(pMatrixStack, ireorderingprocessor, (float) (pLeft), (float) (pTop + 1), 16777215);
         }
     }
 }
+
+
