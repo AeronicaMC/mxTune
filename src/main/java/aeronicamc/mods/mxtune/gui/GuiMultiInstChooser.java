@@ -16,6 +16,7 @@ import java.util.Objects;
 public class GuiMultiInstChooser extends Screen
 {
     private final static ResourceLocation GUI_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/multi_inst_chooser.png");
+    private final static ResourceLocation GUI_TEXTURE_CUTOUT = new ResourceLocation(Reference.MOD_ID, "textures/gui/multi_inst_chooser_cutout.png");
     private final static int imageWidth = 256;
     private final static int imageHeight = 165;
     private final Screen parent;
@@ -81,11 +82,21 @@ public class GuiMultiInstChooser extends Screen
         this.blit(pMatrixStack, relX, relY, 0, 0, imageWidth, imageHeight);
     }
 
+    public void renderBackgroundCutout(MatrixStack pMatrixStack)
+    {
+        RenderSystem.clearColor(1.0F, 1.0F, 1.0F, 1.0F);
+        Objects.requireNonNull(this.minecraft).getTextureManager().bind(GUI_TEXTURE_CUTOUT);
+        int relX = (this.width - imageWidth) / 2;
+        int relY = (this.height - imageHeight) / 2;
+        this.blit(pMatrixStack, relX, relY, 0, 0, imageWidth, imageHeight);
+    }
+
     @Override
     public void render(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks)
     {
         this.renderBackground(pMatrixStack);
         widget.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
+        this.renderBackgroundCutout(pMatrixStack);
         super.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
     }
 
