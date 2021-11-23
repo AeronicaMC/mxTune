@@ -5,8 +5,8 @@ import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.list.ExtendedList;
-import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.ITextProperties;
 import net.minecraft.util.text.TranslationTextComponent;
 
 public class SoundFontProxyWidget extends ExtendedList<SoundFontProxyWidget.Entry>
@@ -82,9 +82,9 @@ public class SoundFontProxyWidget extends ExtendedList<SoundFontProxyWidget.Entr
                 fill(pMatrixStack, pLeft - 2, pTop - 2, pLeft - 5 + width, pTop + itemHeight - 1, 0xA0A0A0A0);
             }
 
-            ITextComponent message = new TranslationTextComponent(String.format("item.mxtune.%s", soundFontProxy.id));
-            IReorderingProcessor ireorderingprocessor = message.getVisualOrderText();
-            minecraft.font.drawShadow(pMatrixStack, ireorderingprocessor, (float) (pLeft), (float) (pTop + 1), 16777215);
+            ITextComponent translated = new TranslationTextComponent(String.format("item.mxtune.%s", soundFontProxy.id));
+            ITextProperties trimmed = minecraft.font.substrByWidth(translated, pWidth - 6);
+            minecraft.font.drawShadow(pMatrixStack, trimmed.getString(), (float) (pLeft), (float) (pTop + 1), 16777215, true);
         }
     }
 }
