@@ -1,6 +1,8 @@
 package aeronicamc.mods.mxtune.gui;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.network.PacketDispatcher;
+import aeronicamc.mods.mxtune.network.messages.ChooseInstrumentMessage;
 import aeronicamc.mods.mxtune.util.SoundFontProxy;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -33,6 +35,7 @@ public class GuiMultiInstChooser extends Screen
     {
         super.init(pMinecraft, pWidth, pHeight);
         assert minecraft != null;
+        this.minecraft.keyboardHandler.setSendRepeatsToGui(true);
         this.width = pWidth;
         this.height = pHeight;
         int guiLeft = (this.width - imageWidth) / 2;
@@ -44,7 +47,8 @@ public class GuiMultiInstChooser extends Screen
         int posY = guiTop + imageHeight - 20 - 10;
 
         this.addButton(new Button(posX, posY, widthButtons, 20, new TranslationTextComponent("gui.done"), (done) -> {
-            this.minecraft.setScreen(this.parent);
+            selectCallback(Objects.requireNonNull(widget.getSelected()));
+            this.minecraft.setScreen(parent);
         }));
 
         int instListWidth = 95;
@@ -54,10 +58,15 @@ public class GuiMultiInstChooser extends Screen
             instListWidth = Math.max(instListWidth, stringWidth + 10);
         }
         instListWidth = Math.min(instListWidth, 128);
-        widget = new SoundFontProxyWidget(minecraft, instListWidth, 0, guiTop + 15, guiTop + 135 + 15, font.lineHeight + 4, guiLeft + 10).init();
+        widget = new SoundFontProxyWidget(minecraft, instListWidth, 0, guiTop + 15, guiTop + 135 + 15, font.lineHeight + 4, guiLeft + 10, this::selectCallback).init();
         widget.setRowWidth(instListWidth - 1);
         this.children.add(widget);
         this.children.add(widget.getSelected());
+    }
+
+    private void selectCallback(SoundFontProxyWidget.Entry selected)
+    {
+        PacketDispatcher.sendToServer(new ChooseInstrumentMessage(selected.getIndex()));
     }
 
     @Override
@@ -67,6 +76,19 @@ public class GuiMultiInstChooser extends Screen
 
     @Override
     public boolean shouldCloseOnEsc()
+    {
+        return true;
+    }
+
+    @Override
+    public void removed()
+    {
+        Objects.requireNonNull(this.minecraft).keyboardHandler.setSendRepeatsToGui(false);
+        super.removed();
+    }
+
+    @Override
+    public boolean isPauseScreen()
     {
         return true;
     }
