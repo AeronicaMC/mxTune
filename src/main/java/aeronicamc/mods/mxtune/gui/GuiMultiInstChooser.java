@@ -11,9 +11,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Objects;
+
+import static aeronicamc.mods.mxtune.init.ModItems.MULTI_INST;
 
 public class GuiMultiInstChooser extends Screen
 {
@@ -21,6 +24,8 @@ public class GuiMultiInstChooser extends Screen
     private final static ResourceLocation GUI_TEXTURE_CUTOUT = new ResourceLocation(Reference.MOD_ID, "textures/gui/multi_inst_chooser_cutout.png");
     private final static int imageWidth = 256;
     private final static int imageHeight = 165;
+    private int guiLeft;
+    private int guiTop;
     private final Screen parent;
     SoundFontProxyWidget widget;
 
@@ -38,23 +43,13 @@ public class GuiMultiInstChooser extends Screen
         this.minecraft.keyboardHandler.setSendRepeatsToGui(true);
         this.width = pWidth;
         this.height = pHeight;
-        int guiLeft = (this.width - imageWidth) / 2;
-        int guiTop = (this.height - imageHeight) / 2;
-
-        /* create button for leave and disable it initially */
-        int widthButtons = 50;
-        int posX = guiLeft + imageWidth - widthButtons - 10;
-        int posY = guiTop + imageHeight - 20 - 10;
-
-        this.addButton(new Button(posX, posY, widthButtons, 20, new TranslationTextComponent("gui.done"), (done) -> {
-            selectCallback(Objects.requireNonNull(widget.getSelected()));
-            this.minecraft.setScreen(parent);
-        }));
+        this.guiLeft = (this.width - imageWidth) / 2;
+        this.guiTop = (this.height - imageHeight) / 2;
 
         int instListWidth = 95;
         for (SoundFontProxy in : SoundFontProxyManager.soundFontProxyMapByIndex.values())
         {
-            int stringWidth = minecraft.font.width(new TranslationTextComponent(String.format("item.mxtune.%s", in.id)).getString());
+            int stringWidth = font.width(new TranslationTextComponent(String.format("item.mxtune.%s", in.id)).getString());
             instListWidth = Math.max(instListWidth, stringWidth + 10);
         }
         instListWidth = Math.min(instListWidth, 128);
@@ -62,6 +57,15 @@ public class GuiMultiInstChooser extends Screen
         widget.setRowWidth(instListWidth - 1);
         this.children.add(widget);
         this.children.add(widget.getSelected());
+
+        int widthButtons = 50;
+        int posX = (widget.getRight() + (guiLeft + imageWidth - widget.getRight())/2) - widthButtons/2;
+        int posY = guiTop + imageHeight - 20 - 15;
+
+        this.addButton(new Button(posX, posY, widthButtons, 20, new TranslationTextComponent("gui.done"), (done) -> {
+            selectCallback(Objects.requireNonNull(widget.getSelected()));
+            this.minecraft.setScreen(parent);
+        }));
     }
 
     private void selectCallback(SoundFontProxyWidget.Entry selected)
@@ -119,7 +123,18 @@ public class GuiMultiInstChooser extends Screen
         this.renderBackground(pMatrixStack);
         widget.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
         this.renderBackgroundCutout(pMatrixStack);
+
+        ITextComponent guiTitle = new TranslationTextComponent("gui.mxtune.guimultiinstchooser.title");
+        int titleWidth = font.width(guiTitle);
+        font.draw(pMatrixStack, guiTitle, (guiLeft+imageWidth) - titleWidth - 10 , guiTop + 4, TextColorFg.DARK_GRAY);
+
         super.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
+
+        int relX = (widget.getRight() + (guiLeft + imageWidth - widget.getRight())/2);
+        int relY = guiTop + (imageHeight)/3;
+        ModGuiHelper.RenderGuiItemScaled(Objects.requireNonNull(minecraft).getItemRenderer(),
+                                         MULTI_INST.get(Objects.requireNonNull(widget.getSelected()).getIndex()).get().getDefaultInstance(), relX, relY, 3, true);
+
     }
 
 }
