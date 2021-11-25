@@ -6,6 +6,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -49,5 +50,14 @@ public class InstrumentScreen extends ContainerScreen<InstrumentContainer>
     protected void renderLabels(MatrixStack matrixStack , int mouseX, int mouseY) {
         this.font.draw(matrixStack, this.title, (float)(imageWidth - font.width(this.title))/2, 10, TextColorFg.DARK_GRAY);
         this.font.draw(matrixStack, new TranslationTextComponent("container.inventory"), 10, 72, TextColorFg.DARK_GRAY);
+    }
+
+    @Override
+    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers)
+    {
+        // Prevent the Instrument from being swapped
+        if (Objects.requireNonNull(this.minecraft).options.keyHotbarSlots[inventory.selected].isActiveAndMatches(InputMappings.getKey(pKeyCode, pScanCode)) || (hoveredSlot != null && hoveredSlot.index == inventory.selected))
+            return true;
+        return super.keyPressed(pKeyCode, pScanCode, pModifiers);
     }
 }
