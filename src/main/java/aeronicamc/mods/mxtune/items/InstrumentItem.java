@@ -33,14 +33,14 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ItemMultiInst extends Item implements IInstrument, INamedContainerProvider
+public class InstrumentItem extends Item implements IInstrument, INamedContainerProvider
 {
     private final static String KEY_PLAY_ID = "MXTunePlayId";
-    private final static ITextComponent SHIFT_HELP = new TranslationTextComponent("item.mxtune.multi_inst.shift");
-    private final static ITextComponent HELP_01 = new TranslationTextComponent("item.mxtune.multi_inst.shift.help01");
-    private final static ITextComponent HELP_02 = new TranslationTextComponent("item.mxtune.multi_inst.shift.help02");
+    private final static ITextComponent SHIFT_HELP_01 = new TranslationTextComponent("instrument_item.shift.help01");
+    private final static ITextComponent SHIFT_HELP_02 = new TranslationTextComponent("instrument_item.shift.help02");
+    private final static ITextComponent SHIFT_HELP_03 = new TranslationTextComponent("instrument_item.shift.help03");
 
-    public ItemMultiInst(Properties pProperties)
+    public InstrumentItem(Properties pProperties)
     {
         super(pProperties);
     }
@@ -211,7 +211,8 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
     @Override
     public ITextComponent getDisplayName()
     {
-        return new TranslationTextComponent("container.inventory");
+        return new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(this.getMaxDamage()));
+//        return new TranslationTextComponent("container.inventory");
     }
 
     @Override
@@ -226,12 +227,12 @@ public class ItemMultiInst extends Item implements IInstrument, INamedContainerP
         }
         if (Screen.hasShiftDown())
         {
-            pTooltip.add(HELP_01);
-            pTooltip.add(HELP_02);
+            pTooltip.add(SHIFT_HELP_02);
+            pTooltip.add(SHIFT_HELP_03);
         }
         else
         {
-            pTooltip.add(SHIFT_HELP);
+            pTooltip.add(SHIFT_HELP_01);
         }
     }
 

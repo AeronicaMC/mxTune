@@ -58,17 +58,17 @@ public class ModItems
     public static final RegistryObject<ItemSheetMusic> SHEET_MUSIC = ITEMS.register("sheet_music",
         () -> new ItemSheetMusic(defaultItemProperties().stacksTo(1)));
 
-    public static final Map<Integer, RegistryObject<ItemMultiInst>> MULTI_INST = new HashMap<>();
+    public static final Map<Integer, RegistryObject<InstrumentItem>> INSTRUMENT_ITEMS = new HashMap<>();
 
     static { registerMultiInst(); }
 
     private static void registerMultiInst()
     {
         soundFontProxyMapByIndex.forEach(
-            (key, value) -> MULTI_INST.put(value.index, ITEMS.register(
-                value.id, () -> new ItemMultiInst(defaultItemProperties()
+            (key, value) -> INSTRUMENT_ITEMS.put(value.index, ITEMS.register(
+                value.id, () -> new InstrumentItem(defaultItemProperties()
                     .stacksTo(1).setNoRepair().defaultDurability(value.index))
-         )));
+                                                                            )));
     }
 
     /**

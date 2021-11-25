@@ -39,12 +39,15 @@ public class MXTuneLanguageProvider extends LanguageProvider
         // TODO
         add(ModItems.SHEET_MUSIC.get(), "Sheet Music");
         add(ModItems.MUSIC_PAPER.get(), "Music Paper");
-        AddMultiInst(this);
+        addInstrumentItems(this);
+        addTooltip("instrument_item.shift_help_01", "Hold SHIFT for HELP");
+        addTooltip("instrument_item.shift_help_02", "SHIFT+Right Click to OPEN");
+        addTooltip("instrument_item.shift_help_03", "Right Click to PLAY");
     }
 
-    private void AddMultiInst(LanguageProvider provider)
+    private void addInstrumentItems(LanguageProvider provider)
     {
-        ModItems.MULTI_INST.forEach(
+        ModItems.INSTRUMENT_ITEMS.forEach(
             (key, value) -> provider.add(value.get(),
                 convertSnakeCaseToTitleCase(SoundFontProxyManager.getName(key))));
     }
@@ -52,5 +55,15 @@ public class MXTuneLanguageProvider extends LanguageProvider
     private String convertSnakeCaseToTitleCase(String input)
     {
         return WordUtils.capitalizeFully(StringUtils.replace(input, "_", " "));
+    }
+
+    /**
+     * prepends tooltip.[mod_id].
+     * @param identifier the unique help id
+     * @param helpText help text
+     */
+    private void addTooltip(String identifier, String helpText)
+    {
+        add(String.format("tooltip.%s.%s", Reference.MOD_ID, identifier), helpText);
     }
 }

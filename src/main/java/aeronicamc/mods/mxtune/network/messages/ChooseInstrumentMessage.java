@@ -1,7 +1,7 @@
 package aeronicamc.mods.mxtune.network.messages;
 
 import aeronicamc.mods.mxtune.Reference;
-import aeronicamc.mods.mxtune.items.ItemMultiInst;
+import aeronicamc.mods.mxtune.items.InstrumentItem;
 import aeronicamc.mods.mxtune.util.Misc;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -51,7 +51,7 @@ public class ChooseInstrumentMessage extends AbstractMessage<ChooseInstrumentMes
 
                 ServerPlayerEntity sPlayer = ctx.get().getSender();
                 assert sPlayer != null;
-                if (!sPlayer.getMainHandItem().isEmpty() && sPlayer.getMainHandItem().getItem() instanceof ItemMultiInst)
+                if (!sPlayer.getMainHandItem().isEmpty() && sPlayer.getMainHandItem().getItem() instanceof InstrumentItem)
                 {
                     int index = Misc.clamp(0, SoundFontProxyManager.soundFontProxyMapByIndex.size(), message.index);
                     ItemStack selected = sPlayer.getMainHandItem();

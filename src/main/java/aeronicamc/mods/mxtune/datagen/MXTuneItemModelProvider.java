@@ -38,7 +38,7 @@ public class MXTuneItemModelProvider extends ItemModelProvider
 
     private void registerMultiInstModels(ItemModelProvider itemModelProvider)
     {
-        MULTI_INST.forEach(
+        INSTRUMENT_ITEMS.forEach(
             (key, value) -> itemModelProvider.withExistingParent(value.getId().getPath(), mcLoc("generated"))
                 .texture("layer0", String.format("item/%s", SoundFontProxyManager.getName(key))));
     }

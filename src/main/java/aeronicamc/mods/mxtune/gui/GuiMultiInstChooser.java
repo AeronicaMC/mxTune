@@ -16,7 +16,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Objects;
 
-import static aeronicamc.mods.mxtune.init.ModItems.MULTI_INST;
+import static aeronicamc.mods.mxtune.init.ModItems.INSTRUMENT_ITEMS;
 
 public class GuiMultiInstChooser extends Screen
 {
@@ -133,7 +133,7 @@ public class GuiMultiInstChooser extends Screen
         int relX = (widget.getRight() + (guiLeft + imageWidth - widget.getRight())/2);
         int relY = guiTop + (imageHeight)/3;
         ModGuiHelper.RenderGuiItemScaled(Objects.requireNonNull(minecraft).getItemRenderer(),
-                                         MULTI_INST.get(Objects.requireNonNull(widget.getSelected()).getIndex()).get().getDefaultInstance(), relX, relY, 3, true);
+                                         INSTRUMENT_ITEMS.get(Objects.requireNonNull(widget.getSelected()).getIndex()).get().getDefaultInstance(), relX, relY, 3, true);
 
     }
 
