@@ -36,9 +36,9 @@ import java.util.List;
 public class InstrumentItem extends Item implements IInstrument, INamedContainerProvider
 {
     private final static String KEY_PLAY_ID = "MXTunePlayId";
-    private final static ITextComponent SHIFT_HELP_01 = new TranslationTextComponent("instrument_item.shift.help01");
-    private final static ITextComponent SHIFT_HELP_02 = new TranslationTextComponent("instrument_item.shift.help02");
-    private final static ITextComponent SHIFT_HELP_03 = new TranslationTextComponent("instrument_item.shift.help03");
+    private final static ITextComponent SHIFT_HELP_01 = new TranslationTextComponent("tooltip.mxtune.instrument_item.shift_help_01");
+    private final static ITextComponent SHIFT_HELP_02 = new TranslationTextComponent("tooltip.mxtune.instrument_item.shift_help_02");
+    private final static ITextComponent SHIFT_HELP_03 = new TranslationTextComponent("tooltip.mxtune.instrument_item.shift_help_03");
 
     public InstrumentItem(Properties pProperties)
     {
