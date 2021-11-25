@@ -6,6 +6,7 @@ import aeronicamc.mods.mxtune.util.IInstrument;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.IContainerListener;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
@@ -18,6 +19,7 @@ import net.minecraftforge.fml.network.IContainerFactory;
 
 public class InstrumentContainer extends Container
 {
+
     public InstrumentContainer(int windowId, World world, BlockPos pos, PlayerInventory playerInventory ,PlayerEntity playerEntity)
     {
         super(ModContainers.INSTRUMENT_CONTAINER.get(), windowId);
@@ -36,7 +38,6 @@ public class InstrumentContainer extends Container
         for (int i = 0; i < 9; i++) {
             this.addSlot(new SlotHotBar(playerInventory, i, i * 18 + 12, 142));
         }
-
     }
 
     public ITextComponent getName()
@@ -73,7 +74,22 @@ public class InstrumentContainer extends Container
                 slot.setChanged();
             }
         }
+        if (!playerIn.level.isClientSide())
+            this.broadcastChanges();
+
         return itemstack;
+    }
+
+    /**
+     * Remove the given Listener. Method name is for legacy.
+     *
+     * @param pListener
+     */
+    @Override
+    public void removeSlotListener(IContainerListener pListener)
+    {
+        System.out.println("removeSlotListener!");
+        super.removeSlotListener(pListener);
     }
 
     public static class Factory implements IContainerFactory<InstrumentContainer>
@@ -91,4 +107,5 @@ public class InstrumentContainer extends Container
             return new InstrumentContainer(windowId, world, pos, inv, player);
         }
     }
+
 }
