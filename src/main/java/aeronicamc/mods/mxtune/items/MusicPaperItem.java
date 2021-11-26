@@ -16,11 +16,11 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
-public class ItemMusicPaper extends Item
+public class MusicPaperItem extends Item
 {
     private static final Random rand = new Random();
 
-    public ItemMusicPaper(Properties pProperties)
+    public MusicPaperItem(Properties pProperties)
     {
         super(pProperties);
     }

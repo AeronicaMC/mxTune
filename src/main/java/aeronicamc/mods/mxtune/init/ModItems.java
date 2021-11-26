@@ -52,17 +52,17 @@ public class ModItems
     public static final RegistryObject<GuiTestItem> GUI_TEST_ITEM = ITEMS.register("gui_test_item",
         () -> new GuiTestItem(defaultItemProperties().stacksTo(1)));
 
-    public static final RegistryObject<ItemMusicPaper> MUSIC_PAPER = ITEMS.register("music_paper",
-        () -> new ItemMusicPaper(defaultItemProperties().stacksTo(16)));
+    public static final RegistryObject<MusicPaperItem> MUSIC_PAPER = ITEMS.register("music_paper",
+                                                                                    () -> new MusicPaperItem(defaultItemProperties().stacksTo(16)));
 
-    public static final RegistryObject<ItemSheetMusic> SHEET_MUSIC = ITEMS.register("sheet_music",
-        () -> new ItemSheetMusic(defaultItemProperties().stacksTo(1)));
+    public static final RegistryObject<SheetMusicItem> SHEET_MUSIC = ITEMS.register("sheet_music",
+                                                                                    () -> new SheetMusicItem(defaultItemProperties().stacksTo(1)));
 
     public static final Map<Integer, RegistryObject<InstrumentItem>> INSTRUMENT_ITEMS = new HashMap<>();
 
-    static { registerMultiInst(); }
+    static { registerInstruments(); }
 
-    private static void registerMultiInst()
+    private static void registerInstruments()
     {
         soundFontProxyMapByIndex.forEach(
             (key, value) -> INSTRUMENT_ITEMS.put(value.index, ITEMS.register(

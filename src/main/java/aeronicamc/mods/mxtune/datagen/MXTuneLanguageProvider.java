@@ -39,6 +39,10 @@ public class MXTuneLanguageProvider extends LanguageProvider
         // TODO
         add(ModItems.SHEET_MUSIC.get(), "Sheet Music");
         add(ModItems.MUSIC_PAPER.get(), "Music Paper");
+        addTooltip("sheet_music.days_left", "Days left: %s");
+        addTooltip("sheet_music.days_left_error", "Days left: nn");
+        addTooltip("mxtune.sheet_music.duration_error", "h:mm:ss");
+        addTooltip("sheet_music.empty", " - Empty - ");
         addInstrumentItems(this);
         addTooltip("instrument_item.shift_help_01", "Hold SHIFT for HELP");
         addTooltip("instrument_item.shift_help_02", "SHIFT+Right Click to OPEN");
