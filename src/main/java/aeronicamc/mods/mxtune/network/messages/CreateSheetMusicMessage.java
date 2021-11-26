@@ -1,7 +1,7 @@
 package aeronicamc.mods.mxtune.network.messages;
 
 import aeronicamc.mods.mxtune.init.ModItems;
-import aeronicamc.mods.mxtune.items.ItemMusicPaper;
+import aeronicamc.mods.mxtune.items.MusicPaperItem;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -48,7 +48,7 @@ public class CreateSheetMusicMessage extends AbstractMessage<CreateSheetMusicMes
 
                 ServerPlayerEntity sPlayer = ctx.get().getSender();
                 assert sPlayer != null;
-                if (!sPlayer.getMainHandItem().isEmpty() && sPlayer.getMainHandItem().getItem() instanceof ItemMusicPaper)
+                if (!sPlayer.getMainHandItem().isEmpty() && sPlayer.getMainHandItem().getItem() instanceof MusicPaperItem)
                     {
                         ItemStack sheetMusic = new ItemStack(ModItems.SHEET_MUSIC.get());
                         if (SheetMusicHelper.writeSheetMusic(sheetMusic, musicTitle, musicText))

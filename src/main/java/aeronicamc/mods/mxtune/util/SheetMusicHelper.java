@@ -38,14 +38,16 @@ public enum SheetMusicHelper
     public static final String KEY_DURATION = "Duration";
     public static final String KEY_MUSIC_TEXT_KEY = "MusicTextKey";
     private final static ITextComponent SHEET_MUSIC_EMPTY =
-            new TranslationTextComponent("item.mxtune.sheet_music.empty")
+            new TranslationTextComponent("tooltip.mxtune.sheet_music.empty")
                     .withStyle(TextFormatting.ITALIC)
                     .withStyle(TextFormatting.RED);
     private final static ITextComponent SHEET_MUSIC_DURATION_ERROR =
-            new TranslationTextComponent("item.mxtune.sheet_music.duration_error")
+            new TranslationTextComponent("tooltip.mxtune.sheet_music.duration_error")
                     .withStyle(TextFormatting.RED);
+    private final static String SHEET_MUSIC_DAYS_LEFT = "tooltip.mxtune.sheet_music.days_left";
+
     private final static ITextComponent SHEET_MUSIC_DAYS_LEFT_ERROR =
-            new TranslationTextComponent("item.mxtune.sheet_music.days_left_error")
+            new TranslationTextComponent("tooltip.mxtune.sheet_music.days_left_error")
                     .withStyle(TextFormatting.RED);
 
 
@@ -100,7 +102,7 @@ public enum SheetMusicHelper
     {
         long daysLeft = getSheetMusicDaysLeft(sheetMusicStack);
         if (daysLeft != 99999)
-            return new TranslationTextComponent("item.mxtune.sheet_music.days_left", getSheetMusicDaysLeft(sheetMusicStack))
+            return new TranslationTextComponent(SHEET_MUSIC_DAYS_LEFT, getSheetMusicDaysLeft(sheetMusicStack))
                 .withStyle(TextFormatting.GRAY)
                 .withStyle(TextFormatting.ITALIC);
         else

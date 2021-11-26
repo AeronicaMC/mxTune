@@ -11,12 +11,11 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static aeronicamc.mods.mxtune.util.SheetMusicHelper.getFormattedMusicDuration;
-import static aeronicamc.mods.mxtune.util.SheetMusicHelper.getFormattedSheetMusicDaysLeft;
+import static aeronicamc.mods.mxtune.util.SheetMusicHelper.*;
 
-public class ItemSheetMusic extends Item implements IMusic
+public class SheetMusicItem extends Item implements IMusic
 {
-    public ItemSheetMusic(Properties pProperties)
+    public SheetMusicItem(Properties pProperties)
     {
         super(pProperties);
     }
@@ -27,7 +26,7 @@ public class ItemSheetMusic extends Item implements IMusic
         if (hasMusicText(pStack))
         {
             pTooltip.clear();
-            pTooltip.add(SheetMusicHelper.getFormattedMusicTitle(pStack));
+            pTooltip.add(getFormattedMusicTitle(pStack));
         }
         pTooltip.add(getFormattedMusicDuration(pStack));
         pTooltip.add(getFormattedSheetMusicDaysLeft(pStack));
