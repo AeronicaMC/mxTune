@@ -10,6 +10,10 @@ buildscript {
         classpath 'org.parchmentmc:librarian:1.+'
     }
 }
+plugins {
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id 'java'
+}
 apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
@@ -36,6 +40,10 @@ repositories {
         //     includeGroup "curse.maven"
         // }
     }
+}
+
+configurations {
+    shade
 }
 
 version = "${version_mod}"
@@ -125,6 +133,7 @@ dependencies {
 //    implementation fg.deobf("curse.maven:${architectury_forge}")
 
     implementation 'com.h2database:h2-mvstore:1.4.200'
+    shade 'com.h2database:h2-mvstore:1.4.200'
     // For more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
@@ -167,6 +176,31 @@ processResources {
         if (it.relativePath.segments[0] in ['META-INF'])
             expand project.properties
     }
+}
+
+reobf {
+    shadowJar {}
+}
+
+def relocate(origin) {
+    shadowJar.relocate(origin, "aeronicamc.libs.mxtune.shadow.$origin")
+}
+
+shadowJar {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+    archiveClassifier = ''
+    configurations = [project.configurations.shade]
+    relocate 'org.h2'
+    exclude 'META-INF/maven/**'
+    exclude 'META-INF/proguard/**'
+    exclude 'META-INF/services/**'
+    exclude 'META-INF/LICENSE*'
+    exclude 'META-INF/NOTICE*'
+    exclude 'module-info.class'
+    exclude 'LICENSE'
+
+    finalizedBy 'reobfShadowJar'
 }
 
 // Example configuration to allow publishing using the maven-publish task
