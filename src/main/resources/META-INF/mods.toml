@@ -1,30 +1,26 @@
-modLoader="javafml" #mandatory
-loaderVersion="[36,)" #mandatory (36 is current forge version)
+modLoader="javafml"
+loaderVersion="[36,)"
 license="Apache-2.0 License"
-issueTrackerURL="https://github.com/AeronicaMC/mxTune/issues" #optional
-[[mods]] #mandatory
-modId="mxtune" #mandatory
-version="${version}" #mandatory
-displayName="mxTune" #mandatory
-updateJSONURL="https://gist.githubusercontent.com/Aeronica/dbc2619e0011d5bdbe7a162d0c6aa82b/raw/update.json" #optional
-displayURL="https://www.curseforge.com/minecraft/mc-mods/mxtune" #optional
-# A file name (in the root of the mod JAR) containing a logo for display
-logoFile="mxtune.png" #optional
-credits="The Forge and FML guys, TheGreyGhost, coolAlias, Choonster,  diesieben07, McJty, OreCruncher, MrCrayFish, BedrockMiner, The Modding Community" #optional
-authors="Aeronica" #optional
-# The description text for the mod (multi line!) (#mandatory)
-description='''MML Music for all occasions'''
-[[dependencies.mxtune]] #optional
-    # the modid of the dependency
-    modId="forge" #mandatory
-    # Does this dependency have to exist - if not, ordering below must be specified
-    mandatory=true #mandatory
-    # The version range of the dependency
-    versionRange="[36,)" #mandatory
-    # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
+issueTrackerURL="https://github.com/AeronicaMC/mxTune/issues"
+
+[[mods]]
+    modId="mxtune"
+    version="${version}"
+    displayName="mxTune"
+    updateJSONURL="https://gist.githubusercontent.com/Aeronica/dbc2619e0011d5bdbe7a162d0c6aa82b/raw/update.json"
+    displayURL="https://www.curseforge.com/minecraft/mc-mods/mxtune"
+    logoFile="mxtune.png"
+    credits="The Forge and FML guys, TheGreyGhost, coolAlias, Choonster,  diesieben07, McJty, OreCruncher, MrCrayFish, BedrockMiner, The Modding Community"
+    authors="Aeronica"
+    description='''MML Music for all occasions'''
+
+[[dependencies.mxtune]]
+    modId="forge"
+    mandatory=true
+    versionRange="[36,)"
     ordering="NONE"
-    # Side this dependency is applied on - BOTH, CLIENT or SERVER
     side="BOTH"
+
 [[dependencies.mxtune]]
     modId="minecraft"
     mandatory=true
