@@ -7,7 +7,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.widget.list.ExtendedList;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -18,16 +17,13 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.function.Consumer;
 
-public class SoundFontProxyWidget extends ExtendedList<SoundFontProxyWidget.Entry>
+public class SoundFontProxyWidget extends ModExtendedList<SoundFontProxyWidget.Entry>
 {
-    private int rowWidth;
-    private final Consumer<SoundFontProxyWidget.Entry> selectCallback;
 
-    public SoundFontProxyWidget(Minecraft minecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight, int pLeft, Consumer<SoundFontProxyWidget.Entry> selectCallback)
+    public SoundFontProxyWidget(Minecraft minecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight, int pLeft, Consumer<Entry> selectCallback)
     {
-        super(minecraft, pWidth, pHeight, pY0, pY1, pItemHeight);
+        super(minecraft, pWidth, pHeight, pY0, pY1, pItemHeight, pLeft, selectCallback);
         super.setLeftPos(pLeft);
-        this.selectCallback = selectCallback;
         super.setRenderTopAndBottom(false);
         super.setRenderSelection(true);
         super.setRenderBackground(true);
@@ -36,18 +32,7 @@ public class SoundFontProxyWidget extends ExtendedList<SoundFontProxyWidget.Entr
     @Override
     protected int getScrollbarPosition()
     {
-        return x0 + width - 5;
-    }
-
-    @Override
-    public int getRowWidth()
-    {
-        return rowWidth - 1;
-    }
-
-    public void setRowWidth(int rowWidth)
-    {
-        this.rowWidth = rowWidth;
+        return x0 + width - 6;
     }
 
     public SoundFontProxyWidget init()
@@ -85,7 +70,7 @@ public class SoundFontProxyWidget extends ExtendedList<SoundFontProxyWidget.Entr
         tessellator.end();
     }
 
-    public class Entry extends ExtendedList.AbstractListEntry<SoundFontProxyWidget.Entry>
+    public class Entry extends ModExtendedList.AbstractListEntry<SoundFontProxyWidget.Entry>
     {
         SoundFontProxy soundFontProxy;
 
