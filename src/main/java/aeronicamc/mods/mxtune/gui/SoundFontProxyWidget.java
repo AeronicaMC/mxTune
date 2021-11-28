@@ -22,7 +22,6 @@ public class SoundFontProxyWidget extends ExtendedList<SoundFontProxyWidget.Entr
 {
     private int rowWidth;
     private final Consumer<SoundFontProxyWidget.Entry> selectCallback;
-    private SoundFontProxyWidget.Entry hooveredEntry = null;
 
     public SoundFontProxyWidget(Minecraft minecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight, int pLeft, Consumer<SoundFontProxyWidget.Entry> selectCallback)
     {
@@ -107,7 +106,6 @@ public class SoundFontProxyWidget extends ExtendedList<SoundFontProxyWidget.Entr
             {
                 setFocused(this);
                 fill(pMatrixStack, pLeft - 2, pTop - 2, pLeft - 5 + width, pTop + itemHeight - 1, 0xA0A0A0A0);
-                hooveredEntry = this;
             }
 
             ITextComponent translated = new TranslationTextComponent(String.format("item.mxtune.%s", soundFontProxy.id));
@@ -119,9 +117,11 @@ public class SoundFontProxyWidget extends ExtendedList<SoundFontProxyWidget.Entr
         public boolean mouseClicked(double pMouseX, double pMouseY, int pButton)
         {
             if (isMouseOver(pMouseX, pMouseY)){
-                SoundFontProxyWidget.super.setSelected(hooveredEntry);
-                selectCallback.accept(hooveredEntry);
+                SoundFontProxyWidget.Entry sfp = getEntryAtPosition(pMouseX, pMouseY);
+                SoundFontProxyWidget.super.setSelected(sfp);
+                selectCallback.accept(sfp);
                 minecraft.getSoundManager().play(SimpleSound.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                return true;
             }
             return false;
         }
