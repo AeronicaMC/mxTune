@@ -21,7 +21,6 @@ import static aeronicamc.mods.mxtune.init.ModItems.INSTRUMENT_ITEMS;
 public class GuiMultiInstChooser extends Screen
 {
     private final static ResourceLocation GUI_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/multi_inst_chooser.png");
-    private final static ResourceLocation GUI_TEXTURE_CUTOUT = new ResourceLocation(Reference.MOD_ID, "textures/gui/multi_inst_chooser_cutout.png");
     private final static int imageWidth = 256;
     private final static int imageHeight = 165;
     private int guiLeft;
@@ -53,8 +52,8 @@ public class GuiMultiInstChooser extends Screen
             instListWidth = Math.max(instListWidth, stringWidth + 10);
         }
         instListWidth = Math.min(instListWidth, 128);
-        widget = new SoundFontProxyWidget(minecraft, instListWidth, 0, guiTop + 15, guiTop + 135 + 15, font.lineHeight + 4, guiLeft + 10, this::selectCallback).init();
-        widget.setRowWidth(instListWidth - 1);
+        widget = new SoundFontProxyWidget(minecraft, instListWidth, 0, guiTop + 10, guiTop + imageHeight - 10, font.lineHeight + 4, guiLeft + 10, this::selectCallback).init();
+
         this.children.add(widget);
         this.children.add(widget.getSelected());
 
@@ -94,7 +93,7 @@ public class GuiMultiInstChooser extends Screen
     @Override
     public boolean isPauseScreen()
     {
-        return true;
+        return false;
     }
 
     @Override
@@ -108,33 +107,27 @@ public class GuiMultiInstChooser extends Screen
         this.blit(pMatrixStack, relX, relY, 0, 0, imageWidth, imageHeight);
     }
 
-    public void renderBackgroundCutout(MatrixStack pMatrixStack)
-    {
-        RenderSystem.clearColor(1.0F, 1.0F, 1.0F, 1.0F);
-        Objects.requireNonNull(this.minecraft).getTextureManager().bind(GUI_TEXTURE_CUTOUT);
-        int relX = (this.width - imageWidth) / 2;
-        int relY = (this.height - imageHeight) / 2;
-        this.blit(pMatrixStack, relX, relY, 0, 0, imageWidth, imageHeight);
-    }
-
     @Override
     public void render(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks)
     {
+        // Render background
         this.renderBackground(pMatrixStack);
-        widget.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
-        this.renderBackgroundCutout(pMatrixStack);
 
+        // render the instrument chooser widget
+        widget.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
+
+        // Render labels
         ITextComponent guiTitle = new TranslationTextComponent("gui.mxtune.guimultiinstchooser.title");
         int titleWidth = font.width(guiTitle);
-        font.draw(pMatrixStack, guiTitle, (guiLeft+imageWidth) - titleWidth - 10 , guiTop + 4, TextColorFg.DARK_GRAY);
+        font.draw(pMatrixStack, guiTitle, (guiLeft+imageWidth) - titleWidth - 10, guiTop + 4, TextColorFg.DARK_GRAY);
 
         super.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
 
+        // Render the Instrument GUI image
         int relX = (widget.getRight() + (guiLeft + imageWidth - widget.getRight())/2);
         int relY = guiTop + (imageHeight)/3;
         ModGuiHelper.RenderGuiItemScaled(Objects.requireNonNull(minecraft).getItemRenderer(),
                                          INSTRUMENT_ITEMS.get(Objects.requireNonNull(widget.getSelected()).getIndex()).get().getDefaultInstance(), relX, relY, 3, true);
 
     }
-
 }
