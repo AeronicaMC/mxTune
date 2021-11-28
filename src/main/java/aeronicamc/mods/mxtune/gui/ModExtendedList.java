@@ -84,17 +84,11 @@ public abstract class ModExtendedList<E extends AbstractList.AbstractListEntry<E
 
     public void render(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks) {
         MainWindow client = minecraft.getWindow();
-
         double scaleW = (double) client.getWidth() / client.getGuiScaledWidth();
         double scaleH = (double) client.getHeight() / client.getGuiScaledHeight();
-
-        assert minecraft.player != null;
-        if ((minecraft.player.level.getDayTime() % 20) == 0L)
-            System.out.println(String.format("%f, %f, %d, %d, %d, %d", scaleW, scaleH, (int)(this.x0 * scaleW), (int)(client.getScreenHeight() - (x1 * scaleH)),
-                                             (int) (width * scaleW), (int) (height * scaleH)));
-
         RenderSystem.enableScissor((int) (this.x0 * scaleW), (int) (client.getScreenHeight() - (y1 * scaleH)),
                                    (int) ((x1 - x0) * scaleW), (int) ((y1 - y0) * scaleH));
+
         this.renderBackground(pMatrixStack);
         int i = this.getScrollbarPosition();
         int j = i + 6;
