@@ -20,7 +20,6 @@ public abstract class ModExtendedList<E extends AbstractList.AbstractListEntry<E
     private int rowWidth;
     protected final Consumer<E> selectCallback;
     private boolean renderBackground;
-    private boolean renderHeader;
     private boolean renderTopAndBottom;
 
     public ModExtendedList(Minecraft pMinecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight, int pLeft, Consumer<E> selectCallback)
@@ -70,13 +69,6 @@ public abstract class ModExtendedList<E extends AbstractList.AbstractListEntry<E
     }
 
     @Override
-    protected void setRenderHeader(boolean pValue, int pHeight)
-    {
-        this.renderHeader = pValue;
-        super.setRenderHeader(pValue, pHeight);
-    }
-
-    @Override
     public void setRenderTopAndBottom(boolean renderTopAndBottom)
     {
         this.renderTopAndBottom = renderTopAndBottom;
@@ -108,9 +100,6 @@ public abstract class ModExtendedList<E extends AbstractList.AbstractListEntry<E
 
         int j1 = this.getRowLeft();
         int k = this.y0 + 4 - (int)this.getScrollAmount();
-        if (this.renderHeader) {
-            this.renderHeader(pMatrixStack, j1, k, tessellator);
-        }
 
         this.renderList(pMatrixStack, j1, k, pMouseX, pMouseY, pPartialTicks);
         if (this.renderTopAndBottom) {
@@ -181,7 +170,6 @@ public abstract class ModExtendedList<E extends AbstractList.AbstractListEntry<E
         RenderSystem.enableAlphaTest();
         RenderSystem.disableBlend();
     }
-
 
     public abstract static class AbstractListEntry<E extends ModExtendedList.AbstractListEntry<E>> extends AbstractList.AbstractListEntry<E> {
         public boolean changeFocus(boolean pFocus) {
