@@ -7,41 +7,55 @@ import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Objects;
+
+import static aeronicamc.mods.mxtune.init.ModItems.INSTRUMENT_ITEMS;
+
 public class TestScreen extends Screen
 {
-    private static int depth;
     private static final Logger LOGGER = LogManager.getLogger();
-    private final Screen lastScreen;
+    private SoundFontProxyWidget sfpWidget;
 
-    public TestScreen(Screen lastScreen)
+    public TestScreen()
     {
         super(new TranslationTextComponent("screen.mxtune.test.title"));
-        this.lastScreen = lastScreen;
     }
 
     @Override
     public void init()
     {
         super.init();
-        this.addButton(new Button(this.width / 2 - 100, (this.height / 6 + 168) - 20, 200, 20, new TranslationTextComponent("gui.mxtune.open"), (done) -> {
-            this.minecraft.setScreen(new TestScreen(this));
-            ++depth;
+        Objects.requireNonNull(this.minecraft).keyboardHandler.setSendRepeatsToGui(true);
+        this.addButton(new Button(this.width - 65, (this.height / 6 + 168) - 20, 50, 20, new TranslationTextComponent("gui.mxtune.open"), (open) -> {
+            minecraft.setScreen(new GuiMultiInstChooser(this));
         }));
-        this.addButton(new Button(this.width / 2 - 100, this.height / 6 + 168, 200, 20, new TranslationTextComponent("gui.done"), (done) -> {
-            this.minecraft.setScreen(this.lastScreen);
-            if (depth >= 1)
-                depth--;
+        this.addButton(new Button(this.width - 65, this.height / 6 + 168, 50, 20, new TranslationTextComponent("gui.done"), (done) -> {
+            assert minecraft != null;
+            minecraft.popGuiLayer();
         }));
 
+        sfpWidget = new SoundFontProxyWidget(minecraft, 128, height - 30 , 15, height - 15, font.lineHeight + 4, 15, (entry)-> {
+            LOGGER.info("Selected {}", entry.soundFontProxy.id);
+        }).init();
+        sfpWidget.changeFocus(true);
+        children.add(sfpWidget);
+        children.add(sfpWidget.getSelected());
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int p_render_1_, int p_render_2_, float p_render_3_)
+    public void render(MatrixStack matrixStack, int pMouseX, int pMouseY, float pPartialTicks)
     {
         this.renderBackground(matrixStack);
-        drawCenteredString(matrixStack, this.font, this.title.getString(), this.width / 2, 15, 16777215);
-        drawCenteredString(matrixStack, this.font, String.format("Depth %d", depth + 1), this.width / 2, 25, 16777215);
-        super.render(matrixStack, p_render_1_, p_render_2_, p_render_3_);
+        this.sfpWidget.render(matrixStack, pMouseX, pMouseY, pPartialTicks);
+        drawCenteredString(matrixStack, this.font, this.title.getString(), this.width / 2, 15, TextColorFg.WHITE);
+        super.render(matrixStack, pMouseX, pMouseY, pPartialTicks);
+
+        // Render the Instrument GUI image
+        int relX = ((width - sfpWidget.getRight()) / 2) + sfpWidget.getRight();
+        int relY = height/2;
+        ModGuiHelper.RenderGuiItemScaled(Objects.requireNonNull(minecraft).getItemRenderer(),
+                                         INSTRUMENT_ITEMS.get(Objects.requireNonNull(sfpWidget.getSelected()).getIndex()).get().getDefaultInstance(), relX, relY, 8, true);
+
     }
 
     @Override
@@ -61,8 +75,7 @@ public class TestScreen extends Screen
     @Override
     public void removed()
     {
-        depth = 0;
-        LOGGER.debug("TestScreen onClose");
+        Objects.requireNonNull(this.minecraft).keyboardHandler.setSendRepeatsToGui(false);
         super.removed();
     }
 
@@ -70,7 +83,6 @@ public class TestScreen extends Screen
     @Override
     public void onClose()
     {
-        LOGGER.debug("TestScreen removed {}", depth);
         super.onClose();
     }
 
