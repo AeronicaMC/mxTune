@@ -39,7 +39,6 @@ public class TestScreen extends Screen
         }).init();
         sfpWidget.changeFocus(true);
         children.add(sfpWidget);
-        children.add(sfpWidget.getSelected());
     }
 
     @Override
