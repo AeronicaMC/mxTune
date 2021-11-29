@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.gui;
 
+import aeronicamc.mods.mxtune.util.AntiNull;
 import net.minecraft.client.Minecraft;
 
 public class Handler
@@ -13,10 +14,10 @@ public class Handler
 
     public static void openTestScreen()
     {
-        mc.tell(()->mc.setScreen(new TestScreen(null)));
+        mc.tell(()->mc.setScreen(new TestScreen()));
     }
     public static void openGuiMultiInstChooser()
     {
-        mc.tell(()->mc.setScreen(new GuiMultiInstChooser(null)));
+        mc.tell(()->mc.setScreen(new GuiMultiInstChooser(AntiNull.nonNullInjected())));
     }
 }
