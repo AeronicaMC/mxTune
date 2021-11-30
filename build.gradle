@@ -11,6 +11,7 @@ buildscript {
     }
 }
 plugins {
+    // https://imperceptiblethoughts.com/shadow/introduction/
     id 'com.github.johnrengelman.shadow' version '6.1.0'
     id 'java'
 }
@@ -65,6 +66,10 @@ minecraft {
         client {
             workingDirectory project.file('run')
 
+            // Need these if building with some other mods that use mixin's
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
+
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
@@ -83,6 +88,10 @@ minecraft {
         server {
             workingDirectory project.file('run')
 
+            // Need these if building with some other mods that use mixin's
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
+
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
             // Recommended logging level for the console
@@ -98,6 +107,10 @@ minecraft {
 
         data {
             workingDirectory project.file('run')
+
+            // Need these if building with some other mods that use mixin's
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
@@ -127,10 +140,8 @@ dependencies {
     //compileOnly fg.deobf("mezz.jei:jei-${version_mc}:${jei_version}:api")
     // at runtime, use the full JEI jar
     implementation fg.deobf("curse.maven:${jei_version}")
-    implementation fg.deobf("curse.maven:${config_menus_forge}")
+    implementation fg.deobf("curse.maven:${configured}")
     implementation fg.deobf("curse.maven:${better_mods_button}")
-//    implementation fg.deobf("curse.maven:${ftb_library_forge}")
-//    implementation fg.deobf("curse.maven:${architectury_forge}")
 
     implementation 'com.h2database:h2-mvstore:1.4.200'
     shade 'com.h2database:h2-mvstore:1.4.200'
@@ -182,6 +193,7 @@ reobf {
     shadowJar {}
 }
 
+
 def relocate(origin) {
     shadowJar.relocate(origin, "aeronicamc.libs.mxtune.shadow.$origin")
 }
@@ -201,6 +213,7 @@ shadowJar {
     exclude 'LICENSE'
 
     finalizedBy 'reobfShadowJar'
+    assemble.dependsOn shadowJar
 }
 
 // Example configuration to allow publishing using the maven-publish task
