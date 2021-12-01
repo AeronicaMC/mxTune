@@ -60,7 +60,7 @@ public class ModDataStore
                 LOGGER.debug("MVStore Started. Commit Version: {}, file: {}", getMvStore().getCurrentVersion(), getMvStore().getFileStore());
         }
         testGet();
-        long count = reapSheetMusic(true);
+        long count = reapSheetMusic(true); // TODO: Remember to set whatIf to false for production!
     }
 
     public static void shutdown()
@@ -194,6 +194,12 @@ public class ModDataStore
         return reapCount;
     }
 
+    /**
+     * Add add a MML format sting to the store. Returns a unique date-time string as the key to the MML.
+     * (At least providing there are no unexpected time shifts due to incorrect time on the server/pc etc.)
+     * @param musicText - the MML music text string to be stored.
+     * @return a unique date-time string (GMT0) as the key to the entry, or null if the add failed.
+     */
     @Nullable
     public static String addMusicText(String musicText)
     {
@@ -215,6 +221,11 @@ public class ModDataStore
         return key != null ? key.toString() : null;
     }
 
+    /**
+     * Retrieves the MML text string for the given key or null if not found.
+     * @param key - The key string in LocalDateTime(GMT0) format.
+     * @return The MML text string for the given key or null if not found.
+     */
     @Nullable
     public static String getMusicText(String key)
     {
