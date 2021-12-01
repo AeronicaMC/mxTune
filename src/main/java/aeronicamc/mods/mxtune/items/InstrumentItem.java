@@ -15,10 +15,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
+import net.minecraft.item.*;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
@@ -159,6 +156,16 @@ public class InstrumentItem extends Item implements IInstrument, INamedContainer
     public int getUseDuration(ItemStack pStack)
     {
         return 72000;
+    }
+
+    public UseAction getUseAnimation(ItemStack pStack) {
+        return UseAction.NONE;
+    }
+
+    @Override
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity)
+    {
+        return true;
     }
 
     @Override
