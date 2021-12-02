@@ -2,5 +2,25 @@
   "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "mxtune:item/sheet_music"
-  }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "mxtune:sheet_music_age": 0.0
+      },
+      "model": "mxtune:item/sheet_music_age0"
+    },
+    {
+      "predicate": {
+        "mxtune:sheet_music_age": 40.0
+      },
+      "model": "mxtune:item/sheet_music_age1"
+    },
+    {
+      "predicate": {
+        "mxtune:sheet_music_age": 80.0
+      },
+      "model": "mxtune:item/sheet_music_age2"
+    }
+  ]
 }

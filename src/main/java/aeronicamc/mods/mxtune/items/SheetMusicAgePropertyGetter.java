@@ -1,0 +1,74 @@
+package aeronicamc.mods.mxtune.items;
+
+import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.config.MXTuneConfig;
+import aeronicamc.mods.mxtune.util.SheetMusicHelper;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
+import net.minecraft.item.IItemPropertyGetter;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemModelsProperties;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
+
+/**
+ *
+ *  The MIT License (MIT)
+ *
+ * Test Mod 3 - Copyright (c) 2015-2021 Choonster
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ * @author Choonster
+ *
+ * @implNote 2021-Dec-01, Aeronica a.k.a Paul Boese modified to suit the needs of mxTune.
+ * Used to age the sheet music over time and select progressively more yellowed and torn textures.
+ */
+public class SheetMusicAgePropertyGetter
+{
+    public static final ResourceLocation NAME = new ResourceLocation(Reference.MOD_ID, "sheet_music_age");
+
+    private static final IItemPropertyGetter GETTER = (pItemStack, pLevel, pEntity) ->
+    {
+        World level = pLevel;
+        Entity entity = pEntity != null ? pEntity : pItemStack.getEntityRepresentation();
+        if (entity == null)
+        {
+            return Float.MAX_VALUE;
+        }
+        else
+        {
+            if (level == null && entity.level instanceof ClientWorld)
+            {
+                level = entity.level;
+            }
+            if (level == null)
+            {
+                return Float.MAX_VALUE;
+            }
+        }
+        return MathHelper.clamp((float) SheetMusicHelper.getSheetMusicDaysLeft(pItemStack) / MXTuneConfig.getSheetMusicLifeInDays() * 100F, 0F, 100F);
+    };
+
+    public static void registerToItem(Item pItem)
+    {
+        ItemModelsProperties.register(pItem, NAME, GETTER);
+    }
+}

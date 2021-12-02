@@ -117,7 +117,7 @@ public enum SheetMusicHelper
             LocalDateTime keyDateTime = LocalDateTime.parse(keyDateTimeString);
             LocalDateTime keyPlusDaysLeft = keyDateTime.plusDays(MXTuneConfig.getSheetMusicLifeInDays());
             LocalDateTime now = LocalDateTime.now(ZoneId.of("GMT0"));
-            return Duration.between(now, keyPlusDaysLeft).getSeconds() / 86400;
+            return Math.max(Duration.between(now, keyPlusDaysLeft).getSeconds() / 86400L, 0L);
         }
         return 99999;
     }
