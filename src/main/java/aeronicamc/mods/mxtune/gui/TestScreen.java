@@ -2,7 +2,9 @@ package aeronicamc.mods.mxtune.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,6 +17,8 @@ public class TestScreen extends Screen
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private SoundFontProxyWidget sfpWidget;
+    private TextFieldWidget titleWidget;
+    private TextFieldWidget musicTextWidget;
 
     public TestScreen()
     {
@@ -39,21 +43,29 @@ public class TestScreen extends Screen
         }).init();
         sfpWidget.changeFocus(true);
         children.add(sfpWidget);
+
+        titleWidget = new TextFieldWidget(font, sfpWidget.getRight() + 10, height / 2, (width - sfpWidget.getRight()) - 20, font.lineHeight + 4, new StringTextComponent("Title"));
+        addWidget(titleWidget);
+        musicTextWidget = new TextFieldWidget(font, sfpWidget.getRight() + 10, (height / 2) + 20, (width - sfpWidget.getRight()) - 20, font.lineHeight + 4, new StringTextComponent("MML"));
+        musicTextWidget.setMaxLength(10000);
+        addWidget(musicTextWidget);
     }
 
     @Override
     public void render(MatrixStack matrixStack, int pMouseX, int pMouseY, float pPartialTicks)
     {
         this.renderBackground(matrixStack);
-        this.sfpWidget.render(matrixStack, pMouseX, pMouseY, pPartialTicks);
         drawCenteredString(matrixStack, this.font, this.title.getString(), this.width / 2, 15, TextColorFg.WHITE);
+        this.sfpWidget.render(matrixStack, pMouseX, pMouseY, pPartialTicks);
+        this.titleWidget.render(matrixStack, pMouseX, pMouseY, pPartialTicks);
+        this.musicTextWidget.render(matrixStack, pMouseX, pMouseY, pPartialTicks);
         super.render(matrixStack, pMouseX, pMouseY, pPartialTicks);
 
         // Render the Instrument GUI image
-        int relX = ((width - sfpWidget.getRight()) / 2) + sfpWidget.getRight();
-        int relY = height/2;
+        int relX = ((width - sfpWidget.getRight()) / 5) + sfpWidget.getRight();
+        int relY = height/5;
         ModGuiHelper.RenderGuiItemScaled(Objects.requireNonNull(minecraft).getItemRenderer(),
-                                         INSTRUMENT_ITEMS.get(Objects.requireNonNull(sfpWidget.getSelected()).getIndex()).get().getDefaultInstance(), relX, relY, 8, true);
+                                         INSTRUMENT_ITEMS.get(Objects.requireNonNull(sfpWidget.getSelected()).getIndex()).get().getDefaultInstance(), relX, relY, 3, true);
 
     }
 
