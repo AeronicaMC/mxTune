@@ -70,7 +70,7 @@ public class SoundFontProxyWidget extends ModExtendedList<SoundFontProxyWidget.E
         tessellator.end();
     }
 
-    public class Entry extends ModExtendedList.AbstractListEntry<SoundFontProxyWidget.Entry>
+    public class Entry extends ModExtendedList.AbstractListEntry<Entry>
     {
         SoundFontProxy soundFontProxy;
 
@@ -89,7 +89,6 @@ public class SoundFontProxyWidget extends ModExtendedList<SoundFontProxyWidget.E
         {
             if (pIsMouseOver)
             {
-                setFocused(this);
                 fill(pMatrixStack, pLeft - 2, pTop - 2, pLeft - 5 + width, pTop + itemHeight - 1, 0xA0A0A0A0);
             }
 
@@ -102,9 +101,8 @@ public class SoundFontProxyWidget extends ModExtendedList<SoundFontProxyWidget.E
         public boolean mouseClicked(double pMouseX, double pMouseY, int pButton)
         {
             if (isMouseOver(pMouseX, pMouseY)){
-                SoundFontProxyWidget.Entry sfp = getEntryAtPosition(pMouseX, pMouseY);
-                SoundFontProxyWidget.super.setSelected(sfp);
-                selectCallback.accept(sfp);
+                SoundFontProxyWidget.this.setSelected(this);
+                selectCallback.accept(this);
                 minecraft.getSoundManager().play(SimpleSound.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 return true;
             }

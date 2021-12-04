@@ -53,8 +53,7 @@ public class GuiMultiInstChooser extends Screen
         }
         instListWidth = Math.min(instListWidth, 128);
         widget = new SoundFontProxyWidget(minecraft, instListWidth, 0, guiTop + 10, guiTop + imageHeight - 10, font.lineHeight + 4, guiLeft + 10, this::selectCallback).init();
-
-        this.children.add(widget);
+        addWidget(widget);
 
         int widthButtons = 50;
         int posX = (widget.getRight() + (guiLeft + imageWidth - widget.getRight())/2) - widthButtons/2;

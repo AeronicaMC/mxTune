@@ -41,13 +41,14 @@ public class TestScreen extends Screen
         sfpWidget = new SoundFontProxyWidget(minecraft, 128, height - 30 , 15, height - 15, font.lineHeight + 4, 15, (entry)-> {
             LOGGER.info("Selected {}", entry.soundFontProxy.id);
         }).init();
-        sfpWidget.changeFocus(true);
-        children.add(sfpWidget);
 
         titleWidget = new TextFieldWidget(font, sfpWidget.getRight() + 10, height / 2, (width - sfpWidget.getRight()) - 20, font.lineHeight + 4, new StringTextComponent("Title"));
-        addWidget(titleWidget);
+
         musicTextWidget = new TextFieldWidget(font, sfpWidget.getRight() + 10, (height / 2) + 20, (width - sfpWidget.getRight()) - 20, font.lineHeight + 4, new StringTextComponent("MML"));
         musicTextWidget.setMaxLength(10000);
+
+        addWidget(sfpWidget);
+        addWidget(titleWidget);
         addWidget(musicTextWidget);
     }
 
