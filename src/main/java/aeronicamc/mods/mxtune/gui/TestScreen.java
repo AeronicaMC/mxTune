@@ -16,9 +16,10 @@ import static aeronicamc.mods.mxtune.init.ModItems.INSTRUMENT_ITEMS;
 public class TestScreen extends Screen
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private SoundFontProxyWidget sfpWidget;
+    private final SoundFontProxyWidget sfpWidget = new SoundFontProxyWidget();
     private TextFieldWidget titleWidget;
     private TextFieldWidget musicTextWidget;
+    private boolean initialized;
 
     public TestScreen()
     {
@@ -38,9 +39,16 @@ public class TestScreen extends Screen
             minecraft.popGuiLayer();
         }));
 
-        sfpWidget = new SoundFontProxyWidget(minecraft, 128, height - 30 , 15, height - 15, font.lineHeight + 4, 15, (entry)-> {
+        sfpWidget.setLayout(128, height - 30 , 15, height - 15, 15);
+        sfpWidget.setCallBack((entry)-> {
             LOGGER.info("Selected {}", entry.soundFontProxy.id);
-        }).init();
+        });
+
+        if (!initialized)
+        {
+            sfpWidget.init();
+            initialized = true;
+        }
 
         titleWidget = new TextFieldWidget(font, sfpWidget.getRight() + 10, height / 2, (width - sfpWidget.getRight()) - 20, font.lineHeight + 4, new StringTextComponent("Title"));
 
