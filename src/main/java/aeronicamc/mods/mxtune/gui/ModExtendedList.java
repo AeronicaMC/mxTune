@@ -89,7 +89,7 @@ public abstract class ModExtendedList<E extends AbstractList.AbstractListEntry<E
         int leftX = getLeft() - 1 ;
         int rightX = getRight() + 1;
         RenderSystem.disableTexture();
-        float f = this.isFocused() ? 1.0F : 0.3F;
+        float f = this.isMouseOver(pMouseX, pMouseY) ? 1.0F : 0.3F;
         RenderSystem.color4f(f, f, f, 1.0F);
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION);
         bufferbuilder.vertex((double)leftX, (double)(botY), 0.0D).endVertex();
