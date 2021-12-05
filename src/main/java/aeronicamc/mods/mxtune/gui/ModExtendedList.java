@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.gui;
 
+import aeronicamc.mods.mxtune.util.AntiNull;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -21,18 +22,38 @@ public abstract class ModExtendedList<E extends AbstractList.AbstractListEntry<E
     private boolean renderBackground;
     private boolean renderTopAndBottom;
 
+    public ModExtendedList()
+    {
+        this(Minecraft.getInstance(), 1, 1, 1, 1, Minecraft.getInstance().font.lineHeight + 4, 1, AntiNull.nonNullInjected());
+    }
+
     public ModExtendedList(Minecraft pMinecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight, int pLeft, Consumer<E> selectCallback)
     {
         super(pMinecraft, pWidth, pHeight, pY0, pY1, pItemHeight);
         this.rowWidth = pWidth;
         this.setLeftPos(pLeft);
         this.selectCallback = selectCallback;
+        super.setRenderTopAndBottom(false);
+        super.setRenderSelection(true);
+        super.setRenderBackground(true);
     }
+
+    public void setLayout(int pWidth, int pHeight, int pY0, int pY1, int pLeft)
+    {
+        this.width = pWidth;
+        this.setRowWidth(pWidth);
+        this.setLeftPos(pLeft);
+        this.height = pHeight;
+        super.y0 = pY0;
+        super.y1 = pY1;
+    }
+
+    public abstract void setCallBack(Consumer<E> selectCallback);
 
     @Override
     protected int getScrollbarPosition()
     {
-        return x0 + width - 5;
+        return x0 + width - 6;
     }
 
     @Override
@@ -58,7 +79,44 @@ public abstract class ModExtendedList<E extends AbstractList.AbstractListEntry<E
         this.renderTopAndBottom = renderTopAndBottom;
     }
 
+    protected void renderBorder(MatrixStack pPoseStack, int pMouseX, int pMouseY)
+    {
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuilder();
+
+        int topY = y0 - 1;
+        int botY = y0 + this.height + this.headerHeight + 1;
+        int leftX = getLeft() - 1 ;
+        int rightX = getRight() + 1;
+        RenderSystem.disableTexture();
+        float f = this.isFocused() ? 1.0F : 0.3F;
+        RenderSystem.color4f(f, f, f, 1.0F);
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION);
+        bufferbuilder.vertex((double)leftX, (double)(botY), 0.0D).endVertex();
+        bufferbuilder.vertex((double)rightX, (double)(botY), 0.0D).endVertex();
+        bufferbuilder.vertex((double)rightX, (double)(topY), 0.0D).endVertex();
+        bufferbuilder.vertex((double)leftX, (double)(topY), 0.0D).endVertex();
+        tessellator.end();
+        RenderSystem.enableTexture();
+    }
+
+    @Override
+    protected void renderBackground(MatrixStack pMatrixStack)
+    {
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuilder();
+        this.minecraft.getTextureManager().bind(AbstractGui.BACKGROUND_LOCATION);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+        bufferbuilder.vertex((double)this.x0, (double)this.y1, 0.0D).uv((float)this.x0 / 32.0F, (float)(this.y1 + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
+        bufferbuilder.vertex((double)this.x1, (double)this.y1, 0.0D).uv((float)this.x1 / 32.0F, (float)(this.y1 + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
+        bufferbuilder.vertex((double)this.x1, (double)this.y0, 0.0D).uv((float)this.x1 / 32.0F, (float)(this.y0 + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
+        bufferbuilder.vertex((double)this.x0, (double)this.y0, 0.0D).uv((float)this.x0 / 32.0F, (float)(this.y0 + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
+        tessellator.end();
+    }
+
     public void render(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks) {
+        renderBorder(pMatrixStack, pMouseX, pMouseY);
         MainWindow client = minecraft.getWindow();
         double scaleW = (double) client.getWidth() / client.getGuiScaledWidth();
         double scaleH = (double) client.getHeight() / client.getGuiScaledHeight();
