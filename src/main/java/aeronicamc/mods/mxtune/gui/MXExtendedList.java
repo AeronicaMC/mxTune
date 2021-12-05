@@ -15,19 +15,19 @@ import net.minecraft.util.math.MathHelper;
 
 import java.util.function.Consumer;
 
-public abstract class ModExtendedList<E extends AbstractList.AbstractListEntry<E>> extends AbstractList<E>
+public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>> extends AbstractList<E>
 {
     protected int rowWidth;
     protected Consumer<E> selectCallback;
     private boolean renderBackground;
     private boolean renderTopAndBottom;
 
-    public ModExtendedList()
+    public MXExtendedList()
     {
         this(Minecraft.getInstance(), 1, 1, 1, 1, Minecraft.getInstance().font.lineHeight + 4, 1, AntiNull.nonNullInjected());
     }
 
-    public ModExtendedList(Minecraft pMinecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight, int pLeft, Consumer<E> selectCallback)
+    public MXExtendedList(Minecraft pMinecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight, int pLeft, Consumer<E> selectCallback)
     {
         super(pMinecraft, pWidth, pHeight, pY0, pY1, pItemHeight);
         this.rowWidth = pWidth;
@@ -213,7 +213,7 @@ public abstract class ModExtendedList<E extends AbstractList.AbstractListEntry<E
         RenderSystem.disableBlend();
     }
 
-    public abstract static class AbstractListEntry<E extends ModExtendedList.AbstractListEntry<E>> extends AbstractList.AbstractListEntry<E> {
+    public abstract static class AbstractListEntry<E extends MXExtendedList.AbstractListEntry<E>> extends AbstractList.AbstractListEntry<E> {
         public boolean changeFocus(boolean pFocus) {
             return false;
         }

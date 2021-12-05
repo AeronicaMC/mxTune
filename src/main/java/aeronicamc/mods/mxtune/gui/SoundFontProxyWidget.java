@@ -12,7 +12,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.function.Consumer;
 
-public class SoundFontProxyWidget extends ModExtendedList<SoundFontProxyWidget.Entry>
+public class SoundFontProxyWidget extends MXExtendedList<SoundFontProxyWidget.Entry>
 {
 
     public SoundFontProxyWidget()
@@ -50,7 +50,7 @@ public class SoundFontProxyWidget extends ModExtendedList<SoundFontProxyWidget.E
         this.selectCallback = selectCallback;
     }
 
-    public class Entry extends ModExtendedList.AbstractListEntry<Entry>
+    public class Entry extends MXExtendedList.AbstractListEntry<Entry>
     {
         SoundFontProxy soundFontProxy;
 
