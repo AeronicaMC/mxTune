@@ -16,9 +16,8 @@ import java.util.function.Consumer;
 
 public abstract class ModExtendedList<E extends AbstractList.AbstractListEntry<E>> extends AbstractList<E>
 {
-    private boolean inFocus;
-    private int rowWidth;
-    protected final Consumer<E> selectCallback;
+    protected int rowWidth;
+    protected Consumer<E> selectCallback;
     private boolean renderBackground;
     private boolean renderTopAndBottom;
 
@@ -28,21 +27,6 @@ public abstract class ModExtendedList<E extends AbstractList.AbstractListEntry<E
         this.rowWidth = pWidth;
         this.setLeftPos(pLeft);
         this.selectCallback = selectCallback;
-    }
-
-    public boolean changeFocus(boolean pFocus) {
-        if (!this.inFocus && this.getItemCount() == 0) {
-            return false;
-        } else {
-            this.inFocus = !this.inFocus;
-            if (this.inFocus && this.getSelected() == null && this.getItemCount() > 0) {
-                this.moveSelection(AbstractList.Ordering.DOWN);
-            } else if (this.inFocus && this.getSelected() != null) {
-                this.refreshSelection();
-            }
-
-            return this.inFocus;
-        }
     }
 
     @Override

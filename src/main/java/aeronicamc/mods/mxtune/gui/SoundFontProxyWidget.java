@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.gui;
 
+import aeronicamc.mods.mxtune.util.AntiNull;
 import aeronicamc.mods.mxtune.util.SoundFontProxy;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -20,6 +21,11 @@ import java.util.function.Consumer;
 public class SoundFontProxyWidget extends ModExtendedList<SoundFontProxyWidget.Entry>
 {
 
+    public SoundFontProxyWidget()
+    {
+        this(Minecraft.getInstance(), 1, 1, 1, 1, Minecraft.getInstance().font.lineHeight + 4, 1, AntiNull.nonNullInjected());
+    }
+
     public SoundFontProxyWidget(Minecraft minecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight, int pLeft, Consumer<Entry> selectCallback)
     {
         super(minecraft, pWidth, pHeight, pY0, pY1, pItemHeight, pLeft, selectCallback);
@@ -27,6 +33,24 @@ public class SoundFontProxyWidget extends ModExtendedList<SoundFontProxyWidget.E
         super.setRenderTopAndBottom(false);
         super.setRenderSelection(true);
         super.setRenderBackground(true);
+    }
+
+    public void setLayout(int pWidth, int pHeight, int pY0, int pY1, int pLeft)
+    {
+        this.width = pWidth;
+        this.setRowWidth(pWidth);
+        this.setLeftPos(pLeft);
+        this.height = pHeight;
+        super.y0 = pY0;
+        super.y1 = pY1;
+        super.setRenderTopAndBottom(false);
+        super.setRenderSelection(true);
+        super.setRenderBackground(true);
+    }
+
+    public void setCallBack(Consumer<Entry> selectCallback)
+    {
+        this.selectCallback = selectCallback;
     }
 
     @Override
@@ -101,6 +125,8 @@ public class SoundFontProxyWidget extends ModExtendedList<SoundFontProxyWidget.E
         public boolean mouseClicked(double pMouseX, double pMouseY, int pButton)
         {
             if (isMouseOver(pMouseX, pMouseY)){
+                changeFocus(true);
+                setFocused(this);
                 SoundFontProxyWidget.this.setSelected(this);
                 selectCallback.accept(this);
                 minecraft.getSoundManager().play(SimpleSound.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
