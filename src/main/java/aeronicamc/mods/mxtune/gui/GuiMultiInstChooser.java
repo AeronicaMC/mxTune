@@ -1,7 +1,7 @@
 package aeronicamc.mods.mxtune.gui;
 
 import aeronicamc.mods.mxtune.Reference;
-import aeronicamc.mods.mxtune.gui.widget.SoundFontProxyWidget;
+import aeronicamc.mods.mxtune.gui.widget.list.SoundFontList;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.ChooseInstrumentMessage;
 import aeronicamc.mods.mxtune.util.SoundFontProxy;
@@ -27,7 +27,7 @@ public class GuiMultiInstChooser extends Screen
     private int guiLeft;
     private int guiTop;
     private final Screen parent;
-    SoundFontProxyWidget widget;
+    SoundFontList widget;
 
     protected GuiMultiInstChooser(Screen parent)
     {
@@ -53,7 +53,7 @@ public class GuiMultiInstChooser extends Screen
             instListWidth = Math.max(instListWidth, stringWidth + 10);
         }
         instListWidth = Math.min(instListWidth, 128);
-        widget = new SoundFontProxyWidget(minecraft, instListWidth + 1, imageHeight - 20, guiTop + 10, guiTop + imageHeight - 10, font.lineHeight + 4, guiLeft + 10, this::selectCallback).init();
+        widget = new SoundFontList(minecraft, instListWidth + 1, imageHeight - 20, guiTop + 10, guiTop + imageHeight - 10, font.lineHeight + 4, guiLeft + 10, this::selectCallback).init();
         addWidget(widget);
 
         int widthButtons = 50;
@@ -66,7 +66,7 @@ public class GuiMultiInstChooser extends Screen
         }));
     }
 
-    private void selectCallback(SoundFontProxyWidget.Entry selected)
+    private void selectCallback(SoundFontList.Entry selected)
     {
         PacketDispatcher.sendToServer(new ChooseInstrumentMessage(selected.getIndex()));
     }
