@@ -13,7 +13,7 @@ import net.minecraftforge.fml.client.gui.GuiUtils;
  */
 public class MXButton extends Button
 {
-    protected int padding = 5;
+    protected int padding = 0;
     public MXButton(IPressable pOnPress)
     {
         super(0, 0, 50, 20, DialogTexts.GUI_DONE, pOnPress);
@@ -22,6 +22,11 @@ public class MXButton extends Button
     public MXButton(int pX, int pY, int pWidth, int pHeight, ITextComponent pMessage, Button.IPressable pOnPress)
     {
         super(pX, pY, pWidth, pHeight, pMessage, pOnPress);
+    }
+
+    public MXButton(IPressable pOnPress, Button.ITooltip pOnTooltip)
+    {
+        super(0, 0, 50, 20, DialogTexts.GUI_DONE, pOnPress, pOnTooltip);
     }
 
     public MXButton(int pX, int pY, int pWidth, int pHeight, ITextComponent pMessage, Button.IPressable pOnPress, Button.ITooltip pOnTooltip)
@@ -41,6 +46,16 @@ public class MXButton extends Button
        this.y = pY;
        this.width = pWidth;
        this.height = pHeight;
+    }
+
+    public int getLeft()
+    {
+        return this.x;
+    }
+
+    public int getTop()
+    {
+        return this.y;
     }
 
     public int getRight()
