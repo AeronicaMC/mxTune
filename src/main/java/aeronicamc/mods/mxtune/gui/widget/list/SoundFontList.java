@@ -1,5 +1,6 @@
-package aeronicamc.mods.mxtune.gui.widget;
+package aeronicamc.mods.mxtune.gui.widget.list;
 
+import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.SoundFontProxy;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -10,37 +11,39 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.ITextProperties;
 import net.minecraft.util.text.TranslationTextComponent;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
-public class SoundFontProxyWidget extends MXExtendedList<SoundFontProxyWidget.Entry>
+public class SoundFontList extends MXExtendedList<SoundFontList.Entry>
 {
 
-    public SoundFontProxyWidget()
+    public SoundFontList()
     {
         super();
     }
 
-    public SoundFontProxyWidget(Minecraft minecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight, int pLeft, Consumer<Entry> selectCallback)
+    public SoundFontList(Minecraft minecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight, int pLeft, Consumer<Entry> selectCallback)
     {
         super(minecraft, pWidth, pHeight, pY0, pY1, pItemHeight, pLeft, selectCallback);
     }
 
-    public SoundFontProxyWidget init()
+    public SoundFontList init()
     {
         for (SoundFontProxy soundFontProxy: SoundFontProxyManager.soundFontProxyMapById.values())
         {
-            SoundFontProxyWidget.Entry entry = new  SoundFontProxyWidget.Entry(soundFontProxy);
+            SoundFontList.Entry entry = new  SoundFontList.Entry(soundFontProxy);
             super.addEntry(entry);
-            assert minecraft.player != null;
-            if (soundFontProxy.index == minecraft.player.getMainHandItem().getMaxDamage())
+            if ((Objects.requireNonNull(minecraft.player).inventory.getSelected().getItem()) instanceof IInstrument &&
+                    (soundFontProxy.index == minecraft.player.inventory.getSelected().getMaxDamage()))
             {
                 super.setSelected(entry);
             }
         }
-        if (super.getSelected() != null)
+        if (super.getSelected() == null)
         {
-            super.centerScrollOn(super.getSelected());
+            super.setSelected(children().get(0));
         }
+        super.centerScrollOn(super.getSelected());
         return this;
     }
 
@@ -88,7 +91,7 @@ public class SoundFontProxyWidget extends MXExtendedList<SoundFontProxyWidget.En
             if (isMouseOver(pMouseX, pMouseY)){
                 changeFocus(true);
                 setFocused(this);
-                SoundFontProxyWidget.this.setSelected(this);
+                SoundFontList.this.setSelected(this);
                 selectCallback.accept(this);
                 minecraft.getSoundManager().play(SimpleSound.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 return true;
