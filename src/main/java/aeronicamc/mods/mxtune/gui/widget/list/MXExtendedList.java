@@ -1,4 +1,4 @@
-package aeronicamc.mods.mxtune.gui.widget;
+package aeronicamc.mods.mxtune.gui.widget.list;
 
 import aeronicamc.mods.mxtune.util.AntiNull;
 import com.mojang.blaze3d.matrix.MatrixStack;
