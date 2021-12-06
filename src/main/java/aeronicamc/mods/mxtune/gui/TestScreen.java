@@ -1,10 +1,12 @@
 package aeronicamc.mods.mxtune.gui;
 
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
-import aeronicamc.mods.mxtune.gui.widget.SoundFontProxyWidget;
+import aeronicamc.mods.mxtune.gui.widget.list.SoundFontList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
@@ -17,7 +19,7 @@ import static aeronicamc.mods.mxtune.init.ModItems.INSTRUMENT_ITEMS;
 public class TestScreen extends Screen
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final SoundFontProxyWidget sfpWidget = new SoundFontProxyWidget();
+    private final SoundFontList sfpWidget = new SoundFontList();
     private TextFieldWidget titleWidget;
     private TextFieldWidget musicTextWidget;
     private boolean initialized;
@@ -81,8 +83,8 @@ public class TestScreen extends Screen
         // Render the Instrument GUI image
         int relX = ((width - sfpWidget.getRight()) / 5) + sfpWidget.getRight();
         int relY = height/5;
-        ModGuiHelper.RenderGuiItemScaled(Objects.requireNonNull(minecraft).getItemRenderer(),
-                                         INSTRUMENT_ITEMS.get(Objects.requireNonNull(sfpWidget.getSelected()).getIndex()).get().getDefaultInstance(), relX, relY, 3, true);
+        ItemStack itemStack = sfpWidget.getSelected() != null ? INSTRUMENT_ITEMS.get(sfpWidget.getSelected().getIndex()).get().getDefaultInstance() : Items.CREEPER_HEAD.getDefaultInstance();
+        ModGuiHelper.RenderGuiItemScaled(Objects.requireNonNull(minecraft).getItemRenderer(), itemStack, relX, relY, 3, true);
     }
 
     @Override
