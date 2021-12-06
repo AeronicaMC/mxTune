@@ -1,4 +1,4 @@
-package aeronicamc.mods.mxtune.gui;
+package aeronicamc.mods.mxtune.gui.widget;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 /**
  * {@link <A ref="https://gist.github.com/XFactHD/ea8882b5ccc5d5f299d4d38a36ce3505">XFactHD/SelectionWidget.java</A>}
  */
+@Deprecated
 public class SelectionWidget<T extends SelectionWidget.SelectionEntry> extends Widget
 {
     private static final ResourceLocation ICONS = new ResourceLocation("minecraft", "textures/gui/resource_packs.png");
