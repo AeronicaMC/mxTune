@@ -1,4 +1,4 @@
-package aeronicamc.mods.mxtune.gui;
+package aeronicamc.mods.mxtune.gui.widget;
 
 import aeronicamc.mods.mxtune.util.SoundFontProxy;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
@@ -52,7 +52,7 @@ public class SoundFontProxyWidget extends MXExtendedList<SoundFontProxyWidget.En
 
     public class Entry extends MXExtendedList.AbstractListEntry<Entry>
     {
-        SoundFontProxy soundFontProxy;
+        protected SoundFontProxy soundFontProxy;
 
         public Entry(SoundFontProxy soundFontProxy)
         {
@@ -62,6 +62,11 @@ public class SoundFontProxyWidget extends MXExtendedList<SoundFontProxyWidget.En
         public int getIndex()
         {
             return soundFontProxy.index;
+        }
+
+        public String getId()
+        {
+            return soundFontProxy.id;
         }
 
         @Override
