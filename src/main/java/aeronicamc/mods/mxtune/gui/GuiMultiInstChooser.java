@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.gui;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.gui.widget.SoundFontProxyWidget;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.ChooseInstrumentMessage;
 import aeronicamc.mods.mxtune.util.SoundFontProxy;

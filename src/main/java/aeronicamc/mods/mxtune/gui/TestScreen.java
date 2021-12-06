@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.gui;
 
+import aeronicamc.mods.mxtune.gui.widget.SoundFontProxyWidget;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -41,7 +42,7 @@ public class TestScreen extends Screen
 
         sfpWidget.setLayout(128, height - 30 , 15, height - 15, 15);
         sfpWidget.setCallBack((entry)-> {
-            LOGGER.info("Selected {}", entry.soundFontProxy.id);
+            LOGGER.info("Selected {}", entry.getId());
         });
 
         if (!initialized)
