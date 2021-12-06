@@ -1,10 +1,10 @@
 package aeronicamc.mods.mxtune.gui;
 
+import aeronicamc.mods.mxtune.gui.widget.MXButton;
 import aeronicamc.mods.mxtune.gui.widget.SoundFontProxyWidget;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
@@ -21,6 +21,7 @@ public class TestScreen extends Screen
     private TextFieldWidget titleWidget;
     private TextFieldWidget musicTextWidget;
     private boolean initialized;
+    private final MXButton buttonOpen = new MXButton((open) -> onButtonOpen());
 
     public TestScreen()
     {
@@ -32,11 +33,11 @@ public class TestScreen extends Screen
     {
         super.init();
         Objects.requireNonNull(this.minecraft).keyboardHandler.setSendRepeatsToGui(true);
-        this.addButton(new Button(this.width - 65, (this.height / 6 + 168) - 20, 50, 20, new TranslationTextComponent("gui.mxtune.open"), (open) -> {
-            minecraft.setScreen(new GuiMultiInstChooser(this));
-        }));
-        this.addButton(new Button(this.width - 65, this.height / 6 + 168, 50, 20, new TranslationTextComponent("gui.done"), (done) -> {
-            assert minecraft != null;
+        buttonOpen.setLayout(this.width - 65, (this.height / 6 + 168) - 20, 50, 20);
+        buttonOpen.setMessage(new TranslationTextComponent("gui.mxtune.open"));
+        addButton(buttonOpen);
+
+        this.addButton(new MXButton(buttonOpen.getLeft(), buttonOpen.getBottom(), 50, 20, new TranslationTextComponent("gui.done"), (done) -> {
             minecraft.popGuiLayer();
         }));
 
@@ -61,6 +62,12 @@ public class TestScreen extends Screen
         addWidget(musicTextWidget);
     }
 
+    public void onButtonOpen()
+    {
+        Objects.requireNonNull(minecraft).setScreen(new GuiMultiInstChooser(this));
+    }
+
+
     @Override
     public void render(MatrixStack matrixStack, int pMouseX, int pMouseY, float pPartialTicks)
     {
@@ -76,7 +83,6 @@ public class TestScreen extends Screen
         int relY = height/5;
         ModGuiHelper.RenderGuiItemScaled(Objects.requireNonNull(minecraft).getItemRenderer(),
                                          INSTRUMENT_ITEMS.get(Objects.requireNonNull(sfpWidget.getSelected()).getIndex()).get().getDefaultInstance(), relX, relY, 3, true);
-
     }
 
     @Override
