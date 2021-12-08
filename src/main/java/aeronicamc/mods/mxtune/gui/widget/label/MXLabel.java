@@ -1,7 +1,6 @@
 package aeronicamc.mods.mxtune.gui.widget.label;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
@@ -15,10 +14,10 @@ public class MXLabel extends AbstractGui implements IRenderable
     private int height;
     private int x;
     private int y;
-    private ITextComponent labelText;
+    private ITextComponent label;
     private boolean centered;
     private boolean visible = true;
-    private boolean labelBgEnabled;
+    private boolean background;
     private int textColor;
     private int backColor = -1;
     private int ulColor = -1;
@@ -34,7 +33,7 @@ public class MXLabel extends AbstractGui implements IRenderable
         y = pY;
         width = pWidth;
         height = pHeight;
-        labelText = pLabelText;
+        label = pLabelText;
         textColor = pTextColor;
     }
 
@@ -98,19 +97,14 @@ public class MXLabel extends AbstractGui implements IRenderable
         this.visible = visible;
     }
 
-    public boolean isLabelBgEnabled()
+    public boolean isBackground()
     {
-        return labelBgEnabled;
+        return background;
     }
 
-    public void setLabelBgEnabled(boolean labelBgEnabled)
+    public void setBackground(boolean background)
     {
-        this.labelBgEnabled = labelBgEnabled;
-    }
-
-    public int getTextColor()
-    {
-        return textColor;
+        this.background = background;
     }
 
     public void setTextColor(int textColor)
@@ -118,19 +112,9 @@ public class MXLabel extends AbstractGui implements IRenderable
         this.textColor = textColor;
     }
 
-    public int getBackColor()
-    {
-        return backColor;
-    }
-
     public void setBackColor(int backColor)
     {
         this.backColor = backColor;
-    }
-
-    public int getUlColor()
-    {
-        return ulColor;
     }
 
     public void setUlColor(int ulColor)
@@ -138,19 +122,9 @@ public class MXLabel extends AbstractGui implements IRenderable
         this.ulColor = ulColor;
     }
 
-    public int getBrColor()
-    {
-        return brColor;
-    }
-
     public void setBrColor(int brColor)
     {
         this.brColor = brColor;
-    }
-
-    public int getBorder()
-    {
-        return border;
     }
 
     public void setBorder(int border)
@@ -158,43 +132,37 @@ public class MXLabel extends AbstractGui implements IRenderable
         this.border = border;
     }
 
-    public void setLabelText(ITextComponent labelText)
+    public void setLabel(ITextComponent label)
     {
-        this.labelText = labelText;
+        this.label = label;
     }
 
     @Override
     public void render(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks)
     {
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.enableDepthTest();
         renderBackGround(pMatrixStack);
 
         if (centered)
-            drawCenteredString(pMatrixStack, fontRenderer, labelText, x + this.width / 2, y + height / 4, textColor | MathHelper.ceil(0.9F * 255.0F) << 24);
+            drawCenteredString(pMatrixStack, fontRenderer, label, x + this.width / 2, y + height / 4, textColor | MathHelper.ceil(1F * 255.0F) << 24);
         else
-            drawString(pMatrixStack, fontRenderer, labelText, x, y + height / 4, textColor | MathHelper.ceil(0.9F * 255.0F) << 24);
-
+            drawString(pMatrixStack, fontRenderer, label, x, y + height / 4, textColor | MathHelper.ceil(1F * 255.0F) << 24);
     }
 
     protected void renderBackGround(MatrixStack pMatrixStack)
     {
-        if (labelBgEnabled)
+        if (background)
         {
             int wb = width + border * 2;
             int hb = height + border * 2;
             int xb = x - this.border;
             int yb = y - this.border;
             fill(pMatrixStack, xb, yb, xb + wb, yb + hb, backColor | MathHelper.ceil(1F * 255.0F) << 24);
-
             vLine(pMatrixStack,xb + wb, yb, yb + hb, brColor | MathHelper.ceil(1F * 255.0F) << 24);
-
             hLine(pMatrixStack, xb, xb + wb, yb, ulColor | MathHelper.ceil(1F * 255.0F) << 24);
-
             hLine(pMatrixStack, xb, xb + wb, yb + hb, brColor | MathHelper.ceil(1F * 255.0F) << 24);
-
             vLine(pMatrixStack, xb, yb, yb + hb + 1, ulColor | MathHelper.ceil(1F * 255.0F) << 24);
-
         }
     }
 }

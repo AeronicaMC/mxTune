@@ -36,13 +36,13 @@ public class TestScreen extends Screen
     public void init()
     {
         super.init();
-        labelTitle = new MXLabel(font, width / 2 , 5, font.width(title.getString()) + 4, font.lineHeight + 4, title, TextColorFg.YELLOW);
-        labelTitle.setLabelBgEnabled(true);
-        labelTitle.setBorder(2);
+        labelTitle = new MXLabel(font, width / 2 , 5, font.width(title.getString()) + 4, font.lineHeight + 4, title, TextColorFg.WHITE);
+        labelTitle.setBackground(false);
+        labelTitle.setBorder(1);
         labelTitle.setCentered(true);
         labelTitle.setUlColor(TextColorBg.WHITE);
         labelTitle.setBrColor(TextColorBg.DARK_GRAY);
-        labelTitle.setBackColor(TextColorBg.DARK_AQUA);
+        labelTitle.setBackColor(TextColorBg.BLUE);
         Objects.requireNonNull(this.minecraft).keyboardHandler.setSendRepeatsToGui(true);
         buttonOpen.setLayout(this.width - 65, (this.height / 6 + 168) - 20, 50, 20);
         buttonOpen.setMessage(new TranslationTextComponent("gui.mxtune.open"));
