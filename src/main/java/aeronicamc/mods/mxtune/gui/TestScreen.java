@@ -21,7 +21,7 @@ public class TestScreen extends Screen
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private final SoundFontList sfpWidget = new SoundFontList();
-    private TextFieldWidget titleWidget;
+    private TextFieldWidget titleTextWidget;
     private TextFieldWidget musicTextWidget;
     private MXLabel labelTitle;
     private boolean initialized;
@@ -63,13 +63,13 @@ public class TestScreen extends Screen
             initialized = true;
         }
 
-        titleWidget = new TextFieldWidget(font, sfpWidget.getRight() + 10, height / 2, (width - sfpWidget.getRight()) - 20, font.lineHeight + 4, new StringTextComponent("Title"));
+        titleTextWidget = new TextFieldWidget(font, sfpWidget.getRight() + 10, height / 2, (width - sfpWidget.getRight()) - 20, font.lineHeight + 4, new StringTextComponent("Title"));
 
         musicTextWidget = new TextFieldWidget(font, sfpWidget.getRight() + 10, (height / 2) + 20, (width - sfpWidget.getRight()) - 20, font.lineHeight + 4, new StringTextComponent("MML"));
         musicTextWidget.setMaxLength(10000);
 
         addWidget(sfpWidget);
-        addWidget(titleWidget);
+        addWidget(titleTextWidget);
         addWidget(musicTextWidget);
     }
 
@@ -84,9 +84,8 @@ public class TestScreen extends Screen
     {
         this.renderBackground(matrixStack);
         labelTitle.render(matrixStack, pMouseX, pMouseY, pPartialTicks);
-        //drawCenteredString(matrixStack, this.font, this.title.getString(), this.width / 2, 15, TextColorFg.WHITE);
         this.sfpWidget.render(matrixStack, pMouseX, pMouseY, pPartialTicks);
-        this.titleWidget.render(matrixStack, pMouseX, pMouseY, pPartialTicks);
+        this.titleTextWidget.render(matrixStack, pMouseX, pMouseY, pPartialTicks);
         this.musicTextWidget.render(matrixStack, pMouseX, pMouseY, pPartialTicks);
         super.render(matrixStack, pMouseX, pMouseY, pPartialTicks);
 
