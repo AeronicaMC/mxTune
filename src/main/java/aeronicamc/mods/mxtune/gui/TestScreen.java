@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.gui;
 
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
+import aeronicamc.mods.mxtune.gui.widget.label.MXLabel;
 import aeronicamc.mods.mxtune.gui.widget.list.SoundFontList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
@@ -22,6 +23,7 @@ public class TestScreen extends Screen
     private final SoundFontList sfpWidget = new SoundFontList();
     private TextFieldWidget titleWidget;
     private TextFieldWidget musicTextWidget;
+    private MXLabel labelTitle;
     private boolean initialized;
     private final MXButton buttonOpen = new MXButton((open) -> onButtonOpen());
 
@@ -34,6 +36,13 @@ public class TestScreen extends Screen
     public void init()
     {
         super.init();
+        labelTitle = new MXLabel(font, width / 2 , 5, font.width(title.getString()) + 4, font.lineHeight + 4, title, TextColorFg.YELLOW);
+        labelTitle.setLabelBgEnabled(true);
+        labelTitle.setBorder(2);
+        labelTitle.setCentered(true);
+        labelTitle.setUlColor(TextColorBg.WHITE);
+        labelTitle.setBrColor(TextColorBg.DARK_GRAY);
+        labelTitle.setBackColor(TextColorBg.DARK_AQUA);
         Objects.requireNonNull(this.minecraft).keyboardHandler.setSendRepeatsToGui(true);
         buttonOpen.setLayout(this.width - 65, (this.height / 6 + 168) - 20, 50, 20);
         buttonOpen.setMessage(new TranslationTextComponent("gui.mxtune.open"));
@@ -74,7 +83,8 @@ public class TestScreen extends Screen
     public void render(MatrixStack matrixStack, int pMouseX, int pMouseY, float pPartialTicks)
     {
         this.renderBackground(matrixStack);
-        drawCenteredString(matrixStack, this.font, this.title.getString(), this.width / 2, 15, TextColorFg.WHITE);
+        labelTitle.render(matrixStack, pMouseX, pMouseY, pPartialTicks);
+        //drawCenteredString(matrixStack, this.font, this.title.getString(), this.width / 2, 15, TextColorFg.WHITE);
         this.sfpWidget.render(matrixStack, pMouseX, pMouseY, pPartialTicks);
         this.titleWidget.render(matrixStack, pMouseX, pMouseY, pPartialTicks);
         this.musicTextWidget.render(matrixStack, pMouseX, pMouseY, pPartialTicks);
