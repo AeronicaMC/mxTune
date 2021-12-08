@@ -41,8 +41,9 @@ public class SheetMusicItem extends Item implements IMusic
     @Override
     public void inventoryTick(ItemStack pStack, World pLevel, Entity pEntity, int pItemSlot, boolean pIsSelected)
     {
-        if (!pLevel.isClientSide)
+        if (pLevel.isClientSide)
         {
+            //NOTE!!! SheetMusicAgePropertyGetter.class is a CLIENT only class!!!
             CompoundNBT nbt = pStack.getTagElement(SheetMusicAgePropertyGetter.NAME.toString());
             if (nbt != null)
             {
