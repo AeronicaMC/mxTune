@@ -100,13 +100,13 @@ public class ActiveTune
         return this;
     }
 
-    void cancel()
+    void cancel(boolean sendStop)
     {
         synchronized (this)
         {
             LOGGER2.debug("A scheduled or requested cancel was sent for playId: {} that had a duration of {}", playId, formatDuration(durationSeconds));
             LOGGER2.debug("Time elapsed: {}", formatDuration(secondsElapsedAI.get()));
-            if (isInitialized)
+            if (isInitialized && sendStop)
                 PlayManager.stopPlayId(playId);
             future.cancel(true);
             done = true;
@@ -131,7 +131,7 @@ public class ActiveTune
         finally
         {
             if (!done)
-                cancel();
+                cancel(true);
         }
     }
 

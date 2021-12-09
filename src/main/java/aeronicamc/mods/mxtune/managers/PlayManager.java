@@ -155,7 +155,7 @@ public final class PlayManager
         {
             for (Map.Entry<Integer, ActiveTune> entry : playIdToActiveTune.entrySet())
             {
-                entry.getValue().cancel();
+                entry.getValue().cancel(false);
             }
             entityIdToPlayId.clear();
             playIdToActiveTune.clear();
@@ -168,6 +168,11 @@ public final class PlayManager
     {
         synchronized (THREAD_SYNC)
         {
+            if (playIdToActiveTune.containsKey(playId))
+            {
+                ActiveTune activeTune = playIdToActiveTune.get(playId);
+                activeTune.cancel(false);
+            }
             removeActivePlayId(playId);
             PacketDispatcher.sendToAll(new StopPlayIdMessage(playId));
         }
