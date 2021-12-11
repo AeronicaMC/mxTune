@@ -77,15 +77,15 @@ public class PartState
 
     public int getOctave() {return octave;}
 
-    public void setOctave(int octave) {this.octave = clamp(1, 8, octave);}
-
     /**
-     * You can <<<< an octave to 0, but you can't
-     * set octave to 0 via the octave command: o0
+     * Set Octave. Range 0 to 8 inclusive! (WOW wow wow! Now Mabinogi allows o0)
+     * @param octave range clamped 0-8 inclusive.
      */
+    public void setOctave(int octave) {this.octave = clamp(0, 8, octave);}
+
     void downOctave() {this.octave = clamp(0, 8, this.octave - 1);}
 
-    void upOctave() {this.octave = clamp(1, 8, this.octave + 1);}
+    void upOctave() {this.octave = clamp(0, 8, this.octave + 1);}
 
     int getMMLLength() {return mmlLength;}
 
