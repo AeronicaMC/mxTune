@@ -21,6 +21,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         // TODO
         addBlocks();
         addItems();
+        addGuiScreens();
     }
 
     @Override
@@ -61,6 +62,16 @@ public class MXTuneLanguageProvider extends LanguageProvider
         return WordUtils.capitalizeFully(StringUtils.replace(input, "_", " "));
     }
 
+    private void addGuiScreens()
+    {
+        addScreen("file_selector.title", "File Selector");
+        addGuiWidget("label.search", "Search");
+        addGuiWidget("button.open_folder", "Open Folder");
+        addGuiWidget("button.refresh", "Refresh");
+        addGuiWidget("button.refresh.help", "Only needed it the file list fails to refresh automatically after dropping MML files into the folder.");
+        addGuiWidget("button.select", "Select");
+    }
+
     /**
      * prepends tooltip.[mod_id].
      * @param identifier the unique help id
@@ -69,5 +80,25 @@ public class MXTuneLanguageProvider extends LanguageProvider
     private void addTooltip(String identifier, String helpText)
     {
         add(String.format("tooltip.%s.%s", Reference.MOD_ID, identifier), helpText);
+    }
+
+    /**
+     * prepends screen.[mod_id].
+     * @param identifier the unique help id
+     * @param title of the screen
+     */
+    private void addScreen(String identifier, String title)
+    {
+        add(String.format("screen.%s.%s", Reference.MOD_ID, identifier), title);
+    }
+
+    /**
+     * prepends gui.[mod_id].
+     * @param identifier the unique help id
+     * @param text of the widget
+     */
+    private void addGuiWidget(String identifier, String text)
+    {
+        add(String.format("gui.%s.%s", Reference.MOD_ID, identifier), text);
     }
 }

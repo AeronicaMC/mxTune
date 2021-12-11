@@ -26,6 +26,7 @@ public class TestScreen extends Screen
     private MXLabel labelTitle;
     private boolean initialized;
     private final MXButton buttonOpen = new MXButton((open) -> onButtonOpen());
+    private final MXButton buttonFile = new MXButton((file) -> onButtonFile());
 
     public TestScreen()
     {
@@ -43,7 +44,10 @@ public class TestScreen extends Screen
         labelTitle.setUlColor(TextColorBg.WHITE);
         labelTitle.setBrColor(TextColorBg.DARK_GRAY);
         labelTitle.setBackColor(TextColorBg.BLUE);
-        Objects.requireNonNull(this.minecraft).keyboardHandler.setSendRepeatsToGui(true);
+
+        buttonFile.setLayout(this.width - 115, (this.height / 6 + 168) - 40, 100, 20);
+        buttonFile.setMessage(new TranslationTextComponent("screen.mxtune.file_selector.title"));
+        addButton(buttonFile);
         buttonOpen.setLayout(this.width - 65, (this.height / 6 + 168) - 20, 50, 20);
         buttonOpen.setMessage(new TranslationTextComponent("gui.mxtune.open"));
         addButton(buttonOpen);
@@ -78,6 +82,10 @@ public class TestScreen extends Screen
         Objects.requireNonNull(minecraft).setScreen(new GuiMultiInstChooser(this));
     }
 
+    public void onButtonFile()
+    {
+        Objects.requireNonNull(minecraft).setScreen(new FileSelector(this));
+    }
 
     @Override
     public void render(MatrixStack matrixStack, int pMouseX, int pMouseY, float pPartialTicks)
