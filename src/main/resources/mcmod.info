@@ -8,6 +8,7 @@
   "url": "https://minecraft.curseforge.com/projects/mxtune",
   "authorList": ["Aeronica"],
   "credits": "The Forge and FML guys, TheGreyGhost, coolAlias, Choonster,  diesieben07, McJty, OreCruncher, MrCrayFish, BedrockMiner, The Modding Community",
+  "logoFile": "assets/mxtune/textures/logo.png",
   "screenshots": [],
   "dependencies": []
 }
