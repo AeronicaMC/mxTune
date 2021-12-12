@@ -48,10 +48,9 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import static net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import static net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 
-@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION,
-     acceptedMinecraftVersions = Reference.ACCEPTED_MINECRAFT_VERSIONS,
-     dependencies = Reference.DEPENDENTS, updateJSON = Reference.UPDATE,
-     certificateFingerprint = Reference.CERTIFICATE_FINGERPRINT)
+@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, useMetadata = true,
+    acceptedMinecraftVersions = Reference.ACCEPTED_MINECRAFT_VERSIONS,
+    certificateFingerprint = Reference.CERTIFICATE_FINGERPRINT)
 
 @SuppressWarnings("deprecation")
 public class MXTune

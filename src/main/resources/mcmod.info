@@ -6,10 +6,14 @@
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "https://minecraft.curseforge.com/projects/mxtune",
+  "updateJSON": "https://gist.githubusercontent.com/Aeronica/dbc2619e0011d5bdbe7a162d0c6aa82b/raw/update.json",
   "authorList": ["Aeronica"],
   "credits": "The Forge and FML guys, TheGreyGhost, coolAlias, Choonster,  diesieben07, McJty, OreCruncher, MrCrayFish, BedrockMiner, The Modding Community",
   "logoFile": "assets/mxtune/textures/logo.png",
   "screenshots": [],
-  "dependencies": []
+  "useDependencyInformation": true,
+  "requiredMods": [],
+  "dependencies": ["required-after:forge@[${mcversion}-${forgeversion},)"],
+  "dependants": []
 }
 ]
