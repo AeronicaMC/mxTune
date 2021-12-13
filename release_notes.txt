@@ -1,5 +1,10 @@
-XXXX-XX-XX mxtune-1.12.2-2.0.0-beta.1
+2021-12-12 mxtune-1.12.2-1.0.2
+Changes
+Update to latest forge 14.23.5.2859 and clean up the build script.
+Mabinogi now allows the octave command to set octave to 0 now: o0. So now mxTune can too!
+Correct the logo.png/mcmod.info files so the logo appears in the mod info gui.
 
+----
 2021-01-16 mxtune-1.12.2-1.0.1
 First Release Version and fix for a rare null pointer exception.
  * Fix rare NPE in PCMCodec.class.
