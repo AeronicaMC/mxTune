@@ -47,9 +47,9 @@ configurations {
     shade
 }
 
-version = "${version_mod}"
+version = "${project.version_mod}"
 group = 'aeronicamc'
-archivesBaseName = "mxtune-${version_mc}"
+archivesBaseName = "mxtune-${project.version_mc}"
 java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 8 to end users, so your mod should target Java 8.
 project.logger.info('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 
@@ -139,9 +139,9 @@ dependencies {
     // compile against the JEI API but do not include it at runtime
     //compileOnly fg.deobf("mezz.jei:jei-${version_mc}:${jei_version}:api")
     // at runtime, use the full JEI jar
-    implementation fg.deobf("curse.maven:${jei_version}")
-    implementation fg.deobf("curse.maven:${configured}")
-    implementation fg.deobf("curse.maven:${better_mods_button}")
+    implementation fg.deobf("curse.maven:${project.jei_version}")
+    implementation fg.deobf("curse.maven:${project.configured}")
+    implementation fg.deobf("curse.maven:${project.better_mods_button}")
 
     implementation 'com.h2database:h2-mvstore:1.4.200'
     shade 'com.h2database:h2-mvstore:1.4.200'
