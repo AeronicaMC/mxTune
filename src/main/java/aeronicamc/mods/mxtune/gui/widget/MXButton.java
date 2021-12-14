@@ -11,7 +11,7 @@ import net.minecraftforge.fml.client.gui.GuiUtils;
 /**
  * Uses the forge ExtendedButton render but extends vanilla Button.
  */
-public class MXButton extends Button
+public class MXButton extends Button implements ILayout
 {
     protected int padding = 0;
     public MXButton(IPressable pOnPress)
@@ -34,12 +34,14 @@ public class MXButton extends Button
         super(pX, pY, pWidth, pHeight, pMessage, pOnPress, pOnTooltip);
     }
 
+    @Override
     public void setPosition(int pX, int pY)
     {
         this.x = pX;
         this.y = pY;
     }
 
+    @Override
     public void setLayout(int pX, int pY, int pWidth, int pHeight)
     {
        this.x = pX;
@@ -48,31 +50,37 @@ public class MXButton extends Button
        this.height = pHeight;
     }
 
+    @Override
     public int getLeft()
     {
         return this.x;
     }
 
+    @Override
     public int getTop()
     {
         return this.y;
     }
 
+    @Override
     public int getRight()
     {
         return this.x + this.width + padding;
     }
 
+    @Override
     public int getBottom()
     {
         return this.y + this.height + padding;
     }
 
+    @Override
     public int getPadding()
     {
         return padding;
     }
 
+    @Override
     public void setPadding(int padding)
     {
         this.padding = padding;

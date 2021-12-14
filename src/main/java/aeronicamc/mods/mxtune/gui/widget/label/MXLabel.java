@@ -1,15 +1,20 @@
 package aeronicamc.mods.mxtune.gui.widget.label;
 
+import aeronicamc.mods.mxtune.gui.TextColorFg;
+import aeronicamc.mods.mxtune.gui.widget.ILayout;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.IRenderable;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
-public class MXLabel extends AbstractGui implements IRenderable
+public class MXLabel extends AbstractGui implements IRenderable, ILayout
 {
+    protected int padding = 0;
     private int width;
     private int height;
     private int x;
@@ -25,6 +30,10 @@ public class MXLabel extends AbstractGui implements IRenderable
     private int border = 0;
     private FontRenderer fontRenderer;
 
+    public MXLabel()
+    {
+        this(Minecraft.getInstance().font, 0, 0, 0, 0, new StringTextComponent(""), TextColorFg.WHITE | MathHelper.ceil(1F * 255.0F) << 24);
+    }
 
     public MXLabel (FontRenderer pFontRenderer, int pX, int pY, int pWidth, int pHeight, ITextComponent pLabelText, int pTextColor)
     {
@@ -37,6 +46,64 @@ public class MXLabel extends AbstractGui implements IRenderable
         textColor = pTextColor;
     }
 
+    @Override
+    public void setPosition(int pX, int pY)
+    {
+        this.x = pX;
+        this.y = pY;
+    }
+
+    @Override
+    public void setLayout(int pX, int pY, int pWidth, int pHeight)
+    {
+        this.x = pX;
+        this.y = pY;
+        this.width = pWidth;
+        this.height = pHeight;
+    }
+
+    @Override
+    public int getLeft()
+    {
+        return this.x;
+    }
+
+    @Override
+    public int getTop()
+    {
+        return this.y;
+    }
+
+    @Override
+    public int getRight()
+    {
+        return this.x + this.width + padding;
+    }
+
+    @Override
+    public int getBottom()
+    {
+        return this.y + this.height + padding;
+    }
+
+    @Override
+    public int getPadding()
+    {
+        return padding;
+    }
+
+    @Override
+    public void setPadding(int padding)
+    {
+        this.padding = padding;
+    }
+
+    public void setFontRenderer(FontRenderer fontRenderer)
+    {
+        this.fontRenderer = fontRenderer;
+    }
+
+    // TODO: Rethink the label. Could I just base this on TextFieldWidget instead
     public int getWidth()
     {
         return width;
