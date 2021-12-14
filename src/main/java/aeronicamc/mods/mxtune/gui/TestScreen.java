@@ -1,11 +1,12 @@
 package aeronicamc.mods.mxtune.gui;
 
+import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
+import aeronicamc.mods.mxtune.gui.widget.MXTextFieldWidget;
 import aeronicamc.mods.mxtune.gui.widget.label.MXLabel;
 import aeronicamc.mods.mxtune.gui.widget.list.SoundFontList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.text.StringTextComponent;
@@ -21,8 +22,8 @@ public class TestScreen extends Screen
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private final SoundFontList sfpWidget = new SoundFontList();
-    private TextFieldWidget titleTextWidget;
-    private TextFieldWidget musicTextWidget;
+    private MXTextFieldWidget titleTextWidget = new MXTextFieldWidget(Reference.MXT_SONG_TITLE_LENGTH);
+    private MXTextFieldWidget musicTextWidget = new MXTextFieldWidget(Reference.MAX_MML_PART_LENGTH);
     private MXLabel labelTitle;
     private boolean initialized;
     private final MXButton buttonOpen = new MXButton((open) -> onButtonOpen());
@@ -67,10 +68,11 @@ public class TestScreen extends Screen
             initialized = true;
         }
 
-        titleTextWidget = new TextFieldWidget(font, sfpWidget.getRight() + 10, height / 2, (width - sfpWidget.getRight()) - 20, font.lineHeight + 4, new StringTextComponent("Title"));
+        titleTextWidget.setLayout(sfpWidget.getRight() + 10, height / 2, (width - sfpWidget.getRight()) - 20, font.lineHeight + 4);
+        titleTextWidget.setMessage(new StringTextComponent("Title"));
 
-        musicTextWidget = new TextFieldWidget(font, sfpWidget.getRight() + 10, (height / 2) + 20, (width - sfpWidget.getRight()) - 20, font.lineHeight + 4, new StringTextComponent("MML"));
-        musicTextWidget.setMaxLength(10000);
+        musicTextWidget.setLayout(sfpWidget.getRight() + 10, (height / 2) + 20, (width - sfpWidget.getRight()) - 20, font.lineHeight + 4);
+        musicTextWidget.setMessage(new StringTextComponent("MML"));
 
         addWidget(sfpWidget);
         addWidget(titleTextWidget);
