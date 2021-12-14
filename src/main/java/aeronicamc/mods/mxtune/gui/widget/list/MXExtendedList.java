@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.gui.widget.list;
 
+import aeronicamc.mods.mxtune.gui.widget.ILayout;
 import aeronicamc.mods.mxtune.util.AntiNull;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -15,8 +16,9 @@ import net.minecraft.util.math.MathHelper;
 
 import java.util.function.Consumer;
 
-public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>> extends AbstractList<E>
+public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>> extends AbstractList<E> implements ILayout
 {
+    protected int padding;
     protected int rowWidth;
     protected Consumer<E> selectCallback;
     private boolean renderBackground;
@@ -38,14 +40,12 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
         super.setRenderBackground(true);
     }
 
-    public void setLayout(int pWidth, int pHeight, int pY0, int pY1, int pLeft)
+    @Override
+    public void setPosition(int pX, int pY)
     {
-        this.width = pWidth;
-        this.setRowWidth(pWidth);
-        this.setLeftPos(pLeft);
-        this.height = pHeight;
-        super.y0 = pY0;
-        super.y1 = pY1;
+        super.setLeftPos(pX);
+        this.y0 = pY;
+        this.y1 = y0 + height;
     }
 
     public void setLayout(int pX, int pY, int pWidth, int pHeight)
@@ -56,6 +56,42 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
         this.height = pHeight;
         this.y0 = pY;
         this.y1 = y0 + pHeight;
+    }
+
+    @Override
+    public int getLeft()
+    {
+        return super.getLeft();
+    }
+
+    @Override
+    public int getTop()
+    {
+        return super.getTop();
+    }
+
+    @Override
+    public int getRight()
+    {
+        return super.getRight() + padding;
+    }
+
+    @Override
+    public int getBottom()
+    {
+        return super.getBottom() + padding;
+    }
+
+    @Override
+    public int getPadding()
+    {
+        return padding;
+    }
+
+    @Override
+    public void setPadding(int padding)
+    {
+        this.padding = padding;
     }
 
     public abstract void setCallBack(Consumer<E> selectCallback);
