@@ -57,7 +57,8 @@ public class TestScreen extends Screen
             minecraft.popGuiLayer();
         }));
 
-        sfpWidget.setLayout(128, height - 30 , 15, height - 15, 15);
+        //sfpWidget.setLayout(128, height - 30 , 15, height - 15, 15);
+        sfpWidget.setLayout(15, 15, 128, height - 30);
         sfpWidget.setCallBack((entry)-> {
             LOGGER.info("Selected {}", entry.getId());
         });

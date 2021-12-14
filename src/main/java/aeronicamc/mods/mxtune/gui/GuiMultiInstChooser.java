@@ -27,12 +27,13 @@ public class GuiMultiInstChooser extends Screen
     private int guiLeft;
     private int guiTop;
     private final Screen parent;
-    SoundFontList widget;
+    private SoundFontList widget;
 
     protected GuiMultiInstChooser(Screen parent)
     {
         super(new TranslationTextComponent("gui.mxtune.guimultiinstchooser.title"));
         this.parent = parent;
+        widget = new SoundFontList().init();
     }
 
     @Override
@@ -53,7 +54,9 @@ public class GuiMultiInstChooser extends Screen
             instListWidth = Math.max(instListWidth, stringWidth + 10);
         }
         instListWidth = Math.min(instListWidth, 128);
-        widget = new SoundFontList(minecraft, instListWidth + 1, imageHeight - 20, guiTop + 10, guiTop + imageHeight - 10, font.lineHeight + 4, guiLeft + 10, this::selectCallback).init();
+        //widget = new SoundFontList(minecraft, instListWidth + 1, imageHeight - 20, guiTop + 10, guiTop + imageHeight - 10, font.lineHeight + 4, guiLeft + 10, this::selectCallback).init();
+        widget.setLayout(guiLeft + 10, guiTop + 10, instListWidth + 1, imageHeight -20);
+        widget.setCallBack(this::selectCallback);
         addWidget(widget);
 
         int widthButtons = 50;

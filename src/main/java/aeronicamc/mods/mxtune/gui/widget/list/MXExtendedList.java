@@ -48,6 +48,16 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
         super.y1 = pY1;
     }
 
+    public void setLayout(int pX, int pY, int pWidth, int pHeight)
+    {
+        this.width = pWidth;
+        this.setRowWidth(pWidth);
+        this.setLeftPos(pX);
+        this.height = pHeight;
+        this.y0 = pY;
+        this.y1 = y0 + pHeight;
+    }
+
     public abstract void setCallBack(Consumer<E> selectCallback);
 
     @Override

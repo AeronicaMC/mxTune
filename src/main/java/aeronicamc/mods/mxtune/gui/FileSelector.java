@@ -146,7 +146,7 @@ public class FileSelector extends Screen
         int statusTop = listBottom + 4;
 
         titleLabel = new MXLabel(font, (width - font.width(title)) / 2, 5, font.width(title), entryHeight, title, TextColorFg.WHITE);
-        pathListWidget.setLayout(listWidth, listHeight, listTop, listBottom, left);
+        pathListWidget.setLayout(left, listTop, listWidth, listHeight);
         pathListWidget.setCallBack((entry) -> {
             selectedEntry = entry;
         });
