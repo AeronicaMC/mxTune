@@ -103,6 +103,18 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
     }
 
     @Override
+    public void centerScrollOn(E pEntry)
+    {
+        super.centerScrollOn(pEntry);
+    }
+
+    @Override
+    public void ensureVisible(E pEntry)
+    {
+        super.ensureVisible(pEntry);
+    }
+
+    @Override
     public int getRowWidth()
     {
         return this.rowWidth;

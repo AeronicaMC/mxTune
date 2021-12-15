@@ -3,11 +3,11 @@ package aeronicamc.mods.mxtune.gui;
 import aeronicamc.mods.mxtune.caches.DirectoryWatcher;
 import aeronicamc.mods.mxtune.caches.FileHelper;
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
+import aeronicamc.mods.mxtune.gui.widget.MXTextFieldWidget;
 import aeronicamc.mods.mxtune.gui.widget.label.MXLabel;
 import aeronicamc.mods.mxtune.gui.widget.list.PathList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -59,11 +59,11 @@ public class FileSelector extends Screen
 
     private MXLabel titleLabel;
     private MXLabel searchLabel;
-    private TextFieldWidget searchText;
+    private MXTextFieldWidget searchText = new MXTextFieldWidget(30);
     private boolean sorted = false;
     private SortType sortType = SortType.NORMAL;
     private String lastSearch = "";
-    private SortType cachedSortType;
+    private SortType cachedSortType = SortType.NORMAL;
 
     private MXButton buttonCancel;
 
@@ -147,14 +147,16 @@ public class FileSelector extends Screen
 
         titleLabel = new MXLabel(font, (width - font.width(title)) / 2, 5, font.width(title), entryHeight, title, TextColorFg.WHITE);
         pathListWidget.setLayout(left, listTop, listWidth, listHeight);
-        pathListWidget.setCallBack((entry) -> {
+        this.pathListWidget.setCallBack((entry) -> {
             selectedEntry = entry;
         });
 
         ITextComponent searchLabelText = new TranslationTextComponent("gui.mxtune.label.search");
         int searchLabelWidth = font.width(searchLabelText) + 4;
         searchLabel = new MXLabel(font, left, statusTop, searchLabelWidth, entryHeight + 2, searchLabelText, TextColorFg.WHITE);
-        searchText = new TextFieldWidget(font, left + searchLabelWidth, statusTop, listWidth - searchLabelWidth, entryHeight, new TranslationTextComponent("gui.mxtune.label.search"));
+        //searchText = new TextFieldWidget(font, left + searchLabelWidth, statusTop, listWidth - searchLabelWidth, entryHeight, new TranslationTextComponent("gui.mxtune.label.search"));
+        searchText.setLayout(left + searchLabelWidth, statusTop, listWidth - searchLabelWidth, entryHeight);
+        searchText.setMessage(new TranslationTextComponent("gui.mxtune.label.search"));
         searchText.setFocus(true);
         searchText.setCanLoseFocus(true);
 
@@ -171,19 +173,16 @@ public class FileSelector extends Screen
         addWidget(pathListWidget);
         addWidget(searchText);
         startWatcher();
+        resortFiles(sortType);
     }
 
     @Override
     public void tick()
     {
         searchText.tick();
-        pathListWidget.setSelected(selectedEntry);
 
-        if (!searchText.getValue().equals(lastSearch))
-        {
-            reloadFiles();
-            sorted = false;
-        }
+        if (selectedEntry != null && pathListWidget.children().contains(selectedEntry) && !selectedEntry.equals(pathListWidget.getSelected()))
+            pathListWidget.setSelected(selectedEntry);
 
         if (!sorted)
         {
@@ -191,11 +190,19 @@ public class FileSelector extends Screen
             pathListWidget.getEntries().sort(sortType);
             if (selectedEntry != null)
             {
-                selectedEntry = pathListWidget.children().stream().filter(e -> e == selectedEntry).findFirst().orElse(null);
-                // update cache
+                selectedEntry = pathListWidget.children().stream().filter(e -> e.getPath().equals(selectedEntry.getPath())).findFirst().orElse(null);
+                if (selectedEntry != null)
+                    pathListWidget.centerScrollOn(selectedEntry);
             }
             sorted = true;
         }
+
+        if (!searchText.getValue().equals(lastSearch))
+        {
+            reloadFiles();
+            sorted = false;
+        }
+
     }
 
     private void reloadFiles()
@@ -229,7 +236,6 @@ public class FileSelector extends Screen
     private void resortFiles(SortType newSort)
     {
         this.sortType = newSort;
-
         for (SortType sort : SortType.values())
         {
             if (sort.button != null)
