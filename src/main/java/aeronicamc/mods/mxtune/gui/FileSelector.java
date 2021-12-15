@@ -207,30 +207,32 @@ public class FileSelector extends Screen
 
     private void reloadFiles()
     {
-        Path path = FileHelper.getDirectory(FileHelper.CLIENT_MML_FOLDER, CLIENT);
-        PathMatcher filter = FileHelper.getMmlMatcher(path);
-        try (Stream<Path> paths = Files.list(path))
+        synchronized (new Object())
         {
-            fileList = paths
-                    .filter(filter::matches)
-                    .collect(Collectors.toList());
-        }
-        catch (NullPointerException | IOException e)
-        {
-            LOGGER.error(e);
-        }
-        List<Path> files = new ArrayList<>();
-        for (Path file : fileList)
-        {
-            if (file.getFileName().toString().toLowerCase(Locale.ROOT).contains(searchText.getValue().toLowerCase(Locale.ROOT)))
+            Path path = FileHelper.getDirectory(FileHelper.CLIENT_MML_FOLDER, CLIENT);
+            PathMatcher filter = FileHelper.getMmlMatcher(path);
+            try (Stream<Path> paths = Files.list(path))
             {
-                files.add(file);
+                fileList = paths
+                        .filter(filter::matches)
+                        .collect(Collectors.toList());
+            } catch (NullPointerException | IOException e)
+            {
+                LOGGER.error(e);
             }
+            List<Path> files = new ArrayList<>();
+            for (Path file : fileList)
+            {
+                if (file.getFileName().toString().toLowerCase(Locale.ROOT).contains(searchText.getValue().toLowerCase(Locale.ROOT)))
+                {
+                    files.add(file);
+                }
+            }
+            fileList = files;
+            pathListWidget.clear();
+            pathListWidget.addAll(files);
+            lastSearch = searchText.getValue();
         }
-        fileList = files;
-        pathListWidget.clear();
-        pathListWidget.addAll(files);
-        lastSearch = searchText.getValue();
     }
 
     private void resortFiles(SortType newSort)
@@ -242,6 +244,14 @@ public class FileSelector extends Screen
                 sort.button.active = sortType != sort;
         }
         sorted = false;
+    }
+
+    @Override
+    public boolean mouseClicked(double pMouseX, double pMouseY, int pButton)
+    {
+        searchText.mouseClicked(pMouseX, pMouseY, pButton);
+        ModGuiHelper.clearOnMouseLeftClicked(searchText, pMouseX, pMouseY, pButton);
+        return super.mouseClicked(pMouseX, pMouseY, pButton);
     }
 
     @Override
