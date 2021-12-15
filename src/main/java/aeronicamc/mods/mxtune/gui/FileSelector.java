@@ -6,10 +6,13 @@ import aeronicamc.mods.mxtune.gui.widget.MXButton;
 import aeronicamc.mods.mxtune.gui.widget.MXTextFieldWidget;
 import aeronicamc.mods.mxtune.gui.widget.label.MXLabel;
 import aeronicamc.mods.mxtune.gui.widget.list.PathList;
+import aeronicamc.mods.mxtune.items.MXScreen;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.loading.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -26,7 +29,7 @@ import java.util.stream.Stream;
 
 import static net.minecraftforge.fml.LogicalSide.CLIENT;
 
-public class FileSelector extends Screen
+public class FileSelector extends MXScreen
 {
     private static final Logger LOGGER = LogManager.getLogger(FileSelector.class);
     private enum SortType implements Comparator<PathList.Entry>
@@ -170,6 +173,17 @@ public class FileSelector extends Screen
         x += buttonWidth + buttonMargin;
         addButton(SortType.Z_TO_A.button = new Button(x, titleTop, buttonWidth - buttonMargin, 20 , SortType.Z_TO_A.getButtonText(), b -> resortFiles(SortType.Z_TO_A)));
 
+        int buttonTop = height - 25;
+        int xOpen = (this.width /2) - 75 * 2;
+        int xRefresh = xOpen + 75;
+        int xDone = xRefresh + 75;
+        int xCancel = xDone + 75;
+        MXButton mxbOpenFolder = new MXButton(open->openFolder());
+        mxbOpenFolder.setLayout(xOpen, buttonTop, 75, 20);
+        mxbOpenFolder.addHooverText(true, new StringTextComponent("TEST Help Title").withStyle(TextFormatting.YELLOW));
+        mxbOpenFolder.addHooverText(false, new StringTextComponent("TEST Help Text . . . blah blah").withStyle(TextFormatting.WHITE));
+        addButton(mxbOpenFolder);
+
         addWidget(pathListWidget);
         addWidget(searchText);
         startWatcher();
@@ -244,6 +258,11 @@ public class FileSelector extends Screen
                 sort.button.active = sortType != sort;
         }
         sorted = false;
+    }
+
+    private void openFolder()
+    {
+        FileHelper.openFolder(FileHelper.CLIENT_MML_FOLDER);
     }
 
     @Override

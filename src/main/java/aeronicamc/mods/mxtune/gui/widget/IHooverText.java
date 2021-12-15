@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface IHooverText
 {
-    void addHooverTexts(ITextComponent hooverText);
+    void addHooverText(boolean clearAll, ITextComponent hooverText);
 
-    boolean isMouseOverWidget(int guiLeft, int guiTop, double mouseX, double mouseY);
+    boolean isMouseOverWidget(double mouseX, double mouseY);
 
     List<ITextComponent> getHooverTexts();
 }

@@ -26,6 +26,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.lwjgl.glfw.GLFW;
 
+@SuppressWarnings("FieldMayBeFinal")
 public class KeyHandler
 {
     private static final Minecraft mc = Minecraft.getInstance();

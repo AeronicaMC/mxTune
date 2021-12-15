@@ -17,6 +17,7 @@ import java.util.List;
 public class MXButton extends Button implements ILayout, IHooverText
 {
     protected int padding = 0;
+    @SuppressWarnings("FieldMayBeFinal")
     private List<ITextComponent> hooverTexts = new ArrayList<>();
 
     public MXButton(IPressable pOnPress)
@@ -92,13 +93,14 @@ public class MXButton extends Button implements ILayout, IHooverText
     }
 
     @Override
-    public void addHooverTexts(ITextComponent hooverText)
+    public void addHooverText(boolean clearAll, ITextComponent hooverText)
     {
+        if (clearAll) hooverTexts.clear();
         hooverTexts.add(hooverText);
     }
 
     @Override
-    public boolean isMouseOverWidget(int guiLeft, int guiTop, double mouseX, double mouseY)
+    public boolean isMouseOverWidget(double mouseX, double mouseY)
     {
         return this.isMouseOver(mouseX, mouseY);
     }
