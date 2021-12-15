@@ -8,12 +8,17 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.client.gui.GuiUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Uses the forge ExtendedButton render but extends vanilla Button.
  */
-public class MXButton extends Button implements ILayout
+public class MXButton extends Button implements ILayout, IHooverText
 {
     protected int padding = 0;
+    private List<ITextComponent> hooverTexts = new ArrayList<>();
+
     public MXButton(IPressable pOnPress)
     {
         super(0, 0, 50, 20, DialogTexts.GUI_DONE, pOnPress);
@@ -84,6 +89,24 @@ public class MXButton extends Button implements ILayout
     public void setPadding(int padding)
     {
         this.padding = padding;
+    }
+
+    @Override
+    public void addHooverTexts(ITextComponent hooverText)
+    {
+        hooverTexts.add(hooverText);
+    }
+
+    @Override
+    public boolean isMouseOverWidget(int guiLeft, int guiTop, double mouseX, double mouseY)
+    {
+        return this.isMouseOver(mouseX, mouseY);
+    }
+
+    @Override
+    public List<ITextComponent> getHooverTexts()
+    {
+        return hooverTexts;
     }
 
     /**
