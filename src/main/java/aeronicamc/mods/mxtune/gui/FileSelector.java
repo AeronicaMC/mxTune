@@ -178,11 +178,23 @@ public class FileSelector extends MXScreen
         int xRefresh = xOpen + 75;
         int xDone = xRefresh + 75;
         int xCancel = xDone + 75;
-        MXButton mxbOpenFolder = new MXButton(open->openFolder());
+        MXButton mxbOpenFolder = new MXButton(new TranslationTextComponent("gui.mxtune.button.open_folder"), open->openFolder());
         mxbOpenFolder.setLayout(xOpen, buttonTop, 75, 20);
         mxbOpenFolder.addHooverText(true, new StringTextComponent("TEST Help Title").withStyle(TextFormatting.YELLOW));
         mxbOpenFolder.addHooverText(false, new StringTextComponent("TEST Help Text . . . blah blah").withStyle(TextFormatting.WHITE));
         addButton(mxbOpenFolder);
+
+        MXButton mxbRefreshFiles = new MXButton(new TranslationTextComponent("gui.mxtune.button.refresh"), refresh->refreshFiles());
+        mxbRefreshFiles.setLayout(xRefresh, buttonTop, 75, 20);
+        addButton(mxbRefreshFiles);
+
+        MXButton mxbSelectDone = new MXButton(new TranslationTextComponent("gui.mxtune.button.select"), select->selectDone());
+        mxbSelectDone.setLayout(xDone, buttonTop, 75, 20);
+        addButton(mxbSelectDone);
+
+        MXButton mxbCancelDone = new MXButton(new TranslationTextComponent("gui.cancel"), cancel->cancelDone());
+        mxbCancelDone.setLayout(xCancel, buttonTop, 75, 20);
+        addButton(mxbCancelDone);
 
         addWidget(pathListWidget);
         addWidget(searchText);
@@ -263,6 +275,23 @@ public class FileSelector extends MXScreen
     private void openFolder()
     {
         FileHelper.openFolder(FileHelper.CLIENT_MML_FOLDER);
+    }
+
+    private void refreshFiles()
+    {
+        init();
+    }
+
+    private void selectDone()
+    {
+        // TODO: Action
+        Objects.requireNonNull(minecraft).setScreen(parent);
+    }
+
+    private void cancelDone()
+    {
+        // TODO: Action
+        Objects.requireNonNull(minecraft).setScreen(parent);
     }
 
     @Override

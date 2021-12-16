@@ -25,6 +25,11 @@ public class MXButton extends Button implements ILayout, IHooverText
         super(0, 0, 50, 20, DialogTexts.GUI_DONE, pOnPress);
     }
 
+    public MXButton(ITextComponent pMessage, IPressable pOnPress)
+    {
+        super(0, 0, 50, 20, pMessage, pOnPress);
+    }
+
     public MXButton(int pX, int pY, int pWidth, int pHeight, ITextComponent pMessage, Button.IPressable pOnPress)
     {
         super(pX, pY, pWidth, pHeight, pMessage, pOnPress);
@@ -109,6 +114,12 @@ public class MXButton extends Button implements ILayout, IHooverText
     public List<ITextComponent> getHooverTexts()
     {
         return hooverTexts;
+    }
+
+    @Override
+    public void setMessage(ITextComponent pMessage)
+    {
+        super.setMessage(pMessage);
     }
 
     /**
