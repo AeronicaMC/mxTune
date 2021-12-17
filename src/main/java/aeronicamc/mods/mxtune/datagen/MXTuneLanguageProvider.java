@@ -21,7 +21,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         // TODO
         addBlocks();
         addItems();
-        addGuiScreens();
+        addGuiTexts();
     }
 
     @Override
@@ -42,7 +42,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         add(ModItems.MUSIC_PAPER.get(), "Music Paper");
         addTooltip("sheet_music.days_left", "Days left: %s");
         addTooltip("sheet_music.days_left_error", "Days left: nn");
-        addTooltip("mxtune.sheet_music.duration_error", "h:mm:ss");
+        addTooltip("sheet_music.duration_error", "h:mm:ss");
         addTooltip("sheet_music.empty", " - Empty - ");
         addInstrumentItems(this);
         addTooltip("instrument_item.shift_help_01", "Hold SHIFT for HELP");
@@ -62,14 +62,16 @@ public class MXTuneLanguageProvider extends LanguageProvider
         return WordUtils.capitalizeFully(StringUtils.replace(input, "_", " "));
     }
 
-    private void addGuiScreens()
+    private void addGuiTexts()
     {
-        addScreen("file_selector.title", "File Selector");
-        addGuiWidget("label.search", "Search");
-        addGuiWidget("button.open_folder", "Open Folder");
-        addGuiWidget("button.refresh", "Refresh");
-        addGuiWidget("button.refresh.help", "Only needed it the file list fails to refresh automatically after dropping MML files into the folder.");
-        addGuiWidget("button.select", "Select");
+        addGuiText("gui_file_selector.title", "File Selector");
+        addGuiText("label.search", "Search");
+        addGuiText("button.open_folder", "Open Folder");
+        addGuiText("button.open_folder.help01","Place MML files into this folder to be imported. Recognized types are: ");
+        addGuiText("button.open_folder.help02"," .mml, .ms2mml, .zip (contains multiple .ms2mml files)");
+        addGuiText("button.refresh", "Refresh");
+        addGuiText("button.refresh.help01", "Only needed it the file list fails to refresh automatically after placing files into the folder.");
+        addGuiText("button.select", "Select");
     }
 
     /**
@@ -83,21 +85,11 @@ public class MXTuneLanguageProvider extends LanguageProvider
     }
 
     /**
-     * prepends screen.[mod_id].
-     * @param identifier the unique help id
-     * @param title of the screen
-     */
-    private void addScreen(String identifier, String title)
-    {
-        add(String.format("screen.%s.%s", Reference.MOD_ID, identifier), title);
-    }
-
-    /**
      * prepends gui.[mod_id].
      * @param identifier the unique help id
-     * @param text of the widget
+     * @param text of the gui element
      */
-    private void addGuiWidget(String identifier, String text)
+    private void addGuiText(String identifier, String text)
     {
         add(String.format("gui.%s.%s", Reference.MOD_ID, identifier), text);
     }

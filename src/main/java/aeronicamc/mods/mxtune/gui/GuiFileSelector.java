@@ -11,7 +11,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.loading.StringUtils;
@@ -29,9 +28,9 @@ import java.util.stream.Stream;
 
 import static net.minecraftforge.fml.LogicalSide.CLIENT;
 
-public class FileSelector extends MXScreen
+public class GuiFileSelector extends MXScreen
 {
-    private static final Logger LOGGER = LogManager.getLogger(FileSelector.class);
+    private static final Logger LOGGER = LogManager.getLogger(GuiFileSelector.class);
     private enum SortType implements Comparator<PathList.Entry>
     {
         NORMAL,
@@ -76,9 +75,9 @@ public class FileSelector extends MXScreen
     private boolean watcherStarted = false;
     private static final int PADDING = 6;
 
-    protected FileSelector(Screen parent)
+    protected GuiFileSelector(Screen parent)
     {
-        super(new TranslationTextComponent("screen.mxtune.file_selector.title"));
+        super(new TranslationTextComponent("gui.mxtune.gui_file_selector.title"));
         this.parent = parent;
 
         // refresh the file list automatically - might be better to not bother the extension filtering but we'll see
@@ -157,9 +156,7 @@ public class FileSelector extends MXScreen
         ITextComponent searchLabelText = new TranslationTextComponent("gui.mxtune.label.search");
         int searchLabelWidth = font.width(searchLabelText) + 4;
         searchLabel = new MXLabel(font, left, statusTop, searchLabelWidth, entryHeight + 2, searchLabelText, TextColorFg.WHITE);
-        //searchText = new TextFieldWidget(font, left + searchLabelWidth, statusTop, listWidth - searchLabelWidth, entryHeight, new TranslationTextComponent("gui.mxtune.label.search"));
         searchText.setLayout(left + searchLabelWidth, statusTop, listWidth - searchLabelWidth, entryHeight);
-        searchText.setMessage(new TranslationTextComponent("gui.mxtune.label.search"));
         searchText.setFocus(true);
         searchText.setCanLoseFocus(true);
 
@@ -180,12 +177,16 @@ public class FileSelector extends MXScreen
         int xCancel = xDone + 75;
         MXButton mxbOpenFolder = new MXButton(new TranslationTextComponent("gui.mxtune.button.open_folder"), open->openFolder());
         mxbOpenFolder.setLayout(xOpen, buttonTop, 75, 20);
-        mxbOpenFolder.addHooverText(true, new StringTextComponent("TEST Help Title").withStyle(TextFormatting.YELLOW));
-        mxbOpenFolder.addHooverText(false, new StringTextComponent("TEST Help Text . . . blah blah").withStyle(TextFormatting.WHITE));
+        mxbOpenFolder.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.open_folder").withStyle(TextFormatting.YELLOW));
+        mxbOpenFolder.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.open_folder.help01").withStyle(TextFormatting.WHITE));
+        mxbOpenFolder.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.open_folder.help02").withStyle(TextFormatting.GREEN));
         addButton(mxbOpenFolder);
 
         MXButton mxbRefreshFiles = new MXButton(new TranslationTextComponent("gui.mxtune.button.refresh"), refresh->refreshFiles());
         mxbRefreshFiles.setLayout(xRefresh, buttonTop, 75, 20);
+        mxbRefreshFiles.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.refresh").withStyle(TextFormatting.YELLOW));
+        mxbRefreshFiles.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.refresh.help01").withStyle(TextFormatting.WHITE));
+
         addButton(mxbRefreshFiles);
 
         MXButton mxbSelectDone = new MXButton(new TranslationTextComponent("gui.mxtune.button.select"), select->selectDone());

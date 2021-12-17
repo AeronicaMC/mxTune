@@ -31,7 +31,7 @@ public class TestScreen extends Screen
 
     public TestScreen()
     {
-        super(new TranslationTextComponent("screen.mxtune.test.title"));
+        super(new TranslationTextComponent("gui.mxtune.gui_test.title"));
     }
 
     @Override
@@ -47,10 +47,10 @@ public class TestScreen extends Screen
         labelTitle.setBackColor(TextColorBg.BLUE);
 
         buttonFile.setLayout(this.width - 115, (this.height / 6 + 168) - 40, 100, 20);
-        buttonFile.setMessage(new TranslationTextComponent("screen.mxtune.file_selector.title"));
+        buttonFile.setMessage(new TranslationTextComponent("gui.mxtune.gui_file_selector.title"));
         addButton(buttonFile);
         buttonOpen.setLayout(this.width - 65, (this.height / 6 + 168) - 20, 50, 20);
-        buttonOpen.setMessage(new TranslationTextComponent("gui.mxtune.open"));
+        buttonOpen.setMessage(new TranslationTextComponent("gui.mxtune.button.open"));
         addButton(buttonOpen);
 
         this.addButton(new MXButton(buttonOpen.getLeft(), buttonOpen.getBottom(), 50, 20, new TranslationTextComponent("gui.done"), (done) -> {
@@ -87,7 +87,7 @@ public class TestScreen extends Screen
 
     public void onButtonFile()
     {
-        Objects.requireNonNull(minecraft).setScreen(new FileSelector(this));
+        Objects.requireNonNull(minecraft).setScreen(new GuiFileSelector(this));
     }
 
     @Override

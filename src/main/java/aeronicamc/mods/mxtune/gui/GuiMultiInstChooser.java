@@ -12,7 +12,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Objects;
@@ -31,7 +30,7 @@ public class GuiMultiInstChooser extends Screen
 
     protected GuiMultiInstChooser(Screen parent)
     {
-        super(new TranslationTextComponent("gui.mxtune.guimultiinstchooser.title"));
+        super(new TranslationTextComponent("gui.mxtune.gui_multiinstchooser.title"));
         this.parent = parent;
         widget = new SoundFontList().init();
     }
@@ -119,9 +118,8 @@ public class GuiMultiInstChooser extends Screen
         widget.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
 
         // Render labels
-        ITextComponent guiTitle = new TranslationTextComponent("gui.mxtune.guimultiinstchooser.title");
-        int titleWidth = font.width(guiTitle);
-        font.draw(pMatrixStack, guiTitle, (guiLeft+imageWidth) - titleWidth - 10, guiTop + 4, TextColorFg.DARK_GRAY);
+        int titleWidth = font.width(this.title);
+        font.draw(pMatrixStack, this.title, (guiLeft+imageWidth) - titleWidth - 10, guiTop + 4, TextColorFg.DARK_GRAY);
 
         super.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
 

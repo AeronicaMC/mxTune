@@ -108,12 +108,15 @@
   "item.mxtune.xylophone": "Xylophone",
   "subtitle.mxtune.pcm-proxy": "Music Plays",
   "mxtune.msu.no_sound_bank_loaded": "No Soundbank Loaded",
-  "screen.mxtune.test.title": "Test",
-  "gui.mxtune.guimultiinstchooser.title": "Instrument Chooser",
-  "gui.mxtune.open": "Open",
+  "gui.mxtune.gui_file_selector.title": "File Selector",
+  "gui.mxtune.gui_multiinstchooser.title": "Instrument Chooser",
+  "gui.mxtune.gui_test.title": "Test",
+  "gui.mxtune.button.open": "Open",
   "gui.mxtune.button.open_folder": "Open Folder",
+  "gui.mxtune.button.open_folder.help01": "Place MML files into this folder to be imported. Recognized types are: ",
+  "gui.mxtune.button.open_folder.help02": " .mml, .ms2mml, .zip (contains multiple .ms2mml files)",
   "gui.mxtune.button.refresh": "Refresh",
-  "gui.mxtune.button.refresh.help": "Only needed it the file list fails to refresh automatically after dropping MML files into the folder.",
+  "gui.mxtune.button.refresh.help01": "Only needed it the file list fails to refresh automatically after dropping MML files into the folder.",
   "gui.mxtune.button.select": "Select",
   "gui.mxtune.label.search": "Search",
   "mxtune.sg.apiano": "Acoustic Piano",
@@ -206,6 +209,5 @@
   "mxtune.sg.orchset": "Orchestra Set",
   "mxtune.key.openParty": "Open Party",
   "mxtune.key.openMusicOptions": "Music Options",
-  "mxtune.status.mml_server_side_validation_failure": "Server side music validation error",
-  "screen.mxtune.file_selector.title": "File Selector"
+  "mxtune.status.mml_server_side_validation_failure": "Server side music validation error"
 }
