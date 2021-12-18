@@ -30,6 +30,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 
+@SuppressWarnings("ALL")
 public class TestMs2Mml
 {
     private static final Logger LOGGER = LogManager.getLogger();
