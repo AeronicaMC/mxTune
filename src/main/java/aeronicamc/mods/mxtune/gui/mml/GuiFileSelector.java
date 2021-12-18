@@ -1,7 +1,9 @@
-package aeronicamc.mods.mxtune.gui;
+package aeronicamc.mods.mxtune.gui.mml;
 
 import aeronicamc.mods.mxtune.caches.DirectoryWatcher;
 import aeronicamc.mods.mxtune.caches.FileHelper;
+import aeronicamc.mods.mxtune.gui.ModGuiHelper;
+import aeronicamc.mods.mxtune.gui.TextColorFg;
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
 import aeronicamc.mods.mxtune.gui.widget.MXTextFieldWidget;
 import aeronicamc.mods.mxtune.gui.widget.label.MXLabel;
@@ -51,31 +53,23 @@ public class GuiFileSelector extends MXScreen
         }
     }
     private final Screen parent;
-    private int guiLeft;
-    private int guiTop;
-    private boolean isStateCached;
-    private int cachedSelectedIndex;
 
     private final PathList pathListWidget =  new PathList();
     private PathList.Entry selectedEntry;
 
     private MXLabel titleLabel;
     private MXLabel searchLabel;
-    private MXTextFieldWidget searchText = new MXTextFieldWidget(30);
+    private final MXTextFieldWidget searchText = new MXTextFieldWidget(30);
     private boolean sorted = false;
     private SortType sortType = SortType.NORMAL;
     private String lastSearch = "";
-    private SortType cachedSortType = SortType.NORMAL;
-
-    private MXButton buttonCancel;
 
     private List<Path> fileList = new ArrayList<>();
 
     private final DirectoryWatcher watcher;
     private boolean watcherStarted = false;
-    private static final int PADDING = 6;
 
-    protected GuiFileSelector(Screen parent)
+    public GuiFileSelector(Screen parent)
     {
         super(new TranslationTextComponent("gui.mxtune.gui_file_selector.title"));
         this.parent = parent;
@@ -136,8 +130,6 @@ public class GuiFileSelector extends MXScreen
     {
         super.init();
         Objects.requireNonNull(this.minecraft).keyboardHandler.setSendRepeatsToGui(true);
-        this.guiLeft = 0;
-        this.guiTop = 0;
         int listWidth = width - 10;
         int entryHeight = Objects.requireNonNull(minecraft).font.lineHeight + 2;
         int left = 5;
@@ -200,6 +192,7 @@ public class GuiFileSelector extends MXScreen
         addWidget(pathListWidget);
         addWidget(searchText);
         startWatcher();
+        sorted = false;
         resortFiles(sortType);
     }
 
@@ -229,7 +222,6 @@ public class GuiFileSelector extends MXScreen
             reloadFiles();
             sorted = false;
         }
-
     }
 
     private void reloadFiles()
@@ -286,13 +278,13 @@ public class GuiFileSelector extends MXScreen
     private void selectDone()
     {
         // TODO: Action
-        Objects.requireNonNull(minecraft).setScreen(parent);
+        onClose();
     }
 
     private void cancelDone()
     {
         // TODO: Action
-        Objects.requireNonNull(minecraft).setScreen(parent);
+        onClose();
     }
 
     @Override
