@@ -72,6 +72,8 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.open_folder.help02"," .mml, .ms2mml, .zip (contains multiple .ms2mml files)");
         addGuiText("button.refresh", "Refresh");
         addGuiText("button.refresh.help01", "Only needed it the file list fails to refresh automatically after placing files into the folder.");
+        addGuiText("button.play", "Play");
+        addGuiText("button.stop", "Stop");
         addGuiText("button.select", "Select");
     }
 
