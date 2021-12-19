@@ -27,7 +27,7 @@ public class PathList extends MXExtendedList<PathList.Entry>
         super(minecraft, pWidth, pHeight, pY0, pY1, pItemHeight, pLeft, selectCallback);
     }
 
-    public int addPath(Path path)
+    public int add(Path path)
     {
         return addEntry(new Entry(path));
     }
