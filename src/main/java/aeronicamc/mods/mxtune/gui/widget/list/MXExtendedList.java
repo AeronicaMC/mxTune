@@ -22,6 +22,7 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
     protected int rowWidth;
     protected Consumer<E> selectCallback;
     private boolean renderBackground;
+    protected boolean renderSelection = true;
     private boolean renderTopAndBottom;
 
     public MXExtendedList()
@@ -135,6 +136,18 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
     public void setRenderTopAndBottom(boolean renderTopAndBottom)
     {
         this.renderTopAndBottom = renderTopAndBottom;
+    }
+
+    @Override
+    public void setRenderSelection(boolean pValue)
+    {
+        renderSelection = pValue;
+        super.setRenderSelection(pValue);
+    }
+
+    public boolean getRenderSelection()
+    {
+        return renderSelection;
     }
 
     protected void renderBorder(MatrixStack pPoseStack, int pMouseX, int pMouseY)
