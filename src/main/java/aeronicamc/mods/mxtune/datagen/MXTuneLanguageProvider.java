@@ -64,6 +64,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
 
     private void addGuiTexts()
     {
+        addGuiText("gui_music_library_selector.title", "mxTune File Library");
         addGuiText("gui_file_selector.title", "File Selector");
         addGuiText("label.search", "Search");
         addGuiText("button.open_folder", "Open Folder");

@@ -108,6 +108,7 @@
   "item.mxtune.xylophone": "Xylophone",
   "subtitle.mxtune.pcm-proxy": "Music Plays",
   "mxtune.msu.no_sound_bank_loaded": "No Soundbank Loaded",
+  "gui.mxtune.gui_music_library_selector.title": "mxTune File Library (.mxt)",
   "gui.mxtune.gui_file_selector.title": "File Selector",
   "gui.mxtune.gui_multiinstchooser.title": "Instrument Chooser",
   "gui.mxtune.gui_test.title": "Test",
