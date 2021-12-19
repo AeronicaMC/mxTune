@@ -8,6 +8,7 @@ import aeronicamc.mods.mxtune.gui.widget.MXButton;
 import aeronicamc.mods.mxtune.gui.widget.MXTextFieldWidget;
 import aeronicamc.mods.mxtune.gui.widget.label.MXLabel;
 import aeronicamc.mods.mxtune.gui.widget.list.FileDataList;
+import aeronicamc.mods.mxtune.gui.widget.list.PartList;
 import aeronicamc.mods.mxtune.items.MXScreen;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.mxt.MXTuneFile;
@@ -78,7 +79,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
 
     // Part List
     private MXTuneFile mxTuneFile;
-    //    private GuiScrollingListOf<MXTunePart> guiPartList;
+    private final PartList partListWidget = new PartList();
     private final List<MXTunePart> tuneParts = new ArrayList<>();
 
     // playing
@@ -116,6 +117,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
     {
         Objects.requireNonNull(this.minecraft).keyboardHandler.setSendRepeatsToGui(false);
         stopWatcher();
+        stopMusic();
         minecraft.setScreen(parent);
     }
 
@@ -145,7 +147,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
     {
         super.init();
         Objects.requireNonNull(this.minecraft).keyboardHandler.setSendRepeatsToGui(true);
-        int listWidth = width - 10;
+        int listWidth = (width - 15) * 3 / 4;
         int entryHeight = Objects.requireNonNull(minecraft).font.lineHeight + 2;
         int left = 5;
         int titleTop = 20;
@@ -153,6 +155,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         int listHeight = height - titleTop - entryHeight - 2 - 10 - 25 - 25;
         int listBottom = listTop + listHeight;
         int statusTop = listBottom + 4;
+        int partListWidth = (width - 15) / 4;
 
         titleLabel = new MXLabel(font, (width - font.width(title)) / 2, 5, font.width(title), entryHeight, title, TextColorFg.WHITE);
         fileDataListWidget.setLayout(left, listTop, listWidth, listHeight);
@@ -160,6 +163,9 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
             selectedEntry = entry;
             updatePartList();
         });
+
+        partListWidget.setLayout(fileDataListWidget.getRight() +5 , listTop, partListWidth, listHeight);
+        partListWidget.setRenderSelection(false);
 
         ITextComponent searchLabelText = new TranslationTextComponent("gui.mxtune.label.search");
         int searchLabelWidth = font.width(searchLabelText) + 4;
@@ -197,7 +203,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         mxbRefreshFiles.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.refresh.help01").withStyle(TextFormatting.WHITE));
         addButton(mxbRefreshFiles);
 
-        buttonPlay = new MXButton(new TranslationTextComponent("gui.mxtune.button.play"), play->play());
+        buttonPlay = new MXButton(new TranslationTextComponent("gui.mxtune.button.play"), play-> playMusic());
         buttonPlay.setLayout(xPlay, buttonTop, 75, 20);
         addButton(buttonPlay);
 
@@ -210,6 +216,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         addButton(mxbCancelDone);
 
         addWidget(fileDataListWidget);
+        addWidget(partListWidget);
         addWidget(searchText);
         startWatcher();
         sorted = false;
@@ -280,6 +287,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
             fileDataListWidget.clear();
             fileDataListWidget.addAll(fileDataArrayList);
             lastSearch = searchText.getValue();
+            updatePartList();
         }
     }
 
@@ -339,13 +347,14 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         titleLabel.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
         searchLabel.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
         fileDataListWidget.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
+        partListWidget.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
         searchText.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
         super.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
     }
 
     private void updatePartList()
     {
-        if (fileDataListWidget.getSelected() != null)
+        if (fileDataListWidget.getSelected() != null && !fileDataListWidget.getEntries().isEmpty())
         {
             Path path = fileDataListWidget.getSelected().getPath();
             String name = fileDataListWidget.getSelected().getName();
@@ -356,20 +365,22 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
                 mxTuneFile = MXTuneFile.build(compound);
                 tuneParts.addAll(mxTuneFile.getParts());
             }
-//            guiPartList.clear();
-//            guiPartList.addAll(tuneParts);
+            partListWidget.clear();
+            partListWidget.addAll(tuneParts);
             LOGGER.debug("Selected file: {}", name);
         } else if (fileDataListWidget.getEntries().isEmpty())
         {
-//            guiPartList.clear();
+            fileDataListWidget.setSelected(null);
+            mxTuneFile = null;
+            partListWidget.clear();
         }
     }
 
-    private void play()
+    private void playMusic()
     {
         if (isPlaying)
         {
-            stop();
+            stopMusic();
         }
         else if (mxTuneFile != null)
         {
@@ -382,7 +393,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         updateState();
     }
 
-    private void stop()
+    private void stopMusic()
     {
         Objects.requireNonNull(minecraft).submitAsync(
                 ()->ClientAudio.stop(playId));
@@ -397,7 +408,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
             if (this.playId == playId && (status == ClientAudio.Status.ERROR || status == ClientAudio.Status.DONE))
             {
                 LOGGER.debug("AudioStatus event received: {}, playId: {}", status, playId);
-                stop();
+                stopMusic();
                 updateState();
             }
         });
