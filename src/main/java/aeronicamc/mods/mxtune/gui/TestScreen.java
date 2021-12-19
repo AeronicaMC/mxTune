@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.gui;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.gui.mml.GuiFileSelector;
+import aeronicamc.mods.mxtune.gui.mml.GuiMusicLibrary;
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
 import aeronicamc.mods.mxtune.gui.widget.MXTextFieldWidget;
 import aeronicamc.mods.mxtune.gui.widget.label.MXLabel;
@@ -29,6 +30,7 @@ public class TestScreen extends Screen
     private boolean initialized;
     private final MXButton buttonOpen = new MXButton((open) -> onButtonOpen());
     private final MXButton buttonFile = new MXButton((file) -> onButtonFile());
+    private final MXButton buttonLib = new MXButton((file) -> onButtonLib());
 
     public TestScreen()
     {
@@ -47,6 +49,9 @@ public class TestScreen extends Screen
         labelTitle.setBrColor(TextColorBg.DARK_GRAY);
         labelTitle.setBackColor(TextColorBg.BLUE);
 
+        buttonLib.setLayout(this.width - 115, (this.height / 6 + 168) - 60, 100, 20);
+        buttonLib.setMessage(new TranslationTextComponent("gui.mxtune.gui_music_library_selector.title"));
+        addButton(buttonLib);
         buttonFile.setLayout(this.width - 115, (this.height / 6 + 168) - 40, 100, 20);
         buttonFile.setMessage(new TranslationTextComponent("gui.mxtune.gui_file_selector.title"));
         addButton(buttonFile);
@@ -89,6 +94,11 @@ public class TestScreen extends Screen
     public void onButtonFile()
     {
         Objects.requireNonNull(minecraft).setScreen(new GuiFileSelector(this));
+    }
+
+    public void onButtonLib()
+    {
+        Objects.requireNonNull(minecraft).setScreen(new GuiMusicLibrary(this));
     }
 
     @Override
