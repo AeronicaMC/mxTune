@@ -59,7 +59,8 @@ public class MXTuneLanguageProvider extends LanguageProvider
 
     private String convertSnakeCaseToTitleCase(String input)
     {
-        return WordUtils.capitalizeFully(StringUtils.replace(input, "_", " "));
+        String temp = WordUtils.capitalizeFully(StringUtils.replace(input, "_", " "));
+        return StringUtils.replace(temp,"Mabinogi", "(Mabi)");
     }
 
     private void addGuiTexts()
