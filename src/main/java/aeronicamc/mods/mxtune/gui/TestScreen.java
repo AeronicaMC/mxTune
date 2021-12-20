@@ -49,13 +49,13 @@ public class TestScreen extends Screen
         labelTitle.setBrColor(TextColorBg.DARK_GRAY);
         labelTitle.setBackColor(TextColorBg.BLUE);
 
-        buttonLib.setLayout(this.width - 115, (this.height / 6 + 168) - 60, 100, 20);
+        buttonLib.setLayout(this.width - 105, (this.height / 6 + 168) - 60, 100, 20);
         buttonLib.setMessage(new TranslationTextComponent("gui.mxtune.gui_music_library_selector.title"));
         addButton(buttonLib);
-        buttonFile.setLayout(this.width - 115, (this.height / 6 + 168) - 40, 100, 20);
+        buttonFile.setLayout(this.width - 105, (this.height / 6 + 168) - 40, 100, 20);
         buttonFile.setMessage(new TranslationTextComponent("gui.mxtune.gui_file_selector.title"));
         addButton(buttonFile);
-        buttonOpen.setLayout(this.width - 65, (this.height / 6 + 168) - 20, 50, 20);
+        buttonOpen.setLayout(this.width - 55, (this.height / 6 + 168) - 20, 50, 20);
         buttonOpen.setMessage(new TranslationTextComponent("gui.mxtune.button.open"));
         addButton(buttonOpen);
 
@@ -64,7 +64,7 @@ public class TestScreen extends Screen
         }));
 
         //sfpWidget.setLayout(128, height - 30 , 15, height - 15, 15);
-        sfpWidget.setLayout(15, 15, 128, height - 30);
+        sfpWidget.setLayout(5, 5, 128, height - 10);
         sfpWidget.setCallBack((entry)-> {
             LOGGER.info("Selected {}", entry.getId());
         });
@@ -75,10 +75,10 @@ public class TestScreen extends Screen
             initialized = true;
         }
 
-        titleTextWidget.setLayout(sfpWidget.getRight() + 10, height / 2, (width - sfpWidget.getRight()) - 20, font.lineHeight + 4);
+        titleTextWidget.setLayout(sfpWidget.getRight() + 5, height / 3, (width - sfpWidget.getRight()) - 10, font.lineHeight + 4);
         titleTextWidget.setMessage(new StringTextComponent("Title"));
 
-        musicTextWidget.setLayout(sfpWidget.getRight() + 10, (height / 2) + 20, (width - sfpWidget.getRight()) - 20, font.lineHeight + 4);
+        musicTextWidget.setLayout(sfpWidget.getRight() + 5, titleTextWidget.getBottom() + 5, (width - sfpWidget.getRight()) - 10, font.lineHeight + 4);
         musicTextWidget.setMessage(new StringTextComponent("MML"));
 
         addWidget(sfpWidget);
