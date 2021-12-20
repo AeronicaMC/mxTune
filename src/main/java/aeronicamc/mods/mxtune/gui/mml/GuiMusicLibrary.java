@@ -165,7 +165,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         });
 
         partListWidget.setLayout(fileDataListWidget.getRight() +5 , listTop, partListWidth, listHeight);
-        partListWidget.setRenderSelection(false);
+        partListWidget.setActive(false);
 
         ITextComponent searchLabelText = new TranslationTextComponent("gui.mxtune.label.search");
         int searchLabelWidth = font.width(searchLabelText) + 4;

@@ -22,7 +22,7 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
     protected int rowWidth;
     protected Consumer<E> selectCallback;
     private boolean renderBackground;
-    protected boolean renderSelection = true;
+    protected boolean active = true;
     private boolean renderTopAndBottom;
 
     public MXExtendedList()
@@ -138,16 +138,15 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
         this.renderTopAndBottom = renderTopAndBottom;
     }
 
-    @Override
-    public void setRenderSelection(boolean pValue)
+    public void setActive(boolean pValue)
     {
-        renderSelection = pValue;
+        active = pValue;
         super.setRenderSelection(pValue);
     }
 
-    public boolean getRenderSelection()
+    public boolean isActive()
     {
-        return renderSelection;
+        return active;
     }
 
     protected void renderBorder(MatrixStack pPoseStack, int pMouseX, int pMouseY)
@@ -160,7 +159,7 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
         int leftX = getLeft() - 1 ;
         int rightX = getRight() + 1;
         RenderSystem.disableTexture();
-        float f = this.isMouseOver(pMouseX, pMouseY) ? 1.0F : 0.3F;
+        float f = this.isMouseOver(pMouseX, pMouseY) && active ? 1.0F : 0.3F;
         RenderSystem.color4f(f, f, f, 1.0F);
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION);
         bufferbuilder.vertex((double)leftX, (double)(botY), 0.0D).endVertex();
