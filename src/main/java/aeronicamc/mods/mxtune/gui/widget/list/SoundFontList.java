@@ -72,6 +72,11 @@ public class SoundFontList extends MXExtendedList<SoundFontList.Entry>
             return soundFontProxy.id;
         }
 
+        public int getPackedPreset()
+        {
+            return soundFontProxy.packed_preset;
+        }
+
         @Override
         public void render(MatrixStack pMatrixStack, int pIndex, int pTop, int pLeft, int pWidth, int pHeight, int pMouseX, int pMouseY, boolean pIsMouseOver, float pPartialTicks)
         {
