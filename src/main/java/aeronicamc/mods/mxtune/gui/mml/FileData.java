@@ -1,6 +1,4 @@
-
 package aeronicamc.mods.mxtune.gui.mml;
-
 
 import aeronicamc.mods.mxtune.caches.FileHelper;
 import org.apache.commons.lang3.builder.EqualsBuilder;
