@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.gui.mml;
 
+import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
 import aeronicamc.mods.mxtune.gui.widget.MXLabel;
 import aeronicamc.mods.mxtune.gui.widget.MXTextFieldWidget;
@@ -14,11 +15,15 @@ import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import aeronicamc.mods.mxtune.util.ValidDuration;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.sound.midi.Instrument;
+import javax.sound.midi.Patch;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -35,12 +40,12 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
 
     // Content
     private MXTunePart mxTunePart = new MXTunePart();
-    private MXTextFieldWidget labelStatus;
+    private MXTextFieldWidget labelStatus = new MXTextFieldWidget(150);
     private MXButton buttonPlay;
     private final SoundFontList listBoxInstruments = new SoundFontList().init();
 
     /* MML Staves: Melody, chord 01, chord 02 ... */
-    private static final int MAX_MML_LINES = 16;
+    private static final int MAX_MML_LINES = 10;
     private static final int MIN_MML_LINES = 1;
     private static final int MML_LINE_IDX = 200;
     private final MXTextFieldWidget[] mmlTextLines = new MXTextFieldWidget[MAX_MML_LINES];
@@ -72,18 +77,83 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
     /* Cached State for when the GUI is resized */
     private boolean isStateCached = false;
     private boolean cachedIsPlaying;
-    private int cachedSelectedInst;
+    private SoundFontList.Entry cachedSelectedInst;
 
     public GuiMXTPartTab(GuiMXT guiMXT)
     {
         super(new TranslationTextComponent("gui.mxtune.gui_mxt_part.title"));
         this.guiMXT = guiMXT;
+        this.minecraft = Minecraft.getInstance();
+        this.font = minecraft.font;
+        this.width = minecraft.getWindow().getWidth();
+        this.height = minecraft.getWindow().getHeight();
+
+        entryHeight = font.lineHeight + 2;
+        Arrays.fill(cachedTextLines, "");
+        initPartNames();
     }
 
     @Override
     protected void init()
     {
         super.init();
+        instListWidth = Math.min(listBoxInstruments.getSuggestedWidth(), 150);
+
+        // create Instrument selector, and buttons
+        buttonPlay = new MXButton(PADDING, bottom - 20, instListWidth, 20, isPlaying ? new TranslationTextComponent("gui.mxtune.button.stop") : new TranslationTextComponent("gui.mxtune.button.play_part"), p -> play());
+        buttonPlay.active = false;
+        addButton(buttonPlay);
+
+        int posY = top + 15;
+        int statusHeight = entryHeight;
+        listBoxInstruments.setLayout(PADDING, posY, instListWidth, Math.max(buttonPlay.y - PADDING - posY, entryHeight));
+        int posX = listBoxInstruments.getRight() + PADDING;
+
+        /* create Status line */
+        int rightSideWidth = Math.max(width - posX - PADDING, 100);
+        labelStatus.setLayout(posX, posY , rightSideWidth, statusHeight);
+        labelStatus.setFocus(false);
+        labelStatus.setCanLoseFocus(true);
+
+        // Create add/minus line buttons
+        posY = labelStatus.y + labelStatus.getHeight() + PADDING;
+        buttonAddLine = new MXButton(posX, posY, 40, 20, new TranslationTextComponent("gui.mxtune.button.plus"), p -> addLine());
+        addButton(buttonAddLine);
+        buttonMinusLine = new MXButton(buttonAddLine.x + buttonAddLine.getWidth(), posY, 40, 20, new TranslationTextComponent("gui.mxtune.button.minus"), p -> minusLine());
+        addButton(buttonMinusLine);
+
+        // Create Clipboard Paste and Copy buttons
+        buttonPasteFromClipBoard =  new MXButton(posX, buttonMinusLine.y + buttonMinusLine.getHeight() + PADDING, 120, 20, new TranslationTextComponent("gui.mxtune.button.paste_from_clipboard"), p -> pasteFromClipboard());
+        addButton(buttonPasteFromClipBoard);
+        buttonCopyToClipBoard =  new MXButton(posX, buttonPasteFromClipBoard.y + buttonPasteFromClipBoard.getHeight(), 120, 20, new TranslationTextComponent("gui.mxtune.button.copy_to_clipboard"), p -> copyToClipboard());
+        addButton(buttonCopyToClipBoard);
+
+        int labelWidth = Math.max(font.width(lineNames[0]), font.width(lineNames[1])) + PADDING;
+        posX = buttonCopyToClipBoard.x + buttonCopyToClipBoard.getWidth() + PADDING;
+        posY = labelStatus.y + labelStatus.getHeight() + PADDING;
+        rightSideWidth = Math.max(width - posX - PADDING, 100);
+        int textX = posX + labelWidth + PADDING;
+        int linesRightSideWidth = rightSideWidth - labelWidth - PADDING;
+        for(int i = 0; i < MAX_MML_LINES; i++)
+        {
+            mmlLabelLines[i] = new MXLabel();
+            mmlLabelLines[i].setLabelText(new StringTextComponent(lineNames[i]));
+            mmlTextLines[i] = new MXTextFieldWidget(Reference.MAX_MML_PART_LENGTH);
+            mmlTextLines[i].setLayout(textX, posY, linesRightSideWidth, font.lineHeight + 2);
+            mmlTextLines[i].setFocus(false);
+            mmlTextLines[i].setCanLoseFocus(true);
+            posY += entryHeight + PADDING;
+        }
+
+        setLinesLayout(cachedViewableLineCount);
+        reloadState();
+        parseTest(!firstParse);
+    }
+
+    @Override
+    public void onClose()
+    {
+        stop();
     }
 
     void refresh()
@@ -94,13 +164,36 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
     @Override
     public void tick()
     {
+        IntStream.range(0, viewableLineCount).forEach(i -> mmlTextLines[i].tick());
+    }
 
+    private static void initPartNames()
+    {
+        lineNames[0] = new TranslationTextComponent("gui.mxtune.label.melody").getString();
+        IntStream.range(1, MAX_MML_LINES).forEach(i -> lineNames[i] = new TranslationTextComponent("gui.mxtune.label.chord", String.format("%02d", i)).getString());
     }
 
     @Override
     public void render(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks)
     {
         renderBackground(pMatrixStack);
+        /* draw Field names */
+        int posX = listBoxInstruments.getRight() + 4;
+        int posY = top + 2;
+        font.drawShadow(pMatrixStack, new TranslationTextComponent("gui.mxtune.label.status"), posX, posY, 0xD3D3D3);
+
+        /* draw the instrument list */
+        posX = 5;
+        font.drawShadow(pMatrixStack, new TranslationTextComponent("gui.mxtune.label.instruments"), posX, posY, 0xD3D3D3);
+
+        listBoxInstruments.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
+        labelStatus.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
+
+        /* draw the MML text lines */
+        IntStream.range(0, viewableLineCount).forEach(i -> {
+            mmlLabelLines[i].render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
+            mmlTextLines[i].render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
+        });
         super.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
     }
 
@@ -168,16 +261,19 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         SoundFontList.Entry entry = listBoxInstruments.getSelected();
         mxTunePart.setPackedPatch(entry != null ? entry.getPackedPreset() : SoundFontProxyManager.getSoundFontProxyDefault().packed_preset);
         mxTunePart.setInstrumentName(entry != null ? entry.getId() : SoundFontProxyManager.getSoundFontProxyDefault().id);
+        updateState();
     }
 
     private void addLine()
     {
         viewableLineCount = (viewableLineCount + 1) > MAX_MML_LINES ? viewableLineCount : viewableLineCount + 1;
+        updateState();
     }
 
     private void minusLine()
     {
         viewableLineCount = (viewableLineCount - 1) >= MIN_MML_LINES ? viewableLineCount - 1 : viewableLineCount;
+        updateState();
     }
 
     private void pasteFromClipboard()
@@ -201,6 +297,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
             } else
                 break;
         }
+        updateState();
     }
 
     private void copyToClipboard()
@@ -208,6 +305,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         // Setting the clipboard to the empty string does nothing. If there are no lines use an 'empty' MML formatted string instead.
         String mml = getMMLClipBoardFormat();
         Objects.requireNonNull(minecraft).keyboardHandler.setClipboard(mml.isEmpty() ? "MML@;" : mml);
+        updateState();
     }
 
     public String getMMLClipBoardFormat()
@@ -219,6 +317,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
             if (i < (viewableLineCount - 1)) lines.append(",");
         }
 
+        updateState();
         return getTextToParse(lines.toString());
     }
 
@@ -276,6 +375,18 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         MXTextFieldWidget mmlTextField = mmlTextLines[viewableLines - 1];
     }
 
+    private void reloadState()
+    {
+        if (!isStateCached) return;
+        listBoxInstruments.setSelected(cachedSelectedInst);
+        isPlaying = cachedIsPlaying;
+        updateStatusText();
+        IntStream.range(0, MAX_MML_LINES).forEach(i -> mmlTextLines[i].setValue(cachedTextLines[i]));
+        IntStream.range(0, MAX_MML_LINES).forEach(i -> mmlTextLines[i].setCursorPosition(cachedCursorPos[i]));
+        viewableLineCount = cachedViewableLineCount;
+        updateButtonState();
+    }
+
     /* MML Parsing */
     private void parseMML(int index, String mml)
     {
@@ -298,6 +409,67 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         }
     }
 
+    /** Table Flip!
+     * Because of the apparent different interpretations of MIDI and
+     * SoundFont specifications and the way Sun implemented
+     * {@link Instrument}, soundfont loading, etc.:
+     * <br/><br/>
+     * A soundfont preset bank:0, program:0 for a piano AND
+     * a soundfont preset bank:128, program:0 for a standard percussion set
+     * produce identical {@link Patch} objects using
+     * {@link Patch javax.sound.midi.Instrument.getPatch()} However
+     * percussion sets use a different internal class. It uses the Drumkit class.
+     * <br/><br/>
+     * If you want to manipulate or test values for bank or program settings
+     * you must also check for the existence of "Drumkit:" in Instrument#toString.
+     */
+    @SuppressWarnings("restriction")
+    private boolean mmlPlay(String mmlIn)
+    {
+        String mml = mmlIn;
+        int soundFontProxyIndex;
+        SoundFontList.Entry entry = listBoxInstruments.getSelected();
+        if (entry != null)
+            soundFontProxyIndex = entry.getIndex();
+        else
+            return false;
+
+        mml = mml.replace("MML@", "MML@i" + soundFontProxyIndex);
+        LOGGER.debug("GuiMusicPaperParse.mmlPlay() name: {}, packed {}", entry.getId(), String.format("%08d",entry.getPackedPreset()));
+        LOGGER.debug("GuiMusicPaperParse.mmlPlay(): {}", mml.substring(0, Math.min(mml.length(), 25)));
+
+        playId = PlayIdSupplier.PlayType.PERSONAL.getAsInt();
+        ClientAudio.playLocal(playId, mml, this);
+        return true;
+    }
+
+    private void play()
+    {
+        if (isPlaying)
+        {
+            stop();
+        }
+        else
+        {
+            if (listBoxInstruments.getSelected() == null)
+                listBoxInstruments.setSelected(listBoxInstruments.children().get(SoundFontProxyManager.getSoundFontProxyDefault().index));
+
+            StringBuilder lines = new StringBuilder();
+            for (int i = 0; i < viewableLineCount; i++)
+            {
+                // commas (chord part breaks) should not exist so we will remove them.
+                lines.append(mmlTextLines[i].getValue().replaceAll(",", ""));
+                // append a comma to separate the melody and chord note parts (tracks).
+                if (i < (viewableLineCount - 1)) lines.append(",");
+            }
+
+            // bind it all up into Mabinogi Past format
+            String mml = getTextToParse(lines.toString());
+            isPlaying = mmlPlay(mml);
+        }
+        updateState();
+    }
+
     private String getTextToParse(String text)
     {
         /* ArcheAge Semi-Compatibility Adjustments and fixes for stupid MML */
@@ -314,9 +486,21 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         return sb.toString();
     }
 
+    private void stop()
+    {
+        Objects.requireNonNull(minecraft).submitAsync(()->ClientAudio.queueAudioDataRemoval(playId));
+        isPlaying = false;
+        playId = PlayIdSupplier.INVALID;
+        updateState();
+    }
+
     @Override
     public void statusCallBack(ClientAudio.Status status, int playId)
     {
-
+        if (this.playId == playId && (status == ClientAudio.Status.ERROR || status == ClientAudio.Status.DONE))
+        {
+            LOGGER.debug("AudioStatus event received: {}, playId: {}", status, playId);
+            stop();
+        }
     }
 }

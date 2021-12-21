@@ -35,10 +35,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static aeronicamc.mods.mxtune.Reference.*;
@@ -59,11 +56,11 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     private MXLabel labelAuthor;
     private MXLabel labelSource;
     private MXLabel labelDuration;
-    private MXTextFieldWidget textTitle = new MXTextFieldWidget(MXT_SONG_TITLE_LENGTH);
+    private final MXTextFieldWidget textTitle = new MXTextFieldWidget(MXT_SONG_TITLE_LENGTH);
     private String cachedTitle = "";
-    private MXTextFieldWidget textAuthor = new MXTextFieldWidget(MXT_SONG_AUTHOR_LENGTH);
+    private final MXTextFieldWidget textAuthor = new MXTextFieldWidget(MXT_SONG_AUTHOR_LENGTH);
     private String cachedAuthor = "";
-    private MXTextFieldWidget textSource = new MXTextFieldWidget(MXT_SONG_SOURCE_LENGTH);
+    private final MXTextFieldWidget textSource = new MXTextFieldWidget(MXT_SONG_SOURCE_LENGTH);
     private String cachedSource = "";
     private MXButton buttonPlayStop;
     private MXButton buttonDoneMode;
@@ -105,6 +102,10 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         super(new TranslationTextComponent("gui.mxtune.gui_mxt.title"));
         this.parent = parent;
         this.mode = mode;
+        for (int i = 0; i < MAX_TABS; i++)
+        {
+            childTabs[i] = new GuiMXTPartTab(this);
+        }
     }
 
     @Override
@@ -124,8 +125,8 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         MXButton buttonImport = new MXButton(buttonNew.getLeft() + buttonNew.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("mxtune.gui.button.import"), pImport->importAction());
         MXButton buttonOpen = new MXButton(buttonImport.getLeft() + buttonImport.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("mxtune.gui.button.open"), pOpen->openAction());
         buttonSave = new MXButton(buttonOpen.getLeft() + buttonOpen.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("mxtune.gui.button.save"), pSave->saveAction());
-        buttonDoneMode = new MXButton(buttonSave.getLeft() + buttonSave.getWidth(), buttonY, buttonWidth, 20, getDoneButtonNameByMode(), pDone->updateState());
-        MXButton buttonCancel = new MXButton(buttonDoneMode.getLeft() + buttonDoneMode.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.cancel"), pCancel->cancelAction());
+        buttonDoneMode = new MXButton(buttonSave.getLeft() + buttonSave.getWidth(), buttonY, buttonWidth, 20, getDoneButtonNameByMode(), pDone->doneAction());
+        MXButton buttonCancel = new MXButton(buttonDoneMode.getLeft() + buttonDoneMode.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.cancel"), pCancel->cancelAction(true));
         if (mode == Mode.CLIENT)
             buttonCancel.visible = false;
         addButton(buttonNew);
@@ -261,7 +262,6 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         AbstractGui.fill(pMatrixStack, gb.x + 1, gb.y + gb.getHeight() + 1, gb.x +1 + gb.getWidth() - 2, gb.y + gb.getHeight() + 3, color);
     }
 
-
     @Override
     public void tick()
     {
@@ -270,6 +270,30 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         textSource.tick();
         childTabs[activeChildIndex].tick();
         if (ticks++ % 5 == 0) updateButtons();
+    }
+
+    @Override
+    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers)
+    {
+        childTabs[activeChildIndex].keyPressed(pKeyCode, pScanCode, pModifiers);
+        return super.keyPressed(pKeyCode, pScanCode, pModifiers);
+    }
+
+    @Override
+    public boolean keyReleased(int pKeyCode, int pScanCode, int pModifiers)
+    {
+        updateButtons();
+        updateState();
+        childTabs[activeChildIndex].keyReleased(pKeyCode, pScanCode, pModifiers);
+        super.keyReleased(pKeyCode, pScanCode, pModifiers);
+        return false;
+    }
+
+    @Override
+    public boolean mouseClicked(double pMouseX, double pMouseY, int pButton)
+    {
+        childTabs[activeChildIndex].mouseClicked(pMouseX, pMouseY, pButton);
+        return false;
     }
 
     private void reloadState()
@@ -375,18 +399,16 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
 
     private void updateButtons()
     {
-//        for (int i=0; i < MAX_TABS; i++ )
-//        {
-//
-//
-//        }
-//            if (button.id >= TAB_BTN_IDX && button.id < (MAX_TABS + TAB_BTN_IDX))
-//            {
-//                button.enabled = (activeChildIndex + TAB_BTN_IDX) != button.id;
-//                button.visible = (button.id) < (viewableTabCount + TAB_BTN_IDX);
-//                if (activeChildIndex >= viewableTabCount)
-//                    activeChildIndex = viewableTabCount - 1;
-//            }
+        Arrays.stream(buttonNames).forEach(button -> {
+            if (button.getIndex() >= TAB_BTN_IDX && button.getIndex() < (MAX_TABS + TAB_BTN_IDX))
+            {
+                button.active = (activeChildIndex + TAB_BTN_IDX) != button.getIndex();
+                button.visible = (button.getIndex()) < (viewableTabCount + TAB_BTN_IDX);
+                if (activeChildIndex >= viewableTabCount)
+                    activeChildIndex = viewableTabCount - 1;
+            }
+        });
+
         buttonAddTab.active = viewableTabCount < MAX_TABS;
         buttonMinusTab.active = viewableTabCount > MIN_TABS;
 
@@ -397,7 +419,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         {
             countOK = childTabs[i].canPlay() ? countOK + 1 : countOK;
             int partDuration = childTabs[i].getDuration();
-            duration = partDuration > duration ? partDuration : duration;
+            duration = Math.max(partDuration, duration);
         }
         durationTotal = duration;
         labelDuration.setLabelText(new StringTextComponent(SheetMusicHelper.formatDuration(durationTotal)));
@@ -577,7 +599,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         switch (mode)
         {
             case CLIENT:
-//                minecraft.setScreen(new GuiYesNo(this, "Have you saved changes?","Do you still want to exit?",4));
+                Objects.requireNonNull(minecraft).setScreen(new ConfirmScreen(this::cancelAction, new TranslationTextComponent(""), new TranslationTextComponent("")));
                 break;
             case SERVER:
                 if (uploadMxt())
@@ -588,6 +610,15 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
                     Objects.requireNonNull(minecraft).setScreen(parent);
                 break;
             default:
+        }
+    }
+
+    private void cancelAction(boolean result)
+    {
+        if (result)
+        {
+            stop();
+            Objects.requireNonNull(minecraft).setScreen(parent);
         }
     }
 
@@ -633,21 +664,17 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
             return String.format("%s (%d-%d : %s)", title, part + 1, parts, instrumentName);
     }
 
-    private void cancelAction()
-    {
-        stop();
-        Objects.requireNonNull(minecraft).setScreen(parent);
-    }
-
     private void addTab()
     {
         viewableTabCount = (viewableTabCount + 1) > MAX_TABS ? viewableTabCount : viewableTabCount + 1;
         activeChildIndex = viewableTabCount - 1;
+        updateState();
     }
 
     private void minusTab()
     {
         viewableTabCount = (viewableTabCount - 1) >= MIN_TABS ? viewableTabCount - 1 : viewableTabCount;
+        updateState();
     }
 
     private void firstTab()
@@ -685,12 +712,12 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
 
     private void stop()
     {
-        Objects.requireNonNull(minecraft).submitAsync(()->ClientAudio.stop(playId));
+        Objects.requireNonNull(minecraft).submitAsync(()->ClientAudio.queueAudioDataRemoval(playId));
         isPlaying = false;
         playId = PlayIdSupplier.INVALID;
 
         // stop child tabs
-//        Arrays.stream(childTabs).forEach(GuiMXTPartTab::onGuiClosed);
+        Arrays.stream(childTabs).forEach(GuiMXTPartTab::onClose);
         updateState();
     }
 
@@ -698,6 +725,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     {
         playId = PlayIdSupplier.PlayType.PERSONAL.getAsInt();
         Objects.requireNonNull(minecraft).submitAsync(()->ClientAudio.playLocal(playId, mmlIn, this));
+        updateState();
         return true;
     }
 
