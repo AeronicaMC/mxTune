@@ -74,7 +74,7 @@ public class PathList extends MXExtendedList<PathList.Entry>
         @Override
         public void render(MatrixStack pMatrixStack, int pIndex, int pTop, int pLeft, int pWidth, int pHeight, int pMouseX, int pMouseY, boolean pIsMouseOver, float pPartialTicks)
         {
-            if (pIsMouseOver)
+            if (pIsMouseOver && isActive())
             {
                 fill(pMatrixStack, pLeft - 2, pTop - 2, pLeft - 5 + width, pTop + itemHeight - 1, 0xA0A0A0A0);
             }
@@ -87,7 +87,7 @@ public class PathList extends MXExtendedList<PathList.Entry>
         @Override
         public boolean mouseClicked(double pMouseX, double pMouseY, int pButton)
         {
-            if (isMouseOver(pMouseX, pMouseY)){
+            if (isMouseOver(pMouseX, pMouseY) && isActive() && selectCallback != null){
                 changeFocus(true);
                 setFocused(this);
                 PathList.this.setSelected(this);
