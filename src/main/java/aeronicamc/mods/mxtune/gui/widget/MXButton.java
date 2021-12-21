@@ -17,6 +17,7 @@ import java.util.List;
 public class MXButton extends Button implements ILayout, IHooverText
 {
     protected int padding = 0;
+    private int index = Integer.MAX_VALUE;
     @SuppressWarnings("FieldMayBeFinal")
     private List<ITextComponent> hooverTexts = new ArrayList<>();
 
@@ -120,6 +121,16 @@ public class MXButton extends Button implements ILayout, IHooverText
     public void setMessage(ITextComponent pMessage)
     {
         super.setMessage(pMessage);
+    }
+
+    public int getIndex()
+    {
+        return index;
+    }
+
+    public void setIndex(int index)
+    {
+        this.index = index;
     }
 
     /**
