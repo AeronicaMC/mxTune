@@ -18,8 +18,8 @@ public class MXLabel extends AbstractGui implements IRenderable, ILayout
     private int height;
     private int x;
     private int y;
-    private ITextComponent labelName;
-    private ITextComponent labelText;
+    private ITextComponent labelName = new StringTextComponent("");
+    private ITextComponent labelText = new StringTextComponent("");
     private boolean centered;
     private boolean visible = true;
     private boolean background;
