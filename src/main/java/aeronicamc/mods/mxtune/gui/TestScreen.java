@@ -2,7 +2,7 @@ package aeronicamc.mods.mxtune.gui;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.gui.mml.GuiFileSelector;
-import aeronicamc.mods.mxtune.gui.mml.GuiMusicLibrary;
+import aeronicamc.mods.mxtune.gui.mml.GuiMXT;
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
 import aeronicamc.mods.mxtune.gui.widget.MXLabel;
 import aeronicamc.mods.mxtune.gui.widget.MXTextFieldWidget;
@@ -30,7 +30,7 @@ public class TestScreen extends Screen
     private boolean initialized;
     private final MXButton buttonOpen = new MXButton((open) -> onButtonOpen());
     private final MXButton buttonFile = new MXButton((file) -> onButtonFile());
-    private final MXButton buttonLib = new MXButton((file) -> onButtonLib());
+    private final MXButton buttonGuiMXT = new MXButton((file) -> onGuiMXT());
 
     public TestScreen()
     {
@@ -49,9 +49,9 @@ public class TestScreen extends Screen
         labelTitle.setBrColor(TextColorBg.DARK_GRAY);
         labelTitle.setBackColor(TextColorBg.BLUE);
 
-        buttonLib.setLayout(this.width - 105, (this.height / 6 + 168) - 60, 100, 20);
-        buttonLib.setMessage(new TranslationTextComponent("gui.mxtune.gui_music_library_selector.title"));
-        addButton(buttonLib);
+        buttonGuiMXT.setLayout(this.width - 105, (this.height / 6 + 168) - 60, 100, 20);
+        buttonGuiMXT.setMessage(new TranslationTextComponent("gui.mxtune.gui_mxt.title"));
+        addButton(buttonGuiMXT);
         buttonFile.setLayout(this.width - 105, (this.height / 6 + 168) - 40, 100, 20);
         buttonFile.setMessage(new TranslationTextComponent("gui.mxtune.gui_file_selector.title"));
         addButton(buttonFile);
@@ -96,9 +96,9 @@ public class TestScreen extends Screen
         Objects.requireNonNull(minecraft).setScreen(new GuiFileSelector(this));
     }
 
-    public void onButtonLib()
+    public void onGuiMXT()
     {
-        Objects.requireNonNull(minecraft).setScreen(new GuiMusicLibrary(this));
+        Objects.requireNonNull(minecraft).setScreen(new GuiMXT(this, GuiMXT.Mode.SHEET_MUSIC));
     }
 
     @Override
