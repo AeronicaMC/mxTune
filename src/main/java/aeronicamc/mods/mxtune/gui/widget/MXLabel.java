@@ -18,7 +18,8 @@ public class MXLabel extends AbstractGui implements IRenderable, ILayout
     private int height;
     private int x;
     private int y;
-    private ITextComponent label;
+    private ITextComponent labelName;
+    private ITextComponent labelText;
     private boolean centered;
     private boolean visible = true;
     private boolean background;
@@ -41,7 +42,7 @@ public class MXLabel extends AbstractGui implements IRenderable, ILayout
         y = pY;
         width = pWidth;
         height = pHeight;
-        label = pLabelText;
+        labelName = pLabelText;
         textColor = pTextColor;
     }
 
@@ -198,9 +199,24 @@ public class MXLabel extends AbstractGui implements IRenderable, ILayout
         this.border = border;
     }
 
-    public void setLabel(ITextComponent label)
+    public void setLabelName(ITextComponent labelName)
     {
-        this.label = label;
+        this.labelName = labelName;
+    }
+
+    public ITextComponent getLabelName()
+    {
+        return labelName;
+    }
+
+    public ITextComponent getLabelText()
+    {
+        return labelText;
+    }
+
+    public void setLabelText(ITextComponent labelText)
+    {
+        this.labelText = labelText;
     }
 
     @Override
@@ -210,10 +226,12 @@ public class MXLabel extends AbstractGui implements IRenderable, ILayout
         RenderSystem.enableDepthTest();
         renderBackGround(pMatrixStack);
 
+        ITextComponent combinedText = labelName.copy().append(labelText);
+
         if (centered)
-            drawCenteredString(pMatrixStack, fontRenderer, label, x + this.width / 2, y + height / 4, textColor | MathHelper.ceil(1F * 255.0F) << 24);
+            drawCenteredString(pMatrixStack, fontRenderer, combinedText, x + this.width / 2, y + height / 4, textColor | MathHelper.ceil(1F * 255.0F) << 24);
         else
-            drawString(pMatrixStack, fontRenderer, label, x, y + height / 4, textColor | MathHelper.ceil(1F * 255.0F) << 24);
+            drawString(pMatrixStack, fontRenderer, combinedText, x, y + height / 4, textColor | MathHelper.ceil(1F * 255.0F) << 24);
     }
 
     protected void renderBackGround(MatrixStack pMatrixStack)
