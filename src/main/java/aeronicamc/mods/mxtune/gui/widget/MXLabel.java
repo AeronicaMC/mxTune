@@ -1,7 +1,6 @@
-package aeronicamc.mods.mxtune.gui.widget.label;
+package aeronicamc.mods.mxtune.gui.widget;
 
 import aeronicamc.mods.mxtune.gui.TextColorFg;
-import aeronicamc.mods.mxtune.gui.widget.ILayout;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
