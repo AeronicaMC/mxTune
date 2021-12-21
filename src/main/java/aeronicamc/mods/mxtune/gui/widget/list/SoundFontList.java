@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 
 public class SoundFontList extends MXExtendedList<SoundFontList.Entry>
 {
+    private int suggestedWidth;
 
     public SoundFontList()
     {
@@ -29,8 +30,10 @@ public class SoundFontList extends MXExtendedList<SoundFontList.Entry>
 
     public SoundFontList init()
     {
+        int suggestedWidth = 0;
         for (SoundFontProxy soundFontProxy: SoundFontProxyManager.soundFontProxyMapById.values())
         {
+            suggestedWidth = calculateWidth(suggestedWidth, soundFontProxy.id);
             SoundFontList.Entry entry = new  SoundFontList.Entry(soundFontProxy);
             super.addEntry(entry);
             if ((Objects.requireNonNull(minecraft.player).inventory.getSelected().getItem()) instanceof IInstrument &&
@@ -45,6 +48,17 @@ public class SoundFontList extends MXExtendedList<SoundFontList.Entry>
         }
         super.centerScrollOn(super.getSelected());
         return this;
+    }
+
+    private int calculateWidth(int lastWidth, String id)
+    {
+        ITextComponent name = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(id));
+        return Math.max(lastWidth, minecraft.font.width(name));
+    }
+
+    public int getSuggestedWidth()
+    {
+        return suggestedWidth;
     }
 
     @Override
