@@ -112,6 +112,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     protected void init()
     {
         super.init();
+        buttons.clear();
         Objects.requireNonNull(this.minecraft).keyboardHandler.setSendRepeatsToGui(true);
         int singleLineHeight = font.lineHeight + 2;
         int titleWidth = width - PADDING * 2;
@@ -195,6 +196,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
             buttonNames[i] = new MXButton(buttonMinusTab.x + buttonMinusTab.getWidth() + PADDING + 20 * i, tabButtonTop, 20, 20, new StringTextComponent(String.format("%d", i + 1)), p->setTab());
             buttonNames[i].setIndex(i);
             addButton(buttonNames[i]);
+            buttonNames[i].active = false;
             childTabs[i].setLayout(tabbedAreaTop, height - PADDING);
             childTabs[i].refresh();
         }
@@ -275,8 +277,8 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     @Override
     public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers)
     {
-        childTabs[activeChildIndex].keyPressed(pKeyCode, pScanCode, pModifiers);
-        return super.keyPressed(pKeyCode, pScanCode, pModifiers);
+        super.keyPressed(pKeyCode, pScanCode, pModifiers);
+        return childTabs[activeChildIndex].keyPressed(pKeyCode, pScanCode, pModifiers);
     }
 
     @Override
@@ -284,16 +286,56 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     {
         updateButtons();
         updateState();
-        childTabs[activeChildIndex].keyReleased(pKeyCode, pScanCode, pModifiers);
+
         super.keyReleased(pKeyCode, pScanCode, pModifiers);
-        return false;
+        return childTabs[activeChildIndex].keyReleased(pKeyCode, pScanCode, pModifiers);
+    }
+
+    @Override
+    public boolean isMouseOver(double pMouseX, double pMouseY)
+    {
+        super.isMouseOver(pMouseX, pMouseY);
+        return childTabs[activeChildIndex].isMouseOver(pMouseX, pMouseY);
     }
 
     @Override
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton)
     {
-        childTabs[activeChildIndex].mouseClicked(pMouseX, pMouseY, pButton);
-        return false;
+        mmlLink.mouseClicked(pMouseX, pMouseY, pButton);
+        sourcesLink.mouseClicked(pMouseX, pMouseY, pButton);
+        textTitle.mouseClicked(pMouseX, pMouseY, pButton);
+        textAuthor.mouseClicked(pMouseX, pMouseY, pButton);
+        textSource.mouseClicked(pMouseX, pMouseY, pButton);
+        super.mouseClicked(pMouseX, pMouseY, pButton);
+        return childTabs[activeChildIndex].mouseClicked(pMouseX, pMouseY, pButton);
+    }
+
+    @Override
+    public boolean mouseReleased(double pMouseX, double pMouseY, int pButton)
+    {
+        super.mouseReleased(pMouseX, pMouseY, pButton);
+        return childTabs[activeChildIndex].mouseReleased(pMouseX, pMouseY,  pButton);
+    }
+
+    @Override
+    public boolean mouseDragged(double pMouseX, double pMouseY, int pButton, double pDragX, double pDragY)
+    {
+        super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
+        return childTabs[activeChildIndex].mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
+    }
+
+    @Override
+    public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta)
+    {
+        super.mouseScrolled(pMouseX, pMouseY, pDelta);
+        return childTabs[activeChildIndex].mouseScrolled(pMouseX, pMouseY, pDelta);
+    }
+
+    @Override
+    public void mouseMoved(double pMouseX, double pMouseY)
+    {
+        super.mouseMoved(pMouseX, pMouseY);
+        childTabs[activeChildIndex].mouseMoved(pMouseX, pMouseY);
     }
 
     private void reloadState()

@@ -97,7 +97,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
     protected void init()
     {
         super.init();
-        instListWidth = Math.min(listBoxInstruments.getSuggestedWidth(), 150);
+        instListWidth = 128; //Math.min(listBoxInstruments.getSuggestedWidth(), 150);
 
         // create Instrument selector, and buttons
         buttonPlay = new MXButton(PADDING, bottom - 20, instListWidth, 20, isPlaying ? new TranslationTextComponent("gui.mxtune.button.stop") : new TranslationTextComponent("gui.mxtune.button.play_part"), p -> play());
@@ -164,8 +164,83 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
     @Override
     public void tick()
     {
+        labelStatus.tick();
         IntStream.range(0, viewableLineCount).forEach(i -> mmlTextLines[i].tick());
     }
+
+    @Override
+    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers)
+    {
+        listBoxInstruments.keyPressed(pKeyCode, pScanCode, pModifiers);
+        IntStream.range(0, viewableLineCount).forEach(i -> mmlTextLines[i].keyPressed(pKeyCode, pScanCode, pModifiers));
+        super.keyPressed(pKeyCode, pScanCode, pModifiers);
+        return false;
+    }
+
+    @Override
+    public boolean keyReleased(int pKeyCode, int pScanCode, int pModifiers)
+    {
+        listBoxInstruments.keyReleased(pKeyCode, pScanCode, pModifiers);
+        IntStream.range(0, viewableLineCount).forEach(i -> mmlTextLines[i].keyReleased(pKeyCode, pScanCode, pModifiers));
+        updateState();
+        super.keyReleased(pKeyCode, pScanCode, pModifiers);
+        return false;
+    }
+
+    @Override
+    public boolean isMouseOver(double pMouseX, double pMouseY)
+    {
+        listBoxInstruments.isMouseOver(pMouseX, pMouseY);
+        IntStream.range(0, viewableLineCount).forEach(i -> mmlTextLines[i].isMouseOver(pMouseX, pMouseY));
+        super.isMouseOver(pMouseX, pMouseY);
+        return false;
+    }
+
+    @Override
+    public boolean mouseClicked(double pMouseX, double pMouseY, int pButton)
+    {
+        listBoxInstruments.mouseClicked(pMouseX, pMouseY, pButton);
+        labelStatus.mouseClicked(pMouseX, pMouseY, pButton);
+        IntStream.range(0, viewableLineCount).forEach(i -> mmlTextLines[i].mouseClicked(pMouseX, pMouseY, pButton));
+        super.mouseClicked(pMouseX, pMouseY, pButton);
+        return false;
+    }
+
+    @Override
+    public boolean mouseReleased(double pMouseX, double pMouseY, int pButton)
+    {
+        listBoxInstruments.mouseReleased(pMouseX, pMouseY, pButton);
+        IntStream.range(0, viewableLineCount).forEach(i -> mmlTextLines[i].mouseReleased(pMouseX, pMouseY, pButton));
+        super.mouseReleased(pMouseX, pMouseY, pButton);
+        return false;
+    }
+
+    @Override
+    public boolean mouseDragged(double pMouseX, double pMouseY, int pButton, double pDragX, double pDragY)
+    {
+        listBoxInstruments.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
+        IntStream.range(0, viewableLineCount).forEach(i -> mmlTextLines[i].mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY));
+        super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
+        return false;
+    }
+
+    @Override
+    public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta)
+    {
+        listBoxInstruments.mouseScrolled(pMouseX, pMouseY, pDelta);
+        IntStream.range(0, viewableLineCount).forEach(i -> mmlTextLines[i].mouseScrolled(pMouseX, pMouseY, pDelta));
+        super.mouseScrolled(pMouseX, pMouseY, pDelta);
+        return false;
+    }
+
+    @Override
+    public void mouseMoved(double pMouseX, double pMouseY)
+    {
+        listBoxInstruments.mouseMoved(pMouseX, pMouseY);
+        IntStream.range(0, viewableLineCount).forEach(i -> mmlTextLines[i].mouseMoved(pMouseX, pMouseY));
+        super.mouseMoved(pMouseX, pMouseY);
+    }
+
 
     private static void initPartNames()
     {
@@ -176,7 +251,6 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
     @Override
     public void render(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks)
     {
-        renderBackground(pMatrixStack);
         /* draw Field names */
         int posX = listBoxInstruments.getRight() + 4;
         int posY = top + 2;
