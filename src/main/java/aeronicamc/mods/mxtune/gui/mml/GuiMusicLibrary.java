@@ -314,7 +314,9 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
 
     private void selectDone()
     {
-        // TODO: Action
+        // action get file, etc...
+        if (fileDataListWidget.getSelected() != null)
+            ActionGet.INSTANCE.select(fileDataListWidget.getSelected().getPath());
         onClose();
     }
 
