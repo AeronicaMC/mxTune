@@ -4,8 +4,6 @@ import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.gui.widget.list.SoundFontList;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.ChooseInstrumentMessage;
-import aeronicamc.mods.mxtune.util.SoundFontProxy;
-import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -30,7 +28,7 @@ public class GuiMultiInstChooser extends Screen
 
     protected GuiMultiInstChooser(Screen parent)
     {
-        super(new TranslationTextComponent("gui.mxtune.gui_multiinstchooser.title"));
+        super(new TranslationTextComponent("gui.mxtune.label.instruments"));
         this.parent = parent;
         widget = new SoundFontList().init();
     }
@@ -46,14 +44,8 @@ public class GuiMultiInstChooser extends Screen
         this.guiLeft = (this.width - imageWidth) / 2;
         this.guiTop = (this.height - imageHeight) / 2;
 
-        int instListWidth = 95;
-        for (SoundFontProxy in : SoundFontProxyManager.soundFontProxyMapByIndex.values())
-        {
-            int stringWidth = font.width(new TranslationTextComponent(String.format("item.mxtune.%s", in.id)).getString());
-            instListWidth = Math.max(instListWidth, stringWidth + 10);
-        }
-        instListWidth = Math.min(instListWidth, 128);
-        //widget = new SoundFontList(minecraft, instListWidth + 1, imageHeight - 20, guiTop + 10, guiTop + imageHeight - 10, font.lineHeight + 4, guiLeft + 10, this::selectCallback).init();
+        int instListWidth;
+        instListWidth = Math.min(widget.getSuggestedWidth(), 200);
         widget.setLayout(guiLeft + 10, guiTop + 10, instListWidth + 1, imageHeight -20);
         widget.setCallBack(this::selectCallback);
         addWidget(widget);

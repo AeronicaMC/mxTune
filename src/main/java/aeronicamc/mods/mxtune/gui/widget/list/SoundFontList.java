@@ -30,7 +30,6 @@ public class SoundFontList extends MXExtendedList<SoundFontList.Entry>
 
     public SoundFontList init()
     {
-        int suggestedWidth = 0;
         for (SoundFontProxy soundFontProxy: SoundFontProxyManager.soundFontProxyMapById.values())
         {
             suggestedWidth = calculateWidth(suggestedWidth, soundFontProxy.id);
@@ -47,6 +46,7 @@ public class SoundFontList extends MXExtendedList<SoundFontList.Entry>
             super.setSelected(children().get(0));
         }
         super.centerScrollOn(super.getSelected());
+        suggestedWidth += 10; // Roughly Account for scrollbar
         return this;
     }
 
