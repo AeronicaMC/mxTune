@@ -35,18 +35,18 @@ public class ImportHelper
     @Nullable
     public static MXTuneFile importToMXTFile(@Nullable Path path)
     {
-        if (path == null) return null;
-        switch (getExtension(path))
-        {
-            case "ms2mml":
-                return importMs2mml(path);
-            case "mml":
-                return MMLFile.parse(path);
-            case "zip": // Only multi-part ms2mml supported at this time
-                return importZippedMs2mml(path);
-            default:
-                return null;
-        }
+        if (path != null)
+            switch (getExtension(path))
+            {
+                case "ms2mml":
+                    return importMs2mml(path);
+                case "mml":
+                    return MMLFile.parse(path);
+                case "zip": // Only multi-part ms2mml supported at this time
+                    return importZippedMs2mml(path);
+                default:
+            }
+        return null;
     }
 
     private static String getExtension(Path path)
