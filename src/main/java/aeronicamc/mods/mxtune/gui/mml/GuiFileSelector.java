@@ -277,7 +277,8 @@ public class GuiFileSelector extends MXScreen
 
     private void selectDone()
     {
-        // TODO: Action
+        if (selectedEntry != null)
+            ActionGet.INSTANCE.select(ImportHelper.importToMXTFile(selectedEntry.getPath()));
         onClose();
     }
 
