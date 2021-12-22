@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.items;
 
 import aeronicamc.libs.mml.util.TestData;
+import aeronicamc.mods.mxtune.gui.Handler;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.CreateSheetMusicMessage;
 import net.minecraft.client.util.ITooltipFlag;
@@ -30,8 +31,8 @@ public class MusicPaperItem extends Item
     {
         if (pLevel.isClientSide)
         {
-            //Handler.openTestScreen();
-            writeRandomSheetMusic();
+            Handler.OpenSheetMusicScreen();
+            //writeRandomSheetMusic();
         }
         return ActionResult.pass(pPlayer.getItemInHand(pHand));
     }

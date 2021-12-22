@@ -111,7 +111,7 @@ public final class PlayManager
             String musicText = ModDataStore.getMusicText(musicTextKey);
             int duration = SheetMusicHelper.getMusicDuration(sheetMusic);
 
-            //mml = mml.replace("MML@", "MML@I" + getPresetIndex(pos, playerIn, isPlaced));
+            musicText = musicText.replace("MML@", "MML@I" + getPresetIndex(pos, playerIn, isPlaced));
             LOGGER.debug("MML Title: {} Duration: {}", title, duration);
             LOGGER.debug("MML Sub25: {}", musicText.substring(0, Math.min(25, musicText.length())));
 
