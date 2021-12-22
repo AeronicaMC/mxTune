@@ -92,6 +92,8 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.plus", "+");
         addGuiText("button.refresh", "Refresh");
         addGuiText("button.refresh.help01", "Only needed it the file list fails to refresh automatically after placing files into the folder.");
+        addGuiText("button.clipboard_Copy_to", "Copy");
+        addGuiText("button.clipboard_paste_from", "Paste");
         addGuiText("button.play", "Play");
         addGuiText("button.play_all", "Play All");
         addGuiText("button.play_part", "Play Part");

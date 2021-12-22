@@ -177,8 +177,8 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         // Button tabs
         int tabButtonTop = textSource.getTop() +  textSource.getHeight() + PADDING * 2;
         // TODO: NOTE SPECIAL BUTTON IDS 250, 251
-        buttonAddTab = new MXButton(PADDING, tabButtonTop, 40, 20, new TranslationTextComponent("gui.mxtune.button.plus"), p->addTab());
-        buttonMinusTab = new MXButton(buttonAddTab.x + buttonAddTab.getWidth(), tabButtonTop, 40, 20, new TranslationTextComponent("gui.mxtune.button.minus"), p->minusTab());
+        buttonAddTab = new MXButton(PADDING, tabButtonTop, 20, 20, new TranslationTextComponent("gui.mxtune.button.plus"), p->addTab());
+        buttonMinusTab = new MXButton(buttonAddTab.x + buttonAddTab.getWidth(), tabButtonTop, 20, 20, new TranslationTextComponent("gui.mxtune.button.minus"), p->minusTab());
         addButton(buttonAddTab);
         addButton(buttonMinusTab);
 

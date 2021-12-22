@@ -101,7 +101,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         super.init();
         children.clear();
         buttons.clear();
-        instListWidth = 128; //Math.min(listBoxInstruments.getSuggestedWidth(), 150);
+        instListWidth = Math.min(listBoxInstruments.getSuggestedWidth(), 150);
 
         // create Instrument selector, and buttons
         buttonPlay = new MXButton(PADDING, bottom - 20, instListWidth, 20, isPlaying ? new TranslationTextComponent("gui.mxtune.button.stop") : new TranslationTextComponent("gui.mxtune.button.play_part"), p -> play());
@@ -123,15 +123,15 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
 
         // Create add/minus line buttons
         posY = labelStatus.y + labelStatus.getHeight() + PADDING;
-        buttonAddLine = new MXButton(posX, posY, 40, 20, new TranslationTextComponent("gui.mxtune.button.plus"), p -> addLine());
+        buttonAddLine = new MXButton(posX, posY, 30, 20, new TranslationTextComponent("gui.mxtune.button.plus"), p -> addLine());
         addButton(buttonAddLine);
-        buttonMinusLine = new MXButton(buttonAddLine.x + buttonAddLine.getWidth(), posY, 40, 20, new TranslationTextComponent("gui.mxtune.button.minus"), p -> minusLine());
+        buttonMinusLine = new MXButton(buttonAddLine.x + buttonAddLine.getWidth(), posY, 30, 20, new TranslationTextComponent("gui.mxtune.button.minus"), p -> minusLine());
         addButton(buttonMinusLine);
 
         // Create Clipboard Paste and Copy buttons
-        buttonPasteFromClipBoard =  new MXButton(posX, buttonMinusLine.y + buttonMinusLine.getHeight() + PADDING, 120, 20, new TranslationTextComponent("gui.mxtune.button.paste_from_clipboard"), p -> pasteFromClipboard());
+        buttonPasteFromClipBoard =  new MXButton(posX, buttonMinusLine.y + buttonMinusLine.getHeight() + PADDING, 60, 20, new TranslationTextComponent("gui.mxtune.button.clipboard_paste_from"), p -> pasteFromClipboard());
         addButton(buttonPasteFromClipBoard);
-        buttonCopyToClipBoard =  new MXButton(posX, buttonPasteFromClipBoard.y + buttonPasteFromClipBoard.getHeight(), 120, 20, new TranslationTextComponent("gui.mxtune.button.copy_to_clipboard"), p -> copyToClipboard());
+        buttonCopyToClipBoard =  new MXButton(posX, buttonPasteFromClipBoard.y + buttonPasteFromClipBoard.getHeight(), 60, 20, new TranslationTextComponent("gui.mxtune.button.clipboard_Copy_to"), p -> copyToClipboard());
         addButton(buttonCopyToClipBoard);
 
         int labelWidth = Math.max(font.width(lineNames[0]), font.width(lineNames[1])) + PADDING;
@@ -374,7 +374,6 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
             {
                 mmlTextLines[i].setValue(iterator.next());
                 mmlTextLines[i].moveCursorToStart();
-                mmlTextLines[i].setHighlightPos(0);
                 mmlTextLines[i++].moveCursorToStart();
                 if (iterator.hasNext())addLine();
             } else
