@@ -72,11 +72,16 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("confirm.new.text01", "This will clear the current music.");
         addGuiText("confirm.new.text02", "There is no undo feature. Are you sure?");
         addGuiText("label.author", "Author:");
+        addGuiText("label.chord", "chord %s");
+        addGuiText("label.melody", "melody %s");
         addGuiText("label.filename", "Filename: ");
-        addGuiText("label.source", "Source URL:");
+        addGuiText("label.instruments", "Instruments");
         addGuiText("label.search", "Search");
+        addGuiText("label.source", "Source URL:");
+        addGuiText("label.status", "Status/Meta");
         addGuiText("label.title", "Title:");
-        addGuiText("label.total_duration", "Duration All");
+        addGuiText("label.metadata", "Chars: %s, Duration: %s, Meta: %s");
+        addGuiText("label.duration_value_total", "Duration All");
         addGuiText("button.import", "Import");
         addGuiText("button.minus", "-");
         addGuiText("button.new", "New");

@@ -83,7 +83,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
 
     public GuiMXTPartTab(GuiMXT guiMXT)
     {
-        super(new TranslationTextComponent("gui.mxtune.gui_mxt_part.title"));
+        super(new StringTextComponent("Should not be seen"));
         this.guiMXT = guiMXT;
         this.minecraft = Minecraft.getInstance();
         this.font = minecraft.font;
@@ -117,6 +117,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         /* create Status line */
         int rightSideWidth = Math.max(width - posX - PADDING, 100);
         labelStatus.setLayout(posX, posY , rightSideWidth, statusHeight);
+        labelStatus.active = false;
         labelStatus.setFocus(false);
         labelStatus.setCanLoseFocus(true);
 
@@ -143,6 +144,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         {
             mmlLabelLines[i] = new MXLabel();
             mmlLabelLines[i].setLabelText(new StringTextComponent(lineNames[i]));
+            mmlLabelLines[i].setLayout(posX, posY, linesRightSideWidth, font.lineHeight + 2);
             mmlTextLines[i] = new MXTextFieldWidget(Reference.MAX_MML_PART_LENGTH);
             mmlTextLines[i].setLayout(textX, posY, linesRightSideWidth, font.lineHeight + 2);
             mmlTextLines[i].setFocus(false);
@@ -371,7 +373,9 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
             if (viewableLineCount < MAX_MML_LINES)
             {
                 mmlTextLines[i].setValue(iterator.next());
-                mmlTextLines[i++].setCursorPosition(0);
+                mmlTextLines[i].moveCursorToStart();
+                mmlTextLines[i].setHighlightPos(0);
+                mmlTextLines[i++].moveCursorToStart();
                 if (iterator.hasNext())addLine();
             } else
                 break;
@@ -426,7 +430,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
 
     private void updateStatusText()
     {
-        labelStatus.setMessage(new TranslationTextComponent("gui.mxtune.gui_mxt.text_status", String.format("%06d", totalCharacters), SheetMusicHelper.formatDuration(duration) , mxTunePart != null ? mxTunePart.getMeta() : ""));
+        labelStatus.setValue(new TranslationTextComponent("gui.mxtune.label.metadata", String.format("%06d", totalCharacters), SheetMusicHelper.formatDuration(duration) , mxTunePart != null ? mxTunePart.getMeta() : "").getString());
     }
 
     private void updateButtonState()

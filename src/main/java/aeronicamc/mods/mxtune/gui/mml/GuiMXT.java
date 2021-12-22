@@ -118,7 +118,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         int singleLineHeight = font.lineHeight + 2;
         int titleWidth = width - PADDING * 2;
 
-        labelMXTFileName = new MXLabel(font, PADDING, PADDING, titleWidth, singleLineHeight, new StringTextComponent("gui.mxtune.label.filename"), -1);
+        labelMXTFileName = new MXLabel(font, PADDING, PADDING, titleWidth, singleLineHeight, new TranslationTextComponent("gui.mxtune.label.filename"), -1);
         setDisplayedFilename(cachedMXTFilename, TextFormatting.AQUA);
         int buttonWidth = Math.max(((width * 2 / 3) - PADDING * 2) / 6, 65);
         int buttonY = labelMXTFileName.getY() + labelMXTFileName.getHeight();
@@ -183,7 +183,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         addButton(buttonMinusTab);
 
         // Total Duration
-        ITextComponent durationLabelName = new TranslationTextComponent("gui.mxtune.label.total_duration");
+        ITextComponent durationLabelName = new TranslationTextComponent("gui.mxtune.label.duration_value_total");
         int durationWidth = font.width(durationLabelName);
         durationWidth += font.width(SheetMusicHelper.formatDuration(0));
         durationWidth += font.width(" ");
