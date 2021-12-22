@@ -118,15 +118,15 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         int singleLineHeight = font.lineHeight + 2;
         int titleWidth = width - PADDING * 2;
 
-        labelMXTFileName = new MXLabel(font, PADDING, PADDING, titleWidth, singleLineHeight, new StringTextComponent("gui.mxture.label.filename"), -1);
+        labelMXTFileName = new MXLabel(font, PADDING, PADDING, titleWidth, singleLineHeight, new StringTextComponent("gui.mxtune.label.filename"), -1);
         setDisplayedFilename(cachedMXTFilename, TextFormatting.AQUA);
         int buttonWidth = Math.max(((width * 2 / 3) - PADDING * 2) / 6, 65);
         int buttonY = labelMXTFileName.getY() + labelMXTFileName.getHeight();
 
         MXButton buttonNew = new MXButton(PADDING, buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.new"), pNew->newAction());
-        MXButton buttonImport = new MXButton(buttonNew.getLeft() + buttonNew.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("mxtune.gui.button.import"), pImport->importAction());
-        MXButton buttonOpen = new MXButton(buttonImport.getLeft() + buttonImport.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("mxtune.gui.button.open"), pOpen->openAction());
-        buttonSave = new MXButton(buttonOpen.getLeft() + buttonOpen.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("mxtune.gui.button.save"), pSave->saveAction());
+        MXButton buttonImport = new MXButton(buttonNew.getLeft() + buttonNew.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.import"), pImport->importAction());
+        MXButton buttonOpen = new MXButton(buttonImport.getLeft() + buttonImport.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.library"), pOpen->openAction());
+        buttonSave = new MXButton(buttonOpen.getLeft() + buttonOpen.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.save"), pSave->saveAction());
         buttonDoneMode = new MXButton(buttonSave.getLeft() + buttonSave.getWidth(), buttonY, buttonWidth, 20, getDoneButtonNameByMode(), pDone->doneAction());
         MXButton buttonCancel = new MXButton(buttonDoneMode.getLeft() + buttonDoneMode.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.cancel"), pCancel->cancelAction(true));
         if (mode == Mode.CLIENT)
@@ -510,7 +510,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
             case SERVER:
                 return new TranslationTextComponent("gui.mxtune.button.upload");
             case SHEET_MUSIC:
-                return new TranslationTextComponent("gui.mxtune.button.create");
+                return new TranslationTextComponent("gui.mxtune.button.write");
             default:
         }
         return new TranslationTextComponent("gui.none");
@@ -539,7 +539,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     {
         stop();
         updateState();
-        Objects.requireNonNull(minecraft).setScreen(new ConfirmScreen(this::newCallback, new TranslationTextComponent(""), new TranslationTextComponent("")));
+        Objects.requireNonNull(minecraft).setScreen(new ConfirmScreen(this::newCallback, new TranslationTextComponent("gui.mxtune.confirm.new.text01"), new TranslationTextComponent("gui.mxtune.new.text02")));
     }
 
     private void newCallback(boolean result)
@@ -564,7 +564,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         ActionGet.INSTANCE.clear();
         ActionGet.INSTANCE.setFileImport();
         viewableTabCount = MIN_TABS;
-        Objects.requireNonNull(minecraft).setScreen(new GuiFileSelector(this));
+        Objects.requireNonNull(minecraft).setScreen(new GuiFileImporter(this));
     }
 
     private void openAction()
@@ -643,7 +643,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         switch (mode)
         {
             case CLIENT:
-                Objects.requireNonNull(minecraft).setScreen(new ConfirmScreen(this::cancelAction, new TranslationTextComponent(""), new TranslationTextComponent("")));
+                Objects.requireNonNull(minecraft).setScreen(new ConfirmScreen(this::cancelAction, new TranslationTextComponent("gui.mxtune.confirm.cancel.text01"), new TranslationTextComponent("gui.mxtune.confirm.cancel.text02")));
                 break;
             case SERVER:
                 if (uploadMxt())

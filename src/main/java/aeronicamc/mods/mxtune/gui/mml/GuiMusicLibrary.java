@@ -89,7 +89,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
 
     public GuiMusicLibrary(Screen parent)
     {
-        super(new TranslationTextComponent("gui.mxtune.gui_music_library_selector.title"));
+        super(new TranslationTextComponent("gui.mxtune.gui_music_library.title"));
         this.parent = parent;
 
         // refresh the file list automatically - might be better to not bother the extension filtering but we'll see

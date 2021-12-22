@@ -65,17 +65,36 @@ public class MXTuneLanguageProvider extends LanguageProvider
 
     private void addGuiTexts()
     {
-        addGuiText("gui_music_library_selector.title", "Music Library");
-        addGuiText("gui_file_selector.title", "File Selector");
+        addGuiText("gui_music_library.title", "Music Library");
+        addGuiText("gui_file_importer.title", "File Importer");
+        addGuiText("confirm.cancel.text01", "Any unsaved changes will be lost.");
+        addGuiText("confirm.cancel.text02", "No to go back and Save. Yes to return to game.");
+        addGuiText("confirm.new.text01", "This will clear the current music.");
+        addGuiText("confirm.new.text02", "There is no undo feature. Are you sure?");
+        addGuiText("label.author", "Author:");
+        addGuiText("label.filename", "Filename: ");
+        addGuiText("label.source", "Source URL:");
         addGuiText("label.search", "Search");
+        addGuiText("label.title", "Title:");
+        addGuiText("label.total_duration", "Duration All");
+        addGuiText("button.import", "Import");
+        addGuiText("button.minus", "-");
+        addGuiText("button.new", "New");
         addGuiText("button.open_folder", "Open Folder");
         addGuiText("button.open_folder.help01","Place MML files into this folder to be imported. Recognized types are: ");
         addGuiText("button.open_folder.help02"," .mml, .ms2mml, .zip (contains multiple .ms2mml files)");
+        addGuiText("button.library", "Library");
+        addGuiText("button.plus", "+");
         addGuiText("button.refresh", "Refresh");
         addGuiText("button.refresh.help01", "Only needed it the file list fails to refresh automatically after placing files into the folder.");
         addGuiText("button.play", "Play");
+        addGuiText("button.play_all", "Play All");
+        addGuiText("button.play_part", "Play Part");
+        addGuiText("button.save", "Save");
         addGuiText("button.stop", "Stop");
         addGuiText("button.select", "Select");
+        addGuiText("button.upload", "Upload");
+        addGuiText("button.write", "Write");
     }
 
     /**
