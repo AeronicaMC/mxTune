@@ -112,6 +112,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     protected void init()
     {
         super.init();
+        children.clear();
         buttons.clear();
         Objects.requireNonNull(this.minecraft).keyboardHandler.setSendRepeatsToGui(true);
         int singleLineHeight = font.lineHeight + 2;
@@ -211,12 +212,13 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
 
     private void setTab()
     {
-        buttons.stream().filter(Widget::isFocused).findFirst().ifPresent(this::buttonAccept);
+        Arrays.stream(buttonNames).filter(Widget::isHovered).findFirst().ifPresent(this::buttonAccept);
     }
 
     private void buttonAccept(Widget widget)
     {
         this.activeChildIndex = ((MXButton)widget).getIndex();
+        ((MXButton)widget).active = true;
         this.childTabs[activeChildIndex].init(Objects.requireNonNull(minecraft), width, height);
     }
 
@@ -442,10 +444,10 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     private void updateButtons()
     {
         Arrays.stream(buttonNames).forEach(button -> {
-            if (button.getIndex() >= TAB_BTN_IDX && button.getIndex() < (MAX_TABS + TAB_BTN_IDX))
+            if (button.getIndex() >= 0 && button.getIndex() < MAX_TABS)
             {
-                button.active = (activeChildIndex + TAB_BTN_IDX) != button.getIndex();
-                button.visible = (button.getIndex()) < (viewableTabCount + TAB_BTN_IDX);
+                button.active = (activeChildIndex != button.getIndex());
+                button.visible = (button.getIndex() < viewableTabCount);
                 if (activeChildIndex >= viewableTabCount)
                     activeChildIndex = viewableTabCount - 1;
             }

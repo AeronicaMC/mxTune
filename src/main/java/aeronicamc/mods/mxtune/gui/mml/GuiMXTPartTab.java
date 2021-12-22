@@ -12,6 +12,7 @@ import aeronicamc.mods.mxtune.mxt.MXTuneStaff;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
 import aeronicamc.mods.mxtune.sound.IAudioStatusCallback;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
+import aeronicamc.mods.mxtune.util.SoundFontProxy;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import aeronicamc.mods.mxtune.util.ValidDuration;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -22,6 +23,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import javax.sound.midi.Instrument;
 import javax.sound.midi.Patch;
 import java.util.*;
@@ -97,6 +99,8 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
     protected void init()
     {
         super.init();
+        children.clear();
+        buttons.clear();
         instListWidth = 128; //Math.min(listBoxInstruments.getSuggestedWidth(), 150);
 
         // create Instrument selector, and buttons
@@ -107,6 +111,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         int posY = top + 15;
         int statusHeight = entryHeight;
         listBoxInstruments.setLayout(PADDING, posY, instListWidth, Math.max(buttonPlay.y - PADDING - posY, entryHeight));
+        listBoxInstruments.setCallBack(this::selectInstrument);
         int posX = listBoxInstruments.getRight() + PADDING;
 
         /* create Status line */
@@ -317,7 +322,6 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
             staves.add(new MXTuneStaff(i, mmlTextLines[i].getValue()));
         }
         mxTunePart.setStaves(staves);
-        selectInstrument();
     }
 
     public void clearPart()
@@ -330,11 +334,12 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         init();
     }
 
-    private void selectInstrument()
+    private void selectInstrument(@Nullable SoundFontList.Entry entry)
     {
-        SoundFontList.Entry entry = listBoxInstruments.getSelected();
-        mxTunePart.setPackedPatch(entry != null ? entry.getPackedPreset() : SoundFontProxyManager.getSoundFontProxyDefault().packed_preset);
-        mxTunePart.setInstrumentName(entry != null ? entry.getId() : SoundFontProxyManager.getSoundFontProxyDefault().id);
+        SoundFontProxy soundFontProxy = SoundFontProxyManager.getSoundFontProxyDefault();
+        mxTunePart.setPackedPatch(entry != null ? entry.getPackedPreset() : soundFontProxy.packed_preset);
+        mxTunePart.setInstrumentName(entry != null ? entry.getId() : soundFontProxy.id);
+        listBoxInstruments.centerScrollOn(entry != null ? entry : listBoxInstruments.children().get(soundFontProxy.index));
         updateState();
     }
 
