@@ -30,9 +30,9 @@ import java.util.stream.Stream;
 
 import static net.minecraftforge.fml.LogicalSide.CLIENT;
 
-public class GuiFileSelector extends MXScreen
+public class GuiFileImporter extends MXScreen
 {
-    private static final Logger LOGGER = LogManager.getLogger(GuiFileSelector.class);
+    private static final Logger LOGGER = LogManager.getLogger(GuiFileImporter.class);
     private enum SortType implements Comparator<PathList.Entry>
     {
         NORMAL,
@@ -69,9 +69,9 @@ public class GuiFileSelector extends MXScreen
     private final DirectoryWatcher watcher;
     private boolean watcherStarted = false;
 
-    public GuiFileSelector(Screen parent)
+    public GuiFileImporter(Screen parent)
     {
-        super(new TranslationTextComponent("gui.mxtune.gui_file_selector.title"));
+        super(new TranslationTextComponent("gui.mxtune.gui_file_importer.title"));
         this.parent = parent;
 
         // refresh the file list automatically - might be better to not bother the extension filtering but we'll see

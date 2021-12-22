@@ -1,7 +1,7 @@
 package aeronicamc.mods.mxtune.gui;
 
 import aeronicamc.mods.mxtune.Reference;
-import aeronicamc.mods.mxtune.gui.mml.GuiFileSelector;
+import aeronicamc.mods.mxtune.gui.mml.GuiFileImporter;
 import aeronicamc.mods.mxtune.gui.mml.GuiMXT;
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
 import aeronicamc.mods.mxtune.gui.widget.MXLabel;
@@ -93,7 +93,7 @@ public class TestScreen extends Screen
 
     public void onButtonFile()
     {
-        Objects.requireNonNull(minecraft).setScreen(new GuiFileSelector(this));
+        Objects.requireNonNull(minecraft).setScreen(new GuiFileImporter(this));
     }
 
     public void onGuiMXT()
