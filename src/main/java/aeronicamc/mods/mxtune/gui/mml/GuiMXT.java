@@ -68,8 +68,8 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     private int ticks;
 
     // Links
-    private MXLink sourcesLink;
-    private MXLink mmlLink;
+    private MXLink sourcesLink = new MXLink(p->openSourceUrl());
+    private MXLink mmlLink = new MXLink(p->openMmlUrl());
 
     // Common data
     private MXTuneFile mxTuneFile;
@@ -85,7 +85,6 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     // Child tabs
     private static final int MAX_TABS = 16;
     private static final int MIN_TABS = 1;
-    private static final int TAB_BTN_IDX = 200;
     private final GuiMXTPartTab[] childTabs = new GuiMXTPartTab[MAX_TABS];
     private int activeChildIndex;
     private int cachedActiveChildIndex;
@@ -141,13 +140,11 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         // Links
         int textY = buttonDoneMode.y + buttonDoneMode.getHeight() + PADDING;
         int urlWidth = width / 2 - PADDING;
-        sourcesLink = new MXLink(p->openSourceUrl());
         sourcesLink.setAlignText(MXLink.AlignText.LEFT);
         sourcesLink.setLayout(PADDING, textY, urlWidth, singleLineHeight);
-        sourcesLink.setUrl(cachedSource);
-        mmlLink = new MXLink(p->openMmlUrl());
+        sourcesLink.setUrl(textSource.getValue());
         mmlLink.setAlignText(MXLink.AlignText.RIGHT);
-        mmlLink.setLayout(width - PADDING , textY, urlWidth, singleLineHeight);
+        mmlLink.setLayout(width - urlWidth - PADDING , textY, urlWidth, singleLineHeight);
         mmlLink.setUrl(MXTuneConfig.getMmlLink());
         addButton(sourcesLink);
         addButton(mmlLink);
@@ -220,6 +217,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         this.activeChildIndex = ((MXButton)widget).getIndex();
         ((MXButton)widget).active = true;
         this.childTabs[activeChildIndex].init(Objects.requireNonNull(minecraft), width, height);
+        updateState();
     }
 
     @Override
@@ -273,14 +271,19 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         textAuthor.tick();
         textSource.tick();
         childTabs[activeChildIndex].tick();
-        if (ticks++ % 5 == 0) updateButtons();
+        if ((ticks++ % 5) == 0) updateButtons();
+    }
+
+    @Override
+    public boolean charTyped(char pCodePoint, int pModifiers)
+    {
+        return childTabs[activeChildIndex].charTyped(pCodePoint, pModifiers) || super.charTyped(pCodePoint, pModifiers);
     }
 
     @Override
     public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers)
     {
-        super.keyPressed(pKeyCode, pScanCode, pModifiers);
-        return childTabs[activeChildIndex].keyPressed(pKeyCode, pScanCode, pModifiers);
+        return childTabs[activeChildIndex].keyPressed(pKeyCode, pScanCode, pModifiers) || super.keyPressed(pKeyCode, pScanCode, pModifiers);
     }
 
     @Override
@@ -288,69 +291,59 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     {
         updateButtons();
         updateState();
-
-        super.keyReleased(pKeyCode, pScanCode, pModifiers);
-        return childTabs[activeChildIndex].keyReleased(pKeyCode, pScanCode, pModifiers);
+        return childTabs[activeChildIndex].keyReleased(pKeyCode, pScanCode, pModifiers) || super.keyReleased(pKeyCode, pScanCode, pModifiers);
     }
 
     @Override
     public boolean isMouseOver(double pMouseX, double pMouseY)
     {
-        super.isMouseOver(pMouseX, pMouseY);
-        return childTabs[activeChildIndex].isMouseOver(pMouseX, pMouseY);
+        return childTabs[activeChildIndex].isMouseOver(pMouseX, pMouseY) || super.isMouseOver(pMouseX, pMouseY);
     }
 
     @Override
     public boolean mouseClicked(double pMouseX, double pMouseY, int pButton)
     {
-        mmlLink.mouseClicked(pMouseX, pMouseY, pButton);
-        sourcesLink.mouseClicked(pMouseX, pMouseY, pButton);
         textTitle.mouseClicked(pMouseX, pMouseY, pButton);
         textAuthor.mouseClicked(pMouseX, pMouseY, pButton);
         textSource.mouseClicked(pMouseX, pMouseY, pButton);
-        super.mouseClicked(pMouseX, pMouseY, pButton);
-        return childTabs[activeChildIndex].mouseClicked(pMouseX, pMouseY, pButton);
+        return childTabs[activeChildIndex].mouseClicked(pMouseX, pMouseY, pButton) || super.mouseClicked(pMouseX, pMouseY, pButton);
     }
 
     @Override
     public boolean mouseReleased(double pMouseX, double pMouseY, int pButton)
     {
-        super.mouseReleased(pMouseX, pMouseY, pButton);
-        return childTabs[activeChildIndex].mouseReleased(pMouseX, pMouseY,  pButton);
+        return childTabs[activeChildIndex].mouseReleased(pMouseX, pMouseY,  pButton) || super.mouseReleased(pMouseX, pMouseY, pButton);
     }
 
     @Override
     public boolean mouseDragged(double pMouseX, double pMouseY, int pButton, double pDragX, double pDragY)
     {
-        super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
-        return childTabs[activeChildIndex].mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
+        return childTabs[activeChildIndex].mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY) || super.mouseDragged(pMouseX, pMouseY, pButton, pDragX, pDragY);
     }
 
     @Override
     public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta)
     {
-        super.mouseScrolled(pMouseX, pMouseY, pDelta);
-        return childTabs[activeChildIndex].mouseScrolled(pMouseX, pMouseY, pDelta);
+        return childTabs[activeChildIndex].mouseScrolled(pMouseX, pMouseY, pDelta) || super.mouseScrolled(pMouseX, pMouseY, pDelta);
     }
 
     @Override
     public void mouseMoved(double pMouseX, double pMouseY)
     {
-        super.mouseMoved(pMouseX, pMouseY);
         childTabs[activeChildIndex].mouseMoved(pMouseX, pMouseY);
+        super.mouseMoved(pMouseX, pMouseY);
     }
 
     private void reloadState()
     {
+        if (isStateCached)
+        {
+            labelMXTFileName.setLabelText(new StringTextComponent(cachedMXTFilename));
+            activeChildIndex = cachedActiveChildIndex;
+            viewableTabCount = cachedViewableTabCount;
+            isPlaying = cachedIsPlaying;
+        }
         updateButtons();
-        if (!isStateCached) return;
-        labelMXTFileName.setLabelText(new StringTextComponent(cachedMXTFilename));
-        activeChildIndex = cachedActiveChildIndex;
-        viewableTabCount = cachedViewableTabCount;
-//        textTitle.setValue(cachedTitle);
-//        textAuthor.setValue(cachedAuthor);
-//        textSource.setValue(cachedSource);
-        isPlaying = cachedIsPlaying;
     }
 
     private void updateState()
@@ -358,12 +351,9 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         cachedMXTFilename = labelMXTFileName.getLabelText().getString();
         cachedActiveChildIndex = activeChildIndex;
         cachedViewableTabCount = viewableTabCount;
-//        cachedTitle = textTitle.getValue();
-//        cachedAuthor = textAuthor.getValue();
-//        cachedSource = textSource.getValue();
         cachedIsPlaying = isPlaying;
-//        sourcesLink.setUrl(cachedSource);
         isStateCached = true;
+        sourcesLink.setUrl(textSource.getValue());
     }
 
     private void getSelection()
@@ -424,6 +414,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
             textTitle.setValue(mxTuneFile.getTitle());
             textAuthor.setValue(mxTuneFile.getAuthor());
             textSource.setValue(mxTuneFile.getSource());
+            sourcesLink.setUrl(mxTuneFile.getSource());
             int tab = 0;
             setDisplayedFilename(ActionGet.INSTANCE.getFileNameString(), TextFormatting.AQUA);
             Iterator<MXTunePart> iterator = mxTuneFile.getParts().iterator();
@@ -471,9 +462,9 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         buttonPlayStop.active = isPlaying || isOK;
         buttonDoneMode.active = Mode.CLIENT == mode || (!textTitle.getValue().isEmpty() && isOK);
         buttonPlayStop.setMessage(isPlaying ? new TranslationTextComponent("gui.mxtune.button.stop") : new TranslationTextComponent("gui.mxtune.button.play_all"));
-        buttonSave.active = !textTitle.getValue().isEmpty() && isOK;
-
         sourcesLink.visible = sourcesLink.getUrl().matches("^(http(s)?:\\/\\/[a-zA-Z0-9\\-_]+\\.[a-zA-Z]+(.)+)+");
+
+        buttonSave.active = !textTitle.getValue().isEmpty() && isOK;
     }
 
     private void updateTabbedButtonNames()

@@ -81,7 +81,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("label.status", "Status/Meta");
         addGuiText("label.title", "Title:");
         addGuiText("label.metadata", "Chars: %s, Duration: %s, Meta: %s");
-        addGuiText("label.duration_value_total", "Duration All");
+        addGuiText("label.duration_value_total", "Duration All: ");
         addGuiText("button.import", "Import");
         addGuiText("button.minus", "-");
         addGuiText("button.new", "New");
