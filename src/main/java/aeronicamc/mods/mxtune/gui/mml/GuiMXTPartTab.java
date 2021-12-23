@@ -176,12 +176,18 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
     }
 
     @Override
+    public boolean charTyped(char pCodePoint, int pModifiers)
+    {
+        IntStream.range(0, viewableLineCount).forEach(i -> mmlTextLines[i].charTyped(pCodePoint, pModifiers));
+        return super.charTyped(pCodePoint, pModifiers);
+    }
+
+    @Override
     public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers)
     {
         listBoxInstruments.keyPressed(pKeyCode, pScanCode, pModifiers);
         IntStream.range(0, viewableLineCount).forEach(i -> mmlTextLines[i].keyPressed(pKeyCode, pScanCode, pModifiers));
-        super.keyPressed(pKeyCode, pScanCode, pModifiers);
-        return false;
+        return super.keyPressed(pKeyCode, pScanCode, pModifiers);
     }
 
     @Override
@@ -190,8 +196,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         listBoxInstruments.keyReleased(pKeyCode, pScanCode, pModifiers);
         IntStream.range(0, viewableLineCount).forEach(i -> mmlTextLines[i].keyReleased(pKeyCode, pScanCode, pModifiers));
         updateState();
-        super.keyReleased(pKeyCode, pScanCode, pModifiers);
-        return false;
+        return super.keyReleased(pKeyCode, pScanCode, pModifiers);
     }
 
     @Override
@@ -199,8 +204,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
     {
         listBoxInstruments.isMouseOver(pMouseX, pMouseY);
         IntStream.range(0, viewableLineCount).forEach(i -> mmlTextLines[i].isMouseOver(pMouseX, pMouseY));
-        super.isMouseOver(pMouseX, pMouseY);
-        return false;
+        return super.isMouseOver(pMouseX, pMouseY);
     }
 
     @Override
@@ -292,13 +296,13 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         CompoundNBT compound = new CompoundNBT();
         mxTunePart.writeToNBT(compound);
         this.mxTunePart = new MXTunePart(compound);
-        this.listBoxInstruments.children().stream().filter(e -> e.getId().equals(mxTunePart.getInstrumentName())).findFirst().ifPresent(listBoxInstruments::centerScrollOn);
+        this.listBoxInstruments.children().stream().filter(e -> e.getId().equals(mxTunePart.getInstrumentName())).findFirst().ifPresent(listBoxInstruments::setSelected);
         Iterator<MXTuneStaff> iterator = mxTunePart.getStaves().iterator();
         int i = 0;
         while (iterator.hasNext())
         {
             mmlTextLines[i].setValue(iterator.next().getMml());
-            mmlTextLines[i++].setCursorPosition(0);
+            mmlTextLines[i++].keyPressed(268,0,0);
             if (iterator.hasNext())
                 addLine();
         }
@@ -373,8 +377,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
             if (viewableLineCount < MAX_MML_LINES)
             {
                 mmlTextLines[i].setValue(iterator.next());
-                mmlTextLines[i].moveCursorToStart();
-                mmlTextLines[i++].moveCursorToStart();
+                mmlTextLines[i++].keyPressed(268,0,0);
                 if (iterator.hasNext())addLine();
             } else
                 break;
@@ -409,7 +412,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         IntStream.range(0, MAX_MML_LINES).forEach(i -> cachedTextLines[i] = mmlTextLines[i].getValue());
         IntStream.range(0, MAX_MML_LINES).forEach(i -> cachedCursorPos[i] = mmlTextLines[i].getCursorPosition());
         cachedViewableLineCount = viewableLineCount;
-//        cachedSelectedInst = listBoxInstruments.getSelectedIndex();
+        cachedSelectedInst = listBoxInstruments.getSelected();
         cachedIsPlaying = isPlaying;
         updateStatusText();
 
@@ -461,6 +464,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
     {
         if (!isStateCached) return;
         listBoxInstruments.setSelected(cachedSelectedInst);
+        listBoxInstruments.ensureVisible(cachedSelectedInst);
         isPlaying = cachedIsPlaying;
         updateStatusText();
         IntStream.range(0, MAX_MML_LINES).forEach(i -> mmlTextLines[i].setValue(cachedTextLines[i]));
