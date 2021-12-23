@@ -5,7 +5,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.ForgeHooks;
 
 public class MXLink extends MXButton
@@ -58,18 +60,20 @@ public class MXLink extends MXButton
             switch (this.alignText)
             {
                 case RIGHT:
-                    alignX = this.x - stringWidth;
+                    alignX = this.x + this.width - stringWidth;
                     break;
                 case CENTER:
-                    alignX = this.x - stringWidth + stringWidth / 2;
+                    alignX = this.x + (this.width)/2 - (stringWidth/2);
                     break;
                 case LEFT:
                     break;
                 default:
             }
+
             String displayLink = font.plainSubstrByWidth(formattedLink.getString(), width);
-            this.fillGradient(mStack,alignX - 2 , y - 2, alignX + width + 2, y +  height, 0xCC000000, 0xCC000000);
-            drawString(mStack, font, displayLink, alignX, this.y, 0xFF8080);
+            ITextComponent link = new StringTextComponent(displayLink).withStyle(TextFormatting.UNDERLINE).withStyle(TextFormatting.AQUA);
+            this.fillGradient(mStack,alignX - 2 , y - 2, alignX + stringWidth + 2, y +  height, 0x40000000, 0x40000000);
+            drawString(mStack, font, link, alignX, this.y, -1);
         }
     }
 
