@@ -31,6 +31,7 @@
 
 package aeronicamc.libs.mml.readers.mml3mle;
 
+import aeronicamc.libs.mml.parser.MMLAllowedChars;
 import aeronicamc.libs.mml.parser.MMLUtil;
 import aeronicamc.mods.mxtune.mxt.MXTuneFile;
 import aeronicamc.mods.mxtune.mxt.MXTunePart;
@@ -190,7 +191,7 @@ public final class MMLFile
             for (int i = 0; i < track.getTrackCount(); i++)
             {
                 text[i] = mmlParts.pop();
-                staves.add(new MXTuneStaff(i, text[i]));
+                staves.add(new MXTuneStaff(i, MMLAllowedChars.filter(text[i], false)));
                 LOGGER.debug("text[{}]= {}", i, text[i]);
             }
 

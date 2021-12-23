@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.gui.mml;
 
+import aeronicamc.libs.mml.parser.MMLAllowedChars;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
 import aeronicamc.mods.mxtune.gui.widget.MXLabel;
@@ -178,7 +179,8 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
     @Override
     public boolean charTyped(char pCodePoint, int pModifiers)
     {
-        IntStream.range(0, viewableLineCount).forEach(i -> mmlTextLines[i].charTyped(pCodePoint, pModifiers));
+        if (MMLAllowedChars.isAllowedChar(pCodePoint, false))
+            IntStream.range(0, viewableLineCount).forEach(i -> mmlTextLines[i].charTyped(pCodePoint, pModifiers));
         return super.charTyped(pCodePoint, pModifiers);
     }
 
@@ -366,7 +368,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         clearPart();
         int i = 0;
 
-        String clip = Objects.requireNonNull(minecraft).keyboardHandler.getClipboard();
+        String clip = MMLAllowedChars.filter(Objects.requireNonNull(minecraft).keyboardHandler.getClipboard(), true);
         LOGGER.debug("{}", clip);
         if (clip.isEmpty())
             return;

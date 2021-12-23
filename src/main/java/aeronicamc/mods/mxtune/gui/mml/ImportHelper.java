@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.gui.mml;
 
+import aeronicamc.libs.mml.parser.MMLAllowedChars;
 import aeronicamc.libs.mml.readers.mml3mle.MMLFile;
 import aeronicamc.libs.mml.readers.ms2mml.MapMS2Instruments;
 import aeronicamc.libs.mml.readers.ms2mml.Ms2MmlReader;
@@ -129,7 +130,7 @@ public class ImportHelper
         for (String mml : data.replaceAll("MML@|MML|;", "").split(","))
         {
             if (i < MAX_STAVES)
-                staves.add(new MXTuneStaff(i++, mml));
+                staves.add(new MXTuneStaff(i++, MMLAllowedChars.filter(mml, false)));
             else
                 break;
         }
