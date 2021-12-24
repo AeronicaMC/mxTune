@@ -33,7 +33,6 @@ import net.minecraftforge.fml.LogicalSide;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.IntStream;
@@ -50,8 +49,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     private final Screen parent;
 
     private boolean isStateCached;
-    private MXLabel labelMXTFileName;
-    private String cachedMXTFilename = "";
+    private MXLabel labelMXTFileName = new MXLabel();
     private MXLabel labelTitle;
     private MXLabel labelAuthor;
     private MXLabel labelSource;
@@ -74,7 +72,6 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     // Common data
     private MXTuneFile mxTuneFile;
     private boolean isPlaying = false;
-    private boolean cachedIsPlaying;
     private MXButton buttonSave;
     private static final int PADDING = 4;
     private final Mode mode;
@@ -117,8 +114,9 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         int singleLineHeight = font.lineHeight + 2;
         int titleWidth = width - PADDING * 2;
 
-        labelMXTFileName = new MXLabel(font, PADDING, PADDING, titleWidth, singleLineHeight, new TranslationTextComponent("gui.mxtune.label.filename"), -1);
-        setDisplayedFilename(cachedMXTFilename, TextFormatting.AQUA);
+        //labelMXTFileName = new MXLabel(font, PADDING, PADDING, titleWidth, singleLineHeight, new TranslationTextComponent("gui.mxtune.label.filename"), -1);
+        labelMXTFileName.setLayout(PADDING, PADDING, titleWidth, singleLineHeight);
+        labelMXTFileName.setLabelName(new TranslationTextComponent("gui.mxtune.label.filename"));
         int buttonWidth = Math.max(((width * 2 / 3) - PADDING * 2) / 6, 65);
         int buttonY = labelMXTFileName.getY() + labelMXTFileName.getHeight();
 
@@ -338,20 +336,16 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     {
         if (isStateCached)
         {
-            labelMXTFileName.setLabelText(new StringTextComponent(cachedMXTFilename));
             activeChildIndex = cachedActiveChildIndex;
             viewableTabCount = cachedViewableTabCount;
-            isPlaying = cachedIsPlaying;
         }
         updateButtons();
     }
 
     private void updateState()
     {
-        cachedMXTFilename = labelMXTFileName.getLabelText().getString();
         cachedActiveChildIndex = activeChildIndex;
         cachedViewableTabCount = viewableTabCount;
-        cachedIsPlaying = isPlaying;
         isStateCached = true;
         sourcesLink.setUrl(textSource.getValue());
     }
@@ -416,7 +410,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
             textSource.setValue(mxTuneFile.getSource());
             sourcesLink.setUrl(mxTuneFile.getSource());
             int tab = 0;
-            setDisplayedFilename(ActionGet.INSTANCE.getFileNameString(), TextFormatting.AQUA);
+            setDisplayedFilename(FileHelper.removeExtension(ActionGet.INSTANCE.getFileNameString()), TextFormatting.AQUA);
             Iterator<MXTunePart> iterator = mxTuneFile.getParts().iterator();
             while (iterator.hasNext() && tab < MAX_TABS)
             {
@@ -570,14 +564,12 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     private void saveAction()
     {
         // TODO: clean this up and toss warnings as needed.
-        String fileName = FileHelper.removeExtension(cachedMXTFilename);
-        if (fileName.length() < 1)
+        // TODO: Need proper save dialog.
+        String fileName = FileHelper.normalizeFilename(textTitle.getValue().trim());
+        if (!fileName.isEmpty() && !textTitle.getValue().trim().isEmpty())
         {
-            fileName = FileHelper.normalizeFilename(textTitle.getValue().trim());
             setDisplayedFilename(fileName, TextFormatting.AQUA);
-        }
-        if (!fileName.equals("") && !textTitle.getValue().trim().equals(""))
-        {
+            LOGGER.info("Write file: {}", fileName + FileHelper.EXTENSION_MXT);
             createMxt();
             CompoundNBT compound = new CompoundNBT();
             mxTuneFile.writeToNBT(compound);
@@ -587,8 +579,14 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
             }
             catch (IOException e)
             {
+                // TODO: Post save error
                 LOGGER.error(e);
             }
+        }
+        else
+        {
+            // TODO: Post file not saved
+            LOGGER.info("File not saved: {}", fileName + FileHelper.EXTENSION_MXT);
         }
         updateState();
     }
@@ -719,9 +717,8 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         updateState();
     }
 
-    private void setDisplayedFilename(@Nullable String name, TextFormatting textFormatting)
+    private void setDisplayedFilename(String name, TextFormatting textFormatting)
     {
-        if (name == null) name = "";
         labelMXTFileName.setLabelText(new StringTextComponent(name).withStyle(textFormatting));
     }
 
