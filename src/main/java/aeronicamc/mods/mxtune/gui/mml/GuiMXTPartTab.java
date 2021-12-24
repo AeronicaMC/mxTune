@@ -57,7 +57,6 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
     private final int[] cachedCursorPos = new int[MAX_MML_LINES];
     private MXButton buttonAddLine;
     private MXButton buttonMinusLine;
-    private MXButton buttonPasteFromClipBoard;
     private MXButton buttonCopyToClipBoard;
     private static final String[] lineNames = new String[MAX_MML_LINES];
 
@@ -72,9 +71,6 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
 
     /* MML Player */
     private int playId = PlayIdSupplier.INVALID;
-
-    /* Instruments */
-    private int instListWidth;
     private boolean isPlaying = false;
 
     /* Cached State for when the GUI is resized */
@@ -102,7 +98,8 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         super.init();
         children.clear();
         buttons.clear();
-        instListWidth = Math.min(listBoxInstruments.getSuggestedWidth(), 150);
+        /* Instruments */
+        int instListWidth = Math.min(listBoxInstruments.getSuggestedWidth(), 150);
 
         // create Instrument selector, and buttons
         buttonPlay = new MXButton(PADDING, bottom - 20, instListWidth, 20, isPlaying ? new TranslationTextComponent("gui.mxtune.button.stop") : new TranslationTextComponent("gui.mxtune.button.play_part"), p -> play());
@@ -130,7 +127,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         addButton(buttonMinusLine);
 
         // Create Clipboard Paste and Copy buttons
-        buttonPasteFromClipBoard =  new MXButton(posX, buttonMinusLine.y + buttonMinusLine.getHeight() + PADDING, 60, 20, new TranslationTextComponent("gui.mxtune.button.clipboard_paste_from"), p -> pasteFromClipboard());
+        MXButton buttonPasteFromClipBoard = new MXButton(posX, buttonMinusLine.y + buttonMinusLine.getHeight() + PADDING, 60, 20, new TranslationTextComponent("gui.mxtune.button.clipboard_paste_from"), p -> pasteFromClipboard());
         addButton(buttonPasteFromClipBoard);
         buttonCopyToClipBoard =  new MXButton(posX, buttonPasteFromClipBoard.y + buttonPasteFromClipBoard.getHeight(), 60, 20, new TranslationTextComponent("gui.mxtune.button.clipboard_Copy_to"), p -> copyToClipboard());
         addButton(buttonCopyToClipBoard);
