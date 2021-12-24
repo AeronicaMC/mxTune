@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2020 Paul Boese a.k.a. Aeronica
+ * Copyright (c) 2022 Paul Boese a.k.a. Aeronica
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,8 @@ package aeronicamc.libs.mml.parser;
 
 public class MMLAllowedChars
 {
-    // Lexer rules - US_ASCII
-    // CMD : [iopstvIOPSTV] ; // MML commands Instrument, Octave, Perform, Sustain, Tempo, Volume
+    // Antlr Lexer rules - US_ASCII
+    // CMD : [opstvIOPSTV] ; // MML commands Octave, Perform, Sustain, Tempo, Volume
     // LEN : [lL] ; // MML Length command
     // OCTAVE : [<>] ; // Octave down/up
     // NOTE : [a-gA-G] ; // Notes
@@ -36,29 +36,30 @@ public class MMLAllowedChars
     // TIE : '&' ; // Tie
     // REST : [rR] ; // Rests
     // INT : [0-9]+ ; // match integers
-    // BEGIN : 'MML@' ; // MML File Begin
-    // PART : ',' ; // Part separator
-    // END : ';' ; // MML File End
+    //// Paste format characters
+    //     BEGIN : 'MML@' ; // MML File Begin
+    //     PART : ',' ; // Part separator
+    //     END : ';' ; // MML File End
     // WS : [ \t\r\n]+ -> skip ; // toss out whitespace
     // JUNK : [\u0000-~] -> skip ; // anything leftover
 
-    private static final String MML_CHARACTERS_PASTE = "abcdefgABCDEFGrR<>+#-.,&0123456789nNopstvOPSTVlLM@;";
-    private static final String MML_CHARACTERS_ONLY = "abcdefgABCDEFGrR<>+#-.&0123456789nNopstvOPSTVlL";
+    private static final char[] MML_CHARACTERS_PASTE = "abcdefgABCDEFGrR<>+#-.,&0123456789nNopstvOPSTVlLM@;".toCharArray();
+    private static final char[] MML_CHARACTERS_ONLY = "abcdefgABCDEFGrR<>+#-.&0123456789nNopstvOPSTVlL".toCharArray();
+
     private MMLAllowedChars() {/* NOP */}
 
     /**
-     * Allow by only standard
-     * @param character
-     * @param paste
-     * @return
+     *  Only standard MML or Mabinogi paste format characters
+     * @param character to test
+     * @param paste if true allow paste characters too ',' ';' 'M' '@' as in 'MML@ ... ,  ... ;'
+     * @return true if character is allowed
      */
     public static boolean isAllowedChar(char character, boolean paste)
     {
-        char[] ca = paste ? MML_CHARACTERS_PASTE.toCharArray() : MML_CHARACTERS_ONLY.toCharArray();
-        for (int i = 0; i < ca.length; i++)
-        {
-            if (character == ca[i]) return true;
-        }
+        char[] ca = paste ? MML_CHARACTERS_PASTE : MML_CHARACTERS_ONLY;
+        for (char c : ca)
+            if (character == c) return true;
+
         return false;
     }
 
@@ -66,19 +67,16 @@ public class MMLAllowedChars
      * Filter string by only keeping those characters for which isAllowedCharacter() returns true.
      * @param input dirty string
      * @param paste if true allow paste characters ',' ';' 'M' '@' as in 'MML@ ... ,  ... ;'
-     * @return
+     * @return a result containing allowed characters or an empty string.
      */
     public static String filter(String input, boolean paste)
     {
         StringBuilder stringbuilder = new StringBuilder();
 
         for (char c0 : input.toCharArray())
-        {
             if (isAllowedChar(c0, paste))
-            {
                 stringbuilder.append(c0);
-            }
-        }
+
         return stringbuilder.toString();
     }
 }
