@@ -302,6 +302,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         {
             mmlTextLines[i].setValue(iterator.next().getMml());
             mmlTextLines[i++].keyPressed(268,0,0);
+            if (i == MAX_MML_LINES) break;
             if (iterator.hasNext())
                 addLine();
         }
