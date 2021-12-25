@@ -49,7 +49,7 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
     }
 
     private IItemHandler createHandler() {
-        return new ItemStackHandler(3) {
+        return new ItemStackHandler(MusicBlockContainer.INVENTORY_SIZE) {
 
             @Override
             protected void onContentsChanged(int slot) {
