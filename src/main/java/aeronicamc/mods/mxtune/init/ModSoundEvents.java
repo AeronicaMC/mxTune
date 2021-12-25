@@ -44,6 +44,7 @@ public class ModSoundEvents
     private static boolean isInitialized;
 
     public static final RegistryObject<SoundEvent> PCM_PROXY = registerSoundEvent("pcm-proxy");
+    public static final RegistryObject<SoundEvent> FAILURE = registerSoundEvent("failure");
 
     private ModSoundEvents() { /* NOP */ }
 
