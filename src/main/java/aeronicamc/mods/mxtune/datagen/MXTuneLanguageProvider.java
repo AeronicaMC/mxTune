@@ -65,6 +65,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
 
     private void addGuiTexts()
     {
+        add("itemGroup.mxtune", "mxTune");
         addGuiText("gui_music_library.title", "Music Library");
         addGuiText("gui_file_importer.title", "File Importer");
         addGuiText("confirm.cancel.text01", "Any unsaved changes will be lost.");

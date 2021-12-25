@@ -3,10 +3,12 @@ package aeronicamc.mods.mxtune.gui;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.gui.mml.GuiFileImporter;
 import aeronicamc.mods.mxtune.gui.mml.GuiMXT;
+import aeronicamc.mods.mxtune.gui.toasts.MXToast;
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
 import aeronicamc.mods.mxtune.gui.widget.MXLabel;
 import aeronicamc.mods.mxtune.gui.widget.MXTextFieldWidget;
 import aeronicamc.mods.mxtune.gui.widget.list.SoundFontList;
+import aeronicamc.mods.mxtune.util.Misc;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
@@ -24,8 +26,8 @@ public class TestScreen extends Screen
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private final SoundFontList sfpWidget = new SoundFontList();
-    private MXTextFieldWidget titleTextWidget = new MXTextFieldWidget(Reference.MXT_SONG_TITLE_LENGTH);
-    private MXTextFieldWidget musicTextWidget = new MXTextFieldWidget(Reference.MAX_MML_PART_LENGTH);
+    private final MXTextFieldWidget titleTextWidget = new MXTextFieldWidget(Reference.MXT_SONG_TITLE_LENGTH);
+    private final MXTextFieldWidget musicTextWidget = new MXTextFieldWidget(Reference.MAX_MML_PART_LENGTH);
     private MXLabel labelTitle;
     private boolean initialized;
     private final MXButton buttonOpen = new MXButton((open) -> onButtonOpen());
@@ -50,22 +52,22 @@ public class TestScreen extends Screen
         labelTitle.setBackColor(TextColorBg.BLUE);
 
         buttonGuiMXT.setLayout(this.width - 105, (this.height / 6 + 168) - 60, 100, 20);
-        buttonGuiMXT.setMessage(new TranslationTextComponent("gui.mxtune.gui_mxt.title"));
+        buttonGuiMXT.setMessage(new TranslationTextComponent("gui.mxtune.gui_music_library.title"));
         addButton(buttonGuiMXT);
         buttonFile.setLayout(this.width - 105, (this.height / 6 + 168) - 40, 100, 20);
-        buttonFile.setMessage(new TranslationTextComponent("gui.mxtune.gui_file_selector.title"));
+        buttonFile.setMessage(new TranslationTextComponent("gui.mxtune.gui_file_importer.title"));
         addButton(buttonFile);
         buttonOpen.setLayout(this.width - 55, (this.height / 6 + 168) - 20, 50, 20);
         buttonOpen.setMessage(new TranslationTextComponent("gui.mxtune.button.open"));
         addButton(buttonOpen);
 
-        this.addButton(new MXButton(buttonOpen.getLeft(), buttonOpen.getBottom(), 50, 20, new TranslationTextComponent("gui.done"), (done) -> {
-            minecraft.popGuiLayer();
-        }));
+        this.addButton(new MXButton(buttonOpen.getLeft(), buttonOpen.getBottom(), 50, 20, new TranslationTextComponent("gui.done"),
+                                    (done) -> Objects.requireNonNull(minecraft).popGuiLayer()));
 
         //sfpWidget.setLayout(128, height - 30 , 15, height - 15, 15);
         sfpWidget.setLayout(5, 5, 128, height - 10);
         sfpWidget.setCallBack((entry)-> {
+            Misc.addToast(new MXToast());
             LOGGER.info("Selected {}", entry.getId());
         });
 
