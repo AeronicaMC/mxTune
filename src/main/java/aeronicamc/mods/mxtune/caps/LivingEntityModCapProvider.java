@@ -1,7 +1,7 @@
 package aeronicamc.mods.mxtune.caps;
 
 import aeronicamc.mods.mxtune.Reference;
-import aeronicamc.mods.mxtune.util.AntiNull;
+import aeronicamc.mods.mxtune.util.Misc;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,7 +29,7 @@ public final class LivingEntityModCapProvider
     private static final Logger LOGGER = LogManager.getLogger(LivingEntityModCapProvider.class);
 
     @CapabilityInject(ILivingEntityModCap.class)
-    public static final Capability<ILivingEntityModCap> LIVING_ENTITY_MOD_CAP_CAPABILITY = AntiNull.nonNullInjected();
+    public static final Capability<ILivingEntityModCap> LIVING_ENTITY_MOD_CAP_CAPABILITY = Misc.nonNullInjected();
 
     private LivingEntityModCapProvider() { /* NOP */ }
 

@@ -1,7 +1,7 @@
 package aeronicamc.mods.mxtune.gui.widget.list;
 
 import aeronicamc.mods.mxtune.gui.widget.ILayout;
-import aeronicamc.mods.mxtune.util.AntiNull;
+import aeronicamc.mods.mxtune.util.Misc;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -27,7 +27,7 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
 
     public MXExtendedList()
     {
-        this(Minecraft.getInstance(), 1, 1, 1, 1, Minecraft.getInstance().font.lineHeight + 4, 1, AntiNull.nonNullInjected());
+        this(Minecraft.getInstance(), 1, 1, 1, 1, Minecraft.getInstance().font.lineHeight + 4, 1, Misc.nonNullInjected());
     }
 
     public MXExtendedList(Minecraft pMinecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight, int pLeft, Consumer<E> selectCallback)

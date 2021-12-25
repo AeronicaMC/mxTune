@@ -3,7 +3,7 @@ package aeronicamc.mods.mxtune.init;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.blocks.InvTestTile;
 import aeronicamc.mods.mxtune.blocks.MusicBlockTile;
-import aeronicamc.mods.mxtune.util.AntiNull;
+import aeronicamc.mods.mxtune.util.Misc;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -75,7 +75,7 @@ public class ModTileEntities
             final TileEntityType<T> tileEntityType;
             tileEntityType = TileEntityType.Builder
                     .of(tileEntityFactory, validBlock.get())
-                    .build(AntiNull.nonNullInjected());
+                    .build(Misc.nonNullInjected());
 
             return tileEntityType;
         });

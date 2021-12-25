@@ -1,7 +1,7 @@
 package aeronicamc.mods.mxtune.render;
 
 import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
-import aeronicamc.mods.mxtune.util.AntiNull;
+import aeronicamc.mods.mxtune.util.Misc;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.util.ResourceLocation;
@@ -22,5 +22,5 @@ public class MusicSourceRenderer extends EntityRenderer<MusicSourceEntity>
      */
     @Nullable
     @Override
-    public ResourceLocation getTextureLocation(@Nullable MusicSourceEntity pEntity) { return AntiNull.nonNullInjected(); }
+    public ResourceLocation getTextureLocation(@Nullable MusicSourceEntity pEntity) { return Misc.nonNullInjected(); }
 }

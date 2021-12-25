@@ -1,7 +1,7 @@
 package aeronicamc.mods.mxtune.render;
 
 import aeronicamc.mods.mxtune.entity.RootedEntity;
-import aeronicamc.mods.mxtune.util.AntiNull;
+import aeronicamc.mods.mxtune.util.Misc;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.util.ResourceLocation;
@@ -24,6 +24,6 @@ public class RootedRenderer extends EntityRenderer<RootedEntity>
     @Override
     public ResourceLocation getTextureLocation(@Nullable RootedEntity pEntity)
     {
-        return AntiNull.nonNullInjected();
+        return Misc.nonNullInjected();
     }
 }
