@@ -39,7 +39,7 @@ public abstract class genericContainer extends Container
                     return ItemStack.EMPTY;
                 slot.onQuickCraft(stack, itemstack);
             }
-            else if (!this.moveItemStackTo(stack, 0, 1, false))
+            else if (!this.moveItemStackTo(stack, 0, 3, false))
             {
                 return ItemStack.EMPTY;
             }

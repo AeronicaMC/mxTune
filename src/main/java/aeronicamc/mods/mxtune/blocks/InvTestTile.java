@@ -1,11 +1,13 @@
 package aeronicamc.mods.mxtune.blocks;
 
 import aeronicamc.mods.mxtune.init.ModTileEntities;
+import aeronicamc.mods.mxtune.util.IInstrument;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -43,19 +45,19 @@ public class InvTestTile extends TileEntity implements INamedContainerProvider, 
                 setChanged();
             }
 
-//            @Override
-//            public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-//                return stack.getItem() == Items.DIAMOND;
-//            }
+            @Override
+            public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+                return stack.getItem() instanceof IInstrument;
+            }
 
-//            @Nonnull
-//            @Override
-//            public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-//                if (stack.getItem() != Items.DIAMOND) {
-//                    return stack;
-//                }
-//                return super.insertItem(slot, stack, simulate);
-//            }
+            @Nonnull
+            @Override
+            public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+                if (stack.getItem() instanceof IInstrument) {
+                    return stack;
+                }
+                return super.insertItem(slot, stack, simulate);
+            }
         };
     }
 

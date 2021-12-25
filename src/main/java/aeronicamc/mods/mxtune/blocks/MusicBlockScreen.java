@@ -12,7 +12,7 @@ import java.util.Objects;
 
 public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
 {
-    private final ResourceLocation GUI = new ResourceLocation(Reference.MOD_ID, "textures/gui/inv_test_gui.png");
+    private final ResourceLocation GUI = new ResourceLocation(Reference.MOD_ID, "textures/gui/inv_music_block_gui.png");
 
     public MusicBlockScreen(MusicBlockContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {

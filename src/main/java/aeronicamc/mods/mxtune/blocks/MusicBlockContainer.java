@@ -30,7 +30,12 @@ public class MusicBlockContainer extends genericContainer
         if (tileEntity != null)
         {
             tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(
-                    h -> addSlot(new SlotMusicBlock(h, (MusicBlockTile) tileEntity, 0, 64, 24)));
+                    h ->
+                    {
+                        addSlot(new SlotMusicBlock(h, (MusicBlockTile) tileEntity, 0, 64, 24));
+                        addSlot(new SlotMusicBlock(h, (MusicBlockTile) tileEntity, 1, 64 + 18, 24));
+                        addSlot(new SlotMusicBlock(h, (MusicBlockTile) tileEntity, 2, 64 + 36, 24));
+                    });
         } else
             throw new IllegalStateException("Invalid tile entity at " + pos);
 
