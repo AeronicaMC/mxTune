@@ -17,6 +17,8 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
     public MusicBlockScreen(MusicBlockContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
+        this.imageWidth = 176;
+        this.imageHeight = 180;
     }
 
     @Override
@@ -39,7 +41,7 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
 
     @Override
     protected void renderLabels(MatrixStack matrixStack , int mouseX, int mouseY) {
-        this.font.draw(matrixStack, menu.getName().getContents(), 10, 8, 4210752);
-        this.font.draw(matrixStack, this.inventory.getDisplayName().getContents(), 10, 58, 4210752);
+        this.font.draw(matrixStack, menu.getName(), 10, 2, 4210752);
+        this.font.draw(matrixStack, this.inventory.getDisplayName(), 10, 84, 4210752);
     }
 }
