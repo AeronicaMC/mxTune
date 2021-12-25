@@ -43,6 +43,7 @@ public class PacketDispatcher
         // To Server
         registerMessage(CreateSheetMusicMessage.class, new CreateSheetMusicMessage());
         registerMessage(ChooseInstrumentMessage.class, new ChooseInstrumentMessage());
+        registerMessage(AudiblePingPlayerMessage.class, new AudiblePingPlayerMessage());
     }
 
     private static <MSG extends AbstractMessage<MSG>> void registerMessage(Class<MSG> messageType, AbstractMessage<MSG> message)
