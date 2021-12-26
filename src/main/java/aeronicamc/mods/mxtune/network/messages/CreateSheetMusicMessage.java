@@ -1,7 +1,10 @@
 package aeronicamc.mods.mxtune.network.messages;
 
 import aeronicamc.mods.mxtune.init.ModItems;
+import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import aeronicamc.mods.mxtune.items.MusicPaperItem;
+import aeronicamc.mods.mxtune.network.NetworkLongUtfHelper;
+import aeronicamc.mods.mxtune.util.Misc;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -13,6 +16,7 @@ import java.util.function.Supplier;
 
 public class CreateSheetMusicMessage extends AbstractMessage<CreateSheetMusicMessage>
 {
+    private final NetworkLongUtfHelper stringHelper = new NetworkLongUtfHelper();
     private String musicTitle;
     private String musicText;
 
@@ -27,9 +31,8 @@ public class CreateSheetMusicMessage extends AbstractMessage<CreateSheetMusicMes
     @Override
     public CreateSheetMusicMessage decode(final PacketBuffer buffer)
     {
-        musicTitle = buffer.readUtf();
-        musicText = buffer.readUtf();
-
+        final String musicTitle = buffer.readUtf();
+        final String musicText = stringHelper.readLongUtf(buffer);
         return new CreateSheetMusicMessage(musicTitle, musicText);
     }
 
@@ -37,7 +40,7 @@ public class CreateSheetMusicMessage extends AbstractMessage<CreateSheetMusicMes
     public void encode(final CreateSheetMusicMessage message, final PacketBuffer buffer)
     {
         buffer.writeUtf(message.musicTitle);
-        buffer.writeUtf(message.musicText);
+        stringHelper.writeLongUtf(buffer, message.musicText);
     }
 
     @Override
@@ -51,7 +54,7 @@ public class CreateSheetMusicMessage extends AbstractMessage<CreateSheetMusicMes
                 if (!sPlayer.getMainHandItem().isEmpty() && sPlayer.getMainHandItem().getItem() instanceof MusicPaperItem)
                     {
                         ItemStack sheetMusic = new ItemStack(ModItems.SHEET_MUSIC.get());
-                        if (SheetMusicHelper.writeSheetMusic(sheetMusic, musicTitle, musicText))
+                        if (SheetMusicHelper.writeSheetMusic(sheetMusic, message.musicTitle, message.musicText))
                         {
                             sPlayer.inventory.removeItem(sPlayer.inventory.selected, 1);
                             if (!sPlayer.inventory.add(sheetMusic.copy()))
@@ -60,7 +63,7 @@ public class CreateSheetMusicMessage extends AbstractMessage<CreateSheetMusicMes
                         else
                         {
                             sPlayer.sendMessage(new TranslationTextComponent("mxtune.status.mml_server_side_validation_failure"), sPlayer.getUUID());
-                            // Miscellus.audiblePingPlayer(sPlayer, SoundEvents.BLOCK_ANVIL_PLACE);
+                            Misc.audiblePingPlayer(sPlayer, ModSoundEvents.FAILURE.get());
                         }
                     }
                 });

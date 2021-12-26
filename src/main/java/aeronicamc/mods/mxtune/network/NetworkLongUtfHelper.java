@@ -30,8 +30,8 @@ public class NetworkLongUtfHelper
     public NetworkLongUtfHelper() { /* NOP */ }
 
     /**
-     * For Server to Client use a network buffer is limited to about 1MB (1048576).
-     * <p>For Client to Server use a network buffer is limited to about 32KB (32767).
+     * The {@link PacketBuffer} utf strings are limited to 32767 bytes. Therefore they
+     * are broken up into separate strings if larger than {@value MAX_STRING_BUFFER} characters
      *
      * @param buffer The vanilla netty packet wrapper.
      * @param stringIn The string to be transferred.
