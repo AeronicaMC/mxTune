@@ -1,7 +1,6 @@
 
 package aeronicamc.mods.mxtune.mxt;
 
-import aeronicamc.mods.mxtune.mxt.base.BaseData;
 import net.minecraft.nbt.CompoundNBT;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -10,11 +9,13 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MXTuneFile extends BaseData
+public class MXTuneFile implements Serializable
 {
+    public static final long serialVersionUID = -76044260522231311L;
     private static final Logger LOGGER = LogManager.getLogger();
     private static final String MXT_VERSION = "2.0.0";
     private static final String TAG_TITLE = "title";
@@ -26,17 +27,19 @@ public class MXTuneFile extends BaseData
     private static final String TAG_MXT_VERSION = "mxtVersion";
     private static final String ERROR_MSG_MXT_VERSION = "Unsupported mxTune file version! expected {}, found {}, Title: {}";
 
-    private String mxtVersion = "";
-    private String title = "";
-    private String author = "";
-    private String source = "";
+    private String mxtVersion;
+    private String title;
+    private String author;
+    private String source;
     private int duration;
-    private List<MXTunePart> parts;
+    private List<MXTunePart> parts = new ArrayList<>();
 
     public MXTuneFile()
     {
-        super();
-        parts = new ArrayList<>();
+        mxtVersion = "";
+        title = "";
+        author = "";
+        source = "";
     }
 
     public static MXTuneFile build(CompoundNBT compound)
@@ -46,7 +49,6 @@ public class MXTuneFile extends BaseData
         return mxTuneFile;
     }
 
-    @Override
     public void readFromNBT(CompoundNBT compound)
     {
         mxtVersion = compound.getString(TAG_MXT_VERSION);
@@ -60,14 +62,16 @@ public class MXTuneFile extends BaseData
         for (int i = 0; i < partCount; i++)
         {
             CompoundNBT compoundPart = (CompoundNBT) compound.get(TAG_PART_PREFIX + i);
-            parts.add(new MXTunePart(compoundPart));
+            if (compoundPart != null)
+                parts.add(new MXTunePart(compoundPart));
+            else
+                break;
         }
 
         if (MXT_VERSION.compareTo(mxtVersion) < 0 || mxtVersion.equals(""))
             LOGGER.warn(ERROR_MSG_MXT_VERSION, MXT_VERSION, mxtVersion.equals("") ? "No Version" : mxtVersion, title);
     }
 
-    @Override
     public void writeToNBT(CompoundNBT compound)
     {
         compound.putString(TAG_MXT_VERSION, MXT_VERSION);
@@ -138,14 +142,7 @@ public class MXTuneFile extends BaseData
         return parts;
     }
 
-    public void setParts(List<MXTunePart> parts) { this.parts = parts != null ? parts : new ArrayList<>(); }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T extends BaseData> T factory()
-    {
-        return (T) new MXTuneFile();
-    }
+    public void setParts(List<MXTunePart> parts) { this.parts = parts; }
 
     @Override
     public int hashCode()
@@ -172,7 +169,6 @@ public class MXTuneFile extends BaseData
         }
         MXTuneFile mxTuneFile = (MXTuneFile) o;
         return new EqualsBuilder()
-                .appendSuper(super.equals(o))
                 .append(mxtVersion, mxTuneFile.getMxtVersion())
                 .append(title, mxTuneFile.getTitle())
                 .append(author, mxTuneFile.getAuthor())
