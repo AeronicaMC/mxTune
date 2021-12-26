@@ -150,7 +150,6 @@ public class MMLToMIDI
     private void nextChannel()
     {
         channel++;
-        if (channel == 8) channel = 10; // Skip over percussion channels
         if (channel > 15) channel = 15;
     }
 
@@ -168,13 +167,13 @@ public class MMLToMIDI
         }
         else
         {
-            /* Convert the preset bank to the Bank Select bank */
-            bank = bank << 7;
+            /* Set Bank Select for Melodic Channel MSB 0x79, LSB 0x00 - 14 bits only */
+            bank = 0x7900 >>> 1;
         }
         long startingTicks = TICKS_OFFSET.apply(mmo.getStartingTicks());
-        tracks[track].add(MIDIHelper.createBankSelectEventMSB(ch, bank, startingTicks-2L));
-        tracks[track].add(MIDIHelper.createBankSelectEventLSB(ch, bank, startingTicks-1L));
-        tracks[track].add(MIDIHelper.createProgramChangeEvent(ch, programPreset, startingTicks));
+        tracks[track].add(MIDIHelper.createBankSelectEventMSB(ch, bank, 0));
+        tracks[track].add(MIDIHelper.createBankSelectEventLSB(ch, bank, 0));
+        tracks[track].add(MIDIHelper.createProgramChangeEvent(ch, programPreset, 0));
         presets.add(mmo.getInstrument());
     }
 
