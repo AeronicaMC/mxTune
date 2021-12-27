@@ -158,22 +158,25 @@ public class MMLToMIDI
         Patch preset = MMLUtil.packedPreset2Patch(SoundFontProxyManager.getPackedPreset(mmo.getInstrument()));
         updateCurrentSoundFontProxy(mmo.getInstrument());
         int bank =  preset.getBank();
+        int bankMSB;
+        int bankLSB;
         int programPreset = preset.getProgram();
         /* Detect a percussion set */
         if (bank == 128)
         {
             /* Set Bank Select for Rhythm Channel MSB 0x78, LSB 0x00  - 14 bits only */
-            bank = 0x7800 >>> 1;
+            bankMSB = 0x7800 >>> 1;
+            bankLSB = 0;
         }
         else
         {
             /* Set Bank Select for Melodic Channel MSB 0x79, LSB 0x00 - 14 bits only */
-            bank = 0x7900 >>> 1;
+            bankMSB = 0x7900 >>> 1;
+            bankLSB = 0;
         }
-        long startingTicks = TICKS_OFFSET.apply(mmo.getStartingTicks());
-        tracks[track].add(MIDIHelper.createBankSelectEventMSB(ch, bank, 0));
-        tracks[track].add(MIDIHelper.createBankSelectEventLSB(ch, bank, 0));
-        tracks[track].add(MIDIHelper.createProgramChangeEvent(ch, programPreset, 0));
+        tracks[track].add(MIDIHelper.createBankSelectEventMSB(ch, bankMSB, 0));
+        tracks[track].add(MIDIHelper.createBankSelectEventLSB(ch, bankLSB, 0));
+        tracks[track].add(MIDIHelper.createProgramChangeEvent(ch, programPreset, 1));
         presets.add(mmo.getInstrument());
     }
 

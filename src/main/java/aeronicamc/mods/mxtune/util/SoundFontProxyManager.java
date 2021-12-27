@@ -34,7 +34,7 @@ import java.util.Locale;
 public class SoundFontProxyManager
 {
     public static final Logger LOGGER = LogManager.getLogger();
-    public static final String RESOURCE = "/assets/mxtune/synth/soundfont_proxy.json";
+    public static final String RESOURCE = "/assets/mxtune/synth/soundfont_proxy_v3.json";
     public static ImmutableMap<Integer, SoundFontProxy> soundFontProxyMapByIndex;
     public static ImmutableMap<String, SoundFontProxy> soundFontProxyMapById;
     public static final String INSTRUMENT_DEFAULT_ID = "piano";

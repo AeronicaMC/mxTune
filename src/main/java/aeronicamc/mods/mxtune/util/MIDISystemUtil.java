@@ -18,10 +18,10 @@ package aeronicamc.mods.mxtune.util;
 
 import aeronicamc.libs.mml.parser.MMLUtil;
 import aeronicamc.mods.mxtune.MXTune;
+import aeronicamc.mods.mxtune.Reference;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.sun.media.sound.AudioSynthesizer;
-import aeronicamc.mods.mxtune.Reference;
 import net.minecraft.util.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,7 +45,7 @@ public enum MIDISystemUtil
     private static boolean synthAvailable = false;
     private static boolean soundBankAvailable = false;
     private static boolean midiAvailable = false;
-    private static final ResourceLocation SOUND_FONT = new ResourceLocation(Reference.MOD_ID, "synth/mxtune_v2.sf2");
+    private static final ResourceLocation SOUND_FONT = new ResourceLocation(Reference.MOD_ID, "synth/mxtune_v3.sf2");
     private static final List<Instrument> instrumentCache = new ArrayList<>();
     private static final BiMap<Integer, Integer> packedPresetToInstrumentCacheIndex =  HashBiMap.create();
     private static BiMap<Integer, Integer> instrumentCacheIndexToPackedPreset;

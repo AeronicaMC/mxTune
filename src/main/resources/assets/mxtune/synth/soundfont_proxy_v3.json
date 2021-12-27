@@ -1,0 +1,587 @@
+﻿[
+  {
+    "index": 0,
+    "id": "accordion",
+    "packed_preset": 21,
+    "general_midi": true
+  },
+  {
+    "index": 1,
+    "id": "bagpipes",
+    "packed_preset": 109,
+    "general_midi": true,
+    "archeage": true
+  },
+  {
+    "index": 2,
+    "id": "banjo",
+    "packed_preset": 105,
+    "general_midi": true,
+    "archeage": true
+  },
+  {
+    "index": 3,
+    "id": "bass_acoustic",
+    "packed_preset": 32,
+    "general_midi": true,
+    "maple_story_2": true,
+    "archeage": true
+  },
+  {
+    "index": 4,
+    "id": "bass_fingered",
+    "packed_preset": 33,
+    "general_midi": true,
+    "maple_story_2": true
+  },
+  {
+    "index": 5,
+    "id": "bass_pick",
+    "packed_preset": 34,
+    "general_midi": true,
+    "maple_story_2": true
+  },
+  {
+    "index": 6,
+    "id": "bassoon",
+    "packed_preset": 70,
+    "general_midi": true,
+    "archeage": true
+  },
+  {
+    "index": 7,
+    "id": "celesta",
+    "packed_preset": 8,
+    "general_midi": true,
+    "maple_story_2": true
+  },
+  {
+    "index": 8,
+    "id": "cello",
+    "packed_preset": 42,
+    "general_midi": true,
+    "maple_story_2": true
+  },
+  {
+    "index": 9,
+    "id": "cello_mabinogi",
+    "packed_preset": 99,
+    "mabinogi": true
+  },
+  {
+    "index": 10,
+    "id": "chalumeau_mabinogi",
+    "packed_preset": 93,
+    "mabinogi": true
+  },
+  {
+    "index": 11,
+    "id": "clarinet",
+    "packed_preset": 71,
+    "general_midi": true,
+    "maple_story_2": true,
+    "archeage": true
+  },
+  {
+    "index": 12,
+    "id": "concert_choir",
+    "packed_preset": 52,
+    "general_midi": true
+  },
+  {
+    "index": 13,
+    "id": "cymbals_mabinogi",
+    "packed_preset": 119,
+    "mabinogi": true
+  },
+  {
+    "index": 14,
+    "id": "double_bass",
+    "packed_preset": 43,
+    "general_midi": true
+  },
+  {
+    "index": 15,
+    "id": "drum_bass_mabinogi",
+    "packed_preset": 103,
+    "mabinogi": true
+  },
+  {
+    "index": 16,
+    "id": "drum_set_mabinogi",
+    "packed_preset": 16384,
+    "mabinogi": true,
+    "transform": "41=36|43=45|45=38|47=37|48=31|50=40|52=48|53=50|55=46|57=42|59=44|60=49|62=57|64=51|65=59|"
+  },
+  {
+    "index": 17,
+    "id": "drum_set_orchestra",
+    "packed_preset": 16432,
+    "general_midi": true
+  },
+  {
+    "index": 18,
+    "id": "drum_set_standard",
+    "packed_preset": 16384,
+    "general_midi": true
+  },
+  {
+    "index": 19,
+    "id": "drum_snare_mabinogi",
+    "packed_preset": 118,
+    "mabinogi": true
+  },
+  {
+    "index": 20,
+    "id": "drums_melodic_tom",
+    "packed_preset": 117,
+    "general_midi": true,
+    "maple_story_2": true
+  },
+  {
+    "index": 21,
+    "id": "drums_steel",
+    "packed_preset": 114,
+    "general_midi": true,
+    "maple_story_2": true
+  },
+  {
+    "index": 22,
+    "id": "drums_taiko",
+    "packed_preset": 116,
+    "general_midi": true
+  },
+  {
+    "index": 23,
+    "id": "english_horn",
+    "packed_preset": 69,
+    "general_midi": true,
+    "archeage": true
+  },
+  {
+    "index": 24,
+    "id": "fiddle",
+    "packed_preset": 110,
+    "general_midi": true
+  },
+  {
+    "index": 25,
+    "id": "flute",
+    "packed_preset": 73,
+    "general_midi": true,
+    "archeage": true
+  },
+  {
+    "index": 26,
+    "id": "flute_mabinogi",
+    "packed_preset": 92,
+    "mabinogi": true
+  },
+  {
+    "index": 27,
+    "id": "flute_pan",
+    "packed_preset": 75,
+    "general_midi": true,
+    "maple_story_2": true
+  },
+  {
+    "index": 28,
+    "id": "flute_tuned_mabinogi",
+    "packed_preset": 101,
+    "mabinogi": true
+  },
+  {
+    "index": 29,
+    "id": "glockenspiel",
+    "packed_preset": 9,
+    "general_midi": true
+  },
+  {
+    "index": 30,
+    "id": "guitar_distortion",
+    "packed_preset": 30,
+    "general_midi": true,
+    "archeage": true
+  },
+  {
+    "index": 31,
+    "id": "guitar_electric_mabinogi",
+    "packed_preset": 96,
+    "mabinogi": true
+  },
+  {
+    "index": 32,
+    "id": "guitar_jazz",
+    "packed_preset": 26,
+    "general_midi": true,
+    "archeage": true
+  },
+  {
+    "index": 33,
+    "id": "guitar_nylon",
+    "packed_preset": 24,
+    "general_midi": true,
+    "maple_story_2": true,
+    "archeage": true
+  },
+  {
+    "index": 34,
+    "id": "guitar_overdrive",
+    "packed_preset": 29,
+    "general_midi": true,
+    "maple_story_2": true,
+    "archeage": true
+  },
+  {
+    "index": 35,
+    "id": "guitar_steel",
+    "packed_preset": 25,
+    "general_midi": true,
+    "archeage": true
+  },
+  {
+    "index": 36,
+    "id": "hand_chimes_mabinogi",
+    "packed_preset": 120,
+    "mabinogi": true
+  },
+  {
+    "index": 37,
+    "id": "harmonica",
+    "packed_preset": 22,
+    "general_midi": true,
+    "maple_story_2": true
+  },
+  {
+    "index": 38,
+    "id": "harp",
+    "packed_preset": 46,
+    "general_midi": true,
+    "maple_story_2": true
+  },
+  {
+    "index": 39,
+    "id": "harp_mabinogi",
+    "packed_preset": 100,
+    "mabinogi": true
+  },
+  {
+    "index": 40,
+    "id": "harpsichord",
+    "packed_preset": 6,
+    "general_midi": true,
+    "maple_story_2": true
+  },
+  {
+    "index": 41,
+    "id": "harpsichord_coupled",
+    "packed_preset": 82,
+    "general_midi": true
+  },
+  {
+    "index": 42,
+    "id": "koto",
+    "packed_preset": 107,
+    "general_midi": true,
+    "archeage": true
+  },
+  {
+    "index": 43,
+    "id": "lute_mabinogi",
+    "packed_preset": 87,
+    "mabinogi": true
+  },
+  {
+    "index": 44,
+    "id": "lyre_mabinogi",
+    "packed_preset": 95,
+    "mabinogi": true
+  },
+  {
+    "index": 45,
+    "id": "mandolin_mabinogi",
+    "packed_preset": 89,
+    "mabinogi": true
+  },
+  {
+    "index": 46,
+    "id": "music_box",
+    "packed_preset": 10,
+    "general_midi": true
+  },
+  {
+    "index": 47,
+    "id": "oboe",
+    "packed_preset": 68,
+    "general_midi": true,
+    "maple_story_2": true,
+    "archeage": true
+  },
+  {
+    "index": 48,
+    "id": "ocarina",
+    "packed_preset": 79,
+    "general_midi": true,
+    "maple_story_2": true,
+    "archeage": true
+  },
+  {
+    "index": 49,
+    "id": "orchestra_hit",
+    "packed_preset": 55,
+    "general_midi": true
+  },
+  {
+    "index": 50,
+    "id": "piano",
+    "packed_preset": 0,
+    "general_midi": true,
+    "maple_story_2": true
+  },
+  {
+    "index": 51,
+    "id": "piano_electric",
+    "packed_preset": 4,
+    "general_midi": true
+  },
+  {
+    "index": 52,
+    "id": "piano_fm",
+    "packed_preset": 5,
+    "general_midi": true,
+    "maple_story_2": true
+  },
+  {
+    "index": 53,
+    "id": "piano_mabinogi",
+    "packed_preset": 97,
+    "mabinogi": true
+  },
+  {
+    "index": 54,
+    "id": "piccolo",
+    "packed_preset": 72,
+    "general_midi": true,
+    "archeage": true
+  },
+  {
+    "index": 55,
+    "id": "pipe_organ_1",
+    "packed_preset": 19,
+    "general_midi": true,
+    "archeage": true
+  },
+  {
+    "index": 56,
+    "id": "pipe_organ_2",
+    "packed_preset": 85,
+    "general_midi": true
+  },
+  {
+    "index": 57,
+    "id": "pizzicato_string",
+    "packed_preset": 45,
+    "general_midi": true,
+    "maple_story_2": true
+  },
+  {
+    "index": 58,
+    "id": "recorder",
+    "packed_preset": 74,
+    "general_midi": true,
+    "maple_story_2": true,
+    "archeage": true
+  },
+  {
+    "index": 59,
+    "id": "roncadora_mabinogi",
+    "packed_preset": 91,
+    "mabinogi": true
+  },
+  {
+    "index": 60,
+    "id": "sax_alto",
+    "packed_preset": 65,
+    "general_midi": true,
+    "maple_story_2": true
+  },
+  {
+    "index": 61,
+    "id": "sax_baritone",
+    "packed_preset": 67,
+    "general_midi": true
+  },
+  {
+    "index": 62,
+    "id": "sax_soprano",
+    "packed_preset": 64,
+    "general_midi": true
+  },
+  {
+    "index": 63,
+    "id": "sax_tenor",
+    "packed_preset": 66,
+    "general_midi": true,
+    "archeage": true
+  },
+  {
+    "index": 64,
+    "id": "section_brass",
+    "packed_preset": 61,
+    "general_midi": true
+  },
+  {
+    "index": 65,
+    "id": "section_strings",
+    "packed_preset": 48,
+    "general_midi": true
+  },
+  {
+    "index": 66,
+    "id": "section_strings_slow",
+    "packed_preset": 49,
+    "general_midi": true
+  },
+  {
+    "index": 67,
+    "id": "section_strings_synth",
+    "packed_preset": 50,
+    "general_midi": true
+  },
+  {
+    "index": 68,
+    "id": "shamisen",
+    "packed_preset": 106,
+    "general_midi": true,
+    "archeage": true
+  },
+  {
+    "index": 69,
+    "id": "shenai",
+    "packed_preset": 111,
+    "general_midi": true
+  },
+  {
+    "index": 70,
+    "id": "sitar",
+    "packed_preset": 104,
+    "general_midi": true,
+    "archeage": true
+  },
+  {
+    "index": 71,
+    "id": "timpani",
+    "packed_preset": 47,
+    "general_midi": true,
+    "maple_story_2": true
+  },
+  {
+    "index": 72,
+    "id": "trombone",
+    "packed_preset": 57,
+    "general_midi": true,
+    "maple_story_2": true,
+    "archeage": true
+  },
+  {
+    "index": 73,
+    "id": "trumpet",
+    "packed_preset": 56,
+    "general_midi": true,
+    "maple_story_2": true
+  },
+  {
+    "index": 74,
+    "id": "trumpet_muted",
+    "packed_preset": 59,
+    "general_midi": true
+  },
+  {
+    "index": 75,
+    "id": "tuba",
+    "packed_preset": 58,
+    "general_midi": true
+  },
+  {
+    "index": 76,
+    "id": "tuba_mabinogi",
+    "packed_preset": 94,
+    "mabinogi": true
+  },
+  {
+    "index": 77,
+    "id": "ukulele_mabinogi",
+    "packed_preset": 88,
+    "mabinogi": true
+  },
+  {
+    "index": 78,
+    "id": "vibraphone",
+    "packed_preset": 11,
+    "general_midi": true,
+    "maple_story_2": true
+  },
+  {
+    "index": 79,
+    "id": "viola",
+    "packed_preset": 41,
+    "general_midi": true
+  },
+  {
+    "index": 80,
+    "id": "violin",
+    "packed_preset": 40,
+    "general_midi": true,
+    "maple_story_2": true
+  },
+  {
+    "index": 81,
+    "id": "violin_mabinogi",
+    "packed_preset": 98,
+    "mabinogi": true
+  },
+  {
+    "index": 82,
+    "id": "wave_saw",
+    "packed_preset": 84,
+    "general_midi": true
+  },
+  {
+    "index": 83,
+    "id": "wave_sine",
+    "packed_preset": 86,
+    "general_midi": true
+  },
+  {
+    "index": 84,
+    "id": "wave_square",
+    "packed_preset": 83,
+    "general_midi": true
+  },
+  {
+    "index": 85,
+    "id": "whistle_mabinogi",
+    "packed_preset": 90,
+    "mabinogi": true
+  },
+  {
+    "index": 86,
+    "id": "whistle_tin",
+    "packed_preset": 78,
+    "general_midi": true,
+    "archeage": true
+  },
+  {
+    "index": 87,
+    "id": "whistle_tuned_mabinogi",
+    "packed_preset": 102,
+    "mabinogi": true
+  },
+  {
+    "index": 88,
+    "id": "xylophone",
+    "packed_preset": 13,
+    "general_midi": true,
+    "maple_story_2": true
+  }
+]
