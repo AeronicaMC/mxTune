@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.gui.mml;
 
 import aeronicamc.mods.mxtune.caches.FileHelper;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
+import aeronicamc.mods.mxtune.gui.TextColorFg;
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
 import aeronicamc.mods.mxtune.gui.widget.MXLabel;
 import aeronicamc.mods.mxtune.gui.widget.MXLink;
@@ -29,6 +30,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -262,7 +264,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
 
     private void drawLine(MatrixStack pMatrixStack, MXButton gb)
     {
-        AbstractGui.fill(pMatrixStack, gb.x + 1, gb.y + gb.getHeight() + 1, gb.x +1 + gb.getWidth() - 2, gb.y + gb.getHeight() + 3, -1);
+        AbstractGui.fill(pMatrixStack, gb.x + 1, gb.y + gb.getHeight() + 1, gb.x +1 + gb.getWidth() - 2, gb.y + gb.getHeight() + 3, TextColorFg.RED | MathHelper.ceil(1F * 255.0F) << 24);
     }
 
     @Override
@@ -284,6 +286,8 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     @Override
     public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers)
     {
+        updateButtons();
+        updateState();
         return childTabs[activeChildIndex].keyPressed(pKeyCode, pScanCode, pModifiers) || super.keyPressed(pKeyCode, pScanCode, pModifiers);
     }
 
