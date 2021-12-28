@@ -43,6 +43,7 @@ package aeronicamc.mods.mxtune.sound;
 import aeronicamc.libs.mml.midi.MIDIHelper;
 import aeronicamc.libs.mml.parser.MMLObject;
 import aeronicamc.libs.mml.parser.MMLUtil;
+import aeronicamc.mods.mxtune.util.MXTuneRuntimeException;
 import aeronicamc.mods.mxtune.util.MapListHelper;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import org.apache.logging.log4j.LogManager;
@@ -59,18 +60,28 @@ public class MMLToMIDI
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final int OFFSET = 10;
-    private static final TicksOffset TICKS_OFFSET = new TicksOffset(OFFSET);
+    private TicksOffset ticksOffset;
 
     private Sequence sequence;
-    private final Set<Integer> presets = new HashSet<>();
+    private final Set<Integer> presets;
     private int channel;
     private int track;
     private String currentTransform = "";
-    private Map<Integer,Integer> noteTranslations = new HashMap<>();
+    private Map<Integer,Integer> noteTranslations;
 
-    public MMLToMIDI() { /* NOP */ }
+    public MMLToMIDI()
+    {
+        noteTranslations = new HashMap<>();
+        presets = new HashSet<>();
+    }
 
-    public Sequence getSequence() {return sequence;}
+    public Sequence getSequence()
+    {
+        if (sequence == null)
+            throw new MXTuneRuntimeException("Must use the method processMObjects before accessing getSequence!");
+        else
+            return sequence;
+    }
     
     public List<Integer> getPresets()
     {
@@ -79,6 +90,7 @@ public class MMLToMIDI
 
     public void processMObjects(List<MMLObject> mmlObjects)
     {
+        ticksOffset = new TicksOffset(OFFSET);
         channel = 0;
         track = 1;
 
@@ -207,9 +219,9 @@ public class MMLToMIDI
     {
         int midiNote = transformNote(mmo.getMidiNote());
         if (mmo.doNoteOn())
-            tracks[track].add(MIDIHelper.createNoteOnEvent(channel, MMLUtil.smartClampMIDI(midiNote), mmo.getNoteVolume(), TICKS_OFFSET.apply(mmo.getStartingTicks())));
+            tracks[track].add(MIDIHelper.createNoteOnEvent(channel, MMLUtil.smartClampMIDI(midiNote), mmo.getNoteVolume(), ticksOffset.apply(mmo.getStartingTicks())));
         if (mmo.doNoteOff())
-            tracks[track].add(MIDIHelper.createNoteOffEvent(channel, MMLUtil.smartClampMIDI(midiNote), mmo.getNoteVolume(), TICKS_OFFSET.apply(mmo.getStartingTicks(), mmo.getLengthTicks(), -1L)));
+            tracks[track].add(MIDIHelper.createNoteOffEvent(channel, MMLUtil.smartClampMIDI(midiNote), mmo.getNoteVolume(), ticksOffset.apply(mmo.getStartingTicks(), mmo.getLengthTicks(), -1L)));
     }
 
     private void addText(MMLObject mmo, Track[] tracks, int track, int channel) throws InvalidMidiDataException
@@ -218,18 +230,18 @@ public class MMLToMIDI
         String pitch = mmo.getType() == MMLObject.Type.NOTE ? String.format("%s(%03d)", onOff, mmo.getMidiNote()) : "--(---)";
         String text = String.format("{t=% 8d l=% 8d}[T:%02d C:%02d %s %s]{ %s }", mmo.getStartingTicks(),
                                     mmo.getLengthTicks(), track, channel, mmo.getType().name(), pitch, mmo.getText());
-        tracks[0].add(MIDIHelper.createTextMetaEvent(text, TICKS_OFFSET.apply(mmo.getStartingTicks())));
+        tracks[0].add(MIDIHelper.createTextMetaEvent(text, ticksOffset.apply(mmo.getStartingTicks())));
     }
 
     private void setTempo(MMLObject mmo, Track[] tracks) throws InvalidMidiDataException
     {
-        tracks[0].add(MIDIHelper.createTempoMetaEvent(mmo.getTempo(), TICKS_OFFSET.apply(mmo.getStartingTicks())));
+        tracks[0].add(MIDIHelper.createTempoMetaEvent(mmo.getTempo(), ticksOffset.apply(mmo.getStartingTicks())));
     }
 
     private void setSustain(MMLObject mmo, Track[] tracks, int track, int channel) throws InvalidMidiDataException
     {
         int sustain = mmo.doSustain() ? 127 : 0;
-        tracks[track].add(MIDIHelper.createControlChangeEvent(channel, 64, sustain, TICKS_OFFSET.apply(mmo.getStartingTicks())));
+        tracks[track].add(MIDIHelper.createControlChangeEvent(channel, 64, sustain, ticksOffset.apply(mmo.getStartingTicks())));
     }
 
     private static class TicksOffset
