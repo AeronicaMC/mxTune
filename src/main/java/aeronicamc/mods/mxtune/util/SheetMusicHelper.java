@@ -293,11 +293,10 @@ public enum SheetMusicHelper
             seconds = (int) (midi2WavRenderer.getSequenceInSeconds(toMIDI.getSequence()) + 4);
         } catch (ModMidiException e)
         {
-            LOGGER.debug("ValidateMML Error: {}", e.getLocalizedMessage());
+            LOGGER.error("ValidateMML Error: {}", e.getLocalizedMessage());
             return ValidDuration.INVALID;
         }
 
-        LOGGER.debug("ValidateMML: length: {}", seconds);
         return new ValidDuration(seconds > 4, seconds);
     }
 
