@@ -97,7 +97,7 @@ public class MMLToMIDI
         try
         {
             sequence = new Sequence(Sequence.PPQ, (int) MMLUtil.PPQ);
-            for (int i = 0; i < MMLUtil.MAX_TRACKS; i++)
+            for (int i = 0; i <= MMLUtil.MAX_TRACKS; i++)
             {
                 sequence.createTrack();
             }
