@@ -92,7 +92,7 @@ public class MMLToMIDI
     {
         ticksOffset = new TicksOffset(OFFSET);
         channel = 0;
-        track = 1;
+        track = 1; // Track 0 is reserved for tempo and text
 
         try
         {
@@ -154,9 +154,12 @@ public class MMLToMIDI
         }
     }
 
+    /**
+     * For loop limited by MMLUtil.MAX_TRACKS
+     */
     private void nextTrack()
     {
-        if (track++ > MMLUtil.MAX_TRACKS) track = MMLUtil.MAX_TRACKS;
+        track++;
     }
 
     private void nextChannel()
