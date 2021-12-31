@@ -17,7 +17,6 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -62,7 +61,8 @@ public final class LivingEntityModCapProvider
         return entity.getCapability(LIVING_ENTITY_MOD_CAP_CAPABILITY, null);
     }
 
-    @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
+    // TODO: Fix the network errors caused by a null here -> LOGGER.debug("AttachCapabilitiesEvent: {}", (event.getObject()));
+    //@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
     private static class EventHandler
     {
         @SubscribeEvent
