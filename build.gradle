@@ -143,8 +143,10 @@ dependencies {
     implementation fg.deobf("curse.maven:${project.configured}")
     implementation fg.deobf("curse.maven:${project.better_mods_button}")
 
-    implementation 'com.h2database:h2-mvstore:1.4.200'
-    shade 'com.h2database:h2-mvstore:1.4.200'
+    implementation 'com.h2database:h2-mvstore:2.0.204'
+    shade 'com.h2database:h2-mvstore:2.0.204'
+//    implementation 'com.h2database:h2-mvstore:1.4.200'
+//    shade 'com.h2database:h2-mvstore:1.4.200'
     // For more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
