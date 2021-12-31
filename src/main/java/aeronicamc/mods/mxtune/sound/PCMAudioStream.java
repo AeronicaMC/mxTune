@@ -76,7 +76,7 @@ public class PCMAudioStream implements IAudioStream
             {
                 nextZeroBuffer();
                 byteBuffer.put(zeroBuffer);
-                if (zeroBufferCount++ > 64)
+                if (zeroBufferCount++ > 256)
                 {
                     LOGGER.error("MML to PCM audio processing took too long. Aborting!");
                     audioDataSetStatus(ClientAudio.Status.ERROR);
