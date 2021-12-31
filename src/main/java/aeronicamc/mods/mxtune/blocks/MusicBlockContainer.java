@@ -73,6 +73,7 @@ public class MusicBlockContainer extends genericContainer
         return tileNotNull && stillValid(IWorldPosCallable.create(tileEntity.getLevel(), tileEntity.getBlockPos()), playerEntity, ModBlocks.MUSIC_BLOCK.get());
     }
 
+    @Override
     public ItemStack quickMoveStack(PlayerEntity pPlayer, int pIndex) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.slots.get(pIndex);
