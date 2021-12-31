@@ -1,7 +1,6 @@
 package aeronicamc.mods.mxtune.blocks;
 
 import aeronicamc.mods.mxtune.init.ModTileEntities;
-import aeronicamc.mods.mxtune.util.IInstrument;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -47,15 +46,15 @@ public class InvTestTile extends TileEntity implements INamedContainerProvider, 
 
             @Override
             public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-                return stack.getItem() instanceof IInstrument;
+                return true;
             }
 
             @Nonnull
             @Override
             public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-                if (stack.getItem() instanceof IInstrument) {
-                    return stack;
-                }
+//                if (stack.getItem() instanceof IInstrument) {
+//                    return stack;
+//                }
                 return super.insertItem(slot, stack, simulate);
             }
         };
