@@ -1,4 +1,6 @@
 {
+  "commands.mxtune.music.dump": "Wrote %s records",
+  "commands.mxtune.music.load": "Read %s records",
   "config.mxtune.client.mml_Link": "MML Site Link",
   "config.mxtune.server.listener_range": "Listener Range",
   "config.mxtune.server.sheet_music_life_in_days": "Sheet Music Life in Days",
@@ -6,6 +8,7 @@
   "block.mxtune.music_block": "Music Block",
   "block.mxtune.inv_test_block": "Inventory Test Block",
   "container.mxtune.inv_test_block.more": "More...",
+  "errors.mxtune.sheet_music_too_old": "The Sheet Music is broken!",
   "item.mxtune.music_item": "Music Item",
   "item.mxtune.gui_test_item": "GUI Test Item",
   "gui.mxtune.gui_test.title": "Gui Test Screen",

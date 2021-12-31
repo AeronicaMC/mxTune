@@ -58,6 +58,7 @@ public class FileHelper
     public static final String SERVER_FOLDER = MOD_FOLDER;
     public static final String SERVER_PLAY_LISTS_FOLDER = SERVER_FOLDER + "/playlists";
     public static final String SERVER_MUSIC_FOLDER = SERVER_FOLDER + "/music";
+    public static final String SERVER_MUSIC_FOLDER_DUMP_FOLDER = SERVER_FOLDER + "/dump";
 
     public static final String EXTENSION_DAT = ".dat";
     public static final String EXTENSION_MXT = ".mxt";

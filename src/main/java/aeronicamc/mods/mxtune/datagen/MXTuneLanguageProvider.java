@@ -22,6 +22,8 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addBlocks();
         addItems();
         addGuiTexts();
+        addCommands();
+        addErrors();
     }
 
     @Override
@@ -105,6 +107,17 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.write", "Write");
     }
 
+    private void addCommands()
+    {
+        addCommand("music.dump", "Wrote %s records");
+        addCommand("music.load", "Read %s records");
+    }
+
+    private void addErrors()
+    {
+        addError("errors.mxtune.sheet_music_too_old", "The Sheet Music is broken!");
+    }
+
     /**
      * prepends tooltip.[mod_id].
      * @param identifier the unique help id
@@ -123,5 +136,25 @@ public class MXTuneLanguageProvider extends LanguageProvider
     private void addGuiText(String identifier, String text)
     {
         add(String.format("gui.%s.%s", Reference.MOD_ID, identifier), text);
+    }
+
+    /**
+     * prepends commands.[mod_id].
+     * @param identifier the unique command id
+     * @param text of the command
+     */
+    private void addCommand(String identifier, String text)
+    {
+        add(String.format("commands.%s.%s", Reference.MOD_ID, identifier), text);
+    }
+
+    /**
+     * prepends errors.[mod_id].
+     * @param identifier the unique error id
+     * @param text of the error
+     */
+    private void addError(String identifier, String text)
+    {
+        add(String.format("errors.%s.%s", Reference.MOD_ID, identifier), text);
     }
 }

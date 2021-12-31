@@ -4,22 +4,27 @@ import aeronicamc.libs.mml.util.TestData;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.util.MXTuneRuntimeException;
 import net.minecraftforge.fml.LogicalSide;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.h2.mvstore.MVMap;
 import org.h2.mvstore.MVStore;
+import org.h2.mvstore.MVStoreException;
 
 import javax.annotation.Nullable;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-import static aeronicamc.mods.mxtune.caches.FileHelper.SERVER_FOLDER;
-import static aeronicamc.mods.mxtune.caches.FileHelper.getCacheFile;
+import static aeronicamc.mods.mxtune.caches.FileHelper.*;
 
 /**
  * A key-value data store for music in MML format. Used to offload the long string
@@ -32,11 +37,14 @@ public class ModDataStore
     private static final Logger LOGGER = LogManager.getLogger(ModDataStore.class);
 
     private static final String SERVER_DATA_STORE_FILENAME = "music.mv";
+    private static final String SERVER_DATA_STORE_DUMP_FILENAME = "dump.txt";
     private static final ZoneId ROOT_ZONE = ZoneId.of("GMT0");
     private static final ArrayList<LocalDateTime> reapDateTimeKeyList = new ArrayList<>();
     private static LocalDateTime lastDateTime = LocalDateTime.now(ROOT_ZONE);
     private static MVStore mvStore;
 
+    // TODO: See about hooking the world gather event to force a commit of the music storage.
+    // TODO: Setup a simple music storage backup and maintains only a user defined number of them.
     public static void start()
     {
         String pathFileName = String.format("Folder: '%s', Filename: '%s'", SERVER_FOLDER, SERVER_DATA_STORE_FILENAME);
@@ -48,7 +56,7 @@ public class ModDataStore
                     .compress()
                     .open();
         }
-        catch (IOException e)
+        catch (IOException | MVStoreException e)
         {
             LOGGER.error("Big OOPS here! Out of disk space? {}", pathFileName);
             LOGGER.error(e);
@@ -101,6 +109,64 @@ public class ModDataStore
             LOGGER.debug("Last key: {}", indexToMusicText.lastKey());
             getMvStore().deregisterVersionUsage(using);
         }
+    }
+
+    public static int dumpToFile()
+    {
+        int size = 0;
+        if (getMvStore() != null)
+        {
+            try
+            {
+                String pathName = getCacheFile(SERVER_MUSIC_FOLDER_DUMP_FOLDER, SERVER_DATA_STORE_DUMP_FILENAME, LogicalSide.SERVER).toString();
+                FileWriter fileWriter = new FileWriter(new File(pathName));
+                PrintWriter printWriter = new PrintWriter(fileWriter);
+                MVStore.TxCounter using = getMvStore().registerVersionUsage();
+                MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
+                size = indexToMusicText.size();
+                for (Map.Entry<LocalDateTime, String> c : indexToMusicText.entrySet())
+                {
+                    printWriter.printf("%s=%s\n", c.getKey(), c.getValue());
+                }
+                printWriter.close();
+                getMvStore().deregisterVersionUsage(using);
+            } catch (IOException e)
+            {
+                LOGGER.error(e);
+            }
+        }
+        return size;
+    }
+
+    public static int loadDumpFile()
+    {
+        int size = -1;
+        if (getMvStore() != null)
+        {
+            try
+            {
+                String pathName = getCacheFile(SERVER_MUSIC_FOLDER_DUMP_FOLDER, SERVER_DATA_STORE_DUMP_FILENAME, LogicalSide.SERVER).toString();
+                if (fileExists(SERVER_MUSIC_FOLDER_DUMP_FOLDER, SERVER_DATA_STORE_DUMP_FILENAME, LogicalSide.SERVER))
+                {
+                    MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
+                    File file = new File(pathName);
+                    List<String> lines = FileUtils.readLines(file, "UTF-8");
+                    for (String line : lines)
+                    {
+                        String[] pair = line.split("=");
+                        LocalDateTime dateTime = (LocalDateTime.parse(pair[0]));
+                        indexToMusicText.putIfAbsent(dateTime, pair[1]);
+                    }
+                    size = indexToMusicText.size();
+                    getMvStore().commit();
+            }
+                else return size;
+            } catch (IOException e)
+            {
+                LOGGER.error(e);
+            }
+        }
+        return size;
     }
 
     private static LocalDateTime nextKey()

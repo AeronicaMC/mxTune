@@ -4,11 +4,13 @@ import aeronicamc.mods.mxtune.blocks.IMusicPlayer;
 import aeronicamc.mods.mxtune.blocks.IPlacedInstrument;
 import aeronicamc.mods.mxtune.caches.ModDataStore;
 import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
+import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.PlayBlockMusicMessage;
 import aeronicamc.mods.mxtune.network.messages.PlaySoloMessage;
 import aeronicamc.mods.mxtune.network.messages.StopPlayIdMessage;
 import aeronicamc.mods.mxtune.util.IInstrument;
+import aeronicamc.mods.mxtune.util.Misc;
 import aeronicamc.mods.mxtune.util.MusicProperties;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.entity.Entity;
@@ -16,6 +18,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -109,13 +112,22 @@ public final class PlayManager
             String title = SheetMusicHelper.getMusicTitleAsString(sheetMusic);
             String musicTextKey = SheetMusicHelper.getMusicTextKey(sheetMusic);
             String musicText = ModDataStore.getMusicText(musicTextKey);
-            int duration = SheetMusicHelper.getMusicDuration(sheetMusic);
+            if (musicText != null)
+            {
+                int duration = SheetMusicHelper.getMusicDuration(sheetMusic);
 
-            musicText = musicText.replace("MML@", "MML@I" + getPresetIndex(pos, playerIn, isPlaced));
-            LOGGER.debug("MML Title: {} Duration: {}", title, duration);
-            LOGGER.debug("MML Sub25: {}", musicText.substring(0, Math.min(25, musicText.length())));
+                musicText = musicText.replace("MML@", "MML@I" + getPresetIndex(pos, playerIn, isPlaced));
+                LOGGER.debug("MML Title: {} Duration: {}", title, duration);
+                LOGGER.debug("MML Sub25: {}", musicText.substring(0, Math.min(25, musicText.length())));
 
-            return playSolo(playerIn, musicText, duration, playerID);
+                return playSolo(playerIn, musicText, duration, playerID);
+            } else
+            {
+                // TODO:
+                Misc.audiblePingPlayer(playerIn, ModSoundEvents.FAILURE.get());
+                playerIn.displayClientMessage(new TranslationTextComponent("errors.mxtune.sheet_music_too_old", musicTextKey), false);
+                LOGGER.debug("Music key not found: {}", musicTextKey);
+            }
         }
         return PlayIdSupplier.INVALID;
     }
