@@ -23,7 +23,7 @@
  * Ignore Song and Chorus detection.
  * Ignore channel options.
  *
- * Use 'MMLUtil.MML_LOGGER'
+ * Use 'Logger LOGGER = LogManager.getLogger();'
  * Partial potential bug fixes for: "The value returned from a stream read should be checked"
  *     Collect and log only, but ideally asserts should raised.
  * Update to read data into mxTune MXT file classes
