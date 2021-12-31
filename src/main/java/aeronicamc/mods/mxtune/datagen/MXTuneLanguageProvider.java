@@ -115,7 +115,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
 
     private void addErrors()
     {
-        addError("errors.mxtune.sheet_music_too_old", "The Sheet Music is broken!");
+        addError("errors.mxtune.sheet_music_too_old", "The Sheet Music is unreadable!");
     }
 
     /**

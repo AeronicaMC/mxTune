@@ -8,7 +8,7 @@
   "block.mxtune.music_block": "Music Block",
   "block.mxtune.inv_test_block": "Inventory Test Block",
   "container.mxtune.inv_test_block.more": "More...",
-  "errors.mxtune.sheet_music_too_old": "The Sheet Music is broken!",
+  "errors.mxtune.sheet_music_too_old": "The Sheet Music is unreadable!",
   "item.mxtune.music_item": "Music Item",
   "item.mxtune.gui_test_item": "GUI Test Item",
   "gui.mxtune.gui_test.title": "Gui Test Screen",
