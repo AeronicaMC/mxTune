@@ -1,8 +1,8 @@
 package aeronicamc.mods.mxtune.blocks;
 
+import aeronicamc.mods.mxtune.Reference;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import aeronicamc.mods.mxtune.Reference;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
@@ -39,7 +39,7 @@ public class InvTestScreen extends ContainerScreen<InvTestContainer>
 
     @Override
     protected void renderLabels(MatrixStack matrixStack , int mouseX, int mouseY) {
-        this.font.draw(matrixStack, menu.getName().getContents(), 10, 8, 4210752);
-        this.font.draw(matrixStack, this.inventory.getDisplayName().getContents(), 10, 58, 4210752);
+        this.font.draw(matrixStack, menu.getName(), 10, 8, 4210752);
+        this.font.draw(matrixStack, this.inventory.getDisplayName(), 10, 58, 4210752);
     }
 }
