@@ -13,6 +13,7 @@
   "item.mxtune.gui_test_item": "GUI Test Item",
   "gui.mxtune.gui_test.title": "Gui Test Screen",
   "tooltip.mxtune.block_music.help": "When placed in the world: SHIFT+Right-Click to OPEN. Right-Click to play. Add up to 16 instruments loaded with sheet music.",
+  "tooltip.mxtune.music_paper.help": "Right-Click to OPEN",
   "tooltip.mxtune.sheet_music.days_left": "Days left: %s",
   "tooltip.mxtune.sheet_music.days_left_error": "Days left: nn",
   "tooltip.mxtune.sheet_music.duration_error": "h:mm:ss",

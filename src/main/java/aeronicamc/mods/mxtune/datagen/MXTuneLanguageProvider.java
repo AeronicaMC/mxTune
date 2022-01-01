@@ -43,6 +43,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         add(ModItems.SHEET_MUSIC.get(), "Sheet Music");
         add(ModItems.MUSIC_PAPER.get(), "Music Paper");
         addTooltip("block_music.help", "When placed in the world: SHIFT+Right-Click to OPEN. Right-Click to play. Add up to 16 instruments loaded with sheet music.");
+        addTooltip("music_paper.help", "Right-Click to OPEN");
         addTooltip("sheet_music.days_left", "Days left: %s");
         addTooltip("sheet_music.days_left_error", "Days left: nn");
         addTooltip("sheet_music.duration_error", "h:mm:ss");
