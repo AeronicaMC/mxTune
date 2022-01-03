@@ -49,7 +49,7 @@ public class MovingMusic extends MxSound
 
             Vector3d vec3d = new Vector3d(mc.player.getX(), mc.player.getY(), mc.player.getZ());
             float distance = (float) vec3d.distanceTo(new Vector3d(entity.getX(), entity.getY(), entity.getZ()));
-            this.volume = 1.0F - MathHelper.clamp(distance / 24.0F, 0.0F, 1.0F);
+            this.volume = (1.0F - MathHelper.clamp(distance / 24.0F, 0.0F, 1.0F)) * audioData.getFadeMultiplier();
             if ((counter++ % 20 == 0) && (distance != lastDistance))
             {
                 LOGGER.debug("dist {}, volume {}", String.format("%03.3f", distance), String.format("%1.3f", volume));

@@ -197,6 +197,12 @@ public class GuiFileImporter extends MXScreen
     }
 
     @Override
+    public boolean isPauseScreen()
+    {
+        return false;
+    }
+
+    @Override
     public void tick()
     {
         searchText.tick();

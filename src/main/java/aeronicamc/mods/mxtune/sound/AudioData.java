@@ -19,6 +19,7 @@ package aeronicamc.mods.mxtune.sound;
 
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.util.LoggedTimer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.util.math.BlockPos;
 
@@ -41,6 +42,7 @@ public class AudioData
     private final IAudioStatusCallback callback;
     private final long netTransitTime;
     private final LoggedTimer loggedTimer = new LoggedTimer();
+    private final Minecraft mc = Minecraft.getInstance();
 
     // TODO: Fadeout volume - Not fully implemented.
     private float volumeFade = 1F;
@@ -165,12 +167,13 @@ public class AudioData
                 fadeCounter--;
                 if (fadeCounter > 0)
                 {
-                    volumeFade = (float) fadeCounter / fadeTicks;
+                    volumeFade = (float) (fadeCounter + mc.getDeltaFrameTime()) / fadeTicks;
                 }
                 else
                 {
                     isFading = false;
                     volumeFade = 0F;
+                    ClientAudio.queueAudioDataRemoval(playId);
                 }
             }
         }
@@ -181,9 +184,9 @@ public class AudioData
         synchronized (this)
         {
             // If a fade out is already in progress we will not change it.
-            if (!isFading && status != ClientAudio.Status.ERROR && status != ClientAudio.Status.DONE)
+            if (!isFading && !(status == ClientAudio.Status.ERROR || status == ClientAudio.Status.DONE))
             {
-                fadeTicks = Math.max(Math.abs(seconds * 20), 1);
+                fadeTicks = Math.max(Math.abs(seconds * 20), 5);
                 fadeCounter = fadeTicks;
                 volumeFade = 1F;
                 isFading = true;

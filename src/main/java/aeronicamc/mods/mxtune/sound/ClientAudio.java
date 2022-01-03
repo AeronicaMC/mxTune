@@ -365,6 +365,22 @@ public class ClientAudio
         }
     }
 
+    /**
+     * Causes the specified playID to fade out over the specified number of seconds.
+     * @param playID the play session to fade.
+     * @param seconds to fade out and stop the song. A value of 0 will stop the song immediately.
+     */
+    public static void fadeOut(int playID, int seconds)
+    {
+        AudioData audioData = playIDAudioData.get(playID);
+        if (soundEngine != null && audioData != null  && seconds > 0)
+        {
+            audioData.startFadeOut(seconds);
+        }
+        else
+            queueAudioDataRemoval(playID);
+    }
+
     private static void removeQueuedAudioData()
     {
         while (!delayedAudioDataRemovalQueue.isEmpty())

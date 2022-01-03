@@ -68,14 +68,14 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
     private MXLabel titleLabel;
     private MXLabel searchLabel;
     private final MXTextFieldWidget searchText = new MXTextFieldWidget(30);
-    private boolean sorted = false;
+    private boolean sorted;
     private SortType sortType = SortType.NORMAL;
     private String lastSearch = "";
 
     private List<Path> libraryPaths = new ArrayList<>();
 
     private final DirectoryWatcher watcher;
-    private boolean watcherStarted = false;
+    private boolean watcherStarted;
 
     // Part List
     private MXTuneFile mxTuneFile;
@@ -83,9 +83,9 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
     private final List<MXTunePart> tuneParts = new ArrayList<>();
 
     // playing
-    private MXButton buttonPlay;
-    private boolean isPlaying = false;
-    private int playId = PlayIdSupplier.INVALID;
+    private final MXButton buttonPlay = new MXButton(new TranslationTextComponent("gui.mxtune.button.play"), p -> playMusic());
+    private boolean isPlaying;
+    private int playId;
 
     public GuiMusicLibrary(Screen parent)
     {
@@ -203,7 +203,6 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         mxbRefreshFiles.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.refresh.help01").withStyle(TextFormatting.WHITE));
         addButton(mxbRefreshFiles);
 
-        buttonPlay = new MXButton(new TranslationTextComponent("gui.mxtune.button.play"), play-> playMusic());
         buttonPlay.setLayout(xPlay, buttonTop, 75, 20);
         addButton(buttonPlay);
 
@@ -222,6 +221,12 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         sorted = false;
         updateState();
         resortFiles(sortType);
+    }
+
+    @Override
+    public boolean isPauseScreen()
+    {
+        return false;
     }
 
     private void updateState()
@@ -378,15 +383,25 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         }
     }
 
+    private boolean isPlaying()
+    {
+        return this.isPlaying;
+    }
+
+    private void setPlaying(boolean play)
+    {
+        isPlaying = play;
+    }
+
     private void playMusic()
     {
-        if (isPlaying)
+        if (isPlaying())
         {
             stopMusic();
         }
         else if (mxTuneFile != null)
         {
-            isPlaying = true;
+            setPlaying(true);
             String mml = MXTuneFileHelper.getMML(mxTuneFile);
             playId = PlayIdSupplier.PlayType.PERSONAL.getAsInt();
             Objects.requireNonNull(minecraft).submitAsync(
@@ -398,9 +413,12 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
     private void stopMusic()
     {
         Objects.requireNonNull(minecraft).submitAsync(
-                ()->ClientAudio.stop(playId));
-        isPlaying = false;
-        playId = PlayIdSupplier.INVALID;
+                ()-> {
+                    LOGGER.debug("stopMusic: playId = {}", playId);
+                    //ClientAudio.stop(playId);
+                    ClientAudio.fadeOut(playId, 4);
+                });
+        setPlaying(false);
     }
 
     @Override
@@ -410,7 +428,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
             if (this.playId == playId && (status == ClientAudio.Status.ERROR || status == ClientAudio.Status.DONE))
             {
                 LOGGER.debug("AudioStatus event received: {}, playId: {}", status, playId);
-                stopMusic();
+                setPlaying(false);
                 updateState();
             }
         });

@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.sound;
 
 import aeronicamc.mods.mxtune.init.ModSoundEvents;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundEventAccessor;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.audio.TickableSound;
@@ -11,6 +12,7 @@ public abstract class MxSound extends TickableSound
     protected int playID;
     protected AudioData audioData;
     private final SoundEventAccessor soundEventAccessor;
+    private final Minecraft mc = Minecraft.getInstance();
 
     public MxSound(AudioData audioData, SoundCategory categoryIn)
     {
@@ -39,6 +41,11 @@ public abstract class MxSound extends TickableSound
     @Override
     public void tick()
     {
+        if (audioData != null)
+        {
+            audioData.updateVolumeFade();
+            volume = volume * audioData.getFadeMultiplier();
+        }
         onUpdate();
     }
 

@@ -156,6 +156,12 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
     }
 
     @Override
+    public boolean isPauseScreen()
+    {
+        return false;
+    }
+
+    @Override
     public void onClose()
     {
         stop();
