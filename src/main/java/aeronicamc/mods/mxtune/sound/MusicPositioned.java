@@ -39,7 +39,6 @@ public class MusicPositioned extends MxSound
             this.volume = (1.0F - MathHelper.clamp(distance / 32.0F, 0.0F, 1.0F)) * audioData.getFadeMultiplier();
             if ((counter++ % 20 == 0) && (distance != lastDistance))
             {
-                LOGGER.debug("dist {}, volume {}", String.format("%03.3f", distance), String.format("%1.3f", volume));
                 this.lastDistance = distance;
             }
         }
