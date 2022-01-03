@@ -28,6 +28,7 @@ public class ModDataProviders
         if (event.includeServer())
         {
             // TODO
+            dataGenerator.addProvider(new MXTuneRecipeProvider(dataGenerator));
         }
     }
 }
