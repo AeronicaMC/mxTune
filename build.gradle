@@ -7,12 +7,14 @@ buildscript {
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0'
         classpath 'org.parchmentmc:librarian:1.+'
     }
 }
 plugins {
     // https://imperceptiblethoughts.com/shadow/introduction/
     id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id "org.sonarqube" version "3.0"
     id 'java'
 }
 apply plugin: 'net.minecraftforge.gradle'
@@ -136,6 +138,12 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft "net.minecraftforge:forge:${version_mc}-${version_forge}"
 
+    // These 3 compileOnly lines are for travis CI and sonarcloud using openjdk11. it provides the missing
+    // javax/jakarta/net-beans xml related stuff removed from java 10+
+    compileOnly 'com.sun.activation:javax.activation:1.2.0'
+    compileOnly 'javax.xml.bind:jaxb-api:2.3.0'
+    compileOnly 'com.sun.xml.bind:jaxb-core:2.3.0'
+
     // compile against the JEI API but do not include it at runtime
     //compileOnly fg.deobf("mezz.jei:jei-${version_mc}:${jei_version}:api")
     // at runtime, use the full JEI jar
@@ -188,6 +196,16 @@ processResources {
         project.logger.info("Processing: $it.name")
         if (it.relativePath.segments[0] in ['META-INF'])
             expand project.properties
+    }
+}
+
+sonarqube {
+    properties {
+        property "sonar.organization", "aeronicamc"
+        property "sonar.projectKey", "AeronicaMC_mxTune"
+        property "sonar.branch.name", "${project.branch_name}"
+        //property "sonar.coverage.exclusions", "**/*"
+        property "sonar.host.url", "https://sonarcloud.io"
     }
 }
 
