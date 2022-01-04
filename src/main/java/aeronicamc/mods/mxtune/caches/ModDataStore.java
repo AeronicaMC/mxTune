@@ -293,10 +293,10 @@ public class ModDataStore
      * @return The MML text string for the given key or null if not found.
      */
     @Nullable
-    public static String getMusicText(String key)
+    public static String getMusicText(@Nullable String key)
     {
         String musicText = null;
-        if (getMvStore() != null)
+        if (getMvStore() != null && key != null)
         {
             MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
             LocalDateTime localDateTime = LocalDateTime.parse(key);
