@@ -5,6 +5,7 @@ import aeronicamc.mods.mxtune.blocks.IPlacedInstrument;
 import aeronicamc.mods.mxtune.caches.ModDataStore;
 import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
 import aeronicamc.mods.mxtune.init.ModSoundEvents;
+import aeronicamc.mods.mxtune.managers.PlayIdSupplier.PlayType;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.PlayBlockMusicMessage;
 import aeronicamc.mods.mxtune.network.messages.PlaySoloMessage;
@@ -49,7 +50,7 @@ public final class PlayManager
 
     private static int getNextPlayID()
     {
-        return PlayIdSupplier.PlayType.PLAYERS.getAsInt();
+        return PlayType.PLAYERS.getAsInt();
     }
 
     /**
@@ -70,7 +71,7 @@ public final class PlayManager
      */
     public static int playMusic(World world, BlockPos blockPos)
     {
-        int playId = PlayIdSupplier.INVALID;
+        int playId = PlayType.INVALID.getAsInt();
         IMusicPlayer musicPlayer;
         if (world.getBlockState(blockPos).getBlock() instanceof IMusicPlayer)
         {
@@ -129,7 +130,7 @@ public final class PlayManager
                 LOGGER.debug("Music key not found: {}", musicTextKey);
             }
         }
-        return PlayIdSupplier.INVALID;
+        return PlayType.INVALID.getAsInt();
     }
 
     private static int playSolo(PlayerEntity playerIn, String musicText, int duration, Integer playerID)
@@ -213,7 +214,7 @@ public final class PlayManager
     {
         synchronized (THREAD_SYNC)
         {
-            return (entityId != null) ? entityIdToPlayId.get(entityId) : PlayIdSupplier.INVALID;
+            return (entityId != null) ? entityIdToPlayId.get(entityId) : PlayType.INVALID.getAsInt();
         }
     }
 
@@ -227,7 +228,7 @@ public final class PlayManager
 
     private static void addActivePlayId(int entityId, @Nullable BlockPos blockPos, int playId, String musicText, int durationSeconds)
     {
-        if ((playId != PlayIdSupplier.INVALID))
+        if ((playId != PlayType.INVALID.getAsInt()))
         {
             activePlayIds.add(playId);
             if (entityId != 0)
@@ -249,7 +250,7 @@ public final class PlayManager
 
     private static void removeActivePlayId(int playId)
     {
-        if ((playId != PlayIdSupplier.INVALID) && !activePlayIds.isEmpty())
+        if ((playId != PlayType.INVALID.getAsInt()) && !activePlayIds.isEmpty())
         {
             entityIdToPlayId.remove(playIdToEntityId.get(playId));
             playIdToActiveTune.remove(playId);

@@ -70,7 +70,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
     private int duration;
 
     /* MML Player */
-    private int playId = PlayIdSupplier.INVALID;
+    private int playId = PlayIdSupplier.PlayType.INVALID.getAsInt();
     private boolean isPlaying = false;
 
     /* Cached State for when the GUI is resized */
@@ -582,7 +582,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
     {
         Objects.requireNonNull(minecraft).submitAsync(()->ClientAudio.queueAudioDataRemoval(playId));
         isPlaying = false;
-        playId = PlayIdSupplier.INVALID;
+        playId = PlayIdSupplier.PlayType.INVALID.getAsInt();
         updateState();
     }
 

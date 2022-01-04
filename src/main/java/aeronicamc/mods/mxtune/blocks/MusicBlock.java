@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.blocks;
 
+import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.managers.PlayManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -23,7 +24,6 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-import static aeronicamc.mods.mxtune.managers.PlayIdSupplier.INVALID;
 
 @SuppressWarnings("deprecation")
 public class MusicBlock extends Block implements IMusicPlayer
@@ -110,7 +110,7 @@ public class MusicBlock extends Block implements IMusicPlayer
             if (PlayManager.isActivePlayId(musicBlockTile.getPlayId()))
             {
                 PlayManager.stopPlayId(musicBlockTile.getPlayId());
-                musicBlockTile.setPlayId(INVALID);
+                musicBlockTile.setPlayId(PlayIdSupplier.PlayType.INVALID.getAsInt());
                 return false;
             }
             if (!stop)
@@ -160,7 +160,7 @@ public class MusicBlock extends Block implements IMusicPlayer
                 if (PlayManager.isActivePlayId(musicBlockTile.getPlayId()))
                 {
                     PlayManager.stopPlayId(musicBlockTile.getPlayId());
-                    musicBlockTile.setPlayId(INVALID);
+                    musicBlockTile.setPlayId(PlayIdSupplier.PlayType.INVALID.getAsInt());
                 }
             }
         }

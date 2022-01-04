@@ -15,7 +15,7 @@ public class PlayBlockMusicMessage extends AbstractMessage<PlayBlockMusicMessage
 {
     private static final Logger LOGGER = LogManager.getLogger(PlayBlockMusicMessage.class);
     private final NetworkLongUtfHelper stringHelper = new NetworkLongUtfHelper();
-    private int playId = PlayIdSupplier.INVALID;
+    private int playId = PlayIdSupplier.PlayType.INVALID.getAsInt();
     private BlockPos blockPos;
     private String musicText = "";
 

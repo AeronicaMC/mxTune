@@ -71,7 +71,7 @@ public class OldMusicLibrary extends Screen implements IAudioStatusCallback
     // playing
     private MXButton buttonPlay;
     private boolean isPlaying = false;
-    private int playId = PlayIdSupplier.INVALID;
+    private int playId = PlayIdSupplier.PlayType.INVALID.getAsInt();
 
     // Directory Watcher
     private boolean watcherStarted = false;
@@ -427,7 +427,7 @@ public class OldMusicLibrary extends Screen implements IAudioStatusCallback
     {
        // ClientAudio.fadeOut(playId, 1);
         isPlaying = false;
-        playId = PlayIdSupplier.INVALID;
+        playId = PlayIdSupplier.PlayType.INVALID.getAsInt();
     }
 
     @Override

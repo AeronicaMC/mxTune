@@ -88,12 +88,12 @@ public class ClientAudio
 
     private static int pollPlayIDQueue01()
     {
-        return playIDQueue01.peek() == null ? PlayIdSupplier.INVALID : playIDQueue01.poll();
+        return playIDQueue01.peek() == null ? PlayIdSupplier.PlayType.INVALID.getAsInt() : playIDQueue01.poll();
     }
 
     private static int peekPlayIDQueue01()
     {
-        return playIDQueue01.peek() == null ? PlayIdSupplier.INVALID : playIDQueue01.peek();
+        return playIDQueue01.peek() == null ? PlayIdSupplier.PlayType.INVALID.getAsInt() : playIDQueue01.peek();
     }
 
     @Nullable
@@ -182,7 +182,7 @@ public class ClientAudio
     private static void play(int secondsToSkip, long netTransitTime, int playID, int entityId, @Nullable BlockPos pos, String musicText, boolean isClient, @Nullable IAudioStatusCallback callback)
     {
         startThreadFactory();
-        if(playID != PlayIdSupplier.INVALID)
+        if(playID != PlayIdSupplier.PlayType.INVALID.getAsInt())
         {
             addPlayIDQueue(playID);
             AudioData audioData = new AudioData(secondsToSkip, netTransitTime, playID, pos, isClient, callback);
@@ -222,7 +222,7 @@ public class ClientAudio
 
     public static void stop(int playID)
     {
-        if (PlayIdSupplier.INVALID == playID) return;
+        if (PlayIdSupplier.PlayType.INVALID.getAsInt() == playID) return;
         AudioData audioData = playIDAudioData.get(playID);
         if (audioData != null && audioData.getISound() != null)
             soundHandler.stop(audioData.getISound());
@@ -302,7 +302,7 @@ public class ClientAudio
      */
     private static void initializeCodec()
     {
-        if (soundEngine != null && soundHandler != null && peekPlayIDQueue01() != PlayIdSupplier.INVALID)
+        if (soundEngine != null && soundHandler != null && peekPlayIDQueue01() != PlayIdSupplier.PlayType.INVALID.getAsInt())
         {
             synchronized (soundEngine.instanceToChannel)
             {

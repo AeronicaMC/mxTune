@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 
 public class StopPlayIdMessage extends AbstractMessage<StopPlayIdMessage>
 {
-    private int playId = PlayIdSupplier.INVALID;
+    private int playId = PlayIdSupplier.PlayType.INVALID.getAsInt();
 
     public StopPlayIdMessage() { /* NOP */ }
 

@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 
 public class LivingEntityModCap implements ILivingEntityModCap
 {
-    private int playId = PlayIdSupplier.INVALID;
+    private int playId = PlayIdSupplier.PlayType.INVALID.getAsInt();
     private final LivingEntity entity;
 
     LivingEntityModCap(@Nullable final LivingEntity entity)

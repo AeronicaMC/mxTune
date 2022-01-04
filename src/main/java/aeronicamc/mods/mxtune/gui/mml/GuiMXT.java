@@ -81,7 +81,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     private final Mode mode;
 
     /* MML Player */
-    private int playId = PlayIdSupplier.INVALID;
+    private int playId = PlayIdSupplier.PlayType.INVALID.getAsInt();
 
     // Child tabs
     private static final int MAX_TABS = 16;
@@ -745,7 +745,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     {
         getMC().submitAsync(()->ClientAudio.queueAudioDataRemoval(playId));
         isPlaying = false;
-        playId = PlayIdSupplier.INVALID;
+        playId = PlayIdSupplier.PlayType.INVALID.getAsInt();
 
         // stop child tabs
         Arrays.stream(childTabs).forEach(GuiMXTPartTab::onClose);

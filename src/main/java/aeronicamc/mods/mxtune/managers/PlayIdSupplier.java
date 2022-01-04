@@ -7,15 +7,13 @@ import java.util.function.IntSupplier;
 
 public class PlayIdSupplier
 {
-    public static final int INVALID = -1;
-
     public enum PlayType implements IntSupplier, Comparator<PlayType>
     {
         EVENT(400000, 499999) {@Override protected PlayIdSource next(PlayIdSource playIdSource) { return playIdSource;}},
         PERSONAL(300000, 399999) {@Override protected PlayIdSource next(PlayIdSource playIdSource) { return playIdSource;}},
         PLAYERS(200000, 299999) {@Override protected PlayIdSource next(PlayIdSource playIdSource) { return playIdSource;}},
         BACKGROUND(100000, 199999) {@Override protected PlayIdSource next(PlayIdSource playIdSource) { return playIdSource;}},
-        UNDEFINED(-1, 0) {@Override protected PlayIdSource next(PlayIdSource playIdSource) { return playIdSource;}},
+        INVALID(-1, -1) {@Override protected PlayIdSource next(PlayIdSource playIdSource) { return playIdSource;}},
         ;
 
         int start;
@@ -38,7 +36,7 @@ public class PlayIdSupplier
                 if (playId >= type.start && playId <= type.end)
                     return type;
             }
-            return PlayType.UNDEFINED;
+            return PlayType.INVALID;
         }
 
         protected abstract PlayIdSource next(PlayIdSource playIdSource);
@@ -54,7 +52,7 @@ public class PlayIdSupplier
         {
             PlayType p1 = getTypeForPlayId(playId1);
             PlayType p2 = getTypeForPlayId(playId2);
-            return p1 != PlayType.UNDEFINED && p2 != PlayType.UNDEFINED ? compare(p1, p2) : null;
+            return p1 != PlayType.INVALID && p2 != PlayType.INVALID ? compare(p1, p2) : null;
         }
 
         @Override
@@ -100,6 +98,6 @@ public class PlayIdSupplier
 
     public static PlayType getTypeForPlayId(int playId)
     {
-        return ((playId >= 100000) && (playId <= 499999)) ? PlayType.EVENT.getTypeForPlayId(playId) : PlayType.UNDEFINED;
+        return ((playId >= 100000) && (playId <= 499999)) ? PlayType.EVENT.getTypeForPlayId(playId) : PlayType.INVALID;
     }
 }

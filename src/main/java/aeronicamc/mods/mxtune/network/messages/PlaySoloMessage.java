@@ -19,7 +19,7 @@ public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
 {
     private static final Logger LOGGER = LogManager.getLogger(PlaySoloMessage.class);
     private final NetworkLongUtfHelper stringHelper = new NetworkLongUtfHelper();
-    private int playId = PlayIdSupplier.INVALID;
+    private int playId = PlayIdSupplier.PlayType.INVALID.getAsInt();
     private int secondsToSkip;
     private int entityId;
     private String musicText = "";
