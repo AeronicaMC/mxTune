@@ -1,3 +1,6 @@
+import java.time.LocalDateTime
+import java.time.ZoneId
+
 buildscript {
     repositories {
         maven { url = 'https://maven.minecraftforge.net' }
@@ -49,7 +52,8 @@ configurations {
     shade
 }
 
-version = "${project.version_mod}"
+def timestamp = "${use_timestamp}".toString() == "true" ? LocalDateTime.now(ZoneId.of("GMT0")).format("-YYYY-MM-dd.A").toString() : ""
+version = "${project.version_mod}${timestamp}"
 group = 'aeronicamc'
 archivesBaseName = "mxtune-${project.version_mc}"
 java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 8 to end users, so your mod should target Java 8.
@@ -229,6 +233,7 @@ shadowJar {
     exclude 'META-INF/services/**'
     exclude 'META-INF/LICENSE*'
     exclude 'META-INF/NOTICE*'
+    exclude 'META-INF/versions/**'
     exclude 'module-info.class'
     exclude 'LICENSE'
 
