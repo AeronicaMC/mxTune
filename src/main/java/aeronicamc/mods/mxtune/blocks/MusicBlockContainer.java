@@ -22,7 +22,7 @@ public class MusicBlockContainer extends genericContainer
 {
     private static final int CONTAINER_ROWS = 4;
     private static final int CONTAINER_SLOTS_PER_ROW = 4;
-    public static final int INVENTORY_SIZE = CONTAINER_ROWS * CONTAINER_SLOTS_PER_ROW;
+    public static final int CONTAINER_SIZE = CONTAINER_ROWS * CONTAINER_SLOTS_PER_ROW;
 
     public MusicBlockContainer(int windowId, World world, BlockPos pos, PlayerInventory playerInventory , PlayerEntity playerEntity)
     {
@@ -80,11 +80,13 @@ public class MusicBlockContainer extends genericContainer
         if (slot != null && slot.hasItem()) {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
-            if (pIndex < CONTAINER_SLOTS_PER_ROW * CONTAINER_ROWS) {
-                if (!this.moveItemStackTo(itemstack1, CONTAINER_SLOTS_PER_ROW * CONTAINER_ROWS, this.slots.size(), true)) {
+            // From Player Inventory to Container Inventory - low to high slot index (reverse == false)
+            if (pIndex < CONTAINER_SIZE) {
+                if (!this.moveItemStackTo(itemstack1, CONTAINER_SIZE, slots.size(), false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.moveItemStackTo(itemstack1, 0, CONTAINER_SLOTS_PER_ROW * CONTAINER_ROWS, false)) {
+                // From Container Inventory to Player Inventory - low to high slot index (reverse == false)
+            } else if (!this.moveItemStackTo(itemstack1, 0, CONTAINER_SIZE, false)) {
                 return ItemStack.EMPTY;
             }
 
