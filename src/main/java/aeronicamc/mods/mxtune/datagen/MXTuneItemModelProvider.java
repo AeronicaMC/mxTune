@@ -10,7 +10,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
-import java.util.stream.IntStream;
+import java.util.Arrays;
 
 import static aeronicamc.mods.mxtune.init.ModItems.*;
 
@@ -34,10 +34,15 @@ public class MXTuneItemModelProvider extends ItemModelProvider
         withExistingParent(MUSIC_PAPER.getId().getPath(), mcLoc("generated"))
                 .texture("layer0", "item/music_paper");
 
+        // AGE here in this context represents the percentage of a maximum number of days sheet music is viable.
+        // At 0% the sheet music is considered unusable. 1-20% is well worn. 21-50% is used. 51%+ like new.
+        final int maxAge = 50;
+        final int[] ages = { 0, 1, 20, maxAge };
         ItemModelBuilder parentModel = withExistingParent(SHEET_MUSIC.getId().getPath(), mcLoc("generated"))
-                .texture("layer0", "item/sheet_music");
+                .texture("layer0", "item/sheet_music_age" + maxAge);
 
-        IntStream.range(0, 3)
+        Arrays.stream(ages)
+                /** IntStream.range(0, maxAge + 1) **/
                 .mapToObj(index -> {
                     final ItemModelBuilder subModel = withExistingParent(SHEET_MUSIC.getId().toString() + "_age" + index, mcLoc(SHEET_MUSIC.getId().toString()))
                             .texture("layer0", "item/" + SHEET_MUSIC.getId().getPath() + "_age" + index);
@@ -47,7 +52,7 @@ public class MXTuneItemModelProvider extends ItemModelProvider
                 .forEachOrdered(child ->
                     parentModel
                             .override()
-                            .predicate(SheetMusicAgePropertyGetter.NAME, child.getKey() * 40)
+                            .predicate(SheetMusicAgePropertyGetter.NAME, child.getKey())
                             .model(child.getValue())
                             .end()
                 );
