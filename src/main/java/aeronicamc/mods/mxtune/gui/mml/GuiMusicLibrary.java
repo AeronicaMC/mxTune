@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.gui.mml;
 
 import aeronicamc.mods.mxtune.caches.DirectoryWatcher;
 import aeronicamc.mods.mxtune.caches.FileHelper;
+import aeronicamc.mods.mxtune.gui.MXScreen;
 import aeronicamc.mods.mxtune.gui.ModGuiHelper;
 import aeronicamc.mods.mxtune.gui.TextColorFg;
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
@@ -9,7 +10,6 @@ import aeronicamc.mods.mxtune.gui.widget.MXLabel;
 import aeronicamc.mods.mxtune.gui.widget.MXTextFieldWidget;
 import aeronicamc.mods.mxtune.gui.widget.list.FileDataList;
 import aeronicamc.mods.mxtune.gui.widget.list.PartList;
-import aeronicamc.mods.mxtune.items.MXScreen;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.mxt.MXTuneFile;
 import aeronicamc.mods.mxtune.mxt.MXTuneFileHelper;

@@ -2,13 +2,13 @@ package aeronicamc.mods.mxtune.gui.mml;
 
 import aeronicamc.mods.mxtune.caches.DirectoryWatcher;
 import aeronicamc.mods.mxtune.caches.FileHelper;
+import aeronicamc.mods.mxtune.gui.MXScreen;
 import aeronicamc.mods.mxtune.gui.ModGuiHelper;
 import aeronicamc.mods.mxtune.gui.TextColorFg;
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
 import aeronicamc.mods.mxtune.gui.widget.MXLabel;
 import aeronicamc.mods.mxtune.gui.widget.MXTextFieldWidget;
 import aeronicamc.mods.mxtune.gui.widget.list.PathList;
-import aeronicamc.mods.mxtune.items.MXScreen;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;

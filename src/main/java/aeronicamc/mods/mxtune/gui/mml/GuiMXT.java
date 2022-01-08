@@ -2,13 +2,13 @@ package aeronicamc.mods.mxtune.gui.mml;
 
 import aeronicamc.mods.mxtune.caches.FileHelper;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
+import aeronicamc.mods.mxtune.gui.MXScreen;
 import aeronicamc.mods.mxtune.gui.TextColorFg;
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
 import aeronicamc.mods.mxtune.gui.widget.MXLabel;
 import aeronicamc.mods.mxtune.gui.widget.MXLink;
 import aeronicamc.mods.mxtune.gui.widget.MXTextFieldWidget;
 import aeronicamc.mods.mxtune.init.ModSoundEvents;
-import aeronicamc.mods.mxtune.items.MXScreen;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.mxt.MXTuneFile;
 import aeronicamc.mods.mxtune.mxt.MXTuneFileHelper;

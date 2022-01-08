@@ -2,11 +2,11 @@ package aeronicamc.mods.mxtune.gui.mml;
 
 import aeronicamc.libs.mml.parser.MMLAllowedChars;
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.gui.MXScreen;
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
 import aeronicamc.mods.mxtune.gui.widget.MXLabel;
 import aeronicamc.mods.mxtune.gui.widget.MXTextFieldWidget;
 import aeronicamc.mods.mxtune.gui.widget.list.SoundFontList;
-import aeronicamc.mods.mxtune.items.MXScreen;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.mxt.MXTunePart;
 import aeronicamc.mods.mxtune.mxt.MXTuneStaff;

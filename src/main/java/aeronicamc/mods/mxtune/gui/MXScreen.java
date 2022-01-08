@@ -1,6 +1,5 @@
-package aeronicamc.mods.mxtune.items;
+package aeronicamc.mods.mxtune.gui;
 
-import aeronicamc.mods.mxtune.gui.ModGuiHelper;
 import aeronicamc.mods.mxtune.gui.widget.IHooverText;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
