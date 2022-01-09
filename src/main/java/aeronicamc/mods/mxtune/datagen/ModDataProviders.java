@@ -23,6 +23,7 @@ public class ModDataProviders
             // TODO look at TestMod3 for passing MXTuneItemModelProvider to the MXTuneBlockStateProvider
             dataGenerator.addProvider(new MXTuneLanguageProvider(dataGenerator));
             dataGenerator.addProvider(new MXTuneItemModelProvider(dataGenerator, Reference.MOD_ID, existingFileHelper));
+            dataGenerator.addProvider(new MXTuneSoundDefinitionsProvider(dataGenerator, Reference.MOD_ID, existingFileHelper));
         }
 
         if (event.includeServer())

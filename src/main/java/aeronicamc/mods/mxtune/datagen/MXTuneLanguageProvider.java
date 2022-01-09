@@ -24,6 +24,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiTexts();
         addCommands();
         addErrors();
+        addSubtitles();
     }
 
     @Override
@@ -121,6 +122,13 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addError("errors.mxtune.sheet_music_too_old", "The Sheet Music is unreadable!");
     }
 
+    private void addSubtitles()
+    {
+        addSubtitle("pcm-proxy", "Music Plays");
+        addSubtitle("failure", "Oops");
+        addSubtitle("crumple_paper", "Crumple Paper");
+    }
+
     /**
      * prepends tooltip.[mod_id].
      * @param identifier the unique help id
@@ -159,5 +167,15 @@ public class MXTuneLanguageProvider extends LanguageProvider
     private void addError(String identifier, String text)
     {
         add(String.format("errors.%s.%s", Reference.MOD_ID, identifier), text);
+    }
+
+    /**
+     * prepends subtitle.[mod_id].
+     * @param identifier the unique error id
+     * @param text of the subtitle
+     */
+    private void addSubtitle(String identifier, String text)
+    {
+        add(String.format("subtitle.%s.%s", Reference.MOD_ID, identifier), text);
     }
 }

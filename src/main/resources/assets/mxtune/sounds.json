@@ -1,18 +1,31 @@
 {
-	"pcm-proxy": {
-		"sounds": [
-			{
-				"name": "mxtune:pcm-proxy",
-				"stream": true
-			}
-		]
-	},
-	"failure": {
-		"sounds": [
-			{
-				"name": "mxtune:failure",
-				"stream": false
-			}
-		]
-	}
+  "pcm-proxy": {
+    "subtitle": "subtitle.mxtune.pcm-proxy",
+    "sounds": [
+      {
+        "name": "mxtune:pcm-proxy",
+        "stream": true
+      }
+    ]
+  },
+  "failure": {
+    "subtitle": "subtitle.mxtune.failure",
+    "sounds": [
+      "mxtune:failure"
+    ]
+  },
+  "crumple-paper": {
+    "subtitle": "subtitle.mxtune.crumple_paper",
+    "sounds": [
+      {
+        "name": "mxtune:crumple-paper",
+        "pitch": 1.2
+      },
+      "mxtune:crumple-paper",
+      {
+        "name": "mxtune:crumple-paper",
+        "pitch": 0.8
+      }
+    ]
+  }
 }

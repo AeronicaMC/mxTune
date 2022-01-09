@@ -45,6 +45,7 @@ public class ModSoundEvents
 
     public static final RegistryObject<SoundEvent> PCM_PROXY = registerSoundEvent("pcm-proxy");
     public static final RegistryObject<SoundEvent> FAILURE = registerSoundEvent("failure");
+    public static final RegistryObject<SoundEvent> CRUMPLE_PAPER = registerSoundEvent("crumple-paper");
 
     private ModSoundEvents() { /* NOP */ }
 
