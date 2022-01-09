@@ -13,7 +13,6 @@ import aeronicamc.mods.mxtune.sound.Midi2WavRenderer;
 import aeronicamc.mods.mxtune.sound.ModMidiException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -278,16 +277,25 @@ public enum SheetMusicHelper
         return false;
     }
 
+    /**
+     * Server Side
+     * Scraps expired sheet music from the players inventory and replaces it with two paper scraps.
+     * @param pStack        The sheet music stack
+     * @param pLevel        The level
+     * @param pEntity       The player
+     * @param pItemSlot     The slot holding the sheet music
+     * @param pIsSelected   True if selected
+     */
     public static void scrapSheetMusic(ItemStack pStack, World pLevel, Entity pEntity, int pItemSlot, boolean pIsSelected)
     {
-        if (!pLevel.isClientSide() && !pStack.isEmpty())
+        if (!pLevel.isClientSide() && !pStack.isEmpty() && (pEntity instanceof PlayerEntity) && !pIsSelected)
         {
-            String key = getMusicTextKey(((ServerPlayerEntity) pEntity).inventory.getItem(pItemSlot));
+            String key = getMusicTextKey(((PlayerEntity) pEntity).inventory.getItem(pItemSlot));
             boolean canReap = getSheetMusicDaysLeft(pStack) == 0L;
             if (key != null && canReap)
             {
                 ModDataStore.removeSheetMusic(key);
-                ((ServerPlayerEntity) pEntity).inventory.removeItem(pStack);
+                ((PlayerEntity) pEntity).inventory.removeItem(pStack);
 
                 SidedThreadGroups.SERVER.newThread(()->{
                     try
@@ -295,9 +303,9 @@ public enum SheetMusicHelper
                         sleep(RandomUtils.nextLong(400, 600));
                     } catch (InterruptedException e)
                     {
-                        LOGGER.error(e);
+                        LOGGER.warn(e);
                     }
-                    ((ServerPlayerEntity) pEntity).inventory.add(pItemSlot, new ItemStack(ModItems.SCRAP_ITEM.get(), 1));
+                    ((PlayerEntity) pEntity).inventory.add(pItemSlot, new ItemStack(ModItems.SCRAP_ITEM.get(), 1));
                     Misc.audiblePingPlayer((PlayerEntity)pEntity, ModSoundEvents.CRUMPLE_PAPER.get());
                 }).start();
                 SidedThreadGroups.SERVER.newThread(()->{
@@ -306,9 +314,9 @@ public enum SheetMusicHelper
                         sleep(RandomUtils.nextLong(600, 700));
                     } catch (InterruptedException e)
                     {
-                        LOGGER.error(e);
+                        LOGGER.warn(e);
                     }
-                    ((ServerPlayerEntity) pEntity).inventory.add(pItemSlot, new ItemStack(ModItems.SCRAP_ITEM.get(), 1));
+                    ((PlayerEntity) pEntity).inventory.add(pItemSlot, new ItemStack(ModItems.SCRAP_ITEM.get(), 1));
                     Misc.audiblePingPlayer((PlayerEntity)pEntity, ModSoundEvents.CRUMPLE_PAPER.get());
                 }).start();
             }
