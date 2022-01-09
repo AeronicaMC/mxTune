@@ -7,10 +7,13 @@ import aeronicamc.mods.mxtune.blocks.IMusicPlayer;
 import aeronicamc.mods.mxtune.caches.ModDataStore;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.init.ModItems;
+import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import aeronicamc.mods.mxtune.sound.MMLToMIDI;
 import aeronicamc.mods.mxtune.sound.Midi2WavRenderer;
 import aeronicamc.mods.mxtune.sound.ModMidiException;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -20,6 +23,9 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.thread.SidedThreadGroups;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,6 +34,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+import static java.lang.Thread.sleep;
 import static net.minecraftforge.common.util.Constants.NBT;
 
 public enum SheetMusicHelper
@@ -269,6 +276,43 @@ public enum SheetMusicHelper
             }
         }
         return false;
+    }
+
+    public static void scrapSheetMusic(ItemStack pStack, World pLevel, Entity pEntity, int pItemSlot, boolean pIsSelected)
+    {
+        if (!pLevel.isClientSide() && !pStack.isEmpty())
+        {
+            String key = getMusicTextKey(((ServerPlayerEntity) pEntity).inventory.getItem(pItemSlot));
+            boolean canReap = getSheetMusicDaysLeft(pStack) == 0L;
+            if (key != null && canReap)
+            {
+                ModDataStore.removeSheetMusic(key);
+                ((ServerPlayerEntity) pEntity).inventory.removeItem(pStack);
+
+                SidedThreadGroups.SERVER.newThread(()->{
+                    try
+                    {
+                        sleep(RandomUtils.nextLong(400, 600));
+                    } catch (InterruptedException e)
+                    {
+                        LOGGER.error(e);
+                    }
+                    ((ServerPlayerEntity) pEntity).inventory.add(pItemSlot, new ItemStack(ModItems.SCRAP_ITEM.get(), 1));
+                    Misc.audiblePingPlayer((PlayerEntity)pEntity, ModSoundEvents.CRUMPLE_PAPER.get());
+                }).start();
+                SidedThreadGroups.SERVER.newThread(()->{
+                    try
+                    {
+                        sleep(RandomUtils.nextLong(600, 700));
+                    } catch (InterruptedException e)
+                    {
+                        LOGGER.error(e);
+                    }
+                    ((ServerPlayerEntity) pEntity).inventory.add(pItemSlot, new ItemStack(ModItems.SCRAP_ITEM.get(), 1));
+                    Misc.audiblePingPlayer((PlayerEntity)pEntity, ModSoundEvents.CRUMPLE_PAPER.get());
+                }).start();
+            }
+        }
     }
 
     /**

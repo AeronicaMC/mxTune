@@ -1,7 +1,6 @@
 package aeronicamc.mods.mxtune.items;
 
 import aeronicamc.mods.mxtune.util.IMusic;
-import aeronicamc.mods.mxtune.util.Misc;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -43,11 +42,7 @@ public class SheetMusicItem extends Item implements IMusic
     {
         if (!pLevel.isClientSide())
         {
-            @SuppressWarnings("all")
-            String x = Misc.nonNullInjected();
-            // TODO: Server side: Remove value for key from storage, then replace item with scraps.
-            //  TODO: Client side: Use a flashy animation and sound effect.
-            //   TODO: Pop out of inventory into the world!?
+            SheetMusicHelper.scrapSheetMusic(pStack, pLevel, pEntity, pItemSlot, pIsSelected);
         }
     }
 
