@@ -1,12 +1,12 @@
 package aeronicamc.mods.mxtune.items;
 
 import aeronicamc.mods.mxtune.util.IMusic;
+import aeronicamc.mods.mxtune.util.Misc;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
@@ -41,14 +41,13 @@ public class SheetMusicItem extends Item implements IMusic
     @Override
     public void inventoryTick(ItemStack pStack, World pLevel, Entity pEntity, int pItemSlot, boolean pIsSelected)
     {
-        if (pLevel.isClientSide)
+        if (!pLevel.isClientSide())
         {
-            //NOTE!!! SheetMusicAgePropertyGetter.class is a CLIENT only class!!!
-            CompoundNBT nbt = pStack.getTagElement(SheetMusicAgePropertyGetter.NAME.toString());
-            if (nbt != null)
-            {
-                LOGGER.info("nbt: {}", nbt.toString());
-            }
+            @SuppressWarnings("all")
+            String x = Misc.nonNullInjected();
+            // TODO: Server side: Remove value for key from storage, then replace item with scraps.
+            //  TODO: Client side: Use a flashy animation and sound effect.
+            //   TODO: Pop out of inventory into the world!?
         }
     }
 

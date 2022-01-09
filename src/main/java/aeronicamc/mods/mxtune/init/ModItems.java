@@ -2,7 +2,10 @@ package aeronicamc.mods.mxtune.init;
 
 import aeronicamc.mods.mxtune.MXTune;
 import aeronicamc.mods.mxtune.Reference;
-import aeronicamc.mods.mxtune.items.*;
+import aeronicamc.mods.mxtune.items.GuiTestItem;
+import aeronicamc.mods.mxtune.items.InstrumentItem;
+import aeronicamc.mods.mxtune.items.MusicPaperItem;
+import aeronicamc.mods.mxtune.items.SheetMusicItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -46,17 +49,17 @@ public class ModItems
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Reference.MOD_ID);
     private static boolean isInitialized;
 
-    public static final RegistryObject<MusicItem> MUSIC_ITEM = ITEMS.register("music_item",
-        () -> new MusicItem(defaultItemProperties().stacksTo(1)));
+    public static final RegistryObject<Item> SCRAP_ITEM = ITEMS.register("scrap_item",
+        () -> new Item(ingredientItemProperties().stacksTo(64)));
 
     public static final RegistryObject<GuiTestItem> GUI_TEST_ITEM = ITEMS.register("gui_test_item",
         () -> new GuiTestItem(defaultItemProperties().stacksTo(1)));
 
     public static final RegistryObject<MusicPaperItem> MUSIC_PAPER = ITEMS.register("music_paper",
-                                                                                    () -> new MusicPaperItem(defaultItemProperties().stacksTo(16)));
+        () -> new MusicPaperItem(defaultItemProperties().stacksTo(16)));
 
     public static final RegistryObject<SheetMusicItem> SHEET_MUSIC = ITEMS.register("sheet_music",
-                                                                                    () -> new SheetMusicItem(defaultItemProperties().stacksTo(1)));
+        () -> new SheetMusicItem(defaultItemProperties().stacksTo(1)));
 
     public static final Map<Integer, RegistryObject<InstrumentItem>> INSTRUMENT_ITEMS = new HashMap<>();
 
@@ -78,6 +81,11 @@ public class ModItems
      */
     private static Item.Properties defaultItemProperties() {
         return new Item.Properties().tab(MXTune.ITEM_GROUP);
+    }
+
+    private static Item.Properties ingredientItemProperties()
+    {
+        return new Item.Properties();
     }
 
     /**

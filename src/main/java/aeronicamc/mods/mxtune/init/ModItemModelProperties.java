@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.init;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.items.ScrapAnimationPropertyGetter;
 import aeronicamc.mods.mxtune.items.SheetMusicAgePropertyGetter;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraftforge.api.distmarker.Dist;
@@ -43,6 +44,7 @@ public class ModItemModelProperties
     public static void event(final FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
             SheetMusicAgePropertyGetter.registerToItem(ModItems.SHEET_MUSIC.get());
+            ScrapAnimationPropertyGetter.registerToItem(ModItems.SCRAP_ITEM.get());
         });
     }
 }
