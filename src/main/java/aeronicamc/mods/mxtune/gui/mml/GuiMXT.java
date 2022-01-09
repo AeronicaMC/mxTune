@@ -458,8 +458,21 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         durationTotal = duration;
         labelDuration.setLabelText(new StringTextComponent(SheetMusicHelper.formatDuration(durationTotal)));
         boolean isOK = countOK == viewableTabCount;
+        boolean hasEnoughMusicPaper = player.inventory.getSelected().getCount() >= viewableTabCount;
         buttonPlayStop.active = isPlaying || isOK;
-        buttonDoneMode.active = Mode.CLIENT == mode || (!textTitle.getValue().isEmpty() && isOK);
+        switch (mode)
+        {
+            case CLIENT:
+            case SERVER:
+                buttonDoneMode.active = !textTitle.getValue().isEmpty() && isOK;
+                break;
+
+            case SHEET_MUSIC:
+                buttonDoneMode.active = !textTitle.getValue().isEmpty() && isOK && hasEnoughMusicPaper;
+                break;
+            default:
+        }
+
         buttonPlayStop.setMessage(isPlaying ? new TranslationTextComponent("gui.mxtune.button.stop") : new TranslationTextComponent("gui.mxtune.button.play_all"));
         sourcesLink.visible = sourcesLink.getUrl().matches("^(http(s)?:\\/\\/[a-zA-Z0-9\\-_]+\\.[a-zA-Z]+(.)+)+");
 
@@ -743,7 +756,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
 
     private void stop()
     {
-        getMC().submitAsync(()->ClientAudio.queueAudioDataRemoval(playId));
+        getMC().submitAsync(()->ClientAudio.fadeOut(playId, 3));
         isPlaying = false;
         playId = PlayIdSupplier.PlayType.INVALID.getAsInt();
 
