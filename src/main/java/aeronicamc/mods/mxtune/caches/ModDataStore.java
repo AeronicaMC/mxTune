@@ -312,4 +312,14 @@ public class ModDataStore
         return musicText;
     }
 
+    /**
+     * Tests if the musicText exists
+     * @param key in LocalDateTime (GMT0) string format
+     * @return true if the musicText key resolves.
+     */
+    public static boolean hasMusicText(@Nullable String key)
+    {
+        return getMusicText(key) != null;
+    }
+
 }
