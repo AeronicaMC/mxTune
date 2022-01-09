@@ -29,6 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.time.DateTimeException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -58,7 +59,8 @@ public enum SheetMusicHelper
 
 
     /**
-     * Returns the TITLE from the handheld IMusic item.
+     * Client Side
+     * <p></p>Returns the TITLE from the handheld IMusic item.
      * e.g. Returns TITLE from ItemSheetMusic
      * @param sheetMusicStack IInstrument music ItemStack
      * @return hoover name of the IMusic ItemStack
@@ -73,11 +75,23 @@ public enum SheetMusicHelper
         return SHEET_MUSIC_EMPTY;
     }
 
+    /**
+     * Client Side
+     * <p></p>Get the sheet music title in plain string format
+     * @param sheetMusicStack The sheet music stack.
+     * @return The title as a string.
+     */
     public static String getMusicTitleAsString(ItemStack sheetMusicStack)
     {
         return getFormattedMusicTitle(sheetMusicStack).plainCopy().getString();
     }
 
+    /**
+     * Client side
+     * <p></p>Get formatted music duration as a {@link ITextComponent} from the sheet music stack.
+     * @param sheetMusicStack The sheet music stack.
+     * @return The formatted music duration as a {@link ITextComponent}
+     */
     public static ITextComponent getFormattedMusicDuration(ItemStack sheetMusicStack)
     {
         int duration = getMusicDuration(sheetMusicStack);
@@ -89,6 +103,12 @@ public enum SheetMusicHelper
         return SHEET_MUSIC_DURATION_ERROR;
     }
 
+    /**
+     * CLient or Server Side
+     * <p></p>Get the duration in seconds from a sheet music stack. (not validated here)
+     * @param sheetMusicStack The sheet music stack.
+     * @return The stored duration in seconds if found or 0. (The minimum duration is 4 seconds if validated)
+     */
     public static int getMusicDuration(ItemStack sheetMusicStack)
     {
         CompoundNBT contents = sheetMusicStack.getTag();
@@ -104,6 +124,12 @@ public enum SheetMusicHelper
         return 0;
     }
 
+    /**
+     * Client Side
+     * <p></p>Get the formatted days left as a {@link ITextComponent} from the sheet music.
+     * @param sheetMusicStack The sheet music stack.
+     * @return The formatted days left as a {@link ITextComponent}
+     */
     public static ITextComponent getFormattedSheetMusicDaysLeft(ItemStack sheetMusicStack)
     {
         long daysLeft = getSheetMusicDaysLeft(sheetMusicStack);
@@ -115,12 +141,25 @@ public enum SheetMusicHelper
             return SHEET_MUSIC_DAYS_LEFT_ERROR;
     }
 
+    /**
+     * Client or Server Side
+     * <p></p>Get the sheet music days left as a {@link long}.
+     * @param sheetMusicStack The sheet music stack.
+     * @return days left or 99999 if there was a parse or item stack error.
+     */
     public static long getSheetMusicDaysLeft(ItemStack sheetMusicStack)
     {
         String keyDateTimeString = getMusicTextKey(sheetMusicStack);
         if (keyDateTimeString != null)
         {
-            LocalDateTime keyDateTime = LocalDateTime.parse(keyDateTimeString);
+            LocalDateTime keyDateTime;
+            try
+            {
+                keyDateTime = LocalDateTime.parse(keyDateTimeString);
+            } catch (DateTimeException e)
+            {
+                return 99999;
+            }
             LocalDateTime keyPlusDaysLeft = keyDateTime.plusDays(MXTuneConfig.getSheetMusicLifeInDays());
             LocalDateTime now = LocalDateTime.now(ZoneId.of("GMT0"));
             return Math.max(Duration.between(now, keyPlusDaysLeft).getSeconds() / 86400L, 0L);
@@ -128,6 +167,12 @@ public enum SheetMusicHelper
         return 99999;
     }
 
+    /**
+     * Client Side
+     * <p></p>Get the Sheet Music key for days left calculations.
+     * @param sheetMusicStack SheetMusic of course
+     * @return The LocalDateTime key in string format or null if not available.
+     */
     @Nullable
     public static String getMusicTextKey(ItemStack sheetMusicStack)
     {
@@ -143,6 +188,29 @@ public enum SheetMusicHelper
         return null;
     }
 
+    /**
+     * Client side
+     * <p></p>Used in the HooverText methods
+     * @param sheetMusicStack to be tested
+     * @return true if the ItemStack has music
+     */
+    public static boolean hasMusicText(ItemStack sheetMusicStack)
+    {
+        CompoundNBT contents = sheetMusicStack.getTag();
+        if (contents != null && sheetMusicStack.getItem() instanceof IMusic && contents.contains(KEY_SHEET_MUSIC))
+        {
+            CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
+            return sm.contains(KEY_DURATION) && (sm.getInt(KEY_DURATION) > 0);
+        }
+        return false;
+    }
+
+    /**
+     * Server Side
+     * <p></p>Get the combined musicText in MML@ paste format from TileEntity inventory.
+     * @param pTileEntity of type {@link IMusicPlayer}
+     * @return A MusicProperties tuple that contains the musicText and duration.
+     */
     public static MusicProperties getMusicFromIMusicPlayer(TileEntity pTileEntity)
     {
         if (!(pTileEntity instanceof IMusicPlayer)) return MusicProperties.INVALID;
@@ -183,35 +251,7 @@ public enum SheetMusicHelper
         return new MusicProperties(buildMML.toString(), duration);
     }
 
-    /**
-     * Client side
-     * Used in the HooverText methods
-     * @param sheetMusicStack to be tested
-     * @return true if the ItemStack has music
-     */
-    public static boolean hasMusicText(ItemStack sheetMusicStack)
-    {
-        CompoundNBT contents = sheetMusicStack.getTag();
-        if (contents != null && sheetMusicStack.getItem() instanceof IMusic && contents.contains(KEY_SHEET_MUSIC))
-        {
-            CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
-            return sm.contains(KEY_DURATION) && (sm.getInt(KEY_DURATION) > 0);
-        }
-        return false;
-    }
-
-    @Nullable
-    public static String getMusicIndex(ItemStack sheetMusicStack)
-    {
-        CompoundNBT contents = sheetMusicStack.getTag();
-        if (contents != null && sheetMusicStack.getItem() instanceof IMusic && contents.contains(KEY_SHEET_MUSIC))
-        {
-            CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
-            return sm.contains(KEY_MUSIC_TEXT_KEY) ? (sm.getString(KEY_MUSIC_TEXT_KEY)) : null;
-        }
-        return null;
-    }
-
+    // TODO: when placed instruments are created.
     public static ItemStack getIMusicFromIPlacedInstrument(BlockPos pos, PlayerEntity playerIn, boolean isPlaced)
     {
         return ItemStack.EMPTY; // TODO: rewrite tile instrument inventory slot queries
@@ -219,17 +259,17 @@ public enum SheetMusicHelper
 
     /**
      * Server Side
-     * Returns the IMusic stack of 1 from an IInstrument Stack of 1
+     * <p></p>Returns the IMusic stack of 1 from an IInstrument Stack of 1
      * e.g. ItemSheetMusic from an ItemMultiInst
      * Validates the existence of keys only
-     * @param iInstStack of handheld IInstrument inventory
+     * @param pInstrumentStack of handheld IInstrument inventory
      * @return ItemStack of handheld IMusic
      */
-    public static ItemStack getIMusicFromIInstrument(ItemStack iInstStack)
+    public static ItemStack getIMusicFromIInstrument(ItemStack pInstrumentStack)
     {
-        if ((iInstStack.getItem() instanceof IInstrument) && iInstStack.getTag() != null)
+        if ((pInstrumentStack.getItem() instanceof IInstrument) && pInstrumentStack.getTag() != null)
         {
-            ListNBT items = iInstStack.getTag().getList("Items", NBT.TAG_COMPOUND);
+            ListNBT items = pInstrumentStack.getTag().getList("Items", NBT.TAG_COMPOUND);
             if (items.size() == 1)
             {
                 CompoundNBT item = items.getCompound(0);
@@ -249,7 +289,7 @@ public enum SheetMusicHelper
 
     /**
      * Server Side
-     * Updates a new Sheet Music ItemStack. Adds the title, duration and keystore id to the it and stores
+     * <p></p>Updates a new Sheet Music ItemStack. Adds the title, duration and keystore id to the it and stores
      * the data to an on-disk data store.
      * @param sheetMusic ItemStack reference to be updated.
      * @param musicTitle becomes the Sheet Music display name
@@ -279,7 +319,7 @@ public enum SheetMusicHelper
 
     /**
      * Server Side
-     * Scraps expired sheet music from the players inventory and replaces it with two paper scraps.
+     * <p></p>Scraps expired sheet music from the players inventory and replaces it with two paper scraps.
      * @param pStack        The sheet music stack
      * @param pLevel        The level
      * @param pEntity       The player
@@ -296,6 +336,7 @@ public enum SheetMusicHelper
             {
                 ModDataStore.removeSheetMusic(key);
                 ((PlayerEntity) pEntity).inventory.removeItem(pStack);
+                Misc.audiblePingPlayer((PlayerEntity)pEntity, ModSoundEvents.CRUMPLE_PAPER.get());
 
                 SidedThreadGroups.SERVER.newThread(()->{
                     try
@@ -325,7 +366,7 @@ public enum SheetMusicHelper
 
     /**
      * Client and Server side
-     * Validate the supplied MML and return it's length in seconds.
+     * <p></p>Validate the supplied MML and return it's length in seconds.
      * @param mml to be validated and its duration in seconds calculated.
      * @return a ValidDuration with 'isValidMML' set true for valid MML else false, and 'getDuration' the length of the tune in seconds<B></B>
      * for valid MML, else 0.
@@ -352,6 +393,12 @@ public enum SheetMusicHelper
         return new ValidDuration(seconds > 4, seconds);
     }
 
+    /**
+     * Client or Server side
+     * <p></p>Get formatted music duration as a {@link String} from the sheet music stack.
+     * @param seconds The duration in seconds
+     * @return The formatted music duration as a {@link String} formatted as "h:mm:ss"
+     */
     public static String formatDuration(int seconds)
     {
         int absSeconds = Math.abs(seconds);
@@ -363,6 +410,7 @@ public enum SheetMusicHelper
         return seconds < 0 ? "-" + positive : positive;
     }
 
+    // TODO: When music mobs are created and can drop sheet music.
     public static ItemStack createSheetMusic(String title, String mml)
     {
         ItemStack sheetMusic = new ItemStack(ModItems.SHEET_MUSIC.get());
@@ -374,6 +422,7 @@ public enum SheetMusicHelper
             return new ItemStack(ModItems.MUSIC_PAPER.get());
     }
 
+    // TODO: When music mobs are created and can drop sheet music.
 //    public static ItemStack createSheetMusic(SheetMusicSongs sheetMusicSong)
 //    {
 //        return createSheetMusic(sheetMusicSong.getTitle(), sheetMusicSong.getMML());
