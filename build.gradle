@@ -52,7 +52,7 @@ configurations {
     shade
 }
 
-def timestamp = "${use_timestamp}".toString() == "true" ? LocalDateTime.now(ZoneId.of("GMT0")).format("-YYYY-MM-dd.A").toString() : ""
+def timestamp = "${use_timestamp}".toString() == "true" ? LocalDateTime.now().format("-YYYY-MM-dd.A").toString() : ""
 version = "${project.version_mod}${timestamp}"
 group = 'aeronicamc'
 archivesBaseName = "mxtune-${project.version_mc}"
@@ -155,8 +155,8 @@ dependencies {
     implementation fg.deobf("curse.maven:${project.configured}")
     implementation fg.deobf("curse.maven:${project.better_mods_button}")
 
-    implementation 'com.h2database:h2-mvstore:2.0.204'
-    shade 'com.h2database:h2-mvstore:2.0.204'
+    implementation "com.h2database:h2-mvstore:${project.h2_version}"
+    shade "com.h2database:h2-mvstore:${project.h2_version}"
 //    implementation 'com.h2database:h2-mvstore:1.4.200'
 //    shade 'com.h2database:h2-mvstore:1.4.200'
     // For more info...
