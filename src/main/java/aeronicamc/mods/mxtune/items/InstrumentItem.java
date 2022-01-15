@@ -98,7 +98,8 @@ public class InstrumentItem extends Item implements IInstrument, INamedContainer
                 PlayManager.stopPlayId(playId);
                 setPlayId(pStack, PlayIdSupplier.PlayType.INVALID.getAsInt());
             }
-            SheetMusicHelper.scrapSheetMusicInInstrument(null, pStack, pLevel, pEntity);
+            // Check for expired sheet music. Deposit scrap in the players inventory if space permits or in the world.
+            SheetMusicHelper.scrapSheetMusicInInstrumentIfExpired(null, pStack, pLevel, pEntity, null);
         }
         super.inventoryTick(pStack, pLevel, pEntity, pItemSlot, pIsSelected);
     }
@@ -209,12 +210,12 @@ public class InstrumentItem extends Item implements IInstrument, INamedContainer
 
     /**
      * Container Title
-     * @return the translated container title. Not really useful since we can't tie it to a stack.
+     * @return the translated container title.
      */
+    @SuppressWarnings("deprecation")
     @Override
     public ITextComponent getDisplayName()
     {
-        //noinspection deprecation
         return new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(this.getMaxDamage()));
     }
 

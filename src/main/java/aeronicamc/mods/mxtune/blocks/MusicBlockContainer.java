@@ -59,16 +59,16 @@ public class MusicBlockContainer extends genericContainer
             this.addSlot(new Slot(playerInventory, i, i * 18 + guiInvX, guiInvY + 58));
         }
 
-        scrapCheck(world, playerEntity);
+        scrapCheck(world, playerEntity, pos);
     }
 
-    private void scrapCheck(World pLevel, PlayerEntity pEntity)
+    private void scrapCheck(World pLevel, PlayerEntity pEntity, BlockPos blockPos)
     {
         if (!pLevel.isClientSide())
         {
             slots.stream().filter(
                     p -> p.index < CONTAINER_SIZE).forEach(
-                            p -> SheetMusicHelper.scrapSheetMusicInInstrument(p, p.getItem(), pLevel, pEntity));
+                            p -> SheetMusicHelper.scrapSheetMusicInInstrumentIfExpired(p, p.getItem(), pLevel, pEntity, blockPos));
 
         }
     }

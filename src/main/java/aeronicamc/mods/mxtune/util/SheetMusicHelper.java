@@ -9,11 +9,14 @@ import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import aeronicamc.mods.mxtune.inventory.InstrumentInventory;
+import aeronicamc.mods.mxtune.items.InstrumentItem;
+import aeronicamc.mods.mxtune.items.SheetMusicItem;
 import aeronicamc.mods.mxtune.sound.MMLToMIDI;
 import aeronicamc.mods.mxtune.sound.Midi2WavRenderer;
 import aeronicamc.mods.mxtune.sound.ModMidiException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -328,7 +331,7 @@ public enum SheetMusicHelper
      * @param pItemSlot     The slot holding the sheet music
      * @param pIsSelected   True if selected
      */
-    public static void scrapSheetMusic(ItemStack pStack, World pLevel, Entity pEntity, int pItemSlot, boolean pIsSelected)
+    public static void scrapSheetMusicIfExpired(ItemStack pStack, World pLevel, Entity pEntity, int pItemSlot, boolean pIsSelected)
     {
         if (!pLevel.isClientSide() && !pStack.isEmpty() && (pEntity instanceof PlayerEntity) && !pIsSelected)
         {
@@ -371,23 +374,27 @@ public enum SheetMusicHelper
     }
 
     /**
-     *
-     * @param pInstrumentStack    The Instrument ItemStack
-     * @param pLevel    The world
-     * @param pEntity   The Player whose inventory will receive the items.
+     * * Server Side
+     * <p></p>Check for an expired {@link SheetMusicItem} stack in a {@link IInstrument}/{@link InstrumentItem}. If expired it
+     * is removed from the instrument and the associated music text from the data store, then two
+     * {@link ModItems#SCRAP_ITEM} are dropped into either the player inventory or into the world depending on the context.
+     * @param slot The {@link Slot} if provided. Can be null
+     * @param pInstrumentStack The {@link IInstrument}/{@link InstrumentItem} stack
+     * @param pLevel  The world
+     * @param pEntity The Player whose inventory will receive the items.
+     * @param blockPos The {@link BlockPos} of the {@link IMusicPlayer if provided. Can be null
      */
-    public static void scrapSheetMusicInInstrument(@Nullable Slot slot, ItemStack pInstrumentStack, World pLevel, Entity pEntity)
+    public static void scrapSheetMusicInInstrumentIfExpired(@Nullable Slot slot, ItemStack pInstrumentStack, World pLevel, Entity pEntity, @Nullable BlockPos blockPos)
     {
         if (!pLevel.isClientSide() && !pInstrumentStack.isEmpty() && (pEntity instanceof PlayerEntity) && !pEntity.isSpectator())
         {
-            int multiplier = 1;
-            ItemStack sheetMusic = getScrapMusicInIInstrument(pInstrumentStack);
+            int multiplier = 0;
+            ItemStack sheetMusic = removeSheetMusicFromIInstrument(pInstrumentStack);
             String key = getMusicTextKey(sheetMusic);
             boolean canReap = getSheetMusicDaysLeft(sheetMusic) == 0L;
-            if (key != null && canReap)
-            {
-                if (slot != null)
-                {
+
+            if (key != null && canReap) {
+                if (slot != null) {
                     multiplier += slot.index;
                     slot.setChanged();
                 }
@@ -403,7 +410,12 @@ public enum SheetMusicHelper
                     {
                         LOGGER.warn(e);
                     }
-                    if (!((PlayerEntity) pEntity).inventory.add(new ItemStack(ModItems.SCRAP_ITEM.get(), 1))){
+                    if (blockPos != null)
+                    {
+                        InventoryHelper.dropItemStack(pLevel, blockPos.getX(), blockPos.getY(), blockPos.getZ(), new ItemStack(ModItems.SCRAP_ITEM.get()));
+                    }
+                    else if (!((PlayerEntity) pEntity).inventory.add(new ItemStack(ModItems.SCRAP_ITEM.get(), 1)))
+                    {
                         ((PlayerEntity) pEntity).drop(new ItemStack(ModItems.SCRAP_ITEM.get(), 1), true, true);
                     }
                     Misc.audiblePingPlayer((PlayerEntity)pEntity, ModSoundEvents.CRUMPLE_PAPER.get());
@@ -411,22 +423,32 @@ public enum SheetMusicHelper
                 SidedThreadGroups.SERVER.newThread(()->{
                     try
                     {
-                        sleep(RandomUtils.nextLong(600 + (50 * finalMultiplier), 700 + (50 * finalMultiplier)));
+                        sleep(RandomUtils.nextLong(600 + (50 * finalMultiplier), 800 + (50 * finalMultiplier)));
                     } catch (InterruptedException e)
                     {
                         LOGGER.warn(e);
                     }
-                    if (!((PlayerEntity) pEntity).inventory.add(new ItemStack(ModItems.SCRAP_ITEM.get(), 1))){
+                    if (blockPos != null && pLevel.getBlockState(blockPos).getBlock() instanceof IMusicPlayer)
+                    {
+                        InventoryHelper.dropItemStack(pLevel, blockPos.getX(), blockPos.getY(), blockPos.getZ(), new ItemStack(ModItems.SCRAP_ITEM.get()));
+                    }
+                    else if (!((PlayerEntity) pEntity).inventory.add(new ItemStack(ModItems.SCRAP_ITEM.get(), 1)))
+                    {
                         ((PlayerEntity) pEntity).drop(new ItemStack(ModItems.SCRAP_ITEM.get(), 1), true, true);
                     }
                     Misc.audiblePingPlayer((PlayerEntity)pEntity, ModSoundEvents.CRUMPLE_PAPER.get());
                 }).start();
             }
         }
-
     }
 
-    private static ItemStack getScrapMusicInIInstrument(ItemStack pStack)
+    /**
+     * Server Side
+     * <p></p>Remove a {@link SheetMusicItem} stack from an {@link IInstrument}/{@link InstrumentItem}
+     * @param pStack The {@link IInstrument}/{@link InstrumentItem} stack
+     * @return a {@link SheetMusicItem} stack or empty stack
+     */
+    private static ItemStack removeSheetMusicFromIInstrument(ItemStack pStack)
     {
         ItemStack sheetMusic = SheetMusicHelper.getIMusicFromIInstrument(pStack);
         if (!sheetMusic.isEmpty() && SheetMusicHelper.getSheetMusicDaysLeft(sheetMusic) == 0)

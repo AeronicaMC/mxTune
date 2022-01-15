@@ -42,7 +42,7 @@ public class SheetMusicItem extends Item implements IMusic
     {
         if (!pLevel.isClientSide())
         {
-            SheetMusicHelper.scrapSheetMusic(pStack, pLevel, pEntity, pItemSlot, pIsSelected);
+            SheetMusicHelper.scrapSheetMusicIfExpired(pStack, pLevel, pEntity, pItemSlot, pIsSelected);
         }
     }
 
