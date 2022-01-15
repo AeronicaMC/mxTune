@@ -98,6 +98,7 @@ public class InstrumentItem extends Item implements IInstrument, INamedContainer
                 PlayManager.stopPlayId(playId);
                 setPlayId(pStack, PlayIdSupplier.PlayType.INVALID.getAsInt());
             }
+            SheetMusicHelper.scrapSheetMusicInInstrument(null, pStack, pLevel, pEntity);
         }
         super.inventoryTick(pStack, pLevel, pEntity, pItemSlot, pIsSelected);
     }
@@ -186,11 +187,6 @@ public class InstrumentItem extends Item implements IInstrument, INamedContainer
         return super.useOn(pContext);
     }
 
-    /**
-     * Gets the title name of the book
-     *
-     * @param pStack
-     */
     @Override
     public ITextComponent getName(ItemStack pStack)
     {
@@ -218,8 +214,8 @@ public class InstrumentItem extends Item implements IInstrument, INamedContainer
     @Override
     public ITextComponent getDisplayName()
     {
+        //noinspection deprecation
         return new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(this.getMaxDamage()));
-//        return new TranslationTextComponent("container.inventory");
     }
 
     @Override

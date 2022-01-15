@@ -8,11 +8,13 @@ import aeronicamc.mods.mxtune.caches.ModDataStore;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.init.ModSoundEvents;
+import aeronicamc.mods.mxtune.inventory.InstrumentInventory;
 import aeronicamc.mods.mxtune.sound.MMLToMIDI;
 import aeronicamc.mods.mxtune.sound.Midi2WavRenderer;
 import aeronicamc.mods.mxtune.sound.ModMidiException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -346,7 +348,9 @@ public enum SheetMusicHelper
                     {
                         LOGGER.warn(e);
                     }
-                    ((PlayerEntity) pEntity).inventory.add(pItemSlot, new ItemStack(ModItems.SCRAP_ITEM.get(), 1));
+                    if (!((PlayerEntity) pEntity).inventory.add(pItemSlot, new ItemStack(ModItems.SCRAP_ITEM.get(), 1))){
+                        ((PlayerEntity) pEntity).drop(new ItemStack(ModItems.SCRAP_ITEM.get(), 1), true, true);
+                    }
                     Misc.audiblePingPlayer((PlayerEntity)pEntity, ModSoundEvents.CRUMPLE_PAPER.get());
                 }).start();
                 SidedThreadGroups.SERVER.newThread(()->{
@@ -357,11 +361,82 @@ public enum SheetMusicHelper
                     {
                         LOGGER.warn(e);
                     }
-                    ((PlayerEntity) pEntity).inventory.add(pItemSlot, new ItemStack(ModItems.SCRAP_ITEM.get(), 1));
+                    if (!((PlayerEntity) pEntity).inventory.add(pItemSlot, new ItemStack(ModItems.SCRAP_ITEM.get(), 1))){
+                        ((PlayerEntity) pEntity).drop(new ItemStack(ModItems.SCRAP_ITEM.get(), 1), true, true);
+                    }
                     Misc.audiblePingPlayer((PlayerEntity)pEntity, ModSoundEvents.CRUMPLE_PAPER.get());
                 }).start();
             }
         }
+    }
+
+    /**
+     *
+     * @param pInstrumentStack    The Instrument ItemStack
+     * @param pLevel    The world
+     * @param pEntity   The Player whose inventory will receive the items.
+     */
+    public static void scrapSheetMusicInInstrument(@Nullable Slot slot, ItemStack pInstrumentStack, World pLevel, Entity pEntity)
+    {
+        if (!pLevel.isClientSide() && !pInstrumentStack.isEmpty() && (pEntity instanceof PlayerEntity) && !pEntity.isSpectator())
+        {
+            int multiplier = 1;
+            ItemStack sheetMusic = getScrapMusicInIInstrument(pInstrumentStack);
+            String key = getMusicTextKey(sheetMusic);
+            boolean canReap = getSheetMusicDaysLeft(sheetMusic) == 0L;
+            if (key != null && canReap)
+            {
+                if (slot != null)
+                {
+                    multiplier += slot.index;
+                    slot.setChanged();
+                }
+                ModDataStore.removeSheetMusic(key);
+                Misc.audiblePingPlayer((PlayerEntity)pEntity, ModSoundEvents.CRUMPLE_PAPER.get());
+
+                int finalMultiplier = multiplier;
+                SidedThreadGroups.SERVER.newThread(()->{
+                    try
+                    {
+                        sleep(RandomUtils.nextLong(400 + (50 * finalMultiplier), 600 + (50 * finalMultiplier)));
+                    } catch (InterruptedException e)
+                    {
+                        LOGGER.warn(e);
+                    }
+                    if (!((PlayerEntity) pEntity).inventory.add(new ItemStack(ModItems.SCRAP_ITEM.get(), 1))){
+                        ((PlayerEntity) pEntity).drop(new ItemStack(ModItems.SCRAP_ITEM.get(), 1), true, true);
+                    }
+                    Misc.audiblePingPlayer((PlayerEntity)pEntity, ModSoundEvents.CRUMPLE_PAPER.get());
+                }).start();
+                SidedThreadGroups.SERVER.newThread(()->{
+                    try
+                    {
+                        sleep(RandomUtils.nextLong(600 + (50 * finalMultiplier), 700 + (50 * finalMultiplier)));
+                    } catch (InterruptedException e)
+                    {
+                        LOGGER.warn(e);
+                    }
+                    if (!((PlayerEntity) pEntity).inventory.add(new ItemStack(ModItems.SCRAP_ITEM.get(), 1))){
+                        ((PlayerEntity) pEntity).drop(new ItemStack(ModItems.SCRAP_ITEM.get(), 1), true, true);
+                    }
+                    Misc.audiblePingPlayer((PlayerEntity)pEntity, ModSoundEvents.CRUMPLE_PAPER.get());
+                }).start();
+            }
+        }
+
+    }
+
+    private static ItemStack getScrapMusicInIInstrument(ItemStack pStack)
+    {
+        ItemStack sheetMusic = SheetMusicHelper.getIMusicFromIInstrument(pStack);
+        if (!sheetMusic.isEmpty() && SheetMusicHelper.getSheetMusicDaysLeft(sheetMusic) == 0)
+        {
+            InstrumentInventory inv = new InstrumentInventory(pStack);
+            ItemStack stack = inv.removeItem(0, 1);
+            inv.setChanged();
+            return stack.copy();
+        }
+        return ItemStack.EMPTY;
     }
 
     /**

@@ -4,6 +4,7 @@ package aeronicamc.mods.mxtune.blocks;
 import aeronicamc.mods.mxtune.init.ModBlocks;
 import aeronicamc.mods.mxtune.init.ModContainers;
 import aeronicamc.mods.mxtune.inventory.SlotMusicBlock;
+import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Slot;
@@ -56,6 +57,19 @@ public class MusicBlockContainer extends genericContainer
 
         for (int i = 0; i < 9; i++) {
             this.addSlot(new Slot(playerInventory, i, i * 18 + guiInvX, guiInvY + 58));
+        }
+
+        scrapCheck(world, playerEntity);
+    }
+
+    private void scrapCheck(World pLevel, PlayerEntity pEntity)
+    {
+        if (!pLevel.isClientSide())
+        {
+            slots.stream().filter(
+                    p -> p.index < CONTAINER_SIZE).forEach(
+                            p -> SheetMusicHelper.scrapSheetMusicInInstrument(p, p.getItem(), pLevel, pEntity));
+
         }
     }
 
