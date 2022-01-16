@@ -59,7 +59,7 @@ public class ClientAudio
             threadFactory = new ThreadFactoryBuilder()
                     .setNameFormat(Reference.MOD_ID + " ClientAudio-%d")
                     .setDaemon(true)
-                    .setPriority(Thread.NORM_PRIORITY)
+                    .setPriority(Thread.MAX_PRIORITY)
                     .build();
             executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE, threadFactory);
         }
@@ -439,10 +439,10 @@ public class ClientAudio
     {
         if (event.side == LogicalSide.CLIENT && event.phase == TickEvent.Phase.END)
         {
-            /* once every 1/4 second */
-            if (counter++ % 5 == 0)
-                initializeCodec();
+            // Do this as fast/often as possible to ensure we capture the ChannelManager.Entry for our stream.
+            initializeCodec();
 
+            // one update per second
             if (counter % 20 == 0)
                 updateClientAudio();
         }
