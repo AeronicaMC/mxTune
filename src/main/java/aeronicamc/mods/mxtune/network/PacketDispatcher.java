@@ -44,6 +44,7 @@ public class PacketDispatcher
         registerMessage(CreateSheetMusicMessage.class, new CreateSheetMusicMessage());
         registerMessage(ChooseInstrumentMessage.class, new ChooseInstrumentMessage());
         registerMessage(AudiblePingPlayerMessage.class, new AudiblePingPlayerMessage());
+        registerMessage(ByteArrayPartMessage.class, new ByteArrayPartMessage());
     }
 
     private static <MSG extends AbstractMessage<MSG>> void registerMessage(Class<MSG> messageType, AbstractMessage<MSG> message)

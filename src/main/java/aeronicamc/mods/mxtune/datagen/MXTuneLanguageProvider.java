@@ -119,7 +119,9 @@ public class MXTuneLanguageProvider extends LanguageProvider
 
     private void addErrors()
     {
-        addError("errors.mxtune.sheet_music_too_old", "The Sheet Music is unreadable!");
+        addError("sheet_music_too_old", "The Sheet Music is unreadable!");
+        addError("sheet_music_write_failure", "Unable to write Sheet Music!");
+        addError("mml_server_side_validation_failure", "Server side music validation error");
     }
 
     private void addSubtitles()

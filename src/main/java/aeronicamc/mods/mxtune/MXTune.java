@@ -26,6 +26,7 @@ import aeronicamc.mods.mxtune.gui.InstrumentScreen;
 import aeronicamc.mods.mxtune.init.*;
 import aeronicamc.mods.mxtune.managers.ActiveTune;
 import aeronicamc.mods.mxtune.managers.PlayManager;
+import aeronicamc.mods.mxtune.network.MultiPacketSerializedObjectManager;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.render.MusicSourceRenderer;
 import aeronicamc.mods.mxtune.render.RootedRenderer;
@@ -117,6 +118,7 @@ public class MXTune
         FileHelper.initialize(event.getServer());
         ActiveTune.initialize();
         ModDataStore.start();
+        MultiPacketSerializedObjectManager.start();
     }
 
     @SubscribeEvent
@@ -124,6 +126,7 @@ public class MXTune
         ActiveTune.shutdown();
         PlayManager.stopAll();
         ModDataStore.shutdown();
+        MultiPacketSerializedObjectManager.shutdown();
     }
 
     @SubscribeEvent

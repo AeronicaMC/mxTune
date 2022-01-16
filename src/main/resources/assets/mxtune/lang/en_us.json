@@ -8,7 +8,9 @@
   "block.mxtune.music_block": "Music Block",
   "block.mxtune.inv_test_block": "Inventory Test Block",
   "container.mxtune.inv_test_block.more": "More...",
+  "errors.mxtune.mml_server_side_validation_failure": "Server side music validation error",
   "errors.mxtune.sheet_music_too_old": "The Sheet Music is unreadable!",
+  "errors.mxtune.sheet_music_write_failure": "Unable to write Sheet Music!",
   "item.mxtune.music_item": "Music Item",
   "item.mxtune.gui_test_item": "GUI Test Item",
   "gui.mxtune.gui_test.title": "Gui Test Screen",
@@ -243,6 +245,5 @@
   "mxtune.sg.stdset": "Standard Set",
   "mxtune.sg.orchset": "Orchestra Set",
   "mxtune.key.openParty": "Open Party",
-  "mxtune.key.openMusicOptions": "Music Options",
-  "mxtune.status.mml_server_side_validation_failure": "Server side music validation error"
+  "mxtune.key.openMusicOptions": "Music Options"
 }
