@@ -57,6 +57,7 @@ public class RenderEvents
             mc.getTextureManager().bind(TEXTURE);
             RenderSystem.color3f(1.0F, 1.0F, 1.0F);
             blit(pPoseStack, 0, 0, 0, 0, width, height);
+            blit(pPoseStack, ((offset - width)/2) + 5, 0, 10, 0, width-10, height);
             blit(pPoseStack, offset - width + 10, 0, 10, 0, width, height);
 
             mc.font.draw(pPoseStack, SheetMusicHelper.getFormattedMusicTitle(sheetMusic), 30.0F, 7.0F, -11534256);
