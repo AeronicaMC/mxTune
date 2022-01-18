@@ -2,15 +2,16 @@ package aeronicamc.mods.mxtune.network.messages;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.caps.LivingEntityModCapProvider;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.LogicalSidedProvider;
 import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public class LivingEntityModCapSync extends AbstractMessage<LivingEntityModCapSync>
@@ -50,14 +51,14 @@ public class LivingEntityModCapSync extends AbstractMessage<LivingEntityModCapSy
         if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT)
             ctx.get().enqueueWork(() ->
                 {
-                    World level = Minecraft.getInstance().level;
-                    if (level != null)
-                    {
-                        final LivingEntity livingEntity = (LivingEntity) level.getEntity(message.entityId);
-                        if (livingEntity != null)
-                            LivingEntityModCapProvider.getLivingEntityModCap(livingEntity).ifPresent(
-                                livingEntityCap -> livingEntityCap.setPlayId(message.playId));
-                    }
+                    final Optional<World> optionalWorld = LogicalSidedProvider.CLIENTWORLD.get(ctx.get().getDirection().getReceptionSide());
+                    optionalWorld.ifPresent(
+                            world -> {
+                                final LivingEntity livingEntity = (LivingEntity) world.getEntity(message.entityId);
+                                if (livingEntity != null)
+                                    LivingEntityModCapProvider.getLivingEntityModCap(livingEntity).ifPresent(
+                                            livingEntityCap -> livingEntityCap.setPlayId(message.playId));
+                    });
                 });
         ctx.get().setPacketHandled(true);
     }
