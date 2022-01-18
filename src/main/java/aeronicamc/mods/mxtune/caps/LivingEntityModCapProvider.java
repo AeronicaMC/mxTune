@@ -5,11 +5,11 @@ import aeronicamc.mods.mxtune.util.Misc;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.IntNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.GameRules;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -17,6 +17,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -62,8 +63,8 @@ public final class LivingEntityModCapProvider
     }
 
     // TODO: Fix the network errors caused by a null here -> LOGGER.debug("AttachCapabilitiesEvent: {}", (event.getObject()));
-    //@Mod.EventBusSubscriber(modid = Reference.MOD_ID)
-    private static class EventHandler
+    @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
+    public static class EventHandler
     {
         @SubscribeEvent
         public static void event(final AttachCapabilitiesEvent<Entity> event)
@@ -74,7 +75,7 @@ public final class LivingEntityModCapProvider
                 final LivingEntityModCap livingEntityModCap = new LivingEntityModCap(playerEntity);
                 event.addCapability(ID, new SerializableCapabilityProvider<>(LIVING_ENTITY_MOD_CAP_CAPABILITY, null, livingEntityModCap));
                 event.addListener(() -> getLivingEntityModCap(playerEntity).invalidate());
-                LOGGER.debug("AttachCapabilitiesEvent: {}", (event.getObject()));
+                //LOGGER.debug("AttachCapabilitiesEvent: {}", playerEntity);
             }
         }
 
@@ -86,16 +87,19 @@ public final class LivingEntityModCapProvider
         @SubscribeEvent
         public static void event(final PlayerEvent.Clone event)
         {
-            event.getOriginal().revive(); // gighertz workaround for MCForge #5956 PlayerEvent.Clone Capability Provider is invalid
-            getLivingEntityModCap(event.getOriginal()).ifPresent(oldLivingEntityCap -> {
-                getLivingEntityModCap(event.getPlayer()).ifPresent(newLivingEntityCap -> {
-                    if (!event.isWasDeath() || event.getPlayer().level.getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY) || event.getOriginal().isSpectator())
+            if (event.getPlayer() instanceof ServerPlayerEntity)
+            {
+                event.getOriginal().revive(); // gighertz workaround for MCForge #5956 PlayerEvent.Clone Capability Provider is invalid
+                getLivingEntityModCap(event.getOriginal()).ifPresent(oldLivingEntityCap ->
+                {
+                 getLivingEntityModCap(event.getPlayer()).ifPresent(newLivingEntityCap ->
                     {
                         newLivingEntityCap.setPlayId(oldLivingEntityCap.getPlayId());
-                        LOGGER.debug("Clone: oldPId:{}, newPId{}, {}", oldLivingEntityCap.getPlayId(), newLivingEntityCap.getPlayId(), event.getPlayer());
-                    }
+                        newLivingEntityCap.synchronize();
+                        LOGGER.debug("Clone: oldPId:{}, newPId:{}, {}", oldLivingEntityCap.getPlayId(), newLivingEntityCap.getPlayId(), event.getPlayer());
+                    });
                 });
-            });
+            }
         }
 
         /**
@@ -106,6 +110,7 @@ public final class LivingEntityModCapProvider
         @SubscribeEvent
         public static void event(final PlayerEvent.PlayerChangedDimensionEvent event)
         {
+            if (event.getPlayer().level.isClientSide()) return;
             getLivingEntityModCap(event.getPlayer()).ifPresent(ILivingEntityModCap::synchronize);
             LOGGER.debug("PlayerChangedDimensionEvent: {}", event.getPlayer());
         }
@@ -113,12 +118,15 @@ public final class LivingEntityModCapProvider
         @SubscribeEvent
         public static void event(PlayerEvent.PlayerLoggedInEvent event)
         {
+            if (event.getPlayer().level.isClientSide()) return;
             getLivingEntityModCap(event.getPlayer()).ifPresent(ILivingEntityModCap::synchronize);
             LOGGER.debug("PlayerLoggedInEvent: {}", event.getPlayer());
         }
 
+        @SubscribeEvent
         public static void event(PlayerEvent.PlayerRespawnEvent event)
         {
+            if (event.getPlayer().level.isClientSide()) return;
             getLivingEntityModCap(event.getPlayer()).ifPresent(ILivingEntityModCap::synchronize);
             LOGGER.debug("PlayerRespawnEvent: {}", event.getPlayer());
         }

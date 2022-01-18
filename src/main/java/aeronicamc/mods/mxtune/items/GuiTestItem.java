@@ -1,9 +1,7 @@
 package aeronicamc.mods.mxtune.items;
 
-import aeronicamc.mods.mxtune.network.PacketDispatcher;
-import aeronicamc.mods.mxtune.network.messages.OpenScreenMessage;
+import aeronicamc.mods.mxtune.caps.LivingEntityModCapProvider;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
@@ -32,11 +30,14 @@ public class GuiTestItem extends Item
         {
             if (!playerIn.isShiftKeyDown())
             {
-                PacketDispatcher.sendTo(new OpenScreenMessage(OpenScreenMessage.SM.TEST_ONE), (ServerPlayerEntity) playerIn);
+                //PacketDispatcher.sendTo(new OpenScreenMessage(OpenScreenMessage.SM.TEST_ONE), (ServerPlayerEntity) playerIn);
+                LivingEntityModCapProvider.getLivingEntityModCap(playerIn).ifPresent(p->{
+                        p.setPlayId(worldIn.getRandom().nextInt(10));
+                });
             }
             else
             {
-                PacketDispatcher.sendTo(new OpenScreenMessage(OpenScreenMessage.SM.TEST_TWO), (ServerPlayerEntity) playerIn);
+                //PacketDispatcher.sendTo(new OpenScreenMessage(OpenScreenMessage.SM.TEST_TWO), (ServerPlayerEntity) playerIn);
             }
 
         } else if (!playerIn.isShiftKeyDown())
@@ -44,7 +45,9 @@ public class GuiTestItem extends Item
             // nop
         } else
         {
-            // nop
+            LivingEntityModCapProvider.getLivingEntityModCap(playerIn).ifPresent(p->{
+                LogManager.getLogger().debug("playId: {}", p.getPlayId());
+            });
         }
         return super.use(worldIn, playerIn, handIn);
     }
