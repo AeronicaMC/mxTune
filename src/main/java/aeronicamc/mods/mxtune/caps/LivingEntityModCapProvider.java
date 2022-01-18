@@ -110,7 +110,6 @@ public final class LivingEntityModCapProvider
         @SubscribeEvent
         public static void event(final PlayerEvent.PlayerChangedDimensionEvent event)
         {
-            if (event.getPlayer().level.isClientSide()) return;
             getLivingEntityModCap(event.getPlayer()).ifPresent(ILivingEntityModCap::synchronize);
             LOGGER.debug("PlayerChangedDimensionEvent: {}", event.getPlayer());
         }
@@ -118,7 +117,6 @@ public final class LivingEntityModCapProvider
         @SubscribeEvent
         public static void event(PlayerEvent.PlayerLoggedInEvent event)
         {
-            if (event.getPlayer().level.isClientSide()) return;
             getLivingEntityModCap(event.getPlayer()).ifPresent(ILivingEntityModCap::synchronize);
             LOGGER.debug("PlayerLoggedInEvent: {}", event.getPlayer());
         }
@@ -126,7 +124,6 @@ public final class LivingEntityModCapProvider
         @SubscribeEvent
         public static void event(PlayerEvent.PlayerRespawnEvent event)
         {
-            if (event.getPlayer().level.isClientSide()) return;
             getLivingEntityModCap(event.getPlayer()).ifPresent(ILivingEntityModCap::synchronize);
             LOGGER.debug("PlayerRespawnEvent: {}", event.getPlayer());
         }
