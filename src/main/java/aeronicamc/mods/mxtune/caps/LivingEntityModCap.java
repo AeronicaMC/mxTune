@@ -39,6 +39,6 @@ public class LivingEntityModCap implements ILivingEntityModCap
         World world = entity.level;
         if (world.isClientSide) return;
         RegistryKey<World> dimension = world.dimension();
-        PacketDispatcher.sendToDimension(new LivingEntityModCapSync(playId), dimension);
+        PacketDispatcher.sendToDimension(new LivingEntityModCapSync(playId, entity.getId()), dimension);
     }
 }
