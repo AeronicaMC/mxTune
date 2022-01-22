@@ -17,12 +17,16 @@ import java.util.function.Supplier;
 public class LivingEntityModCapSync extends AbstractMessage<LivingEntityModCapSync>
 {
     private static final Logger LOGGER = LogManager.getLogger(Reference.MOD_NAME);
-    private int playId;
-    private int entityId;
+    private final int playId;
+    private final int entityId;
 
-    public LivingEntityModCapSync() { /* NOP */ }
+    public LivingEntityModCapSync()
+    {
+        this.playId = -1;
+        this.entityId = Integer.MIN_VALUE;
+    }
 
-    public LivingEntityModCapSync(int playId, int entityId)
+    public LivingEntityModCapSync(final int playId, final int entityId)
     {
         this.playId = playId;
         this.entityId = entityId;
