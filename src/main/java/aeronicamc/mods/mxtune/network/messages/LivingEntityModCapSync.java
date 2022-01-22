@@ -1,6 +1,5 @@
 package aeronicamc.mods.mxtune.network.messages;
 
-import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.caps.LivingEntityModCapProvider;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.PacketBuffer;
@@ -16,7 +15,7 @@ import java.util.function.Supplier;
 
 public class LivingEntityModCapSync extends AbstractMessage<LivingEntityModCapSync>
 {
-    private static final Logger LOGGER = LogManager.getLogger(Reference.MOD_NAME);
+    private static final Logger LOGGER = LogManager.getLogger(LivingEntityModCapSync.class);
     private final int playId;
     private final int entityId;
 
