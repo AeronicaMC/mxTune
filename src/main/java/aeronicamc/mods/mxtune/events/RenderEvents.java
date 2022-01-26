@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.events;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.blocks.MusicBlock;
 import aeronicamc.mods.mxtune.init.ModBlocks;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.util.IInstrument;
@@ -9,14 +10,23 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.renderer.ActiveRenderInfo;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.DrawHighlightEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -68,5 +78,26 @@ public class RenderEvents
 
     static void blit(MatrixStack pMatrixStack, int pX, int pY, int pUOffset, int pVOffset, int pUWidth, int pVHeight) {
         AbstractGui.blit(pMatrixStack, pX, pY, blitOffset, (float)pUOffset, (float)pVOffset, pUWidth, pVHeight, 256, 256);
+    }
+
+    @SubscribeEvent
+    public static void event(DrawHighlightEvent.HighlightBlock event)
+    {
+        final WorldRenderer worldRenderer = event.getContext();
+        final BlockRayTraceResult blockRayTraceResult = event.getTarget();
+        final IRenderTypeBuffer renderTypeBuffer = event.getBuffers();
+        final ActiveRenderInfo activeRenderInfo = event.getInfo();
+        final MatrixStack matrixStack = event.getMatrix();
+        final boolean isCancelable = event.isCancelable();
+        final float partialTicks = event.getPartialTicks();
+        final EventPriority eventPriority = event.getPhase();
+        PlayerEntity player = Minecraft.getInstance().player;
+        World level = player.level;
+        if (level.getBlockState(blockRayTraceResult.getBlockPos()).getBlock() instanceof MusicBlock)
+        {
+            BlockPos pos = activeRenderInfo.getBlockPosition().relative(player.getDirection().getOpposite());
+            BlockPos offset = blockRayTraceResult.getBlockPos();
+            DebugRenderer.renderFloatingText(ModBlocks.MUSIC_BLOCK.get().asItem().getDescription().getString(), pos.getX(), pos.getY(), pos.getZ(), 16711680, 0.3F);
+        }
     }
 }
