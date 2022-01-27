@@ -8,17 +8,24 @@ import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.client.renderer.debug.DebugRenderer;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -91,13 +98,30 @@ public class RenderEvents
         final boolean isCancelable = event.isCancelable();
         final float partialTicks = event.getPartialTicks();
         final EventPriority eventPriority = event.getPhase();
-        PlayerEntity player = Minecraft.getInstance().player;
+        final PlayerEntity player = Minecraft.getInstance().player;
+        if (player == null) return;
+        Vector3d vector3d = activeRenderInfo.getPosition();
+        double d0 = vector3d.x();
+        double d1 = vector3d.y();
+        double d2 = vector3d.z();
         World level = player.level;
         if (level.getBlockState(blockRayTraceResult.getBlockPos()).getBlock() instanceof MusicBlock)
         {
-            BlockPos pos = activeRenderInfo.getBlockPosition().relative(player.getDirection().getOpposite());
-            BlockPos offset = blockRayTraceResult.getBlockPos();
-            DebugRenderer.renderFloatingText(ModBlocks.MUSIC_BLOCK.get().asItem().getDescription().getString(), pos.getX(), pos.getY(), pos.getZ(), 16711680, 0.3F);
+            BlockPos pos = blockRayTraceResult.getBlockPos().above();
+            IVertexBuilder ivertexbuilder2 = renderTypeBuffer.getBuffer(RenderType.lines());
+            renderHitOutline(level, matrixStack, ivertexbuilder2, activeRenderInfo.getEntity(), d0, d1, d2, pos, level.getBlockState(blockRayTraceResult.getBlockPos()));
         }
+    }
+
+    private static void renderHitOutline(World level, MatrixStack pMatrixStack, IVertexBuilder pBuffer, Entity pEntity, double pX, double pY, double pZ, BlockPos pBlockPos, BlockState pBlockState) {
+        renderShape(pMatrixStack, pBuffer, pBlockState.getShape(level, pBlockPos, ISelectionContext.of(pEntity)), (double)pBlockPos.getX() - pX, (double)pBlockPos.getY() - pY, (double)pBlockPos.getZ() - pZ, 0.0F, 0.0F, 0.0F, 0.4F);
+    }
+
+    private static void renderShape(MatrixStack pMatrixStack, IVertexBuilder pBuffer, VoxelShape pShape, double pX, double pY, double pZ, float pRed, float pGreen, float pBlue, float pAlpha) {
+        Matrix4f matrix4f = pMatrixStack.last().pose();
+        pShape.forAllEdges((fromX, fromY, fromZ, toX, toY, toZ) -> {
+            pBuffer.vertex(matrix4f, (float)(fromX + pX), (float)(fromY + pY), (float)(fromZ + pZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+            pBuffer.vertex(matrix4f, (float)(toX + pX), (float)(toY + pY), (float)(toZ + pZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        });
     }
 }
