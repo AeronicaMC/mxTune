@@ -109,7 +109,12 @@ public class RenderEvents
         {
             BlockPos posAbove = blockRayTraceResult.getBlockPos().above();
             IVertexBuilder ivertexbuilder2 = renderTypeBuffer.getBuffer(RenderType.lines());
-            renderHitOutline(level, matrixStack, ivertexbuilder2, activeRenderInfo.getEntity(), d0, d1, d2, posAbove, level.getBlockState(blockRayTraceResult.getBlockPos()));
+            renderHitOutline(level, matrixStack, ivertexbuilder2, activeRenderInfo.getEntity(), d0, d1, d2, blockRayTraceResult.getBlockPos(), level.getBlockState(blockRayTraceResult.getBlockPos()));
+
+            BlockState blockState = level.getBlockState(blockRayTraceResult.getBlockPos());
+            renderShape(matrixStack, ivertexbuilder2, blockState.getShape(level, blockRayTraceResult.getBlockPos(), ISelectionContext.of(activeRenderInfo.getEntity())), posAbove.getX() - d0, posAbove.getY() - d1, posAbove.getZ() - d2, 0F, 1F, 1F, 0.4F);
+
+            if (isCancelable) event.setCanceled(true);
         }
     }
 
@@ -124,4 +129,6 @@ public class RenderEvents
             pBuffer.vertex(matrix4f, (float)(edgeVertexEnd_X + pX), (float)(edgeVertexEnd_Y + pY), (float)(edgeVertexEnd_Z + pZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
         });
     }
+
+    // renderLineBox(MatrixStack pMatrixStack, IVertexBuilder pBuffer, AxisAlignedBB pAabb, float pRed, float pGreen, float pBlue, float pAlpha)
 }
