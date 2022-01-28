@@ -107,9 +107,9 @@ public class RenderEvents
         World level = player.level;
         if (level.getBlockState(blockRayTraceResult.getBlockPos()).getBlock() instanceof MusicBlock)
         {
-            BlockPos pos = blockRayTraceResult.getBlockPos().above();
+            BlockPos posAbove = blockRayTraceResult.getBlockPos().above();
             IVertexBuilder ivertexbuilder2 = renderTypeBuffer.getBuffer(RenderType.lines());
-            renderHitOutline(level, matrixStack, ivertexbuilder2, activeRenderInfo.getEntity(), d0, d1, d2, pos, level.getBlockState(blockRayTraceResult.getBlockPos()));
+            renderHitOutline(level, matrixStack, ivertexbuilder2, activeRenderInfo.getEntity(), d0, d1, d2, posAbove, level.getBlockState(blockRayTraceResult.getBlockPos()));
         }
     }
 
@@ -119,9 +119,9 @@ public class RenderEvents
 
     private static void renderShape(MatrixStack pMatrixStack, IVertexBuilder pBuffer, VoxelShape pShape, double pX, double pY, double pZ, float pRed, float pGreen, float pBlue, float pAlpha) {
         Matrix4f matrix4f = pMatrixStack.last().pose();
-        pShape.forAllEdges((fromX, fromY, fromZ, toX, toY, toZ) -> {
-            pBuffer.vertex(matrix4f, (float)(fromX + pX), (float)(fromY + pY), (float)(fromZ + pZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-            pBuffer.vertex(matrix4f, (float)(toX + pX), (float)(toY + pY), (float)(toZ + pZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        pShape.forAllEdges((edgeVertexBegin_X, edgeVertexBegin_Y, edgeVertexBegin_Z, edgeVertexEnd_X, edgeVertexEnd_Y, edgeVertexEnd_Z) -> {
+            pBuffer.vertex(matrix4f, (float)(edgeVertexBegin_X + pX), (float)(edgeVertexBegin_Y + pY), (float)(edgeVertexBegin_Z + pZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+            pBuffer.vertex(matrix4f, (float)(edgeVertexEnd_X + pX), (float)(edgeVertexEnd_Y + pY), (float)(edgeVertexEnd_Z + pZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
         });
     }
 }
