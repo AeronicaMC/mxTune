@@ -103,21 +103,24 @@ public class RenderEvents
         final PlayerEntity player = Minecraft.getInstance().player;
         if (player == null) return;
         Vector3d vector3d = activeRenderInfo.getPosition();
-        double d0 = vector3d.x();
-        double d1 = vector3d.y();
-        double d2 = vector3d.z();
+        double camX = vector3d.x();
+        double camY = vector3d.y();
+        double camZ = vector3d.z();
         World level = player.level;
         if (level.getBlockState(blockRayTraceResult.getBlockPos()).getBlock() instanceof MusicBlock)
         {
             BlockPos posAbove = blockRayTraceResult.getBlockPos().above();
-            IVertexBuilder ivertexbuilder2 = renderTypeBuffer.getBuffer(RenderType.lines());
-            renderHitOutline(level, matrixStack, ivertexbuilder2, activeRenderInfo.getEntity(), d0, d1, d2, blockRayTraceResult.getBlockPos(), level.getBlockState(blockRayTraceResult.getBlockPos()));
+            IVertexBuilder vertexBuilder = renderTypeBuffer.getBuffer(RenderType.lines());
+            renderHitOutline(level, matrixStack, vertexBuilder, activeRenderInfo.getEntity(), camX, camY, camZ, blockRayTraceResult.getBlockPos(), level.getBlockState(blockRayTraceResult.getBlockPos()));
             BlockState blockState = level.getBlockState(blockRayTraceResult.getBlockPos());
-            renderShape(matrixStack, ivertexbuilder2, blockState.getShape(level, blockRayTraceResult.getBlockPos(), ISelectionContext.of(activeRenderInfo.getEntity())), posAbove.getX() - d0, posAbove.getY() - d1, posAbove.getZ() - d2, 0F, 1F, 1F, 0.4F);
+            renderShape(matrixStack, vertexBuilder, blockState.getShape(level, blockRayTraceResult.getBlockPos(), ISelectionContext.of(activeRenderInfo.getEntity())), posAbove.getX() - camX, posAbove.getY() - camY, posAbove.getZ() - camZ, 0F, 1F, 1F, 0.4F);
 
-            VoxelShape cubeShape = VoxelShapes.create(new AxisAlignedBB(new BlockPos(-2,-2,-2), new BlockPos(2,2,2)));
-            renderShape(matrixStack, ivertexbuilder2, cubeShape, posAbove.getX() - d0, posAbove.getY() - d1, posAbove.getZ() - d2, 1F, 0F, 1F, 0.4F);
-
+            // Define and AABB in BlockPos coordinates
+            final BlockPos b0 = new BlockPos(173, 70, -441);
+            final BlockPos b1 = new BlockPos(177, 72, -445);
+            // Create a VoxelShape for drawing the edges for the AABB BlockPos corner coordinates expanded and moved to encompass the maximum extents of the BlockPos
+            VoxelShape cubeShape = VoxelShapes.create(new AxisAlignedBB(b0, b1).inflate(0.5).move(0.5,0.5,0.5));
+            renderShape2(matrixStack, vertexBuilder, cubeShape, camX, camY, camZ, 1F, 0F, 1F, 0.4F);
 
             if (isCancelable) event.setCanceled(true);
         }
@@ -134,4 +137,14 @@ public class RenderEvents
             pBuffer.vertex(matrix4f, (float)(edgeVertexEnd_X + pX), (float)(edgeVertexEnd_Y + pY), (float)(edgeVertexEnd_Z + pZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
         });
     }
+
+    // Render the shape AABB in BlockPos Level Coordinates
+    private static void renderShape2(MatrixStack pMatrixStack, IVertexBuilder pBuffer, VoxelShape pShape, double camX, double camY, double camZ, float pRed, float pGreen, float pBlue, float pAlpha) {
+        Matrix4f matrix4f = pMatrixStack.last().pose();
+        pShape.forAllEdges((edgeVertexBegin_X, edgeVertexBegin_Y, edgeVertexBegin_Z, edgeVertexEnd_X, edgeVertexEnd_Y, edgeVertexEnd_Z) -> {
+            pBuffer.vertex(matrix4f, (float)(edgeVertexBegin_X - camX), (float)(edgeVertexBegin_Y - camY), (float)(edgeVertexBegin_Z - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+            pBuffer.vertex(matrix4f, (float)(edgeVertexEnd_X - camX), (float)(edgeVertexEnd_Y - camY), (float)(edgeVertexEnd_Z - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+        });
+    }
+
 }
