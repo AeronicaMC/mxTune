@@ -20,10 +20,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.TextFormatting;
@@ -110,9 +112,12 @@ public class RenderEvents
             BlockPos posAbove = blockRayTraceResult.getBlockPos().above();
             IVertexBuilder ivertexbuilder2 = renderTypeBuffer.getBuffer(RenderType.lines());
             renderHitOutline(level, matrixStack, ivertexbuilder2, activeRenderInfo.getEntity(), d0, d1, d2, blockRayTraceResult.getBlockPos(), level.getBlockState(blockRayTraceResult.getBlockPos()));
-
             BlockState blockState = level.getBlockState(blockRayTraceResult.getBlockPos());
             renderShape(matrixStack, ivertexbuilder2, blockState.getShape(level, blockRayTraceResult.getBlockPos(), ISelectionContext.of(activeRenderInfo.getEntity())), posAbove.getX() - d0, posAbove.getY() - d1, posAbove.getZ() - d2, 0F, 1F, 1F, 0.4F);
+
+            VoxelShape cubeShape = VoxelShapes.create(new AxisAlignedBB(new BlockPos(-2,-2,-2), new BlockPos(2,2,2)));
+            renderShape(matrixStack, ivertexbuilder2, cubeShape, posAbove.getX() - d0, posAbove.getY() - d1, posAbove.getZ() - d2, 1F, 0F, 1F, 0.4F);
+
 
             if (isCancelable) event.setCanceled(true);
         }
@@ -129,6 +134,4 @@ public class RenderEvents
             pBuffer.vertex(matrix4f, (float)(edgeVertexEnd_X + pX), (float)(edgeVertexEnd_Y + pY), (float)(edgeVertexEnd_Z + pZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
         });
     }
-
-    // renderLineBox(MatrixStack pMatrixStack, IVertexBuilder pBuffer, AxisAlignedBB pAabb, float pRed, float pGreen, float pBlue, float pAlpha)
 }
