@@ -2,10 +2,7 @@ package aeronicamc.mods.mxtune.init;
 
 import aeronicamc.mods.mxtune.MXTune;
 import aeronicamc.mods.mxtune.Reference;
-import aeronicamc.mods.mxtune.items.GuiTestItem;
-import aeronicamc.mods.mxtune.items.InstrumentItem;
-import aeronicamc.mods.mxtune.items.MusicPaperItem;
-import aeronicamc.mods.mxtune.items.SheetMusicItem;
+import aeronicamc.mods.mxtune.items.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -51,6 +48,9 @@ public class ModItems
 
     public static final RegistryObject<Item> SCRAP_ITEM = ITEMS.register("scrap_item",
         () -> new Item(ingredientItemProperties().stacksTo(64)));
+
+    public static final RegistryObject<StageToolItem> STAGE_TOOL = ITEMS.register("stage_tool",
+        () -> new StageToolItem(defaultItemProperties().stacksTo(1)));
 
     public static final RegistryObject<GuiTestItem> GUI_TEST_ITEM = ITEMS.register("gui_test_item",
         () -> new GuiTestItem(defaultItemProperties().stacksTo(1)));

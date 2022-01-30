@@ -32,6 +32,9 @@ public class MXTuneItemModelProvider extends ItemModelProvider
     @Override
     protected void registerModels()
     {
+        withExistingParent(STAGE_TOOL.getId().getPath(), mcLoc("generated"))
+                .texture("layer0", "item/stage_tool");
+
         withExistingParent(MUSIC_PAPER.getId().getPath(), mcLoc("generated"))
                 .texture("layer0", "item/music_paper");
 

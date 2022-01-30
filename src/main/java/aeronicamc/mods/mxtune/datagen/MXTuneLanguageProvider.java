@@ -42,6 +42,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
     {
         // TODO
         add(ModItems.SCRAP_ITEM.get(), "Paper Scraps");
+        add(ModItems.STAGE_TOOL.get(), "Stage Tool");
         add(ModItems.SHEET_MUSIC.get(), "Sheet Music");
         add(ModItems.MUSIC_PAPER.get(), "Music Paper");
         addTooltip("block_music.help", "When placed in the world: SHIFT+Right-Click to OPEN. Right-Click to play. Add up to 16 instruments loaded with sheet music.");
