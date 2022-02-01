@@ -5,10 +5,10 @@ import aeronicamc.mods.mxtune.caps.SerializableCapabilityProvider;
 import aeronicamc.mods.mxtune.util.Misc;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -40,7 +40,8 @@ public class ServerStageAreaProvider
             @Override
             public INBT writeNBT(Capability<IServerStageAreas> capability, final IServerStageAreas instance, Direction side)
             {
-                CompoundNBT compoundNBT = new CompoundNBT();
+                CompoundNBT compoundNBT;
+                compoundNBT = (CompoundNBT) NBTDynamicOps.INSTANCE.withEncoder(StageAreaData.CODEC).apply(instance.getStageAreaData()).result().get();
                 compoundNBT.putInt("someInt", instance.getInt());
                 return compoundNBT;
             }
@@ -52,6 +53,8 @@ public class ServerStageAreaProvider
                     throw new IllegalArgumentException("Can not deserialize to an instance that isn't the default implementation");
                 if (nbt instanceof CompoundNBT)
                 {
+                    if (((CompoundNBT) nbt).contains("dimension"))
+                        NBTDynamicOps.INSTANCE.withParser(StageAreaData.CODEC).apply(nbt);
                     instance.setInt( ((CompoundNBT)nbt).getInt("someInt"));
                     LOGGER.debug("readNBT {}", instance.getInt());
                 }
@@ -71,7 +74,7 @@ public class ServerStageAreaProvider
         public static void event(final AttachCapabilitiesEvent<World> event)
         {
             final World world = event.getObject();
-            if (!world.isClientSide() && event.getObject() instanceof ServerWorld)
+            //if (!world.isClientSide() && event.getObject() instanceof ServerWorld)
             {
                 final ServerStageAreas serverStageAreas = new ServerStageAreas();
                 event.addCapability(ID, new SerializableCapabilityProvider<>(STAGE_AREA_CAP, null, serverStageAreas));

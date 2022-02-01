@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.events;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.caps.stages.ServerStageAreaProvider;
 import aeronicamc.mods.mxtune.init.ModBlocks;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.items.StageToolItem;
@@ -95,23 +96,29 @@ public class RenderEvents
 
             IRenderTypeBuffer.Impl buffer = mc.renderBuffers().bufferSource();
 
-            // Define and AABB in BlockPos coordinates
-            final BlockPos b0 = new BlockPos(173, 70, -441);
-            final BlockPos b1 = new BlockPos(177, 72, -445);
-            // Create a VoxelShape for drawing the edges for the AABB BlockPos corner coordinates expanded and moved to encompass the maximum extents of the BlockPos
-            AxisAlignedBB bb = new AxisAlignedBB(b0, b1).inflate(0.5).move(0.5,0.5,0.5);
-            VoxelShape cubeShape = VoxelShapes.create(bb);
+            ServerStageAreaProvider.getServerStageAreas(mc.level).ifPresent(p -> {
+                if (p.getStageAreaData() == null) return;
 
-            IVertexBuilder vertexBuilder = buffer.getBuffer(RenderType.lines());
-            StageAreaRenderer.renderEdges(event.getMatrixStack(), vertexBuilder, cubeShape, camX, camY, camZ, 1F, 0F, 1F, 0.7F);
-            buffer.endBatch(RenderType.lines());
+                // Define and AABB in BlockPos coordinates
+                final BlockPos b0 = new BlockPos(173, 70, -441);
+                final BlockPos b1 = new BlockPos(177, 72, -445);
+                // Create a VoxelShape for drawing the edges for the AABB BlockPos corner coordinates expanded and moved to encompass the maximum extents of the BlockPos
+                AxisAlignedBB bb = p.getStageAreaData().getAreaAABB();
+                //AxisAlignedBB bb = new AxisAlignedBB(b0, b1).inflate(0.5).move(0.5,0.5,0.5);
+                VoxelShape cubeShape = VoxelShapes.create(bb);
 
-            vertexBuilder = buffer.getBuffer(RenderType.lightning());
-            StageAreaRenderer.renderFaces(event.getMatrixStack(), vertexBuilder, bb, camX, camY, camZ, 1F, 0F, 1F, 0.15F);
-            buffer.endBatch(RenderType.lightning());
+                IVertexBuilder vertexBuilder = buffer.getBuffer(RenderType.lines());
+                StageAreaRenderer.renderEdges(event.getMatrixStack(), vertexBuilder, cubeShape, camX, camY, camZ, 1F, 0F, 1F, 0.7F);
+                buffer.endBatch(RenderType.lines());
 
-            Vector3d center = bb.getCenter();
-            StageAreaRenderer.renderFloatingText(new StringTextComponent("ABCDEFGHIJKLMNOPQRWXYZ0123456789"), center, event.getMatrixStack(), mc.renderBuffers().bufferSource(), mc.gameRenderer.getMainCamera(), -1);
+                vertexBuilder = buffer.getBuffer(RenderType.lightning());
+                StageAreaRenderer.renderFaces(event.getMatrixStack(), vertexBuilder, bb, camX, camY, camZ, 1F, 0F, 1F, 0.15F);
+                buffer.endBatch(RenderType.lightning());
+
+                Vector3d center = bb.getCenter();
+                StageAreaRenderer.renderFloatingText(new StringTextComponent(p.getStageAreaData().getTitle()), center, event.getMatrixStack(), mc.renderBuffers().bufferSource(), mc.gameRenderer.getMainCamera(), -1);
+            });
+
         }
     }
 
