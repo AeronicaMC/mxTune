@@ -9,6 +9,7 @@ import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -40,10 +41,13 @@ public class ServerStageAreaProvider
             @Override
             public INBT writeNBT(Capability<IServerStageAreas> capability, final IServerStageAreas instance, Direction side)
             {
-                CompoundNBT compoundNBT;
-                compoundNBT = (CompoundNBT) NBTDynamicOps.INSTANCE.withEncoder(StageAreaData.CODEC).apply(instance.getStageAreaData()).result().get();
-                compoundNBT.putInt("someInt", instance.getInt());
-                return compoundNBT;
+                final CompoundNBT[] compoundNBT = {new CompoundNBT()};
+                if (instance.getStageAreaData().getDimension().equals(ServerWorld.OVERWORLD))
+                    NBTDynamicOps.INSTANCE.withEncoder(StageAreaData.CODEC).apply(instance.getStageAreaData()).result().ifPresent(p -> {
+                        compoundNBT[0] = (CompoundNBT) p.copy();
+                    });
+                compoundNBT[0].putInt("someInt", instance.getInt());
+                return compoundNBT[0];
             }
 
             @Override
@@ -53,7 +57,7 @@ public class ServerStageAreaProvider
                     throw new IllegalArgumentException("Can not deserialize to an instance that isn't the default implementation");
                 if (nbt instanceof CompoundNBT)
                 {
-                    if (((CompoundNBT) nbt).contains("dimension"))
+                    if (((CompoundNBT) nbt).contains("dimension") && instance.getStageAreaData().getDimension().equals(ServerWorld.OVERWORLD))
                         NBTDynamicOps.INSTANCE.withParser(StageAreaData.CODEC).apply(nbt);
                     instance.setInt( ((CompoundNBT)nbt).getInt("someInt"));
                     LOGGER.debug("readNBT {}", instance.getInt());

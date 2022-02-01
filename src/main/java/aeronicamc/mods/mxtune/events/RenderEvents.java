@@ -23,7 +23,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -96,6 +95,7 @@ public class RenderEvents
 
             IRenderTypeBuffer.Impl buffer = mc.renderBuffers().bufferSource();
 
+            // This will actually need to filter on nearest stage areas and stream those to the renderer
             ServerStageAreaProvider.getServerStageAreas(mc.level).ifPresent(p -> {
                 if (p.getStageAreaData() == null) return;
 
@@ -103,7 +103,7 @@ public class RenderEvents
                 final BlockPos b0 = new BlockPos(173, 70, -441);
                 final BlockPos b1 = new BlockPos(177, 72, -445);
                 // Create a VoxelShape for drawing the edges for the AABB BlockPos corner coordinates expanded and moved to encompass the maximum extents of the BlockPos
-                AxisAlignedBB bb = p.getStageAreaData().getAreaAABB();
+                AxisAlignedBB bb = p.getAreaAABB();
                 //AxisAlignedBB bb = new AxisAlignedBB(b0, b1).inflate(0.5).move(0.5,0.5,0.5);
                 VoxelShape cubeShape = VoxelShapes.create(bb);
 
@@ -116,7 +116,7 @@ public class RenderEvents
                 buffer.endBatch(RenderType.lightning());
 
                 Vector3d center = bb.getCenter();
-                StageAreaRenderer.renderFloatingText(new StringTextComponent(p.getStageAreaData().getTitle()), center, event.getMatrixStack(), mc.renderBuffers().bufferSource(), mc.gameRenderer.getMainCamera(), -1);
+                StageAreaRenderer.renderFloatingText(p.getTitle(), center, event.getMatrixStack(), mc.renderBuffers().bufferSource(), mc.gameRenderer.getMainCamera(), -1);
             });
 
         }
