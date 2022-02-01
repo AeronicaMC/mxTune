@@ -7,14 +7,11 @@ import net.minecraft.util.UUIDCodec;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import org.apache.commons.lang3.builder.*;
 
 import java.util.UUID;
 
-public class StageAreaData
+public class StageAreaData implements Comparable<StageAreaData>
 {
     final static Codec<StageAreaData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             World.RESOURCE_KEY_CODEC.fieldOf("dimension").forGetter(StageAreaData::getDimension),
@@ -26,16 +23,16 @@ public class StageAreaData
             UUIDCodec.CODEC.fieldOf("ownerUUID").forGetter(StageAreaData::getOwnerUUID)
             ).apply(instance, StageAreaData::new));
 
-    final RegistryKey<World> dimension;
-    final BlockPos startPos;
-    final BlockPos endPos;
-    final BlockPos performerSpawn;
-    final BlockPos audienceSpawn;
-    final String title;
-    final UUID ownerUUID;
-    final AxisAlignedBB areaAABB;
+    private RegistryKey<World> dimension;
+    private BlockPos startPos;
+    private BlockPos endPos;
+    private BlockPos performerSpawn;
+    private BlockPos audienceSpawn;
+    private String title;
+    private UUID ownerUUID;
+    private AxisAlignedBB areaAABB;
 
-    StageAreaData(final RegistryKey<World> dimension, final BlockPos startPos, final BlockPos endPos, final BlockPos performerSpawn, final BlockPos audienceSpawn, final String title, final UUID ownerUUID)
+    StageAreaData(RegistryKey<World> dimension, BlockPos startPos, BlockPos endPos, BlockPos performerSpawn, BlockPos audienceSpawn, String title, UUID ownerUUID)
     {
         this.dimension = dimension;
         this.startPos = startPos;
@@ -75,6 +72,41 @@ public class StageAreaData
     public AxisAlignedBB getAreaAABB()
     {
         return areaAABB;
+    }
+
+    public void setDimension(RegistryKey<World> dimension)
+    {
+        this.dimension = dimension;
+    }
+
+    public void setStartPos(BlockPos startPos)
+    {
+        this.startPos = startPos;
+    }
+
+    public void setEndPos(BlockPos endPos)
+    {
+        this.endPos = endPos;
+    }
+
+    public void setPerformerSpawn(BlockPos performerSpawn)
+    {
+        this.performerSpawn = performerSpawn;
+    }
+
+    public void setAudienceSpawn(BlockPos audienceSpawn)
+    {
+        this.audienceSpawn = audienceSpawn;
+    }
+
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+
+    public void setOwnerUUID(UUID ownerUUID)
+    {
+        this.ownerUUID = ownerUUID;
     }
 
     public String getTitle()
@@ -135,5 +167,28 @@ public class StageAreaData
                 .append("title", title)
                 .append("ownerUUID", ownerUUID)
                 .toString();
+    }
+
+    /**
+     * Compares this object with the specified object for order.  Returns a
+     * negative integer, zero, or a positive integer as this object is less
+     * than, equal to, or greater than the specified object.
+     * <p></p>
+     * {@link Comparable}
+     * <p></p>
+     * @param o the object to be compared.
+     * @return a negative integer, zero, or a positive integer as this object
+     * is less than, equal to, or greater than the specified object.
+     * @throws NullPointerException if the specified object is null
+     * @throws ClassCastException   if the specified object's type prevents it
+     *                              from being compared to this object.
+     */
+    @Override
+    public int compareTo(StageAreaData o)
+    {
+        return new CompareToBuilder()
+                .append(title, o.getTitle())
+                .append(ownerUUID, o.getOwnerUUID())
+                .toComparison();
     }
 }
