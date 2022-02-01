@@ -1,22 +1,12 @@
 package aeronicamc.mods.mxtune.caps.stages;
 
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.common.util.INBTSerializable;
 
-public interface IServerStageAreas
+import java.util.List;
+
+public interface IServerStageAreas extends INBTSerializable
 {
-    StageAreaData getStageAreaData();
-
-    AxisAlignedBB getAreaAABB();
-
-    ITextComponent getTitle();
-
-    BlockPos getPerformerSpawn();
-
-    BlockPos getAudienceSpawn();
-
-    void setStageAreaData(StageAreaData stageAreaData);
+    List<StageAreaData> getStageAreas();
 
     Integer getInt();
 
