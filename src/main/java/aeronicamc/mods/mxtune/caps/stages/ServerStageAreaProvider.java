@@ -66,7 +66,7 @@ public class ServerStageAreaProvider
             final World world = event.getObject();
             //if (!world.isClientSide() && event.getObject() instanceof ServerWorld)
             {
-                final ServerStageAreas serverStageAreas = new ServerStageAreas();
+                final ServerStageAreas serverStageAreas = new ServerStageAreas(world.dimension());
                 event.addCapability(ID, new SerializableCapabilityProvider<>(STAGE_AREA_CAP, null, serverStageAreas));
                 event.addListener(() -> getServerStageAreas(world).invalidate());
                 LOGGER.debug("AttachCapabilitiesEvent<World> {} {}", world, world.dimension());

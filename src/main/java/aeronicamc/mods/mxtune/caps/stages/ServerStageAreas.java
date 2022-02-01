@@ -4,33 +4,47 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.NBTDynamicOps;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ServerStageAreas implements IServerStageAreas
 {
+    RegistryKey<World> dimension;
     List<StageAreaData> stageAreas = new ArrayList<>();
-//    StageAreaData stageAreaData = new StageAreaData(World.OVERWORLD,
-//                                                    new BlockPos(173,70,-441),
-//                                                    new BlockPos(177,72,-445),
-//                                                    new BlockPos(176,70,-441),
-//                                                    new BlockPos(173,70,-441), "Null Stage", UUID.randomUUID());
-    ITextComponent title = new StringTextComponent("");
+    StageAreaData stageAreaDataTest = new StageAreaData(World.OVERWORLD,
+                                                        new BlockPos(173, 70, -441),
+                                                        new BlockPos(177,72,-445),
+                                                        new BlockPos(176,70,-441),
+                                                        new BlockPos(173,70,-441), "Null Stage", UUID.randomUUID());
     Integer someInt;
 
     ServerStageAreas()
     {
-        someInt = 0;
+        this.stageAreas.add(stageAreaDataTest);
+        this.someInt = 0;
+    }
+
+    ServerStageAreas(RegistryKey<World> dimension)
+    {
+        this();
+        this.dimension = dimension;
     }
 
     @Override
     public List<StageAreaData> getStageAreas()
     {
         return stageAreas;
+    }
+
+    @Override
+    public RegistryKey<World> getDimension()
+    {
+        return this.dimension;
     }
 
     @Override
