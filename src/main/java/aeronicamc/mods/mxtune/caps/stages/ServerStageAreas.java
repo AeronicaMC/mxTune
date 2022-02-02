@@ -9,23 +9,24 @@ import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ServerStageAreas implements IServerStageAreas
 {
     private static final Logger LOGGER = LogManager.getLogger(ServerStageAreas.class);
-    RegistryKey<World> dimension;
-    List<StageAreaData> stageAreas = new ArrayList<>();
+    private RegistryKey<World> dimension;
+    private final List<StageAreaData> stageAreas = new CopyOnWriteArrayList<>();
 
-    int someInt;
+    private int someInt;
 
     ServerStageAreas() { /* NOP */ }
 
@@ -46,6 +47,7 @@ public class ServerStageAreas implements IServerStageAreas
     @Override
     public void test()
     {
+        genTest().getAreaAABB().inflate(0.002);
         stageAreas.add(genTest());
     }
 
@@ -77,12 +79,9 @@ public class ServerStageAreas implements IServerStageAreas
     public void sync()
     {
         if (EffectiveSide.get().isServer())
-        {
             PacketDispatcher.sendToAll(new StageAreaSyncMessage(Objects.requireNonNull(serializeNBT())));
-            LOGGER.debug("{someInt {}, stageAreas {}", this.someInt, this.stageAreas);
-        } else {
-            LOGGER.debug("{someInt {}, stageAreas {}", this.someInt, this.stageAreas);
-        }
+
+        LOGGER.debug("{someInt {}, stageAreas {}", this.someInt, this.stageAreas);
     }
 
     @Override
@@ -90,13 +89,10 @@ public class ServerStageAreas implements IServerStageAreas
     {
         final CompoundNBT compoundNBT = new CompoundNBT();
         ListNBT listnbt = new ListNBT();
-        for(StageAreaData stageArea : stageAreas) {
-            NBTDynamicOps.INSTANCE.withEncoder(StageAreaData.CODEC).apply(stageArea).result().ifPresent(p -> {
-                listnbt.add(p.copy());
-            });
-        }
-        compoundNBT.put("stageAreas", listnbt);
+        stageAreas.forEach(stageArea -> NBTDynamicOps.INSTANCE.withEncoder(StageAreaData.CODEC)
+                                .apply(stageArea).result().ifPresent(listnbt::add));
 
+        compoundNBT.put("stageAreas", listnbt);
         compoundNBT.putInt("someInt", getInt());
         return compoundNBT;
     }
@@ -109,12 +105,12 @@ public class ServerStageAreas implements IServerStageAreas
         {
             if (compoundNBT.contains("stageAreas"))
             {
-                ListNBT listnbt = compoundNBT.getList("stageAreas", 10);
+                ListNBT listnbt = compoundNBT.getList("stageAreas", Constants.NBT.TAG_COMPOUND);
                 stageAreas.clear();
-                for (INBT stageAreaNBT : listnbt)
-                {
-                    NBTDynamicOps.INSTANCE.withParser(StageAreaData.CODEC).apply(stageAreaNBT).result().ifPresent(stageAreaData -> stageAreas.add(stageAreaData));
-                }
+                listnbt.forEach( stageAreaNBT -> {
+                    NBTDynamicOps.INSTANCE.withParser(StageAreaData.CODEC)
+                            .apply(stageAreaNBT).result().ifPresent(stageAreaData -> stageAreas.add(stageAreaData));
+                });
                 setInt(compoundNBT.getInt("someInt"));
             }
         }
