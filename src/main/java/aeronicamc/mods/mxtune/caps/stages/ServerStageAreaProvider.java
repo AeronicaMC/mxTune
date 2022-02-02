@@ -47,9 +47,9 @@ public class ServerStageAreaProvider
             {
                 if (!(instance instanceof ServerStageAreas))
                     throw new IllegalArgumentException("Can not deserialize to an instance that isn't the default implementation");
-                instance.deserializeNBT(nbt);
+                ((ServerStageAreas) instance).deserializeNBT(nbt);
             }
-        }, ServerStageAreas::new);
+        }, () -> null);
     }
 
     public static LazyOptional<IServerStageAreas> getServerStageAreas(final World world)
@@ -64,13 +64,10 @@ public class ServerStageAreaProvider
         public static void event(final AttachCapabilitiesEvent<World> event)
         {
             final World world = event.getObject();
-            //if (!world.isClientSide() && event.getObject() instanceof ServerWorld)
-            {
-                final ServerStageAreas serverStageAreas = new ServerStageAreas(world.dimension());
-                event.addCapability(ID, new SerializableCapabilityProvider<>(STAGE_AREA_CAP, null, serverStageAreas));
-                event.addListener(() -> getServerStageAreas(world).invalidate());
-                LOGGER.debug("AttachCapabilitiesEvent<World> {} {}", world, world.dimension());
-            }
+            final ServerStageAreas serverStageAreas = new ServerStageAreas(world.dimension());
+            event.addCapability(ID, new SerializableCapabilityProvider<>(STAGE_AREA_CAP, null, serverStageAreas));
+            event.addListener(() -> getServerStageAreas(world).invalidate());
+            LOGGER.debug("AttachCapabilitiesEvent<World> {} {}", world, world.dimension());
         }
     }
 }

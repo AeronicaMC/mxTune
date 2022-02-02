@@ -40,6 +40,7 @@ public class PacketDispatcher
         registerMessage(PlaySoloMessage.class, new PlaySoloMessage());
         registerMessage(StopPlayIdMessage.class, new StopPlayIdMessage());
         registerMessage(PlayBlockMusicMessage.class, new PlayBlockMusicMessage());
+        registerMessage(StageAreaSyncMessage.class, new StageAreaSyncMessage());
         // To Server
         registerMessage(CreateSheetMusicMessage.class, new CreateSheetMusicMessage());
         registerMessage(ChooseInstrumentMessage.class, new ChooseInstrumentMessage());

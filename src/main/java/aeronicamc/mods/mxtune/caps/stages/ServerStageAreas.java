@@ -1,5 +1,7 @@
 package aeronicamc.mods.mxtune.caps.stages;
 
+import aeronicamc.mods.mxtune.network.PacketDispatcher;
+import aeronicamc.mods.mxtune.network.messages.StageAreaSyncMessage;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
@@ -7,13 +9,18 @@ import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.thread.EffectiveSide;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class ServerStageAreas implements IServerStageAreas
 {
+    private static final Logger LOGGER = LogManager.getLogger(ServerStageAreas.class);
     RegistryKey<World> dimension;
     List<StageAreaData> stageAreas = new ArrayList<>();
     StageAreaData stageAreaDataTest = new StageAreaData(World.OVERWORLD,
@@ -21,18 +28,23 @@ public class ServerStageAreas implements IServerStageAreas
                                                         new BlockPos(177,72,-445),
                                                         new BlockPos(176,70,-441),
                                                         new BlockPos(173,70,-441), "Null Stage", UUID.randomUUID());
-    Integer someInt;
+    int someInt;
 
     ServerStageAreas()
     {
         this.stageAreas.add(stageAreaDataTest);
-        this.someInt = 0;
     }
 
     ServerStageAreas(RegistryKey<World> dimension)
     {
         this();
         this.dimension = dimension;
+    }
+
+    @Override
+    public void test()
+    {
+        stageAreas.add(stageAreaDataTest);
     }
 
     @Override
@@ -48,7 +60,7 @@ public class ServerStageAreas implements IServerStageAreas
     }
 
     @Override
-    public Integer getInt()
+    public int getInt()
     {
         return someInt;
     }
@@ -57,13 +69,17 @@ public class ServerStageAreas implements IServerStageAreas
     public void setInt(Integer someInt)
     {
         this.someInt = someInt;
+        sync();
     }
 
-    public void sync(World world)
+    public void sync()
     {
-        if (!world.isClientSide())
+        if (EffectiveSide.get().isServer())
         {
-            // TODO: Sync to client with network packet.
+            PacketDispatcher.sendToAll(new StageAreaSyncMessage(Objects.requireNonNull(serializeNBT())));
+            LOGGER.debug("{someInt {}, stageAreas {}", this.someInt, this.stageAreas);
+        } else {
+            LOGGER.debug("{someInt {}, stageAreas {}", this.someInt, this.stageAreas);
         }
     }
 
