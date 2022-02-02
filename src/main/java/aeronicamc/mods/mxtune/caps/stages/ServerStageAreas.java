@@ -10,6 +10,7 @@ import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,17 +24,10 @@ public class ServerStageAreas implements IServerStageAreas
     private static final Logger LOGGER = LogManager.getLogger(ServerStageAreas.class);
     RegistryKey<World> dimension;
     List<StageAreaData> stageAreas = new ArrayList<>();
-    StageAreaData stageAreaDataTest = new StageAreaData(World.OVERWORLD,
-                                                        new BlockPos(173, 70, -441),
-                                                        new BlockPos(177,72,-445),
-                                                        new BlockPos(176,70,-441),
-                                                        new BlockPos(173,70,-441), "Null Stage", UUID.randomUUID());
+
     int someInt;
 
-    ServerStageAreas()
-    {
-        this.stageAreas.add(stageAreaDataTest);
-    }
+    ServerStageAreas() { /* NOP */ }
 
     ServerStageAreas(RegistryKey<World> dimension)
     {
@@ -41,10 +35,18 @@ public class ServerStageAreas implements IServerStageAreas
         this.dimension = dimension;
     }
 
+    StageAreaData genTest() {
+        return new StageAreaData(dimension,
+                                 new BlockPos(173, 70, -441),
+                                 new BlockPos(177 + RandomUtils.nextInt(1,5),72 + RandomUtils.nextInt(4, 10),-445 - RandomUtils.nextInt(3, 7)),
+                                 new BlockPos(176,70,-441),
+                                 new BlockPos(173,70,-441), "Stage#: " + RandomUtils.nextInt(), UUID.randomUUID());
+    }
+
     @Override
     public void test()
     {
-        stageAreas.add(stageAreaDataTest);
+        stageAreas.add(genTest());
     }
 
     @Override
