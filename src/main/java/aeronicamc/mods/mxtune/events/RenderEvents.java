@@ -18,8 +18,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
@@ -100,29 +98,30 @@ public class RenderEvents
             ServerStageAreaProvider.getServerStageAreas(mc.level).ifPresent(p -> {
                 if (p.getStageAreas().isEmpty()) return;
 
-                p.getStageAreas().forEach((area) ->
-                    {
-                        // Define and AABB in BlockPos coordinates
-                        final BlockPos b0 = new BlockPos(173, 70, -441);
-                        final BlockPos b1 = new BlockPos(177, 72, -445);
-                        // Create a VoxelShape for drawing the edges for the AABB BlockPos corner coordinates expanded and moved to encompass the maximum extents of the BlockPos
-                        AxisAlignedBB bb = area.getAreaAABB();
-                        //AxisAlignedBB bb = new AxisAlignedBB(b0, b1).inflate(0.5).move(0.5,0.5,0.5);
-                        VoxelShape cubeShape = VoxelShapes.create(bb);
+                p.getStageAreas().forEach(
+                        (area) -> {
 
-                        IVertexBuilder vertexBuilder = buffer.getBuffer(RenderType.lines());
-                        StageAreaRenderer.renderEdges(event.getMatrixStack(), vertexBuilder, cubeShape, camX, camY, camZ, 1F, 0F, 1F, 0.7F);
-                        buffer.endBatch(RenderType.lines());
+                            IVertexBuilder vertexBuilder = buffer.getBuffer(RenderType.lightning());
+                            StageAreaRenderer.renderFaces(event.getMatrixStack(), vertexBuilder, area.getAreaAABB(), camX, camY, camZ, 1F, 0F, 1F, 0.15F);
+                        });
+                p.getStageAreas().forEach(
+                        (area) ->
+                                  {
+                                      VoxelShape cubeShape = VoxelShapes.create(area.getAreaAABB());
+                                      IVertexBuilder vertexBuilder = buffer.getBuffer(RenderType.lines());
+                                      StageAreaRenderer.renderEdges(event.getMatrixStack(), vertexBuilder, cubeShape, camX, camY, camZ, 1F, 1F, 1F, 0.7F);
+                                      buffer.endBatch(RenderType.lines());
+                                  });
+                p.getStageAreas().forEach(
+                        (area) -> StageAreaRenderer.renderFloatingText(
+                                new StringTextComponent(area.getTitle()),
+                                area.getAreaAABB().getCenter(),
+                                event.getMatrixStack(),
+                                mc.renderBuffers().bufferSource(), mc.gameRenderer.getMainCamera(), -1));
 
-                        vertexBuilder = buffer.getBuffer(RenderType.lightning());
-                        StageAreaRenderer.renderFaces(event.getMatrixStack(), vertexBuilder, bb, camX, camY, camZ, 1F, 0F, 1F, 0.15F);
-                        buffer.endBatch(RenderType.lightning());
-
-                        Vector3d center = bb.getCenter();
-                        StageAreaRenderer.renderFloatingText(new StringTextComponent(area.getTitle()), center, event.getMatrixStack(), mc.renderBuffers().bufferSource(), mc.gameRenderer.getMainCamera(), -1);
-                    });
+                buffer.endBatch(RenderType.lightning());
+                buffer.endBatch(RenderType.lines());
             });
-
         }
     }
 
