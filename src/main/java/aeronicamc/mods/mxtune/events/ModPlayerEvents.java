@@ -1,6 +1,8 @@
 package aeronicamc.mods.mxtune.events;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.caps.stages.IServerStageAreas;
+import aeronicamc.mods.mxtune.caps.stages.ServerStageAreaProvider;
 import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
 import aeronicamc.mods.mxtune.managers.PlayManager;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -40,6 +42,14 @@ public class ModPlayerEvents
     {
         if(!event.getEntityLiving().getCommandSenderWorld().isClientSide())
             PlayManager.stopPlayingEntity(event.getEntityLiving());
+    }
+
+    @SubscribeEvent
+    public static void event(PlayerEvent.PlayerLoggedInEvent event)
+    {
+        if(!event.getEntityLiving().getCommandSenderWorld().isClientSide())
+            ServerStageAreaProvider.getServerStageAreas(event.getEntity().level).ifPresent(
+                    IServerStageAreas::sync);
     }
 
 }

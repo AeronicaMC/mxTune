@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.items;
 
 import aeronicamc.mods.mxtune.caps.LivingEntityModCapProvider;
+import aeronicamc.mods.mxtune.caps.stages.ServerStageAreaProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -31,8 +32,12 @@ public class StageToolItem extends Item
             if (!playerIn.isShiftKeyDown())
             {
                 //PacketDispatcher.sendTo(new OpenScreenMessage(OpenScreenMessage.SM.TEST_ONE), (ServerPlayerEntity) playerIn);
+                ServerStageAreaProvider.getServerStageAreas(worldIn).ifPresent(p->{
+                    p.test();
+                    p.setInt(worldIn.getRandom().nextInt(10));
+                });
                 LivingEntityModCapProvider.getLivingEntityModCap(playerIn).ifPresent(p->{
-                        p.setPlayId(worldIn.getRandom().nextInt(10));
+                    p.setPlayId(worldIn.getRandom().nextInt(10));
                 });
             }
             else
@@ -46,7 +51,9 @@ public class StageToolItem extends Item
         } else
         {
             LivingEntityModCapProvider.getLivingEntityModCap(playerIn).ifPresent(p->{
-                LogManager.getLogger().debug("playId: {}", p.getPlayId());
+                ServerStageAreaProvider.getServerStageAreas(worldIn).ifPresent(n->{
+                    LOGGER.debug("playId: {}, someInt: {}", p.getPlayId(), n.getInt());
+                });
             });
         }
         return super.use(worldIn, playerIn, handIn);
