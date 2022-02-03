@@ -98,18 +98,19 @@ public class RenderEvents
             ServerStageAreaProvider.getServerStageAreas(mc.level).ifPresent(p -> {
                 if (p.getStageAreas().isEmpty()) return;
 
-                p.getStageAreas().forEach(
-                        (area) -> {
-
-                            IVertexBuilder vertexBuilder = buffer.getBuffer(RenderType.lightning());
-                            StageAreaRenderer.renderFaces(event.getMatrixStack(), vertexBuilder, area.getAreaAABB(), camX, camY, camZ, 1F, 0F, 1F, 0.15F);
-                        });
+//                p.getStageAreas().forEach(
+//                        (area) -> {
+//
+//                            IVertexBuilder vertexBuilder = buffer.getBuffer(RenderType.lightning());
+//                            StageAreaRenderer.renderFaces(event.getMatrixStack(), vertexBuilder, area.getAreaAABB(), camX, camY, camZ, 1F, 0F, 1F, 0.15F);
+//                        });
                 p.getStageAreas().forEach(
                         (area) ->
                                   {
                                       VoxelShape cubeShape = VoxelShapes.create(area.getAreaAABB());
                                       IVertexBuilder vertexBuilder = buffer.getBuffer(RenderType.lines());
-                                      StageAreaRenderer.renderEdges(event.getMatrixStack(), vertexBuilder, cubeShape, camX, camY, camZ, 1F, 1F, 1F, 0.7F);
+//                                      StageAreaRenderer.renderEdges(event.getMatrixStack(), vertexBuilder, cubeShape, camX, camY, camZ, 1F, 0F, 1F, 0.3F);
+                                      StageAreaRenderer.renderEdges2(event.getMatrixStack(), cubeShape, camX, camY, camZ, 1F, 0F, 1F, 0.3F);
                                       buffer.endBatch(RenderType.lines());
                                   });
                 p.getStageAreas().forEach(
@@ -117,10 +118,11 @@ public class RenderEvents
                                 new StringTextComponent(area.getTitle()),
                                 area.getAreaAABB().getCenter(),
                                 event.getMatrixStack(),
-                                mc.renderBuffers().bufferSource(), mc.gameRenderer.getMainCamera(), -1));
+                                buffer, mc.gameRenderer.getMainCamera(), -1));
 
-                buffer.endBatch(RenderType.lightning());
-                buffer.endBatch(RenderType.lines());
+//                buffer.endBatch(RenderType.lightning());
+//                buffer.endBatch(RenderType.lines());
+                //buffer.endBatch();
             });
         }
     }
