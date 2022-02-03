@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.events;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.blocks.MusicBlock;
 import aeronicamc.mods.mxtune.caps.stages.ServerStageAreaProvider;
 import aeronicamc.mods.mxtune.init.ModBlocks;
 import aeronicamc.mods.mxtune.init.ModItems;
@@ -18,13 +19,16 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.DrawHighlightEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -83,6 +87,63 @@ public class RenderEvents
     }
 
     @SubscribeEvent
+    public static void event(DrawHighlightEvent.HighlightBlock event)
+    {
+        final PlayerEntity player = Minecraft.getInstance().player;
+        World level;
+        if (player == null ||(level = player.level) == null) return;
+        final BlockRayTraceResult blockRayTraceResult = event.getTarget();
+
+        if (level.getBlockState(blockRayTraceResult.getBlockPos()).getBlock() instanceof MusicBlock)
+        {
+            Vector3d vector3d = mc.gameRenderer.getMainCamera().getPosition();
+            double camX = vector3d.x();
+            double camY = vector3d.y();
+            double camZ = vector3d.z();
+
+            IRenderTypeBuffer.Impl buffer = mc.renderBuffers().bufferSource();
+
+            ServerStageAreaProvider.getServerStageAreas(level).ifPresent(
+                    areas -> {
+                        areas.getStageAreas().forEach(
+                            (area) -> {
+                                IVertexBuilder vertexBuilder1 = buffer.getBuffer(RenderType.lightning());
+                                StageAreaRenderer.renderFaces(event.getMatrix(), vertexBuilder1, area.getAreaAABB(), camX, camY, camZ, 1F, 0F, 1F, 0.1F);
+                            });
+
+                        areas.getStageAreas().forEach(
+                            (area) ->
+                            {
+                                IVertexBuilder vertexBuilder2 = buffer.getBuffer(RenderType.lines());
+                                VoxelShape cubeShape = VoxelShapes.create(area.getAreaAABB());
+                                StageAreaRenderer.renderEdges(event.getMatrix(), vertexBuilder2, cubeShape, camX, camY, camZ, 1F, 0F, 1F, 1F);
+                            });
+
+                        areas.getStageAreas().forEach(
+                                (area) ->
+                                {
+                                    StageAreaRenderer.renderFloatingText(new StringTextComponent(area.getTitle()),
+                                        area.getAreaAABB().getCenter(),
+                                        event.getMatrix(),
+                                        buffer, mc.gameRenderer.getMainCamera(), -1);
+
+                                    StageAreaRenderer.renderFloatingText(new StringTextComponent("Audience Spawn"),
+                                         new Vector3d(area.getAudienceSpawn().getX(), area.getAudienceSpawn().getY() + 1, area.getAudienceSpawn().getZ()),
+                                         event.getMatrix(),
+                                         buffer, mc.gameRenderer.getMainCamera(), -1);
+
+                                    StageAreaRenderer.renderFloatingText(new StringTextComponent("Performer Spawn"),
+                                         new Vector3d(area.getPerformerSpawn().getX(), area.getPerformerSpawn().getY() + 1, area.getPerformerSpawn().getZ()),
+                                         event.getMatrix(),
+                                         buffer, mc.gameRenderer.getMainCamera(), -1);
+                                });
+                    });
+        }
+    }
+
+
+
+    @SubscribeEvent
     public static void event(RenderWorldLastEvent event)
     {
         if (mc.level != null && mc.player != null && !mc.player.getMainHandItem().isEmpty() && mc.player.getMainHandItem().getItem() instanceof StageToolItem)
@@ -94,7 +155,6 @@ public class RenderEvents
 
             IRenderTypeBuffer.Impl buffer = mc.renderBuffers().bufferSource();
 
-            // This will actually need to filter on nearest stage areas and stream those to the renderer
             ServerStageAreaProvider.getServerStageAreas(mc.level).ifPresent(p -> {
                 if (p.getStageAreas().isEmpty()) return;
 
