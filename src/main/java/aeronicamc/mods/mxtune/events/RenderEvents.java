@@ -1,11 +1,9 @@
 package aeronicamc.mods.mxtune.events;
 
 import aeronicamc.mods.mxtune.Reference;
-import aeronicamc.mods.mxtune.blocks.MusicBlock;
 import aeronicamc.mods.mxtune.caps.stages.ServerStageAreaProvider;
 import aeronicamc.mods.mxtune.init.ModBlocks;
 import aeronicamc.mods.mxtune.init.ModItems;
-import aeronicamc.mods.mxtune.items.StageToolItem;
 import aeronicamc.mods.mxtune.render.StageAreaRenderer;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
@@ -14,12 +12,14 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
@@ -28,9 +28,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.DrawHighlightEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -86,105 +84,45 @@ public class RenderEvents
         AbstractGui.blit(pMatrixStack, pX, pY, blitOffset, (float)pUOffset, (float)pVOffset, pUWidth, pVHeight, 256, 256);
     }
 
-    @SubscribeEvent
-    public static void event(DrawHighlightEvent.HighlightBlock event)
+    // It's absolutely Fabulous
+    public static void renderLast(MatrixStack pMatrixStack, IRenderTypeBuffer.Impl pBuffer, LightTexture pLightTexture, ActiveRenderInfo pActiveRenderInfo, float pPartialTicks, ClippingHelper pClippingHelper)
     {
-        final PlayerEntity player = Minecraft.getInstance().player;
+        final PlayerEntity player = mc.player;
         World level;
-        if (player == null ||(level = player.level) == null) return;
-        final BlockRayTraceResult blockRayTraceResult = event.getTarget();
+        if (player == null || (level = player.level) == null) return;
 
-        if (level.getBlockState(blockRayTraceResult.getBlockPos()).getBlock() instanceof MusicBlock)
-        {
-            Vector3d vector3d = mc.gameRenderer.getMainCamera().getPosition();
-            double camX = vector3d.x();
-            double camY = vector3d.y();
-            double camZ = vector3d.z();
+        Vector3d camera = pActiveRenderInfo.getPosition();
+        double camX = camera.x;
+        double camY = camera.y;
+        double camZ = camera.z;
 
-            IRenderTypeBuffer.Impl buffer = mc.renderBuffers().bufferSource();
-
-            ServerStageAreaProvider.getServerStageAreas(level).ifPresent(
-                    areas -> {
-                        areas.getStageAreas().forEach(
+        ServerStageAreaProvider.getServerStageAreas(level).ifPresent(
+                areas -> {
+                    areas.getStageAreas().stream().filter(area-> pClippingHelper.isVisible(area.getAreaAABB())).forEach(
                             (area) -> {
-                                IVertexBuilder vertexBuilder1 = buffer.getBuffer(RenderType.lightning());
-                                StageAreaRenderer.renderFaces(event.getMatrix(), vertexBuilder1, area.getAreaAABB(), camX, camY, camZ, 1F, 0F, 1F, 0.1F);
-                            });
+                                IVertexBuilder vertexBuilder1 = pBuffer.getBuffer(RenderType.lightning());
+                                StageAreaRenderer.renderFaces(pMatrixStack, vertexBuilder1, area.getAreaAABB(), camX, camY, camZ, 1F, 0F, 1F, 0.1F);
 
-                        areas.getStageAreas().forEach(
-                            (area) ->
-                            {
-                                IVertexBuilder vertexBuilder2 = buffer.getBuffer(RenderType.lines());
+
+                                IVertexBuilder vertexBuilder2 = pBuffer.getBuffer(RenderType.lines());
                                 VoxelShape cubeShape = VoxelShapes.create(area.getAreaAABB());
-                                StageAreaRenderer.renderEdges(event.getMatrix(), vertexBuilder2, cubeShape, camX, camY, camZ, 1F, 0F, 1F, 1F);
+                                StageAreaRenderer.renderEdges(pMatrixStack, vertexBuilder2, cubeShape, camX, camY, camZ, 1F, 0F, 1F, 1F);
+
+                                StageAreaRenderer.renderFloatingText(new StringTextComponent(area.getTitle()),
+                                                                     area.getAreaAABB().getCenter(),
+                                                                     pMatrixStack,
+                                                                     pBuffer, pActiveRenderInfo, -1);
+
+                                StageAreaRenderer.renderFloatingText(new StringTextComponent("Audience Spawn"),
+                                                                     new Vector3d(area.getAudienceSpawn().getX() + 0.5, area.getAudienceSpawn().getY() + 1.5, area.getAudienceSpawn().getZ() + 0.5),
+                                                                     pMatrixStack,
+                                                                     pBuffer, pActiveRenderInfo, -1);
+
+                                StageAreaRenderer.renderFloatingText(new StringTextComponent("Performer Spawn"),
+                                                                     new Vector3d(area.getPerformerSpawn().getX() + 0.5, area.getPerformerSpawn().getY() + 1.5, area.getPerformerSpawn().getZ() + 0.5),
+                                                                     pMatrixStack,
+                                                                     pBuffer, pActiveRenderInfo, -1);
                             });
-
-                        areas.getStageAreas().forEach(
-                                (area) ->
-                                {
-                                    StageAreaRenderer.renderFloatingText(new StringTextComponent(area.getTitle()),
-                                        area.getAreaAABB().getCenter(),
-                                        event.getMatrix(),
-                                        buffer, mc.gameRenderer.getMainCamera(), -1);
-
-                                    StageAreaRenderer.renderFloatingText(new StringTextComponent("Audience Spawn"),
-                                         new Vector3d(area.getAudienceSpawn().getX(), area.getAudienceSpawn().getY() + 1, area.getAudienceSpawn().getZ()),
-                                         event.getMatrix(),
-                                         buffer, mc.gameRenderer.getMainCamera(), -1);
-
-                                    StageAreaRenderer.renderFloatingText(new StringTextComponent("Performer Spawn"),
-                                         new Vector3d(area.getPerformerSpawn().getX(), area.getPerformerSpawn().getY() + 1, area.getPerformerSpawn().getZ()),
-                                         event.getMatrix(),
-                                         buffer, mc.gameRenderer.getMainCamera(), -1);
-                                });
-                    });
-        }
+                });
     }
-
-
-
-    @SubscribeEvent
-    public static void event(RenderWorldLastEvent event)
-    {
-        if (mc.level != null && mc.player != null && !mc.player.getMainHandItem().isEmpty() && mc.player.getMainHandItem().getItem() instanceof StageToolItem)
-        {
-            Vector3d vector3d = mc.gameRenderer.getMainCamera().getPosition();
-            double camX = vector3d.x();
-            double camY = vector3d.y();
-            double camZ = vector3d.z();
-
-            IRenderTypeBuffer.Impl buffer = mc.renderBuffers().bufferSource();
-
-            ServerStageAreaProvider.getServerStageAreas(mc.level).ifPresent(p -> {
-                if (p.getStageAreas().isEmpty()) return;
-
-//                p.getStageAreas().forEach(
-//                        (area) -> {
-//
-//                            IVertexBuilder vertexBuilder = buffer.getBuffer(RenderType.lightning());
-//                            StageAreaRenderer.renderFaces(event.getMatrixStack(), vertexBuilder, area.getAreaAABB(), camX, camY, camZ, 1F, 0F, 1F, 0.15F);
-//                        });
-                p.getStageAreas().forEach(
-                        (area) ->
-                                  {
-                                      VoxelShape cubeShape = VoxelShapes.create(area.getAreaAABB());
-                                      IVertexBuilder vertexBuilder = buffer.getBuffer(RenderType.lines());
-//                                      StageAreaRenderer.renderEdges(event.getMatrixStack(), vertexBuilder, cubeShape, camX, camY, camZ, 1F, 0F, 1F, 0.3F);
-                                      StageAreaRenderer.renderEdges2(event.getMatrixStack(), cubeShape, camX, camY, camZ, 1F, 0F, 1F, 0.3F);
-                                      buffer.endBatch(RenderType.lines());
-                                  });
-                p.getStageAreas().forEach(
-                        (area) -> StageAreaRenderer.renderFloatingText(
-                                new StringTextComponent(area.getTitle()),
-                                area.getAreaAABB().getCenter(),
-                                event.getMatrixStack(),
-                                buffer, mc.gameRenderer.getMainCamera(), -1));
-
-//                buffer.endBatch(RenderType.lightning());
-//                buffer.endBatch(RenderType.lines());
-                //buffer.endBatch();
-            });
-        }
-    }
-
 }

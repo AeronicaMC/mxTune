@@ -1,16 +1,17 @@
 import java.time.LocalDateTime
-import java.time.ZoneId
 
 buildscript {
     repositories {
         maven { url = 'https://maven.minecraftforge.net' }
         maven { url = 'https://maven.parchmentmc.org' }
         maven { url = 'https://plugins.gradle.org/m2/' }
+        maven { url = 'https://repo.spongepowered.org/maven' }
         mavenCentral()
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
         classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0'
+        classpath 'org.spongepowered:mixingradle:0.7.+'
         classpath 'org.parchmentmc:librarian:1.+'
     }
 }
@@ -24,6 +25,7 @@ apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: 'maven-publish'
+apply plugin: 'org.spongepowered.mixin'
 
 repositories {
     maven {
@@ -142,6 +144,9 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft "net.minecraftforge:forge:${version_mc}-${version_forge}"
 
+    // Apply Mixin AP
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
     // These 3 compileOnly lines are for travis CI and sonarcloud using openjdk11. it provides the missing
     // javax/jakarta/net-beans xml related stuff removed from java 10+
     compileOnly 'com.sun.activation:javax.activation:1.2.0'
@@ -163,6 +168,15 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
+}
+
+mixin {
+    // MixinGradle Settings
+    add sourceSets.main, 'mixins.mxtune.refmap.json'
+    config 'mixins.mxtune.json'
+
+    debug.verbose = true
+    debug.export = true
 }
 
 tasks.withType(JavaCompile) {

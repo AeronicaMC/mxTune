@@ -1,0 +1,13 @@
+{
+  "package": "aeronicamc.mods.mxtune.mixins",
+  "required": true,
+  "refmap": "mixins.mxtune.refmap.json",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+  ],
+  "client": [
+    "MixinParticleManager"
+  ]
+}
