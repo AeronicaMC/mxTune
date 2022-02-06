@@ -95,37 +95,11 @@ public final class LivingEntityModCapProvider
                  getLivingEntityModCap(event.getPlayer()).ifPresent(newLivingEntityCap ->
                     {
                         newLivingEntityCap.setPlayId(oldLivingEntityCap.getPlayId());
-                        newLivingEntityCap.synchronize();
+                        newLivingEntityCap.sync();
                         LOGGER.debug("Clone: oldPId:{}, newPId:{}, {}", oldLivingEntityCap.getPlayId(), newLivingEntityCap.getPlayId(), event.getPlayer());
                     });
                 });
             }
-        }
-
-        /**
-         * Synchronise a player's playId to watching clients when they change dimensions.
-         *
-         * @param event The event
-         */
-        @SubscribeEvent
-        public static void event(final PlayerEvent.PlayerChangedDimensionEvent event)
-        {
-            getLivingEntityModCap(event.getPlayer()).ifPresent(ILivingEntityModCap::synchronize);
-            LOGGER.debug("PlayerChangedDimensionEvent: {}", event.getPlayer());
-        }
-
-        @SubscribeEvent
-        public static void event(PlayerEvent.PlayerLoggedInEvent event)
-        {
-            getLivingEntityModCap(event.getPlayer()).ifPresent(ILivingEntityModCap::synchronize);
-            LOGGER.debug("PlayerLoggedInEvent: {}", event.getPlayer());
-        }
-
-        @SubscribeEvent
-        public static void event(PlayerEvent.PlayerRespawnEvent event)
-        {
-            getLivingEntityModCap(event.getPlayer()).ifPresent(ILivingEntityModCap::synchronize);
-            LOGGER.debug("PlayerRespawnEvent: {}", event.getPlayer());
         }
     }
 }
