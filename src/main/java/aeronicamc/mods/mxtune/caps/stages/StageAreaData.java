@@ -36,6 +36,11 @@ public class StageAreaData implements Comparable<StageAreaData>
         this.audienceSpawn = audienceSpawn;
         this.title = title;
         this.ownerUUID = ownerUUID;
+        makeAABB();
+    }
+
+    private void makeAABB()
+    {
         this.areaAABB = new AxisAlignedBB(this.startPos, this.endPos).inflate(0.5).move(0.5,0.5,0.5);
     }
 
@@ -67,11 +72,13 @@ public class StageAreaData implements Comparable<StageAreaData>
     public void setStartPos(BlockPos startPos)
     {
         this.startPos = startPos;
+        makeAABB();
     }
 
     public void setEndPos(BlockPos endPos)
     {
         this.endPos = endPos;
+        makeAABB();
     }
 
     public void setPerformerSpawn(BlockPos performerSpawn)
