@@ -1,15 +1,11 @@
 package aeronicamc.mods.mxtune.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.ActiveRenderInfo;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.vector.Matrix4f;
@@ -26,33 +22,6 @@ public class StageAreaRenderer
             pBuffer.vertex(matrix4f, (float)(edgeVertexBegin_X - pX), (float)(edgeVertexBegin_Y - pY), (float)(edgeVertexBegin_Z - pZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
             pBuffer.vertex(matrix4f, (float)(edgeVertexEnd_X - pX), (float)(edgeVertexEnd_Y - pY), (float)(edgeVertexEnd_Z - pZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
         });
-    }
-
-    public static void renderEdges2(MatrixStack pMatrixStack, VoxelShape pShape, double pX, double pY, double pZ, float pRed, float pGreen, float pBlue, float pAlpha) {
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuilder();
-        RenderSystem.depthMask(true);
-        RenderSystem.disableCull();
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableTexture();
-        Matrix4f matrix4f = pMatrixStack.last().pose();
-
-        bufferbuilder.begin(1, DefaultVertexFormats.POSITION_COLOR);
-        RenderSystem.lineWidth(2.0F);
-
-        pShape.forAllEdges((edgeVertexBegin_X, edgeVertexBegin_Y, edgeVertexBegin_Z, edgeVertexEnd_X, edgeVertexEnd_Y, edgeVertexEnd_Z) -> {
-            bufferbuilder.vertex(matrix4f, (float)(edgeVertexBegin_X - pX), (float)(edgeVertexBegin_Y - pY), (float)(edgeVertexBegin_Z - pZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-            bufferbuilder.vertex(matrix4f, (float)(edgeVertexEnd_X - pX), (float)(edgeVertexEnd_Y - pY), (float)(edgeVertexEnd_Z - pZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
-        });
-
-        tessellator.end();
-        RenderSystem.lineWidth(1.0F);
-
-        RenderSystem.depthMask(true);
-        RenderSystem.disableBlend();
-        RenderSystem.enableCull();
-        RenderSystem.enableTexture();
     }
 
     public static void renderFaces(MatrixStack pMatrixStack, IVertexBuilder pBuffer, final AxisAlignedBB aabb, double camX, double camY, double camZ, float pRed, float pGreen, float pBlue, float pAlpha) {

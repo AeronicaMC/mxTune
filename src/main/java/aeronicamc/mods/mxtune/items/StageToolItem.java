@@ -1,6 +1,6 @@
 package aeronicamc.mods.mxtune.items;
 
-import aeronicamc.mods.mxtune.caps.LivingEntityModCapProvider;
+import aeronicamc.mods.mxtune.caps.stages.IServerStageAreas;
 import aeronicamc.mods.mxtune.caps.stages.ServerStageAreaProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -31,30 +31,8 @@ public class StageToolItem extends Item
         {
             if (!playerIn.isShiftKeyDown())
             {
-                //PacketDispatcher.sendTo(new OpenScreenMessage(OpenScreenMessage.SM.TEST_ONE), (ServerPlayerEntity) playerIn);
-                ServerStageAreaProvider.getServerStageAreas(worldIn).ifPresent(p->{
-                    p.test();
-                    p.setInt(worldIn.getRandom().nextInt(10));
-                });
-                LivingEntityModCapProvider.getLivingEntityModCap(playerIn).ifPresent(p->{
-                    p.setPlayId(worldIn.getRandom().nextInt(10));
-                });
+                ServerStageAreaProvider.getServerStageAreas(worldIn).ifPresent(IServerStageAreas::test);
             }
-            else
-            {
-                //PacketDispatcher.sendTo(new OpenScreenMessage(OpenScreenMessage.SM.TEST_TWO), (ServerPlayerEntity) playerIn);
-            }
-
-        } else if (!playerIn.isShiftKeyDown())
-        {
-            // nop
-        } else
-        {
-            LivingEntityModCapProvider.getLivingEntityModCap(playerIn).ifPresent(p->{
-                ServerStageAreaProvider.getServerStageAreas(worldIn).ifPresent(n->{
-                    LOGGER.debug("playId: {}, someInt: {}", p.getPlayId(), n.getInt());
-                });
-            });
         }
         return super.use(worldIn, playerIn, handIn);
     }
