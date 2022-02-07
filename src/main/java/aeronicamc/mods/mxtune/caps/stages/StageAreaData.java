@@ -2,11 +2,9 @@ package aeronicamc.mods.mxtune.caps.stages;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.RegistryKey;
 import net.minecraft.util.UUIDCodec;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import org.apache.commons.lang3.builder.*;
 
 import java.util.UUID;
@@ -14,7 +12,6 @@ import java.util.UUID;
 public class StageAreaData implements Comparable<StageAreaData>
 {
     final static Codec<StageAreaData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            World.RESOURCE_KEY_CODEC.fieldOf("dimension").forGetter(StageAreaData::getDimension),
             BlockPos.CODEC.fieldOf("startPos").forGetter(StageAreaData::getStartPos),
             BlockPos.CODEC.fieldOf("endPos").forGetter(StageAreaData::getEndPos),
             BlockPos.CODEC.fieldOf("performerSpawn").forGetter(StageAreaData::getPerformerSpawn),
@@ -23,7 +20,6 @@ public class StageAreaData implements Comparable<StageAreaData>
             UUIDCodec.CODEC.fieldOf("ownerUUID").forGetter(StageAreaData::getOwnerUUID)
             ).apply(instance, StageAreaData::new));
 
-    private RegistryKey<World> dimension;
     private BlockPos startPos;
     private BlockPos endPos;
     private BlockPos performerSpawn;
@@ -32,9 +28,8 @@ public class StageAreaData implements Comparable<StageAreaData>
     private UUID ownerUUID;
     private AxisAlignedBB areaAABB;
 
-    StageAreaData(RegistryKey<World> dimension, BlockPos startPos, BlockPos endPos, BlockPos performerSpawn, BlockPos audienceSpawn, String title, UUID ownerUUID)
+    StageAreaData(BlockPos startPos, BlockPos endPos, BlockPos performerSpawn, BlockPos audienceSpawn, String title, UUID ownerUUID)
     {
-        this.dimension = dimension;
         this.startPos = startPos;
         this.endPos = endPos;
         this.performerSpawn = performerSpawn;
@@ -42,11 +37,6 @@ public class StageAreaData implements Comparable<StageAreaData>
         this.title = title;
         this.ownerUUID = ownerUUID;
         this.areaAABB = new AxisAlignedBB(this.startPos, this.endPos).inflate(0.5).move(0.5,0.5,0.5);
-    }
-
-    public RegistryKey<World> getDimension()
-    {
-        return dimension;
     }
 
     public BlockPos getStartPos()
@@ -72,11 +62,6 @@ public class StageAreaData implements Comparable<StageAreaData>
     public AxisAlignedBB getAreaAABB()
     {
         return areaAABB;
-    }
-
-    public void setDimension(RegistryKey<World> dimension)
-    {
-        this.dimension = dimension;
     }
 
     public void setStartPos(BlockPos startPos)
@@ -123,7 +108,6 @@ public class StageAreaData implements Comparable<StageAreaData>
     public int hashCode()
     {
         return new HashCodeBuilder(17, 37)
-                .append(dimension)
                 .append(startPos)
                 .append(endPos)
                 .append(performerSpawn)
@@ -145,7 +129,6 @@ public class StageAreaData implements Comparable<StageAreaData>
         }
         StageAreaData stageAreaData = (StageAreaData) o;
         return new EqualsBuilder()
-                .append(dimension, stageAreaData.getDimension())
                 .append(startPos, stageAreaData.getStartPos())
                 .append(endPos, stageAreaData.getEndPos())
                 .append(performerSpawn, stageAreaData.getPerformerSpawn())
@@ -159,7 +142,6 @@ public class StageAreaData implements Comparable<StageAreaData>
     public String toString()
     {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("dimension", dimension)
                 .append("startPos", startPos)
                 .append("endPos", endPos)
                 .append("performerSpawn", performerSpawn)
