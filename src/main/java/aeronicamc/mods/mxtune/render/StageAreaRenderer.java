@@ -103,6 +103,10 @@ public class StageAreaRenderer
     public static void renderFloatingText(ITextComponent pDisplayName, Vector3d pos, MatrixStack pMatrixStack, IRenderTypeBuffer pBuffer, ActiveRenderInfo activeRenderInfo, int pColor) {
         pMatrixStack.pushPose();
         Vector3d cam = activeRenderInfo.getPosition();
+        if (Minecraft.getInstance().options.getCameraType().isFirstPerson()) {
+            // TODO: translate text to
+        }
+
         pMatrixStack.translate(pos.x - cam.x, pos.y - cam.y, pos.z - cam.z);
         pMatrixStack.mulPose(activeRenderInfo.rotation());
         pMatrixStack.scale(-0.025F, -0.025F, 0.025F);
