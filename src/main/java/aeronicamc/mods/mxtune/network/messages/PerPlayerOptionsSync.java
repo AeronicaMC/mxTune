@@ -1,6 +1,6 @@
 package aeronicamc.mods.mxtune.network.messages;
 
-import aeronicamc.mods.mxtune.caps.LivingEntityModCapProvider;
+import aeronicamc.mods.mxtune.caps.player.PerPlayerOptionsProvider;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
@@ -13,35 +13,35 @@ import org.apache.logging.log4j.Logger;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class LivingEntityModCapSync extends AbstractMessage<LivingEntityModCapSync>
+public class PerPlayerOptionsSync extends AbstractMessage<PerPlayerOptionsSync>
 {
-    private static final Logger LOGGER = LogManager.getLogger(LivingEntityModCapSync.class);
+    private static final Logger LOGGER = LogManager.getLogger(PerPlayerOptionsSync.class);
     private final int playId;
     private final int entityId;
 
-    public LivingEntityModCapSync()
+    public PerPlayerOptionsSync()
     {
         this.playId = -1;
         this.entityId = Integer.MIN_VALUE;
     }
 
-    public LivingEntityModCapSync(final int playId, final int entityId)
+    public PerPlayerOptionsSync(final int playId, final int entityId)
     {
         this.playId = playId;
         this.entityId = entityId;
     }
 
     @Override
-    public LivingEntityModCapSync decode(final PacketBuffer buffer)
+    public PerPlayerOptionsSync decode(final PacketBuffer buffer)
     {
         final int playId = buffer.readInt();
         final int entityId = buffer.readInt();
         LOGGER.debug("playId: {}", playId);
-        return new LivingEntityModCapSync(playId, entityId);
+        return new PerPlayerOptionsSync(playId, entityId);
     }
 
     @Override
-    public void encode(final LivingEntityModCapSync message, final PacketBuffer buffer)
+    public void encode(final PerPlayerOptionsSync message, final PacketBuffer buffer)
     {
         LOGGER.debug("playId: {}", message.playId);
         buffer.writeInt(message.playId);
@@ -49,7 +49,7 @@ public class LivingEntityModCapSync extends AbstractMessage<LivingEntityModCapSy
     }
 
     @Override
-    public void handle(final LivingEntityModCapSync message, final Supplier<NetworkEvent.Context> ctx)
+    public void handle(final PerPlayerOptionsSync message, final Supplier<NetworkEvent.Context> ctx)
     {
         if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT)
             ctx.get().enqueueWork(() ->
@@ -59,8 +59,8 @@ public class LivingEntityModCapSync extends AbstractMessage<LivingEntityModCapSy
                             world -> {
                                 final LivingEntity livingEntity = (LivingEntity) world.getEntity(message.entityId);
                                 if (livingEntity != null)
-                                    LivingEntityModCapProvider.getLivingEntityModCap(livingEntity).ifPresent(
-                                            livingEntityCap -> livingEntityCap.setPlayId(message.playId));
+                                    PerPlayerOptionsProvider.getPerPlayerOptions(livingEntity).ifPresent(
+                                            playerOptions -> playerOptions.setPlayId(message.playId));
                     });
                 });
         ctx.get().setPacketHandled(true);

@@ -35,7 +35,7 @@ public class PacketDispatcher
         // Bidirectional
         registerMessage(SendKeyMessage.class, new SendKeyMessage());
         // To Client(s)
-        registerMessage(LivingEntityModCapSync.class, new LivingEntityModCapSync());
+        registerMessage(PerPlayerOptionsSync.class, new PerPlayerOptionsSync());
         registerMessage(OpenScreenMessage.class, new OpenScreenMessage());
         registerMessage(PlaySoloMessage.class, new PlaySoloMessage());
         registerMessage(StopPlayIdMessage.class, new StopPlayIdMessage());

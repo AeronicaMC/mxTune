@@ -1,6 +1,6 @@
 package aeronicamc.mods.mxtune.items;
 
-import aeronicamc.mods.mxtune.caps.LivingEntityModCapProvider;
+import aeronicamc.mods.mxtune.caps.player.PerPlayerOptionsProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -31,7 +31,7 @@ public class GuiTestItem extends Item
             if (!playerIn.isShiftKeyDown())
             {
                 //PacketDispatcher.sendTo(new OpenScreenMessage(OpenScreenMessage.SM.TEST_ONE), (ServerPlayerEntity) playerIn);
-                LivingEntityModCapProvider.getLivingEntityModCap(playerIn).ifPresent(p->{
+                PerPlayerOptionsProvider.getPerPlayerOptions(playerIn).ifPresent(p->{
                         p.setPlayId(worldIn.getRandom().nextInt(10));
                 });
             }
@@ -45,7 +45,7 @@ public class GuiTestItem extends Item
             // nop
         } else
         {
-            LivingEntityModCapProvider.getLivingEntityModCap(playerIn).ifPresent(p->{
+            PerPlayerOptionsProvider.getPerPlayerOptions(playerIn).ifPresent(p->{
                 LogManager.getLogger().debug("playId: {}", p.getPlayId());
             });
         }

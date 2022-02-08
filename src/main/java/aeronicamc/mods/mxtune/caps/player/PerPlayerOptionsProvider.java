@@ -1,13 +1,13 @@
-package aeronicamc.mods.mxtune.caps;
+package aeronicamc.mods.mxtune.caps.player;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.caps.SerializableCapabilityProvider;
 import aeronicamc.mods.mxtune.util.Misc;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.IntNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
@@ -24,45 +24,44 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 
 
-public final class LivingEntityModCapProvider
+public final class PerPlayerOptionsProvider
 {
-    private static final Logger LOGGER = LogManager.getLogger(LivingEntityModCapProvider.class);
+    private static final Logger LOGGER = LogManager.getLogger(PerPlayerOptionsProvider.class);
 
-    @CapabilityInject(ILivingEntityModCap.class)
-    public static final Capability<ILivingEntityModCap> LIVING_ENTITY_MOD_CAP_CAPABILITY = Misc.nonNullInjected();
+    @CapabilityInject(IPerPlayerOptions.class)
+    public static final Capability<IPerPlayerOptions> PLAYER_OPTIONS_CAPABILITY = Misc.nonNullInjected();
 
-    private LivingEntityModCapProvider() { /* NOP */ }
+    private PerPlayerOptionsProvider() { /* NOP */ }
 
-    public static final ResourceLocation ID = new ResourceLocation(Reference.MOD_ID, "living_mod_cap");
+    public static final ResourceLocation ID = new ResourceLocation(Reference.MOD_ID, "per_player_options");
 
     public static void register()
     {
-        CapabilityManager.INSTANCE.register(ILivingEntityModCap.class, new Capability.IStorage<ILivingEntityModCap>()
+        CapabilityManager.INSTANCE.register(IPerPlayerOptions.class, new Capability.IStorage<IPerPlayerOptions>()
         {
             @Nullable
             @Override
-            public INBT writeNBT(final Capability<ILivingEntityModCap> capability, final ILivingEntityModCap instance, final Direction side)
+            public INBT writeNBT(final Capability<IPerPlayerOptions> capability, final IPerPlayerOptions instance, final Direction side)
             {
-                return IntNBT.valueOf(instance.getPlayId());
+                return instance.serializeNBT();
             }
 
             @Override
-            public void readNBT(final Capability<ILivingEntityModCap> capability, final ILivingEntityModCap instance, final Direction side, final INBT nbt)
+            public void readNBT(final Capability<IPerPlayerOptions> capability, final IPerPlayerOptions instance, final Direction side, final INBT nbt)
             {
-                if (!(instance instanceof LivingEntityModCap))
+                if (!(instance instanceof PerPlayerOptions))
                     throw new IllegalArgumentException("Can not deserialize to an instance that isn't the default implementation");
 
-                instance.setPlayId(((IntNBT) nbt).getAsInt());
+                instance.deserializeNBT(nbt);
             }
-        }, () -> new LivingEntityModCap(null));
+        }, () -> null);
     }
 
-    public static LazyOptional<ILivingEntityModCap> getLivingEntityModCap(final LivingEntity entity)
+    public static LazyOptional<IPerPlayerOptions> getPerPlayerOptions(final LivingEntity entity)
     {
-        return entity.getCapability(LIVING_ENTITY_MOD_CAP_CAPABILITY, null);
+        return entity.getCapability(PLAYER_OPTIONS_CAPABILITY, null);
     }
 
-    // TODO: Fix the network errors caused by a null here -> LOGGER.debug("AttachCapabilitiesEvent: {}", (event.getObject()));
     @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
     public static class EventHandler
     {
@@ -72,9 +71,9 @@ public final class LivingEntityModCapProvider
             if (event.getObject() instanceof PlayerEntity)
             {
                 final PlayerEntity playerEntity = (PlayerEntity) event.getObject();
-                final LivingEntityModCap livingEntityModCap = new LivingEntityModCap(playerEntity);
-                event.addCapability(ID, new SerializableCapabilityProvider<>(LIVING_ENTITY_MOD_CAP_CAPABILITY, null, livingEntityModCap));
-                event.addListener(() -> getLivingEntityModCap(playerEntity).invalidate());
+                final PerPlayerOptions perPlayerOptions = new PerPlayerOptions(playerEntity);
+                event.addCapability(ID, new SerializableCapabilityProvider<>(PLAYER_OPTIONS_CAPABILITY, null, perPlayerOptions));
+                event.addListener(() -> getPerPlayerOptions(playerEntity).invalidate());
                 //LOGGER.debug("AttachCapabilitiesEvent: {}", playerEntity);
             }
         }
@@ -90,9 +89,9 @@ public final class LivingEntityModCapProvider
             if (event.getPlayer() instanceof ServerPlayerEntity)
             {
                 event.getOriginal().revive(); // gighertz workaround for MCForge #5956 PlayerEvent.Clone Capability Provider is invalid
-                getLivingEntityModCap(event.getOriginal()).ifPresent(oldLivingEntityCap ->
+                getPerPlayerOptions(event.getOriginal()).ifPresent(oldLivingEntityCap ->
                 {
-                 getLivingEntityModCap(event.getPlayer()).ifPresent(newLivingEntityCap ->
+                 getPerPlayerOptions(event.getPlayer()).ifPresent(newLivingEntityCap ->
                     {
                         newLivingEntityCap.setPlayId(oldLivingEntityCap.getPlayId());
                         newLivingEntityCap.sync();

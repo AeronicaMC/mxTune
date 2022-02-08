@@ -1,7 +1,7 @@
 package aeronicamc.mods.mxtune.events;
 
 import aeronicamc.mods.mxtune.Reference;
-import aeronicamc.mods.mxtune.caps.ILivingEntityModCap;
+import aeronicamc.mods.mxtune.caps.player.IPerPlayerOptions;
 import aeronicamc.mods.mxtune.caps.stages.IServerStageAreas;
 import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
 import aeronicamc.mods.mxtune.managers.PlayManager;
@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static aeronicamc.mods.mxtune.caps.LivingEntityModCapProvider.getLivingEntityModCap;
+import static aeronicamc.mods.mxtune.caps.player.PerPlayerOptionsProvider.getPerPlayerOptions;
 import static aeronicamc.mods.mxtune.caps.stages.ServerStageAreaProvider.getServerStageAreas;
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
@@ -86,7 +86,7 @@ public class ModPlayerEvents
     private static void capabilitySynchronize(LivingEntity livingEntity)
     {
         getServerStageAreas(livingEntity.level).ifPresent(IServerStageAreas::sync);
-        getLivingEntityModCap(livingEntity).ifPresent(ILivingEntityModCap::sync);
+        getPerPlayerOptions(livingEntity).ifPresent(IPerPlayerOptions::sync);
     }
 
 }

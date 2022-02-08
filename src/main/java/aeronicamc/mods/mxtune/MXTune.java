@@ -21,7 +21,7 @@ import aeronicamc.mods.mxtune.blocks.InvTestScreen;
 import aeronicamc.mods.mxtune.blocks.MusicBlockScreen;
 import aeronicamc.mods.mxtune.caches.FileHelper;
 import aeronicamc.mods.mxtune.caches.ModDataStore;
-import aeronicamc.mods.mxtune.caps.LivingEntityModCapProvider;
+import aeronicamc.mods.mxtune.caps.player.PerPlayerOptionsProvider;
 import aeronicamc.mods.mxtune.caps.stages.ServerStageAreaProvider;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.gui.InstrumentScreen;
@@ -96,7 +96,7 @@ public class MXTune
     {
         ModEntities.extendEntityClassification();
         PacketDispatcher.register();
-        LivingEntityModCapProvider.register();
+        PerPlayerOptionsProvider.register();
         ServerStageAreaProvider.register();
     }
 
