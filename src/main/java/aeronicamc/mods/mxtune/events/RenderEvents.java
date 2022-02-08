@@ -57,6 +57,7 @@ public class RenderEvents
     {
         if (mc.player == null )
             return;
+        if (mc.options.renderDebug) return;
 
         PlayerEntity player = mc.player;
         ItemStack itemStack = player.inventory.getSelected();
@@ -78,6 +79,30 @@ public class RenderEvents
             mc.font.draw(pPoseStack, SheetMusicHelper.getFormattedMusicDuration(sheetMusic), 30.0F, 17.0F, -11534256);
             mc.getItemRenderer().renderAndDecorateItem(itemStack, 8, 8);
         }
+//        if (event.getType() == RenderGameOverlayEvent.ElementType.ALL && (mc.screen == null) && itemStack.getItem() instanceof StageToolItem)
+//        {
+//            MatrixStack pPoseStack = event.getMatrixStack();
+//            ActiveRenderInfo activeRenderInfo = mc.gameRenderer.getMainCamera();
+//            RayTraceResult raytraceresult = mc.hitResult;
+//
+//            ITextComponent textComponent = new StringTextComponent("test").withStyle(TextFormatting.WHITE);
+//            int offset = Math.max(mc.font.width(textComponent) + 40, width);
+//
+//            if (raytraceresult != null && raytraceresult.getType() == RayTraceResult.Type.BLOCK)
+//                StageAreaRenderer.renderFloatingText(textComponent, raytraceresult.getLocation(), pPoseStack , mc.renderBuffers().bufferSource(), activeRenderInfo, -1);
+//
+//            mc.getTextureManager().bind(TEXTURE);
+//            RenderSystem.color3f(1.0F, 1.0F, 1.0F);
+//            blit(pPoseStack, 0, 0, 0, 0, width, height);
+//            blit(pPoseStack, ((offset - width)/2) + 5, 0, 10, 0, width-10, height);
+//            blit(pPoseStack, offset - width + 10, 0, 10, 0, width, height);
+//
+//            mc.font.draw(pPoseStack, textComponent, 30.0F, 7.0F, -11534256);
+//            mc.font.draw(pPoseStack, textComponent, 30.0F, 17.0F, -11534256);
+//            mc.getItemRenderer().renderAndDecorateItem(itemStack, 8, 8);
+//
+//        }
+
     }
 
     static void blit(MatrixStack pMatrixStack, int pX, int pY, int pUOffset, int pVOffset, int pUWidth, int pVHeight) {
