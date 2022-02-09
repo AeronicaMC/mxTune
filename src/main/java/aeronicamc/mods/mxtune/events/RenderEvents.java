@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.ClippingHelper;
+import net.minecraft.client.settings.GraphicsFanciness;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -109,7 +110,7 @@ public class RenderEvents
         AbstractGui.blit(pMatrixStack, pX, pY, blitOffset, (float)pUOffset, (float)pVOffset, pUWidth, pVHeight, 256, 256);
     }
 
-    // It's absolutely Fabulous
+    // It's absolutely Fabulous... or maybe not, but at least in Fabulous Graphics mode it's not bad.
     public static void renderLast(MatrixStack pMatrixStack, IRenderTypeBuffer.Impl pBuffer, LightTexture pLightTexture, ActiveRenderInfo pActiveRenderInfo, float pPartialTicks, ClippingHelper pClippingHelper)
     {
         final PlayerEntity player = mc.player;
@@ -126,27 +127,43 @@ public class RenderEvents
                     areas.getStageAreas().stream().filter(area-> pClippingHelper.isVisible(area.getAreaAABB())).forEach(
                             (area) -> {
                                 IVertexBuilder vertexBuilder1 = pBuffer.getBuffer(RenderType.lightning());
-                                StageAreaRenderer.renderFaces(pMatrixStack, vertexBuilder1, area.getAreaAABB(), camX, camY, camZ, 1F, 0F, 1F, 0.1F);
+                                if (mc.options.graphicsMode.equals(GraphicsFanciness.FABULOUS))
+                                    StageAreaRenderer.renderFaces(pMatrixStack, vertexBuilder1, area.getAreaAABB(), camX, camY, camZ, 1F, 0F, 1F, 0.1F);
 
 
                                 IVertexBuilder vertexBuilder2 = pBuffer.getBuffer(RenderType.lines());
                                 VoxelShape cubeShape = VoxelShapes.create(area.getAreaAABB());
                                 StageAreaRenderer.renderEdges(pMatrixStack, vertexBuilder2, cubeShape, camX, camY, camZ, 1F, 0F, 1F, 1F);
 
-                                StageAreaRenderer.renderFloatingText(new StringTextComponent(area.getTitle()),
-                                                                     area.getAreaAABB().getCenter(),
-                                                                     pMatrixStack,
-                                                                     pBuffer, pActiveRenderInfo, -1);
+                                if (!(pActiveRenderInfo.getEntity().distanceToSqr(area.getAreaAABB().getCenter()) > 512))
+                                {
+                                    StageAreaRenderer.renderFloatingText(new StringTextComponent(area.getTitle()),
+                                                                         area.getAreaAABB().getCenter(),
+                                                                         pMatrixStack,
+                                                                         pBuffer, pActiveRenderInfo, -1);
 
-                                StageAreaRenderer.renderFloatingText(new StringTextComponent("Audience Spawn"),
-                                                                     new Vector3d(area.getAudienceSpawn().getX() + 0.5, area.getAudienceSpawn().getY() + 1.5, area.getAudienceSpawn().getZ() + 0.5),
-                                                                     pMatrixStack,
-                                                                     pBuffer, pActiveRenderInfo, -1);
+                                    StageAreaRenderer.renderFloatingText(new StringTextComponent("Audience Spawn"),
+                                                                         new Vector3d(area.getAudienceSpawn().getX() + 0.5, area.getAudienceSpawn().getY() + 1.5, area.getAudienceSpawn().getZ() + 0.5),
+                                                                         pMatrixStack,
+                                                                         pBuffer, pActiveRenderInfo, -1);
 
-                                StageAreaRenderer.renderFloatingText(new StringTextComponent("Performer Spawn"),
-                                                                     new Vector3d(area.getPerformerSpawn().getX() + 0.5, area.getPerformerSpawn().getY() + 1.5, area.getPerformerSpawn().getZ() + 0.5),
-                                                                     pMatrixStack,
-                                                                     pBuffer, pActiveRenderInfo, -1);
+                                    StageAreaRenderer.renderFloatingText(new StringTextComponent("Performer Spawn"),
+                                                                         new Vector3d(area.getPerformerSpawn().getX() + 0.5, area.getPerformerSpawn().getY() + 1.5, area.getPerformerSpawn().getZ() + 0.5),
+                                                                         pMatrixStack,
+
+                                                                         pBuffer, pActiveRenderInfo, -1);
+                                }
+                                // Need check if RenderType.lightning() is actually part of the ShaderGroup transparencyChain
+                                if (mc.levelRenderer.transparencyChain != null)
+                                {
+                                    pBuffer.endBatch();
+                                    pBuffer.endBatch(RenderType.lines());
+                                    pBuffer.endBatch(RenderType.lightning());
+                                } else
+                                {
+                                    pBuffer.endBatch();
+                                    pBuffer.endBatch(RenderType.lines());
+                                }
                             });
                 });
     }
