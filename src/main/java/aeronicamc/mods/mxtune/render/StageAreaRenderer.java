@@ -1,20 +1,86 @@
 package aeronicamc.mods.mxtune.render;
 
+import aeronicamc.mods.mxtune.caps.stages.ServerStageAreaProvider;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.culling.ClippingHelper;
+import net.minecraft.client.settings.GraphicsFanciness;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.World;
 
 public class StageAreaRenderer
 {
+    private static final Minecraft mc = Minecraft.getInstance();
     private StageAreaRenderer() { /* NOP */ }
+
+    public static void render(MatrixStack pMatrixStack, IRenderTypeBuffer.Impl pBuffer, LightTexture pLightTexture, ActiveRenderInfo pActiveRenderInfo, float pPartialTicks, ClippingHelper pClippingHelper)
+    {
+        final PlayerEntity player = mc.player;
+        World level;
+        if (player == null || (level = player.level) == null) return;
+
+        Vector3d camera = pActiveRenderInfo.getPosition();
+        double camX = camera.x;
+        double camY = camera.y;
+        double camZ = camera.z;
+
+        ServerStageAreaProvider.getServerStageAreas(level).ifPresent(
+                areas -> {
+                    areas.getStageAreas().stream().filter(area-> pClippingHelper.isVisible(area.getAreaAABB())).forEach(
+                            (area) -> {
+                                IVertexBuilder vertexBuilder1 = pBuffer.getBuffer(RenderType.lightning());
+                                if (mc.options.graphicsMode.equals(GraphicsFanciness.FABULOUS))
+                                    StageAreaRenderer.renderFaces(pMatrixStack, vertexBuilder1, area.getAreaAABB(), camX, camY, camZ, 1F, 0F, 1F, 0.1F);
+
+                                IVertexBuilder vertexBuilder2 = pBuffer.getBuffer(RenderType.lines());
+                                VoxelShape cubeShape = VoxelShapes.create(area.getAreaAABB());
+                                StageAreaRenderer.renderEdges(pMatrixStack, vertexBuilder2, cubeShape, camX, camY, camZ, 1F, 0F, 1F, 1F);
+
+                                if (!(pActiveRenderInfo.getEntity().distanceToSqr(area.getAreaAABB().getCenter()) > 512))
+                                {
+                                    StageAreaRenderer.renderFloatingText(new StringTextComponent(area.getTitle()),
+                                                                         area.getAreaAABB().getCenter(),
+                                                                         pMatrixStack,
+                                                                         pBuffer, pActiveRenderInfo, -1);
+
+                                    StageAreaRenderer.renderFloatingText(new StringTextComponent("Audience Spawn"),
+                                                                         new Vector3d(area.getAudienceSpawn().getX() + 0.5, area.getAudienceSpawn().getY() + 1.5, area.getAudienceSpawn().getZ() + 0.5),
+                                                                         pMatrixStack,
+                                                                         pBuffer, pActiveRenderInfo, -1);
+
+                                    StageAreaRenderer.renderFloatingText(new StringTextComponent("Performer Spawn"),
+                                                                         new Vector3d(area.getPerformerSpawn().getX() + 0.5, area.getPerformerSpawn().getY() + 1.5, area.getPerformerSpawn().getZ() + 0.5),
+                                                                         pMatrixStack,
+
+                                                                         pBuffer, pActiveRenderInfo, -1);
+                                }
+                                // Need check if RenderType.lightning() is actually part of the ShaderGroup transparencyChain
+                                if (mc.levelRenderer.transparencyChain != null)
+                                {
+                                    pBuffer.endBatch();
+                                    pBuffer.endBatch(RenderType.lines());
+                                    pBuffer.endBatch(RenderType.lightning());
+                                } else
+                                {
+                                    pBuffer.endBatch();
+                                    pBuffer.endBatch(RenderType.lines());
+                                }
+                            });
+                });
+    }
 
     public static void renderEdges(MatrixStack pMatrixStack, IVertexBuilder pBuffer, VoxelShape pShape, double pX, double pY, double pZ, float pRed, float pGreen, float pBlue, float pAlpha) {
         Matrix4f matrix4f = pMatrixStack.last().pose();
