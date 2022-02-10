@@ -3,23 +3,35 @@ package aeronicamc.mods.mxtune.events;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.init.ModBlocks;
 import aeronicamc.mods.mxtune.init.ModItems;
+import aeronicamc.mods.mxtune.items.StageToolItem;
 import aeronicamc.mods.mxtune.render.StageAreaRenderer;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.DrawHighlightEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -43,6 +55,35 @@ public class RenderEvents
     static int width = 160;
     static int height = 32;
     static int blitOffset = 0;
+
+    @SubscribeEvent
+    public static void event(DrawHighlightEvent.HighlightBlock event)
+    {
+        if (mc.player == null )
+            return;
+        if (mc.options.renderDebug) return;
+        if (!(mc.player.inventory.getSelected().getItem() instanceof StageToolItem)) return;
+        if (event.isCancelable()) event.setCanceled(true);
+
+        final BlockRayTraceResult blockRayTraceResult = event.getTarget();
+        final IRenderTypeBuffer renderTypeBuffer = event.getBuffers();
+        final ActiveRenderInfo activeRenderInfo = event.getInfo();
+        final MatrixStack matrixStack = event.getMatrix();
+
+        Vector3d vector3d = activeRenderInfo.getPosition();
+        double camX = vector3d.x();
+        double camY = vector3d.y();
+        double camZ = vector3d.z();
+        World level = mc.player.level;
+
+        BlockPos blockPos = blockRayTraceResult.getBlockPos();
+        BlockState blockState = level.getBlockState(blockRayTraceResult.getBlockPos());
+
+        if (!blockState.isAir(level, blockPos) && level.getWorldBorder().isWithinBounds(blockPos)) {
+            IVertexBuilder ivertexBuilder = renderTypeBuffer.getBuffer(RenderType.lines());
+            StageAreaRenderer.renderHitOutline(level, matrixStack, ivertexBuilder, activeRenderInfo.getEntity(), camX, camY, camZ, blockPos, blockState);
+        }
+    }
 
     @SubscribeEvent
     public static void event(RenderGameOverlayEvent.Post event)
@@ -71,30 +112,30 @@ public class RenderEvents
             mc.font.draw(pPoseStack, SheetMusicHelper.getFormattedMusicDuration(sheetMusic), 30.0F, 17.0F, -11534256);
             mc.getItemRenderer().renderAndDecorateItem(itemStack, 8, 8);
         }
-//        if (event.getType() == RenderGameOverlayEvent.ElementType.ALL && (mc.screen == null) && itemStack.getItem() instanceof StageToolItem)
-//        {
-//            MatrixStack pPoseStack = event.getMatrixStack();
-//            ActiveRenderInfo activeRenderInfo = mc.gameRenderer.getMainCamera();
-//            RayTraceResult raytraceresult = mc.hitResult;
-//
-//            ITextComponent textComponent = new StringTextComponent("test").withStyle(TextFormatting.WHITE);
-//            int offset = Math.max(mc.font.width(textComponent) + 40, width);
-//
-//            if (raytraceresult != null && raytraceresult.getType() == RayTraceResult.Type.BLOCK)
-//                StageAreaRenderer.renderFloatingText(textComponent, raytraceresult.getLocation(), pPoseStack , mc.renderBuffers().bufferSource(), activeRenderInfo, -1);
-//
-//            mc.getTextureManager().bind(TEXTURE);
-//            RenderSystem.color3f(1.0F, 1.0F, 1.0F);
-//            blit(pPoseStack, 0, 0, 0, 0, width, height);
-//            blit(pPoseStack, ((offset - width)/2) + 5, 0, 10, 0, width-10, height);
-//            blit(pPoseStack, offset - width + 10, 0, 10, 0, width, height);
-//
-//            mc.font.draw(pPoseStack, textComponent, 30.0F, 7.0F, -11534256);
-//            mc.font.draw(pPoseStack, textComponent, 30.0F, 17.0F, -11534256);
-//            mc.getItemRenderer().renderAndDecorateItem(itemStack, 8, 8);
-//
-//        }
 
+        if (event.getType() == RenderGameOverlayEvent.ElementType.ALL && (mc.screen == null) && itemStack.getItem() instanceof StageToolItem)
+        {
+            MatrixStack pPoseStack = event.getMatrixStack();
+            ActiveRenderInfo activeRenderInfo = mc.gameRenderer.getMainCamera();
+            RayTraceResult raytraceresult = mc.hitResult;
+
+            ITextComponent textComponent = new StringTextComponent("test").withStyle(TextFormatting.WHITE);
+            int offset = Math.max(mc.font.width(textComponent) + 40, width);
+
+            if (raytraceresult != null && raytraceresult.getType() == RayTraceResult.Type.BLOCK)
+                StageAreaRenderer.renderFloatingText(textComponent, raytraceresult.getLocation(), pPoseStack , mc.renderBuffers().bufferSource(), activeRenderInfo, -1);
+            mc.renderBuffers().bufferSource().endBatch();
+
+            mc.getTextureManager().bind(TEXTURE);
+            RenderSystem.color3f(1.0F, 1.0F, 1.0F);
+            blit(pPoseStack, 0, 0, 0, 0, width, height);
+            blit(pPoseStack, ((offset - width)/2) + 5, 0, 10, 0, width-10, height);
+            blit(pPoseStack, offset - width + 10, 0, 10, 0, width, height);
+
+            mc.font.draw(pPoseStack, textComponent, 30.0F, 7.0F, -11534256);
+            mc.font.draw(pPoseStack, textComponent, 30.0F, 17.0F, -11534256);
+            mc.getItemRenderer().renderAndDecorateItem(itemStack, 8, 8);
+        }
     }
 
     static void blit(MatrixStack pMatrixStack, int pX, int pY, int pUOffset, int pVOffset, int pUWidth, int pVHeight) {
