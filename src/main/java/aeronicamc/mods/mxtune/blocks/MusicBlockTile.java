@@ -177,16 +177,10 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
         setChanged();
     }
 
-    @Nullable
     @Override
-    public IItemHandler getInventory()
+    public LazyOptional<IItemHandler> getItemHandler()
     {
-        if (handler.resolve().isPresent())
-        {
-            return this.handler.resolve().get();
-        }
-        else
-            return null;
+        return handler;
     }
 
     @Override

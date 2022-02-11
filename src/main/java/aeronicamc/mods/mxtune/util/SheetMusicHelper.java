@@ -220,40 +220,41 @@ public enum SheetMusicHelper
     {
         if (!(pTileEntity instanceof IMusicPlayer)) return MusicProperties.INVALID;
         StringBuilder buildMML = new StringBuilder();
-        int duration = 0;
         IMusicPlayer musicPlayer = (IMusicPlayer) pTileEntity;
-        int slotCount = musicPlayer.getInventory() != null ? musicPlayer.getInventory().getSlots() : 0;
-        for (int slot = 0; slot < slotCount; slot++)
-        {
-            ItemStack stackInSlot = musicPlayer.getInventory().getStackInSlot(slot);
-            if (!stackInSlot.isEmpty() && stackInSlot.getItem() instanceof IInstrument)
-            {
-                IInstrument instrument = (IInstrument) stackInSlot.getItem();
-                int patch = instrument.getPatch(stackInSlot);
-                ItemStack sheetMusic = getIMusicFromIInstrument(stackInSlot);
-                if (!sheetMusic.isEmpty() && sheetMusic.getTag() != null)
-                {
-                    CompoundNBT contents = (CompoundNBT) sheetMusic.getTag().get(KEY_SHEET_MUSIC);
-                    if (contents != null && contents.contains(KEY_MUSIC_TEXT_KEY, NBT.TAG_STRING))
-                    {
-                        String keyMusicTextKey = contents.getString(KEY_MUSIC_TEXT_KEY);
-                        String musicText = ModDataStore.getMusicText(keyMusicTextKey);
-                        if (musicText != null && musicText.contains("MML@"))
-                        {
-                            musicText = musicText.replace("MML@", "MML@I" + patch);
-                        }
-                        else
-                        {
-                            musicText = "";
-                        }
-                        buildMML.append(musicText);
-                        duration = Math.max(duration, contents.getInt(KEY_DURATION));
-                    }
+        final int[] duration = new int[1];
 
+        musicPlayer.getItemHandler().ifPresent(inventory -> {
+            for (int slot = 0; slot < inventory.getSlots(); slot++)
+                {
+                    ItemStack stackInSlot = inventory.getStackInSlot(slot);
+                    if (!stackInSlot.isEmpty() && stackInSlot.getItem() instanceof IInstrument)
+                    {
+                        IInstrument instrument = (IInstrument) stackInSlot.getItem();
+                        int patch = instrument.getPatch(stackInSlot);
+                        ItemStack sheetMusic = getIMusicFromIInstrument(stackInSlot);
+                        if (!sheetMusic.isEmpty() && sheetMusic.getTag() != null)
+                        {
+                            CompoundNBT contents = (CompoundNBT) sheetMusic.getTag().get(KEY_SHEET_MUSIC);
+                            if (contents != null && contents.contains(KEY_MUSIC_TEXT_KEY, NBT.TAG_STRING))
+                            {
+                                String keyMusicTextKey = contents.getString(KEY_MUSIC_TEXT_KEY);
+                                String musicText = ModDataStore.getMusicText(keyMusicTextKey);
+                                if (musicText != null && musicText.contains("MML@"))
+                                {
+                                    musicText = musicText.replace("MML@", "MML@I" + patch);
+                                }
+                                else
+                                {
+                                    musicText = "";
+                                }
+                                buildMML.append(musicText);
+                                duration[0] = Math.max(duration[0], contents.getInt(KEY_DURATION));
+                            }
+                        }
+                    }
                 }
-            }
-        }
-        return new MusicProperties(buildMML.toString(), duration);
+        });
+        return new MusicProperties(buildMML.toString(), duration[0]);
     }
 
     // TODO: when placed instruments are created.
