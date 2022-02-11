@@ -24,32 +24,32 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 
 
-public final class PerPlayerOptionsProvider
+public final class PlayerNexusProvider
 {
-    private static final Logger LOGGER = LogManager.getLogger(PerPlayerOptionsProvider.class);
+    private static final Logger LOGGER = LogManager.getLogger(PlayerNexusProvider.class);
 
-    @CapabilityInject(IPerPlayerOptions.class)
-    public static final Capability<IPerPlayerOptions> PLAYER_OPTIONS_CAPABILITY = Misc.nonNullInjected();
+    @CapabilityInject(IPlayerNexus.class)
+    public static final Capability<IPlayerNexus> NEXUS_CAPABILITY = Misc.nonNullInjected();
 
-    private PerPlayerOptionsProvider() { /* NOP */ }
+    private PlayerNexusProvider() { /* NOP */ }
 
-    public static final ResourceLocation ID = new ResourceLocation(Reference.MOD_ID, "per_player_options");
+    public static final ResourceLocation ID = new ResourceLocation(Reference.MOD_ID, "nexus");
 
     public static void register()
     {
-        CapabilityManager.INSTANCE.register(IPerPlayerOptions.class, new Capability.IStorage<IPerPlayerOptions>()
+        CapabilityManager.INSTANCE.register(IPlayerNexus.class, new Capability.IStorage<IPlayerNexus>()
         {
             @Nullable
             @Override
-            public INBT writeNBT(final Capability<IPerPlayerOptions> capability, final IPerPlayerOptions instance, final Direction side)
+            public INBT writeNBT(final Capability<IPlayerNexus> capability, final IPlayerNexus instance, final Direction side)
             {
                 return instance.serializeNBT();
             }
 
             @Override
-            public void readNBT(final Capability<IPerPlayerOptions> capability, final IPerPlayerOptions instance, final Direction side, final INBT nbt)
+            public void readNBT(final Capability<IPlayerNexus> capability, final IPlayerNexus instance, final Direction side, final INBT nbt)
             {
-                if (!(instance instanceof PerPlayerOptions))
+                if (!(instance instanceof PlayerNexus))
                     throw new IllegalArgumentException("Can not deserialize to an instance that isn't the default implementation");
 
                 instance.deserializeNBT(nbt);
@@ -57,9 +57,9 @@ public final class PerPlayerOptionsProvider
         }, () -> null);
     }
 
-    public static LazyOptional<IPerPlayerOptions> getPerPlayerOptions(final LivingEntity entity)
+    public static LazyOptional<IPlayerNexus> getPerPlayerOptions(final LivingEntity entity)
     {
-        return entity.getCapability(PLAYER_OPTIONS_CAPABILITY, null);
+        return entity.getCapability(NEXUS_CAPABILITY, null);
     }
 
     @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
@@ -71,8 +71,8 @@ public final class PerPlayerOptionsProvider
             if (event.getObject() instanceof PlayerEntity)
             {
                 final PlayerEntity playerEntity = (PlayerEntity) event.getObject();
-                final PerPlayerOptions perPlayerOptions = new PerPlayerOptions(playerEntity);
-                event.addCapability(ID, new SerializableCapabilityProvider<>(PLAYER_OPTIONS_CAPABILITY, null, perPlayerOptions));
+                final PlayerNexus perPlayerOptions = new PlayerNexus(playerEntity);
+                event.addCapability(ID, new SerializableCapabilityProvider<>(NEXUS_CAPABILITY, null, perPlayerOptions));
                 event.addListener(() -> getPerPlayerOptions(playerEntity).invalidate());
                 //LOGGER.debug("AttachCapabilitiesEvent: {}", playerEntity);
             }

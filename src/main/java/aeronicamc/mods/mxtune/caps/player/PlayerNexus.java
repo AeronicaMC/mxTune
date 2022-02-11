@@ -2,7 +2,7 @@ package aeronicamc.mods.mxtune.caps.player;
 
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
-import aeronicamc.mods.mxtune.network.messages.PerPlayerOptionsSync;
+import aeronicamc.mods.mxtune.network.messages.PlayerNexusSync;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.IntNBT;
@@ -11,12 +11,12 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-public class PerPlayerOptions implements IPerPlayerOptions
+public class PlayerNexus implements IPlayerNexus
 {
     private int playId = PlayIdSupplier.PlayType.INVALID.getAsInt();
     private final LivingEntity entity;
 
-    PerPlayerOptions(@Nullable final LivingEntity entity)
+    PlayerNexus(@Nullable final LivingEntity entity)
     {
         this.entity = entity;
     }
@@ -54,6 +54,6 @@ public class PerPlayerOptions implements IPerPlayerOptions
         World world = entity.level;
         if (world.isClientSide) return;
         RegistryKey<World> dimension = world.dimension();
-        PacketDispatcher.sendToDimension(new PerPlayerOptionsSync(playId, entity.getId()), dimension);
+        PacketDispatcher.sendToDimension(new PlayerNexusSync(playId, entity.getId()), dimension);
     }
 }
