@@ -51,6 +51,7 @@ public class ServerStageAreas implements IServerStageAreas
     {
         genTest().getAreaAABB().inflate(0.002);
         stageAreas.add(genTest());
+        sync();
     }
 
     @Override
