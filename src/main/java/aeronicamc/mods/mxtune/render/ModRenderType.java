@@ -50,4 +50,16 @@ public class ModRenderType extends RenderType
                                                                   .setLightmapState(NO_LIGHTMAP)
                                                                   .setWriteMaskState(COLOR_WRITE)
                                                                   .createCompositeState(false));
+
+    public static final RenderType TRANSPARENT_QUADS_NO_TEXTURE = create("transparent_quads_no_texture",
+                                                                         DefaultVertexFormats.POSITION_COLOR, GL12.GL_QUADS, 256,
+                                                                         State.builder()
+                                                                                 .setLayeringState(VIEW_OFFSET_Z_LAYERING)
+                                                                                 .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                                                                                 .setTextureState(NO_TEXTURE)
+                                                                                 .setDepthTestState(NO_DEPTH_TEST)
+                                                                                 .setCullState(NO_CULL)
+                                                                                 .setLightmapState(NO_LIGHTMAP)
+                                                                                 .setWriteMaskState(COLOR_WRITE)
+                                                                                 .createCompositeState(true));
 }
