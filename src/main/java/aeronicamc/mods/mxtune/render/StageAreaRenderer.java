@@ -49,7 +49,7 @@ public class StageAreaRenderer
                                 if (mc.options.graphicsMode.equals(GraphicsFanciness.FABULOUS))
                                     StageAreaRenderer.renderFaces(pMatrixStack, vertexBuilder1, area.getAreaAABB(), camX, camY, camZ, 1F, 0F, 1F, 0.1F);
 
-                                IVertexBuilder vertexBuilder2 = pBuffer.getBuffer(RenderType.lines());
+                                IVertexBuilder vertexBuilder2 = pBuffer.getBuffer(ModRenderType.OVERLAY_LINES);
                                 VoxelShape cubeShape = VoxelShapes.create(area.getAreaAABB());
                                 StageAreaRenderer.renderEdges(pMatrixStack, vertexBuilder2, cubeShape, camX, camY, camZ, 1F, 0F, 1F, 1F);
 
@@ -75,12 +75,12 @@ public class StageAreaRenderer
                                 if (mc.levelRenderer.transparencyChain != null)
                                 {
                                     pBuffer.endBatch();
-                                    pBuffer.endBatch(RenderType.lines());
+                                    pBuffer.endBatch(ModRenderType.OVERLAY_LINES);
                                     pBuffer.endBatch(RenderType.lightning());
                                 } else
                                 {
                                     pBuffer.endBatch();
-                                    pBuffer.endBatch(RenderType.lines());
+                                    pBuffer.endBatch(ModRenderType.OVERLAY_LINES);
                                 }
                             });
                 });
