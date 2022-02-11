@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.ClippingHelper;
-import net.minecraft.client.settings.GraphicsFanciness;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -45,11 +44,10 @@ public class StageAreaRenderer
                 areas -> {
                     areas.getStageAreas().stream().filter(area-> pClippingHelper.isVisible(area.getAreaAABB())).forEach(
                             (area) -> {
-                                IVertexBuilder vertexBuilder1 = pBuffer.getBuffer(RenderType.lightning());
-                                if (mc.options.graphicsMode.equals(GraphicsFanciness.FABULOUS))
-                                    StageAreaRenderer.renderFaces(pMatrixStack, vertexBuilder1, area.getAreaAABB(), camX, camY, camZ, 1F, 0F, 1F, 0.1F);
+                                IVertexBuilder vertexBuilder1 = pBuffer.getBuffer(ModRenderType.TRANSPARENT_QUADS_NO_TEXTURE);
+                                StageAreaRenderer.renderFaces(pMatrixStack, vertexBuilder1, area.getAreaAABB(), camX, camY, camZ, 1F, 0F, 1F, 0.1F);
 
-                                IVertexBuilder vertexBuilder2 = pBuffer.getBuffer(ModRenderType.OVERLAY_LINES);
+                                IVertexBuilder vertexBuilder2 = pBuffer.getBuffer(RenderType.lines());
                                 VoxelShape cubeShape = VoxelShapes.create(area.getAreaAABB());
                                 StageAreaRenderer.renderEdges(pMatrixStack, vertexBuilder2, cubeShape, camX, camY, camZ, 1F, 0F, 1F, 1F);
 
@@ -71,17 +69,9 @@ public class StageAreaRenderer
 
                                                                          pBuffer, pActiveRenderInfo, -1);
                                 }
-                                // Need check if RenderType.lightning() is actually part of the ShaderGroup transparencyChain
-                                if (mc.levelRenderer.transparencyChain != null)
-                                {
-                                    pBuffer.endBatch();
-                                    pBuffer.endBatch(ModRenderType.OVERLAY_LINES);
-                                    pBuffer.endBatch(RenderType.lightning());
-                                } else
-                                {
-                                    pBuffer.endBatch();
-                                    pBuffer.endBatch(ModRenderType.OVERLAY_LINES);
-                                }
+                                pBuffer.endBatch();
+                                pBuffer.endBatch(RenderType.lines());
+                                pBuffer.endBatch(ModRenderType.TRANSPARENT_QUADS_NO_TEXTURE);
                             });
                 });
     }
