@@ -28,7 +28,7 @@ public class StageAreaData implements Comparable<StageAreaData>
     private UUID ownerUUID;
     private AxisAlignedBB areaAABB;
 
-    StageAreaData(BlockPos startPos, BlockPos endPos, BlockPos performerSpawn, BlockPos audienceSpawn, String title, UUID ownerUUID)
+    public StageAreaData(BlockPos startPos, BlockPos endPos, BlockPos performerSpawn, BlockPos audienceSpawn, String title, UUID ownerUUID)
     {
         this.startPos = startPos;
         this.endPos = endPos;

@@ -1,6 +1,8 @@
 package aeronicamc.mods.mxtune.caps.player;
 
+import aeronicamc.mods.mxtune.network.messages.StageToolMessage;
 import net.minecraft.nbt.INBT;
+import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
 
@@ -11,6 +13,10 @@ import javax.annotation.Nullable;
  */
 public interface IPlayerNexus
 {
+    void setStagePos(StageToolMessage.StageOperation operation, BlockPos blockPos);
+
+    void setStageName(String name);
+
     void setPlayId(int playId);
 
     int getPlayId();
