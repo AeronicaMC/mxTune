@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.items;
 
 import aeronicamc.mods.mxtune.caps.player.PlayerNexusProvider;
+import aeronicamc.mods.mxtune.caps.stages.ServerStageAreaProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -34,6 +35,9 @@ public class GuiTestItem extends Item
                 PlayerNexusProvider.getNexus(playerIn).ifPresent(p->{
                         p.setPlayId(worldIn.getRandom().nextInt(10));
                 });
+                ServerStageAreaProvider.getServerStageAreas(playerIn.level).ifPresent(s->{
+                    s.setInt((worldIn.getRandom().nextInt(100)));
+                });
             }
             else
             {
@@ -46,7 +50,10 @@ public class GuiTestItem extends Item
         } else
         {
             PlayerNexusProvider.getNexus(playerIn).ifPresent(p->{
-                LogManager.getLogger().debug("playId: {}", p.getPlayId());
+                LOGGER.debug("playId: {}", p.getPlayId());
+            });
+            ServerStageAreaProvider.getServerStageAreas(playerIn.level).ifPresent(s->{
+                LOGGER.debug("someInt: {}, Stages {}", s.getInt(), s.getStageAreas().size());
             });
         }
         return super.use(worldIn, playerIn, handIn);

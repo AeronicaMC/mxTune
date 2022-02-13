@@ -68,7 +68,7 @@ public final class PlayerNexusProvider
         @SubscribeEvent
         public static void event(final AttachCapabilitiesEvent<Entity> event)
         {
-            if (event.getObject() instanceof PlayerEntity)
+            if ((event.getObject() instanceof PlayerEntity))
             {
                 final PlayerEntity playerEntity = (PlayerEntity) event.getObject();
                 final PlayerNexus playerNexus = new PlayerNexus(playerEntity);

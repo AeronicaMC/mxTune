@@ -47,7 +47,7 @@ public class ServerStageAreaProvider
             {
                 if (!(instance instanceof ServerStageAreas))
                     throw new IllegalArgumentException("Can not deserialize to an instance that isn't the default implementation");
-                ((ServerStageAreas) instance).deserializeNBT(nbt);
+                instance.deserializeNBT(nbt);
             }
         }, () -> null);
     }
