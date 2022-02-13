@@ -11,7 +11,6 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -33,8 +32,9 @@ public class StageAreaSyncMessage extends AbstractMessage<StageAreaSyncMessage>
     @Override
     public StageAreaSyncMessage decode(final PacketBuffer buffer)
     {
-        final CompoundNBT compoundNBT = buffer.readNbt();
-        return new StageAreaSyncMessage(Objects.requireNonNull(compoundNBT));
+        final CompoundNBT stageAreaNbt = buffer.readNbt();
+        assert (stageAreaNbt == null);
+        return new StageAreaSyncMessage(stageAreaNbt);
     }
 
     @Override
@@ -57,7 +57,6 @@ public class StageAreaSyncMessage extends AbstractMessage<StageAreaSyncMessage>
                             stageAreas ->
                             {
                                 stageAreas.deserializeNBT(message.stageAreaNbt);
-
                             });
                         });
                     ctx.get().setPacketHandled(true);

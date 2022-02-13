@@ -36,14 +36,14 @@ public class PlayerNexusSync extends AbstractMessage<PlayerNexusSync>
     {
         final int playId = buffer.readInt();
         final int entityId = buffer.readInt();
-        LOGGER.debug("playId: {}", playId);
+        LOGGER.debug("decode playId: {}", playId);
         return new PlayerNexusSync(playId, entityId);
     }
 
     @Override
     public void encode(final PlayerNexusSync message, final PacketBuffer buffer)
     {
-        LOGGER.debug("playId: {}", message.playId);
+        LOGGER.debug("encode playId: {}", message.playId);
         buffer.writeInt(message.playId);
         buffer.writeInt(message.entityId);
     }
@@ -59,7 +59,7 @@ public class PlayerNexusSync extends AbstractMessage<PlayerNexusSync>
                             world -> {
                                 final LivingEntity livingEntity = (LivingEntity) world.getEntity(message.entityId);
                                 if (livingEntity != null)
-                                    PlayerNexusProvider.getPerPlayerOptions(livingEntity).ifPresent(
+                                    PlayerNexusProvider.getNexus(livingEntity).ifPresent(
                                             playerOptions -> playerOptions.setPlayId(message.playId));
                     });
                 });

@@ -31,7 +31,7 @@ public class GuiTestItem extends Item
             if (!playerIn.isShiftKeyDown())
             {
                 //PacketDispatcher.sendTo(new OpenScreenMessage(OpenScreenMessage.SM.TEST_ONE), (ServerPlayerEntity) playerIn);
-                PlayerNexusProvider.getPerPlayerOptions(playerIn).ifPresent(p->{
+                PlayerNexusProvider.getNexus(playerIn).ifPresent(p->{
                         p.setPlayId(worldIn.getRandom().nextInt(10));
                 });
             }
@@ -45,7 +45,7 @@ public class GuiTestItem extends Item
             // nop
         } else
         {
-            PlayerNexusProvider.getPerPlayerOptions(playerIn).ifPresent(p->{
+            PlayerNexusProvider.getNexus(playerIn).ifPresent(p->{
                 LogManager.getLogger().debug("playId: {}", p.getPlayId());
             });
         }

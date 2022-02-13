@@ -61,7 +61,7 @@ public class StageToolMessage extends AbstractMessage<StageToolMessage>
                 if (sPlayer != null && !sPlayer.getMainHandItem().isEmpty() && sPlayer.getMainHandItem().getItem() instanceof StageToolItem)
                 {
                     World level = sPlayer.level;
-                    PlayerNexusProvider.getPerPlayerOptions(sPlayer).ifPresent(nexus -> {
+                    PlayerNexusProvider.getNexus(sPlayer).ifPresent(nexus -> {
                         switch (message.stageOperation)
                         {
                             case CORNER1:

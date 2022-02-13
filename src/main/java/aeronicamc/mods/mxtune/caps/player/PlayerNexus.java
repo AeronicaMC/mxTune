@@ -22,8 +22,10 @@ import java.util.UUID;
 public class PlayerNexus implements IPlayerNexus
 {
     private int playId = PlayIdSupplier.PlayType.INVALID.getAsInt();
-    private final WeakReference<PlayerEntity> playerWeakRef;
+    private WeakReference<PlayerEntity> playerWeakRef;
     private final StageAreaData stageToolData = new StageAreaData(BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, "Set Name", UUID.randomUUID());
+
+    PlayerNexus() { /* NOP */ }
 
     PlayerNexus(@Nullable final PlayerEntity playerEntity)
     {

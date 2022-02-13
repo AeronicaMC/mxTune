@@ -57,7 +57,7 @@ public final class PlayerNexusProvider
         }, () -> null);
     }
 
-    public static LazyOptional<IPlayerNexus> getPerPlayerOptions(final LivingEntity entity)
+    public static LazyOptional<IPlayerNexus> getNexus(final LivingEntity entity)
     {
         return entity.getCapability(NEXUS_CAPABILITY, null);
     }
@@ -71,10 +71,10 @@ public final class PlayerNexusProvider
             if (event.getObject() instanceof PlayerEntity)
             {
                 final PlayerEntity playerEntity = (PlayerEntity) event.getObject();
-                final PlayerNexus perPlayerOptions = new PlayerNexus(playerEntity);
-                event.addCapability(ID, new SerializableCapabilityProvider<>(NEXUS_CAPABILITY, null, perPlayerOptions));
-                event.addListener(() -> getPerPlayerOptions(playerEntity).invalidate());
-                //LOGGER.debug("AttachCapabilitiesEvent: {}", playerEntity);
+                final PlayerNexus playerNexus = new PlayerNexus(playerEntity);
+                event.addCapability(ID, new SerializableCapabilityProvider<>(NEXUS_CAPABILITY, null, playerNexus));
+                event.addListener(() -> getNexus(playerEntity).invalidate());
+                LOGGER.debug("AttachCapabilitiesEvent<Entity>: {}", playerEntity);
             }
         }
 
@@ -89,9 +89,9 @@ public final class PlayerNexusProvider
             if (event.getPlayer() instanceof ServerPlayerEntity)
             {
                 event.getOriginal().revive(); // gighertz workaround for MCForge #5956 PlayerEvent.Clone Capability Provider is invalid
-                getPerPlayerOptions(event.getOriginal()).ifPresent(oldLivingEntityCap ->
+                getNexus(event.getOriginal()).ifPresent(oldLivingEntityCap ->
                 {
-                 getPerPlayerOptions(event.getPlayer()).ifPresent(newLivingEntityCap ->
+                 getNexus(event.getPlayer()).ifPresent(newLivingEntityCap ->
                     {
                         newLivingEntityCap.setPlayId(oldLivingEntityCap.getPlayId());
                         newLivingEntityCap.sync();
