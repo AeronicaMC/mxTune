@@ -1,6 +1,6 @@
-package aeronicamc.mods.mxtune.render;
+package aeronicamc.mods.mxtune.render.not;
 
-import aeronicamc.mods.mxtune.entity.RootedEntity;
+import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
 import aeronicamc.mods.mxtune.util.Misc;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
@@ -8,9 +8,9 @@ import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
 
-public class RootedRenderer extends EntityRenderer<RootedEntity>
+public class MusicSourceRenderer extends EntityRenderer<MusicSourceEntity>
 {
-    public RootedRenderer(EntityRendererManager rendererManager)
+    public MusicSourceRenderer(EntityRendererManager rendererManager)
     {
         super(rendererManager);
     }
@@ -22,8 +22,5 @@ public class RootedRenderer extends EntityRenderer<RootedEntity>
      */
     @Nullable
     @Override
-    public ResourceLocation getTextureLocation(@Nullable RootedEntity pEntity)
-    {
-        return Misc.nonNullInjected();
-    }
+    public ResourceLocation getTextureLocation(@Nullable MusicSourceEntity pEntity) { return Misc.nonNullInjected(); }
 }

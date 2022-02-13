@@ -1,6 +1,6 @@
 package aeronicamc.mods.mxtune.mixins;
 
-import aeronicamc.mods.mxtune.events.RenderEvents;
+import aeronicamc.mods.mxtune.render.RenderEvents;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.renderer.ActiveRenderInfo;
