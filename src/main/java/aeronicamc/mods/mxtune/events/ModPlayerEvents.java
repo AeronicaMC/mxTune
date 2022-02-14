@@ -91,8 +91,8 @@ public class ModPlayerEvents
         //
         if (event.getEntity() instanceof PlayerEntity)
         {
-            capabilitySynchronize((PlayerEntity) event.getEntity());
-            LOGGER.debug("EntityJoinWorldEvent: {}", event.getEntity());
+//            capabilitySynchronize((PlayerEntity) event.getEntity());
+//            LOGGER.debug("EntityJoinWorldEvent: {}", event.getEntity());
         }
     }
 
