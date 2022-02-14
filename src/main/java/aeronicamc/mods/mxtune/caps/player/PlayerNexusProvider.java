@@ -74,7 +74,7 @@ public final class PlayerNexusProvider
                 final PlayerNexus playerNexus = new PlayerNexus(playerEntity);
                 event.addCapability(ID, new SerializableCapabilityProvider<>(NEXUS_CAPABILITY, null, playerNexus));
                 event.addListener(() -> getNexus(playerEntity).invalidate());
-                LOGGER.debug("AttachCapabilitiesEvent<Entity>: {}", playerEntity);
+                LOGGER.debug("AttachCapabilitiesEvent<Entity>: {}", event.getObject());
             }
         }
 

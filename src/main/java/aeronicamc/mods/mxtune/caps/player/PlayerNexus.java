@@ -8,9 +8,7 @@ import aeronicamc.mods.mxtune.network.messages.StageToolMessage;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.IntNBT;
-import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
@@ -89,11 +87,9 @@ public class PlayerNexus implements IPlayerNexus
     public void sync()
     {
         PlayerEntity playerEntity = playerWeakRef.get();
-        if (playerEntity != null && !playerEntity.level.isClientSide)
+        if (playerEntity != null && !playerEntity.level.isClientSide())
         {
-            World world = playerEntity.level;
-            RegistryKey<World> dimension = world.dimension();
-            PacketDispatcher.sendToDimension(new PlayerNexusSync(playId, playerEntity.getId()), dimension);
+            PacketDispatcher.sendToAll(new PlayerNexusSync(playId, playerEntity.getId()));
         }
     }
 }

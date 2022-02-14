@@ -9,7 +9,6 @@ import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.thread.EffectiveSide;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -75,9 +74,9 @@ public class ServerStageAreas implements IServerStageAreas
 
     public void sync()
     {
-        World level = this.levelRef.get();
-        if (EffectiveSide.get().isServer() && level != null)
-            PacketDispatcher.sendToDimension(new StageAreaSyncMessage(Objects.requireNonNull(serializeNBT())), level.dimension());
+        World level = levelRef.get();
+        if (level != null && !level.isClientSide())
+            PacketDispatcher.sendToAll(new StageAreaSyncMessage(Objects.requireNonNull(serializeNBT())));
 
         LOGGER.debug("{someInt {}, stageAreas {}", this.someInt, this.stageAreas);
     }
@@ -99,17 +98,14 @@ public class ServerStageAreas implements IServerStageAreas
     public void deserializeNBT(INBT nbt)
     {
         CompoundNBT compoundNBT = ((CompoundNBT) nbt);
-        if (nbt != null)
+        if (compoundNBT.contains("stageAreas"))
         {
-            if (compoundNBT.contains("stageAreas"))
-            {
-                ListNBT listnbt = compoundNBT.getList("stageAreas", Constants.NBT.TAG_COMPOUND);
-                stageAreas.clear();
-                listnbt.forEach(stageAreaNBT -> NBTDynamicOps.INSTANCE.withParser(StageAreaData.CODEC)
-                        .apply(stageAreaNBT).result().ifPresent(stageAreas::add));
+            ListNBT listnbt = compoundNBT.getList("stageAreas", Constants.NBT.TAG_COMPOUND);
+            stageAreas.clear();
+            listnbt.forEach(stageAreaNBT -> NBTDynamicOps.INSTANCE.withParser(StageAreaData.CODEC)
+                    .apply(stageAreaNBT).result().ifPresent(stageAreas::add));
 
-                setInt(compoundNBT.getInt("someInt"));
-            }
+            setInt(compoundNBT.getInt("someInt"));
         }
     }
 }
