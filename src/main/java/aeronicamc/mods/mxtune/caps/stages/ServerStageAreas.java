@@ -16,7 +16,6 @@ import org.apache.logging.log4j.Logger;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -76,7 +75,7 @@ public class ServerStageAreas implements IServerStageAreas
     {
         World level = levelRef.get();
         if (level != null && !level.isClientSide())
-            PacketDispatcher.sendToAll(new StageAreaSyncMessage(Objects.requireNonNull(this.serializeNBT())));
+            PacketDispatcher.sendToDimension(new StageAreaSyncMessage(serializeNBT()), level.dimension());
 
         LOGGER.debug("{someInt {}, stageAreas {}", this.someInt, this.stageAreas);
     }
