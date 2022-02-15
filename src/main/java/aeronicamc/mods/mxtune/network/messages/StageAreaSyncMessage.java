@@ -11,20 +11,18 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 public class StageAreaSyncMessage extends AbstractMessage<StageAreaSyncMessage>
 {
     private static final Logger LOGGER = LogManager.getLogger(StageAreaSyncMessage.class);
-    private final INBT stageAreaNbt;
+    private INBT stageAreaNbt;
 
-    public StageAreaSyncMessage()
-    {
-        this.stageAreaNbt = new CompoundNBT();
-    }
+    public StageAreaSyncMessage() { /* NOP */ }
 
-    public StageAreaSyncMessage(final INBT stageAreaNbt)
+    public StageAreaSyncMessage(@Nullable final INBT stageAreaNbt)
     {
         this.stageAreaNbt = stageAreaNbt;
     }
@@ -32,9 +30,7 @@ public class StageAreaSyncMessage extends AbstractMessage<StageAreaSyncMessage>
     @Override
     public StageAreaSyncMessage decode(final PacketBuffer buffer)
     {
-        final CompoundNBT stageAreaNbt = buffer.readNbt();
-        assert (stageAreaNbt == null);
-        return new StageAreaSyncMessage(stageAreaNbt);
+        return new StageAreaSyncMessage(buffer.readNbt());
     }
 
     @Override
@@ -47,19 +43,21 @@ public class StageAreaSyncMessage extends AbstractMessage<StageAreaSyncMessage>
     public void handle(final StageAreaSyncMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
         if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT)
+        {
             ctx.get().enqueueWork(() ->
-                {
-                    final Optional<World> optionalWorld = LogicalSidedProvider.CLIENTWORLD.get(ctx.get().getDirection().getReceptionSide());
-                    optionalWorld.ifPresent(
-                        world ->
-                        {
-                        ServerStageAreaProvider.getServerStageAreas(world).ifPresent(
-                            stageAreas ->
-                            {
-                                stageAreas.deserializeNBT(message.stageAreaNbt);
-                            });
-                        });
-                    ctx.get().setPacketHandled(true);
-                });
+                                  {
+                                      final Optional<World> optionalWorld = LogicalSidedProvider.CLIENTWORLD.get(ctx.get().getDirection().getReceptionSide());
+                                      optionalWorld.ifPresent(
+                                              world ->
+                                              {
+                                                  ServerStageAreaProvider.getServerStageAreas(world).ifPresent(
+                                                          stageAreas ->
+                                                          {
+                                                              stageAreas.deserializeNBT(message.stageAreaNbt);
+                                                          });
+                                              });
+                                  });
+            ctx.get().setPacketHandled(true);
+        }
     }
 }

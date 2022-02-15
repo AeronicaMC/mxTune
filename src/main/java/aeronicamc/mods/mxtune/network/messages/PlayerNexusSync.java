@@ -52,17 +52,20 @@ public class PlayerNexusSync extends AbstractMessage<PlayerNexusSync>
     public void handle(final PlayerNexusSync message, final Supplier<NetworkEvent.Context> ctx)
     {
         if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT)
+        {
             ctx.get().enqueueWork(() ->
-                {
-                    final Optional<World> optionalWorld = LogicalSidedProvider.CLIENTWORLD.get(ctx.get().getDirection().getReceptionSide());
-                    optionalWorld.ifPresent(
-                            world -> {
-                                final LivingEntity livingEntity = (LivingEntity) world.getEntity(message.entityId);
-                                if (livingEntity != null)
-                                    PlayerNexusProvider.getNexus(livingEntity).ifPresent(
-                                            playerOptions -> playerOptions.setPlayId(message.playId));
-                    });
-                });
-        ctx.get().setPacketHandled(true);
+                                  {
+                                      final Optional<World> optionalWorld = LogicalSidedProvider.CLIENTWORLD.get(ctx.get().getDirection().getReceptionSide());
+                                      optionalWorld.ifPresent(
+                                              world ->
+                                              {
+                                                  final LivingEntity livingEntity = (LivingEntity) world.getEntity(message.entityId);
+                                                  if (livingEntity != null)
+                                                      PlayerNexusProvider.getNexus(livingEntity).ifPresent(
+                                                              playerOptions -> playerOptions.setPlayId(message.playId));
+                                              });
+                                  });
+            ctx.get().setPacketHandled(true);
+        }
     }
 }
