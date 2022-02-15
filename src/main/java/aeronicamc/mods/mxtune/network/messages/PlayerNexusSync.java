@@ -7,23 +7,16 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.LogicalSidedProvider;
 import net.minecraftforge.fml.network.NetworkEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
 import java.util.function.Supplier;
 
 public class PlayerNexusSync extends AbstractMessage<PlayerNexusSync>
 {
-    private static final Logger LOGGER = LogManager.getLogger(PlayerNexusSync.class);
-    private final int playId;
-    private final int entityId;
+    private int playId;
+    private int entityId;
 
-    public PlayerNexusSync()
-    {
-        this.playId = -1;
-        this.entityId = Integer.MIN_VALUE;
-    }
+    public PlayerNexusSync() { /* NOP */ }
 
     public PlayerNexusSync(final int playId, final int entityId)
     {
@@ -36,14 +29,12 @@ public class PlayerNexusSync extends AbstractMessage<PlayerNexusSync>
     {
         final int playId = buffer.readInt();
         final int entityId = buffer.readInt();
-        LOGGER.debug("decode playId: {}", playId);
         return new PlayerNexusSync(playId, entityId);
     }
 
     @Override
     public void encode(final PlayerNexusSync message, final PacketBuffer buffer)
     {
-        LOGGER.debug("encode playId: {}", message.playId);
         buffer.writeInt(message.playId);
         buffer.writeInt(message.entityId);
     }
@@ -65,7 +56,7 @@ public class PlayerNexusSync extends AbstractMessage<PlayerNexusSync>
                                                               playerOptions -> playerOptions.setPlayId(message.playId));
                                               });
                                   });
-            ctx.get().setPacketHandled(true);
         }
+        ctx.get().setPacketHandled(true);
     }
 }

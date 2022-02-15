@@ -13,6 +13,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -41,7 +42,9 @@ public class ServerStageAreas implements IServerStageAreas
                                  new BlockPos(173,70,-441),
                                  new BlockPos(177,72,-445),
                                  new BlockPos(176,70,-441),
-                                 new BlockPos(173,70,-441), "Stage#: " + RandomUtils.nextInt(), UUID.randomUUID());
+                                 new BlockPos(173,70,-441),
+                                 "Stage#: " + RandomUtils.nextInt(),
+                                 UUID.randomUUID());
     }
 
     @Override
@@ -75,9 +78,10 @@ public class ServerStageAreas implements IServerStageAreas
     {
         World level = levelRef.get();
         if (level != null && !level.isClientSide())
-            PacketDispatcher.sendToDimension(new StageAreaSyncMessage(serializeNBT()), level.dimension());
-
-        LOGGER.debug("{someInt {}, stageAreas {}", this.someInt, this.stageAreas);
+            {
+                PacketDispatcher.sendToDimension(new StageAreaSyncMessage(serializeNBT()), level.dimension());
+                LOGGER.debug("sync: someInt {}, stageAreas {}", this.someInt, this.stageAreas.size());
+            }
     }
 
     @Override
@@ -94,17 +98,17 @@ public class ServerStageAreas implements IServerStageAreas
     }
 
     @Override
-    public void deserializeNBT(INBT nbt)
+    public void deserializeNBT(@Nullable INBT nbt)
     {
-        CompoundNBT compoundNBT = ((CompoundNBT) nbt);
-        if (compoundNBT.contains("stageAreas"))
+        CompoundNBT cNbt = ((CompoundNBT) nbt);
+        if (cNbt != null && cNbt.contains("stageAreas"))
         {
-            ListNBT listnbt = compoundNBT.getList("stageAreas", Constants.NBT.TAG_COMPOUND);
+            ListNBT listnbt = cNbt.getList("stageAreas", Constants.NBT.TAG_COMPOUND);
             stageAreas.clear();
             listnbt.forEach(stageAreaNBT -> NBTDynamicOps.INSTANCE.withParser(StageAreaData.CODEC)
                     .apply(stageAreaNBT).result().ifPresent(stageAreas::add));
 
-            setInt(compoundNBT.getInt("someInt"));
+            setInt(cNbt.getInt("someInt"));
         }
     }
 }

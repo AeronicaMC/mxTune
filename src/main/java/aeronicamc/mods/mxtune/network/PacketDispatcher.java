@@ -69,7 +69,7 @@ public class PacketDispatcher
      */
     public static <MSG extends AbstractMessage<MSG>> void sendToAll(MSG message)
     {
-        channel.send(PacketDistributor.ALL.with(null), message);
+        channel.send(PacketDistributor.ALL.noArg(), message);
     }
 
     /**

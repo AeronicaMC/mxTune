@@ -8,8 +8,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.LogicalSidedProvider;
 import net.minecraftforge.fml.network.NetworkEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -17,8 +15,7 @@ import java.util.function.Supplier;
 
 public class StageAreaSyncMessage extends AbstractMessage<StageAreaSyncMessage>
 {
-    private static final Logger LOGGER = LogManager.getLogger(StageAreaSyncMessage.class);
-    private INBT stageAreaNbt;
+    private INBT stageAreaNbt = new CompoundNBT();
 
     public StageAreaSyncMessage() { /* NOP */ }
 
@@ -57,7 +54,7 @@ public class StageAreaSyncMessage extends AbstractMessage<StageAreaSyncMessage>
                                                           });
                                               });
                                   });
-            ctx.get().setPacketHandled(true);
         }
+        ctx.get().setPacketHandled(true);
     }
 }

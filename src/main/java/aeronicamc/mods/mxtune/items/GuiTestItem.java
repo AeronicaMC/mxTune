@@ -33,10 +33,10 @@ public class GuiTestItem extends Item
             {
                 //PacketDispatcher.sendTo(new OpenScreenMessage(OpenScreenMessage.SM.TEST_ONE), (ServerPlayerEntity) playerIn);
                 PlayerNexusProvider.getNexus(playerIn).ifPresent(p->{
-                        p.setPlayId(worldIn.getRandom().nextInt(10));
+                        p.setPlayId(worldIn.getRandom().nextInt(10) + 5);
                 });
                 ServerStageAreaProvider.getServerStageAreas(playerIn.level).ifPresent(s->{
-                    s.setInt((worldIn.getRandom().nextInt(100)));
+                    s.setInt((worldIn.getRandom().nextInt(50)) + 50);
                 });
             }
             else

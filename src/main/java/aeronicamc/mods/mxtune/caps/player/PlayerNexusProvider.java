@@ -71,6 +71,7 @@ public final class PlayerNexusProvider
             if ((event.getObject() instanceof PlayerEntity))
             {
                 event.addCapability(ID, new SerializableCapabilityProvider<>(NEXUS_CAPABILITY, null, new PlayerNexus((PlayerEntity) event.getObject())));
+                LOGGER.debug("AttachCapabilitiesEvent<Entity>: {}", event.getObject());
             }
         }
 

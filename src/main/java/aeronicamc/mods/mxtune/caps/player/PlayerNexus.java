@@ -10,6 +10,8 @@ import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.IntNBT;
 import net.minecraft.util.math.BlockPos;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.lang.ref.ReferenceQueue;
@@ -19,6 +21,7 @@ import java.util.UUID;
 
 public class PlayerNexus implements IPlayerNexus
 {
+    private static final Logger LOGGER = LogManager.getLogger(PlayerNexus.class);
     private int playId = PlayIdSupplier.PlayType.INVALID.getAsInt();
     private WeakReference<PlayerEntity> playerWeakRef;
     private final StageAreaData stageToolData = new StageAreaData(BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, "Set Name", UUID.randomUUID());
@@ -78,9 +81,10 @@ public class PlayerNexus implements IPlayerNexus
     }
 
     @Override
-    public void deserializeNBT(INBT nbt)
+    public void deserializeNBT(@Nullable INBT nbt)
     {
-        setPlayId(((IntNBT) nbt).getAsInt());
+        if (nbt != null)
+            setPlayId(((IntNBT) nbt).getAsInt());
     }
 
     @Override
@@ -89,7 +93,8 @@ public class PlayerNexus implements IPlayerNexus
         PlayerEntity playerEntity = playerWeakRef.get();
         if (playerEntity != null && !playerEntity.level.isClientSide())
         {
-            PacketDispatcher.sendToAll(new PlayerNexusSync(playId, playerEntity.getId()));
+            PacketDispatcher.sendToDimension(new PlayerNexusSync(playId, playerEntity.getId()), playerEntity.level.dimension());
+            LOGGER.debug("sync: playId {}, entityId {}", playId, playerEntity.getId());
         }
     }
 }
