@@ -72,8 +72,7 @@ public class ModPlayerEvents
     @SubscribeEvent
     public static void event(PlayerEvent.PlayerRespawnEvent event)
     {
-        capabilitySynchronize(event.getEntityLiving());
-        LOGGER.debug("PlayerRespawnEvent: {}", event.getPlayer());
+//        LOGGER.debug("PlayerRespawnEvent: {}", event.getPlayer());
     }
 
     @SubscribeEvent

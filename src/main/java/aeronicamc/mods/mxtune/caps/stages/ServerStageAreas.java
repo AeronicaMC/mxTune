@@ -76,7 +76,7 @@ public class ServerStageAreas implements IServerStageAreas
     {
         World level = levelRef.get();
         if (level != null && !level.isClientSide())
-            PacketDispatcher.sendToAll(new StageAreaSyncMessage(Objects.requireNonNull(serializeNBT())));
+            PacketDispatcher.sendToAll(new StageAreaSyncMessage(Objects.requireNonNull(this.serializeNBT())));
 
         LOGGER.debug("{someInt {}, stageAreas {}", this.someInt, this.stageAreas);
     }

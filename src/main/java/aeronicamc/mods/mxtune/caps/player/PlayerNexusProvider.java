@@ -54,7 +54,7 @@ public final class PlayerNexusProvider
 
                 instance.deserializeNBT(nbt);
             }
-        }, () -> null);
+        }, () -> new PlayerNexus(null));
     }
 
     public static LazyOptional<IPlayerNexus> getNexus(final LivingEntity entity)
@@ -70,11 +70,7 @@ public final class PlayerNexusProvider
         {
             if ((event.getObject() instanceof PlayerEntity))
             {
-                final PlayerEntity playerEntity = (PlayerEntity) event.getObject();
-                final PlayerNexus playerNexus = new PlayerNexus(playerEntity);
-                event.addCapability(ID, new SerializableCapabilityProvider<>(NEXUS_CAPABILITY, null, playerNexus));
-                event.addListener(() -> getNexus(playerEntity).invalidate());
-                LOGGER.debug("AttachCapabilitiesEvent<Entity>: {}", event.getObject());
+                event.addCapability(ID, new SerializableCapabilityProvider<>(NEXUS_CAPABILITY, null, new PlayerNexus((PlayerEntity) event.getObject())));
             }
         }
 
