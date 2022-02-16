@@ -68,11 +68,8 @@ public class StageToolMessage extends AbstractMessage<StageToolMessage>
                             case CORNER2:
                             case PERFORMERS:
                             case AUDIENCE:
-                                if (level.isLoaded(message.blockPos))
-                                    nexus.setStagePos(message.stageOperation, message.blockPos);
                                 break;
                             case NAME:
-                                nexus.setStageName(message.name);
                                 break;
                             case APPLY:
                                 break;

@@ -1,30 +1,23 @@
 package aeronicamc.mods.mxtune.caps.player;
 
-import aeronicamc.mods.mxtune.caps.stages.StageAreaData;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.PlayerNexusSync;
-import aeronicamc.mods.mxtune.network.messages.StageToolMessage;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.IntNBT;
-import net.minecraft.util.math.BlockPos;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
-import java.util.Objects;
-import java.util.UUID;
 
 public class PlayerNexus implements IPlayerNexus
 {
     private static final Logger LOGGER = LogManager.getLogger(PlayerNexus.class);
     private int playId = PlayIdSupplier.PlayType.INVALID.getAsInt();
     private WeakReference<PlayerEntity> playerWeakRef;
-    private final StageAreaData stageToolData = new StageAreaData(BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, "Set Name", UUID.randomUUID());
 
     PlayerNexus() { /* NOP */ }
 
@@ -32,32 +25,6 @@ public class PlayerNexus implements IPlayerNexus
     {
         ReferenceQueue<PlayerEntity> playerEntityReferenceQueue = new ReferenceQueue<>();
         this.playerWeakRef = new WeakReference<>(playerEntity, playerEntityReferenceQueue);
-        stageToolData.setOwnerUUID(playerEntity != null ? Objects.requireNonNull(playerEntity).getUUID() : UUID.randomUUID());
-    }
-
-    @Override
-    public void setStagePos(StageToolMessage.StageOperation operation, BlockPos blockPos)
-    {
-        switch (operation)
-        {
-            case CORNER1:
-                stageToolData.setStartPos(blockPos);
-                break;
-            case CORNER2:
-                stageToolData.setEndPos(blockPos);
-                break;
-            case PERFORMERS:
-                stageToolData.setPerformerSpawn(blockPos);
-            case AUDIENCE:
-                stageToolData.setAudienceSpawn(blockPos);
-            default:
-        }
-    }
-
-    @Override
-    public void setStageName(String name)
-    {
-        stageToolData.setTitle(StringUtils.normalizeSpace(name));
     }
 
     @Override

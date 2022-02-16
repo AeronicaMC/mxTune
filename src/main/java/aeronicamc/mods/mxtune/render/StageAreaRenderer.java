@@ -47,7 +47,7 @@ public class StageAreaRenderer
 
                                 if (!(pActiveRenderInfo.getEntity().distanceToSqr(area.getAreaAABB().getCenter()) > 512))
                                 {
-                                    RenderHelper.renderFloatingText(area.getAreaAABB().getCenter(), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent(area.getTitle()),
+                                    RenderHelper.renderFloatingText(area.getAreaAABB().getCenter(), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent(area.getName()),
                                                                     RenderHelper.PACKED_LIGHT_MAX);
 
                                     RenderHelper.renderFloatingText(new Vector3d(area.getAudienceSpawn().getX() + 0.5, area.getAudienceSpawn().getY() + 1.5, area.getAudienceSpawn().getZ() + 0.5), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent("Audience Spawn"),
