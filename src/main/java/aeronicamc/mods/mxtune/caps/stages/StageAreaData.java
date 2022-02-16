@@ -16,7 +16,7 @@ public class StageAreaData implements Comparable<StageAreaData>
             BlockPos.CODEC.fieldOf("endPos").forGetter(StageAreaData::getEndPos),
             BlockPos.CODEC.fieldOf("performerSpawn").forGetter(StageAreaData::getPerformerSpawn),
             BlockPos.CODEC.fieldOf("audienceSpawn").forGetter(StageAreaData::getAudienceSpawn),
-            Codec.STRING.fieldOf("title").forGetter(StageAreaData::getTitle),
+            Codec.STRING.fieldOf("name").forGetter(StageAreaData::getName),
             UUIDCodec.CODEC.fieldOf("ownerUUID").forGetter(StageAreaData::getOwnerUUID)
             ).apply(instance, StageAreaData::new));
 
@@ -24,17 +24,17 @@ public class StageAreaData implements Comparable<StageAreaData>
     private BlockPos endPos;
     private BlockPos performerSpawn;
     private BlockPos audienceSpawn;
-    private String title;
+    private String name;
     private UUID ownerUUID;
     private AxisAlignedBB areaAABB;
 
-    public StageAreaData(BlockPos startPos, BlockPos endPos, BlockPos performerSpawn, BlockPos audienceSpawn, String title, UUID ownerUUID)
+    public StageAreaData(BlockPos startPos, BlockPos endPos, BlockPos performerSpawn, BlockPos audienceSpawn, String name, UUID ownerUUID)
     {
         this.startPos = startPos;
         this.endPos = endPos;
         this.performerSpawn = performerSpawn;
         this.audienceSpawn = audienceSpawn;
-        this.title = title;
+        this.name = name;
         this.ownerUUID = ownerUUID;
         makeAABB();
     }
@@ -91,9 +91,9 @@ public class StageAreaData implements Comparable<StageAreaData>
         this.audienceSpawn = audienceSpawn;
     }
 
-    public void setTitle(String title)
+    public void setName(String name)
     {
-        this.title = title;
+        this.name = name;
     }
 
     public void setOwnerUUID(UUID ownerUUID)
@@ -101,9 +101,9 @@ public class StageAreaData implements Comparable<StageAreaData>
         this.ownerUUID = ownerUUID;
     }
 
-    public String getTitle()
+    public String getName()
     {
-        return title;
+        return name;
     }
 
     public UUID getOwnerUUID()
@@ -119,7 +119,7 @@ public class StageAreaData implements Comparable<StageAreaData>
                 .append(endPos)
                 .append(performerSpawn)
                 .append(audienceSpawn)
-                .append(title)
+                .append(name)
                 .append(ownerUUID)
                 .toHashCode();
     }
@@ -140,7 +140,7 @@ public class StageAreaData implements Comparable<StageAreaData>
                 .append(endPos, stageAreaData.getEndPos())
                 .append(performerSpawn, stageAreaData.getPerformerSpawn())
                 .append(audienceSpawn, stageAreaData.getAudienceSpawn())
-                .append(title, stageAreaData.getTitle())
+                .append(name, stageAreaData.getName())
                 .append(ownerUUID, stageAreaData.getOwnerUUID())
                 .isEquals();
     }
@@ -153,7 +153,7 @@ public class StageAreaData implements Comparable<StageAreaData>
                 .append("endPos", endPos)
                 .append("performerSpawn", performerSpawn)
                 .append("audienceSpawn", audienceSpawn)
-                .append("title", title)
+                .append("name", name)
                 .append("ownerUUID", ownerUUID)
                 .toString();
     }
@@ -176,7 +176,7 @@ public class StageAreaData implements Comparable<StageAreaData>
     public int compareTo(StageAreaData o)
     {
         return new CompareToBuilder()
-                .append(title, o.getTitle())
+                .append(name, o.getName())
                 .append(ownerUUID, o.getOwnerUUID())
                 .toComparison();
     }
