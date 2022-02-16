@@ -47,21 +47,15 @@ public class StageAreaRenderer
 
                                 if (!(pActiveRenderInfo.getEntity().distanceToSqr(area.getAreaAABB().getCenter()) > 512))
                                 {
-                                    RenderHelper.renderFloatingText(new StringTextComponent(area.getTitle()),
-                                                                    area.getAreaAABB().getCenter(),
-                                                                    pMatrixStack,
-                                                                    pBuffer, pActiveRenderInfo, -1);
+                                    RenderHelper.renderFloatingText(area.getAreaAABB().getCenter(), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent(area.getTitle()),
+                                                                    RenderHelper.PACKED_LIGHT_MAX);
 
-                                    RenderHelper.renderFloatingText(new StringTextComponent("Audience Spawn"),
-                                                                    new Vector3d(area.getAudienceSpawn().getX() + 0.5, area.getAudienceSpawn().getY() + 1.5, area.getAudienceSpawn().getZ() + 0.5),
-                                                                    pMatrixStack,
-                                                                    pBuffer, pActiveRenderInfo, -1);
+                                    RenderHelper.renderFloatingText(new Vector3d(area.getAudienceSpawn().getX() + 0.5, area.getAudienceSpawn().getY() + 1.5, area.getAudienceSpawn().getZ() + 0.5), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent("Audience Spawn"),
+                                                                    RenderHelper.PACKED_LIGHT_MAX);
 
-                                    RenderHelper.renderFloatingText(new StringTextComponent("Performer Spawn"),
-                                                                    new Vector3d(area.getPerformerSpawn().getX() + 0.5, area.getPerformerSpawn().getY() + 1.5, area.getPerformerSpawn().getZ() + 0.5),
-                                                                    pMatrixStack,
+                                    RenderHelper.renderFloatingText(new Vector3d(area.getPerformerSpawn().getX() + 0.5, area.getPerformerSpawn().getY() + 1.5, area.getPerformerSpawn().getZ() + 0.5), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent("Performer Spawn"),
 
-                                                                    pBuffer, pActiveRenderInfo, -1);
+                                                                    RenderHelper.PACKED_LIGHT_MAX);
                                 }
                                 pBuffer.endBatch();
                                 pBuffer.endBatch(RenderType.lines());
