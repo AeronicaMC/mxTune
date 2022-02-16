@@ -13,25 +13,22 @@ public class StageToolRenderer
 {
     private static final Minecraft mc = Minecraft.getInstance();
 
-    private StageToolRenderer() { /*NOP */ }
+    private StageToolRenderer() { /* NOP */ }
 
     static void renderUUID(MatrixStack pMatrixStack, IRenderTypeBuffer.Impl pBuffer, LightTexture pLightTexture, ActiveRenderInfo pActiveRenderInfo, float pPartialTicks, ClippingHelper pClippingHelper)
     {
-        if (mc.player != null)
+        if (mc.player != null && mc.level != null)
         {
             Vector3d cam = pActiveRenderInfo.getPosition();
-
             mc.level.players().stream().filter(p -> pClippingHelper.isVisible(p.getBoundingBoxForCulling())).forEach(player -> {
+                int packedLight = mc.getEntityRenderDispatcher().getPackedLightCoords(player, pPartialTicks);
                 Vector3d playerPos = player.getPosition(pPartialTicks);
                 RenderHelper.renderFloatingText(
-                        new StringTextComponent(player.getUUID().toString()),
                         new Vector3d(playerPos.x(), playerPos.y()+ player.getBbHeight() + 0.8, playerPos.z()),
-                        /*new Vector3d(player.getX(), player.getBbHeight() + 0.5D, player.getZ()),*/
-                        pMatrixStack, pBuffer, pActiveRenderInfo ,-1);
+                        pMatrixStack, pBuffer, pActiveRenderInfo, -1,
+                        new StringTextComponent(player.getUUID().toString()), packedLight);
                 pBuffer.endBatch();
             });
-
         }
     }
-
 }
