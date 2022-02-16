@@ -21,6 +21,8 @@ import net.minecraft.world.World;
 
 public class RenderHelper
 {
+    static final int PACKED_LIGHT_MAX = 15728880;
+
     private RenderHelper() { /* NOP */ }
 
     /**
@@ -75,16 +77,16 @@ public class RenderHelper
         });
     }
 
-    static void renderFloatingText(ITextComponent pDisplayName, Vector3d pos, MatrixStack pMatrixStack, IRenderTypeBuffer pBuffer, ActiveRenderInfo activeRenderInfo, int pColor) {
+    static void renderFloatingText(Vector3d pos, MatrixStack pMatrixStack, IRenderTypeBuffer pBuffer, ActiveRenderInfo activeRenderInfo, int pColor, ITextComponent pDisplayName, int packedLight) {
         Vector3d cam = activeRenderInfo.getPosition();
-        renderFloatingText(pDisplayName, pos, pMatrixStack, pBuffer, activeRenderInfo.rotation(), cam.x(), cam.y(), cam.z(), pColor);
+        renderFloatingText(pDisplayName, pos, pMatrixStack, pBuffer, activeRenderInfo.rotation(), cam.x(), cam.y(), cam.z(), pColor, packedLight);
     }
 
     static void renderFloatingText(ITextComponent pDisplayName, BlockPos blockPos, MatrixStack pMatrixStack, IRenderTypeBuffer pBuffer, ActiveRenderInfo activeRenderInfo, int pColor)
     {
         Vector3d cam = activeRenderInfo.getPosition();
         Vector3d pos = new Vector3d(blockPos.getX() + 0.5D, blockPos.getY() + 1.5D, blockPos.getZ() + 0.5D);
-        renderFloatingText(pDisplayName, pos, pMatrixStack, pBuffer, activeRenderInfo.rotation(), cam.x(), cam.y(), cam.z(), pColor);
+        renderFloatingText(pDisplayName, pos, pMatrixStack, pBuffer, activeRenderInfo.rotation(), cam.x(), cam.y(), cam.z(), pColor, 15728880);
     }
 
     /**
@@ -98,8 +100,9 @@ public class RenderHelper
      * @param pCamY         Camera Y position
      * @param pCamZ         Camera Z position
      * @param pColor        colour and alpha
+     * @param packedLight
      */
-    static void renderFloatingText(ITextComponent pDisplayName, Vector3d pos, MatrixStack pMatrixStack, IRenderTypeBuffer pBuffer, Quaternion rotation, double pCamX, double pCamY, double pCamZ, int pColor) {
+    static void renderFloatingText(ITextComponent pDisplayName, Vector3d pos, MatrixStack pMatrixStack, IRenderTypeBuffer pBuffer, Quaternion rotation, double pCamX, double pCamY, double pCamZ, int pColor, int packedLight) {
         pMatrixStack.pushPose();
         pMatrixStack.translate(pos.x - pCamX, pos.y - pCamY, pos.z - pCamZ);
         pMatrixStack.mulPose(rotation);
@@ -109,7 +112,7 @@ public class RenderHelper
         int j = (int)(f1 * 255.0F) << 24;
         FontRenderer fontrenderer = Minecraft.getInstance().font;
         float f2 = (float)(-fontrenderer.width(pDisplayName) / 2);
-        fontrenderer.drawInBatch(pDisplayName, f2, (float)0, pColor, false, matrix4f, pBuffer, false, j, 15728880);
+        fontrenderer.drawInBatch(pDisplayName, f2, (float)0, pColor, false, matrix4f, pBuffer, false, j, packedLight);
         pMatrixStack.popPose();
     }
 }
