@@ -116,13 +116,16 @@ public class RenderEvents
             MatrixStack pPoseStack = event.getMatrixStack();
             ActiveRenderInfo activeRenderInfo = mc.gameRenderer.getMainCamera();
             RayTraceResult raytraceresult = mc.hitResult;
+            BlockPos blockpos = ((BlockRayTraceResult)raytraceresult).getBlockPos();
 
-            ITextComponent textComponent = new StringTextComponent("test").withStyle(TextFormatting.WHITE);
-            int offset = Math.max(mc.font.width(textComponent) + 40, width);
+            ITextComponent testText = new StringTextComponent("test").withStyle(TextFormatting.WHITE);
+            ITextComponent blockName;
+            int offset = Math.max(mc.font.width(testText) + 40, width);
 
-            if (raytraceresult != null && raytraceresult.getType() == RayTraceResult.Type.BLOCK)
-                RenderHelper.renderFloatingText(textComponent, raytraceresult.getLocation(), pPoseStack , mc.renderBuffers().bufferSource(), activeRenderInfo, -1);
-            mc.renderBuffers().bufferSource().endBatch();
+            if (mc.level != null && raytraceresult.getType() == RayTraceResult.Type.BLOCK)
+                blockName = mc.level.getBlockState(blockpos).getBlock().getName().withStyle(TextFormatting.YELLOW);
+            else
+                blockName = new StringTextComponent("---").withStyle(TextFormatting.AQUA);
 
             mc.getTextureManager().bind(TEXTURE);
             RenderSystem.color3f(1.0F, 1.0F, 1.0F);
@@ -130,8 +133,8 @@ public class RenderEvents
             RenderHelper.blit(pPoseStack, ((offset - width)/2) + 5, 0, 10, 0, width-10, height);
             RenderHelper.blit(pPoseStack, offset - width + 10, 0, 10, 0, width, height);
 
-            mc.font.draw(pPoseStack, textComponent, 30.0F, 7.0F, -11534256);
-            mc.font.draw(pPoseStack, textComponent, 30.0F, 17.0F, -11534256);
+            mc.font.draw(pPoseStack, testText, 30.0F, 7.0F, -11534256);
+            mc.font.draw(pPoseStack, blockName, 30.0F, 17.0F, -11534256);
             mc.getItemRenderer().renderAndDecorateItem(itemStack, 8, 8);
         }
     }
