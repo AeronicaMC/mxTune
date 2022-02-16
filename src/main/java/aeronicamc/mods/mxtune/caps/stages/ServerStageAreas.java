@@ -9,7 +9,6 @@ import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,21 +36,32 @@ public class ServerStageAreas implements IServerStageAreas
         this.levelRef = new WeakReference<>(level, worldReferenceQueue);
     }
 
-    StageAreaData genTest() {
+    StageAreaData genTest1() {
         return new StageAreaData(
                                  new BlockPos(173,70,-441),
                                  new BlockPos(177,72,-445),
                                  new BlockPos(176,70,-441),
                                  new BlockPos(173,70,-441),
-                                 "Stage#: " + RandomUtils.nextInt(),
+                                 "Stage#: 01",
                                  UUID.randomUUID());
+    }
+
+    StageAreaData genTest2() {
+        return new StageAreaData(
+                new BlockPos(169,73,-446),
+                new BlockPos(164,69,-451),
+                new BlockPos(167,69,-448),
+                new BlockPos(166,69,-450),
+                "Stage#: 02",
+                UUID.randomUUID());
     }
 
     @Override
     public void test()
     {
-        genTest().getAreaAABB().inflate(0.002);
-        stageAreas.add(genTest());
+
+        stageAreas.add(genTest1());
+        stageAreas.add(genTest2());
         sync();
     }
 
