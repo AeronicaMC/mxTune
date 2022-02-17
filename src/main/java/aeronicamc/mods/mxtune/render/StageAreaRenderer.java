@@ -42,29 +42,29 @@ public class StageAreaRenderer
                             .sorted((o1, o2) -> ((Double)o2.getAreaAABB().getCenter().distanceToSqr(camera))
                                     .compareTo(o1.getAreaAABB().getCenter().distanceToSqr(camera)))
                             .filter(area-> pClippingHelper.isVisible(area.getAreaAABB())).forEach(
-                            (area) -> {
-                                IVertexBuilder vertexBuilder1 = pBuffer.getBuffer(ModRenderType.TRANSPARENT_QUADS_NO_TEXTURE);
-                                renderFaces(pMatrixStack, vertexBuilder1, area.getAreaAABB(), camX, camY, camZ, 1F, 0F, 1F, 0.1F);
+                                (area) -> {
+                                    IVertexBuilder vertexBuilder1 = pBuffer.getBuffer(ModRenderType.TRANSPARENT_QUADS_NO_TEXTURE);
+                                    renderFaces(pMatrixStack, vertexBuilder1, area.getAreaAABB(), camX, camY, camZ, 1F, 0F, 1F, 0.1F);
 
-                                IVertexBuilder vertexBuilder2 = pBuffer.getBuffer(RenderType.lines());
-                                renderEdges(pMatrixStack, vertexBuilder2, area.getAreaAABB(), camX, camY, camZ, 1F, 0F, 1F, 1F);
+                                    IVertexBuilder vertexBuilder2 = pBuffer.getBuffer(RenderType.lines());
+                                    renderEdges(pMatrixStack, vertexBuilder2, area.getAreaAABB(), camX, camY, camZ, 1F, 0F, 1F, 1F);
 
-                                if (!(pActiveRenderInfo.getEntity().distanceToSqr(area.getAreaAABB().getCenter()) > 512))
-                                {
-                                    RenderHelper.renderFloatingText(area.getAreaAABB().getCenter(), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent(area.getName()),
-                                                                    RenderHelper.PACKED_LIGHT_MAX);
+                                    if (!(pActiveRenderInfo.getEntity().distanceToSqr(area.getAreaAABB().getCenter()) > 512))
+                                    {
+                                        RenderHelper.renderFloatingText(area.getAreaAABB().getCenter(), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent(area.getName()),
+                                                                        RenderHelper.PACKED_LIGHT_MAX);
 
-                                    RenderHelper.renderFloatingText(new Vector3d(area.getAudienceSpawn().getX() + 0.5, area.getAudienceSpawn().getY() + 1.5, area.getAudienceSpawn().getZ() + 0.5), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent("Audience Spawn"),
-                                                                    RenderHelper.PACKED_LIGHT_MAX);
+                                        RenderHelper.renderFloatingText(new Vector3d(area.getAudienceSpawn().getX() + 0.5, area.getAudienceSpawn().getY() + 1.5, area.getAudienceSpawn().getZ() + 0.5), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent("Audience Spawn"),
+                                                                        RenderHelper.PACKED_LIGHT_MAX);
 
-                                    RenderHelper.renderFloatingText(new Vector3d(area.getPerformerSpawn().getX() + 0.5, area.getPerformerSpawn().getY() + 1.5, area.getPerformerSpawn().getZ() + 0.5), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent("Performer Spawn"),
+                                        RenderHelper.renderFloatingText(new Vector3d(area.getPerformerSpawn().getX() + 0.5, area.getPerformerSpawn().getY() + 1.5, area.getPerformerSpawn().getZ() + 0.5), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent("Performer Spawn"),
 
-                                                                    RenderHelper.PACKED_LIGHT_MAX);
-                                }
-                                pBuffer.endBatch(ModRenderType.TRANSPARENT_QUADS_NO_TEXTURE);
-                                pBuffer.endBatch(RenderType.lines());
-                                pBuffer.endBatch();
-                            });
+                                                                        RenderHelper.PACKED_LIGHT_MAX);
+                                    }
+                                    pBuffer.endBatch(ModRenderType.TRANSPARENT_QUADS_NO_TEXTURE);
+                                    pBuffer.endBatch(RenderType.lines());
+                                    pBuffer.endBatch();
+                                });
                 });
     }
 
