@@ -37,7 +37,11 @@ public class StageAreaRenderer
 
         ServerStageAreaProvider.getServerStageAreas(level).ifPresent(
                 areas -> {
-                    areas.getStageAreas().stream().filter(area-> pClippingHelper.isVisible(area.getAreaAABB())).forEach(
+                    areas.getStageAreas().stream()
+                            // Sort areas so they transparency renders properly with regard to each other and the camera
+                            .sorted((o1, o2) -> ((Double)o2.getAreaAABB().getCenter().distanceToSqr(camera))
+                                    .compareTo(o1.getAreaAABB().getCenter().distanceToSqr(camera)))
+                            .filter(area-> pClippingHelper.isVisible(area.getAreaAABB())).forEach(
                             (area) -> {
                                 IVertexBuilder vertexBuilder1 = pBuffer.getBuffer(ModRenderType.TRANSPARENT_QUADS_NO_TEXTURE);
                                 renderFaces(pMatrixStack, vertexBuilder1, area.getAreaAABB(), camX, camY, camZ, 1F, 0F, 1F, 0.1F);
@@ -57,9 +61,9 @@ public class StageAreaRenderer
 
                                                                     RenderHelper.PACKED_LIGHT_MAX);
                                 }
-                                pBuffer.endBatch();
-                                pBuffer.endBatch(RenderType.lines());
                                 pBuffer.endBatch(ModRenderType.TRANSPARENT_QUADS_NO_TEXTURE);
+                                pBuffer.endBatch(RenderType.lines());
+                                pBuffer.endBatch();
                             });
                 });
     }

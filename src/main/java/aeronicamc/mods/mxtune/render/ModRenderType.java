@@ -57,7 +57,7 @@ public class ModRenderType extends RenderType
                                                                                  .setLayeringState(VIEW_OFFSET_Z_LAYERING)
                                                                                  .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                                                                                  .setTextureState(NO_TEXTURE)
-                                                                                 .setDepthTestState(NO_DEPTH_TEST)
+                                                                                 //.setDepthTestState(NO_DEPTH_TEST)
                                                                                  .setCullState(NO_CULL)
                                                                                  .setLightmapState(NO_LIGHTMAP)
                                                                                  .setWriteMaskState(COLOR_WRITE)
