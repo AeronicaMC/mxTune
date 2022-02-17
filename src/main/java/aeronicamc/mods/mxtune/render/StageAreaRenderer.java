@@ -75,7 +75,7 @@ public class StageAreaRenderer
 
     public static void renderFaces(MatrixStack pMatrixStack, IVertexBuilder pBuffer, final AxisAlignedBB alignedBB, double camX, double camY, double camZ, float pRed, float pGreen, float pBlue, float pAlpha) {
         Matrix4f matrix4f = pMatrixStack.last().pose();
-        AxisAlignedBB box = alignedBB.inflate(.001);
+        AxisAlignedBB box = alignedBB.inflate(.01);
         // North inner
         pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.minY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
         pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.maxY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
