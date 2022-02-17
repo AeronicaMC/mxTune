@@ -36,17 +36,17 @@ public class ServerStageAreas implements IServerStageAreas
         this.levelRef = new WeakReference<>(level, worldReferenceQueue);
     }
 
-    StageAreaData genTest1() {
+    StageAreaData stageAreaTest01() {
         return new StageAreaData(
-                                 new BlockPos(173,70,-441),
-                                 new BlockPos(177,72,-445),
-                                 new BlockPos(176,70,-441),
-                                 new BlockPos(173,70,-441),
-                                 "Stage#: 01",
-                                 UUID.randomUUID());
+                new BlockPos(173,70,-441),
+                new BlockPos(177,72,-445),
+                new BlockPos(176,70,-441),
+                new BlockPos(173,70,-441),
+                "Stage#: 01",
+                UUID.randomUUID());
     }
 
-    StageAreaData genTest2() {
+    StageAreaData stageAreaTest02() {
         return new StageAreaData(
                 new BlockPos(169,73,-446),
                 new BlockPos(164,69,-451),
@@ -59,9 +59,8 @@ public class ServerStageAreas implements IServerStageAreas
     @Override
     public void test()
     {
-
-        stageAreas.add(genTest1());
-        stageAreas.add(genTest2());
+        stageAreas.add(stageAreaTest01());
+        stageAreas.add(stageAreaTest02());
         sync();
     }
 
@@ -97,14 +96,14 @@ public class ServerStageAreas implements IServerStageAreas
     @Override
     public INBT serializeNBT()
     {
-        final CompoundNBT compoundNBT = new CompoundNBT();
+        final CompoundNBT cNbt = new CompoundNBT();
         ListNBT listnbt = new ListNBT();
         stageAreas.forEach(stageArea -> NBTDynamicOps.INSTANCE.withEncoder(StageAreaData.CODEC)
                 .apply(stageArea).result().ifPresent(listnbt::add));
 
-        compoundNBT.put("stageAreas", listnbt);
-        compoundNBT.putInt("someInt", getInt());
-        return compoundNBT;
+        cNbt.put("stageAreas", listnbt);
+        cNbt.putInt("someInt", getInt());
+        return cNbt;
     }
 
     @Override
