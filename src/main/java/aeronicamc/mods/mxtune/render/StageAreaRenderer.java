@@ -38,7 +38,7 @@ public class StageAreaRenderer
         ServerStageAreaProvider.getServerStageAreas(level).ifPresent(
                 areas -> {
                     areas.getStageAreas().stream()
-                            // Sort areas so they transparency renders properly with regard to each other and the camera
+                            // Sort areas so the transparency renders properly with regard to each other and the camera.
                             .sorted((o1, o2) -> ((Double)o2.getAreaAABB().getCenter().distanceToSqr(camera))
                                     .compareTo(o1.getAreaAABB().getCenter().distanceToSqr(camera)))
                             .filter(area-> pClippingHelper.isVisible(area.getAreaAABB())).forEach(
