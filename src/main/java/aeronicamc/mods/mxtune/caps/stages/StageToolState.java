@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.caps.stages;
 
+import aeronicamc.mods.mxtune.util.Color3f;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
 
@@ -105,7 +106,9 @@ public enum StageToolState
 
     private static StageAreaData initStageArea()
     {
-        return new StageAreaData(BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, "", UUID.randomUUID());
+        Color3f color = Color3f.rainbowFactory();
+        String name = color.toString();
+        return new StageAreaData(BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, color.toString(), UUID.randomUUID(), color.getR(), color.getG(), color.getB());
     }
 
     public static StageToolState create(LivingEntity livingEntity)

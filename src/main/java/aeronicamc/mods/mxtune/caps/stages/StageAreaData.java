@@ -17,8 +17,11 @@ public class StageAreaData implements Comparable<StageAreaData>
             BlockPos.CODEC.fieldOf("performerSpawn").forGetter(StageAreaData::getPerformerSpawn),
             BlockPos.CODEC.fieldOf("audienceSpawn").forGetter(StageAreaData::getAudienceSpawn),
             Codec.STRING.fieldOf("name").forGetter(StageAreaData::getName),
-            UUIDCodec.CODEC.fieldOf("ownerUUID").forGetter(StageAreaData::getOwnerUUID)
-            ).apply(instance, StageAreaData::new));
+            UUIDCodec.CODEC.fieldOf("ownerUUID").forGetter(StageAreaData::getOwnerUUID),
+            Codec.FLOAT.fieldOf("r").forGetter(StageAreaData::getR),
+            Codec.FLOAT.fieldOf("g").forGetter(StageAreaData::getG),
+            Codec.FLOAT.fieldOf("b").forGetter(StageAreaData::getB)
+            ).apply(instance, (BlockPos startPos1, BlockPos endPos1, BlockPos performerSpawn1, BlockPos audienceSpawn1, String name1, UUID ownerUUID1, Float ownerUUID12, Float ownerUUID13, Float ownerUUID14) -> new StageAreaData(startPos1, endPos1, performerSpawn1, audienceSpawn1, name1, ownerUUID1, 0F, 1F, 0F)));
 
     private BlockPos startPos;
     private BlockPos endPos;
@@ -26,9 +29,14 @@ public class StageAreaData implements Comparable<StageAreaData>
     private BlockPos audienceSpawn;
     private String name;
     private UUID ownerUUID;
-    private AxisAlignedBB areaAABB;
+    private float r;
+    private float g;
+    private float b;
 
-    public StageAreaData(BlockPos startPos, BlockPos endPos, BlockPos performerSpawn, BlockPos audienceSpawn, String name, UUID ownerUUID)
+    private AxisAlignedBB areaAABB;
+    public StageAreaData toolState;
+
+    public StageAreaData(BlockPos startPos, BlockPos endPos, BlockPos performerSpawn, BlockPos audienceSpawn, String name, UUID ownerUUID, float r, float g, float b)
     {
         this.startPos = startPos;
         this.endPos = endPos;
@@ -36,6 +44,9 @@ public class StageAreaData implements Comparable<StageAreaData>
         this.audienceSpawn = audienceSpawn;
         this.name = name;
         this.ownerUUID = ownerUUID;
+        this.r = r;
+        this.g = g;
+        this.b = b;
         makeAABB();
     }
 
@@ -111,6 +122,26 @@ public class StageAreaData implements Comparable<StageAreaData>
         return ownerUUID;
     }
 
+    public float getR()
+    {
+        return r;
+    }
+
+    public float getG()
+    {
+        return g;
+    }
+
+    public float getB()
+    {
+        return b;
+    }
+
+    public StageAreaData getToolState()
+    {
+        return toolState;
+    }
+
     @Override
     public int hashCode()
     {
@@ -121,6 +152,9 @@ public class StageAreaData implements Comparable<StageAreaData>
                 .append(audienceSpawn)
                 .append(name)
                 .append(ownerUUID)
+                .append(r)
+                .append(g)
+                .append(b)
                 .toHashCode();
     }
 
@@ -142,6 +176,9 @@ public class StageAreaData implements Comparable<StageAreaData>
                 .append(audienceSpawn, stageAreaData.getAudienceSpawn())
                 .append(name, stageAreaData.getName())
                 .append(ownerUUID, stageAreaData.getOwnerUUID())
+                .append(r, stageAreaData.getR())
+                .append(g, stageAreaData.getG())
+                .append(b, stageAreaData.getB())
                 .isEquals();
     }
 
@@ -155,6 +192,9 @@ public class StageAreaData implements Comparable<StageAreaData>
                 .append("audienceSpawn", audienceSpawn)
                 .append("name", name)
                 .append("ownerUUID", ownerUUID)
+                .append("r", r)
+                .append("g", g)
+                .append("b", b)
                 .toString();
     }
 

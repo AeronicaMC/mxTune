@@ -46,7 +46,6 @@ public class StageToolItem extends Item
                 StageToolHelper.create(context.getPlayer());
                 toolState = StageToolHelper.next(context.getPlayer(), StageToolHelper.stageToolState(context.getPlayer()), context.getClickedPos());
                 StageToolHelper.set(context.getPlayer(), toolState);
-                StageToolState.edit(context.getPlayer(), StageToolState.get(context.getPlayer()), StageToolState.Name).apply("test", context.getPlayer().getId());
                 return ActionResultType.SUCCESS;
             } else
             {

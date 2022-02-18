@@ -49,7 +49,7 @@ public class ServerStageAreas implements IServerStageAreas
                 new BlockPos(176,70,-441),
                 new BlockPos(173,70,-441),
                 "Stage#: 01",
-                UUID.randomUUID());
+                UUID.randomUUID(), 0F, 1F, 0F);
     }
 
     StageAreaData stageAreaTest02() {
@@ -59,7 +59,7 @@ public class ServerStageAreas implements IServerStageAreas
                 new BlockPos(167,69,-448),
                 new BlockPos(166,69,-450),
                 "Stage#: 02",
-                UUID.randomUUID());
+                UUID.randomUUID(), 0F, 1F, 0F);
     }
 
     @Override
