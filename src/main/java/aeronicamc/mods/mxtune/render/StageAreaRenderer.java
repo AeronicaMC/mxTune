@@ -46,7 +46,7 @@ public class StageAreaRenderer
                                     renderFaces(pMatrixStack, vertexBuilder1, area.getAreaAABB(), camX, camY, camZ, area.getR(), area.getG(), area.getB(), 0.1F);
 
                                     IVertexBuilder vertexBuilder2 = pBuffer.getBuffer(RenderType.lines());
-                                    renderEdges(pMatrixStack, vertexBuilder2, area.getAreaAABB(), camX, camY, camZ, area.getR(), area.getG(), area.getB(), 1F);
+                                    renderEdges(pMatrixStack, vertexBuilder2, area.getAreaAABB(), camX, camY, camZ, area.getR(), area.getG(), area.getB(), 0.4F);
 
                                     if (!(pActiveRenderInfo.getEntity().distanceToSqr(area.getAreaAABB().getCenter()) > 512))
                                     {
@@ -69,12 +69,12 @@ public class StageAreaRenderer
 
     static void renderEdges(MatrixStack pMatrixStack, IVertexBuilder pBuffer, AxisAlignedBB alignedBB, double pX, double pY, double pZ, float pRed, float pGreen, float pBlue, float pAlpha)
     {
-        renderShape(pMatrixStack, pBuffer, VoxelShapes.create(alignedBB), -pX, -pY, -pZ, pRed, pGreen, pBlue, pAlpha);
+        renderShape(pMatrixStack, pBuffer, VoxelShapes.create(alignedBB.inflate(-0.1D)), -pX, -pY, -pZ, pRed, pGreen, pBlue, pAlpha);
     }
 
     public static void renderFaces(MatrixStack pMatrixStack, IVertexBuilder pBuffer, final AxisAlignedBB alignedBB, double camX, double camY, double camZ, float pRed, float pGreen, float pBlue, float pAlpha) {
         Matrix4f matrix4f = pMatrixStack.last().pose();
-        AxisAlignedBB box = alignedBB.inflate(.01);
+        AxisAlignedBB box = alignedBB.inflate(-0.01D);
         // North inner
         pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.minY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
         pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.maxY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
