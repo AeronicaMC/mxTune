@@ -29,7 +29,7 @@ public class Color3f implements Comparable<Color3f>
 
     public static Color3f rainbowFactory()
     {
-        int row = RandomUtils.nextInt(0, rainbow.length/3);
+        int row = RandomUtils.nextInt(0, rainbow.length);
         return new Color3f(rainbow[row][0], rainbow[row][1], rainbow[row][2]);
     }
 
