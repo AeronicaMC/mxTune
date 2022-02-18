@@ -21,7 +21,7 @@ public class StageAreaData implements Comparable<StageAreaData>
             Codec.FLOAT.fieldOf("r").forGetter(StageAreaData::getR),
             Codec.FLOAT.fieldOf("g").forGetter(StageAreaData::getG),
             Codec.FLOAT.fieldOf("b").forGetter(StageAreaData::getB)
-            ).apply(instance, (BlockPos startPos1, BlockPos endPos1, BlockPos performerSpawn1, BlockPos audienceSpawn1, String name1, UUID ownerUUID1, Float ownerUUID12, Float ownerUUID13, Float ownerUUID14) -> new StageAreaData(startPos1, endPos1, performerSpawn1, audienceSpawn1, name1, ownerUUID1, 0F, 1F, 0F)));
+            ).apply(instance, StageAreaData::new));
 
     private BlockPos startPos;
     private BlockPos endPos;
