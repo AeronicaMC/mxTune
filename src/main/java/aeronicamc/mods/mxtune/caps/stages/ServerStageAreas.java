@@ -36,6 +36,12 @@ public class ServerStageAreas implements IServerStageAreas
         this.levelRef = new WeakReference<>(level, worldReferenceQueue);
     }
 
+    @Override
+    public void addArea(StageAreaData stageAreaData)
+    {
+        stageAreas.add(stageAreaData);
+    }
+
     StageAreaData stageAreaTest01() {
         return new StageAreaData(
                 new BlockPos(173,70,-441),

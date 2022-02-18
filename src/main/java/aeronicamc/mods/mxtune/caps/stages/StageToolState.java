@@ -108,14 +108,21 @@ public enum StageToolState
         return new StageAreaData(BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, "", UUID.randomUUID());
     }
 
-    public static StageToolState create(LivingEntity livingEntity){
+    public static StageToolState create(LivingEntity livingEntity)
+    {
         StageAreaData tempArea = initStageArea();
         tempArea.setOwnerUUID(livingEntity.getUUID());
         setupArea.putIfAbsent(livingEntity.getId(), tempArea);
         return Corner1;
     }
 
-    public static StageToolState edit(LivingEntity livingEntity, StageAreaData stageAreaData, StageToolState stageToolState){
+    public static void reset(LivingEntity livingEntity)
+    {
+        setupArea.remove(livingEntity.getId());
+    }
+
+    public static StageToolState edit(LivingEntity livingEntity, StageAreaData stageAreaData, StageToolState stageToolState)
+    {
         setupArea.remove(livingEntity.getId());
         setupArea.putIfAbsent(livingEntity.getId(), stageAreaData);
         return stageToolState;

@@ -9,6 +9,8 @@ public interface IServerStageAreas
 {
     List<StageAreaData> getStageAreas();
 
+    void addArea(StageAreaData stageAreaData);
+
     int getInt();
 
     void setInt(Integer someInt);

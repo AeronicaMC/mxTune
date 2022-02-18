@@ -21,6 +21,30 @@ public class StageToolHelper
         return toolState;
     }
 
+
+    public static StageToolState set(LivingEntity livingEntity, StageToolState stageToolState)
+    {
+        setupState.replace(livingEntity.getId(), stageToolState);
+        return stageToolState;
+    }
+
+    public static StageToolState next(LivingEntity livingEntity, StageToolState toolState, Object object)
+    {
+        return setupState.get(livingEntity.getId()).apply(object, livingEntity.getId());
+    }
+
+
+    public static void reset(LivingEntity livingEntity)
+    {
+        setupState.remove(livingEntity.getId());
+        StageToolState.reset(livingEntity);
+    }
+
+    public static StageToolState stageToolState(LivingEntity livingEntity)
+    {
+        return setupState.get(livingEntity.getId());
+    }
+
     public static StageToolState edit(LivingEntity livingEntity, StageAreaData stageArea, StageToolState toolState, Object object)
     {
         StageToolState nextState = StageToolState.edit(livingEntity, stageArea, toolState).apply(object, livingEntity.getId());
@@ -30,7 +54,7 @@ public class StageToolHelper
     }
 
     @Nullable
-    public StageAreaData get(LivingEntity livingEntity)
+    public static StageAreaData get(LivingEntity livingEntity)
     {
         if (StageToolState.has(livingEntity))
         {
