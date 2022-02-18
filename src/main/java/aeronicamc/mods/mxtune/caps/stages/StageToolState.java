@@ -1,143 +1,134 @@
 package aeronicamc.mods.mxtune.caps.stages;
 
-import net.minecraftforge.eventbus.api.Event;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.math.BlockPos;
+
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public enum StageToolState
 {
     Corner1 {
         @Override
-        public StageToolState nextState() {
+        public <T> StageToolState apply(T object, Integer id)
+        {
+            setupArea.get(id).setStartPos((BlockPos) object);
             return Corner2;
-        }
-
-        @Override
-        public Event processRequest() {
-            return new Event();
         }
     },
     Corner2 {
         @Override
-        public StageToolState nextState() {
+        public <T> StageToolState apply(T object, Integer id)
+        {
+            setupArea.get(id).setEndPos((BlockPos) object);
             return AudienceSpawn;
-        }
-
-        @Override
-        public Event processRequest() {
-            return new Event();
         }
     },
     AudienceSpawn {
         @Override
-        public StageToolState nextState() {
+        public <T> StageToolState apply(T object, Integer id)
+        {
+            setupArea.get(id).setAudienceSpawn((BlockPos) object);
             return StageSpawn;
-        }
-
-        @Override
-        public Event processRequest() {
-            return new Event();
         }
     },
     StageSpawn {
         @Override
-        public StageToolState nextState() {
+        public <T> StageToolState apply(T object, Integer id)
+        {
+            setupArea.get(id).setPerformerSpawn((BlockPos) object);
             return Name;
-        }
-
-        @Override
-        public Event processRequest() {
-            return new Event();
         }
     },
     Name {
         @Override
-        public StageToolState nextState() {
-            return Apply;
-        }
-
-        @Override
-        public Event processRequest() {
-            return new Event();
+        public <T> StageToolState apply(T object, Integer id)
+        {
+            setupArea.get(id).setName((String) object);
+            return Done;
         }
     },
     Corner1Edit {
         @Override
-        public StageToolState nextState() {
-            return Apply;
-        }
-
-        @Override
-        public Event processRequest() {
-            return new Event();
+        public <T> StageToolState apply(T object, Integer id)
+        {
+            setupArea.get(id).setStartPos((BlockPos) object);
+            return Done;
         }
     },
     Corner2Edit {
         @Override
-        public StageToolState nextState() {
-            return Apply;
-        }
-
-        @Override
-        public Event processRequest() {
-            return new Event();
+        public <T> StageToolState apply(T object, Integer id)
+        {
+            setupArea.get(id).setEndPos((BlockPos) object);
+            return Done;
         }
     },
     AudienceSpawnEdit {
         @Override
-        public StageToolState nextState() {
-            return Apply;
-        }
-
-        @Override
-        public Event processRequest() {
-            return new Event();
+        public <T> StageToolState apply(T object, Integer id)
+        {
+            setupArea.get(id).setAudienceSpawn((BlockPos) object);
+            return Done;
         }
     },
     StageSpawnEdit {
         @Override
-        public StageToolState nextState() {
-            return Apply;
-        }
-
-        @Override
-        public Event processRequest() {
-            return new Event();
+        public <T> StageToolState apply(T object, Integer id)
+        {
+            setupArea.get(id).setPerformerSpawn((BlockPos) object);
+            return Done;
         }
     },
     NameEdit {
         @Override
-        public StageToolState nextState() {
-            return Apply;
-        }
-
-        @Override
-        public Event processRequest() {
-            return new Event();
-        }
-    },
-    Apply {
-        @Override
-        public StageToolState nextState() {
+        public <T> StageToolState apply(T object, Integer id)
+        {
+            setupArea.get(id).setName((String) object);
             return Done;
-        }
-
-        @Override
-        public Event processRequest() {
-            return new Event();
         }
     },
     Done {
         @Override
-        public StageToolState nextState() {
-             return Done;
-        }
-
-        @Override
-        public Event processRequest() {
-            return new Event();
+        public <T> StageToolState apply(T object, Integer id)
+        {
+            return Done;
         }
     };
 
-    public abstract StageToolState nextState();
+    private static final Map<Integer, StageAreaData> setupArea = Collections.synchronizedMap(new HashMap<>());
 
-    public abstract Event processRequest();
+    public abstract <T extends Object> StageToolState apply(T object, Integer id);
+
+    private static StageAreaData initStageArea()
+    {
+        return new StageAreaData(BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, "", UUID.randomUUID());
+    }
+
+    public static StageToolState create(LivingEntity livingEntity){
+        StageAreaData tempArea = initStageArea();
+        tempArea.setOwnerUUID(livingEntity.getUUID());
+        setupArea.putIfAbsent(livingEntity.getId(), tempArea);
+        return Corner1;
+    }
+
+    public static StageToolState edit(LivingEntity livingEntity, StageAreaData stageAreaData, StageToolState stageToolState){
+        setupArea.remove(livingEntity.getId());
+        setupArea.putIfAbsent(livingEntity.getId(), stageAreaData);
+        return stageToolState;
+    }
+
+    public static boolean has(LivingEntity livingEntity)
+    {
+        return setupArea.containsKey(livingEntity.getId());
+    }
+
+    @Nullable
+    public static StageAreaData get(LivingEntity livingEntity)
+    {
+        return setupArea.get(livingEntity.getId());
+    }
 }
