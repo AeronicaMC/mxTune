@@ -14,7 +14,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
 import static aeronicamc.mods.mxtune.render.RenderHelper.renderShape;
@@ -51,15 +50,15 @@ public class StageAreaRenderer
 
                                     if (!(pActiveRenderInfo.getEntity().distanceToSqr(area.getAreaAABB().getCenter()) > 512))
                                     {
-                                        RenderHelper.renderFloatingText(area.getAreaAABB().getCenter(), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent(area.getName()),
-                                                                        RenderHelper.PACKED_LIGHT_MAX);
-
-                                        RenderHelper.renderFloatingText(new Vector3d(area.getAudienceSpawn().getX() + 0.5, area.getAudienceSpawn().getY() + 1.5, area.getAudienceSpawn().getZ() + 0.5), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent("Audience Spawn"),
-                                                                        RenderHelper.PACKED_LIGHT_MAX);
-
-                                        RenderHelper.renderFloatingText(new Vector3d(area.getPerformerSpawn().getX() + 0.5, area.getPerformerSpawn().getY() + 1.5, area.getPerformerSpawn().getZ() + 0.5), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent("Performer Spawn"),
-
-                                                                        RenderHelper.PACKED_LIGHT_MAX);
+//                                        RenderHelper.renderFloatingText(area.getAreaAABB().getCenter(), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent(area.getName()),
+//                                                                        RenderHelper.PACKED_LIGHT_MAX);
+//
+//                                        RenderHelper.renderFloatingText(new Vector3d(area.getAudienceSpawn().getX() + 0.5, area.getAudienceSpawn().getY() + 1.5, area.getAudienceSpawn().getZ() + 0.5), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent("Audience Spawn"),
+//                                                                        RenderHelper.PACKED_LIGHT_MAX);
+//
+//                                        RenderHelper.renderFloatingText(new Vector3d(area.getPerformerSpawn().getX() + 0.5, area.getPerformerSpawn().getY() + 1.5, area.getPerformerSpawn().getZ() + 0.5), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent("Performer Spawn"),
+//
+//                                                                        RenderHelper.PACKED_LIGHT_MAX);
                                     }
                                     pBuffer.endBatch(ModRenderType.TRANSPARENT_QUADS_NO_TEXTURE);
                                     pBuffer.endBatch(RenderType.lines());
