@@ -62,7 +62,6 @@ public class StageToolItem extends Item
                                                                                               }
                                                                                           });
             }
-
         }
 
         return ActionResultType.SUCCESS;
@@ -77,8 +76,6 @@ public class StageToolItem extends Item
             ServerPlayerEntity serverPlayerEntity = ((ServerPlayerEntity) playerIn);
             if (!playerIn.isShiftKeyDown())
             {
-
-
                 //ServerStageAreaProvider.getServerStageAreas(worldIn).ifPresent(IServerStageAreas::test);
             }
         }

@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public enum StageToolState
 {
@@ -104,18 +103,17 @@ public enum StageToolState
 
     public abstract <T extends Object> StageToolState apply(T object, Integer id);
 
-    private static StageAreaData initStageArea()
+    private static StageAreaData initStageArea(LivingEntity livingEntity)
     {
         Color3f color = Color3f.rainbowFactory();
-        String name = color.toString();
-        return new StageAreaData(BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, color.toString(), UUID.randomUUID(), color.getR(), color.getG(), color.getB());
+        return new StageAreaData(BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, color.toString(), livingEntity.getUUID(), color.getR(), color.getG(), color.getB());
     }
 
     public static StageToolState create(LivingEntity livingEntity)
     {
-        StageAreaData tempArea = initStageArea();
-        tempArea.setOwnerUUID(livingEntity.getUUID());
-        setupArea.putIfAbsent(livingEntity.getId(), tempArea);
+        StageAreaData tempStage = initStageArea(livingEntity);
+        tempStage.setToolState(Corner1);
+        setupArea.putIfAbsent(livingEntity.getId(), tempStage);
         return Corner1;
     }
 
@@ -126,6 +124,7 @@ public enum StageToolState
 
     public static StageToolState edit(LivingEntity livingEntity, StageAreaData stageAreaData, StageToolState stageToolState)
     {
+        stageAreaData.setToolState(stageToolState);
         setupArea.remove(livingEntity.getId());
         setupArea.putIfAbsent(livingEntity.getId(), stageAreaData);
         return stageToolState;
