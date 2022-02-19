@@ -10,21 +10,24 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
-import java.lang.ref.ReferenceQueue;
-import java.lang.ref.WeakReference;
+import java.util.Optional;
 
 public class PlayerNexus implements IPlayerNexus
 {
     private static final Logger LOGGER = LogManager.getLogger(PlayerNexus.class);
     private int playId = PlayIdSupplier.PlayType.INVALID.getAsInt();
-    private WeakReference<PlayerEntity> playerWeakRef;
+    private PlayerEntity player;
 
     PlayerNexus() { /* NOP */ }
 
     PlayerNexus(@Nullable final PlayerEntity playerEntity)
     {
-        ReferenceQueue<PlayerEntity> playerEntityReferenceQueue = new ReferenceQueue<>();
-        this.playerWeakRef = new WeakReference<>(playerEntity, playerEntityReferenceQueue);
+        player = playerEntity;
+    }
+
+    private Optional<PlayerEntity> getPlayer()
+    {
+        return Optional.of(player);
     }
 
     @Override
@@ -57,11 +60,12 @@ public class PlayerNexus implements IPlayerNexus
     @Override
     public void sync()
     {
-        PlayerEntity playerEntity = playerWeakRef.get();
-        if (playerEntity != null && !playerEntity.level.isClientSide())
-        {
-            PacketDispatcher.sendToDimension(new PlayerNexusSync(playId, playerEntity.getId()), playerEntity.level.dimension());
-            LOGGER.debug("sync: playId {}, entityId {}", playId, playerEntity.getId());
-        }
+        getPlayer().ifPresent( pPlayer -> {
+            if (!pPlayer.level.isClientSide())
+            {
+                PacketDispatcher.sendToDimension(new PlayerNexusSync(playId, pPlayer.getId()), pPlayer.level.dimension());
+                LOGGER.debug("sync: playId {}, entityId {}", playId, pPlayer.getId());
+            }
+        });
     }
 }

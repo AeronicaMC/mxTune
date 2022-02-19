@@ -21,6 +21,4 @@ public interface IServerStageAreas
     void deserializeNBT(INBT nbt);
 
     void sync();
-
-    void test();
 }

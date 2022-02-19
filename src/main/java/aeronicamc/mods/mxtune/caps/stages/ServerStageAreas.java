@@ -6,23 +6,20 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.NBTDynamicOps;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
-import java.lang.ref.ReferenceQueue;
-import java.lang.ref.WeakReference;
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ServerStageAreas implements IServerStageAreas
 {
     private static final Logger LOGGER = LogManager.getLogger(ServerStageAreas.class);
-    private WeakReference<World> levelRef;
+    private World level;
     private final List<StageAreaData> stageAreas = new CopyOnWriteArrayList<>();
 
     private int someInt;
@@ -32,42 +29,18 @@ public class ServerStageAreas implements IServerStageAreas
     ServerStageAreas(World level)
     {
         this();
-        ReferenceQueue<World> worldReferenceQueue = new ReferenceQueue<>();
-        this.levelRef = new WeakReference<>(level, worldReferenceQueue);
+        this.level = level;
+    }
+
+    private Optional<World> getLevel()
+    {
+        return Optional.of(level);
     }
 
     @Override
     public void addArea(StageAreaData stageAreaData)
     {
         stageAreas.add(stageAreaData);
-    }
-
-    StageAreaData stageAreaTest01() {
-        return new StageAreaData(
-                new BlockPos(173,70,-441),
-                new BlockPos(177,72,-445),
-                new BlockPos(176,70,-441),
-                new BlockPos(173,70,-441),
-                "Stage#: 01",
-                UUID.randomUUID(), 0F, 1F, 0F);
-    }
-
-    StageAreaData stageAreaTest02() {
-        return new StageAreaData(
-                new BlockPos(169,73,-446),
-                new BlockPos(164,69,-451),
-                new BlockPos(167,69,-448),
-                new BlockPos(166,69,-450),
-                "Stage#: 02",
-                UUID.randomUUID(), 0F, 1F, 0F);
-    }
-
-    @Override
-    public void test()
-    {
-        stageAreas.add(stageAreaTest01());
-        stageAreas.add(stageAreaTest02());
-        sync();
     }
 
     @Override
@@ -91,12 +64,13 @@ public class ServerStageAreas implements IServerStageAreas
 
     public void sync()
     {
-        World level = levelRef.get();
-        if (level != null && !level.isClientSide())
+        getLevel().ifPresent(level -> {
+            if (!level.isClientSide())
             {
                 PacketDispatcher.sendToDimension(new StageAreaSyncMessage(serializeNBT()), level.dimension());
                 LOGGER.debug("sync: someInt {}, stageAreas {}", this.someInt, this.stageAreas.size());
             }
+        });
     }
 
     @Override
