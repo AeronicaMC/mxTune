@@ -34,7 +34,7 @@ public class StageAreaData implements Comparable<StageAreaData>
     private float b;
 
     private AxisAlignedBB areaAABB;
-    public StageAreaData toolState;
+    private StageToolState toolState;
 
     public StageAreaData(BlockPos startPos, BlockPos endPos, BlockPos performerSpawn, BlockPos audienceSpawn, String name, UUID ownerUUID, float r, float g, float b)
     {
@@ -60,30 +60,15 @@ public class StageAreaData implements Comparable<StageAreaData>
         return startPos;
     }
 
-    public BlockPos getEndPos()
-    {
-        return endPos;
-    }
-
-    public BlockPos getPerformerSpawn()
-    {
-        return performerSpawn;
-    }
-
-    public BlockPos getAudienceSpawn()
-    {
-        return audienceSpawn;
-    }
-
-    public AxisAlignedBB getAreaAABB()
-    {
-        return areaAABB;
-    }
-
     public void setStartPos(BlockPos startPos)
     {
         this.startPos = startPos;
         makeAABB();
+    }
+
+    public BlockPos getEndPos()
+    {
+        return endPos;
     }
 
     public void setEndPos(BlockPos endPos)
@@ -92,9 +77,19 @@ public class StageAreaData implements Comparable<StageAreaData>
         makeAABB();
     }
 
+    public BlockPos getPerformerSpawn()
+    {
+        return performerSpawn;
+    }
+
     public void setPerformerSpawn(BlockPos performerSpawn)
     {
         this.performerSpawn = performerSpawn;
+    }
+
+    public BlockPos getAudienceSpawn()
+    {
+        return audienceSpawn;
     }
 
     public void setAudienceSpawn(BlockPos audienceSpawn)
@@ -102,14 +97,9 @@ public class StageAreaData implements Comparable<StageAreaData>
         this.audienceSpawn = audienceSpawn;
     }
 
-    public void setName(String name)
+    public AxisAlignedBB getAreaAABB()
     {
-        this.name = name;
-    }
-
-    public void setOwnerUUID(UUID ownerUUID)
-    {
-        this.ownerUUID = ownerUUID;
+        return areaAABB;
     }
 
     public String getName()
@@ -117,9 +107,19 @@ public class StageAreaData implements Comparable<StageAreaData>
         return name;
     }
 
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
     public UUID getOwnerUUID()
     {
         return ownerUUID;
+    }
+
+    public void setOwnerUUID(UUID ownerUUID)
+    {
+        this.ownerUUID = ownerUUID;
     }
 
     public float getR()
@@ -137,9 +137,14 @@ public class StageAreaData implements Comparable<StageAreaData>
         return b;
     }
 
-    public StageAreaData getToolState()
+    public StageToolState getToolState()
     {
         return toolState;
+    }
+
+    public void setToolState(StageToolState toolState)
+    {
+        this.toolState = toolState;
     }
 
     @Override
