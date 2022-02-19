@@ -1,10 +1,7 @@
 package aeronicamc.mods.mxtune.util;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.*;
 
 public class Color3f implements Comparable<Color3f>
 {
@@ -51,8 +48,11 @@ public class Color3f implements Comparable<Color3f>
     @Override
     public String toString()
     {
-        int shift = RandomUtils.nextInt(1, 10);
-        return String.format("Stage: %s", StringUtils.rotate("0123456789", shift));
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("R", r)
+                .append("G", g)
+                .append("B", b)
+                .toString();
     }
 
     @Override
