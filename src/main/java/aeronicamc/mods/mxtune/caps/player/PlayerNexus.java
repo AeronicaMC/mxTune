@@ -53,8 +53,13 @@ public class PlayerNexus implements IPlayerNexus
     @Override
     public void deserializeNBT(@Nullable INBT nbt)
     {
-        if (nbt != null)
-            setPlayId(((IntNBT) nbt).getAsInt());
+        Optional<INBT> oNbt = Optional.ofNullable(nbt);
+        oNbt.ifPresent(this::accept);
+    }
+
+    private void accept(INBT pNbt)
+    {
+        setPlayId(((IntNBT) pNbt).getAsInt());
     }
 
     @Override
