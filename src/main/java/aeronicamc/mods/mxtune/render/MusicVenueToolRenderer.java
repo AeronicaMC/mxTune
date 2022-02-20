@@ -9,11 +9,11 @@ import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.StringTextComponent;
 
-public class StageToolRenderer
+public class MusicVenueToolRenderer
 {
     private static final Minecraft mc = Minecraft.getInstance();
 
-    private StageToolRenderer() { /* NOP */ }
+    private MusicVenueToolRenderer() { /* NOP */ }
 
     static void renderUUID(MatrixStack pMatrixStack, IRenderTypeBuffer.Impl pBuffer, LightTexture pLightTexture, ActiveRenderInfo pActiveRenderInfo, float pPartialTicks, ClippingHelper pClippingHelper)
     {

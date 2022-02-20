@@ -2,7 +2,7 @@ package aeronicamc.mods.mxtune.events;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.caps.player.IPlayerNexus;
-import aeronicamc.mods.mxtune.caps.stages.IServerStageAreas;
+import aeronicamc.mods.mxtune.caps.venues.IMusicVenues;
 import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
 import aeronicamc.mods.mxtune.managers.PlayManager;
 import net.minecraft.entity.LivingEntity;
@@ -17,7 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import static aeronicamc.mods.mxtune.caps.player.PlayerNexusProvider.getNexus;
-import static aeronicamc.mods.mxtune.caps.stages.ServerStageAreaProvider.getServerStageAreas;
+import static aeronicamc.mods.mxtune.caps.venues.MusicVenueProvider.getMusicVenues;
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
 public class ModPlayerEvents
@@ -97,7 +97,7 @@ public class ModPlayerEvents
 
     private static void capabilitySynchronize(LivingEntity livingEntity)
     {
-        getServerStageAreas(livingEntity.level).ifPresent(IServerStageAreas::sync);
+        getMusicVenues(livingEntity.level).ifPresent(IMusicVenues::sync);
         getNexus(livingEntity).ifPresent(IPlayerNexus::sync);
     }
 

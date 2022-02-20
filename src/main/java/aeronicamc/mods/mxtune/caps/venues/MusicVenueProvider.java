@@ -1,4 +1,4 @@
-package aeronicamc.mods.mxtune.caps.stages;
+package aeronicamc.mods.mxtune.caps.venues;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.caps.SerializableCapabilityProvider;
@@ -19,42 +19,42 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
-public class ServerStageAreaProvider
+public class MusicVenueProvider
 {
-    private static final Logger LOGGER = LogManager.getLogger(ServerStageAreaProvider.class);
+    private static final Logger LOGGER = LogManager.getLogger(MusicVenueProvider.class);
 
-    @CapabilityInject(IServerStageAreas.class)
-    public static Capability<IServerStageAreas> STAGE_AREA_CAP = Misc.nonNullInjected();
+    @CapabilityInject(IMusicVenues.class)
+    public static Capability<IMusicVenues> musicVenuesCapability = Misc.nonNullInjected();
 
-    private ServerStageAreaProvider() { /* NOP */ }
+    private MusicVenueProvider() { /* NOP */ }
 
     public static final ResourceLocation ID = new ResourceLocation(Reference.MOD_ID, "stage_area");
 
     public static void register()
     {
-        CapabilityManager.INSTANCE.register(IServerStageAreas.class, new Capability.IStorage<IServerStageAreas>()
+        CapabilityManager.INSTANCE.register(IMusicVenues.class, new Capability.IStorage<IMusicVenues>()
         {
             @Nullable
             @Override
-            public INBT writeNBT(Capability<IServerStageAreas> capability, final IServerStageAreas instance, Direction side)
+            public INBT writeNBT(Capability<IMusicVenues> capability, final IMusicVenues instance, Direction side)
             {
                 return instance.serializeNBT();
             }
 
             @SuppressWarnings("unchecked")
             @Override
-            public void readNBT(Capability<IServerStageAreas> capability, final IServerStageAreas instance, Direction side, INBT nbt)
+            public void readNBT(Capability<IMusicVenues> capability, final IMusicVenues instance, Direction side, INBT nbt)
             {
-                if (!(instance instanceof ServerStageAreas))
+                if (!(instance instanceof MusicVenues))
                     throw new IllegalArgumentException("Can not deserialize to an instance that isn't the default implementation");
                 instance.deserializeNBT(nbt);
             }
-        }, ServerStageAreas::new);
+        }, MusicVenues::new);
     }
 
-    public static LazyOptional<IServerStageAreas> getServerStageAreas(final World world)
+    public static LazyOptional<IMusicVenues> getMusicVenues(final World world)
     {
-        return world.getCapability(STAGE_AREA_CAP, null);
+        return world.getCapability(musicVenuesCapability, null);
     }
 
     @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
@@ -63,7 +63,7 @@ public class ServerStageAreaProvider
         @SubscribeEvent
         public static void event(final AttachCapabilitiesEvent<World> event)
         {
-            event.addCapability(ID, new SerializableCapabilityProvider<>(STAGE_AREA_CAP, null, new ServerStageAreas(event.getObject())));
+            event.addCapability(ID, new SerializableCapabilityProvider<>(musicVenuesCapability, null, new MusicVenues(event.getObject())));
             LOGGER.debug("AttachCapabilitiesEvent<World> {} {}", event.getObject(), event.getObject().dimension());
         }
     }

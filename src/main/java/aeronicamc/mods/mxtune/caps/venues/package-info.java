@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package aeronicamc.mods.mxtune.caps.stages;
+package aeronicamc.mods.mxtune.caps.venues;
 
 import mcp.MethodsReturnNonnullByDefault;
 

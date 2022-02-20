@@ -1,7 +1,7 @@
-package aeronicamc.mods.mxtune.caps.stages;
+package aeronicamc.mods.mxtune.caps.venues;
 
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
-import aeronicamc.mods.mxtune.network.messages.StageAreaSyncMessage;
+import aeronicamc.mods.mxtune.network.messages.MusicVenueSyncMessage;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
@@ -16,17 +16,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class ServerStageAreas implements IServerStageAreas
+public class MusicVenues implements IMusicVenues
 {
-    private static final Logger LOGGER = LogManager.getLogger(ServerStageAreas.class);
+    private static final Logger LOGGER = LogManager.getLogger(MusicVenues.class);
     private World level;
-    private final List<StageAreaData> stageAreas = new CopyOnWriteArrayList<>();
+    private final List<MusicVenue> musicVenues = new CopyOnWriteArrayList<>();
 
     private int someInt;
 
-    ServerStageAreas() { /* NOP */ }
+    MusicVenues() { /* NOP */ }
 
-    ServerStageAreas(World level)
+    MusicVenues(World level)
     {
         this();
         this.level = level;
@@ -38,15 +38,15 @@ public class ServerStageAreas implements IServerStageAreas
     }
 
     @Override
-    public void addArea(StageAreaData stageAreaData)
+    public void addMusicVenue(MusicVenue musicVenue)
     {
-        stageAreas.add(stageAreaData);
+        musicVenues.add(musicVenue);
     }
 
     @Override
-    public List<StageAreaData> getStageAreas()
+    public List<MusicVenue> getMusicVenues()
     {
-        return stageAreas;
+        return musicVenues;
     }
 
     @Override
@@ -67,8 +67,8 @@ public class ServerStageAreas implements IServerStageAreas
         getLevel().ifPresent(level -> {
             if (!level.isClientSide())
             {
-                PacketDispatcher.sendToDimension(new StageAreaSyncMessage(serializeNBT()), level.dimension());
-                LOGGER.debug("sync: someInt {}, stageAreas {}", this.someInt, this.stageAreas.size());
+                PacketDispatcher.sendToDimension(new MusicVenueSyncMessage(serializeNBT()), level.dimension());
+                LOGGER.debug("sync: someInt {}, musicVenues {}", this.someInt, this.musicVenues.size());
             }
         });
     }
@@ -78,10 +78,10 @@ public class ServerStageAreas implements IServerStageAreas
     {
         final CompoundNBT cNbt = new CompoundNBT();
         ListNBT listnbt = new ListNBT();
-        stageAreas.forEach(stageArea -> NBTDynamicOps.INSTANCE.withEncoder(StageAreaData.CODEC)
+        musicVenues.forEach(stageArea -> NBTDynamicOps.INSTANCE.withEncoder(MusicVenue.CODEC)
                 .apply(stageArea).result().ifPresent(listnbt::add));
 
-        cNbt.put("stageAreas", listnbt);
+        cNbt.put("musicVenues", listnbt);
         cNbt.putInt("someInt", getInt());
         return cNbt;
     }
@@ -90,12 +90,12 @@ public class ServerStageAreas implements IServerStageAreas
     public void deserializeNBT(@Nullable INBT nbt)
     {
         CompoundNBT cNbt = ((CompoundNBT) nbt);
-        if (cNbt != null && cNbt.contains("stageAreas"))
+        if (cNbt != null && cNbt.contains("musicVenues"))
         {
-            ListNBT listnbt = cNbt.getList("stageAreas", Constants.NBT.TAG_COMPOUND);
-            stageAreas.clear();
-            listnbt.forEach(stageAreaNBT -> NBTDynamicOps.INSTANCE.withParser(StageAreaData.CODEC)
-                    .apply(stageAreaNBT).result().ifPresent(stageAreas::add));
+            ListNBT listnbt = cNbt.getList("musicVenues", Constants.NBT.TAG_COMPOUND);
+            musicVenues.clear();
+            listnbt.forEach(stageAreaNBT -> NBTDynamicOps.INSTANCE.withParser(MusicVenue.CODEC)
+                    .apply(stageAreaNBT).result().ifPresent(musicVenues::add));
 
             setInt(cNbt.getInt("someInt"));
         }

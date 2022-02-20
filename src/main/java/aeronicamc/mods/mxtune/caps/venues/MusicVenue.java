@@ -1,4 +1,4 @@
-package aeronicamc.mods.mxtune.caps.stages;
+package aeronicamc.mods.mxtune.caps.venues;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -9,19 +9,20 @@ import org.apache.commons.lang3.builder.*;
 
 import java.util.UUID;
 
-public class StageAreaData implements Comparable<StageAreaData>
+public class MusicVenue implements Comparable<MusicVenue>
 {
-    final static Codec<StageAreaData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            BlockPos.CODEC.fieldOf("startPos").forGetter(StageAreaData::getStartPos),
-            BlockPos.CODEC.fieldOf("endPos").forGetter(StageAreaData::getEndPos),
-            BlockPos.CODEC.fieldOf("performerSpawn").forGetter(StageAreaData::getPerformerSpawn),
-            BlockPos.CODEC.fieldOf("audienceSpawn").forGetter(StageAreaData::getAudienceSpawn),
-            Codec.STRING.fieldOf("name").forGetter(StageAreaData::getName),
-            UUIDCodec.CODEC.fieldOf("ownerUUID").forGetter(StageAreaData::getOwnerUUID),
-            Codec.FLOAT.fieldOf("r").forGetter(StageAreaData::getR),
-            Codec.FLOAT.fieldOf("g").forGetter(StageAreaData::getG),
-            Codec.FLOAT.fieldOf("b").forGetter(StageAreaData::getB)
-            ).apply(instance, StageAreaData::new));
+    final static Codec<MusicVenue> CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                BlockPos.CODEC.fieldOf("startPos").forGetter(MusicVenue::getStartPos),
+                BlockPos.CODEC.fieldOf("endPos").forGetter(MusicVenue::getEndPos),
+                BlockPos.CODEC.fieldOf("performerSpawn").forGetter(MusicVenue::getPerformerSpawn),
+                BlockPos.CODEC.fieldOf("audienceSpawn").forGetter(MusicVenue::getAudienceSpawn),
+                Codec.STRING.fieldOf("name").forGetter(MusicVenue::getName),
+                UUIDCodec.CODEC.fieldOf("ownerUUID").forGetter(MusicVenue::getOwnerUUID),
+                Codec.FLOAT.fieldOf("r").forGetter(MusicVenue::getR),
+                Codec.FLOAT.fieldOf("g").forGetter(MusicVenue::getG),
+                Codec.FLOAT.fieldOf("b").forGetter(MusicVenue::getB)
+                                      ).apply(instance, MusicVenue::new));
 
     private BlockPos startPos;
     private BlockPos endPos;
@@ -33,10 +34,9 @@ public class StageAreaData implements Comparable<StageAreaData>
     private float g;
     private float b;
 
-    private AxisAlignedBB areaAABB;
-    private StageToolState toolState;
+    private AxisAlignedBB venueAABB;
 
-    public StageAreaData(BlockPos startPos, BlockPos endPos, BlockPos performerSpawn, BlockPos audienceSpawn, String name, UUID ownerUUID, float r, float g, float b)
+    public MusicVenue(BlockPos startPos, BlockPos endPos, BlockPos performerSpawn, BlockPos audienceSpawn, String name, UUID ownerUUID, float r, float g, float b)
     {
         this.startPos = startPos;
         this.endPos = endPos;
@@ -52,7 +52,7 @@ public class StageAreaData implements Comparable<StageAreaData>
 
     private void makeAABB()
     {
-        this.areaAABB = new AxisAlignedBB(this.startPos, this.endPos).inflate(0.5).move(0.5,0.5,0.5);
+        this.venueAABB = new AxisAlignedBB(this.startPos, this.endPos).inflate(0.5).move(0.5, 0.5, 0.5);
     }
 
     public BlockPos getStartPos()
@@ -97,9 +97,9 @@ public class StageAreaData implements Comparable<StageAreaData>
         this.audienceSpawn = audienceSpawn;
     }
 
-    public AxisAlignedBB getAreaAABB()
+    public AxisAlignedBB getVenueAABB()
     {
-        return areaAABB;
+        return venueAABB;
     }
 
     public String getName()
@@ -137,16 +137,6 @@ public class StageAreaData implements Comparable<StageAreaData>
         return b;
     }
 
-    public StageToolState getToolState()
-    {
-        return toolState;
-    }
-
-    public void setToolState(StageToolState toolState)
-    {
-        this.toolState = toolState;
-    }
-
     @Override
     public int hashCode()
     {
@@ -173,17 +163,17 @@ public class StageAreaData implements Comparable<StageAreaData>
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        StageAreaData stageAreaData = (StageAreaData) o;
+        MusicVenue musicVenue = (MusicVenue) o;
         return new EqualsBuilder()
-                .append(startPos, stageAreaData.getStartPos())
-                .append(endPos, stageAreaData.getEndPos())
-                .append(performerSpawn, stageAreaData.getPerformerSpawn())
-                .append(audienceSpawn, stageAreaData.getAudienceSpawn())
-                .append(name, stageAreaData.getName())
-                .append(ownerUUID, stageAreaData.getOwnerUUID())
-                .append(r, stageAreaData.getR())
-                .append(g, stageAreaData.getG())
-                .append(b, stageAreaData.getB())
+                .append(startPos, musicVenue.getStartPos())
+                .append(endPos, musicVenue.getEndPos())
+                .append(performerSpawn, musicVenue.getPerformerSpawn())
+                .append(audienceSpawn, musicVenue.getAudienceSpawn())
+                .append(name, musicVenue.getName())
+                .append(ownerUUID, musicVenue.getOwnerUUID())
+                .append(r, musicVenue.getR())
+                .append(g, musicVenue.getG())
+                .append(b, musicVenue.getB())
                 .isEquals();
     }
 
@@ -218,7 +208,7 @@ public class StageAreaData implements Comparable<StageAreaData>
      *                              from being compared to this object.
      */
     @Override
-    public int compareTo(StageAreaData o)
+    public int compareTo(MusicVenue o)
     {
         return new CompareToBuilder()
                 .append(name, o.getName())

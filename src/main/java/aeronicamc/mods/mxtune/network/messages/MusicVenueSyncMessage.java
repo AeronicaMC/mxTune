@@ -1,6 +1,6 @@
 package aeronicamc.mods.mxtune.network.messages;
 
-import aeronicamc.mods.mxtune.caps.stages.ServerStageAreaProvider;
+import aeronicamc.mods.mxtune.caps.venues.MusicVenueProvider;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.network.PacketBuffer;
@@ -13,31 +13,31 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class StageAreaSyncMessage extends AbstractMessage<StageAreaSyncMessage>
+public class MusicVenueSyncMessage extends AbstractMessage<MusicVenueSyncMessage>
 {
     private INBT stageAreaNbt = new CompoundNBT();
 
-    public StageAreaSyncMessage() { /* NOP */ }
+    public MusicVenueSyncMessage() { /* NOP */ }
 
-    public StageAreaSyncMessage(@Nullable final INBT stageAreaNbt)
+    public MusicVenueSyncMessage(@Nullable final INBT stageAreaNbt)
     {
         this.stageAreaNbt = stageAreaNbt;
     }
 
     @Override
-    public StageAreaSyncMessage decode(final PacketBuffer buffer)
+    public MusicVenueSyncMessage decode(final PacketBuffer buffer)
     {
-        return new StageAreaSyncMessage(buffer.readNbt());
+        return new MusicVenueSyncMessage(buffer.readNbt());
     }
 
     @Override
-    public void encode(final StageAreaSyncMessage message, final PacketBuffer buffer)
+    public void encode(final MusicVenueSyncMessage message, final PacketBuffer buffer)
     {
         buffer.writeNbt((CompoundNBT) message.stageAreaNbt);
     }
 
     @Override
-    public void handle(final StageAreaSyncMessage message, final Supplier<NetworkEvent.Context> ctx)
+    public void handle(final MusicVenueSyncMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
         if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT)
         {
@@ -47,7 +47,7 @@ public class StageAreaSyncMessage extends AbstractMessage<StageAreaSyncMessage>
                                       optionalWorld.ifPresent(
                                               world ->
                                               {
-                                                  ServerStageAreaProvider.getServerStageAreas(world).ifPresent(
+                                                  MusicVenueProvider.getMusicVenues(world).ifPresent(
                                                           stageAreas ->
                                                           {
                                                               stageAreas.deserializeNBT(message.stageAreaNbt);

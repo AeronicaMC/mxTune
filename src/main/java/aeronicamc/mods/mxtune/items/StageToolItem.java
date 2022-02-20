@@ -1,9 +1,5 @@
 package aeronicamc.mods.mxtune.items;
 
-import aeronicamc.mods.mxtune.caps.stages.ServerStageAreaProvider;
-import aeronicamc.mods.mxtune.caps.stages.StageAreaData;
-import aeronicamc.mods.mxtune.caps.stages.StageToolHelper;
-import aeronicamc.mods.mxtune.caps.stages.StageToolState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
@@ -38,30 +34,10 @@ public class StageToolItem extends Item
     {
         if (!context.getHand().equals(Hand.MAIN_HAND))
             return super.onItemUseFirst(stack, context);
-        StageToolState toolState;
+
         if (context.getPlayer() != null && !context.getLevel().isClientSide())
         {
-            if (StageToolHelper.get(context.getPlayer()) == null)
-            {
-                StageToolHelper.create(context.getPlayer());
-                toolState = StageToolHelper.next(context.getPlayer(), StageToolHelper.stageToolState(context.getPlayer()), context.getClickedPos());
-                StageToolHelper.set(context.getPlayer(), toolState);
-                return ActionResultType.SUCCESS;
-            } else
-            {
-                toolState = StageToolHelper.next(context.getPlayer(), StageToolHelper.stageToolState(context.getPlayer()), context.getClickedPos());
-                StageToolHelper.set(context.getPlayer(), toolState);
-                StageAreaData stageArea = StageToolHelper.get(context.getPlayer());
-                ServerStageAreaProvider.getServerStageAreas(context.getLevel()).ifPresent(areas ->
-                                                                                          {
-                                                                                              if (stageArea != null)
-                                                                                              {
-                                                                                                  areas.addArea(stageArea);
-                                                                                                  areas.sync();
-                                                                                                  StageToolHelper.reset(context.getPlayer());
-                                                                                              }
-                                                                                          });
-            }
+            // TODO: Music venue construction...
         }
 
         return ActionResultType.SUCCESS;

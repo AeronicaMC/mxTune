@@ -22,7 +22,7 @@ import aeronicamc.mods.mxtune.blocks.MusicBlockScreen;
 import aeronicamc.mods.mxtune.caches.FileHelper;
 import aeronicamc.mods.mxtune.caches.ModDataStore;
 import aeronicamc.mods.mxtune.caps.player.PlayerNexusProvider;
-import aeronicamc.mods.mxtune.caps.stages.ServerStageAreaProvider;
+import aeronicamc.mods.mxtune.caps.venues.MusicVenueProvider;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.gui.InstrumentScreen;
 import aeronicamc.mods.mxtune.init.*;
@@ -97,7 +97,7 @@ public class MXTune
         ModEntities.extendEntityClassification();
         PacketDispatcher.register();
         PlayerNexusProvider.register();
-        ServerStageAreaProvider.register();
+        MusicVenueProvider.register();
     }
 
     private void clientSetup(final FMLClientSetupEvent event)

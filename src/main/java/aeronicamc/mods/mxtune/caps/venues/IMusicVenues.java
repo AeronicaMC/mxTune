@@ -1,15 +1,15 @@
-package aeronicamc.mods.mxtune.caps.stages;
+package aeronicamc.mods.mxtune.caps.venues;
 
 import net.minecraft.nbt.INBT;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public interface IServerStageAreas
+public interface IMusicVenues
 {
-    List<StageAreaData> getStageAreas();
+    List<MusicVenue> getMusicVenues();
 
-    void addArea(StageAreaData stageAreaData);
+    void addMusicVenue(MusicVenue musicVenue);
 
     int getInt();
 
