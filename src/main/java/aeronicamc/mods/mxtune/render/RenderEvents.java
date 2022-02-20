@@ -20,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
@@ -116,14 +117,23 @@ public class RenderEvents
             MatrixStack pPoseStack = event.getMatrixStack();
             ActiveRenderInfo activeRenderInfo = mc.gameRenderer.getMainCamera();
             RayTraceResult raytraceresult = mc.hitResult;
-            BlockPos blockpos = ((BlockRayTraceResult)raytraceresult).getBlockPos();
-
+            BlockPos blockpos = BlockPos.ZERO;
+            Vector3d vector3d;
             ITextComponent testText = new StringTextComponent("test").withStyle(TextFormatting.WHITE);
             ITextComponent blockName;
             int offset = Math.max(mc.font.width(testText) + 40, width);
+            if (raytraceresult instanceof BlockRayTraceResult)
+                blockpos = ((BlockRayTraceResult)raytraceresult).getBlockPos();
+            else if (raytraceresult instanceof EntityRayTraceResult)
+            {
+                vector3d = ((EntityRayTraceResult) raytraceresult).getEntity().getPosition(mc.getFrameTime());
+                blockpos = new BlockPos(vector3d.x, vector3d.y, vector3d.z);
+            }
 
-            if (mc.level != null && raytraceresult.getType() == RayTraceResult.Type.BLOCK)
+            if (mc.level != null && raytraceresult instanceof BlockRayTraceResult)
                 blockName = mc.level.getBlockState(blockpos).getBlock().getName().withStyle(TextFormatting.YELLOW);
+            else if (raytraceresult instanceof EntityRayTraceResult)
+                blockName = new StringTextComponent(((EntityRayTraceResult) raytraceresult).getEntity().getName().getString()).withStyle(TextFormatting.YELLOW);
             else
                 blockName = new StringTextComponent("---").withStyle(TextFormatting.AQUA);
 
