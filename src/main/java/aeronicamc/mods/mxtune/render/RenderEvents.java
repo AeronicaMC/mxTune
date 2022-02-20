@@ -3,7 +3,7 @@ package aeronicamc.mods.mxtune.render;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.init.ModBlocks;
 import aeronicamc.mods.mxtune.init.ModItems;
-import aeronicamc.mods.mxtune.items.StageToolItem;
+import aeronicamc.mods.mxtune.items.MusicVenueToolItem;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -59,7 +59,7 @@ public class RenderEvents
         if (mc.player == null )
             return;
         if (mc.options.renderDebug) return;
-        if (!(mc.player.inventory.getSelected().getItem() instanceof StageToolItem)) return;
+        if (!(mc.player.inventory.getSelected().getItem() instanceof MusicVenueToolItem)) return;
         if (event.isCancelable()) event.setCanceled(true);
 
         final BlockRayTraceResult blockRayTraceResult = event.getTarget();
@@ -111,7 +111,7 @@ public class RenderEvents
             mc.getItemRenderer().renderAndDecorateItem(itemStack, 8, 8);
         }
 
-        if (event.getType() == RenderGameOverlayEvent.ElementType.ALL && (mc.screen == null) && itemStack.getItem() instanceof StageToolItem)
+        if (event.getType() == RenderGameOverlayEvent.ElementType.ALL && (mc.screen == null) && itemStack.getItem() instanceof MusicVenueToolItem)
         {
             MatrixStack pPoseStack = event.getMatrixStack();
             ActiveRenderInfo activeRenderInfo = mc.gameRenderer.getMainCamera();

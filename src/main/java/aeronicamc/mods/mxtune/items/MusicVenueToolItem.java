@@ -14,10 +14,10 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 
-public class StageToolItem extends Item
+public class MusicVenueToolItem extends Item
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    public StageToolItem(Properties properties)
+    public MusicVenueToolItem(Properties properties)
     {
         super(properties);
     }

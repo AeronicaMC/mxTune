@@ -1,7 +1,7 @@
 package aeronicamc.mods.mxtune.network.messages;
 
 import aeronicamc.mods.mxtune.caps.player.PlayerNexusProvider;
-import aeronicamc.mods.mxtune.items.StageToolItem;
+import aeronicamc.mods.mxtune.items.MusicVenueToolItem;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
@@ -58,7 +58,7 @@ public class StageToolMessage extends AbstractMessage<StageToolMessage>
             ctx.get().enqueueWork(() ->{
 
                 ServerPlayerEntity sPlayer = ctx.get().getSender();
-                if (sPlayer != null && !sPlayer.getMainHandItem().isEmpty() && sPlayer.getMainHandItem().getItem() instanceof StageToolItem)
+                if (sPlayer != null && !sPlayer.getMainHandItem().isEmpty() && sPlayer.getMainHandItem().getItem() instanceof MusicVenueToolItem)
                 {
                     World level = sPlayer.level;
                     PlayerNexusProvider.getNexus(sPlayer).ifPresent(nexus -> {
