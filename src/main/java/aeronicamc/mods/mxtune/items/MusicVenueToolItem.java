@@ -1,18 +1,14 @@
 package aeronicamc.mods.mxtune.items;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
-import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nonnull;
 import java.util.Optional;
 
 public class MusicVenueToolItem extends Item
@@ -34,12 +30,9 @@ public class MusicVenueToolItem extends Item
             return super.onItemUseFirst(stack, context);
 
         getPlayer(context).filter(p -> !p.level.isClientSide()).ifPresent(player -> {
-                LOGGER.debug("onItemUseFirst: poke poke poke...");
+            // TODO: Music venue construction...
+            LOGGER.debug("onItemUseFirst: poke poke poke...");
         });
-//        if (context.getPlayer() != null && !context.getLevel().isClientSide())
-//        {
-//            // TODO: Music venue construction...
-//        }
 
         return ActionResultType.SUCCESS;
     }
@@ -48,24 +41,6 @@ public class MusicVenueToolItem extends Item
     private Optional<PlayerEntity> getPlayer(ItemUseContext context)
     {
         return Optional.ofNullable(context.getPlayer());
-    }
-
-    /**
-     * Called to trigger the item's "innate" right click behavior. To handle when this item is used on a Block.
-     */
-    @Nonnull
-    @Override
-    public ActionResult<ItemStack> use(@Nonnull World worldIn, @Nonnull PlayerEntity playerIn, @Nonnull Hand handIn)
-    {
-        if (!worldIn.isClientSide)
-        {
-            ServerPlayerEntity serverPlayerEntity = ((ServerPlayerEntity) playerIn);
-            if (!playerIn.isShiftKeyDown())
-            {
-                //ServerStageAreaProvider.getServerStageAreas(worldIn).ifPresent(IServerStageAreas::test);
-            }
-        }
-        return super.use(worldIn, playerIn, handIn);
     }
 
     @Override
