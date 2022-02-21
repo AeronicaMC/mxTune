@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.caps.venues;
 
+import aeronicamc.mods.mxtune.util.Color3f;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.UUIDCodec;
@@ -135,6 +136,12 @@ public class MusicVenue implements Comparable<MusicVenue>
     public float getB()
     {
         return b;
+    }
+
+    public static MusicVenue factory(UUID uuid)
+    {
+        Color3f rainbow = Color3f.rainbowFactory();
+        return new MusicVenue(BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, "", uuid, rainbow.getR(), rainbow.getG(), rainbow.getB());
     }
 
     @Override

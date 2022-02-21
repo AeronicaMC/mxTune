@@ -28,7 +28,7 @@ public class ToolState
             return this.serializationKey;
         }
 
-        private Type(String serializationKey)
+        Type(String serializationKey)
         {
             this.serializationKey = serializationKey;
         }

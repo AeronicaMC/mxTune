@@ -3,6 +3,8 @@ package aeronicamc.mods.mxtune.caps.venues;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import java.util.UUID;
+
 public class MusicVenueTool
 {
     final static Codec<MusicVenueTool> CODEC = RecordCodecBuilder.create(
@@ -37,5 +39,10 @@ public class MusicVenueTool
     public void setToolState(ToolState.Type toolState)
     {
         this.toolState = toolState;
+    }
+
+    public static MusicVenueTool factory(UUID uuid)
+    {
+        return new MusicVenueTool(MusicVenue.factory(uuid), ToolState.Type.START);
     }
 }
