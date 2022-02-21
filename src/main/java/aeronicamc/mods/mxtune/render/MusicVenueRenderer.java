@@ -34,8 +34,7 @@ public class MusicVenueRenderer
                 areas -> {
                     areas.getMusicVenues().stream()
                             // Sort areas so the transparency renders properly with regard to each other and the camera.
-                            .sorted((o1, o2) -> ((Double)o2.getVenueAABB().getCenter().distanceToSqr(camera))
-                                    .compareTo(o1.getVenueAABB().getCenter().distanceToSqr(camera)))
+                            .sorted((o1, o2) -> Double.compare(o2.getVenueAABB().getCenter().distanceToSqr(camera), o1.getVenueAABB().getCenter().distanceToSqr(camera)))
                             .filter(venue-> pClippingHelper.isVisible(venue.getVenueAABB())).forEach(
                                 (venue) -> {
                                     IVertexBuilder vertexBuilder1 = pBuffer.getBuffer(ModRenderType.TRANSPARENT_QUADS_NO_TEXTURE);
@@ -46,7 +45,8 @@ public class MusicVenueRenderer
 
                                     if (!(pActiveRenderInfo.getEntity().distanceToSqr(venue.getVenueAABB().getCenter()) > 512))
                                     {
-                                        RenderHelper.renderFloatingText(venue.getVenueAABB().getCenter(), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent(venue.getName()),
+                                        if (!venue.getName().isEmpty())
+                                            RenderHelper.renderFloatingText(venue.getVenueAABB().getCenter(), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent(venue.getName()),
                                                                         RenderHelper.PACKED_LIGHT_MAX);
 
                                         RenderHelper.renderFloatingText(new Vector3d(venue.getAudienceSpawn().getX() + 0.5, venue.getAudienceSpawn().getY() + 1.5, venue.getAudienceSpawn().getZ() + 0.5), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent("Audience Spawn"),

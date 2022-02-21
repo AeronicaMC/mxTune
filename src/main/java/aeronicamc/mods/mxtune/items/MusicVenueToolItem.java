@@ -32,7 +32,10 @@ public class MusicVenueToolItem extends Item
 
         getPlayer(context).filter(p -> !p.level.isClientSide()).ifPresent(player -> {
             // TODO: Music venue construction...
-            ToolManager.setPosition(player, context);
+            if (!player.isShiftKeyDown())
+                ToolManager.setPosition(player, context);
+            else
+                ToolManager.reset(player);
             LOGGER.debug("onItemUseFirst: poke poke poke...");
         });
 

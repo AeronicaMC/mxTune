@@ -38,15 +38,20 @@ public class ToolManager implements INBTSerializable<INBT>
                     sync(livingEntity);
                     break;
                 case END:
-                    tool.getMusicVenue().setStartPos(context.getClickedPos());
+                    tool.getMusicVenue().setEndPos(context.getClickedPos());
                     validate(livingEntity, context, tool).ifPresent(test-> {
                         tool.setToolState(ToolState.Type.DONE);
                         MusicVenueProvider.getMusicVenues(livingEntity.level).ifPresent(
-                            venues -> venues.addMusicVenue(tool.getMusicVenue()));
+                            venues -> {
+                                venues.addMusicVenue(tool.getMusicVenue());
+                                venues.sync();
+                            });
                     });
                     sync(livingEntity);
                     break;
                 case DONE:
+                default:
+                    reset(livingEntity);
             }
         });
     }
