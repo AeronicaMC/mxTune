@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.items;
 
+import aeronicamc.mods.mxtune.caps.venues.ToolManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -31,6 +32,7 @@ public class MusicVenueToolItem extends Item
 
         getPlayer(context).filter(p -> !p.level.isClientSide()).ifPresent(player -> {
             // TODO: Music venue construction...
+            ToolManager.setPosition(player, context);
             LOGGER.debug("onItemUseFirst: poke poke poke...");
         });
 
