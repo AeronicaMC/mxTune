@@ -78,7 +78,7 @@ public class RenderEvents
         BlockState blockState = level.getBlockState(blockRayTraceResult.getBlockPos());
 
         if (!blockState.isAir(level, blockPos) && level.getWorldBorder().isWithinBounds(blockPos)) {
-            IVertexBuilder ivertexBuilder = renderTypeBuffer.getBuffer(ModRenderType.OVERLAY_LINES);
+            IVertexBuilder ivertexBuilder = renderTypeBuffer.getBuffer(ModRenderType.THICK_LINES);
             RenderHelper.renderHitOutline(level, matrixStack, ivertexBuilder, activeRenderInfo.getEntity(), camX, camY, camZ, blockPos, blockState);
             RenderHelper.renderFloatingText(blockState.getBlock().getName(), blockPos, matrixStack, renderTypeBuffer, activeRenderInfo, -1);
         }
