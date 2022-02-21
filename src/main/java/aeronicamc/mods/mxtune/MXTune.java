@@ -36,6 +36,8 @@ import aeronicamc.mods.mxtune.sound.ClientAudio;
 import aeronicamc.mods.mxtune.util.KeyHandler;
 import aeronicamc.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -109,6 +111,7 @@ public class MXTune
         MinecraftForge.EVENT_BUS.register(ClientAudio.class);
         RenderingRegistry.registerEntityRenderingHandler(ModEntities.MUSIC_SOURCE.get(), MusicSourceRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntities.ROOTED_SOURCE.get(), RootedRenderer::new);
+        RenderTypeLookup.setRenderLayer(ModBlocks.MUSIC_VENUE_TOOL_BLOCK.get(), RenderType.cutoutMipped());
     }
 
     private void modLoadingComplete(FMLLoadCompleteEvent event)

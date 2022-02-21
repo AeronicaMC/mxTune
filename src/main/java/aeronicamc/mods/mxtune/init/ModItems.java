@@ -50,7 +50,7 @@ public class ModItems
         () -> new Item(ingredientItemProperties().stacksTo(64)));
 
     public static final RegistryObject<MusicVenueToolItem> MUSIC_VENUE_TOOL = ITEMS.register("music_venue_tool",
-                                                                                             () -> new MusicVenueToolItem(defaultItemProperties().stacksTo(1)));
+        () -> new MusicVenueToolItem(defaultItemProperties().stacksTo(1)));
 
     public static final RegistryObject<GuiTestItem> GUI_TEST_ITEM = ITEMS.register("gui_test_item",
         () -> new GuiTestItem(defaultItemProperties().stacksTo(1)));
