@@ -37,7 +37,7 @@ public class ModRenderType extends RenderType
         super(p_i225992_1_, p_i225992_2_, p_i225992_3_, p_i225992_4_, p_i225992_5_, p_i225992_6_, p_i225992_7_, p_i225992_8_);
     }
 
-    private static final LineState FAT_LINES = new LineState(OptionalDouble.of(4.0D));
+    private static final LineState FAT_LINES = new LineState(OptionalDouble.of(3.0D));
 
     public static final RenderType THICK_LINES = create("thick_select_lines",
                                                           DefaultVertexFormats.POSITION_COLOR, GL12.GL_LINES, 256,

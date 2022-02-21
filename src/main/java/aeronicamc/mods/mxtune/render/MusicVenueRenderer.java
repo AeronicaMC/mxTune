@@ -40,7 +40,7 @@ public class MusicVenueRenderer
                                     IVertexBuilder vertexBuilder1 = pBuffer.getBuffer(ModRenderType.TRANSPARENT_QUADS_NO_TEXTURE);
                                     RenderHelper.renderFaces(pMatrixStack, vertexBuilder1, venue.getVenueAABB(), camX, camY, camZ, venue.getR(), venue.getG(), venue.getB(), 0.1F);
 
-                                    IVertexBuilder vertexBuilder2 = pBuffer.getBuffer(RenderType.lines());
+                                    IVertexBuilder vertexBuilder2 = pBuffer.getBuffer(ModRenderType.THICK_LINES);
                                     RenderHelper.renderEdges(pMatrixStack, vertexBuilder2, venue.getVenueAABB(), camX, camY, camZ, venue.getR(), venue.getG(), venue.getB(), 0.4F);
 
                                     if (!(pActiveRenderInfo.getEntity().distanceToSqr(venue.getVenueAABB().getCenter()) > 512))
