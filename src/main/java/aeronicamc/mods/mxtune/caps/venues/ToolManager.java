@@ -1,31 +1,42 @@
 package aeronicamc.mods.mxtune.caps.venues;
 
+import aeronicamc.mods.mxtune.network.PacketDispatcher;
+import aeronicamc.mods.mxtune.network.messages.ToolManagerSyncMessage;
+import com.mojang.serialization.Codec;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemUseContext;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
-import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.NBTDynamicOps;
+import net.minecraftforge.common.util.Constants;
 
+import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ToolManager implements INBTSerializable<INBT>
+public class ToolManager
 {
-    private static final Map<Integer, MusicVenueTool> playerTools = new ConcurrentHashMap<>();
+    public static final Codec<Map<String, MusicVenueTool>> CODEC = Codec.unboundedMap(Codec.STRING, MusicVenueTool.CODEC);
+    private final Map<String, MusicVenueTool> playerTools = new ConcurrentHashMap<>();
 
-    private static Optional<MusicVenueTool> getPlayerTool(LivingEntity livingEntity)
+    ToolManager() { /* NOP */ }
+
+    private Optional<MusicVenueTool> getPlayerTool(LivingEntity livingEntity)
     {
-        if (playerTools.containsKey(livingEntity.getId()))
-            return Optional.ofNullable(playerTools.get(livingEntity.getId()));
+        if (playerTools.containsKey(String.valueOf(livingEntity.getId())))
+            return Optional.ofNullable(playerTools.get(String.valueOf(livingEntity.getId())));
         else
         {
             MusicVenueTool tool = MusicVenueTool.factory(livingEntity.getUUID());
-            playerTools.put(livingEntity.getId(), tool);
+            playerTools.put(String.valueOf(livingEntity.getId()), tool);
             return !livingEntity.level.isClientSide() ? Optional.of(tool) : Optional.empty();
         }
     }
 
-    public static void setPosition(LivingEntity livingEntity, ItemUseContext context)
+    public void setPosition(LivingEntity livingEntity, ItemUseContext context)
     {
         if (livingEntity.level.isClientSide()) return;
 
@@ -47,43 +58,61 @@ public class ToolManager implements INBTSerializable<INBT>
                                 venues.sync();
                             });
                     });
+                    reset(livingEntity);
                     sync(livingEntity);
                     break;
                 case DONE:
                 default:
-                    reset(livingEntity);
             }
         });
     }
 
-    public static void reset(LivingEntity livingEntity)
+    public void reset(LivingEntity livingEntity)
     {
-        playerTools.remove(livingEntity.getId());
+        MusicVenueTool tool = MusicVenueTool.factory(livingEntity.getUUID());
+        if(null == playerTools.replace(String.valueOf(livingEntity.getId()), tool))
+            playerTools.put(String.valueOf(livingEntity.getId()), tool);
         sync(livingEntity);
     }
 
-    private static Optional<Boolean> validate(LivingEntity livingEntity, ItemUseContext context, MusicVenueTool tool)
+    private Optional<Boolean> validate(LivingEntity livingEntity, ItemUseContext context, MusicVenueTool tool)
     {
         return Optional.of(true); // TODO: validations and chat/overlay/tool messages/status
     }
 
-    private static void sync (LivingEntity livingEntity)
+    @Nullable
+    public MusicVenueTool getTool(LivingEntity livingEntity)
+    {
+        return (playerTools.get(String.valueOf(livingEntity.getId())));
+    }
+
+    private void sync (LivingEntity livingEntity)
     {
         if (!livingEntity.level.isClientSide())
         {
-            // TODO:
+            PacketDispatcher.sendToAll(new ToolManagerSyncMessage(serialize()));
         }
     }
 
-    @Override
-    public INBT serializeNBT()
+    public INBT serialize()
     {
-        return null; // TODO:
+        CompoundNBT cNbt = new CompoundNBT();
+        ListNBT listnbt = new ListNBT();
+        NBTDynamicOps.INSTANCE.withEncoder(ToolManager.CODEC)
+                .apply(Collections.unmodifiableMap(playerTools)).result().ifPresent(listnbt::add);
+        cNbt.put("playerTools", listnbt);
+        return cNbt;
     }
 
-    @Override
-    public void deserializeNBT(INBT nbt)
+    public void deserialize(@Nullable INBT nbt)
     {
-        // TODO:
+        CompoundNBT cNbt = ((CompoundNBT) nbt);
+        if (cNbt != null && cNbt.contains("playerTools"))
+        {
+            ListNBT listnbt = cNbt.getList("playerTools", Constants.NBT.TAG_COMPOUND);
+            playerTools.clear();
+            listnbt.forEach(playerTool -> NBTDynamicOps.INSTANCE.withParser(ToolManager.CODEC)
+                            .apply(playerTool).result().ifPresent(playerTools::putAll));
+        }
     }
 }
