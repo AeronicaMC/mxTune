@@ -46,7 +46,7 @@ public class PacketDispatcher
         registerMessage(ChooseInstrumentMessage.class, new ChooseInstrumentMessage());
         registerMessage(AudiblePingPlayerMessage.class, new AudiblePingPlayerMessage());
         registerMessage(ByteArrayPartMessage.class, new ByteArrayPartMessage());
-        registerMessage(StageToolMessage.class, new StageToolMessage());
+        registerMessage(ToolManagerSyncMessage.class, new ToolManagerSyncMessage());
     }
 
     private static <MSG extends AbstractMessage<MSG>> void registerMessage(Class<MSG> messageType, AbstractMessage<MSG> message)

@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.render;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.caps.venues.MusicVenueProvider;
 import aeronicamc.mods.mxtune.init.ModBlocks;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.items.MusicVenueToolItem;
@@ -119,7 +120,14 @@ public class RenderEvents
             RayTraceResult raytraceresult = mc.hitResult;
             BlockPos blockpos = BlockPos.ZERO;
             Vector3d vector3d;
-            ITextComponent testText = new StringTextComponent("test").withStyle(TextFormatting.WHITE);
+
+            String[] stateName = new String[1];
+                MusicVenueProvider.getMusicVenues(mc.level)
+                        .ifPresent(mvp -> stateName[0] =
+                                (mvp.getToolManager().getTool(mc.player) != null) ?
+                                                         mvp.getToolManager().getTool(mc.player).getToolState().getSerializedName() : "START");
+            ITextComponent testText = new StringTextComponent(stateName[0]).withStyle(TextFormatting.WHITE);
+
             ITextComponent blockName;
             int offset = Math.max(mc.font.width(testText) + 40, width);
             if (raytraceresult instanceof BlockRayTraceResult)
