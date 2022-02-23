@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.render;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.caps.venues.ToolManager;
+import aeronicamc.mods.mxtune.caps.venues.ToolState;
 import aeronicamc.mods.mxtune.init.ModBlocks;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.items.MusicVenueToolItem;
@@ -121,11 +122,11 @@ public class RenderEvents
             BlockPos blockpos = BlockPos.ZERO;
             Vector3d vector3d;
 
-            String[] stateName = {"START"};
+            ToolState.Type[] stateName = {ToolState.Type.START};
             toolManager().getToolOpl(mc.player).ifPresent(tool-> {
-                stateName[0] = tool.getToolState().getSerializedName();
+                stateName[0] = tool.getToolState();
             });
-            ITextComponent testText = new StringTextComponent(stateName[0]).withStyle(TextFormatting.WHITE);
+            ITextComponent testText = new TranslationTextComponent(stateName[0].getTranslationKey()).withStyle(TextFormatting.WHITE);
 
             ITextComponent blockName;
             int offset = Math.max(mc.font.width(testText) + 40, width);
