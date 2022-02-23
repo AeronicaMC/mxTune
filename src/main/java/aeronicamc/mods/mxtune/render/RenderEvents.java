@@ -1,7 +1,7 @@
 package aeronicamc.mods.mxtune.render;
 
 import aeronicamc.mods.mxtune.Reference;
-import aeronicamc.mods.mxtune.caps.venues.MusicVenueProvider;
+import aeronicamc.mods.mxtune.caps.venues.ToolManager;
 import aeronicamc.mods.mxtune.init.ModBlocks;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.items.MusicVenueToolItem;
@@ -121,11 +121,10 @@ public class RenderEvents
             BlockPos blockpos = BlockPos.ZERO;
             Vector3d vector3d;
 
-            String[] stateName = new String[1];
-                MusicVenueProvider.getMusicVenues(mc.level)
-                        .ifPresent(mvp -> stateName[0] =
-                                (((MusicVenueToolItem) itemStack.getItem()).getToolManager().getTool(mc.player) != null) ?
-                                (((MusicVenueToolItem) itemStack.getItem()).getToolManager().getTool(mc.player).getToolState().getSerializedName()) : "START");
+            String[] stateName = {"START"};
+            toolManager().getToolOpl(mc.player).ifPresent(tool-> {
+                stateName[0] = tool.getToolState().getSerializedName();
+            });
             ITextComponent testText = new StringTextComponent(stateName[0]).withStyle(TextFormatting.WHITE);
 
             ITextComponent blockName;
@@ -162,5 +161,10 @@ public class RenderEvents
     {
         MusicVenueRenderer.render(pMatrixStack, pBuffer, pLightTexture, pActiveRenderInfo, pPartialTicks, pClippingHelper);
         //StageToolRenderer.renderUUID(pMatrixStack, pBuffer, pLightTexture, pActiveRenderInfo, pPartialTicks, pClippingHelper);
+    }
+
+    public static ToolManager toolManager()
+    {
+        return (((MusicVenueToolItem) ModItems.MUSIC_VENUE_TOOL.get().getItem()).getToolManager());
     }
 }
