@@ -86,6 +86,11 @@ public class ToolManager
         return (playerTools.get(String.valueOf(livingEntity.getId())));
     }
 
+    public Optional<MusicVenueTool> getToolOpl(LivingEntity livingEntity)
+    {
+        return Optional.ofNullable(getTool(livingEntity));
+    }
+
     private void sync (LivingEntity livingEntity)
     {
         if (!livingEntity.level.isClientSide())
