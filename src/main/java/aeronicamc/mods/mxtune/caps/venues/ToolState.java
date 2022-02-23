@@ -12,10 +12,13 @@ public class ToolState
 {
     public static enum Type implements IStringSerializable
     {
-        START("START"), END("END"), DONE("DONE");
+        START("START", "enum.mxtune.tool_state.type.start"),
+        END("END", "enum.mxtune.tool_state.type.end"),
+        DONE("DONE", "enum.mxtune.tool_state.type.done");
 
         public static final Codec<ToolState.Type> CODEC = IStringSerializable.fromEnum(ToolState.Type::values, ToolState.Type::getFromKey);
         private final String serializationKey;
+        private final String translationKey;
         private static final Map<String, ToolState.Type> REVERSE_LOOKUP = Util.make(Maps.newHashMap(), (reverseHash) -> {
             for(ToolState.Type toolState$type : values()) {
                 reverseHash.put(toolState$type.serializationKey, toolState$type);
@@ -28,9 +31,15 @@ public class ToolState
             return this.serializationKey;
         }
 
-        Type(String serializationKey)
+        Type(String serializationKey, String translationKey)
         {
             this.serializationKey = serializationKey;
+            this.translationKey = translationKey;
+        }
+
+        public String getTranslationKey()
+        {
+            return translationKey;
         }
 
         @Nullable
