@@ -22,7 +22,6 @@ public class MusicVenues implements IMusicVenues
     private World level;
     private final List<MusicVenue> musicVenues = new CopyOnWriteArrayList<>();
 
-    private final ToolManager toolManager = new ToolManager();
     private int someInt;
 
     MusicVenues() { /* NOP */ }
@@ -36,12 +35,6 @@ public class MusicVenues implements IMusicVenues
     private Optional<World> getLevel()
     {
         return Optional.of(level);
-    }
-
-    @Override
-    public ToolManager getToolManager()
-    {
-        return toolManager;
     }
 
     @Override

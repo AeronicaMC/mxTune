@@ -1,20 +1,19 @@
 package aeronicamc.mods.mxtune.items;
 
 import aeronicamc.mods.mxtune.caps.venues.MusicVenueProvider;
+import aeronicamc.mods.mxtune.caps.venues.ToolManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
 
 public class MusicVenueToolItem extends Item
 {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private final ToolManager toolManager = new ToolManager();
     public MusicVenueToolItem(Properties properties)
     {
         super(properties);
@@ -33,9 +32,9 @@ public class MusicVenueToolItem extends Item
         getPlayer(context).filter(p -> !p.level.isClientSide()).ifPresent(player -> {
             MusicVenueProvider.getMusicVenues(context.getLevel()).ifPresent(mvp -> {
             if (!player.isShiftKeyDown())
-                mvp.getToolManager().setPosition(player, context);
+                toolManager.setPosition(player, context);
             else
-                mvp.getToolManager().reset(player);
+                toolManager.reset(player);
             });
         });
 
@@ -46,6 +45,11 @@ public class MusicVenueToolItem extends Item
     private Optional<PlayerEntity> getPlayer(ItemUseContext context)
     {
         return Optional.ofNullable(context.getPlayer());
+    }
+
+    public ToolManager getToolManager()
+    {
+        return toolManager;
     }
 
     @Override

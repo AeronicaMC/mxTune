@@ -9,8 +9,6 @@ public interface IMusicVenues
 {
     List<MusicVenue> getMusicVenues();
 
-    ToolManager getToolManager();
-
     void addMusicVenue(MusicVenue musicVenue);
 
     int getInt();

@@ -22,7 +22,7 @@ public class ToolManager
     public static final Codec<Map<String, MusicVenueTool>> CODEC = Codec.unboundedMap(Codec.STRING, MusicVenueTool.CODEC);
     private final Map<String, MusicVenueTool> playerTools = new ConcurrentHashMap<>();
 
-    ToolManager() { /* NOP */ }
+    public ToolManager() { /* NOP */ }
 
     private Optional<MusicVenueTool> getPlayerTool(LivingEntity livingEntity)
     {

@@ -124,8 +124,8 @@ public class RenderEvents
             String[] stateName = new String[1];
                 MusicVenueProvider.getMusicVenues(mc.level)
                         .ifPresent(mvp -> stateName[0] =
-                                (mvp.getToolManager().getTool(mc.player) != null) ?
-                                                         mvp.getToolManager().getTool(mc.player).getToolState().getSerializedName() : "START");
+                                (((MusicVenueToolItem) itemStack.getItem()).getToolManager().getTool(mc.player) != null) ?
+                                (((MusicVenueToolItem) itemStack.getItem()).getToolManager().getTool(mc.player).getToolState().getSerializedName()) : "START");
             ITextComponent testText = new StringTextComponent(stateName[0]).withStyle(TextFormatting.WHITE);
 
             ITextComponent blockName;
