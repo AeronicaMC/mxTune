@@ -20,10 +20,11 @@ public class MXTuneLanguageProvider extends LanguageProvider
     {
         // TODO
         addBlocks();
-        addItems();
-        addGuiTexts();
         addCommands();
+        addEnums();
         addErrors();
+        addGuiTexts();
+        addItems();
         addSubtitles();
     }
 
@@ -118,6 +119,13 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addCommand("music.load", "Read %s records");
     }
 
+    private void addEnums()
+    {
+        addEnum("tool_state.type.start", "Start");
+        addEnum("tool_state.type.end", "End");
+        addEnum("tool_state.type.done", "Done");
+    }
+
     private void addErrors()
     {
         addError("sheet_music_too_old", "The Sheet Music is unreadable!");
@@ -160,6 +168,16 @@ public class MXTuneLanguageProvider extends LanguageProvider
     private void addCommand(String identifier, String text)
     {
         add(String.format("commands.%s.%s", Reference.MOD_ID, identifier), text);
+    }
+
+    /**
+     * prepends enum.[mod_id].
+     * @param identifier the unique error id
+     * @param text of the enum
+     */
+    private void addEnum(String identifier, String text)
+    {
+        add(String.format("enum.%s.%s", Reference.MOD_ID, identifier), text);
     }
 
     /**
