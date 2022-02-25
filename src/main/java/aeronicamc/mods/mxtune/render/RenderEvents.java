@@ -1,6 +1,8 @@
 package aeronicamc.mods.mxtune.render;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.caps.venues.MusicVenue;
+import aeronicamc.mods.mxtune.caps.venues.MusicVenueProvider;
 import aeronicamc.mods.mxtune.caps.venues.ToolManager;
 import aeronicamc.mods.mxtune.caps.venues.ToolState;
 import aeronicamc.mods.mxtune.init.ModBlocks;
@@ -121,12 +123,21 @@ public class RenderEvents
             RayTraceResult raytraceresult = mc.hitResult;
             BlockPos blockpos = BlockPos.ZERO;
             Vector3d vector3d;
+            MusicVenue[] activeVenue = new MusicVenue[1];
+
+            MusicVenueProvider.getMusicVenues(mc.player.level).ifPresent(
+                    areas ->
+                    {
+                        areas.getMusicVenues().stream().filter(v->v.getVenueAABB().contains(mc.player.getEyePosition(mc.getFrameTime()))).findFirst().ifPresent(area->{
+                            activeVenue[0] = area;
+                        });
+                    });
 
             ToolState.Type[] stateName = {ToolState.Type.START};
             toolManager().getToolOpl(mc.player).ifPresent(tool-> {
                 stateName[0] = tool.getToolState();
             });
-            ITextComponent testText = new TranslationTextComponent(stateName[0].getTranslationKey()).withStyle(TextFormatting.WHITE);
+            ITextComponent testText = new TranslationTextComponent(stateName[0].getTranslationKey()).withStyle(TextFormatting.WHITE).append(" ").append(activeVenue[0] != null ? activeVenue[0].getVenueAABB().getCenter().toString() : "");
 
             ITextComponent blockName;
             int offset = Math.max(mc.font.width(testText) + 40, width);
