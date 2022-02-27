@@ -17,9 +17,9 @@ import static aeronicamc.mods.mxtune.init.ModItems.*;
 
 public class MXTuneItemModelProvider extends ItemModelProvider
 {
-    public MXTuneItemModelProvider(DataGenerator generator, String modid, ExistingFileHelper existingFileHelper)
+    public MXTuneItemModelProvider(DataGenerator generator, ExistingFileHelper existingFileHelper)
     {
-        super(generator, modid, existingFileHelper);
+        super(generator, Reference.MOD_ID, existingFileHelper);
     }
 
     @Nonnull

@@ -15,9 +15,9 @@ public class MXTuneSoundDefinitionsProvider extends SoundDefinitionsProvider
     private static final Logger LOGGER = LogManager.getLogger();
     private final ExistingFileHelper helper;
 
-    public MXTuneSoundDefinitionsProvider(DataGenerator generator, String modId, ExistingFileHelper helper)
+    public MXTuneSoundDefinitionsProvider(DataGenerator generator, ExistingFileHelper helper)
     {
-        super(generator, modId, helper);
+        super(generator, Reference.MOD_ID, helper);
         this.helper = helper;
     }
 

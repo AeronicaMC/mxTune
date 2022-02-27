@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.datagen;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.datagen.loot.MXTuneLootTableProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.IDataProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -26,21 +27,26 @@ public class ModDataProviders
 
         if (event.includeClient())
         {
-            // TODO look at TestMod3 for passing MXTuneItemModelProvider to the MXTuneBlockStateProvider
             dataGenerator.addProvider(new MXTuneLanguageProvider(dataGenerator));
+            dataGenerator.addProvider(new MXTuneSoundDefinitionsProvider(dataGenerator, existingFileHelper));
 
-            final MXTuneItemModelProvider itemModelProvider = new MXTuneItemModelProvider(dataGenerator, Reference.MOD_ID, existingFileHelper);
+            final MXTuneItemModelProvider itemModelProvider = new MXTuneItemModelProvider(dataGenerator, existingFileHelper);
             dataGenerator.addProvider(itemModelProvider);
-            dataGenerator.addProvider(new MXTuneSoundDefinitionsProvider(dataGenerator, Reference.MOD_ID, existingFileHelper));
+
 
             // Let BlockState provider see generated item models by passing its existing file helper
-            dataGenerator.addProvider(new ModBlockStateProvider(dataGenerator, Reference.MOD_ID, itemModelProvider.existingFileHelper));
+            dataGenerator.addProvider(new MXTuneBlockStateProvider(dataGenerator, itemModelProvider.existingFileHelper));
         }
 
         if (event.includeServer())
         {
             // TODO
             dataGenerator.addProvider(new MXTuneRecipeProvider(dataGenerator));
+            dataGenerator.addProvider(new MXTuneLootTableProvider(dataGenerator));
+
+            final MXTuneBlockTagsProvider blockTagsProvider = new MXTuneBlockTagsProvider(dataGenerator, existingFileHelper);
+            dataGenerator.addProvider(blockTagsProvider);
+            dataGenerator.addProvider(new MXTuneItemTagsProvider(dataGenerator, blockTagsProvider, existingFileHelper));
         }
     }
 }

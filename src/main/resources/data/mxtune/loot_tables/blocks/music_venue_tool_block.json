@@ -2,11 +2,11 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "rolls": 0,
+      "rolls": 1,
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "mxtune:inv_test_block"
+          "name": "mxtune:music_venue_tool_block"
         }
       ],
       "conditions": [

@@ -11,13 +11,13 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ModBlockStateProvider extends BlockStateProvider
+public class MXTuneBlockStateProvider extends BlockStateProvider
 {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ModBlockStateProvider(DataGenerator gen, String modId, ExistingFileHelper exFileHelper)
+    public MXTuneBlockStateProvider(DataGenerator gen, ExistingFileHelper exFileHelper)
     {
-        super(gen, modId, exFileHelper);
+        super(gen, Reference.MOD_ID, exFileHelper);
     }
 
     private ResourceLocation registryName(final Block block) {
@@ -31,7 +31,7 @@ public class ModBlockStateProvider extends BlockStateProvider
 
     @Override
     public String getName() {
-        return Reference.MOD_NAME + "BlockStates";
+        return Reference.MOD_NAME + " BlockStates";
     }
 
     @Override

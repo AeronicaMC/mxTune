@@ -38,6 +38,6 @@ public class MXTuneRecipeProvider extends RecipeProvider
     @Override
     public String getName()
     {
-        return Reference.MOD_NAME + " " +super.getName();
+        return Reference.MOD_NAME + " " + super.getName();
     }
 }
