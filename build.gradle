@@ -84,13 +84,29 @@ minecraft {
             ideaModule "${project.name}.main"
 
             // program arguments
-            args '--username', 'Player01'
+            // args '--username', 'Player01'
 
             mods {
                 mxtune {
                     source sourceSets.main
                 }
             }
+        }
+
+        client01 {
+            parent runs.client
+            workingDirectory project.file('run01')
+
+            // program arguments
+            args '--username', 'Player01'
+        }
+
+        client02 {
+            parent runs.client
+            workingDirectory project.file('run02')
+
+            // program arguments
+            args '--username', 'Player02'
         }
 
         server {
@@ -111,6 +127,11 @@ minecraft {
                     source sourceSets.main
                 }
             }
+        }
+
+        server03 {
+            parent runs.server
+            workingDirectory project.file('run03')
         }
 
         data {
