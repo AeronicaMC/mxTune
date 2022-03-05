@@ -1,8 +1,10 @@
 package aeronicamc.mods.mxtune.datagen;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.items.MultiInstModelPropertyGetter;
 import aeronicamc.mods.mxtune.items.ScrapAnimationPropertyGetter;
 import aeronicamc.mods.mxtune.items.SheetMusicAgePropertyGetter;
+import aeronicamc.mods.mxtune.util.SoundFontProxy;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
@@ -11,7 +13,9 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static aeronicamc.mods.mxtune.init.ModItems.*;
 
@@ -84,16 +88,37 @@ public class MXTuneItemModelProvider extends ItemModelProvider
                         .model(child.getValue())
                         .end()
             );
-
         }
 
-        registerMultiInstModels(this);
+        {
+            final List<SoundFontProxy> proxies = new ArrayList<>(SoundFontProxyManager.soundFontProxyMapByIndex.values());
+            ItemModelBuilder parentModel = withExistingParent(MULTI_INST.getId().getPath(), mcLoc("generated"));
+
+            proxies.stream()
+                    .map(proxy ->
+                              {
+                                  final ItemModelBuilder subModel = withExistingParent(proxy.id, mcLoc("generated"))
+                                          .texture("layer0", "item/" + proxy.id);
+
+                                  return Pair.of(proxy.index, subModel);
+                              })
+                    .forEachOrdered(child ->
+                                            parentModel
+                                                    .override()
+                                                    .predicate(MultiInstModelPropertyGetter.NAME, child.getKey())
+                                                    .model(child.getValue())
+                                                    .end()
+                                   );
+        }
+
+
+//        registerMultiInstModels(this);
     }
 
-    private void registerMultiInstModels(ItemModelProvider itemModelProvider)
-    {
-        INSTRUMENT_ITEMS.forEach(
-            (key, value) -> itemModelProvider.withExistingParent(value.getId().getPath(), mcLoc("generated"))
-                .texture("layer0", String.format("item/%s", SoundFontProxyManager.getName(key))));
-    }
+//    private void registerMultiInstModels(ItemModelProvider itemModelProvider)
+//    {
+//        INSTRUMENT_ITEMS.forEach(
+//            (key, value) -> itemModelProvider.withExistingParent(value.getId().getPath(), mcLoc("generated"))
+//                .texture("layer0", String.format("item/%s", SoundFontProxyManager.getName(key))));
+//    }
 }

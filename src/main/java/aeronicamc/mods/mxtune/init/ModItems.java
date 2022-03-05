@@ -61,6 +61,9 @@ public class ModItems
     public static final RegistryObject<SheetMusicItem> SHEET_MUSIC = ITEMS.register("sheet_music",
         () -> new SheetMusicItem(defaultItemProperties().stacksTo(1)));
 
+    public static final RegistryObject<MultiInstItem> MULTI_INST = ITEMS.register("multi_inst",
+        () -> new MultiInstItem(defaultItemProperties().stacksTo(1).setNoRepair()));
+
     public static final Map<Integer, RegistryObject<InstrumentItem>> INSTRUMENT_ITEMS = new HashMap<>();
 
     static { registerInstruments(); }
