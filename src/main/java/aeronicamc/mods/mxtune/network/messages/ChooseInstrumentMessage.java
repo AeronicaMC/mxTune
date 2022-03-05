@@ -1,19 +1,11 @@
 package aeronicamc.mods.mxtune.network.messages;
 
-import aeronicamc.mods.mxtune.Reference;
-import aeronicamc.mods.mxtune.items.InstrumentItem;
-import aeronicamc.mods.mxtune.util.Misc;
+import aeronicamc.mods.mxtune.items.MultiInstItem;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.Objects;
 import java.util.function.Supplier;
 
 public class ChooseInstrumentMessage extends AbstractMessage<ChooseInstrumentMessage>
@@ -50,15 +42,9 @@ public class ChooseInstrumentMessage extends AbstractMessage<ChooseInstrumentMes
             ctx.get().enqueueWork(() ->{
 
                 ServerPlayerEntity sPlayer = ctx.get().getSender();
-                assert sPlayer != null;
-                if (!sPlayer.getMainHandItem().isEmpty() && sPlayer.getMainHandItem().getItem() instanceof InstrumentItem)
+                if (sPlayer != null && !sPlayer.getMainHandItem().isEmpty() && sPlayer.getMainHandItem().getItem() instanceof MultiInstItem)
                 {
-                    int index = Misc.clamp(0, SoundFontProxyManager.soundFontProxyMapByIndex.size(), message.index);
-                    ItemStack selected = sPlayer.getMainHandItem();
-                    ItemStack newInst = Objects.requireNonNull(ForgeRegistries.ITEMS.getValue(new ResourceLocation(Reference.MOD_ID, SoundFontProxyManager.getName(index)))).getDefaultInstance().copy();
-                    CompoundNBT transfer = selected.serializeNBT();
-                    newInst.deserializeNBT(transfer);
-                    sPlayer.setItemInHand(Hand.MAIN_HAND, newInst);
+                    sPlayer.getMainHandItem().setDamageValue(SoundFontProxyManager.getProxy(message.index).index);
                 }
             });
         ctx.get().setPacketHandled(true);

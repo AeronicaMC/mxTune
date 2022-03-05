@@ -9,10 +9,12 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import static aeronicamc.mods.mxtune.init.ModItems.INSTRUMENT_ITEMS;
 
@@ -62,8 +64,19 @@ public class GuiMultiInstChooser extends Screen
 
     private void selectCallback(SoundFontList.Entry selected)
     {
-        PacketDispatcher.sendToServer(new ChooseInstrumentMessage(selected.getIndex()));
+        getPlayer(Objects.requireNonNull(minecraft)).ifPresent(player->{
+            player.inventory.getSelected().setDamageValue(selected.getIndex());
+            ((InstrumentScreen)parent).updateButton(selected.getIndex());
+            PacketDispatcher.sendToServer(new ChooseInstrumentMessage(selected.getIndex()));
+        });
+
     }
+
+    Optional<PlayerEntity> getPlayer(Minecraft minecraft)
+    {
+        return Optional.ofNullable(minecraft.player);
+    }
+
 
     @Override
     public String getNarrationMessage() {
