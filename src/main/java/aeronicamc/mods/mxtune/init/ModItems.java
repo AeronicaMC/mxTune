@@ -56,7 +56,7 @@ public class ModItems
         () -> new MusicPaperItem(defaultItemProperties().stacksTo(16)));
 
     public static final RegistryObject<SheetMusicItem> SHEET_MUSIC = ITEMS.register("sheet_music",
-        () -> new SheetMusicItem(defaultItemProperties().stacksTo(1)));
+        () -> new SheetMusicItem(new Item.Properties().stacksTo(1)));
 
     public static final RegistryObject<MultiInstItem> MULTI_INST = ITEMS.register("multi_inst",
         () -> new MultiInstItem(defaultItemProperties().stacksTo(1).setNoRepair()));
