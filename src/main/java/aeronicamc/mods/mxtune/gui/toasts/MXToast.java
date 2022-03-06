@@ -12,7 +12,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 public class MXToast implements IToast
 {
     private static final ITextComponent TITLE_TEXT = new TranslationTextComponent("itemGroup.mxtune");
-    private ItemStack itemStack = new ItemStack(ModItems.INSTRUMENT_ITEMS.get(27).get());
+    private final ItemStack itemStack = ModItems.getMultiInst(27);
     private long lastChanged;
     private boolean changed;
 

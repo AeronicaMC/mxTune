@@ -4,6 +4,7 @@ import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.data.LanguageProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
@@ -60,9 +61,9 @@ public class MXTuneLanguageProvider extends LanguageProvider
 
     private void addInstrumentItems(LanguageProvider provider)
     {
-        ModItems.INSTRUMENT_ITEMS.forEach(
-            (key, value) -> provider.add(value.get(),
-                convertSnakeCaseToTitleCase(SoundFontProxyManager.getName(key))));
+        SoundFontProxyManager.soundFontProxyMapByIndex.forEach(
+            (key, value) -> provider.add(new ResourceLocation(Reference.MOD_ID, value.id).toString(),
+                                         convertSnakeCaseToTitleCase(SoundFontProxyManager.getName(key))));
     }
 
     private String convertSnakeCaseToTitleCase(String input)

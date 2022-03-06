@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.gui;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.gui.widget.list.SoundFontList;
+import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.ChooseInstrumentMessage;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -10,13 +11,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Objects;
 import java.util.Optional;
-
-import static aeronicamc.mods.mxtune.init.ModItems.INSTRUMENT_ITEMS;
 
 public class GuiMultiInstChooser extends Screen
 {
@@ -131,8 +132,7 @@ public class GuiMultiInstChooser extends Screen
         // Render the Instrument GUI image
         int relX = (widget.getRight() + (guiLeft + imageWidth - widget.getRight())/2);
         int relY = guiTop + (imageHeight)/3;
-        ModGuiHelper.RenderGuiItemScaled(Objects.requireNonNull(minecraft).getItemRenderer(),
-                                         INSTRUMENT_ITEMS.get(Objects.requireNonNull(widget.getSelected()).getIndex()).get().getDefaultInstance(), relX, relY, 3, true);
-
+        ItemStack itemStack = widget.getSelected() != null ? ModItems.getMultiInst(widget.getSelected().getIndex()) : Items.CREEPER_HEAD.getDefaultInstance();
+        ModGuiHelper.RenderGuiItemScaled(Objects.requireNonNull(minecraft).getItemRenderer(), itemStack, relX, relY, 3, true);
     }
 }

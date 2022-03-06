@@ -3,8 +3,10 @@ package aeronicamc.mods.mxtune.init;
 import aeronicamc.mods.mxtune.MXTune;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.items.*;
+import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -107,5 +109,12 @@ public class ModItems
         ITEMS.register(modEventBus);
 
         isInitialized = true;
+    }
+
+    public static ItemStack getMultiInst(int index)
+    {
+        ItemStack stack = new ItemStack(MULTI_INST.get());
+        stack.setDamageValue(SoundFontProxyManager.getProxy(index).index);
+        return stack;
     }
 }
