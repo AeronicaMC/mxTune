@@ -39,7 +39,7 @@ repositories {
     maven {
         // location of a maven mirror for JEI files, as a fallback
         name = "ModMaven"
-        url = "modmaven.k-4u.nl"
+        url = "https://modmaven.dev"
     }
     maven {
         url 'https://www.cursemaven.com'
@@ -175,9 +175,10 @@ dependencies {
     compileOnly 'com.sun.xml.bind:jaxb-core:2.3.0'
 
     // compile against the JEI API but do not include it at runtime
-    //compileOnly fg.deobf("mezz.jei:jei-${version_mc}:${jei_version}:api")
+    compileOnly fg.deobf("mezz.jei:jei-${version_mc}:${jei_version_repo}:api")
     // at runtime, use the full JEI jar
-    implementation fg.deobf("curse.maven:${project.jei_version}")
+    runtimeOnly fg.deobf("mezz.jei:jei-${version_mc}:${jei_version_repo}")
+    //implementation fg.deobf("curse.maven:${project.jei_version}")
     implementation fg.deobf("curse.maven:${project.configured}")
     implementation fg.deobf("curse.maven:${project.better_mods_button}")
 
