@@ -220,7 +220,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
     @Override
     public ITextComponent getDisplayName()
     {
-        return new StringTextComponent("TODO: Replace from ItemStack damage value name lookup");
+        return new StringTextComponent("-unused-");
     }
 
 
