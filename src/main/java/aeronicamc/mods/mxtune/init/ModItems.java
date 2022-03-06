@@ -12,11 +12,6 @@ import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static aeronicamc.mods.mxtune.util.SoundFontProxyManager.soundFontProxyMapByIndex;
-
 /**
  *
  The MIT License (MIT)
@@ -66,18 +61,18 @@ public class ModItems
     public static final RegistryObject<MultiInstItem> MULTI_INST = ITEMS.register("multi_inst",
         () -> new MultiInstItem(defaultItemProperties().stacksTo(1).setNoRepair()));
 
-    public static final Map<Integer, RegistryObject<InstrumentItem>> INSTRUMENT_ITEMS = new HashMap<>();
-
-    static { registerInstruments(); }
-
-    private static void registerInstruments()
-    {
-        soundFontProxyMapByIndex.forEach(
-            (key, value) -> INSTRUMENT_ITEMS.put(value.index, ITEMS.register(
-                value.id, () -> new InstrumentItem(defaultItemProperties()
-                    .stacksTo(1).setNoRepair().defaultDurability(value.index))
-                                                                            )));
-    }
+//    public static final Map<Integer, RegistryObject<InstrumentItem>> INSTRUMENT_ITEMS = new HashMap<>();
+//
+//    static { registerInstruments(); }
+//
+//    private static void registerInstruments()
+//    {
+//        soundFontProxyMapByIndex.forEach(
+//            (key, value) -> INSTRUMENT_ITEMS.put(value.index, ITEMS.register(
+//                value.id, () -> new InstrumentItem(defaultItemProperties()
+//                    .stacksTo(1).setNoRepair().defaultDurability(value.index))
+//                                                                            )));
+//    }
 
     /**
      * Gets an {@link Item.Properties} instance with the {@link ItemGroup} set to {@link MXTune#ITEM_GROUP}.
