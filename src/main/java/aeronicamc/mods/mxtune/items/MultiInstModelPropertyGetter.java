@@ -35,7 +35,7 @@ public class MultiInstModelPropertyGetter
             }
         }
         float maxIndex = SoundFontProxyManager.soundFontProxyMapByIndex.size();
-        return !pItemStack.isEmpty() ? MathHelper.clamp(pItemStack.getDamageValue(), 0F, maxIndex) : maxIndex;
+        return !pItemStack.isEmpty() ? MathHelper.clamp(pItemStack.getDamageValue(), 0F, maxIndex) : 0F;
     };
 
     public static void registerToItem(Item pItem)
