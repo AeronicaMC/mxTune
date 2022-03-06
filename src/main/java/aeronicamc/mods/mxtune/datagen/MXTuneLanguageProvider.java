@@ -4,7 +4,6 @@ import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.data.LanguageProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
@@ -53,17 +52,17 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addTooltip("sheet_music.days_left_error", "Days left: nn");
         addTooltip("sheet_music.duration_error", "h:mm:ss");
         addTooltip("sheet_music.empty", " - Empty - ");
-        addInstrumentItems(this);
+        addInstrumentNames(this);
         addTooltip("instrument_item.shift_help_01", "Hold SHIFT for HELP");
         addTooltip("instrument_item.shift_help_02", "SHIFT+Right Click to OPEN");
         addTooltip("instrument_item.shift_help_03", "Right Click to PLAY");
     }
 
-    private void addInstrumentItems(LanguageProvider provider)
+    private void addInstrumentNames(LanguageProvider provider)
     {
         SoundFontProxyManager.soundFontProxyMapByIndex.forEach(
-            (key, value) -> provider.add(new ResourceLocation(Reference.MOD_ID, value.id).toString(),
-                                         convertSnakeCaseToTitleCase(SoundFontProxyManager.getName(key))));
+            (key, value) -> provider.add("item." + Reference.MOD_ID + "." +value.id,
+                                         convertSnakeCaseToTitleCase(value.id)));
     }
 
     private String convertSnakeCaseToTitleCase(String input)
