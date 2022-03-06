@@ -13,7 +13,6 @@ import net.minecraft.util.ResourceLocation;
 @JeiPlugin
 public class MxtuneJEIPlugin implements IModPlugin
 {
-
     /**
      * The unique ID for this mod plugin.
      * The namespace should be your mod's modId.
@@ -37,18 +36,6 @@ public class MxtuneJEIPlugin implements IModPlugin
 
     public static class MultiInstSubTypeInterpreter implements IIngredientSubtypeInterpreter<ItemStack>
     {
-        /**
-         * Get the data from an ingredient that is relevant to telling subtypes apart in the given context.
-         * This should account for nbt, and anything else that's relevant.
-         * <p>
-         * {@link UidContext} can be used to give different subtype information depending on the given context.
-         * Most cases will return the same value for all contexts and it can usually be ignored.
-         * <p>
-         * Return {@link #NONE} if there is no data used for subtypes.
-         *
-         * @param ingredient
-         * @param context
-         */
         @Override
         public String apply(ItemStack ingredient, UidContext context)
         {
