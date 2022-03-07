@@ -12,7 +12,7 @@ import net.minecraft.util.text.StringTextComponent;
 import javax.annotation.Nullable;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public class PathList extends MXExtendedList<PathList.Entry>
 {
@@ -22,7 +22,7 @@ public class PathList extends MXExtendedList<PathList.Entry>
         super();
     }
 
-    public PathList(Minecraft minecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight, int pLeft, Consumer<PathList.Entry> selectCallback)
+    public PathList(Minecraft minecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight, int pLeft, BiConsumer<Entry, Boolean> selectCallback)
     {
         super(minecraft, pWidth, pHeight, pY0, pY1, pItemHeight, pLeft, selectCallback);
     }
@@ -52,7 +52,7 @@ public class PathList extends MXExtendedList<PathList.Entry>
     }
 
     @Override
-    public void setCallBack(Consumer<Entry> selectCallback)
+    public void setCallBack(BiConsumer<Entry, Boolean> selectCallback)
     {
         this.selectCallback = selectCallback;
     }
@@ -91,7 +91,7 @@ public class PathList extends MXExtendedList<PathList.Entry>
                 changeFocus(true);
                 setFocused(this);
                 PathList.this.setSelected(this);
-                selectCallback.accept(this);
+                selectCallback.accept(this, doubleClicked());
                 minecraft.getSoundManager().play(SimpleSound.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 return true;
             }

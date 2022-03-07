@@ -346,7 +346,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         init();
     }
 
-    private void selectInstrument(@Nullable SoundFontList.Entry entry)
+    private void selectInstrument(@Nullable SoundFontList.Entry entry, Boolean doubleClicked)
     {
         SoundFontProxy soundFontProxy = SoundFontProxyManager.getSoundFontProxyDefault();
         mxTunePart.setPackedPatch(entry != null ? entry.getPackedPreset() : soundFontProxy.packed_preset);

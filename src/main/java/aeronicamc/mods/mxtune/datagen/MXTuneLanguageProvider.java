@@ -21,6 +21,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         // TODO
         addBlocks();
         addCommands();
+        addConfigs();
         addEnums();
         addErrors();
         addGuiTexts();
@@ -119,6 +120,14 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addCommand("music.load", "Read %s records");
     }
 
+    private void addConfigs()
+    {
+        addConfig("client.double_click_time_ms", "Double-click time in milliseconds for GUI widgets");
+        addConfig("client.mml_Link", "MML Site Link");
+        addConfig("server.listener_range", "Listener Range");
+        addConfig("server.sheet_music_life_in_days", "Sheet Music Life in Days");
+    }
+
     private void addEnums()
     {
         addEnum("tool_state.type.start", "Start");
@@ -168,6 +177,17 @@ public class MXTuneLanguageProvider extends LanguageProvider
     private void addCommand(String identifier, String text)
     {
         add(String.format("commands.%s.%s", Reference.MOD_ID, identifier), text);
+    }
+
+    /**
+     * prepends config.[mod_id].
+     * @param identifier the unique command id
+     * @param text of the config item
+     */
+
+    private void addConfig(String identifier, String text)
+    {
+        add(String.format("config.%s.%s", Reference.MOD_ID, identifier), text);
     }
 
     /**

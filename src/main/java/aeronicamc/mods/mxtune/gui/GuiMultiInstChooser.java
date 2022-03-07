@@ -29,11 +29,12 @@ public class GuiMultiInstChooser extends Screen
     private final Screen parent;
     private SoundFontList widget;
 
-    protected GuiMultiInstChooser(Screen parent)
+    public GuiMultiInstChooser(Screen parent)
     {
         super(new TranslationTextComponent("gui.mxtune.label.instruments"));
         this.parent = parent;
         widget = new SoundFontList().init();
+        setSelected(((InstrumentScreen)parent).getInstrument());
     }
 
     @Override
@@ -58,19 +59,21 @@ public class GuiMultiInstChooser extends Screen
         int posY = guiTop + imageHeight - 20 - 15;
 
         this.addButton(new Button(posX, posY, widthButtons, 20, new TranslationTextComponent("gui.done"), (done) -> {
-            selectCallback(Objects.requireNonNull(widget.getSelected()));
+            selectCallback(Objects.requireNonNull(widget.getSelected()), false);
             this.minecraft.setScreen(parent);
         }));
     }
 
-    private void selectCallback(SoundFontList.Entry selected)
+    private void selectCallback(SoundFontList.Entry selected, Boolean doubleClicked)
     {
+
         getPlayer(Objects.requireNonNull(minecraft)).ifPresent(player->{
             player.inventory.getSelected().setDamageValue(selected.getIndex());
             ((InstrumentScreen)parent).updateButton(selected.getIndex());
             PacketDispatcher.sendToServer(new ChooseInstrumentMessage(selected.getIndex()));
         });
-
+        if (doubleClicked)
+            this.minecraft.setScreen(parent);
     }
 
     Optional<PlayerEntity> getPlayer(Minecraft minecraft)
@@ -78,6 +81,12 @@ public class GuiMultiInstChooser extends Screen
         return Optional.ofNullable(minecraft.player);
     }
 
+    private void setSelected(int index)
+    {
+        SoundFontList.Entry selected = widget.children().get(index);
+        widget.setSelected(selected);
+        widget.centerScrollOn(selected);
+    }
 
     @Override
     public String getNarrationMessage() {

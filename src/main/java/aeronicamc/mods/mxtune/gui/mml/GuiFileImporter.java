@@ -141,7 +141,7 @@ public class GuiFileImporter extends MXScreen
 
         titleLabel = new MXLabel(font, (width - font.width(title)) / 2, 5, font.width(title), entryHeight, title, TextColorFg.WHITE);
         pathListWidget.setLayout(left, listTop, listWidth, listHeight);
-        this.pathListWidget.setCallBack((entry) -> {
+        this.pathListWidget.setCallBack((entry, doubleClicked) -> {
             selectedEntry = entry;
         });
 

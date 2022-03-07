@@ -31,6 +31,7 @@ public class MXTuneConfig
     /** Client Configuration Settings */
     public static class Client
     {
+        public final ConfigValue<Integer> doubleClickTime;
         public final ConfigValue<String> site;
 
         public Client(final ForgeConfigSpec.Builder builder)
@@ -38,9 +39,14 @@ public class MXTuneConfig
             builder.comment("Client Only Settings")
                     .push("client");
 
+            doubleClickTime = builder
+                    .comment("Double-click time in milliseconds for GUI widgets")
+                    .translation("config.mxtune.client.double_click_time_ms")
+                    .defineInRange("doubleClickTime", 500, 10, 5000);
+
             site = builder
                     .comment("Site Link")
-                    .translation("config.client.mxtune.mml_Link")
+                    .translation("config.mxtune.client.mml_Link")
                     .define("site", "https://mabibeats.com/");
 
             builder.pop();
@@ -75,6 +81,8 @@ public class MXTuneConfig
     public static float getListenerRange() { return (float) SERVER.listenerRange.get(); }
 
     public static int getSheetMusicLifeInDays() { return SERVER.sheetMusicLifeInDays.get(); }
+
+    public static int getDoubleClickTimeMS() { return CLIENT.doubleClickTime.get(); }
 
     public static String getMmlLink() { return CLIENT.site.get(); }
 

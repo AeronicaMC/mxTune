@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.gui.widget.list;
 
+import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.gui.widget.ILayout;
 import aeronicamc.mods.mxtune.util.Misc;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -14,23 +15,24 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>> extends AbstractList<E> implements ILayout
 {
     protected int padding;
     protected int rowWidth;
-    protected Consumer<E> selectCallback;
+    protected BiConsumer<E, Boolean> selectCallback;
     private boolean renderBackground;
     protected boolean active = true;
     private boolean renderTopAndBottom;
+    protected long lastClick = System.currentTimeMillis();
 
     public MXExtendedList()
     {
         this(Minecraft.getInstance(), 1, 1, 1, 1, Minecraft.getInstance().font.lineHeight + 4, 1, Misc.nonNullInjected());
     }
 
-    public MXExtendedList(Minecraft pMinecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight, int pLeft, Consumer<E> selectCallback)
+    public MXExtendedList(Minecraft pMinecraft, int pWidth, int pHeight, int pY0, int pY1, int pItemHeight, int pLeft, BiConsumer<E, Boolean> selectCallback)
     {
         super(pMinecraft, pWidth, pHeight, pY0, pY1, pItemHeight);
         this.rowWidth = pWidth;
@@ -95,7 +97,18 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
         this.padding = padding;
     }
 
-    public abstract void setCallBack(Consumer<E> selectCallback);
+    public abstract void setCallBack(BiConsumer<E, Boolean> selectCallback);
+
+    protected boolean doubleClicked()
+    {
+        final long clicked = System.currentTimeMillis();
+        boolean result = false;
+        if ((clicked - lastClick) < MXTuneConfig.getDoubleClickTimeMS())
+            result = true;
+
+        lastClick = clicked;
+        return result;
+    }
 
     @Override
     protected int getScrollbarPosition()

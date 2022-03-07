@@ -159,7 +159,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
 
         titleLabel = new MXLabel(font, (width - font.width(title)) / 2, 5, font.width(title), entryHeight, title, TextColorFg.WHITE);
         fileDataListWidget.setLayout(left, listTop, listWidth, listHeight);
-        this.fileDataListWidget.setCallBack((entry) -> {
+        this.fileDataListWidget.setCallBack((entry, doubleClicked) -> {
             selectedEntry = entry;
             updatePartList();
         });

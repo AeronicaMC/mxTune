@@ -46,6 +46,11 @@ public class InstrumentScreen extends ContainerScreen<InstrumentContainer>
         updateButton(inventory.getSelected().getDamageValue());
     }
 
+    int getInstrument()
+    {
+        return inventory.getSelected().getDamageValue();
+    }
+
     void updateButton(int selected)
     {
         buttonChangeInstrument.setMessage(new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(selected)));
