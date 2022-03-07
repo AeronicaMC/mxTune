@@ -65,7 +65,7 @@ public class TestScreen extends Screen
 
         //sfpWidget.setLayout(128, height - 30 , 15, height - 15, 15);
         sfpWidget.setLayout(5, 5, 128, height - 10);
-        sfpWidget.setCallBack((entry)-> {
+        sfpWidget.setCallBack((entry, doubleClicked)-> {
             Misc.addToast(new MXToast());
             LOGGER.info("Selected {}", entry.getId());
         });
@@ -89,7 +89,7 @@ public class TestScreen extends Screen
 
     public void onButtonOpen()
     {
-        Objects.requireNonNull(minecraft).setScreen(new GuiMultiInstChooser(this));
+        LOGGER.debug("Nothing to do :P");
     }
 
     public void onButtonFile()
