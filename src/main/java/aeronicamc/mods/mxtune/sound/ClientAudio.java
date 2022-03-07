@@ -67,6 +67,7 @@ public class ClientAudio
 
     private static void init(SoundEngine se)
     {
+        startThreadFactory();
         if (soundHandler == null || soundEngine == null)
         {
             soundEngine = se;
@@ -181,7 +182,6 @@ public class ClientAudio
      */
     private static void play(int secondsToSkip, long netTransitTime, int playID, int entityId, @Nullable BlockPos pos, String musicText, boolean isClient, @Nullable IAudioStatusCallback callback)
     {
-        startThreadFactory();
         if(playID != PlayIdSupplier.PlayType.INVALID.getAsInt())
         {
             addPlayIDQueue(playID);
