@@ -61,7 +61,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
 
     private void addInstrumentNames(LanguageProvider provider)
     {
-        SoundFontProxyManager.soundFontProxyMapByIndex.forEach(
+        SoundFontProxyManager.getProxyMapByIndex().forEach(
             (key, value) -> provider.add("item." + Reference.MOD_ID + "." +value.id,
                                          convertSnakeCaseToTitleCase(value.id)));
     }
