@@ -10,6 +10,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.renderer.ItemModelMesher;
+import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -67,8 +69,15 @@ public class GuiMultiInstChooser extends Screen
     private void selectCallback(SoundFontList.Entry selected, Boolean doubleClicked)
     {
 
+        ItemModelMesher itemModelMesher = Minecraft.getInstance().getItemRenderer().getItemModelShaper();
+
+            ItemStack stack = minecraft.player.inventory.getSelected();
+            IBakedModel bakedModel = itemModelMesher.getItemModel(stack);
+            IBakedModel thisModel = bakedModel.getOverrides().resolve(bakedModel, stack, minecraft.level, minecraft.player);
+            System.out.printf("Model = %s, TotalModels %d \n", thisModel, bakedModel.getOverrides().getOverrides().size());
+
         getPlayer(Objects.requireNonNull(minecraft)).ifPresent(player->{
-            player.inventory.getSelected().setDamageValue(selected.getIndex());
+            //player.inventory.getSelected().setDamageValue(selected.getIndex());
             ((InstrumentScreen)parent).updateButton(selected.getIndex());
             PacketDispatcher.sendToServer(new ChooseInstrumentMessage(selected.getIndex()));
         });

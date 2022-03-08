@@ -4,7 +4,6 @@ import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.items.MultiInstModelPropertyGetter;
 import aeronicamc.mods.mxtune.items.ScrapAnimationPropertyGetter;
 import aeronicamc.mods.mxtune.items.SheetMusicAgePropertyGetter;
-import aeronicamc.mods.mxtune.util.SoundFontProxy;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
@@ -13,9 +12,7 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static aeronicamc.mods.mxtune.init.ModItems.*;
 
@@ -91,10 +88,8 @@ public class MXTuneItemModelProvider extends ItemModelProvider
         }
 
         {
-            final List<SoundFontProxy> proxies = new ArrayList<>(SoundFontProxyManager.soundFontProxyMapByIndex.values());
             ItemModelBuilder parentModel = withExistingParent(MULTI_INST.getId().getPath(), mcLoc("generated"));
-
-            proxies.stream()
+            SoundFontProxyManager.getProxies().stream()
                     .map(proxy ->
                               {
                                   final ItemModelBuilder subModel = withExistingParent(proxy.id, mcLoc("generated"))

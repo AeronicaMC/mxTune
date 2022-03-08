@@ -149,7 +149,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
     public void fillItemCategory(ItemGroup pGroup, NonNullList<ItemStack> pItems) // getSubItems
     {
         if (pGroup.equals(MXTune.ITEM_GROUP))
-            SoundFontProxyManager.soundFontProxyMapByIndex.forEach((index, proxy) -> pItems.add(ModItems.getMultiInst(index)));
+            SoundFontProxyManager.getProxyMapByIndex().forEach((index, proxy) -> pItems.add(ModItems.getMultiInst(index)));
     }
 
     @Override

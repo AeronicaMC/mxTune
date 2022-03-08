@@ -17,6 +17,7 @@
 
 package aeronicamc.mods.mxtune.util;
 
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -181,4 +182,21 @@ public class SoundFontProxyManager
         }
         return 53; // default piano_mabinogi
     }
+
+    public static int countInstruments()
+    {
+        return soundFontProxyMapByIndex.size();
+    }
+
+    public static ImmutableCollection<SoundFontProxy> getProxies()
+    {
+        return soundFontProxyMapByIndex.values();
+    }
+
+    public static ImmutableMap<Integer, SoundFontProxy> getProxyMapByIndex()
+    {
+        return soundFontProxyMapByIndex;
+    }
+
+
 }

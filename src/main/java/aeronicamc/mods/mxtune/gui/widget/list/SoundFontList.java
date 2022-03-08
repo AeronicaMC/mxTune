@@ -30,7 +30,7 @@ public class SoundFontList extends MXExtendedList<SoundFontList.Entry>
 
     public SoundFontList init()
     {
-        for (SoundFontProxy soundFontProxy: SoundFontProxyManager.soundFontProxyMapById.values())
+        for (SoundFontProxy soundFontProxy: SoundFontProxyManager.getProxyMapByIndex().values())
         {
             suggestedWidth = calculateWidth(suggestedWidth, soundFontProxy.id);
             SoundFontList.Entry entry = new  SoundFontList.Entry(soundFontProxy);
