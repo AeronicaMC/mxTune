@@ -3,14 +3,11 @@ package aeronicamc.mods.mxtune.items;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 
 /**
  *
@@ -46,26 +43,7 @@ public class SheetMusicAgePropertyGetter
     public static final ResourceLocation NAME = new ResourceLocation(Reference.MOD_ID, "sheet_music_age");
 
     private static final IItemPropertyGetter GETTER = (pItemStack, pLevel, pEntity) ->
-    {
-        World level = pLevel;
-        Entity entity = pEntity != null ? pEntity : pItemStack.getEntityRepresentation();
-        if (entity == null)
-        {
-            return Float.MAX_VALUE;
-        }
-        else
-        {
-            if (level == null && entity.level instanceof ClientWorld)
-            {
-                level = entity.level;
-            }
-            if (level == null)
-            {
-                return Float.MAX_VALUE;
-            }
-        }
-        return MathHelper.clamp((float) SheetMusicHelper.getSheetMusicDaysLeft(pItemStack) / MXTuneConfig.getSheetMusicLifeInDays() * 100F, 0F, 100F);
-    };
+            MathHelper.clamp((float) SheetMusicHelper.getSheetMusicDaysLeft(pItemStack) / MXTuneConfig.getSheetMusicLifeInDays() * 100F, 0F, 100F);
 
     public static void registerToItem(Item pItem)
     {
