@@ -416,7 +416,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
                 ()-> {
                     LOGGER.debug("stopMusic: playId = {}", playId);
                     //ClientAudio.stop(playId);
-                    ClientAudio.fadeOut(playId, 4);
+                    ClientAudio.fadeOut(playId, 1);
                 });
         setPlaying(false);
     }

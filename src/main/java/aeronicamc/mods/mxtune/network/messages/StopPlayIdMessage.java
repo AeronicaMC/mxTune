@@ -37,7 +37,7 @@ public class StopPlayIdMessage extends AbstractMessage<StopPlayIdMessage>
         if (ctx.get().getDirection().getReceptionSide().isClient())
         {
             ctx.get().enqueueWork(() ->
-                ClientAudio.fadeOut(message.playId, 3));
+                ClientAudio.fadeOut(message.playId, 1));
         }
         ctx.get().setPacketHandled(true);
     }
