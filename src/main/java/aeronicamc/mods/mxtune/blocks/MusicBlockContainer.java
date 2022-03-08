@@ -94,12 +94,12 @@ public class MusicBlockContainer extends genericContainer
         if (slot != null && slot.hasItem()) {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
-            // From Player Inventory to Container Inventory - low to high slot index (reverse == false)
+            // From Container Inventory to Player Inventory - low to high slot index (reverse == true)
             if (pIndex < CONTAINER_SIZE) {
-                if (!this.moveItemStackTo(itemstack1, CONTAINER_SIZE, slots.size(), false)) {
+                if (!this.moveItemStackTo(itemstack1, CONTAINER_SIZE, slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-                // From Container Inventory to Player Inventory - low to high slot index (reverse == false)
+            // From Player Inventory to Container Inventory - low to high slot index (reverse == false)
             } else if (!this.moveItemStackTo(itemstack1, 0, CONTAINER_SIZE, false)) {
                 return ItemStack.EMPTY;
             }
