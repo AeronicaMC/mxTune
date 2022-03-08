@@ -304,31 +304,45 @@ public class ClientAudio
     {
         if (soundEngine != null && soundHandler != null && peekPlayIDQueue01() != PlayIdSupplier.PlayType.INVALID.getAsInt())
         {
-            synchronized (soundEngine.instanceToChannel)
+            AudioData audioData = getAudioData(pollPlayIDQueue01());
+            if (audioData != null && audioData.getISound() != null)
             {
-                AudioData audioData = getAudioData(pollPlayIDQueue01());
-                if (audioData != null && audioData.getISound() != null)
+                ISound iSound = audioData.getISound();
+                ChannelManager.Entry entry = getChannelManagerEntry(iSound);
+                if (entry != null)
                 {
-                    ISound iSound = audioData.getISound();
-                    ChannelManager.Entry entry = soundEngine.instanceToChannel.get(iSound);
-                    if (entry != null)
-                    {
-                        submitStream(audioData).thenAccept(iAudioStream -> entry.execute(soundSource ->
-                            {
-                                soundSource.attachBufferStream(iAudioStream);
-                                soundSource.play();
-                            }));
-                        int playId = audioData.getPlayId();
-                        LOGGER.debug("initializeCodec: playId: {}, ISound: {}", playId, iSound.getLocation());
-                    }
-                    else
-                    {
-                        int playId = audioData.getPlayId();
-                        playIDAudioData.remove(playId);
-                        LOGGER.debug("initializeCodec: failed - playIDQueue01: {}", playId);
-                    }
+                    submitStream(audioData).thenAccept(iAudioStream -> entry.execute(soundSource ->
+                        {
+                            soundSource.attachBufferStream(iAudioStream);
+                            soundSource.play();
+                        }));
+                    int playId = audioData.getPlayId();
+                    LOGGER.debug("initializeCodec: playId: {}, ISound: {}", playId, iSound.getLocation());
+                }
+                else
+                {
+                    int playId = audioData.getPlayId();
+                    playIDAudioData.remove(playId);
+                    LOGGER.debug("initializeCodec: failed - playIDQueue01: {}", playId);
                 }
             }
+        }
+    }
+
+    @Nullable
+    private static ChannelManager.Entry getChannelManagerEntry(ISound iSound)
+    {
+        synchronized (soundEngine.instanceToChannel)
+        {
+            return soundEngine.instanceToChannel.get(iSound);
+        }
+    }
+
+    private static boolean channelHasISound(@Nullable ISound iSound)
+    {
+        synchronized (soundEngine.instanceToChannel)
+        {
+            return (iSound != null) && soundEngine.instanceToChannel.containsKey(iSound);
         }
     }
 
@@ -351,7 +365,7 @@ public class ClientAudio
             {
                 AudioData audioData = entry.getValue();
                 Status status = audioData.getStatus();
-                if (status == Status.ERROR || status == Status.DONE || !soundEngine.instanceToChannel.containsKey(audioData.getISound()))
+                if (status == Status.ERROR || status == Status.DONE || !channelHasISound(audioData.getISound()))
                 {
                     // Stopping playing audio takes 100 milliseconds. e.g. SoundSystem fadeOut(<source>, <delay in ms>)
                     // To prevent audio clicks/pops we have the wait at least that amount of time
