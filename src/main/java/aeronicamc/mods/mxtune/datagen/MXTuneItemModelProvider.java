@@ -105,15 +105,5 @@ public class MXTuneItemModelProvider extends ItemModelProvider
                                                     .end()
                                    );
         }
-
-
-//        registerMultiInstModels(this);
     }
-
-//    private void registerMultiInstModels(ItemModelProvider itemModelProvider)
-//    {
-//        INSTRUMENT_ITEMS.forEach(
-//            (key, value) -> itemModelProvider.withExistingParent(value.getId().getPath(), mcLoc("generated"))
-//                .texture("layer0", String.format("item/%s", SoundFontProxyManager.getName(key))));
-//    }
 }

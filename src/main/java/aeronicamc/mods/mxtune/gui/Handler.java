@@ -21,8 +21,4 @@ public class Handler
     {
         mc.tell(()->mc.setScreen(new TestScreen()));
     }
-    public static void openGuiMultiInstChooser()
-    {
-        mc.tell(()->mc.setScreen(new GuiMultiInstChooser(Misc.nonNullInjected())));
-    }
 }

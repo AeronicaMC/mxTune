@@ -1,9 +1,6 @@
 package aeronicamc.mods.mxtune.items;
 
-import aeronicamc.libs.mml.util.TestData;
 import aeronicamc.mods.mxtune.gui.Handler;
-import aeronicamc.mods.mxtune.network.PacketDispatcher;
-import aeronicamc.mods.mxtune.network.messages.CreateSheetMusicMessage;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -32,7 +29,6 @@ public class MusicPaperItem extends Item
         if (pLevel.isClientSide)
         {
             Handler.OpenSheetMusicScreen();
-            //writeRandomSheetMusic();
         }
         return ActionResult.pass(pPlayer.getItemInHand(pHand));
     }
@@ -47,13 +43,5 @@ public class MusicPaperItem extends Item
     public int getUseDuration(ItemStack pStack) // getMaxItemUseDuration
     {
         return 72000;
-    }
-
-    private void writeRandomSheetMusic()
-    {
-        int index = rand.nextInt(TestData.values().length);
-        PacketDispatcher.sendToServer(
-                new CreateSheetMusicMessage(TestData.getMML(index).getTitle(),
-                                            TestData.getMML(index).getMML()));
     }
 }

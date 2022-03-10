@@ -42,7 +42,6 @@ public class OpenScreenMessage extends AbstractMessage<OpenScreenMessage>
                             Handler.openTestScreen();
                             break;
                         case TEST_TWO:
-                            Handler.openGuiMultiInstChooser();
                             break;
                     }
                 });
