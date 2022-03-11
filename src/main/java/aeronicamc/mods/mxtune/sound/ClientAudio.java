@@ -22,7 +22,7 @@ import java.util.concurrent.*;
 
 public class ClientAudio
 {
-    private static final Logger LOGGER = LogManager.getLogger(ClientAudio.class);
+    public static final Logger LOGGER = LogManager.getLogger(ClientAudio.class);
     public static final Object THREAD_SYNC = new Object();
     private static final Minecraft mc = Minecraft.getInstance();
     private static SoundEngine soundEngine;
@@ -97,12 +97,11 @@ public class ClientAudio
         return playIDQueue01.peek() == null ? PlayIdSupplier.PlayType.INVALID.getAsInt() : playIDQueue01.peek();
     }
 
-    @Nullable
-    private static AudioData getAudioData(Integer playID)
+    private static Optional<AudioData> getAudioData(int playID)
     {
         synchronized (THREAD_SYNC)
         {
-            return playIDAudioData.get(playID);
+            return Optional.ofNullable(playIDAudioData.get(playID));
         }
     }
 
@@ -291,6 +290,33 @@ public class ClientAudio
         return CompletableFuture.supplyAsync(() -> new PCMAudioStream(audioData), Util.backgroundExecutor());
     }
 
+    public static void submitStream(ISound pISound, boolean isStream, @Nullable ChannelManager.Entry entry)
+    {
+        if (soundEngine != null && soundHandler != null && peekPlayIDQueue01() != PlayIdSupplier.PlayType.INVALID.getAsInt() && isStream)
+        {
+            getAudioData(pollPlayIDQueue01()).filter(audioData -> audioData.getISound() == pISound).ifPresent(audioData ->
+            {
+                LOGGER.info("submitStream {}", pISound);
+                if (entry != null)
+                {
+                    submitStream(audioData).thenAccept(iAudioStream -> entry.execute(soundSource ->
+                         {
+                             soundSource.attachBufferStream(iAudioStream);
+                             soundSource.play();
+                         }));
+                    int playId = audioData.getPlayId();
+                    LOGGER.debug("initializeCodec: playId: {}, ISound: {}", playId, pISound.getLocation());
+                }
+                else
+                {
+                    int playId = audioData.getPlayId();
+                    playIDAudioData.remove(playId);
+                    LOGGER.debug("initializeCodec: failed - playIDQueue01: {}", playId);
+                }
+            });
+        }
+    }
+
     /**
      * Try to submit our PCMAudio to the vanilla {@link SoundEngine} by looking for the mxTune {@link ISound}
      * {@link MxSound} and the associated {@link Sound} {@link PCMSound} dummy resource in the vanilla
@@ -304,8 +330,7 @@ public class ClientAudio
     {
         if (soundEngine != null && soundHandler != null && peekPlayIDQueue01() != PlayIdSupplier.PlayType.INVALID.getAsInt())
         {
-            AudioData audioData = getAudioData(pollPlayIDQueue01());
-            if (audioData != null && audioData.getISound() != null)
+            getAudioData(pollPlayIDQueue01()).filter(audioData -> audioData.getISound() != null).ifPresent(audioData ->
             {
                 ISound iSound = audioData.getISound();
                 ChannelManager.Entry entry = getChannelManagerEntry(iSound);
@@ -325,7 +350,7 @@ public class ClientAudio
                     playIDAudioData.remove(playId);
                     LOGGER.debug("initializeCodec: failed - playIDQueue01: {}", playId);
                 }
-            }
+            });
         }
     }
 
@@ -454,7 +479,7 @@ public class ClientAudio
         if (event.side == LogicalSide.CLIENT && event.phase == TickEvent.Phase.END)
         {
             // Do this as fast/often as possible to ensure we capture the ChannelManager.Entry for our stream.
-            initializeCodec();
+            //initializeCodec();
 
             // one update per second
             if (counter % 20 == 0)
