@@ -32,6 +32,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static aeronicamc.mods.mxtune.managers.PlayIdSupplier.INVALID;
+
 
 @SuppressWarnings("unused")
 public final class PlayManager
@@ -71,7 +73,7 @@ public final class PlayManager
      */
     public static int playMusic(World world, BlockPos blockPos)
     {
-        int playId = PlayType.INVALID.getAsInt();
+        int playId = INVALID;
         IMusicPlayer musicPlayer;
         if (world.getBlockState(blockPos).getBlock() instanceof IMusicPlayer)
         {
@@ -130,7 +132,7 @@ public final class PlayManager
                 LOGGER.debug("Music key not found: {}", musicTextKey);
             }
         }
-        return PlayType.INVALID.getAsInt();
+        return INVALID;
     }
 
     private static int playSolo(PlayerEntity playerIn, String musicText, int duration, Integer playerID)
@@ -214,7 +216,7 @@ public final class PlayManager
     {
         synchronized (THREAD_SYNC)
         {
-            return (entityId != null) ? entityIdToPlayId.get(entityId) : PlayType.INVALID.getAsInt();
+            return (entityId != null) ? entityIdToPlayId.get(entityId) : INVALID;
         }
     }
 
@@ -228,7 +230,7 @@ public final class PlayManager
 
     private static void addActivePlayId(int entityId, @Nullable BlockPos blockPos, int playId, String musicText, int durationSeconds)
     {
-        if ((playId != PlayType.INVALID.getAsInt()))
+        if ((playId != INVALID))
         {
             activePlayIds.add(playId);
             if (entityId != 0)
@@ -250,7 +252,7 @@ public final class PlayManager
 
     private static void removeActivePlayId(int playId)
     {
-        if ((playId != PlayType.INVALID.getAsInt()) && !activePlayIds.isEmpty())
+        if ((playId != INVALID) && !activePlayIds.isEmpty())
         {
             entityIdToPlayId.remove(playIdToEntityId.get(playId));
             playIdToActiveTune.remove(playId);

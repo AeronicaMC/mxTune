@@ -100,4 +100,6 @@ public class PlayIdSupplier
     {
         return ((playId >= 100000) && (playId <= 499999)) ? PlayType.EVENT.getTypeForPlayId(playId) : PlayType.INVALID;
     }
+
+    public static final int INVALID = -1;
 }

@@ -40,7 +40,7 @@ public class ActiveTune
     {
         this.entityId = 0;
         this.blockPos = null;
-        this.playId = PlayIdSupplier.PlayType.INVALID.getAsInt();
+        this.playId = PlayIdSupplier.INVALID;
         this.musicText = "";
         this.durationSeconds = 0;
     }

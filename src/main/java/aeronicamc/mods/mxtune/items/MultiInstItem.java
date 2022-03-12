@@ -71,7 +71,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
      * Get this stack's playId, or INVALID (-1) if no playId is defined.
      */
     private int getPlayId(ItemStack pStack) {
-        return pStack.hasTag() && pStack.getTag() != null && pStack.getTag().contains(KEY_PLAY_ID, Constants.NBT.TAG_INT) ? pStack.getTag().getInt(KEY_PLAY_ID) : PlayIdSupplier.PlayType.INVALID.getAsInt();
+        return pStack.hasTag() && pStack.getTag() != null && pStack.getTag().contains(KEY_PLAY_ID, Constants.NBT.TAG_INT) ? pStack.getTag().getInt(KEY_PLAY_ID) : PlayIdSupplier.INVALID;
     }
 
     /**
@@ -99,7 +99,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
             if (!pIsSelected && PlayManager.isActivePlayId(playId))
             {
                 PlayManager.stopPlayId(playId);
-                setPlayId(pStack, PlayIdSupplier.PlayType.INVALID.getAsInt());
+                setPlayId(pStack, PlayIdSupplier.INVALID);
             }
             // Check for expired sheet music. Deposit scrap in the players inventory if space permits or in the world.
             SheetMusicHelper.scrapSheetMusicInInstrumentIfExpired(null, pStack, pLevel, pEntity, null);
@@ -117,7 +117,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
             if (PlayManager.isActivePlayId(playId))
             {
                 PlayManager.stopPlayId(playId);
-                setPlayId(pStack, PlayIdSupplier.PlayType.INVALID.getAsInt());
+                setPlayId(pStack, PlayIdSupplier.INVALID);
             }
         }
         return true;
@@ -133,7 +133,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
             if (PlayManager.isActivePlayId(playId))
             {
                 PlayManager.stopPlayId(playId);
-                setPlayId(pStack, PlayIdSupplier.PlayType.INVALID.getAsInt());
+                setPlayId(pStack, PlayIdSupplier.INVALID);
             }
         }
         return super.getEntityLifespan(pStack, pLevel);
@@ -142,7 +142,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
     @Override
     public void onCraftedBy(ItemStack pStack, World pLevel, PlayerEntity pPlayer)
     {
-        setPlayId(pStack, PlayIdSupplier.PlayType.INVALID.getAsInt());
+        setPlayId(pStack, PlayIdSupplier.INVALID);
     }
 
     @Override

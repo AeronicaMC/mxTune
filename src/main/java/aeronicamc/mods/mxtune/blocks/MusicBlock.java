@@ -110,7 +110,7 @@ public class MusicBlock extends Block implements IMusicPlayer
             if (PlayManager.isActivePlayId(musicBlockTile.getPlayId()))
             {
                 PlayManager.stopPlayId(musicBlockTile.getPlayId());
-                musicBlockTile.setPlayId(PlayIdSupplier.PlayType.INVALID.getAsInt());
+                musicBlockTile.setPlayId(PlayIdSupplier.INVALID);
                 return false;
             }
             if (!stop)
@@ -160,7 +160,7 @@ public class MusicBlock extends Block implements IMusicPlayer
                 if (PlayManager.isActivePlayId(musicBlockTile.getPlayId()))
                 {
                     PlayManager.stopPlayId(musicBlockTile.getPlayId());
-                    musicBlockTile.setPlayId(PlayIdSupplier.PlayType.INVALID.getAsInt());
+                    musicBlockTile.setPlayId(PlayIdSupplier.INVALID);
                 }
             }
         }

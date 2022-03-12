@@ -15,7 +15,7 @@ import java.util.Optional;
 public class PlayerNexus implements IPlayerNexus
 {
     private static final Logger LOGGER = LogManager.getLogger(PlayerNexus.class);
-    private int playId = PlayIdSupplier.PlayType.INVALID.getAsInt();
+    private int playId = PlayIdSupplier.INVALID;
     private PlayerEntity player;
 
     PlayerNexus() { /* NOP */ }
