@@ -41,14 +41,11 @@ public final class PlayManager
     public static final Object THREAD_SYNC = new Object();
     private static final Logger LOGGER = LogManager.getLogger(PlayManager.class);
     private static final Set<Integer> activePlayIds = new HashSet<>();
-    private static final Map<Integer, ActiveTune> playIdToActiveTune = new HashMap<>();
+    //private static final Map<Integer, ActiveTune> playIdToActiveTune = new HashMap<>();
     private static final Map<Integer, Integer> playIdToEntityId = new HashMap<>();
     private static final Map<Integer, Integer> entityIdToPlayId = new HashMap<>();
 
-    private PlayManager()
-    {
-        /* NOP */
-    }
+    private PlayManager() { /* NOP */ }
 
     private static int getNextPlayID()
     {
@@ -168,12 +165,10 @@ public final class PlayManager
     {
         synchronized (THREAD_SYNC)
         {
-            for (Map.Entry<Integer, ActiveTune> entry : playIdToActiveTune.entrySet())
-            {
-                entry.getValue().cancel(false);
-            }
+            ActiveTune.getActiveTuneEntries().stream().mapToInt(
+                    entry -> entry.playId).forEach(PlayManager::stopPlayId);
             entityIdToPlayId.clear();
-            playIdToActiveTune.clear();
+            ActiveTune.removeAll();
             activePlayIds.clear();
             playIdToEntityId.clear();
         }
@@ -183,11 +178,7 @@ public final class PlayManager
     {
         synchronized (THREAD_SYNC)
         {
-            if (playIdToActiveTune.containsKey(playId))
-            {
-                ActiveTune activeTune = playIdToActiveTune.get(playId);
-                activeTune.cancel(false);
-            }
+            ActiveTune.remove(playId);
             removeActivePlayId(playId);
             PacketDispatcher.sendToAll(new StopPlayIdMessage(playId));
         }
@@ -241,11 +232,11 @@ public final class PlayManager
                     entityIdToPlayId.putIfAbsent(entityId, playId);
 
                 playIdToEntityId.put(playId, entityId);
-                playIdToActiveTune.putIfAbsent(playId, ActiveTune.newActiveTune(entityId, playId, musicText, durationSeconds).start());
+                ActiveTune.addEntry(entityId, playId, musicText, durationSeconds);
             }
             else if (blockPos != null)
             {
-                playIdToActiveTune.putIfAbsent(playId, ActiveTune.newActiveTune(blockPos, playId, musicText, durationSeconds).start());
+                ActiveTune.addEntry(blockPos, playId, musicText, durationSeconds);
             }
         }
     }
@@ -255,7 +246,7 @@ public final class PlayManager
         if ((playId != INVALID) && !activePlayIds.isEmpty())
         {
             entityIdToPlayId.remove(playIdToEntityId.get(playId));
-            playIdToActiveTune.remove(playId);
+            ActiveTune.remove(playId);
             activePlayIds.remove(playId);
             playIdToEntityId.remove(playId);
         }
@@ -267,19 +258,17 @@ public final class PlayManager
         {
             if ((listeningPlayer != null) && (soundSourceEntity != null) && hasActivePlayId(soundSourceEntity))
             {
-                ActiveTune activeTune = getActiveTuneByEntityId(soundSourceEntity);
-                if (activeTune != null && listeningPlayer.level.getServer() != null)
-                {
-                    int playId = activeTune.getPlayId();
-
-                    PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, LocalDateTime.now(ZoneId.of("GMT0")).toString(), activeTune.getSecondsElapsed(), soundSourceEntity.getId(), activeTune.getMusicText());
-                    PacketDispatcher.sendTo(packetPlaySolo, listeningPlayer);
-                    LOGGER.debug("sendMusicTo {} starting at {}", listeningPlayer.getDisplayName().getString(), SheetMusicHelper.formatDuration(activeTune.getSecondsElapsed()));
-                }
-                else
-                {
-                    LOGGER.warn("sendMusicTo -ERROR- No playId: {} for this Entity: {}", getEntitiesPlayId(soundSourceEntity.getId()), soundSourceEntity);
-                }
+                ActiveTune.getActiveTuneByEntityId(soundSourceEntity).ifPresent(activeTune-> {
+                    if (listeningPlayer.level.getServer() != null)
+                    {
+                        PacketDispatcher.sendTo(new PlaySoloMessage(activeTune.playId, LocalDateTime.now(ZoneId.of("GMT0")).toString(), activeTune.getSecondsElapsed(), soundSourceEntity.getId(), activeTune.musicText), listeningPlayer);
+                        LOGGER.debug("sendMusicTo {} starting at {}", listeningPlayer.getDisplayName().getString(), SheetMusicHelper.formatDuration(activeTune.getSecondsElapsed()));
+                    }
+                    else
+                    {
+                        LOGGER.warn("sendMusicTo -ERROR- No playId: {} for this Entity: {}", getEntitiesPlayId(soundSourceEntity.getId()), soundSourceEntity);
+                    }
+                });
             }
         }
     }
@@ -290,19 +279,17 @@ public final class PlayManager
         {
             if ((listeningPlayer != null) && (soundSourceEntity != null) && hasActivePlayId(soundSourceEntity))
             {
-                ActiveTune activeTune = getActiveTuneByEntityId(soundSourceEntity);
-                if (activeTune != null && listeningPlayer.level.getServer() != null)
-                {
-                    int playId = activeTune.getPlayId();
-
-                    StopPlayIdMessage stopPlayIdMessage = new StopPlayIdMessage(playId);
-                    PacketDispatcher.sendTo(stopPlayIdMessage, listeningPlayer);
-                    LOGGER.debug("{} stopListeningTo {}", listeningPlayer.getDisplayName().getString(), soundSourceEntity.getName().getString());
-                }
-                else
-                {
-                    LOGGER.warn("stopListeningTo -ERROR- No playId: {} for this Entity: {}", getEntitiesPlayId(soundSourceEntity.getId()), soundSourceEntity);
-                }
+                ActiveTune.getActiveTuneByEntityId(soundSourceEntity).ifPresent(activeTune-> {
+                     if (listeningPlayer.level.getServer() != null)
+                     {
+                         PacketDispatcher.sendTo(new StopPlayIdMessage(activeTune.playId), listeningPlayer);
+                         LOGGER.debug("{} stopListeningTo {}", listeningPlayer.getDisplayName().getString(), soundSourceEntity.getName().getString());
+                     }
+                     else
+                     {
+                         LOGGER.warn("stopListeningTo -ERROR- No playId: {} for this Entity: {}", getEntitiesPlayId(soundSourceEntity.getId()), soundSourceEntity);
+                     }
+                 });
             }
         }
     }
@@ -323,12 +310,4 @@ public final class PlayManager
         }
     }
 
-    @Nullable
-    static ActiveTune getActiveTuneByEntityId(@Nullable Entity entity)
-    {
-        synchronized (THREAD_SYNC)
-        {
-            return (entity != null) ? playIdToActiveTune.get(entityIdToPlayId.get(entity.getId())) : null;
-        }
-    }
 }

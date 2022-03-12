@@ -2,19 +2,21 @@ package aeronicamc.mods.mxtune.managers;
 
 import aeronicamc.mods.mxtune.Reference;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static aeronicamc.mods.mxtune.util.SheetMusicHelper.formatDuration;
 
 public class ActiveTune
 {
     private static final Logger LOGGER2 = LogManager.getLogger(ActiveTune.class);
+    private static final Map<Integer, ActiveTune.Entry> playIdToActiveTuneEntry = new ConcurrentHashMap<>(16);
+    private static final Queue<ActiveTune.Entry> deleteEntryQueue = new ConcurrentLinkedQueue<>();
 
     private static ScheduledExecutorService scheduledThreadPool = null;
     private static ExecutorService executor = null;
@@ -23,53 +25,15 @@ public class ActiveTune
     private ScheduledFuture<?> future;
     private final AtomicInteger secondsElapsedAI = new AtomicInteger();
     private int secondsElapsed;
-    private boolean done;
 
-    protected final int entityId;
-    protected final BlockPos blockPos;
-    protected final int playId;
-    protected final String musicText;
-    protected final int durationSeconds;
-
-    synchronized int getPlayId()
-    {
-        return playId;
-    }
-
-    private ActiveTune()
-    {
-        this.entityId = 0;
-        this.blockPos = null;
-        this.playId = PlayIdSupplier.INVALID;
-        this.musicText = "";
-        this.durationSeconds = 0;
-    }
-
-    private ActiveTune(int entityId, @Nullable BlockPos blockPos, int playId, String musicText, int durationSeconds)
-    {
-        this.entityId = entityId;
-        this.blockPos = blockPos;
-        this.playId = playId;
-        this.musicText = musicText;
-        this.durationSeconds = durationSeconds;
-    }
-
-    public static ActiveTune newActiveTune(int entityId, int playId, String mml, int durationSeconds)
-    {
-        return new ActiveTune(entityId, null, playId, mml, durationSeconds);
-    }
-
-    public static ActiveTune newActiveTune(BlockPos blockPos, int playId, String mml, int durationSeconds)
-    {
-        return new ActiveTune(0, blockPos, playId, mml, durationSeconds);
-    }
+    private ActiveTune() { /* NOP */ }
 
     public static void shutdown()
     {
         isInitialized = false;
         executor.shutdown();
         scheduledThreadPool.shutdown();
-        LOGGER2.debug("ActiveStore Shutdown.");
+        LOGGER2.debug("ActiveTune Shutdown.");
     }
 
     public static void initialize()
@@ -77,87 +41,147 @@ public class ActiveTune
         if (!isInitialized)
         {
             ThreadFactory threadFactoryScheduled = new ThreadFactoryBuilder()
-                    .setNameFormat(Reference.MOD_NAME + " ActiveTune-Scheduled-Counters-%d")
+                    .setNameFormat(Reference.MOD_NAME + " ActiveTune-Counter-%d")
                     .setDaemon(true)
-                    .setPriority(Thread.NORM_PRIORITY)
+                    .setPriority(Thread.MIN_PRIORITY)
                     .build();
-            scheduledThreadPool = Executors.newScheduledThreadPool(2, threadFactoryScheduled);
+            scheduledThreadPool = Executors.newScheduledThreadPool(1, threadFactoryScheduled);
 
             ThreadFactory threadFactoryPool = new ThreadFactoryBuilder()
                     .setNameFormat(Reference.MOD_NAME + " ActiveTune-pool-%d")
                     .setDaemon(true)
-                    .setPriority(Thread.NORM_PRIORITY)
+                    .setPriority(Thread.MIN_PRIORITY)
                     .build();
             executor = Executors.newCachedThreadPool(threadFactoryPool);
             isInitialized = true;
+            ActiveTune activeTune = new ActiveTune();
+            executor.execute(activeTune::counter);
             LOGGER2.debug("ActiveTune initialized.");
         }
     }
 
-    synchronized ActiveTune start()
+    void counter()
     {
-        executor.execute(this::counter);
-        return this;
-    }
-
-    void cancel(boolean sendStop)
-    {
-        synchronized (this)
-        {
-            LOGGER2.debug("A scheduled or requested cancel was sent for playId: {} that had a duration of {}", playId, formatDuration(durationSeconds));
-            LOGGER2.debug("Time elapsed: {}", formatDuration(secondsElapsedAI.get()));
-            if (isInitialized && sendStop)
-                PlayManager.stopPlayId(playId);
-            future.cancel(true);
-            done = true;
-        }
-    }
-
-    private void counter()
-    {
-        CountDownLatch lock = new CountDownLatch(durationSeconds);
+        CountDownLatch lock = new CountDownLatch(Integer.MAX_VALUE);
         future = scheduledThreadPool.scheduleAtFixedRate(() -> {
             secondsElapsed = secondsElapsedAI.incrementAndGet();
+            playIdToActiveTuneEntry.values().forEach(entry -> {
+                if (entry.isDone())
+                    deleteEntryQueue.add(entry);
+                entry.pollDone();
+            });
+            if (!deleteEntryQueue.isEmpty())
+                playIdToActiveTuneEntry.remove(deleteEntryQueue.remove().playId);
             lock.countDown();
         }, 500, 1000, TimeUnit.MILLISECONDS);
         try
         {
-            lock.await(durationSeconds * 1000, TimeUnit.MILLISECONDS);
+            lock.await(Integer.MAX_VALUE, TimeUnit.MILLISECONDS);
         }
         catch (InterruptedException e)
         {
-            LOGGER2.info("Oops: {}", e.getLocalizedMessage());
+            LOGGER2.error(e);
         }
-        finally
+    }
+
+    synchronized static void addEntry(int entityId, int playId, String mml, int durationSeconds)
+    {
+        playIdToActiveTuneEntry.putIfAbsent(playId, Entry.newEntry(entityId, playId, mml, durationSeconds));
+    }
+
+    synchronized static void addEntry(BlockPos blockPos, int playId, String mml, int durationSeconds)
+    {
+        playIdToActiveTuneEntry.putIfAbsent(playId, Entry.newEntry(blockPos, playId, mml, durationSeconds));
+    }
+
+    synchronized static List<Entry> getActiveTuneEntries()
+    {
+        return new ArrayList<>(playIdToActiveTuneEntry.values());
+    }
+
+    static Optional<Entry> getActiveTuneByEntityId(@Nullable Entity entity)
+    {
+        Entry[] result = {null};
+        if (entity != null)
+            getActiveTuneEntries().stream().filter(entry -> entry.entityId == entity.getId()).findFirst().ifPresent(entry -> {
+                result[0] = entry;
+            });
+        return Optional.ofNullable(result[0]);
+    }
+
+    synchronized static void remove(int playId)
+    {
+        if (!playIdToActiveTuneEntry.isEmpty())
+            playIdToActiveTuneEntry.remove(playId);
+    }
+
+    synchronized static void removeAll()
+    {
+        playIdToActiveTuneEntry.clear();
+        while (!deleteEntryQueue.isEmpty()) {
+            deleteEntryQueue.remove();
+        }
+    }
+
+    static class Entry
+    {
+        private int secondsElapsed;
+
+        final String musicText;
+        final int entityId;
+        final BlockPos blockPos;
+        final int playId;
+        final int durationSeconds;
+
+        private Entry()
         {
-            if (!done)
-                cancel(true);
+            this.entityId = 0;
+            this.blockPos = null;
+            this.playId = PlayIdSupplier.INVALID;
+            this.musicText = "";
+            this.durationSeconds = 0;
         }
-    }
 
-    synchronized int getEntityId()
-    {
-        return entityId;
-    }
+        private Entry(int entityId, @Nullable BlockPos blockPos, int playId, String musicText, int durationSeconds)
+        {
+            this.entityId = entityId;
+            this.blockPos = blockPos;
+            this.playId = playId;
+            this.musicText = musicText;
+            this.durationSeconds = durationSeconds;
+        }
 
-    synchronized int getDurationSeconds()
-    {
-        return durationSeconds;
-    }
+        public static Entry newEntry(int entityId, int playId, String mml, int durationSeconds)
+        {
+            return new Entry(entityId, null, playId, mml, durationSeconds);
+        }
 
-    synchronized boolean isDone()
-    {
-        return done;
-    }
+        public static Entry newEntry(BlockPos blockPos, int playId, String mml, int durationSeconds)
+        {
+            return new Entry(0, blockPos, playId, mml, durationSeconds);
+        }
 
-    synchronized int getSecondsElapsed()
-    {
-        return secondsElapsed;
-    }
+        public int getSecondsElapsed()
+        {
+            return secondsElapsed;
+        }
 
-    synchronized String getMusicText()
-    {
-        return musicText;
+        public int getDurationSeconds()
+        {
+            return durationSeconds;
+        }
+
+        public boolean isDone()
+        {
+            return durationSeconds < secondsElapsed;
+        }
+
+        public void pollDone()
+        {
+            boolean isDone = durationSeconds <= ++secondsElapsed;
+            if (isDone) executor.execute(()-> PlayManager.stopPlayId(playId));
+        }
     }
 }
+
 
