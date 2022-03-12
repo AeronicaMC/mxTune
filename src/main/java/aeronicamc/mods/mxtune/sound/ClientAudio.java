@@ -8,7 +8,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.*;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.client.event.sound.*;
+import net.minecraftforge.client.event.sound.PlaySoundEvent;
+import net.minecraftforge.client.event.sound.PlayStreamingSourceEvent;
+import net.minecraftforge.client.event.sound.SoundLoadEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
@@ -317,43 +319,6 @@ public class ClientAudio
         }
     }
 
-    /**
-     * Try to submit our PCMAudio to the vanilla {@link SoundEngine} by looking for the mxTune {@link ISound}
-     * {@link MxSound} and the associated {@link Sound} {@link PCMSound} dummy resource in the vanilla
-     * SoundEngines {@link ChannelManager.Entry} map. When we find it submit the stream using our custom
-     * {@link ClientAudio#submitStream(AudioData)} method.
-     *
-     * This method is called 4 times a second in our subscribed {@link TickEvent.ClientTickEvent} to ensure
-     * submissions are handled in a timely manner.
-     */
-    private static void initializeCodec()
-    {
-        if (soundEngine != null && soundHandler != null && peekPlayIDQueue01() != PlayIdSupplier.INVALID)
-        {
-            getAudioData(pollPlayIDQueue01()).filter(audioData -> audioData.getISound() != null).ifPresent(audioData ->
-            {
-                ISound iSound = audioData.getISound();
-                ChannelManager.Entry entry = getChannelManagerEntry(iSound);
-                if (entry != null)
-                {
-                    submitStream(audioData).thenAccept(iAudioStream -> entry.execute(soundSource ->
-                        {
-                            soundSource.attachBufferStream(iAudioStream);
-                            soundSource.play();
-                        }));
-                    int playId = audioData.getPlayId();
-                    LOGGER.debug("initializeCodec: playId: {}, ISound: {}", playId, iSound.getLocation());
-                }
-                else
-                {
-                    int playId = audioData.getPlayId();
-                    playIDAudioData.remove(playId);
-                    LOGGER.debug("initializeCodec: failed - playIDQueue01: {}", playId);
-                }
-            });
-        }
-    }
-
     @Nullable
     private static ChannelManager.Entry getChannelManagerEntry(ISound iSound)
     {
@@ -478,20 +443,10 @@ public class ClientAudio
     {
         if (event.side == LogicalSide.CLIENT && event.phase == TickEvent.Phase.END)
         {
-            // Do this as fast/often as possible to ensure we capture the ChannelManager.Entry for our stream.
-            //initializeCodec();
-
             // one update per second
             if (counter % 20 == 0)
                 updateClientAudio();
         }
-    }
-
-    @SubscribeEvent
-    public static void event(SoundSetupEvent event) // never gets called
-    {
-        init(event.getManager());
-        LOGGER.debug("SoundSetupEvent");
     }
 
     @SubscribeEvent
@@ -507,14 +462,6 @@ public class ClientAudio
     {
         // Gets called often so pretty much guarantees ClientAudio will get initialized.
         init(event.getManager());
-    }
-
-    @SubscribeEvent
-    public static void event(PlaySoundSourceEvent event)
-    {
-        // This will never get called since the consumer of the disqualifies non-ogg sound resources.
-        if (event.getSound().getLocation().equals(ModSoundEvents.PCM_PROXY.getId()))
-            LOGGER.debug("PlaySoundSourceEvent {}", event.getSound().getLocation());
     }
 
     @SubscribeEvent
