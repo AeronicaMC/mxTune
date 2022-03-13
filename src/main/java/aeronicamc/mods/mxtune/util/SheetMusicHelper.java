@@ -9,7 +9,7 @@ import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import aeronicamc.mods.mxtune.inventory.InstrumentInventory;
-import aeronicamc.mods.mxtune.items.InstrumentItem;
+import aeronicamc.mods.mxtune.items.MultiInstItem;
 import aeronicamc.mods.mxtune.items.SheetMusicItem;
 import aeronicamc.mods.mxtune.sound.MMLToMIDI;
 import aeronicamc.mods.mxtune.sound.Midi2WavRenderer;
@@ -376,11 +376,11 @@ public enum SheetMusicHelper
 
     /**
      * * Server Side
-     * <p></p>Check for an expired {@link SheetMusicItem} stack in a {@link IInstrument}/{@link InstrumentItem}. If expired it
+     * <p></p>Check for an expired {@link SheetMusicItem} stack in a {@link IInstrument}/{@link MultiInstItem}. If expired it
      * is removed from the instrument and the associated music text from the data store, then two
      * {@link ModItems#SCRAP_ITEM} are dropped into either the player inventory or into the world depending on the context.
      * @param slot The {@link Slot} if provided. Can be null
-     * @param pInstrumentStack The {@link IInstrument}/{@link InstrumentItem} stack
+     * @param pInstrumentStack The {@link IInstrument}/{@link MultiInstItem} stack
      * @param pLevel  The world
      * @param pEntity The Player whose inventory will receive the items.
      * @param blockPos The {@link BlockPos} of the {@link IMusicPlayer if provided. Can be null
@@ -445,8 +445,8 @@ public enum SheetMusicHelper
 
     /**
      * Server Side
-     * <p></p>Remove a {@link SheetMusicItem} stack from an {@link IInstrument}/{@link InstrumentItem}
-     * @param pStack The {@link IInstrument}/{@link InstrumentItem} stack
+     * <p></p>Remove a {@link SheetMusicItem} stack from an {@link IInstrument}/{@link MultiInstItem}
+     * @param pStack The {@link IInstrument}/{@link MultiInstItem} stack
      * @return a {@link SheetMusicItem} stack or empty stack
      */
     private static ItemStack removeSheetMusicFromIInstrument(ItemStack pStack)
