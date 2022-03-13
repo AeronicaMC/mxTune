@@ -12,6 +12,8 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static aeronicamc.mods.mxtune.managers.PlayIdSupplier.INVALID;
+
 public class ActiveTune
 {
     private static final Logger LOGGER2 = LogManager.getLogger(ActiveTune.class);
@@ -99,7 +101,22 @@ public class ActiveTune
         return new ArrayList<>(playIdToActiveTuneEntry.values());
     }
 
-    static Optional<Entry> getActiveTuneByEntityId(@Nullable Entity entity)
+    synchronized static Set<Integer> getActivePlayIds()
+    {
+        return playIdToActiveTuneEntry.keySet();
+    }
+
+    synchronized static boolean isActivePlayId(int playId)
+    {
+        return (playId != INVALID) && ActiveTune.getActivePlayIds().contains(playId);
+    }
+
+    synchronized static boolean isEmpty()
+    {
+        return playIdToActiveTuneEntry.isEmpty();
+    }
+
+    synchronized static Optional<Entry> getActiveTuneByEntityId(@Nullable Entity entity)
     {
         Entry[] result = {null};
         if (entity != null)
@@ -137,7 +154,7 @@ public class ActiveTune
         {
             this.entityId = 0;
             this.blockPos = null;
-            this.playId = PlayIdSupplier.INVALID;
+            this.playId = INVALID;
             this.musicText = "";
             this.durationSeconds = 0;
         }
@@ -151,32 +168,32 @@ public class ActiveTune
             this.durationSeconds = durationSeconds;
         }
 
-        public static Entry newEntry(int entityId, int playId, String mml, int durationSeconds)
+        static Entry newEntry(int entityId, int playId, String mml, int durationSeconds)
         {
             return new Entry(entityId, null, playId, mml, durationSeconds);
         }
 
-        public static Entry newEntry(BlockPos blockPos, int playId, String mml, int durationSeconds)
+        static Entry newEntry(BlockPos blockPos, int playId, String mml, int durationSeconds)
         {
             return new Entry(0, blockPos, playId, mml, durationSeconds);
         }
 
-        public int getSecondsElapsed()
+        int getSecondsElapsed()
         {
             return secondsElapsed;
         }
 
-        public int getDurationSeconds()
+        int getDurationSeconds()
         {
             return durationSeconds;
         }
 
-        public boolean isDone()
+        boolean isDone()
         {
             return durationSeconds < secondsElapsed;
         }
 
-        public void pollDone()
+        void pollDone()
         {
             boolean isDone = durationSeconds <= ++secondsElapsed;
             if (isDone) executor.execute(()-> PlayManager.stopPlayId(playId));

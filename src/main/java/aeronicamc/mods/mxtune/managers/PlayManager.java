@@ -28,20 +28,18 @@ import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import static aeronicamc.mods.mxtune.managers.PlayIdSupplier.INVALID;
 
-
+/**
+ * The PlayManger class is used Server Side ONLY!
+ */
 @SuppressWarnings("unused")
 public final class PlayManager
 {
     public static final Object THREAD_SYNC = new Object();
     private static final Logger LOGGER = LogManager.getLogger(PlayManager.class);
-    private static final Set<Integer> activePlayIds = new HashSet<>();
-    //private static final Map<Integer, ActiveTune> playIdToActiveTune = new HashMap<>();
     private static final Map<Integer, Integer> playIdToEntityId = new HashMap<>();
     private static final Map<Integer, Integer> entityIdToPlayId = new HashMap<>();
 
@@ -169,7 +167,6 @@ public final class PlayManager
                     entry -> entry.playId).forEach(PlayManager::stopPlayId);
             entityIdToPlayId.clear();
             ActiveTune.removeAll();
-            activePlayIds.clear();
             playIdToEntityId.clear();
         }
     }
@@ -223,7 +220,6 @@ public final class PlayManager
     {
         if ((playId != INVALID))
         {
-            activePlayIds.add(playId);
             if (entityId != 0)
             {
                 if (entityIdToPlayId.containsKey(entityId))
@@ -243,12 +239,11 @@ public final class PlayManager
 
     private static void removeActivePlayId(int playId)
     {
-        if ((playId != INVALID) && !activePlayIds.isEmpty())
+        if ((playId != INVALID) && !ActiveTune.isEmpty())
         {
             entityIdToPlayId.remove(playIdToEntityId.get(playId));
-            ActiveTune.remove(playId);
-            activePlayIds.remove(playId);
             playIdToEntityId.remove(playId);
+            ActiveTune.remove(playId);
         }
     }
 
@@ -306,7 +301,7 @@ public final class PlayManager
     {
         synchronized (THREAD_SYNC)
         {
-            return (playId >= 0) && activePlayIds.contains(playId);
+            return ActiveTune.isActivePlayId(playId);
         }
     }
 
