@@ -50,10 +50,10 @@ public class GuiTestItem extends Item
         } else
         {
             PlayerNexusProvider.getNexus(playerIn).ifPresent(p->{
-                LOGGER.debug("playId: {}", p.getPlayId());
+                LOGGER.debug("PlayerNexus: playId: {}", p.getPlayId());
             });
             MusicVenueProvider.getMusicVenues(playerIn.level).ifPresent(s->{
-                LOGGER.debug("someInt: {}, Venues {}", s.getInt(), s.getMusicVenues().size());
+                LOGGER.debug("MusicVenus: someInt: {}, Venues {}", s.getInt(), s.getMusicVenues().size());
             });
         }
         return super.use(worldIn, playerIn, handIn);

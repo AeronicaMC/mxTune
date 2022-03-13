@@ -1,0 +1,35 @@
+package aeronicamc.mods.mxtune.events;
+
+import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.network.PacketDispatcher;
+import aeronicamc.mods.mxtune.network.messages.SyncCapabilityRequestMessage;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+@Mod.EventBusSubscriber(modid = Reference.MOD_ID, value = Dist.CLIENT)
+public class ClientEvents
+{
+    private static final Logger LOGGER = LogManager.getLogger(ClientEvents.class);
+
+    @SubscribeEvent
+    public static void event(ClientPlayerNetworkEvent.LoggedInEvent event)
+    {
+        PacketDispatcher.sendToServer(new SyncCapabilityRequestMessage());
+    }
+
+    @SubscribeEvent
+    public static void event(ClientPlayerNetworkEvent.LoggedOutEvent event)
+    {
+        /* NOP */
+    }
+
+    @SubscribeEvent
+    public static void event(ClientPlayerNetworkEvent.RespawnEvent event)
+    {
+        /* NOP */
+    }
+}

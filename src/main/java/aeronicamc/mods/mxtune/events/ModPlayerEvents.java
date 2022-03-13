@@ -6,7 +6,6 @@ import aeronicamc.mods.mxtune.caps.venues.IMusicVenues;
 import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
 import aeronicamc.mods.mxtune.managers.PlayManager;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
@@ -65,34 +64,20 @@ public class ModPlayerEvents
     @SubscribeEvent
     public static void event(PlayerEvent.PlayerLoggedInEvent event)
     {
-        capabilitySynchronize(event.getEntityLiving());
-        LOGGER.debug("PlayerLoggedInEvent: {}", event.getPlayer());
+        /* NOP See ClientEvents event(ClientPlayerNetworkEvent.LoggedInEvent event) */
     }
 
     @SubscribeEvent
     public static void event(PlayerEvent.PlayerRespawnEvent event)
     {
-//        LOGGER.debug("PlayerRespawnEvent: {}", event.getPlayer());
+        capabilitySynchronize(event.getEntityLiving());
+        LOGGER.debug("PlayerRespawnEvent: {}", event.getPlayer());
     }
 
     @SubscribeEvent
     public static void event(EntityJoinWorldEvent event)
     {
-        // TODO: see if this is typical or related to something I'm doing incorrectly?!
-        // LAN play worlds need this so the visiting player can sync our capabilities.
-        // There client side network errors that occur in the connecting players logs:
-        //     [09:17:09] [Render thread/FATAL] [minecraft/ThreadTaskExecutor]: Error executing task on Client
-        //     java.lang.IndexOutOfBoundsException: null
-        //	       at io.netty.buffer.EmptyByteBuf.readUnsignedByte(EmptyByteBuf.java:536) ~[netty-all-4.1.25.Final.jar:4.1.25.Final] {}
-        //         ...
-        //         at cpw.mods.modlauncher.Launcher.main(Launcher.java:66) [modlauncher-8.1.3.jar:?] {}
-        //	       at net.minecraftforge.userdev.LaunchTesting.main(LaunchTesting.java:108) [forge-1.16.5-36.2.28_mapped_parchment_2021.10.17-1.16.5.jar:?] {}
-        //
-        if (event.getEntity() instanceof PlayerEntity)
-        {
-//            capabilitySynchronize((PlayerEntity) event.getEntity());
-//            LOGGER.debug("EntityJoinWorldEvent: {}", event.getEntity());
-        }
+        /* NOP */
     }
 
     private static void capabilitySynchronize(LivingEntity livingEntity)
@@ -100,5 +85,4 @@ public class ModPlayerEvents
         getMusicVenues(livingEntity.level).ifPresent(IMusicVenues::sync);
         getNexus(livingEntity).ifPresent(IPlayerNexus::sync);
     }
-
 }
