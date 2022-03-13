@@ -30,6 +30,6 @@ public class ClientEvents
     @SubscribeEvent
     public static void event(ClientPlayerNetworkEvent.RespawnEvent event)
     {
-        /* NOP */
+        PacketDispatcher.sendToServer(new SyncCapabilityRequestMessage());
     }
 }
