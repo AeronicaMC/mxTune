@@ -46,6 +46,7 @@ public class AudioData
 
     // TODO: Fadeout volume - Not fully implemented.
     private float volumeFade = 1F;
+    private boolean fadeIn;
     private boolean isFading;
     private int fadeTicks;
     private int fadeCounter;
@@ -173,17 +174,23 @@ public class AudioData
                 {
                     isFading = false;
                     volumeFade = 0F;
-                    ClientAudio.queueAudioDataRemoval(playId);
+                    if (!fadeIn) ClientAudio.queueAudioDataRemoval(playId);
                 }
             }
         }
     }
 
-    void startFadeOut(int seconds)
+    /**
+     * Start a fade-in or fade-out. Fade-in is set true only in the {@link PCMAudioStream} notifyOnInputStreamAvailable() method.
+     * @param seconds   duration of the fade in seconds. 5 MAX.
+     * @param fadeIn    set true for fade-in mode.
+     */
+    void startFadeInOut(int seconds, boolean fadeIn)
     {
         synchronized (this)
         {
             // If a fade out is already in progress we will not change it.
+            this.fadeIn = fadeIn;
             if (!isFading && !(status == ClientAudio.Status.ERROR || status == ClientAudio.Status.DONE))
             {
                 fadeTicks = Math.max(Math.abs(seconds * 20), 5);
@@ -196,7 +203,7 @@ public class AudioData
 
     synchronized float getFadeMultiplier()
     {
-        return volumeFade;
+        return fadeIn ? 1.0F - volumeFade : volumeFade;
     }
 
     synchronized boolean isFading()

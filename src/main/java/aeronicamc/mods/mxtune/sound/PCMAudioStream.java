@@ -102,7 +102,10 @@ public class PCMAudioStream implements IAudioStream
             try
             {
                 if (audioInputStream.available() > 0)
+                {
                     hasStream = true;
+                    audioData.startFadeInOut(2, true);
+                }
             }
             catch (IOException e)
             {

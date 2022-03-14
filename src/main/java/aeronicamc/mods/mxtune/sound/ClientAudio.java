@@ -379,7 +379,7 @@ public class ClientAudio
         AudioData audioData = playIDAudioData.get(playID);
         if (soundEngine != null && audioData != null  && seconds > 0)
         {
-            audioData.startFadeOut(seconds);
+            audioData.startFadeInOut(seconds, false);
         }
         else
             queueAudioDataRemoval(playID);

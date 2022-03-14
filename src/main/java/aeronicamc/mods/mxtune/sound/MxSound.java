@@ -49,6 +49,12 @@ public abstract class MxSound extends TickableSound
         onUpdate();
     }
 
+    @Override
+    public boolean canStartSilent()
+    {
+        return true;
+    }
+
     protected void onUpdate() { /* NOP */ }
 
     protected void setDonePlaying()
