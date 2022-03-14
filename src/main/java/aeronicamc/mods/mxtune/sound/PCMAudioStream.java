@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.sound;
 
 import net.minecraft.client.audio.IAudioStream;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.BufferUtils;
 
 import javax.annotation.Nullable;
@@ -12,11 +13,11 @@ import java.nio.ByteBuffer;
 
 public class PCMAudioStream implements IAudioStream
 {
-    private static final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(PCMAudioStream.class);
     private static final int SAMPLE_SIZE = 19200;
     private final AudioData audioData;
     private AudioInputStream audioInputStream = null;
-    private ByteBuffer zeroBuffer = BufferUtils.createByteBuffer(SAMPLE_SIZE);
+    private final ByteBuffer zeroBuffer = BufferUtils.createByteBuffer(SAMPLE_SIZE);
     private boolean hasStream = false;
     private int zeroBufferCount = 0;
 
