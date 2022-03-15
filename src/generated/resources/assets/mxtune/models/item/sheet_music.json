@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "mxtune:item/sheet_music_age50"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "mxtune:sheet_music_age": 0.0
+      },
+      "model": "mxtune:item/sheet_music_age0"
+    },
+    {
+      "predicate": {
+        "mxtune:sheet_music_age": 1.0
+      },
+      "model": "mxtune:item/sheet_music_age1"
+    },
+    {
+      "predicate": {
+        "mxtune:sheet_music_age": 20.0
+      },
+      "model": "mxtune:item/sheet_music_age20"
+    },
+    {
+      "predicate": {
+        "mxtune:sheet_music_age": 50.0
+      },
+      "model": "mxtune:item/sheet_music_age50"
+    }
+  ]
+}
