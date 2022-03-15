@@ -38,7 +38,7 @@ run
 run01
 run02
 run03
-src/generated
+src/generated/resources/\.cache/
 mcmodsrepo
 minecraft
 mc10_2

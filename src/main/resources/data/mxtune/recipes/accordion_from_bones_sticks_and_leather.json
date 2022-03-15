@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BBB",
+    "SLS",
+    "SSS"
+  ],
+  "key": {
+    "B": {
+      "tag": "forge:bones"
+    },
+    "S": {
+      "tag": "forge:rods/wooden"
+    },
+    "L": {
+      "tag": "forge:leather"
+    }
+  },
+  "result": {
+    "item": "mxtune:multi_inst"
+  }
+}
