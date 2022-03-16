@@ -194,7 +194,7 @@ public class ClientAudio
                 LOGGER.warn("ClientAudio#play: playID: {} has already been submitted", playID);
                 return;
             }
-            if (isClient || (mc.player != null && (mc.player.getId() == entityId)))
+            if (isClient || (mc.player != null && (mc.player.getId() == entityId)) && pos == null)
             {
                 // This CLIENT Player: The Player
                 mc.getSoundManager().play(new MusicClient(audioData));
