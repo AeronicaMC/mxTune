@@ -1,22 +1,21 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "BBB",
-    "SLS",
+    "LSL",
     "SSS"
   ],
   "key": {
-    "B": {
-      "tag": "forge:bones"
-    },
     "S": {
-      "tag": "forge:rods/wooden"
+      "item": "minecraft:sugar_cane"
     },
     "L": {
       "tag": "forge:leather"
     }
   },
   "result": {
-    "item": "mxtune:multi_inst"
+    "item": "mxtune:multi_inst",
+    "nbt": {
+      "MXTunePatch": 27
+    }
   }
 }

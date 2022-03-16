@@ -154,7 +154,7 @@
   "tooltip.mxtune.music_venue_tool_block.help_01": "WIP: Does nothing at this time :P",
   "tooltip.mxtune.music_venue_tool_item.shift_help_02": "Right Click two blocks to define an area",
   "tooltip.mxtune.music_venue_tool_item.shift_help_03": "SHIFT+Right Click block to Reset back to Start",
-  "tooltip.mxtune.music_venue_tool_item.shift_help_04": "Makes Pretty boxes. Useless at this point. Work-in-progress! You cannot edit or delete them at this point :P",
+  "tooltip.mxtune.music_venue_tool_item.shift_help_04": "Makes Pretty boxes. Useless at this point. Work-in-progress! You cannot edit or delete them!",
   "tooltip.mxtune.sheet_music.days_left": "Days left: %s",
   "tooltip.mxtune.sheet_music.days_left_error": "Days left: nn",
   "tooltip.mxtune.sheet_music.duration_error": "h:mm:ss",

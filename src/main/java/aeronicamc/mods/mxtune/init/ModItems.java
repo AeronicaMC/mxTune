@@ -98,7 +98,7 @@ public class ModItems
     {
         ItemStack stack = new ItemStack(MULTI_INST.get());
         ((IInstrument)stack.getItem()).setPatch(stack, index);
-        stack.setDamageValue(SoundFontProxyManager.getProxy(index).index);
+        stack.setDamageValue(SoundFontProxyManager.getProxy(index).index); // TODO: remove after next snapshot
         return stack;
     }
 }

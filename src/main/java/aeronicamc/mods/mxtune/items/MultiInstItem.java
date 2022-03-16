@@ -217,7 +217,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
     @Override
     public ITextComponent getName(ItemStack pStack)
     {
-        return new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(pStack.getDamageValue()));
+        return new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(((IInstrument)pStack.getItem()).getPatch(pStack)));
     }
 
     /**
