@@ -15,8 +15,7 @@
   "result": {
     "item": "mxtune:multi_inst",
     "nbt": {
-      "MXTunePatch": 27,
-      "Damage": 27
+      "MXTunePatch": 27
     }
   }
 }
