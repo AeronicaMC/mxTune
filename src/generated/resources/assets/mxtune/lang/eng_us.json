@@ -1,4 +1,5 @@
 {
+  "block.mxtune.music_venue_tool_block": "Music Venue Marker",
   "commands.mxtune.music.dump": "Wrote %s records",
   "commands.mxtune.music.load": "Read %s records",
   "config.mxtune.client.double_click_time_ms": "Double-click time in milliseconds for GUI widgets",
@@ -150,6 +151,10 @@
   "tooltip.mxtune.instrument_item.shift_help_02": "SHIFT+Right Click to OPEN",
   "tooltip.mxtune.instrument_item.shift_help_03": "Right Click to PLAY",
   "tooltip.mxtune.music_paper.help": "Right-Click to OPEN",
+  "tooltip.mxtune.music_venue_tool_block.help_01": "WIP: Does nothing at this time :P",
+  "tooltip.mxtune.music_venue_tool_item.shift_help_02": "Right Click two blocks to define an area",
+  "tooltip.mxtune.music_venue_tool_item.shift_help_03": "SHIFT+Right Click block to Reset back to Start",
+  "tooltip.mxtune.music_venue_tool_item.shift_help_04": "Makes Pretty boxes. Useless at this point. Work-in-progress! You cannot edit or delete them at this point :P",
   "tooltip.mxtune.sheet_music.days_left": "Days left: %s",
   "tooltip.mxtune.sheet_music.days_left_error": "Days left: nn",
   "tooltip.mxtune.sheet_music.duration_error": "h:mm:ss",

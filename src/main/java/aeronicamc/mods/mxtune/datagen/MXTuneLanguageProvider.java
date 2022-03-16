@@ -38,6 +38,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
     private void addBlocks()
     {
         // TODO
+        addBlock("music_venue_tool_block", "Music Venue Marker");
     }
 
     private void addItems()
@@ -57,6 +58,10 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addTooltip("instrument_item.shift_help_01", "Hold SHIFT for HELP");
         addTooltip("instrument_item.shift_help_02", "SHIFT+Right Click to OPEN");
         addTooltip("instrument_item.shift_help_03", "Right Click to PLAY");
+        addTooltip("music_venue_tool_item.shift_help_02", "Right Click two blocks to define an area");
+        addTooltip("music_venue_tool_item.shift_help_03", "SHIFT+Right Click block to Reset back to Start");
+        addTooltip("music_venue_tool_item.shift_help_04", "Makes Pretty boxes. Useless at this point. Work-in-progress! You cannot edit or delete them!");
+        addTooltip("music_venue_tool_block.help_01", "WIP: Does nothing at this time :P");
     }
 
     private void addInstrumentNames(LanguageProvider provider)
@@ -177,6 +182,16 @@ public class MXTuneLanguageProvider extends LanguageProvider
     private void addCommand(String identifier, String text)
     {
         add(String.format("commands.%s.%s", Reference.MOD_ID, identifier), text);
+    }
+
+    /**
+     * prepends block.[mod_id].
+     * @param identifier the unique block id
+     * @param text of the command
+     */
+    private void addBlock(String identifier, String text)
+    {
+        add(String.format("block.%s.%s", Reference.MOD_ID, identifier), text);
     }
 
     /**
