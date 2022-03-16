@@ -18,7 +18,6 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.*;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
@@ -85,30 +84,25 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
     /**
      * Get this stack's patch, or 0 if no patch is defined.
      */
+    @SuppressWarnings("all")
     @Override
     public int getPatch(ItemStack itemStack) {
-        CompoundNBT nbt = itemStack.getOrCreateTag();
-        int patch;
-        if (nbt.contains(PATCH, Constants.NBT.TAG_INT))
-        {
-            patch = nbt.getInt(PATCH);
-        }
-        else
-        {
-            // TODO: This would probably be a good place to set the default to flute_pan instead of using craft result w nbt
-            patch = itemStack.getDamageValue(); // TODO: remove after next snapshot
-            setPatch(itemStack, patch);
-        }
-        return patch;
+        // TODO: replace 'tempFix' with 0 or another default after next snapshot
+        return (itemStack.hasTag() && itemStack.getTag().contains(PATCH)) ? itemStack.getTag().getInt(PATCH) :  tempFix(itemStack);
+    }
+
+    // TODO: remove after next snapshot
+    private int tempFix(ItemStack itemStack)
+    {
+        itemStack.getOrCreateTag().putInt(PATCH, Math.max(0, itemStack.getDamageValue()));
+        return itemStack.getDamageValue();
     }
 
     @Override
     public void setPatch(ItemStack itemStack, int patch)
     {
-        CompoundNBT nbt = itemStack.getOrCreateTag();
-        nbt.putInt(PATCH, patch);
+        itemStack.getOrCreateTag().putInt(PATCH, Math.max(0, patch));
         itemStack.setDamageValue(patch); // TODO: remove after next snapshot
-        itemStack.setTag(nbt);
     }
 
     // Stop playing if active and the item is no longer selected.
