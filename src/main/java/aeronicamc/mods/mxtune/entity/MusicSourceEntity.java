@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.entity;
 
+import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.blocks.IMusicPlayer;
 import aeronicamc.mods.mxtune.init.ModEntities;
 import aeronicamc.mods.mxtune.managers.PlayManager;
@@ -13,6 +14,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.world.ForgeChunkManager;
 import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,6 +39,8 @@ public class MusicSourceEntity extends Entity
         this(level);
         this.source = source;
         this.setPos(source.getX() + 0.5, source.getY() + 0.5, source.getZ() + 0.5);
+        if (!level.isClientSide() && !ForgeChunkManager.hasForcedChunks((ServerWorld) level))
+            ForgeChunkManager.forceChunk((ServerWorld) level, Reference.MOD_ID, this, level.getChunk(source).getPos().x, level.getChunk(source).getPos().z, true, true);
     }
 
     @Override
