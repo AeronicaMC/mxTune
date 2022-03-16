@@ -39,7 +39,7 @@ public class MusicSourceEntity extends Entity
         this(level);
         this.source = source;
         this.setPos(source.getX() + 0.5, source.getY() + 0.5, source.getZ() + 0.5);
-        if (!level.isClientSide() && !ForgeChunkManager.hasForcedChunks((ServerWorld) level))
+        if (!level.isClientSide())
             ForgeChunkManager.forceChunk((ServerWorld) level, Reference.MOD_ID, this, level.getChunk(source).getPos().x, level.getChunk(source).getPos().z, true, true);
     }
 
@@ -72,11 +72,12 @@ public class MusicSourceEntity extends Entity
             boolean hasPlayId = PlayManager.hasActivePlayId(this);
             if (!this.isAlive() || this.level.isEmptyBlock(this.source) || !(this.level.getBlockState(this.source).getBlock() instanceof IMusicPlayer) || !hasPlayId)
             {
-                PlayManager.stopPlayingEntity(this);
                 LOGGER.debug("has playId: {}", hasPlayId);
                 LOGGER.debug("{} removed from world.", this.getId());
                 LOGGER.debug("{} @Block is Air: {}.", this.getId(), this.level.isEmptyBlock(this.source));
                 this.remove();
+                ForgeChunkManager.forceChunk((ServerWorld) level, Reference.MOD_ID, this, level.getChunk(source).getPos().x, level.getChunk(source).getPos().z, false, true);
+                PlayManager.stopPlayingEntity(this);
                 this.level.updateNeighbourForOutputSignal(blockPosition(), this.level.getBlockState(blockPosition()).getBlock());
             }
         }
