@@ -95,8 +95,9 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
         }
         else
         {
+            // TODO: This would probably be a good place to set the default to flute_pan instead of using craft result w nbt
             patch = itemStack.getDamageValue(); // TODO: remove after next snapshot
-            nbt.putInt(PATCH, patch);
+            setPatch(itemStack, patch);
         }
         return patch;
     }
