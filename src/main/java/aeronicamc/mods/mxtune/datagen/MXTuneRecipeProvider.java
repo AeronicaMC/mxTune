@@ -47,7 +47,7 @@ public class MXTuneRecipeProvider extends RecipeProvider
                     .pattern("SSS")
                     .define('S', Items.SUGAR_CANE)
                     .define('L', Tags.Items.LEATHER)
-                    .unlockedBy("has_sugarcane", has(Tags.Items.RODS_WOODEN))
+                    .unlockedBy("has_sugarcane", has(Items.SUGAR_CANE))
                     .unlockedBy("has_leather", has(Tags.Items.LEATHER))
                     .save(recipeConsumer, new ResourceLocation(Reference.MOD_ID, "flute_pan"));
         }
