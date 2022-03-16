@@ -44,7 +44,6 @@ public class AudioData
     private final LoggedTimer loggedTimer = new LoggedTimer();
     private final Minecraft mc = Minecraft.getInstance();
 
-    // TODO: Fadeout volume - Not fully implemented.
     private float volumeFade = 1F;
     private boolean fadeIn;
     private boolean isFading;

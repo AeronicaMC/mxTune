@@ -46,7 +46,6 @@ public class ChooseInstrumentMessage extends AbstractMessage<ChooseInstrumentMes
                 if (sPlayer != null && !sPlayer.getMainHandItem().isEmpty() && sPlayer.getMainHandItem().getItem() instanceof MultiInstItem)
                 {
                     ((IInstrument)sPlayer.getMainHandItem().getItem()).setPatch(sPlayer.getMainHandItem(), SoundFontProxyManager.getProxy(message.index).index);
-                    sPlayer.getMainHandItem().setDamageValue(SoundFontProxyManager.getProxy(message.index).index); // TODO: remove after next snapshot
                 }
             });
         ctx.get().setPacketHandled(true);

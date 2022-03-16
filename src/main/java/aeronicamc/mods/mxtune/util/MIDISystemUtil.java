@@ -193,13 +193,6 @@ public enum MIDISystemUtil
         instrumentCacheIndexToPackedPreset = packedPresetToInstrumentCacheIndex.inverse();
     }
 
-    /*
-     ** TODO: add in the optional transform using the soundfont proxy class SoundFontProxy.
-     ** Don't use raw javax.sound.midi.Instrument! Instead use the proxy class that will supply
-     ** additional data that will allow midi note transforms. This will allow shrinking the soundfont while
-     ** covering various MML/Game instrument variations.
-     */
-
     public static List<Instrument> getInstrumentCacheCopy() { return new ArrayList<>(instrumentCache); }
 
     public static int getPackedPresetFromInstrumentCacheIndex(int index)

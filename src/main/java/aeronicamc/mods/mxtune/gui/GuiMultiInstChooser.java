@@ -67,7 +67,6 @@ public class GuiMultiInstChooser extends Screen
     private void selectCallback(SoundFontList.Entry selected, Boolean doubleClicked)
     {
         getPlayer(Objects.requireNonNull(minecraft)).ifPresent(player->{
-            player.inventory.getSelected().setDamageValue(selected.getIndex()); // TODO: Remove after next snapshot
             ((IInstrument)player.inventory.getSelected().getItem()).setPatch(player.inventory.getSelected(), selected.getIndex());
             ((InstrumentScreen)parent).updateButton(selected.getIndex());
             PacketDispatcher.sendToServer(new ChooseInstrumentMessage(selected.getIndex()));

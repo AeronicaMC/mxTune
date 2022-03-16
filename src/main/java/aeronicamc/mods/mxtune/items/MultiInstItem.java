@@ -102,7 +102,6 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
     public void setPatch(ItemStack itemStack, int patch)
     {
         itemStack.getOrCreateTag().putInt(PATCH, Math.max(0, patch));
-        itemStack.setDamageValue(patch); // TODO: remove after next snapshot
     }
 
     // Stop playing if active and the item is no longer selected.
@@ -238,7 +237,6 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
     {
         return new StringTextComponent("-unused-");
     }
-
 
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable World pLevel, List<ITextComponent> pTooltip, ITooltipFlag pFlag)
