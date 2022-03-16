@@ -18,6 +18,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.*;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
@@ -85,8 +86,28 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
      * Get this stack's patch, or 0 if no patch is defined.
      */
     @Override
-    public int getPatch(ItemStack pStack) {
-        return pStack.getDamageValue();
+    public int getPatch(ItemStack itemStack) {
+        CompoundNBT nbt = itemStack.getOrCreateTag();
+        int patch;
+        if (nbt.contains(PATCH, Constants.NBT.TAG_INT))
+        {
+            patch = nbt.getInt(PATCH);
+        }
+        else
+        {
+            patch = itemStack.getDamageValue(); // TODO: remove after next snapshot
+            nbt.putInt(PATCH, patch);
+        }
+        return patch;
+    }
+
+    @Override
+    public void setPatch(ItemStack itemStack, int patch)
+    {
+        CompoundNBT nbt = itemStack.getOrCreateTag();
+        nbt.putInt(PATCH, patch);
+        itemStack.setDamageValue(patch); // TODO: remove after next snapshot
+        itemStack.setTag(nbt);
     }
 
     // Stop playing if active and the item is no longer selected.
@@ -155,7 +176,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
     @Override
     public String getDescriptionId(ItemStack pStack)
     {
-        return SoundFontProxyManager.getLangKeyName(pStack.getDamageValue());
+        return SoundFontProxyManager.getLangKeyName(((IInstrument)pStack.getItem()).getPatch(pStack));
     }
 
     @Override
@@ -209,7 +230,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
     @Override
     public ITextComponent getHighlightTip(ItemStack item, ITextComponent displayName)
     {
-        return new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(item.getDamageValue()));
+        return new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(((IInstrument)item.getItem()).getPatch(item)));
     }
 
     /**
@@ -250,5 +271,11 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         if (playerEntity.level == null) return null;
         return new InstrumentContainer(i, playerEntity.level, playerEntity.blockPosition(), playerInventory, playerEntity);
+    }
+
+    @Override
+    public boolean showDurabilityBar(ItemStack stack)
+    {
+        return false;
     }
 }

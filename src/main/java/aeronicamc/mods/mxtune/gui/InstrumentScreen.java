@@ -3,6 +3,7 @@ package aeronicamc.mods.mxtune.gui;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
 import aeronicamc.mods.mxtune.inventory.InstrumentContainer;
+import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -43,12 +44,12 @@ public class InstrumentScreen extends ContainerScreen<InstrumentContainer>
 
         buttonChangeInstrument.setLayout(xPos, yPos, imageWidth - 24, 20);
         this.addButton(buttonChangeInstrument);
-        updateButton(inventory.getSelected().getDamageValue());
+        updateButton(((IInstrument)inventory.getSelected().getItem()).getPatch(inventory.getSelected()));
     }
 
     int getInstrument()
     {
-        return inventory.getSelected().getDamageValue();
+        return ((IInstrument)inventory.getSelected().getItem()).getPatch(inventory.getSelected());
     }
 
     void updateButton(int selected)

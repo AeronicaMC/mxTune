@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.jei;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.init.ModItems;
+import aeronicamc.mods.mxtune.util.IInstrument;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.ISubtypeRegistration;
@@ -21,6 +22,6 @@ public class MxtuneJEIPlugin implements IModPlugin
     {
         registration.registerSubtypeInterpreter(
                 ModItems.MULTI_INST.get().getItem(),
-                (ingredient, context) -> Integer.toString(ingredient.getDamageValue()));
+                (ingredient, context) -> Integer.toString(((IInstrument)ingredient.getItem()).getPatch(ingredient)));
     }
 }

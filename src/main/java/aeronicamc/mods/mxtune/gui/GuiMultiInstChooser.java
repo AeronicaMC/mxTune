@@ -5,6 +5,7 @@ import aeronicamc.mods.mxtune.gui.widget.list.SoundFontList;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.ChooseInstrumentMessage;
+import aeronicamc.mods.mxtune.util.IInstrument;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -66,7 +67,8 @@ public class GuiMultiInstChooser extends Screen
     private void selectCallback(SoundFontList.Entry selected, Boolean doubleClicked)
     {
         getPlayer(Objects.requireNonNull(minecraft)).ifPresent(player->{
-            player.inventory.getSelected().setDamageValue(selected.getIndex());
+            player.inventory.getSelected().setDamageValue(selected.getIndex()); // TODO: Remove after next snapshot
+            ((IInstrument)player.inventory.getSelected().getItem()).setPatch(player.inventory.getSelected(), selected.getIndex());
             ((InstrumentScreen)parent).updateButton(selected.getIndex());
             PacketDispatcher.sendToServer(new ChooseInstrumentMessage(selected.getIndex()));
         });

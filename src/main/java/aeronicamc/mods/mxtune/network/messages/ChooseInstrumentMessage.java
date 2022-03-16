@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.network.messages;
 
 import aeronicamc.mods.mxtune.items.MultiInstItem;
+import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -44,7 +45,8 @@ public class ChooseInstrumentMessage extends AbstractMessage<ChooseInstrumentMes
                 ServerPlayerEntity sPlayer = ctx.get().getSender();
                 if (sPlayer != null && !sPlayer.getMainHandItem().isEmpty() && sPlayer.getMainHandItem().getItem() instanceof MultiInstItem)
                 {
-                    sPlayer.getMainHandItem().setDamageValue(SoundFontProxyManager.getProxy(message.index).index);
+                    ((IInstrument)sPlayer.getMainHandItem().getItem()).setPatch(sPlayer.getMainHandItem(), SoundFontProxyManager.getProxy(message.index).index);
+                    sPlayer.getMainHandItem().setDamageValue(SoundFontProxyManager.getProxy(message.index).index); // TODO: remove after next snapshot
                 }
             });
         ctx.get().setPacketHandled(true);

@@ -3,6 +3,7 @@ package aeronicamc.mods.mxtune.init;
 import aeronicamc.mods.mxtune.MXTune;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.items.*;
+import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -96,6 +97,7 @@ public class ModItems
     public static ItemStack getMultiInst(int index)
     {
         ItemStack stack = new ItemStack(MULTI_INST.get());
+        ((IInstrument)stack.getItem()).setPatch(stack, index);
         stack.setDamageValue(SoundFontProxyManager.getProxy(index).index);
         return stack;
     }
