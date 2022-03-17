@@ -86,14 +86,20 @@ public class ActiveTune
         }
     }
 
-    synchronized static void addEntry(int entityId, int playId, String mml, int durationSeconds)
+    static void addEntry(int entityId, int playId, String mml, int durationSeconds)
     {
-        playIdToActiveTuneEntry.putIfAbsent(playId, Entry.newEntry(entityId, playId, mml, durationSeconds));
+        synchronized (playIdToActiveTuneEntry)
+        {
+            playIdToActiveTuneEntry.putIfAbsent(playId, Entry.newEntry(entityId, playId, mml, durationSeconds));
+        }
     }
 
-    synchronized static void addEntry(BlockPos blockPos, int playId, String mml, int durationSeconds)
+    static void addEntry(BlockPos blockPos, int playId, String mml, int durationSeconds)
     {
-        playIdToActiveTuneEntry.putIfAbsent(playId, Entry.newEntry(blockPos, playId, mml, durationSeconds));
+        synchronized (playIdToActiveTuneEntry)
+        {
+            playIdToActiveTuneEntry.putIfAbsent(playId, Entry.newEntry(blockPos, playId, mml, durationSeconds));
+        }
     }
 
     synchronized static List<Entry> getActiveTuneEntries()
@@ -126,17 +132,24 @@ public class ActiveTune
         return Optional.ofNullable(result[0]);
     }
 
-    synchronized static void remove(int playId)
+    static void remove(int playId)
     {
-        if (!playIdToActiveTuneEntry.isEmpty())
-            playIdToActiveTuneEntry.remove(playId);
+        synchronized (playIdToActiveTuneEntry)
+        {
+            if (!playIdToActiveTuneEntry.isEmpty())
+                playIdToActiveTuneEntry.remove(playId);
+        }
     }
 
-    synchronized static void removeAll()
+    static void removeAll()
     {
-        playIdToActiveTuneEntry.clear();
-        while (!deleteEntryQueue.isEmpty()) {
-            deleteEntryQueue.remove();
+        synchronized (playIdToActiveTuneEntry)
+        {
+            playIdToActiveTuneEntry.clear();
+            while (!deleteEntryQueue.isEmpty())
+            {
+                deleteEntryQueue.remove();
+            }
         }
     }
 
@@ -165,7 +178,7 @@ public class ActiveTune
             this.blockPos = blockPos;
             this.playId = playId;
             this.musicText = musicText;
-            this.durationSeconds = durationSeconds;
+            this.durationSeconds = durationSeconds + 2;
         }
 
         static Entry newEntry(int entityId, int playId, String mml, int durationSeconds)
