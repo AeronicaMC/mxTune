@@ -1,13 +1,11 @@
 package aeronicamc.mods.mxtune.sound;
 
-import net.minecraft.util.SoundCategory;
-
 public class MusicClient extends MxSound
 {
 
     MusicClient(AudioData audioData)
     {
-        super(audioData, SoundCategory.MUSIC);
+        super(audioData);
         this.attenuation = AttenuationType.NONE;
     }
 

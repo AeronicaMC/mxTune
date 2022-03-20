@@ -1,7 +1,6 @@
 package aeronicamc.mods.mxtune.sound;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
@@ -16,7 +15,7 @@ public class MusicPositioned extends MxSound
 
     MusicPositioned(AudioData audioData)
     {
-        super(audioData, SoundCategory.RECORDS);
+        super(audioData);
         this.attenuation = AttenuationType.LINEAR;
         BlockPos blockPos = audioData.getBlockPos();
         if (blockPos != null)

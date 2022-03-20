@@ -2,7 +2,6 @@ package aeronicamc.mods.mxtune.sound;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import org.apache.logging.log4j.LogManager;
@@ -24,7 +23,7 @@ public class MovingMusic extends MxSound
      */
     public MovingMusic(AudioData audioData, Entity entity)
     {
-        super(audioData, SoundCategory.PLAYERS);
+        super(audioData);
         this.entity = entity;
         this.stopped = false;
         this.x = (float) entity.getX();

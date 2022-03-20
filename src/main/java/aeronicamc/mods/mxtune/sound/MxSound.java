@@ -14,6 +14,11 @@ public abstract class MxSound extends TickableSound
     private final SoundEventAccessor soundEventAccessor;
     private final Minecraft mc = Minecraft.getInstance();
 
+    public MxSound(AudioData audioData)
+    {
+        this(audioData, SoundCategory.RECORDS);
+    }
+
     public MxSound(AudioData audioData, SoundCategory categoryIn)
     {
         super(ModSoundEvents.PCM_PROXY.get(), categoryIn);
