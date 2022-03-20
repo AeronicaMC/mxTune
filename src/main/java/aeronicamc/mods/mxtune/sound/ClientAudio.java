@@ -238,7 +238,7 @@ public class ClientAudio
         return mc.options.getSoundSourceVolume(SoundCategory.MASTER) > 0F && mc.options.getSoundSourceVolume(SoundCategory.RECORDS) > 0F;
     }
 
-    public static void stop(int playID)
+    private static void stop(int playID)
     {
         if (PlayIdSupplier.INVALID == playID) return;
         AudioData audioData = playIDAudioData.get(playID);
