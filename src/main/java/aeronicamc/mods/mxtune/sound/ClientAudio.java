@@ -6,8 +6,10 @@ import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.*;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.PlayStreamingSourceEvent;
 import net.minecraftforge.client.event.sound.SoundLoadEvent;
@@ -183,42 +185,57 @@ public class ClientAudio
      */
     private static void play(int secondsToSkip, long netTransitTime, int playID, int entityId, @Nullable BlockPos pos, String musicText, boolean isClient, @Nullable IAudioStatusCallback callback)
     {
-        if(playID != PlayIdSupplier.INVALID)
+        if (recordVolumeOK())
         {
-            addPlayIDQueue(playID);
-            AudioData audioData = new AudioData(secondsToSkip, netTransitTime, playID, pos, isClient, callback);
-            setAudioFormat(audioData);
-            AudioData result = playIDAudioData.putIfAbsent(playID, audioData);
-            if (result != null)
+            if (playID != PlayIdSupplier.INVALID)
             {
-                LOGGER.warn("ClientAudio#play: playID: {} has already been submitted", playID);
-                return;
-            }
-            if (isClient || (mc.player != null && (mc.player.getId() == entityId)) && pos == null)
-            {
-                // This CLIENT Player: The Player
-                mc.getSoundManager().play(new MusicClient(audioData));
-            }
-            else if (pos == null) {
-                // Other players instruments
-                if ((mc.player != null) && (mc.player.level.getEntity(entityId) != null))
+                addPlayIDQueue(playID);
+                AudioData audioData = new AudioData(secondsToSkip, netTransitTime, playID, pos, isClient, callback);
+                setAudioFormat(audioData);
+                AudioData result = playIDAudioData.putIfAbsent(playID, audioData);
+                if (result != null)
                 {
-                    mc.getSoundManager().play(new MovingMusic(
-                            audioData,
-                            Objects.requireNonNull(mc.player.level.getEntity(entityId))));
+                    LOGGER.warn("ClientAudio#play: playID: {} has already been submitted", playID);
+                    return;
                 }
+                if (isClient || (mc.player != null && (mc.player.getId() == entityId)))
+                {
+                    // This CLIENT Player: The Player
+                    mc.getSoundManager().play(new MusicClient(audioData));
+                }
+                else if (pos == null)
+                {
+                    // Other players instruments
+                    if ((mc.player != null) && (mc.player.level.getEntity(entityId) != null))
+                    {
+                        mc.getSoundManager().play(new MovingMusic(
+                                audioData,
+                                Objects.requireNonNull(mc.player.level.getEntity(entityId))));
+                    }
+                }
+                else
+                {
+                    // Placed Musical Machines. e.g. Record Player, etc.
+                    mc.getSoundManager().play(new MusicPositioned(audioData));
+                }
+                executorService.execute(new ThreadedPlay(audioData, musicText));
+                stopVanillaMusic();
             }
             else
             {
-                // Placed Musical Machines. e.g. Record Player, etc.
-                mc.getSoundManager().play(new MusicPositioned(audioData));
+                LOGGER.warn("ClientAudio#play(Integer playID, BlockPos pos, String musicText): playID is null!");
             }
-            executorService.execute(new ThreadedPlay(audioData, musicText));
-            stopVanillaMusic();
-        } else
-        {
-            LOGGER.warn("ClientAudio#play(Integer playID, BlockPos pos, String musicText): playID is null!");
         }
+        else
+        {
+            if (mc.player != null)
+                mc.player.sendMessage(new StringTextComponent("Record and/or Master volume(s) are off."), mc.player.getUUID());
+        }
+    }
+
+    public static boolean recordVolumeOK()
+    {
+        return mc.options.getSoundSourceVolume(SoundCategory.MASTER) > 0F && mc.options.getSoundSourceVolume(SoundCategory.RECORDS) > 0F;
     }
 
     public static void stop(int playID)
