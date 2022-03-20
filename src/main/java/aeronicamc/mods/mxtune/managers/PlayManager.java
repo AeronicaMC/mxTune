@@ -175,7 +175,6 @@ public final class PlayManager
     {
         synchronized (THREAD_SYNC)
         {
-            ActiveTune.remove(playId);
             removeActivePlayId(playId);
             PacketDispatcher.sendToAll(new StopPlayIdMessage(playId));
         }
@@ -239,7 +238,7 @@ public final class PlayManager
 
     private static void removeActivePlayId(int playId)
     {
-        if ((playId != INVALID) && !ActiveTune.isEmpty())
+        if ((playId != INVALID))
         {
             entityIdToPlayId.remove(playIdToEntityId.get(playId));
             playIdToEntityId.remove(playId);
