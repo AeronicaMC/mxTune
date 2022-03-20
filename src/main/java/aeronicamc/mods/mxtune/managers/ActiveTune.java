@@ -30,14 +30,6 @@ public class ActiveTune
 
     private ActiveTune() { /* NOP */ }
 
-    public static void shutdown()
-    {
-        isInitialized = false;
-        executor.shutdown();
-        scheduledThreadPool.shutdown();
-        LOGGER2.debug("ActiveTune Shutdown.");
-    }
-
     public static void initialize()
     {
         if (!isInitialized)

@@ -129,7 +129,6 @@ public class MXTune
 
     @SubscribeEvent
     public void event(FMLServerStoppingEvent event) {
-        ActiveTune.shutdown();
         PlayManager.stopAll();
         ModDataStore.shutdown();
         MultiPacketSerializedObjectManager.shutdown();
