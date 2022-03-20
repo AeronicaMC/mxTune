@@ -29,6 +29,9 @@ apply plugin: 'org.spongepowered.mixin'
 
 repositories {
     maven {
+        url = 'https://files.minecraftforge.net/maven'
+    }
+    maven {
         url 'https://oss.sonatype.org/content/repositories/snapshots'
     }
     maven {
@@ -39,7 +42,11 @@ repositories {
     maven {
         // location of a maven mirror for JEI files, as a fallback
         name = "ModMaven"
-        url = "https://modmaven.dev"
+        url = "https://modmaven.k-4u.nl"
+    }
+	    maven {
+        name = "Modmaven"
+        url = "https://modmaven.dev/"
     }
     maven {
         url 'https://www.cursemaven.com'
