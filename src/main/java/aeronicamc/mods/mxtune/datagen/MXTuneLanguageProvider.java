@@ -27,6 +27,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiTexts();
         addItems();
         addSubtitles();
+        addMessages();
     }
 
     @Override
@@ -147,6 +148,11 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addError("mml_server_side_validation_failure", "Server side music validation error");
     }
 
+    private void addMessages()
+    {
+        addMessage("master_record_sound_off","mxTune Music Plays: Records and/or Master volume(s) are off." );
+    }
+
     private void addSubtitles()
     {
         addSubtitle("pcm-proxy", "Music Plays");
@@ -223,6 +229,16 @@ public class MXTuneLanguageProvider extends LanguageProvider
     private void addError(String identifier, String text)
     {
         add(String.format("errors.%s.%s", Reference.MOD_ID, identifier), text);
+    }
+
+    /**
+     * prepends message.[mod_id].
+     * @param identifier the unique error id
+     * @param text of the error
+     */
+    private void addMessage(String identifier, String text)
+    {
+        add(String.format("message.%s.%s", Reference.MOD_ID, identifier), text);
     }
 
     /**

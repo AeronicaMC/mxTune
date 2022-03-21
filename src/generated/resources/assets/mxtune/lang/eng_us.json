@@ -143,6 +143,7 @@
   "item.mxtune.whistle_tuned_mabinogi": "Whistle Tuned (Mabi)",
   "item.mxtune.xylophone": "Xylophone",
   "itemGroup.mxtune": "mxTune",
+  "message.mxtune.master_record_sound_off": "mxTune Music Plays: Records and/or Master volume(s) are off.",
   "subtitle.mxtune.crumple_paper": "Crumple Paper",
   "subtitle.mxtune.failure": "Oops",
   "subtitle.mxtune.pcm-proxy": "Music Plays",

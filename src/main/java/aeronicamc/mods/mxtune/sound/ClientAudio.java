@@ -9,7 +9,8 @@ import net.minecraft.client.audio.*;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.PlayStreamingSourceEvent;
 import net.minecraftforge.client.event.sound.SoundLoadEvent;
@@ -32,6 +33,7 @@ public class ClientAudio
     private static SoundEngine soundEngine;
     private static SoundHandler soundHandler;
     private static MusicTicker musicTicker;
+    private static int soundOffCount;
     private static int counter;
     private static final Queue<Integer> delayedAudioDataRemovalQueue = new ConcurrentLinkedDeque<>();
 
@@ -48,6 +50,8 @@ public class ClientAudio
     private static ThreadFactory threadFactory = null;
 
     private static boolean vanillaMusicPaused = false;
+
+    static final ITextComponent MESSAGE_MASTER_RECORD_SOUND_OFF = new TranslationTextComponent("message.mxtune.master_record_sound_off");
 
     private ClientAudio() { /* NOP */ }
 
@@ -189,6 +193,7 @@ public class ClientAudio
         {
             if (playID != PlayIdSupplier.INVALID)
             {
+                soundOffCount = 0;
                 addPlayIDQueue(playID);
                 AudioData audioData = new AudioData(secondsToSkip, netTransitTime, playID, pos, isClient, callback);
                 setAudioFormat(audioData);
@@ -228,8 +233,9 @@ public class ClientAudio
         }
         else
         {
-            if (mc.player != null)
-                mc.player.sendMessage(new StringTextComponent("Record and/or Master volume(s) are off."), mc.player.getUUID());
+            // Let the player know that the Master and/or Record volumes are off
+            if (mc.player != null && soundOffCount++ < 3)
+                mc.player.sendMessage(MESSAGE_MASTER_RECORD_SOUND_OFF, mc.player.getUUID());
         }
     }
 
