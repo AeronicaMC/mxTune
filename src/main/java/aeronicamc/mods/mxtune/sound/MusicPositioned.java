@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.sound;
 
+import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -37,7 +38,7 @@ public class MusicPositioned extends MxSound
         {
             Vector3d thePlayerVec3d = new Vector3d(mc.player.getX(), mc.player.getY(), mc.player.getZ());
             float distance = (float) thePlayerVec3d.distanceTo(new Vector3d(this.x, this.y, this.z));
-            this.volume = (1.0F - MathHelper.clamp(distance / 32.0F, 0.0F, 1.0F)) * audioData.getFadeMultiplier();
+            this.volume = (1.0F - MathHelper.clamp(distance / MXTuneConfig.getListenerRange(), 0.0F, 1.0F)) * audioData.getFadeMultiplier();
             if ((counter++ % 20 == 0) && (distance != lastDistance))
             {
                 this.lastDistance = distance;
