@@ -7,6 +7,8 @@ import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.audio.TickableSound;
 import net.minecraft.util.SoundCategory;
 
+import java.util.Optional;
+
 public abstract class MxSound extends TickableSound
 {
     protected int playID;
@@ -37,6 +39,11 @@ public abstract class MxSound extends TickableSound
         this.soundEventAccessor = new SoundEventAccessor(this.sound.getLocation(), "subtitle.mxtune.pcm-proxy");
     }
 
+    Optional<AudioData> getAudioData()
+    {
+        return Optional.ofNullable(audioData);
+    }
+
     @Override
     public SoundEventAccessor resolve(SoundHandler handler)
     {
@@ -46,11 +53,10 @@ public abstract class MxSound extends TickableSound
     @Override
     public void tick()
     {
-        if (audioData != null)
-        {
+        getAudioData().ifPresent(audioData -> {
             audioData.updateVolumeFade();
             volume = volume * audioData.getFadeMultiplier();
-        }
+        });
         onUpdate();
     }
 

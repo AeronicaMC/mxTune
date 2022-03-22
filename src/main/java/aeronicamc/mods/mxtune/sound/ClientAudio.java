@@ -41,7 +41,7 @@ public class ClientAudio
     /* PCM Signed Stereo little endian */
     private static final AudioFormat audioFormatStereo = new AudioFormat(48000, 16, 2, true, false);
     /* Used to track which player/groups queued up music to be played by PlayID */
-    private static final Queue<Integer> playIDQueue01 = new ConcurrentLinkedQueue<>(); // Polled in initializeCodec
+    //private static final Queue<Integer> playIDQueue01 = new ConcurrentLinkedQueue<>(); // Polled in initializeCodec
     private static final Map<Integer, AudioData> playIDAudioData = new ConcurrentHashMap<>();
 
     private static ExecutorService executorService = null;
@@ -86,20 +86,20 @@ public class ClientAudio
         WAITING, READY, ERROR, DONE
     }
 
-    private static synchronized void addPlayIDQueue(int playID)
-    {
-        playIDQueue01.add(playID);
-    }
-
-    private static int pollPlayIDQueue01()
-    {
-        return playIDQueue01.peek() == null ? PlayIdSupplier.INVALID : playIDQueue01.poll();
-    }
-
-    private static int peekPlayIDQueue01()
-    {
-        return playIDQueue01.peek() == null ? PlayIdSupplier.INVALID : playIDQueue01.peek();
-    }
+//    private static synchronized void addPlayIDQueue(int playID)
+//    {
+//        playIDQueue01.add(playID);
+//    }
+//
+//    private static int pollPlayIDQueue01()
+//    {
+//        return playIDQueue01.peek() == null ? PlayIdSupplier.INVALID : playIDQueue01.poll();
+//    }
+//
+//    private static int peekPlayIDQueue01()
+//    {
+//        return playIDQueue01.peek() == null ? PlayIdSupplier.INVALID : playIDQueue01.peek();
+//    }
 
     private static Optional<AudioData> getAudioData(int playID)
     {
@@ -188,7 +188,7 @@ public class ClientAudio
         if (playID != PlayIdSupplier.INVALID)
         {
             soundOffCount = 0;
-            addPlayIDQueue(playID);
+//            addPlayIDQueue(playID);
             AudioData audioData = new AudioData(secondsToSkip, netTransitTime, playID, pos, isClient, callback);
             setAudioFormat(audioData);
             AudioData result = playIDAudioData.putIfAbsent(playID, audioData);
@@ -217,8 +217,11 @@ public class ClientAudio
                 // Placed Musical Machines. e.g. Record Player, etc.
                 mc.getSoundManager().play(new MusicPositioned(audioData));
             }
-            executorService.execute(new ThreadedPlay(audioData, musicText));
-            stopVanillaMusic();
+            if (recordsVolumeOn())
+            {
+                executorService.execute(new ThreadedPlay(audioData, musicText));
+                stopVanillaMusic();
+            }
         }
         else
         {
@@ -261,7 +264,7 @@ public class ClientAudio
     private static void cleanup()
     {
         playIDAudioData.keySet().forEach(ClientAudio::queueAudioDataRemoval);
-        playIDQueue01.clear();
+//        playIDQueue01.clear();
     }
 
     // SoundEngine
@@ -304,9 +307,11 @@ public class ClientAudio
 
     public static void submitStream(ISound pISound, boolean isStream, @Nullable ChannelManager.Entry entry)
     {
-        if (soundEngine != null && soundHandler != null && peekPlayIDQueue01() != PlayIdSupplier.INVALID && isStream)
+        if (soundEngine != null && soundHandler != null && isStream /* && peekPlayIDQueue01() != PlayIdSupplier.INVALID */ )
         {
-            getAudioData(pollPlayIDQueue01()).filter(audioData -> audioData.getISound() == pISound).ifPresent(audioData ->
+//            pollPlayIDQueue01();
+            //getAudioData(pollPlayIDQueue01()).filter(audioData -> audioData.getISound() == pISound).ifPresent(audioData ->
+            if (pISound instanceof MxSound) ((MxSound)pISound).getAudioData().ifPresent( audioData ->
             {
                 LOGGER.info("submitStream {}", pISound);
                 if (entry != null)
