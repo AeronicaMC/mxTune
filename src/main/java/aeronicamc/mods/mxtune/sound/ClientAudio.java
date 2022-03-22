@@ -311,7 +311,7 @@ public class ClientAudio
         {
 //            pollPlayIDQueue01();
             //getAudioData(pollPlayIDQueue01()).filter(audioData -> audioData.getISound() == pISound).ifPresent(audioData ->
-            if (pISound instanceof MxSound) ((MxSound)pISound).getAudioData().ifPresent( audioData ->
+            if (pISound instanceof MxSound) ((MxSound)pISound).getAudioData().filter(audioData -> audioData.getISound() == pISound).ifPresent( audioData ->
             {
                 LOGGER.info("submitStream {}", pISound);
                 if (entry != null)
