@@ -9,8 +9,6 @@ import net.minecraft.client.audio.*;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.PlayStreamingSourceEvent;
 import net.minecraftforge.client.event.sound.SoundLoadEvent;
@@ -50,8 +48,6 @@ public class ClientAudio
     private static ThreadFactory threadFactory = null;
 
     private static boolean vanillaMusicPaused = false;
-
-    static final ITextComponent MESSAGE_MASTER_RECORD_SOUND_OFF = new TranslationTextComponent("message.mxtune.master_record_sound_off");
 
     private ClientAudio() { /* NOP */ }
 
@@ -189,57 +185,48 @@ public class ClientAudio
      */
     private static void play(int secondsToSkip, long netTransitTime, int playID, int entityId, @Nullable BlockPos pos, String musicText, boolean isClient, @Nullable IAudioStatusCallback callback)
     {
-        if (recordVolumeOK())
+        if (playID != PlayIdSupplier.INVALID)
         {
-            if (playID != PlayIdSupplier.INVALID)
+            soundOffCount = 0;
+            addPlayIDQueue(playID);
+            AudioData audioData = new AudioData(secondsToSkip, netTransitTime, playID, pos, isClient, callback);
+            setAudioFormat(audioData);
+            AudioData result = playIDAudioData.putIfAbsent(playID, audioData);
+            if (result != null)
             {
-                soundOffCount = 0;
-                addPlayIDQueue(playID);
-                AudioData audioData = new AudioData(secondsToSkip, netTransitTime, playID, pos, isClient, callback);
-                setAudioFormat(audioData);
-                AudioData result = playIDAudioData.putIfAbsent(playID, audioData);
-                if (result != null)
+                LOGGER.warn("ClientAudio#play: playID: {} has already been submitted", playID);
+                return;
+            }
+            if (isClient || (mc.player != null && (mc.player.getId() == entityId)))
+            {
+                // This CLIENT Player: The Player
+                mc.getSoundManager().play(new MusicClient(audioData));
+            }
+            else if (pos == null)
+            {
+                // Other players instruments
+                if ((mc.player != null) && (mc.player.level.getEntity(entityId) != null))
                 {
-                    LOGGER.warn("ClientAudio#play: playID: {} has already been submitted", playID);
-                    return;
+                    mc.getSoundManager().play(new MovingMusic(
+                            audioData,
+                            Objects.requireNonNull(mc.player.level.getEntity(entityId))));
                 }
-                if (isClient || (mc.player != null && (mc.player.getId() == entityId)))
-                {
-                    // This CLIENT Player: The Player
-                    mc.getSoundManager().play(new MusicClient(audioData));
-                }
-                else if (pos == null)
-                {
-                    // Other players instruments
-                    if ((mc.player != null) && (mc.player.level.getEntity(entityId) != null))
-                    {
-                        mc.getSoundManager().play(new MovingMusic(
-                                audioData,
-                                Objects.requireNonNull(mc.player.level.getEntity(entityId))));
-                    }
-                }
-                else
-                {
-                    // Placed Musical Machines. e.g. Record Player, etc.
-                    mc.getSoundManager().play(new MusicPositioned(audioData));
-                }
-                executorService.execute(new ThreadedPlay(audioData, musicText));
-                stopVanillaMusic();
             }
             else
             {
-                LOGGER.warn("ClientAudio#play(Integer playID, BlockPos pos, String musicText): playID is null!");
+                // Placed Musical Machines. e.g. Record Player, etc.
+                mc.getSoundManager().play(new MusicPositioned(audioData));
             }
+            executorService.execute(new ThreadedPlay(audioData, musicText));
+            stopVanillaMusic();
         }
         else
         {
-            // Let the player know that the Master and/or Record volumes are off
-            if (mc.player != null && soundOffCount++ < 3)
-                mc.player.sendMessage(MESSAGE_MASTER_RECORD_SOUND_OFF, mc.player.getUUID());
+            LOGGER.warn("ClientAudio#play(Integer playID, BlockPos pos, String musicText): playID is null!");
         }
     }
 
-    public static boolean recordVolumeOK()
+    public static boolean recordsVolumeOn()
     {
         return mc.options.getSoundSourceVolume(SoundCategory.MASTER) > 0F && mc.options.getSoundSourceVolume(SoundCategory.RECORDS) > 0F;
     }
@@ -363,15 +350,16 @@ public class ClientAudio
     {
         if (soundEngine != null)
         {
-            if(isVanillaMusicPaused() && playIDAudioData.isEmpty() )
-            {
-                resumeVanillaMusic();
-                setVanillaMusicPaused(false);
-            } else if (!playIDAudioData.isEmpty())
-            {
-                // don't allow the timer to counter down while ClientAudio sessions are playing
-                setVanillaMusicTimer(Integer.MAX_VALUE);
-            }
+            if (recordsVolumeOn())
+                if(isVanillaMusicPaused() && playIDAudioData.isEmpty() )
+                {
+                    resumeVanillaMusic();
+                    setVanillaMusicPaused(false);
+                } else if (!playIDAudioData.isEmpty())
+                {
+                    // don't allow the timer to counter down while ClientAudio sessions are playing
+                    setVanillaMusicTimer(Integer.MAX_VALUE);
+                }
             // Remove inactive playIDs
             removeQueuedAudioData();
             for (Map.Entry<Integer, AudioData> entry : playIDAudioData.entrySet())

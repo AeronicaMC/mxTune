@@ -150,6 +150,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
 
     private void addMessages()
     {
+        /* unused */
         addMessage("master_record_sound_off","mxTune Music Plays: Records and/or Master volume(s) are off." );
     }
 
