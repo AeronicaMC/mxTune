@@ -46,6 +46,7 @@ public class MusicPositioned extends MxSound
         } else
         {
             setDonePlaying();
+            ClientAudio.queueAudioDataRemoval(playID);
             LOGGER.debug("MusicPositioned playID {} done", playID);
         }
     }
