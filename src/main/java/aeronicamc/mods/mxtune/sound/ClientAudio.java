@@ -3,6 +3,7 @@ package aeronicamc.mods.mxtune.sound;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
+import aeronicamc.mods.mxtune.mixins.MixinSoundEngine;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.*;
@@ -40,8 +41,8 @@ public class ClientAudio
     private static final AudioFormat audioFormat3D = new AudioFormat(48000, 16, 1, true, false);
     /* PCM Signed Stereo little endian */
     private static final AudioFormat audioFormatStereo = new AudioFormat(48000, 16, 2, true, false);
-    /* Used to track which player/groups queued up music to be played by PlayID */
-    //private static final Queue<Integer> playIDQueue01 = new ConcurrentLinkedQueue<>(); // Polled in initializeCodec
+
+    /* The active mxTune audio streams by playId */
     private static final Map<Integer, AudioData> playIDAudioData = new ConcurrentHashMap<>();
 
     private static ExecutorService executorService = null;
@@ -85,21 +86,6 @@ public class ClientAudio
     {
         WAITING, READY, ERROR, DONE
     }
-
-//    private static synchronized void addPlayIDQueue(int playID)
-//    {
-//        playIDQueue01.add(playID);
-//    }
-//
-//    private static int pollPlayIDQueue01()
-//    {
-//        return playIDQueue01.peek() == null ? PlayIdSupplier.INVALID : playIDQueue01.poll();
-//    }
-//
-//    private static int peekPlayIDQueue01()
-//    {
-//        return playIDQueue01.peek() == null ? PlayIdSupplier.INVALID : playIDQueue01.peek();
-//    }
 
     private static Optional<AudioData> getAudioData(int playID)
     {
@@ -188,7 +174,6 @@ public class ClientAudio
         if (playID != PlayIdSupplier.INVALID)
         {
             soundOffCount = 0;
-//            addPlayIDQueue(playID);
             AudioData audioData = new AudioData(secondsToSkip, netTransitTime, playID, pos, isClient, callback);
             setAudioFormat(audioData);
             AudioData result = playIDAudioData.putIfAbsent(playID, audioData);
@@ -305,14 +290,21 @@ public class ClientAudio
         return CompletableFuture.supplyAsync(() -> new PCMAudioStream(audioData), Util.backgroundExecutor());
     }
 
+    /**
+     * Called by the {@link MixinSoundEngine} class. The injection point is between the point where the
+     * {@link ChannelManager.Entry} set and the {@link IAudioStream} based codec are initialized. It is at this
+     * point we can add our own audio stream using our custom codec.
+     * @param pISound   The current {@link ISound}
+     * @param isStream  True if the ISound is a stream
+     * @param entry     The channel entry associated with this ISound.
+     */
     public static void submitStream(ISound pISound, boolean isStream, @Nullable ChannelManager.Entry entry)
     {
-        if (soundEngine != null && soundHandler != null && isStream /* && peekPlayIDQueue01() != PlayIdSupplier.INVALID */ )
+        if (soundEngine != null && soundHandler != null && isStream)
         {
-//            pollPlayIDQueue01();
-            //getAudioData(pollPlayIDQueue01()).filter(audioData -> audioData.getISound() == pISound).ifPresent(audioData ->
             if (pISound instanceof MxSound) ((MxSound)pISound).getAudioData().filter(audioData -> audioData.getISound() == pISound).ifPresent( audioData ->
             {
+                int playId = audioData.getPlayId();
                 LOGGER.info("submitStream {}", pISound);
                 if (entry != null)
                 {
@@ -321,25 +313,14 @@ public class ClientAudio
                              soundSource.attachBufferStream(iAudioStream);
                              soundSource.play();
                          }));
-                    int playId = audioData.getPlayId();
                     LOGGER.debug("initializeCodec: playId: {}, ISound: {}", playId, pISound.getLocation());
                 }
                 else
                 {
-                    int playId = audioData.getPlayId();
                     playIDAudioData.remove(playId);
-                    LOGGER.debug("initializeCodec: failed - playIDQueue01: {}", playId);
+                    LOGGER.debug("initializeCodec: failed - playId: {}", playId);
                 }
             });
-        }
-    }
-
-    @Nullable
-    private static ChannelManager.Entry getChannelManagerEntry(ISound iSound)
-    {
-        synchronized (soundEngine.instanceToChannel)
-        {
-            return soundEngine.instanceToChannel.get(iSound);
         }
     }
 
@@ -373,11 +354,6 @@ public class ClientAudio
                 Status status = audioData.getStatus();
                 if (status == Status.ERROR || status == Status.DONE || !channelHasISound(audioData.getISound()))
                 {
-                    // Stopping playing audio takes 100 milliseconds. e.g. SoundSystem fadeOut(<source>, <delay in ms>)
-                    // To prevent audio clicks/pops we have the wait at least that amount of time
-                    // before removing the AudioData instance for this playID.
-                    // Therefore the removal is queued for 250 milliseconds.
-                    // e.g. the client tick setup to trigger once every 1/4 second.
                     queueAudioDataRemoval(entry.getKey());
                     LOGGER.debug("updateClientAudio: AudioData for playID {} queued for removal", entry.getKey());
                 }
