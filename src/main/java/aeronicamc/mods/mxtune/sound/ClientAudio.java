@@ -77,6 +77,7 @@ public class ClientAudio
         {
             soundEngine = se;
             soundHandler = soundEngine.soundManager;
+            LOGGER.info("Starting mxTune ClientAudio System");
         }
         if (musicTicker == null)
             musicTicker = mc.getMusicManager();
@@ -249,7 +250,6 @@ public class ClientAudio
     private static void cleanup()
     {
         playIDAudioData.keySet().forEach(ClientAudio::queueAudioDataRemoval);
-//        playIDQueue01.clear();
     }
 
     // SoundEngine
@@ -442,7 +442,7 @@ public class ClientAudio
     }
 
     @SubscribeEvent
-    public static void event(SoundLoadEvent event) // only called on sound reload. i.e. key-press F3+T
+    public static void event(SoundLoadEvent event) // called in SoundEngine CTOR and reload. i.e. key-press F3+T
     {
         cleanup();
         init(event.getManager());
@@ -452,8 +452,7 @@ public class ClientAudio
     @SubscribeEvent
     public static void event(PlaySoundEvent event)
     {
-        // Gets called often so pretty much guarantees ClientAudio will get initialized.
-        init(event.getManager());
+        // NOP
     }
 
     @SubscribeEvent
