@@ -452,7 +452,8 @@ public class ClientAudio
     @SubscribeEvent
     public static void event(PlaySoundEvent event)
     {
-        // NOP
+        // Gets called often and guarantees that ClientAudio will get initialized.
+        init(event.getManager());
     }
 
     @SubscribeEvent
