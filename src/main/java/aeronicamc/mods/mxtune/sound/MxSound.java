@@ -12,9 +12,12 @@ import java.util.Optional;
 public abstract class MxSound extends TickableSound
 {
     protected int playID;
+    // volumeBase: A volume multiplicand that severs as static or calculated base volume.
+    // Inheriting classes can use this to add volume at a distance effects, etc.
+    protected float volumeBase;
     protected AudioData audioData;
     private final SoundEventAccessor soundEventAccessor;
-    private final Minecraft mc = Minecraft.getInstance();
+    protected final Minecraft mc = Minecraft.getInstance();
 
     public MxSound(AudioData audioData)
     {
@@ -26,6 +29,7 @@ public abstract class MxSound extends TickableSound
         super(ModSoundEvents.PCM_PROXY.get(), categoryIn);
         this.audioData = audioData;
         this.playID = audioData.getPlayId();
+        this.volumeBase = 1F;
         this.audioData.setISound(this);
         this.sound = new PCMSound();
         this.volume = 1F;
@@ -53,11 +57,11 @@ public abstract class MxSound extends TickableSound
     @Override
     public void tick()
     {
+        onUpdate();
         getAudioData().ifPresent(audioData -> {
             audioData.updateVolumeFade();
-            volume = volume * audioData.getFadeMultiplier();
+            volume = volumeBase * audioData.getFadeMultiplier();
         });
-        onUpdate();
     }
 
     @Override

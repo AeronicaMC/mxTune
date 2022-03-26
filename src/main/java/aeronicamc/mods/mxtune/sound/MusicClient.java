@@ -16,8 +16,8 @@ public class MusicClient extends MxSound
     }
 
     @Override
-    protected void onUpdate()
+    public void onUpdate()
     {
-        volume = 1.0F * audioData.getFadeMultiplier();
+        // NOP
     }
 }
