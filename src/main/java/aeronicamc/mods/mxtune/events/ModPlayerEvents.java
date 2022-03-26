@@ -58,6 +58,7 @@ public class ModPlayerEvents
     public static void event(final PlayerEvent.PlayerChangedDimensionEvent event)
     {
         capabilitySynchronize(event.getEntityLiving());
+        PlayManager.sendMusicTo((ServerPlayerEntity) event.getPlayer(), event.getPlayer());
         LOGGER.debug("PlayerChangedDimensionEvent: {}", event.getPlayer());
     }
 

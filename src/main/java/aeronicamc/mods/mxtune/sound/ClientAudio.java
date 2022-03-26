@@ -178,7 +178,7 @@ public class ClientAudio
             AudioData audioData = new AudioData(secondsToSkip, netTransitTime, playID, pos, isClient, callback);
             setAudioFormat(audioData);
             AudioData result = playIDAudioData.putIfAbsent(playID, audioData);
-            if (result != null)
+            if (result != null && mc.player != null && isClient && entityId == mc.player.getId())
             {
                 LOGGER.warn("ClientAudio#play: playID: {} has already been submitted", playID);
                 return;
