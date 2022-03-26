@@ -100,8 +100,13 @@ public class Midi2WavRenderer implements Receiver
         try
         {
             long justSkipped;
-            while (bytesToSkip > 0 && (justSkipped = outputStream.skip(bytesToSkip)) > 0)
+            // TODO: Skipping takes time and depends on blocking waits for data to be available.
+            // TODO: The outputStream.skip(bytesToSkip) pause time could be roughly calculated ahead of time and added to
+            // TODO: secondsToSkip to prevent the termination of a tune before it's ended.
+            // -shrugs shoulders- NIO is a PIA
+            while ((bytesToSkip > 0) && (((justSkipped = outputStream.skip(bytesToSkip))) > 0) && (len > secondsToSkip))
             {
+                LOGGER.debug("tl:{} sk:{} sb:{} bk:{} jk:{}", total, secondsToSkip, savedBytesToSkip, bytesToSkip, justSkipped);
                 bytesToSkip -= justSkipped;
             }
             LOGGER.debug("Skipped {} seconds or {} bytes.", secondsToSkip, savedBytesToSkip);
