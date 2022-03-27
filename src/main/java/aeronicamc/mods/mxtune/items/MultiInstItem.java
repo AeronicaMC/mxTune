@@ -23,9 +23,11 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -65,6 +67,16 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
             }
         }
         return ActionResult.pass(pPlayer.getItemInHand(pHand));
+    }
+
+    /**
+     * Should this item, when held, allow sneak-clicks to pass through to the
+     * underlying block?
+     */
+    @Override
+    public boolean doesSneakBypassUse(ItemStack stack, IWorldReader world, BlockPos pos, PlayerEntity player)
+    {
+        return true;
     }
 
     /**
@@ -108,9 +120,9 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
     @Override
     public void inventoryTick(ItemStack pStack, World pLevel, Entity pEntity, int pItemSlot, boolean pIsSelected)
     {
+        int playId = getPlayId(pStack);
         if (!pLevel.isClientSide())
         {
-            int playId = getPlayId(pStack);
             if (!pIsSelected && PlayManager.isActivePlayId(playId))
             {
                 PlayManager.stopPlayId(playId);
