@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.blocks;
 
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.managers.PlayManager;
+import aeronicamc.mods.mxtune.sound.ClientAudio;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
@@ -11,6 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -40,7 +42,25 @@ public class MusicBlock extends Block implements IMusicPlayer
     @Override
     public void animateTick(BlockState pState, World pLevel, BlockPos pPos, Random pRand)
     {
-        super.animateTick(pState, pLevel, pPos, pRand);
+        double d0 = (double)pPos.getX() + 0.5D;
+        double d1 = (double)pPos.getY() + 1.0625D;
+        double d2 = (double)pPos.getZ() + 0.5D;
+        double d3 = 0.52D;
+        double d4 = pRand.nextDouble() * 0.6D - 0.3D;
+        double d5 = 1D * 0D;
+        double d6 = pRand.nextDouble() * 6.0D / 16.0D;
+        double d7 = 1D * 0D;
+        TileEntity tileEntity = pLevel.getBlockEntity(pPos);
+        if (tileEntity instanceof MusicBlockTile)
+        {
+            MusicBlockTile musicBlockTile = (MusicBlockTile) tileEntity;
+            //System.out.printf("%d\n", musicBlockTile.getPlayId());
+            if (ClientAudio.getActivePlayIDs().contains(musicBlockTile.getPlayId()))
+            {
+                pLevel.addParticle(ParticleTypes.SMOKE, d0 + d5, d1 + d6, d2 + d7, 0.0D, 0.0D, 0.0D);
+                pLevel.addParticle(ParticleTypes.FLAME, d0 + d5, d1 + d6, d2 + d7, 0.0D, 0.0D, 0.0D);
+            }
+        }
     }
 
     @Override
