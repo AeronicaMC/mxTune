@@ -49,7 +49,7 @@ public class InstrumentContainer extends Container
 
     @Override
     public boolean stillValid(PlayerEntity playerIn) {
-        return !playerIn.isHurt();
+        return playerIn.isAlive();
     }
 
     // Transfer the item in test slot to-from any other open slot
