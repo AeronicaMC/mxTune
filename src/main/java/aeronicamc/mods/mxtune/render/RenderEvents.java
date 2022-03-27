@@ -103,7 +103,11 @@ public class RenderEvents
         if (event.getType() == RenderGameOverlayEvent.ElementType.ALL && (mc.screen == null) && itemStack.getItem() instanceof IInstrument)
         {
             ItemStack sheetMusic = SheetMusicHelper.getIMusicFromIInstrument(itemStack);
-            int offset = Math.max(mc.font.width(SheetMusicHelper.getFormattedMusicTitle(sheetMusic)) + 40, width);
+            ITextComponent titleText = SheetMusicHelper.getFormattedMusicTitle(sheetMusic);
+            ITextComponent infoText = new StringTextComponent("").append(SheetMusicHelper.getFormattedMusicDuration(sheetMusic))
+                    .append(String.format(" %s %s", mc.getSoundManager().getDebugString(), ClientAudio.getDebugString())).withStyle(TextFormatting.WHITE);
+
+            int offset = Math.max(Math.max(mc.font.width(titleText), mc.font.width(infoText)) + 40, width);
             MatrixStack pPoseStack = event.getMatrixStack();
 
             mc.getTextureManager().bind(TEXTURE);
@@ -112,9 +116,7 @@ public class RenderEvents
             RenderHelper.blit(pPoseStack, ((offset - width)/2) + 5, 0, 10, 0, width-10, height);
             RenderHelper.blit(pPoseStack, offset - width + 10, 0, 10, 0, width, height);
 
-            ITextComponent infoText = new StringTextComponent("").append(SheetMusicHelper.getFormattedMusicDuration(sheetMusic))
-                    .append(String.format(" %s %s", mc.getSoundManager().getDebugString(), ClientAudio.getDebugString())).withStyle(TextFormatting.WHITE);
-            mc.font.draw(pPoseStack, SheetMusicHelper.getFormattedMusicTitle(sheetMusic), 30.0F, 7.0F, -11534256);
+            mc.font.draw(pPoseStack, titleText, 30.0F, 7.0F, -11534256);
             mc.font.draw(pPoseStack, infoText, 30.0F, 17.0F, -11534256);
             mc.getItemRenderer().renderAndDecorateItem(itemStack, 8, 8);
         }
