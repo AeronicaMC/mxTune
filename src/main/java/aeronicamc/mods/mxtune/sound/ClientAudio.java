@@ -188,9 +188,14 @@ public class ClientAudio
                 LOGGER.warn("ClientAudio#play: playID: {} has already been submitted", playID);
                 return;
             }
-            if (isClient || (mc.player != null && (mc.player.getId() == entityId)))
+            if (isClient || (mc.player != null && (mc.player.getId() == entityId))) // This CLIENT Player own music
             {
-                // This CLIENT Player: The Player
+                // SPECIAL CASE
+                // Player (actively playing solo) changed dimension so we reuse the playId and REPLACE the AudioData.
+                // Vanilla stops all sounds on the client when changing dimension. Playing is restarted where
+                // it left off. This works because the server keeps track of all active tunes.
+                if (result != null)
+                    playIDAudioData.replace(playID, audioData);
                 mc.getSoundManager().play(new MusicClient(audioData));
             }
             else if (pos == null)
