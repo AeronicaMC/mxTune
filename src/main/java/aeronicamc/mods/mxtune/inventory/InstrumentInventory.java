@@ -6,7 +6,6 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
 
 public class InstrumentInventory implements IInventory
@@ -93,7 +92,7 @@ public class InstrumentInventory implements IInventory
     @Override
     public boolean stillValid(PlayerEntity pPlayer)
     {
-        return pPlayer.getItemInHand(Hand.MAIN_HAND).getItem() instanceof IInstrument;
+        return pPlayer.inventory.getSelected().getItem() instanceof IInstrument;
     }
 
     @Override
