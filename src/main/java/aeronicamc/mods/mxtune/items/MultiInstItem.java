@@ -54,7 +54,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
             int playId = getPlayId(itemStackIn);
             if (pPlayer.isCrouching() && pHand.equals(Hand.MAIN_HAND))
             {
-                NetworkHooks.openGui((ServerPlayerEntity) pPlayer, this, pPlayer.blockPosition());
+                NetworkHooks.openGui((ServerPlayerEntity) pPlayer, this);
             }
             else if (!pPlayer.isCrouching() && pHand.equals(Hand.MAIN_HAND))
             {

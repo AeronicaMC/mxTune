@@ -17,10 +17,12 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.IContainerFactory;
 
+import javax.annotation.Nullable;
+
 public class InstrumentContainer extends Container
 {
 
-    public InstrumentContainer(int windowId, World world, BlockPos pos, PlayerInventory playerInventory ,PlayerEntity playerEntity)
+    public InstrumentContainer(int windowId, World world, @Nullable BlockPos pos, PlayerInventory playerInventory , PlayerEntity playerEntity)
     {
         super(ModContainers.INSTRUMENT_CONTAINER.get(), windowId);
         InstrumentInventory instrumentInventory = new InstrumentInventory(playerEntity.getItemInHand(Hand.MAIN_HAND));
@@ -96,7 +98,6 @@ public class InstrumentContainer extends Container
     {
         @Override
         public InstrumentContainer create(final int windowId, final PlayerInventory inv, final PacketBuffer data) {
-            final BlockPos pos = data.readBlockPos();
             final World world = inv.player.getCommandSenderWorld();
             final PlayerEntity player = inv.player;
 
@@ -104,7 +105,7 @@ public class InstrumentContainer extends Container
                 throw new IllegalStateException("Invalid item at " + player.getDisplayName().getString());
             }
 
-            return new InstrumentContainer(windowId, world, pos, inv, player);
+            return new InstrumentContainer(windowId, world, null, inv, player);
         }
     }
 

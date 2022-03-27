@@ -49,6 +49,13 @@ public class ModPlayerEvents
             PlayManager.stopPlayingEntity(event.getEntityLiving());
     }
 
+    @SubscribeEvent
+    public static void event(PlayerContainerEvent.Close event)
+    {
+        if(!event.getEntityLiving().getCommandSenderWorld().isClientSide())
+            LOGGER.debug("{}", event.getContainer());
+    }
+
     /**
      * Synchronise a player's playId to watching clients when they change dimensions.
      *
