@@ -100,7 +100,7 @@ public class InstrumentContainer extends Container
             final World world = inv.player.getCommandSenderWorld();
             final PlayerEntity player = inv.player;
 
-            if (!(player.getItemInHand(Hand.MAIN_HAND).getItem() instanceof IInstrument)) {
+            if (!(inv.getSelected().getItem() instanceof IInstrument)) {
                 throw new IllegalStateException("Invalid item at " + player.getDisplayName().getString());
             }
 
