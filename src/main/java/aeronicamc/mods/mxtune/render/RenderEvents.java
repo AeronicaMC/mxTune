@@ -8,6 +8,7 @@ import aeronicamc.mods.mxtune.caps.venues.ToolState;
 import aeronicamc.mods.mxtune.init.ModBlocks;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.items.MusicVenueToolItem;
+import aeronicamc.mods.mxtune.sound.ClientAudio;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -111,8 +112,10 @@ public class RenderEvents
             RenderHelper.blit(pPoseStack, ((offset - width)/2) + 5, 0, 10, 0, width-10, height);
             RenderHelper.blit(pPoseStack, offset - width + 10, 0, 10, 0, width, height);
 
+            ITextComponent infoText = new StringTextComponent("").append(SheetMusicHelper.getFormattedMusicDuration(sheetMusic))
+                    .append(String.format(" %s %s", mc.getSoundManager().getDebugString(), ClientAudio.getDebugString())).withStyle(TextFormatting.WHITE);
             mc.font.draw(pPoseStack, SheetMusicHelper.getFormattedMusicTitle(sheetMusic), 30.0F, 7.0F, -11534256);
-            mc.font.draw(pPoseStack, SheetMusicHelper.getFormattedMusicDuration(sheetMusic), 30.0F, 17.0F, -11534256);
+            mc.font.draw(pPoseStack, infoText, 30.0F, 17.0F, -11534256);
             mc.getItemRenderer().renderAndDecorateItem(itemStack, 8, 8);
         }
 

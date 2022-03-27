@@ -70,6 +70,11 @@ public class ClientAudio
         }
     }
 
+    public static String getDebugString()
+    {
+        return String.format("AudioData %d/%d", playIDAudioData.size(), delayedAudioDataRemovalQueue.size());
+    }
+
     private static void init(SoundEngine se)
     {
         startThreadFactory();
