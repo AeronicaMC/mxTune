@@ -89,8 +89,8 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
     /**
      * Set this stack's playId.
      */
-    private void setPlayId(ItemStack pStack, int pCost) {
-        pStack.getOrCreateTag().putInt(KEY_PLAY_ID, pCost);
+    private void setPlayId(ItemStack pStack, int playId) {
+        pStack.getOrCreateTag().putInt(KEY_PLAY_ID, playId);
     }
 
     /**
@@ -99,15 +99,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
     @SuppressWarnings("all")
     @Override
     public int getPatch(ItemStack itemStack) {
-        // TODO: replace 'tempFix' with 0 or another default after next snapshot
-        return (itemStack.hasTag() && itemStack.getTag().contains(PATCH)) ? itemStack.getTag().getInt(PATCH) :  tempFix(itemStack);
-    }
-
-    // TODO: remove after next snapshot
-    private int tempFix(ItemStack itemStack)
-    {
-        itemStack.getOrCreateTag().putInt(PATCH, Math.max(0, itemStack.getDamageValue()));
-        return itemStack.getDamageValue();
+        return (itemStack.hasTag() && itemStack.getTag().contains(PATCH)) ? itemStack.getTag().getInt(PATCH) : SoundFontProxyManager.getSoundFontProxyDefault().index;
     }
 
     @Override
