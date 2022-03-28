@@ -1,3 +1,15 @@
+#### 2022-03-28 mxtune-1.16.5-2.0.0-alpha-2022-03-28.52233404
+* Make the MusicBlock keep the chunk loaded while it's playing.
+* All mxTune music now uses the vanilla Records SoundCategory.
+* Enable server side config for listener range: i.e. distance where volume is zero.
+* Ensure mxTune music playing subtitle works even when master and/or record volume is off.
+* Experimental: Active solo playing player will hear their music when changing dimensions. Unreliable at this point. Cancelling a play after changing dimension may fail.
+* Fixed issue where a hurt player could not open the instrument inventory.
+* Instruments: Allow sneak pass thru to blocks/tile entities. i.e. you can open the Music Block inventory when holding an instrument now.
+* Instruments: When in the instrument selection gui you can double-click on an entry to select and close the gui. (This was implemented in the previous snapshot but was not included in the release notes)
+* Music Blocks now emit NOTE particles when active. i.e. begins work toward completing the Band Amp.
+* Known Issue: When in Standalone mode, and the game paused any active mxTunes may end prematurely when the game is un-paused. The server side is unaware of client pauses and will stop a tune when its duration ends.
+
 #### 2022-03-15 mxtune-1.16.5-2.0.0-alpha-2022-03-15.70879418
 * Due to the change below all instruments have been converted to Accordions :D
 * Instruments are now a single item with multiple models. Meaning no need to craft 89 instruments in the future. Works like the 1.12.2 version now.
