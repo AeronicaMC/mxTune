@@ -310,7 +310,7 @@ public class ClientAudio
      */
     public static void submitStream(ISound pISound, boolean isStream, @Nullable ChannelManager.Entry entry)
     {
-        if (soundEngine != null && soundHandler != null && isStream)
+        if (soundEngine != null && isStream)
         {
             if (pISound instanceof MxSound) ((MxSound)pISound).getAudioData().filter(audioData -> audioData.getISound() == pISound).ifPresent( audioData ->
             {
@@ -451,8 +451,10 @@ public class ClientAudio
         }
     }
 
+    // called in SoundEngine CTOR and reload. i.e. key-press F3+T
+    // NOTE: The CTOR hook is never fired! The mod event buses might not be active at this point.
     @SubscribeEvent
-    public static void event(SoundLoadEvent event) // called in SoundEngine CTOR and reload. i.e. key-press F3+T
+    public static void event(SoundLoadEvent event)
     {
         cleanup();
         init(event.getManager());
