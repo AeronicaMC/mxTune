@@ -18,7 +18,14 @@ public class MXTuneLanguageProvider extends LanguageProvider
     @Override
     protected void addTranslations()
     {
-        // TODO
+        // TODO: remove raw testing translations
+        add("block.mxtune.inv_test_block", "Inventory Test Block");
+        add("block.mxtune.music_block", "Music Block");
+        add("container.mxtune.inv_test_block.more", "More...");
+        add("gui.mxtune.gui_test.title", "Gui Test Screen");
+        add("item.mxtune.music_item", "Music Item");
+        add("item.mxtune.gui_test_item", "GUI Test Item");
+
         addBlocks();
         addCommands();
         addConfigs();
@@ -26,8 +33,9 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addErrors();
         addGuiTexts();
         addItems();
-        addSubtitles();
+        addKeys();
         addMessages();
+        addSubtitles();
     }
 
     @Override
@@ -143,9 +151,16 @@ public class MXTuneLanguageProvider extends LanguageProvider
 
     private void addErrors()
     {
+        addError("midi_system_util.no_sound_bank_loaded","No SoundBank Loaded");
+        addError("mml_server_side_validation_failure", "Server side music validation error");
         addError("sheet_music_too_old", "The Sheet Music is unreadable!");
         addError("sheet_music_write_failure", "Unable to write Sheet Music!");
-        addError("mml_server_side_validation_failure", "Server side music validation error");
+    }
+
+    private void addKeys()
+    {
+        addKey("open_party", "Open Party");
+        addKey("open_music_options", "Music Options");
     }
 
     private void addMessages()
@@ -230,6 +245,16 @@ public class MXTuneLanguageProvider extends LanguageProvider
     private void addError(String identifier, String text)
     {
         add(String.format("errors.%s.%s", Reference.MOD_ID, identifier), text);
+    }
+
+    /**
+     * prepends key.[mod_id].
+     * @param identifier the unique error id
+     * @param text of the error
+     */
+    private void addKey(String identifier, String text)
+    {
+        add(String.format("key.%s.%s", Reference.MOD_ID, identifier), text);
     }
 
     /**

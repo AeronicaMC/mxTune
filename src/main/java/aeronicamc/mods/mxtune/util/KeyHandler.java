@@ -33,8 +33,8 @@ public class KeyHandler
     private static class KeyHandlerHolder {private static final KeyHandler INSTANCE = new KeyHandler();}
     public static KeyHandler getInstance() {return KeyHandlerHolder.INSTANCE;}
 
-    private KeyBinding keyOpenPartyGUI = new KeyBinding("mxtune.key.openParty", GLFW.GLFW_KEY_J, Reference.MOD_ID);
-    private KeyBinding keyOpenMusicOptionsGUI = new KeyBinding("mxtune.key.openMusicOptions", GLFW.GLFW_KEY_P, Reference.MOD_ID);
+    private KeyBinding keyOpenPartyGUI = new KeyBinding("key.mxtune.open_party", GLFW.GLFW_KEY_J, Reference.MOD_ID);
+    private KeyBinding keyOpenMusicOptionsGUI = new KeyBinding("key.mxtune.open_music_options", GLFW.GLFW_KEY_P, Reference.MOD_ID);
     private boolean ctrlKeyDown = false;
 
     private KeyHandler()

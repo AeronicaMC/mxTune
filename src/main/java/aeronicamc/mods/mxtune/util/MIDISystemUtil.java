@@ -23,6 +23,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.sun.media.sound.AudioSynthesizer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,7 +39,7 @@ public enum MIDISystemUtil
 {
     ;
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final String NO_SOUND_BANK = "No SoundBank Loaded"; // I18n.format("mxtune.msu.no_sound_bank_loaded");
+    private static final String NO_SOUND_BANK = new TranslationTextComponent("errors.mxtune.midi_system_util.no_sound_bank_loaded").getString();
     private static MidiDevice.Info bestSynthInfo = null;
     private static Synthesizer bestSynth = null;
     private static Soundbank mxTuneSoundBank = null;

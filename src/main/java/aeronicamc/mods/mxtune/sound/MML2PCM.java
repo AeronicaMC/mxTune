@@ -20,7 +20,7 @@ import aeronicamc.libs.mml.parser.MMLParser;
 import aeronicamc.libs.mml.parser.MMLParserFactory;
 import aeronicamc.libs.mml.parser.MMLUtil;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
-import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,8 +51,7 @@ public class MML2PCM
         for (int preset: toMIDI.getPresets())
         {
             Patch patchPreset = MMLUtil.packedPreset2Patch(SoundFontProxyManager.getPackedPreset(preset));
-            // FIXME: Language Format
-            String name = I18n.get(SoundFontProxyManager.getLangKeyName(preset));
+            String name = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(preset)).getString();
             LOGGER.debug("MML2PCM preset: {}, bank: {}, program: {}, name: {}", preset, patchPreset.getBank(),
                            patchPreset.getProgram(), name);
         }

@@ -65,11 +65,11 @@ public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
     private static void handleClientSide(final SendKeyMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
         ctx.get().enqueueWork(()->{
-            if ("mxtune.key.openParty".equalsIgnoreCase(message.keyBindingDesc))
+            if ("key.mxtune.open_party".equalsIgnoreCase(message.keyBindingDesc))
             {
                 Handler.openTestScreen();
             }
-            if ("mxtune.key.openMusicOptions".equalsIgnoreCase(message.keyBindingDesc))
+            if ("key.mxtune.open_music_options".equalsIgnoreCase(message.keyBindingDesc))
             {
                 Handler.openTestScreen();
             }
