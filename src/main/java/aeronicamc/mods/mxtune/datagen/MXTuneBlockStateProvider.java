@@ -37,6 +37,8 @@ public class MXTuneBlockStateProvider extends BlockStateProvider
     @Override
     protected void registerStatesAndModels()
     {
+        simpleBlock(ModBlocks.MUSIC_BLOCK.get());
+        simpleBlockItem(ModBlocks.MUSIC_BLOCK.get());
         simpleBlock(ModBlocks.MUSIC_VENUE_TOOL_BLOCK.get());
         simpleBlockItem(ModBlocks.MUSIC_VENUE_TOOL_BLOCK.get());
     }

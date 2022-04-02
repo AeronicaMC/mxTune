@@ -20,7 +20,6 @@ public class MXTuneLanguageProvider extends LanguageProvider
     {
         // TODO: remove raw testing translations
         add("block.mxtune.inv_test_block", "Inventory Test Block");
-        add("block.mxtune.music_block", "Music Block");
         add("container.mxtune.inv_test_block.more", "More...");
         add("gui.mxtune.gui_test.title", "Gui Test Screen");
         add("item.mxtune.music_item", "Music Item");
@@ -47,6 +46,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
     private void addBlocks()
     {
         // TODO
+        addBlock("music_block", "Music Block");
         addBlock("music_venue_tool_block", "Music Venue Marker");
     }
 
