@@ -243,7 +243,7 @@ processResources {
     exclude '**/*.pdn'
 
     // Exclude src/generated/resources/.cache
-    exclude '**/.cache/'
+    //exclude '**/.cache/'
 
     duplicatesStrategy = DuplicatesStrategy.FAIL
     filesMatching("META-INF/mods.toml") {
