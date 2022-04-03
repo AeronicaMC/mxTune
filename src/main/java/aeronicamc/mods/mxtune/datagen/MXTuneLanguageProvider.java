@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.datagen;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.init.ModBlocks;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.data.DataGenerator;
@@ -46,18 +47,17 @@ public class MXTuneLanguageProvider extends LanguageProvider
     private void addBlocks()
     {
         // TODO
-        addBlock("music_block", "Music Block");
-        addBlock("music_venue_tool_block", "Music Venue Marker");
+        add(ModBlocks.MUSIC_BLOCK.get(), "Music Block");
+        addTooltip("block_music.help", "When placed in the world: SHIFT+Right-Click to OPEN. Right-Click to play. Add up to 16 instruments loaded with sheet music.");
+        add(ModBlocks.MUSIC_VENUE_TOOL_BLOCK.get(), "Music Venue Marker");
     }
 
     private void addItems()
     {
         // TODO
         add(ModItems.SCRAP_ITEM.get(), "Paper Scraps");
-        add(ModItems.MUSIC_VENUE_TOOL.get(), "Music Venue Tool");
         add(ModItems.SHEET_MUSIC.get(), "Sheet Music");
         add(ModItems.MUSIC_PAPER.get(), "Music Paper");
-        addTooltip("block_music.help", "When placed in the world: SHIFT+Right-Click to OPEN. Right-Click to play. Add up to 16 instruments loaded with sheet music.");
         addTooltip("music_paper.help", "Right-Click to OPEN");
         addTooltip("sheet_music.days_left", "Days left: %s");
         addTooltip("sheet_music.days_left_error", "Days left: nn");
@@ -67,6 +67,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addTooltip("instrument_item.shift_help_01", "Hold SHIFT for HELP");
         addTooltip("instrument_item.shift_help_02", "SHIFT+Right Click to OPEN");
         addTooltip("instrument_item.shift_help_03", "Right Click to PLAY");
+        add(ModItems.MUSIC_VENUE_TOOL.get(), "Music Venue Tool");
         addTooltip("music_venue_tool_item.shift_help_02", "Right Click two blocks to define an area");
         addTooltip("music_venue_tool_item.shift_help_03", "SHIFT+Right Click block to Reset back to Start");
         addTooltip("music_venue_tool_item.shift_help_04", "Makes Pretty boxes. Useless at this point. Work-in-progress! You cannot edit or delete them!");

@@ -50,15 +50,15 @@ repositories {
     }
     maven {
         url 'https://www.cursemaven.com'
-        // FG4: It's recommended to uncomment the following block
-        // content {
-        //     includeGroup "curse.maven"
-        // }
     }
 }
 
 configurations {
-    shade
+    shade {
+        transitive = false
+    }
+
+    implementation.extendsFrom shade
 }
 
 def timestamp = "${use_timestamp}".toString() == "true" ? LocalDateTime.now().format("-YYYY-MM-dd.A").toString() : ""
@@ -187,19 +187,13 @@ dependencies {
     // compile against the JEI API but do not include it at runtime
     compileOnly fg.deobf("mezz.jei:jei-${version_mc}:${jei_version_repo}:api")
     // at runtime, use the full JEI jar
-    runtimeOnly fg.deobf("mezz.jei:jei-${version_mc}:${jei_version_repo}")
+//    runtimeOnly fg.deobf("mezz.jei:jei-${version_mc}:${jei_version_repo}")
     //implementation fg.deobf("curse.maven:${project.jei_version}")
     implementation fg.deobf("curse.maven:${project.configured}")
-    implementation fg.deobf("curse.maven:${project.better_mods_button}")
+//    implementation fg.deobf("curse.maven:${project.better_mods_button}")
 
     implementation "com.h2database:h2-mvstore:${project.h2_version}"
     shade "com.h2database:h2-mvstore:${project.h2_version}"
-//    implementation 'com.h2database:h2-mvstore:1.4.200'
-//    shade 'com.h2database:h2-mvstore:1.4.200'
-    // For more info...
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
 }
 
 mixin {
@@ -242,8 +236,7 @@ processResources {
     // Exclude the Paint.NET image files
     exclude '**/*.pdn'
 
-    // Exclude src/generated/resources/.cache
-    //exclude '**/.cache/'
+    exclude '**/.cache/'
 
     duplicatesStrategy = DuplicatesStrategy.FAIL
     filesMatching("META-INF/mods.toml") {
@@ -265,7 +258,6 @@ reobf {
     shadowJar {}
 }
 
-
 def relocate(origin) {
     shadowJar.relocate(origin, "aeronicamc.libs.mxtune.shadow.$origin")
 }
@@ -284,7 +276,6 @@ shadowJar {
     exclude 'META-INF/versions/**'
     exclude 'module-info.class'
     exclude 'LICENSE'
-    exclude '**/.cache/'
 
     finalizedBy 'reobfShadowJar'
     assemble.dependsOn shadowJar
