@@ -13,7 +13,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
 {
     public MXTuneLanguageProvider(DataGenerator gen)
     {
-        super(gen, Reference.MOD_ID, "eng_us");
+        super(gen, Reference.MOD_ID, "en_us");
     }
 
     @Override
