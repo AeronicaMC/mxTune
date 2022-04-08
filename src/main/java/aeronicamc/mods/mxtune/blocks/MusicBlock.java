@@ -13,6 +13,8 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -30,6 +32,9 @@ import java.util.Random;
 @SuppressWarnings("deprecation")
 public class MusicBlock extends Block implements IMusicPlayer
 {
+    public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
+    public static final BooleanProperty PLAYING = BooleanProperty.create("playing");
+
     private static final Random rand = new Random();
 
     public MusicBlock()

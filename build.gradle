@@ -187,7 +187,7 @@ dependencies {
     // compile against the JEI API but do not include it at runtime
     compileOnly fg.deobf("mezz.jei:jei-${version_mc}:${jei_version_repo}:api")
     // at runtime, use the full JEI jar
-//    runtimeOnly fg.deobf("mezz.jei:jei-${version_mc}:${jei_version_repo}")
+    runtimeOnly fg.deobf("mezz.jei:jei-${version_mc}:${jei_version_repo}")
     //implementation fg.deobf("curse.maven:${project.jei_version}")
     implementation fg.deobf("curse.maven:${project.configured}")
 //    implementation fg.deobf("curse.maven:${project.better_mods_button}")
