@@ -11,13 +11,14 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
@@ -32,8 +33,8 @@ import java.util.Random;
 @SuppressWarnings("deprecation")
 public class MusicBlock extends Block implements IMusicPlayer
 {
-    public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
     public static final BooleanProperty PLAYING = BooleanProperty.create("playing");
+    public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
     private static final Random rand = new Random();
 
@@ -42,6 +43,10 @@ public class MusicBlock extends Block implements IMusicPlayer
         super(Properties.of(Material.METAL)
              .sound(SoundType.METAL)
              .strength(2.0F));
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
+                .setValue(PLAYING, Boolean.FALSE)
+                .setValue(POWERED, Boolean.FALSE));
     }
 
     @Override
@@ -151,7 +156,36 @@ public class MusicBlock extends Block implements IMusicPlayer
 
     private void setPlayingState(World worldIn, BlockPos posIn, BlockState state, boolean playing)
     {
+        if (state.getValue(PLAYING) != playing)
+        {
+//            worldIn.setBlock(posIn, worldIn.getBlockState(posIn).setValue(PLAYING, playing), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+//            worldIn.neighborChanged(posIn, this, posIn);
+        }
+    }
 
+    @Override
+    public BlockState mirror(BlockState state, Mirror mirrorIn) {
+        return state.rotate(mirrorIn.getRotation(state.getValue(BlockStateProperties.HORIZONTAL_FACING)));
+    }
+
+    @Override
+    public BlockState rotate(BlockState state, Rotation rot) {
+        return state.setValue(BlockStateProperties.HORIZONTAL_FACING, rot.rotate(state.getValue(BlockStateProperties.HORIZONTAL_FACING)));
+    }
+
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(BlockItemUseContext context)
+    {
+        return this.defaultBlockState()
+                .setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite())
+                .setValue(PLAYING, Boolean.FALSE)
+                .setValue(POWERED, Boolean.FALSE);
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        builder.add(BlockStateProperties.HORIZONTAL_FACING, PLAYING, POWERED);
     }
 
     @Override
