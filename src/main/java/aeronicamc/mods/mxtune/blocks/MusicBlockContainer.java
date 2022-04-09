@@ -1,7 +1,6 @@
 package aeronicamc.mods.mxtune.blocks;
 
 
-import aeronicamc.mods.mxtune.init.ModBlocks;
 import aeronicamc.mods.mxtune.init.ModContainers;
 import aeronicamc.mods.mxtune.inventory.SlotMusicBlock;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
@@ -84,7 +83,7 @@ public class MusicBlockContainer extends genericContainer
     @Override
     public boolean stillValid(PlayerEntity playerIn) {
         boolean tileNotNull = tileEntity != null && tileEntity.getLevel() != null;
-        return tileNotNull && stillValid(IWorldPosCallable.create(tileEntity.getLevel(), tileEntity.getBlockPos()), playerEntity, ModBlocks.MUSIC_BLOCK.get());
+        return tileNotNull && stillValid(IWorldPosCallable.create(tileEntity.getLevel(), tileEntity.getBlockPos()), playerIn, tileEntity.getLevel().getBlockState(tileEntity.getBlockPos()).getBlock());
     }
 
     @Override
