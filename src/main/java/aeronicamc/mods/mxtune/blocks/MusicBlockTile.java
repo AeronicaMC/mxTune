@@ -204,7 +204,7 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
         {
             this.playId = playId;
             this.setChanged();
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE /* + Constants.BlockFlags.NOTIFY_NEIGHBORS*/ );
         }
     }
 
@@ -218,6 +218,6 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
         if (countUp)
             useHeldCounter = (useHeldCounter += 5) > 1 ? 5 : useHeldCounter;
         else
-            useHeldCounter = --useHeldCounter < -1 ? -1 : useHeldCounter;
+            useHeldCounter = (--useHeldCounter < -1) ? -1 : useHeldCounter;
     }
 }

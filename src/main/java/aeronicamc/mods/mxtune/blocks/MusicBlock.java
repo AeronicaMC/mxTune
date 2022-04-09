@@ -43,7 +43,7 @@ public class MusicBlock extends Block implements IMusicPlayer
         super(Properties.of(Material.METAL)
              .sound(SoundType.METAL)
              .strength(2.0F));
-        this.registerDefaultState(this.stateDefinition.any()
+        this.registerDefaultState(this.defaultBlockState()
                 .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
                 .setValue(PLAYING, Boolean.FALSE)
                 .setValue(POWERED, Boolean.FALSE));
@@ -52,19 +52,20 @@ public class MusicBlock extends Block implements IMusicPlayer
     @Override
     public void animateTick(BlockState pState, World pLevel, BlockPos pPos, Random pRand)
     {
-        double d0 = (double)pPos.getX() + 0.5D;
-        double d1 = (double)pPos.getY() + 1.0625D;
-        double d2 = (double)pPos.getZ() + 0.5D;
-        double noteColor = rand.nextDouble();
-        double d4 = pRand.nextDouble() * 0.4D - 0.2D;
-        double d5 = 1D * 0D;
-        double d6 = pRand.nextDouble() * 6.0D / 16.0D;
-        double d7 = 1D * 0D;
-        // TODO: Convert to use block state properties so server-side invoked changes are used to
-        // TODO: control the particles/animations. Property<Boolean> PLAYING...
         TileEntity tileEntity = pLevel.getBlockEntity(pPos);
         if (tileEntity instanceof MusicBlockTile)
-        {
+            {
+            double d0 = (double)pPos.getX() + 0.5D;
+            double d1 = (double)pPos.getY() + 1.0625D;
+            double d2 = (double)pPos.getZ() + 0.5D;
+            double noteColor = rand.nextDouble();
+            double d4 = pRand.nextDouble() * 0.4D - 0.2D;
+            double d5 = 1D * 0D;
+            double d6 = pRand.nextDouble() * 6.0D / 16.0D;
+            double d7 = 1D * 0D;
+
+            // TODO: Convert to use block state properties so server-side invoked changes are used to
+            // TODO: control the particles/animations. Property<Boolean> PLAYING...
             MusicBlockTile musicBlockTile = (MusicBlockTile) tileEntity;
             if (ClientAudio.getActivePlayIDs().contains(musicBlockTile.getPlayId()))
             {
@@ -112,7 +113,6 @@ public class MusicBlock extends Block implements IMusicPlayer
                     {
                         boolean isPlaying = canPlayOrStopMusic(worldIn, pos, false);
                         setPlayingState(worldIn, pos, state, isPlaying);
-                        worldIn.updateNeighborsAt(pos, this);
                     }
                     musicBlockTile.useHeldCounterUpdate(true);
                 }
@@ -156,11 +156,7 @@ public class MusicBlock extends Block implements IMusicPlayer
 
     private void setPlayingState(World worldIn, BlockPos posIn, BlockState state, boolean playing)
     {
-        if (state.getValue(PLAYING) != playing)
-        {
-//            worldIn.setBlock(posIn, worldIn.getBlockState(posIn).setValue(PLAYING, playing), Constants.BlockFlags.BLOCK_UPDATE + Constants.BlockFlags.NOTIFY_NEIGHBORS);
-//            worldIn.neighborChanged(posIn, this, posIn);
-        }
+        //worldIn.setBlock(posIn, state.setValue(PLAYING, playing), Constants.BlockFlags.BLOCK_UPDATE);
     }
 
     @Override
@@ -196,6 +192,7 @@ public class MusicBlock extends Block implements IMusicPlayer
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+        LOGGER.debug("Created TE {}", state);
         return new MusicBlockTile();
     }
 
