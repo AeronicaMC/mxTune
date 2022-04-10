@@ -36,10 +36,7 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
     private ITextComponent customName;
     private final LazyOptional<IItemHandler> handler = LazyOptional.of(this::createHandler);
 
-    private int playId;
-    private int lastPlayId;
     private int durationSeconds;
-
     private int counter;
     private int useHeldCounter;
 
@@ -115,8 +112,6 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
         }
         if (nbt.contains("duration", Constants.NBT.TAG_INT))
             this.durationSeconds = nbt.getInt("duration");
-        if (nbt.contains("playId", Constants.NBT.TAG_INT))
-            this.playId = nbt.getInt("playId");
         super.load(state, nbt);
     }
 
@@ -131,7 +126,6 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
             tag.putString("CustomName", ITextComponent.Serializer.toJson(this.customName));
         }
         tag.putInt("duration", this.durationSeconds);
-        tag.putInt("playId", this.playId);
         return super.save(tag);
     }
 
@@ -190,22 +184,6 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
     public MusicProperties getMusicProperties()
     {
         return SheetMusicHelper.getMusicFromIMusicPlayer(this);
-    }
-
-    public int getPlayId()
-    {
-        return playId;
-    }
-
-    public void setPlayId(int playId)
-    {
-        this.lastPlayId = this.playId;
-        if (this.playId != playId)
-        {
-            this.playId = playId;
-            this.setChanged();
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE /* + Constants.BlockFlags.NOTIFY_NEIGHBORS*/ );
-        }
     }
 
     public boolean isUseHeld()

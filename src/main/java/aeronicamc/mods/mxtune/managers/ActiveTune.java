@@ -4,6 +4,8 @@ import aeronicamc.mods.mxtune.Reference;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -78,6 +80,14 @@ public class ActiveTune
         }
     }
 
+    static void addEntry(int entityId, BlockPos blockPos, int playId, String mml, int durationSeconds)
+    {
+        synchronized (playIdToActiveTuneEntry)
+        {
+            playIdToActiveTuneEntry.putIfAbsent(playId, Entry.newEntry(entityId, blockPos, playId, mml, durationSeconds));
+        }
+    }
+
     static void addEntry(int entityId, int playId, String mml, int durationSeconds)
     {
         synchronized (playIdToActiveTuneEntry)
@@ -104,6 +114,11 @@ public class ActiveTune
         return playIdToActiveTuneEntry.keySet();
     }
 
+    synchronized static Optional<Entry> getActiveBlock(BlockPos pPos)
+    {
+        return playIdToActiveTuneEntry.values().stream().filter(p -> ((p.blockPos != null) && p.blockPos.equals(pPos))).findFirst();
+    }
+
     synchronized static boolean isActivePlayId(int playId)
     {
         return (playId != INVALID) && ActiveTune.getActivePlayIds().contains(playId);
@@ -116,12 +131,7 @@ public class ActiveTune
 
     synchronized static Optional<Entry> getActiveTuneByEntityId(@Nullable Entity entity)
     {
-        Entry[] result = {null};
-        if (entity != null)
-            getActiveTuneEntries().stream().filter(entry -> entry.entityId == entity.getId()).findFirst().ifPresent(entry -> {
-                result[0] = entry;
-            });
-        return Optional.ofNullable(result[0]);
+        return getActiveTuneEntries().stream().filter(entry -> ((entity != null) && (entry.entityId == entity.getId()))).findFirst();
     }
 
     static void remove(int playId)
@@ -173,6 +183,11 @@ public class ActiveTune
             this.durationSeconds = durationSeconds + 2;
         }
 
+        static Entry newEntry(int entityId, BlockPos blockPos, int playId, String mml, int durationSeconds)
+        {
+            return new Entry(entityId, blockPos, playId, mml, durationSeconds);
+        }
+
         static Entry newEntry(int entityId, int playId, String mml, int durationSeconds)
         {
             return new Entry(entityId, null, playId, mml, durationSeconds);
@@ -202,6 +217,17 @@ public class ActiveTune
         {
             boolean isDone = durationSeconds <= ++secondsElapsed;
             if (isDone) executor.execute(()-> PlayManager.stopPlayId(playId));
+        }
+
+        @Override
+        public String toString()
+        {
+            return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                    .append("entityId", entityId)
+                    .append("blockPos", blockPos)
+                    .append("playId", playId)
+                    .append("durationSeconds", durationSeconds)
+                    .build();
         }
     }
 }

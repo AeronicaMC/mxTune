@@ -175,6 +175,7 @@ public final class PlayManager
     {
         synchronized (THREAD_SYNC)
         {
+            LOGGER.debug("stopPlayId {}", playId);
             removeActivePlayId(playId);
             PacketDispatcher.sendToAll(new StopPlayIdMessage(playId));
         }
@@ -227,11 +228,11 @@ public final class PlayManager
                     entityIdToPlayId.putIfAbsent(entityId, playId);
 
                 playIdToEntityId.put(playId, entityId);
-                ActiveTune.addEntry(entityId, playId, musicText, durationSeconds);
+                ActiveTune.addEntry(entityId, blockPos, playId, musicText, durationSeconds);
             }
             else if (blockPos != null)
             {
-                ActiveTune.addEntry(blockPos, playId, musicText, durationSeconds);
+                ActiveTune.addEntry(0, blockPos, playId, musicText, durationSeconds);
             }
         }
     }
@@ -302,6 +303,11 @@ public final class PlayManager
         {
             return ActiveTune.isActivePlayId(playId);
         }
+    }
+
+    public static int getActiveBlockPlayId(BlockPos pPos)
+    {
+        return ActiveTune.getActiveBlock(pPos).isPresent() ? ActiveTune.getActiveBlock(pPos).get().playId : INVALID;
     }
 
 }
