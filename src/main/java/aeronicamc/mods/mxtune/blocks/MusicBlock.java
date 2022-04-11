@@ -145,6 +145,29 @@ public class MusicBlock extends Block implements IMusicPlayer
     }
 
     @Override
+    public void neighborChanged(BlockState pState, World pLevel, BlockPos pPos, Block pBlock, BlockPos pFromPos, boolean pIsMoving) {
+        if (!pLevel.isClientSide)
+        {
+            TileEntity tileEntity = pLevel.getBlockEntity(pPos);
+            // get redStone input from the front side
+            boolean isSidePowered = pLevel.hasSignal(pPos.relative(pState.getValue(BlockStateProperties.HORIZONTAL_FACING)), pState.getValue(BlockStateProperties.HORIZONTAL_FACING));
+            if (tileEntity instanceof MusicBlockTile)
+            {
+                MusicBlockTile tileBandAmp = (MusicBlockTile) tileEntity;
+                if ((tileBandAmp.getPreviousInputState() != isSidePowered))
+                {
+                    if (isSidePowered)
+                    {
+                        boolean isPlaying = canPlayOrStopMusic(pLevel, pState, pPos, false);
+                        setPlayingState(pLevel, pPos, pState, isPlaying);
+                    }
+                    tileBandAmp.setPreviousInputState(isSidePowered);
+                }
+            }
+        }
+    }
+
+    @Override
     public BlockState mirror(BlockState state, Mirror mirrorIn) {
         return state.rotate(mirrorIn.getRotation(state.getValue(BlockStateProperties.HORIZONTAL_FACING)));
     }

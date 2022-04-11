@@ -37,6 +37,7 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
     private final LazyOptional<IItemHandler> handler = LazyOptional.of(this::createHandler);
 
     private int durationSeconds;
+    private boolean previousInputPowerState;
     private int counter;
     private int useHeldCounter;
 
@@ -127,6 +128,22 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
         }
         tag.putInt("duration", this.durationSeconds);
         return super.save(tag);
+    }
+
+    /**
+     * @return the previousInputPowerState
+     */
+    boolean getPreviousInputState()
+    {
+        return previousInputPowerState;
+    }
+
+    /**
+     * @param previousRedStoneState the previousInputPowerState to set
+     */
+    void setPreviousInputState(boolean previousRedStoneState)
+    {
+        this.previousInputPowerState = previousRedStoneState;
     }
 
     @Nonnull
