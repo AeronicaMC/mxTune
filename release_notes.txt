@@ -1,3 +1,9 @@
+2022-04-12 mxtune-1.12.2-1.0.3
+Fix
+ * Crash on startup because mxtune access modifier file was not properly specified in the jar manifest.
+ I'm amazed it took this long for a report to surface. I can only guess that other mods in a mod-pack
+ were changing the access modifier required by mxtune.
+
 2021-12-12 mxtune-1.12.2-1.0.2
 Changes
 Update to latest forge 14.23.5.2859 and clean up the build script.
