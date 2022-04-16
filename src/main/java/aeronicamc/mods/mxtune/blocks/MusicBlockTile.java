@@ -29,14 +29,31 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.UUID;
+
+import static aeronicamc.mods.mxtune.util.SheetMusicHelper.KEY_DURATION;
 
 public class MusicBlockTile extends TileEntity implements INamedContainerProvider, INameable, IMusicPlayer, ITickableTileEntity
 {
+    public static final UUID EMPTY_OWNER = new UUID(0,0);
     private static final Logger LOGGER = LogManager.getLogger(MusicBlockTile.class);
     private ITextComponent customName;
     private final LazyOptional<IItemHandler> handler = LazyOptional.of(this::createHandler);
+    private static final String KEY_CUSTOM_NAME = "CustomName";
+    private static final String KEY_INVENTORY = "Inventory";
+    private static final String KEY_LEFT_RS_OUTPUT_ENABLED = "leftRsOutputEnabled";
+    private static final String KEY_REAR_RS_INPUT_ENABLED = "rearRsInputEnabled";
+    private static final String KEY_RIGHT_RS_OUTPUT_ENABLED = "rightRsOutputEnabled";
+    public static final String KEY_OWNER = "Owner";
 
+    // stored in nbt
+    private UUID ownerUUID = EMPTY_OWNER;
     private int durationSeconds;
+    private boolean rearRsInputEnabled = true;
+    private boolean leftRsOutputEnabled = true;
+    private boolean rightRsOutputEnabled = true;
+
+    // not stored in nbt
     private boolean previousInputPowerState;
     private int counter;
     private int useHeldCounter;
@@ -53,20 +70,6 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
             protected void onContentsChanged(int slot) {
                 setChanged();
             }
-
-//            @Override
-//            public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-//                return stack.getItem() == Items.DIAMOND;
-//            }
-
-//            @Nonnull
-//            @Override
-//            public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-//                if (stack.getItem() != Items.DIAMOND) {
-//                    return stack;
-//                }
-//                return super.insertItem(slot, stack, simulate);
-//            }
         };
     }
 
@@ -74,10 +77,7 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
     public void tick()
     {
         if (level != null && counter++ % 5 == 0)
-        {
             useHeldCounterUpdate(false);
-            //LOGGER.info("...tick... {} isUseHeld: {}", useHeldCounter, isUseHeld());
-        }
     }
 
     @Override
@@ -106,13 +106,21 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
     @Override
     public void load(BlockState state, CompoundNBT nbt)
     {
-        CompoundNBT invTag = nbt.getCompound("Inventory");
+        CompoundNBT invTag = nbt.getCompound(KEY_INVENTORY);
         handler.ifPresent(h -> ((INBTSerializable<CompoundNBT>) h).deserializeNBT(invTag));
-        if (nbt.contains("CustomName", Constants.NBT.TAG_STRING)) {
-            this.customName = ITextComponent.Serializer.fromJson(nbt.getString("CustomName"));
+        if (nbt.contains(KEY_CUSTOM_NAME, Constants.NBT.TAG_STRING)) {
+            this.customName = ITextComponent.Serializer.fromJson(nbt.getString(KEY_CUSTOM_NAME));
         }
-        if (nbt.contains("duration", Constants.NBT.TAG_INT))
-            this.durationSeconds = nbt.getInt("duration");
+        if (nbt.contains(KEY_DURATION, Constants.NBT.TAG_INT))
+            this.durationSeconds = nbt.getInt(KEY_DURATION);
+        if (nbt.contains(KEY_LEFT_RS_OUTPUT_ENABLED, Constants.NBT.TAG_BYTE))
+            this.leftRsOutputEnabled = nbt.getBoolean(KEY_LEFT_RS_OUTPUT_ENABLED);
+        if (nbt.contains(KEY_RIGHT_RS_OUTPUT_ENABLED, Constants.NBT.TAG_BYTE))
+            this.rightRsOutputEnabled = nbt.getBoolean(KEY_RIGHT_RS_OUTPUT_ENABLED);
+        if (nbt.contains(KEY_REAR_RS_INPUT_ENABLED, Constants.NBT.TAG_BYTE))
+            this.rearRsInputEnabled = nbt.getBoolean(KEY_REAR_RS_INPUT_ENABLED);
+        if(nbt.hasUUID(KEY_OWNER))
+            this.ownerUUID = nbt.getUUID(KEY_OWNER);
         super.load(state, nbt);
     }
 
@@ -121,12 +129,16 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
     public CompoundNBT save(CompoundNBT tag) {
         handler.ifPresent(h -> {
             CompoundNBT compound = ((INBTSerializable<CompoundNBT>) h).serializeNBT();
-            tag.put("Inventory", compound);
+            tag.put(KEY_INVENTORY, compound);
         });
         if (this.customName != null) {
-            tag.putString("CustomName", ITextComponent.Serializer.toJson(this.customName));
+            tag.putString(KEY_CUSTOM_NAME, ITextComponent.Serializer.toJson(this.customName));
         }
-        tag.putInt("duration", this.durationSeconds);
+        tag.putInt(KEY_DURATION, this.durationSeconds);
+        tag.putBoolean(KEY_LEFT_RS_OUTPUT_ENABLED, leftRsOutputEnabled);
+        tag.putBoolean(KEY_RIGHT_RS_OUTPUT_ENABLED, rightRsOutputEnabled);
+        tag.putBoolean(KEY_REAR_RS_INPUT_ENABLED, rearRsInputEnabled);
+        tag.putUUID(KEY_OWNER, ownerUUID);
         return super.save(tag);
     }
 
@@ -144,6 +156,64 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
     void setPreviousInputState(boolean previousRedStoneState)
     {
         this.previousInputPowerState = previousRedStoneState;
+    }
+
+    public boolean isRearRedstoneInputEnabled()
+    {
+        return rearRsInputEnabled;
+    }
+
+    public void setRearRedstoneInputEnabled(boolean rearRsInputEnabled)
+    {
+        if(this.rearRsInputEnabled != rearRsInputEnabled)
+        {
+            this.rearRsInputEnabled = rearRsInputEnabled;
+            markDirtySyncClient();
+        }
+    }
+
+    public boolean isLeftRedstoneOutputEnabled()
+    {
+        return leftRsOutputEnabled;
+    }
+
+    public void setLeftRedstoneOutputEnabled(boolean leftRsOutputEnabled)
+    {
+        if(this.leftRsOutputEnabled != leftRsOutputEnabled)
+        {
+            this.leftRsOutputEnabled = leftRsOutputEnabled;
+            markDirtySyncClient();
+        }
+    }
+
+    public boolean isRightRedstoneOutputEnabled()
+    {
+        return rightRsOutputEnabled;
+    }
+
+    public void setRightRedstoneOutputEnabled(boolean rightRsOutputEnabled)
+    {
+        if(this.rightRsOutputEnabled != rightRsOutputEnabled)
+        {
+            this.rightRsOutputEnabled = rightRsOutputEnabled;
+            markDirtySyncClient();
+        }
+    }
+
+    private void syncClient()
+    {
+        if (level != null && !level.isClientSide())
+        {
+            level.setBlock(worldPosition, level.getBlockState(worldPosition).setValue(MusicBlock.POWERED, level.getBlockState(worldPosition).getValue(MusicBlock.POWERED)), Constants.BlockFlags.BLOCK_UPDATE);
+            //level.notifyBlockUpdate(getPos(), world.getBlockState(pos), world.getBlockState(pos), 2);
+            //level.scheduleBlockUpdate(pos, this.getBlockType(),0,0);
+        }
+    }
+
+    private void markDirtySyncClient()
+    {
+        syncClient();
+        setChanged();
     }
 
     @Nonnull
