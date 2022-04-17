@@ -21,6 +21,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
@@ -30,6 +31,8 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.Random;
+
+import static net.minecraft.state.properties.BlockStateProperties.HORIZONTAL_FACING;
 
 
 @SuppressWarnings("deprecation")
@@ -47,7 +50,7 @@ public class MusicBlock extends Block implements IMusicPlayer
              .sound(SoundType.METAL)
              .strength(2.0F));
         this.registerDefaultState(this.defaultBlockState()
-                .setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
+                .setValue(HORIZONTAL_FACING, Direction.NORTH)
                 .setValue(PLAYING, Boolean.FALSE)
                 .setValue(POWERED, Boolean.FALSE));
     }
@@ -149,10 +152,11 @@ public class MusicBlock extends Block implements IMusicPlayer
         if (!pLevel.isClientSide)
         {
             TileEntity tileEntity = pLevel.getBlockEntity(pPos);
-            // get redStone input from the front side
-            boolean isSidePowered = pLevel.hasSignal(pPos.relative(pState.getValue(BlockStateProperties.HORIZONTAL_FACING)), pState.getValue(BlockStateProperties.HORIZONTAL_FACING));
+
             if (tileEntity instanceof MusicBlockTile)
             {
+                // get redStone input from the front side
+                boolean isSidePowered = pLevel.hasSignal(pPos.relative(pState.getValue(HORIZONTAL_FACING)), pState.getValue(HORIZONTAL_FACING));
                 MusicBlockTile tileBandAmp = (MusicBlockTile) tileEntity;
                 if ((tileBandAmp.getPreviousInputState() != isSidePowered))
                 {
@@ -168,13 +172,73 @@ public class MusicBlock extends Block implements IMusicPlayer
     }
 
     @Override
+    public boolean canConnectRedstone(BlockState state, IBlockReader world, BlockPos pos, @Nullable Direction side)
+    {
+        TileEntity tileEntity = world.getBlockEntity(pos);
+        if (side != null && (tileEntity instanceof MusicBlockTile))
+        {
+            MusicBlockTile musicBlockTile = (MusicBlockTile) tileEntity;
+            Direction direction = state.getValue(HORIZONTAL_FACING);
+            boolean canConnectBack = musicBlockTile.isRearRedstoneInputEnabled() && direction == side;
+            boolean canConnectLeft = musicBlockTile.isLeftRedstoneOutputEnabled() && direction.getCounterClockWise() == side;
+            boolean canConnectRight = musicBlockTile.isRightRedstoneOutputEnabled() && direction.getClockWise() == side;
+            return canConnectBack || canConnectLeft || canConnectRight;
+        }
+        return false;
+    }
+
+    @Override
+    public BlockState updateShape(BlockState pState, Direction pFacing, BlockState pFacingState, IWorld pLevel, BlockPos pCurrentPos, BlockPos pFacingPos)
+    {
+        TileEntity tileEntity = pLevel.getBlockEntity(pCurrentPos);
+        if (tileEntity instanceof MusicBlockTile)
+        {
+            MusicBlockTile musicBlockTile = (MusicBlockTile) tileEntity;
+            Direction direction = pState.getValue(HORIZONTAL_FACING);
+            boolean canConnectBack = musicBlockTile.isRearRedstoneInputEnabled() && direction.getOpposite() == pFacing;
+            boolean canConnectLeft = musicBlockTile.isLeftRedstoneOutputEnabled() && direction.getCounterClockWise() == pFacing;
+            boolean canConnectRight = musicBlockTile.isRightRedstoneOutputEnabled() && direction.getClockWise() == pFacing;
+            boolean connectState = canConnectBack || canConnectLeft || canConnectRight;
+            return connectState ? pState.setValue(HORIZONTAL_FACING, pState.getValue(HORIZONTAL_FACING)) : super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
+        }
+        return super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
+    }
+
+    @Override
+    public int getSignal(BlockState pBlockState, IBlockReader pBlockAccess, BlockPos pPos, Direction pSide)
+    {
+        TileEntity tileEntity = pBlockAccess.getBlockEntity(pPos);
+        if (tileEntity instanceof MusicBlockTile)
+        {
+            MusicBlockTile musicBlockTile = (MusicBlockTile) tileEntity;
+            Direction direction = pBlockState.getValue(HORIZONTAL_FACING);
+            boolean canConnectLeft = musicBlockTile.isLeftRedstoneOutputEnabled() && direction.getCounterClockWise() == pSide;
+            boolean canConnectRight = musicBlockTile.isRightRedstoneOutputEnabled() && direction.getClockWise() == pSide;
+            return pBlockState.getValue(POWERED) && (canConnectLeft || canConnectRight) ? 15 :0;
+        }
+        return 0;
+    }
+
+    @Override
+    public int getDirectSignal(BlockState pBlockState, IBlockReader pBlockAccess, BlockPos pPos, Direction pSide)
+    {
+        return super.getSignal(pBlockState, pBlockAccess, pPos, pSide);
+    }
+
+    @Override
+    public boolean isSignalSource(BlockState pState)
+    {
+        return true;
+    }
+
+    @Override
     public BlockState mirror(BlockState state, Mirror mirrorIn) {
-        return state.rotate(mirrorIn.getRotation(state.getValue(BlockStateProperties.HORIZONTAL_FACING)));
+        return state.rotate(mirrorIn.getRotation(state.getValue(HORIZONTAL_FACING)));
     }
 
     @Override
     public BlockState rotate(BlockState state, Rotation rot) {
-        return state.setValue(BlockStateProperties.HORIZONTAL_FACING, rot.rotate(state.getValue(BlockStateProperties.HORIZONTAL_FACING)));
+        return state.setValue(HORIZONTAL_FACING, rot.rotate(state.getValue(HORIZONTAL_FACING)));
     }
 
     @Nullable
@@ -182,14 +246,14 @@ public class MusicBlock extends Block implements IMusicPlayer
     public BlockState getStateForPlacement(BlockItemUseContext context)
     {
         return this.defaultBlockState()
-                .setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite())
+                .setValue(HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite())
                 .setValue(PLAYING, Boolean.FALSE)
                 .setValue(POWERED, Boolean.FALSE);
     }
 
     @Override
     protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
-        builder.add(BlockStateProperties.HORIZONTAL_FACING, PLAYING, POWERED);
+        builder.add(HORIZONTAL_FACING, PLAYING, POWERED);
     }
 
     @Override

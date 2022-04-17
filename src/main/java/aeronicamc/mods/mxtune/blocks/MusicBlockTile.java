@@ -51,7 +51,7 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
     private int durationSeconds;
     private boolean rearRsInputEnabled = true;
     private boolean leftRsOutputEnabled = true;
-    private boolean rightRsOutputEnabled = true;
+    private boolean rightRsOutputEnabled = false;
 
     // not stored in nbt
     private boolean previousInputPowerState;
