@@ -55,6 +55,7 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
 
     // not stored in nbt
     private boolean previousInputPowerState;
+    private boolean LastPlay;
     private int counter;
     private int useHeldCounter;
 
@@ -142,20 +143,24 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
         return super.save(tag);
     }
 
-    /**
-     * @return the previousInputPowerState
-     */
     boolean getPreviousInputState()
     {
         return previousInputPowerState;
     }
 
-    /**
-     * @param previousRedStoneState the previousInputPowerState to set
-     */
     void setPreviousInputState(boolean previousRedStoneState)
     {
         this.previousInputPowerState = previousRedStoneState;
+    }
+
+    public boolean isLastPlay()
+    {
+        return LastPlay;
+    }
+
+    public void setLastPlay(boolean lastPlay)
+    {
+        LastPlay = lastPlay;
     }
 
     public boolean isRearRedstoneInputEnabled()

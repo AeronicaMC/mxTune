@@ -76,11 +76,24 @@ public class MusicBlock extends Block implements IMusicPlayer
 
     @Override
     public void tick(BlockState pState, ServerWorld pLevel, BlockPos pPos, Random pRand) {
-        if (!pLevel.isClientSide() && pState.getValue(PLAYING))
+        if (!pLevel.isClientSide())
         {
-            pLevel.getBlockTicks().scheduleTick(pPos, this, 20);
-            if (PlayManager.getActiveBlockPlayId(pPos) == PlayIdSupplier.INVALID)
-                setPlayingState(pLevel, pPos, pState, false);
+            TileEntity tileEntity = pLevel.getBlockEntity(pPos);
+            if (tileEntity instanceof MusicBlockTile)
+            {
+                MusicBlockTile musicBlockTile = (MusicBlockTile) tileEntity;
+                if (pState.getValue(PLAYING))
+                {
+                    pLevel.getBlockTicks().scheduleTick(pPos, this, 20);
+                    if (PlayManager.getActiveBlockPlayId(pPos) == PlayIdSupplier.INVALID)
+                    {
+                        setPlayingState(pLevel, pPos, pState, false);
+                        onePulseOutputState(pLevel, pPos, pState, musicBlockTile);
+                    }
+                }
+                else
+                    onePulseOutputState(pLevel, pPos, pState, musicBlockTile);
+            }
         }
     }
 
@@ -102,6 +115,8 @@ public class MusicBlock extends Block implements IMusicPlayer
                     if (!musicBlockTile.isUseHeld())
                     {
                         boolean isPlaying = canPlayOrStopMusic(worldIn, state, pos, false);
+                        if (isPlaying)
+                            musicBlockTile.setLastPlay(true);
                         setPlayingState(worldIn, pos, state, isPlaying);
                     }
                     musicBlockTile.useHeldCounterUpdate(true);
@@ -123,28 +138,45 @@ public class MusicBlock extends Block implements IMusicPlayer
         return ActionResultType.SUCCESS;
     }
 
-    private boolean canPlayOrStopMusic(World worldIn, BlockState pState, BlockPos pos, Boolean stop)
+    private boolean canPlayOrStopMusic(World pLevel, BlockState pState, BlockPos pPos, Boolean noPlay)
     {
-        int playId = PlayManager.getActiveBlockPlayId(pos);
+        int playId = PlayManager.getActiveBlockPlayId(pPos);
             if (PlayManager.isActivePlayId(playId) || pState.getValue(PLAYING))
             {
                 LOGGER.warn("STOP canPlayOrStopMusic playId {}", playId);
                 PlayManager.stopPlayId(playId);
                 return false;
             }
-            if (!stop)
+            if (!noPlay)
             {
-                playId = PlayManager.playMusic(worldIn, pos);
+                playId = PlayManager.playMusic(pLevel, pPos);
                 LOGGER.warn("PLAY canPlayOrStopMusic playId {}", playId);
                 return playId != PlayIdSupplier.INVALID && !pState.getValue(PLAYING);
             }
         return false;
     }
 
-    private void setPlayingState(World worldIn, BlockPos posIn, BlockState state, boolean playing)
+    private void onePulseOutputState(World pLevel, BlockPos pPos, BlockState pState, MusicBlockTile musicBlockTile)
     {
-        worldIn.setBlock(posIn, state.setValue(PLAYING, playing), Constants.BlockFlags.BLOCK_UPDATE | Constants.BlockFlags.UPDATE_NEIGHBORS);
-        worldIn.getBlockTicks().scheduleTick(posIn, this, 10);
+        if (!pState.getValue(POWERED) && musicBlockTile.isLastPlay())
+        {
+            setOutputPowerState(pLevel, pPos, pState, true);
+            musicBlockTile.setLastPlay(false);
+        } else if (pState.getValue(POWERED))
+            setOutputPowerState(pLevel, pPos, pState, false);
+    }
+
+
+    private void setPlayingState(World pLevel, BlockPos pPos, BlockState pState, boolean pIsPlaying)
+    {
+        pLevel.setBlock(pPos, pState.setValue(PLAYING, pIsPlaying), Constants.BlockFlags.BLOCK_UPDATE | Constants.BlockFlags.UPDATE_NEIGHBORS);
+        pLevel.getBlockTicks().scheduleTick(pPos, this, 10);
+    }
+
+    private void setOutputPowerState(World pLevel, BlockPos pPos, BlockState pState, boolean pIsPowered)
+    {
+        pLevel.setBlock(pPos, pState.setValue(POWERED, pIsPowered), 3);
+        pLevel.getBlockTicks().scheduleTick(pPos, this, 10);
     }
 
     @Override
@@ -157,15 +189,17 @@ public class MusicBlock extends Block implements IMusicPlayer
             {
                 // get redStone input from the front side
                 boolean isSidePowered = pLevel.hasSignal(pPos.relative(pState.getValue(HORIZONTAL_FACING)), pState.getValue(HORIZONTAL_FACING));
-                MusicBlockTile tileBandAmp = (MusicBlockTile) tileEntity;
-                if ((tileBandAmp.getPreviousInputState() != isSidePowered))
+                MusicBlockTile musicBlockTile = (MusicBlockTile) tileEntity;
+                if ((musicBlockTile.getPreviousInputState() != isSidePowered))
                 {
                     if (isSidePowered)
                     {
                         boolean isPlaying = canPlayOrStopMusic(pLevel, pState, pPos, false);
+                        if (isPlaying)
+                            musicBlockTile.setLastPlay(true);
                         setPlayingState(pLevel, pPos, pState, isPlaying);
                     }
-                    tileBandAmp.setPreviousInputState(isSidePowered);
+                    musicBlockTile.setPreviousInputState(isSidePowered);
                 }
             }
         }
@@ -195,11 +229,11 @@ public class MusicBlock extends Block implements IMusicPlayer
         {
             MusicBlockTile musicBlockTile = (MusicBlockTile) tileEntity;
             Direction direction = pState.getValue(HORIZONTAL_FACING);
-            boolean canConnectBack = musicBlockTile.isRearRedstoneInputEnabled() && direction.getOpposite() == pFacing;
+            boolean canConnectBack = musicBlockTile.isRearRedstoneInputEnabled() && direction == pFacing;
             boolean canConnectLeft = musicBlockTile.isLeftRedstoneOutputEnabled() && direction.getCounterClockWise() == pFacing;
             boolean canConnectRight = musicBlockTile.isRightRedstoneOutputEnabled() && direction.getClockWise() == pFacing;
             boolean connectState = canConnectBack || canConnectLeft || canConnectRight;
-            return connectState ? pState.setValue(HORIZONTAL_FACING, pState.getValue(HORIZONTAL_FACING)) : super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
+            return connectState ? pState.setValue(POWERED, pState.getValue(POWERED)) : super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
         }
         return super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
     }
