@@ -21,7 +21,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
@@ -222,23 +222,6 @@ public class MusicBlock extends Block implements IMusicPlayer
     }
 
     @Override
-    public BlockState updateShape(BlockState pState, Direction pFacing, BlockState pFacingState, IWorld pLevel, BlockPos pCurrentPos, BlockPos pFacingPos)
-    {
-        TileEntity tileEntity = pLevel.getBlockEntity(pCurrentPos);
-        if (tileEntity instanceof MusicBlockTile)
-        {
-            MusicBlockTile musicBlockTile = (MusicBlockTile) tileEntity;
-            Direction direction = pState.getValue(HORIZONTAL_FACING);
-            boolean canConnectBack = musicBlockTile.isRearRedstoneInputEnabled() && direction == pFacing;
-            boolean canConnectLeft = musicBlockTile.isLeftRedstoneOutputEnabled() && direction.getCounterClockWise() == pFacing;
-            boolean canConnectRight = musicBlockTile.isRightRedstoneOutputEnabled() && direction.getClockWise() == pFacing;
-            boolean connectState = canConnectBack || canConnectLeft || canConnectRight;
-            return connectState ? pState.setValue(POWERED, pState.getValue(POWERED)) : super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
-        }
-        return super.updateShape(pState, pFacing, pFacingState, pLevel, pCurrentPos, pFacingPos);
-    }
-
-    @Override
     public int getSignal(BlockState pBlockState, IBlockReader pBlockAccess, BlockPos pPos, Direction pSide)
     {
         TileEntity tileEntity = pBlockAccess.getBlockEntity(pPos);
@@ -257,6 +240,13 @@ public class MusicBlock extends Block implements IMusicPlayer
     public int getDirectSignal(BlockState pBlockState, IBlockReader pBlockAccess, BlockPos pPos, Direction pSide)
     {
         return super.getSignal(pBlockState, pBlockAccess, pPos, pSide);
+    }
+
+    // This prevents this block from conducting redstone signals.
+    @Override
+    public boolean shouldCheckWeakPower(BlockState state, IWorldReader world, BlockPos pos, Direction side)
+    {
+        return false; //state.isRedstoneConductor(world, pos);
     }
 
     @Override
