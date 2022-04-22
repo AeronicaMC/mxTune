@@ -9,6 +9,8 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.item.ItemStack;
 
+import java.util.List;
+
 public class ModGuiHelper
 {
     public static void RenderGuiItemScaled(ItemRenderer itemRenderer, ItemStack pStack, int posX, int posY, int scale, boolean onCenter)
@@ -23,9 +25,15 @@ public class ModGuiHelper
 
     public static  <T extends Screen, S extends Object>  void drawHooveringHelp(MatrixStack poseStack, T guiScreen, IHooverText widget, double mouseX, double mouseY)
     {
+        if (widget.isMouseOverWidget(mouseX, mouseY) && Screen.hasShiftDown())
+            guiScreen.renderWrappedToolTip(poseStack, widget.getHooverTexts(), (int) mouseX, (int) mouseY, Minecraft.getInstance().font);
+    }
 
-            if (widget.isMouseOverWidget(mouseX, mouseY) && Screen.hasShiftDown())
-                guiScreen.renderWrappedToolTip(poseStack, widget.getHooverTexts(), (int) mouseX, (int) mouseY, Minecraft.getInstance().font);
+    public static  <T extends Screen, S extends Object>  void drawHooveringHelp(MatrixStack poseStack, T guiScreen, List<S> buttons, double mouseX, double mouseY)
+    {
+        for (Object widget : buttons)
+            if (widget instanceof IHooverText && ((IHooverText) widget).isMouseOverWidget(mouseX, mouseY) && Screen.hasShiftDown())
+                guiScreen.renderWrappedToolTip(poseStack, ((IHooverText) widget).getHooverTexts(), (int) mouseX, (int) mouseY, Minecraft.getInstance().font);
     }
 
     public static <T extends TextFieldWidget> void clearOnMouseLeftClicked(T textFieldWidget, double mouseX, double mouseY, double mouseButton)

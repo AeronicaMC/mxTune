@@ -1,7 +1,8 @@
 package aeronicamc.mods.mxtune.blocks;
 
 import aeronicamc.mods.mxtune.Reference;
-import aeronicamc.mods.mxtune.gui.widget.list.GuiRedstoneButton;
+import aeronicamc.mods.mxtune.gui.ModGuiHelper;
+import aeronicamc.mods.mxtune.gui.widget.GuiRedstoneButton;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -31,9 +32,11 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
     {
         super.init();
         backRSIn.setLayout(leftPos + 141, topPos + 12, 20, 20);
-        backRSIn.addHooverText(false, new StringTextComponent("Backside Redstone Input"));
+        backRSIn.addHooverText(true, new StringTextComponent("Back side Redstone Input"));
         leftRSOut.setLayout(leftPos + 131, topPos + 32, 20, 20);
+        leftRSOut.addHooverText(true, new StringTextComponent("Left side Redstone Output"));
         rightSOut.setLayout(leftPos + 151, topPos + 32, 20, 20);
+        rightSOut.addHooverText(true, new StringTextComponent("Right side Redstone Output"));
         addButton(backRSIn);
         addButton(leftRSOut);
         addButton(rightSOut);
@@ -70,6 +73,7 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
         this.renderBackground(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.renderTooltip(matrixStack, mouseX, mouseY);
+        ModGuiHelper.drawHooveringHelp(matrixStack, this, buttons, mouseX, mouseY);
     }
 
     @Override

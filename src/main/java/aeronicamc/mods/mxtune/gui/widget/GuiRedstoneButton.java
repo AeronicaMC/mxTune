@@ -1,7 +1,6 @@
-package aeronicamc.mods.mxtune.gui.widget.list;
+package aeronicamc.mods.mxtune.gui.widget;
 
 import aeronicamc.mods.mxtune.blocks.MusicBlockScreen;
-import aeronicamc.mods.mxtune.gui.widget.MXButton;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
