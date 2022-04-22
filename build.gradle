@@ -80,7 +80,7 @@ minecraft {
             workingDirectory project.file('run01')
 
             // program arguments
-            args '--username', 'Player01'
+            args '--username', 'Player325'
         }
 
         client02 {
@@ -88,7 +88,7 @@ minecraft {
             workingDirectory project.file('run02')
 
             // program arguments
-            args '--username', 'Player02'
+            args '--username', 'Player350'
         }
 
         server {
