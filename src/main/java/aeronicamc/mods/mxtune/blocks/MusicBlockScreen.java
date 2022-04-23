@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.blocks;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.gui.ModGuiHelper;
+import aeronicamc.mods.mxtune.gui.widget.GuiLockButton;
 import aeronicamc.mods.mxtune.gui.widget.GuiRedstoneButton;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -16,6 +17,7 @@ import java.util.Objects;
 public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
 {
     public static final ResourceLocation GUI = new ResourceLocation(Reference.MOD_ID, "textures/gui/inv_music_block_gui.png");
+    private final GuiLockButton lockButton = new GuiLockButton(p -> toggleLock());
     private final GuiRedstoneButton backRSIn = new GuiRedstoneButton(GuiRedstoneButton.ArrowFaces.DOWN, p -> toggleBackRSIn());
     private final GuiRedstoneButton leftRSOut = new GuiRedstoneButton(GuiRedstoneButton.ArrowFaces.LEFT, p -> toggleLeftRSOut());
     private final GuiRedstoneButton rightSOut = new GuiRedstoneButton(GuiRedstoneButton.ArrowFaces.RIGHT, p -> toggleRightRSOut());
@@ -31,30 +33,38 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
     protected void init()
     {
         super.init();
-        backRSIn.setLayout(leftPos + 141, topPos + 12, 20, 20);
+        lockButton.setLayout(leftPos + 17, topPos + 12, 20, 20);
+        lockButton.addHooverText(true, new StringTextComponent("lock or not"));
+        backRSIn.setLayout(leftPos + 142, topPos + 12, 20, 20);
         backRSIn.addHooverText(true, new StringTextComponent("Back side Redstone Input"));
-        leftRSOut.setLayout(leftPos + 131, topPos + 32, 20, 20);
+        leftRSOut.setLayout(leftPos + 132, topPos + 32, 20, 20);
         leftRSOut.addHooverText(true, new StringTextComponent("Left side Redstone Output"));
-        rightSOut.setLayout(leftPos + 151, topPos + 32, 20, 20);
+        rightSOut.setLayout(leftPos + 152, topPos + 32, 20, 20);
         rightSOut.addHooverText(true, new StringTextComponent("Right side Redstone Output"));
+        addButton(lockButton);
         addButton(backRSIn);
         addButton(leftRSOut);
         addButton(rightSOut);
     }
 
+    private void toggleLock()
+    {
+        lockButton.setLocked(!lockButton.isLocked());
+    }
+
     private void toggleBackRSIn()
     {
-
+        backRSIn.setSignalEnabled(!backRSIn.isSignalEnabled());
     }
 
     private void toggleLeftRSOut()
     {
-       // TODO:
+       leftRSOut.setSignalEnabled(!leftRSOut.isSignalEnabled());
     }
 
     private void toggleRightRSOut()
     {
-        // TODO:
+        rightSOut.setSignalEnabled(!rightSOut.isSignalEnabled());
     }
 
     @Override
