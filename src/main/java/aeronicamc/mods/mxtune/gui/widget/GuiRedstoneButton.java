@@ -70,12 +70,12 @@ public class GuiRedstoneButton extends MXButton
 
     public enum Icon
     {
-        SIGNAL_ENABLED(0, 176),
-        SIGNAL_ENABLED_HOVER(0, 196),
-        SIGNAL_ENABLED_DISABLED(0, 216),
-        SIGNAL_DISABLED_UNLOCKED(20, 176),
-        SIGNAL_DISABLED_HOVER(20, 196),
-        SIGNAL_DISABLED_DISABLED(20, 216);
+        SIGNAL_ENABLED(0, 184),
+        SIGNAL_ENABLED_HOVER(0, 204),
+        SIGNAL_ENABLED_DISABLED(0, 224),
+        SIGNAL_DISABLED_UNLOCKED(20, 184),
+        SIGNAL_DISABLED_HOVER(20, 204),
+        SIGNAL_DISABLED_DISABLED(20, 224);
 
         private final int x;
         private final int y;

@@ -16,7 +16,7 @@ import java.util.Objects;
 
 public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
 {
-    public static final ResourceLocation GUI = new ResourceLocation(Reference.MOD_ID, "textures/gui/inv_music_block_gui.png");
+    public static final ResourceLocation GUI = new ResourceLocation(Reference.MOD_ID, "textures/gui/container/music_block.png");
     private final GuiLockButton lockButton = new GuiLockButton(p -> toggleLock());
     private final GuiRedstoneButton backRSIn = new GuiRedstoneButton(GuiRedstoneButton.ArrowFaces.DOWN, p -> toggleBackRSIn());
     private final GuiRedstoneButton leftRSOut = new GuiRedstoneButton(GuiRedstoneButton.ArrowFaces.LEFT, p -> toggleLeftRSOut());
@@ -25,21 +25,21 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
     public MusicBlockScreen(MusicBlockContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
-        this.imageWidth = 180;
-        this.imageHeight = 176;
+        this.imageWidth = 186;
+        this.imageHeight = 184;
     }
 
     @Override
     protected void init()
     {
         super.init();
-        lockButton.setLayout(leftPos + 17, topPos + 12, 20, 20);
+        lockButton.setLayout(leftPos + 21, topPos + 17, 20, 20);
         lockButton.addHooverText(true, new StringTextComponent("lock or not"));
-        backRSIn.setLayout(leftPos + 142, topPos + 12, 20, 20);
+        backRSIn.setLayout(leftPos + 146, topPos + 17, 20, 20);
         backRSIn.addHooverText(true, new StringTextComponent("Back side Redstone Input"));
-        leftRSOut.setLayout(leftPos + 132, topPos + 32, 20, 20);
+        leftRSOut.setLayout(leftPos + 136, topPos + 37, 20, 20);
         leftRSOut.addHooverText(true, new StringTextComponent("Left side Redstone Output"));
-        rightSOut.setLayout(leftPos + 152, topPos + 32, 20, 20);
+        rightSOut.setLayout(leftPos + 156, topPos + 37, 20, 20);
         rightSOut.addHooverText(true, new StringTextComponent("Right side Redstone Output"));
         addButton(lockButton);
         addButton(backRSIn);
@@ -88,7 +88,7 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
 
     @Override
     protected void renderLabels(MatrixStack matrixStack , int mouseX, int mouseY) {
-        this.font.draw(matrixStack, menu.getName(), 10, 2, 4210752);
-        this.font.draw(matrixStack, this.inventory.getDisplayName(), 10, 84, 4210752);
+        this.font.draw(matrixStack, menu.getName(), 8, 6, 4210752);
+        this.font.draw(matrixStack, this.inventory.getDisplayName(), 8, 92, 4210752);
     }
 }

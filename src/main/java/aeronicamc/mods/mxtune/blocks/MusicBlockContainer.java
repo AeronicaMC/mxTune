@@ -27,10 +27,10 @@ public class MusicBlockContainer extends genericContainer
     public MusicBlockContainer(int windowId, World world, BlockPos pos, PlayerInventory playerInventory , PlayerEntity playerEntity)
     {
         super(ModContainers.MUSIC_BLOCK_CONTAINER.get(), windowId, world, pos, playerInventory, playerEntity);
-        final int guiConX = 55;
-        final int guiConY = 13;
-        final int guiInvX = 10;
-        final int guiInvY = 94;
+        final int guiConX = 58;
+        final int guiConY = 17;
+        final int guiInvX = 13;
+        final int guiInvY = 102;
         this.playerEntity = playerEntity;
         tileEntity = world.getBlockEntity(pos);
 
