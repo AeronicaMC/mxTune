@@ -19,14 +19,14 @@ import java.util.Objects;
 
 public class MultiInstScreen extends ContainerScreen<MultiInstContainer>
 {
-    private static final ResourceLocation GUI = new ResourceLocation(Reference.MOD_ID, "textures/gui/instrument_inventory.png");
+    private static final ResourceLocation GUI = new ResourceLocation(Reference.MOD_ID, "textures/gui/container/multi_inst_item.png");
     private final MXButton buttonChangeInstrument = new MXButton(this::openSelector);
 
     public MultiInstScreen(MultiInstContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
-        this.imageWidth = 166;
         this.imageWidth = 184;
+        this.imageHeight = 166;
     }
 
     private void openSelector(Button button)
@@ -78,8 +78,6 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer>
 
     @Override
     protected void renderLabels(MatrixStack matrixStack , int mouseX, int mouseY) {
-//        ITextComponent title = inventory.getSelected().getHoverName();
-//        this.font.draw(matrixStack, title, (float)(imageWidth - font.width(title))/2, 10, TextColorFg.DARK_GRAY);
         this.font.draw(matrixStack, new TranslationTextComponent("container.inventory"), 10, 72, TextColorFg.DARK_GRAY);
     }
 
