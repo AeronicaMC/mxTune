@@ -2,7 +2,7 @@ package aeronicamc.mods.mxtune.items;
 
 import aeronicamc.mods.mxtune.MXTune;
 import aeronicamc.mods.mxtune.init.ModItems;
-import aeronicamc.mods.mxtune.inventory.InstrumentContainer;
+import aeronicamc.mods.mxtune.inventory.MultiInstContainer;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.managers.PlayManager;
 import aeronicamc.mods.mxtune.util.IInstrument;
@@ -267,7 +267,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         if (playerEntity.level == null) return null;
-        return new InstrumentContainer(i, playerEntity.level, playerEntity.blockPosition(), playerInventory, playerEntity);
+        return new MultiInstContainer(i, playerEntity.level, playerEntity.blockPosition(), playerInventory, playerEntity);
     }
 
     @Override

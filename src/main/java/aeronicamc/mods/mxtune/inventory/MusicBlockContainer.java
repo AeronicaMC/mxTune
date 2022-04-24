@@ -1,8 +1,9 @@
-package aeronicamc.mods.mxtune.blocks;
+package aeronicamc.mods.mxtune.inventory;
 
 
+import aeronicamc.mods.mxtune.blocks.MusicBlockTile;
+import aeronicamc.mods.mxtune.blocks.genericContainer;
 import aeronicamc.mods.mxtune.init.ModContainers;
-import aeronicamc.mods.mxtune.inventory.SlotMusicBlock;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;

@@ -19,15 +19,15 @@ import net.minecraftforge.fml.network.IContainerFactory;
 
 import javax.annotation.Nullable;
 
-public class InstrumentContainer extends Container
+public class MultiInstContainer extends Container
 {
 
-    public InstrumentContainer(int windowId, World world, @Nullable BlockPos pos, PlayerInventory playerInventory , PlayerEntity playerEntity)
+    public MultiInstContainer(int windowId, World world, @Nullable BlockPos pos, PlayerInventory playerInventory , PlayerEntity playerEntity)
     {
         super(ModContainers.INSTRUMENT_CONTAINER.get(), windowId);
-        InstrumentInventory instrumentInventory = new InstrumentInventory(playerEntity.getItemInHand(Hand.MAIN_HAND));
+        MultiInstInventory multiInstInventory = new MultiInstInventory(playerEntity.getItemInHand(Hand.MAIN_HAND));
 
-        this.addSlot(new SlotInstrument(instrumentInventory, 0, 12, 8 + 2 * 18));
+        this.addSlot(new SlotInstrument(multiInstInventory, 0, 12, 8 + 2 * 18));
 
         // Player Inventory
         for (int i = 0; i < 3; i++) {
@@ -94,10 +94,10 @@ public class InstrumentContainer extends Container
         super.removeSlotListener(pListener);
     }
 
-    public static class Factory implements IContainerFactory<InstrumentContainer>
+    public static class Factory implements IContainerFactory<MultiInstContainer>
     {
         @Override
-        public InstrumentContainer create(final int windowId, final PlayerInventory inv, final PacketBuffer data) {
+        public MultiInstContainer create(final int windowId, final PlayerInventory inv, final PacketBuffer data) {
             final World world = inv.player.getCommandSenderWorld();
             final PlayerEntity player = inv.player;
 
@@ -105,7 +105,7 @@ public class InstrumentContainer extends Container
                 throw new IllegalStateException("Invalid item at " + player.getDisplayName().getString());
             }
 
-            return new InstrumentContainer(windowId, world, null, inv, player);
+            return new MultiInstContainer(windowId, world, null, inv, player);
         }
     }
 

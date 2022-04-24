@@ -2,7 +2,7 @@ package aeronicamc.mods.mxtune.gui;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
-import aeronicamc.mods.mxtune.inventory.InstrumentContainer;
+import aeronicamc.mods.mxtune.inventory.MultiInstContainer;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -17,12 +17,12 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Objects;
 
-public class InstrumentScreen extends ContainerScreen<InstrumentContainer>
+public class MultiInstScreen extends ContainerScreen<MultiInstContainer>
 {
     private static final ResourceLocation GUI = new ResourceLocation(Reference.MOD_ID, "textures/gui/instrument_inventory.png");
     private final MXButton buttonChangeInstrument = new MXButton(this::openSelector);
 
-    public InstrumentScreen(InstrumentContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
+    public MultiInstScreen(MultiInstContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
         this.imageWidth = 166;

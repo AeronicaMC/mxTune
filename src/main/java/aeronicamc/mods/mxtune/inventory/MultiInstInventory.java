@@ -8,12 +8,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
 
-public class InstrumentInventory implements IInventory
+public class MultiInstInventory implements IInventory
 {
     public final NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
     private final ItemStack stack;
 
-    public InstrumentInventory(ItemStack stack)
+    public MultiInstInventory(ItemStack stack)
     {
         this.stack = stack;
         if (!this.stack.hasTag())

@@ -34,7 +34,7 @@ public class GuiMultiInstChooser extends Screen
     {
         super(new TranslationTextComponent("gui.mxtune.label.instruments"));
         this.parent = parent;
-        setSelected(((InstrumentScreen)parent).getInstrument());
+        setSelected(((MultiInstScreen)parent).getInstrument());
     }
 
     @Override
@@ -68,7 +68,7 @@ public class GuiMultiInstChooser extends Screen
     {
         getPlayer(Objects.requireNonNull(minecraft)).ifPresent(player->{
             ((IInstrument)player.inventory.getSelected().getItem()).setPatch(player.inventory.getSelected(), selected.getIndex());
-            ((InstrumentScreen)parent).updateButton(selected.getIndex());
+            ((MultiInstScreen)parent).updateButton(selected.getIndex());
             PacketDispatcher.sendToServer(new ChooseInstrumentMessage(selected.getIndex()));
         });
         if (doubleClicked)

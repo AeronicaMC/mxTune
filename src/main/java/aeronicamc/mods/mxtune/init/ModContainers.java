@@ -2,8 +2,8 @@ package aeronicamc.mods.mxtune.init;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.blocks.InvTestContainer;
-import aeronicamc.mods.mxtune.blocks.MusicBlockContainer;
-import aeronicamc.mods.mxtune.inventory.InstrumentContainer;
+import aeronicamc.mods.mxtune.inventory.MultiInstContainer;
+import aeronicamc.mods.mxtune.inventory.MusicBlockContainer;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
@@ -54,9 +54,9 @@ public class ModContainers
                                                                  () -> new ContainerType<>(new MusicBlockContainer.Factory())
                                                                 );
 
-    public static final RegistryObject<ContainerType<InstrumentContainer>>
+    public static final RegistryObject<ContainerType<MultiInstContainer>>
             INSTRUMENT_CONTAINER = CONTAINER_TYPES.register("instrument_container",
-                                                            () -> new ContainerType<>(new InstrumentContainer.Factory())
+                                                            () -> new ContainerType<>(new MultiInstContainer.Factory())
                                                            );
 
     /**

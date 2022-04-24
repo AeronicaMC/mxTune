@@ -8,7 +8,7 @@ import aeronicamc.mods.mxtune.caches.ModDataStore;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.init.ModSoundEvents;
-import aeronicamc.mods.mxtune.inventory.InstrumentInventory;
+import aeronicamc.mods.mxtune.inventory.MultiInstInventory;
 import aeronicamc.mods.mxtune.items.MultiInstItem;
 import aeronicamc.mods.mxtune.items.SheetMusicItem;
 import aeronicamc.mods.mxtune.sound.MMLToMIDI;
@@ -454,7 +454,7 @@ public enum SheetMusicHelper
         ItemStack sheetMusic = SheetMusicHelper.getIMusicFromIInstrument(pStack);
         if (!sheetMusic.isEmpty() && SheetMusicHelper.getSheetMusicDaysLeft(sheetMusic) == 0)
         {
-            InstrumentInventory inv = new InstrumentInventory(pStack);
+            MultiInstInventory inv = new MultiInstInventory(pStack);
             ItemStack stack = inv.removeItem(0, 1);
             inv.setChanged();
             return stack.copy();

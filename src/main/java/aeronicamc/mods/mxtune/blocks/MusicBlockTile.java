@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.blocks;
 
 import aeronicamc.mods.mxtune.init.ModTileEntities;
+import aeronicamc.mods.mxtune.inventory.MusicBlockContainer;
 import aeronicamc.mods.mxtune.util.MusicProperties;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.block.BlockState;
