@@ -187,10 +187,10 @@ public class MusicBlock extends Block implements IMusicPlayer
 
             if (tileEntity instanceof MusicBlockTile)
             {
-                // get redStone input from the front side
-                boolean isSidePowered = pLevel.hasSignal(pPos.relative(pState.getValue(HORIZONTAL_FACING)), pState.getValue(HORIZONTAL_FACING));
+                // get redStone input from the rear side
+                boolean isSidePowered = pLevel.hasSignal(pPos.relative(pState.getValue(HORIZONTAL_FACING).getOpposite()), pState.getValue(HORIZONTAL_FACING));
                 MusicBlockTile musicBlockTile = (MusicBlockTile) tileEntity;
-                if ((musicBlockTile.getPreviousInputState() != isSidePowered))
+                if ((musicBlockTile.getPreviousInputState() != isSidePowered) && musicBlockTile.isRearRedstoneInputEnabled())
                 {
                     if (isSidePowered)
                     {
