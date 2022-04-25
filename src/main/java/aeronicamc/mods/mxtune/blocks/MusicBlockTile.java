@@ -16,7 +16,6 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.INameable;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
@@ -221,27 +220,7 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
     private void syncClient()
     {
         if (level != null && !level.isClientSide())
-        {
-            // FIXME: Unsure how to make redstone wires connect/disconnect when a side is enabled/disabled for connections.
-            // Monkey coding will not cut it here...
-            //level.setBlock(worldPosition, level.getBlockState(worldPosition).setValue(MusicBlock.POWERED, level.getBlockState(worldPosition).getValue(MusicBlock.POWERED)), Constants.BlockFlags.DEFAULT);
-            for(Direction direction : Direction.values())
-            {
-                BlockPos blockpos = worldPosition.relative(direction);
-                if (level.hasChunkAt(blockpos))
-                {
-                    BlockState blockstate = level.getBlockState(blockpos);
-                    blockstate.onNeighborChange(level, worldPosition, blockpos);
-                    boolean canConnectRedstone = blockstate.canConnectRedstone(level, blockpos, direction.getOpposite());
-                    if (canConnectRedstone)
-                    {
-                        level.updateNeighborsAt(blockpos, level.getBlockState(worldPosition).getBlock());
-                    }
-                }
-            }
-            //level.notifyBlockUpdate(getPos(), world.getBlockState(pos), world.getBlockState(pos), 2);
-            //level.scheduleBlockUpdate(pos, this.getBlockType(),0,0);
-        }
+            level.getBlockState(worldPosition).updateNeighbourShapes(level, worldPosition, 3);
     }
 
     private void markDirtySyncClient()
