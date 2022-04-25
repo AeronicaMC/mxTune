@@ -17,10 +17,12 @@ public abstract class genericContainer extends Container
 {
     protected TileEntity tileEntity;
     protected PlayerEntity playerEntity;
+    protected BlockPos blockPos;
 
     public genericContainer(ContainerType containerType, int windowId, World world, BlockPos pos, PlayerInventory playerInventory , PlayerEntity playerEntity)
     {
         super(containerType, windowId);
+        blockPos = pos;
     }
 
     public abstract ITextComponent getName();

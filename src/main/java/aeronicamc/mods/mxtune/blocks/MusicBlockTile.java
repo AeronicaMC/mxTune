@@ -16,6 +16,7 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.INameable;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
@@ -49,7 +50,7 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
 
     // stored in nbt
     private UUID ownerUUID = EMPTY_OWNER;
-    private int durationSeconds;
+    private int duration;
     private boolean rearRsInputEnabled = true;
     private boolean leftRsOutputEnabled = true;
     private boolean rightRsOutputEnabled = false;
@@ -114,7 +115,7 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
             this.customName = ITextComponent.Serializer.fromJson(nbt.getString(KEY_CUSTOM_NAME));
         }
         if (nbt.contains(KEY_DURATION, Constants.NBT.TAG_INT))
-            this.durationSeconds = nbt.getInt(KEY_DURATION);
+            this.duration = nbt.getInt(KEY_DURATION);
         if (nbt.contains(KEY_LEFT_RS_OUTPUT_ENABLED, Constants.NBT.TAG_BYTE))
             this.leftRsOutputEnabled = nbt.getBoolean(KEY_LEFT_RS_OUTPUT_ENABLED);
         if (nbt.contains(KEY_RIGHT_RS_OUTPUT_ENABLED, Constants.NBT.TAG_BYTE))
@@ -136,7 +137,7 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
         if (this.customName != null) {
             tag.putString(KEY_CUSTOM_NAME, ITextComponent.Serializer.toJson(this.customName));
         }
-        tag.putInt(KEY_DURATION, this.durationSeconds);
+        tag.putInt(KEY_DURATION, this.duration);
         tag.putBoolean(KEY_LEFT_RS_OUTPUT_ENABLED, leftRsOutputEnabled);
         tag.putBoolean(KEY_RIGHT_RS_OUTPUT_ENABLED, rightRsOutputEnabled);
         tag.putBoolean(KEY_REAR_RS_INPUT_ENABLED, rearRsInputEnabled);
@@ -162,6 +163,17 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
     public void setLastPlay(boolean lastPlay)
     {
         LastPlay = lastPlay;
+    }
+
+    public int getDuration()
+    {
+        return duration;
+    }
+
+    public void setDuration(int duration)
+    {
+        this.duration = duration;
+        setChanged();
     }
 
     public boolean isRearRedstoneInputEnabled()
@@ -210,7 +222,23 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
     {
         if (level != null && !level.isClientSide())
         {
-            level.setBlock(worldPosition, level.getBlockState(worldPosition).setValue(MusicBlock.POWERED, level.getBlockState(worldPosition).getValue(MusicBlock.POWERED)), Constants.BlockFlags.BLOCK_UPDATE);
+            // FIXME: Unsure how to make redstone wires connect/disconnect when a side is enabled/disabled for connections.
+            // Monkey coding will not cut it here...
+            //level.setBlock(worldPosition, level.getBlockState(worldPosition).setValue(MusicBlock.POWERED, level.getBlockState(worldPosition).getValue(MusicBlock.POWERED)), Constants.BlockFlags.DEFAULT);
+            for(Direction direction : Direction.values())
+            {
+                BlockPos blockpos = worldPosition.relative(direction);
+                if (level.hasChunkAt(blockpos))
+                {
+                    BlockState blockstate = level.getBlockState(blockpos);
+                    blockstate.onNeighborChange(level, worldPosition, blockpos);
+                    boolean canConnectRedstone = blockstate.canConnectRedstone(level, blockpos, direction.getOpposite());
+                    if (canConnectRedstone)
+                    {
+                        level.updateNeighborsAt(blockpos, level.getBlockState(worldPosition).getBlock());
+                    }
+                }
+            }
             //level.notifyBlockUpdate(getPos(), world.getBlockState(pos), world.getBlockState(pos), 2);
             //level.scheduleBlockUpdate(pos, this.getBlockType(),0,0);
         }

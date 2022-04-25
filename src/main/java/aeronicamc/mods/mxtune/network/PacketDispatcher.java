@@ -48,6 +48,7 @@ public class PacketDispatcher
         registerMessage(ByteArrayPartMessage.class, new ByteArrayPartMessage());
         registerMessage(ToolManagerSyncMessage.class, new ToolManagerSyncMessage());
         registerMessage(SyncCapabilityRequestMessage.class, new SyncCapabilityRequestMessage());
+        registerMessage(MusicBlockMessage.class, new MusicBlockMessage());
     }
 
     private static <MSG extends AbstractMessage<MSG>> void registerMessage(Class<MSG> messageType, AbstractMessage<MSG> message)

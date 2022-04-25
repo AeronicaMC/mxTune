@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IWorldPosCallable;
+import net.minecraft.util.IntReferenceHolder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -59,7 +60,78 @@ public class MusicBlockContainer extends genericContainer
             this.addSlot(new Slot(playerInventory, i, i * 18 + guiInvX, guiInvY + 58));
         }
 
+        trackSignals();
         scrapCheck(world, playerEntity, pos);
+    }
+
+    public BlockPos getPosition()
+    {
+        return blockPos;
+    }
+
+    private void trackSignals()
+    {
+        addDataSlot(new IntReferenceHolder() {
+            @Override
+            public int get()
+            {
+                return getSignals();
+            }
+
+            @Override
+            public void set(int pValue)
+            {
+                setSignals(pValue);
+            }
+        });
+    }
+
+    public int getSignals()
+    {
+        int signals = 0;
+        if (tileEntity instanceof MusicBlockTile)
+        {
+            signals += ((MusicBlockTile) tileEntity).isRearRedstoneInputEnabled() ? 1 : 0;
+            signals += ((MusicBlockTile) tileEntity).isLeftRedstoneOutputEnabled() ? 2 : 0;
+            signals += ((MusicBlockTile) tileEntity).isRightRedstoneOutputEnabled() ? 4 : 0;
+        }
+        return signals;
+    }
+
+    public void setSignals(int signals)
+    {
+        if (tileEntity instanceof MusicBlockTile)
+        {
+            ((MusicBlockTile) tileEntity).setRearRedstoneInputEnabled((signals & 0x0001) > 0);
+            ((MusicBlockTile) tileEntity).setLeftRedstoneOutputEnabled((signals & 0x0002) > 0);
+            ((MusicBlockTile) tileEntity).setRightRedstoneOutputEnabled((signals & 0x0004) > 0);
+        }
+    }
+
+    public int getDuration()
+    {
+        int[] duration = new int [1];
+        ((MusicBlockTile) tileEntity).getItemHandler().ifPresent(itemHandler ->
+            {
+              for (int i = 0; i < itemHandler.getSlots(); i++)
+              {
+                  ItemStack stackInSlot = itemHandler.getStackInSlot(i);
+                  duration[0] = getDuration(stackInSlot, duration[0]);
+              }
+            });
+        return duration[0];
+    }
+
+    private int getDuration(ItemStack itemStack, int durationIn)
+    {
+        int duration = durationIn;
+        ItemStack sheetMusic = SheetMusicHelper.getIMusicFromIInstrument(itemStack);
+        if (!sheetMusic.isEmpty())
+        {
+            int durationSheet = SheetMusicHelper.getMusicDuration(sheetMusic);
+            if (durationSheet > duration) duration = durationSheet;
+        }
+        return duration;
     }
 
     private void scrapCheck(World pLevel, PlayerEntity pEntity, BlockPos blockPos)
