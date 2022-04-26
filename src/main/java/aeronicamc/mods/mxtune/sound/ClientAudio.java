@@ -29,45 +29,34 @@ public class ClientAudio
     public static final Logger LOGGER = LogManager.getLogger(ClientAudio.class);
     public static final Object THREAD_SYNC = new Object();
     private static final Minecraft mc = Minecraft.getInstance();
+    private static final SoundHandler soundHandler = mc.getSoundManager();
+    private static final MusicTicker musicTicker = mc.getMusicManager();
     private static SoundEngine soundEngine;
-    private static SoundHandler soundHandler;
-    private static MusicTicker musicTicker;
-    private static int soundOffCount;
-    private static int counter;
     private static final Queue<Integer> delayedAudioDataRemovalQueue = new ConcurrentLinkedDeque<>();
-
+    private static int counter;
     private static final int THREAD_POOL_SIZE = 2;
     /* PCM Signed Monaural little endian */
     private static final AudioFormat audioFormat3D = new AudioFormat(48000, 16, 1, true, false);
     /* PCM Signed Stereo little endian */
     private static final AudioFormat audioFormatStereo = new AudioFormat(48000, 16, 2, true, false);
-
     /* The active mxTune audio streams by playId */
     private static final Map<Integer, AudioData> playIDAudioData = new ConcurrentHashMap<>();
 
-    private static ExecutorService executorService = null;
-    private static ThreadFactory threadFactory = null;
-
-    private static boolean vanillaMusicPaused = false;
+    private static final ExecutorService executorService;
+    static {
+        final ThreadFactory threadFactory = new ThreadFactoryBuilder()
+                .setNameFormat(Reference.MOD_ID + " ClientAudio-%d")
+                .setDaemon(true)
+                .setPriority(Thread.MAX_PRIORITY)
+                .build();
+        executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE, threadFactory);
+    }
 
     private ClientAudio() { /* NOP */ }
 
     public static synchronized Set<Integer> getActivePlayIDs()
     {
         return Collections.unmodifiableSet(new HashSet<>(playIDAudioData.keySet()));
-    }
-
-    private static void startThreadFactory()
-    {
-        if (threadFactory == null)
-        {
-            threadFactory = new ThreadFactoryBuilder()
-                    .setNameFormat(Reference.MOD_ID + " ClientAudio-%d")
-                    .setDaemon(true)
-                    .setPriority(Thread.MAX_PRIORITY)
-                    .build();
-            executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE, threadFactory);
-        }
     }
 
     public static String getDebugString()
@@ -77,15 +66,11 @@ public class ClientAudio
 
     private static void init(SoundEngine se)
     {
-        startThreadFactory();
-        if (soundHandler == null || soundEngine == null)
+        if (soundEngine == null)
         {
             soundEngine = se;
-            soundHandler = soundEngine.soundManager;
             LOGGER.info("Starting mxTune ClientAudio System");
         }
-        if (musicTicker == null)
-            musicTicker = mc.getMusicManager();
     }
 
     public enum Status
@@ -179,7 +164,6 @@ public class ClientAudio
     {
         if (playID != PlayIdSupplier.INVALID)
         {
-            soundOffCount = 0;
             AudioData audioData = new AudioData(secondsToSkip, netTransitTime, playID, pos, isClient, callback);
             setAudioFormat(audioData);
             AudioData result = playIDAudioData.putIfAbsent(playID, audioData);
@@ -191,7 +175,7 @@ public class ClientAudio
             if (isClient || (mc.player != null && (mc.player.getId() == entityId))) // This CLIENT Player own music
             {
                 // SPECIAL CASE
-                // Player (actively playing solo) changed dimension so we reuse the playId and REPLACE the AudioData.
+                // Player (actively playing solo) changed dimension, so we reuse the playId and REPLACE the AudioData.
                 // Vanilla stops all sounds on the client when changing dimension. Playing is restarted where
                 // it left off. This works because the server keeps track of all active tunes.
                 if (result != null)
@@ -223,6 +207,12 @@ public class ClientAudio
         {
             LOGGER.warn("ClientAudio#play(Integer playID, BlockPos pos, String musicText): playID is null!");
         }
+    }
+
+    private static void stopVanillaMusic()
+    {
+        if (musicTicker.currentMusic != null)
+            musicTicker.stopPlaying();
     }
 
     public static boolean recordsVolumeOn()
@@ -310,7 +300,7 @@ public class ClientAudio
      */
     public static void submitStream(ISound pISound, boolean isStream, @Nullable ChannelManager.Entry entry)
     {
-        if (soundEngine != null && isStream)
+        if (isStream)
         {
             if (pISound instanceof MxSound) ((MxSound)pISound).getAudioData().filter(audioData -> audioData.getISound() == pISound).ifPresent( audioData ->
             {
@@ -344,19 +334,8 @@ public class ClientAudio
 
     private static void updateClientAudio()
     {
-        if (soundEngine != null)
+        if (soundEngine != null && recordsVolumeOn())
         {
-            if (recordsVolumeOn())
-                if(isVanillaMusicPaused() && playIDAudioData.isEmpty() )
-                {
-                    resumeVanillaMusic();
-                    setVanillaMusicPaused(false);
-                } else if (!playIDAudioData.isEmpty())
-                {
-                    // don't allow the timer to counter down while ClientAudio sessions are playing
-                    setVanillaMusicTimer(Integer.MAX_VALUE);
-                }
-            // Remove inactive playIDs
             removeQueuedAudioData();
             for (Map.Entry<Integer, AudioData> entry : playIDAudioData.entrySet())
             {
@@ -400,53 +379,13 @@ public class ClientAudio
         delayedAudioDataRemovalQueue.add(playId);
     }
 
-    private static void stopVanillaMusicTicker()
-    {
-        if (musicTicker.currentMusic != null)
-        {
-            soundHandler.stop(musicTicker.currentMusic);
-            musicTicker.currentMusic = null;
-            musicTicker.nextSongDelay = 0;
-        }
-    }
-
-    private static void stopVanillaMusic()
-    {
-        LOGGER.debug("ClientAudio stopVanillaMusic - PAUSED on {} active sessions.", playIDAudioData.size());
-        setVanillaMusicPaused(true);
-        stopVanillaMusicTicker();
-        setVanillaMusicTimer(Integer.MAX_VALUE);
-    }
-
-    private static void resumeVanillaMusic()
-    {
-        LOGGER.debug("ClientAudio resumeVanillaMusic - RESUMED");
-        setVanillaMusicTimer(100);
-    }
-
-    private static void setVanillaMusicTimer(int value)
-    {
-        if (musicTicker != null)
-            musicTicker.nextSongDelay = value;
-    }
-
-    private static void setVanillaMusicPaused(boolean flag)
-    {
-        vanillaMusicPaused = flag;
-    }
-
-    private static boolean isVanillaMusicPaused()
-    {
-        return vanillaMusicPaused;
-    }
-
     @SubscribeEvent
     public static void event(TickEvent.ClientTickEvent event)
     {
         if (event.side == LogicalSide.CLIENT && event.phase == TickEvent.Phase.END)
         {
             // one update per second
-            if (counter % 20 == 0)
+            if (counter++ % 20 == 0)
                 updateClientAudio();
         }
     }
@@ -464,8 +403,9 @@ public class ClientAudio
     @SubscribeEvent
     public static void event(PlaySoundEvent event)
     {
-        // Gets called often and guarantees that ClientAudio will get initialized.
         init(event.getManager());
+        if (event.getSound().getSource().equals(SoundCategory.MUSIC) && !playIDAudioData.isEmpty())
+            event.setResultSound(null);
     }
 
     @SubscribeEvent
