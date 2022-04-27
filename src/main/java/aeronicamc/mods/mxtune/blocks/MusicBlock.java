@@ -108,6 +108,7 @@ public class MusicBlock extends Block implements IMusicPlayer
                 if (tileEntity instanceof MusicBlockTile)
                 {
                     MusicBlockTile musicBlockTile = (MusicBlockTile) tileEntity;
+                    // Use spam prevention.
                     // Server side: prevent runaway activation.
                     // Limits activation to a single use even if held.
                     // It's a shame to use ITickableTileEntity#ticks for this,
@@ -190,17 +191,22 @@ public class MusicBlock extends Block implements IMusicPlayer
                 // get redStone input from the rear side
                 boolean isSidePowered = pLevel.hasSignal(pPos.relative(pState.getValue(HORIZONTAL_FACING).getOpposite()), pState.getValue(HORIZONTAL_FACING));
                 MusicBlockTile musicBlockTile = (MusicBlockTile) tileEntity;
-                if ((musicBlockTile.getPreviousInputState() != isSidePowered) && musicBlockTile.isRearRedstoneInputEnabled())
+                // Lever spam prevention. see use method above for more details.
+                if (!musicBlockTile.isUseHeld())
                 {
-                    if (isSidePowered)
+                    if ((musicBlockTile.getPreviousInputState() != isSidePowered) && musicBlockTile.isRearRedstoneInputEnabled())
                     {
-                        boolean isPlaying = canPlayOrStopMusic(pLevel, pState, pPos, false);
-                        if (isPlaying)
-                            musicBlockTile.setLastPlay(true);
-                        setPlayingState(pLevel, pPos, pState, isPlaying);
+                        if (isSidePowered)
+                        {
+                            boolean isPlaying = canPlayOrStopMusic(pLevel, pState, pPos, false);
+                            if (isPlaying)
+                                musicBlockTile.setLastPlay(true);
+                            setPlayingState(pLevel, pPos, pState, isPlaying);
+                        }
+                        musicBlockTile.setPreviousInputState(isSidePowered);
                     }
-                    musicBlockTile.setPreviousInputState(isSidePowered);
                 }
+                musicBlockTile.useHeldCounterUpdate(pState.getValue(PLAYING));
             }
         }
     }
