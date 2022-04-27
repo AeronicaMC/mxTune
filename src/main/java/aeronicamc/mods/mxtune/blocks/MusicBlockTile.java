@@ -50,9 +50,9 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
     // stored in nbt
     private UUID ownerUUID = EMPTY_OWNER;
     private int duration;
-    private boolean rearRsInputEnabled = true;
-    private boolean leftRsOutputEnabled = true;
-    private boolean rightRsOutputEnabled = false;
+    private boolean rearRsInputEnabled;
+    private boolean leftRsOutputEnabled;
+    private boolean rightRsOutputEnabled;
 
     // not stored in nbt
     private boolean previousInputPowerState;
