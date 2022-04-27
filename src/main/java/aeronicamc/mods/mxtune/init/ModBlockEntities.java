@@ -2,7 +2,7 @@ package aeronicamc.mods.mxtune.init;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.blocks.InvTestTile;
-import aeronicamc.mods.mxtune.blocks.MusicBlockTile;
+import aeronicamc.mods.mxtune.blocks.MusicBlockEntity;
 import aeronicamc.mods.mxtune.util.Misc;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
@@ -42,7 +42,7 @@ import java.util.function.Supplier;
  *
  * @author Choonster
  */
-public class ModTileEntities
+public class ModBlockEntities
 {
     private static final DeferredRegister<TileEntityType<?>> TILE_ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, Reference.MOD_ID);
 
@@ -54,9 +54,9 @@ public class ModTileEntities
                                                    ModBlocks.INV_TEST_BLOCK
                                                   );
 
-    public static final RegistryObject<TileEntityType<MusicBlockTile>>
+    public static final RegistryObject<TileEntityType<MusicBlockEntity>>
             INV_MUSIC_BLOCK = registerTileEntityType("inv_music_block",
-                                                     MusicBlockTile::new,
+                                                     MusicBlockEntity::new,
                                                      ModBlocks.MUSIC_BLOCK
                                                     );
 

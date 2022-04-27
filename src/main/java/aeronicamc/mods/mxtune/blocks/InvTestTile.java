@@ -1,6 +1,6 @@
 package aeronicamc.mods.mxtune.blocks;
 
-import aeronicamc.mods.mxtune.init.ModTileEntities;
+import aeronicamc.mods.mxtune.init.ModBlockEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -33,7 +33,7 @@ public class InvTestTile extends TileEntity implements INamedContainerProvider, 
 
     public InvTestTile()
     {
-        super(ModTileEntities.INV_TEST_TILE.get());
+        super(ModBlockEntities.INV_TEST_TILE.get());
     }
 
     private IItemHandler createHandler() {

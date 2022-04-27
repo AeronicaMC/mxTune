@@ -1,7 +1,7 @@
 package aeronicamc.mods.mxtune.inventory;
 
 
-import aeronicamc.mods.mxtune.blocks.MusicBlockTile;
+import aeronicamc.mods.mxtune.blocks.MusicBlockEntity;
 import aeronicamc.mods.mxtune.blocks.genericContainer;
 import aeronicamc.mods.mxtune.init.ModContainers;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
@@ -43,7 +43,7 @@ public class MusicBlockContainer extends genericContainer
                     {
                         for (int i = 0; i < CONTAINER_ROWS; i++) {
                             for (int j = 0; j < CONTAINER_SLOTS_PER_ROW; j++) {
-                                addSlot(new SlotMusicBlock(h, (MusicBlockTile) tileEntity, j + i * CONTAINER_ROWS, j * 18 + guiConX, i * 18 + guiConY));
+                                addSlot(new SlotMusicBlock(h, (MusicBlockEntity) tileEntity, j + i * CONTAINER_ROWS, j * 18 + guiConX, i * 18 + guiConY));
                             }
                         }
                     });
@@ -89,29 +89,29 @@ public class MusicBlockContainer extends genericContainer
     public int getSignals()
     {
         int signals = 0;
-        if (tileEntity instanceof MusicBlockTile)
+        if (tileEntity instanceof MusicBlockEntity)
         {
-            signals += ((MusicBlockTile) tileEntity).isRearRedstoneInputEnabled() ? 1 : 0;
-            signals += ((MusicBlockTile) tileEntity).isLeftRedstoneOutputEnabled() ? 2 : 0;
-            signals += ((MusicBlockTile) tileEntity).isRightRedstoneOutputEnabled() ? 4 : 0;
+            signals += ((MusicBlockEntity) tileEntity).isRearRedstoneInputEnabled() ? 1 : 0;
+            signals += ((MusicBlockEntity) tileEntity).isLeftRedstoneOutputEnabled() ? 2 : 0;
+            signals += ((MusicBlockEntity) tileEntity).isRightRedstoneOutputEnabled() ? 4 : 0;
         }
         return signals;
     }
 
     public void setSignals(int signals)
     {
-        if (tileEntity instanceof MusicBlockTile)
+        if (tileEntity instanceof MusicBlockEntity)
         {
-            ((MusicBlockTile) tileEntity).setRearRedstoneInputEnabled((signals & 0x0001) > 0);
-            ((MusicBlockTile) tileEntity).setLeftRedstoneOutputEnabled((signals & 0x0002) > 0);
-            ((MusicBlockTile) tileEntity).setRightRedstoneOutputEnabled((signals & 0x0004) > 0);
+            ((MusicBlockEntity) tileEntity).setRearRedstoneInputEnabled((signals & 0x0001) > 0);
+            ((MusicBlockEntity) tileEntity).setLeftRedstoneOutputEnabled((signals & 0x0002) > 0);
+            ((MusicBlockEntity) tileEntity).setRightRedstoneOutputEnabled((signals & 0x0004) > 0);
         }
     }
 
     public int getDuration()
     {
         int[] duration = new int [1];
-        ((MusicBlockTile) tileEntity).getItemHandler().ifPresent(itemHandler ->
+        ((MusicBlockEntity) tileEntity).getItemHandler().ifPresent(itemHandler ->
             {
               for (int i = 0; i < itemHandler.getSlots(); i++)
               {
@@ -149,7 +149,7 @@ public class MusicBlockContainer extends genericContainer
     public ITextComponent getName()
     {
         if ((tileEntity != null) && (tileEntity.getLevel() != null) && tileEntity.getLevel().isClientSide)
-            return ((MusicBlockTile)tileEntity).getName();
+            return ((MusicBlockEntity)tileEntity).getName();
         return new StringTextComponent("");
     }
 
@@ -195,7 +195,7 @@ public class MusicBlockContainer extends genericContainer
             final TileEntity tileEntity = world.getBlockEntity(pos);
             final PlayerEntity player = inv.player;
 
-            if (!(tileEntity instanceof MusicBlockTile)) {
+            if (!(tileEntity instanceof MusicBlockEntity)) {
                 throw new IllegalStateException("Invalid block at " + pos);
             }
 

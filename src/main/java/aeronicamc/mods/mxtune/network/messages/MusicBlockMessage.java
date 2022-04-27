@@ -1,6 +1,6 @@
 package aeronicamc.mods.mxtune.network.messages;
 
-import aeronicamc.mods.mxtune.blocks.MusicBlockTile;
+import aeronicamc.mods.mxtune.blocks.MusicBlockEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -48,12 +48,12 @@ public class MusicBlockMessage extends AbstractMessage<MusicBlockMessage>
                 ServerPlayerEntity sPlayer = ctx.get().getSender();
                 if (sPlayer != null && sPlayer.level.isLoaded(message.blockPos))
                 {
-                    TileEntity tileEntity = sPlayer.level.getBlockEntity(message.blockPos);
-                    if (tileEntity instanceof MusicBlockTile)
+                    TileEntity blockEntity = sPlayer.level.getBlockEntity(message.blockPos);
+                    if (blockEntity instanceof MusicBlockEntity)
                     {
-                        ((MusicBlockTile) tileEntity).setRearRedstoneInputEnabled((message.signals & 0x0001) > 0);
-                        ((MusicBlockTile) tileEntity).setLeftRedstoneOutputEnabled((message.signals & 0x0002) > 0);
-                        ((MusicBlockTile) tileEntity).setRightRedstoneOutputEnabled((message.signals & 0x0004) > 0);
+                        ((MusicBlockEntity) blockEntity).setRearRedstoneInputEnabled((message.signals & 0x0001) > 0);
+                        ((MusicBlockEntity) blockEntity).setLeftRedstoneOutputEnabled((message.signals & 0x0002) > 0);
+                        ((MusicBlockEntity) blockEntity).setRightRedstoneOutputEnabled((message.signals & 0x0004) > 0);
                     }
 
                 }

@@ -1,6 +1,6 @@
 package aeronicamc.mods.mxtune.blocks;
 
-import aeronicamc.mods.mxtune.init.ModTileEntities;
+import aeronicamc.mods.mxtune.init.ModBlockEntities;
 import aeronicamc.mods.mxtune.inventory.MusicBlockContainer;
 import aeronicamc.mods.mxtune.util.MusicProperties;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
@@ -34,10 +34,10 @@ import java.util.UUID;
 
 import static aeronicamc.mods.mxtune.util.SheetMusicHelper.KEY_DURATION;
 
-public class MusicBlockTile extends TileEntity implements INamedContainerProvider, INameable, IMusicPlayer, ITickableTileEntity
+public class MusicBlockEntity extends TileEntity implements INamedContainerProvider, INameable, IMusicPlayer, ITickableTileEntity
 {
     public static final UUID EMPTY_OWNER = new UUID(0,0);
-    private static final Logger LOGGER = LogManager.getLogger(MusicBlockTile.class);
+    private static final Logger LOGGER = LogManager.getLogger(MusicBlockEntity.class);
     private ITextComponent customName;
     private final LazyOptional<IItemHandler> handler = LazyOptional.of(this::createHandler);
     private static final String KEY_CUSTOM_NAME = "CustomName";
@@ -60,9 +60,9 @@ public class MusicBlockTile extends TileEntity implements INamedContainerProvide
     private int counter;
     private int useHeldCounter;
 
-    public MusicBlockTile()
+    public MusicBlockEntity()
     {
-        super(ModTileEntities.INV_MUSIC_BLOCK.get());
+        super(ModBlockEntities.INV_MUSIC_BLOCK.get());
     }
 
     private IItemHandler createHandler() {
