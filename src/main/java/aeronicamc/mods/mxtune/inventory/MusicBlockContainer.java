@@ -110,28 +110,7 @@ public class MusicBlockContainer extends genericContainer
 
     public int getDuration()
     {
-        int[] duration = new int [1];
-        ((MusicBlockEntity) tileEntity).getItemHandler().ifPresent(itemHandler ->
-            {
-              for (int i = 0; i < itemHandler.getSlots(); i++)
-              {
-                  ItemStack stackInSlot = itemHandler.getStackInSlot(i);
-                  duration[0] = getDuration(stackInSlot, duration[0]);
-              }
-            });
-        return duration[0];
-    }
-
-    private int getDuration(ItemStack itemStack, int durationIn)
-    {
-        int duration = durationIn;
-        ItemStack sheetMusic = SheetMusicHelper.getIMusicFromIInstrument(itemStack);
-        if (!sheetMusic.isEmpty())
-        {
-            int durationSheet = SheetMusicHelper.getMusicDuration(sheetMusic);
-            if (durationSheet > duration) duration = durationSheet;
-        }
-        return duration;
+        return tileEntity instanceof MusicBlockEntity ? ((MusicBlockEntity) tileEntity).getDuration() : 0;
     }
 
     private void scrapCheck(World pLevel, PlayerEntity pEntity, BlockPos blockPos)

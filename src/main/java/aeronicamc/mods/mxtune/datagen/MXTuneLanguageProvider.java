@@ -48,6 +48,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
     {
         // TODO
         add(ModBlocks.MUSIC_BLOCK.get(), "Music Block");
+        add("container.mxtune.block_music.more", "%s More");
         addTooltip("block_music.help", "When placed in the world: SHIFT+Right-Click to OPEN. Right-Click to play. Add up to 16 instruments loaded with sheet music.");
         add(ModBlocks.MUSIC_VENUE_TOOL_BLOCK.get(), "Music Venue Marker");
     }

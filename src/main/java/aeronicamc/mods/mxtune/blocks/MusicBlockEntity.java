@@ -9,6 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -49,7 +50,6 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
 
     // stored in nbt
     private UUID ownerUUID = EMPTY_OWNER;
-    private int duration;
     private boolean rearRsInputEnabled;
     private boolean leftRsOutputEnabled;
     private boolean rightRsOutputEnabled;
@@ -113,8 +113,6 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
         if (nbt.contains(KEY_CUSTOM_NAME, Constants.NBT.TAG_STRING)) {
             this.customName = ITextComponent.Serializer.fromJson(nbt.getString(KEY_CUSTOM_NAME));
         }
-        if (nbt.contains(KEY_DURATION, Constants.NBT.TAG_INT))
-            this.duration = nbt.getInt(KEY_DURATION);
         if (nbt.contains(KEY_LEFT_RS_OUTPUT_ENABLED, Constants.NBT.TAG_BYTE))
             this.leftRsOutputEnabled = nbt.getBoolean(KEY_LEFT_RS_OUTPUT_ENABLED);
         if (nbt.contains(KEY_RIGHT_RS_OUTPUT_ENABLED, Constants.NBT.TAG_BYTE))
@@ -136,7 +134,7 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
         if (this.customName != null) {
             tag.putString(KEY_CUSTOM_NAME, ITextComponent.Serializer.toJson(this.customName));
         }
-        tag.putInt(KEY_DURATION, this.duration);
+        tag.putInt(KEY_DURATION, getDuration());
         tag.putBoolean(KEY_LEFT_RS_OUTPUT_ENABLED, leftRsOutputEnabled);
         tag.putBoolean(KEY_RIGHT_RS_OUTPUT_ENABLED, rightRsOutputEnabled);
         tag.putBoolean(KEY_REAR_RS_INPUT_ENABLED, rearRsInputEnabled);
@@ -166,13 +164,29 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
 
     public int getDuration()
     {
-        return duration;
+        int[] duration = new int [1];
+        getItemHandler().ifPresent(
+                itemHandler ->
+                {
+                   for (int i = 0; i < itemHandler.getSlots(); i++)
+                   {
+                       ItemStack stackInSlot = itemHandler.getStackInSlot(i);
+                       duration[0] = getDuration(stackInSlot, duration[0]);
+                   }
+               });
+        return duration[0];
     }
 
-    public void setDuration(int duration)
+    private int getDuration(ItemStack itemStack, int durationIn)
     {
-        this.duration = duration;
-        setChanged();
+        int duration = durationIn;
+        ItemStack sheetMusic = SheetMusicHelper.getIMusicFromIInstrument(itemStack);
+        if (!sheetMusic.isEmpty())
+        {
+            int durationSheet = SheetMusicHelper.getMusicDuration(sheetMusic);
+            if (durationSheet > duration) duration = durationSheet;
+        }
+        return duration;
     }
 
     public boolean isRearRedstoneInputEnabled()

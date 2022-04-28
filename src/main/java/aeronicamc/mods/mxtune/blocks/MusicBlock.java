@@ -2,14 +2,18 @@ package aeronicamc.mods.mxtune.blocks;
 
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.managers.PlayManager;
+import aeronicamc.mods.mxtune.util.IInstrument;
+import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
@@ -23,6 +27,9 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
@@ -48,7 +55,6 @@ public class MusicBlock extends Block implements IMusicPlayer
 
     private static final Logger LOGGER = LogManager.getLogger(MusicBlock.class);
     private static final Random rand = new Random();
-    private int signal;
 
     public MusicBlock()
     {
@@ -298,6 +304,21 @@ public class MusicBlock extends Block implements IMusicPlayer
     @Override
     public void playerWillDestroy(World pLevel, BlockPos pPos, BlockState pState, PlayerEntity pPlayer)
     {
+        getMusicBlockEntity(pLevel, pPos).filter(p -> !pLevel.isClientSide() && !pPlayer.isCreative()).ifPresent(
+                musicBlockEntity ->
+                {
+                    ItemStack itemStack = getCloneItemStack(pLevel, pPos, pState);
+                    CompoundNBT cNBT = musicBlockEntity.save(new CompoundNBT());
+                    if (!cNBT.isEmpty())
+                        itemStack.addTagElement("BlockEntityTag", cNBT);
+
+                    if (musicBlockEntity.hasCustomName())
+                        itemStack.setHoverName(musicBlockEntity.getCustomName());
+
+                    ItemEntity itemEntity = new ItemEntity(pLevel, pPos.getX(), pPos.getY(), pPos.getZ(), itemStack);
+                    itemEntity.setDefaultPickUpDelay();
+                    pLevel.addFreshEntity(itemEntity);
+                });
         super.playerWillDestroy(pLevel, pPos, pState, pPlayer);
     }
 
@@ -319,6 +340,30 @@ public class MusicBlock extends Block implements IMusicPlayer
     public void appendHoverText(ItemStack pStack, @Nullable IBlockReader pLevel, List<ITextComponent> pTooltip, ITooltipFlag pFlag)
     {
         super.appendHoverText(pStack, pLevel, pTooltip, pFlag);
+        CompoundNBT cNBT = pStack.getTagElement("BlockEntityTag");
+        if (cNBT != null)
+        {
+            CompoundNBT inventoryNBT = cNBT.getCompound("Inventory");
+            if (inventoryNBT.contains("Items", Constants.NBT.TAG_LIST))
+            {
+                int size = inventoryNBT.contains("Size", Constants.NBT.TAG_INT) ? inventoryNBT.getInt("Size") : 27;
+                NonNullList<ItemStack> nonNullList = NonNullList.withSize(size, ItemStack.EMPTY);
+                ItemStackHelper.loadAllItems(inventoryNBT, nonNullList);
+                ItemStack instrumentStack = nonNullList.stream().findFirst().orElse(ItemStack.EMPTY);
+
+                if (!instrumentStack.isEmpty())
+                    pTooltip.add(SheetMusicHelper.getFormattedMusicTitle(SheetMusicHelper.getIMusicFromIInstrument(instrumentStack)));
+                else pTooltip.add(SheetMusicHelper.getFormattedMusicTitle(ItemStack.EMPTY));
+
+                long instrumentCount = nonNullList.stream().filter(p -> (p.getItem() instanceof IInstrument) && !SheetMusicHelper.getIMusicFromIInstrument(p).isEmpty()).count();
+                if (instrumentCount > 1)
+                    pTooltip.add(new StringTextComponent(new TranslationTextComponent("container.mxtune.block_music.more", instrumentCount - 1).getString() + (TextFormatting.ITALIC)));
+
+                int duration =  cNBT.contains("Duration", Constants.NBT.TAG_INT) ? cNBT.getInt("Duration") : 0;
+                if (duration > 0)
+                    pTooltip.add(new StringTextComponent(SheetMusicHelper.formatDuration(duration)).withStyle(TextFormatting.YELLOW));
+            }
+        }
     }
 
     private Optional<MusicBlockEntity> getMusicBlockEntity(IBlockReader pLevel, BlockPos pPos)
