@@ -319,14 +319,14 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
 
     public boolean notFastRS()
     {
-        return useHeldCounter <= 0;
+        return fastRSCounter <= 0;
     }
 
     public void fastRSCounterUpdate(boolean countUp)
     {
         if (countUp)
-            useHeldCounter = (useHeldCounter += 5) > 1 ? 5 : useHeldCounter;
+            fastRSCounter = (fastRSCounter += 5) > 1 ? 5 : fastRSCounter;
         else
-            useHeldCounter = (--useHeldCounter < -1) ? -1 : useHeldCounter;
+            fastRSCounter = (--fastRSCounter < -1) ? -1 : fastRSCounter;
     }
 }
