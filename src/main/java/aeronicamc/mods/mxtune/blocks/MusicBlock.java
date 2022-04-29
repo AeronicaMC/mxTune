@@ -123,7 +123,7 @@ public class MusicBlock extends Block implements IMusicPlayer
                             // Limits activation to a single use even if held.
                             // It's a shame to use ITickableTileEntity#ticks for this,
                             // but I have not found another solution yet.
-                            if (!musicBlockEntity.isUseHeld())
+                            if (musicBlockEntity.notHeld())
                             {
                                 boolean isPlaying = canPlayOrStopMusic(worldIn, state, pos, false);
                                 if (isPlaying)
@@ -194,7 +194,7 @@ public class MusicBlock extends Block implements IMusicPlayer
                     // get redStone input from the rear side
                     boolean isSidePowered = pLevel.hasSignal(pPos.relative(pState.getValue(HORIZONTAL_FACING).getOpposite()), pState.getValue(HORIZONTAL_FACING));
                     // Lever spam prevention. see use method above for more details.
-                    if (!musicBlockEntity.isUseHeld())
+                    if (musicBlockEntity.notFastRS())
                     {
                         if ((musicBlockEntity.getPreviousInputState() != isSidePowered) && musicBlockEntity.isRearRedstoneInputEnabled())
                         {
@@ -208,7 +208,7 @@ public class MusicBlock extends Block implements IMusicPlayer
                             musicBlockEntity.setPreviousInputState(isSidePowered);
                         }
                     }
-                    musicBlockEntity.useHeldCounterUpdate(pState.getValue(PLAYING));
+                    musicBlockEntity.fastRSCounterUpdate(pState.getValue(PLAYING));
                 });
     }
 
