@@ -227,14 +227,17 @@ jar {
 }
 
 processResources {
-    // Exclude the GIMP image files
+    // Exclude the GIMP project files
     exclude '**/*.xcf'
 
-    // Exclude the Cubik model files
+    // Exclude the Cubik project files
     exclude '**/*.bdc3D'
 
-    // Exclude the Paint.NET image files
+    // Exclude the Paint.NET project files
     exclude '**/*.pdn'
+
+    // Exclude Blockbench project files
+    exclude '**/*.bbmodel'
 
     exclude '**/.cache/'
 
