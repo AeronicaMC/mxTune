@@ -45,10 +45,10 @@ public class MXTuneBlockStateProvider extends BlockStateProvider
                 .texture("particle", modLoc("block/music_block"))
                 .texture("down", modLoc("block/music_block"))
                 .texture("up", modLoc("block/music_block"))
-                .texture("east", modLoc("block/music_block"))
-                .texture("west", modLoc("block/music_block"))
-                .texture("north", modLoc("block/inv_test_block_front"))
-                .texture("south", modLoc("block/music_block"));
+                .texture("east", modLoc("block/music_block_side"))
+                .texture("west", modLoc("block/music_block_side"))
+                .texture("north", modLoc("block/music_block_front"))
+                .texture("south", modLoc("block/music_block_side"));
 
         getVariantBuilder(ModBlocks.MUSIC_BLOCK.get())
                 .forAllStates(state -> {

@@ -4,9 +4,9 @@
     "particle": "mxtune:block/music_block",
     "down": "mxtune:block/music_block",
     "up": "mxtune:block/music_block",
-    "east": "mxtune:block/music_block",
-    "west": "mxtune:block/music_block",
-    "north": "mxtune:block/inv_test_block_front",
-    "south": "mxtune:block/music_block"
+    "east": "mxtune:block/music_block_side",
+    "west": "mxtune:block/music_block_side",
+    "north": "mxtune:block/music_block_front",
+    "south": "mxtune:block/music_block_side"
   }
 }
