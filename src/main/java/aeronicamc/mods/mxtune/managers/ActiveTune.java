@@ -64,7 +64,7 @@ public class ActiveTune
             playIdToActiveTuneEntry.values().forEach(entry -> {
                 if (entry.isDone())
                     deleteEntryQueue.add(entry);
-                entry.pollDone();
+                entry.tickDuration();
             });
             if (!deleteEntryQueue.isEmpty())
                 playIdToActiveTuneEntry.remove(deleteEntryQueue.remove().playId);
@@ -213,10 +213,9 @@ public class ActiveTune
             return durationSeconds < secondsElapsed;
         }
 
-        void pollDone()
+        void tickDuration()
         {
-            boolean isDone = durationSeconds <= ++secondsElapsed;
-            if (isDone) executor.execute(()-> PlayManager.stopPlayId(playId));
+            ++secondsElapsed;
         }
 
         @Override
