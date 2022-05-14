@@ -1,11 +1,12 @@
-#### 2022-05-14 mxtune-1.16.5-2.0.0-alpha- <TBD>
-* Music Block updates are still WIP, but making progress:
-  * GUI updates: resized and added buttons for redstone signals.
-  * Responds to rear redstone signal for start/stop play.
-  * Outputs redstone signals to left/right sides.
-  * Breaking the block now returns a block item entity containing the settings and inventory.
-  * New textures, but these will probably change yet again when other visual features are enabled.
-* Simplify the mxTune client audio initialization. This should improve reliability of music plays.
+#### 2022-05-14 mxtune-1.16.5-2.0.0-alpha-2022-05-14.48539161 
+* Music Block updates are still WIP, but making progress: 
+  * GUI updates: resized and added buttons for redstone signals. 
+  * Responds to rear redstone signal for start/stop play. 
+  * Outputs redstone signals to left/right sides. 
+  * Breaking the block now returns a block item entity containing the settings and inventory. 
+  * New textures, but these will probably change yet again when other visual features are enabled. 
+* Simplify the mxTune client audio initialization. This should improve reliability of music plays. 
+* When a tune ends the server no longer sends a stop. The server tracks seconds elapsed so a tune can be started mid-play for a player who wonders into the area where an mxTune instrument is active. 
 
 #### 2022-03-28 mxtune-1.16.5-2.0.0-alpha-2022-03-28.52233404
 * Make the MusicBlock keep the chunk loaded while it's playing.
