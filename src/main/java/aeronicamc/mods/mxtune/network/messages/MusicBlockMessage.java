@@ -43,7 +43,7 @@ public class MusicBlockMessage extends AbstractMessage<MusicBlockMessage>
     public void handle(MusicBlockMessage message, Supplier<NetworkEvent.Context> ctx)
     {
         if (ctx.get().getDirection().getReceptionSide().isServer())
-            ctx.get().enqueueWork(() ->{
+            ctx.get().enqueueWork(() -> {
 
                 ServerPlayerEntity sPlayer = ctx.get().getSender();
                 if (sPlayer != null && sPlayer.level.isLoaded(message.blockPos))
@@ -54,8 +54,11 @@ public class MusicBlockMessage extends AbstractMessage<MusicBlockMessage>
                         ((MusicBlockEntity) blockEntity).setRearRedstoneInputEnabled((message.signals & 0x0001) > 0);
                         ((MusicBlockEntity) blockEntity).setLeftRedstoneOutputEnabled((message.signals & 0x0002) > 0);
                         ((MusicBlockEntity) blockEntity).setRightRedstoneOutputEnabled((message.signals & 0x0004) > 0);
+                        if (((MusicBlockEntity) blockEntity).isOwner(sPlayer.getUUID()))
+                        {
+                            ((MusicBlockEntity) blockEntity).setLock((message.signals & 0x0008) > 0);
+                        }
                     }
-
                 }
             });
         ctx.get().setPacketHandled(true);

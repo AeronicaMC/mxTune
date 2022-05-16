@@ -35,6 +35,7 @@ import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -114,7 +115,7 @@ public class MusicBlock extends Block implements IMusicPlayer
     {
         if (!worldIn.isClientSide())
         {
-            if (!player.isShiftKeyDown())
+            if (invertShiftIfLocked(player, worldIn, pos))
                 getMusicBlockEntity(worldIn, pos).ifPresent(
                         musicBlockEntity ->
                         {
@@ -142,6 +143,11 @@ public class MusicBlock extends Block implements IMusicPlayer
             }
         }
         return ActionResultType.SUCCESS;
+    }
+
+    private boolean invertShiftIfLocked(PlayerEntity player, World level, BlockPos blockPos)
+    {
+        return LockableHelper.isLocked(FakePlayerFactory.getMinecraft((ServerWorld) level), level, blockPos) != player.isShiftKeyDown();
     }
 
     private boolean canPlayOrStopMusic(World pLevel, BlockState pState, BlockPos pPos, Boolean noPlay)
@@ -297,8 +303,13 @@ public class MusicBlock extends Block implements IMusicPlayer
     @Override
     public void setPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack)
     {
-        getMusicBlockEntity(world, pos).filter(p -> stack.hasCustomHoverName()).ifPresent(
-                musicBlockEntity -> musicBlockEntity.setCustomName(stack.getHoverName()));
+        getMusicBlockEntity(world, pos).ifPresent(
+                musicBlockEntity -> {
+                    if (stack.hasCustomHoverName())
+                        musicBlockEntity.setCustomName(stack.getHoverName());
+                    if (entity != null) musicBlockEntity.setOwner(entity.getUUID());
+                    }
+                );
     }
 
     @Override

@@ -35,7 +35,7 @@ import java.util.UUID;
 
 import static aeronicamc.mods.mxtune.util.SheetMusicHelper.KEY_DURATION;
 
-public class MusicBlockEntity extends TileEntity implements INamedContainerProvider, INameable, IMusicPlayer, ITickableTileEntity
+public class MusicBlockEntity extends TileEntity implements INamedContainerProvider, ILockable, IMusicPlayer, INameable, ITickableTileEntity
 {
     public static final UUID EMPTY_OWNER = new UUID(0,0);
     private static final Logger LOGGER = LogManager.getLogger(MusicBlockEntity.class);
@@ -46,6 +46,7 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
     private static final String KEY_LEFT_RS_OUTPUT_ENABLED = "leftRsOutputEnabled";
     private static final String KEY_REAR_RS_INPUT_ENABLED = "rearRsInputEnabled";
     private static final String KEY_RIGHT_RS_OUTPUT_ENABLED = "rightRsOutputEnabled";
+    private static final String KEY_LOCK = "Lock";
     public static final String KEY_OWNER = "Owner";
 
     // stored in nbt
@@ -53,6 +54,7 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
     private boolean rearRsInputEnabled;
     private boolean leftRsOutputEnabled;
     private boolean rightRsOutputEnabled;
+    private boolean lock;
 
     // not stored in nbt
     private boolean previousInputPowerState;
@@ -123,8 +125,10 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
             this.rightRsOutputEnabled = nbt.getBoolean(KEY_RIGHT_RS_OUTPUT_ENABLED);
         if (nbt.contains(KEY_REAR_RS_INPUT_ENABLED, Constants.NBT.TAG_BYTE))
             this.rearRsInputEnabled = nbt.getBoolean(KEY_REAR_RS_INPUT_ENABLED);
-        if(nbt.hasUUID(KEY_OWNER))
+        if (nbt.hasUUID(KEY_OWNER))
             this.ownerUUID = nbt.getUUID(KEY_OWNER);
+        if (nbt.contains(KEY_LOCK))
+            this.lock = nbt.getBoolean(KEY_LOCK);
         super.load(state, nbt);
     }
 
@@ -143,6 +147,7 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
         tag.putBoolean(KEY_RIGHT_RS_OUTPUT_ENABLED, rightRsOutputEnabled);
         tag.putBoolean(KEY_REAR_RS_INPUT_ENABLED, rearRsInputEnabled);
         tag.putUUID(KEY_OWNER, ownerUUID);
+        tag.putBoolean(KEY_LOCK, lock);
         return super.save(tag);
     }
 
@@ -328,5 +333,37 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
             fastRSCounter = (fastRSCounter += 5) > 1 ? 5 : fastRSCounter;
         else
             fastRSCounter = (--fastRSCounter < -1) ? -1 : fastRSCounter;
+    }
+
+    @Override
+    public boolean isLocked()
+    {
+        return lock;
+    }
+
+    @Override
+    public void setLock(boolean lock)
+    {
+        this.lock = lock;
+        markDirtySyncClient();
+    }
+
+    @Override
+    public boolean isOwner(UUID owner)
+    {
+        return this.ownerUUID.equals(owner);
+    }
+
+    @Override
+    public void setOwner(UUID owner)
+    {
+        this.ownerUUID = owner;
+        markDirtySyncClient();
+    }
+
+    @Override
+    public UUID getOwner()
+    {
+        return this.ownerUUID;
     }
 }

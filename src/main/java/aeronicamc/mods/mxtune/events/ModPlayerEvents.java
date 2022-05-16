@@ -1,15 +1,21 @@
 package aeronicamc.mods.mxtune.events;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.blocks.ILockable;
+import aeronicamc.mods.mxtune.blocks.IMusicPlayer;
+import aeronicamc.mods.mxtune.blocks.LockableHelper;
 import aeronicamc.mods.mxtune.caps.player.IPlayerNexus;
 import aeronicamc.mods.mxtune.caps.venues.IMusicVenues;
 import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
 import aeronicamc.mods.mxtune.managers.PlayManager;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
@@ -67,6 +73,24 @@ public class ModPlayerEvents
         capabilitySynchronize(event.getEntityLiving());
         PlayManager.sendMusicTo((ServerPlayerEntity) event.getPlayer(), event.getPlayer());
         LOGGER.debug("PlayerChangedDimensionEvent: {}", event.getPlayer());
+    }
+
+    // Test if a player can break this block with a BE of type ILockable.
+    // Only the owner of the block can break these.
+    @SubscribeEvent
+    public static void onEvent(BlockEvent.BreakEvent event)
+    {
+        if(event.getWorld().isClientSide()) return;
+        if(event.getState().getBlock() instanceof IMusicPlayer)
+        {
+            TileEntity tileEntity = event.getWorld().getBlockEntity(event.getPos());
+            if(tileEntity instanceof ILockable)
+            {
+                boolean isCreativeMode = event.getPlayer() != null && event.getPlayer().isCreative();
+                if (LockableHelper.cannotBreak(event.getPlayer(), (World) event.getWorld(), event.getPos()) && !isCreativeMode)
+                    event.setCanceled(true);
+            }
+        }
     }
 
     @SubscribeEvent
