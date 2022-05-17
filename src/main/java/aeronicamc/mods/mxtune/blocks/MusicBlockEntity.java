@@ -81,7 +81,7 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
     @Override
     public void tick()
     {
-        if (level != null && counter++ % 5 == 0)
+        if (level != null && counter++ % 2 == 0)
         {
             useHeldCounterUpdate(false);
             fastRSCounterUpdate(false);

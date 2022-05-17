@@ -34,7 +34,6 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
@@ -46,6 +45,8 @@ import java.util.Optional;
 import java.util.Random;
 
 import static net.minecraft.state.properties.BlockStateProperties.HORIZONTAL_FACING;
+import static net.minecraftforge.common.util.Constants.BlockFlags;
+import static net.minecraftforge.common.util.Constants.NBT;
 
 
 @SuppressWarnings("deprecation")
@@ -97,7 +98,7 @@ public class MusicBlock extends Block implements IMusicPlayer
                     {
                         if (pState.getValue(PLAYING))
                         {
-                            pLevel.getBlockTicks().scheduleTick(pPos, this, 20);
+                            pLevel.getBlockTicks().scheduleTick(pPos, this, 4);
                             if (PlayManager.getActiveBlockPlayId(pPos) == PlayIdSupplier.INVALID)
                             {
                                 setPlayingState(pLevel, pPos, pState, false);
@@ -182,14 +183,14 @@ public class MusicBlock extends Block implements IMusicPlayer
 
     private void setPlayingState(World pLevel, BlockPos pPos, BlockState pState, boolean pIsPlaying)
     {
-        pLevel.setBlock(pPos, pState.setValue(PLAYING, pIsPlaying), Constants.BlockFlags.BLOCK_UPDATE | Constants.BlockFlags.UPDATE_NEIGHBORS);
-        pLevel.getBlockTicks().scheduleTick(pPos, this, 10);
+        pLevel.setBlock(pPos, pState.setValue(PLAYING, pIsPlaying), BlockFlags.BLOCK_UPDATE | BlockFlags.NOTIFY_NEIGHBORS);
+        pLevel.getBlockTicks().scheduleTick(pPos, this, 4);
     }
 
     private void setOutputPowerState(World pLevel, BlockPos pPos, BlockState pState, boolean pIsPowered)
     {
-        pLevel.setBlock(pPos, pState.setValue(POWERED, pIsPowered), 3);
-        pLevel.getBlockTicks().scheduleTick(pPos, this, 10);
+        pLevel.setBlock(pPos, pState.setValue(POWERED, pIsPowered), BlockFlags.BLOCK_UPDATE | BlockFlags.NOTIFY_NEIGHBORS);
+        pLevel.getBlockTicks().scheduleTick(pPos, this, 4);
     }
 
     @Override
@@ -256,7 +257,7 @@ public class MusicBlock extends Block implements IMusicPlayer
     @Override
     public boolean shouldCheckWeakPower(BlockState state, IWorldReader world, BlockPos pos, Direction side)
     {
-        return false; //state.isRedstoneConductor(world, pos);
+        return false;
     }
 
     @Override
@@ -356,9 +357,9 @@ public class MusicBlock extends Block implements IMusicPlayer
         if (cNBT != null)
         {
             CompoundNBT inventoryNBT = cNBT.getCompound("Inventory");
-            if (inventoryNBT.contains("Items", Constants.NBT.TAG_LIST))
+            if (inventoryNBT.contains("Items", NBT.TAG_LIST))
             {
-                int size = inventoryNBT.contains("Size", Constants.NBT.TAG_INT) ? inventoryNBT.getInt("Size") : 27;
+                int size = inventoryNBT.contains("Size", NBT.TAG_INT) ? inventoryNBT.getInt("Size") : 27;
                 NonNullList<ItemStack> nonNullList = NonNullList.withSize(size, ItemStack.EMPTY);
                 ItemStackHelper.loadAllItems(inventoryNBT, nonNullList);
                 ItemStack instrumentStack = nonNullList.stream().findFirst().orElse(ItemStack.EMPTY);
@@ -371,7 +372,7 @@ public class MusicBlock extends Block implements IMusicPlayer
                 if (instrumentCount > 1)
                     pTooltip.add(new StringTextComponent(new TranslationTextComponent("container.mxtune.block_music.more", instrumentCount - 1).getString() + (TextFormatting.ITALIC)));
 
-                int duration =  cNBT.contains("Duration", Constants.NBT.TAG_INT) ? cNBT.getInt("Duration") : 0;
+                int duration =  cNBT.contains("Duration", NBT.TAG_INT) ? cNBT.getInt("Duration") : 0;
                 if (duration > 0)
                     pTooltip.add(new StringTextComponent(SheetMusicHelper.formatDuration(duration)).withStyle(TextFormatting.YELLOW));
             }
