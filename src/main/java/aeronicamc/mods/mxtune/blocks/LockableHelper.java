@@ -49,19 +49,20 @@ public class LockableHelper
         return (lockable.isOwner(player.getUUID()) && !player.isSpectator()) || !lockable.isLocked() ;
     }
 
-    public static boolean cannotBreak(PlayerEntity playerIn, World worldIn, BlockPos pos)
+    /**
+     * Test if the {@link PlayerEntity} can't break the block.
+     * @param player that is tested for ownership
+     * @param level the current world
+     * @param blockPos of the {@link TileEntity}
+     * @return true if the block cannot be removed
+     */
+    public static boolean cannotBreak(PlayerEntity player, World level, BlockPos blockPos)
     {
-        TileEntity tileEntity = worldIn.getBlockEntity(pos);
-        boolean cannotBreak = false;
+        TileEntity tileEntity = level.getBlockEntity(blockPos);
+        boolean cannotBreak = true;
         if (tileEntity instanceof ILockable)
-            cannotBreak = cannotBreak(playerIn, (ILockable) tileEntity);
+            cannotBreak = !((ILockable) tileEntity).isOwner(player.getUUID());
 
         return cannotBreak;
     }
-
-    private static boolean cannotBreak(PlayerEntity player, ILockable lockable)
-    {
-        return !lockable.isOwner(player.getUUID());
-    }
-
 }

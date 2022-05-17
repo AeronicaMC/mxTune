@@ -119,7 +119,6 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
     @Override
     protected void renderBg(MatrixStack matrixStack, float partialTicks, int x, int y)
     {
-        //RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.clearColor(1.0F, 1.0F, 1.0F, 1.0F);
         Objects.requireNonNull(this.minecraft).getTextureManager().bind(GUI);
         int relX = (this.width - this.imageWidth) / 2;

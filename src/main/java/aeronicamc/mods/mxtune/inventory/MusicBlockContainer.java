@@ -113,8 +113,7 @@ public class MusicBlockContainer extends Container
             ((MusicBlockEntity) blockEntity).setRearRedstoneInputEnabled((signals & 0x0001) > 0);
             ((MusicBlockEntity) blockEntity).setLeftRedstoneOutputEnabled((signals & 0x0002) > 0);
             ((MusicBlockEntity) blockEntity).setRightRedstoneOutputEnabled((signals & 0x0004) > 0);
-           // if (LockableHelper.canLock(playerEntity, (ILockable) blockEntity))
-                ((ILockable) blockEntity).setLock((signals & 0x0008) > 0);
+            ((ILockable) blockEntity).setLock((signals & 0x0008) > 0);
         }
     }
 
@@ -182,9 +181,8 @@ public class MusicBlockContainer extends Container
         // *** only allow owners to manage instruments when locked ***
         ItemStack stack = ItemStack.EMPTY;
         if (!(((ILockable) blockEntity).isLocked() && !((ILockable) blockEntity).isOwner(playerEntity.getUUID())) || pSlotId >= CONTAINER_SIZE)
-        {
             stack = super.clicked(pSlotId, pDragType, pClickType, pPlayer);
-        }
+
         return stack;
     }
 
@@ -197,9 +195,8 @@ public class MusicBlockContainer extends Container
             final TileEntity tileEntity = world.getBlockEntity(pos);
             final PlayerEntity player = inv.player;
 
-            if (!(tileEntity instanceof MusicBlockEntity)) {
+            if (!(tileEntity instanceof MusicBlockEntity))
                 throw new IllegalStateException("Invalid block at " + pos);
-            }
 
             return new MusicBlockContainer(windowId, world, pos, inv, player);
         }

@@ -141,8 +141,9 @@ public class MusicBlock extends Block implements IMusicPlayer
                 else
                     throw new IllegalStateException("Our named container provider is missing!");
             }
-        }
-        return ActionResultType.SUCCESS;
+            return ActionResultType.SUCCESS;
+        } else
+            return ActionResultType.CONSUME;
     }
 
     private boolean invertShiftIfLocked(PlayerEntity player, World level, BlockPos blockPos)
