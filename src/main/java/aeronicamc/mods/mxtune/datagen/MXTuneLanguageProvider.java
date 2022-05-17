@@ -128,6 +128,33 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.select", "Select");
         addGuiText("button.upload", "Upload");
         addGuiText("button.write", "Write");
+
+        addGuiText("button.lock.help01", "Lock");
+        addGuiText("button.lock.help02", "[Unlocked]: Anyone can modify contents. View contents by RIGHT-CLICK-ing the block.");
+        addGuiText("button.lock.help03", "[Locked]: Non-owners can view contents. View contents by SHIFT-RIGHT-CLICK-ing the block.");
+        addGuiText("button.lock.help04", "Play Activation: [Unlocked] SHIFT-RIGHT-CLICK / [Locked] RIGHT-CLICK.");
+        addGuiText("button.lock.help05", "Only Owners may break the block. Settings and instruments are saved! The block item may be passed to another person. They become owner upon placing in the world.");
+        addGuiText("button.lock.locked", "Locked");
+        addGuiText("button.lock.unlocked", "Unlocked");
+
+        addGuiText("button.back_rs_in.help01", "Back Side Redstone Input Toggle");
+        addGuiText("button.back_rs_in.help02", "Enables or Disables Redstone input from the Backside.");
+        addGuiText("button.back_rs_in.help03", "Plays when the input changes state from off to on.");
+        addGuiText("button.back_rs_in.disabled", "Input Disabled");
+        addGuiText("button.back_rs_in.enabled", "Input Enabled");
+
+        addGuiText("button.left_rs_out.help01", "Left Side Redstone Output Toggle");
+        addGuiText("button.left_rs_out.help02", "Enables or Disables Redstone output from the Left Side.");
+        addGuiText("button.left_rs_out.help03", "Outputs a single 10 tick pulse at the end of a song/cancel.");
+        addGuiText("button.left_rs_out.disabled", "Output Disabled");
+        addGuiText("button.left_rs_out.enabled", "Output Enabled");
+
+        addGuiText("button.right_rs_out.help01", "Right Side Redstone Output Toggle");
+        addGuiText("button.right_rs_out.help02", "Enables or Disables Redstone output from the Right Side.");
+        addGuiText("button.right_rs_out.help03", "Outputs a single 10 tick pulse at the end of a song/cancel.");
+        addGuiText("button.right_rs_out.disabled", "Output Disabled");
+        addGuiText("button.right_rs_out.enabled", "Output Enabled");
+
     }
 
     private void addCommands()

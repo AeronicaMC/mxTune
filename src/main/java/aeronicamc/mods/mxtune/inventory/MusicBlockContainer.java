@@ -202,6 +202,8 @@ public class MusicBlockContainer extends Container
         }
     }
 
+    // extend Container menu. for MusicBlockScreen
+
     public TileEntity getBlockEntity()
     {
         return blockEntity;
@@ -215,5 +217,25 @@ public class MusicBlockContainer extends Container
     public BlockPos getBlockPos()
     {
         return blockPos;
+    }
+
+    public boolean getLockedState()
+    {
+        return (getSignals() & 0x0008) > 0;
+    }
+
+    public boolean getBackRSInState()
+    {
+        return (getSignals() & 0x0001) > 0;
+    }
+
+    public boolean getLeftRSOutState()
+    {
+        return (getSignals() & 0x0002) > 0;
+    }
+
+    public boolean getRightRSOutState()
+    {
+        return (getSignals() & 0x0004) > 0;
     }
 }

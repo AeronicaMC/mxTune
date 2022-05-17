@@ -19,17 +19,41 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Objects;
 
 public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
 {
     public static final ResourceLocation GUI = new ResourceLocation(Reference.MOD_ID, "textures/gui/container/music_block.png");
+
+    private static final ITextComponent LOCK_HELP01 = new TranslationTextComponent("gui.mxtune.button.lock.help01").withStyle(TextFormatting.RESET);
+    private static final ITextComponent LOCK_HELP02 = new TranslationTextComponent("gui.mxtune.button.lock.help02").withStyle(TextFormatting.GREEN);
+    private static final ITextComponent LOCK_HELP03 = new TranslationTextComponent("gui.mxtune.button.lock.help03").withStyle(TextFormatting.YELLOW);
+    private static final ITextComponent LOCK_HELP04 = new TranslationTextComponent("gui.mxtune.button.lock.help04").withStyle(TextFormatting.GREEN);
+    private static final ITextComponent LOCK_HELP05 = new TranslationTextComponent("gui.mxtune.button.lock.help05").withStyle(TextFormatting.YELLOW);
+    private static final ITextComponent LOCK_LOCKED = new TranslationTextComponent("gui.mxtune.button.lock.locked").withStyle(TextFormatting.AQUA);
+    private static final ITextComponent LOCK_UNLOCKED = new TranslationTextComponent("gui.mxtune.button.lock.unlocked").withStyle(TextFormatting.AQUA);
+    private static final ITextComponent BACK_RS_IN_HELP01 = new TranslationTextComponent("gui.mxtune.button.back_rs_in.help01").withStyle(TextFormatting.RESET);
+    private static final ITextComponent BACK_RS_IN_HELP02 = new TranslationTextComponent("gui.mxtune.button.back_rs_in.help02").withStyle(TextFormatting.GREEN);
+    private static final ITextComponent BACK_RS_IN_HELP03 = new TranslationTextComponent("gui.mxtune.button.back_rs_in.help03").withStyle(TextFormatting.YELLOW);
+    private static final ITextComponent BACK_RS_IN_ENABLED = new TranslationTextComponent("gui.mxtune.button.back_rs_in.enabled").withStyle(TextFormatting.AQUA);
+    private static final ITextComponent BACK_RS_IN_DISABLED = new TranslationTextComponent("gui.mxtune.button.back_rs_in.disabled").withStyle(TextFormatting.AQUA);
+    private static final ITextComponent LEFT_RS_OUT_HELP01 = new TranslationTextComponent("gui.mxtune.button.left_rs_out.help01").withStyle(TextFormatting.RESET);
+    private static final ITextComponent LEFT_RS_OUT_HELP02 = new TranslationTextComponent("gui.mxtune.button.left_rs_out.help02").withStyle(TextFormatting.GREEN);
+    private static final ITextComponent LEFT_RS_OUT_HELP03 = new TranslationTextComponent("gui.mxtune.button.left_rs_out.help03").withStyle(TextFormatting.YELLOW);
+    private static final ITextComponent LEFT_RS_OUT_ENABLED = new TranslationTextComponent("gui.mxtune.button.left_rs_out.enabled").withStyle(TextFormatting.AQUA);
+    private static final ITextComponent LEFT_RS_OUT_DISABLED = new TranslationTextComponent("gui.mxtune.button.left_rs_out.disabled").withStyle(TextFormatting.AQUA);
+    private static final ITextComponent RIGHT_RS_OUT_HELP01 = new TranslationTextComponent("gui.mxtune.button.right_rs_out.help01").withStyle(TextFormatting.RESET);
+    private static final ITextComponent RIGHT_RS_OUT_HELP02 = new TranslationTextComponent("gui.mxtune.button.right_rs_out.help02").withStyle(TextFormatting.GREEN);
+    private static final ITextComponent RIGHT_RS_OUT_HELP03 = new TranslationTextComponent("gui.mxtune.button.right_rs_out.help03").withStyle(TextFormatting.YELLOW);
+    private static final ITextComponent RIGHT_RS_OUT_ENABLED = new TranslationTextComponent("gui.mxtune.button.right_rs_out.enabled").withStyle(TextFormatting.AQUA);
+    private static final ITextComponent RIGHT_RS_OUT_DISABLED = new TranslationTextComponent("gui.mxtune.button.right_rs_out.disabled").withStyle(TextFormatting.AQUA);
+
     private final GuiLockButton lockButton = new GuiLockButton(p -> toggleLock());
     private final GuiRedstoneButton backRSIn = new GuiRedstoneButton(GuiRedstoneButton.ArrowFaces.DOWN, p -> toggleBackRSIn());
     private final GuiRedstoneButton leftRSOut = new GuiRedstoneButton(GuiRedstoneButton.ArrowFaces.LEFT, p -> toggleLeftRSOut());
     private final GuiRedstoneButton rightSOut = new GuiRedstoneButton(GuiRedstoneButton.ArrowFaces.RIGHT, p -> toggleRightRSOut());
-    private int lastSignals;
 
     public MusicBlockScreen(MusicBlockContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
@@ -46,20 +70,16 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
         boolean isLockActive = LockableHelper.canLock(menu.getPlayerEntity(), (ILockable) menu.getBlockEntity());
         boolean isActive = LockableHelper.canManage(menu.getPlayerEntity(), (ILockable) menu.getBlockEntity());
         lockButton.setLayout(leftPos + 21, topPos + 17, 20, 20);
-        lockButton.addHooverText(true, new StringTextComponent("lock or not"));
-        lockButton.setLocked((menu.getSignals() & 0x0008) > 0);
+        lockButton.setLocked(menu.getLockedState());
         lockButton.active = isLockActive;
         backRSIn.setLayout(leftPos + 146, topPos + 17, 20, 20);
-        backRSIn.addHooverText(true, new StringTextComponent("Back side Redstone Input"));
-        backRSIn.setSignalEnabled((menu.getSignals() & 0x0001) > 0);
+        backRSIn.setSignalEnabled(menu.getBackRSInState());
         backRSIn.active = isActive;
         leftRSOut.setLayout(leftPos + 136, topPos + 37, 20, 20);
-        leftRSOut.addHooverText(true, new StringTextComponent("Left side Redstone Output"));
-        leftRSOut.setSignalEnabled((menu.getSignals() & 0x0002) > 0);
+        leftRSOut.setSignalEnabled(menu.getLeftRSOutState());
         leftRSOut.active = isActive;
         rightSOut.setLayout(leftPos + 156, topPos + 37, 20, 20);
-        rightSOut.addHooverText(true, new StringTextComponent("Right side Redstone Output"));
-        rightSOut.setSignalEnabled((menu.getSignals() & 0x0004) > 0);
+        rightSOut.setSignalEnabled(menu.getRightRSOutState());
         rightSOut.active = isActive;
         addButton(lockButton);
         addButton(backRSIn);
@@ -98,7 +118,6 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
         signals += leftRSOut.isSignalEnabled() ? 2 : 0;
         signals += rightSOut.isSignalEnabled() ? 4 : 0;
         signals += lockButton.isLocked() ? 8 : 0;
-        lastSignals = signals;
         PacketDispatcher.sendToServer(new MusicBlockMessage(menu.getPosition(), signals));
     }
 
@@ -106,13 +125,31 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
     {
         boolean isLockActive = LockableHelper.canLock(menu.getPlayerEntity(), (ILockable) menu.getBlockEntity());
         boolean isActive = LockableHelper.canManage(menu.getPlayerEntity(), (ILockable) menu.getBlockEntity());
-        lockButton.setLocked((menu.getSignals() & 0x0008) > 0);
+        lockButton.setLocked(menu.getLockedState());
+        lockButton.addHooverText(true, LOCK_HELP01);
+        lockButton.addHooverText(false, LOCK_HELP02);
+        lockButton.addHooverText(false, LOCK_HELP03);
+        lockButton.addHooverText(false, LOCK_HELP04);
+        lockButton.addHooverText(false, LOCK_HELP05);
+        lockButton.addHooverText(false, menu.getLockedState() ? LOCK_LOCKED : LOCK_UNLOCKED);
         lockButton.active = isLockActive;
-        backRSIn.setSignalEnabled((menu.getSignals() & 0x0001) > 0);
+        backRSIn.setSignalEnabled(menu.getBackRSInState());
+        backRSIn.addHooverText(true, BACK_RS_IN_HELP01);
+        backRSIn.addHooverText(false, BACK_RS_IN_HELP02);
+        backRSIn.addHooverText(false, BACK_RS_IN_HELP03);
+        backRSIn.addHooverText(false, menu.getBackRSInState() ? BACK_RS_IN_ENABLED : BACK_RS_IN_DISABLED);
         backRSIn.active = isActive;
-        leftRSOut.setSignalEnabled((menu.getSignals() & 0x0002) > 0);
+        leftRSOut.setSignalEnabled(menu.getLeftRSOutState());
+        leftRSOut.addHooverText(true, LEFT_RS_OUT_HELP01);
+        leftRSOut.addHooverText(false, LEFT_RS_OUT_HELP02);
+        leftRSOut.addHooverText(false, LEFT_RS_OUT_HELP03);
+        leftRSOut.addHooverText(false, menu.getLeftRSOutState() ? LEFT_RS_OUT_ENABLED : LEFT_RS_OUT_DISABLED);
         leftRSOut.active = isActive;
-        rightSOut.setSignalEnabled((menu.getSignals() & 0x0004) > 0);
+        rightSOut.setSignalEnabled(menu.getRightRSOutState());
+        rightSOut.addHooverText(true, RIGHT_RS_OUT_HELP01);
+        rightSOut.addHooverText(false, RIGHT_RS_OUT_HELP02);
+        rightSOut.addHooverText(false, RIGHT_RS_OUT_HELP03);
+        rightSOut.addHooverText(false, menu.getRightRSOutState() ? RIGHT_RS_OUT_ENABLED : RIGHT_RS_OUT_DISABLED);
         rightSOut.active = isActive;
     }
 
