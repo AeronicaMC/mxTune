@@ -98,7 +98,7 @@ public class MusicBlock extends Block implements IMusicPlayer
                     {
                         if (pState.getValue(PLAYING))
                         {
-                            pLevel.getBlockTicks().scheduleTick(pPos, this, 4);
+                            pLevel.getBlockTicks().scheduleTick(pPos, this, 10);
                             if (PlayManager.getActiveBlockPlayId(pPos) == PlayIdSupplier.INVALID)
                             {
                                 setPlayingState(pLevel, pPos, pState, false);
