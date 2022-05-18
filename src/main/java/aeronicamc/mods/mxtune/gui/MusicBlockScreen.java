@@ -3,8 +3,10 @@ package aeronicamc.mods.mxtune.gui;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.blocks.ILockable;
 import aeronicamc.mods.mxtune.blocks.LockableHelper;
+import aeronicamc.mods.mxtune.gui.widget.GuiHelpButton;
 import aeronicamc.mods.mxtune.gui.widget.GuiLockButton;
 import aeronicamc.mods.mxtune.gui.widget.GuiRedstoneButton;
+import aeronicamc.mods.mxtune.gui.widget.IHooverText;
 import aeronicamc.mods.mxtune.inventory.MusicBlockContainer;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.MusicBlockMessage;
@@ -23,6 +25,8 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Objects;
 
+import static aeronicamc.mods.mxtune.gui.ModGuiHelper.*;
+
 public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
 {
     public static final ResourceLocation GUI = new ResourceLocation(Reference.MOD_ID, "textures/gui/container/music_block.png");
@@ -32,6 +36,7 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
     private static final ITextComponent LOCK_HELP03 = new TranslationTextComponent("gui.mxtune.button.lock.help03").withStyle(TextFormatting.YELLOW);
     private static final ITextComponent LOCK_HELP04 = new TranslationTextComponent("gui.mxtune.button.lock.help04").withStyle(TextFormatting.GREEN);
     private static final ITextComponent LOCK_HELP05 = new TranslationTextComponent("gui.mxtune.button.lock.help05").withStyle(TextFormatting.YELLOW);
+    private static final ITextComponent LOCK_HELP06 = new TranslationTextComponent("gui.mxtune.button.lock.help06").withStyle(TextFormatting.RED);
     private static final ITextComponent LOCK_LOCKED = new TranslationTextComponent("gui.mxtune.button.lock.locked").withStyle(TextFormatting.AQUA);
     private static final ITextComponent LOCK_UNLOCKED = new TranslationTextComponent("gui.mxtune.button.lock.unlocked").withStyle(TextFormatting.AQUA);
     private static final ITextComponent BACK_RS_IN_HELP01 = new TranslationTextComponent("gui.mxtune.button.back_rs_in.help01").withStyle(TextFormatting.RESET);
@@ -50,6 +55,7 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
     private static final ITextComponent RIGHT_RS_OUT_ENABLED = new TranslationTextComponent("gui.mxtune.button.right_rs_out.enabled").withStyle(TextFormatting.AQUA);
     private static final ITextComponent RIGHT_RS_OUT_DISABLED = new TranslationTextComponent("gui.mxtune.button.right_rs_out.disabled").withStyle(TextFormatting.AQUA);
 
+    private final GuiHelpButton helpButton = new GuiHelpButton(p -> helpClicked());
     private final GuiLockButton lockButton = new GuiLockButton(p -> toggleLock());
     private final GuiRedstoneButton backRSIn = new GuiRedstoneButton(GuiRedstoneButton.ArrowFaces.DOWN, p -> toggleBackRSIn());
     private final GuiRedstoneButton leftRSOut = new GuiRedstoneButton(GuiRedstoneButton.ArrowFaces.LEFT, p -> toggleLeftRSOut());
@@ -81,10 +87,22 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
         rightSOut.setLayout(leftPos + 156, topPos + 37, 20, 20);
         rightSOut.setSignalEnabled(menu.getRightRSOutState());
         rightSOut.active = isActive;
+        helpButton.setLayout(leftPos + 21, topPos + 37, 20, 20);
+
         addButton(lockButton);
         addButton(backRSIn);
         addButton(leftRSOut);
         addButton(rightSOut);
+        addButton(helpButton);
+        updateButtonStatuses();
+    }
+
+    private void helpClicked()
+    {
+        helpButton.setHelpEnabled(!helpButton.isHelpEnabled());
+        buttons.stream().filter(b -> b instanceof IHooverText)
+                .forEach(b -> ((IHooverText) b).setHooverTextOverride(helpButton.isHelpEnabled()));
+        updateButtonStatuses();
     }
 
     private void toggleLock()
@@ -131,6 +149,7 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
         lockButton.addHooverText(false, LOCK_HELP03);
         lockButton.addHooverText(false, LOCK_HELP04);
         lockButton.addHooverText(false, LOCK_HELP05);
+        lockButton.addHooverText(false, LOCK_HELP06);
         lockButton.addHooverText(false, menu.getLockedState() ? LOCK_LOCKED : LOCK_UNLOCKED);
         lockButton.active = isLockActive;
         backRSIn.setSignalEnabled(menu.getBackRSInState());
@@ -151,6 +170,8 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
         rightSOut.addHooverText(false, RIGHT_RS_OUT_HELP03);
         rightSOut.addHooverText(false, menu.getRightRSOutState() ? RIGHT_RS_OUT_ENABLED : RIGHT_RS_OUT_DISABLED);
         rightSOut.active = isActive;
+        helpButton.addHooverText(true, HELP_HELP01);
+        helpButton.addHooverText(false, helpButton.isHelpEnabled() ? HELP_HELP02 : HELP_HELP03);
     }
 
     @Override
@@ -180,9 +201,9 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
         NetworkPlayerInfo playerInfo = minecraft.getConnection() != null ? minecraft.getConnection().getPlayerInfo(((ILockable)menu.getBlockEntity()).getOwner()) : null;
         ITextComponent ownerName = new StringTextComponent(playerInfo != null ? playerInfo.getProfile().getName() : "-offline-").withStyle(TextFormatting.ITALIC);
         int nameWidth = this.font.width(ownerName);
-        this.font.draw(matrixStack, SheetMusicHelper.formatDuration(menu.getDuration()), imageWidth - durationWidth - 8, 6, 4210752);
-        this.font.draw(matrixStack, menu.getName(), 8, 6, 4210752);
-        this.font.draw(matrixStack, this.inventory.getDisplayName(), 8, 92, 4210752);
-        this.font.draw(matrixStack, ownerName, imageWidth - nameWidth - 8, 92, 4210752);
+        this.font.draw(matrixStack, SheetMusicHelper.formatDuration(menu.getDuration()), imageWidth - durationWidth - 12, 6, 4210752);
+        this.font.draw(matrixStack, menu.getName(), 12, 6, 4210752);
+        this.font.draw(matrixStack, this.inventory.getDisplayName(), 12, 91, 4210752);
+        this.font.draw(matrixStack, ownerName, imageWidth - nameWidth - 12, 91, 4210752);
     }
 }

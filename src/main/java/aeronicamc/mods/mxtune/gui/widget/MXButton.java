@@ -20,6 +20,7 @@ public class MXButton extends Button implements ILayout, IHooverText
     private int index = Integer.MAX_VALUE;
     @SuppressWarnings("FieldMayBeFinal")
     private List<ITextComponent> hooverTexts = new ArrayList<>();
+    private boolean hooverTextsOverride;
 
     public MXButton(IPressable pOnPress)
     {
@@ -103,6 +104,18 @@ public class MXButton extends Button implements ILayout, IHooverText
     {
         if (clearAll) hooverTexts.clear();
         hooverTexts.add(hooverText);
+    }
+
+    @Override
+    public boolean isHooverTextOverride()
+    {
+        return hooverTextsOverride;
+    }
+
+    @Override
+    public void setHooverTextOverride(boolean override)
+    {
+        hooverTextsOverride = override;
     }
 
     @Override

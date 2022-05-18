@@ -11,4 +11,8 @@ public interface IHooverText
     boolean isMouseOverWidget(double mouseX, double mouseY);
 
     List<ITextComponent> getHooverTexts();
+
+    boolean isHooverTextOverride();
+
+    void setHooverTextOverride(boolean override);
 }
