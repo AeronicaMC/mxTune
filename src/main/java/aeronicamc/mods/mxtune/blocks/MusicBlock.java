@@ -323,7 +323,15 @@ public class MusicBlock extends Block implements IMusicPlayer
                     ItemStack itemStack = getCloneItemStack(pLevel, pPos, pState);
                     CompoundNBT cNBT = musicBlockEntity.save(new CompoundNBT());
                     if (!cNBT.isEmpty())
+                    {
+                        // Save Inventory only! No need to keep block position, button state or owner.
+                        cNBT.remove("x");
+                        cNBT.remove("y");
+                        cNBT.remove("z");
+                        cNBT.remove(MusicBlockEntity.KEY_BUTTON_STATE);
+                        cNBT.remove(MusicBlockEntity.KEY_OWNER);
                         itemStack.addTagElement("BlockEntityTag", cNBT);
+                    }
 
                     if (musicBlockEntity.hasCustomName())
                         itemStack.setHoverName(musicBlockEntity.getCustomName());

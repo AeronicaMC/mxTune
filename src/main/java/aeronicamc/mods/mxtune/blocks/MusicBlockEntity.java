@@ -33,24 +33,29 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-import static aeronicamc.mods.mxtune.util.SheetMusicHelper.KEY_DURATION;
-
 public class MusicBlockEntity extends TileEntity implements INamedContainerProvider, ILockable, IMusicPlayer, INameable, ITickableTileEntity
 {
     public static final UUID EMPTY_OWNER = new UUID(0,0);
     private static final Logger LOGGER = LogManager.getLogger(MusicBlockEntity.class);
-    private ITextComponent customName;
     private final LazyOptional<IItemHandler> handler = LazyOptional.of(this::createHandler);
-    private static final String KEY_CUSTOM_NAME = "CustomName";
-    private static final String KEY_INVENTORY = "Inventory";
-    private static final String KEY_LEFT_RS_OUTPUT_ENABLED = "leftRsOutputEnabled";
-    private static final String KEY_REAR_RS_INPUT_ENABLED = "rearRsInputEnabled";
-    private static final String KEY_RIGHT_RS_OUTPUT_ENABLED = "rightRsOutputEnabled";
-    private static final String KEY_LOCK = "Lock";
+    public static final String KEY_CUSTOM_NAME = "CustomName";
+    public static final String KEY_INVENTORY = "Inventory";
+    public static final String KEY_BUTTON_STATE = "ButtonState";
+
+    // TODO: Remove after next snapshot
+    public static final String KEY_LEFT_RS_OUTPUT_ENABLED = "leftRsOutputEnabled";
+    public static final String KEY_REAR_RS_INPUT_ENABLED = "rearRsInputEnabled";
+    public static final String KEY_RIGHT_RS_OUTPUT_ENABLED = "rightRsOutputEnabled";
+    public static final String KEY_LOCK = "Lock";
+
     public static final String KEY_OWNER = "Owner";
 
     // stored in nbt
+    private ITextComponent customName;
     private UUID ownerUUID = EMPTY_OWNER;
+    private byte buttonSignals; // boolean bit OR from redstone signals and lock
+
+    // Button state/signals stored in nbt via the buttonSignals field
     private boolean rearRsInputEnabled;
     private boolean leftRsOutputEnabled;
     private boolean rightRsOutputEnabled;
@@ -119,16 +124,22 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
         if (nbt.contains(KEY_CUSTOM_NAME, Constants.NBT.TAG_STRING)) {
             this.customName = ITextComponent.Serializer.fromJson(nbt.getString(KEY_CUSTOM_NAME));
         }
-        if (nbt.contains(KEY_LEFT_RS_OUTPUT_ENABLED, Constants.NBT.TAG_BYTE))
-            this.leftRsOutputEnabled = nbt.getBoolean(KEY_LEFT_RS_OUTPUT_ENABLED);
-        if (nbt.contains(KEY_RIGHT_RS_OUTPUT_ENABLED, Constants.NBT.TAG_BYTE))
-            this.rightRsOutputEnabled = nbt.getBoolean(KEY_RIGHT_RS_OUTPUT_ENABLED);
-        if (nbt.contains(KEY_REAR_RS_INPUT_ENABLED, Constants.NBT.TAG_BYTE))
-            this.rearRsInputEnabled = nbt.getBoolean(KEY_REAR_RS_INPUT_ENABLED);
+
+        if (nbt.contains(KEY_BUTTON_STATE, Constants.NBT.TAG_BYTE))
+            this.setButtonSignals(nbt.getByte(KEY_BUTTON_STATE));
+
+        // TODO: remove after next snapshot
+            if (nbt.contains(KEY_LEFT_RS_OUTPUT_ENABLED, Constants.NBT.TAG_BYTE))
+                this.leftRsOutputEnabled = nbt.getBoolean(KEY_LEFT_RS_OUTPUT_ENABLED);
+            if (nbt.contains(KEY_RIGHT_RS_OUTPUT_ENABLED, Constants.NBT.TAG_BYTE))
+                this.rightRsOutputEnabled = nbt.getBoolean(KEY_RIGHT_RS_OUTPUT_ENABLED);
+            if (nbt.contains(KEY_REAR_RS_INPUT_ENABLED, Constants.NBT.TAG_BYTE))
+                this.rearRsInputEnabled = nbt.getBoolean(KEY_REAR_RS_INPUT_ENABLED);
+            if (nbt.contains(KEY_LOCK))
+                this.lock = nbt.getBoolean(KEY_LOCK);
+
         if (nbt.hasUUID(KEY_OWNER))
             this.ownerUUID = nbt.getUUID(KEY_OWNER);
-        if (nbt.contains(KEY_LOCK))
-            this.lock = nbt.getBoolean(KEY_LOCK);
         super.load(state, nbt);
     }
 
@@ -142,12 +153,8 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
         if (this.customName != null) {
             tag.putString(KEY_CUSTOM_NAME, ITextComponent.Serializer.toJson(this.customName));
         }
-        tag.putInt(KEY_DURATION, getDuration());
-        tag.putBoolean(KEY_LEFT_RS_OUTPUT_ENABLED, leftRsOutputEnabled);
-        tag.putBoolean(KEY_RIGHT_RS_OUTPUT_ENABLED, rightRsOutputEnabled);
-        tag.putBoolean(KEY_REAR_RS_INPUT_ENABLED, rearRsInputEnabled);
         tag.putUUID(KEY_OWNER, ownerUUID);
-        tag.putBoolean(KEY_LOCK, lock);
+        tag.putByte(KEY_BUTTON_STATE,  getButtonSignals());
         return super.save(tag);
     }
 
@@ -240,6 +247,29 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
         }
     }
 
+    private byte getButtonSignals()
+    {
+        updateButtonSignals();
+        return buttonSignals;
+    }
+
+    private void setButtonSignals(byte buttonSignalsIn)
+    {
+        rearRsInputEnabled = ((buttonSignalsIn & 0x1) > 0);
+        leftRsOutputEnabled = ((buttonSignalsIn & 0x2) > 0);
+        rightRsOutputEnabled = ((buttonSignalsIn & 0x4) > 0);
+        lock = ((buttonSignalsIn & 0x8) > 0);
+    }
+
+    private void updateButtonSignals()
+    {
+        buttonSignals = 0;
+        buttonSignals |= isRearRedstoneInputEnabled() ? 0x1 : 0x0;
+        buttonSignals |= isLeftRedstoneOutputEnabled() ? 0x2 : 0x0;
+        buttonSignals |= isRightRedstoneOutputEnabled() ? 0x4 : 0x0;
+        buttonSignals |= isLocked() ? 0x8 : 0x0;
+    }
+
     private void syncClient()
     {
         if (level != null && !level.isClientSide())
@@ -248,6 +278,7 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
 
     private void markDirtySyncClient()
     {
+        updateButtonSignals();
         syncClient();
         setChanged();
     }
