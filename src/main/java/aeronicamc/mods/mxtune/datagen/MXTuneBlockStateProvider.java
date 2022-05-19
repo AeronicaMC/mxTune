@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.datagen;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.blocks.MusicBlock;
 import aeronicamc.mods.mxtune.init.ModBlocks;
 import com.google.common.base.Preconditions;
 import net.minecraft.block.Block;
@@ -51,13 +52,13 @@ public class MXTuneBlockStateProvider extends BlockStateProvider
                 .texture("south", modLoc("block/music_block_side"));
 
         getVariantBuilder(ModBlocks.MUSIC_BLOCK.get())
-                .forAllStates(state -> {
+                .forAllStatesExcept(state -> {
                     Direction direction = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
                     return ConfiguredModel.builder()
                             .modelFile(musicBlockModel)
                             .rotationY(((int)direction.toYRot() + 180) % 360)
                             .build();
-                });
+                }, MusicBlock.POWERED);
 
         simpleBlockItem(ModBlocks.MUSIC_BLOCK.get());
         simpleBlock(ModBlocks.MUSIC_VENUE_TOOL_BLOCK.get());

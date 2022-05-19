@@ -1,62 +1,32 @@
 {
   "variants": {
-    "facing=north,playing=false,powered=false": {
+    "facing=north,playing=false": {
       "model": "mxtune:block/music_block"
     },
-    "facing=south,playing=false,powered=false": {
+    "facing=south,playing=false": {
       "model": "mxtune:block/music_block",
       "y": 180
     },
-    "facing=west,playing=false,powered=false": {
+    "facing=west,playing=false": {
       "model": "mxtune:block/music_block",
       "y": 270
     },
-    "facing=east,playing=false,powered=false": {
+    "facing=east,playing=false": {
       "model": "mxtune:block/music_block",
       "y": 90
     },
-    "facing=north,playing=true,powered=false": {
+    "facing=north,playing=true": {
       "model": "mxtune:block/music_block"
     },
-    "facing=south,playing=true,powered=false": {
+    "facing=south,playing=true": {
       "model": "mxtune:block/music_block",
       "y": 180
     },
-    "facing=west,playing=true,powered=false": {
+    "facing=west,playing=true": {
       "model": "mxtune:block/music_block",
       "y": 270
     },
-    "facing=east,playing=true,powered=false": {
-      "model": "mxtune:block/music_block",
-      "y": 90
-    },
-    "facing=north,playing=false,powered=true": {
-      "model": "mxtune:block/music_block"
-    },
-    "facing=south,playing=false,powered=true": {
-      "model": "mxtune:block/music_block",
-      "y": 180
-    },
-    "facing=west,playing=false,powered=true": {
-      "model": "mxtune:block/music_block",
-      "y": 270
-    },
-    "facing=east,playing=false,powered=true": {
-      "model": "mxtune:block/music_block",
-      "y": 90
-    },
-    "facing=north,playing=true,powered=true": {
-      "model": "mxtune:block/music_block"
-    },
-    "facing=south,playing=true,powered=true": {
-      "model": "mxtune:block/music_block",
-      "y": 180
-    },
-    "facing=west,playing=true,powered=true": {
-      "model": "mxtune:block/music_block",
-      "y": 270
-    },
-    "facing=east,playing=true,powered=true": {
+    "facing=east,playing=true": {
       "model": "mxtune:block/music_block",
       "y": 90
     }
