@@ -2,7 +2,7 @@
   "parent": "minecraft:block/orientable",
   "textures": {
     "side": "mxtune:block/music_block_side",
-    "front": "mxtune:block/music_block_front",
+    "front": "mxtune:block/music_block_playing_front",
     "top": "mxtune:block/music_block",
     "particle": "mxtune:block/music_block"
   }

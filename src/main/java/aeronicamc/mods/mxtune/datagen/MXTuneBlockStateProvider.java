@@ -42,22 +42,33 @@ public class MXTuneBlockStateProvider extends BlockStateProvider
     @Override
     protected void registerStatesAndModels()
     {
-        final ModelFile musicBlockModel = models().withExistingParent(registryName(ModBlocks.MUSIC_BLOCK.get()).getPath(), mcLoc("block/cube"))
-                .texture("particle", modLoc("block/music_block"))
-                .texture("down", modLoc("block/music_block"))
-                .texture("up", modLoc("block/music_block"))
-                .texture("east", modLoc("block/music_block_side"))
-                .texture("west", modLoc("block/music_block_side"))
-                .texture("north", modLoc("block/music_block_front"))
-                .texture("south", modLoc("block/music_block_side"));
+        final ModelFile musicBlockModel = models().orientable(
+                        ModBlocks.MUSIC_BLOCK.getId().getPath(),
+                        modLoc("block/music_block_side"),
+                        modLoc("block/music_block_front"),
+                        modLoc("block/music_block"))
+                .texture("particle", modLoc("block/music_block"));
+
+        final ModelFile musicBlockModelPLaying = models().orientable(
+                        ModBlocks.MUSIC_BLOCK.getId().getPath() + "_playing",
+                        modLoc("block/music_block_side"),
+                        modLoc("block/music_block_playing_front"),
+                        modLoc("block/music_block"))
+                .texture("particle", modLoc("block/music_block"));
 
         getVariantBuilder(ModBlocks.MUSIC_BLOCK.get())
                 .forAllStatesExcept(state -> {
                     Direction direction = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
-                    return ConfiguredModel.builder()
-                            .modelFile(musicBlockModel)
-                            .rotationY(((int)direction.toYRot() + 180) % 360)
-                            .build();
+                    if (state.getValue(MusicBlock.PLAYING).equals(false))
+                        return ConfiguredModel.builder()
+                                .modelFile(musicBlockModel)
+                                .rotationY(((int)direction.toYRot() + 180) % 360)
+                                .build();
+                    else
+                        return ConfiguredModel.builder()
+                                .modelFile(musicBlockModelPLaying)
+                                .rotationY(((int)direction.toYRot() + 180) % 360)
+                                .build();
                 }, MusicBlock.POWERED);
 
         simpleBlockItem(ModBlocks.MUSIC_BLOCK.get());

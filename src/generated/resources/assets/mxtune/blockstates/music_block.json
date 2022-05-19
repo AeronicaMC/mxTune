@@ -16,18 +16,18 @@
       "y": 90
     },
     "facing=north,playing=true": {
-      "model": "mxtune:block/music_block"
+      "model": "mxtune:block/music_block_playing"
     },
     "facing=south,playing=true": {
-      "model": "mxtune:block/music_block",
+      "model": "mxtune:block/music_block_playing",
       "y": 180
     },
     "facing=west,playing=true": {
-      "model": "mxtune:block/music_block",
+      "model": "mxtune:block/music_block_playing",
       "y": 270
     },
     "facing=east,playing=true": {
-      "model": "mxtune:block/music_block",
+      "model": "mxtune:block/music_block_playing",
       "y": 90
     }
   }
