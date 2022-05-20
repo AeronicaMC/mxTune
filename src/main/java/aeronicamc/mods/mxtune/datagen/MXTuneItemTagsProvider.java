@@ -1,6 +1,8 @@
 package aeronicamc.mods.mxtune.datagen;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.init.ModItems;
+import aeronicamc.mods.mxtune.init.ModTags;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.ItemTagsProvider;
@@ -18,6 +20,6 @@ public class MXTuneItemTagsProvider extends ItemTagsProvider
     @Override
     protected void addTags()
     {
-        // TODO: populate as needed
+        tag(ModTags.Items.TOOLS_WRENCH).add(ModItems.GUI_TEST_ITEM.get());
     }
 }

@@ -38,4 +38,6 @@ public class Reference
     public static final int MXT_SONG_SOURCE_LENGTH = 320;
     public static final int MXT_TAG_NAME_LENGTH = 25;
     public static final int MXT_TAG_DISPLAY_NAME_LENGTH = 50;
+
+    public static final String MOD_ID_FORGE = "forge";
 }
