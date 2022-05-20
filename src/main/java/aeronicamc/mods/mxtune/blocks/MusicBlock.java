@@ -4,6 +4,7 @@ import aeronicamc.mods.mxtune.init.ModParticles;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.managers.PlayManager;
 import aeronicamc.mods.mxtune.util.IInstrument;
+import aeronicamc.mods.mxtune.util.IWrenchAble;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -51,7 +52,7 @@ import static net.minecraftforge.common.util.Constants.NBT;
 
 
 @SuppressWarnings("deprecation")
-public class MusicBlock extends Block implements IMusicPlayer
+public class MusicBlock extends Block implements IMusicPlayer, IWrenchAble
 {
     public static final BooleanProperty PLAYING = BooleanProperty.create("playing");
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
@@ -61,13 +62,15 @@ public class MusicBlock extends Block implements IMusicPlayer
 
     public MusicBlock()
     {
-        super(Properties.of(Material.METAL)
-             .sound(SoundType.METAL)
-             .strength(2.0F));
+        super(Properties.of(Material.WOOD)
+                      .sound(SoundType.WOOD)
+                      .strength(1.0F)
+                      .lightLevel(state -> state.getValue(PLAYING) ? 14 : 0));
         this.registerDefaultState(this.defaultBlockState()
                 .setValue(HORIZONTAL_FACING, Direction.NORTH)
                 .setValue(PLAYING, Boolean.FALSE)
                 .setValue(POWERED, Boolean.FALSE));
+
     }
 
     @Override
@@ -117,6 +120,9 @@ public class MusicBlock extends Block implements IMusicPlayer
     {
         if (!worldIn.isClientSide())
         {
+            if (handleWrenchAble(state, worldIn, pos, player, handIn, hit))
+                return ActionResultType.SUCCESS;
+
             if (invertShiftIfLocked(player, worldIn, pos))
                 getMusicBlockEntity(worldIn, pos).ifPresent(
                         musicBlockEntity ->
@@ -171,6 +177,29 @@ public class MusicBlock extends Block implements IMusicPlayer
         return false;
     }
 
+    private boolean handleWrenchAble(BlockState state, World level, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
+    {
+        MusicBlockEntity blockEntity = getMusicBlockEntity(level, pos).orElseThrow(() -> new IllegalStateException("Our Block Entity is missing!"));
+        if (!level.isClientSide() && blockEntity.isOwner(player.getUUID()) && hasWrench(player, handIn))
+        {
+            BlockState newState;
+            if (player.isShiftKeyDown())
+            {
+                // Harvest Block
+                state.getBlock().playerWillDestroy(level, pos, state, player);
+                level.destroyBlock(pos, false, player);
+            }
+            else
+            {
+                // Rotate Block Horizontally
+                newState = state.rotate(level, pos, Rotation.CLOCKWISE_90);
+                level.setBlockAndUpdate(pos, newState);
+            }
+            return true;
+        }
+        return false;
+    }
+
     private void onePulseOutputState(World pLevel, BlockPos pPos, BlockState pState, MusicBlockEntity musicBlockEntity)
     {
         if (!pState.getValue(POWERED) && musicBlockEntity.isLastPlay())
@@ -180,7 +209,6 @@ public class MusicBlock extends Block implements IMusicPlayer
         } else if (pState.getValue(POWERED))
             setOutputPowerState(pLevel, pPos, pState, false);
     }
-
 
     private void setPlayingState(World pLevel, BlockPos pPos, BlockState pState, boolean pIsPlaying)
     {
