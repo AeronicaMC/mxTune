@@ -61,12 +61,18 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
     private final GuiRedstoneButton leftRSOut = new GuiRedstoneButton(GuiRedstoneButton.ArrowFaces.LEFT, p -> toggleLeftRSOut());
     private final GuiRedstoneButton rightSOut = new GuiRedstoneButton(GuiRedstoneButton.ArrowFaces.RIGHT, p -> toggleRightRSOut());
 
+    NetworkPlayerInfo NetPlayerInfo;
+    ITextComponent ownerName;
+
     public MusicBlockScreen(MusicBlockContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
         this.imageWidth = 186;
         this.imageHeight = 184;
         this.minecraft = Minecraft.getInstance();
+
+        this.NetPlayerInfo = minecraft.getConnection() != null ? minecraft.getConnection().getPlayerInfo(((ILockable)menu.getBlockEntity()).getOwner()) : null;
+        this.ownerName = new StringTextComponent(NetPlayerInfo != null ? NetPlayerInfo.getProfile().getName() : "-offline-").withStyle(TextFormatting.ITALIC);
     }
 
     @Override
@@ -197,9 +203,7 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
     protected void renderLabels(MatrixStack matrixStack , int mouseX, int mouseY) {
         String text = SheetMusicHelper.formatDuration(menu.getDuration());
         int durationWidth = this.font.width(text);
-
-        NetworkPlayerInfo playerInfo = minecraft.getConnection() != null ? minecraft.getConnection().getPlayerInfo(((ILockable)menu.getBlockEntity()).getOwner()) : null;
-        ITextComponent ownerName = new StringTextComponent(playerInfo != null ? playerInfo.getProfile().getName() : "-offline-").withStyle(TextFormatting.ITALIC);
+        ITextComponent ownerName = new StringTextComponent(NetPlayerInfo != null ? NetPlayerInfo.getProfile().getName() : "-offline-").withStyle(TextFormatting.ITALIC);
         int nameWidth = this.font.width(ownerName);
         this.font.draw(matrixStack, SheetMusicHelper.formatDuration(menu.getDuration()), imageWidth - durationWidth - 12, 6, 4210752);
         this.font.draw(matrixStack, menu.getName(), 12, 6, 4210752);

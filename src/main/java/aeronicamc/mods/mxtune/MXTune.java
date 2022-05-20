@@ -82,6 +82,7 @@ public class MXTune
         ModContainers.registerToModEventBus(modEventBus);
         ModBlockEntities.registerToModEventBus(modEventBus);
         ModSoundEvents.registerToModEventBus(modEventBus);
+        ModParticles.registerToModEventBus(modEventBus);
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
