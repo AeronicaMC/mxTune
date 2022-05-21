@@ -30,6 +30,7 @@ import aeronicamc.mods.mxtune.managers.ActiveTune;
 import aeronicamc.mods.mxtune.managers.PlayManager;
 import aeronicamc.mods.mxtune.network.MultiPacketSerializedObjectManager;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
+import aeronicamc.mods.mxtune.render.blockentity.MusicBlockEntityRenderer;
 import aeronicamc.mods.mxtune.render.not.MusicSourceRenderer;
 import aeronicamc.mods.mxtune.render.not.RootedRenderer;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
@@ -45,6 +46,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -113,6 +115,7 @@ public class MXTune
         RenderingRegistry.registerEntityRenderingHandler(ModEntities.MUSIC_SOURCE.get(), MusicSourceRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntities.ROOTED_SOURCE.get(), RootedRenderer::new);
         RenderTypeLookup.setRenderLayer(ModBlocks.MUSIC_VENUE_TOOL_BLOCK.get(), RenderType.cutoutMipped());
+        ClientRegistry.bindTileEntityRenderer(ModBlockEntities.INV_MUSIC_BLOCK.get(), MusicBlockEntityRenderer::new);
     }
 
     private void modLoadingComplete(FMLLoadCompleteEvent event)

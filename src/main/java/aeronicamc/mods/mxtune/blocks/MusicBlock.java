@@ -1,6 +1,5 @@
 package aeronicamc.mods.mxtune.blocks;
 
-import aeronicamc.mods.mxtune.init.ModParticles;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.managers.PlayManager;
 import aeronicamc.mods.mxtune.util.IInstrument;
@@ -20,7 +19,6 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -76,20 +74,20 @@ public class MusicBlock extends Block implements IMusicPlayer, IWrenchAble
     @Override
     public void animateTick(BlockState pState, World pLevel, BlockPos pPos, Random pRand)
     {
-        if (pState.getValue(PLAYING))
-            {
-            double d0 = (double)pPos.getX() + 0.5D;
-            double d1 = (double)pPos.getY() + 1.0625D;
-            double d2 = (double)pPos.getZ() + 0.5D;
-            double noteColor = rand.nextDouble();
-            double d4 = pRand.nextDouble() * 0.4D - 0.2D;
-            double d5 = 1D * 0D;
-            double d6 = pRand.nextDouble() * 6.0D / 16.0D;
-            double d7 = 1D * 0D;
-            // TODO: come up with out own particles for the BandAmp :D
-            pLevel.addParticle(ModParticles.getSpeaker(), d0 + d4, d1 + d6, d2 + d4, 0.0D, 0.1D, 0.0D);
-            pLevel.addParticle(ParticleTypes.ASH, d0 + d5, d1 + d6, d2 + d7, 0.0D, 0.0D, 0.0D);
-            }
+//        if (pState.getValue(PLAYING))
+//            {
+//            double d0 = (double)pPos.getX() + 0.5D;
+//            double d1 = (double)pPos.getY() + 1.0625D;
+//            double d2 = (double)pPos.getZ() + 0.5D;
+//            double noteColor = rand.nextDouble();
+//            double d4 = pRand.nextDouble() * 0.4D - 0.2D;
+//            double d5 = 1D * 0D;
+//            double d6 = pRand.nextDouble() * 6.0D / 16.0D;
+//            double d7 = 1D * 0D;
+//            // TODO: come up with out own particles for the BandAmp :D
+//            pLevel.addParticle(ModParticles.getSpeaker(), d0 + d4, d1 + d6, d2 + d4, 0.0D, 0.1D, 0.0D);
+//            pLevel.addParticle(ParticleTypes.ASH, d0 + d5, d1 + d6, d2 + d7, 0.0D, 0.0D, 0.0D);
+//            }
     }
 
     @Override
