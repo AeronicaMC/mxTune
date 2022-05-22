@@ -27,5 +27,17 @@
         "pitch": 0.8
       }
     ]
+  },
+  "rotate_block": {
+    "subtitle": "subtitle.mxtune.rotate_block",
+    "sounds": [
+      "mxtune:rotate_block"
+    ]
+  },
+  "rotate_block_failed": {
+    "subtitle": "subtitle.mxtune.rotate_block_failed",
+    "sounds": [
+      "mxtune:rotate_block_failed"
+    ]
   }
 }

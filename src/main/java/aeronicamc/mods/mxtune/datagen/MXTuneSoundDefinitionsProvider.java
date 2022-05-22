@@ -44,5 +44,11 @@ public class MXTuneSoundDefinitionsProvider extends SoundDefinitionsProvider
                 sound(ModSoundEvents.CRUMPLE_PAPER.getId()).pitch(1.2),
                 sound(ModSoundEvents.CRUMPLE_PAPER.getId()),
                 sound(ModSoundEvents.CRUMPLE_PAPER.getId()).pitch(0.8)).subtitle("subtitle.mxtune.crumple_paper"));
+
+        add(ModSoundEvents.ROTATE_BLOCK.get(), definition().with(
+                sound(ModSoundEvents.ROTATE_BLOCK.getId())).subtitle("subtitle.mxtune.rotate_block"));
+
+        add(ModSoundEvents.ROTATE_BLOCK_FAILED.get(), definition().with(
+                sound(ModSoundEvents.ROTATE_BLOCK_FAILED.getId())).subtitle("subtitle.mxtune.rotate_block_failed"));
     }
 }

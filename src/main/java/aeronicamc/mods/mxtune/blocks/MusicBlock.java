@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.blocks;
 
+import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.managers.PlayManager;
 import aeronicamc.mods.mxtune.util.IInstrument;
@@ -9,6 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MaterialColor;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
@@ -60,9 +62,9 @@ public class MusicBlock extends Block implements IMusicPlayer, IWrenchAble
 
     public MusicBlock()
     {
-        super(Properties.of(Material.WOOD)
+        super(Properties.of(Material.NETHER_WOOD, MaterialColor.COLOR_BROWN)
                       .sound(SoundType.WOOD)
-                      .strength(1.0F)
+                      .strength(2.0F)
                       .lightLevel(state -> state.getValue(PLAYING) ? 14 : 0));
         this.registerDefaultState(this.defaultBlockState()
                 .setValue(HORIZONTAL_FACING, Direction.NORTH)
@@ -183,15 +185,28 @@ public class MusicBlock extends Block implements IMusicPlayer, IWrenchAble
             BlockState newState;
             if (player.isShiftKeyDown())
             {
-                // Harvest Block
-                state.getBlock().playerWillDestroy(level, pos, state, player);
+                // Pickup Music Block into player inventory. If inventory is full drop in the world.
+                ItemStack itemStack = state.getBlock().getCloneItemStack(level, pos, state);
+                if (!player.inventory.add(itemStack))
+                {
+                    ItemEntity itemEntity = new ItemEntity(level, pos.getX(), pos.getY(), pos.getZ(), itemStack);
+                    itemEntity.setDefaultPickUpDelay();
+                    level.addFreshEntity(itemEntity);
+                    level.playSound(null, pos, SoundEvents.WOOD_BREAK, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                }
                 level.destroyBlock(pos, false, player);
             }
             else
             {
-                // Rotate Block Horizontally
-                newState = state.rotate(level, pos, Rotation.CLOCKWISE_90);
-                level.setBlockAndUpdate(pos, newState);
+                // Rotate Block Horizontally to the side hit.
+                if (!hit.getDirection().equals(Direction.UP ) && !hit.getDirection().equals(Direction.DOWN))
+                {
+                    newState = state.setValue(HORIZONTAL_FACING, hit.getDirection());
+                    //newState = state.rotate(level, pos, Rotation.CLOCKWISE_90);
+                    level.setBlockAndUpdate(pos, newState);
+                    level.playSound(null, pos, ModSoundEvents.ROTATE_BLOCK.get(), SoundCategory.BLOCKS, 0.6F, 1.0F);
+                } else
+                    level.playSound(null, pos, ModSoundEvents.ROTATE_BLOCK_FAILED.get(), SoundCategory.BLOCKS, 0.2F, 1.0F);
             }
             return true;
         }
@@ -344,44 +359,39 @@ public class MusicBlock extends Block implements IMusicPlayer, IWrenchAble
     @Override
     public void playerWillDestroy(World pLevel, BlockPos pPos, BlockState pState, PlayerEntity pPlayer)
     {
-        getMusicBlockEntity(pLevel, pPos).filter(p -> !pLevel.isClientSide() && !pPlayer.isCreative()).ifPresent(
-                musicBlockEntity ->
-                {
-                    ItemStack itemStack = getCloneItemStack(pLevel, pPos, pState);
-                    CompoundNBT cNBT = musicBlockEntity.save(new CompoundNBT());
-                    if (!cNBT.isEmpty())
-                    {
-                        // Save Inventory only! No need to keep block position, button state or owner.
-                        cNBT.remove("x");
-                        cNBT.remove("y");
-                        cNBT.remove("z");
-                        cNBT.remove(MusicBlockEntity.KEY_BUTTON_STATE);
-                        cNBT.remove(MusicBlockEntity.KEY_OWNER);
-                        itemStack.addTagElement("BlockEntityTag", cNBT);
-                    }
-
-                    if (musicBlockEntity.hasCustomName())
-                        itemStack.setHoverName(musicBlockEntity.getCustomName());
-
-                    ItemEntity itemEntity = new ItemEntity(pLevel, pPos.getX(), pPos.getY(), pPos.getZ(), itemStack);
-                    itemEntity.setDefaultPickUpDelay();
-                    pLevel.addFreshEntity(itemEntity);
-                });
+        if(!pLevel.isClientSide() && !pPlayer.isCreative())
+        {
+            ItemStack itemStack = getCloneItemStack(pLevel, pPos, pState);
+            ItemEntity itemEntity = new ItemEntity(pLevel, pPos.getX(), pPos.getY(), pPos.getZ(), itemStack);
+            itemEntity.setDefaultPickUpDelay();
+            pLevel.addFreshEntity(itemEntity);
+        }
         super.playerWillDestroy(pLevel, pPos, pState, pPlayer);
     }
 
     @Override
     public ItemStack getCloneItemStack(IBlockReader pLevel, BlockPos pPos, BlockState pState)
     {
-        ItemStack itemstack = super.getCloneItemStack(pLevel, pPos, pState);
+        ItemStack itemStack = super.getCloneItemStack(pLevel, pPos, pState);
         getMusicBlockEntity(pLevel, pPos).ifPresent(
                 musicBlockEntity ->
                 {
-                    CompoundNBT compoundnbt = musicBlockEntity.save(new CompoundNBT());
-                    if (!compoundnbt.isEmpty())
-                        itemstack.addTagElement("BlockEntityTag", compoundnbt);
+                    CompoundNBT compoundNBT = musicBlockEntity.save(new CompoundNBT());
+                    if (!compoundNBT.isEmpty())
+                    {
+                        // Save Inventory only! No need to keep block position, button state or owner.
+                        compoundNBT.remove("x");
+                        compoundNBT.remove("y");
+                        compoundNBT.remove("z");
+                        compoundNBT.remove(MusicBlockEntity.KEY_BUTTON_STATE);
+                        compoundNBT.remove(MusicBlockEntity.KEY_OWNER);
+                        itemStack.addTagElement("BlockEntityTag", compoundNBT);
+                    }
+
+                    if (musicBlockEntity.hasCustomName())
+                        itemStack.setHoverName(musicBlockEntity.getCustomName());
                 });
-        return itemstack;
+        return itemStack;
     }
 
     @Override

@@ -24,7 +24,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         add("container.mxtune.inv_test_block.more", "More...");
         add("gui.mxtune.gui_test.title", "Gui Test Screen");
         add("item.mxtune.music_item", "Music Item");
-        add("item.mxtune.gui_test_item", "GUI Test Item");
+        add("item.mxtune.gui_test_item", "Wrench Test Item");
 
         addBlocks();
         addCommands();
@@ -138,8 +138,8 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.lock.help02", "[Unlocked]: Anyone can modify contents. View contents by RIGHT-CLICK-ing the block.");
         addGuiText("button.lock.help03", "[Locked]: Non-owners can view contents. View contents by SHIFT-RIGHT-CLICK-ing the block.");
         addGuiText("button.lock.help04", "Play Activation: [Unlocked] SHIFT-RIGHT-CLICK / [Locked] RIGHT-CLICK.");
-        addGuiText("button.lock.help05", "Only Owners may break the block or. Settings and instruments are saved! The block item may be passed to another person. They become owner upon placing in the world.");
-        addGuiText("button.lock.help06", "Only Owners may lock or unlock the contents.");
+        addGuiText("button.lock.help05", "Owners may break the block or. Settings and instruments are saved! The block item may be passed to another person. They become owner upon placing in the world.");
+        addGuiText("button.lock.help06", "Owners may lock or unlock the contents. Owners can use a standard mod wrench to rotate or pick up the block.");
         addGuiText("button.lock.locked", "Locked");
         addGuiText("button.lock.unlocked", "Unlocked");
 
@@ -209,6 +209,8 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addSubtitle("pcm-proxy", "Music Plays");
         addSubtitle("failure", "Oops");
         addSubtitle("crumple_paper", "Crumple Paper");
+        addSubtitle("rotate_block", "Rotate Block");
+        addSubtitle("rotate_block_failed", "Rotate Block Failed");
     }
 
     /**
