@@ -227,6 +227,9 @@ jar {
 }
 
 processResources {
+    // Exclude the Audacity project files
+    exclude '**/*.aup'
+
     // Exclude the GIMP project files
     exclude '**/*.xcf'
 
