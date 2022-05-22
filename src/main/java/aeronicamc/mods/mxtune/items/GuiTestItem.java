@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.items;
 
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -9,12 +10,17 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class GuiTestItem extends Item
 {
@@ -72,6 +78,15 @@ public class GuiTestItem extends Item
 //            });
 //        }
         return ActionResult.pass(itemstack);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack pStack, @Nullable World pLevel, List<ITextComponent> pTooltip, ITooltipFlag pFlag)
+    {
+        pTooltip.add(new StringTextComponent("Does anyone read these? Should mxTune include a wrench?").withStyle(TextFormatting.GOLD));
+        pTooltip.add(new StringTextComponent("Music Block: Right-Click rotates front to the clicked face. SHIFT-Right-Click pick up into inventory").withStyle(TextFormatting.GOLD));
+        pTooltip.add(new StringTextComponent("is ItemTag forge:tools/wrench").withStyle(TextFormatting.DARK_GREEN));
+        pTooltip.add(new StringTextComponent("Ref: Other popular mods with wrenches RF... Ther...").withStyle(TextFormatting.DARK_GREEN));
     }
 
     @Override
