@@ -244,7 +244,7 @@ processResources {
 
     exclude '**/.cache/'
 
-    duplicatesStrategy = DuplicatesStrategy.FAIL
+    duplicatesStrategy = DuplicatesStrategy.WARN
     filesMatching("META-INF/mods.toml") {
         expand 'version': project.version
     }

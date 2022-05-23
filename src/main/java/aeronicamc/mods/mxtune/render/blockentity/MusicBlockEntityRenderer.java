@@ -25,11 +25,12 @@ public class MusicBlockEntityRenderer extends TileEntityRenderer<MusicBlockEntit
     @Override
     public void render(MusicBlockEntity pBlockEntity, float pPartialTicks, MatrixStack pMatrixStack, IRenderTypeBuffer pBuffer, int pCombinedLight, int pCombinedOverlay)
     {
-        pBlockEntity.getItemHandler().filter(p -> pBlockEntity.getBlockState().getValue(MusicBlock.PLAYING)).ifPresent(inv -> {
+        pBlockEntity.getItemHandler().ifPresent(inv -> {
             double x = 0;
             double y = 0;
-
+            int itemLighting = pBlockEntity.getBlockState().getValue(MusicBlock.PLAYING) ? 224 : 168;
             Direction facing = pBlockEntity.getBlockState().getValue(HORIZONTAL_FACING);
+
             pMatrixStack.pushPose();
             if (Direction.NORTH.equals(facing))
             {
@@ -60,11 +61,11 @@ public class MusicBlockEntityRenderer extends TileEntityRenderer<MusicBlockEntit
                     pMatrixStack.pushPose();
 
                     pMatrixStack.mulPose(Vector3f.XP.rotationDegrees(0F));
-                    pMatrixStack.translate(0.125 + x, 1.25, 0.125 + y);
+                    pMatrixStack.translate(0.125 + x, 0.75, 0.125 + y);
                     pMatrixStack.scale(0.2F, 0.2F, 0.2F);
                     pMatrixStack.mulPose(Vector3f.YP.rotationDegrees(pBlockEntity.getLevel().getGameTime()));
 
-                    Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemCameraTransforms.TransformType.FIXED, pCombinedLight, pCombinedOverlay, pMatrixStack, pBuffer);
+                    Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemCameraTransforms.TransformType.FIXED, itemLighting, pCombinedOverlay, pMatrixStack, pBuffer);
 
                     pMatrixStack.popPose();
                 }
