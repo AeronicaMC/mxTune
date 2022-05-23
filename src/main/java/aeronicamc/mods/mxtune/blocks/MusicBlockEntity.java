@@ -66,7 +66,6 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
     private boolean LastPlay;
     private int counter;
     private int useHeldCounter;
-    private int fastRSCounter;
 
     public MusicBlockEntity()
     {
@@ -89,7 +88,6 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
         if (level != null && counter++ % 2 == 0)
         {
             useHeldCounterUpdate(false);
-            fastRSCounterUpdate(false);
         }
     }
 
@@ -348,22 +346,9 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
     public void useHeldCounterUpdate(boolean countUp)
     {
         if (countUp)
-            useHeldCounter = (useHeldCounter += 5) > 1 ? 5 : useHeldCounter;
+            useHeldCounter = (useHeldCounter += 7) > 1 ? 7 : useHeldCounter;
         else
             useHeldCounter = (--useHeldCounter < -1) ? -1 : useHeldCounter;
-    }
-
-    public boolean notFastRS()
-    {
-        return fastRSCounter <= 0;
-    }
-
-    public void fastRSCounterUpdate(boolean countUp)
-    {
-        if (countUp)
-            fastRSCounter = (fastRSCounter += 5) > 1 ? 5 : fastRSCounter;
-        else
-            fastRSCounter = (--fastRSCounter < -1) ? -1 : fastRSCounter;
     }
 
     @Override

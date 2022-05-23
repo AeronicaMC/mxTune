@@ -102,7 +102,7 @@ public class MusicBlock extends Block implements IMusicPlayer, IWrenchAble
                     {
                         if (pState.getValue(PLAYING))
                         {
-                            pLevel.getBlockTicks().scheduleTick(pPos, this, 10);
+                            pLevel.getBlockTicks().scheduleTick(pPos, this, 20);
                             if (PlayManager.getActiveBlockPlayId(pPos) == PlayIdSupplier.INVALID)
                             {
                                 setPlayingState(pLevel, pPos, pState, false);
@@ -244,7 +244,7 @@ public class MusicBlock extends Block implements IMusicPlayer, IWrenchAble
                     // get redStone input from the rear side
                     boolean isSidePowered = pLevel.hasSignal(pPos.relative(pState.getValue(HORIZONTAL_FACING).getOpposite()), pState.getValue(HORIZONTAL_FACING));
                     // Lever spam prevention. see use method above for more details.
-                    if (musicBlockEntity.notFastRS())
+                    if (musicBlockEntity.notHeld())
                     {
                         if ((musicBlockEntity.getPreviousInputState() != isSidePowered) && musicBlockEntity.isRearRedstoneInputEnabled())
                         {
@@ -258,7 +258,7 @@ public class MusicBlock extends Block implements IMusicPlayer, IWrenchAble
                             musicBlockEntity.setPreviousInputState(isSidePowered);
                         }
                     }
-                    musicBlockEntity.fastRSCounterUpdate(pState.getValue(PLAYING));
+                    musicBlockEntity.useHeldCounterUpdate(pState.getValue(PLAYING));
                 });
     }
 
