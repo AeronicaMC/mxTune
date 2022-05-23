@@ -1,12 +1,17 @@
 package aeronicamc.mods.mxtune.datagen;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.blocks.MusicBlock;
 import aeronicamc.mods.mxtune.init.ModBlocks;
 import com.google.common.base.Preconditions;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
+import net.minecraftforge.client.model.generators.ConfiguredModel;
+import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,36 +42,26 @@ public class MXTuneBlockStateProvider extends BlockStateProvider
     @Override
     protected void registerStatesAndModels()
     {
-//        final ModelFile musicBlockModel = models().orientable(
-//                        ModBlocks.MUSIC_BLOCK.getId().getPath(),
-//                        modLoc("block/music_block_side"),
-//                        modLoc("block/music_block_front"),
-//                        modLoc("block/music_block"))
-//                .texture("particle", modLoc("block/music_block"));
-//
-//        final ModelFile musicBlockModelPLaying = models().orientable(
-//                        ModBlocks.MUSIC_BLOCK.getId().getPath() + "_playing",
-//                        modLoc("block/music_block_side"),
-//                        modLoc("block/music_block_playing_front"),
-//                        modLoc("block/music_block"))
-//                .texture("particle", modLoc("block/music_block"));
+        // Using non-generated BlockBench models. Load them using getExistingFile...
+        final ModelFile musicBlockModel = models().getExistingFile(modLoc("music_block"));
+        final ModelFile musicBlockModelPLaying = models().getExistingFile(modLoc("music_block_playing"));
 
-//        getVariantBuilder(ModBlocks.MUSIC_BLOCK.get())
-//                .forAllStatesExcept(state -> {
-//                    Direction direction = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
-//                    if (state.getValue(MusicBlock.PLAYING).equals(false))
-//                        return ConfiguredModel.builder()
-//                                .modelFile(models().getExistingFile(new ResourceLocation(Reference.MOD_ID, "block/music_block")))
-//                                .rotationY(((int)direction.toYRot() + 180) % 360)
-//                                .build();
-//                    else
-//                        return ConfiguredModel.builder()
-//                                .modelFile(models().getExistingFile(new ResourceLocation(Reference.MOD_ID, "block/music_block_playing")))
-//                                .rotationY(((int)direction.toYRot() + 180) % 360)
-//                                .build();
-//                }, MusicBlock.POWERED);
+        getVariantBuilder(ModBlocks.MUSIC_BLOCK.get())
+                .forAllStatesExcept(state -> {
+                    Direction direction = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
+                    if (state.getValue(MusicBlock.PLAYING).equals(false))
+                        return ConfiguredModel.builder()
+                                .modelFile(musicBlockModel)
+                                .rotationY(((int)direction.toYRot() + 180) % 360)
+                                .build();
+                    else
+                        return ConfiguredModel.builder()
+                                .modelFile(musicBlockModelPLaying)
+                                .rotationY(((int)direction.toYRot() + 180) % 360)
+                                .build();
+                }, MusicBlock.POWERED);
 
-        //simpleBlockItem(ModBlocks.MUSIC_BLOCK.get(), (models().getExistingFile(new ResourceLocation(Reference.MOD_ID, "block/music_block"))));
+        simpleBlockItem(ModBlocks.MUSIC_BLOCK.get(), musicBlockModel);
         simpleBlock(ModBlocks.MUSIC_VENUE_TOOL_BLOCK.get());
         simpleBlockItem(ModBlocks.MUSIC_VENUE_TOOL_BLOCK.get());
     }
