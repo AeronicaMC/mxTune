@@ -28,6 +28,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -36,6 +38,8 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
@@ -57,6 +61,7 @@ public class MusicBlock extends Block implements IMusicPlayer, IWrenchAble
     public static final BooleanProperty PLAYING = BooleanProperty.create("playing");
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
+    private static final VoxelShape BOTTOM_AABB = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 8.0D, 16.0D);
     private static final Logger LOGGER = LogManager.getLogger(MusicBlock.class);
     private static final Random rand = new Random();
 
@@ -65,12 +70,35 @@ public class MusicBlock extends Block implements IMusicPlayer, IWrenchAble
         super(Properties.of(Material.NETHER_WOOD, MaterialColor.COLOR_BROWN)
                       .sound(SoundType.WOOD)
                       .strength(2.0F)
-                      .lightLevel(state -> state.getValue(PLAYING) ? 14 : 0));
+                      .lightLevel(state -> state.getValue(PLAYING) ? 14 : 0)
+                      .noOcclusion());
         this.registerDefaultState(this.defaultBlockState()
                 .setValue(HORIZONTAL_FACING, Direction.NORTH)
                 .setValue(PLAYING, Boolean.FALSE)
                 .setValue(POWERED, Boolean.FALSE));
 
+    }
+
+    @Override
+    public VoxelShape getVisualShape(BlockState pState, IBlockReader pReader, BlockPos pPos, ISelectionContext pContext) {
+        return BOTTOM_AABB; //VoxelShapes.empty();
+    }
+
+    @Override
+    public boolean useShapeForLightOcclusion(BlockState pState) {
+        return true;
+    }
+
+    // Glass returns 1.0F here. Use 0.0F since this is like a bottom slab visually
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public float getShadeBrightness(BlockState pState, IBlockReader pLevel, BlockPos pPos) {
+        return 0.0F;
+    }
+
+    @Override
+    public boolean propagatesSkylightDown(BlockState pState, IBlockReader pReader, BlockPos pPos) {
+        return false;
     }
 
     @Override
