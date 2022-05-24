@@ -3,12 +3,11 @@
 	"parent": "mxtune:block/music_block",
 	"textures": {
 		"0": "mxtune:block/music_block_bottom",
-		"1": "mxtune:block/music_block_front2",
+		"1": "mxtune:block/music_block_playing_front2",
 		"2": "mxtune:block/music_block_side2",
 		"3": "mxtune:block/music_block_top",
 		"4": "mxtune:block/music_block_inside",
 		"5": "mxtune:block/music_block_inside_front",
-		"6": "mxtune:block/music_block_playing_front2",
 		"particle": "mxtune:block/music_block_bottom"
 	},
 	"elements": [
@@ -30,7 +29,7 @@
 			"from": [0, 0, 0],
 			"to": [16, 11, 1],
 			"faces": {
-				"north": {"uv": [0, 5, 16, 16], "texture": "#6", "cullface": "north"},
+				"north": {"uv": [0, 5, 16, 16], "texture": "#1", "cullface": "north"},
 				"east": {"uv": [15, 7, 16, 16], "texture": "#2", "cullface": "east"},
 				"south": {"uv": [0, 5, 16, 16], "texture": "#5"},
 				"west": {"uv": [0, 5, 1, 16], "texture": "#2"},
@@ -109,7 +108,7 @@
 			"to": [1, 16, 1],
 			"faces": {
 				"north": {"uv": [15, 0, 16, 5], "texture": "#1", "cullface": "north"},
-				"east": {"uv": [0, 1, 1, 5], "texture": "#3", "cullface": "east"},
+				"east": {"uv": [0, 1, 1, 5], "texture": "#3"},
 				"south": {"uv": [0, 1, 1, 5], "texture": "#2"},
 				"west": {"uv": [0, 1, 1, 5], "texture": "#2"},
 				"up": {"uv": [15, 15, 16, 16], "texture": "#3"},
