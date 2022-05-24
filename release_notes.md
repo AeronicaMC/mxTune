@@ -1,3 +1,16 @@
+#### 2022-05-23 mxtune-1.16.5-2.0.0
+* More Music Block updates, but not complete: 
+  * Owner can lock, manage contents/settings and break. 
+  * Add hoover helps and help button. 
+  * New model and textures. NOT FINAL! WIP. Has playing texture now. 
+  * Block lights up when playing. 
+  * Instruments are now displayed in the world for now, but may change. 
+  * Music Block can now be rotated and picked up into inventory using a standard mod wrench (ItemTag forge:tools/wrench). Think of other mods that have wrenches: RFTo... Therm... 
+    * Main Hand Wrench: Right-Click rotates front to the clicked face. SHIFT-Right-Click picks up into inventory. 
+  * Included basic Wrench Test Item. No recipe, so give it to yourself. 
+### IMPORTANT 
+  With this snapshot, the player who places the Music Block becomes the owner. If updating to this version, any placed Music Blocks placed will have a null owner. They are not locked, but you can't remove them in survival mode. I suggest breaking all the Music Blocks before updating then and placing them back after. That will guarantee your player will be the owner of the Music Block. Read the Music Block Inventory Screen help for more information on how Ownership and Locking work. 
+
 #### 2022-05-14 mxtune-1.16.5-2.0.0-alpha-2022-05-14.48539161 
 * Music Block updates are still WIP, but making progress: 
   * GUI updates: resized and added buttons for redstone signals. 
