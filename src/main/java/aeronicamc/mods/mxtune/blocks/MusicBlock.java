@@ -38,8 +38,6 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
@@ -76,24 +74,11 @@ public class MusicBlock extends Block implements IMusicPlayer, IWrenchAble
                 .setValue(HORIZONTAL_FACING, Direction.NORTH)
                 .setValue(PLAYING, Boolean.FALSE)
                 .setValue(POWERED, Boolean.FALSE));
-
     }
 
     @Override
     public VoxelShape getVisualShape(BlockState pState, IBlockReader pReader, BlockPos pPos, ISelectionContext pContext) {
-        return BOTTOM_AABB; //VoxelShapes.empty();
-    }
-
-    @Override
-    public boolean useShapeForLightOcclusion(BlockState pState) {
-        return true;
-    }
-
-    // Glass returns 1.0F here. Use 0.0F since this is like a bottom slab visually
-    @OnlyIn(Dist.CLIENT)
-    @Override
-    public float getShadeBrightness(BlockState pState, IBlockReader pLevel, BlockPos pPos) {
-        return 0.0F;
+        return BOTTOM_AABB;
     }
 
     @Override

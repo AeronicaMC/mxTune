@@ -1,6 +1,5 @@
 package aeronicamc.mods.mxtune.render.blockentity;
 
-import aeronicamc.mods.mxtune.blocks.MusicBlock;
 import aeronicamc.mods.mxtune.blocks.MusicBlockEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
@@ -28,30 +27,11 @@ public class MusicBlockEntityRenderer extends TileEntityRenderer<MusicBlockEntit
         pBlockEntity.getItemHandler().ifPresent(inv -> {
             double x = 0;
             double y = 0;
-            int itemLighting = pBlockEntity.getBlockState().getValue(MusicBlock.PLAYING) ? 224 : 168;
             Direction facing = pBlockEntity.getBlockState().getValue(HORIZONTAL_FACING);
-
             pMatrixStack.pushPose();
-            if (Direction.NORTH.equals(facing))
-            {
-                pMatrixStack.mulPose(Vector3f.YP.rotationDegrees(180));
-                pMatrixStack.translate(-1, 0, -1);
-            }
-            else if (Direction.SOUTH.equals(facing))
-            {
-                pMatrixStack.mulPose(Vector3f.YP.rotationDegrees(0));
-                pMatrixStack.translate(0, 0, 0);
-            }
-            else if (Direction.EAST.equals(facing))
-            {
-                pMatrixStack.mulPose(Vector3f.YP.rotationDegrees(90));
-                pMatrixStack.translate(-1, 0, 0);
-            }
-            else if (Direction.WEST.equals(facing))
-            {
-                pMatrixStack.mulPose(Vector3f.YP.rotationDegrees(270));
-                pMatrixStack.translate(0, 0, -1);
-            }
+            pMatrixStack.translate(0.5, 0, 0.5);
+            pMatrixStack.mulPose(Vector3f.YP.rotationDegrees(-facing.toYRot()));
+            pMatrixStack.translate(-0.5, 0, -0.5);
 
             for(int i = 0; i < inv.getSlots(); i++)
             {
@@ -65,7 +45,7 @@ public class MusicBlockEntityRenderer extends TileEntityRenderer<MusicBlockEntit
                     pMatrixStack.scale(0.2F, 0.2F, 0.2F);
                     pMatrixStack.mulPose(Vector3f.YP.rotationDegrees(pBlockEntity.getLevel().getGameTime()));
 
-                    Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemCameraTransforms.TransformType.FIXED, itemLighting, pCombinedOverlay, pMatrixStack, pBuffer);
+                    Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemCameraTransforms.TransformType.FIXED, pCombinedLight, pCombinedOverlay, pMatrixStack, pBuffer);
 
                     pMatrixStack.popPose();
                 }
