@@ -7,7 +7,6 @@ import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
 import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier.PlayType;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
-import aeronicamc.mods.mxtune.network.messages.PlayBlockMusicMessage;
 import aeronicamc.mods.mxtune.network.messages.PlaySoloMessage;
 import aeronicamc.mods.mxtune.network.messages.StopPlayIdMessage;
 import aeronicamc.mods.mxtune.util.IInstrument;
@@ -82,17 +81,14 @@ public final class PlayManager
                     {
                         playId = getNextPlayID();
                         MusicSourceEntity musicSource = new MusicSourceEntity(world, blockPos, false);
-                        world.addFreshEntity(musicSource);
                         addActivePlayId(musicSource.getId(), blockPos, playId, musicProperties.getMusicText(), musicProperties.getDuration());
-                        PlayBlockMusicMessage playBlockMusicMessage = new PlayBlockMusicMessage(playId, blockPos , musicProperties.getMusicText());
-                        PacketDispatcher.sendToTrackingEntity(playBlockMusicMessage, musicSource);
+                        world.addFreshEntity(musicSource);
                     }
                 }
             }
         }
         return playId;
     }
-
 
     /**
      * For playing music
@@ -254,14 +250,14 @@ public final class PlayManager
             if ((listeningPlayer != null) && (soundSourceEntity != null) && hasActivePlayId(soundSourceEntity))
             {
                 ActiveTune.getActiveTuneByEntityId(soundSourceEntity).ifPresent(activeTune-> {
-                    if (listeningPlayer.level.getServer() != null)
+                    if (listeningPlayer.level.getServer() != null && !activeTune.isDone())
                     {
                         PacketDispatcher.sendTo(new PlaySoloMessage(activeTune.playId, LocalDateTime.now(ZoneId.of("GMT0")).toString(), activeTune.getSecondsElapsed(), soundSourceEntity.getId(), activeTune.musicText), listeningPlayer);
                         LOGGER.debug("sendMusicTo {} starting at {}", listeningPlayer.getDisplayName().getString(), SheetMusicHelper.formatDuration(activeTune.getSecondsElapsed()));
                     }
                     else
                     {
-                        LOGGER.warn("sendMusicTo -ERROR- No playId: {} for this Entity: {}", getEntitiesPlayId(soundSourceEntity.getId()), soundSourceEntity);
+                        LOGGER.warn("sendMusicTo -ERROR- or -DONE- No playId: {} for this Entity: {}", getEntitiesPlayId(soundSourceEntity.getId()), soundSourceEntity);
                     }
                 });
             }
