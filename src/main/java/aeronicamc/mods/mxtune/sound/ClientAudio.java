@@ -66,7 +66,7 @@ public class ClientAudio
 
     private static void init(SoundEngine se)
     {
-        if (soundEngine == null)
+        if (soundEngine != se)
         {
             soundEngine = se;
             LOGGER.info("Starting mxTune ClientAudio System");
