@@ -62,8 +62,11 @@ public class ActiveTune
         future = scheduledThreadPool.scheduleAtFixedRate(() -> {
             secondsElapsed = secondsElapsedAI.incrementAndGet();
             playIdToActiveTuneEntry.values().forEach(entry -> {
-                if (entry.isDone())
+                if (entry.canRemove())
+                {
                     deleteEntryQueue.add(entry);
+                    PlayManager.stopPlayId(entry.playId);
+                }
                 entry.tickDuration();
             });
             if (!deleteEntryQueue.isEmpty())
@@ -116,7 +119,7 @@ public class ActiveTune
 
     synchronized static Optional<Entry> getActiveBlock(BlockPos pPos)
     {
-        return playIdToActiveTuneEntry.values().stream().filter(p -> ((p.blockPos != null) && p.blockPos.equals(pPos))).findFirst();
+        return playIdToActiveTuneEntry.values().stream().filter(p -> ((p.blockPos != null) && p.blockPos.equals(pPos) && !p.isDone())).findFirst();
     }
 
     synchronized static boolean isActivePlayId(int playId)
@@ -164,6 +167,7 @@ public class ActiveTune
         final BlockPos blockPos;
         final int playId;
         final int durationSeconds;
+        final int removalSeconds;
 
         private Entry()
         {
@@ -172,6 +176,7 @@ public class ActiveTune
             this.playId = INVALID;
             this.musicText = "";
             this.durationSeconds = 0;
+            this.removalSeconds = 60;
         }
 
         private Entry(int entityId, @Nullable BlockPos blockPos, int playId, String musicText, int durationSeconds)
@@ -181,6 +186,7 @@ public class ActiveTune
             this.playId = playId;
             this.musicText = musicText;
             this.durationSeconds = durationSeconds + 2;
+            this.removalSeconds = durationSeconds + 60;
         }
 
         static Entry newEntry(int entityId, BlockPos blockPos, int playId, String mml, int durationSeconds)
@@ -211,6 +217,11 @@ public class ActiveTune
         boolean isDone()
         {
             return durationSeconds < secondsElapsed;
+        }
+
+        boolean canRemove()
+        {
+            return removalSeconds < secondsElapsed;
         }
 
         void tickDuration()
