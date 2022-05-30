@@ -184,7 +184,7 @@ public class ClientAudio
             }
             else if (pos == null)
             {
-                // Other players instruments
+                // Other players instruments, Music Block
                 if ((mc.player != null) && (mc.player.level.getEntity(entityId) != null))
                 {
                     mc.getSoundManager().play(new MovingMusic(
