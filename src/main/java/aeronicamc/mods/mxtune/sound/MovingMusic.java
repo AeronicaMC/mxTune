@@ -30,17 +30,17 @@ public class MovingMusic extends MxSound
         this.x = (float) entity.getX();
         this.y = (float) entity.getY();
         this.z = (float) entity.getZ();
-        LOGGER.debug("MovingMusic entity {}", entity.getName().getContents());
+        LOGGER.debug("MovingMusic entity {}, playId {}", entity.getName().getContents(), audioData.getPlayId());
     }
 
     @Override
     public void onUpdate()
     {
-        if (!this.entity.isAlive() || isStopped())
+        if (!this.entity.isAlive() && !isStopped())
         {
             setDonePlaying();
             ClientAudio.queueAudioDataRemoval(playID);
-            LOGGER.debug("MovingMusic playID {} done", playID);
+            LOGGER.debug("MovingMusic playID {} done, this {}", playID, this);
         } else if (audioData != null && mc.player != null)
         {
             this.x = entity.getX();
