@@ -21,6 +21,7 @@
  */
 package aeronicamc.mods.mxtune.sound;
 
+import aeronicamc.mods.mxtune.util.LoggedTimer;
 import aeronicamc.mods.mxtune.util.MIDISystemUtil;
 import com.sun.media.sound.AudioSynthesizer;
 import org.apache.logging.log4j.LogManager;
@@ -45,6 +46,7 @@ public class Midi2WavRenderer implements Receiver
 {
     private static final Logger LOGGER = LogManager.getLogger(Midi2WavRenderer.class);
     private final AudioData audioData;
+    private final LoggedTimer loggedTimer = new LoggedTimer();
 
     public Midi2WavRenderer()
     {
@@ -97,8 +99,10 @@ public class Midi2WavRenderer implements Receiver
         long secondsToSkip = audioData != null && audioData.getSecondsToSkip() != 0 ? audioData.getSecondsToSkip() : 0L;
         long savedBytesToSkip;
         long bytesToSkip = savedBytesToSkip = format.getFrameSize() * ((int)format.getFrameRate()) * secondsToSkip;
+        LOGGER.debug("FrameSize {}, FrameRate {}", format.getFrameSize(), format.getSampleRate());
         try
         {
+            loggedTimer.start(String.format("PlayId %d Skipping %d seconds, Mark Supported %s", audioData.getPlayId(), secondsToSkip, outputStream.markSupported()));
             long justSkipped;
             // TODO: Skipping takes time and depends on blocking waits for data to be available.
             // TODO: The outputStream.skip(bytesToSkip) pause time could be roughly calculated ahead of time and added to
@@ -110,6 +114,7 @@ public class Midi2WavRenderer implements Receiver
                 bytesToSkip -= justSkipped;
             }
             LOGGER.debug("Skipped {} seconds or {} bytes.", secondsToSkip, savedBytesToSkip);
+            loggedTimer.stop();
         } catch (IOException e)
         {
             LOGGER.error(e);
