@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static aeronicamc.mods.mxtune.managers.PlayIdSupplier.INVALID;
 
@@ -23,12 +22,7 @@ public class ActiveTune
     private static final Queue<ActiveTune.Entry> deleteEntryQueue = new ConcurrentLinkedQueue<>();
 
     private static ScheduledExecutorService scheduledThreadPool = null;
-    private static ExecutorService executor = null;
     private static boolean isInitialized;
-
-    private ScheduledFuture<?> future;
-    private final AtomicInteger secondsElapsedAI = new AtomicInteger();
-    private int secondsElapsed;
 
     private ActiveTune() { /* NOP */ }
 
@@ -48,7 +42,7 @@ public class ActiveTune
                     .setDaemon(true)
                     .setPriority(Thread.MIN_PRIORITY)
                     .build();
-            executor = Executors.newCachedThreadPool(threadFactoryPool);
+            ExecutorService executor = Executors.newCachedThreadPool(threadFactoryPool);
             isInitialized = true;
             ActiveTune activeTune = new ActiveTune();
             executor.execute(activeTune::counter);
@@ -59,22 +53,26 @@ public class ActiveTune
     void counter()
     {
         CountDownLatch lock = new CountDownLatch(Integer.MAX_VALUE);
-        future = scheduledThreadPool.scheduleAtFixedRate(() -> {
-            secondsElapsed = secondsElapsedAI.incrementAndGet();
-            playIdToActiveTuneEntry.values().forEach(entry -> {
-                if (entry.canRemove())
+        scheduledThreadPool.scheduleAtFixedRate(
+                () ->
                 {
-                    deleteEntryQueue.add(entry);
-                    PlayManager.stopPlayId(entry.playId);
-                }
-                entry.tickDuration();
-            });
-            if (!deleteEntryQueue.isEmpty())
-                playIdToActiveTuneEntry.remove(deleteEntryQueue.remove().playId);
-            lock.countDown();
-        }, 500, 1000, TimeUnit.MILLISECONDS);
+                    playIdToActiveTuneEntry.values()
+                            .forEach(entry ->
+                                     {
+                                         if (entry.canRemove())
+                                         {
+                                             deleteEntryQueue.add(entry);
+                                             PlayManager.stopPlayId(entry.playId);
+                                         }
+                                         entry.tickDuration();
+                                     });
+                    if (!deleteEntryQueue.isEmpty())
+                        playIdToActiveTuneEntry.remove(deleteEntryQueue.remove().playId);
+                    lock.countDown();
+                }, 500, 1000, TimeUnit.MILLISECONDS);
         try
         {
+            //noinspection ResultOfMethodCallIgnored
             lock.await(Integer.MAX_VALUE, TimeUnit.MILLISECONDS);
         }
         catch (InterruptedException e)
@@ -91,22 +89,6 @@ public class ActiveTune
         }
     }
 
-    static void addEntry(int entityId, int playId, String mml, int durationSeconds)
-    {
-        synchronized (playIdToActiveTuneEntry)
-        {
-            playIdToActiveTuneEntry.putIfAbsent(playId, Entry.newEntry(entityId, playId, mml, durationSeconds));
-        }
-    }
-
-    static void addEntry(BlockPos blockPos, int playId, String mml, int durationSeconds)
-    {
-        synchronized (playIdToActiveTuneEntry)
-        {
-            playIdToActiveTuneEntry.putIfAbsent(playId, Entry.newEntry(blockPos, playId, mml, durationSeconds));
-        }
-    }
-
     synchronized static List<Entry> getActiveTuneEntries()
     {
         return new ArrayList<>(playIdToActiveTuneEntry.values());
@@ -119,17 +101,12 @@ public class ActiveTune
 
     synchronized static Optional<Entry> getActiveBlock(BlockPos pPos)
     {
-        return playIdToActiveTuneEntry.values().stream().filter(p -> ((p.blockPos != null) && p.blockPos.equals(pPos) && !p.isDone())).findFirst();
+        return playIdToActiveTuneEntry.values().stream().filter(p -> ((p.blockPos != null) && p.blockPos.equals(pPos) && p.isActive())).findFirst();
     }
 
     synchronized static boolean isActivePlayId(int playId)
     {
         return (playId != INVALID) && ActiveTune.getActivePlayIds().contains(playId);
-    }
-
-    synchronized static boolean isEmpty()
-    {
-        return playIdToActiveTuneEntry.isEmpty();
     }
 
     synchronized static Optional<Entry> getActiveTuneByEntityId(@Nullable Entity entity)
@@ -169,16 +146,6 @@ public class ActiveTune
         final int durationSeconds;
         final int removalSeconds;
 
-        private Entry()
-        {
-            this.entityId = 0;
-            this.blockPos = null;
-            this.playId = INVALID;
-            this.musicText = "";
-            this.durationSeconds = 0;
-            this.removalSeconds = 60;
-        }
-
         private Entry(int entityId, @Nullable BlockPos blockPos, int playId, String musicText, int durationSeconds)
         {
             this.entityId = entityId;
@@ -194,29 +161,14 @@ public class ActiveTune
             return new Entry(entityId, blockPos, playId, mml, durationSeconds);
         }
 
-        static Entry newEntry(int entityId, int playId, String mml, int durationSeconds)
-        {
-            return new Entry(entityId, null, playId, mml, durationSeconds);
-        }
-
-        static Entry newEntry(BlockPos blockPos, int playId, String mml, int durationSeconds)
-        {
-            return new Entry(0, blockPos, playId, mml, durationSeconds);
-        }
-
         int getSecondsElapsed()
         {
             return secondsElapsed;
         }
 
-        int getDurationSeconds()
+        boolean isActive()
         {
-            return durationSeconds;
-        }
-
-        boolean isDone()
-        {
-            return durationSeconds < secondsElapsed;
+            return durationSeconds >= secondsElapsed;
         }
 
         boolean canRemove()

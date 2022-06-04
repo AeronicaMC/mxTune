@@ -250,7 +250,7 @@ public final class PlayManager
             if ((listeningPlayer != null) && (soundSourceEntity != null) && hasActivePlayId(soundSourceEntity))
             {
                 ActiveTune.getActiveTuneByEntityId(soundSourceEntity).ifPresent(activeTune-> {
-                    if (listeningPlayer.level.getServer() != null && !activeTune.isDone())
+                    if (listeningPlayer.level.getServer() != null && activeTune.isActive())
                     {
                         PacketDispatcher.sendTo(new PlaySoloMessage(activeTune.playId, LocalDateTime.now(ZoneId.of("GMT0")).toString(), activeTune.getSecondsElapsed(), soundSourceEntity.getId(), activeTune.musicText), listeningPlayer);
                         LOGGER.debug("sendMusicTo {} starting at {}", listeningPlayer.getDisplayName().getString(), SheetMusicHelper.formatDuration(activeTune.getSecondsElapsed()));
