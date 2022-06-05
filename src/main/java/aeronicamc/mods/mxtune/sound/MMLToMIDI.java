@@ -54,7 +54,6 @@ import javax.sound.midi.Patch;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Track;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class MMLToMIDI
 {
@@ -260,9 +259,9 @@ public class MMLToMIDI
          */
         long apply(Long... ticks)
         {
-            AtomicReference<Long> value = new AtomicReference<>(0L);
-            Arrays.asList(ticks).forEach(p-> value.updateAndGet(v -> v + p));
-            return value.get() + offset;
+            final long[] value = new long[1];
+            Arrays.asList(ticks).forEach(tick -> value[0] += tick);
+            return value[0] + offset;
         }
     }
 }
