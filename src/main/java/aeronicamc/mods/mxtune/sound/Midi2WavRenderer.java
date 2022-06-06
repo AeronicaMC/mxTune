@@ -31,7 +31,6 @@ import javax.annotation.Nullable;
 import javax.sound.midi.*;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -89,36 +88,38 @@ public class Midi2WavRenderer implements Receiver
 
         // Play Sequence into AudioSynthesizer Receiver.
         Receiver receiver = audioSynthesizer.getReceiver();
-        double total = send(sequence, receiver);
-
+        double total = send(sequence, receiver,
+                            audioData != null && audioData.getSecondsToSkip() != 0 ? audioData.getSecondsToSkip() : 0L);
+        LOGGER.info("");
         // Calculate how long the WAVE file needs to be and add a 4 seconds to account for sustained notes
         long len = (long) (outputStream.getFormat().getFrameRate() * (total + 4));
         outputStream = new AudioInputStream(outputStream, outputStream.getFormat(), len);
 
         receiver.close();
-        long secondsToSkip = audioData != null && audioData.getSecondsToSkip() != 0 ? audioData.getSecondsToSkip() : 0L;
-        long savedBytesToSkip;
-        long bytesToSkip = savedBytesToSkip = format.getFrameSize() * ((int)format.getFrameRate()) * secondsToSkip;
-        LOGGER.debug("FrameSize {}, FrameRate {}", format.getFrameSize(), format.getSampleRate());
-        try
-        {
-            loggedTimer.start(String.format("PlayId %d Skipping %d seconds, Mark Supported %s", audioData.getPlayId(), secondsToSkip, outputStream.markSupported()));
-            long justSkipped;
-            // TODO: Skipping takes time and depends on blocking waits for data to be available.
-            // TODO: The outputStream.skip(bytesToSkip) pause time could be roughly calculated ahead of time and added to
-            // TODO: secondsToSkip to prevent the termination of a tune before it's ended.
-            // -shrugs shoulders- NIO is a PIA
-            while ((bytesToSkip > 0) && (((justSkipped = outputStream.skip(bytesToSkip))) > 0) && (len > secondsToSkip))
-            {
-                LOGGER.debug("tl:{} sk:{} sb:{} bk:{} jk:{}", total, secondsToSkip, savedBytesToSkip, bytesToSkip, justSkipped);
-                bytesToSkip -= justSkipped;
-            }
-            LOGGER.debug("Skipped {} seconds or {} bytes.", secondsToSkip, savedBytesToSkip);
-            loggedTimer.stop();
-        } catch (IOException e)
-        {
-            LOGGER.error(e);
-        }
+        LOGGER.info("Skipping {} Seconds", audioData.getSecondsToSkip());
+//        long secondsToSkip = audioData != null && audioData.getSecondsToSkip() != 0 ? audioData.getSecondsToSkip() : 0L;
+//        long savedBytesToSkip;
+//        long bytesToSkip = savedBytesToSkip = format.getFrameSize() * ((int)format.getFrameRate()) * secondsToSkip;
+//        LOGGER.debug("FrameSize {}, FrameRate {}", format.getFrameSize(), format.getSampleRate());
+//        try
+//        {
+//            loggedTimer.start(String.format("PlayId %d Skipping %d seconds, Mark Supported %s", audioData.getPlayId(), secondsToSkip, outputStream.markSupported()));
+//            long justSkipped;
+//            // TODO: Skipping takes time and depends on blocking waits for data to be available.
+//            // TODO: The outputStream.skip(bytesToSkip) pause time could be roughly calculated ahead of time and added to
+//            // TODO: secondsToSkip to prevent the termination of a tune before it's ended.
+//            // -shrugs shoulders- NIO is a PIA
+//            while ((bytesToSkip > 0) && (((justSkipped = outputStream.skip(bytesToSkip))) > 0) && (len > secondsToSkip))
+//            {
+//                LOGGER.debug("tl:{} sk:{} sb:{} bk:{} jk:{}", total, secondsToSkip, savedBytesToSkip, bytesToSkip, justSkipped);
+//                bytesToSkip -= justSkipped;
+//            }
+//            LOGGER.debug("Skipped {} seconds or {} bytes.", secondsToSkip, savedBytesToSkip);
+//            loggedTimer.stop();
+//        } catch (IOException e)
+//        {
+//            LOGGER.error(e);
+//        }
         return outputStream;
     }
 
@@ -151,7 +152,7 @@ public class Midi2WavRenderer implements Receiver
 
     public double getSequenceInSeconds(Sequence sequence) throws ModMidiException
     {
-        return send(sequence, this);
+        return send(sequence, this, 0L);
     }
 
     @Override
@@ -161,11 +162,21 @@ public class Midi2WavRenderer implements Receiver
     public void close() {/* NOP */}
 
     /**
-     * Send entry MIDI Sequence into Receiver using timestamps.
+     * Send entry MIDI Sequence into Receiver using timestamps.<p>
+     * <p>Added a simpler and FASTER way to skip forward in the tune. Do it while rendering instead of after.
+     *
+     * @param seq Sequence to send
+     * @param recv  the Receiver of the Sequence
+     * @param SkipSeconds Seconds to skip forward
+     * @return Total Length in seconds
+     * @throws ModMidiException
      */
-    private double send(@Nullable Sequence seq, @Nullable Receiver recv) throws ModMidiException
+    private double send(@Nullable Sequence seq, @Nullable Receiver recv, long SkipSeconds) throws ModMidiException
     {
         if (seq == null) return 0D;
+        boolean skipping = SkipSeconds > 2L;
+        long skipTime = (long) (1000000.0 * SkipSeconds);
+        boolean oneTime = false;
 
         float divisionType = seq.getDivisionType();
         Track[] tracks = seq.getTracks();
@@ -174,6 +185,7 @@ public class Midi2WavRenderer implements Receiver
         int seqResolution = seq.getResolution();
         long lastTick = 0;
         long currentTime = 0;
+
         while (true) {
             MidiEvent selectedEvent = null;
             int selectedTrack = -1;
@@ -210,7 +222,33 @@ public class Midi2WavRenderer implements Receiver
                     }
             } else {
                 if (recv != null)
-                    recv.send(msg, currentTime);
+                {
+                    // Skip forward, but keep the program settings messages. Send other messages only after skipTime.
+                    if (skipping && ((currentTime < 11000) || (currentTime >= skipTime)))
+                        recv.send(msg, (currentTime < 11000) ? currentTime : currentTime - skipTime);
+
+                    // Special case: Send "All Notes Off" to each channel before we start sending to the receiver.
+                    else if (skipping && !oneTime && (currentTime <= (skipTime - 100000)))
+                    {
+                        oneTime = true;
+                        for (int channel = 0; channel < 16; channel++)
+                        {
+                            ShortMessage msgLoc = new ShortMessage();
+                            try
+                            {
+                                // All Notes Off
+                                msgLoc.setMessage(ShortMessage.CONTROL_CHANGE, channel, 120 & 0x7F, 0 & 0x7F);
+                            } catch (InvalidMidiDataException e)
+                            {
+                                LOGGER.error("Failed to create All Notes Off message.");
+                            }
+                            recv.send(msgLoc, currentTime);
+                        }
+                    }
+                    // Normal no skip operation. Send everything
+                    else if (!skipping)
+                        recv.send(msg, currentTime);
+                }
             }
         }
         return currentTime / 1000000.0;
