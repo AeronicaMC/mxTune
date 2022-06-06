@@ -1,3 +1,13 @@
+#### 2022-06-06 mxtune-1.16.5-2.0.0-alpha-2022-06-06.32450078  
+* Behind the scenes improvements: 
+  * Improve skipping forward in active tunes. Example when you enter a world where a tune is in progress, you will hear that tune sooner. 
+    * There probably some bugs hiding here so please do let me know if you find one. 
+  * Ensure the Music Block removes its chunk load ticket one minute after a tune stops. 
+  * General clean up of sound mxTune classes. 
+  * Waiting on the next Forge Recommended Build for 1.16.5 which should include "Allow sound instances to customize stream source #8595" 
+    * https://github.com/MinecraftForge/MinecraftForge/pull/8595 
+    * This will allow me to remove a mixin, and improve reliability. 
+
 #### 2022-05-23 mxtune-1.16.5-2.0.0-alpha-2022-05-24.31048005 
 * More Music Block updates, but not complete: 
   * Owner can lock, manage contents/settings and break. 
