@@ -19,7 +19,7 @@ public class ModEntities
 
     private static boolean isInitialized;
 
-    public static final RegistryObject<EntityType<MusicSourceEntity>> MUSIC_SOURCE = register("music_source", EntityType.Builder.<MusicSourceEntity>of((type, world) -> new MusicSourceEntity(world), EntityClassification.MISC).sized(0.0F, 0.0F).setCustomClientFactory((spawnEntity, world) -> new MusicSourceEntity(world)));
+    public static final RegistryObject<EntityType<MusicSourceEntity>> MUSIC_SOURCE = register("music_source", EntityType.Builder.<MusicSourceEntity>of((type, world) -> new MusicSourceEntity(world), EntityClassification.MISC).sized(0.0F, 0.0F).noSave().noSummon().setCustomClientFactory((spawnEntity, world) -> new MusicSourceEntity(world)));
 
     public static final RegistryObject<EntityType<RootedEntity>> ROOTED_SOURCE = register("rooted_source", EntityType.Builder.<RootedEntity>of((type, world) -> new RootedEntity(world), EntityClassification.MISC).sized(0.0F, 0.0F).setCustomClientFactory((spawnEntity, world) -> new RootedEntity(world)));
 
