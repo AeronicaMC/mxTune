@@ -16,10 +16,10 @@ public class PlayIdSupplier
         INVALID(-1, -1) {@Override protected PlayIdSource next(PlayIdSource playIdSource) { return playIdSource;}},
         ;
 
-        int start;
-        int end;
-        PlayIdSource playIdSource;
-        PlayType playType;
+        final int start;
+        final int end;
+        final PlayIdSource playIdSource;
+        final PlayType playType;
 
         PlayType(int start, int end)
         {

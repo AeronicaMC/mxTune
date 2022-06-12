@@ -189,6 +189,7 @@ public class ActiveTune
                     .append("blockPos", blockPos)
                     .append("playId", playId)
                     .append("durationSeconds", durationSeconds)
+                    .append("removalSeconds", removalSeconds)
                     .build();
         }
     }

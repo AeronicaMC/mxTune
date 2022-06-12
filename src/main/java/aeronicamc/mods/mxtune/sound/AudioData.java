@@ -167,7 +167,7 @@ public class AudioData
                 fadeCounter--;
                 if (fadeCounter > 0)
                 {
-                    volumeFade = (float) (fadeCounter + mc.getDeltaFrameTime()) / fadeTicks;
+                    volumeFade = (fadeCounter + mc.getDeltaFrameTime()) / fadeTicks;
                 }
                 else
                 {
