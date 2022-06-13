@@ -12,7 +12,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.BlockEvent;
@@ -106,8 +106,13 @@ public class ModPlayerEvents
     }
 
     @SubscribeEvent
-    public static void event(EntityJoinWorldEvent event)
+    public static void event(LivingDeathEvent event)
     {
+        if (event.getEntity().level.isClientSide()) return;
+        if (event.getEntityLiving() instanceof ServerPlayerEntity)
+        {
+            PlayManager.stopPlayingEntity(event.getEntityLiving());
+        }
         /* NOP */
     }
 
