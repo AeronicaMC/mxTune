@@ -7,7 +7,7 @@ import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
 import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier.PlayType;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
-import aeronicamc.mods.mxtune.network.messages.PlaySoloMessage;
+import aeronicamc.mods.mxtune.network.messages.PlayMusicMessage;
 import aeronicamc.mods.mxtune.network.messages.StopPlayIdMessage;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.Misc;
@@ -130,9 +130,9 @@ public final class PlayManager
     {
         int playId = getNextPlayID();
         int entityId = playerIn.getId();
-
+        // TODO: See if we can attach the music source to a player, or maybe make the instrument the source!?
         addActivePlayId(entityId, null, playId, musicText, duration);
-        PlaySoloMessage packetPlaySolo = new PlaySoloMessage(playId, LocalDateTime.now(ZoneId.of("GMT0")).toString(), 0, entityId , musicText);
+        PlayMusicMessage packetPlaySolo = new PlayMusicMessage(playId, LocalDateTime.now(ZoneId.of("GMT0")).toString(), 0, entityId , musicText);
         PacketDispatcher.sendToTrackingEntityAndSelf(packetPlaySolo, playerIn);
         return playId;
     }
@@ -252,7 +252,7 @@ public final class PlayManager
                 ActiveTune.getActiveTuneByEntityId(soundSourceEntity).ifPresent(activeTune-> {
                     if (listeningPlayer.level.getServer() != null && activeTune.isActive())
                     {
-                        PacketDispatcher.sendTo(new PlaySoloMessage(activeTune.playId, LocalDateTime.now(ZoneId.of("GMT0")).toString(), activeTune.getSecondsElapsed(), soundSourceEntity.getId(), activeTune.musicText), listeningPlayer);
+                        PacketDispatcher.sendTo(new PlayMusicMessage(activeTune.playId, LocalDateTime.now(ZoneId.of("GMT0")).toString(), activeTune.getSecondsElapsed(), soundSourceEntity.getId(), activeTune.musicText), listeningPlayer);
                         LOGGER.debug("sendMusicTo {} starting at {}", listeningPlayer.getDisplayName().getString(), SheetMusicHelper.formatDuration(activeTune.getSecondsElapsed()));
                     }
                     else

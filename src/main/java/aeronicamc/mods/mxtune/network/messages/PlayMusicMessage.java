@@ -15,9 +15,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.function.Supplier;
 
-public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
+public class PlayMusicMessage extends AbstractMessage<PlayMusicMessage>
 {
-    private static final Logger LOGGER = LogManager.getLogger(PlaySoloMessage.class);
+    private static final Logger LOGGER = LogManager.getLogger(PlayMusicMessage.class);
     private final NetworkLongUtfHelper stringHelper = new NetworkLongUtfHelper();
     private int playId = PlayIdSupplier.INVALID;
     private int secondsToSkip;
@@ -25,16 +25,16 @@ public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
     private String musicText = "";
     private String dateTimeServer = "";
 
-    public PlaySoloMessage() { /* NOP */ }
+    public PlayMusicMessage() { /* NOP */ }
 
-    public PlaySoloMessage(int playId, int entityId, String musicText)
+    public PlayMusicMessage(int playId, int entityId, String musicText)
     {
         this.playId = playId;
         this.entityId = entityId;
         this.musicText = musicText;
     }
 
-    public PlaySoloMessage(int playId, String dateTimeServer, int secondsToSkip, int entityId, String musicText)
+    public PlayMusicMessage(int playId, String dateTimeServer, int secondsToSkip, int entityId, String musicText)
     {
         this.playId = playId;
         this.dateTimeServer = dateTimeServer;
@@ -44,7 +44,7 @@ public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
     }
 
     @Override
-    public void encode(PlaySoloMessage message, PacketBuffer buffer)
+    public void encode(PlayMusicMessage message, PacketBuffer buffer)
     {
         buffer.writeInt(message.playId);
         buffer.writeUtf(message.dateTimeServer);
@@ -54,18 +54,18 @@ public class PlaySoloMessage extends AbstractMessage<PlaySoloMessage>
     }
 
     @Override
-    public PlaySoloMessage decode(PacketBuffer buffer)
+    public PlayMusicMessage decode(PacketBuffer buffer)
     {
         final int playId = buffer.readInt();
         final String dateTimeServer = buffer.readUtf();
         final int secondsToSkip = buffer.readInt();
         final int entityId = buffer.readInt();
         final String mml = stringHelper.readLongUtf(buffer);
-        return new PlaySoloMessage(playId, dateTimeServer, secondsToSkip, entityId, mml);
+        return new PlayMusicMessage(playId, dateTimeServer, secondsToSkip, entityId, mml);
     }
 
     @Override
-    public void handle(PlaySoloMessage message, Supplier<NetworkEvent.Context> ctx)
+    public void handle(PlayMusicMessage message, Supplier<NetworkEvent.Context> ctx)
     {
         if (ctx.get().getDirection().getReceptionSide().isClient())
         {

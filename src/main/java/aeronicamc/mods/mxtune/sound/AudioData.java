@@ -21,7 +21,6 @@ import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.util.LoggedTimer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
-import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
 import javax.sound.midi.Sequence;
@@ -44,7 +43,7 @@ public class AudioData
     private final long netTransitTime;
     private final int playId;
     private final PlayIdSupplier.PlayType playType;
-    private final BlockPos blockPos;
+    private final int entityId;
     private final boolean isClientPlayer;
     private final IAudioStatusCallback callback;
 
@@ -59,17 +58,17 @@ public class AudioData
      * @param secondsToSkip forward in the audio stream.
      * @param netTransitTime in milliseconds for server packet to reach the client.
      * @param playId for this stream.
-     * @param blockPos of the audio source.
+     * @param entityId of the audio source.
      * @param isClientPlayer the audio source. Used stereo vs 3D audio selection and ISound type.
      * @param callback is optional and is used to notify a class that implements the {@link IAudioStatusCallback}
      */
-    AudioData(int secondsToSkip, long netTransitTime, int playId, @Nullable BlockPos blockPos, boolean isClientPlayer, @Nullable IAudioStatusCallback callback)
+    AudioData(int secondsToSkip, long netTransitTime, int playId, int entityId, boolean isClientPlayer, @Nullable IAudioStatusCallback callback)
     {
         this.secondsToSkip = secondsToSkip;
         this.netTransitTime = netTransitTime;
         this.playId = playId;
         this.playType = PlayIdSupplier.getTypeForPlayId(playId);
-        this.blockPos = blockPos;
+        this.entityId = entityId;
         this.isClientPlayer = isClientPlayer;
         this.status = ClientAudio.Status.WAITING;
         this.callback = callback;
@@ -119,10 +118,9 @@ public class AudioData
         return playId;
     }
 
-    @Nullable
-    synchronized BlockPos getBlockPos()
+    synchronized int getEntityId()
     {
-        return blockPos;
+        return entityId;
     }
 
     synchronized boolean isClientPlayer()

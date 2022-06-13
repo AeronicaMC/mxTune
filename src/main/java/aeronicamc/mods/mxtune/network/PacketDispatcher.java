@@ -37,9 +37,8 @@ public class PacketDispatcher
         // To Client(s)
         registerMessage(PlayerNexusSync.class, new PlayerNexusSync());
         registerMessage(OpenScreenMessage.class, new OpenScreenMessage());
-        registerMessage(PlaySoloMessage.class, new PlaySoloMessage());
+        registerMessage(PlayMusicMessage.class, new PlayMusicMessage());
         registerMessage(StopPlayIdMessage.class, new StopPlayIdMessage());
-        registerMessage(PlayBlockMusicMessage.class, new PlayBlockMusicMessage());
         registerMessage(MusicVenueSyncMessage.class, new MusicVenueSyncMessage());
         // To Server
         registerMessage(CreateSheetMusicMessage.class, new CreateSheetMusicMessage());

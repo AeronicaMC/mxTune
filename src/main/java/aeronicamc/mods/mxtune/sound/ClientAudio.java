@@ -9,7 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.*;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.PlayStreamingSourceEvent;
 import net.minecraftforge.client.event.sound.SoundLoadEvent;
@@ -93,13 +92,6 @@ public class ClientAudio
             audioData.setISound(iSound);
     }
 
-    @Nullable
-    private static BlockPos getBlockPos(Integer playID)
-    {
-        AudioData audioData = playIDAudioData.get(playID);
-        return (audioData != null) ? audioData.getBlockPos() : null;
-    }
-
     static boolean hasPlayID(int playID)
     {
         return !playIDAudioData.isEmpty() && playIDAudioData.containsKey(playID);
@@ -121,23 +113,12 @@ public class ClientAudio
      */
     public static void play(int secondsToSkip, long netTransitTime, int playID, int entityId, String musicText)
     {
-        play(secondsToSkip, netTransitTime, playID, entityId, null, musicText, false, null);
-    }
-
-    /**
-     * For TileEntities placed in the world.
-     * @param playID unique submission identifier.
-     * @param pos block position in the world
-     * @param musicText MML string
-     */
-    public static void play(Integer playID, BlockPos pos, String musicText)
-    {
-        play(0, 0, playID, 0, pos, musicText, false, null);
+        play(secondsToSkip, netTransitTime, playID, entityId, musicText, false, null);
     }
 
     public static void playLocal(int playId, String musicText, @Nullable IAudioStatusCallback callback)
     {
-        play(0, 0, playId, 0 , mc.player == null ? null : mc.player.blockPosition(), musicText, true, callback);
+        play(0, 0, playId, Objects.requireNonNull(mc.player).getId(), musicText, true, callback);
     }
 
     // Determine if audio is 3D spacial or background
@@ -155,16 +136,15 @@ public class ClientAudio
      * @param netTransitTime time in milliseconds for server packet to reach the client.
      * @param playID The unique server identifier for each music submission. see {@link PlayIdSupplier}
      * @param entityId The unique entity id of the music source. Generally another player.
-     * @param pos the {@link BlockPos} of a placed instrument of music machine in the world
      * @param musicText The MML {@link <A="https://en.wikipedia.org/wiki/MML">MML</A>} to be played
      * @param isClient if true, the local client player hears their own music in stereo else other players in 3D audio.
      * @param callback An optional callback that is fired when {@link Status} changes related to {@link AudioData}
      */
-    private static void play(int secondsToSkip, long netTransitTime, int playID, int entityId, @Nullable BlockPos pos, String musicText, boolean isClient, @Nullable IAudioStatusCallback callback)
+    private static void play(int secondsToSkip, long netTransitTime, int playID, int entityId, String musicText, boolean isClient, @Nullable IAudioStatusCallback callback)
     {
         if (playID != PlayIdSupplier.INVALID)
         {
-            AudioData audioData = new AudioData(secondsToSkip, netTransitTime, playID, pos, isClient, callback);
+            AudioData audioData = new AudioData(secondsToSkip, netTransitTime, playID, entityId, isClient, callback);
             setAudioFormat(audioData);
             AudioData result = playIDAudioData.putIfAbsent(playID, audioData);
             if (result != null && mc.player != null && isClient && entityId == mc.player.getId())
@@ -182,7 +162,7 @@ public class ClientAudio
                     playIDAudioData.replace(playID, audioData);
                 mc.getSoundManager().play(new MusicClient(audioData));
             }
-            else if (pos == null)
+            else
             {
                 // Other players instruments, Music Block
                 if ((mc.player != null) && (mc.player.level.getEntity(entityId) != null))
@@ -191,11 +171,6 @@ public class ClientAudio
                             audioData,
                             Objects.requireNonNull(mc.player.level.getEntity(entityId))));
                 }
-            }
-            else
-            {
-                // Placed Musical Machines. e.g. Record Player, etc.
-                mc.getSoundManager().play(new MusicPositioned(audioData));
             }
             if (recordsVolumeOn())
             {
