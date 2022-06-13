@@ -93,13 +93,13 @@ public class ModPlayerEvents
         }
     }
 
-    @SubscribeEvent
+//    @SubscribeEvent
     public static void event(PlayerEvent.PlayerLoggedInEvent event)
     {
         /* NOP See ClientEvents event(ClientPlayerNetworkEvent.LoggedInEvent event) */
     }
 
-    @SubscribeEvent
+//    @SubscribeEvent
     public static void event(PlayerEvent.PlayerRespawnEvent event)
     {
         /* NOP See ClientEvents event(ClientPlayerNetworkEvent.RespawnEvent) */
@@ -113,7 +113,6 @@ public class ModPlayerEvents
         {
             PlayManager.stopPlayingEntity(event.getEntityLiving());
         }
-        /* NOP */
     }
 
     private static void capabilitySynchronize(LivingEntity livingEntity)
