@@ -21,7 +21,6 @@
  */
 package aeronicamc.mods.mxtune.sound;
 
-import aeronicamc.mods.mxtune.util.LoggedTimer;
 import aeronicamc.mods.mxtune.util.MIDISystemUtil;
 import com.sun.media.sound.AudioSynthesizer;
 import org.apache.logging.log4j.LogManager;
@@ -29,7 +28,6 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import javax.sound.midi.*;
-import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,36 +36,27 @@ import java.util.Map;
  * user: Paul Boese aka Aeronica
  * <Li>removed the JFugue specific pattern signature methods.</Li>
  * <Li>Added an option to skip forward N seconds of audio.</Li>
- * <P>ref: {@link <A="https://stackoverflow.com/questions/52595473/java-start-audio-playback-at-x-position">Java: Start Audio Playback at X Position</A></P>}
+ * <P>Skip forward in the send method instead!</P>
+ * <P>Deprecated ref: {@link <A="https://stackoverflow.com/questions/52595473/java-start-audio-playback-at-x-position">Java: Start Audio Playback at X Position</A></P>}
  */
 @SuppressWarnings("restriction")
 public class Midi2WavRenderer implements Receiver
 {
     private static final Logger LOGGER = LogManager.getLogger(Midi2WavRenderer.class);
-    private final AudioData audioData;
-    private final LoggedTimer loggedTimer = new LoggedTimer();
 
-    public Midi2WavRenderer()
-    {
-        audioData = null;
-    }
-
-    public Midi2WavRenderer(AudioData audioData)
-    {
-        this.audioData = audioData;
-    }
+    public Midi2WavRenderer() { /* NOP */ }
 
     /**
      * Creates a PCM stream based on the Sequence, patches and audio format, using the default soundbank.
      * Note: This uses the mxTune soundfont only
      *  
      * @param sequence the MIDI sequence to be rendered
-     * @param format the audio format for rendering
+     * @param audioData the audio format for rendering
      * @throws MidiUnavailableException potential exception
      * @throws ModMidiException potential exception
      * @return the AudioInputStream
      */
-    AudioInputStream createPCMStream(Sequence sequence, AudioFormat format) throws ModMidiException, MidiUnavailableException
+    AudioInputStream createPCMStream(Sequence sequence, AudioData audioData) throws ModMidiException, MidiUnavailableException
     {    
         Soundbank mxTuneSoundBank = MIDISystemUtil.getMXTuneSoundBank();
         AudioSynthesizer audioSynthesizer = findAudioSynthesizer();
@@ -78,7 +67,7 @@ public class Midi2WavRenderer implements Receiver
         Map<String, Object> p = new HashMap<>();
         p.put("interpolation", "sinc");
         p.put("max polyphony", "1024");
-        AudioInputStream outputStream = audioSynthesizer.openStream(format, p);
+        AudioInputStream outputStream = audioSynthesizer.openStream(audioData.getAudioFormat(), p);
 
         Soundbank defaultSoundBank = audioSynthesizer.getDefaultSoundbank();
         if (defaultSoundBank != null)
@@ -89,7 +78,7 @@ public class Midi2WavRenderer implements Receiver
         // Play Sequence into AudioSynthesizer Receiver.
         Receiver receiver = audioSynthesizer.getReceiver();
         double total = send(sequence, receiver,
-                            audioData != null && audioData.getSecondsToSkip() != 0 ? audioData.getSecondsToSkip() : 0L);
+                            audioData.getSecondsToSkip() != 0 ? audioData.getSecondsToSkip() : 0L);
         LOGGER.info("");
         // Calculate how long the WAVE file needs to be and add a 4 seconds to account for sustained notes
         long len = (long) (outputStream.getFormat().getFrameRate() * (total + 4));

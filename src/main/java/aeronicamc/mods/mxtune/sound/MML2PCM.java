@@ -59,8 +59,8 @@ public class MML2PCM
         // Generate PCM Audio Stream from MIDI
         try
         {
-            Midi2WavRenderer mw = new Midi2WavRenderer(audioData);
-            AudioInputStream pcmStream = mw.createPCMStream(toMIDI.getSequence(), audioData.getAudioFormat());
+            Midi2WavRenderer mw = new Midi2WavRenderer();
+            AudioInputStream pcmStream = mw.createPCMStream(toMIDI.getSequence(), audioData);
             audioData.setAudioStream(pcmStream);
         } catch (ModMidiException | MidiUnavailableException e)
         {
