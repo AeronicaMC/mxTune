@@ -352,7 +352,8 @@ public class ClientAudio
 
     public static void queueAudioDataRemoval(int playId)
     {
-        delayedAudioDataRemovalQueue.add(playId);
+        if (PlayIdSupplier.INVALID != playId)
+            delayedAudioDataRemovalQueue.add(playId);
     }
 
     @SubscribeEvent
