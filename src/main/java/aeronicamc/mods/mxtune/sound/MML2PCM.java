@@ -26,6 +26,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Patch;
+import javax.sound.midi.Sequence;
 import javax.sound.sampled.AudioInputStream;
 
 public class MML2PCM
@@ -43,24 +44,32 @@ public class MML2PCM
     public boolean process()
     {
         MMLParser mmlParser;
+        Sequence sequence;
 
-        mmlParser = MMLParserFactory.getMMLParser(mmlText);
-        MMLToMIDI toMIDI = new MMLToMIDI();
-        toMIDI.processMObjects(mmlParser.getMmlObjects());
-        // Log bank and program per instrument
-        for (int preset: toMIDI.getPresets())
+        if (null == audioData.getSequence())
         {
-            Patch patchPreset = MMLUtil.packedPreset2Patch(SoundFontProxyManager.getPackedPreset(preset));
-            String name = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(preset)).getString();
-            LOGGER.debug("MML2PCM preset: {}, bank: {}, program: {}, name: {}", preset, patchPreset.getBank(),
-                           patchPreset.getProgram(), name);
-        }
+            mmlParser = MMLParserFactory.getMMLParser(mmlText);
+            MMLToMIDI toMIDI = new MMLToMIDI();
+            toMIDI.processMObjects(mmlParser.getMmlObjects());
+            sequence = toMIDI.getSequence();
 
-        // Generate PCM Audio Stream from MIDI
+            // Log bank and program per instrument
+            for (int preset: toMIDI.getPresets())
+            {
+                Patch patchPreset = MMLUtil.packedPreset2Patch(SoundFontProxyManager.getPackedPreset(preset));
+                String name = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(preset)).getString();
+                LOGGER.debug("MML2PCM preset: {}, bank: {}, program: {}, name: {}", preset, patchPreset.getBank(),
+                             patchPreset.getProgram(), name);
+            }
+        } else
+            sequence = audioData.getSequence();
+
+        // Generate PCM Audio Stream from MIDI sequence
         try
         {
             Midi2WavRenderer mw = new Midi2WavRenderer();
-            AudioInputStream pcmStream = mw.createPCMStream(toMIDI.getSequence(), audioData);
+            AudioInputStream pcmStream = mw.createPCMStream(sequence, audioData);
+            audioData.setSequence(sequence);
             audioData.setAudioStream(pcmStream);
         } catch (ModMidiException | MidiUnavailableException e)
         {

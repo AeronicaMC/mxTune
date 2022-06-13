@@ -24,25 +24,29 @@ import net.minecraft.client.audio.ISound;
 import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;
+import javax.sound.midi.Sequence;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 
 
 public class AudioData
 {
-    private final int playId;
-    private final int secondsToSkip;
-    private final BlockPos blockPos;
-    private final boolean isClientPlayer;
+    private final LoggedTimer loggedTimer = new LoggedTimer();
+    private final Minecraft mc = Minecraft.getInstance();
+
     private AudioInputStream audioStream;
     private AudioFormat audioFormat;
     private ISound iSound;
+    private Sequence sequence;
     private ClientAudio.Status status;
-    private final PlayIdSupplier.PlayType playType;
-    private final IAudioStatusCallback callback;
+
+    private final int secondsToSkip;
     private final long netTransitTime;
-    private final LoggedTimer loggedTimer = new LoggedTimer();
-    private final Minecraft mc = Minecraft.getInstance();
+    private final int playId;
+    private final PlayIdSupplier.PlayType playType;
+    private final BlockPos blockPos;
+    private final boolean isClientPlayer;
+    private final IAudioStatusCallback callback;
 
     private float volumeFade = 1F;
     private boolean fadeIn;
@@ -150,6 +154,20 @@ public class AudioData
         synchronized (this)
         {
             this.iSound = iSound;
+        }
+    }
+
+    @Nullable
+    synchronized Sequence getSequence()
+    {
+        return sequence;
+    }
+
+    public void setSequence(Sequence sequence)
+    {
+        synchronized (this)
+        {
+            this.sequence = sequence;
         }
     }
 
