@@ -223,9 +223,7 @@ public class ClientAudio
     private static void stop(int playID)
     {
         if (PlayIdSupplier.INVALID == playID) return;
-        AudioData audioData = playIDAudioData.get(playID);
-        if (audioData != null && audioData.getISound() != null)
-            soundHandler.stop(audioData.getISound());
+        getAudioData(playID).filter(audioData -> audioData.getISound() != null).ifPresent(audioData -> soundHandler.stop(audioData.getISound()));
     }
 
     private static class ThreadedPlay implements Runnable
@@ -337,16 +335,14 @@ public class ClientAudio
         if (soundEngine != null && recordsVolumeOn())
         {
             removeQueuedAudioData();
-            for (Map.Entry<Integer, AudioData> entry : playIDAudioData.entrySet())
-            {
-                AudioData audioData = entry.getValue();
+            playIDAudioData.forEach((playId, audioData) -> {
                 Status status = audioData.getStatus();
                 if (status == Status.ERROR || status == Status.DONE || !channelHasISound(audioData.getISound()))
                 {
-                    queueAudioDataRemoval(entry.getKey());
-                    LOGGER.debug("updateClientAudio: AudioData for playID {} queued for removal", entry.getKey());
+                    queueAudioDataRemoval(playId);
+                    LOGGER.debug("updateClientAudio: AudioData for playID {} queued for removal", playId);
                 }
-            }
+            });
         }
     }
 
@@ -359,9 +355,7 @@ public class ClientAudio
     {
         AudioData audioData = playIDAudioData.get(playID);
         if (soundEngine != null && audioData != null  && seconds > 0)
-        {
             audioData.startFadeInOut(seconds, false);
-        }
         else
             queueAudioDataRemoval(playID);
     }
@@ -370,12 +364,15 @@ public class ClientAudio
     {
         while (!delayedAudioDataRemovalQueue.isEmpty())
             if (delayedAudioDataRemovalQueue.peek() != null)
+            {
+                stop(delayedAudioDataRemovalQueue.peek());
+                LOGGER.debug("removeQueuedAudioData playId: {}", delayedAudioDataRemovalQueue.peek());
                 playIDAudioData.remove(Objects.requireNonNull(delayedAudioDataRemovalQueue.poll()));
+            }
     }
 
     public static void queueAudioDataRemoval(int playId)
     {
-        stop(playId);
         delayedAudioDataRemovalQueue.add(playId);
     }
 
