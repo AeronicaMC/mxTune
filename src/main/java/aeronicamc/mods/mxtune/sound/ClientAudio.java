@@ -353,6 +353,7 @@ public class ClientAudio
      */
     public static void fadeOut(int playID, int seconds)
     {
+        if (PlayIdSupplier.INVALID == playID) return;
         AudioData audioData = playIDAudioData.get(playID);
         if (soundEngine != null && audioData != null  && seconds > 0)
             audioData.startFadeInOut(seconds, false);
@@ -363,12 +364,15 @@ public class ClientAudio
     private static void removeQueuedAudioData()
     {
         while (!delayedAudioDataRemovalQueue.isEmpty())
-            if (delayedAudioDataRemovalQueue.peek() != null)
+        {
+            Integer playId = delayedAudioDataRemovalQueue.peek();
+            if (playId != null)
             {
-                stop(delayedAudioDataRemovalQueue.peek());
-                LOGGER.debug("removeQueuedAudioData playId: {}", delayedAudioDataRemovalQueue.peek());
+                stop(playId);
+                LOGGER.debug("removeQueuedAudioData playId: {}", playId);
                 playIDAudioData.remove(Objects.requireNonNull(delayedAudioDataRemovalQueue.poll()));
             }
+        }
     }
 
     public static void queueAudioDataRemoval(int playId)
