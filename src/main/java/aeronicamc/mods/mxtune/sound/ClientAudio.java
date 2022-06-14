@@ -20,8 +20,12 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import javax.sound.sampled.AudioFormat;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 public class ClientAudio
 {
@@ -31,7 +35,7 @@ public class ClientAudio
     private static final SoundHandler soundHandler = mc.getSoundManager();
     private static final MusicTicker musicTicker = mc.getMusicManager();
     private static SoundEngine soundEngine;
-    private static final Queue<Integer> delayedAudioDataRemovalQueue = new ConcurrentLinkedDeque<>();
+    //private static final Queue<Integer> delayedAudioDataRemovalQueue = new ConcurrentLinkedDeque<>();
     private static int counter;
     private static final int THREAD_POOL_SIZE = 2;
     /* PCM Signed Monaural little endian */
@@ -39,7 +43,7 @@ public class ClientAudio
     /* PCM Signed Stereo little endian */
     private static final AudioFormat audioFormatStereo = new AudioFormat(48000, 16, 2, true, false);
     /* The active mxTune audio streams by playId */
-    private static final Map<Integer, AudioData> playIDAudioData = new ConcurrentHashMap<>();
+    //private static final Map<Integer, AudioData> playIDAudioData = new ConcurrentHashMap<>();
 
     private static final ExecutorService executorService;
     static {
@@ -53,14 +57,9 @@ public class ClientAudio
 
     private ClientAudio() { /* NOP */ }
 
-    public static synchronized Set<Integer> getActivePlayIDs()
-    {
-        return Collections.unmodifiableSet(new HashSet<>(playIDAudioData.keySet()));
-    }
-
     public static String getDebugString()
     {
-        return String.format("AudioData %d/%d", playIDAudioData.size(), delayedAudioDataRemovalQueue.size());
+        return String.format("AudioData %d/%d", ActiveAudio.getActiveAudioEntries().size(), ActiveAudio.getDeleteQueueSize());
     }
 
     private static void init(SoundEngine se)
@@ -81,44 +80,45 @@ public class ClientAudio
     {
         synchronized (THREAD_SYNC)
         {
-            return Optional.ofNullable(playIDAudioData.get(playID));
+            return Optional.ofNullable(ActiveAudio.getAudioData(playID));
         }
     }
 
     static synchronized void setISound(Integer playID, ISound iSound)
     {
-        AudioData audioData = playIDAudioData.get(playID);
+        AudioData audioData = ActiveAudio.getAudioData(playID);
         if (audioData != null)
             audioData.setISound(iSound);
     }
 
     static boolean hasPlayID(int playID)
     {
-        return !playIDAudioData.isEmpty() && playIDAudioData.containsKey(playID);
+        return ActiveAudio.getActivePlayIds().contains(playID);
     }
 
     private static boolean isClientPlayer(Integer playID)
     {
-        AudioData audioData = playIDAudioData.get(playID);
+        AudioData audioData = ActiveAudio.getAudioData(playID);
         return audioData != null && audioData.isClientPlayer();
     }
 
     /**
      * For players and source entities.
+     * @param duration
      * @param secondsToSkip seconds to skip forward in the music.
      * @param netTransitTime time in milliseconds for server packet to reach the client.
      * @param playID unique submission identifier.
      * @param entityId the id of the music source.
      * @param musicText MML string
      */
-    public static void play(int secondsToSkip, long netTransitTime, int playID, int entityId, String musicText)
+    public static void play(int duration, int secondsToSkip, long netTransitTime, int playID, int entityId, String musicText)
     {
-        play(secondsToSkip, netTransitTime, playID, entityId, musicText, false, null);
+        play(playID, duration, secondsToSkip, netTransitTime, entityId, musicText, false, null);
     }
 
-    public static void playLocal(int playId, String musicText, @Nullable IAudioStatusCallback callback)
+    public static void playLocal(int duration, int playId, String musicText, @Nullable IAudioStatusCallback callback)
     {
-        play(0, 0, playId, Objects.requireNonNull(mc.player).getId(), musicText, true, callback);
+        play(playId, duration, 0, 0, Objects.requireNonNull(mc.player).getId(), musicText, true, callback);
     }
 
     // Determine if audio is 3D spacial or background
@@ -132,22 +132,23 @@ public class ClientAudio
 
     /**
      * The all-in-one #play(...) method of the {@link ClientAudio} class.
+     * @param playID The unique server identifier for each music submission. see {@link PlayIdSupplier}
+     * @param duration
      * @param secondsToSkip seconds to skip forward in the music.
      * @param netTransitTime time in milliseconds for server packet to reach the client.
-     * @param playID The unique server identifier for each music submission. see {@link PlayIdSupplier}
      * @param entityId The unique entity id of the music source. Generally another player.
      * @param musicText The MML {@link <A="https://en.wikipedia.org/wiki/MML">MML</A>} to be played
      * @param isClient if true, the local client player hears their own music in stereo else other players in 3D audio.
      * @param callback An optional callback that is fired when {@link Status} changes related to {@link AudioData}
      */
-    private static void play(int secondsToSkip, long netTransitTime, int playID, int entityId, String musicText, boolean isClient, @Nullable IAudioStatusCallback callback)
+    private static void play(int playID, int duration, int secondsToSkip, long netTransitTime, int entityId, String musicText, boolean isClient, @Nullable IAudioStatusCallback callback)
     {
         if (playID != PlayIdSupplier.INVALID)
         {
-            AudioData audioData = new AudioData(secondsToSkip, netTransitTime, playID, entityId, isClient, callback);
+            AudioData audioData = new AudioData(duration, secondsToSkip, netTransitTime, playID, entityId, isClient, callback);
             setAudioFormat(audioData);
-            AudioData result = playIDAudioData.putIfAbsent(playID, audioData);
-            if (result != null && mc.player != null && isClient && entityId == mc.player.getId())
+            boolean isDuplicatePlayId = ActiveAudio.addEntry(audioData);
+            if (isDuplicatePlayId && mc.player != null && isClient && entityId == mc.player.getId())
             {
                 LOGGER.warn("ClientAudio#play: playID: {} has already been submitted", playID);
                 return;
@@ -158,8 +159,6 @@ public class ClientAudio
                 // Player (actively playing solo) changed dimension, so we reuse the playId and REPLACE the AudioData.
                 // Vanilla stops all sounds on the client when changing dimension. Playing is restarted where
                 // it left off. This works because the server keeps track of all active tunes.
-                if (result != null)
-                    playIDAudioData.replace(playID, audioData);
                 mc.getSoundManager().play(new MusicClient(audioData));
             }
             else
@@ -195,7 +194,7 @@ public class ClientAudio
         return mc.options.getSoundSourceVolume(SoundCategory.MASTER) > 0F && mc.options.getSoundSourceVolume(SoundCategory.RECORDS) > 0F;
     }
 
-    private static void stop(int playID)
+    static void stop(int playID)
     {
         if (PlayIdSupplier.INVALID == playID) return;
         getAudioData(playID).filter(audioData -> audioData.getISound() != null).ifPresent(audioData -> soundHandler.stop(audioData.getISound()));
@@ -222,7 +221,7 @@ public class ClientAudio
 
     private static void cleanup()
     {
-        playIDAudioData.keySet().forEach(ClientAudio::queueAudioDataRemoval);
+        ActiveAudio.removeAll();
     }
 
     // SoundEngine
@@ -290,7 +289,7 @@ public class ClientAudio
                 }
                 else
                 {
-                    playIDAudioData.remove(playId);
+                    ActiveAudio.remove(playId);
                     LOGGER.debug("initializeCodec: failed - playId: {}", playId);
                 }
             });
@@ -310,13 +309,14 @@ public class ClientAudio
         if (soundEngine != null && recordsVolumeOn())
         {
             removeQueuedAudioData();
-            playIDAudioData.forEach((playId, audioData) -> {
+            ActiveAudio.getActiveAudioEntries().forEach((audioData) -> {
                 Status status = audioData.getStatus();
                 if (status == Status.ERROR || status == Status.DONE || !channelHasISound(audioData.getISound()))
                 {
-                    queueAudioDataRemoval(playId);
-                    LOGGER.debug("updateClientAudio: AudioData for playID {} queued for removal", playId);
+                    queueAudioDataRemoval(audioData.getPlayId());
+                    LOGGER.debug("updateClientAudio: AudioData for playID {} queued for removal", audioData.getPlayId());
                 }
+                LOGGER.debug(" audioData: {}", audioData);
             });
         }
     }
@@ -328,32 +328,34 @@ public class ClientAudio
      */
     public static void fadeOut(int playID, int seconds)
     {
+        LOGGER.info("fadeOut: {} in {} sec.", playID, seconds);
         if (PlayIdSupplier.INVALID == playID) return;
-        AudioData audioData = playIDAudioData.get(playID);
-        if (soundEngine != null && audioData != null  && seconds > 0)
-            audioData.startFadeInOut(seconds, false);
-        else
-            queueAudioDataRemoval(playID);
+        getAudioData(playID).filter(audioData -> soundEngine != null).ifPresent(audioData -> {
+            if (seconds > 0)
+                audioData.startFadeInOut(seconds, false);
+            else
+                audioData.expire();
+        });
     }
 
     private static void removeQueuedAudioData()
     {
-        while (!delayedAudioDataRemovalQueue.isEmpty())
-        {
-            Integer playId = delayedAudioDataRemovalQueue.peek();
-            if (playId != null)
-            {
-                stop(playId);
-                LOGGER.debug("removeQueuedAudioData playId: {}", playId);
-                playIDAudioData.remove(Objects.requireNonNull(delayedAudioDataRemovalQueue.poll()));
-            }
-        }
+//        while (!delayedAudioDataRemovalQueue.isEmpty())
+//        {
+//            Integer playId = delayedAudioDataRemovalQueue.peek();
+//            if (playId != null)
+//            {
+//                stop(playId);
+//                LOGGER.debug("removeQueuedAudioData playId: {}", playId);
+//                playIDAudioData.remove(Objects.requireNonNull(delayedAudioDataRemovalQueue.poll()));
+//            }
+//        }
     }
 
     public static void queueAudioDataRemoval(int playId)
     {
-        if (PlayIdSupplier.INVALID != playId)
-            delayedAudioDataRemovalQueue.add(playId);
+//        if (PlayIdSupplier.INVALID != playId)
+//            delayedAudioDataRemovalQueue.add(playId);
     }
 
     @SubscribeEvent
@@ -381,7 +383,7 @@ public class ClientAudio
     public static void event(PlaySoundEvent event)
     {
         init(event.getManager());
-        if (event.getSound().getSource().equals(SoundCategory.MUSIC) && !playIDAudioData.isEmpty())
+        if (event.getSound().getSource().equals(SoundCategory.MUSIC) && !ActiveAudio.getActivePlayIds().isEmpty())
             event.setResultSound(null);
     }
 

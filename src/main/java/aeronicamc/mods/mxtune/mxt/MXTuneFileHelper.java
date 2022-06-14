@@ -18,6 +18,7 @@
 package aeronicamc.mods.mxtune.mxt;
 
 import aeronicamc.mods.mxtune.caches.FileHelper;
+import aeronicamc.mods.mxtune.util.MusicProperties;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.nbt.CompoundNBT;
 import org.apache.logging.log4j.LogManager;
@@ -48,7 +49,7 @@ public class MXTuneFileHelper
         return mxTuneFile;
     }
 
-    public static String getMML(MXTuneFile mxTuneFile)
+    public static MusicProperties getMusicProperties(MXTuneFile mxTuneFile)
     {
         StringBuilder builder = new StringBuilder();
         for (MXTunePart part : mxTuneFile.getParts())
@@ -70,7 +71,7 @@ public class MXTuneFileHelper
             }
             builder.append(";");
         }
-        return builder.toString();
+        return new MusicProperties(builder.toString(), mxTuneFile.getDuration());
     }
 //    public static Song getSong(MXTuneFile tune)
 //    {

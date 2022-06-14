@@ -16,6 +16,7 @@ import aeronicamc.mods.mxtune.mxt.MXTuneFileHelper;
 import aeronicamc.mods.mxtune.mxt.MXTunePart;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
 import aeronicamc.mods.mxtune.sound.IAudioStatusCallback;
+import aeronicamc.mods.mxtune.util.MusicProperties;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
@@ -402,10 +403,10 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         else if (mxTuneFile != null)
         {
             setPlaying(true);
-            String mml = MXTuneFileHelper.getMML(mxTuneFile);
+            MusicProperties musicProperties = MXTuneFileHelper.getMusicProperties(mxTuneFile);
             playId = PlayIdSupplier.PlayType.PERSONAL.getAsInt();
             Objects.requireNonNull(minecraft).submitAsync(
-                    () -> ClientAudio.playLocal(playId, mml, this));
+                    () -> ClientAudio.playLocal(musicProperties.getDuration(), playId, musicProperties.getMusicText(), this));
         }
         updateState();
     }

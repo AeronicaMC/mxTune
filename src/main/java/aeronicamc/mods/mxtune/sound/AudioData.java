@@ -21,6 +21,8 @@ import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.util.LoggedTimer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.annotation.Nullable;
 import javax.sound.midi.Sequence;
@@ -40,6 +42,8 @@ public class AudioData
     private ClientAudio.Status status;
 
     private final int secondsToSkip;
+    private final int durationSeconds;
+    private final int removalSeconds;
     private final long netTransitTime;
     private final int playId;
     private final PlayIdSupplier.PlayType playType;
@@ -47,6 +51,7 @@ public class AudioData
     private final boolean isClientPlayer;
     private final IAudioStatusCallback callback;
 
+    private int secondsElapsed;
     private float volumeFade = 1F;
     private boolean fadeIn;
     private boolean isFading;
@@ -55,6 +60,7 @@ public class AudioData
 
     /**
      * All the data needed to generate and manage the audio stream except the musicText which is passed to the parser only.
+     * @param durationSeconds
      * @param secondsToSkip forward in the audio stream.
      * @param netTransitTime in milliseconds for server packet to reach the client.
      * @param playId for this stream.
@@ -62,8 +68,10 @@ public class AudioData
      * @param isClientPlayer the audio source. Used stereo vs 3D audio selection and ISound type.
      * @param callback is optional and is used to notify a class that implements the {@link IAudioStatusCallback}
      */
-    AudioData(int secondsToSkip, long netTransitTime, int playId, int entityId, boolean isClientPlayer, @Nullable IAudioStatusCallback callback)
+    AudioData(int durationSeconds, int secondsToSkip, long netTransitTime, int playId, int entityId, boolean isClientPlayer, @Nullable IAudioStatusCallback callback)
     {
+        this.durationSeconds = durationSeconds;
+        this.removalSeconds = this.durationSeconds + 60;
         this.secondsToSkip = secondsToSkip;
         this.netTransitTime = netTransitTime;
         this.playId = playId;
@@ -111,6 +119,26 @@ public class AudioData
         loggedTimer.stop();
         return secondsToSkip > 0 ? Math.round(
             ((double)secondsToSkip) + (((double)loggedTimer.getTimeElapsed() + (double) netTransitTime) / 1000f)) : 0L;
+    }
+
+    void tickDuration()
+    {
+        ++secondsElapsed;
+    }
+
+    int getSecondsElapsed()
+    {
+        return secondsElapsed;
+    }
+
+    boolean isActive()
+    {
+        return durationSeconds >= secondsElapsed;
+    }
+
+    boolean canRemove()
+    {
+        return removalSeconds < secondsElapsed;
     }
 
     synchronized int getPlayId()
@@ -189,7 +217,8 @@ public class AudioData
                 {
                     isFading = false;
                     volumeFade = 0F;
-                    if (!fadeIn) ClientAudio.queueAudioDataRemoval(playId);
+                    if (!fadeIn)
+                        expire();
                 }
             }
         }
@@ -224,5 +253,28 @@ public class AudioData
     synchronized boolean isFading()
     {
         return isFading;
+    }
+
+    synchronized void expire()
+    {
+        volumeFade = 0F;
+        isFading = false;
+        secondsElapsed = Integer.MAX_VALUE / 2;
+        ClientAudio.stop(playId);
+    }
+
+    @Override
+    public String toString()
+    {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("isClientPlayer", isClientPlayer)
+                .append("entityId", entityId)
+                .append("playId", playId)
+                .append("secondsElapsed", secondsElapsed)
+                .append("durationSeconds", durationSeconds)
+                .append("removalSeconds", removalSeconds)
+                .append("status", status)
+                .append("callback", callback)
+                .build();
     }
 }

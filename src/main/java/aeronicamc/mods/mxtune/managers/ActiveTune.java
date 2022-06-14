@@ -118,8 +118,11 @@ public class ActiveTune
     {
         synchronized (playIdToActiveTuneEntry)
         {
-            if (!playIdToActiveTuneEntry.isEmpty())
-                playIdToActiveTuneEntry.remove(playId);
+            if (playIdToActiveTuneEntry.containsKey(playId))
+            {
+                Entry entry = playIdToActiveTuneEntry.get(playId);
+                entry.secondsElapsed = entry.durationSeconds - 1;
+            }
         }
     }
 

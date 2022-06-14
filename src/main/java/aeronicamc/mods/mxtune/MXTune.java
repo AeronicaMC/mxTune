@@ -33,6 +33,7 @@ import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.render.blockentity.MusicBlockEntityRenderer;
 import aeronicamc.mods.mxtune.render.not.MusicSourceRenderer;
 import aeronicamc.mods.mxtune.render.not.RootedRenderer;
+import aeronicamc.mods.mxtune.sound.ActiveAudio;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
 import aeronicamc.mods.mxtune.util.KeyHandler;
 import aeronicamc.mods.mxtune.util.MIDISystemUtil;
@@ -91,6 +92,7 @@ public class MXTune
         if (FMLEnvironment.dist == Dist.CLIENT)
         {
             MIDISystemUtil.mxTuneInit();
+            ActiveAudio.initialize();
             FMLJavaModLoadingContext.get().getModEventBus().addListener(this::modLoadingComplete);
         }
         // Register ourselves for server and other game events we are interested in

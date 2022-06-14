@@ -768,7 +768,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     private boolean mmlPlay(String mmlIn)
     {
         playId = PlayIdSupplier.PlayType.PERSONAL.getAsInt();
-        getMC().submitAsync(()->ClientAudio.playLocal(playId, mmlIn, this));
+        getMC().submitAsync(()->ClientAudio.playLocal(durationTotal, playId, mmlIn, this));
         updateState();
         return true;
     }

@@ -531,7 +531,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         LOGGER.debug("GuiMusicPaperParse.mmlPlay(): {}", mml.substring(0, Math.min(mml.length(), 25)));
 
         playId = PlayIdSupplier.PlayType.PERSONAL.getAsInt();
-        ClientAudio.playLocal(playId, mml, this);
+        ClientAudio.playLocal(getDuration(), playId, mml, this);
         return true;
     }
 

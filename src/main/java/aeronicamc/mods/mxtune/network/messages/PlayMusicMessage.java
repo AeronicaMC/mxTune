@@ -21,23 +21,18 @@ public class PlayMusicMessage extends AbstractMessage<PlayMusicMessage>
     private final NetworkLongUtfHelper stringHelper = new NetworkLongUtfHelper();
     private int playId = PlayIdSupplier.INVALID;
     private int secondsToSkip;
+    private int duration;
     private int entityId;
     private String musicText = "";
     private String dateTimeServer = "";
 
     public PlayMusicMessage() { /* NOP */ }
 
-    public PlayMusicMessage(int playId, int entityId, String musicText)
-    {
-        this.playId = playId;
-        this.entityId = entityId;
-        this.musicText = musicText;
-    }
-
-    public PlayMusicMessage(int playId, String dateTimeServer, int secondsToSkip, int entityId, String musicText)
+    public PlayMusicMessage(int playId, String dateTimeServer, int duration, int secondsToSkip, int entityId, String musicText)
     {
         this.playId = playId;
         this.dateTimeServer = dateTimeServer;
+        this.duration = duration;
         this.secondsToSkip = secondsToSkip;
         this.entityId = entityId;
         this.musicText = musicText;
@@ -46,22 +41,24 @@ public class PlayMusicMessage extends AbstractMessage<PlayMusicMessage>
     @Override
     public void encode(PlayMusicMessage message, PacketBuffer buffer)
     {
-        buffer.writeInt(message.playId);
+        buffer.writeVarInt(message.playId);
         buffer.writeUtf(message.dateTimeServer);
-        buffer.writeInt(message.secondsToSkip);
-        buffer.writeInt(message.entityId);
+        buffer.writeVarInt(message.duration);
+        buffer.writeVarInt(message.secondsToSkip);
+        buffer.writeVarInt(message.entityId);
         stringHelper.writeLongUtf(buffer, message.musicText);
     }
 
     @Override
     public PlayMusicMessage decode(PacketBuffer buffer)
     {
-        final int playId = buffer.readInt();
+        final int playId = buffer.readVarInt();
         final String dateTimeServer = buffer.readUtf();
-        final int secondsToSkip = buffer.readInt();
-        final int entityId = buffer.readInt();
+        final int duration = buffer.readVarInt();
+        final int secondsToSkip = buffer.readVarInt();
+        final int entityId = buffer.readVarInt();
         final String mml = stringHelper.readLongUtf(buffer);
-        return new PlayMusicMessage(playId, dateTimeServer, secondsToSkip, entityId, mml);
+        return new PlayMusicMessage(playId, dateTimeServer, duration, secondsToSkip, entityId, mml);
     }
 
     @Override
@@ -77,7 +74,7 @@ public class PlayMusicMessage extends AbstractMessage<PlayMusicMessage>
                 LocalDateTime dateTimeServer = message.secondsToSkip > 0 ? LocalDateTime.parse(message.dateTimeServer) : dateTimeClient;
                 long netTransitTime = Duration.between(dateTimeServer, dateTimeClient).toMillis();
                 LOGGER.info("In transit: {} ms, From: {} to: {}", netTransitTime, senderName, Minecraft.getInstance().player.getDisplayName().getString());
-                ClientAudio.play(message.secondsToSkip, netTransitTime, message.playId, message.entityId, message.musicText);
+                ClientAudio.play(message.duration, message.secondsToSkip, netTransitTime, message.playId, message.entityId, message.musicText);
         });
         }
         ctx.get().setPacketHandled(true);

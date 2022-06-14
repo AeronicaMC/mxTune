@@ -132,7 +132,7 @@ public final class PlayManager
         int entityId = playerIn.getId();
         // TODO: See if we can attach the music source to a player, or maybe make the instrument the source!?
         addActivePlayId(entityId, null, playId, musicText, duration);
-        PlayMusicMessage packetPlaySolo = new PlayMusicMessage(playId, LocalDateTime.now(ZoneId.of("GMT0")).toString(), 0, entityId , musicText);
+        PlayMusicMessage packetPlaySolo = new PlayMusicMessage(playId, LocalDateTime.now(ZoneId.of("GMT0")).toString(), duration, 0, entityId, musicText);
         PacketDispatcher.sendToTrackingEntityAndSelf(packetPlaySolo, playerIn);
         return playId;
     }
@@ -172,8 +172,8 @@ public final class PlayManager
         synchronized (THREAD_SYNC)
         {
             LOGGER.debug("stopPlayId {}", playId);
-            removeActivePlayId(playId);
             PacketDispatcher.sendToAll(new StopPlayIdMessage(playId));
+            removeActivePlayId(playId);
         }
     }
 
@@ -252,7 +252,7 @@ public final class PlayManager
                 ActiveTune.getActiveTuneByEntityId(soundSourceEntity).ifPresent(activeTune-> {
                     if (listeningPlayer.level.getServer() != null && activeTune.isActive())
                     {
-                        PacketDispatcher.sendTo(new PlayMusicMessage(activeTune.playId, LocalDateTime.now(ZoneId.of("GMT0")).toString(), activeTune.getSecondsElapsed(), soundSourceEntity.getId(), activeTune.musicText), listeningPlayer);
+                        PacketDispatcher.sendTo(new PlayMusicMessage(activeTune.playId, LocalDateTime.now(ZoneId.of("GMT0")).toString(), activeTune.durationSeconds, activeTune.getSecondsElapsed(), soundSourceEntity.getId(), activeTune.musicText), listeningPlayer);
                         LOGGER.debug("sendMusicTo {} starting at {}", listeningPlayer.getDisplayName().getString(), SheetMusicHelper.formatDuration(activeTune.getSecondsElapsed()));
                     }
                     else
