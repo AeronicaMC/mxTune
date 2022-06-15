@@ -70,8 +70,8 @@ public class ModPlayerEvents
     @SubscribeEvent
     public static void event(final PlayerEvent.PlayerChangedDimensionEvent event)
     {
-        capabilitySynchronize(event.getEntityLiving());
-        PlayManager.sendMusicTo((ServerPlayerEntity) event.getPlayer(), event.getPlayer());
+        //capabilitySynchronize(event.getEntityLiving());
+        //PlayManager.sendMusicTo((ServerPlayerEntity) event.getPlayer(), event.getPlayer());
         LOGGER.debug("PlayerChangedDimensionEvent: {}", event.getPlayer());
     }
 
@@ -99,9 +99,10 @@ public class ModPlayerEvents
         /* NOP See ClientEvents event(ClientPlayerNetworkEvent.LoggedInEvent event) */
     }
 
-//    @SubscribeEvent
+    @SubscribeEvent
     public static void event(PlayerEvent.PlayerRespawnEvent event)
     {
+        PlayManager.sendMusicTo((ServerPlayerEntity) event.getPlayer(), event.getPlayer());
         /* NOP See ClientEvents event(ClientPlayerNetworkEvent.RespawnEvent) */
     }
 
