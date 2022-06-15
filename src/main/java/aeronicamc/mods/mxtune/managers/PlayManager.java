@@ -8,7 +8,7 @@ import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier.PlayType;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.PlayMusicMessage;
-import aeronicamc.mods.mxtune.network.messages.StopPlayIdMessage;
+import aeronicamc.mods.mxtune.network.messages.StopPlayMessage;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.Misc;
 import aeronicamc.mods.mxtune.util.MusicProperties;
@@ -26,8 +26,6 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.HashMap;
-import java.util.Map;
 
 import static aeronicamc.mods.mxtune.managers.PlayIdSupplier.INVALID;
 
@@ -39,8 +37,6 @@ public final class PlayManager
 {
     public static final Object THREAD_SYNC = new Object();
     private static final Logger LOGGER = LogManager.getLogger(PlayManager.class);
-    private static final Map<Integer, Integer> playIdToEntityId = new HashMap<>();
-    private static final Map<Integer, Integer> entityIdToPlayId = new HashMap<>();
 
     private PlayManager() { /* NOP */ }
 
@@ -69,7 +65,7 @@ public final class PlayManager
     {
         int playId = INVALID;
         IMusicPlayer musicPlayer;
-        if (world.getBlockState(blockPos).getBlock() instanceof IMusicPlayer)
+        if (world.getBlockState(blockPos).hasTileEntity() && world.getBlockEntity(blockPos) instanceof IMusicPlayer)
         {
             musicPlayer = (IMusicPlayer) world.getBlockEntity(blockPos);
             if (musicPlayer != null)
@@ -81,6 +77,7 @@ public final class PlayManager
                     {
                         playId = getNextPlayID();
                         MusicSourceEntity musicSource = new MusicSourceEntity(world, blockPos, false);
+                        musicPlayer.setMusicSourceEntityId(musicSource.getId());
                         addActivePlayId(musicSource.getId(), blockPos, playId, musicProperties.getMusicText(), musicProperties.getDuration());
                         world.addFreshEntity(musicSource);
                     }
@@ -159,11 +156,8 @@ public final class PlayManager
     {
         synchronized (THREAD_SYNC)
         {
-            ActiveTune.getActiveTuneEntries().stream().mapToInt(
-                    entry -> entry.playId).forEach(PlayManager::stopPlayId);
-            entityIdToPlayId.clear();
+            PacketDispatcher.sendToAll(new StopPlayMessage());
             ActiveTune.removeAll();
-            playIdToEntityId.clear();
         }
     }
 
@@ -171,8 +165,9 @@ public final class PlayManager
     {
         synchronized (THREAD_SYNC)
         {
+            if (INVALID == playId) return;
             LOGGER.debug("stopPlayId {}", playId);
-            PacketDispatcher.sendToAll(new StopPlayIdMessage(playId));
+            PacketDispatcher.sendToAll(new StopPlayMessage(playId));
             removeActivePlayId(playId);
         }
     }
@@ -185,69 +180,42 @@ public final class PlayManager
         }
     }
 
-    private static void stopPlayingEntity(Integer entityId)
+    private static void stopPlayingEntity(int entityId)
     {
         synchronized (THREAD_SYNC)
         {
-            if (isEntityPlaying(entityId))
+            if (activeTuneEntityActive(entityId))
             {
-                stopPlayId(entityIdToPlayId.get(entityId));
+                stopPlayId(ActiveTune.getPlayIdForEntity(entityId));
             }
         }
     }
 
-    private static int getEntitiesPlayId(@Nullable Integer entityId)
+    public static int getEntitiesPlayId(int entityId)
     {
         synchronized (THREAD_SYNC)
         {
-            return (entityId != null) ? entityIdToPlayId.get(entityId) : INVALID;
-        }
-    }
-
-    private static boolean isEntityPlaying(@Nullable Integer entityId)
-    {
-        synchronized (THREAD_SYNC)
-        {
-            return entityId != null && entityIdToPlayId.containsKey(entityId);
+            return ActiveTune.getPlayIdForEntity(entityId);
         }
     }
 
     private static void addActivePlayId(int entityId, @Nullable BlockPos blockPos, int playId, String musicText, int durationSeconds)
     {
         if ((playId != INVALID))
-        {
-            if (entityId != 0)
-            {
-                if (entityIdToPlayId.containsKey(entityId))
-                    entityIdToPlayId.replace(entityId, playId);
-                else
-                    entityIdToPlayId.putIfAbsent(entityId, playId);
-
-                playIdToEntityId.put(playId, entityId);
-                ActiveTune.addEntry(entityId, blockPos, playId, musicText, durationSeconds);
-            }
-            else if (blockPos != null)
-            {
-                ActiveTune.addEntry(0, blockPos, playId, musicText, durationSeconds);
-            }
-        }
+            ActiveTune.addEntry(entityId, blockPos, playId, musicText, durationSeconds);
     }
 
     private static void removeActivePlayId(int playId)
     {
         if ((playId != INVALID))
-        {
-            entityIdToPlayId.remove(playIdToEntityId.get(playId));
-            playIdToEntityId.remove(playId);
             ActiveTune.remove(playId);
-        }
     }
 
     public static void sendMusicTo(@Nullable ServerPlayerEntity listeningPlayer, @Nullable Entity soundSourceEntity)
     {
         synchronized (THREAD_SYNC)
         {
-            if ((listeningPlayer != null) && (soundSourceEntity != null) && hasActivePlayId(soundSourceEntity))
+            if ((listeningPlayer != null) && (soundSourceEntity != null) && activeTuneEntityActive(soundSourceEntity))
             {
                 ActiveTune.getActiveTuneByEntityId(soundSourceEntity).ifPresent(activeTune-> {
                     if (listeningPlayer.level.getServer() != null && activeTune.isActive())
@@ -257,7 +225,7 @@ public final class PlayManager
                     }
                     else
                     {
-                        LOGGER.warn("sendMusicTo -ERROR- or -DONE- No playId: {} for this Entity: {}", getEntitiesPlayId(soundSourceEntity.getId()), soundSourceEntity);
+                        LOGGER.warn("sendMusicTo -ERROR- or -DONE- No playId: {} for this Entity: {}", PlayManager.getEntitiesPlayId(soundSourceEntity.getId()), soundSourceEntity);
                     }
                 });
             }
@@ -268,12 +236,12 @@ public final class PlayManager
     {
         synchronized (THREAD_SYNC)
         {
-            if ((listeningPlayer != null) && (soundSourceEntity != null) && hasActivePlayId(soundSourceEntity))
+            if ((listeningPlayer != null) && (soundSourceEntity != null) && activeTuneEntityActive(soundSourceEntity))
             {
                 ActiveTune.getActiveTuneByEntityId(soundSourceEntity).ifPresent(activeTune-> {
                      if (listeningPlayer.level.getServer() != null)
                      {
-                         PacketDispatcher.sendTo(new StopPlayIdMessage(activeTune.playId), listeningPlayer);
+                         PacketDispatcher.sendTo(new StopPlayMessage(activeTune.playId), listeningPlayer);
                          LOGGER.debug("{} stopListeningTo {}", listeningPlayer.getDisplayName().getString(), soundSourceEntity.getName().getString());
                      }
                      else
@@ -285,11 +253,35 @@ public final class PlayManager
         }
     }
 
-    public static boolean hasActivePlayId(@Nullable Entity pEntity)
+    public static boolean activeTuneEntityActive(@Nullable Entity pEntity)
     {
         synchronized (THREAD_SYNC)
         {
-            return pEntity != null && entityIdToPlayId.containsKey(pEntity.getId());
+            return pEntity != null && ActiveTune.entityActive(pEntity.getId());
+        }
+    }
+
+    public static boolean activeTuneEntityActive(int entityId)
+    {
+        synchronized (THREAD_SYNC)
+        {
+            return ActiveTune.entityActive(entityId);
+        }
+    }
+
+    public static boolean activeTuneEntityExists(@Nullable Entity pEntity)
+    {
+        synchronized (THREAD_SYNC)
+        {
+            return pEntity != null && ActiveTune.entityExists(pEntity.getId());
+        }
+    }
+
+    public static boolean activeTuneEntityExists(int entityId)
+    {
+        synchronized (THREAD_SYNC)
+        {
+            return ActiveTune.entityExists(entityId);
         }
     }
 
@@ -300,10 +292,4 @@ public final class PlayManager
             return ActiveTune.isActivePlayId(playId);
         }
     }
-
-    public static int getActiveBlockPlayId(BlockPos pPos)
-    {
-        return ActiveTune.getActiveBlock(pPos).isPresent() ? ActiveTune.getActiveBlock(pPos).get().playId : INVALID;
-    }
-
 }

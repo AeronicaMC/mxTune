@@ -81,7 +81,7 @@ public class ModPlayerEvents
     public static void onEvent(BlockEvent.BreakEvent event)
     {
         if(event.getWorld().isClientSide()) return;
-        if(event.getState().getBlock() instanceof IMusicPlayer)
+        if(event.getState().hasTileEntity() && event.getWorld().getBlockEntity(event.getPos()) instanceof IMusicPlayer)
         {
             TileEntity tileEntity = event.getWorld().getBlockEntity(event.getPos());
             if(tileEntity instanceof ILockable)

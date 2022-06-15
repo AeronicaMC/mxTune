@@ -429,7 +429,7 @@ public enum SheetMusicHelper
                     {
                         LOGGER.warn(e);
                     }
-                    if (blockPos != null && pLevel.getBlockState(blockPos).getBlock() instanceof IMusicPlayer)
+                    if (blockPos != null && pLevel.getBlockState(blockPos).hasTileEntity() && pLevel.getBlockEntity(blockPos) instanceof IMusicPlayer)
                     {
                         InventoryHelper.dropItemStack(pLevel, blockPos.getX(), blockPos.getY(), blockPos.getZ(), new ItemStack(ModItems.SCRAP_ITEM.get()));
                     }

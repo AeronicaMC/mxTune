@@ -56,7 +56,7 @@ public class ActiveAudio
                     playIdToActiveAudioEntry.values()
                             .forEach(entry ->
                                      {
-                                         if (entry.canRemove())
+                                         if (entry.canRemove() || entry.getStatus().equals(ClientAudio.Status.DONE) || entry.getStatus().equals(ClientAudio.Status.ERROR))
                                          {
                                              deleteEntryQueue.add(entry);
                                          }

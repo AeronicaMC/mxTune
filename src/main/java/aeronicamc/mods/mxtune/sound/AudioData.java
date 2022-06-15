@@ -71,7 +71,7 @@ public class AudioData
     AudioData(int durationSeconds, int secondsToSkip, long netTransitTime, int playId, int entityId, boolean isClientPlayer, @Nullable IAudioStatusCallback callback)
     {
         this.durationSeconds = durationSeconds;
-        this.removalSeconds = this.durationSeconds + 60;
+        this.removalSeconds = durationSeconds + 2;
         this.secondsToSkip = secondsToSkip;
         this.netTransitTime = netTransitTime;
         this.playId = playId;

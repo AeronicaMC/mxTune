@@ -6,9 +6,13 @@ import net.minecraftforge.items.IItemHandler;
 
 public interface IMusicPlayer
 {
-    default MusicProperties getMusicProperties() { return MusicProperties.INVALID; }
+    MusicProperties getMusicProperties();
+
+    int getMusicSourceEntityId();
+
+    void setMusicSourceEntityId(int entityId);
 
 //    default SoundRange getSoundRange() { /* implement in TE */ return SoundRange.NORMAL; }
 
-    default LazyOptional<IItemHandler> getItemHandler() { /* implement in TE */  return LazyOptional.empty(); }
+    LazyOptional<IItemHandler> getItemHandler();
 }

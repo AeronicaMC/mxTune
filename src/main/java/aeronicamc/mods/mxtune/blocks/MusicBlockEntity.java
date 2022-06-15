@@ -66,6 +66,7 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
     private boolean LastPlay;
     private int counter;
     private int useHeldCounter;
+    private int musicSourceEntityId;
 
     public MusicBlockEntity()
     {
@@ -381,5 +382,17 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
     public UUID getOwner()
     {
         return this.ownerUUID;
+    }
+
+    @Override
+    public int getMusicSourceEntityId()
+    {
+        return musicSourceEntityId;
+    }
+
+    @Override
+    public void setMusicSourceEntityId(int entityId)
+    {
+        musicSourceEntityId = entityId;
     }
 }

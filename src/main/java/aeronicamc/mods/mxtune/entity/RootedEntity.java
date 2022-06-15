@@ -69,12 +69,12 @@ public class RootedEntity extends Entity
 
         if(!this.level.isClientSide())
         {
-            boolean hasPlayId = PlayManager.hasActivePlayId(this);
-            if (!this.isAlive() || this.level.isEmptyBlock(this.source) || !(this.hasOnePlayerPassenger()) || !hasPlayId)
+            boolean hasActiveTuneEntry = PlayManager.activeTuneEntityExists(this);
+            if (!this.isAlive() || this.level.isEmptyBlock(this.source) || !(this.hasOnePlayerPassenger()) || !hasActiveTuneEntry)
             {
-                if (PlayManager.hasActivePlayId(this))
+                if (PlayManager.activeTuneEntityActive(this))
                     PlayManager.stopPlayingEntity(this);
-                LOGGER.debug("has playId: {}", hasPlayId);
+                LOGGER.debug("has playId: {}", hasActiveTuneEntry);
                 LOGGER.debug("{} removed from world.", this.getId());
                 LOGGER.debug("{} @Block is Air: {}.", this.getId(), this.level.isEmptyBlock(this.source));
                 this.remove();

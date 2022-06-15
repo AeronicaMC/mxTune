@@ -54,7 +54,7 @@ import static net.minecraftforge.common.util.Constants.NBT;
 
 
 @SuppressWarnings("deprecation")
-public class MusicBlock extends Block implements IMusicPlayer, IWrenchAble
+public class MusicBlock extends Block implements IWrenchAble
 {
     public static final BooleanProperty PLAYING = BooleanProperty.create("playing");
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
@@ -115,8 +115,9 @@ public class MusicBlock extends Block implements IMusicPlayer, IWrenchAble
                     {
                         if (pState.getValue(PLAYING))
                         {
-                            pLevel.getBlockTicks().scheduleTick(pPos, this, 20);
-                            if (PlayManager.getActiveBlockPlayId(pPos) == PlayIdSupplier.INVALID)
+                            pLevel.getBlockTicks().scheduleTick(pPos, this, 4);
+                            int playId = PlayManager.getEntitiesPlayId(musicBlockEntity.getMusicSourceEntityId());
+                            if (playId == PlayIdSupplier.INVALID || !PlayManager.isActivePlayId(playId))
                             {
                                 setPlayingState(pLevel, pPos, pState, false);
                                 onePulseOutputState(pLevel, pPos, pState, musicBlockEntity);
@@ -147,7 +148,7 @@ public class MusicBlock extends Block implements IMusicPlayer, IWrenchAble
                             // but I have not found another solution yet.
                             if (musicBlockEntity.notHeld())
                             {
-                                boolean isPlaying = canPlayOrStopMusic(worldIn, state, pos, false);
+                                boolean isPlaying = canPlayOrStopMusic(worldIn, state, pos, musicBlockEntity, false);
                                 if (isPlaying)
                                     musicBlockEntity.setLastPlay(true);
                                 setPlayingState(worldIn, pos, state, isPlaying);
@@ -172,9 +173,9 @@ public class MusicBlock extends Block implements IMusicPlayer, IWrenchAble
         return LockableHelper.isLocked(FakePlayerFactory.getMinecraft((ServerWorld) level), level, blockPos) != player.isShiftKeyDown();
     }
 
-    private boolean canPlayOrStopMusic(World pLevel, BlockState pState, BlockPos pPos, Boolean noPlay)
+    private boolean canPlayOrStopMusic(World pLevel, BlockState pState, BlockPos pPos, MusicBlockEntity musicBlockEntity, Boolean noPlay)
     {
-        int playId = PlayManager.getActiveBlockPlayId(pPos);
+        int playId = PlayManager.getEntitiesPlayId(musicBlockEntity.getMusicSourceEntityId());
             if (PlayManager.isActivePlayId(playId) || pState.getValue(PLAYING))
             {
                 LOGGER.warn("STOP canPlayOrStopMusic playId {}", playId);
@@ -263,7 +264,7 @@ public class MusicBlock extends Block implements IMusicPlayer, IWrenchAble
                         {
                             if (isSidePowered)
                             {
-                                boolean isPlaying = canPlayOrStopMusic(pLevel, pState, pPos, false);
+                                boolean isPlaying = canPlayOrStopMusic(pLevel, pState, pPos, musicBlockEntity, false);
                                 if (isPlaying)
                                     musicBlockEntity.setLastPlay(true);
                                 setPlayingState(pLevel, pPos, pState, isPlaying);

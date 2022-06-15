@@ -308,16 +308,7 @@ public class ClientAudio
     {
         if (soundEngine != null && recordsVolumeOn())
         {
-            removeQueuedAudioData();
-            ActiveAudio.getActiveAudioEntries().forEach((audioData) -> {
-                Status status = audioData.getStatus();
-                if (status == Status.ERROR || status == Status.DONE || !channelHasISound(audioData.getISound()))
-                {
-                    queueAudioDataRemoval(audioData.getPlayId());
-                    LOGGER.debug("updateClientAudio: AudioData for playID {} queued for removal", audioData.getPlayId());
-                }
-                LOGGER.debug(" audioData: {}", audioData);
-            });
+            ActiveAudio.getActiveAudioEntries().forEach((audioData) -> LOGGER.debug("{}", audioData));
         }
     }
 
@@ -328,9 +319,9 @@ public class ClientAudio
      */
     public static void fadeOut(int playID, int seconds)
     {
-        LOGGER.info("fadeOut: {} in {} sec.", playID, seconds);
         if (PlayIdSupplier.INVALID == playID) return;
         getAudioData(playID).filter(audioData -> soundEngine != null).ifPresent(audioData -> {
+            LOGGER.info("fadeOut: {} in {} sec.", playID, seconds);
             if (seconds > 0)
                 audioData.startFadeInOut(seconds, false);
             else
@@ -338,24 +329,9 @@ public class ClientAudio
         });
     }
 
-    private static void removeQueuedAudioData()
+    public static void stopAll()
     {
-//        while (!delayedAudioDataRemovalQueue.isEmpty())
-//        {
-//            Integer playId = delayedAudioDataRemovalQueue.peek();
-//            if (playId != null)
-//            {
-//                stop(playId);
-//                LOGGER.debug("removeQueuedAudioData playId: {}", playId);
-//                playIDAudioData.remove(Objects.requireNonNull(delayedAudioDataRemovalQueue.poll()));
-//            }
-//        }
-    }
-
-    public static void queueAudioDataRemoval(int playId)
-    {
-//        if (PlayIdSupplier.INVALID != playId)
-//            delayedAudioDataRemovalQueue.add(playId);
+        ActiveAudio.removeAll();
     }
 
     @SubscribeEvent
