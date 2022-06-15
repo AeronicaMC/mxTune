@@ -84,27 +84,9 @@ public class ClientAudio
         }
     }
 
-    static synchronized void setISound(Integer playID, ISound iSound)
-    {
-        AudioData audioData = ActiveAudio.getAudioData(playID);
-        if (audioData != null)
-            audioData.setISound(iSound);
-    }
-
-    static boolean hasPlayID(int playID)
-    {
-        return ActiveAudio.getActivePlayIds().contains(playID);
-    }
-
-    private static boolean isClientPlayer(Integer playID)
-    {
-        AudioData audioData = ActiveAudio.getAudioData(playID);
-        return audioData != null && audioData.isClientPlayer();
-    }
-
     /**
      * For players and source entities.
-     * @param duration
+     * @param duration of the tune in seconds.
      * @param secondsToSkip seconds to skip forward in the music.
      * @param netTransitTime time in milliseconds for server packet to reach the client.
      * @param playID unique submission identifier.
@@ -116,6 +98,13 @@ public class ClientAudio
         play(playID, duration, secondsToSkip, netTransitTime, entityId, musicText, false, null);
     }
 
+    /**
+     * For client side only music.
+     * @param duration of the tune in seconds.
+     * @param playId unique submission identifier.
+     * @param musicText MML string.
+     * @param callback if used, will send status changes to the calling class that implements {@link IAudioStatusCallback}.
+     */
     public static void playLocal(int duration, int playId, String musicText, @Nullable IAudioStatusCallback callback)
     {
         play(playId, duration, 0, 0, Objects.requireNonNull(mc.player).getId(), musicText, true, callback);
@@ -133,7 +122,7 @@ public class ClientAudio
     /**
      * The all-in-one #play(...) method of the {@link ClientAudio} class.
      * @param playID The unique server identifier for each music submission. see {@link PlayIdSupplier}
-     * @param duration
+     * @param duration of the tune in seconds
      * @param secondsToSkip seconds to skip forward in the music.
      * @param netTransitTime time in milliseconds for server packet to reach the client.
      * @param entityId The unique entity id of the music source. Generally another player.
@@ -219,11 +208,6 @@ public class ClientAudio
         }
     }
 
-    private static void cleanup()
-    {
-        ActiveAudio.removeAll();
-    }
-
     // SoundEngine
     // private final Map<ISound, ChannelManager.Entry> playingSoundsChannel = Maps.newHashMap(); // AT this so we can attach the PCM the audio stream
     // private final Multimap<SoundCategory, ISound> instanceBySource = HashMultimap.create(); // AT this for monitoring our ISounds
@@ -296,14 +280,6 @@ public class ClientAudio
         }
     }
 
-    private static boolean channelHasISound(@Nullable ISound iSound)
-    {
-        synchronized (soundEngine.instanceToChannel)
-        {
-            return (iSound != null) && soundEngine.instanceToChannel.containsKey(iSound);
-        }
-    }
-
     private static void updateClientAudio()
     {
         if (soundEngine != null && recordsVolumeOn())
@@ -350,8 +326,8 @@ public class ClientAudio
     @SubscribeEvent
     public static void event(SoundLoadEvent event)
     {
-        cleanup();
         init(event.getManager());
+        stopAll();
         LOGGER.debug("SoundLoadEvent");
     }
 

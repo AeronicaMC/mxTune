@@ -96,6 +96,7 @@ public class ActiveAudio
         return new ArrayList<>(playIdToActiveAudioEntry.values());
     }
 
+    @Nullable
     synchronized static AudioData getAudioData(int playId)
     {
         return playIdToActiveAudioEntry.get(playId);
