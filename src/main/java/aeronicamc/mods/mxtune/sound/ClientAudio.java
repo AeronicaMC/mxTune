@@ -174,8 +174,7 @@ public class ClientAudio
 
     private static void stopVanillaMusic()
     {
-        if (musicTicker.currentMusic != null)
-            musicTicker.stopPlaying();
+        musicTicker.stopPlaying();
     }
 
     public static boolean recordsVolumeOn()

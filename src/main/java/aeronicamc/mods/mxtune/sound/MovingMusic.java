@@ -26,7 +26,6 @@ public class MovingMusic extends MxSound
     {
         super(audioData);
         this.entity = entity;
-        this.stopped = false;
         this.x = (float) entity.getX();
         this.y = (float) entity.getY();
         this.z = (float) entity.getZ();
