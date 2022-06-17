@@ -31,11 +31,12 @@ public class ClientAudio
 {
     public static final Logger LOGGER = LogManager.getLogger(ClientAudio.class);
     public static final Object THREAD_SYNC = new Object();
+
     private static final Minecraft mc = Minecraft.getInstance();
     private static final SoundHandler soundHandler = mc.getSoundManager();
     private static final MusicTicker musicTicker = mc.getMusicManager();
     private static SoundEngine soundEngine;
-    //private static final Queue<Integer> delayedAudioDataRemovalQueue = new ConcurrentLinkedDeque<>();
+
     private static int counter;
     private static final int THREAD_POOL_SIZE = 2;
     /* PCM Signed Monaural little endian */
@@ -43,7 +44,6 @@ public class ClientAudio
     /* PCM Signed Stereo little endian */
     private static final AudioFormat audioFormatStereo = new AudioFormat(48000, 16, 2, true, false);
     /* The active mxTune audio streams by playId */
-    //private static final Map<Integer, AudioData> playIDAudioData = new ConcurrentHashMap<>();
 
     private static final ExecutorService executorService;
     static {
@@ -116,7 +116,8 @@ public class ClientAudio
     {
         if (audioData.isClientPlayer())
             audioData.setAudioFormat(audioFormatStereo);
-        else audioData.setAudioFormat(audioFormat3D);
+        else
+            audioData.setAudioFormat(audioFormat3D);
     }
 
     /**
@@ -320,8 +321,9 @@ public class ClientAudio
         }
     }
 
-    // called in SoundEngine CTOR and reload. i.e. key-press F3+T
-    // NOTE: The CTOR hook is never fired! The mod event buses might not be active at this point.
+    // called in SoundEngine CTOR* and reload. Reload: i.e. key-press F3+T
+    // *NOTE: The CTOR hook is fired on the FML MOD BUS! On Sound reload this is fired on the FORGE BUS!
+    // ClientAudio is registered to the FORGE BUS!
     @SubscribeEvent
     public static void event(SoundLoadEvent event)
     {
@@ -330,6 +332,8 @@ public class ClientAudio
         LOGGER.debug("SoundLoadEvent");
     }
 
+    // Here we ensure our local SoundEngine reference is initialized AND also where we prevent a new
+    // vanilla MUSIC from starting, when mxTune tunes are active.
     @SubscribeEvent
     public static void event(PlaySoundEvent event)
     {
