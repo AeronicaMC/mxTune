@@ -62,6 +62,7 @@ public class ActiveTune
                     playIdToActiveTuneEntry.values()
                             .forEach(entry ->
                                      {
+                                         //LOGGER2.debug("{}", entry);
                                          if (entry.canRemove())
                                          {
                                              deleteEntryQueue.add(entry);
@@ -214,6 +215,7 @@ public class ActiveTune
             return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                     .append("entityId", entityId)
                     .append("playId", playId)
+                    .append("secondsElapsed", secondsElapsed)
                     .append("durationSeconds", durationSeconds)
                     .append("removalSeconds", removalSeconds)
                     .build();
