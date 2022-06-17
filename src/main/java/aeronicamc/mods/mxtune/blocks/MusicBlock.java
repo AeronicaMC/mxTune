@@ -197,7 +197,7 @@ public class MusicBlock extends Block implements IWrenchAble
         if (!level.isClientSide() && blockEntity.isOwner(player.getUUID()) && hasWrench(player, handIn))
         {
             BlockState newState;
-            if (player.isShiftKeyDown())
+            if (player.isShiftKeyDown() && !player.isCreative())
             {
                 // Pickup Music Block into player inventory. If inventory is full drop in the world.
                 ItemStack itemStack = state.getBlock().getCloneItemStack(level, pos, state);
