@@ -135,15 +135,17 @@ public class ClientAudio
     {
         if (playID != PlayIdSupplier.INVALID)
         {
-            AudioData audioData = new AudioData(duration, secondsToSkip, netTransitTime, playID, entityId, isClient, callback);
+            boolean isReallyClient = (((mc.player != null) && (mc.player.getId() == entityId)) || isClient);
+            AudioData audioData = new AudioData(duration, secondsToSkip, netTransitTime, playID, entityId, isReallyClient, callback);
             setAudioFormat(audioData);
+            LOGGER.warn("playId: {}, mc.player: {}, entityId: {}, isClient: {}, isReallyClient: {}", playID, mc.player.getId(), entityId, isClient, isReallyClient);
             boolean isDuplicatePlayId = ActiveAudio.addEntry(audioData);
-            if (isDuplicatePlayId && mc.player != null && isClient && entityId == mc.player.getId())
-            {
-                LOGGER.warn("ClientAudio#play: playID: {} has already been submitted", playID);
-                return;
-            }
-            if (isClient || (mc.player != null && (mc.player.getId() == entityId))) // This CLIENT Player own music
+//            if (isDuplicatePlayId && isReallyClient)
+//            {
+//                LOGGER.warn("ClientAudio#play: playID: {} has already been submitted", playID);
+//                return;
+//            }
+            if (isReallyClient) // This CLIENT Player own music
             {
                 // SPECIAL CASE
                 // Player (actively playing solo) changed dimension, so we reuse the playId and REPLACE the AudioData.
@@ -175,7 +177,8 @@ public class ClientAudio
 
     private static void stopVanillaMusic()
     {
-        musicTicker.stopPlaying();
+        soundHandler.stop(null, SoundCategory.MUSIC);
+        //musicTicker.stopPlaying();
     }
 
     public static boolean recordsVolumeOn()
@@ -282,9 +285,9 @@ public class ClientAudio
 
     private static void updateClientAudio()
     {
-        if (soundEngine != null && recordsVolumeOn())
+        if (recordsVolumeOn())
         {
-            ActiveAudio.getActiveAudioEntries().forEach((audioData) -> LOGGER.debug("{}", audioData));
+            //ActiveAudio.getActiveAudioEntries().forEach((audioData) -> LOGGER.debug("{}", audioData));
         }
     }
 
@@ -296,7 +299,7 @@ public class ClientAudio
     public static void fadeOut(int playID, int seconds)
     {
         if (PlayIdSupplier.INVALID == playID) return;
-        getAudioData(playID).filter(audioData -> soundEngine != null).ifPresent(audioData -> {
+        getAudioData(playID).ifPresent(audioData -> {
             LOGGER.info("fadeOut: {} in {} sec.", playID, seconds);
             if (seconds > 0)
                 audioData.startFadeInOut(seconds, false);

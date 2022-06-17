@@ -4,7 +4,6 @@ import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.init.ModBlocks;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.SyncCapabilityRequestMessage;
-import aeronicamc.mods.mxtune.sound.ClientAudio;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -36,7 +35,6 @@ public class ClientEvents
     public static void event(ClientPlayerNetworkEvent.RespawnEvent event)
     {
         LOGGER.debug("RespawnEvent: {}", event.getPlayer());
-        ClientAudio.stopAll();
         PacketDispatcher.sendToServer(new SyncCapabilityRequestMessage());
     }
 
