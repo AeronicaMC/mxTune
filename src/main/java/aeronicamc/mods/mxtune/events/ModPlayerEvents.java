@@ -67,11 +67,10 @@ public class ModPlayerEvents
      *
      * @param event The event
      */
-    @SubscribeEvent
+//    @SubscribeEvent
     public static void event(final PlayerEvent.PlayerChangedDimensionEvent event)
     {
-        PlayManager.sendMusicTo((ServerPlayerEntity) event.getPlayer(), event.getPlayer());
-        LOGGER.debug("PlayerChangedDimensionEvent: {}", event.getPlayer());
+        /* NOP See ClientEvents event(ClientPlayerNetworkEvent.RespawnEvent) */
     }
 
     // Test if a player can break this block with a BE of type ILockable.

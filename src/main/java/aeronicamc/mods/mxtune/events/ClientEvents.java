@@ -3,7 +3,8 @@ package aeronicamc.mods.mxtune.events;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.init.ModBlocks;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
-import aeronicamc.mods.mxtune.network.messages.SyncCapabilityRequestMessage;
+import aeronicamc.mods.mxtune.network.messages.SyncRequestMessage;
+import aeronicamc.mods.mxtune.sound.ClientAudio;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -22,7 +23,7 @@ public class ClientEvents
     @SubscribeEvent
     public static void event(ClientPlayerNetworkEvent.LoggedInEvent event)
     {
-        PacketDispatcher.sendToServer(new SyncCapabilityRequestMessage());
+        PacketDispatcher.sendToServer(new SyncRequestMessage());
     }
 
     @SubscribeEvent
@@ -35,7 +36,8 @@ public class ClientEvents
     public static void event(ClientPlayerNetworkEvent.RespawnEvent event)
     {
         LOGGER.debug("RespawnEvent: {}", event.getPlayer());
-        PacketDispatcher.sendToServer(new SyncCapabilityRequestMessage());
+        ClientAudio.stopAll();
+        PacketDispatcher.sendToServer(new SyncRequestMessage());
     }
 
     private static final ITextComponent MUSIC_VENUE_TOOL_BLOCK_HELP = new TranslationTextComponent("tooltip.mxtune.music_venue_tool_block.help_01");

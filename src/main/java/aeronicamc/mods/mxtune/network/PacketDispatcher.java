@@ -46,7 +46,7 @@ public class PacketDispatcher
         registerMessage(AudiblePingPlayerMessage.class, new AudiblePingPlayerMessage());
         registerMessage(ByteArrayPartMessage.class, new ByteArrayPartMessage());
         registerMessage(ToolManagerSyncMessage.class, new ToolManagerSyncMessage());
-        registerMessage(SyncCapabilityRequestMessage.class, new SyncCapabilityRequestMessage());
+        registerMessage(SyncRequestMessage.class, new SyncRequestMessage());
         registerMessage(MusicBlockMessage.class, new MusicBlockMessage());
     }
 

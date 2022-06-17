@@ -4,26 +4,27 @@ import aeronicamc.mods.mxtune.caps.player.IPlayerNexus;
 import aeronicamc.mods.mxtune.caps.player.PlayerNexusProvider;
 import aeronicamc.mods.mxtune.caps.venues.IMusicVenues;
 import aeronicamc.mods.mxtune.caps.venues.MusicVenueProvider;
+import aeronicamc.mods.mxtune.managers.PlayManager;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class SyncCapabilityRequestMessage extends AbstractMessage<SyncCapabilityRequestMessage>
+public class SyncRequestMessage extends AbstractMessage<SyncRequestMessage>
 {
-    public SyncCapabilityRequestMessage() { /* NOP */ }
+    public SyncRequestMessage() { /* NOP */ }
 
     @Override
-    public void encode(SyncCapabilityRequestMessage message, PacketBuffer buffer) { /* NOP */ }
+    public void encode(SyncRequestMessage message, PacketBuffer buffer) { /* NOP */ }
 
     @Override
-    public SyncCapabilityRequestMessage decode(PacketBuffer buffer) {
-        return new SyncCapabilityRequestMessage();
+    public SyncRequestMessage decode(PacketBuffer buffer) {
+        return new SyncRequestMessage();
     }
 
     @Override
-    public void handle(SyncCapabilityRequestMessage message, Supplier<NetworkEvent.Context> ctx)
+    public void handle(SyncRequestMessage message, Supplier<NetworkEvent.Context> ctx)
     {
         if (ctx.get().getDirection().getReceptionSide().isServer())
             ctx.get().enqueueWork(() ->{
@@ -31,6 +32,7 @@ public class SyncCapabilityRequestMessage extends AbstractMessage<SyncCapability
                 ServerPlayerEntity sPlayer = ctx.get().getSender();
                 if (sPlayer != null)
                 {
+                    PlayManager.sendMusicTo(sPlayer, sPlayer);
                     PlayerNexusProvider.getNexus(sPlayer).ifPresent(IPlayerNexus::sync);
                     MusicVenueProvider.getMusicVenues(sPlayer.level).ifPresent(IMusicVenues::sync);
                 }
