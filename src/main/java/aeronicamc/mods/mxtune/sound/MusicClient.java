@@ -7,6 +7,7 @@ public class MusicClient extends MxSound
     {
         super(audioData);
         this.attenuation = AttenuationType.NONE;
+        this.volumeBase = 0.7F;
     }
 
     @Override
