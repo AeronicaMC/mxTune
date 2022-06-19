@@ -18,7 +18,6 @@ package aeronicamc.mods.mxtune.sound;
 
 
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
-import aeronicamc.mods.mxtune.util.LoggedTimer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.entity.Entity;
@@ -34,10 +33,11 @@ import javax.sound.midi.Sequence;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 
+import static aeronicamc.mods.mxtune.util.SheetMusicHelper.formatDuration;
+
 
 public class AudioData
 {
-    private final LoggedTimer loggedTimer = new LoggedTimer();
     private final Minecraft mc = Minecraft.getInstance();
     private static final Vector3d MAX_VECTOR3D = new Vector3d(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
 
@@ -50,7 +50,6 @@ public class AudioData
     private int secondsToSkip;
     private final int durationSeconds;
     private final int removalSeconds;
-    private long netTransitTime;
     private final int playId;
     private final PlayIdSupplier.PlayType playType;
     private final int entityId;
@@ -78,8 +77,7 @@ public class AudioData
     {
         this.durationSeconds = durationSeconds;
         this.removalSeconds = durationSeconds + 2;
-        this.secondsToSkip = secondsToSkip;
-        this.netTransitTime = netTransitTime;
+        this.secondsToSkip = secondsToSkip + (int)(netTransitTime / 1000L);
         this.playId = playId;
         this.playType = PlayIdSupplier.getTypeForPlayId(playId);
         this.entityId = entityId;
@@ -98,7 +96,6 @@ public class AudioData
         synchronized (this)
         {
             this.audioFormat = audioFormat;
-            loggedTimer.start("Generate AudioData");
         }
     }
 
@@ -122,9 +119,7 @@ public class AudioData
 
     synchronized long getSecondsToSkip()
     {
-        loggedTimer.stop();
-        return secondsToSkip > 0 ? Math.round(
-            ((double)secondsToSkip) + (((double)loggedTimer.getTimeElapsed() + (double) netTransitTime) / 1000f)) : 0L;
+        return secondsToSkip;
     }
 
     void tickDuration()
@@ -139,12 +134,12 @@ public class AudioData
 
     boolean isActive()
     {
-        return durationSeconds >= secondsElapsed;
+        return durationSeconds >= (secondsElapsed + secondsToSkip);
     }
 
     boolean canRemove()
     {
-        return removalSeconds < secondsElapsed;
+        return removalSeconds < (secondsElapsed + secondsToSkip);
     }
 
     synchronized int getPlayId()
@@ -265,7 +260,7 @@ public class AudioData
     {
         volumeFade = 0F;
         isFading = false;
-        secondsElapsed = ClientAudio.Status.YIELDING == status ? secondsElapsed : Integer.MAX_VALUE / 2;
+        setStatus(ClientAudio.Status.DONE);
         ClientAudio.stop(playId);
     }
 
@@ -287,22 +282,21 @@ public class AudioData
         {
             setStatus(ClientAudio.Status.WAITING);
             secondsToSkip = secondsElapsed;
-            netTransitTime = 0;
             ClientAudio.reSubmit(this);
         }
     }
 
     synchronized int getRemainingDuration()
     {
-        return Math.max(durationSeconds - secondsElapsed, 0);
+        return Math.max(durationSeconds - (secondsElapsed + secondsToSkip), 0);
     }
 
     synchronized float getProgress()
     {
-        return 1F / ((durationSeconds - 4F) / ((secondsElapsed + getSecondsToSkip()) - 1F));
+        return Math.max(Math.min(1F / ((durationSeconds +0.1F) / (secondsElapsed + secondsToSkip + 0.1F)), 1F), 0F);
     }
 
-    synchronized double getDistanceToSqr()
+    synchronized double getDistanceTo()
     {
         return mc.player != null ? mc.player.getPosition(mc.getDeltaFrameTime()).distanceTo(getEntityPosition()) : Double.MAX_VALUE;
     }
@@ -324,6 +318,7 @@ public class AudioData
                 .append("isClientPlayer", isClientPlayer)
                 .append("entityId", entityId)
                 .append("playId", playId)
+                .append("secondsToSkip", secondsToSkip)
                 .append("secondsElapsed", secondsElapsed)
                 .append("durationSeconds", durationSeconds)
                 .append("removalSeconds", removalSeconds)
@@ -334,9 +329,9 @@ public class AudioData
 
     synchronized public ITextComponent getInfo()
     {
-        String name = mc.level != null && mc.level.getEntity(entityId) != null ? mc.level.getEntity(entityId).getName().getString() : "** ??? **";
+        String name = mc.level != null && mc.level.getEntity(entityId) != null ? mc.level.getEntity(entityId).getName().getString() : "[*ERROR*]";
         return new StringTextComponent(
-                String.format("[%s] %s, E:%06d, P:%06d, T:%04d, PCT:%01.2f, dist:%05.2f",
-                              status, name, entityId, playId, secondsElapsed , getProgress(), getDistanceToSqr())).withStyle(TextFormatting.WHITE);
+                String.format("[%s] %s, E:%06d, P:%06d, T:%04d, RD:%s PCT:%01.2f, dist:%05.2f",
+                              status, name, entityId, playId, secondsElapsed + secondsToSkip, formatDuration(getRemainingDuration()), getProgress(), getDistanceTo())).withStyle(TextFormatting.WHITE);
     }
 }

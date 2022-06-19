@@ -10,13 +10,14 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 import static aeronicamc.mods.mxtune.managers.PlayIdSupplier.INVALID;
 
 public class ActiveAudio
 {
     private static final Logger LOGGER = LogManager.getLogger(ActiveAudio.class);
-    private static final Map<Integer, AudioData> playIdToActiveAudioEntry = new ConcurrentHashMap<>(16);
+    private static final Map<Integer, AudioData> playIdToActiveAudioEntry = new HashMap<>(16);
     private static final Queue<AudioData> deleteEntryQueue = new ConcurrentLinkedQueue<>();
     private static final Minecraft mc = Minecraft.getInstance();
 
@@ -60,6 +61,7 @@ public class ActiveAudio
                                      {
                                          if (entry.canRemove() || entry.getStatus().equals(ClientAudio.Status.DONE) || entry.getStatus().equals(ClientAudio.Status.ERROR))
                                          {
+                                             entry.expire();
                                              deleteEntryQueue.add(entry);
                                          }
                                          entry.tickDuration();
@@ -95,7 +97,7 @@ public class ActiveAudio
 
     synchronized static List<AudioData> getActiveAudioEntries()
     {
-        return new ArrayList<>(playIdToActiveAudioEntry.values());
+        return playIdToActiveAudioEntry.values().stream().sorted(Comparator.comparingDouble(AudioData::getDistanceTo)).collect(Collectors.toList());
     }
 
     @Nullable
