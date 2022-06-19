@@ -10,6 +10,7 @@
   "config.mxtune.server.sheet_music_life_in_days": "Sheet Music Life in Days",
   "container.mxtune.block_music.more": "%s More",
   "container.mxtune.inv_test_block.more": "More...",
+  "entity.mxtune.music_source": "[MusicSource]",
   "enum.mxtune.tool_state.type.done": "Done",
   "enum.mxtune.tool_state.type.end": "End",
   "enum.mxtune.tool_state.type.start": "Start",

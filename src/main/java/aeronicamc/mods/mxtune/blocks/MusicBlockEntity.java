@@ -41,14 +41,8 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
     public static final String KEY_CUSTOM_NAME = "CustomName";
     public static final String KEY_INVENTORY = "Inventory";
     public static final String KEY_BUTTON_STATE = "ButtonState";
-
-    // TODO: Remove after next snapshot
-    public static final String KEY_LEFT_RS_OUTPUT_ENABLED = "leftRsOutputEnabled";
-    public static final String KEY_REAR_RS_INPUT_ENABLED = "rearRsInputEnabled";
-    public static final String KEY_RIGHT_RS_OUTPUT_ENABLED = "rightRsOutputEnabled";
-    public static final String KEY_LOCK = "Lock";
-
     public static final String KEY_OWNER = "Owner";
+    public static final String KEY_MUSIC_SOURCE = "MusicSource";
 
     // stored in nbt
     private ITextComponent customName;
@@ -127,18 +121,12 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
         if (nbt.contains(KEY_BUTTON_STATE, Constants.NBT.TAG_BYTE))
             this.setButtonSignals(nbt.getByte(KEY_BUTTON_STATE));
 
-        // TODO: remove after next snapshot
-            if (nbt.contains(KEY_LEFT_RS_OUTPUT_ENABLED, Constants.NBT.TAG_BYTE))
-                this.leftRsOutputEnabled = nbt.getBoolean(KEY_LEFT_RS_OUTPUT_ENABLED);
-            if (nbt.contains(KEY_RIGHT_RS_OUTPUT_ENABLED, Constants.NBT.TAG_BYTE))
-                this.rightRsOutputEnabled = nbt.getBoolean(KEY_RIGHT_RS_OUTPUT_ENABLED);
-            if (nbt.contains(KEY_REAR_RS_INPUT_ENABLED, Constants.NBT.TAG_BYTE))
-                this.rearRsInputEnabled = nbt.getBoolean(KEY_REAR_RS_INPUT_ENABLED);
-            if (nbt.contains(KEY_LOCK))
-                this.lock = nbt.getBoolean(KEY_LOCK);
-
         if (nbt.hasUUID(KEY_OWNER))
             this.ownerUUID = nbt.getUUID(KEY_OWNER);
+
+        if (nbt.contains(KEY_MUSIC_SOURCE))
+            this.musicSourceEntityId = nbt.getInt(KEY_MUSIC_SOURCE);
+
         super.load(state, nbt);
     }
 
@@ -154,6 +142,7 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
         }
         tag.putUUID(KEY_OWNER, ownerUUID);
         tag.putByte(KEY_BUTTON_STATE,  getButtonSignals());
+        tag.putInt(KEY_MUSIC_SOURCE, musicSourceEntityId);
         return super.save(tag);
     }
 
@@ -394,5 +383,6 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
     public void setMusicSourceEntityId(int entityId)
     {
         musicSourceEntityId = entityId;
+        markDirtySyncClient();
     }
 }

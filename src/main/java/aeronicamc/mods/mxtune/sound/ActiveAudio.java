@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.sound;
 
 import aeronicamc.mods.mxtune.Reference;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,6 +18,7 @@ public class ActiveAudio
     private static final Logger LOGGER = LogManager.getLogger(ActiveAudio.class);
     private static final Map<Integer, AudioData> playIdToActiveAudioEntry = new ConcurrentHashMap<>(16);
     private static final Queue<AudioData> deleteEntryQueue = new ConcurrentLinkedQueue<>();
+    private static final Minecraft mc = Minecraft.getInstance();
 
     private static ScheduledExecutorService scheduledThreadPool = null;
     private static boolean isInitialized;
@@ -115,6 +117,11 @@ public class ActiveAudio
     synchronized static Optional<AudioData> getActiveTuneByEntityId(@Nullable Entity entity)
     {
         return getActiveAudioEntries().stream().filter(entry -> ((entity != null) && (entry.getEntityId() == entity.getId()))).findFirst();
+    }
+
+    synchronized static Optional<AudioData> getActiveTuneByEntityId(int entityId)
+    {
+        return getActiveAudioEntries().stream().filter(entry -> (entityId == entry.getEntityId())).findFirst();
     }
 
     synchronized static int getDeleteQueueSize()

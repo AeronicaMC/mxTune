@@ -21,6 +21,11 @@ import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.util.LoggedTimer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -34,6 +39,7 @@ public class AudioData
 {
     private final LoggedTimer loggedTimer = new LoggedTimer();
     private final Minecraft mc = Minecraft.getInstance();
+    private static final Vector3d MAX_VECTOR3D = new Vector3d(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
 
     private AudioInputStream audioStream;
     private AudioFormat audioFormat;
@@ -41,10 +47,10 @@ public class AudioData
     private Sequence sequence;
     private ClientAudio.Status status;
 
-    private final int secondsToSkip;
+    private int secondsToSkip;
     private final int durationSeconds;
     private final int removalSeconds;
-    private final long netTransitTime;
+    private long netTransitTime;
     private final int playId;
     private final PlayIdSupplier.PlayType playType;
     private final int entityId;
@@ -255,16 +261,64 @@ public class AudioData
         return isFading;
     }
 
-    synchronized void expire()
+    void expire()
     {
         volumeFade = 0F;
         isFading = false;
-        secondsElapsed = Integer.MAX_VALUE / 2;
+        secondsElapsed = ClientAudio.Status.YIELDING == status ? secondsElapsed : Integer.MAX_VALUE / 2;
         ClientAudio.stop(playId);
     }
 
+    void yield()
+    {
+        synchronized (this)
+        {
+            if ((status == ClientAudio.Status.WAITING) || (status == ClientAudio.Status.READY))
+            {
+                setStatus(ClientAudio.Status.YIELDING);
+                startFadeInOut(1, false);
+            }
+        }
+    }
+
+    void resume()
+    {
+        synchronized (this)
+        {
+            setStatus(ClientAudio.Status.WAITING);
+            secondsToSkip = secondsElapsed;
+            netTransitTime = 0;
+            ClientAudio.reSubmit(this);
+        }
+    }
+
+    synchronized int getRemainingDuration()
+    {
+        return Math.max(durationSeconds - secondsElapsed, 0);
+    }
+
+    synchronized float getProgress()
+    {
+        return 1F / ((durationSeconds - 4F) / ((secondsElapsed + getSecondsToSkip()) - 1F));
+    }
+
+    synchronized double getDistanceToSqr()
+    {
+        return mc.player != null ? mc.player.getPosition(mc.getDeltaFrameTime()).distanceTo(getEntityPosition()) : Double.MAX_VALUE;
+    }
+
+    Vector3d getEntityPosition()
+    {
+        Entity entity;
+        if ((mc.player != null) && (mc.player.level != null) && (((entity = mc.player.level.getEntity(entityId))) != null))
+        {
+            return entity.getPosition(mc.getDeltaFrameTime());
+        }
+        return MAX_VECTOR3D;
+    }
+
     @Override
-    public String toString()
+    synchronized public String toString()
     {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("isClientPlayer", isClientPlayer)
@@ -276,5 +330,13 @@ public class AudioData
                 .append("status", status)
                 .append("callback", callback)
                 .build();
+    }
+
+    synchronized public ITextComponent getInfo()
+    {
+        String name = mc.level != null && mc.level.getEntity(entityId) != null ? mc.level.getEntity(entityId).getName().getString() : "** ??? **";
+        return new StringTextComponent(
+                String.format("[%s] %s, E:%06d, P:%06d, T:%04d, PCT:%01.2f, dist:%05.2f",
+                              status, name, entityId, playId, secondsElapsed , getProgress(), getDistanceToSqr())).withStyle(TextFormatting.WHITE);
     }
 }

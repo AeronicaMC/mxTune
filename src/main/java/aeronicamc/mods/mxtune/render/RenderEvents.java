@@ -119,6 +119,12 @@ public class RenderEvents
             mc.font.draw(pPoseStack, titleText, 30.0F, 7.0F, -11534256);
             mc.font.draw(pPoseStack, infoText, 30.0F, 17.0F, -11534256);
             mc.getItemRenderer().renderAndDecorateItem(itemStack, 8, 8);
+
+            int[] posY = new int[1];
+            posY[0] = 25;
+            ClientAudio.getAudioData().forEach(audioData -> {
+                mc.font.drawShadow(pPoseStack, audioData.getInfo(), 5, posY[0]+=10, -11534256);
+            });
         }
 
         if (event.getType() == RenderGameOverlayEvent.ElementType.ALL && (mc.screen == null) && itemStack.getItem() instanceof MusicVenueToolItem)

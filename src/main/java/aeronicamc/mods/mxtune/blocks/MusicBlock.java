@@ -3,6 +3,7 @@ package aeronicamc.mods.mxtune.blocks;
 import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.managers.PlayManager;
+import aeronicamc.mods.mxtune.sound.ClientAudio;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.IWrenchAble;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
@@ -89,8 +90,14 @@ public class MusicBlock extends Block implements IWrenchAble
     @Override
     public void animateTick(BlockState pState, World pLevel, BlockPos pPos, Random pRand)
     {
-//        if (pState.getValue(PLAYING))
-//            {
+        if (pState.getValue(PLAYING))
+        {
+            getMusicBlockEntity(pLevel, pPos).ifPresent(blockEntity -> {
+                float progress;
+                progress = ClientAudio.getProgress(blockEntity.getMusicSourceEntityId());
+                //LOGGER.info("{}. progress: {}", blockEntity.getMusicSourceEntityId(), progress);
+            });
+
 //            double d0 = (double)pPos.getX() + 0.5D;
 //            double d1 = (double)pPos.getY() + 1.0625D;
 //            double d2 = (double)pPos.getZ() + 0.5D;
@@ -102,7 +109,7 @@ public class MusicBlock extends Block implements IWrenchAble
 //            // TODO: come up with out own particles for the BandAmp :D
 //            pLevel.addParticle(ModParticles.getSpeaker(), d0 + d4, d1 + d6, d2 + d4, 0.0D, 0.1D, 0.0D);
 //            pLevel.addParticle(ParticleTypes.ASH, d0 + d5, d1 + d6, d2 + d7, 0.0D, 0.0D, 0.0D);
-//            }
+        }
     }
 
     @Override
@@ -393,12 +400,13 @@ public class MusicBlock extends Block implements IWrenchAble
                     CompoundNBT compoundNBT = musicBlockEntity.save(new CompoundNBT());
                     if (!compoundNBT.isEmpty())
                     {
-                        // Save Inventory only! No need to keep block position, button state or owner.
+                        // Save Inventory only! No need to keep block position, button state, owner or music source id.
                         compoundNBT.remove("x");
                         compoundNBT.remove("y");
                         compoundNBT.remove("z");
                         compoundNBT.remove(MusicBlockEntity.KEY_BUTTON_STATE);
                         compoundNBT.remove(MusicBlockEntity.KEY_OWNER);
+                        compoundNBT.remove(MusicBlockEntity.KEY_MUSIC_SOURCE);
                         itemStack.addTagElement("BlockEntityTag", compoundNBT);
                     }
 

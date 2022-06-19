@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.datagen;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.init.ModBlocks;
+import aeronicamc.mods.mxtune.init.ModEntities;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.data.DataGenerator;
@@ -25,6 +26,8 @@ public class MXTuneLanguageProvider extends LanguageProvider
         add("gui.mxtune.gui_test.title", "Gui Test Screen");
         add("item.mxtune.music_item", "Music Item");
         add("item.mxtune.gui_test_item", "Wrench Test Item");
+
+        add(ModEntities.MUSIC_SOURCE.get(), "[MusicSource]");
 
         addBlocks();
         addCommands();

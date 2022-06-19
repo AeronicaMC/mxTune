@@ -7,6 +7,7 @@ import aeronicamc.mods.mxtune.mixins.MixinSoundEngine;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.*;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.Util;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
@@ -20,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import javax.sound.sampled.AudioFormat;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -62,6 +64,17 @@ public class ClientAudio
         return String.format("AudioData %d/%d", ActiveAudio.getActiveAudioEntries().size(), ActiveAudio.getDeleteQueueSize());
     }
 
+    public static List<AudioData> getAudioData()
+    {
+        return ActiveAudio.getActiveAudioEntries();
+    }
+
+
+    public static float getProgress(int entityId)
+    {
+        return ActiveAudio.getActiveTuneByEntityId(entityId).isPresent() ? ActiveAudio.getActiveTuneByEntityId(entityId).get().getProgress() : 0F;
+    }
+
     private static void init(SoundEngine se)
     {
         if (soundEngine != se)
@@ -73,7 +86,7 @@ public class ClientAudio
 
     public enum Status
     {
-        WAITING, READY, ERROR, DONE
+        WAITING, READY, YIELDING, ERROR, DONE
     }
 
     private static Optional<AudioData> getAudioData(int playID)
@@ -175,13 +188,33 @@ public class ClientAudio
         }
     }
 
+    /**
+     * Re-submit an exiting {@link AudioData} source. i.e. restart the tune.
+     * @param audioData preexisting source
+     */
+    static void reSubmit(AudioData audioData)
+    {
+        if (audioData.getSequence() != null && mc.player != null && (audioData.getRemainingDuration() > 8))
+        {
+            Entity entity = mc.player.level.getEntity(audioData.getEntityId());
+            if (entity != null)
+            {
+                if (audioData.isClientPlayer())
+                    mc.getSoundManager().play(new MusicClient(audioData));
+                else
+                    mc.getSoundManager().play(new MovingMusic(audioData, entity));
+                executorService.execute(new ThreadedPlay(audioData, ""));
+                stopVanillaMusic();
+            }
+        }
+    }
+
     private static void stopVanillaMusic()
     {
         soundHandler.stop(null, SoundCategory.MUSIC);
-        //musicTicker.stopPlaying();
     }
 
-    public static boolean recordsVolumeOn()
+    static boolean recordsVolumeOn()
     {
         return mc.options.getSoundSourceVolume(SoundCategory.MASTER) > 0F && mc.options.getSoundSourceVolume(SoundCategory.RECORDS) > 0F;
     }
