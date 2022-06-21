@@ -144,22 +144,22 @@ public class AudioData
         return removalSeconds < (secondsElapsed + secondsToSkip);
     }
 
-    synchronized int getPlayId()
+    int getPlayId()
     {
         return playId;
     }
 
-    synchronized int getEntityId()
+    int getEntityId()
     {
         return entityId;
     }
 
-    synchronized boolean isClientPlayer()
+    boolean isClientPlayer()
     {
         return isClientPlayer;
     }
 
-    synchronized AudioInputStream getAudioStream()
+    AudioInputStream getAudioStream()
     {
         return audioStream;
     }
@@ -173,7 +173,7 @@ public class AudioData
     }
 
     @Nullable
-    synchronized ISound getISound()
+    ISound getISound()
     {
         return iSound;
     }
@@ -186,7 +186,7 @@ public class AudioData
         }
     }
 
-    synchronized Sequence getSequence()
+    Sequence getSequence()
     {
         return sequence;
     }
@@ -199,29 +199,26 @@ public class AudioData
         }
     }
 
-    synchronized PlayIdSupplier.PlayType getPlayType()
+    PlayIdSupplier.PlayType getPlayType()
     {
         return playType;
     }
 
     void updateVolumeFade()
     {
-        synchronized (this)
+        if (isFading)
         {
-            if (isFading)
+            fadeCounter--;
+            if (fadeCounter > 0)
             {
-                fadeCounter--;
-                if (fadeCounter > 0)
-                {
-                    volumeFade = (fadeCounter + mc.getDeltaFrameTime()) / fadeTicks;
-                }
-                else
-                {
-                    isFading = false;
-                    volumeFade = 0F;
-                    if (!fadeIn)
-                        expire();
-                }
+                volumeFade = (fadeCounter + mc.getDeltaFrameTime()) / fadeTicks;
+            }
+            else
+            {
+                isFading = false;
+                volumeFade = 0F;
+                if (!fadeIn)
+                    expire();
             }
         }
     }
@@ -247,12 +244,12 @@ public class AudioData
         }
     }
 
-    synchronized float getFadeMultiplier()
+    float getFadeMultiplier()
     {
         return fadeIn ? 1.0F - volumeFade : volumeFade;
     }
 
-    synchronized boolean isFading()
+    boolean isFading()
     {
         return isFading;
     }
@@ -271,39 +268,33 @@ public class AudioData
 
     void yield()
     {
-        synchronized (this)
+        if ((status == ClientAudio.Status.WAITING) || (status == ClientAudio.Status.READY))
         {
-            if ((status == ClientAudio.Status.WAITING) || (status == ClientAudio.Status.READY))
-            {
-                setStatus(ClientAudio.Status.YIELDING);
-                startFadeInOut(1, false);
-            }
+            setStatus(ClientAudio.Status.YIELDING);
+            startFadeInOut(1, false);
         }
     }
 
     void resume()
     {
-        synchronized (this)
-        {
-            setStatus(ClientAudio.Status.WAITING);
-            if (!firstSubmission)
-                secondsToSkip += secondsElapsed;
-            firstSubmission = true;
-            ClientAudio.submitSoundInstance(this);
-        }
+        setStatus(ClientAudio.Status.WAITING);
+        if (!firstSubmission)
+            secondsToSkip += secondsElapsed;
+        firstSubmission = true;
+        ClientAudio.submitSoundInstance(this);
     }
 
-    synchronized int getRemainingDuration()
+    int getRemainingDuration()
     {
         return Math.max(durationSeconds - (secondsElapsed + secondsToSkip), 0);
     }
 
-    synchronized float getProgress()
+    float getProgress()
     {
         return Math.max(Math.min(1F / ((durationSeconds +0.1F) / (secondsElapsed + secondsToSkip + 0.1F)), 1F), 0F);
     }
 
-    synchronized double getDistanceTo()
+    double getDistanceTo()
     {
         return mc.player != null ? mc.player.getPosition(mc.getDeltaFrameTime()).distanceTo(getEntityPosition()) : Double.MAX_VALUE;
     }
@@ -318,13 +309,13 @@ public class AudioData
         return MAX_VECTOR3D;
     }
 
-    synchronized boolean isEntityRemoved()
+    boolean isEntityRemoved()
     {
         return !(mc.level != null && mc.level.getEntity(entityId) != null);
     }
 
     @Override
-    synchronized public String toString()
+    public String toString()
     {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("isClientPlayer", isClientPlayer)
@@ -339,7 +330,7 @@ public class AudioData
                 .build();
     }
 
-    synchronized public ITextComponent getInfo()
+    public ITextComponent getInfo()
     {
         String name = mc.level != null && mc.level.getEntity(entityId) != null ? mc.level.getEntity(entityId).getName().getString() : "[*ERROR*]";
         return new StringTextComponent(

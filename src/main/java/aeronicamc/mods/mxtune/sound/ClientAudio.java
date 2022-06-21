@@ -97,10 +97,7 @@ public class ClientAudio
 
     private static Optional<AudioData> getAudioData(int playID)
     {
-        synchronized (THREAD_SYNC)
-        {
-            return Optional.ofNullable(ActiveAudio.getAudioData(playID));
-        }
+        return Optional.ofNullable(ActiveAudio.getAudioData(playID));
     }
 
     /**

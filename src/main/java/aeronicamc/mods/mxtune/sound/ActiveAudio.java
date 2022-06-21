@@ -50,6 +50,88 @@ public class ActiveAudio
         }
     }
 
+    @SuppressWarnings("UnusedReturnValue")
+    static boolean addEntry(AudioData audioData)
+    {
+        boolean hasDuplicatePlayId;
+        synchronized (playIdToActiveAudioEntry)
+        {
+            hasDuplicatePlayId = playIdToActiveAudioEntry.containsKey(audioData.getPlayId());
+        }
+        if (hasDuplicatePlayId)
+            synchronized (playIdToActiveAudioEntry)
+            {
+                playIdToActiveAudioEntry.replace(audioData.getPlayId(), audioData);
+            }
+        else
+            synchronized (playIdToActiveAudioEntry)
+            {
+                playIdToActiveAudioEntry.put(audioData.getPlayId(), audioData);
+            }
+        return hasDuplicatePlayId;
+    }
+
+    static List<AudioData> getDistanceSortedSources()
+    {
+        return playIdToActiveAudioEntry.values().stream().sorted(Comparator.comparingDouble(AudioData::getDistanceTo)).collect(Collectors.toList());
+    }
+
+    @Nullable
+    static AudioData getAudioData(int playId)
+    {
+        return playIdToActiveAudioEntry.get(playId);
+    }
+
+    static Set<Integer> getActivePlayIds()
+    {
+        return playIdToActiveAudioEntry.keySet();
+    }
+
+    static boolean isActivePlayId(int playId)
+    {
+        return (playId != INVALID) && ActiveAudio.getActivePlayIds().contains(playId);
+    }
+
+    static Optional<AudioData> getActiveTuneByEntityId(@Nullable Entity entity)
+    {
+        synchronized (playIdToActiveAudioEntry)
+        {
+            return playIdToActiveAudioEntry.values().stream().filter(entry -> ((entity != null) && (entry.getEntityId() == entity.getId()))).findFirst();
+        }
+    }
+
+    static Optional<AudioData> getActiveTuneByEntityId(int entityId)
+    {
+        return getDistanceSortedSources().stream().filter(entry -> (entityId == entry.getEntityId())).findFirst();
+    }
+
+    static int getDeleteQueueSize()
+    {
+        return deleteEntryQueue.size();
+    }
+
+    static void remove(int playId)
+    {
+        if (!playIdToActiveAudioEntry.isEmpty())
+            synchronized (playIdToActiveAudioEntry)
+            {
+                playIdToActiveAudioEntry.remove(playId);
+            }
+    }
+
+    static void removeAll()
+    {
+        synchronized (playIdToActiveAudioEntry)
+        {
+            playIdToActiveAudioEntry.forEach((playId, audioData) -> audioData.expire());
+        }
+        while (!deleteEntryQueue.isEmpty())
+            synchronized (deleteEntryQueue)
+            {
+                deleteEntryQueue.remove();
+            }
+    }
+
     void counter()
     {
         CountDownLatch lock = new CountDownLatch(Integer.MAX_VALUE);
@@ -74,81 +156,9 @@ public class ActiveAudio
         {
             //noinspection ResultOfMethodCallIgnored
             lock.await(Integer.MAX_VALUE, TimeUnit.MILLISECONDS);
-        }
-        catch (InterruptedException e)
+        } catch (InterruptedException e)
         {
             LOGGER.error(e);
-        }
-    }
-
-    static boolean addEntry(AudioData audioData)
-    {
-        boolean hasDuplicatePlayId;
-        synchronized (playIdToActiveAudioEntry)
-        {
-            hasDuplicatePlayId = playIdToActiveAudioEntry.containsKey(audioData.getPlayId());
-            if (hasDuplicatePlayId)
-                playIdToActiveAudioEntry.replace(audioData.getPlayId(), audioData);
-            else
-                playIdToActiveAudioEntry.put(audioData.getPlayId(), audioData);
-        }
-        return hasDuplicatePlayId;
-    }
-
-    synchronized static List<AudioData> getDistanceSortedSources()
-    {
-        return playIdToActiveAudioEntry.values().stream().sorted(Comparator.comparingDouble(AudioData::getDistanceTo)).collect(Collectors.toList());
-    }
-
-    @Nullable
-    synchronized static AudioData getAudioData(int playId)
-    {
-        return playIdToActiveAudioEntry.get(playId);
-    }
-
-    synchronized static Set<Integer> getActivePlayIds()
-    {
-        return playIdToActiveAudioEntry.keySet();
-    }
-
-    synchronized static boolean isActivePlayId(int playId)
-    {
-        return (playId != INVALID) && ActiveAudio.getActivePlayIds().contains(playId);
-    }
-
-    synchronized static Optional<AudioData> getActiveTuneByEntityId(@Nullable Entity entity)
-    {
-        return playIdToActiveAudioEntry.values().stream().filter(entry -> ((entity != null) && (entry.getEntityId() == entity.getId()))).findFirst();
-    }
-
-    synchronized static Optional<AudioData> getActiveTuneByEntityId(int entityId)
-    {
-        return getDistanceSortedSources().stream().filter(entry -> (entityId == entry.getEntityId())).findFirst();
-    }
-
-    synchronized static int getDeleteQueueSize()
-    {
-        return deleteEntryQueue.size();
-    }
-
-    static void remove(int playId)
-    {
-        synchronized (playIdToActiveAudioEntry)
-        {
-            if (!playIdToActiveAudioEntry.isEmpty())
-                playIdToActiveAudioEntry.remove(playId);
-        }
-    }
-
-    static void removeAll()
-    {
-        synchronized (playIdToActiveAudioEntry)
-        {
-            playIdToActiveAudioEntry.forEach((playId, audioData) -> audioData.expire());
-            while (!deleteEntryQueue.isEmpty())
-            {
-                deleteEntryQueue.remove();
-            }
         }
     }
 }
