@@ -1,15 +1,21 @@
 package aeronicamc.mods.mxtune.sound;
 
+import aeronicamc.libs.mml.parser.MMLParser;
+import aeronicamc.libs.mml.parser.MMLParserFactory;
+import aeronicamc.libs.mml.parser.MMLUtil;
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.mixins.MixinSoundEngine;
+import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.Util;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.PlayStreamingSourceEvent;
 import net.minecraftforge.client.event.sound.SoundLoadEvent;
@@ -20,6 +26,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import javax.sound.midi.Patch;
 import javax.sound.sampled.AudioFormat;
 import java.util.List;
 import java.util.Objects;
@@ -42,10 +49,9 @@ public class ClientAudio
     private static int counter;
     private static final int THREAD_POOL_SIZE = 2;
     /* PCM Signed Monaural little endian */
-    private static final AudioFormat audioFormat3D = new AudioFormat(48000, 16, 1, true, false);
+    static final AudioFormat AUDIO_FORMAT_3D = new AudioFormat(48000, 16, 1, true, false);
     /* PCM Signed Stereo little endian */
-    private static final AudioFormat audioFormatStereo = new AudioFormat(48000, 16, 2, true, false);
-    /* The active mxTune audio streams by playId */
+    static final AudioFormat AUDIO_FORMAT_STEREO = new AudioFormat(48000, 16, 2, true, false);
 
     private static final ExecutorService executorService;
     static {
@@ -61,12 +67,12 @@ public class ClientAudio
 
     public static String getDebugString()
     {
-        return String.format("AudioData %d/%d", ActiveAudio.getActiveAudioEntries().size(), ActiveAudio.getDeleteQueueSize());
+        return String.format("AudioData %d/%d", ActiveAudio.getDistanceSortedSources().size(), ActiveAudio.getDeleteQueueSize());
     }
 
     public static List<AudioData> getAudioData()
     {
-        return ActiveAudio.getActiveAudioEntries();
+        return ActiveAudio.getDistanceSortedSources();
     }
 
 
@@ -128,9 +134,9 @@ public class ClientAudio
     private static void setAudioFormat(AudioData audioData)
     {
         if (audioData.isClientPlayer())
-            audioData.setAudioFormat(audioFormatStereo);
+            audioData.setAudioFormat(AUDIO_FORMAT_STEREO);
         else
-            audioData.setAudioFormat(audioFormat3D);
+            audioData.setAudioFormat(AUDIO_FORMAT_3D);
     }
 
     /**
@@ -150,37 +156,9 @@ public class ClientAudio
         {
             boolean isReallyClient = (((mc.player != null) && (mc.player.getId() == entityId)) || isClient);
             AudioData audioData = new AudioData(duration, secondsToSkip, netTransitTime, playID, entityId, isReallyClient, callback);
-            setAudioFormat(audioData);
-            LOGGER.warn("playId: {}, mc.player: {}, entityId: {}, isClient: {}, isReallyClient: {}", playID, mc.player.getId(), entityId, isClient, isReallyClient);
-            boolean isDuplicatePlayId = ActiveAudio.addEntry(audioData);
-//            if (isDuplicatePlayId && isReallyClient)
-//            {
-//                LOGGER.warn("ClientAudio#play: playID: {} has already been submitted", playID);
-//                return;
-//            }
-            if (isReallyClient) // This CLIENT Player own music
-            {
-                // SPECIAL CASE
-                // Player (actively playing solo) changed dimension, so we reuse the playId and REPLACE the AudioData.
-                // Vanilla stops all sounds on the client when changing dimension. Playing is restarted where
-                // it left off. This works because the server keeps track of all active tunes.
-                mc.getSoundManager().play(new MusicClient(audioData));
-            }
-            else
-            {
-                // Other players instruments, Music Block
-                if ((mc.player != null) && (mc.player.level.getEntity(entityId) != null))
-                {
-                    mc.getSoundManager().play(new MovingMusic(
-                            audioData,
-                            Objects.requireNonNull(mc.player.level.getEntity(entityId))));
-                }
-            }
-            if (recordsVolumeOn())
-            {
-                executorService.execute(new ThreadedPlay(audioData, musicText));
-                stopVanillaMusic();
-            }
+            parseMML(audioData, musicText);
+            ActiveAudio.addEntry(audioData);
+            LOGGER.debug("playId: {}, mc.player: {}, entityId: {}, isClient: {}, isReallyClient: {}", playID, mc.player.getId(), entityId, isClient, isReallyClient);
         }
         else
         {
@@ -189,12 +167,12 @@ public class ClientAudio
     }
 
     /**
-     * Re-submit an exiting {@link AudioData} source. i.e. restart the tune.
+     * Submit {@link AudioData} source. i.e. restart the tune.
      * @param audioData preexisting source
      */
-    static void reSubmit(AudioData audioData)
+    static void submitSoundInstance(AudioData audioData)
     {
-        if (audioData.getSequence() != null && mc.player != null && (audioData.getRemainingDuration() > 8))
+        if (mc.player != null)
         {
             Entity entity = mc.player.level.getEntity(audioData.getEntityId());
             if (entity != null)
@@ -203,8 +181,11 @@ public class ClientAudio
                     mc.getSoundManager().play(new MusicClient(audioData));
                 else
                     mc.getSoundManager().play(new MovingMusic(audioData, entity));
-                executorService.execute(new ThreadedPlay(audioData, ""));
-                stopVanillaMusic();
+                if (recordsVolumeOn())
+                {
+                    executorService.execute(new RenderAudio(audioData));
+                    stopVanillaMusic();
+                }
             }
         }
     }
@@ -225,22 +206,36 @@ public class ClientAudio
         getAudioData(playID).filter(audioData -> audioData.getISound() != null).ifPresent(audioData -> soundHandler.stop(audioData.getISound()));
     }
 
-    private static class ThreadedPlay implements Runnable
+    private static class RenderAudio implements Runnable
     {
         private final AudioData audioData;
-        private final String musicText;
 
-        ThreadedPlay(AudioData audioData, String musicText)
+        RenderAudio(AudioData audioData)
         {
             this.audioData = audioData;
-            this.musicText = musicText;
         }
 
         @Override
         public void run()
         {
-            MML2PCM mml2PCM = new MML2PCM(audioData, musicText);
-            mml2PCM.process();
+            new MML2PCM(audioData).process();
+        }
+    }
+
+    private static void parseMML(AudioData audioData, String musicText)
+    {
+        MMLParser mmlParser = MMLParserFactory.getMMLParser(musicText);
+        MMLToMIDI toMIDI = new MMLToMIDI();
+        toMIDI.processMObjects(mmlParser.getMmlObjects());
+        audioData.setSequence(toMIDI.getSequence());
+
+        // Log bank and program per instrument
+        for (int preset : toMIDI.getPresets())
+        {
+            Patch patchPreset = MMLUtil.packedPreset2Patch(SoundFontProxyManager.getPackedPreset(preset));
+            String name = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(preset)).getString();
+            LOGGER.debug("MML2PCM preset: {}, bank: {}, program: {}, name: {}", preset, patchPreset.getBank(),
+                         patchPreset.getProgram(), name);
         }
     }
 
@@ -318,10 +313,22 @@ public class ClientAudio
 
     private static void updateClientAudio()
     {
-        if (recordsVolumeOn())
-        {
-            //ActiveAudio.getActiveAudioEntries().forEach((audioData) -> LOGGER.debug("{}", audioData));
-        }
+        int[] priority = new int[1];
+        ActiveAudio.getDistanceSortedSources().forEach(audioData -> {
+
+            ClientAudio.Status status = audioData.getStatus();
+            if (audioData.getDistanceTo() > (MXTuneConfig.getListenerRange() + 16D))
+                audioData.yield();
+            else if (priority[0] < 3 && (status == Status.YIELDING))
+                audioData.resume();
+            else if (audioData.isEntityRemoved())
+                audioData.expire();
+            else if (priority[0] >= 3)
+                audioData.yield();
+
+            priority[0]++;
+        });
+        //ActiveAudio.getActiveAudioEntries().forEach((audioData) -> LOGGER.debug("{}", audioData));
     }
 
     /**
@@ -351,7 +358,7 @@ public class ClientAudio
     {
         if (event.side == LogicalSide.CLIENT && event.phase == TickEvent.Phase.END)
         {
-            // one update per second
+            // one update twice per second
             if (counter++ % 20 == 0)
                 updateClientAudio();
         }

@@ -56,6 +56,7 @@ public class AudioData
     private final boolean isClientPlayer;
     private final IAudioStatusCallback callback;
 
+    private boolean firstSubmission;
     private int secondsElapsed;
     private float volumeFade = 1F;
     private boolean fadeIn;
@@ -65,12 +66,12 @@ public class AudioData
 
     /**
      * All the data needed to generate and manage the audio stream except the musicText which is passed to the parser only.
-     * @param durationSeconds
+     * @param durationSeconds length of tune (includes four seconds buffer to account for decaying audio).
      * @param secondsToSkip forward in the audio stream.
      * @param netTransitTime in milliseconds for server packet to reach the client.
      * @param playId for this stream.
      * @param entityId of the audio source.
-     * @param isClientPlayer the audio source. Used stereo vs 3D audio selection and ISound type.
+     * @param isClientPlayer the audio source. Used stereo vs 3D audio selection.
      * @param callback is optional and is used to notify a class that implements the {@link IAudioStatusCallback}
      */
     AudioData(int durationSeconds, int secondsToSkip, long netTransitTime, int playId, int entityId, boolean isClientPlayer, @Nullable IAudioStatusCallback callback)
@@ -82,7 +83,8 @@ public class AudioData
         this.playType = PlayIdSupplier.getTypeForPlayId(playId);
         this.entityId = entityId;
         this.isClientPlayer = isClientPlayer;
-        this.status = ClientAudio.Status.WAITING;
+        this.audioFormat = isClientPlayer ? ClientAudio.AUDIO_FORMAT_STEREO : ClientAudio.AUDIO_FORMAT_3D;
+        this.status = ClientAudio.Status.YIELDING;
         this.callback = callback;
     }
 
@@ -184,7 +186,6 @@ public class AudioData
         }
     }
 
-    @Nullable
     synchronized Sequence getSequence()
     {
         return sequence;
@@ -256,11 +257,15 @@ public class AudioData
         return isFading;
     }
 
+    /**
+     * Stops Vanilla audio, and if the tune is not yielding will set change the status to DONE, signalling the end of the tune.
+     */
     void expire()
     {
         volumeFade = 0F;
         isFading = false;
-        setStatus(ClientAudio.Status.DONE);
+        if ((status != ClientAudio.Status.YIELDING) || isEntityRemoved())
+            setStatus(ClientAudio.Status.DONE);
         ClientAudio.stop(playId);
     }
 
@@ -281,8 +286,10 @@ public class AudioData
         synchronized (this)
         {
             setStatus(ClientAudio.Status.WAITING);
-            secondsToSkip = secondsElapsed;
-            ClientAudio.reSubmit(this);
+            if (!firstSubmission)
+                secondsToSkip += secondsElapsed;
+            firstSubmission = true;
+            ClientAudio.submitSoundInstance(this);
         }
     }
 
@@ -301,7 +308,7 @@ public class AudioData
         return mc.player != null ? mc.player.getPosition(mc.getDeltaFrameTime()).distanceTo(getEntityPosition()) : Double.MAX_VALUE;
     }
 
-    Vector3d getEntityPosition()
+    private Vector3d getEntityPosition()
     {
         Entity entity;
         if ((mc.player != null) && (mc.player.level != null) && (((entity = mc.player.level.getEntity(entityId))) != null))
@@ -309,6 +316,11 @@ public class AudioData
             return entity.getPosition(mc.getDeltaFrameTime());
         }
         return MAX_VECTOR3D;
+    }
+
+    synchronized boolean isEntityRemoved()
+    {
+        return !(mc.level != null && mc.level.getEntity(entityId) != null);
     }
 
     @Override

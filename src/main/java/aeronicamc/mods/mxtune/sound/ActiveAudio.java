@@ -17,7 +17,7 @@ import static aeronicamc.mods.mxtune.managers.PlayIdSupplier.INVALID;
 public class ActiveAudio
 {
     private static final Logger LOGGER = LogManager.getLogger(ActiveAudio.class);
-    private static final Map<Integer, AudioData> playIdToActiveAudioEntry = new HashMap<>(16);
+    private static final Map<Integer, AudioData> playIdToActiveAudioEntry = new ConcurrentHashMap<>(16);
     private static final Queue<AudioData> deleteEntryQueue = new ConcurrentLinkedQueue<>();
     private static final Minecraft mc = Minecraft.getInstance();
 
@@ -95,7 +95,7 @@ public class ActiveAudio
         return hasDuplicatePlayId;
     }
 
-    synchronized static List<AudioData> getActiveAudioEntries()
+    synchronized static List<AudioData> getDistanceSortedSources()
     {
         return playIdToActiveAudioEntry.values().stream().sorted(Comparator.comparingDouble(AudioData::getDistanceTo)).collect(Collectors.toList());
     }
@@ -118,12 +118,12 @@ public class ActiveAudio
 
     synchronized static Optional<AudioData> getActiveTuneByEntityId(@Nullable Entity entity)
     {
-        return getActiveAudioEntries().stream().filter(entry -> ((entity != null) && (entry.getEntityId() == entity.getId()))).findFirst();
+        return playIdToActiveAudioEntry.values().stream().filter(entry -> ((entity != null) && (entry.getEntityId() == entity.getId()))).findFirst();
     }
 
     synchronized static Optional<AudioData> getActiveTuneByEntityId(int entityId)
     {
-        return getActiveAudioEntries().stream().filter(entry -> (entityId == entry.getEntityId())).findFirst();
+        return getDistanceSortedSources().stream().filter(entry -> (entityId == entry.getEntityId())).findFirst();
     }
 
     synchronized static int getDeleteQueueSize()

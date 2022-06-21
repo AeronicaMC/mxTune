@@ -96,7 +96,7 @@ public class PCMAudioStream implements IAudioStream
 
     private void notifyOnInputStreamAvailable()
     {
-        if (!hasStream && ((audioData.getStatus() == ClientAudio.Status.READY) || audioData.getStatus() == ClientAudio.Status.YIELDING))
+        if (!hasStream && (audioData.getStatus() == ClientAudio.Status.READY))
         {
             audioInputStream = audioData.getAudioStream();
             try
