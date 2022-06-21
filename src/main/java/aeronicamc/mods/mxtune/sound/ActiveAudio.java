@@ -95,9 +95,9 @@ public class ActiveAudio
         return hasDuplicatePlayId;
     }
 
-    static List<AudioData> getDistanceSortedSources()
+    synchronized static List<AudioData> getDistanceSortedSources()
     {
-        return Collections.unmodifiableList(playIdToActiveAudioEntry.values().stream().sorted(Comparator.comparingDouble(AudioData::getDistanceTo)).collect(Collectors.toList()));
+        return playIdToActiveAudioEntry.values().stream().sorted(Comparator.comparingDouble(AudioData::getDistanceTo)).collect(Collectors.toList());
     }
 
     @Nullable
