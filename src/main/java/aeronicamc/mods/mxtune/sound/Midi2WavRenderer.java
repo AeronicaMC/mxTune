@@ -21,6 +21,7 @@
  */
 package aeronicamc.mods.mxtune.sound;
 
+import aeronicamc.mods.mxtune.util.LoggedTimer;
 import aeronicamc.mods.mxtune.util.MIDISystemUtil;
 import com.sun.media.sound.AudioSynthesizer;
 import org.apache.logging.log4j.LogManager;
@@ -57,7 +58,9 @@ public class Midi2WavRenderer implements Receiver
      * @return the AudioInputStream
      */
     AudioInputStream createPCMStream(Sequence sequence, AudioData audioData) throws ModMidiException, MidiUnavailableException
-    {    
+    {
+        LoggedTimer timer = new LoggedTimer();
+        timer.start(String.format("%d: Render Audio", audioData.getPlayId()));
         Soundbank mxTuneSoundBank = MIDISystemUtil.getMXTuneSoundBank();
         AudioSynthesizer audioSynthesizer = findAudioSynthesizer();
         if (audioSynthesizer == null) {
@@ -77,38 +80,15 @@ public class Midi2WavRenderer implements Receiver
 
         // Play Sequence into AudioSynthesizer Receiver.
         Receiver receiver = audioSynthesizer.getReceiver();
-        double total = send(sequence, receiver,
-                            audioData.getSecondsToSkip() != 0 ? audioData.getSecondsToSkip() : 0L);
+        double total = send(sequence, receiver, audioData.getSecondsToSkip()); // add 1 to account for render time
         LOGGER.info("");
-        // Calculate how long the WAVE file needs to be and add a 4 seconds to account for sustained notes
+        // Calculate how long the WAVE file needs to be and add 4 seconds to account for sustained notes
         long len = (long) (outputStream.getFormat().getFrameRate() * (total + 4));
         outputStream = new AudioInputStream(outputStream, outputStream.getFormat(), len);
 
         receiver.close();
         LOGGER.info("Skipping {} Seconds", audioData.getSecondsToSkip());
-//        long secondsToSkip = audioData != null && audioData.getSecondsToSkip() != 0 ? audioData.getSecondsToSkip() : 0L;
-//        long savedBytesToSkip;
-//        long bytesToSkip = savedBytesToSkip = format.getFrameSize() * ((int)format.getFrameRate()) * secondsToSkip;
-//        LOGGER.debug("FrameSize {}, FrameRate {}", format.getFrameSize(), format.getSampleRate());
-//        try
-//        {
-//            loggedTimer.start(String.format("PlayId %d Skipping %d seconds, Mark Supported %s", audioData.getPlayId(), secondsToSkip, outputStream.markSupported()));
-//            long justSkipped;
-//            // TODO: Skipping takes time and depends on blocking waits for data to be available.
-//            // TODO: The outputStream.skip(bytesToSkip) pause time could be roughly calculated ahead of time and added to
-//            // TODO: secondsToSkip to prevent the termination of a tune before it's ended.
-//            // -shrugs shoulders- NIO is a PIA
-//            while ((bytesToSkip > 0) && (((justSkipped = outputStream.skip(bytesToSkip))) > 0) && (len > secondsToSkip))
-//            {
-//                LOGGER.debug("tl:{} sk:{} sb:{} bk:{} jk:{}", total, secondsToSkip, savedBytesToSkip, bytesToSkip, justSkipped);
-//                bytesToSkip -= justSkipped;
-//            }
-//            LOGGER.debug("Skipped {} seconds or {} bytes.", secondsToSkip, savedBytesToSkip);
-//            loggedTimer.stop();
-//        } catch (IOException e)
-//        {
-//            LOGGER.error(e);
-//        }
+        timer.stop();
         return outputStream;
     }
 

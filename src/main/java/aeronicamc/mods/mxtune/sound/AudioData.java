@@ -77,14 +77,14 @@ public class AudioData
     AudioData(int durationSeconds, int secondsToSkip, long netTransitTime, int playId, int entityId, boolean isClientPlayer, @Nullable IAudioStatusCallback callback)
     {
         this.durationSeconds = durationSeconds;
-        this.removalSeconds = durationSeconds + 2;
-        this.secondsToSkip = secondsToSkip + (int)(netTransitTime / 1000L);
+        this.removalSeconds = durationSeconds + 4;
+        this.secondsToSkip = Math.round(secondsToSkip + (netTransitTime / 1000F));
         this.playId = playId;
         this.playType = PlayIdSupplier.getTypeForPlayId(playId);
         this.entityId = entityId;
         this.isClientPlayer = isClientPlayer;
         this.audioFormat = isClientPlayer ? ClientAudio.AUDIO_FORMAT_STEREO : ClientAudio.AUDIO_FORMAT_3D;
-        this.status = ClientAudio.Status.YIELDING;
+        this.status = ClientAudio.Status.YIELD;
         this.callback = callback;
     }
 
@@ -261,16 +261,16 @@ public class AudioData
     {
         volumeFade = 0F;
         isFading = false;
-        if ((status != ClientAudio.Status.YIELDING) || isEntityRemoved())
+        if ((status != ClientAudio.Status.YIELD) || isEntityRemoved())
             setStatus(ClientAudio.Status.DONE);
         ClientAudio.stop(playId);
     }
 
     void yield()
     {
-        if ((status == ClientAudio.Status.WAITING) || (status == ClientAudio.Status.READY))
+        if ((status == ClientAudio.Status.WAITING) || (status == ClientAudio.Status.PLAY))
         {
-            setStatus(ClientAudio.Status.YIELDING);
+            setStatus(ClientAudio.Status.YIELD);
             startFadeInOut(1, false);
         }
     }

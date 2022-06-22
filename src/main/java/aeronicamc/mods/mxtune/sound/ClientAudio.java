@@ -8,6 +8,7 @@ import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.mixins.MixinSoundEngine;
+import aeronicamc.mods.mxtune.util.LoggedTimer;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.minecraft.client.Minecraft;
@@ -92,7 +93,7 @@ public class ClientAudio
 
     public enum Status
     {
-        WAITING, READY, YIELDING, ERROR, DONE
+        WAITING, PLAY, YIELD, ERROR, DONE
     }
 
     private static Optional<AudioData> getAudioData(int playID)
@@ -221,10 +222,13 @@ public class ClientAudio
 
     private static void parseMML(AudioData audioData, String musicText)
     {
+        LoggedTimer timer = new LoggedTimer();
+        timer.start(String.format("%d: Parse MML", audioData.getPlayId()));
         MMLParser mmlParser = MMLParserFactory.getMMLParser(musicText);
         MMLToMIDI toMIDI = new MMLToMIDI();
         toMIDI.processMObjects(mmlParser.getMmlObjects());
         audioData.setSequence(toMIDI.getSequence());
+        timer.stop();
 
         // Log bank and program per instrument
         for (int preset : toMIDI.getPresets())
@@ -316,7 +320,7 @@ public class ClientAudio
             ClientAudio.Status status = audioData.getStatus();
             if (audioData.getDistanceTo() > (MXTuneConfig.getListenerRange() + 16D))
                 audioData.yield();
-            else if (priority[0] < 3 && (status == Status.YIELDING))
+            else if (priority[0] < 3 && (status == Status.YIELD))
                 audioData.resume();
             else if (audioData.isEntityRemoved())
                 audioData.expire();

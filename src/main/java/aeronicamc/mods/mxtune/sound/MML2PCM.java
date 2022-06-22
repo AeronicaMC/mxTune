@@ -38,6 +38,7 @@ public class MML2PCM
     {
         // Generate PCM Audio Stream from MIDI sequence
         getAudioData().ifPresent(audioData -> {
+            ClientAudio.Status status = ClientAudio.Status.PLAY;
             try
             {
                 Midi2WavRenderer mw = new Midi2WavRenderer();
@@ -45,12 +46,13 @@ public class MML2PCM
                 audioData.setAudioStream(pcmStream);
             } catch (ModMidiException | MidiUnavailableException e)
             {
-                audioData.setStatus(ClientAudio.Status.ERROR);
+                status = ClientAudio.Status.ERROR;
                 LOGGER.error("MIDI to PCM process: ", e);
+            } finally
+            {
+                audioData.setStatus(status);
             }
-            audioData.setStatus(ClientAudio.Status.READY);
         });
-
         return this;
     }
 
