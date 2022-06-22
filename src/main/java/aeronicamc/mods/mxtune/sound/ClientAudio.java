@@ -327,11 +327,12 @@ public class ClientAudio
     {
         int[] priority = new int[1];
         int[] availableStreams = new int[1];
-        availableStreams[0] = getAvailableStreamCount();
         ActiveAudio.getDistanceSortedSources().forEach(audioData -> {
 
             ClientAudio.Status status = audioData.getStatus();
-            if (audioData.getDistanceTo() > (MXTuneConfig.getListenerRange() + 16D))
+            availableStreams[0] = getAvailableStreamCount();
+
+            if (audioData.getDistanceTo() > (MXTuneConfig.getListenerRange() + 16.0D))
                 audioData.yield();
             else if (priority[0] < availableStreams[0] && (status == Status.YIELD))
                 audioData.resume();
