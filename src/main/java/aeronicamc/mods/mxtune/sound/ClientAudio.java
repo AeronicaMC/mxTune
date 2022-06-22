@@ -48,6 +48,7 @@ public class ClientAudio
     private static SoundEngine soundEngine;
 
     private static int counter;
+    static int MAX_AUDIO_STREAMS = 3;
     private static final int THREAD_POOL_SIZE = 2;
     /* PCM Signed Monaural little endian */
     static final AudioFormat AUDIO_FORMAT_3D = new AudioFormat(48000, 16, 1, true, false);
@@ -314,13 +315,12 @@ public class ClientAudio
 
     /**
      * Ugly as sin TODO: get actual values from SoundSystem . . .
-     * @return the available stream count
+     * @return the available stream count with a max of 3
      */
-    @SuppressWarnings("ConstantConditions")
     public static int getAvailableStreamCount()
     {
-        String[] COUNTS = soundEngine != null ? soundEngine.getDebugString().split("[\\W\\D]+") : new String[]{"", "0", "0", "0", "0"};
-        return Math.min(((Integer.valueOf(COUNTS[4]) != null ? Integer.parseInt(COUNTS[4]) : 0) - (Integer.valueOf(COUNTS[3]) != null ? Integer.parseInt(COUNTS[3]) : 0)), 3);
+        String[] COUNTS = soundEngine != null ? soundEngine.getDebugString().split("\\D+") : new String[]{"", "0", "0", "0", "0"};
+        return Math.min(Integer.parseInt(COUNTS[4]) - Integer.parseInt(COUNTS[3]), MAX_AUDIO_STREAMS);
     }
 
     private static void updateClientAudio()
