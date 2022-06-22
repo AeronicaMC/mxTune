@@ -312,24 +312,36 @@ public class ClientAudio
         }
     }
 
+    /**
+     * Ugly as sin TODO: get actual values from SoundSystem . . .
+     * @return the available stream count
+     */
+    @SuppressWarnings("ConstantConditions")
+    public static int getAvailableStreamCount()
+    {
+        String[] COUNTS = soundEngine != null ? soundEngine.getDebugString().split("[\\W\\D]+") : new String[]{"", "0", "0", "0", "0"};
+        return Math.min(((Integer.valueOf(COUNTS[4]) != null ? Integer.parseInt(COUNTS[4]) : 0) - (Integer.valueOf(COUNTS[3]) != null ? Integer.parseInt(COUNTS[3]) : 0)), 3);
+    }
+
     private static void updateClientAudio()
     {
         int[] priority = new int[1];
+        int[] availableStreams = new int[1];
+        availableStreams[0] = getAvailableStreamCount();
         ActiveAudio.getDistanceSortedSources().forEach(audioData -> {
 
             ClientAudio.Status status = audioData.getStatus();
             if (audioData.getDistanceTo() > (MXTuneConfig.getListenerRange() + 16D))
                 audioData.yield();
-            else if (priority[0] < 3 && (status == Status.YIELD))
+            else if (priority[0] < availableStreams[0] && (status == Status.YIELD))
                 audioData.resume();
             else if (audioData.isEntityRemoved())
                 audioData.expire();
-            else if (priority[0] >= 3)
+            else if (priority[0] >= availableStreams[0])
                 audioData.yield();
 
             priority[0]++;
         });
-        //ActiveAudio.getActiveAudioEntries().forEach((audioData) -> LOGGER.debug("{}", audioData));
     }
 
     /**
@@ -377,12 +389,12 @@ public class ClientAudio
     }
 
     // Here we ensure our local SoundEngine reference is initialized AND also where we prevent a new
-    // vanilla MUSIC from starting, when mxTune tunes are active.
+    // vanilla MUSIC from starting, when mxTune tunes are playing.
     @SubscribeEvent
     public static void event(PlaySoundEvent event)
     {
         init(event.getManager());
-        if (event.getSound().getSource().equals(SoundCategory.MUSIC) && !ActiveAudio.getActivePlayIds().isEmpty())
+        if (event.getSound().getSource().equals(SoundCategory.MUSIC) && ActiveAudio.isPlaying())
             event.setResultSound(null);
     }
 

@@ -20,7 +20,12 @@ public class ActiveAudio
     private static final Map<Integer, AudioData> playIdToActiveAudioEntry = new ConcurrentHashMap<>(16);
     private static final Queue<AudioData> deleteEntryQueue = new ConcurrentLinkedQueue<>();
     private static final Minecraft mc = Minecraft.getInstance();
-
+    private static final HashSet<ClientAudio.Status> PLAYING_STATUSES;
+    static {
+        PLAYING_STATUSES = new HashSet<>();
+        PLAYING_STATUSES.add(ClientAudio.Status.WAITING);
+        PLAYING_STATUSES.add(ClientAudio.Status.PLAY);
+    }
     private static ScheduledExecutorService scheduledThreadPool = null;
     private static boolean isInitialized;
 
@@ -74,6 +79,11 @@ public class ActiveAudio
     static List<AudioData> getDistanceSortedSources()
     {
         return playIdToActiveAudioEntry.values().stream().sorted(Comparator.comparingDouble(AudioData::getDistanceTo)).collect(Collectors.toList());
+    }
+
+    static boolean isPlaying()
+    {
+        return playIdToActiveAudioEntry.values().stream().anyMatch(audioData -> PLAYING_STATUSES.contains(audioData.getStatus()));
     }
 
     @Nullable
