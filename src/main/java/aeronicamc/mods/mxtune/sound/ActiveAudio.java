@@ -38,7 +38,7 @@ public class ActiveAudio
             ThreadFactory threadFactoryScheduled = new ThreadFactoryBuilder()
                     .setNameFormat(Reference.MOD_NAME + " ActiveAudio-Counter-%d")
                     .setDaemon(true)
-                    .setPriority(Thread.MIN_PRIORITY)
+                    .setPriority(Thread.NORM_PRIORITY)
                     .build();
             scheduledThreadPool = Executors.newScheduledThreadPool(1, threadFactoryScheduled);
 
@@ -156,7 +156,7 @@ public class ActiveAudio
                                              entry.expire();
                                              deleteEntryQueue.add(entry);
                                          }
-                                         entry.tickDuration();
+                                         entry.tick();
                                      });
                     if (!deleteEntryQueue.isEmpty())
                         playIdToActiveAudioEntry.remove(deleteEntryQueue.remove().getPlayId());

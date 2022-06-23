@@ -49,7 +49,7 @@ public class ClientAudio
 
     private static int counter;
     static int MAX_AUDIO_STREAMS = 3;
-    private static final int THREAD_POOL_SIZE = 2;
+    private static final int THREAD_POOL_SIZE = 3;
     /* PCM Signed Monaural little endian */
     static final AudioFormat AUDIO_FORMAT_3D = new AudioFormat(48000, 16, 1, true, false);
     /* PCM Signed Stereo little endian */
@@ -60,7 +60,7 @@ public class ClientAudio
         final ThreadFactory threadFactory = new ThreadFactoryBuilder()
                 .setNameFormat(Reference.MOD_ID + " ClientAudio-%d")
                 .setDaemon(true)
-                .setPriority(Thread.MAX_PRIORITY)
+                .setPriority(Thread.NORM_PRIORITY)
                 .build();
         executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE, threadFactory);
     }
@@ -106,14 +106,14 @@ public class ClientAudio
      * For players and source entities.
      * @param duration of the tune in seconds.
      * @param secondsToSkip seconds to skip forward in the music.
-     * @param netTransitTime time in milliseconds for server packet to reach the client.
+     * @param processTimeMS time in milliseconds for server packet to reach the client.
      * @param playID unique submission identifier.
      * @param entityId the id of the music source.
      * @param musicText MML string
      */
-    public static void play(int duration, int secondsToSkip, long netTransitTime, int playID, int entityId, String musicText)
+    public static void play(int duration, int secondsToSkip, long processTimeMS, int playID, int entityId, String musicText)
     {
-        play(playID, duration, secondsToSkip, netTransitTime, entityId, musicText, false, null);
+        play(playID, duration, secondsToSkip, processTimeMS, entityId, musicText, false, null);
     }
 
     /**
@@ -142,19 +142,19 @@ public class ClientAudio
      * The all-in-one #play(...) method of the {@link ClientAudio} class.
      * @param playID The unique server identifier for each music submission. see {@link PlayIdSupplier}
      * @param duration of the tune in seconds
-     * @param secondsToSkip seconds to skip forward in the music.
-     * @param netTransitTime time in milliseconds for server packet to reach the client.
+     * @param secondsElapsed seconds to skip forward in the music.
+     * @param processTimeMS time in milliseconds for server packet to reach the client.
      * @param entityId The unique entity id of the music source. Generally another player.
      * @param musicText The MML {@link <A="https://en.wikipedia.org/wiki/MML">MML</A>} to be played
      * @param isClient if true, the local client player hears their own music in stereo else other players in 3D audio.
      * @param callback An optional callback that is fired when {@link Status} changes related to {@link AudioData}
      */
-    private static void play(int playID, int duration, int secondsToSkip, long netTransitTime, int entityId, String musicText, boolean isClient, @Nullable IAudioStatusCallback callback)
+    private static void play(int playID, int duration, int secondsElapsed, long processTimeMS, int entityId, String musicText, boolean isClient, @Nullable IAudioStatusCallback callback)
     {
         if (playID != PlayIdSupplier.INVALID)
         {
             boolean isReallyClient = (((mc.player != null) && (mc.player.getId() == entityId)) || isClient);
-            AudioData audioData = new AudioData(duration, secondsToSkip, netTransitTime, playID, entityId, isReallyClient, callback);
+            AudioData audioData = new AudioData(duration, secondsElapsed, processTimeMS, playID, entityId, isReallyClient, callback);
             parseMML(audioData, musicText);
             ActiveAudio.addEntry(audioData);
             LOGGER.debug("playId: {}, mc.player: {}, entityId: {}, isClient: {}, isReallyClient: {}", playID, mc.player.getId(), entityId, isClient, isReallyClient);
@@ -230,6 +230,7 @@ public class ClientAudio
         toMIDI.processMObjects(mmlParser.getMmlObjects());
         audioData.setSequence(toMIDI.getSequence());
         timer.stop();
+        audioData.addProcessTimeMS(timer.getTimeElapsed());
 
         // Log bank and program per instrument
         for (int preset : toMIDI.getPresets())
@@ -240,33 +241,6 @@ public class ClientAudio
                          patchPreset.getProgram(), name);
         }
     }
-
-    // SoundEngine
-    // private final Map<ISound, ChannelManager.Entry> playingSoundsChannel = Maps.newHashMap(); // AT this so we can attach the PCM the audio stream
-    // private final Multimap<SoundCategory, ISound> instanceBySource = HashMultimap.create(); // AT this for monitoring our ISounds
-    // private final List<ITickableSound> tickableSounds = Lists.newArrayList(); // AT this for monitoring
-    //
-
-    //    this.audioStreamManager.getStream(sound.getSoundAsOggLocation()).thenAccept((p_217928_1_) -> {
-    //        channelmanager$entry.runOnSoundExecutor((p_217935_1_) -> {
-    //            p_217935_1_.attachBufferStream(p_217928_1_);
-    //            p_217935_1_.play();
-    //            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.sound.PlayStreamingSourceEvent(this, isound, p_217935_1_));
-    //        });
-    //    });
-
-    //    public CompletableFuture<IAudioStream> getStream(ResourceLocation p_217917_1_) {
-    //        return CompletableFuture.supplyAsync(() -> {
-    //            try {
-    //                IResource iresource = this.resourceManager.getResource(p_217917_1_);
-    //                InputStream inputstream = iresource.getInputStream();
-    //                return new OggAudioStream(inputstream);
-    //            } catch (IOException ioexception) {
-    //                throw new CompletionException(ioexception);
-    //            }
-    //        }, Util.getServerExecutor());
-    //    }
-
 
     /**
      * A helper method used to force the vanilla {@link SoundEngine} to use our {@link IAudioStream}

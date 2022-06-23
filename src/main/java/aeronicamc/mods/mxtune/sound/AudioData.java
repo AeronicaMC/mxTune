@@ -47,7 +47,7 @@ public class AudioData
     private Sequence sequence;
     private ClientAudio.Status status;
 
-    private int secondsToSkip;
+    private long processTimeMS;
     private final int durationSeconds;
     private final int removalSeconds;
     private final int playId;
@@ -56,7 +56,6 @@ public class AudioData
     private final boolean isClientPlayer;
     private final IAudioStatusCallback callback;
 
-    private boolean firstSubmission;
     private int secondsElapsed;
     private float volumeFade = 1F;
     private boolean fadeIn;
@@ -67,18 +66,19 @@ public class AudioData
     /**
      * All the data needed to generate and manage the audio stream except the musicText which is passed to the parser only.
      * @param durationSeconds length of tune (includes four seconds buffer to account for decaying audio).
-     * @param secondsToSkip forward in the audio stream.
-     * @param netTransitTime in milliseconds for server packet to reach the client.
+     * @param secondsElapsed in the audio stream.
+     * @param processTimeMS in milliseconds for server packet to reach the client.
      * @param playId for this stream.
      * @param entityId of the audio source.
      * @param isClientPlayer the audio source. Used stereo vs 3D audio selection.
      * @param callback is optional and is used to notify a class that implements the {@link IAudioStatusCallback}
      */
-    AudioData(int durationSeconds, int secondsToSkip, long netTransitTime, int playId, int entityId, boolean isClientPlayer, @Nullable IAudioStatusCallback callback)
+    AudioData(int durationSeconds, int secondsElapsed, long processTimeMS, int playId, int entityId, boolean isClientPlayer, @Nullable IAudioStatusCallback callback)
     {
         this.durationSeconds = durationSeconds;
         this.removalSeconds = durationSeconds + 4;
-        this.secondsToSkip = Math.round(secondsToSkip + (netTransitTime / 1000F));
+        this.processTimeMS = processTimeMS;
+        this.secondsElapsed = secondsElapsed;
         this.playId = playId;
         this.playType = PlayIdSupplier.getTypeForPlayId(playId);
         this.entityId = entityId;
@@ -86,6 +86,23 @@ public class AudioData
         this.audioFormat = isClientPlayer ? ClientAudio.AUDIO_FORMAT_STEREO : ClientAudio.AUDIO_FORMAT_3D;
         this.status = ClientAudio.Status.YIELD;
         this.callback = callback;
+    }
+
+    void addProcessTimeMS(long ms)
+    {
+        processTimeMS += ms;
+    }
+
+    void setProcessTimeMS(long ms)
+    {
+        processTimeMS = ms;
+    }
+
+    int applyProcessTimeToElapsedTime()
+    {
+        secondsElapsed += Math.round((float) processTimeMS / 1000.0);
+        processTimeMS = 0;
+        return secondsElapsed;
     }
 
     synchronized AudioFormat getAudioFormat()
@@ -119,29 +136,24 @@ public class AudioData
         }
     }
 
-    synchronized long getSecondsToSkip()
+    synchronized int getSecondsElapsed()
     {
-        return secondsToSkip;
+        return applyProcessTimeToElapsedTime();
     }
 
-    void tickDuration()
+    void tick()
     {
-        ++secondsElapsed;
-    }
-
-    int getSecondsElapsed()
-    {
-        return secondsElapsed;
+        secondsElapsed++;
     }
 
     boolean isActive()
     {
-        return durationSeconds >= (secondsElapsed + secondsToSkip);
+        return durationSeconds >= (secondsElapsed);
     }
 
     boolean canRemove()
     {
-        return removalSeconds < (secondsElapsed + secondsToSkip);
+        return removalSeconds < (secondsElapsed);
     }
 
     int getPlayId()
@@ -278,20 +290,17 @@ public class AudioData
     void resume()
     {
         setStatus(ClientAudio.Status.WAITING);
-        if (!firstSubmission)
-            secondsToSkip += secondsElapsed;
-        firstSubmission = true;
         ClientAudio.submitSoundInstance(this);
     }
 
     int getRemainingDuration()
     {
-        return Math.max(durationSeconds - (secondsElapsed + secondsToSkip), 0);
+        return Math.max(durationSeconds - secondsElapsed, 0);
     }
 
     float getProgress()
     {
-        return Math.max(Math.min(1F / ((durationSeconds +0.1F) / (secondsElapsed + secondsToSkip + 0.1F)), 1F), 0F);
+        return Math.max(Math.min(1F / ((durationSeconds +0.1F) / (secondsElapsed + 0.1F)), 1F), 0F);
     }
 
     double getDistanceTo()
@@ -321,7 +330,7 @@ public class AudioData
                 .append("isClientPlayer", isClientPlayer)
                 .append("entityId", entityId)
                 .append("playId", playId)
-                .append("secondsToSkip", secondsToSkip)
+                .append("secondsToSkip", processTimeMS)
                 .append("secondsElapsed", secondsElapsed)
                 .append("durationSeconds", durationSeconds)
                 .append("removalSeconds", removalSeconds)
@@ -335,6 +344,6 @@ public class AudioData
         String name = mc.level != null && mc.level.getEntity(entityId) != null ? mc.level.getEntity(entityId).getName().getString() : "[*ERROR*]";
         return new StringTextComponent(
                 String.format("[%s] %s, E:%06d, P:%06d, T:%04d, RD:%s PCT:%01.2f, dist:%05.2f",
-                              status, name, entityId, playId, secondsElapsed + secondsToSkip, formatDuration(getRemainingDuration()), getProgress(), getDistanceTo())).withStyle(TextFormatting.WHITE);
+                              status, name, entityId, playId, secondsElapsed, formatDuration(getRemainingDuration()), getProgress(), getDistanceTo())).withStyle(TextFormatting.WHITE);
     }
 }

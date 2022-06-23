@@ -36,7 +36,7 @@ public class ActiveTune
             ThreadFactory threadFactoryScheduled = new ThreadFactoryBuilder()
                     .setNameFormat(Reference.MOD_NAME + " ActiveTune-Counter-%d")
                     .setDaemon(true)
-                    .setPriority(Thread.MIN_PRIORITY)
+                    .setPriority(Thread.NORM_PRIORITY)
                     .build();
             scheduledThreadPool = Executors.newScheduledThreadPool(1, threadFactoryScheduled);
 
@@ -62,11 +62,9 @@ public class ActiveTune
                     playIdToActiveTuneEntry.values()
                             .forEach(entry ->
                                      {
-                                         //LOGGER2.debug("{}", entry);
                                          if (entry.canRemove())
                                          {
                                              deleteEntryQueue.add(entry);
-                                             PlayManager.stopPlayId(entry.playId);
                                          }
                                          entry.tickDuration();
                                      });
@@ -181,7 +179,7 @@ public class ActiveTune
             this.playId = playId;
             this.musicText = musicText;
             this.durationSeconds = durationSeconds;
-            this.removalSeconds = durationSeconds + 10;
+            this.removalSeconds = durationSeconds + 30;
         }
 
         static Entry newEntry(int entityId, int playId, String mml, int durationSeconds)
@@ -196,7 +194,7 @@ public class ActiveTune
 
         boolean isActive()
         {
-            return durationSeconds >= secondsElapsed;
+            return durationSeconds > secondsElapsed;
         }
 
         boolean canRemove()

@@ -20,7 +20,7 @@ public class PlayMusicMessage extends AbstractMessage<PlayMusicMessage>
     private static final Logger LOGGER = LogManager.getLogger(PlayMusicMessage.class);
     private final NetworkLongUtfHelper stringHelper = new NetworkLongUtfHelper();
     private int playId = PlayIdSupplier.INVALID;
-    private int secondsToSkip;
+    private int secondsElapsed;
     private int duration;
     private int entityId;
     private String musicText = "";
@@ -28,12 +28,12 @@ public class PlayMusicMessage extends AbstractMessage<PlayMusicMessage>
 
     public PlayMusicMessage() { /* NOP */ }
 
-    public PlayMusicMessage(int playId, String dateTimeServer, int duration, int secondsToSkip, int entityId, String musicText)
+    public PlayMusicMessage(int playId, String dateTimeServer, int duration, int secondsElapsed, int entityId, String musicText)
     {
         this.playId = playId;
         this.dateTimeServer = dateTimeServer;
         this.duration = duration;
-        this.secondsToSkip = secondsToSkip;
+        this.secondsElapsed = secondsElapsed;
         this.entityId = entityId;
         this.musicText = musicText;
     }
@@ -44,7 +44,7 @@ public class PlayMusicMessage extends AbstractMessage<PlayMusicMessage>
         buffer.writeVarInt(message.playId);
         buffer.writeUtf(message.dateTimeServer);
         buffer.writeVarInt(message.duration);
-        buffer.writeVarInt(message.secondsToSkip);
+        buffer.writeVarInt(message.secondsElapsed);
         buffer.writeVarInt(message.entityId);
         stringHelper.writeLongUtf(buffer, message.musicText);
     }
@@ -71,10 +71,10 @@ public class PlayMusicMessage extends AbstractMessage<PlayMusicMessage>
                 Entity sender = Minecraft.getInstance().player.level.getEntity(message.entityId);
                 String senderName = sender != null ? sender.getDisplayName().getString() : "--Server--";
                 LocalDateTime dateTimeClient = LocalDateTime.now(ZoneId.of("GMT0"));
-                LocalDateTime dateTimeServer = message.secondsToSkip > 0 ? LocalDateTime.parse(message.dateTimeServer) : dateTimeClient;
+                LocalDateTime dateTimeServer = message.secondsElapsed > 0 ? LocalDateTime.parse(message.dateTimeServer) : dateTimeClient;
                 long netTransitTime = Duration.between(dateTimeServer, dateTimeClient).toMillis();
                 LOGGER.info("In transit: {} ms, From: {} to: {}", netTransitTime, senderName, Minecraft.getInstance().player.getDisplayName().getString());
-                ClientAudio.play(message.duration, message.secondsToSkip, netTransitTime, message.playId, message.entityId, message.musicText);
+                ClientAudio.play(message.duration, message.secondsElapsed, netTransitTime, message.playId, message.entityId, message.musicText);
         });
         }
         ctx.get().setPacketHandled(true);
