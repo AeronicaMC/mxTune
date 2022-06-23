@@ -1,3 +1,9 @@
+#### 2022-06-23 mxtune-1.16.5-2.0.0-alpha-2022-06-22.78821947 
+* Client Audio Refactor:
+  * Initial implementation of sound source limiting and prioritization.
+  * Track elapsed play time on client too so at some point I will add a progress bar to the HUD and Music Block. 
+  * Many bugs and odd behavior will probably appear :D
+
 #### 2022-06-06 mxtune-1.16.5-2.0.0-alpha-2022-06-06.32450078  
 * Behind the scenes improvements: 
   * Improve skipping forward in active tunes. Example when you enter a world where a tune is in progress, you will hear that tune sooner. 
