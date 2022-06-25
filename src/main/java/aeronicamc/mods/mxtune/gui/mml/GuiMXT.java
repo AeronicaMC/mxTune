@@ -788,7 +788,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     @Override
     public void statusCallBack(ClientAudio.Status status, int playId)
     {
-        if (this.playId == playId && (status == ClientAudio.Status.ERROR || status == ClientAudio.Status.DONE))
+        if ((this.playId == playId) && ClientAudio.isDoneOrYieldStatus(status))
         {
             LOGGER.debug("AudioStatus event received: {}, playId: {}", status, playId);
             stop();

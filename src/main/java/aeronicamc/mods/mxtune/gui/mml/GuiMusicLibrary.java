@@ -416,7 +416,6 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         Objects.requireNonNull(minecraft).submitAsync(
                 ()-> {
                     LOGGER.debug("stopMusic: playId = {}", playId);
-                    //ClientAudio.stop(playId);
                     ClientAudio.fadeOut(playId, 1);
                 });
         setPlaying(false);
@@ -426,9 +425,10 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
     public void statusCallBack(ClientAudio.Status status, int playId)
     {
         Objects.requireNonNull(minecraft).submitAsync(() -> {
-            if (this.playId == playId && (status == ClientAudio.Status.ERROR || status == ClientAudio.Status.DONE))
+            if ((this.playId == playId) && ClientAudio.isDoneOrYieldStatus(status))
             {
                 LOGGER.debug("AudioStatus event received: {}, playId: {}", status, playId);
+                ClientAudio.fadeOut(playId, 1);
                 setPlaying(false);
                 updateState();
             }
