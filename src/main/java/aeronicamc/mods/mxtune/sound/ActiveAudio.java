@@ -2,7 +2,6 @@ package aeronicamc.mods.mxtune.sound;
 
 import aeronicamc.mods.mxtune.Reference;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,15 +16,9 @@ import static aeronicamc.mods.mxtune.managers.PlayIdSupplier.INVALID;
 public class ActiveAudio
 {
     private static final Logger LOGGER = LogManager.getLogger(ActiveAudio.class);
-    private static final Map<Integer, AudioData> playIdToActiveAudioEntry = new ConcurrentHashMap<>(16);
-    private static final Queue<AudioData> deleteEntryQueue = new ConcurrentLinkedQueue<>();
-    private static final Minecraft mc = Minecraft.getInstance();
-    private static final HashSet<ClientAudio.Status> PLAYING_STATUSES;
-    static {
-        PLAYING_STATUSES = new HashSet<>();
-        PLAYING_STATUSES.add(ClientAudio.Status.WAITING);
-        PLAYING_STATUSES.add(ClientAudio.Status.PLAY);
-    }
+    private static final Map<Integer, AudioData> playIdToActiveAudioData = new ConcurrentHashMap<>(16);
+    private static final Queue<AudioData> deleteAudioDataQueue = new ConcurrentLinkedQueue<>();
+
     private static ScheduledExecutorService scheduledThreadPool = null;
     private static boolean isInitialized;
 
@@ -59,42 +52,42 @@ public class ActiveAudio
     static boolean addEntry(AudioData audioData)
     {
         boolean hasDuplicatePlayId;
-        synchronized (playIdToActiveAudioEntry)
+        synchronized (playIdToActiveAudioData)
         {
-            hasDuplicatePlayId = playIdToActiveAudioEntry.containsKey(audioData.getPlayId());
+            hasDuplicatePlayId = playIdToActiveAudioData.containsKey(audioData.getPlayId());
         }
         if (hasDuplicatePlayId)
-            synchronized (playIdToActiveAudioEntry)
+            synchronized (playIdToActiveAudioData)
             {
-                playIdToActiveAudioEntry.replace(audioData.getPlayId(), audioData);
+                playIdToActiveAudioData.replace(audioData.getPlayId(), audioData);
             }
         else
-            synchronized (playIdToActiveAudioEntry)
+            synchronized (playIdToActiveAudioData)
             {
-                playIdToActiveAudioEntry.put(audioData.getPlayId(), audioData);
+                playIdToActiveAudioData.put(audioData.getPlayId(), audioData);
             }
         return hasDuplicatePlayId;
     }
 
     static List<AudioData> getDistanceSortedSources()
     {
-        return playIdToActiveAudioEntry.values().stream().sorted(Comparator.comparingDouble(AudioData::getDistanceTo)).collect(Collectors.toList());
+        return playIdToActiveAudioData.values().stream().sorted(Comparator.comparingDouble(AudioData::getDistanceTo)).collect(Collectors.toList());
     }
 
     static boolean isPlaying()
     {
-        return playIdToActiveAudioEntry.values().stream().anyMatch(audioData -> PLAYING_STATUSES.contains(audioData.getStatus()));
+        return playIdToActiveAudioData.values().stream().anyMatch(audioData -> ClientAudio.PLAYING_STATUSES.contains(audioData.getStatus()));
     }
 
     @Nullable
     static AudioData getAudioData(int playId)
     {
-        return playIdToActiveAudioEntry.get(playId);
+        return playIdToActiveAudioData.get(playId);
     }
 
     static Set<Integer> getActivePlayIds()
     {
-        return playIdToActiveAudioEntry.keySet();
+        return playIdToActiveAudioData.keySet();
     }
 
     static boolean isActivePlayId(int playId)
@@ -104,9 +97,9 @@ public class ActiveAudio
 
     static Optional<AudioData> getActiveTuneByEntityId(@Nullable Entity entity)
     {
-        synchronized (playIdToActiveAudioEntry)
+        synchronized (playIdToActiveAudioData)
         {
-            return playIdToActiveAudioEntry.values().stream().filter(entry -> ((entity != null) && (entry.getEntityId() == entity.getId()))).findFirst();
+            return playIdToActiveAudioData.values().stream().filter(entry -> ((entity != null) && (entry.getEntityId() == entity.getId()))).findFirst();
         }
     }
 
@@ -117,28 +110,28 @@ public class ActiveAudio
 
     static int getDeleteQueueSize()
     {
-        return deleteEntryQueue.size();
+        return deleteAudioDataQueue.size();
     }
 
     static void remove(int playId)
     {
-        if (!playIdToActiveAudioEntry.isEmpty())
-            synchronized (playIdToActiveAudioEntry)
+        if (!playIdToActiveAudioData.isEmpty())
+            synchronized (playIdToActiveAudioData)
             {
-                playIdToActiveAudioEntry.remove(playId);
+                playIdToActiveAudioData.remove(playId);
             }
     }
 
     static void removeAll()
     {
-        synchronized (playIdToActiveAudioEntry)
+        synchronized (playIdToActiveAudioData)
         {
-            playIdToActiveAudioEntry.forEach((playId, audioData) -> audioData.expire());
+            playIdToActiveAudioData.forEach((playId, audioData) -> audioData.expire());
         }
-        while (!deleteEntryQueue.isEmpty())
-            synchronized (deleteEntryQueue)
+        while (!deleteAudioDataQueue.isEmpty())
+            synchronized (deleteAudioDataQueue)
             {
-                deleteEntryQueue.remove();
+                deleteAudioDataQueue.remove();
             }
     }
 
@@ -148,18 +141,20 @@ public class ActiveAudio
         scheduledThreadPool.scheduleAtFixedRate(
                 () ->
                 {
-                    playIdToActiveAudioEntry.values()
-                            .forEach(entry ->
+                    if (!deleteAudioDataQueue.isEmpty())
+                        playIdToActiveAudioData.remove(deleteAudioDataQueue.remove().getPlayId());
+
+                    playIdToActiveAudioData.values()
+                            .forEach(audioData ->
                                      {
-                                         if (entry.canRemove() || entry.getStatus().equals(ClientAudio.Status.DONE) || entry.getStatus().equals(ClientAudio.Status.ERROR))
+                                         if (audioData.canRemove() || ClientAudio.DONE_STATUSES.contains(audioData.getStatus()))
                                          {
-                                             entry.expire();
-                                             deleteEntryQueue.add(entry);
+                                             audioData.expire();
+                                             deleteAudioDataQueue.add(audioData);
                                          }
-                                         entry.tick();
+                                         audioData.tick();
                                      });
-                    if (!deleteEntryQueue.isEmpty())
-                        playIdToActiveAudioEntry.remove(deleteEntryQueue.remove().getPlayId());
+
                     lock.countDown();
                 }, 500, 1000, TimeUnit.MILLISECONDS);
         try

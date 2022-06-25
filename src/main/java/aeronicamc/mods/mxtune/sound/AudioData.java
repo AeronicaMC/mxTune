@@ -246,7 +246,7 @@ public class AudioData
         {
             // If a fade out is already in progress we will not change it.
             this.fadeIn = fadeIn;
-            if (!isFading && !(status == ClientAudio.Status.ERROR || status == ClientAudio.Status.DONE))
+            if (!isFading && !ClientAudio.isDoneStatus(status))
             {
                 fadeTicks = Math.max(Math.abs(seconds * 20), 5);
                 fadeCounter = fadeTicks;
@@ -275,12 +275,12 @@ public class AudioData
         isFading = false;
         if ((status != ClientAudio.Status.YIELD) || isEntityRemoved())
             setStatus(ClientAudio.Status.DONE);
-        ClientAudio.stop(playId);
+        ClientAudio.stop(iSound);
     }
 
     void yield()
     {
-        if ((status == ClientAudio.Status.WAITING) || (status == ClientAudio.Status.PLAY))
+        if (ClientAudio.isPlayingStatus(status))
         {
             setStatus(ClientAudio.Status.YIELD);
             startFadeInOut(1, false);
@@ -290,7 +290,7 @@ public class AudioData
     void resume()
     {
         setStatus(ClientAudio.Status.WAITING);
-        ClientAudio.submitSoundInstance(this);
+        ClientAudio.submitAudioData(this);
     }
 
     int getRemainingDuration()

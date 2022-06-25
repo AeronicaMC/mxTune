@@ -10,6 +10,7 @@ import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.mixins.MixinSoundEngine;
 import aeronicamc.mods.mxtune.util.LoggedTimer;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.*;
@@ -40,8 +41,6 @@ import java.util.concurrent.ThreadFactory;
 public class ClientAudio
 {
     public static final Logger LOGGER = LogManager.getLogger(ClientAudio.class);
-    public static final Object THREAD_SYNC = new Object();
-
     private static final Minecraft mc = Minecraft.getInstance();
     private static final SoundHandler soundHandler = mc.getSoundManager();
     private static final MusicTicker musicTicker = mc.getMusicManager();
@@ -54,6 +53,11 @@ public class ClientAudio
     static final AudioFormat AUDIO_FORMAT_3D = new AudioFormat(48000, 16, 1, true, false);
     /* PCM Signed Stereo little endian */
     static final AudioFormat AUDIO_FORMAT_STEREO = new AudioFormat(48000, 16, 2, true, false);
+
+    static final ImmutableSet<Status> PLAYING_STATUSES =
+            ImmutableSet.<Status>builder().add(Status.WAITING).add(Status.PLAY).build();
+    static final ImmutableSet<Status> DONE_STATUSES =
+            ImmutableSet.<Status>builder().add(Status.DONE).add(Status.ERROR).build();
 
     private static final ExecutorService executorService;
     static {
@@ -95,6 +99,36 @@ public class ClientAudio
     public enum Status
     {
         WAITING, PLAY, YIELD, ERROR, DONE
+    }
+
+    /**
+     * Test against {@link Status} of DONE, ERROR.
+     * @param status to test.
+     * @return true if DONE or ERROR
+     */
+    public static boolean isDoneStatus(Status status)
+    {
+        return DONE_STATUSES.contains(status);
+    }
+
+    /**
+     * Test against {@link Status} of DONE, ERROR or YIELD.
+     * @param status to test.
+     * @return true if one of DONE, ERROR or YIELD.
+     */
+    public static boolean isDoneOrYieldStatus(Status status)
+    {
+        return isDoneStatus(status) || Status.YIELD.equals(status);
+    }
+
+    /**
+     * Test against {@link Status} of PLAY or WAITING.
+     * @param status to test.
+     * @return true if PLAY or WAITING.
+     */
+    public static boolean isPlayingStatus(Status status)
+    {
+        return PLAYING_STATUSES.contains(status);
     }
 
     private static Optional<AudioData> getAudioData(int playID)
@@ -169,7 +203,7 @@ public class ClientAudio
      * Submit {@link AudioData} source. i.e. restart the tune.
      * @param audioData preexisting source
      */
-    static void submitSoundInstance(AudioData audioData)
+    static void submitAudioData(AudioData audioData)
     {
         if (mc.player != null)
         {
@@ -204,6 +238,19 @@ public class ClientAudio
         if (PlayIdSupplier.INVALID == playID) return;
         getAudioData(playID).filter(audioData -> audioData.getISound() != null).ifPresent(audioData -> soundHandler.stop(audioData.getISound()));
     }
+
+    static void stop(ISound iSound)
+    {
+        synchronized (soundHandler)
+        {
+            soundHandler.stop(iSound);
+        }
+        synchronized (soundHandler)
+        {
+            soundHandler.stop(iSound);
+        }
+    }
+
 
     private static class RenderAudio implements Runnable
     {
@@ -297,7 +344,7 @@ public class ClientAudio
         return Math.min(Integer.parseInt(COUNTS[4]) - Integer.parseInt(COUNTS[3]), MAX_AUDIO_STREAMS);
     }
 
-    private static void updateClientAudio()
+    private static void prioritizeAndLimitSources()
     {
         int[] priority = new int[1];
         int[] availableStreams = new int[1];
@@ -348,7 +395,7 @@ public class ClientAudio
         {
             // one update twice per second
             if (counter++ % 20 == 0)
-                updateClientAudio();
+                prioritizeAndLimitSources();
         }
     }
 
