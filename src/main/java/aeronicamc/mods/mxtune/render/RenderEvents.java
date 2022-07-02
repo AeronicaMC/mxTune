@@ -136,16 +136,16 @@ public class RenderEvents
             Vector3d vector3d;
             MusicVenue[] activeVenue = new MusicVenue[1];
 
-            MusicVenueProvider.getMusicVenues(mc.player.level).ifPresent(
+            MusicVenueProvider.getMusicVenues(player.level).ifPresent(
                     areas ->
                     {
-                        areas.getMusicVenues().stream().filter(v->v.getVenueAABB().contains(mc.player.getEyePosition(mc.getFrameTime()))).findFirst().ifPresent(area->{
+                        areas.getMusicVenues().stream().filter(v->v.getVenueAABB().contains(player.getEyePosition(mc.getFrameTime()))).findFirst().ifPresent(area->{
                             activeVenue[0] = area;
                         });
                     });
 
             ToolState.Type[] stateName = {ToolState.Type.START};
-            toolManager().getToolOpl(mc.player).ifPresent(tool-> {
+            toolManager().getToolOpl(player).ifPresent(tool-> {
                 stateName[0] = tool.getToolState();
             });
             ITextComponent testText = new TranslationTextComponent(stateName[0].getTranslationKey()).withStyle(TextFormatting.WHITE).append(" ").append(activeVenue[0] != null ? activeVenue[0].getVenueAABB().getCenter().toString() : "");
