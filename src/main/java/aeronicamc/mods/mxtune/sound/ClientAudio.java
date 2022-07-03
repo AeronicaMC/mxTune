@@ -399,6 +399,10 @@ public class ClientAudio
     public static void stopAll()
     {
         ActiveAudio.removeAll();
+        synchronized (soundHandler)
+        {
+            soundEngine.stopAll();
+        }
     }
 
     @SubscribeEvent
