@@ -12,6 +12,9 @@ import java.util.UUID;
 
 public class MusicVenue implements Comparable<MusicVenue>
 {
+    public static final BlockPos OUT_OF_BOUNDS = new BlockPos(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
+    public static final MusicVenue EMPTY = MusicVenue.factory(UUID.fromString("00000000-0000-0000-0000-000000000000"));
+
     final static Codec<MusicVenue> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
                 BlockPos.CODEC.fieldOf("startPos").forGetter(MusicVenue::getStartPos),
@@ -141,7 +144,7 @@ public class MusicVenue implements Comparable<MusicVenue>
     public static MusicVenue factory(UUID uuid)
     {
         Color3f rainbow = Color3f.rainbowFactory();
-        return new MusicVenue(BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, BlockPos.ZERO, "", uuid, rainbow.getR(), rainbow.getG(), rainbow.getB());
+        return new MusicVenue(OUT_OF_BOUNDS, OUT_OF_BOUNDS, OUT_OF_BOUNDS, OUT_OF_BOUNDS, "", uuid, rainbow.getR(), rainbow.getG(), rainbow.getB());
     }
 
     @Override

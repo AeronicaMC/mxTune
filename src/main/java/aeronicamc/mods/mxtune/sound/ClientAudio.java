@@ -4,6 +4,7 @@ import aeronicamc.libs.mml.parser.MMLParser;
 import aeronicamc.libs.mml.parser.MMLParserFactory;
 import aeronicamc.libs.mml.parser.MMLUtil;
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.caps.venues.MusicVenueHelper;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
@@ -15,9 +16,11 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.*;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.Util;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.PlayStreamingSourceEvent;
 import net.minecraftforge.client.event.sound.SoundLoadEvent;
@@ -348,14 +351,20 @@ public class ClientAudio
     {
         int[] priority = new int[1];
         int[] availableStreams = new int[1];
+        World level = mc.level;
+        PlayerEntity player = mc.player;
+        if (level == null || player == null) return;
+
         ActiveAudio.getDistanceSortedSources().forEach(audioData -> {
 
             ClientAudio.Status status = audioData.getStatus();
             availableStreams[0] = getAvailableStreamCount();
+            boolean sourceInVenue = MusicVenueHelper.inVenue(level, audioData.getEntityId());
+            boolean playerInVenue = MusicVenueHelper.inVenue(level, player.getId());
 
-            if (audioData.getDistanceTo() > (MXTuneConfig.getListenerRange() + 16.0D))
+            if ((audioData.getDistanceTo() > (MXTuneConfig.getListenerRange() + 16.0D)))
                 audioData.yield();
-            else if (priority[0] < availableStreams[0] && (status == Status.YIELD))
+            else if (((priority[0] < availableStreams[0]) && (status == Status.YIELD)))
                 audioData.resume();
             else if (audioData.isEntityRemoved())
                 audioData.expire();
