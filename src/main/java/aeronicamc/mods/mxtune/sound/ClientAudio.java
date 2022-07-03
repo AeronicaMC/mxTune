@@ -4,6 +4,7 @@ import aeronicamc.libs.mml.parser.MMLParser;
 import aeronicamc.libs.mml.parser.MMLParserFactory;
 import aeronicamc.libs.mml.parser.MMLUtil;
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.caps.venues.EntityVenueState;
 import aeronicamc.mods.mxtune.caps.venues.MusicVenueHelper;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.init.ModSoundEvents;
@@ -354,20 +355,20 @@ public class ClientAudio
         World level = mc.level;
         PlayerEntity player = mc.player;
         if (level == null || player == null) return;
-        boolean playerInVenue = MusicVenueHelper.inVenue(level, player.getId());
+        EntityVenueState playerVenueState = MusicVenueHelper.getEntityVenueState(level, player.getId());
 
         ActiveAudio.getDistanceSortedSources().forEach(audioData -> {
 
             ClientAudio.Status status = audioData.getStatus();
             availableStreams[0] = getAvailableStreamCount();
-            boolean sourceInVenue = MusicVenueHelper.inVenue(level, audioData.getEntityId());
+            EntityVenueState sourceVenueState = MusicVenueHelper.getEntityVenueState(level, audioData.getEntityId());
 
 
             if (audioData.getDistanceTo() > (MXTuneConfig.getListenerRange() + 16.0D))
                 audioData.yield();
-            else if (playerInVenue && !sourceInVenue)
+            else if (playerVenueState.inVenue() && !playerVenueState.equals(sourceVenueState))
                 audioData.yield();
-            else if (!playerInVenue && sourceInVenue)
+            else if (!playerVenueState.inVenue() && !playerVenueState.equals(sourceVenueState))
                 audioData.yield();
             else if (((priority[0] < availableStreams[0]) && (status == Status.YIELD)))
                 audioData.resume();
