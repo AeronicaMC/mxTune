@@ -363,14 +363,11 @@ public class ClientAudio
             availableStreams[0] = getAvailableStreamCount();
             EntityVenueState sourceVenueState = MusicVenueHelper.getEntityVenueState(level, audioData.getEntityId());
 
-
             if (audioData.getDistanceTo() > (MXTuneConfig.getListenerRange() + 16.0D))
                 audioData.yield();
-            else if (playerVenueState.inVenue() && !playerVenueState.equals(sourceVenueState))
+            else if (!playerVenueState.equals(sourceVenueState))
                 audioData.yield();
-            else if (!playerVenueState.inVenue() && !playerVenueState.equals(sourceVenueState))
-                audioData.yield();
-            else if (((priority[0] < availableStreams[0]) && (status == Status.YIELD)))
+            else if (((priority[0] < availableStreams[0]) && (status == Status.YIELD)) && playerVenueState.equals(sourceVenueState))
                 audioData.resume();
 
             if (audioData.isEntityRemoved())
