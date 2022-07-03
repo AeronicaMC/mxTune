@@ -13,7 +13,7 @@ import java.util.UUID;
 public class MusicVenue implements Comparable<MusicVenue>
 {
     public static final BlockPos OUT_OF_BOUNDS = new BlockPos(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
-    public static final MusicVenue EMPTY = MusicVenue.factory(UUID.fromString("00000000-0000-0000-0000-000000000000"));
+    public static final MusicVenue EMPTY = MusicVenue.factory(UUID.fromString("00000000-0000-0000-0000-000000000000"),"-999999999-01-01T00:00:00");
 
     final static Codec<MusicVenue> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
@@ -23,6 +23,7 @@ public class MusicVenue implements Comparable<MusicVenue>
                 BlockPos.CODEC.fieldOf("audienceSpawn").forGetter(MusicVenue::getAudienceSpawn),
                 Codec.STRING.fieldOf("name").forGetter(MusicVenue::getName),
                 UUIDCodec.CODEC.fieldOf("ownerUUID").forGetter(MusicVenue::getOwnerUUID),
+                Codec.STRING.fieldOf("id").forGetter(MusicVenue::getId),
                 Codec.FLOAT.fieldOf("r").forGetter(MusicVenue::getR),
                 Codec.FLOAT.fieldOf("g").forGetter(MusicVenue::getG),
                 Codec.FLOAT.fieldOf("b").forGetter(MusicVenue::getB)
@@ -32,6 +33,7 @@ public class MusicVenue implements Comparable<MusicVenue>
     private BlockPos endPos;
     private BlockPos performerSpawn;
     private BlockPos audienceSpawn;
+    private String id;
     private String name;
     private UUID ownerUUID;
     private float r;
@@ -40,7 +42,7 @@ public class MusicVenue implements Comparable<MusicVenue>
 
     private AxisAlignedBB venueAABB;
 
-    public MusicVenue(BlockPos startPos, BlockPos endPos, BlockPos performerSpawn, BlockPos audienceSpawn, String name, UUID ownerUUID, float r, float g, float b)
+    public MusicVenue(BlockPos startPos, BlockPos endPos, BlockPos performerSpawn, BlockPos audienceSpawn, String name, UUID ownerUUID, String id, float r, float g, float b)
     {
         this.startPos = startPos;
         this.endPos = endPos;
@@ -48,6 +50,7 @@ public class MusicVenue implements Comparable<MusicVenue>
         this.audienceSpawn = audienceSpawn;
         this.name = name;
         this.ownerUUID = ownerUUID;
+        this.id = id;
         this.r = r;
         this.g = g;
         this.b = b;
@@ -126,6 +129,11 @@ public class MusicVenue implements Comparable<MusicVenue>
         this.ownerUUID = ownerUUID;
     }
 
+    public String getId()
+    {
+        return id;
+    }
+
     public float getR()
     {
         return r;
@@ -141,10 +149,10 @@ public class MusicVenue implements Comparable<MusicVenue>
         return b;
     }
 
-    public static MusicVenue factory(UUID uuid)
+    public static MusicVenue factory(UUID uuid, String id)
     {
         Color3f rainbow = Color3f.rainbowFactory();
-        return new MusicVenue(OUT_OF_BOUNDS, OUT_OF_BOUNDS, OUT_OF_BOUNDS, OUT_OF_BOUNDS, "", uuid, rainbow.getR(), rainbow.getG(), rainbow.getB());
+        return new MusicVenue(OUT_OF_BOUNDS, OUT_OF_BOUNDS, OUT_OF_BOUNDS, OUT_OF_BOUNDS, "", uuid, id, rainbow.getR(), rainbow.getG(), rainbow.getB());
     }
 
     @Override
