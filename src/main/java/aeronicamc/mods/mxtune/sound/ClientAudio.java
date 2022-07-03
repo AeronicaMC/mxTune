@@ -354,21 +354,27 @@ public class ClientAudio
         World level = mc.level;
         PlayerEntity player = mc.player;
         if (level == null || player == null) return;
+        boolean playerInVenue = MusicVenueHelper.inVenue(level, player.getId());
 
         ActiveAudio.getDistanceSortedSources().forEach(audioData -> {
 
             ClientAudio.Status status = audioData.getStatus();
             availableStreams[0] = getAvailableStreamCount();
             boolean sourceInVenue = MusicVenueHelper.inVenue(level, audioData.getEntityId());
-            boolean playerInVenue = MusicVenueHelper.inVenue(level, player.getId());
 
-            if ((audioData.getDistanceTo() > (MXTuneConfig.getListenerRange() + 16.0D)))
+
+            if (audioData.getDistanceTo() > (MXTuneConfig.getListenerRange() + 16.0D))
+                audioData.yield();
+            else if (playerInVenue && !sourceInVenue)
+                audioData.yield();
+            else if (!playerInVenue && sourceInVenue)
                 audioData.yield();
             else if (((priority[0] < availableStreams[0]) && (status == Status.YIELD)))
                 audioData.resume();
-            else if (audioData.isEntityRemoved())
+
+            if (audioData.isEntityRemoved())
                 audioData.expire();
-            else if (priority[0] >= availableStreams[0])
+            if (priority[0] >= availableStreams[0])
                 audioData.yield();
 
             priority[0]++;
