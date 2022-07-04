@@ -145,7 +145,7 @@ public class Midi2WavRenderer implements Receiver
     private double send(@Nullable Sequence seq, @Nullable Receiver receiver, long SkipSeconds) throws ModMidiException
     {
         if (seq == null) return 0D;
-        boolean skipping = SkipSeconds >= 1L;
+        boolean skipping = SkipSeconds > 1L;
         long skipTime = (long) (1000000.0 * SkipSeconds);
         boolean oneTime = false;
 
@@ -195,11 +195,11 @@ public class Midi2WavRenderer implements Receiver
                 if (receiver != null)
                 {
                     // Skip forward, but keep the program settings messages. Send other messages only after skipTime.
-                    if (skipping && ((currentTime < 1500) || (currentTime >= skipTime)))
-                        receiver.send(msg, (currentTime < 1500) ? currentTime : currentTime - skipTime);
+                    if (skipping && ((currentTime < 1100) || (currentTime >= skipTime)))
+                        receiver.send(msg, (currentTime < 1100) ? currentTime : currentTime - skipTime);
 
                     // Special case: Send "All Notes Off" to each channel before we start sending to the receiver.
-                    else if (skipping && !oneTime && (currentTime <= (skipTime - 1000)))
+                    else if (skipping && !oneTime && (currentTime <= (skipTime - 500)))
                     {
                         oneTime = true;
                         for (int channel = 0; channel < 16; channel++)

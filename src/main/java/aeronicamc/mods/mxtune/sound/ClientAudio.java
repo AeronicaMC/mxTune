@@ -348,6 +348,8 @@ public class ClientAudio
         return Math.min(Integer.parseInt(COUNTS[4]) - Integer.parseInt(COUNTS[3]), MAX_AUDIO_STREAMS);
     }
 
+    // TODO: Review for race conditions, test SoundEngine for active source instances (ISound) and resubmit or
+    // TODO:  not depending on result (ensure acquisition of stream, and/or confirm release).
     private static void prioritizeAndLimitSources()
     {
         int[] priority = new int[1];
@@ -410,8 +412,8 @@ public class ClientAudio
     {
         if (event.side == LogicalSide.CLIENT && event.phase == TickEvent.Phase.END)
         {
-            // one update twice per second
-            if (counter++ % 10 == 0)
+            // one update per second
+            if (counter++ % 20 == 0)
                 prioritizeAndLimitSources();
         }
     }
