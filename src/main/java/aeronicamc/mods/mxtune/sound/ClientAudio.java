@@ -410,8 +410,8 @@ public class ClientAudio
     {
         if (event.side == LogicalSide.CLIENT && event.phase == TickEvent.Phase.END)
         {
-            // one update twice per second
-            if (counter++ % 20 == 0)
+            // one update 4 times per second
+            if (counter++ % 5 == 0)
                 prioritizeAndLimitSources();
         }
     }

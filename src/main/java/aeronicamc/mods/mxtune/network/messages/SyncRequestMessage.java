@@ -32,9 +32,9 @@ public class SyncRequestMessage extends AbstractMessage<SyncRequestMessage>
                 ServerPlayerEntity sPlayer = ctx.get().getSender();
                 if (sPlayer != null)
                 {
-                    PlayManager.sendMusicTo(sPlayer, sPlayer);
                     PlayerNexusProvider.getNexus(sPlayer).ifPresent(IPlayerNexus::sync);
                     MusicVenueProvider.getMusicVenues(sPlayer.level).ifPresent(IMusicVenues::sync);
+                    PlayManager.sendMusicTo(sPlayer, sPlayer);
                 }
             });
         ctx.get().setPacketHandled(true);
