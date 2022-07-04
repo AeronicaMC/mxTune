@@ -137,15 +137,15 @@ public class Midi2WavRenderer implements Receiver
      * <p>Added a simpler and FASTER way to skip forward in the tune. Do it while rendering instead of after.
      *
      * @param seq Sequence to send
-     * @param recv  the Receiver of the Sequence
+     * @param receiver  the Receiver of the Sequence
      * @param SkipSeconds Seconds to skip forward
      * @return Total Length in seconds
      * @throws ModMidiException
      */
-    private double send(@Nullable Sequence seq, @Nullable Receiver recv, long SkipSeconds) throws ModMidiException
+    private double send(@Nullable Sequence seq, @Nullable Receiver receiver, long SkipSeconds) throws ModMidiException
     {
         if (seq == null) return 0D;
-        boolean skipping = SkipSeconds > 2L;
+        boolean skipping = SkipSeconds >= 1L;
         long skipTime = (long) (1000000.0 * SkipSeconds);
         boolean oneTime = false;
 
@@ -192,14 +192,14 @@ public class Midi2WavRenderer implements Receiver
                                 | ((data[1] & 0xff) << 8) | (data[2] & 0xff);
                     }
             } else {
-                if (recv != null)
+                if (receiver != null)
                 {
                     // Skip forward, but keep the program settings messages. Send other messages only after skipTime.
-                    if (skipping && ((currentTime < 11000) || (currentTime >= skipTime)))
-                        recv.send(msg, (currentTime < 11000) ? currentTime : currentTime - skipTime);
+                    if (skipping && ((currentTime < 1500) || (currentTime >= skipTime)))
+                        receiver.send(msg, (currentTime < 1500) ? currentTime : currentTime - skipTime);
 
                     // Special case: Send "All Notes Off" to each channel before we start sending to the receiver.
-                    else if (skipping && !oneTime && (currentTime <= (skipTime - 100000)))
+                    else if (skipping && !oneTime && (currentTime <= (skipTime - 1000)))
                     {
                         oneTime = true;
                         for (int channel = 0; channel < 16; channel++)
@@ -213,12 +213,12 @@ public class Midi2WavRenderer implements Receiver
                             {
                                 LOGGER.error("Failed to create All Notes Off message.");
                             }
-                            recv.send(msgLoc, currentTime);
+                            receiver.send(msgLoc, currentTime);
                         }
                     }
                     // Normal no skip operation. Send everything
                     else if (!skipping)
-                        recv.send(msg, currentTime);
+                        receiver.send(msg, currentTime);
                 }
             }
         }
