@@ -1,7 +1,7 @@
 package aeronicamc.mods.mxtune.events;
 
 import aeronicamc.mods.mxtune.Reference;
-import aeronicamc.mods.mxtune.init.ModBlocks;
+import aeronicamc.mods.mxtune.items.MusicVenueToolItem;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.SyncRequestMessage;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
@@ -44,7 +44,7 @@ public class ClientEvents
     @SubscribeEvent
     public static void event(ItemTooltipEvent event)
     {
-        if (event.getItemStack().getItem().getRegistryName().compareTo(ModBlocks.MUSIC_VENUE_TOOL_BLOCK.getId()) == 0)
+        if (event.getItemStack().getItem() instanceof MusicVenueToolItem)
         {
             event.getToolTip().add(MUSIC_VENUE_TOOL_BLOCK_HELP);
         }
