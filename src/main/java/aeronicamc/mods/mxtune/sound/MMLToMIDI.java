@@ -58,7 +58,7 @@ import java.util.*;
 public class MMLToMIDI
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final int OFFSET = 500;
+    private static final int OFFSET = 1000;
     private TicksOffset ticksOffset;
 
     private Sequence sequence;

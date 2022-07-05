@@ -90,17 +90,17 @@ public class AudioData
 
     void addProcessTimeMS(long ms)
     {
-        processTimeMS += ms;
+        // processTimeMS += ms;
     }
 
     void setProcessTimeMS(long ms)
     {
-        processTimeMS = ms;
+        // processTimeMS = ms;
     }
 
     int applyProcessTimeToElapsedTime()
     {
-        secondsElapsed += Math.round((float) processTimeMS / 1000.0);
+        // secondsElapsed += Math.round((float) processTimeMS / 1000.0);
         processTimeMS = 0;
         return secondsElapsed;
     }
