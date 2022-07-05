@@ -146,7 +146,7 @@ public class Midi2WavRenderer implements Receiver
     {
         if (seq == null) return 0D;
         boolean skipping = SkipSeconds >= 0L;
-        long skipTime = (long) (1000000.0 * SkipSeconds);
+        long skipTime = (long) (1000000.0 * SkipSeconds) + 1000;
         boolean oneTime = false;
 
         float divisionType = seq.getDivisionType();
@@ -199,7 +199,7 @@ public class Midi2WavRenderer implements Receiver
                         receiver.send(msg, (currentTime < 2000) ? currentTime : currentTime - skipTime);
 
                     // Special case: Send "All Notes Off" to each channel before we start sending to the receiver.
-                    else if (skipping && !oneTime && (currentTime <= (skipTime - 900)))
+                    else if (skipping && !oneTime && (currentTime <= (skipTime - 500)))
                     {
                         oneTime = true;
                         for (int channel = 0; channel < 16; channel++)

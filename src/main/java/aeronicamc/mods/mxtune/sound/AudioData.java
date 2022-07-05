@@ -77,7 +77,7 @@ public class AudioData
     {
         this.durationSeconds = durationSeconds;
         this.removalSeconds = durationSeconds + 4;
-        this.processTimeMS = processTimeMS;
+        this.processTimeMS = 0; //processTimeMS;
         this.secondsElapsed = secondsElapsed;
         this.playId = playId;
         this.playType = PlayIdSupplier.getTypeForPlayId(playId);

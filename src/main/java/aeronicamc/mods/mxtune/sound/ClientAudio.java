@@ -281,7 +281,7 @@ public class ClientAudio
         toMIDI.processMObjects(mmlParser.getMmlObjects());
         audioData.setSequence(toMIDI.getSequence());
         timer.stop();
-        audioData.addProcessTimeMS(timer.getTimeElapsed());
+        //audioData.addProcessTimeMS(timer.getTimeElapsed());
 
         // Log bank and program per instrument
         for (int preset : toMIDI.getPresets())
@@ -365,15 +365,19 @@ public class ClientAudio
             availableStreams[0] = getAvailableStreamCount();
             EntityVenueState sourceVenueState = MusicVenueHelper.getEntityVenueState(level, audioData.getEntityId());
 
-            if (audioData.getDistanceTo() > (MXTuneConfig.getListenerRange() + 16.0D))
+//            if (audioData.getDistanceTo() > (MXTuneConfig.getListenerRange() + 16.0D))
+//                audioData.yield();
+            if (!playerVenueState.equals(sourceVenueState))
                 audioData.yield();
-            else if (!playerVenueState.equals(sourceVenueState))
+            else if (audioData.getDistanceTo() > (MXTuneConfig.getListenerRange() + 16.0D))
                 audioData.yield();
             else if (((priority[0] < availableStreams[0]) && (status == Status.YIELD)) && playerVenueState.equals(sourceVenueState))
                 audioData.resume();
+            else if (priority[0] >= availableStreams[0])
+                audioData.yield();
 
-            if (audioData.isEntityRemoved())
-                audioData.expire();
+//            if (audioData.isEntityRemoved())
+//                audioData.expire();
             if (priority[0] >= availableStreams[0])
                 audioData.yield();
 
@@ -412,8 +416,8 @@ public class ClientAudio
     {
         if (event.side == LogicalSide.CLIENT && event.phase == TickEvent.Phase.END)
         {
-            // one update per second
-            if (counter++ % 20 == 0)
+            // five updates per second
+            if (counter++ % 4 == 0)
                 prioritizeAndLimitSources();
         }
     }
