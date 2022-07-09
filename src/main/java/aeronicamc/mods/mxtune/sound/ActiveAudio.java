@@ -163,7 +163,9 @@ public class ActiveAudio
             lock.await(Integer.MAX_VALUE, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e)
         {
-            LOGGER.error(e);
+            LOGGER.warn("Interrupted!", e);
+            // Restore interrupted state...
+            Thread.currentThread().interrupt();
         }
     }
 }

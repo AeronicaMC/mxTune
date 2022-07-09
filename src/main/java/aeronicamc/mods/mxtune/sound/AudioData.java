@@ -171,7 +171,7 @@ public class AudioData
         return isClientPlayer;
     }
 
-    AudioInputStream getAudioStream()
+    synchronized AudioInputStream getAudioStream()
     {
         return audioStream;
     }
@@ -185,7 +185,7 @@ public class AudioData
     }
 
     @Nullable
-    ISound getISound()
+    synchronized ISound getISound()
     {
         return iSound;
     }

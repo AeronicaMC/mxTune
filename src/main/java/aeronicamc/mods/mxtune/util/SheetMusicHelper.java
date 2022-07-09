@@ -409,7 +409,9 @@ public enum SheetMusicHelper
                         sleep(RandomUtils.nextLong(400 + (50 * finalMultiplier), 600 + (50 * finalMultiplier)));
                     } catch (InterruptedException e)
                     {
-                        LOGGER.warn(e);
+                        LOGGER.warn("Interrupted!", e);
+                        // Restore interrupted state...
+                        Thread.currentThread().interrupt();
                     }
                     if (blockPos != null)
                     {
@@ -427,7 +429,9 @@ public enum SheetMusicHelper
                         sleep(RandomUtils.nextLong(600 + (50 * finalMultiplier), 800 + (50 * finalMultiplier)));
                     } catch (InterruptedException e)
                     {
-                        LOGGER.warn(e);
+                        LOGGER.warn("Interrupted!", e);
+                        // Restore interrupted state...
+                        Thread.currentThread().interrupt();
                     }
                     if (blockPos != null && pLevel.getBlockState(blockPos).hasTileEntity() && pLevel.getBlockEntity(blockPos) instanceof IMusicPlayer)
                     {

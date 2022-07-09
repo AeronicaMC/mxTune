@@ -17,7 +17,7 @@ import static aeronicamc.mods.mxtune.managers.PlayIdSupplier.INVALID;
 
 public class ActiveTune
 {
-    private static final Logger LOGGER2 = LogManager.getLogger(ActiveTune.class);
+    private static final Logger LOGGER = LogManager.getLogger(ActiveTune.class);
     private static final Map<Integer, ActiveTune.Entry> playIdToActiveTuneEntry = new ConcurrentHashMap<>(16);
     private static final Map<Integer, ActiveTune.Entry> entityIdToActiveTuneEntry = new ConcurrentHashMap<>(16);
 
@@ -49,7 +49,7 @@ public class ActiveTune
             isInitialized = true;
             ActiveTune activeTune = new ActiveTune();
             executor.execute(activeTune::counter);
-            LOGGER2.debug("ActiveTune initialized.");
+            LOGGER.debug("ActiveTune initialized.");
         }
     }
 
@@ -78,7 +78,9 @@ public class ActiveTune
         }
         catch (InterruptedException e)
         {
-            LOGGER2.error(e);
+            LOGGER.warn("Interrupted!", e);
+            // Restore interrupted state...
+            Thread.currentThread().interrupt();
         }
     }
 
