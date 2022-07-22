@@ -9,17 +9,18 @@ import aeronicamc.mods.mxtune.caps.venues.MusicVenueHelper;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
-import aeronicamc.mods.mxtune.mixins.MixinSoundEngine;
 import aeronicamc.mods.mxtune.util.LoggedTimer;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.*;
+import net.minecraft.client.audio.ISound;
+import net.minecraft.client.audio.MusicTicker;
+import net.minecraft.client.audio.SoundEngine;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.Util;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
@@ -37,7 +38,6 @@ import javax.sound.sampled.AudioFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -290,51 +290,6 @@ public class ClientAudio
             String name = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(preset)).getString();
             LOGGER.debug("MML2PCM preset: {}, bank: {}, program: {}, name: {}", preset, patchPreset.getBank(),
                          patchPreset.getProgram(), name);
-        }
-    }
-
-    /**
-     * A helper method used to force the vanilla {@link SoundEngine} to use our {@link IAudioStream}
-     * class {@link PCMAudioStream} codec instead of the default {@link OggAudioStream} codec.
-     * @return the IAudioStream from the newly created PCMAudioStream
-     * @param audioData {@link AudioData} data and settings related to a music submission.
-     */
-    private static CompletableFuture<IAudioStream> submitStream(AudioData audioData)
-    {
-        return CompletableFuture.supplyAsync(() -> new PCMAudioStream(audioData), Util.backgroundExecutor());
-    }
-
-    /**
-     * Called by the {@link MixinSoundEngine} class. The injection point is between the point where the
-     * {@link ChannelManager.Entry} set and the {@link IAudioStream} based codec are initialized. It is at this
-     * point we can add our own audio stream using our custom codec.
-     * @param pISound   The current {@link ISound}
-     * @param isStream  True if the ISound is a stream
-     * @param entry     The channel entry associated with this ISound.
-     */
-    public static void submitStream(ISound pISound, boolean isStream, @Nullable ChannelManager.Entry entry)
-    {
-        if (isStream)
-        {
-            if (pISound instanceof MxSound) ((MxSound)pISound).getAudioData().filter(audioData -> audioData.getISound() == pISound).ifPresent( audioData ->
-            {
-                int playId = audioData.getPlayId();
-                LOGGER.info("submitStream {}", pISound);
-                if (entry != null)
-                {
-                    submitStream(audioData).thenAccept(iAudioStream -> entry.execute(soundSource ->
-                         {
-                             soundSource.attachBufferStream(iAudioStream);
-                             soundSource.play();
-                         }));
-                    LOGGER.debug("initializeCodec: playId: {}, ISound: {}", playId, pISound.getLocation());
-                }
-                else
-                {
-                    ActiveAudio.remove(playId);
-                    LOGGER.debug("initializeCodec: failed - playId: {}", playId);
-                }
-            });
         }
     }
 

@@ -2,12 +2,11 @@ package aeronicamc.mods.mxtune.sound;
 
 import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SoundEventAccessor;
-import net.minecraft.client.audio.SoundHandler;
-import net.minecraft.client.audio.TickableSound;
+import net.minecraft.client.audio.*;
 import net.minecraft.util.SoundCategory;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public abstract class MxSound extends TickableSound
 {
@@ -75,5 +74,11 @@ public abstract class MxSound extends TickableSound
     protected void setDonePlaying()
     {
         this.stop();
+    }
+
+    @Override
+    public CompletableFuture<IAudioStream> getStream(AudioStreamManager soundBuffers, Sound sound, boolean looping)
+    {
+        return CompletableFuture.completedFuture(new PCMAudioStream(audioData));
     }
 }
