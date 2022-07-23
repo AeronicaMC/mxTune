@@ -7,7 +7,6 @@ import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.caps.venues.EntityVenueState;
 import aeronicamc.mods.mxtune.caps.venues.MusicVenueHelper;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
-import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.util.LoggedTimer;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
@@ -15,7 +14,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
-import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.client.audio.SoundEngine;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.entity.Entity;
@@ -24,7 +22,6 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
-import net.minecraftforge.client.event.sound.PlayStreamingSourceEvent;
 import net.minecraftforge.client.event.sound.SoundLoadEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -47,7 +44,6 @@ public class ClientAudio
     public static final Logger LOGGER = LogManager.getLogger(ClientAudio.class);
     private static final Minecraft mc = Minecraft.getInstance();
     private static final SoundHandler soundHandler = mc.getSoundManager();
-    private static final MusicTicker musicTicker = mc.getMusicManager();
     private static SoundEngine soundEngine;
 
     private static int counter;
@@ -166,16 +162,6 @@ public class ClientAudio
         play(playId, duration, 0, 0, Objects.requireNonNull(mc.player).getId(), musicText, true, callback);
     }
 
-    // Determine if audio is 3D spacial or background
-    // Players playing solo, or in JAMS hear their own audio without 3D effects or falloff.
-    private static void setAudioFormat(AudioData audioData)
-    {
-        if (audioData.isClientPlayer())
-            audioData.setAudioFormat(AUDIO_FORMAT_STEREO);
-        else
-            audioData.setAudioFormat(AUDIO_FORMAT_3D);
-    }
-
     /**
      * The all-in-one #play(...) method of the {@link ClientAudio} class.
      * @param playID The unique server identifier for each music submission. see {@link PlayIdSupplier}
@@ -237,12 +223,6 @@ public class ClientAudio
         return mc.options.getSoundSourceVolume(SoundCategory.MASTER) > 0F && mc.options.getSoundSourceVolume(SoundCategory.RECORDS) > 0F;
     }
 
-    static void stop(int playID)
-    {
-        if (PlayIdSupplier.INVALID == playID) return;
-        getAudioData(playID).filter(audioData -> audioData.getISound() != null).ifPresent(audioData -> soundHandler.stop(audioData.getISound()));
-    }
-
     static void stop(ISound iSound)
     {
         synchronized (soundHandler)
@@ -254,7 +234,6 @@ public class ClientAudio
             soundHandler.stop(iSound);
         }
     }
-
 
     private static class RenderAudio implements Runnable
     {
@@ -320,8 +299,6 @@ public class ClientAudio
             availableStreams[0] = getAvailableStreamCount();
             EntityVenueState sourceVenueState = MusicVenueHelper.getEntityVenueState(level, audioData.getEntityId());
 
-//            if (audioData.getDistanceTo() > (MXTuneConfig.getListenerRange() + 16.0D))
-//                audioData.yield();
             if (!playerVenueState.equals(sourceVenueState))
                 audioData.yield();
             else if (audioData.getDistanceTo() > (MXTuneConfig.getListenerRange() + 16.0D))
@@ -331,8 +308,6 @@ public class ClientAudio
             else if (priority[0] >= availableStreams[0])
                 audioData.yield();
 
-//            if (audioData.isEntityRemoved())
-//                audioData.expire();
             if (priority[0] >= availableStreams[0])
                 audioData.yield();
 
@@ -396,13 +371,5 @@ public class ClientAudio
         init(event.getManager());
         if (event.getSound().getSource().equals(SoundCategory.MUSIC) && ActiveAudio.isPlaying())
             event.setResultSound(null);
-    }
-
-    @SubscribeEvent
-    public static void event(PlayStreamingSourceEvent event)
-    {
-        // This will never get called since the consumer of the stream disqualifies non-ogg sound resources.
-        if (event.getSound().getLocation().equals(ModSoundEvents.PCM_PROXY.getId()))
-            LOGGER.debug("PlayStreamingSourceEvent {}", event.getSound().getLocation());
     }
 }
