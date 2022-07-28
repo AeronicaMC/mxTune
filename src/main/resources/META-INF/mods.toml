@@ -17,7 +17,7 @@ issueTrackerURL="https://github.com/AeronicaMC/mxTune/issues"
 [[dependencies.mxtune]]
     modId="forge"
     mandatory=true
-    versionRange="[36,)"
+    versionRange="[36.2.39,)"
     ordering="NONE"
     side="BOTH"
 
