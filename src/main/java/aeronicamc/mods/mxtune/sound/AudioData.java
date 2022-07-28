@@ -17,6 +17,7 @@
 package aeronicamc.mods.mxtune.sound;
 
 
+import aeronicamc.mods.mxtune.caps.venues.MusicVenueHelper;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
@@ -32,6 +33,7 @@ import javax.annotation.Nullable;
 import javax.sound.midi.Sequence;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
+import java.util.Objects;
 
 import static aeronicamc.mods.mxtune.util.SheetMusicHelper.formatDuration;
 
@@ -83,7 +85,8 @@ public class AudioData
         this.playType = PlayIdSupplier.getTypeForPlayId(playId);
         this.entityId = entityId;
         this.isClientPlayer = isClientPlayer;
-        this.audioFormat = isClientPlayer ? ClientAudio.AUDIO_FORMAT_STEREO : ClientAudio.AUDIO_FORMAT_3D;
+        boolean inVenue = MusicVenueHelper.getEntityVenueState(Objects.requireNonNull(mc.level), entityId).inVenue();
+        this.audioFormat = (isClientPlayer || inVenue) ? ClientAudio.AUDIO_FORMAT_STEREO : ClientAudio.AUDIO_FORMAT_3D;
         this.status = ClientAudio.Status.YIELD;
         this.callback = callback;
     }
