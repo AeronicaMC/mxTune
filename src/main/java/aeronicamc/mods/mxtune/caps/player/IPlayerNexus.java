@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.caps.player;
 
+import aeronicamc.mods.mxtune.caps.venues.EntityVenueState;
 import net.minecraft.nbt.INBT;
 
 import javax.annotation.Nullable;
@@ -14,6 +15,10 @@ public interface IPlayerNexus
     void setPlayId(int playId);
 
     int getPlayId();
+
+    EntityVenueState getEntityVenueState();
+
+    void setEntityVenueState(EntityVenueState evs);
 
     @Nullable
     INBT serializeNBT();

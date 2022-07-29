@@ -135,16 +135,8 @@ public class RenderEvents
             BlockPos blockpos = BlockPos.ZERO;
             EntityVenueState bvs;
             Vector3d vector3d;
-            //MusicVenue[] activeVenue = new MusicVenue[1];
             EntityVenueState evs = MusicVenueHelper.getEntityVenueState(player.level, player.getId());
 
-//            MusicVenueProvider.getMusicVenues(player.level).ifPresent(
-//                    areas ->
-//                    {
-//                        areas.getMusicVenues().stream().filter(v->v.getVenueAABB().contains(player.getEyePosition(mc.getFrameTime()))).findFirst().ifPresent(area->{
-//                            activeVenue[0] = area;
-//                        });
-//                    });
             ITextComponent blockName;
             if (raytraceresult instanceof BlockRayTraceResult)
             {
@@ -159,12 +151,13 @@ public class RenderEvents
 
             ToolState.Type[] stateName = {ToolState.Type.START};
             toolManager().getToolOpl(player).ifPresent(tool-> {
-                if (!evs.inVenue() && !bvs.inVenue())
-                    stateName[0] = tool.getToolState();
-                else if (evs.getVenue().getOwnerUUID().equals(player.getUUID()))
-                    stateName[0] = ToolState.Type.REMOVE;
-                else
-                    stateName[0] = ToolState.Type.DONE;
+                stateName[0] = tool.getToolState();
+//                if (!evs.inVenue() && !bvs.inVenue())
+//                    stateName[0] = tool.getToolState();
+//                else if (evs.getVenue().getOwnerUUID().equals(player.getUUID()))
+//                    stateName[0] = ToolState.Type.REMOVE;
+//                else
+//                    stateName[0] = ToolState.Type.DONE;
             });
             ITextComponent testText = new TranslationTextComponent(stateName[0].getTranslationKey()).withStyle(TextFormatting.WHITE).append(" ").append(evs.inVenue() ? evs.getVenue().getVenueAABB().getCenter().toString() : "");
             int offset = Math.max(mc.font.width(testText) + 40, width);

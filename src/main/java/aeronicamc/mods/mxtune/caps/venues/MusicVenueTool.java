@@ -19,6 +19,7 @@ public class MusicVenueTool
                                       ).apply(instance, MusicVenueTool::new));
     private MusicVenue musicVenue;
     private ToolState.Type toolState;
+    private int slot;
 
     public MusicVenueTool(MusicVenue musicVenue, ToolState.Type toolState)
     {
@@ -54,6 +55,16 @@ public class MusicVenueTool
         } while (now.equals(lastDateTime));
         lastDateTime = now;
         return now;
+    }
+
+    public int getSlot()
+    {
+        return slot;
+    }
+
+    public void setSlot(int slot)
+    {
+        this.slot = slot;
     }
 
     public static MusicVenueTool factory(UUID uuid)

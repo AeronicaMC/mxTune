@@ -43,7 +43,10 @@ public class ToolManager
         getPlayerTool(livingEntity).ifPresent(tool -> {
             EntityVenueState evs = MusicVenueHelper.getEntityVenueState(livingEntity.level, livingEntity.getId());
             if (evs.getVenue().getOwnerUUID().equals(livingEntity.getUUID()) && evs.inVenue())
+            {
                 tool.setToolState(ToolState.Type.REMOVE);
+                sync(livingEntity);
+            }
             switch (tool.getToolState())
             {
                 case START:
@@ -77,6 +80,7 @@ public class ToolManager
                     sync(livingEntity);
                     break;
                 case DONE:
+                    sync(livingEntity);
                 default:
             }
         });
@@ -106,7 +110,7 @@ public class ToolManager
         return Optional.ofNullable(getTool(livingEntity));
     }
 
-    private void sync (LivingEntity livingEntity)
+    public void sync (LivingEntity livingEntity)
     {
         if (!livingEntity.level.isClientSide())
         {

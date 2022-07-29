@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.caps.player;
 
+import aeronicamc.mods.mxtune.caps.venues.EntityVenueState;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.PlayerNexusSync;
@@ -17,6 +18,7 @@ public class PlayerNexus implements IPlayerNexus
     private static final Logger LOGGER = LogManager.getLogger(PlayerNexus.class);
     private int playId = PlayIdSupplier.INVALID;
     private PlayerEntity player;
+    private EntityVenueState evs = EntityVenueState.INVALID;
 
     PlayerNexus() { /* NOP */ }
 
@@ -41,6 +43,18 @@ public class PlayerNexus implements IPlayerNexus
     public int getPlayId()
     {
         return playId;
+    }
+
+    @Override
+    public EntityVenueState getEntityVenueState()
+    {
+        return evs;
+    }
+
+    @Override
+    public void setEntityVenueState(EntityVenueState evs)
+    {
+        this.evs = evs;
     }
 
     @Nullable

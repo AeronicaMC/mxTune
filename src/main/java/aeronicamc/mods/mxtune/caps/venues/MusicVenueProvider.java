@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.caps.venues;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.caps.SerializableCapabilityProvider;
+import aeronicamc.mods.mxtune.caps.player.PlayerNexusProvider;
 import aeronicamc.mods.mxtune.util.Misc;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
@@ -12,6 +13,7 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
@@ -60,11 +62,31 @@ public class MusicVenueProvider
     @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
     public static class EventHandler
     {
+        private static int counter;
+
         @SubscribeEvent
         public static void event(final AttachCapabilitiesEvent<World> event)
         {
             event.addCapability(ID, new SerializableCapabilityProvider<>(musicVenuesCapability, null, new MusicVenues(event.getObject())));
             LOGGER.debug("AttachCapabilitiesEvent<World> {} {}", event.getObject(), event.getObject().dimension());
+        }
+
+        @SubscribeEvent
+        public static void event(final TickEvent.PlayerTickEvent event)
+        {
+            if(event.phase.equals(TickEvent.Phase.END) && (counter++ % 10 == 0))
+            {
+                PlayerNexusProvider.getNexus(event.player).ifPresent(
+                        nexus ->
+                        {
+                            EntityVenueState evs = MusicVenueHelper.getEntityVenueState(event.player.level, event.player.getId());
+                            if (!nexus.getEntityVenueState().equals(evs))
+                            {
+                                nexus.setEntityVenueState(evs);
+                                LOGGER.debug("{} inVenue {}: {}", event.player.getName().getString(), evs.inVenue() ,evs.getVenue());
+                            };
+                        });
+            }
         }
     }
 }
