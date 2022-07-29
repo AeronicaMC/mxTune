@@ -16,7 +16,7 @@ import static aeronicamc.mods.mxtune.managers.PlayIdSupplier.INVALID;
 public class ActiveAudio
 {
     private static final Logger LOGGER = LogManager.getLogger(ActiveAudio.class);
-    private static final Map<Integer, AudioData> playIdToActiveAudioData = new ConcurrentHashMap<>(16);
+    private static final List<AudioData> activeAudioData = new ArrayList<>(16);
     private static final Queue<AudioData> deleteAudioDataQueue = new ConcurrentLinkedQueue<>();
 
     private static ScheduledExecutorService scheduledThreadPool = null;
@@ -48,46 +48,33 @@ public class ActiveAudio
         }
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    static boolean addEntry(AudioData audioData)
+    static void addEntry(AudioData audioData)
     {
-        boolean hasDuplicatePlayId;
-        synchronized (playIdToActiveAudioData)
+        synchronized (activeAudioData)
         {
-            hasDuplicatePlayId = playIdToActiveAudioData.containsKey(audioData.getPlayId());
+            activeAudioData.add(audioData);
         }
-        if (hasDuplicatePlayId)
-            synchronized (playIdToActiveAudioData)
-            {
-                playIdToActiveAudioData.replace(audioData.getPlayId(), audioData);
-            }
-        else
-            synchronized (playIdToActiveAudioData)
-            {
-                playIdToActiveAudioData.put(audioData.getPlayId(), audioData);
-            }
-        return hasDuplicatePlayId;
     }
 
     static List<AudioData> getDistanceSortedSources()
     {
-        return playIdToActiveAudioData.values().stream().sorted(Comparator.comparingDouble(AudioData::getDistanceTo)).collect(Collectors.toList());
+        return activeAudioData.stream().sorted(Comparator.comparingDouble(AudioData::getDistanceTo)).collect(Collectors.toList());
     }
 
     static boolean isPlaying()
     {
-        return playIdToActiveAudioData.values().stream().anyMatch(audioData -> ClientAudio.PLAYING_STATUSES.contains(audioData.getStatus()));
+        return activeAudioData.stream().anyMatch(audioData -> ClientAudio.PLAYING_STATUSES.contains(audioData.getStatus()));
     }
 
     @Nullable
     static AudioData getAudioData(int playId)
     {
-        return playIdToActiveAudioData.get(playId);
+        return activeAudioData.stream().filter(audioData -> audioData.getPlayId() == playId).findFirst().orElse(null);
     }
 
     static Set<Integer> getActivePlayIds()
     {
-        return playIdToActiveAudioData.keySet();
+        return activeAudioData.stream().map(AudioData::getPlayId).collect(Collectors.toSet());
     }
 
     static boolean isActivePlayId(int playId)
@@ -97,9 +84,9 @@ public class ActiveAudio
 
     static Optional<AudioData> getActiveTuneByEntityId(@Nullable Entity entity)
     {
-        synchronized (playIdToActiveAudioData)
+        synchronized (activeAudioData)
         {
-            return playIdToActiveAudioData.values().stream().filter(entry -> ((entity != null) && (entry.getEntityId() == entity.getId()))).findFirst();
+            return activeAudioData.stream().filter(entry -> ((entity != null) && (entry.getEntityId() == entity.getId()))).findFirst();
         }
     }
 
@@ -113,20 +100,11 @@ public class ActiveAudio
         return deleteAudioDataQueue.size();
     }
 
-    static void remove(int playId)
-    {
-        if (!playIdToActiveAudioData.isEmpty())
-            synchronized (playIdToActiveAudioData)
-            {
-                playIdToActiveAudioData.remove(playId);
-            }
-    }
-
     static void removeAll()
     {
-        synchronized (playIdToActiveAudioData)
+        synchronized (activeAudioData)
         {
-            playIdToActiveAudioData.forEach((playId, audioData) -> audioData.expire());
+            activeAudioData.forEach(AudioData::expire);
         }
         while (!deleteAudioDataQueue.isEmpty())
             synchronized (deleteAudioDataQueue)
@@ -142,9 +120,9 @@ public class ActiveAudio
                 () ->
                 {
                     if (!deleteAudioDataQueue.isEmpty())
-                        playIdToActiveAudioData.remove(deleteAudioDataQueue.remove().getPlayId());
+                        activeAudioData.remove(deleteAudioDataQueue.remove());
 
-                    playIdToActiveAudioData.values()
+                    activeAudioData
                             .forEach(audioData ->
                                      {
                                          if (audioData.canRemove() || ClientAudio.DONE_STATUSES.contains(audioData.getStatus()))

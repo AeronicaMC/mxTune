@@ -293,6 +293,7 @@ public class ClientAudio
         if (level == null || player == null) return;
         EntityVenueState playerVenueState = MusicVenueHelper.getEntityVenueState(level, player.getId());
 
+        // TODO: Sorting needs to take into account In/Out of venue.
         ActiveAudio.getDistanceSortedSources().forEach(audioData -> {
 
             ClientAudio.Status status = audioData.getStatus();
@@ -319,16 +320,17 @@ public class ClientAudio
      * Causes the specified playID to fade out over the specified number of seconds.
      * @param playID the play session to fade.
      * @param seconds to fade out and stop the song. A value of 0 will stop the song immediately.
+     * @param stop
      */
-    public static void fadeOut(int playID, int seconds)
+    public static void fadeOut(int playID, int seconds, boolean stop)
     {
         if (PlayIdSupplier.INVALID == playID) return;
         getAudioData(playID).ifPresent(audioData -> {
             LOGGER.info("fadeOut: {} in {} sec.", playID, seconds);
             if (seconds > 0)
-                audioData.startFadeInOut(seconds, false);
+                audioData.startFadeInOut(seconds, false, stop);
             else
-                audioData.expire();
+                audioData.startFadeInOut(0, false, stop);
         });
     }
 

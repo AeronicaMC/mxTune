@@ -38,7 +38,7 @@ import java.util.Objects;
 import static aeronicamc.mods.mxtune.util.SheetMusicHelper.formatDuration;
 
 
-public class AudioData
+public class AudioData implements Cloneable
 {
     private final Minecraft mc = Minecraft.getInstance();
     private static final Vector3d MAX_VECTOR3D = new Vector3d(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
@@ -64,6 +64,8 @@ public class AudioData
     private boolean isFading;
     private int fadeTicks;
     private int fadeCounter;
+
+    private boolean fadeToStop;
 
     /**
      * All the data needed to generate and manage the audio stream except the musicText which is passed to the parser only.
@@ -156,7 +158,7 @@ public class AudioData
 
     boolean canRemove()
     {
-        return removalSeconds < (secondsElapsed);
+        return (removalSeconds < secondsElapsed) || fadeToStop;
     }
 
     int getPlayId()
@@ -228,6 +230,12 @@ public class AudioData
             {
                 volumeFade = (fadeCounter + mc.getDeltaFrameTime()) / fadeTicks;
             }
+            else if (fadeToStop)
+            {
+                isFading = false;
+                volumeFade = 0F;
+                    expire();
+            }
             else
             {
                 isFading = false;
@@ -242,13 +250,15 @@ public class AudioData
      * Start a fade-in or fade-out. Fade-in is set true only in the {@link PCMAudioStream} notifyOnInputStreamAvailable() method.
      * @param seconds   duration of the fade in seconds. 5 MAX.
      * @param fadeIn    set true for fade-in mode.
+     * @param stop
      */
-    void startFadeInOut(int seconds, boolean fadeIn)
+    void startFadeInOut(int seconds, boolean fadeIn, boolean stop)
     {
         synchronized (this)
         {
             // If a fade out is already in progress we will not change it.
             this.fadeIn = fadeIn;
+            this.fadeToStop = stop;
             if (!isFading && !ClientAudio.isDoneStatus(status))
             {
                 fadeTicks = Math.max(Math.abs(seconds * 20), 5);
@@ -276,7 +286,7 @@ public class AudioData
     {
         volumeFade = 0F;
         isFading = false;
-        if ((status != ClientAudio.Status.YIELD) || isEntityRemoved())
+        if ((status != ClientAudio.Status.YIELD) || isEntityRemoved() || fadeToStop)
             setStatus(ClientAudio.Status.DONE);
         ClientAudio.stop(iSound);
     }
@@ -286,14 +296,17 @@ public class AudioData
         if (ClientAudio.isPlayingStatus(status))
         {
             setStatus(ClientAudio.Status.YIELD);
-            startFadeInOut(1, false);
+            startFadeInOut(1, false, false);
         }
     }
 
     void resume()
     {
         setStatus(ClientAudio.Status.WAITING);
-        ClientAudio.submitAudioData(this);
+        AudioData clone = (AudioData) this.clone();
+        this.startFadeInOut(1, false, true);
+        ActiveAudio.addEntry(clone);
+        ClientAudio.submitAudioData(clone);
     }
 
     int getRemainingDuration()
@@ -348,5 +361,76 @@ public class AudioData
         return new StringTextComponent(
                 String.format("[%s] %s, E:%06d, P:%06d, T:%04d, RD:%s PCT:%01.2f, dist:%05.2f",
                               status, name, entityId, playId, secondsElapsed, formatDuration(getRemainingDuration()), getProgress(), getDistanceTo())).withStyle(TextFormatting.WHITE);
+    }
+
+    /**
+     * Creates and returns a copy of this object.  The precise meaning
+     * of "copy" may depend on the class of the object. The general
+     * intent is that, for any object {@code x}, the expression:
+     * <blockquote>
+     * <pre>
+     * x.clone() != x</pre></blockquote>
+     * will be true, and that the expression:
+     * <blockquote>
+     * <pre>
+     * x.clone().getClass() == x.getClass()</pre></blockquote>
+     * will be {@code true}, but these are not absolute requirements.
+     * While it is typically the case that:
+     * <blockquote>
+     * <pre>
+     * x.clone().equals(x)</pre></blockquote>
+     * will be {@code true}, this is not an absolute requirement.
+     * <p>
+     * By convention, the returned object should be obtained by calling
+     * {@code super.clone}.  If a class and all of its superclasses (except
+     * {@code Object}) obey this convention, it will be the case that
+     * {@code x.clone().getClass() == x.getClass()}.
+     * <p>
+     * By convention, the object returned by this method should be independent
+     * of this object (which is being cloned).  To achieve this independence,
+     * it may be necessary to modify one or more fields of the object returned
+     * by {@code super.clone} before returning it.  Typically, this means
+     * copying any mutable objects that comprise the internal "deep structure"
+     * of the object being cloned and replacing the references to these
+     * objects with references to the copies.  If a class contains only
+     * primitive fields or references to immutable objects, then it is usually
+     * the case that no fields in the object returned by {@code super.clone}
+     * need to be modified.
+     * <p>
+     * The method {@code clone} for class {@code Object} performs a
+     * specific cloning operation. First, if the class of this object does
+     * not implement the interface {@code Cloneable}, then a
+     * {@code CloneNotSupportedException} is thrown. Note that all arrays
+     * are considered to implement the interface {@code Cloneable} and that
+     * the return type of the {@code clone} method of an array type {@code T[]}
+     * is {@code T[]} where T is any reference or primitive type.
+     * Otherwise, this method creates a new instance of the class of this
+     * object and initializes all its fields with exactly the contents of
+     * the corresponding fields of this object, as if by assignment; the
+     * contents of the fields are not themselves cloned. Thus, this method
+     * performs a "shallow copy" of this object, not a "deep copy" operation.
+     * <p>
+     * The class {@code Object} does not itself implement the interface
+     * {@code Cloneable}, so calling the {@code clone} method on an object
+     * whose class is {@code Object} will result in throwing an
+     * exception at run time.
+     *
+     * @return a clone of this instance.
+     * @throws CloneNotSupportedException if the object's class does not
+     *                                    support the {@code Cloneable} interface. Subclasses
+     *                                    that override the {@code clone} method can also
+     *                                    throw this exception to indicate that an instance cannot
+     *                                    be cloned.
+     * @see Cloneable
+     */
+    @Override
+    protected Object clone()
+    {
+        try {
+            return (AudioData) super.clone();
+        } catch (CloneNotSupportedException e)
+        {
+            return new AudioData(this.durationSeconds, this.secondsElapsed, this.processTimeMS, this.getPlayId(), this.getEntityId(), this.isClientPlayer, this.callback);
+        }
     }
 }

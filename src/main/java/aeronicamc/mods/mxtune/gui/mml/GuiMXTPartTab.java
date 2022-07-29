@@ -580,7 +580,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
 
     private void stop()
     {
-        Objects.requireNonNull(minecraft).submitAsync(()->ClientAudio.fadeOut(playId, 1));
+        Objects.requireNonNull(minecraft).submitAsync(()->ClientAudio.fadeOut(playId, 1, false));
         isPlaying = false;
         playId = PlayIdSupplier.INVALID;
         updateState();
