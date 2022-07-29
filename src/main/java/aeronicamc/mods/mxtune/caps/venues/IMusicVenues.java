@@ -11,6 +11,8 @@ public interface IMusicVenues
 
     void addMusicVenue(MusicVenue musicVenue);
 
+    boolean removeMusicVenue(MusicVenue musicVenue);
+
     int getInt();
 
     void setInt(Integer someInt);

@@ -44,6 +44,12 @@ public class MusicVenues implements IMusicVenues
     }
 
     @Override
+    public boolean removeMusicVenue(MusicVenue musicVenue)
+    {
+        return musicVenues.remove(musicVenue);
+    }
+
+    @Override
     public List<MusicVenue> getMusicVenues()
     {
         return musicVenues;
