@@ -29,6 +29,7 @@ public class MovingMusic extends MxSound
         this.x = (float) entity.getX();
         this.y = (float) entity.getY();
         this.z = (float) entity.getZ();
+        this.attenuation = audioData.getAudioFormat().equals(ClientAudio.AUDIO_FORMAT_STEREO) ? AttenuationType.NONE : AttenuationType.LINEAR;
         LOGGER.debug("MovingMusic entity {}, playId {}", entity.getName().getContents(), audioData.getPlayId());
     }
 
@@ -39,7 +40,7 @@ public class MovingMusic extends MxSound
         {
             setDonePlaying();
             LOGGER.debug("MovingMusic playID {} done, this {}", playID, this);
-        } else if (audioData != null && mc.player != null)
+        } else if (audioData != null && mc.player != null && audioData.getAudioFormat().equals(ClientAudio.AUDIO_FORMAT_3D))
         {
             this.x = entity.getX();
             this.y = entity.getY();
@@ -52,6 +53,7 @@ public class MovingMusic extends MxSound
             {
                 this.lastDistance = distance;
             }
-        }
+        } else
+            this.volumeBase = 0.6F;
     }
 }
