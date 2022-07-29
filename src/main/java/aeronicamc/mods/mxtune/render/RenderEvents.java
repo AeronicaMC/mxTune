@@ -1,8 +1,8 @@
 package aeronicamc.mods.mxtune.render;
 
 import aeronicamc.mods.mxtune.Reference;
-import aeronicamc.mods.mxtune.caps.venues.MusicVenue;
-import aeronicamc.mods.mxtune.caps.venues.MusicVenueProvider;
+import aeronicamc.mods.mxtune.caps.venues.EntityVenueState;
+import aeronicamc.mods.mxtune.caps.venues.MusicVenueHelper;
 import aeronicamc.mods.mxtune.caps.venues.ToolManager;
 import aeronicamc.mods.mxtune.caps.venues.ToolState;
 import aeronicamc.mods.mxtune.init.ModBlocks;
@@ -133,32 +133,41 @@ public class RenderEvents
             ActiveRenderInfo activeRenderInfo = mc.gameRenderer.getMainCamera();
             RayTraceResult raytraceresult = mc.hitResult;
             BlockPos blockpos = BlockPos.ZERO;
+            EntityVenueState bvs;
             Vector3d vector3d;
-            MusicVenue[] activeVenue = new MusicVenue[1];
+            //MusicVenue[] activeVenue = new MusicVenue[1];
+            EntityVenueState evs = MusicVenueHelper.getEntityVenueState(player.level, player.getId());
 
-            MusicVenueProvider.getMusicVenues(player.level).ifPresent(
-                    areas ->
-                    {
-                        areas.getMusicVenues().stream().filter(v->v.getVenueAABB().contains(player.getEyePosition(mc.getFrameTime()))).findFirst().ifPresent(area->{
-                            activeVenue[0] = area;
-                        });
-                    });
-
-            ToolState.Type[] stateName = {ToolState.Type.START};
-            toolManager().getToolOpl(player).ifPresent(tool-> {
-                stateName[0] = tool.getToolState();
-            });
-            ITextComponent testText = new TranslationTextComponent(stateName[0].getTranslationKey()).withStyle(TextFormatting.WHITE).append(" ").append(activeVenue[0] != null ? activeVenue[0].getVenueAABB().getCenter().toString() : "");
-
+//            MusicVenueProvider.getMusicVenues(player.level).ifPresent(
+//                    areas ->
+//                    {
+//                        areas.getMusicVenues().stream().filter(v->v.getVenueAABB().contains(player.getEyePosition(mc.getFrameTime()))).findFirst().ifPresent(area->{
+//                            activeVenue[0] = area;
+//                        });
+//                    });
             ITextComponent blockName;
-            int offset = Math.max(mc.font.width(testText) + 40, width);
             if (raytraceresult instanceof BlockRayTraceResult)
-                blockpos = ((BlockRayTraceResult)raytraceresult).getBlockPos();
+            {
+                blockpos = ((BlockRayTraceResult) raytraceresult).getBlockPos();
+            }
             else if (raytraceresult instanceof EntityRayTraceResult)
             {
                 vector3d = ((EntityRayTraceResult) raytraceresult).getEntity().getPosition(mc.getFrameTime());
                 blockpos = new BlockPos(vector3d.x, vector3d.y, vector3d.z);
             }
+            bvs = MusicVenueHelper.getBlockVenueState(player.level, blockpos);
+
+            ToolState.Type[] stateName = {ToolState.Type.START};
+            toolManager().getToolOpl(player).ifPresent(tool-> {
+                if (!evs.inVenue() && !bvs.inVenue())
+                    stateName[0] = tool.getToolState();
+                else if (evs.getVenue().getOwnerUUID().equals(player.getUUID()))
+                    stateName[0] = ToolState.Type.REMOVE;
+                else
+                    stateName[0] = ToolState.Type.DONE;
+            });
+            ITextComponent testText = new TranslationTextComponent(stateName[0].getTranslationKey()).withStyle(TextFormatting.WHITE).append(" ").append(evs.inVenue() ? evs.getVenue().getVenueAABB().getCenter().toString() : "");
+            int offset = Math.max(mc.font.width(testText) + 40, width);
 
             if (mc.level != null && raytraceresult instanceof BlockRayTraceResult)
                 blockName = mc.level.getBlockState(blockpos).getBlock().getName().withStyle(TextFormatting.YELLOW);
