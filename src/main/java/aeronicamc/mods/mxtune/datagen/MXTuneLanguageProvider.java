@@ -185,6 +185,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addEnum("tool_state.type.start", "Start");
         addEnum("tool_state.type.end", "End");
         addEnum("tool_state.type.done", "Done");
+        addEnum("tool_state.type.remove", "Remove");
     }
 
     private void addErrors()

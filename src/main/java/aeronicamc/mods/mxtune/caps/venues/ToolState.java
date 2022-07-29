@@ -14,7 +14,8 @@ public class ToolState
     {
         START("START", "enum.mxtune.tool_state.type.start"),
         END("END", "enum.mxtune.tool_state.type.end"),
-        DONE("DONE", "enum.mxtune.tool_state.type.done");
+        DONE("DONE", "enum.mxtune.tool_state.type.done"),
+        REMOVE("REMOVE", "enum.mxtune.tool_state.type.remove");
 
         public static final Codec<ToolState.Type> CODEC = IStringSerializable.fromEnum(ToolState.Type::values, ToolState.Type::getFromKey);
         private final String serializationKey;

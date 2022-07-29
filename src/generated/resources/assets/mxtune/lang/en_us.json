@@ -13,6 +13,7 @@
   "entity.mxtune.music_source": "[MusicSource]",
   "enum.mxtune.tool_state.type.done": "Done",
   "enum.mxtune.tool_state.type.end": "End",
+  "enum.mxtune.tool_state.type.remove": "Remove",
   "enum.mxtune.tool_state.type.start": "Start",
   "errors.mxtune.midi_system_util.no_sound_bank_loaded": "No SoundBank Loaded",
   "errors.mxtune.mml_server_side_validation_failure": "Server side music validation error",
