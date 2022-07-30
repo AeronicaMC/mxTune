@@ -66,6 +66,7 @@ public class AudioData implements Cloneable
     private int fadeCounter;
 
     private boolean fadeToStop;
+    private boolean dead;
 
     /**
      * All the data needed to generate and manage the audio stream except the musicText which is passed to the parser only.
@@ -230,17 +231,11 @@ public class AudioData implements Cloneable
             {
                 volumeFade = (fadeCounter + mc.getDeltaFrameTime()) / fadeTicks;
             }
-            else if (fadeToStop)
-            {
-                isFading = false;
-                volumeFade = 0F;
-                    expire();
-            }
             else
             {
                 isFading = false;
                 volumeFade = 0F;
-                if (!fadeIn)
+                if (!fadeIn || fadeToStop)
                     expire();
             }
         }
@@ -302,11 +297,15 @@ public class AudioData implements Cloneable
 
     void resume()
     {
-        setStatus(ClientAudio.Status.WAITING);
-        AudioData clone = (AudioData) this.clone();
-        this.startFadeInOut(1, false, true);
-        ActiveAudio.addEntry(clone);
-        ClientAudio.submitAudioData(clone);
+        if (!this.dead)
+        {
+            AudioData clone = (AudioData) this.clone();
+            clone.setStatus(ClientAudio.Status.WAITING);
+            this.dead = true;
+            this.startFadeInOut(1, false, true);
+            ActiveAudio.addEntry(clone);
+            ClientAudio.submitAudioData(clone);
+        }
     }
 
     int getRemainingDuration()

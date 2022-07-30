@@ -47,7 +47,7 @@ public class ClientAudio
     private static SoundEngine soundEngine;
 
     private static int counter;
-    static int MAX_AUDIO_STREAMS = 3;
+    static int MAX_AUDIO_STREAMS = 4;
     private static final int THREAD_POOL_SIZE = 3;
     /* PCM Signed Monaural little endian */
     static final AudioFormat AUDIO_FORMAT_3D = new AudioFormat(48000, 16, 1, true, false);
@@ -300,19 +300,20 @@ public class ClientAudio
             availableStreams[0] = getAvailableStreamCount();
             EntityVenueState sourceVenueState = MusicVenueHelper.getEntityVenueState(level, audioData.getEntityId());
 
-            if (!playerVenueState.equals(sourceVenueState))
+            if (audioData.getDistanceTo() > (MXTuneConfig.getListenerRange() + 16.0D))
                 audioData.yield();
-            else if (audioData.getDistanceTo() > (MXTuneConfig.getListenerRange() + 16.0D))
+            else if (!playerVenueState.equals(sourceVenueState))
                 audioData.yield();
             else if (((priority[0] < availableStreams[0]) && (status == Status.YIELD)) && playerVenueState.equals(sourceVenueState))
                 audioData.resume();
             else if (priority[0] >= availableStreams[0])
                 audioData.yield();
 
-            if (priority[0] >= availableStreams[0])
-                audioData.yield();
+//            if (priority[0] >= availableStreams[0])
+//                audioData.yield();
 
-            priority[0]++;
+            if (PLAYING_STATUSES.contains(audioData.getStatus()))
+                priority[0]++;
         });
     }
 
@@ -349,7 +350,7 @@ public class ClientAudio
         if (event.side == LogicalSide.CLIENT && event.phase == TickEvent.Phase.END)
         {
             // five updates per second
-            if (counter++ % 4 == 0)
+            if (counter++ % 10 == 0)
                 prioritizeAndLimitSources();
         }
     }

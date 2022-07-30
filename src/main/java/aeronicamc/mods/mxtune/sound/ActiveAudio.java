@@ -125,7 +125,7 @@ public class ActiveAudio
                     activeAudioData
                             .forEach(audioData ->
                                      {
-                                         if (audioData.canRemove() || ClientAudio.DONE_STATUSES.contains(audioData.getStatus()))
+                                         if (audioData.canRemove() || audioData.isEntityRemoved() || ClientAudio.DONE_STATUSES.contains(audioData.getStatus()))
                                          {
                                              audioData.expire();
                                              deleteAudioDataQueue.add(audioData);
