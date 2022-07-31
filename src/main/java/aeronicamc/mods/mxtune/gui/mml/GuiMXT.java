@@ -756,7 +756,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
 
     private void stop()
     {
-        getMC().submitAsync(()->ClientAudio.fadeOut(playId, 1, false));
+        getMC().submitAsync(()->ClientAudio.fadeOut(playId, 1));
         isPlaying = false;
         playId = PlayIdSupplier.INVALID;
 

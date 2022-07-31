@@ -45,7 +45,7 @@ public class StopPlayMessage extends AbstractMessage<StopPlayMessage>
                 if (message.stopAll)
                     ClientAudio.stopAll();
                 else
-                    ClientAudio.fadeOut(message.playId, 1, true);
+                    ClientAudio.fadeOut(message.playId, 1);
             });
         }
         ctx.get().setPacketHandled(true);

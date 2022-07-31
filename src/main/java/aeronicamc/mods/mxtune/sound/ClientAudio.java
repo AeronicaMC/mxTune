@@ -25,7 +25,6 @@ import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.SoundLoadEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.LogicalSide;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -309,9 +308,6 @@ public class ClientAudio
             else if (priority[0] >= availableStreams[0])
                 audioData.yield();
 
-//            if (priority[0] >= availableStreams[0])
-//                audioData.yield();
-
             if (PLAYING_STATUSES.contains(audioData.getStatus()))
                 priority[0]++;
         });
@@ -321,17 +317,13 @@ public class ClientAudio
      * Causes the specified playID to fade out over the specified number of seconds.
      * @param playID the play session to fade.
      * @param seconds to fade out and stop the song. A value of 0 will stop the song immediately.
-     * @param stop
      */
-    public static void fadeOut(int playID, int seconds, boolean stop)
+    public static void fadeOut(int playID, int seconds)
     {
         if (PlayIdSupplier.INVALID == playID) return;
         getAudioData(playID).ifPresent(audioData -> {
             LOGGER.info("fadeOut: {} in {} sec.", playID, seconds);
-            if (seconds > 0)
-                audioData.startFadeInOut(seconds, false, stop);
-            else
-                audioData.startFadeInOut(0, false, stop);
+            audioData.startFadeInOut(Math.max(seconds, 0), false, true);
         });
     }
 
@@ -347,12 +339,9 @@ public class ClientAudio
     @SubscribeEvent
     public static void event(TickEvent.ClientTickEvent event)
     {
-        if (event.side == LogicalSide.CLIENT && event.phase == TickEvent.Phase.END)
-        {
-            // five updates per second
+        if (event.phase == TickEvent.Phase.END)
             if (counter++ % 10 == 0)
                 prioritizeAndLimitSources();
-        }
     }
 
     // called in SoundEngine CTOR* and reload. Reload: i.e. key-press F3+T
