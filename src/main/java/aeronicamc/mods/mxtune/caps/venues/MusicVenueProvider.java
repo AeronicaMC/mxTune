@@ -76,24 +76,54 @@ public class MusicVenueProvider
         public static void event(final TickEvent.PlayerTickEvent event)
         {
             if(!event.player.getCommandSenderWorld().isClientSide && event.phase.equals(TickEvent.Phase.END) && (counterServer++ % 10 == 0))
-                updateEntityVenue(event);
+                updateServerEntityVenue(event);
 
             if(event.player.getCommandSenderWorld().isClientSide && event.phase.equals(TickEvent.Phase.END) && (counterClient++ % 10 == 0))
-                updateEntityVenue(event);
+                updateClientEntityVenue(event);
         }
 
-        private static void updateEntityVenue(TickEvent.PlayerTickEvent event)
+        private static void updateServerEntityVenue(TickEvent.PlayerTickEvent event)
         {
             PlayerNexusProvider.getNexus(event.player).ifPresent(
                     nexus ->
                     {
                         EntityVenueState evs = MusicVenueHelper.getEntityVenueState(event.player.level, event.player.getId());
+                        ToolManager.getPlayerTool(event.player).ifPresent(tool -> {
+                            if (!nexus.getEntityVenueState().equals(evs))
+                            {
+                                if (!event.player.getCommandSenderWorld().isClientSide && evs.inVenue() &&
+                                        (evs.getVenue().getOwnerUUID().equals(event.player.getUUID()) ||
+                                                 event.player.isCreative() || (event.player.level.getServer() != null &&
+                                                                                       event.player.level.getServer().getPlayerList().isOp(event.player.getGameProfile()))))
+                                {
+                                    tool.setToolState(ToolState.Type.REMOVE);
+                                    ToolManager.sync(event.player);
+                                }
+                                else if (!event.player.getCommandSenderWorld().isClientSide)
+                                {
+                                    tool.setToolState(ToolState.Type.START);
+                                    ToolManager.sync(event.player);
+                                }
+
+                                nexus.setEntityVenueState(evs);
+                                //LOGGER.debug("{} inVenue {}: {}", event.player.getName().getString(), evs.inVenue() ,evs.getVenue());
+                            };
+                        });
+                    });
+        }
+
+        private static void updateClientEntityVenue(TickEvent.PlayerTickEvent event)
+        {
+            PlayerNexusProvider.getNexus(event.player).ifPresent(
+                    nexus -> {
+                        EntityVenueState evs = MusicVenueHelper.getEntityVenueState(event.player.level, event.player.getId());
                         if (!nexus.getEntityVenueState().equals(evs))
                         {
                             nexus.setEntityVenueState(evs);
                             //LOGGER.debug("{} inVenue {}: {}", event.player.getName().getString(), evs.inVenue() ,evs.getVenue());
-                        };
+                        }
                     });
+
         }
     }
 }

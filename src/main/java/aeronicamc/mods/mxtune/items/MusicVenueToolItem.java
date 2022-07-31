@@ -6,7 +6,6 @@ import aeronicamc.mods.mxtune.caps.venues.ToolManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -29,7 +28,6 @@ public class MusicVenueToolItem extends Item
     private final static ITextComponent SHIFT_HELP_03 = new TranslationTextComponent("tooltip.mxtune.music_venue_tool_item.shift_help_03").withStyle(TextFormatting.YELLOW);
     private final static ITextComponent SHIFT_HELP_04 = new TranslationTextComponent("tooltip.mxtune.music_venue_tool_item.shift_help_04").withStyle(TextFormatting.GREEN);
 
-    private final ToolManager toolManager = new ToolManager();
     public MusicVenueToolItem(Properties properties)
     {
         super(properties);
@@ -48,9 +46,9 @@ public class MusicVenueToolItem extends Item
         getPlayer(context).filter(p -> !p.level.isClientSide()).ifPresent(player -> {
             MusicVenueProvider.getMusicVenues(context.getLevel()).ifPresent(mvp -> {
             if (!player.isShiftKeyDown())
-                toolManager.setPosition(player, context);
+                ToolManager.setPosition(player, context);
             else
-                toolManager.reset(player);
+                ToolManager.reset(player);
             });
         });
 
@@ -60,11 +58,11 @@ public class MusicVenueToolItem extends Item
     @Override
     public void inventoryTick(ItemStack pStack, World pLevel, Entity pEntity, int pItemSlot, boolean pIsSelected)
     {
-        MusicVenueTool tool = toolManager.getTool((LivingEntity) pEntity);
+        MusicVenueTool tool = ToolManager.getTool((PlayerEntity) pEntity);
         if (tool != null && tool.getSlot() == pItemSlot)
         {
             tool.setSlot(pItemSlot);
-            toolManager.sync((LivingEntity) pEntity);
+            ToolManager.sync((PlayerEntity) pEntity);
         }
     }
 
@@ -86,11 +84,6 @@ public class MusicVenueToolItem extends Item
     private Optional<PlayerEntity> getPlayer(ItemUseContext context)
     {
         return Optional.ofNullable(context.getPlayer());
-    }
-
-    public ToolManager getToolManager()
-    {
-        return toolManager;
     }
 
     @Override

@@ -150,15 +150,10 @@ public class RenderEvents
             bvs = MusicVenueHelper.getBlockVenueState(player.level, blockpos);
 
             ToolState.Type[] stateName = {ToolState.Type.START};
-            toolManager().getToolOpl(player).ifPresent(tool-> {
+            ToolManager.getToolOpl(player).ifPresent(tool-> {
                 stateName[0] = tool.getToolState();
-//                if (!evs.inVenue() && !bvs.inVenue())
-//                    stateName[0] = tool.getToolState();
-//                else if (evs.getVenue().getOwnerUUID().equals(player.getUUID()))
-//                    stateName[0] = ToolState.Type.REMOVE;
-//                else
-//                    stateName[0] = ToolState.Type.DONE;
             });
+
             ITextComponent testText = new TranslationTextComponent(stateName[0].getTranslationKey()).withStyle(TextFormatting.WHITE).append(" ").append(evs.inVenue() ? evs.getVenue().getVenueAABB().getCenter().toString() : "");
             int offset = Math.max(mc.font.width(testText) + 40, width);
 
@@ -188,8 +183,4 @@ public class RenderEvents
         //StageToolRenderer.renderUUID(pMatrixStack, pBuffer, pLightTexture, pActiveRenderInfo, pPartialTicks, pClippingHelper);
     }
 
-    public static ToolManager toolManager()
-    {
-        return (((MusicVenueToolItem) ModItems.MUSIC_VENUE_TOOL.get().getItem()).getToolManager());
-    }
 }

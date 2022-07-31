@@ -1,6 +1,6 @@
 package aeronicamc.mods.mxtune.network.messages;
 
-import aeronicamc.mods.mxtune.init.ModItems;
+import aeronicamc.mods.mxtune.caps.venues.ToolManager;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.network.PacketBuffer;
@@ -41,7 +41,7 @@ public class ToolManagerSyncMessage extends AbstractMessage<ToolManagerSyncMessa
         if (ctx.get().getDirection().getReceptionSide().isClient())
             ctx.get().enqueueWork(() -> {
                 final Optional<World> levelOpt = LogicalSidedProvider.CLIENTWORLD.get(ctx.get().getDirection().getReceptionSide());
-                levelOpt.ifPresent(level -> ModItems.MUSIC_VENUE_TOOL.ifPresent(tool-> tool.getToolManager().deserialize(message.nbt)));
+                levelOpt.ifPresent(level -> ToolManager.deserialize(message.nbt));
             });
         ctx.get().setPacketHandled(true);
     }
