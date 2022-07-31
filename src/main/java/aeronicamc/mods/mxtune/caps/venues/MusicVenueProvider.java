@@ -62,7 +62,8 @@ public class MusicVenueProvider
     @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
     public static class EventHandler
     {
-        private static int counter;
+        private static int counterClient;
+        private static int counterServer;
 
         @SubscribeEvent
         public static void event(final AttachCapabilitiesEvent<World> event)
@@ -74,19 +75,25 @@ public class MusicVenueProvider
         @SubscribeEvent
         public static void event(final TickEvent.PlayerTickEvent event)
         {
-            if(event.phase.equals(TickEvent.Phase.END) && (counter++ % 10 == 0))
-            {
-                PlayerNexusProvider.getNexus(event.player).ifPresent(
-                        nexus ->
+            if(!event.player.getCommandSenderWorld().isClientSide && event.phase.equals(TickEvent.Phase.END) && (counterServer++ % 10 == 0))
+                updateEntityVenue(event);
+
+            if(event.player.getCommandSenderWorld().isClientSide && event.phase.equals(TickEvent.Phase.END) && (counterClient++ % 10 == 0))
+                updateEntityVenue(event);
+        }
+
+        private static void updateEntityVenue(TickEvent.PlayerTickEvent event)
+        {
+            PlayerNexusProvider.getNexus(event.player).ifPresent(
+                    nexus ->
+                    {
+                        EntityVenueState evs = MusicVenueHelper.getEntityVenueState(event.player.level, event.player.getId());
+                        if (!nexus.getEntityVenueState().equals(evs))
                         {
-                            EntityVenueState evs = MusicVenueHelper.getEntityVenueState(event.player.level, event.player.getId());
-                            if (!nexus.getEntityVenueState().equals(evs))
-                            {
-                                nexus.setEntityVenueState(evs);
-                                LOGGER.debug("{} inVenue {}: {}", event.player.getName().getString(), evs.inVenue() ,evs.getVenue());
-                            };
-                        });
-            }
+                            nexus.setEntityVenueState(evs);
+                            //LOGGER.debug("{} inVenue {}: {}", event.player.getName().getString(), evs.inVenue() ,evs.getVenue());
+                        };
+                    });
         }
     }
 }
