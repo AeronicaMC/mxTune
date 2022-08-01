@@ -206,6 +206,9 @@ public class MXTuneLanguageProvider extends LanguageProvider
     {
         addMessage("master_record_sound_off","mxTune Music Plays: Records and/or Master volume(s) are off." );
         addMessage("existing_venue_error", "Cannot choose a position in an existing venue.");
+        addMessage("intersects_venue", "Intersects existing venue.");
+        addMessage("same_block_error", "Same block not allowed.");
+        addMessage("venue_too_small", "Too small. Must be at least 2x2x2.");
         addMessage("not_owner_of_venue", "Only owner, admin or player in creative mode can remove a venue.");
     }
 

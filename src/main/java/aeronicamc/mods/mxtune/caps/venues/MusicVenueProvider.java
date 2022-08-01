@@ -4,6 +4,7 @@ import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.caps.SerializableCapabilityProvider;
 import aeronicamc.mods.mxtune.caps.player.PlayerNexusProvider;
 import aeronicamc.mods.mxtune.util.Misc;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -43,7 +44,6 @@ public class MusicVenueProvider
                 return instance.serializeNBT();
             }
 
-            @SuppressWarnings("unchecked")
             @Override
             public void readNBT(Capability<IMusicVenues> capability, final IMusicVenues instance, Direction side, INBT nbt)
             {
@@ -87,27 +87,22 @@ public class MusicVenueProvider
             PlayerNexusProvider.getNexus(event.player).ifPresent(
                     nexus ->
                     {
-                        EntityVenueState evs = MusicVenueHelper.getEntityVenueState(event.player.level, event.player.getId());
-                        ToolManager.getPlayerTool(event.player).ifPresent(tool -> {
-                            if (!nexus.getEntityVenueState().equals(evs))
-                            {
-                                if (!event.player.getCommandSenderWorld().isClientSide && evs.inVenue() &&
-                                        (evs.getVenue().getOwnerUUID().equals(event.player.getUUID()) ||
-                                                 event.player.isCreative() || (event.player.level.getServer() != null &&
-                                                                                       event.player.level.getServer().getPlayerList().isOp(event.player.getGameProfile()))))
+                        PlayerEntity player = event.player;
+                        EntityVenueState evs = MusicVenueHelper.getEntityVenueState(player.level, player.getId());
+                        ToolManager.getPlayerTool(player).ifPresent(
+                                tool ->
                                 {
-                                    tool.setToolState(ToolState.Type.REMOVE);
-                                    ToolManager.sync(event.player);
-                                }
-                                else if (!event.player.getCommandSenderWorld().isClientSide)
-                                {
-                                    tool.setToolState(ToolState.Type.START);
-                                    ToolManager.sync(event.player);
-                                }
+                                    if (!nexus.getEntityVenueState().equals(evs))
+                                    {
+                                        if (evs.inVenue() && (evs.getVenue().getOwnerUUID().equals(player.getUUID()) || player.isCreative() || ToolManager.isOp(player)))
+                                            tool.setToolState(ToolState.Type.REMOVE);
+                                        else if (tool.getToolState().equals(ToolState.Type.REMOVE))
+                                            tool.setToolState(ToolState.Type.START);
 
+                                        ToolManager.sync(player);
+                                    }
                                 nexus.setEntityVenueState(evs);
-                                //LOGGER.debug("{} inVenue {}: {}", event.player.getName().getString(), evs.inVenue() ,evs.getVenue());
-                            };
+                                //LOGGER.debug("{} inVenue {}: {}", player.getName().getString(), evs.inVenue() ,evs.getVenue());
                         });
                     });
         }
@@ -116,14 +111,23 @@ public class MusicVenueProvider
         {
             PlayerNexusProvider.getNexus(event.player).ifPresent(
                     nexus -> {
-                        EntityVenueState evs = MusicVenueHelper.getEntityVenueState(event.player.level, event.player.getId());
+                        PlayerEntity player = event.player;
+                        EntityVenueState evs = MusicVenueHelper.getEntityVenueState(player.level, player.getId());
                         if (!nexus.getEntityVenueState().equals(evs))
                         {
                             nexus.setEntityVenueState(evs);
-                            //LOGGER.debug("{} inVenue {}: {}", event.player.getName().getString(), evs.inVenue() ,evs.getVenue());
+                            ToolManager.getToolOpl(player).ifPresent(
+                                    tool -> {
+                                        if (evs.inVenue() && (evs.getVenue().getOwnerUUID().equals(player.getUUID()) || player.isCreative() || ToolManager.isOp(player)))
+                                            tool.setToolState(ToolState.Type.REMOVE);
+                                        else if (tool.getToolState().equals(ToolState.Type.REMOVE))
+                                            tool.setToolState(ToolState.Type.START);
+                                    });
+                            LOGGER.debug("{} inVenue {}: {}", player.getName().getString(), evs.inVenue() ,evs.getVenue());
                         }
                     });
 
         }
+
     }
 }

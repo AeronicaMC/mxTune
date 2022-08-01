@@ -46,7 +46,7 @@ public class MusicVenueToolItem extends Item
         getPlayer(context).filter(p -> !p.level.isClientSide()).ifPresent(player -> {
             MusicVenueProvider.getMusicVenues(context.getLevel()).ifPresent(mvp -> {
             if (!player.isShiftKeyDown())
-                ToolManager.setPosition(player, context);
+                ToolManager.setPosition(context);
             else
                 ToolManager.reset(player);
             });

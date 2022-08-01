@@ -9,6 +9,9 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.NBTDynamicOps;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.util.Constants;
 
@@ -42,65 +45,66 @@ public class ToolManager
         }
     }
 
-    public static void setPosition(PlayerEntity playerEntity, ItemUseContext context)
+    public static void setPosition(ItemUseContext context)
     {
-        if (playerEntity.level.isClientSide()) return;
+        PlayerEntity player = context.getPlayer();
+        if (player == null || context.getLevel().isClientSide()) return;
 
-        getPlayerTool(playerEntity).ifPresent(tool -> {
-            EntityVenueState evs = MusicVenueHelper.getEntityVenueState(playerEntity.level, playerEntity.getId());
-            if (evs.getVenue().getOwnerUUID().equals(playerEntity.getUUID()) && evs.inVenue())
+        getPlayerTool(player).ifPresent(tool -> {
+            EntityVenueState evs = MusicVenueHelper.getEntityVenueState(player.level, player.getId());
+            if (evs.getVenue().getOwnerUUID().equals(player.getUUID()) && evs.inVenue())
             {
                 tool.setToolState(ToolState.Type.REMOVE);
-                sync(playerEntity);
+                sync(player);
             }
             switch (tool.getToolState())
             {
                 case START:
                     tool.getMusicVenue().setStartPos(context.getClickedPos());
-                    validate(playerEntity, context, tool).filter(test -> test).ifPresent(test-> tool.setToolState(ToolState.Type.END));
-                    sync(playerEntity);
+                    validate(player, context, tool).filter(test -> test).ifPresent(test-> tool.setToolState(ToolState.Type.END));
+                    sync(player);
                     break;
                 case END:
                     tool.getMusicVenue().setEndPos(context.getClickedPos());
-                    validate(playerEntity, context, tool).filter(test -> test).ifPresent(test -> {
+                    validate(player, context, tool).filter(test -> test).ifPresent(test -> {
                         tool.setToolState(ToolState.Type.DONE);
-                        MusicVenueProvider.getMusicVenues(playerEntity.level).ifPresent(
+                        MusicVenueProvider.getMusicVenues(player.level).ifPresent(
                             venues -> {
                                 venues.addMusicVenue(tool.getMusicVenue());
                                 venues.sync();
                             });
                     });
-                    reset(playerEntity);
-                    sync(playerEntity);
+                    reset(player);
+                    sync(player);
                     break;
                 case REMOVE:
-                    validate(playerEntity, context, tool).ifPresent(test -> {
-                        if (test && evs.getVenue().getOwnerUUID().equals(playerEntity.getUUID()) && evs.inVenue())
-                            MusicVenueProvider.getMusicVenues(playerEntity.level).ifPresent(
+                    validate(player, context, tool).ifPresent(test -> {
+                        if (test && evs.getVenue().getOwnerUUID().equals(player.getUUID()) && evs.inVenue())
+                            MusicVenueProvider.getMusicVenues(player.level).ifPresent(
                                 venues -> {
                                     venues.removeMusicVenue(evs.getVenue());
                                     venues.sync();
                                 });
                             });
-                    reset(playerEntity);
-                    sync(playerEntity);
+                    reset(player);
+                    sync(player);
                     break;
                 case DONE:
-                    sync(playerEntity);
+                    sync(player);
                 default:
             }
         });
     }
 
-    public static void reset(PlayerEntity playerEntity)
+    public static void reset(PlayerEntity player)
     {
-        MusicVenueTool tool = MusicVenueTool.factory(playerEntity.getUUID());
-        if(null == playerTools.replace(String.valueOf(playerEntity.getId()), tool))
-            playerTools.put(String.valueOf(playerEntity.getId()), tool);
-        sync(playerEntity);
+        MusicVenueTool tool = MusicVenueTool.factory(player.getUUID());
+        if(null == playerTools.replace(String.valueOf(player.getId()), tool))
+            playerTools.put(String.valueOf(player.getId()), tool);
+        sync(player);
     }
 
-    private static Optional<Boolean> validate(PlayerEntity playerEntity, ItemUseContext context, MusicVenueTool tool)
+    private static Optional<Boolean> validate(PlayerEntity player, ItemUseContext context, MusicVenueTool tool)
     {
         switch (tool.getToolState())
         {
@@ -108,47 +112,76 @@ public class ToolManager
             case END:
                 if(MusicVenueHelper.getBlockVenueState(context.getLevel(), context.getClickedPos()).inVenue())
                 {
-                    playerEntity.displayClientMessage(new TranslationTextComponent("message.mxtune.existing_venue_error"), false);
+                    player.displayClientMessage(new TranslationTextComponent("message.mxtune.existing_venue_error").withStyle(TextFormatting.BOLD), true);
+                    tool.setToolState(ToolState.Type.START);
+                    return Optional.of(false);
+                } else if (tool.getToolState().equals(ToolState.Type.END) && notIntersects(context, tool.getMusicVenue().getStartPos(), context.getClickedPos()))
+                {
+                    player.displayClientMessage(new TranslationTextComponent("message.mxtune.intersects_venue").withStyle(TextFormatting.BOLD), true);
+                    tool.setToolState(ToolState.Type.START);
+                    return Optional.of(false);
+                } else if (tool.getToolState().equals(ToolState.Type.END) && tool.getMusicVenue().getStartPos().equals(context.getClickedPos()))
+                {
+                    player.displayClientMessage(new TranslationTextComponent("message.mxtune.same_block_error").withStyle(TextFormatting.BOLD), true);
+                    tool.setToolState(ToolState.Type.START);
+                    return Optional.of(false);
+                } else if (tool.getToolState().equals(ToolState.Type.END) && notMinimumSize(tool.getMusicVenue().getStartPos(), context.getClickedPos()))
+                {
+                    player.displayClientMessage(new TranslationTextComponent("message.mxtune.venue_too_small").withStyle(TextFormatting.BOLD), true);
                     tool.setToolState(ToolState.Type.START);
                     return Optional.of(false);
                 } else
                     return Optional.of(true);
             case REMOVE:
                 EntityVenueState bvs = MusicVenueHelper.getBlockVenueState(context.getLevel(), context.getClickedPos());
-                EntityVenueState pvs = MusicVenueHelper.getEntityVenueState(context.getLevel(), context.getPlayer().getId());
+                EntityVenueState pvs = MusicVenueHelper.getEntityVenueState(context.getLevel(), player.getId());
 
-                if (bvs.inVenue() && pvs.inVenue() && pvs.equals(bvs) &&
-                        (pvs.getVenue().getOwnerUUID().equals(context.getPlayer().getUUID()) ||
-                                 context.getPlayer().isCreative() || (context.getLevel().getServer() != null &&
-                                          context.getLevel().getServer().getPlayerList().isOp(context.getPlayer().getGameProfile()))))
+                if (pvs.inVenue() && (pvs.getVenue().getOwnerUUID().equals(player.getUUID()) || player.isCreative() || isOp(player)))
                     return Optional.of(true);
                 else
                 {
-                    playerEntity.displayClientMessage(new TranslationTextComponent("message.mxtune.not_owner_of_venue"), false);
-                    tool.setToolState(ToolState.Type.DONE);
+                    player.displayClientMessage(new TranslationTextComponent("message.mxtune.not_owner_of_venue").withStyle(TextFormatting.BOLD), true);
                     return Optional.of(false);
                 }
             case DONE:
                 break;
             default:
         }
-        return Optional.of(false); // TODO: validations and chat/overlay/tool messages/status
+        return Optional.of(false);
+    }
+
+    private static boolean notMinimumSize(BlockPos pos1, BlockPos pos2)
+    {
+        AxisAlignedBB aabb = new AxisAlignedBB(pos1, pos2).inflate(0.5).move(0.5, 0.5, 0.5);
+        return ((Math.abs(aabb.maxX - aabb.minX) <= 1.5) || (Math.abs(aabb.maxY - aabb.minY) <= 1.5) || (Math.abs(aabb.maxZ - aabb.minZ) <= 1.5));
+    }
+
+    private static boolean notIntersects(ItemUseContext context, BlockPos pos1, BlockPos pos2)
+    {
+        AxisAlignedBB aabb = new AxisAlignedBB(pos1, pos2).inflate(0.5).move(0.5, 0.5, 0.5);
+        boolean[] result = new boolean[1];
+        MusicVenueProvider.getMusicVenues(context.getLevel()).ifPresent(
+                areas ->
+                {
+                    result[0] = areas.getMusicVenues().stream().anyMatch(area -> area.getVenueAABB().intersects(aabb));
+                });
+        return result[0];
     }
 
     @Nullable
-    public static MusicVenueTool getTool(PlayerEntity playerEntity)
+    public static MusicVenueTool getTool(PlayerEntity player)
     {
-        return (playerTools.get(String.valueOf(playerEntity.getId())));
+        return (playerTools.get(String.valueOf(player.getId())));
     }
 
-    public static Optional<MusicVenueTool> getToolOpl(PlayerEntity playerEntity)
+    public static Optional<MusicVenueTool> getToolOpl(PlayerEntity player)
     {
-        return Optional.ofNullable(getTool(playerEntity));
+        return Optional.ofNullable(getTool(player));
     }
 
-    public static void sync (PlayerEntity playerEntity)
+    public static void sync (PlayerEntity player)
     {
-        if (!playerEntity.level.isClientSide())
+        if (!player.level.isClientSide())
         {
             PacketDispatcher.sendToAll(new ToolManagerSyncMessage(serialize()));
         }
@@ -174,5 +207,10 @@ public class ToolManager
             listnbt.forEach(playerTool -> NBTDynamicOps.INSTANCE.withParser(ToolManager.CODEC)
                             .apply(playerTool).result().ifPresent(playerTools::putAll));
         }
+    }
+
+    static boolean isOp(PlayerEntity player)
+    {
+        return player.level.getServer() != null && player.level.getServer().getPlayerList().isOp(player.getGameProfile());
     }
 }
