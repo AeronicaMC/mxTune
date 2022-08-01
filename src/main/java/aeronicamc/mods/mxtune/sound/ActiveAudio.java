@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.sound;
 
 import aeronicamc.mods.mxtune.Reference;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -121,7 +122,7 @@ public class ActiveAudio
                 {
                     if (!deleteAudioDataQueue.isEmpty())
                         activeAudioData.remove(deleteAudioDataQueue.remove());
-
+                    Minecraft.getInstance().submitAsync(ClientAudio::prioritizeAndLimitSources);
                     activeAudioData
                             .forEach(audioData ->
                                      {

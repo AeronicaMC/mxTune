@@ -180,6 +180,7 @@ public class ClientAudio
             AudioData audioData = new AudioData(duration, secondsElapsed, processTimeMS, playID, entityId, isReallyClient, callback);
             parseMML(audioData, musicText);
             ActiveAudio.addEntry(audioData);
+            Minecraft.getInstance().submitAsync(ClientAudio::prioritizeAndLimitSources);
             LOGGER.debug("playId: {}, mc.player: {}, entityId: {}, isClient: {}, isReallyClient: {}", playID, mc.player.getId(), entityId, isClient, isReallyClient);
         }
         else
@@ -208,6 +209,7 @@ public class ClientAudio
                     executorService.execute(new RenderAudio(audioData));
                     stopVanillaMusic();
                 }
+                Minecraft.getInstance().submitAsync(ClientAudio::prioritizeAndLimitSources);
             }
         }
     }
@@ -283,7 +285,7 @@ public class ClientAudio
 
     // TODO: Review for race conditions, test SoundEngine for active source instances (ISound) and resubmit or
     // TODO:  not depending on result (ensure acquisition of stream, and/or confirm release).
-    private static void prioritizeAndLimitSources()
+    public static void prioritizeAndLimitSources()
     {
         int[] priority = new int[1];
         int[] availableStreams = new int[1];
@@ -339,9 +341,9 @@ public class ClientAudio
     @SubscribeEvent
     public static void event(TickEvent.ClientTickEvent event)
     {
-        if (event.phase == TickEvent.Phase.END)
-            if (counter++ % 10 == 0)
-                prioritizeAndLimitSources();
+//        if (event.phase == TickEvent.Phase.END)
+//            if (counter++ % 10 == 0)
+//                prioritizeAndLimitSources();
     }
 
     // called in SoundEngine CTOR* and reload. Reload: i.e. key-press F3+T
