@@ -3,10 +3,7 @@ package aeronicamc.mods.mxtune.caps.venues;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.caps.SerializableCapabilityProvider;
 import aeronicamc.mods.mxtune.caps.player.PlayerNexusProvider;
-import aeronicamc.mods.mxtune.sound.ClientAudio;
 import aeronicamc.mods.mxtune.util.Misc;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -64,8 +61,7 @@ public class MusicVenueProvider
     @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
     public static class EventHandler
     {
-        private static int counterClient;
-        private static int counterServer;
+        private static int counter;
 
         @SubscribeEvent
         public static void event(final AttachCapabilitiesEvent<World> event)
@@ -75,62 +71,40 @@ public class MusicVenueProvider
         }
 
         @SubscribeEvent
-        public static void event(final TickEvent.PlayerTickEvent event)
+        public static void event(final TickEvent.WorldTickEvent event)
         {
-            if(!event.player.getCommandSenderWorld().isClientSide && event.phase.equals(TickEvent.Phase.END) && (counterServer++ % 10 == 0))
+            if(event.phase.equals(TickEvent.Phase.END) && (counter++ % 10 == 0))
                 updateServerEntityVenue(event);
-
-            if(event.player.getCommandSenderWorld().isClientSide && event.phase.equals(TickEvent.Phase.END) && (counterClient++ % 10 == 0))
-                updateClientEntityVenue(event);
         }
 
-        private static void updateServerEntityVenue(TickEvent.PlayerTickEvent event)
+        private static void updateServerEntityVenue(TickEvent.WorldTickEvent event)
         {
-            PlayerNexusProvider.getNexus(event.player).ifPresent(
-                    nexus ->
+            event.world.players().forEach(
+                    player ->
                     {
-                        PlayerEntity player = event.player;
-                        EntityVenueState evs = MusicVenueHelper.getEntityVenueState(player.level, player.getId());
-                        ToolManager.getPlayerTool(player).ifPresent(
-                                tool ->
+                        PlayerNexusProvider.getNexus(player).ifPresent(
+                                nexus ->
                                 {
-                                    if (!nexus.getEntityVenueState().equals(evs))
+                                    EntityVenueState pvs = MusicVenueHelper.getEntityVenueState(player.level, player.getId());
+                                    if (!nexus.getEntityVenueState().equals(pvs))
                                     {
-                                        if (evs.inVenue() && (evs.getVenue().getOwnerUUID().equals(player.getUUID()) || player.isCreative() || ToolManager.isOp(player)))
-                                            tool.setToolState(ToolState.Type.REMOVE);
-                                        else if (tool.getToolState().equals(ToolState.Type.REMOVE))
-                                            tool.setToolState(ToolState.Type.START);
+                                        nexus.setEntityVenueState(pvs);
+                                        ToolManager.getPlayerTool(player).ifPresent(
+                                                tool ->
+                                                {
+                                                    if (pvs.inVenue() && (pvs.getVenue().getOwnerUUID().equals(player.getUUID()) || player.isCreative() || ToolManager.isOp(player)))
+                                                        tool.setToolState(ToolState.Type.REMOVE);
+                                                    else if (!pvs.inVenue() && tool.getToolState().equals(ToolState.Type.REMOVE))
+                                                        tool.setToolState(ToolState.Type.START);
 
-                                        ToolManager.sync(player);
+                                                    ToolManager.sync(player);
+                                                });
+
+                                        nexus.setEntityVenueState(pvs);
+                                        //LOGGER.debug("{} inVenue {}: {}", player.getName().getString(), pvs.inVenue(), pvs.getVenue());
                                     }
-                                nexus.setEntityVenueState(evs);
-                                //LOGGER.debug("{} inVenue {}: {}", player.getName().getString(), evs.inVenue() ,evs.getVenue());
-                        });
+                                });
                     });
         }
-
-        private static void updateClientEntityVenue(TickEvent.PlayerTickEvent event)
-        {
-            PlayerNexusProvider.getNexus(event.player).ifPresent(
-                    nexus -> {
-                        PlayerEntity player = event.player;
-                        EntityVenueState evs = MusicVenueHelper.getEntityVenueState(player.level, player.getId());
-                        if (!nexus.getEntityVenueState().equals(evs))
-                        {
-                            nexus.setEntityVenueState(evs);
-                            Minecraft.getInstance().submitAsync(ClientAudio::prioritizeAndLimitSources);
-                            ToolManager.getToolOpl(player).ifPresent(
-                                    tool -> {
-                                        if (evs.inVenue() && (evs.getVenue().getOwnerUUID().equals(player.getUUID()) || player.isCreative() || ToolManager.isOp(player)))
-                                            tool.setToolState(ToolState.Type.REMOVE);
-                                        else if (tool.getToolState().equals(ToolState.Type.REMOVE))
-                                            tool.setToolState(ToolState.Type.START);
-                                    });
-                            LOGGER.debug("{} inVenue {}: {}", player.getName().getString(), evs.inVenue() ,evs.getVenue());
-                        }
-                    });
-
-        }
-
     }
 }
