@@ -51,8 +51,8 @@ public class ToolManager
         if (player == null || context.getLevel().isClientSide()) return;
 
         getPlayerTool(player).ifPresent(tool -> {
-            EntityVenueState evs = MusicVenueHelper.getEntityVenueState(player.level, player.getId());
-            if (evs.getVenue().getOwnerUUID().equals(player.getUUID()) && evs.inVenue())
+            EntityVenueState pvs = MusicVenueHelper.getEntityVenueState(player.level, player.getId());
+            if (pvs.getVenue().getOwnerUUID().equals(player.getUUID()) && pvs.inVenue())
             {
                 tool.setToolState(ToolState.Type.REMOVE);
                 sync(player);
@@ -79,10 +79,10 @@ public class ToolManager
                     break;
                 case REMOVE:
                     validate(player, context, tool).ifPresent(test -> {
-                        if (test && evs.getVenue().getOwnerUUID().equals(player.getUUID()) && evs.inVenue())
+                        if (test)
                             MusicVenueProvider.getMusicVenues(player.level).ifPresent(
                                 venues -> {
-                                    venues.removeMusicVenue(evs.getVenue());
+                                    venues.removeMusicVenue(pvs.getVenue());
                                     venues.sync();
                                 });
                             });
@@ -106,11 +106,13 @@ public class ToolManager
 
     private static Optional<Boolean> validate(PlayerEntity player, ItemUseContext context, MusicVenueTool tool)
     {
+        EntityVenueState bvs = MusicVenueHelper.getBlockVenueState(context.getLevel(), context.getClickedPos());
+        EntityVenueState pvs = MusicVenueHelper.getEntityVenueState(context.getLevel(), player.getId());
         switch (tool.getToolState())
         {
             case START:
             case END:
-                if(MusicVenueHelper.getBlockVenueState(context.getLevel(), context.getClickedPos()).inVenue())
+                if((tool.getToolState().equals(ToolState.Type.END) || tool.getToolState().equals(ToolState.Type.START)) && MusicVenueHelper.getBlockVenueState(context.getLevel(), context.getClickedPos()).inVenue())
                 {
                     player.displayClientMessage(new TranslationTextComponent("message.mxtune.existing_venue_error").withStyle(TextFormatting.BOLD), true);
                     tool.setToolState(ToolState.Type.START);
@@ -133,9 +135,6 @@ public class ToolManager
                 } else
                     return Optional.of(true);
             case REMOVE:
-                EntityVenueState bvs = MusicVenueHelper.getBlockVenueState(context.getLevel(), context.getClickedPos());
-                EntityVenueState pvs = MusicVenueHelper.getEntityVenueState(context.getLevel(), player.getId());
-
                 if (pvs.inVenue() && (pvs.getVenue().getOwnerUUID().equals(player.getUUID()) || player.isCreative() || isOp(player)))
                     return Optional.of(true);
                 else
