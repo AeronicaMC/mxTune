@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.render;
 
 import aeronicamc.mods.mxtune.caps.venues.MusicVenueProvider;
+import aeronicamc.mods.mxtune.init.ModItems;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.Minecraft;
@@ -10,6 +11,7 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
@@ -17,6 +19,7 @@ import net.minecraft.world.World;
 public class MusicVenueRenderer
 {
     private static final Minecraft mc = Minecraft.getInstance();
+    private static final ItemStack MUSIC_VENUE_ITEM_STACK = new ItemStack(ModItems.MUSIC_VENUE_TOOL.get());
     private MusicVenueRenderer() { /* NOP */ }
 
     public static void render(MatrixStack pMatrixStack, IRenderTypeBuffer.Impl pBuffer, LightTexture pLightTexture, ActiveRenderInfo pActiveRenderInfo, float pPartialTicks, ClippingHelper pClippingHelper)
@@ -30,7 +33,7 @@ public class MusicVenueRenderer
         double camY = camera.y;
         double camZ = camera.z;
 
-        MusicVenueProvider.getMusicVenues(level).ifPresent(
+        MusicVenueProvider.getMusicVenues(level).filter(areas -> isToolInHotBar(player)).ifPresent(
                 areas -> {
                     areas.getMusicVenues().stream()
                             // Sort areas so the transparency renders properly with regard to each other and the camera.
@@ -63,4 +66,9 @@ public class MusicVenueRenderer
                 });
     }
 
+    private static boolean isToolInHotBar(PlayerEntity player)
+    {
+        int slot = player.inventory.findSlotMatchingItem(MUSIC_VENUE_ITEM_STACK);
+        return slot >= 0 && slot < 9;
+    }
 }

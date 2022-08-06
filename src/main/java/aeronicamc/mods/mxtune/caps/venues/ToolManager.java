@@ -45,7 +45,7 @@ public class ToolManager
         }
     }
 
-    public static void setPosition(ItemUseContext context)
+    public static void apply(ItemUseContext context)
     {
         PlayerEntity player = context.getPlayer();
         if (player == null || context.getLevel().isClientSide()) return;

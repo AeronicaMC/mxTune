@@ -51,6 +51,15 @@ public class MXTuneRecipeProvider extends RecipeProvider
                     .unlockedBy("has_leather", has(Tags.Items.LEATHER))
                     .save(recipeConsumer, new ResourceLocation(Reference.MOD_ID, "flute_pan"));
         }
+
+        {
+            ShapelessRecipeBuilder.shapeless(ModItems.MUSIC_VENUE_TOOL.get(), 1)
+                    .requires(MULTI_INST.get())
+                    .requires(Tags.Items.RODS_WOODEN)
+                    .unlockedBy("has_instrument", has(MULTI_INST.get()))
+                    .unlockedBy("has_rods_wooden", has(Tags.Items.RODS_WOODEN))
+                    .save(recipeConsumer);
+        }
     }
 
     /**

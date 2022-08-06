@@ -72,10 +72,14 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addTooltip("instrument_item.shift_help_02", "SHIFT+Right Click to OPEN");
         addTooltip("instrument_item.shift_help_03", "Right Click to PLAY");
         add(ModItems.MUSIC_VENUE_TOOL.get(), "Music Venue Tool");
-        addTooltip("music_venue_tool_item.shift_help_02", "Right Click two blocks to define an area");
-        addTooltip("music_venue_tool_item.shift_help_03", "SHIFT+Right Click block to Reset back to Start");
-        addTooltip("music_venue_tool_item.shift_help_04", "Makes Pretty boxes. Useless at this point. Work-in-progress! You cannot edit or delete them!");
-        addTooltip("music_venue_tool_block.help_01", "WIP: Does nothing at this time :P");
+        addTooltip("music_venue_tool_item.shift_help_02", "Right Click two blocks to define a Venue. Minimum size 2x2x2. Venues cannot intersect.");
+        addTooltip("music_venue_tool_item.shift_help_03", "SHIFT+Right Click block to Reset back to Start.");
+        addTooltip("music_venue_tool_item.shift_help_04", "To REMOVE a venue, stand *inside* it and Right Click any block. *(Head and Body)*");
+        addTooltip("music_venue_tool_item.shift_help_05", "Survival: Owners may remove their own Venues. OP/Creative players can remove any Venue.");
+        addTooltip("music_venue_tool_item.shift_help_06", "Venues are only visible when this tool is on the HotBar.");
+
+
+        addTooltip("music_venue_tool_block.help_01", "Used to manage mxTune Venues. mxTunes played within a Venue are only heard by players while inside. mxTunes played Outside the Venue are not heard by players within.");
     }
 
     private void addInstrumentNames(LanguageProvider provider)
