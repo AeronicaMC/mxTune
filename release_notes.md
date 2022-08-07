@@ -1,3 +1,13 @@
+#### 2022-08-07 mxtune-1.16.5-2.0.0-alpha-2022-08-07.46813887 
+* Music Venue Tool updated! Music Venues enabled! 
+  * To use this snapshot you must update to Forge 1.16.5 - 36.2.39+ 
+  * Removed a SoundEngine mixin in favor of using back ported PR that allows custom stream sources: 
+    * Ref: Allow sound instances to customize stream source (#8595) 
+  * The music venue tool now allows creating and removing venues. A venue is just a box defined by two corners. The minimum size in blocks is 2x2x2. A venue creates a sound barrier for mxTune music. mxTunes played inside can't be heard outside and vise versa. 
+  * Updated tooltips for the "Music Venue Tool" and added a recipe for it: 
+    * 1 "wooden rod" and any 1 "mxTune held instrument". 
+  * Sorry but group JAMS are not implemented yet, but I will begin work on that next. 
+
 #### 2022-06-23 mxtune-1.16.5-2.0.0-alpha-2022-06-22.78821947 
 * Client Audio Refactor:
   * Initial implementation of sound source limiting and prioritization.
