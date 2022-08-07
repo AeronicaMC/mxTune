@@ -120,9 +120,14 @@ public class ActiveAudio
         scheduledThreadPool.scheduleAtFixedRate(
                 () ->
                 {
-                    if (!deleteAudioDataQueue.isEmpty())
+                    // Remove expired AudioData instances
+                    while (!deleteAudioDataQueue.isEmpty())
                         activeAudioData.remove(deleteAudioDataQueue.remove());
+
+                    // Prioritize live AudioData instances
                     Minecraft.getInstance().submitAsync(ClientAudio::prioritizeAndLimitSources);
+
+                    // Tick and Expire AudioData instances
                     activeAudioData
                             .forEach(audioData ->
                                      {

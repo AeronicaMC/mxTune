@@ -136,7 +136,7 @@ public class AudioData implements Cloneable
             if (this.status != status)
             {
                 this.status = status;
-                if (callback != null)
+                if (callback != null && !dead)
                     callback.statusCallBack(this.status, playId);
             }
         }
@@ -164,7 +164,7 @@ public class AudioData implements Cloneable
 
     int getPlayId()
     {
-        return playId;
+        return !dead ? playId : PlayIdSupplier.INVALID;
     }
 
     int getEntityId()
@@ -297,7 +297,7 @@ public class AudioData implements Cloneable
 
     void resume()
     {
-        if (!this.dead)
+        if (!this.dead && status.equals(ClientAudio.Status.YIELD))
         {
             AudioData clone = (AudioData) this.clone();
             clone.setStatus(ClientAudio.Status.WAITING);
