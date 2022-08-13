@@ -17,7 +17,7 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 public class PacketDispatcher
 {
     private static final ResourceLocation CHANNEL_NAME = new ResourceLocation(Reference.MOD_ID, "network");
-    private static final String NETWORK_VERSION = new ResourceLocation(Reference.MOD_ID, "1").toString();
+    private static final String PROTOCOL_VERSION = "2.0.1";
     private static int packetId = 0;
     private static SimpleChannel channel;
 
@@ -27,9 +27,9 @@ public class PacketDispatcher
     {
         channel = NetworkRegistry.ChannelBuilder
                 .named(CHANNEL_NAME)
-                .clientAcceptedVersions(version -> true)
-                .serverAcceptedVersions(version -> true)
-                .networkProtocolVersion(() -> NETWORK_VERSION)
+                .clientAcceptedVersions(PROTOCOL_VERSION::equals)
+                .serverAcceptedVersions(PROTOCOL_VERSION::equals)
+                .networkProtocolVersion(() -> PROTOCOL_VERSION)
                 .simpleChannel();
 
         // Bidirectional
