@@ -429,13 +429,13 @@ public class MusicBlock extends Block implements IWrenchAble
                 int size = inventoryNBT.contains("Size", NBT.TAG_INT) ? inventoryNBT.getInt("Size") : 27;
                 NonNullList<ItemStack> nonNullList = NonNullList.withSize(size, ItemStack.EMPTY);
                 ItemStackHelper.loadAllItems(inventoryNBT, nonNullList);
-                ItemStack instrumentStack = nonNullList.stream().findFirst().orElse(ItemStack.EMPTY);
+                ItemStack instrumentStack = nonNullList.stream().filter(itemStack -> itemStack.getItem() instanceof IInstrument).findFirst().orElse(ItemStack.EMPTY);
 
                 if (!instrumentStack.isEmpty())
                     pTooltip.add(SheetMusicHelper.getFormattedMusicTitle(SheetMusicHelper.getIMusicFromIInstrument(instrumentStack)));
                 else pTooltip.add(SheetMusicHelper.getFormattedMusicTitle(ItemStack.EMPTY));
 
-                long instrumentCount = nonNullList.stream().filter(p -> (p.getItem() instanceof IInstrument) && !SheetMusicHelper.getIMusicFromIInstrument(p).isEmpty()).count();
+                long instrumentCount = nonNullList.stream().filter(itemStack -> (itemStack.getItem() instanceof IInstrument) && !SheetMusicHelper.getIMusicFromIInstrument(itemStack).isEmpty()).count();
                 if (instrumentCount > 1)
                     pTooltip.add(new StringTextComponent(new TranslationTextComponent("container.mxtune.block_music.more", instrumentCount - 1).getString() + (TextFormatting.ITALIC)));
 
