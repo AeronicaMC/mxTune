@@ -43,7 +43,7 @@ public class MusicBlockEntityRenderer extends TileEntityRenderer<MusicBlockEntit
                     pMatrixStack.mulPose(Vector3f.XP.rotationDegrees(0F));
                     pMatrixStack.translate(0.125 + x, 0.75, 0.125 + y);
                     pMatrixStack.scale(0.2F, 0.2F, 0.2F);
-                    pMatrixStack.mulPose(Vector3f.YP.rotationDegrees(pBlockEntity.getLevel().getGameTime()));
+                    pMatrixStack.mulPose(Vector3f.YP.rotationDegrees((pBlockEntity.getLevel().getGameTime() % 360) + pPartialTicks));
 
                     Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemCameraTransforms.TransformType.FIXED, pCombinedLight, pCombinedOverlay, pMatrixStack, pBuffer);
 
