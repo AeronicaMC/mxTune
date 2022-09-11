@@ -48,7 +48,7 @@ public final class PlayManager
     /**
      * For playing music from an Item
      * @param playerIn who is playing
-     * @return a unique play id
+     * @return a unique play id or {@link aeronicamc.mods.mxtune.managers.PlayIdSupplier#INVALID} if unable to play
      */
     public static int playMusic(PlayerEntity playerIn)
     {
@@ -59,7 +59,7 @@ public final class PlayManager
      * For playing music from a block, e.g. Band Amp.
      * @param world the world of course
      * @param blockPos position of block instrument
-     * @return a unique play id
+     * @return a unique play id or {@link aeronicamc.mods.mxtune.managers.PlayIdSupplier#INVALID} if unable to play
      */
     public static int playMusic(World world, BlockPos blockPos)
     {
@@ -92,7 +92,7 @@ public final class PlayManager
      * @param playerIn who is playing
      * @param pos position of block instrument
      * @param isPlaced true is this is a block instrument
-     * @return a unique play id or null if unable to play
+     * @return a unique play id or {@link aeronicamc.mods.mxtune.managers.PlayIdSupplier#INVALID} if unable to play
      */
     public static int playMusic(PlayerEntity playerIn, @Nullable BlockPos pos, boolean isPlaced)
     {
