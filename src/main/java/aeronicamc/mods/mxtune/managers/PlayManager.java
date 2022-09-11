@@ -134,10 +134,10 @@ public final class PlayManager
         return playId;
     }
 
-    private static int getPresetIndex(BlockPos pos, PlayerEntity playerIn, boolean isPlaced)
+    private static int getPresetIndex(@Nullable BlockPos pos, PlayerEntity playerIn, boolean isPlaced)
     {
         int presetIndex = 0;
-        if (isPlaced)
+        if (isPlaced && (pos != null))
         {
             if (playerIn.level.getBlockState(pos).getBlock() instanceof IPlacedInstrument)
             {
