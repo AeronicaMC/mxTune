@@ -21,6 +21,7 @@ public class ActiveAudio
     private static final List<AudioData> activeAudioData = new ArrayList<>(16);
     private static final HashMap<Integer, SequenceProxy> playIdToMidiSequence = new HashMap<>(16);
     private static final Queue<AudioData> deleteAudioDataQueue = new ConcurrentLinkedQueue<>();
+    private static final Queue<Integer> deleteMidiSequenceQueue = new ConcurrentLinkedQueue<>();
 
     private static ScheduledExecutorService scheduledThreadPool = null;
     private static boolean isInitialized;
@@ -144,6 +145,11 @@ public class ActiveAudio
                     while (!deleteAudioDataQueue.isEmpty())
                         activeAudioData.remove(deleteAudioDataQueue.remove());
 
+                    // Remove expired MIDI Sequence instances
+                    while(!deleteMidiSequenceQueue.isEmpty())
+                        playIdToMidiSequence.remove(deleteMidiSequenceQueue.remove());
+
+
                     // Prioritize live AudioData instances
                     Minecraft.getInstance().submitAsync(ClientAudio::prioritizeAndLimitSources);
 
@@ -159,13 +165,12 @@ public class ActiveAudio
                                          audioData.tick();
                                      });
 
-                    // Tick cached MIDI Sequences and remove them after 30 minutes (1800 ticks)
-                    playIdToMidiSequence.values().forEach(SequenceProxy::tick);
+                    // Tick cached MIDI Sequences and remove them after 30 minutes (1800 ticks)`
                     playIdToMidiSequence.forEach((key, sp) -> {
-                        if (sp.getTimeout() > 1800)
-                            playIdToMidiSequence.remove(key);
+                        sp.tick();
+                        if (sp.getTimeout() == 0)
+                            deleteMidiSequenceQueue.add(key);
                     });
-                    System.out.println(playIdToMidiSequence.size());
 
                     lock.countDown();
                 }, 500, 1000, TimeUnit.MILLISECONDS);
