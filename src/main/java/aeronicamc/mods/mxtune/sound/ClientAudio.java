@@ -254,22 +254,26 @@ public class ClientAudio
 
     private static void parseMML(AudioData audioData, String musicText)
     {
-        LoggedTimer timer = new LoggedTimer();
-        timer.start(String.format("%d: Parse MML", audioData.getPlayId()));
-        MMLParser mmlParser = MMLParserFactory.getMMLParser(musicText);
-        MMLToMIDI toMIDI = new MMLToMIDI();
-        toMIDI.processMObjects(mmlParser.getMmlObjects());
-        audioData.setSequence(toMIDI.getSequence());
-        timer.stop();
-        //audioData.addProcessTimeMS(timer.getTimeElapsed());
-
-        // Log bank and program per instrument
-        for (int preset : toMIDI.getPresets())
+        // Optimization: Parse MML once and store the resulting MIDI Sequence.
+        if (!ActiveAudio.hasSequence(audioData.getPlayId()))
         {
-            Patch patchPreset = MMLUtil.packedPreset2Patch(SoundFontProxyManager.getPackedPreset(preset));
-            String name = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(preset)).getString();
-            LOGGER.debug("MML2PCM preset: {}, bank: {}, program: {}, name: {}", preset, patchPreset.getBank(),
-                         patchPreset.getProgram(), name);
+            LoggedTimer timer = new LoggedTimer();
+            timer.start(String.format("%d: Parse MML", audioData.getPlayId()));
+            MMLParser mmlParser = MMLParserFactory.getMMLParser(musicText);
+            MMLToMIDI toMIDI = new MMLToMIDI();
+            toMIDI.processMObjects(mmlParser.getMmlObjects());
+            ActiveAudio.addSequence(audioData.getPlayId(), toMIDI.getSequence());
+            timer.stop();
+            //audioData.addProcessTimeMS(timer.getTimeElapsed());
+
+            // Log bank and program per instrument
+            for (int preset : toMIDI.getPresets())
+            {
+                Patch patchPreset = MMLUtil.packedPreset2Patch(SoundFontProxyManager.getPackedPreset(preset));
+                String name = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(preset)).getString();
+                LOGGER.debug("MML2PCM preset: {}, bank: {}, program: {}, name: {}", preset, patchPreset.getBank(),
+                             patchPreset.getProgram(), name);
+            }
         }
     }
 

@@ -30,7 +30,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.annotation.Nullable;
-import javax.sound.midi.Sequence;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import java.util.Objects;
@@ -46,7 +45,6 @@ public class AudioData implements Cloneable
     private AudioInputStream audioStream;
     private AudioFormat audioFormat;
     private ISound iSound;
-    private Sequence sequence;
     private ClientAudio.Status status;
 
     private long processTimeMS;
@@ -201,19 +199,6 @@ public class AudioData implements Cloneable
         synchronized (this)
         {
             this.iSound = iSound;
-        }
-    }
-
-    Sequence getSequence()
-    {
-        return sequence;
-    }
-
-    public void setSequence(Sequence sequence)
-    {
-        synchronized (this)
-        {
-            this.sequence = sequence;
         }
     }
 

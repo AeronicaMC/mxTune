@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import javax.sound.midi.Sequence;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ public class ActiveAudio
 {
     private static final Logger LOGGER = LogManager.getLogger(ActiveAudio.class);
     private static final List<AudioData> activeAudioData = new ArrayList<>(16);
+    private static final HashMap<Integer, SequenceProxy> playIdToMidiSequence = new HashMap<>(16);
     private static final Queue<AudioData> deleteAudioDataQueue = new ConcurrentLinkedQueue<>();
 
     private static ScheduledExecutorService scheduledThreadPool = null;
@@ -114,6 +116,24 @@ public class ActiveAudio
             }
     }
 
+    static boolean hasSequence(int playId)
+    {
+        return playIdToMidiSequence.containsKey(playId);
+    }
+
+    static Sequence getSequence(int playId)
+    {
+        synchronized (playIdToMidiSequence)
+        {
+            return playIdToMidiSequence.get(playId).getSequence();
+        }
+    }
+
+    static void addSequence(int playId, Sequence sequence)
+    {
+        playIdToMidiSequence.putIfAbsent(playId, new SequenceProxy(sequence));
+    }
+
     void counter()
     {
         CountDownLatch lock = new CountDownLatch(Integer.MAX_VALUE);
@@ -139,6 +159,14 @@ public class ActiveAudio
                                          audioData.tick();
                                      });
 
+                    // Tick cached MIDI Sequences and remove them after 30 minutes (1800 ticks)
+                    playIdToMidiSequence.values().forEach(SequenceProxy::tick);
+                    playIdToMidiSequence.forEach((key, sp) -> {
+                        if (sp.getTimeout() > 1800)
+                            playIdToMidiSequence.remove(key);
+                    });
+                    System.out.println(playIdToMidiSequence.size());
+
                     lock.countDown();
                 }, 500, 1000, TimeUnit.MILLISECONDS);
         try
@@ -152,6 +180,7 @@ public class ActiveAudio
             Thread.currentThread().interrupt();
         }
     }
+
 }
 
 
