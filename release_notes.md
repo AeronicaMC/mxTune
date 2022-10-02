@@ -1,3 +1,12 @@
+#### 2022-10-02 mxtune-1.16.5-2.0.0-alpha-2022-10-02.26788435
+* Parse MML once and cache generated MIDI sequence. Minor fixes.
+  * Manage network protocol version. Client and server side versions must match.
+  * Music Block as Item: Shows sheet music title for first instrument found in inventory.
+  * Music Block: Make instrument rotation smoother.
+  * Fix-up some javadocs.
+  * Squash a potential NPE when getting the music preset index.
+  * Optimization: Parse MML once and cache the sequence.
+
 #### 2022-08-07 mxtune-1.16.5-2.0.0-alpha-2022-08-07.46813887 
 * Music Venue Tool updated! Music Venues enabled! 
   * To use this snapshot you must update to Forge 1.16.5 - 36.2.39+ 
