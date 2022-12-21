@@ -61,6 +61,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         // TODO
         add(ModItems.SCRAP_ITEM.get(), "Paper Scraps");
         add(ModItems.SHEET_MUSIC.get(), "Sheet Music");
+        add(ModItems.MUSIC_SCORE.get(), "Music Score");
         add(ModItems.MUSIC_PAPER.get(), "Music Paper");
         addTooltip("music_paper.help", "Right-Click to OPEN");
         addTooltip("sheet_music.days_left", "Days left: %s");

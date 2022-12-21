@@ -9,4 +9,7 @@ import net.minecraft.item.ItemStack;
  * 
  */
 public interface IMusic
-{public boolean hasMusicText(ItemStack itemStackIn);}
+{
+    boolean hasMusicText(ItemStack itemStackIn);
+    MusicType getMusicType(ItemStack itemStackIn);
+}

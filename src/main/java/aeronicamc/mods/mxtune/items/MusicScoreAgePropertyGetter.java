@@ -1,15 +1,13 @@
-package aeronicamc.mods.mxtune.init;
+package aeronicamc.mods.mxtune.items;
 
 import aeronicamc.mods.mxtune.Reference;
-import aeronicamc.mods.mxtune.items.MultiInstModelPropertyGetter;
-import aeronicamc.mods.mxtune.items.MusicScoreAgePropertyGetter;
-import aeronicamc.mods.mxtune.items.ScrapAnimationPropertyGetter;
-import aeronicamc.mods.mxtune.items.SheetMusicAgePropertyGetter;
+import aeronicamc.mods.mxtune.config.MXTuneConfig;
+import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.item.IItemPropertyGetter;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemModelsProperties;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 
 /**
  *
@@ -35,20 +33,20 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * Registers this mod's {@link IItemPropertyGetter}s.
- *
  * @author Choonster
+ *
+ * @implNote 2021-Dec-01, Aeronica a.k.a Paul Boese modified to suit the needs of mxTune.
+ * Used to age the sheet music over time and select progressively more yellowed and torn textures.
  */
-@Mod.EventBusSubscriber(modid = Reference.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-public class ModItemModelProperties
+public class MusicScoreAgePropertyGetter
 {
-    @SubscribeEvent
-    public static void event(final FMLClientSetupEvent event) {
-        event.enqueueWork(() -> {
-            SheetMusicAgePropertyGetter.registerToItem(ModItems.SHEET_MUSIC.get());
-            MusicScoreAgePropertyGetter.registerToItem(ModItems.MUSIC_SCORE.get());
-            ScrapAnimationPropertyGetter.registerToItem(ModItems.SCRAP_ITEM.get());
-            MultiInstModelPropertyGetter.registerToItem(ModItems.MULTI_INST.get());
-        });
+    public static final ResourceLocation NAME = new ResourceLocation(Reference.MOD_ID, "music_score_age");
+
+    private static final IItemPropertyGetter GETTER = (pItemStack, pLevel, pEntity) ->
+            MathHelper.clamp((float) SheetMusicHelper.getSheetMusicDaysLeft(pItemStack) / MXTuneConfig.getSheetMusicLifeInDays() * 100F, 0F, 100F);
+
+    public static void registerToItem(Item pItem)
+    {
+        ItemModelsProperties.register(pItem, NAME, GETTER);
     }
 }

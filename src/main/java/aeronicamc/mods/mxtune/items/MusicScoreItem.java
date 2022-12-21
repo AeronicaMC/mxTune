@@ -17,11 +17,11 @@ import java.util.List;
 
 import static aeronicamc.mods.mxtune.util.SheetMusicHelper.*;
 
-public class SheetMusicItem extends Item implements IMusic
+public class MusicScoreItem extends Item implements IMusic
 {
-    private static final Logger LOGGER = LogManager.getLogger(SheetMusicItem.class);
+    private static final Logger LOGGER = LogManager.getLogger(MusicScoreItem.class);
 
-    public SheetMusicItem(Properties pProperties)
+    public MusicScoreItem(Properties pProperties)
     {
         super(pProperties);
     }
@@ -56,6 +56,6 @@ public class SheetMusicItem extends Item implements IMusic
     @Override
     public MusicType getMusicType(ItemStack itemStackIn)
     {
-        return MusicType.PART;
+        return MusicType.SCORE;
     }
 }

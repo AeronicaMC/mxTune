@@ -58,6 +58,9 @@ public class ModItems
     public static final RegistryObject<SheetMusicItem> SHEET_MUSIC = ITEMS.register("sheet_music",
         () -> new SheetMusicItem(new Item.Properties().stacksTo(1)));
 
+    public static final RegistryObject<MusicScoreItem> MUSIC_SCORE = ITEMS.register("music_score",
+        () -> new MusicScoreItem(new Item.Properties().stacksTo(1)));
+
     public static final RegistryObject<MultiInstItem> MULTI_INST = ITEMS.register("multi_inst",
         () -> new MultiInstItem(defaultItemProperties().stacksTo(1).setNoRepair()));
 

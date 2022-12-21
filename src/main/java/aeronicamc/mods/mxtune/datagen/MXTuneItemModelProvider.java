@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.datagen;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.items.MultiInstModelPropertyGetter;
+import aeronicamc.mods.mxtune.items.MusicScoreAgePropertyGetter;
 import aeronicamc.mods.mxtune.items.ScrapAnimationPropertyGetter;
 import aeronicamc.mods.mxtune.items.SheetMusicAgePropertyGetter;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
@@ -62,6 +63,31 @@ public class MXTuneItemModelProvider extends ItemModelProvider
                         .model(child.getValue())
                         .end()
             );
+        }
+
+        {
+            // AGE here in this context represents the percentage of a maximum number of days sheet music is viable.
+            // At 0% the sheet music is considered unusable. 1-20% is well worn. 21-50% is used. 51%+ like new.
+            final int maxAge = 50;
+            final int[] ages = {0, 1, 20, maxAge};
+            ItemModelBuilder parentModel = withExistingParent(MUSIC_SCORE.getId().getPath(), mcLoc("generated"))
+                .texture("layer0", "item/music_score_age" + maxAge);
+
+            Arrays.stream(ages)
+                .mapToObj(index ->
+                      {
+                          final ItemModelBuilder subModel = withExistingParent(MUSIC_SCORE.getId().toString() + "_age" + index, mcLoc(MUSIC_SCORE.getId().toString()))
+                              .texture("layer0", "item/" + MUSIC_SCORE.getId().getPath() + "_age" + index);
+
+                          return Pair.of(index, subModel);
+                      })
+                .forEachOrdered(child ->
+                    parentModel
+                            .override()
+                            .predicate(MusicScoreAgePropertyGetter.NAME, child.getKey())
+                            .model(child.getValue())
+                            .end()
+           );
         }
 
         {
