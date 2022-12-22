@@ -38,6 +38,9 @@ import java.time.DateTimeException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static java.lang.Thread.sleep;
 import static net.minecraftforge.common.util.Constants.NBT;
@@ -49,6 +52,7 @@ public enum SheetMusicHelper
     public static final String KEY_SHEET_MUSIC = "SheetMusic";
     public static final String KEY_DURATION = "Duration";
     public static final String KEY_MUSIC_TEXT_KEY = "MusicTextKey";
+    public static final String KEY_PARTS = "ScoreParts"; // list of soundfont proxy id strings. Order as-is.
     private final static ITextComponent SHEET_MUSIC_EMPTY =
             new TranslationTextComponent("tooltip.mxtune.sheet_music.empty")
                     .withStyle(TextFormatting.ITALIC)
@@ -60,6 +64,9 @@ public enum SheetMusicHelper
 
     private final static ITextComponent SHEET_MUSIC_DAYS_LEFT_ERROR =
             new TranslationTextComponent("tooltip.mxtune.sheet_music.days_left_error")
+                    .withStyle(TextFormatting.RED);
+    private final static ITextComponent MUSIC_SCORE_PART_ERROR =
+            new TranslationTextComponent("tooltip.mxtune.music_score.parts_error")
                     .withStyle(TextFormatting.RED);
 
 
@@ -127,6 +134,33 @@ public enum SheetMusicHelper
         }
 
         return 0;
+    }
+
+    public static List<ITextComponent> getFormattedMusicScoreParts(ItemStack musicScoreStack)
+    {
+        List<ITextComponent> part = new ArrayList<>();
+        CompoundNBT contents = musicScoreStack.getTag();
+        if (contents != null && contents.contains(KEY_SHEET_MUSIC))
+        {
+            CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
+            if ((sm.contains(KEY_PARTS) && sm.getIntArray(KEY_PARTS).length > 0))
+            {
+                int[] i = new int[1];
+                i[0] = 1;
+                Arrays.stream(sm.getIntArray(KEY_PARTS)).forEach(partInstrumentIndex->{
+                        part.add(new StringTextComponent(String.format("%02d: ", i[0]++))
+                                         .withStyle(TextFormatting.GRAY)
+                                         .append(new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(partInstrumentIndex))
+                                                         .withStyle(TextFormatting.YELLOW)));
+                                                                 });
+                return part;
+            }
+            else
+                part.add(MUSIC_SCORE_PART_ERROR);
+        }
+        else
+            part.add(MUSIC_SCORE_PART_ERROR);
+        return part;
     }
 
     /**
@@ -295,14 +329,15 @@ public enum SheetMusicHelper
 
     /**
      * Server Side
-     * <p></p>Updates a new Sheet Music ItemStack. Adds the title, duration and keystore id to the it and stores
+     * <p></p>Updates a new Sheet Music or Music Score ItemStack. Adds the title, duration and keystore id to it and stores
      * the data to an on-disk data store.
      * @param sheetMusic ItemStack reference to be updated.
      * @param musicTitle becomes the Sheet Music display name
      * @param musicText MML to be saved to disk
+     * @param partInstrumentIndexes int array of part instrument indexes. Must be a 0 length for sheet music, or the number of parts for a music score.
      * @return true on success.
      */
-    public static boolean writeSheetMusic(ItemStack sheetMusic, String musicTitle, String musicText)
+    public static boolean writeIMusic(ItemStack sheetMusic, String musicTitle, String musicText, int[] partInstrumentIndexes)
     {
         musicTitle = musicTitle.substring(0, Math.min(musicTitle.length(), Reference.MXT_SONG_TITLE_LENGTH));
         sheetMusic.setHoverName(new StringTextComponent(musicTitle));
@@ -316,7 +351,10 @@ public enum SheetMusicHelper
                 CompoundNBT contents = new CompoundNBT();
                 contents.putString(KEY_MUSIC_TEXT_KEY, musicTextKey);
                 contents.putInt(KEY_DURATION, validDuration.getDuration());
+                if (partInstrumentIndexes.length > 0)
+                    contents.putIntArray(KEY_PARTS, partInstrumentIndexes);
                 compound.put(KEY_SHEET_MUSIC, contents);
+
                 return true;
             }
         }
@@ -516,7 +554,7 @@ public enum SheetMusicHelper
     public static ItemStack createSheetMusic(String title, String mml)
     {
         ItemStack sheetMusic = new ItemStack(ModItems.SHEET_MUSIC.get());
-        if (SheetMusicHelper.writeSheetMusic(sheetMusic, title, mml))
+        if (SheetMusicHelper.writeIMusic(sheetMusic, title, mml, new int[0]))
         {
             return sheetMusic;
         }

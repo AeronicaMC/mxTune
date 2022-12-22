@@ -15,6 +15,7 @@ import aeronicamc.mods.mxtune.mxt.MXTuneFileHelper;
 import aeronicamc.mods.mxtune.mxt.MXTunePart;
 import aeronicamc.mods.mxtune.mxt.MXTuneStaff;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
+import aeronicamc.mods.mxtune.network.messages.CreateMusicScoreMessage;
 import aeronicamc.mods.mxtune.network.messages.CreateSheetMusicMessage;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
 import aeronicamc.mods.mxtune.sound.IAudioStatusCallback;
@@ -48,10 +49,6 @@ import static aeronicamc.mods.mxtune.Reference.*;
 public class GuiMXT extends MXScreen implements IAudioStatusCallback
 {
     private static final Logger LOGGER = LogManager.getLogger(GuiMXT.class);
-    public enum Mode
-    {
-        CLIENT, SERVER, SHEET_MUSIC
-    }
     private final Screen parent;
     private final PlayerEntity player;
 
@@ -65,7 +62,8 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     private final MXTextFieldWidget textAuthor = new MXTextFieldWidget(MXT_SONG_AUTHOR_LENGTH);
     private final MXTextFieldWidget textSource = new MXTextFieldWidget(MXT_SONG_SOURCE_LENGTH);
     private MXButton buttonPlayStop;
-    private MXButton buttonDoneMode;
+    private MXButton buttonSheetMusic;
+    private MXButton buttonMusicScore;
     private int durationTotal;
     private int ticks;
 
@@ -78,7 +76,6 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     private boolean isPlaying = false;
     private MXButton buttonSave;
     private static final int PADDING = 4;
-    private final Mode mode;
 
     /* MML Player */
     private int playId = PlayIdSupplier.INVALID;
@@ -97,12 +94,11 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     private int viewableTabCount = MIN_TABS;
     private int cachedViewableTabCount;
 
-    public GuiMXT(Screen parent, Mode mode)
+    public GuiMXT(Screen parent)
     {
         super(new TranslationTextComponent("gui.mxtune.gui_mxt.title"));
         this.parent = parent;
         this.player = getMC().player;
-        this.mode = mode;
         for (int i = 0; i < MAX_TABS; i++)
         {
             childTabs[i] = new GuiMXTPartTab(this);
@@ -128,19 +124,19 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         MXButton buttonImport = new MXButton(buttonNew.getLeft() + buttonNew.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.import"), pImport->importAction());
         MXButton buttonOpen = new MXButton(buttonImport.getLeft() + buttonImport.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.library"), pOpen->openAction());
         buttonSave = new MXButton(buttonOpen.getLeft() + buttonOpen.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.save"), pSave->saveAction());
-        buttonDoneMode = new MXButton(buttonSave.getLeft() + buttonSave.getWidth(), buttonY, buttonWidth, 20, getDoneButtonNameByMode(), pDone->doneAction());
-        MXButton buttonCancel = new MXButton(buttonDoneMode.getLeft() + buttonDoneMode.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.cancel"), pCancel->cancelAction(true));
-        if (mode == Mode.CLIENT)
-            buttonCancel.visible = false;
+        buttonSheetMusic = new MXButton(buttonSave.getLeft() + buttonSave.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.write_sheet_music"), pDone->writeSheetMusic());
+        buttonMusicScore = new MXButton(buttonSheetMusic.getLeft() + buttonSheetMusic.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.write_music_score"), pDone->writeMusicScore());
+        MXButton buttonCancel = new MXButton(buttonMusicScore.getLeft() + buttonMusicScore.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.cancel"), pCancel->cancelAction(true));
         addButton(buttonNew);
         addButton(buttonImport);
         addButton(buttonOpen);
         addButton(buttonSave);
-        addButton(buttonDoneMode);
+        addButton(buttonSheetMusic);
+        addButton(buttonMusicScore);
         addButton(buttonCancel);
 
         // Links
-        int textY = buttonDoneMode.y + buttonDoneMode.getHeight() + PADDING;
+        int textY = buttonMusicScore.y + buttonMusicScore.getHeight() + PADDING;
         int urlWidth = width / 2 - PADDING;
         sourcesLink.setAlignText(MXLink.AlignText.LEFT);
         sourcesLink.setLayout(PADDING, textY, urlWidth, singleLineHeight);
@@ -460,19 +456,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         boolean isOK = countOK == viewableTabCount;
         boolean hasEnoughMusicPaper = player.inventory.getSelected().getCount() >= viewableTabCount;
         buttonPlayStop.active = isPlaying || isOK;
-        switch (mode)
-        {
-            case CLIENT:
-            case SERVER:
-                buttonDoneMode.active = !textTitle.getValue().isEmpty() && isOK;
-                break;
-
-            case SHEET_MUSIC:
-                buttonDoneMode.active = !textTitle.getValue().isEmpty() && isOK && hasEnoughMusicPaper;
-                break;
-            default:
-        }
-
+        buttonSheetMusic.active = buttonMusicScore.active = !textTitle.getValue().isEmpty() && isOK && hasEnoughMusicPaper;
         buttonPlayStop.setMessage(isPlaying ? new TranslationTextComponent("gui.mxtune.button.stop") : new TranslationTextComponent("gui.mxtune.button.play_all"));
         sourcesLink.visible = sourcesLink.getUrl().matches("^(http(s)?:\\/\\/[a-zA-Z0-9\\-_]+\\.[a-zA-Z]+(.)+)+");
 
@@ -502,21 +486,6 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         MXTunePart part = childTabs[index].getPart();
         ITextComponent localizedInstrumentName = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(childTabs[index].getPart().getInstrumentName()));
         return (!part.getInstrumentName().equals("")) ? new StringTextComponent(String.format("%s: ", number)).append(localizedInstrumentName) : new StringTextComponent(number);
-    }
-
-    private ITextComponent getDoneButtonNameByMode()
-    {
-        switch (mode)
-        {
-            case CLIENT:
-                return new TranslationTextComponent("gui.done");
-            case SERVER:
-                return new TranslationTextComponent("gui.mxtune.button.upload");
-            case SHEET_MUSIC:
-                return new TranslationTextComponent("gui.mxtune.button.write");
-            default:
-        }
-        return new TranslationTextComponent("gui.none");
     }
 
     @Override
@@ -642,26 +611,22 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         mxTuneFile.setParts(parts);
     }
 
-    private void doneAction()
+    /**
+     * Write Sheet Music and quit to main screen is successful
+     */
+    private void writeSheetMusic()
     {
-        // Todo: Warning if un-saved! Quit Yes/No dialog
-        stop();
-        updateState();
-        switch (mode)
-        {
-            case CLIENT:
-                getMC().setScreen(new ConfirmScreen(this::cancelAction, new TranslationTextComponent("gui.mxtune.confirm.cancel.text01"), new TranslationTextComponent("gui.mxtune.confirm.cancel.text02")));
-                break;
-            case SERVER:
-                if (uploadMxt())
-                    getMC().setScreen(parent);
-                break;
-            case SHEET_MUSIC:
-                if (makeSheetMusic())
-                    getMC().setScreen(parent);
-                break;
-            default:
-        }
+        if (makeSheetMusic())
+            getMC().setScreen(parent);
+    }
+
+    /**
+     * Write Music Score and quit to main screen is successful
+     */
+    private void writeMusicScore()
+    {
+        if (makeMusicScore())
+            getMC().setScreen(parent);
     }
 
     private void cancelAction(boolean result)
@@ -699,6 +664,28 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
             return true;
         }
         return false;
+    }
+
+    private boolean makeMusicScore()
+    {
+        if (!textTitle.getValue().trim().equals("") && buttonPlayStop.active)
+        {
+            String title = String.format("%s (%d %s)", this.textTitle.getValue(), viewableTabCount, new TranslationTextComponent("gui.mxtune.label.n_part_score").getString());
+            StringBuilder scoreMML = new StringBuilder();
+            int[] partInstrumentIndexes = new int[viewableTabCount];
+            for (int i = 0; i < viewableTabCount; i++)
+            {
+                childTabs[i].updatePart();
+                int partInstrumentIndex = SoundFontProxyManager.getIndexById(childTabs[i].getPart().getInstrumentName());
+                partInstrumentIndexes[i] = partInstrumentIndex;
+                String mml = childTabs[i].getMMLClipBoardFormat();
+                mml = mml.replace("MML@", "MML@i" + partInstrumentIndex);
+                scoreMML.append(mml);
+            }
+            PacketDispatcher.sendToServer(new CreateMusicScoreMessage(title, scoreMML.toString(), partInstrumentIndexes));
+            return true;
+        }
+        return true;
     }
 
     private String formatTitle(String title, int part, int parts, String instrumentName)

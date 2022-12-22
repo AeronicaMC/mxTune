@@ -41,6 +41,7 @@ public class PacketDispatcher
         registerMessage(StopPlayMessage.class, new StopPlayMessage());
         registerMessage(MusicVenueSyncMessage.class, new MusicVenueSyncMessage());
         // To Server
+        registerMessage(CreateMusicScoreMessage.class, new CreateMusicScoreMessage());
         registerMessage(CreateSheetMusicMessage.class, new CreateSheetMusicMessage());
         registerMessage(ChooseInstrumentMessage.class, new ChooseInstrumentMessage());
         registerMessage(AudiblePingPlayerMessage.class, new AudiblePingPlayerMessage());

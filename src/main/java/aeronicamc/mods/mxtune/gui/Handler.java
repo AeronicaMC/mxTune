@@ -15,7 +15,7 @@ public class Handler
 
     public static void OpenSheetMusicScreen()
     {
-        mc.tell(()->mc.setScreen(new GuiMXT(Misc.nonNullInjected(), GuiMXT.Mode.SHEET_MUSIC)));
+        mc.tell(()->mc.setScreen(new GuiMXT(Misc.nonNullInjected())));
     }
     public static void openTestScreen()
     {

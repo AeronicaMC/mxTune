@@ -99,7 +99,7 @@ public class TestScreen extends Screen
 
     public void onGuiMXT()
     {
-        Objects.requireNonNull(minecraft).setScreen(new GuiMXT(this, GuiMXT.Mode.SHEET_MUSIC));
+        Objects.requireNonNull(minecraft).setScreen(new GuiMXT(this));
     }
 
     @Override

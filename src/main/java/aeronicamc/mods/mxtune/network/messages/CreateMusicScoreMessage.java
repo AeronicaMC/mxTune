@@ -17,31 +17,32 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.function.Supplier;
 
-public class CreateSheetMusicMessage extends AbstractMessage<CreateSheetMusicMessage>
+public class CreateMusicScoreMessage extends AbstractMessage<CreateMusicScoreMessage>
 {
-    private static final Logger LOGGER = LogManager.getLogger(CreateSheetMusicMessage.class);
+    private static final Logger LOGGER = LogManager.getLogger(CreateMusicScoreMessage.class);
     private String musicTitle;
     private String musicText;
+    private int[] partInstrumentIndexes;
     private boolean error;
 
-    public CreateSheetMusicMessage() { /* NOP */ }
+    public CreateMusicScoreMessage() { /* NOP */ }
 
-    public CreateSheetMusicMessage(final String musicTitle, final String musicText)
+    public CreateMusicScoreMessage(final String musicTitle, final String musicText, final int[] partInstrumentIndexes)
     {
         this.musicTitle = musicTitle;
         this.musicText = musicText;
+        this.partInstrumentIndexes = partInstrumentIndexes;
         this.error = false;
     }
 
-    public CreateSheetMusicMessage(final String musicTitle, final String musicText, final boolean error)
+    public CreateMusicScoreMessage(final String musicTitle, final String musicText, final int[] partInstrumentIndexes, final boolean error)
     {
-        this.musicTitle = musicTitle;
-        this.musicText = musicText;
+        this(musicTitle, musicText, partInstrumentIndexes);
         this.error = error;
     }
 
     @Override
-    public CreateSheetMusicMessage decode(final PacketBuffer buffer)
+    public CreateMusicScoreMessage decode(final PacketBuffer buffer)
     {
         final String musicTitle = buffer.readUtf();
         String musicText = "";
@@ -54,11 +55,13 @@ public class CreateSheetMusicMessage extends AbstractMessage<CreateSheetMusicMes
             LOGGER.error("unable to decode string", e);
             error = true;
         }
-        return new CreateSheetMusicMessage(musicTitle, musicText != null ? musicText : "", error);
+        final int[] partInstrumentIndexes = buffer.readVarIntArray(16);
+        LOGGER.debug(String.format("%s, buffer.readLongArray: %d", musicTitle, partInstrumentIndexes.length));
+        return new CreateMusicScoreMessage(musicTitle, musicText != null ? musicText : "", partInstrumentIndexes , error);
     }
 
     @Override
-    public void encode(final CreateSheetMusicMessage message, final PacketBuffer buffer)
+    public void encode(final CreateMusicScoreMessage message, final PacketBuffer buffer)
     {
         buffer.writeUtf(message.musicTitle);
         try
@@ -71,11 +74,12 @@ public class CreateSheetMusicMessage extends AbstractMessage<CreateSheetMusicMes
             buffer.writeBoolean(true);
             return;
         }
+        buffer.writeVarIntArray(message.partInstrumentIndexes);
         buffer.writeBoolean(message.error);
     }
 
     @Override
-    public void handle(final CreateSheetMusicMessage message, final Supplier<NetworkEvent.Context> ctx)
+    public void handle(final CreateMusicScoreMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
         if (ctx.get().getDirection().getReceptionSide().isServer())
             ctx.get().enqueueWork(() ->{
@@ -90,12 +94,12 @@ public class CreateSheetMusicMessage extends AbstractMessage<CreateSheetMusicMes
 
                 } else if (!sPlayer.getMainHandItem().isEmpty() && sPlayer.getMainHandItem().getItem() instanceof MusicPaperItem)
                     {
-                        ItemStack sheetMusic = new ItemStack(ModItems.SHEET_MUSIC.get());
-                        if (SheetMusicHelper.writeIMusic(sheetMusic, message.musicTitle, message.musicText, new int[0]))
+                        ItemStack musicScore = new ItemStack(ModItems.MUSIC_SCORE.get());
+                        if (SheetMusicHelper.writeIMusic(musicScore, message.musicTitle, message.musicText, message.partInstrumentIndexes))
                         {
-                            sPlayer.inventory.removeItem(sPlayer.inventory.selected, 1);
-                            if (!sPlayer.inventory.add(sheetMusic.copy()))
-                                sPlayer.drop(sheetMusic, true, false);
+                            sPlayer.inventory.removeItem(sPlayer.inventory.selected, message.partInstrumentIndexes.length);
+                            if (!sPlayer.inventory.add(musicScore.copy()))
+                                sPlayer.drop(musicScore, true, false);
                         }
                         else
                         {

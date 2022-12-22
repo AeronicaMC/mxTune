@@ -64,6 +64,8 @@ public class MXTuneLanguageProvider extends LanguageProvider
         add(ModItems.MUSIC_SCORE.get(), "Music Score");
         add(ModItems.MUSIC_PAPER.get(), "Music Paper");
         addTooltip("music_paper.help", "Right-Click to OPEN");
+        addTooltip("music_score.shift_parts_01", "Hold SHIFT to see parts");
+        addTooltip("music_score.parts_error", "No parts found");
         addTooltip("sheet_music.days_left", "Days left: %s");
         addTooltip("sheet_music.days_left_error", "Days left: nn");
         addTooltip("sheet_music.duration_error", "h:mm:ss");
@@ -115,6 +117,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("label.status", "Status/Meta");
         addGuiText("label.title", "Title:");
         addGuiText("label.metadata", "Chars: %s, Duration: %s, Meta: %s");
+        addGuiText("label.n_part_score", "Part Score");
         addGuiText("label.duration_value_total", "Duration All: ");
 
         addGuiText("button.help.help01", "Help");
@@ -140,7 +143,8 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.stop", "Stop");
         addGuiText("button.select", "Select");
         addGuiText("button.upload", "Upload");
-        addGuiText("button.write", "Write");
+        addGuiText("button.write_sheet_music", "Make Sheet Music");
+        addGuiText("button.write_music_score", "Make Music Score");
 
         addGuiText("button.lock.help01", "Lock");
         addGuiText("button.lock.help02", "[Unlocked]: Anyone can modify contents. View contents by RIGHT-CLICK-ing the block.");
