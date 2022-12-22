@@ -1,6 +1,6 @@
 {
 	"credit": "Made with Blockbench",
-	"parent": "mxtune:block/music_block",
+	"parent": "minecraft:block/cube_all",
 	"textures": {
 		"0": "mxtune:block/music_block_bottom",
 		"1": "mxtune:block/music_block_playing_front2",
