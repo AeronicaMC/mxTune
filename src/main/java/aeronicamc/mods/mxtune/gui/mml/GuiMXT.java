@@ -685,7 +685,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
             PacketDispatcher.sendToServer(new CreateMusicScoreMessage(title, scoreMML.toString(), partInstrumentIndexes));
             return true;
         }
-        return true;
+        return false;
     }
 
     private String formatTitle(String title, int part, int parts, String instrumentName)
