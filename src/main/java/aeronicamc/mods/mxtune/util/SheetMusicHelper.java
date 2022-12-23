@@ -52,7 +52,7 @@ public enum SheetMusicHelper
     public static final String KEY_SHEET_MUSIC = "SheetMusic";
     public static final String KEY_DURATION = "Duration";
     public static final String KEY_MUSIC_TEXT_KEY = "MusicTextKey";
-    public static final String KEY_PARTS = "ScoreParts"; // list of soundfont proxy id strings. Order as-is.
+    public static final String KEY_PARTS = "ScoreParts"; // list of soundfont proxy indexes. Order as-is.
     private final static ITextComponent SHEET_MUSIC_EMPTY =
             new TranslationTextComponent("tooltip.mxtune.sheet_music.empty")
                     .withStyle(TextFormatting.ITALIC)
