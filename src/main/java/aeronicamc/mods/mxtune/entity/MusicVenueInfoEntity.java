@@ -15,14 +15,14 @@ import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
-public class MusicVenueEntity extends HangingEntity implements IEntityAdditionalSpawnData
+public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditionalSpawnData
 {
-    public MusicVenueEntity(World level)
+    public MusicVenueInfoEntity(World level)
     {
         super(ModEntities.MUSIC_VENUE_INFO.get(), level);
     }
 
-    public MusicVenueEntity(World level, BlockPos pPos)
+    public MusicVenueInfoEntity(World level, BlockPos pPos)
     {
         super(ModEntities.MUSIC_VENUE_INFO.get(), level, pPos);
     }

@@ -31,6 +31,7 @@ import aeronicamc.mods.mxtune.managers.PlayManager;
 import aeronicamc.mods.mxtune.network.MultiPacketSerializedObjectManager;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.render.blockentity.MusicBlockEntityRenderer;
+import aeronicamc.mods.mxtune.render.entity.MusicVenueInfoRenderer;
 import aeronicamc.mods.mxtune.render.not.MusicSourceRenderer;
 import aeronicamc.mods.mxtune.render.not.RootedRenderer;
 import aeronicamc.mods.mxtune.sound.ActiveAudio;
@@ -116,6 +117,7 @@ public class MXTune
         MinecraftForge.EVENT_BUS.register(ClientAudio.class);
         RenderingRegistry.registerEntityRenderingHandler(ModEntities.MUSIC_SOURCE.get(), MusicSourceRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntities.ROOTED_SOURCE.get(), RootedRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntities.MUSIC_VENUE_INFO.get(), MusicVenueInfoRenderer::new);
         RenderTypeLookup.setRenderLayer(ModBlocks.MUSIC_VENUE_TOOL_BLOCK.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.MUSIC_BLOCK.get(), RenderType.cutoutMipped());
         ClientRegistry.bindTileEntityRenderer(ModBlockEntities.INV_MUSIC_BLOCK.get(), MusicBlockEntityRenderer::new);

@@ -2,7 +2,7 @@ package aeronicamc.mods.mxtune.init;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
-import aeronicamc.mods.mxtune.entity.MusicVenueEntity;
+import aeronicamc.mods.mxtune.entity.MusicVenueInfoEntity;
 import aeronicamc.mods.mxtune.entity.RootedEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
@@ -24,7 +24,7 @@ public class ModEntities
 
     public static final RegistryObject<EntityType<RootedEntity>> ROOTED_SOURCE = register("rooted_source", EntityType.Builder.<RootedEntity>of((type, world) -> new RootedEntity(world), EntityClassification.MISC).sized(0.0F, 0.0F).setCustomClientFactory((spawnEntity, world) -> new RootedEntity(world)));
 
-    public static final RegistryObject<EntityType<MusicVenueEntity>> MUSIC_VENUE_INFO = register("music_venue_info", EntityType.Builder.<MusicVenueEntity>of((type, world) -> new MusicVenueEntity(world), EntityClassification.MISC).sized(1.0F, 1.0F).setCustomClientFactory((spawnEntity, world) -> new MusicVenueEntity(world)));
+    public static final RegistryObject<EntityType<MusicVenueInfoEntity>> MUSIC_VENUE_INFO = register("music_venue_info", EntityType.Builder.<MusicVenueInfoEntity>of((type, world) -> new MusicVenueInfoEntity(world), EntityClassification.MISC).sized(1.0F, 1.0F).setCustomClientFactory((spawnEntity, world) -> new MusicVenueInfoEntity(world)));
 
 
     private static <T extends Entity> RegistryObject<EntityType<T>> register(String name, EntityType.Builder<T> builder)
