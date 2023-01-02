@@ -32,6 +32,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addBlocks();
         addCommands();
         addConfigs();
+        addEntities();
         addEnums();
         addErrors();
         addGuiTexts();
@@ -63,6 +64,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         add(ModItems.SHEET_MUSIC.get(), "Sheet Music");
         add(ModItems.MUSIC_SCORE.get(), "Music Score");
         add(ModItems.MUSIC_PAPER.get(), "Music Paper");
+        add(ModItems.MUSIC_VENUE_INFO.get(), "Music Venue Info Panel");
         addTooltip("music_paper.help", "Right-Click to OPEN");
         addTooltip("music_score.shift_parts_01", "Hold SHIFT to see parts");
         addTooltip("music_score.parts_error", "No parts found");
@@ -189,6 +191,11 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addConfig("server.sheet_music_life_in_days", "Sheet Music Life in Days");
     }
 
+    private void addEntities()
+    {
+        addEntity("music_venue_info", "Music Venue Info Panel");
+    }
+
     private void addEnums()
     {
         addEnum("tool_state.type.start", "Start");
@@ -279,6 +286,16 @@ public class MXTuneLanguageProvider extends LanguageProvider
     private void addConfig(String identifier, String text)
     {
         add(String.format("config.%s.%s", Reference.MOD_ID, identifier), text);
+    }
+
+    /**
+     * prepends entity.[mod_id].
+     * @param identifier the unique error id
+     * @param text of the entity
+     */
+    private void addEntity(String identifier, String text)
+    {
+        add(String.format("entity.%s.%s", Reference.MOD_ID, identifier), text);
     }
 
     /**

@@ -40,6 +40,9 @@ public class MXTuneItemModelProvider extends ItemModelProvider
         withExistingParent(MUSIC_PAPER.getId().getPath(), mcLoc("generated"))
                 .texture("layer0", "item/music_paper");
 
+        withExistingParent(MUSIC_VENUE_INFO.getId().getPath(), mcLoc("generated"))
+                .texture("layer0", "item/music_venue_info");
+
         {
             // AGE here in this context represents the percentage of a maximum number of days sheet music is viable.
             // At 0% the sheet music is considered unusable. 1-20% is well worn. 21-50% is used. 51%+ like new.

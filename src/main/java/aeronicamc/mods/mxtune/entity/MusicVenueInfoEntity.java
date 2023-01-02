@@ -1,12 +1,17 @@
 package aeronicamc.mods.mxtune.entity;
 
 import aeronicamc.mods.mxtune.init.ModEntities;
+import aeronicamc.mods.mxtune.init.ModItems;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.HangingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -17,26 +22,28 @@ import javax.annotation.Nullable;
 
 public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditionalSpawnData
 {
+    public static final String TAG_FACING = "Facing";
     public MusicVenueInfoEntity(World level)
     {
         super(ModEntities.MUSIC_VENUE_INFO.get(), level);
     }
 
-    public MusicVenueInfoEntity(World level, BlockPos pPos)
+    public MusicVenueInfoEntity(World level, BlockPos pPos, Direction facing)
     {
         super(ModEntities.MUSIC_VENUE_INFO.get(), level, pPos);
+        this.setDirection(facing);
     }
 
     @Override
     public int getWidth()
     {
-        return 0;
+        return 16;
     }
 
     @Override
     public int getHeight()
     {
-        return 0;
+        return 16;
     }
 
     /**
@@ -47,7 +54,17 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
     @Override
     public void dropItem(@Nullable Entity pBrokenEntity)
     {
+        if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+            this.playSound(SoundEvents.PAINTING_BREAK, 1.0F, 1.0F);
+            if (pBrokenEntity instanceof PlayerEntity) {
+                PlayerEntity playerentity = (PlayerEntity)pBrokenEntity;
+                if (playerentity.abilities.instabuild) {
+                    return;
+                }
+            }
 
+            this.spawnAtLocation(ModItems.MUSIC_VENUE_INFO.get());
+        }
     }
 
     @Override
@@ -61,6 +78,20 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
+    public void addAdditionalSaveData(CompoundNBT pCompound) {
+        pCompound.putByte(TAG_FACING, (byte)this.direction.get2DDataValue());
+        super.addAdditionalSaveData(pCompound);
+    }
+
+    /**
+     * (abstract) Protected helper method to read subclass entity data from NBT.
+     */
+    public void readAdditionalSaveData(CompoundNBT pCompound) {
+        this.direction = Direction.from2DDataValue(pCompound.getByte(TAG_FACING));
+        super.readAdditionalSaveData(pCompound);
+        this.setDirection(this.direction);
+    }
+
     /**
      * Called by the server when constructing the spawn packet.
      * Data should be added to the provided stream.
@@ -70,19 +101,22 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
     @Override
     public void writeSpawnData(PacketBuffer buffer)
     {
-
+        buffer.writeBlockPos(this.pos);
+        buffer.writeByte((byte)this.direction.get2DDataValue());
     }
 
     /**
      * Called by the client when it receives a Entity spawn packet.
      * Data should be read out of the stream in the same way as it was written.
      *
-     * @param additionalData The packet data stream
+     * @param buffer The packet data stream
      */
     @Override
-    public void readSpawnData(PacketBuffer additionalData)
+    public void readSpawnData(PacketBuffer buffer)
     {
-
+        this.pos = buffer.readBlockPos();
+        this.direction = Direction.from2DDataValue(buffer.readByte());
+        this.setDirection(this.direction);
     }
 
     /**
