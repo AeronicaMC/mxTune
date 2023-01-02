@@ -61,8 +61,11 @@ public class ModItems
     public static final RegistryObject<MusicScoreItem> MUSIC_SCORE = ITEMS.register("music_score",
         () -> new MusicScoreItem(new Item.Properties().stacksTo(1)));
 
+    public static final RegistryObject<MusicVenueInfoItem> MUSIC_VENUE_INFO = ITEMS.register("music_venue_info",
+        () -> new MusicVenueInfoItem(defaultItemProperties().stacksTo(4)));
+
     public static final RegistryObject<MultiInstItem> MULTI_INST = ITEMS.register("multi_inst",
-        () -> new MultiInstItem(defaultItemProperties().stacksTo(1).setNoRepair()));
+                                                                                  () -> new MultiInstItem(defaultItemProperties().stacksTo(1).setNoRepair()));
 
     /**
      * Gets an {@link Item.Properties} instance with the {@link ItemGroup} set to {@link MXTune#ITEM_GROUP}.
