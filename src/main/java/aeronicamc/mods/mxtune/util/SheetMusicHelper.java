@@ -389,6 +389,7 @@ public enum SheetMusicHelper
                     } catch (InterruptedException e)
                     {
                         LOGGER.warn(e);
+                        Thread.currentThread().interrupt();
                     }
                     if (!((PlayerEntity) pEntity).inventory.add(pItemSlot, new ItemStack(ModItems.SCRAP_ITEM.get(), 1))){
                         ((PlayerEntity) pEntity).drop(new ItemStack(ModItems.SCRAP_ITEM.get(), 1), true, true);
@@ -402,6 +403,7 @@ public enum SheetMusicHelper
                     } catch (InterruptedException e)
                     {
                         LOGGER.warn(e);
+                        Thread.currentThread().interrupt();
                     }
                     if (!((PlayerEntity) pEntity).inventory.add(pItemSlot, new ItemStack(ModItems.SCRAP_ITEM.get(), 1))){
                         ((PlayerEntity) pEntity).drop(new ItemStack(ModItems.SCRAP_ITEM.get(), 1), true, true);
@@ -444,7 +446,7 @@ public enum SheetMusicHelper
                 SidedThreadGroups.SERVER.newThread(()->{
                     try
                     {
-                        sleep(RandomUtils.nextLong(400 + (50 * finalMultiplier), 600 + (50 * finalMultiplier)));
+                        sleep(RandomUtils.nextLong(400 + (50L * finalMultiplier), 600 + (50L * finalMultiplier)));
                     } catch (InterruptedException e)
                     {
                         LOGGER.warn("Interrupted!", e);
@@ -464,7 +466,7 @@ public enum SheetMusicHelper
                 SidedThreadGroups.SERVER.newThread(()->{
                     try
                     {
-                        sleep(RandomUtils.nextLong(600 + (50 * finalMultiplier), 800 + (50 * finalMultiplier)));
+                        sleep(RandomUtils.nextLong(600 + (50L * finalMultiplier), 800 + (50L * finalMultiplier)));
                     } catch (InterruptedException e)
                     {
                         LOGGER.warn("Interrupted!", e);

@@ -81,16 +81,15 @@ public class ImportHelper
     @Nullable
     private static MXTuneFile importZippedMs2mml(Path path)
     {
-        if (path == null) return null;
         try (ZipFile file = new ZipFile(path.toString()))
         {
             String title = FileHelper.removeExtension(path.getFileName().toString());
             MXTuneFile mxTuneFile = new MXTuneFile();
             mxTuneFile.setTitle(title);
             Enumeration<? extends ZipEntry> entries = file.entries();
-            LOGGER.debug("---- Zip File: {}", file.getName().substring(file.getName().lastIndexOf('\\')+1));
+            LOGGER.debug("---- Zip File: {}", file.getName().substring(file.getName().lastIndexOf('\\') + 1));
             int count = 0;
-            while(entries.hasMoreElements())
+            while (entries.hasMoreElements())
             {
                 ZipEntry entry = entries.nextElement();
                 if (!entry.isDirectory() && hasExtension(entry.getName(), "ms2mml"))

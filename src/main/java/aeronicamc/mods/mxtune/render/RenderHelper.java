@@ -113,7 +113,7 @@ public class RenderHelper
         float f1 = Minecraft.getInstance().options.getBackgroundOpacity(0.25F);
         int j = (int)(f1 * 255.0F) << 24;
         FontRenderer fontrenderer = Minecraft.getInstance().font;
-        float f2 = (float)(-fontrenderer.width(pDisplayName) / 2);
+        float f2 = (float)((double) -fontrenderer.width(pDisplayName) / 2);
         fontrenderer.drawInBatch(pDisplayName, f2, (float)0, pColor, false, matrix4f, pBuffer, false, j, packedLight);
         pMatrixStack.popPose();
     }
