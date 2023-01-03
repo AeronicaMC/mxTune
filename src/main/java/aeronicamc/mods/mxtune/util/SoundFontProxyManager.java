@@ -92,7 +92,9 @@ public class SoundFontProxyManager
         LOGGER.debug("Loaded {} records from {}", soundFontProxyMapByIndex.size(), RESOURCE);
     }
 
-    public SoundFontProxyManager INSTANCE = new SoundFontProxyManager();
+    private SoundFontProxyManager() {
+        // NO OP
+    }
 
     public static SoundFontProxy getProxy(int index)
     {
@@ -197,6 +199,4 @@ public class SoundFontProxyManager
     {
         return soundFontProxyMapByIndex;
     }
-
-
 }
