@@ -60,6 +60,7 @@ public class MapMS2Instruments
         builderByIndex.put("saxophone","sax_alto");
         builderByIndex.put("snaredrum","drum_snare_mabinogi");
         builderByIndex.put("steeldrum","drums_steel");
+        builderByIndex.put("steeldrums","drums_steel");
         builderByIndex.put("timpani","timpani");
         builderByIndex.put("tomtom","drums_melodic_tom");
         builderByIndex.put("trombone","trombone");
