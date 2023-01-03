@@ -62,7 +62,6 @@ public class MusicBlock extends Block implements IWrenchAble
 
     private static final VoxelShape BOTTOM_AABB = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 8.0D, 16.0D);
     private static final Logger LOGGER = LogManager.getLogger(MusicBlock.class);
-    private static final Random rand = new Random();
 
     public MusicBlock()
     {
