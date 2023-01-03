@@ -17,7 +17,7 @@
 
 package aeronicamc.libs.mml.readers.ms2mml;
 
-import com.google.common.io.Files;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -90,7 +90,7 @@ public class TestMs2Mml
                     // Directory
                 } else
                 {
-                    LOGGER.info("Ext: {}, File: {}, size: {}", Files.getFileExtension(entry.getName()), entry.getName(), entry.getSize());
+                    LOGGER.info("Ext: {}, File: {}, size: {}", FilenameUtils.getExtension(entry.getName()), entry.getName(), entry.getSize());
                     InputStream is = file.getInputStream(entry);
                     builder.append(viewMs2Mml(is));
                 }

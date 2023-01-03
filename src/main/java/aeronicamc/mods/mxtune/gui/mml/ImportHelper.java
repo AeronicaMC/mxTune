@@ -9,7 +9,7 @@ import aeronicamc.mods.mxtune.mxt.MXTuneFile;
 import aeronicamc.mods.mxtune.mxt.MXTunePart;
 import aeronicamc.mods.mxtune.mxt.MXTuneStaff;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
-import com.google.common.io.Files;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -43,7 +43,7 @@ public class ImportHelper
                     return importMs2mml(path);
                 case "mml":
                     return MMLFile.parse(path);
-                case "zip": // Only multi-part ms2mml supported at this time
+                case "zip": // Only multipart ms2mml supported at this time
                     return importZippedMs2mml(path);
                 default:
             }
@@ -52,12 +52,14 @@ public class ImportHelper
 
     private static String getExtension(Path path)
     {
-        return Files.getFileExtension(path.getFileName().toString().toLowerCase(Locale.ROOT));
+
+        return FilenameUtils.getExtension(path.getFileName().toString().toLowerCase(Locale.ROOT));
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static boolean hasExtension(String test, String ext)
     {
-        return Files.getFileExtension(test).equalsIgnoreCase(ext);
+        return FilenameUtils.getExtension(test).equalsIgnoreCase(ext);
     }
 
     @Nullable
@@ -95,7 +97,7 @@ public class ImportHelper
                 if (!entry.isDirectory() && hasExtension(entry.getName(), "ms2mml"))
                 {
                     Ms2MmlReader ms2MmlReader = new Ms2MmlReader();
-                    LOGGER.debug("Ext: {}, File: {}, size: {}", Files.getFileExtension(entry.getName()), entry.getName(), entry.getSize());
+                    LOGGER.debug("Ext: {}, File: {}, size: {}", FilenameUtils.getExtension(entry.getName()), entry.getName(), entry.getSize());
                     InputStream is = file.getInputStream(entry);
                     if (ms2MmlReader.parseStream(is))
                     {
