@@ -126,7 +126,7 @@ public class ImportHelper
                     compressionRatio = (double) totalSizeEntry / entry.getCompressedSize();
                     if(compressionRatio > THRESHOLD_RATIO) {
                         // ratio between compressed and uncompressed data is highly suspicious, looks like a Zip Bomb Attack
-                        LOGGER.debug("Compression Ratio {} > {} Threshold Ratio", compressionRatio, THRESHOLD_RATIO);
+                        LOGGER.debug("Compression Ratio {} > {} Threshold Ratio", String.format("%02.2f", String.format("%02.2f", compressionRatio)), THRESHOLD_RATIO);
                         break;
                     }
                 }
@@ -169,9 +169,9 @@ public class ImportHelper
 
 
                 LOGGER.debug("  This Entry Size {}", totalSizeEntry);
-                LOGGER.debug("  Compression Ratio {}", compressionRatio);
+                LOGGER.debug("  Compression Ratio {}", String.format("%02.2f", compressionRatio));
             }
-            LOGGER.debug("    Largest Compression Ratio {} > {} Threshold Ratio", largestCompressionRatio, THRESHOLD_RATIO);
+            LOGGER.debug("    Largest Compression Ratio {} > {} Threshold Ratio", String.format("%02.2f", largestCompressionRatio), THRESHOLD_RATIO);
             LOGGER.debug("    Total Archive Size {} > {} Threshold Size", totalSizeArchive, THRESHOLD_SIZE);
             LOGGER.debug("    Total Archive Entries {} <= {} Threshold Entries", totalEntryArchive, THRESHOLD_ENTRIES);
             if (count > 0)
