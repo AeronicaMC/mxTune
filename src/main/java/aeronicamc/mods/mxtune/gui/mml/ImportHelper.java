@@ -123,7 +123,7 @@ public class ImportHelper
                     totalSizeEntry += nBytes;
                     totalSizeArchive += nBytes;
 
-                    compressionRatio = totalSizeEntry / entry.getCompressedSize();
+                    compressionRatio = (double) totalSizeEntry / entry.getCompressedSize();
                     if(compressionRatio > THRESHOLD_RATIO) {
                         // ratio between compressed and uncompressed data is highly suspicious, looks like a Zip Bomb Attack
                         LOGGER.debug("Compression Ratio {} > {} Threshold Ratio", compressionRatio, THRESHOLD_RATIO);
