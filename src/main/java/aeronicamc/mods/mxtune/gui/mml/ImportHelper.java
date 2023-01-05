@@ -82,9 +82,9 @@ public class ImportHelper
     }
 
     // sonarcloud recommended solution to zip-bomb negation
-    static final int THRESHOLD_ENTRIES = 20;  // 10-16 typical. 20 never happen.
-    static final int THRESHOLD_SIZE = 100000; // 100 KB
-    static final double THRESHOLD_RATIO = 200.0D; // text has high compression ratios
+    static final int THRESHOLD_ENTRIES = 20;  // 10-16 typical. 20 should never happen.
+    static final int THRESHOLD_SIZE = 200000; // 200 KB
+    static final double THRESHOLD_RATIO = 20.0D; // text can have high compression ratios
 
     @Nullable
     private static MXTuneFile importZippedMs2mml(Path path)
@@ -100,7 +100,7 @@ public class ImportHelper
             MXTuneFile mxTuneFile = new MXTuneFile();
             mxTuneFile.setTitle(title);
             Enumeration<? extends ZipEntry> entries = file.entries();
-            LOGGER.debug("---- Zip File: {}", file.getName().substring(file.getName().lastIndexOf('\\') + 1));
+            LOGGER.debug("|---- Zip File: {}", file.getName().substring(file.getName().lastIndexOf('\\') + 1));
             int count = 0;
 
             // sonarcloud recommended solution to zip-bomb negation
@@ -148,7 +148,7 @@ public class ImportHelper
                 if (!entry.isDirectory() && hasExtension(entry.getName(), "ms2mml"))
                 {
                     Ms2MmlReader ms2MmlReader = new Ms2MmlReader();
-                    LOGGER.debug("{} Ext: {}, File: {}, size: {}", String.format("%02d", count + 1), FilenameUtils.getExtension(entry.getName()), entry.getName(), entry.getSize());
+                    LOGGER.debug("| {} Ext: {}, File: {}, size from file: {}, size read {}, Compression Ratio {}", String.format("%02d", count + 1), FilenameUtils.getExtension(entry.getName()), entry.getName(), entry.getSize(), totalSizeEntry, String.format("%02.2f", compressionRatio));
                     InputStream is = file.getInputStream(entry);
                     if (ms2MmlReader.parseStream(is))
                     {
@@ -156,7 +156,7 @@ public class ImportHelper
                         String soundFontProxyID = MapMS2Instruments.getSoundFontProxyNameFromMeta(title);
                         int packedPatch = SoundFontProxyManager.getPackedPreset(soundFontProxyID);
                         List<MXTuneStaff> staves = getStaves(ms2MmlReader.getMML());
-                        LOGGER.debug(String.format("Part: packedPatch %05d, sfpId: %s, meta: %s", packedPatch, soundFontProxyID, title));
+                        LOGGER.debug(String.format("|    Part: packedPatch %05d, sfpId: %s, meta: %s", packedPatch, soundFontProxyID, title));
                         if (!staves.isEmpty())
                         {
                             MXTunePart part = new MXTunePart(soundFontProxyID, title, packedPatch, staves);
@@ -165,19 +165,15 @@ public class ImportHelper
                         }
                     }
                 } else
-                    LOGGER.debug("-- Ext: {}, File: {}, size: {}", FilenameUtils.getExtension(entry.getName()), entry.getName(), entry.getSize());
-
-
-                LOGGER.debug("  This Entry Size {}", totalSizeEntry);
-                LOGGER.debug("  Compression Ratio {}", String.format("%02.2f", compressionRatio));
+                    LOGGER.debug("|-- Ext: {}, File: {}, size from file: {}, size read {}, Compression Ratio {}", FilenameUtils.getExtension(entry.getName()), entry.getName(), entry.getSize(), totalSizeEntry, String.format("%02.2f", compressionRatio));
             }
-            LOGGER.debug("    Largest Compression Ratio {} > {} Threshold Ratio", String.format("%02.2f", largestCompressionRatio), THRESHOLD_RATIO);
-            LOGGER.debug("    Total Archive Size {} > {} Threshold Size", totalSizeArchive, THRESHOLD_SIZE);
-            LOGGER.debug("    Total Archive Entries {} <= {} Threshold Entries", totalEntryArchive, THRESHOLD_ENTRIES);
+            LOGGER.debug("| Largest Compression Ratio: {} < {} Threshold Ratio", String.format("%02.2f", largestCompressionRatio), THRESHOLD_RATIO);
+            LOGGER.debug("| Total Archive Size:        {} < {} Threshold Size", totalSizeArchive, THRESHOLD_SIZE);
+            LOGGER.debug("| Total Archive Entries:     {} <= {} Threshold Entries", totalEntryArchive, THRESHOLD_ENTRIES);
             if (count > 0)
-                LOGGER.debug("---- Success! Found at least one ms2mml file.");
+                LOGGER.debug("|---- Success! Found at least one ms2mml file.");
             else
-                LOGGER.debug("---- Load Failure! No ms2mml files found.");
+                LOGGER.debug("|---- Load Failure! No ms2mml files found.");
             return count > 0 ? mxTuneFile : null;
 
         } catch (IOException e)
