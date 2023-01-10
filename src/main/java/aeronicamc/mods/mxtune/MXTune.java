@@ -31,6 +31,7 @@ import aeronicamc.mods.mxtune.managers.PlayManager;
 import aeronicamc.mods.mxtune.network.MultiPacketSerializedObjectManager;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.render.blockentity.MusicBlockEntityRenderer;
+import aeronicamc.mods.mxtune.render.entity.InfoRenderer;
 import aeronicamc.mods.mxtune.render.entity.MusicVenueInfoRenderer;
 import aeronicamc.mods.mxtune.render.not.MusicSourceRenderer;
 import aeronicamc.mods.mxtune.render.not.RootedRenderer;
@@ -38,6 +39,7 @@ import aeronicamc.mods.mxtune.sound.ActiveAudio;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
 import aeronicamc.mods.mxtune.util.KeyHandler;
 import aeronicamc.mods.mxtune.util.MIDISystemUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
@@ -121,6 +123,7 @@ public class MXTune
         RenderTypeLookup.setRenderLayer(ModBlocks.MUSIC_VENUE_TOOL_BLOCK.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.MUSIC_BLOCK.get(), RenderType.cutoutMipped());
         ClientRegistry.bindTileEntityRenderer(ModBlockEntities.INV_MUSIC_BLOCK.get(), MusicBlockEntityRenderer::new);
+        new InfoRenderer(Minecraft.getInstance().getTextureManager());
     }
 
     private void modLoadingComplete(FMLLoadCompleteEvent event)
