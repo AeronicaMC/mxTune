@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.entity;
 
 import aeronicamc.mods.mxtune.init.ModEntities;
 import aeronicamc.mods.mxtune.init.ModItems;
+import aeronicamc.mods.mxtune.render.entity.InfoRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.HangingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -117,6 +118,16 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
         this.pos = buffer.readBlockPos();
         this.direction = Direction.from2DDataValue(buffer.readByte());
         this.setDirection(this.direction);
+    }
+
+    @Override
+    public void onRemovedFromWorld()
+    {
+        if (this.level.isClientSide)
+        {
+            InfoRenderer.getInstance().close(this);
+        }
+        super.onRemovedFromWorld();
     }
 
     /**
