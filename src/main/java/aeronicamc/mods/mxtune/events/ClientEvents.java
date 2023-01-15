@@ -3,6 +3,7 @@ package aeronicamc.mods.mxtune.events;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.SyncRequestMessage;
+import aeronicamc.mods.mxtune.render.entity.InfoRenderer;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
@@ -25,7 +26,7 @@ public class ClientEvents
     @SubscribeEvent
     public static void event(ClientPlayerNetworkEvent.LoggedOutEvent event)
     {
-        /* NOP */
+        InfoRenderer.getInstance().clearInfoRendererInstances();
     }
 
     @SubscribeEvent

@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
 
-import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Random;
 
@@ -38,40 +37,27 @@ public class InfoRenderer implements AutoCloseable
     {
         if (infoEntity == null) return;
 
-        InfoRenderer.Instance rendererInstance = this.getInfoRendererInstance(infoEntity, false);
+        InfoRenderer.Instance rendererInstance = this.infoRendererInstances.get(infoEntity.getId());
 
         if (rendererInstance == null)
         {
             createInfoRendererInstance(infoEntity);
-            System.out.println("***** CREATED INFO-RENDERER-INSTANCE");
+            System.out.printf("***** CREATED INFO-RENDERER-INSTANCE %s\n", this.infoRendererInstances.size());
             return;
         }
         rendererInstance.render(matrixStack, renderTypeBuffer, combinedLight);
     }
 
     public void updateInfoTexture(MusicVenueInfoEntity infoEntity) {
-        this.getInfoRendererInstance(infoEntity, true).updateInfoTexture(infoEntity);
-    }
-
-    // FIXME
-    private @Nullable InfoRenderer.Instance getInfoRendererInstance(MusicVenueInfoEntity infoEntity, boolean create) {
         InfoRenderer.Instance infoRendererInstance = this.infoRendererInstances.get(infoEntity.getId());
-
-        if (create && infoRendererInstance == null) {
-            this.createInfoRendererInstance(infoEntity);
-            this.updateInfoTexture(infoEntity);
-        }
-
-        return infoRendererInstance;
+        if (infoRendererInstance != null)
+            infoRendererInstance.updateInfoTexture(infoEntity);
     }
 
-    // FIXME
     private void createInfoRendererInstance(MusicVenueInfoEntity infoEntity) {
-        InfoRenderer.Instance infoRendererInstance = new InfoRenderer.Instance(
-                infoEntity);
+        InfoRenderer.Instance infoRendererInstance = new InfoRenderer.Instance(infoEntity);
         infoRendererInstance.updateInfoTexture(infoEntity);
         this.infoRendererInstances.put(infoEntity.getId(), infoRendererInstance);
-        System.out.printf("***** %s infoRenderInstances\n", this.infoRendererInstances.size());
     }
 
     public void clearInfoRendererInstances()
@@ -82,6 +68,7 @@ public class InfoRenderer implements AutoCloseable
     public void close(MusicVenueInfoEntity infoEntity)
     {
         infoRendererInstances.remove(infoEntity.getId());
+        System.out.printf("***** REMOVED INFO-RENDERER-INSTANCE %s\n", this.infoRendererInstances.size());
     }
 
     @Override
@@ -110,7 +97,6 @@ public class InfoRenderer implements AutoCloseable
             this.renderType = RenderType.text(dynamicTextureLocation);
         }
 
-        // FIXME
         private void updateInfoTexture(MusicVenueInfoEntity infoEntity)
         {
             for(int pixelY = 0; pixelY < infoEntity.getHeight(); pixelY++) {
@@ -141,7 +127,6 @@ public class InfoRenderer implements AutoCloseable
             ivertexbuilder.vertex(matrix4f, (float) this.width, 0F, pZ).color(255, 255, 255, 255).uv(1.0F, 0.0F).uv2(combinedLight).endVertex();
             ivertexbuilder.vertex(matrix4f, 0F, 0F, pZ).color(255, 255, 255, 255).uv(0.0F, 0.0F).uv2(combinedLight).endVertex();
         }
-
 
         @Override
         public void close() throws Exception
