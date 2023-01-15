@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Random;
 
@@ -33,6 +34,20 @@ public class InfoRenderer implements AutoCloseable
 
     // stuff to handle a never saved dynamic texture for drawing
 
+    public @Nullable IVertexBuilder getInfoRenderVertexBuilder(IRenderTypeBuffer renderTypeBuffer, MusicVenueInfoEntity infoEntity){
+        if (infoEntity == null) return null;
+        InfoRenderer.Instance rendererInstance = this.infoRendererInstances.get(infoEntity.getId());
+
+        if (rendererInstance == null)
+        {
+            createInfoRendererInstance(infoEntity);
+            System.out.printf("***** CREATED INFO-RENDERER-INSTANCE %s\n", this.infoRendererInstances.size());
+            return null;
+        }
+
+        return rendererInstance.getInfoRenderVertexBuilder(renderTypeBuffer);
+    }
+
     public void renderInfo(MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, MusicVenueInfoEntity infoEntity, int combinedLight)
     {
         if (infoEntity == null) return;
@@ -52,6 +67,11 @@ public class InfoRenderer implements AutoCloseable
         InfoRenderer.Instance infoRendererInstance = this.infoRendererInstances.get(infoEntity.getId());
         if (infoRendererInstance != null)
             infoRendererInstance.updateInfoTexture(infoEntity);
+    }
+
+    public void updateAll()
+    {
+        infoRendererInstances.forEach((key, value) -> value.updateInfoTexture());
     }
 
     private void createInfoRendererInstance(MusicVenueInfoEntity infoEntity) {
@@ -108,6 +128,17 @@ public class InfoRenderer implements AutoCloseable
             this.infoTexture.upload();
         }
 
+        private void updateInfoTexture()
+        {
+            for(int pixelY = 0; pixelY < infoEntity.getHeight(); pixelY++) {
+                for(int pixelX = 0; pixelX < infoEntity.getWidth(); pixelX++) {
+                    int color = randomColor();
+                    this.infoTexture.getPixels().setPixelRGBA(pixelX, pixelY, color);
+                }
+            }
+            this.infoTexture.upload();
+        }
+
         private int randomColor()
         {
             int x = random.nextInt();
@@ -115,6 +146,11 @@ public class InfoRenderer implements AutoCloseable
                     ((x & 0x00FF0000) >> 16) | //______RR
                     ((x & 0x0000FF00)) |       //____GG__
                     ((x & 0x000000FF) << 16);  //__BB____
+        }
+
+        private IVertexBuilder getInfoRenderVertexBuilder(IRenderTypeBuffer renderTypeBuffer)
+        {
+            return renderTypeBuffer.getBuffer(this.renderType);
         }
 
         private void render(MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, int combinedLight)

@@ -131,6 +131,19 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
     }
 
     /**
+     * Called to update the entity's position/logic.
+     */
+    @Override
+    public void tick()
+    {
+        if(this.level.isClientSide)
+        {
+            InfoRenderer.getInstance().updateInfoTexture(this);
+        }
+        super.tick();
+    }
+
+    /**
      * Sets the location and rotation of the entity in the world.
      */
     @Override
