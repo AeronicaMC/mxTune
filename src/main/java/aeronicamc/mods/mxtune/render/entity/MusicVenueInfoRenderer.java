@@ -105,7 +105,6 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
                     k1 = MathHelper.floor(venueInfoEntity.getZ() + (double)((f15 + f16) / 2.0F / 16.0F));
                 }
 
-                // TODO: Store this and use for rendering the information display
                 int l1 = WorldRenderer.getLightColor(venueInfoEntity.level, new BlockPos(i1, j1, k1));
                 float f19 = paintingSprite.getU(d0 * (double)(i - k));
                 float f20 = paintingSprite.getU(d0 * (double)(i - (k + 1)));
@@ -117,6 +116,7 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
 //                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f17, f19, f22, -0.5F, 0, 0, -1, l1);
 //                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f17, f20, f22, -0.5F, 0, 0, -1, l1);
 
+                // Dynamic Texture rendering for the information panel
                 IVertexBuilder infoVertexBuilder = InfoRenderer.getInstance().getInfoRenderVertexBuilder(pBuffer, venueInfoEntity);
                 if (infoVertexBuilder != null)
                 {
