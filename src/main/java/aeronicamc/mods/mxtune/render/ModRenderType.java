@@ -37,6 +37,8 @@ public class ModRenderType extends RenderType
         super(p_i225992_1_, p_i225992_2_, p_i225992_3_, p_i225992_4_, p_i225992_5_, p_i225992_6_, p_i225992_7_, p_i225992_8_);
     }
 
+    public static final int FULL_BRIGHT_LIGHT_MAP = (0xF << 4) | (0xF << 20);
+
     private static final LineState FAT_LINES = new LineState(OptionalDouble.of(4.0D));
 
     public static final RenderType THICK_LINES = create("thick_select_lines",

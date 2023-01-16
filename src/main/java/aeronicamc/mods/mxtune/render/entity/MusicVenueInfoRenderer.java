@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.render.entity;
 
 import aeronicamc.mods.mxtune.entity.MusicVenueInfoEntity;
+import aeronicamc.mods.mxtune.render.ModRenderType;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.Minecraft;
@@ -102,7 +103,8 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
                     k1 = MathHelper.floor(venueInfoEntity.getZ() + (double)((f15 + f16) / 2.0F / 16.0F));
                 }
 
-                int l1 = WorldRenderer.getLightColor(venueInfoEntity.level, new BlockPos(i1, j1, k1));
+                int lightColor = WorldRenderer.getLightColor(venueInfoEntity.level, new BlockPos(i1, j1, k1));
+
                 // Painting
 //                float f19 = paintingSprite.getU(d0 * (double)(i - k));
 //                float f20 = paintingSprite.getU(d0 * (double)(i - (k + 1)));
@@ -116,6 +118,7 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
 
                 // Dynamic Texture rendering for the information panel
                 IVertexBuilder infoVertexBuilder = InfoRenderer.getInstance().getInfoRenderVertexBuilder(pBuffer, venueInfoEntity);
+                int lightColorInfo = ModRenderType.FULL_BRIGHT_LIGHT_MAP;
                 if (infoVertexBuilder != null)
                 {
 
@@ -126,33 +129,33 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
                     //System.out.printf("u0=%f u1=%f hpc=%d hpp=%d\n", u0, u1, hPanelCnt, hPanelPos);
                     //System.out.printf("v0=%f v1=%f vpc=%d vpp=%d\n\n", v0, v1, vPanelCnt, vPanelPos);
 
-                    this.vertexInfo(matrix4f, matrix3f, infoVertexBuilder, f15, f18, u1, v0, -0.5F, 0, 0, -1, l1);
-                    this.vertexInfo(matrix4f, matrix3f, infoVertexBuilder, f16, f18, u0, v0, -0.5F, 0, 0, -1, l1);
-                    this.vertexInfo(matrix4f, matrix3f, infoVertexBuilder, f16, f17, u0, v1, -0.5F, 0, 0, -1, l1);
-                    this.vertexInfo(matrix4f, matrix3f, infoVertexBuilder, f15, f17, u1, v1, -0.5F, 0, 0, -1, l1);
+                    this.vertexInfo(matrix4f, matrix3f, infoVertexBuilder, f15, f18, u1, v0, -0.5F, 0, 0, -1, lightColorInfo);
+                    this.vertexInfo(matrix4f, matrix3f, infoVertexBuilder, f16, f18, u0, v0, -0.5F, 0, 0, -1, lightColorInfo);
+                    this.vertexInfo(matrix4f, matrix3f, infoVertexBuilder, f16, f17, u0, v1, -0.5F, 0, 0, -1, lightColorInfo);
+                    this.vertexInfo(matrix4f, matrix3f, infoVertexBuilder, f15, f17, u1, v1, -0.5F, 0, 0, -1, lightColorInfo);
                 }
 
                 IVertexBuilder vertexBuilder = pBuffer.getBuffer(RenderType.entitySolid(this.getTextureLocation(venueInfoEntity)));
-                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f17, f3, f5, 0.5F, 0, 0, 1, l1);
-                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f17, f4, f5, 0.5F, 0, 0, 1, l1);
-                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f18, f4, f6, 0.5F, 0, 0, 1, l1);
-                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f18, f3, f6, 0.5F, 0, 0, 1, l1);
-                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f17, f7, f9, -0.5F, 0, 1, 0, l1);
-                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f17, f8, f9, -0.5F, 0, 1, 0, l1);
-                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f17, f8, f10, 0.5F, 0, 1, 0, l1);
-                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f17, f7, f10, 0.5F, 0, 1, 0, l1);
-                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f18, f7, f9, 0.5F, 0, -1, 0, l1);
-                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f18, f8, f9, 0.5F, 0, -1, 0, l1);
-                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f18, f8, f10, -0.5F, 0, -1, 0, l1);
-                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f18, f7, f10, -0.5F, 0, -1, 0, l1);
-                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f17, f12, f13, 0.5F, -1, 0, 0, l1);
-                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f18, f12, f14, 0.5F, -1, 0, 0, l1);
-                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f18, f11, f14, -0.5F, -1, 0, 0, l1);
-                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f17, f11, f13, -0.5F, -1, 0, 0, l1);
-                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f17, f12, f13, -0.5F, 1, 0, 0, l1);
-                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f18, f12, f14, -0.5F, 1, 0, 0, l1);
-                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f18, f11, f14, 0.5F, 1, 0, 0, l1);
-                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f17, f11, f13, 0.5F, 1, 0, 0, l1);
+                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f17, f3, f5, 0.5F, 0, 0, 1, lightColor);
+                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f17, f4, f5, 0.5F, 0, 0, 1, lightColor);
+                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f18, f4, f6, 0.5F, 0, 0, 1, lightColor);
+                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f18, f3, f6, 0.5F, 0, 0, 1, lightColor);
+                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f17, f7, f9, -0.5F, 0, 1, 0, lightColor);
+                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f17, f8, f9, -0.5F, 0, 1, 0, lightColor);
+                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f17, f8, f10, 0.5F, 0, 1, 0, lightColor);
+                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f17, f7, f10, 0.5F, 0, 1, 0, lightColor);
+                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f18, f7, f9, 0.5F, 0, -1, 0, lightColor);
+                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f18, f8, f9, 0.5F, 0, -1, 0, lightColor);
+                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f18, f8, f10, -0.5F, 0, -1, 0, lightColor);
+                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f18, f7, f10, -0.5F, 0, -1, 0, lightColor);
+                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f17, f12, f13, 0.5F, -1, 0, 0, lightColor);
+                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f18, f12, f14, 0.5F, -1, 0, 0, lightColor);
+                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f18, f11, f14, -0.5F, -1, 0, 0, lightColor);
+                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f17, f11, f13, -0.5F, -1, 0, 0, lightColor);
+                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f17, f12, f13, -0.5F, 1, 0, 0, lightColor);
+                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f18, f12, f14, -0.5F, 1, 0, 0, lightColor);
+                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f18, f11, f14, 0.5F, 1, 0, 0, lightColor);
+                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f17, f11, f13, 0.5F, 1, 0, 0, lightColor);
             }
         }
         //System.out.printf("---RenderStop---\n\n");

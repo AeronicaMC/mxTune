@@ -88,6 +88,7 @@ public class InfoRenderer implements AutoCloseable
         private final int entityId;
         private final int texWidth;
         private final int texHeight;
+        private final ResourceLocation dynamicTextureLocation;
 
         private Instance(MusicVenueInfoEntity pInfoEntity)
         {
@@ -95,7 +96,7 @@ public class InfoRenderer implements AutoCloseable
             this.texWidth = pInfoEntity.getWidth() * 4;
             this.texHeight = pInfoEntity.getHeight() * 4;
             this.infoTexture = new DynamicTexture(this.texWidth, this.texHeight, true);
-            ResourceLocation dynamicTextureLocation = InfoRenderer.this.textureManager.register("info/" + pInfoEntity.getId(), this.infoTexture);
+            this.dynamicTextureLocation = InfoRenderer.this.textureManager.register("info/" + pInfoEntity.getId(), this.infoTexture);
             this.renderType = RenderType.text(dynamicTextureLocation);
         }
 
@@ -193,6 +194,7 @@ public class InfoRenderer implements AutoCloseable
         public void close() throws Exception
         {
             this.infoTexture.close();
+            InfoRenderer.getInstance().textureManager.release(dynamicTextureLocation);
         }
     }
 }
