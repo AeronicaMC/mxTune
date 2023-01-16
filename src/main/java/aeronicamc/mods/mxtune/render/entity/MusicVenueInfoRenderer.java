@@ -38,9 +38,7 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
 
         pMatrixStack.scale(0.0625F, 0.0625F, 0.0625F);
         PaintingSpriteUploader paintingspriteuploader = Minecraft.getInstance().getPaintingTextures();
-        this.renderInfoPanel(pMatrixStack, pBuffer, pEntity, paintingtype.getWidth(), paintingtype.getHeight(), paintingspriteuploader.get(paintingtype), paintingspriteuploader.getBackSprite());
-//        pMatrixStack.translate(-8,-8,-0.5);
-//        InfoRenderer.getInstance().renderInfo(pMatrixStack, pBuffer, pEntity, pPackedLight);
+        this.renderInfoPanel(pMatrixStack, pBuffer, pEntity, paintingtype.getWidth(), paintingtype.getHeight(), paintingspriteuploader.getBackSprite());
         pMatrixStack.popPose();
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight);
     }
@@ -55,10 +53,10 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
     /**
      * Copied from the vanilla Painting Renderer and modified to use a dynamic texture.
      */
-    private void renderInfoPanel(MatrixStack matrixStack, IRenderTypeBuffer pBuffer, MusicVenueInfoEntity venueInfoEntity, int width, int height, TextureAtlasSprite paintingSprite, TextureAtlasSprite backSprite) {
-        MatrixStack.Entry matrixstack$entry = matrixStack.last();
-        Matrix4f matrix4f = matrixstack$entry.pose();
-        Matrix3f matrix3f = matrixstack$entry.normal();
+    private void renderInfoPanel(MatrixStack matrixStack, IRenderTypeBuffer pBuffer, MusicVenueInfoEntity venueInfoEntity, int width, int height, TextureAtlasSprite backSprite) {
+        MatrixStack.Entry matrixStack$entry = matrixStack.last();
+        Matrix4f matrix4f = matrixStack$entry.pose();
+        Matrix3f matrix3f = matrixStack$entry.normal();
         float f = (float)(-width) / 2.0F;
         float f1 = (float)(-height) / 2.0F;
         float f2 = 0.5F;
@@ -106,11 +104,12 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
                 }
 
                 int l1 = WorldRenderer.getLightColor(venueInfoEntity.level, new BlockPos(i1, j1, k1));
-                float f19 = paintingSprite.getU(d0 * (double)(i - k));
-                float f20 = paintingSprite.getU(d0 * (double)(i - (k + 1)));
-                float f21 = paintingSprite.getV(d1 * (double)(j - l));
-                float f22 = paintingSprite.getV(d1 * (double)(j - (l + 1)));
                 // Painting
+//                float f19 = paintingSprite.getU(d0 * (double)(i - k));
+//                float f20 = paintingSprite.getU(d0 * (double)(i - (k + 1)));
+//                float f21 = paintingSprite.getV(d1 * (double)(j - l));
+//                float f22 = paintingSprite.getV(d1 * (double)(j - (l + 1)));
+//
 //                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f18, f20, f21, -0.5F, 0, 0, -1, l1);
 //                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f18, f19, f21, -0.5F, 0, 0, -1, l1);
 //                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f17, f19, f22, -0.5F, 0, 0, -1, l1);
@@ -123,12 +122,12 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
                     float u0 = (float) (/*d0*/ 1 * (double)(i - k));
                     float u1 = (float) (/*d0*/ 1 * (double)(i - (k + 1)));
                     float v0 = (float) (/*d1*/ 1 * (double)(j - l));
-                    float v1 = (float) (/*d1*/ 1 * (double)(j - (l + 1))) / 16;
+                    float v1 = (float) (/*d1*/ 1 * (double)(j - (l + 1)));
 
-                    this.vertexInfo(matrix4f, infoVertexBuilder, f15, f18, u1, v0, -0.5F, l1);
-                    this.vertexInfo(matrix4f, infoVertexBuilder, f16, f18, u0, v0, -0.5F, l1);
-                    this.vertexInfo(matrix4f, infoVertexBuilder, f16, f17, u0, v1, -0.5F, l1);
-                    this.vertexInfo(matrix4f, infoVertexBuilder, f15, f17, u1, v1, -0.5F, l1);
+                    this.vertexInfo(matrix4f, matrix3f, infoVertexBuilder, f15, f18, u1, v0, -0.5F, 0, 0, -1, l1);
+                    this.vertexInfo(matrix4f, matrix3f, infoVertexBuilder, f16, f18, u0, v0, -0.5F, 0, 0, -1, l1);
+                    this.vertexInfo(matrix4f, matrix3f, infoVertexBuilder, f16, f17, u0, v1, -0.5F, 0, 0, -1, l1);
+                    this.vertexInfo(matrix4f, matrix3f, infoVertexBuilder, f15, f17, u1, v1, -0.5F, 0, 0, -1, l1);
                 }
 
                 IVertexBuilder vertexBuilder = pBuffer.getBuffer(RenderType.entitySolid(this.getTextureLocation(venueInfoEntity)));
@@ -160,7 +159,7 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
         vertexBuilder.vertex(matrix4f$pose, pPoseX, pPoseY, pPoseZ).color(255, 255, 255, 255).uv(pU, pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightMap).normal(matrix3f$normal, (float)pNormalX, (float)pNormalY, (float)pNormalZ).endVertex();
     }
 
-    private void vertexInfo(Matrix4f matrix4f$pose, IVertexBuilder vertexBuilder, float pPoseX, float pPoseY, float pU, float pV, float pPoseZ, int pLightMap) {
-        vertexBuilder.vertex(matrix4f$pose, pPoseX, pPoseY, pPoseZ).color(255, 255, 255, 255).uv(pU, pV).uv2(pLightMap).endVertex();
+    private void vertexInfo(Matrix4f matrix4f$pose, Matrix3f matrix3f$normal, IVertexBuilder vertexBuilder, float pPoseX, float pPoseY, float pU, float pV, float pPoseZ, int pNormalX, int pNormalY, int pNormalZ, int pLightMap) {
+        vertexBuilder.vertex(matrix4f$pose, pPoseX, pPoseY, pPoseZ).color(255, 255, 255, 255).uv(pU, pV).uv2(pLightMap).normal(matrix3f$normal, (float)pNormalX, (float)pNormalY, (float)pNormalZ).endVertex();
     }
 }

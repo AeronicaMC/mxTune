@@ -2,14 +2,12 @@ package aeronicamc.mods.mxtune.render.entity;
 
 import aeronicamc.mods.mxtune.entity.MusicVenueInfoEntity;
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Matrix4f;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -46,21 +44,6 @@ public class InfoRenderer implements AutoCloseable
         }
 
         return rendererInstance.getInfoRenderVertexBuilder(renderTypeBuffer);
-    }
-
-    public void renderInfo(MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, MusicVenueInfoEntity infoEntity, int combinedLight)
-    {
-        if (infoEntity == null) return;
-
-        InfoRenderer.Instance rendererInstance = this.infoRendererInstances.get(infoEntity.getId());
-
-        if (rendererInstance == null)
-        {
-            createInfoRendererInstance(infoEntity);
-            System.out.printf("***** CREATED INFO-RENDERER-INSTANCE %s\n", this.infoRendererInstances.size());
-            return;
-        }
-        rendererInstance.render(matrixStack, renderTypeBuffer, combinedLight);
     }
 
     public void updateInfoTexture(MusicVenueInfoEntity infoEntity) {
@@ -151,17 +134,6 @@ public class InfoRenderer implements AutoCloseable
         private IVertexBuilder getInfoRenderVertexBuilder(IRenderTypeBuffer renderTypeBuffer)
         {
             return renderTypeBuffer.getBuffer(this.renderType);
-        }
-
-        private void render(MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, int combinedLight)
-        {
-            Matrix4f matrix4f = matrixStack.last().pose();
-            float pZ = 0F;
-            IVertexBuilder ivertexbuilder = renderTypeBuffer.getBuffer(this.renderType);
-            ivertexbuilder.vertex(matrix4f, 0F, (float) this.height, pZ).color(255, 255, 255, 255).uv(0.0F, 1.0F).uv2(combinedLight).endVertex();
-            ivertexbuilder.vertex(matrix4f, (float) this.width, (float) this.height, pZ).color(255, 255, 255, 255).uv(1.0F, 1.0F).uv2(combinedLight).endVertex();
-            ivertexbuilder.vertex(matrix4f, (float) this.width, 0F, pZ).color(255, 255, 255, 255).uv(1.0F, 0.0F).uv2(combinedLight).endVertex();
-            ivertexbuilder.vertex(matrix4f, 0F, 0F, pZ).color(255, 255, 255, 255).uv(0.0F, 0.0F).uv2(combinedLight).endVertex();
         }
 
         @Override
