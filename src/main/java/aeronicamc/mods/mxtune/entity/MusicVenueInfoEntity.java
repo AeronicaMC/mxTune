@@ -48,10 +48,14 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
         {
             this.infoPanelType = infoPanel;
             this.setDirection(facing);
-            list.add(infoPanel);
-            int j = infoPanel.getWidth() * infoPanel.getHeight();
-            if (j > i) {
-                i = j;
+            if (this.survives())
+            {
+                list.add(infoPanel);
+                int j = infoPanel.getWidth() * infoPanel.getHeight();
+                if (j > i)
+                {
+                    i = j;
+                }
             }
         }
 
