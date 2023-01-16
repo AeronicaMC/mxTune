@@ -3,6 +3,9 @@ package aeronicamc.mods.mxtune.entity;
 import aeronicamc.mods.mxtune.init.ModEntities;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.render.entity.InfoRenderer;
+import aeronicamc.mods.mxtune.util.InfoPanelType;
+import aeronicamc.mods.mxtune.util.MXRegistry;
+import com.google.common.collect.Lists;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.HangingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,6 +13,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
@@ -20,10 +24,15 @@ import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
+import java.util.Iterator;
+import java.util.List;
 
 public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditionalSpawnData
 {
+    public static final String TAG_PANEL = "Panel";
     public static final String TAG_FACING = "Facing";
+    public InfoPanelType infoPanelType;
+
     public MusicVenueInfoEntity(World level)
     {
         super(ModEntities.MUSIC_VENUE_INFO.get(), level);
@@ -32,19 +41,51 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
     public MusicVenueInfoEntity(World level, BlockPos pPos, Direction facing)
     {
         super(ModEntities.MUSIC_VENUE_INFO.get(), level, pPos);
+        List<InfoPanelType> list = Lists.newArrayList();
+        int i = 0;
+
+        for(InfoPanelType infoPanel : MXRegistry.INFO_PANEL_REGISTRY.get().getValues())
+        {
+            this.infoPanelType = infoPanel;
+            this.setDirection(facing);
+            list.add(infoPanel);
+            int j = infoPanel.getWidth() * infoPanel.getHeight();
+            if (j > i) {
+                i = j;
+            }
+        }
+
+        if (!list.isEmpty()) {
+            Iterator<InfoPanelType> iterator = list.iterator();
+
+            while(iterator.hasNext()) {
+                InfoPanelType panelType = iterator.next();
+                if (panelType.getWidth() * panelType.getHeight() < i) {
+                    iterator.remove();
+                }
+            }
+            this.infoPanelType = list.get(this.random.nextInt(list.size()));
+        }
         this.setDirection(facing);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public MusicVenueInfoEntity(World pLevel, PacketBuffer buffer)
+    {
+        this(pLevel);
+        this.writeSpawnData(buffer);
     }
 
     @Override
     public int getWidth()
     {
-        return 16;
+        return this.infoPanelType == null ? 1 : this.infoPanelType.getWidth();
     }
 
     @Override
     public int getHeight()
     {
-        return 16;
+        return this.infoPanelType == null ? 1 : this.infoPanelType.getHeight();
     }
 
     /**
@@ -80,6 +121,7 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
     }
 
     public void addAdditionalSaveData(CompoundNBT pCompound) {
+        pCompound.putString(TAG_PANEL, String.valueOf(MXRegistry.INFO_PANEL_REGISTRY.get().getKey(infoPanelType)));
         pCompound.putByte(TAG_FACING, (byte)this.direction.get2DDataValue());
         super.addAdditionalSaveData(pCompound);
     }
@@ -88,6 +130,7 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
     public void readAdditionalSaveData(CompoundNBT pCompound) {
+        this.infoPanelType = MXRegistry.INFO_PANEL_REGISTRY.get().getValue(ResourceLocation.tryParse(pCompound.getString(TAG_PANEL)));
         this.direction = Direction.from2DDataValue(pCompound.getByte(TAG_FACING));
         super.readAdditionalSaveData(pCompound);
         this.setDirection(this.direction);
@@ -104,6 +147,7 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
     {
         buffer.writeBlockPos(this.pos);
         buffer.writeByte((byte)this.direction.get2DDataValue());
+        buffer.writeUtf(String.valueOf(MXRegistry.INFO_PANEL_REGISTRY.get().getKey(infoPanelType)));
     }
 
     /**
@@ -117,6 +161,7 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
     {
         this.pos = buffer.readBlockPos();
         this.direction = Direction.from2DDataValue(buffer.readByte());
+        this.infoPanelType = MXRegistry.INFO_PANEL_REGISTRY.get().getValue(ResourceLocation.tryParse(buffer.readUtf()));
         this.setDirection(this.direction);
     }
 
