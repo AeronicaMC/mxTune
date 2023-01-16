@@ -37,6 +37,7 @@ import aeronicamc.mods.mxtune.render.not.MusicSourceRenderer;
 import aeronicamc.mods.mxtune.render.not.RootedRenderer;
 import aeronicamc.mods.mxtune.sound.ActiveAudio;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
+import aeronicamc.mods.mxtune.util.InfoPanelType;
 import aeronicamc.mods.mxtune.util.KeyHandler;
 import aeronicamc.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.Minecraft;
@@ -89,6 +90,7 @@ public class MXTune
         ModBlockEntities.registerToModEventBus(modEventBus);
         ModSoundEvents.registerToModEventBus(modEventBus);
         ModParticles.registerToModEventBus(modEventBus);
+        InfoPanelType.initialize(modEventBus);
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
