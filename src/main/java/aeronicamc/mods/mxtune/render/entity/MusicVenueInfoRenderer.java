@@ -74,7 +74,7 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
         int vPanelCnt = height / 16;
         double d0 = 16.0D / (double)hPanelCnt;
         double d1 = 16.0D / (double)vPanelCnt;
-        System.out.println("***RenderStart***");
+        //System.out.printf("***RenderStart***\n");
 
         for(int hPanelPos = 0; hPanelPos < hPanelCnt; ++hPanelPos) {
             for(int vPanelPos = 0; vPanelPos < vPanelCnt; ++vPanelPos) {
@@ -119,12 +119,12 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
                 if (infoVertexBuilder != null)
                 {
 
-                    float u0 = (float) ((d0 * (double)(hPanelCnt - hPanelPos)))/16F;
-                    float u1 = (float) ((d0 * (double)(hPanelCnt - (hPanelPos + 1))))/16F;
-                    float v0 = (float) ((d1 * (double)(vPanelCnt - vPanelPos)))/16F;
-                    float v1 = (float) ((d1 * (double)(vPanelCnt - (vPanelPos + 1))))/16F;
-                    System.out.printf("u0=%f u1=%f hpc=%d hpp=%d\n", u0, u1, hPanelCnt, hPanelPos);
-                    System.out.printf("v0=%f v1=%f vpc=%d vpp=%d\n\n", v0, v1, vPanelCnt, vPanelPos);
+                    float u0 = (float) (d0 * (double)(hPanelCnt - hPanelPos))/16;
+                    float u1 = (float) (d0 * (double)(hPanelCnt - (hPanelPos + 1)))/16;
+                    float v0 = (float) (d1 * (double)(vPanelCnt - vPanelPos))/16;
+                    float v1 = (float) (d1 * (double)(vPanelCnt - (vPanelPos + 1)))/16;
+                    //System.out.printf("u0=%f u1=%f hpc=%d hpp=%d\n", u0, u1, hPanelCnt, hPanelPos);
+                    //System.out.printf("v0=%f v1=%f vpc=%d vpp=%d\n\n", v0, v1, vPanelCnt, vPanelPos);
 
                     this.vertexInfo(matrix4f, matrix3f, infoVertexBuilder, f15, f18, u1, v0, -0.5F, 0, 0, -1, l1);
                     this.vertexInfo(matrix4f, matrix3f, infoVertexBuilder, f16, f18, u0, v0, -0.5F, 0, 0, -1, l1);
@@ -155,7 +155,7 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
                 this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f17, f11, f13, 0.5F, 1, 0, 0, l1);
             }
         }
-        System.out.println("---RenderStop---");
+        //System.out.printf("---RenderStop---\n\n");
     }
 
     private void vertex(Matrix4f matrix4f$pose, Matrix3f matrix3f$normal, IVertexBuilder vertexBuilder, float pPoseX, float pPoseY, float pU, float pV, float pPoseZ, int pNormalX, int pNormalY, int pNormalZ, int pLightMap) {
