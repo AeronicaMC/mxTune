@@ -93,17 +93,17 @@ public class InfoRenderer implements AutoCloseable
         private Instance(MusicVenueInfoEntity infoEntity)
         {
             this.infoEntity = infoEntity;
-            this.width = infoEntity.getWidth();
-            this.height = infoEntity.getWidth();
-            this.infoTexture = new DynamicTexture(infoEntity.getWidth(), infoEntity.getHeight(), true);
+            this.width = infoEntity.getWidth()*4;
+            this.height = infoEntity.getHeight()*4;
+            this.infoTexture = new DynamicTexture(this.width, this.height, true);
             ResourceLocation dynamicTextureLocation = InfoRenderer.this.textureManager.register("info/" + infoEntity.getId(), this.infoTexture);
             this.renderType = RenderType.text(dynamicTextureLocation);
         }
 
         private void updateInfoTexture(MusicVenueInfoEntity infoEntity)
         {
-            for(int pixelY = 0; pixelY < infoEntity.getHeight(); pixelY++) {
-                for(int pixelX = 0; pixelX < infoEntity.getWidth(); pixelX++) {
+            for(int pixelY = 0; pixelY < this.height; pixelY++) {
+                for(int pixelX = 0; pixelX < this.width; pixelX++) {
                     int color = randomColor();
                     this.infoTexture.getPixels().setPixelRGBA(pixelX, pixelY, color);
                 }
@@ -113,8 +113,8 @@ public class InfoRenderer implements AutoCloseable
 
         private void updateInfoTexture()
         {
-            for(int pixelY = 0; pixelY < infoEntity.getHeight(); pixelY++) {
-                for(int pixelX = 0; pixelX < infoEntity.getWidth(); pixelX++) {
+            for(int pixelY = 0; pixelY < this.height; pixelY++) {
+                for(int pixelX = 0; pixelX < this.width; pixelX++) {
                     int color = randomColor();
                     this.infoTexture.getPixels().setPixelRGBA(pixelX, pixelY, color);
                 }
