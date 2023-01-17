@@ -158,7 +158,12 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
                 this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f17, f11, f13, 0.5F, 1, 0, 0, lightColor);
             }
         }
-        //System.out.printf("---RenderStop---\n\n");
+        matrixStack.pushPose();
+        matrixStack.translate(0,0, -0.501);
+        matrixStack.scale(-width/16F/16F, -height/16F/16F, 0);
+        Minecraft.getInstance().font.drawShadow(matrixStack, "TEST", -127, -127, 0x00dddddd);
+        Minecraft.getInstance().font.drawShadow(matrixStack, "STARTED", -127, -117, 0x0000FF00);
+        matrixStack.popPose();
     }
 
     private void vertex(Matrix4f matrix4f$pose, Matrix3f matrix3f$normal, IVertexBuilder vertexBuilder, float pPoseX, float pPoseY, float pU, float pV, float pPoseZ, int pNormalX, int pNormalY, int pNormalZ, int pLightMap) {
