@@ -159,10 +159,14 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
             }
         }
         matrixStack.pushPose();
-        matrixStack.translate(0,0, -0.501);
-        matrixStack.scale(-width/16F/16F, -height/16F/16F, 0);
+        matrixStack.translate((width/16F)*(width/16F), (height/16F), -0.501);
+        //matrixStack.translate(0F, 0F, -0.501);
+        //matrixStack.scale(-0.0625F/(16F/height), -0.0625F/(16F/height), 1F);
+        matrixStack.scale(-0.0625F, -0.0625F, 1F);
         Minecraft.getInstance().font.drawShadow(matrixStack, "TEST", -127, -127, 0x00dddddd);
         Minecraft.getInstance().font.drawShadow(matrixStack, "STARTED", -127, -117, 0x0000FF00);
+        Minecraft.getInstance().font.drawShadow(matrixStack, String.format("width:  %d", width), -127, -107, 0x00dddddd);
+        Minecraft.getInstance().font.drawShadow(matrixStack, String.format("height: %d", height), -127, -97, 0x00dddddd);
         matrixStack.popPose();
     }
 
