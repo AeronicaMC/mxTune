@@ -50,14 +50,14 @@ public class MusicVenueRenderer
                                     {
                                         if (!venue.getName().isEmpty())
                                             RenderHelper.renderFloatingText(venue.getVenueAABB().getCenter(), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent(venue.getName()),
-                                                                        RenderHelper.PACKED_LIGHT_MAX);
+                                                                            ModRenderType.FULL_BRIGHT_LIGHT_MAP);
 
                                         RenderHelper.renderFloatingText(new Vector3d(venue.getAudienceSpawn().getX() + 0.5, venue.getAudienceSpawn().getY() + 1.5, venue.getAudienceSpawn().getZ() + 0.5), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent("Audience Spawn"),
-                                                                        RenderHelper.PACKED_LIGHT_MAX);
+                                                                        ModRenderType.FULL_BRIGHT_LIGHT_MAP);
 
                                         RenderHelper.renderFloatingText(new Vector3d(venue.getPerformerSpawn().getX() + 0.5, venue.getPerformerSpawn().getY() + 1.5, venue.getPerformerSpawn().getZ() + 0.5), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent("Performer Spawn"),
 
-                                                                        RenderHelper.PACKED_LIGHT_MAX);
+                                                                        ModRenderType.FULL_BRIGHT_LIGHT_MAP);
                                     }
                                     pBuffer.endBatch(ModRenderType.TRANSPARENT_QUADS_NO_TEXTURE);
                                     pBuffer.endBatch(RenderType.lines());

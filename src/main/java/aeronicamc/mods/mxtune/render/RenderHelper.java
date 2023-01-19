@@ -23,8 +23,6 @@ import net.minecraft.world.World;
 
 public class RenderHelper
 {
-    static final int PACKED_LIGHT_MAX = 15728880;
-
     private RenderHelper() { /* NOP */ }
 
     /**
