@@ -5,6 +5,7 @@ import aeronicamc.mods.mxtune.render.ModRenderType;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.WorldRenderer;
@@ -20,6 +21,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Matrix3f;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 
 public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
 {
@@ -158,15 +162,20 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
                 this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f17, f11, f13, 0.5F, 1, 0, 0, lightColor);
             }
         }
+        // Render text over the dynamic background image
         matrixStack.pushPose();
-        matrixStack.translate((width/16F)*(width/16F), (height/16F), -0.501);
-        //matrixStack.translate(0F, 0F, -0.501);
-        //matrixStack.scale(-0.0625F/(16F/height), -0.0625F/(16F/height), 1F);
-        matrixStack.scale(-0.0625F, -0.0625F, 1F);
-        Minecraft.getInstance().font.drawShadow(matrixStack, "TEST", -127, -127, 0x00dddddd);
-        Minecraft.getInstance().font.drawShadow(matrixStack, "STARTED", -127, -117, 0x0000FF00);
-        Minecraft.getInstance().font.drawShadow(matrixStack, String.format("width:  %d", width), -127, -107, 0x00dddddd);
-        Minecraft.getInstance().font.drawShadow(matrixStack, String.format("height: %d", height), -127, -97, 0x00dddddd);
+        matrixStack.translate(8 * width/16F,  8 * height/16F, -0.52);
+        matrixStack.scale(-0.25F, -0.25F, 1F);
+
+        FontRenderer fontrenderer = Minecraft.getInstance().font;
+        ITextComponent iTextComponent1 = new StringTextComponent("mxTune\u266b");
+        ITextComponent iTextComponent2 = new StringTextComponent(String.format("%dX%dpx", height * 4, width * 4)).withStyle(TextFormatting.AQUA);
+        Minecraft.getInstance().font.drawShadow(matrixStack, "TEST", 1, 1, 0x00dddddd);
+        Minecraft.getInstance().font.drawShadow(matrixStack, "STARTED", 1, 11, 0x0000FF00);
+        Minecraft.getInstance().font.drawShadow(matrixStack, String.format("%dX%d Blk", height/16, width/16), 1, 21, 0x00dddddd);
+        fontrenderer.drawInBatch(iTextComponent1, 1.0F, 41.0F, -1, false, matrixStack.last().pose(), pBuffer, false, Integer.MIN_VALUE, ModRenderType.FULL_BRIGHT_LIGHT_MAP);
+        fontrenderer.drawInBatch(iTextComponent2, 1.0F, 51.0F, -1, false, matrixStack.last().pose(), pBuffer, false, Integer.MIN_VALUE, ModRenderType.FULL_BRIGHT_LIGHT_MAP);
+
         matrixStack.popPose();
     }
 
