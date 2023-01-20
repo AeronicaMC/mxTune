@@ -101,9 +101,9 @@ public class InfoRenderer implements AutoCloseable
         }
 
         private void updateInfoTexture() {
-            if (random.nextInt(100) > 80)
-                noiseFill();
-            else
+//            if (random.nextInt(100) > 80)
+//                noiseFill();
+//            else
                 colorBars();
         }
 
