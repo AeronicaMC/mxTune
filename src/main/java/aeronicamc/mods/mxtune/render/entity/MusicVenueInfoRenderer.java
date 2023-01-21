@@ -37,8 +37,6 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
     {
         pMatrixStack.pushPose();
         pMatrixStack.mulPose(Vector3f.YP.rotationDegrees(180.0F - pEntityYaw));
-        float f = 0.0625F;
-
         pMatrixStack.scale(0.0625F, 0.0625F, 0.0625F);
         PaintingSpriteUploader paintingspriteuploader = Minecraft.getInstance().getPaintingTextures();
         this.renderInfoPanel(pMatrixStack, pBuffer, pEntity, pEntity.getWidth(), pEntity.getHeight(), paintingspriteuploader.getBackSprite());
@@ -79,7 +77,6 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
         int vPanelCnt = height / 16;
         double d0 = 16.0D / (double)hPanelCnt;
         double d1 = 16.0D / (double)vPanelCnt;
-        //System.out.printf("***RenderStart***\n");
 
         for(int hPanelPos = 0; hPanelPos < hPanelCnt; ++hPanelPos) {
             for(int vPanelPos = 0; vPanelPos < vPanelCnt; ++vPanelPos) {
@@ -109,30 +106,15 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
 
                 int lightColor = WorldRenderer.getLightColor(venueInfoEntity.level, new BlockPos(i1, j1, k1));
 
-                // Painting
-//                float f19 = paintingSprite.getU(d0 * (double)(i - k));
-//                float f20 = paintingSprite.getU(d0 * (double)(i - (k + 1)));
-//                float f21 = paintingSprite.getV(d1 * (double)(j - l));
-//                float f22 = paintingSprite.getV(d1 * (double)(j - (l + 1)));
-//
-//                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f18, f20, f21, -0.5F, 0, 0, -1, l1);
-//                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f18, f19, f21, -0.5F, 0, 0, -1, l1);
-//                this.vertex(matrix4f, matrix3f, vertexBuilder, f16, f17, f19, f22, -0.5F, 0, 0, -1, l1);
-//                this.vertex(matrix4f, matrix3f, vertexBuilder, f15, f17, f20, f22, -0.5F, 0, 0, -1, l1);
-
                 // Dynamic Texture rendering for the information panel
                 IVertexBuilder infoVertexBuilder = InfoRenderer.getInstance().getInfoRenderVertexBuilder(pBuffer, venueInfoEntity);
                 int lightColorInfo = ModRenderType.FULL_BRIGHT_LIGHT_MAP;
                 if (infoVertexBuilder != null)
                 {
-
                     float u0 = (float) (d0 * (double)(hPanelCnt - hPanelPos))/16;
                     float u1 = (float) (d0 * (double)(hPanelCnt - (hPanelPos + 1)))/16;
                     float v0 = (float) (d1 * (double)(vPanelCnt - vPanelPos))/16;
                     float v1 = (float) (d1 * (double)(vPanelCnt - (vPanelPos + 1)))/16;
-                    //System.out.printf("u0=%f u1=%f hpc=%d hpp=%d\n", u0, u1, hPanelCnt, hPanelPos);
-                    //System.out.printf("v0=%f v1=%f vpc=%d vpp=%d\n\n", v0, v1, vPanelCnt, vPanelPos);
-
                     this.vertexInfo(matrix4f, matrix3f, infoVertexBuilder, f15, f18, u1, v0, -0.5F, 0, 0, -1, lightColorInfo);
                     this.vertexInfo(matrix4f, matrix3f, infoVertexBuilder, f16, f18, u0, v0, -0.5F, 0, 0, -1, lightColorInfo);
                     this.vertexInfo(matrix4f, matrix3f, infoVertexBuilder, f16, f17, u0, v1, -0.5F, 0, 0, -1, lightColorInfo);
@@ -164,6 +146,7 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
         }
         // Render text over the dynamic background image
         matrixStack.pushPose();
+        // Move 0,0 from center to upper left corner of the image
         matrixStack.translate(8 * width/16F,  8 * height/16F, -0.52);
         matrixStack.scale(-0.25F, -0.25F, 1F);
 
@@ -186,4 +169,6 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
     private void vertexInfo(Matrix4f matrix4f$pose, Matrix3f matrix3f$normal, IVertexBuilder vertexBuilder, float pPoseX, float pPoseY, float pU, float pV, float pPoseZ, int pNormalX, int pNormalY, int pNormalZ, int pLightMap) {
         vertexBuilder.vertex(matrix4f$pose, pPoseX, pPoseY, pPoseZ).color(255, 255, 255, 255).uv(pU, pV).uv2(pLightMap).normal(matrix3f$normal, (float)pNormalX, (float)pNormalY, (float)pNormalZ).endVertex();
     }
+
+    private void dummyPress() {}
 }
