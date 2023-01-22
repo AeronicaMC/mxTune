@@ -1,5 +1,8 @@
 package aeronicamc.mods.mxtune.render.entity;
 
+import aeronicamc.mods.mxtune.caps.venues.EntityVenueState;
+import aeronicamc.mods.mxtune.caps.venues.MusicVenue;
+import aeronicamc.mods.mxtune.caps.venues.MusicVenueHelper;
 import aeronicamc.mods.mxtune.entity.MusicVenueInfoEntity;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -49,17 +52,30 @@ public class InfoRenderer implements AutoCloseable
     public void updateInfoTexture(MusicVenueInfoEntity infoEntity) {
         InfoRenderer.Instance infoRendererInstance = this.infoRendererInstances.get(infoEntity.getId());
         if (infoRendererInstance != null)
-            infoRendererInstance.updateInfoTexture();
+            infoRendererInstance.updateInfoTexture(infoEntity);
     }
 
-    public void updateAll()
+    public boolean inVenue(MusicVenueInfoEntity infoEntity)
     {
-        infoRendererInstances.forEach((key, value) -> value.updateInfoTexture());
+        boolean result = false;
+        InfoRenderer.Instance infoRendererInstance = this.infoRendererInstances.get(infoEntity.getId());
+        if (infoRendererInstance != null)
+            result = infoRendererInstance.inVenue();
+        return result;
+    }
+
+    public MusicVenue getVenue(MusicVenueInfoEntity infoEntity)
+    {
+        InfoRenderer.Instance infoRendererInstance = this.infoRendererInstances.get(infoEntity.getId());
+        if (infoRendererInstance != null)
+            return infoRendererInstance.getVenue();
+        else
+            return MusicVenue.EMPTY;
     }
 
     private void createInfoRendererInstance(MusicVenueInfoEntity infoEntity) {
         InfoRenderer.Instance infoRendererInstance = new InfoRenderer.Instance(infoEntity);
-        infoRendererInstance.updateInfoTexture();
+        infoRendererInstance.updateInfoTexture(infoEntity);
         this.infoRendererInstances.put(infoEntity.getId(), infoRendererInstance);
     }
 
@@ -89,22 +105,27 @@ public class InfoRenderer implements AutoCloseable
         private final int texWidth;
         private final int texHeight;
         private final ResourceLocation dynamicTextureLocation;
+        private EntityVenueState sourceVenueState;
+        private int count;
 
         private Instance(MusicVenueInfoEntity pInfoEntity)
         {
-            this.entityId = pInfoEntity.getHeight();
+            this.entityId = pInfoEntity.getId();
             this.texWidth = pInfoEntity.getWidth() * 4;
             this.texHeight = pInfoEntity.getHeight() * 4;
             this.infoTexture = new DynamicTexture(this.texWidth, this.texHeight, true);
             this.dynamicTextureLocation = InfoRenderer.this.textureManager.register("info/" + pInfoEntity.getId(), this.infoTexture);
             this.renderType = RenderType.text(dynamicTextureLocation);
+            this.sourceVenueState = MusicVenueHelper.getEntityVenueState(pInfoEntity.level, pInfoEntity.getId());
         }
 
-        private void updateInfoTexture() {
-//            if (random.nextInt(100) > 80)
-//                noiseFill();
-//            else
+        private void updateInfoTexture(MusicVenueInfoEntity infoEntity) {
+            if (count++ % 20 == 0)
+                this.sourceVenueState = MusicVenueHelper.getEntityVenueState(infoEntity.level, infoEntity.getId());
+            if (sourceVenueState.inVenue())
                 colorBars();
+            else
+                noiseFill();
         }
 
         private void noiseFill() {
@@ -190,6 +211,16 @@ public class InfoRenderer implements AutoCloseable
         private int getTexHeight()
         {
             return texHeight;
+        }
+
+        public boolean inVenue()
+        {
+            return sourceVenueState.inVenue();
+        }
+
+        public MusicVenue getVenue()
+        {
+            return sourceVenueState.getVenue();
         }
 
         @Override
