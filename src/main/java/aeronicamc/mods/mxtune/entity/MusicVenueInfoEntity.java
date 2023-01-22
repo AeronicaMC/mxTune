@@ -43,6 +43,7 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
         super(ModEntities.MUSIC_VENUE_INFO.get(), level, pPos);
         List<InfoPanelType> list = Lists.newArrayList();
         int i = 0;
+        this.canUpdate(true);
 
         for(InfoPanelType infoPanel : MXRegistry.INFO_PANEL_REGISTRY.get().getValues())
         {
