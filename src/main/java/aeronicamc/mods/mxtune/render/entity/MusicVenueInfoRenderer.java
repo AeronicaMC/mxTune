@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.render.entity;
 
+import aeronicamc.mods.mxtune.caps.venues.EntityVenueState;
 import aeronicamc.mods.mxtune.entity.MusicVenueInfoEntity;
 import aeronicamc.mods.mxtune.render.ModRenderType;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -25,8 +26,12 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
+/**
+ * Based on the vanilla PaintingRenderer and related classes
+ */
 public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
 {
+    EntityVenueState sourceVenueState;
     public MusicVenueInfoRenderer(EntityRendererManager rendererManager)
     {
         super(rendererManager);
@@ -150,15 +155,19 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
         matrixStack.translate(8 * width/16F,  8 * height/16F, -0.52);
         matrixStack.scale(-0.25F, -0.25F, 1F);
 
-        FontRenderer fontrenderer = Minecraft.getInstance().font;
-        ITextComponent iTextComponent1 = new StringTextComponent("mxTune\u266b");
-        ITextComponent iTextComponent2 = new StringTextComponent(String.format("%dX%dpx", height * 4, width * 4)).withStyle(TextFormatting.AQUA);
-        Minecraft.getInstance().font.drawShadow(matrixStack, "TEST", 1, 1, 0x00dddddd);
-        Minecraft.getInstance().font.drawShadow(matrixStack, "STARTED", 1, 11, 0x0000FF00);
-        Minecraft.getInstance().font.drawShadow(matrixStack, String.format("%dX%d Blk", height/16, width/16), 1, 21, 0x00dddddd);
-        fontrenderer.drawInBatch(iTextComponent1, 1.0F, 41.0F, -1, false, matrixStack.last().pose(), pBuffer, false, Integer.MIN_VALUE, ModRenderType.FULL_BRIGHT_LIGHT_MAP);
-        fontrenderer.drawInBatch(iTextComponent2, 1.0F, 51.0F, -1, false, matrixStack.last().pose(), pBuffer, false, Integer.MIN_VALUE, ModRenderType.FULL_BRIGHT_LIGHT_MAP);
-
+        if (InfoRenderer.getInstance().inVenue(venueInfoEntity))
+        {
+            FontRenderer fontrenderer = Minecraft.getInstance().font;
+            ITextComponent iTextComponent1 = new StringTextComponent("mxTune\u266b");
+            ITextComponent iTextComponent2 = new StringTextComponent(String.format("%dX%dpx", height * 4, width * 4)).withStyle(TextFormatting.AQUA);
+            ITextComponent iTextComponent3 = new StringTextComponent(InfoRenderer.getInstance().getVenue(venueInfoEntity).getId());
+            String id = Minecraft.getInstance().font.substrByWidth(iTextComponent3, (width * 4) - 2).getString();
+            Minecraft.getInstance().font.drawShadow(matrixStack, "TEST", 1, 1, 0x00dddddd);
+            Minecraft.getInstance().font.drawShadow(matrixStack, id, 1, 11, 0x0000FF00);
+            Minecraft.getInstance().font.drawShadow(matrixStack, String.format("%dX%d Blk", height / 16, width / 16), 1, 21, 0x00dddddd);
+            fontrenderer.drawInBatch(iTextComponent1, 1.0F, 41.0F, -1, false, matrixStack.last().pose(), pBuffer, false, Integer.MIN_VALUE, ModRenderType.FULL_BRIGHT_LIGHT_MAP);
+            fontrenderer.drawInBatch(iTextComponent2, 1.0F, 51.0F, -1, false, matrixStack.last().pose(), pBuffer, false, Integer.MIN_VALUE, ModRenderType.FULL_BRIGHT_LIGHT_MAP);
+        }
         matrixStack.popPose();
     }
 
