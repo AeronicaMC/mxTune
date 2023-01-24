@@ -32,6 +32,7 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
     public static final String TAG_PANEL = "Panel";
     public static final String TAG_FACING = "Facing";
     public InfoPanelType infoPanelType;
+    private boolean newPanel = false;
 
     public MusicVenueInfoEntity(World level)
     {
@@ -72,6 +73,7 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
             this.infoPanelType = list.get(this.random.nextInt(list.size()));
         }
         this.setDirection(facing);
+        this.newPanel = true;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -153,6 +155,7 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
         buffer.writeBlockPos(this.pos);
         buffer.writeByte((byte)this.direction.get2DDataValue());
         buffer.writeUtf(String.valueOf(MXRegistry.INFO_PANEL_REGISTRY.get().getKey(infoPanelType)));
+        buffer.writeBoolean(this.newPanel);
     }
 
     /**
@@ -167,7 +170,13 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
         this.pos = buffer.readBlockPos();
         this.direction = Direction.from2DDataValue(buffer.readByte());
         this.infoPanelType = MXRegistry.INFO_PANEL_REGISTRY.get().getValue(ResourceLocation.tryParse(buffer.readUtf()));
+        this.newPanel = buffer.readBoolean();
         this.setDirection(this.direction);
+    }
+
+    public boolean isNewPanel()
+    {
+        return newPanel;
     }
 
     @Override
