@@ -11,8 +11,7 @@ public class MusicVenueHelper
 
     public static boolean inVenue(World level, int entityId)
     {
-        MusicVenue[] activeVenue = new MusicVenue[1];
-        activeVenue[0] = MusicVenue.EMPTY;
+        MusicVenue[] activeVenue = { MusicVenue.EMPTY };
         Entity entity = level.getEntity(entityId);
         if (entity == null) return false;
 
@@ -28,8 +27,7 @@ public class MusicVenueHelper
 
     public static EntityVenueState getEntityVenueState(World level, int entityId)
     {
-        MusicVenue[] activeVenue = new MusicVenue[1];
-        activeVenue[0] = MusicVenue.EMPTY;
+        MusicVenue[] activeVenue = { MusicVenue.EMPTY };
         Entity entity = level.getEntity(entityId);
         if (entity == null) return EntityVenueState.INVALID;
 
@@ -45,8 +43,7 @@ public class MusicVenueHelper
 
     public static EntityVenueState getBlockVenueState(World level, BlockPos blockPos)
     {
-        MusicVenue[] activeVenue = new MusicVenue[1];
-        activeVenue[0] = MusicVenue.EMPTY;
+        MusicVenue[] activeVenue = { MusicVenue.EMPTY };
         Vector3d EntityPos = new Vector3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         if (!level.isLoaded(blockPos)) return EntityVenueState.INVALID;
 
