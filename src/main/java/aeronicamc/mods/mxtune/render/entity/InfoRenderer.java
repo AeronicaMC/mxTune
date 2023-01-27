@@ -4,6 +4,7 @@ import aeronicamc.mods.mxtune.caps.venues.EntityVenueState;
 import aeronicamc.mods.mxtune.caps.venues.MusicVenue;
 import aeronicamc.mods.mxtune.caps.venues.MusicVenueHelper;
 import aeronicamc.mods.mxtune.entity.MusicVenueInfoEntity;
+import aeronicamc.mods.mxtune.render.PixelFu;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -106,6 +107,7 @@ public class InfoRenderer implements AutoCloseable
         private final int texWidth;
         private final int texHeight;
         private final ResourceLocation dynamicTextureLocation;
+        private final PixelFu pixelFu;
         private EntityVenueState sourceVenueState = EntityVenueState.INVALID;
         private int count = 0;
 
@@ -118,6 +120,7 @@ public class InfoRenderer implements AutoCloseable
             this.dynamicTextureLocation = InfoRenderer.this.textureManager.register("info/" + pInfoEntity.getId(), this.infoTexture);
             this.renderType = RenderType.text(dynamicTextureLocation);
             this.count = pInfoEntity.isNewPanel() ? 1 : 0;
+            this.pixelFu = new PixelFu(infoTexture);
         }
 
         private void updateInfoTexture(MusicVenueInfoEntity infoEntity) {
@@ -130,14 +133,14 @@ public class InfoRenderer implements AutoCloseable
         }
 
         private void noiseFill() {
-            if (this.infoTexture.getPixels() != null) {
+            if (pixelFu.isReady()) {
                 for (int pixelY = 0; pixelY < this.texHeight; pixelY++) {
                     for (int pixelX = 0; pixelX < this.texWidth; pixelX++) {
                         int color = randomColor();
-                        this.infoTexture.getPixels().setPixelRGBA(pixelX, pixelY, color);
+                        pixelFu.pixel(pixelX, pixelY, color);
                     }
                 }
-                this.infoTexture.upload();
+                pixelFu.upload();
             }
         }
 
@@ -166,98 +169,36 @@ public class InfoRenderer implements AutoCloseable
         private void colorBars() {
             int barWidth = this.texWidth / 8;
             int upperBarHeight = (this.texHeight / 8) * 6;
-            if (this.infoTexture.getPixels() != null) {
+            if (pixelFu.isReady()) {
                 int x = 0;
                 for (int xBar = 0; xBar < 8; xBar++) {
                     int color = getABGR(upperBars[xBar][0], upperBars[xBar][1], upperBars[xBar][2]);
-                    this.infoTexture.getPixels().fillRect(x, 0, barWidth , upperBarHeight, color);
+                    pixelFu.fillRect(x, 0, barWidth , upperBarHeight, color);
 
                     color = getABGR(lowerBars[xBar][0], lowerBars[xBar][1], lowerBars[xBar][2]);
-                    this.infoTexture.getPixels().fillRect(x, upperBarHeight, barWidth , texHeight - upperBarHeight, color);
+                    pixelFu.fillRect(x, upperBarHeight, barWidth , texHeight - upperBarHeight, color);
                     x += barWidth;
                 }
-                // top
-                plotLine(0,0, texWidth-1, 0, getABGR(0x192,0x0, 0x0));
-                plotLine(0,1, texWidth-1, 1, getABGR(0x192,0x0, 0x0));
-                // bottom
-                plotLine(0,texHeight-1, texWidth-1, texHeight-1, getABGR(0x192,0x0, 0x0));
-                plotLine(0,texHeight-2, texWidth-1, texHeight-2, getABGR(0x192,0x0, 0x0));
-                // left
-                plotLine(0,0, 0, texHeight-1, getABGR(0x192,0x0, 0x0));
-                plotLine(1,0, 1, texHeight-1, getABGR(0x192,0x0, 0x0));
-                // right
-                plotLine(texWidth-1,0, texWidth-1, texHeight-1, getABGR(0x192,0x0, 0x0));
-                plotLine(texWidth-2,0, texWidth-2, texHeight-1, getABGR(0x192,0x0, 0x0));
-                this.infoTexture.upload();
+                pixelFu.border(0,0, this.texWidth, this.texHeight, 2, getABGR(0xCC, 0x00, 0x00));
+                pixelFu.upload();
             }
         }
 
         private void randomLines() {
-            for (int i = 0; i < 64 ; i++)
+            if (pixelFu.isReady())
             {
-                int x1 = random.nextInt(texWidth);
-                int y1 = random.nextInt(texHeight);
-                int x2 = random.nextInt(texWidth);
-                int y2 = random.nextInt(texHeight);
-                plotLine(x1, y1, x2, y2, randomColor());
-            }
-            this.infoTexture.upload();
-        }
-
-        // Digital Differential Analyzer Line drawing Algorithm http://csis.pace.edu/~marchese/CG/Lect4/cg_l4.htm
-        private void lineDDA (int x0, int y0, int xEnd, int yEnd, int color)
-        {
-            int dx = xEnd - x0,  dy = yEnd - y0,  steps,  k;
-            float xIncrement, yIncrement, x = x0, y = y0;
-
-            steps = Math.max(Math.abs(dx), Math.abs(dy));
-
-            xIncrement = (float)dx / (float)steps;
-            yIncrement = (float)dy / (float) steps;
-            if (this.infoTexture.getPixels() != null)
-            {
-                this.infoTexture.getPixels().setPixelRGBA(Math.round(x), Math.round(y), color);
-
-                for (k = 0; k < steps; k++)
+                pixelFu.fillRect(0, 0, texWidth, texHeight, getABGR(0, 0, 0));
+                for (int i = 0; i < 16; i++)
                 {
-
-                    x += xIncrement;
-
-                    y += yIncrement;
-                    this.infoTexture.getPixels().setPixelRGBA(Math.round(x), Math.round(y), color);
+                    int x1 = random.nextInt(texWidth);
+                    int y1 = random.nextInt(texHeight);
+                    int x2 = random.nextInt(texWidth);
+                    int y2 = random.nextInt(texHeight);
+                    //pixelFu.plotLine(x1, y1, x2, y2, randomColor());
+                    pixelFu.border(x1, y1, x2, y2, 2, randomColor());
                 }
-            }
-        }
 
-        // Bresenham's line algorithm https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
-        private void plotLine(int x0, int y0, int x1, int y1, int color)
-        {
-            int dx = Math.abs(x1 - x0);
-            int sx = x0 < x1 ? 1 : -1;
-            int dy = -Math.abs(y1 - y0);
-            int sy = y0 < y1 ? 1 : -1;
-            int error = dx + dy;
-
-            if (this.infoTexture.getPixels() != null)
-            {
-                while (true)
-                {
-                    this.infoTexture.getPixels().setPixelRGBA(x0, y0, color);
-                    if (x0 == x1 && y0 == y1) break;
-                    int e2 = 2 * error;
-                    if (e2 >= dy)
-                    {
-                        if (x0 == x1) break;
-                        error = error + dy;
-                        x0 = x0 + sx;
-                    }
-                    if (e2 <= dx)
-                    {
-                        if (y0 == y1) break;
-                        error = error + dx;
-                        y0 = y0 + sy;
-                    }
-                }
+                pixelFu.upload();
             }
         }
 
