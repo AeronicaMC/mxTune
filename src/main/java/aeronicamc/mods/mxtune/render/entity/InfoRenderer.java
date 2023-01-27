@@ -188,7 +188,7 @@ public class InfoRenderer implements AutoCloseable
             if (pixelFu.isReady())
             {
                 pixelFu.fillRect(0, 0, texWidth, texHeight, getABGR(0, 0, 0));
-                for (int i = 0; i < 8; i += 2)
+                for (int i = 0; i < 16; i += 2)
                 {
                     int x1 = random.nextInt(texWidth/2);
                     int y1 = random.nextInt(texHeight/2);
