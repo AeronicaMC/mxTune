@@ -46,7 +46,7 @@ public class PixelFu
                 // top
                 plotLine(x0 + i, y0 + i, width - 1 - i , y0 + i, rgbaColor);
                 // bottom
-                plotLine(x0 + i,height - 1 - i, width - 1 - i, height - 1 -i, rgbaColor);
+                plotLine(x0 + i,height - 1 - i, width - 1 - i, height - 1 - i, rgbaColor);
                 // left
                 plotLine(x0 + i,y0 + i, x0 + i, height - 1 - i, rgbaColor);
                 // right
