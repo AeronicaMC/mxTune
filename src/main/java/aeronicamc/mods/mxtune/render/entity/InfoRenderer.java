@@ -188,14 +188,15 @@ public class InfoRenderer implements AutoCloseable
             if (pixelFu.isReady())
             {
                 pixelFu.fillRect(0, 0, texWidth, texHeight, getABGR(0, 0, 0));
-                for (int i = 0; i < 16; i++)
+                for (int i = 0; i < 8; i += 2)
                 {
-                    int x1 = random.nextInt(texWidth);
-                    int y1 = random.nextInt(texHeight);
-                    int x2 = random.nextInt(texWidth);
-                    int y2 = random.nextInt(texHeight);
+                    int x1 = random.nextInt(texWidth/2);
+                    int y1 = random.nextInt(texHeight/2);
+                    int x2 = random.nextInt(texWidth/2) + texWidth/2;
+                    int y2 = random.nextInt(texHeight/2) + texHeight/2;
                     //pixelFu.plotLine(x1, y1, x2, y2, randomColor());
                     pixelFu.border(x1, y1, x2, y2, 2, randomColor());
+                    //pixelFu.border(i, i , texWidth - i, texHeight - i, 1, randomColor());
                 }
 
                 pixelFu.upload();
