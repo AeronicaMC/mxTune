@@ -68,7 +68,7 @@ public class ModDataStore
                 LOGGER.debug("MVStore Started. Commit Version: {}, file: {}", getMvStore().getCurrentVersion(), getMvStore().getFileStore());
         }
         testGet();
-        long count = reapSheetMusic(true); // TODO: Remember to set whatIf to false for production!
+        long count = reapSheetMusic(false); // TODO: Remember to set whatIf to false for production!
     }
 
     public static void shutdown()
@@ -99,14 +99,16 @@ public class ModDataStore
     {
         if (getMvStore() != null)
         {
+            int i = 0;
             MVStore.TxCounter using = getMvStore().registerVersionUsage();
             MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
             for (Map.Entry<LocalDateTime, String> c : indexToMusicText.entrySet())
             {
+                if (i++ > 10) break;
                 LOGGER.debug("id: {}, musicText: {}", String.format("%s", c.getKey()), c.getValue().substring(0, Math.min(24, c.getValue().length())));
             }
 
-            LOGGER.debug("Last key: {}", indexToMusicText.lastKey());
+            LOGGER.debug("Last key: {}, Total records: {}", indexToMusicText.lastKey(), indexToMusicText.size());
             getMvStore().deregisterVersionUsage(using);
         }
     }
