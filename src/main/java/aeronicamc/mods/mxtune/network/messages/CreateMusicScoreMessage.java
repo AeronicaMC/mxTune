@@ -22,22 +22,24 @@ public class CreateMusicScoreMessage extends AbstractMessage<CreateMusicScoreMes
     private static final Logger LOGGER = LogManager.getLogger(CreateMusicScoreMessage.class);
     private String musicTitle;
     private String musicText;
+    private String extraText;
     private int[] partInstrumentIndexes;
     private boolean error;
 
     public CreateMusicScoreMessage() { /* NOP */ }
 
-    public CreateMusicScoreMessage(final String musicTitle, final String musicText, final int[] partInstrumentIndexes)
+    public CreateMusicScoreMessage(final String musicTitle, final String extraText, final String musicText, final int[] partInstrumentIndexes)
     {
         this.musicTitle = musicTitle;
+        this.extraText = extraText;
         this.musicText = musicText;
         this.partInstrumentIndexes = partInstrumentIndexes;
         this.error = false;
     }
 
-    public CreateMusicScoreMessage(final String musicTitle, final String musicText, final int[] partInstrumentIndexes, final boolean error)
+    public CreateMusicScoreMessage(final String musicTitle, final String extraText, final String musicText, final int[] partInstrumentIndexes, final boolean error)
     {
-        this(musicTitle, musicText, partInstrumentIndexes);
+        this(musicTitle, extraText, musicText, partInstrumentIndexes);
         this.error = error;
     }
 
@@ -45,6 +47,7 @@ public class CreateMusicScoreMessage extends AbstractMessage<CreateMusicScoreMes
     public CreateMusicScoreMessage decode(final PacketBuffer buffer)
     {
         final String musicTitle = buffer.readUtf();
+        final String extraText = buffer.readUtf();
         String musicText = "";
         boolean error = false;
         try
@@ -57,13 +60,14 @@ public class CreateMusicScoreMessage extends AbstractMessage<CreateMusicScoreMes
         }
         final int[] partInstrumentIndexes = buffer.readVarIntArray(16);
         LOGGER.debug(String.format("%s, buffer.readLongArray: %d", musicTitle, partInstrumentIndexes.length));
-        return new CreateMusicScoreMessage(musicTitle, musicText != null ? musicText : "", partInstrumentIndexes , error);
+        return new CreateMusicScoreMessage(musicTitle, extraText, musicText != null ? musicText : "", partInstrumentIndexes , error);
     }
 
     @Override
     public void encode(final CreateMusicScoreMessage message, final PacketBuffer buffer)
     {
         buffer.writeUtf(message.musicTitle);
+        buffer.writeUtf(message.extraText);
         try
         {
             NetworkSerializedHelper.writeSerializedObject(buffer, message.musicText);
@@ -95,7 +99,7 @@ public class CreateMusicScoreMessage extends AbstractMessage<CreateMusicScoreMes
                 } else if (!sPlayer.getMainHandItem().isEmpty() && sPlayer.getMainHandItem().getItem() instanceof MusicPaperItem)
                     {
                         ItemStack musicScore = new ItemStack(ModItems.MUSIC_SCORE.get());
-                        if (SheetMusicHelper.writeIMusic(musicScore, message.musicTitle, message.musicText, message.partInstrumentIndexes))
+                        if (SheetMusicHelper.writeIMusic(musicScore, message.musicTitle, (message.extraText), message.musicText, message.partInstrumentIndexes))
                         {
                             sPlayer.inventory.removeItem(sPlayer.inventory.selected, message.partInstrumentIndexes.length);
                             if (!sPlayer.inventory.add(musicScore.copy()))

@@ -21,21 +21,24 @@ public class CreateSheetMusicMessage extends AbstractMessage<CreateSheetMusicMes
 {
     private static final Logger LOGGER = LogManager.getLogger(CreateSheetMusicMessage.class);
     private String musicTitle;
+    private String extraText;
     private String musicText;
     private boolean error;
 
     public CreateSheetMusicMessage() { /* NOP */ }
 
-    public CreateSheetMusicMessage(final String musicTitle, final String musicText)
+    public CreateSheetMusicMessage(final String musicTitle, final String extraText, final String musicText)
     {
         this.musicTitle = musicTitle;
+        this.extraText = extraText;
         this.musicText = musicText;
         this.error = false;
     }
 
-    public CreateSheetMusicMessage(final String musicTitle, final String musicText, final boolean error)
+    public CreateSheetMusicMessage(final String musicTitle, String extraText, final String musicText, final boolean error)
     {
         this.musicTitle = musicTitle;
+        this.extraText = extraText;
         this.musicText = musicText;
         this.error = error;
     }
@@ -44,6 +47,7 @@ public class CreateSheetMusicMessage extends AbstractMessage<CreateSheetMusicMes
     public CreateSheetMusicMessage decode(final PacketBuffer buffer)
     {
         final String musicTitle = buffer.readUtf();
+        final String extraText = buffer.readUtf();
         String musicText = "";
         boolean error = false;
         try
@@ -54,13 +58,14 @@ public class CreateSheetMusicMessage extends AbstractMessage<CreateSheetMusicMes
             LOGGER.error("unable to decode string", e);
             error = true;
         }
-        return new CreateSheetMusicMessage(musicTitle, musicText != null ? musicText : "", error);
+        return new CreateSheetMusicMessage(musicTitle, extraText, musicText != null ? musicText : "", error);
     }
 
     @Override
     public void encode(final CreateSheetMusicMessage message, final PacketBuffer buffer)
     {
         buffer.writeUtf(message.musicTitle);
+        buffer.writeUtf(message.extraText);
         try
         {
             NetworkSerializedHelper.writeSerializedObject(buffer, message.musicText);
@@ -91,7 +96,7 @@ public class CreateSheetMusicMessage extends AbstractMessage<CreateSheetMusicMes
                 } else if (!sPlayer.getMainHandItem().isEmpty() && sPlayer.getMainHandItem().getItem() instanceof MusicPaperItem)
                     {
                         ItemStack sheetMusic = new ItemStack(ModItems.SHEET_MUSIC.get());
-                        if (SheetMusicHelper.writeIMusic(sheetMusic, message.musicTitle, message.musicText, new int[0]))
+                        if (SheetMusicHelper.writeIMusic(sheetMusic, message.musicTitle, message.extraText, message.musicText, new int[0]))
                         {
                             sPlayer.inventory.removeItem(sPlayer.inventory.selected, 1);
                             if (!sPlayer.inventory.add(sheetMusic.copy()))

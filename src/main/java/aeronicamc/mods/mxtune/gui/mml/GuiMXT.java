@@ -657,9 +657,9 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
             {
                 childTabs[i].updatePart();
                 ITextComponent instrumentName = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(childTabs[i].getPart().getInstrumentName()));
-                String titleAndInstrument = formatTitle(title, i, viewableTabCount, instrumentName.getString());
+                String instrument = formatInstrument(i, viewableTabCount, instrumentName.getString());
                 String mml = childTabs[i].getMMLClipBoardFormat();
-                PacketDispatcher.sendToServer(new CreateSheetMusicMessage(titleAndInstrument, mml));
+                PacketDispatcher.sendToServer(new CreateSheetMusicMessage(title, instrument, mml));
             }
             return true;
         }
@@ -670,7 +670,8 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     {
         if (!textTitle.getValue().trim().equals("") && buttonPlayStop.active)
         {
-            String title = String.format("%s (%d %s)", this.textTitle.getValue(), viewableTabCount, new TranslationTextComponent("gui.mxtune.label.n_part_score").getString());
+            String title = this.textTitle.getValue();
+            String scoreParts = String.format("(%d %s)", viewableTabCount, new TranslationTextComponent("gui.mxtune.label.n_part_score").getString());
             StringBuilder scoreMML = new StringBuilder();
             int[] partInstrumentIndexes = new int[viewableTabCount];
             for (int i = 0; i < viewableTabCount; i++)
@@ -682,18 +683,18 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
                 mml = mml.replace("MML@", "MML@i" + partInstrumentIndex);
                 scoreMML.append(mml);
             }
-            PacketDispatcher.sendToServer(new CreateMusicScoreMessage(title, scoreMML.toString(), partInstrumentIndexes));
+            PacketDispatcher.sendToServer(new CreateMusicScoreMessage(title, scoreParts, scoreMML.toString(), partInstrumentIndexes));
             return true;
         }
         return false;
     }
 
-    private String formatTitle(String title, int part, int parts, String instrumentName)
+    private String formatInstrument(int part, int parts, String instrumentName)
     {
         if (parts == 1)
-            return String.format("%s (%s)", title, instrumentName);
+            return String.format("(%s)", instrumentName);
         else
-            return String.format("%s (%d-%d : %s)", title, part + 1, parts, instrumentName);
+            return String.format("(%d-%d : %s)", part + 1, parts, instrumentName);
     }
 
     private void addTab()

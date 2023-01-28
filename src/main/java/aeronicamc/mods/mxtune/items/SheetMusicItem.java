@@ -8,6 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,6 +34,8 @@ public class SheetMusicItem extends Item implements IMusic
         {
             pTooltip.clear();
             pTooltip.add(getFormattedMusicTitle(pStack));
+            if(!getFormattedExtraText(pStack).equals(StringTextComponent.EMPTY))
+                pTooltip.add(getFormattedExtraText(pStack));
         }
         pTooltip.add(getFormattedMusicDuration(pStack));
         pTooltip.add(getFormattedSheetMusicDaysLeft(pStack));

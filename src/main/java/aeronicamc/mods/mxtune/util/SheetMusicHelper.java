@@ -50,6 +50,7 @@ public enum SheetMusicHelper
     ;
     private static final Logger LOGGER = LogManager.getLogger(SheetMusicHelper.class);
     public static final String KEY_SHEET_MUSIC = "SheetMusic";
+    public static final String KEY_EXTRA_TEXT = "ExtraText";
     public static final String KEY_DURATION = "Duration";
     public static final String KEY_MUSIC_TEXT_KEY = "MusicTextKey";
     public static final String KEY_PARTS = "ScoreParts"; // list of soundfont proxy indexes. Order as-is.
@@ -96,6 +97,20 @@ public enum SheetMusicHelper
     public static String getMusicTitleAsString(ItemStack sheetMusicStack)
     {
         return getFormattedMusicTitle(sheetMusicStack).plainCopy().getString();
+    }
+
+    public static ITextComponent getFormattedExtraText(ItemStack sheetMusicStack)
+    {
+        CompoundNBT contents = sheetMusicStack.getTag();
+        if (contents != null && contents.contains(KEY_SHEET_MUSIC))
+        {
+            CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
+            if (sm.contains(KEY_EXTRA_TEXT))
+            {
+                return new StringTextComponent(sm.getString(KEY_EXTRA_TEXT)).withStyle(TextFormatting.YELLOW);
+            }
+        }
+        return StringTextComponent.EMPTY;
     }
 
     /**
@@ -331,25 +346,27 @@ public enum SheetMusicHelper
      * Server Side
      * <p></p>Updates a new Sheet Music or Music Score ItemStack. Adds the title, duration and keystore id to it and stores
      * the data to an on-disk data store.
-     * @param sheetMusic ItemStack reference to be updated.
+     * @param itemStack ItemStack reference to be updated.
      * @param musicTitle becomes the Sheet Music display name
+     * @param extraText additional information. For SheetMusic it would be the suggested instrument. For MusicScore it would indicate how many parts.
      * @param musicText MML to be saved to disk
      * @param partInstrumentIndexes int array of part instrument indexes. Must be a 0 length for sheet music, or the number of parts for a music score.
      * @return true on success.
      */
-    public static boolean writeIMusic(ItemStack sheetMusic, String musicTitle, String musicText, int[] partInstrumentIndexes)
+    public static boolean writeIMusic(ItemStack itemStack, String musicTitle, String extraText, String musicText, int[] partInstrumentIndexes)
     {
         musicTitle = musicTitle.substring(0, Math.min(musicTitle.length(), Reference.MXT_SONG_TITLE_LENGTH));
-        sheetMusic.setHoverName(new StringTextComponent(musicTitle));
-        CompoundNBT compound = sheetMusic.getTag();
+        itemStack.setHoverName(new StringTextComponent(musicTitle));
+        CompoundNBT compound = itemStack.getTag();
         ValidDuration validDuration = validateMML(musicText);
-        if (compound != null && (sheetMusic.getItem() instanceof IMusic) && validDuration.isValidMML() && validDuration.getDuration() > 0)
+        if (compound != null && (itemStack.getItem() instanceof IMusic) && validDuration.isValidMML() && validDuration.getDuration() > 0)
         {
             String musicTextKey = ModDataStore.addMusicText(musicText);
             if (musicTextKey != null)
             {
                 CompoundNBT contents = new CompoundNBT();
                 contents.putString(KEY_MUSIC_TEXT_KEY, musicTextKey);
+                contents.putString(KEY_EXTRA_TEXT, extraText);
                 contents.putInt(KEY_DURATION, validDuration.getDuration());
                 if (partInstrumentIndexes.length > 0)
                     contents.putIntArray(KEY_PARTS, partInstrumentIndexes);
@@ -553,10 +570,10 @@ public enum SheetMusicHelper
     }
 
     // TODO: When music mobs are created and can drop sheet music.
-    public static ItemStack createSheetMusic(String title, String mml)
+    public static ItemStack createSheetMusic(String title, String mml, String extraText)
     {
         ItemStack sheetMusic = new ItemStack(ModItems.SHEET_MUSIC.get());
-        if (SheetMusicHelper.writeIMusic(sheetMusic, title, mml, new int[0]))
+        if (SheetMusicHelper.writeIMusic(sheetMusic, title, extraText, mml, new int[0]))
         {
             return sheetMusic;
         }
