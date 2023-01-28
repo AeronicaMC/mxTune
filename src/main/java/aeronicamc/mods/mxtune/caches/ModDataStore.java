@@ -104,7 +104,7 @@ public class ModDataStore
             MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
             for (Map.Entry<LocalDateTime, String> c : indexToMusicText.entrySet())
             {
-                if (i++ > 10) break;
+                if (i++ >= 10) break;
                 LOGGER.debug("id: {}, musicText: {}", String.format("%s", c.getKey()), c.getValue().substring(0, Math.min(24, c.getValue().length())));
             }
 
