@@ -241,7 +241,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
     @Override
     public ITextComponent getDisplayName()
     {
-        return new StringTextComponent("-unused-");
+        return StringTextComponent.EMPTY;
     }
 
     @Override
