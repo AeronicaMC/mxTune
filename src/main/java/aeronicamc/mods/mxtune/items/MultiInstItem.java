@@ -35,6 +35,8 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import static aeronicamc.mods.mxtune.util.SheetMusicHelper.getFormattedExtraText;
+
 public class MultiInstItem extends Item implements IInstrument, INamedContainerProvider
 {
     private final static String KEY_PLAY_ID = "MXTunePlayId";
@@ -249,6 +251,8 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
         pTooltip.add(SheetMusicHelper.getFormattedMusicTitle(iMusic));
         if (SheetMusicHelper.hasMusicText(SheetMusicHelper.getIMusicFromIInstrument(pStack)))
         {
+            if(!getFormattedExtraText(iMusic).equals(StringTextComponent.EMPTY))
+                pTooltip.add(getFormattedExtraText(iMusic));
             pTooltip.add(SheetMusicHelper.getFormattedMusicDuration(iMusic));
             pTooltip.add(SheetMusicHelper.getFormattedSheetMusicDaysLeft(iMusic));
         }
