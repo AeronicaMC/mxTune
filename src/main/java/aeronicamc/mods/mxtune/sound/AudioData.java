@@ -293,6 +293,11 @@ public class AudioData implements Cloneable
         }
     }
 
+    public int getDurationSeconds()
+    {
+        return durationSeconds;
+    }
+
     int getRemainingDuration()
     {
         return Math.max(durationSeconds - secondsElapsed, 0);

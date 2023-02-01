@@ -7,10 +7,10 @@ public class SequenceProxy
     Sequence sequence;
     int timeout;
 
-    SequenceProxy(Sequence seq)
+    SequenceProxy(Sequence seq, int duration)
     {
         sequence = seq;
-        timeout = 1800; // 30 minutes in seconds
+        timeout = duration + 60; // tune duration + 60 seconds for good measure
     }
 
     Sequence getSequence()
@@ -18,13 +18,8 @@ public class SequenceProxy
         return sequence;
     }
 
-    int getTimeout()
+    int tick()
     {
-        return timeout;
-    }
-
-    void tick()
-    {
-        timeout--;
+        return --timeout;
     }
 }

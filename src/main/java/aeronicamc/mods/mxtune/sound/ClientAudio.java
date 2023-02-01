@@ -72,7 +72,7 @@ public class ClientAudio
 
     public static String getDebugString()
     {
-        return String.format("AudioData %d/%d", ActiveAudio.getDistanceSortedSources().size(), ActiveAudio.getDeleteQueueSize());
+        return String.format("AudioData %d/%d/%d", ActiveAudio.getDistanceSortedSources().size(), ActiveAudio.getDeleteQueueSize(), ActiveAudio.getCachedMidiSequenceCount());
     }
 
     public static List<AudioData> getAudioData()
@@ -262,7 +262,7 @@ public class ClientAudio
             MMLParser mmlParser = MMLParserFactory.getMMLParser(musicText);
             MMLToMIDI toMIDI = new MMLToMIDI();
             toMIDI.processMObjects(mmlParser.getMmlObjects());
-            ActiveAudio.addSequence(audioData.getPlayId(), toMIDI.getSequence());
+            ActiveAudio.addSequence(audioData.getPlayId(), audioData.getDurationSeconds(), toMIDI.getSequence());
             timer.stop();
             //audioData.addProcessTimeMS(timer.getTimeElapsed());
 

@@ -115,6 +115,15 @@ public class ActiveAudio
             {
                 deleteAudioDataQueue.remove();
             }
+        synchronized (playIdToMidiSequence)
+        {
+            playIdToMidiSequence.clear();
+        }
+        while (!deleteMidiSequenceQueue.isEmpty())
+            synchronized (deleteMidiSequenceQueue)
+            {
+                deleteMidiSequenceQueue.remove();
+            }
     }
 
     static boolean hasSequence(int playId)
@@ -130,9 +139,14 @@ public class ActiveAudio
         }
     }
 
-    static void addSequence(int playId, Sequence sequence)
+    static void addSequence(int playId, int duration, Sequence sequence)
     {
-        playIdToMidiSequence.putIfAbsent(playId, new SequenceProxy(sequence));
+        playIdToMidiSequence.putIfAbsent(playId, new SequenceProxy(sequence, duration));
+    }
+
+    static int getCachedMidiSequenceCount()
+    {
+        return playIdToMidiSequence.size();
     }
 
     void counter()
@@ -165,10 +179,9 @@ public class ActiveAudio
                                          audioData.tick();
                                      });
 
-                    // Tick cached MIDI Sequences and remove them after 30 minutes (1800 ticks)`
+                    // Tick cached MIDI Sequences and remove them upon timeout
                     playIdToMidiSequence.forEach((key, sp) -> {
-                        sp.tick();
-                        if (sp.getTimeout() == 0)
+                        if (sp.tick() == 0)
                             deleteMidiSequenceQueue.add(key);
                     });
 
