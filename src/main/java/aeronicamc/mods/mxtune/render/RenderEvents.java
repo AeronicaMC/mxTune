@@ -7,6 +7,7 @@ import aeronicamc.mods.mxtune.caps.venues.ToolManager;
 import aeronicamc.mods.mxtune.caps.venues.ToolState;
 import aeronicamc.mods.mxtune.init.ModBlocks;
 import aeronicamc.mods.mxtune.init.ModItems;
+import aeronicamc.mods.mxtune.items.MusicVenueInfoItem;
 import aeronicamc.mods.mxtune.items.MusicVenueToolItem;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
 import aeronicamc.mods.mxtune.util.IInstrument;
@@ -87,6 +88,30 @@ public class RenderEvents
             RenderHelper.renderHitOutline(level, matrixStack, ivertexBuilder, activeRenderInfo.getEntity(), camX, camY, camZ, blockPos, blockState);
             RenderHelper.renderFloatingText(blockState.getBlock().getName(), blockPos, matrixStack, renderTypeBuffer, activeRenderInfo, -1);
         }
+    }
+
+    @SubscribeEvent
+    public static void event(DrawHighlightEvent.HighlightEntity event)
+    {
+        if (mc.player == null )
+            return;
+        if (mc.options.renderDebug) return;
+        if (!(mc.player.inventory.getSelected().getItem() instanceof MusicVenueInfoItem)) return;
+        if (event.isCancelable()) event.setCanceled(true);
+
+        final PlayerEntity player = mc.player;
+        final ItemStack itemStack = player.inventory.getSelected();
+        final EntityRayTraceResult entityRayTraceResult = event.getTarget();
+        final IRenderTypeBuffer renderTypeBuffer = event.getBuffers();
+        final ActiveRenderInfo activeRenderInfo = event.getInfo();
+        final MatrixStack matrixStack = event.getMatrix();
+
+        final Vector3d vector3d = activeRenderInfo.getPosition();
+        double camX = vector3d.x();
+        double camY = vector3d.y();
+        double camZ = vector3d.z();
+        IVertexBuilder ivertexBuilder = renderTypeBuffer.getBuffer(ModRenderType.THICK_LINES);
+        RenderHelper.renderEdges(matrixStack, ivertexBuilder, entityRayTraceResult.getEntity().getBoundingBox(), camX, camY, camZ, 1.0F, 0.0F, 1.0F, 0.4F);
     }
 
     @SubscribeEvent
