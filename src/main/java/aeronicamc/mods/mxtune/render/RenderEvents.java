@@ -74,10 +74,7 @@ public class RenderEvents
         final ActiveRenderInfo activeRenderInfo = event.getInfo();
         final MatrixStack matrixStack = event.getMatrix();
 
-        Vector3d vector3d = activeRenderInfo.getPosition();
-        double camX = vector3d.x();
-        double camY = vector3d.y();
-        double camZ = vector3d.z();
+        Vector3d camera = activeRenderInfo.getPosition();
         World level = mc.player.level;
 
         BlockPos blockPos = blockRayTraceResult.getBlockPos();
@@ -85,7 +82,7 @@ public class RenderEvents
 
         if (!blockState.isAir(level, blockPos) && level.getWorldBorder().isWithinBounds(blockPos)) {
             IVertexBuilder ivertexBuilder = renderTypeBuffer.getBuffer(ModRenderType.THICK_LINES);
-            RenderHelper.renderHitOutline(level, matrixStack, ivertexBuilder, activeRenderInfo.getEntity(), camX, camY, camZ, blockPos, blockState);
+            RenderHelper.renderHitOutline(level, matrixStack, ivertexBuilder, activeRenderInfo.getEntity(), camera.x(), camera.y(), camera.z(), blockPos, blockState);
             RenderHelper.renderFloatingText(blockState.getBlock().getName(), blockPos, matrixStack, renderTypeBuffer, activeRenderInfo, -1);
         }
     }
@@ -105,16 +102,12 @@ public class RenderEvents
         final IRenderTypeBuffer renderTypeBuffer = event.getBuffers();
         final ActiveRenderInfo activeRenderInfo = event.getInfo();
         final MatrixStack matrixStack = event.getMatrix();
+        final Vector3d camera = activeRenderInfo.getPosition();
 
-        final Vector3d vector3d = activeRenderInfo.getPosition();
-        double camX = vector3d.x();
-        double camY = vector3d.y();
-        double camZ = vector3d.z();
         IVertexBuilder vertexBuilder1 = renderTypeBuffer.getBuffer(ModRenderType.TRANSPARENT_QUADS_NO_TEXTURE);
-        RenderHelper.renderFaces(matrixStack, vertexBuilder1, entityRayTraceResult.getEntity().getBoundingBox().inflate(0.001D), camX, camY, camZ, 1.0F, 0.0F, 1.0F, 0.4F);
-
+        RenderHelper.renderFaces(matrixStack, vertexBuilder1, entityRayTraceResult.getEntity().getBoundingBox().inflate(0.001D), camera.x(), camera.y(), camera.z(), 1.0F, 0.0F, 1.0F, 0.4F);
         IVertexBuilder vertexBuilder2 = renderTypeBuffer.getBuffer(ModRenderType.LINES);
-        RenderHelper.renderEdges(matrixStack, vertexBuilder2, entityRayTraceResult.getEntity().getBoundingBox().inflate(0.001D), camX, camY, camZ, 1.0F, 0.0F, 1.0F, 0.4F);
+        RenderHelper.renderEdges(matrixStack, vertexBuilder2, entityRayTraceResult.getEntity().getBoundingBox().inflate(0.001D), camera.x(), camera.y(), camera.z(), 1.0F, 0.0F, 1.0F, 0.4F);
     }
 
     @SubscribeEvent
@@ -208,7 +201,6 @@ public class RenderEvents
     public static void renderLast(MatrixStack pMatrixStack, IRenderTypeBuffer.Impl pBuffer, LightTexture pLightTexture, ActiveRenderInfo pActiveRenderInfo, float pPartialTicks, ClippingHelper pClippingHelper)
     {
         MusicVenueRenderer.render(pMatrixStack, pBuffer, pLightTexture, pActiveRenderInfo, pPartialTicks, pClippingHelper);
-        //StageToolRenderer.renderUUID(pMatrixStack, pBuffer, pLightTexture, pActiveRenderInfo, pPartialTicks, pClippingHelper);
+        //MusicVenueToolRenderer.renderUUID(pMatrixStack, pBuffer, pLightTexture, pActiveRenderInfo, pPartialTicks, pClippingHelper);
     }
-
 }
