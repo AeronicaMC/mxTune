@@ -110,8 +110,11 @@ public class RenderEvents
         double camX = vector3d.x();
         double camY = vector3d.y();
         double camZ = vector3d.z();
-        IVertexBuilder ivertexBuilder = renderTypeBuffer.getBuffer(ModRenderType.THICK_LINES);
-        RenderHelper.renderEdges(matrixStack, ivertexBuilder, entityRayTraceResult.getEntity().getBoundingBox(), camX, camY, camZ, 1.0F, 0.0F, 1.0F, 0.4F);
+        IVertexBuilder vertexBuilder1 = renderTypeBuffer.getBuffer(ModRenderType.TRANSPARENT_QUADS_NO_TEXTURE);
+        RenderHelper.renderFaces(matrixStack, vertexBuilder1, entityRayTraceResult.getEntity().getBoundingBox().inflate(0.001D), camX, camY, camZ, 1.0F, 0.0F, 1.0F, 0.4F);
+
+        IVertexBuilder vertexBuilder2 = renderTypeBuffer.getBuffer(ModRenderType.LINES);
+        RenderHelper.renderEdges(matrixStack, vertexBuilder2, entityRayTraceResult.getEntity().getBoundingBox().inflate(0.001D), camX, camY, camZ, 1.0F, 0.0F, 1.0F, 0.4F);
     }
 
     @SubscribeEvent

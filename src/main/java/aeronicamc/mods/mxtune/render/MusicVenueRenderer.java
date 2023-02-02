@@ -44,7 +44,7 @@ public class MusicVenueRenderer
                                     RenderHelper.renderFaces(pMatrixStack, vertexBuilder1, venue.getVenueAABB(), camX, camY, camZ, venue.getR(), venue.getG(), venue.getB(), 0.1F);
 
                                     IVertexBuilder vertexBuilder2 = pBuffer.getBuffer(ModRenderType.THICK_LINES);
-                                    RenderHelper.renderEdges(pMatrixStack, vertexBuilder2, venue.getVenueAABB(), camX, camY, camZ, venue.getR(), venue.getG(), venue.getB(), 0.4F);
+                                    RenderHelper.renderEdges(pMatrixStack, vertexBuilder2, venue.getVenueAABB().inflate(-0.001D), camX, camY, camZ, venue.getR(), venue.getG(), venue.getB(), 0.4F);
 
                                     if (!(pActiveRenderInfo.getEntity().distanceToSqr(venue.getVenueAABB().getCenter()) > 512))
                                     {
