@@ -118,7 +118,7 @@ public class RenderHelper
 
     static void renderEdges(MatrixStack pMatrixStack, IVertexBuilder pBuffer, AxisAlignedBB alignedBB, double pX, double pY, double pZ, float pRed, float pGreen, float pBlue, float pAlpha)
     {
-        renderShape(pMatrixStack, pBuffer, VoxelShapes.create(alignedBB.inflate(-0.001D)), -pX, -pY, -pZ, pRed, pGreen, pBlue, pAlpha);
+        renderShape(pMatrixStack, pBuffer, VoxelShapes.create(alignedBB.inflate(0.001D)), -pX, -pY, -pZ, pRed, pGreen, pBlue, pAlpha);
     }
 
     static void renderFaces(MatrixStack pMatrixStack, IVertexBuilder pBuffer, final AxisAlignedBB alignedBB, double camX, double camY, double camZ, float pRed, float pGreen, float pBlue, float pAlpha) {
