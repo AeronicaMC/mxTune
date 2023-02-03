@@ -5,6 +5,7 @@ import aeronicamc.mods.mxtune.caps.venues.EntityVenueState;
 import aeronicamc.mods.mxtune.caps.venues.MusicVenueHelper;
 import aeronicamc.mods.mxtune.caps.venues.ToolManager;
 import aeronicamc.mods.mxtune.caps.venues.ToolState;
+import aeronicamc.mods.mxtune.entity.MusicVenueInfoEntity;
 import aeronicamc.mods.mxtune.init.ModBlocks;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.items.MusicVenueInfoItem;
@@ -21,8 +22,12 @@ import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.culling.ClippingHelper;
+import net.minecraft.entity.item.HangingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -66,24 +71,54 @@ public class RenderEvents
         if (mc.player == null )
             return;
         if (mc.options.renderDebug) return;
-        if (!(mc.player.inventory.getSelected().getItem() instanceof MusicVenueToolItem)) return;
-        if (event.isCancelable()) event.setCanceled(true);
-
         final BlockRayTraceResult blockRayTraceResult = event.getTarget();
         final IRenderTypeBuffer renderTypeBuffer = event.getBuffers();
         final ActiveRenderInfo activeRenderInfo = event.getInfo();
         final MatrixStack matrixStack = event.getMatrix();
 
-        Vector3d camera = activeRenderInfo.getPosition();
-        World level = mc.player.level;
+        final Vector3d camera = activeRenderInfo.getPosition();
+        final World level = mc.player.level;
 
-        BlockPos blockPos = blockRayTraceResult.getBlockPos();
-        BlockState blockState = level.getBlockState(blockRayTraceResult.getBlockPos());
+        final BlockPos blockPos = blockRayTraceResult.getBlockPos();
+        final BlockState blockState = level.getBlockState(blockRayTraceResult.getBlockPos());
 
-        if (!blockState.isAir(level, blockPos) && level.getWorldBorder().isWithinBounds(blockPos)) {
-            IVertexBuilder ivertexBuilder = renderTypeBuffer.getBuffer(ModRenderType.THICK_LINES);
-            RenderHelper.renderHitOutline(level, matrixStack, ivertexBuilder, activeRenderInfo.getEntity(), camera.x(), camera.y(), camera.z(), blockPos, blockState);
-            RenderHelper.renderFloatingText(blockState.getBlock().getName(), blockPos, matrixStack, renderTypeBuffer, activeRenderInfo, -1);
+        // Highlight blocks for tool use
+        if (mc.player.inventory.getSelected().getItem() instanceof MusicVenueToolItem)
+        {
+            if (event.isCancelable()) event.setCanceled(true);
+
+            if (!blockState.isAir(level, blockPos) && level.getWorldBorder().isWithinBounds(blockPos))
+            {
+                final IVertexBuilder ivertexBuilder = renderTypeBuffer.getBuffer(ModRenderType.THICK_LINES);
+                RenderHelper.renderHitOutline(level, matrixStack, ivertexBuilder, activeRenderInfo.getEntity(), camera.x(), camera.y(), camera.z(), blockPos, blockState);
+//                RenderHelper.renderFloatingText(blockState.getBlock().getName(), blockPos, matrixStack, renderTypeBuffer, activeRenderInfo, -1);
+            }
+        }
+
+        // Show the pre-placement info panel outline.
+        if (mc.player.inventory.getSelected().getItem() instanceof MusicVenueInfoItem)
+        {
+            if (event.isCancelable()) event.setCanceled(true);
+
+            if (!blockState.isAir(level, blockPos) && level.getWorldBorder().isWithinBounds(blockPos))
+            {
+                final ItemUseContext useContext = new ItemUseContext(mc.player, Hand.MAIN_HAND, blockRayTraceResult);
+                final BlockPos clickedPos = useContext.getClickedPos();
+                final Direction facing = useContext.getClickedFace();
+                final BlockPos placementPos = clickedPos.relative(facing);
+
+                if (MusicVenueInfoItem.mayPlace(mc.player, facing, useContext.getItemInHand(), placementPos))
+                {
+                    final HangingEntity infoEntity = new MusicVenueInfoEntity(useContext.getLevel(), placementPos, facing);
+                    if (infoEntity.survives())
+                    {
+                        final IVertexBuilder vertexBuilder1 = renderTypeBuffer.getBuffer(ModRenderType.TRANSPARENT_QUADS_NO_TEXTURE);
+                        RenderHelper.renderFaces(matrixStack, vertexBuilder1, infoEntity.getBoundingBox().inflate(0.001D), camera.x(), camera.y(), camera.z(), 1.0F, 0.0F, 1.0F, 0.4F);
+                        final IVertexBuilder vertexBuilder2 = renderTypeBuffer.getBuffer(ModRenderType.LINES);
+                        RenderHelper.renderEdges(matrixStack, vertexBuilder2, infoEntity.getBoundingBox().inflate(0.001D), camera.x(), camera.y(), camera.z(), 1.0F, 0.0F, 1.0F, 0.4F);
+                    }
+                }
+            }
         }
     }
 
@@ -93,19 +128,17 @@ public class RenderEvents
         if (mc.player == null )
             return;
         if (mc.options.renderDebug) return;
-        if (!(mc.player.inventory.getSelected().getItem() instanceof MusicVenueInfoItem)) return;
+        if (!(mc.player.inventory.getSelected().getItem() instanceof MusicVenueToolItem)) return;
         if (event.isCancelable()) event.setCanceled(true);
 
         final PlayerEntity player = mc.player;
-        final ItemStack itemStack = player.inventory.getSelected();
         final EntityRayTraceResult entityRayTraceResult = event.getTarget();
         final IRenderTypeBuffer renderTypeBuffer = event.getBuffers();
         final ActiveRenderInfo activeRenderInfo = event.getInfo();
         final MatrixStack matrixStack = event.getMatrix();
         final Vector3d camera = activeRenderInfo.getPosition();
 
-        IVertexBuilder vertexBuilder1 = renderTypeBuffer.getBuffer(ModRenderType.TRANSPARENT_QUADS_NO_TEXTURE);
-        RenderHelper.renderFaces(matrixStack, vertexBuilder1, entityRayTraceResult.getEntity().getBoundingBox().inflate(0.001D), camera.x(), camera.y(), camera.z(), 1.0F, 0.0F, 1.0F, 0.4F);
+        // Draw the entity bounding box
         IVertexBuilder vertexBuilder2 = renderTypeBuffer.getBuffer(ModRenderType.LINES);
         RenderHelper.renderEdges(matrixStack, vertexBuilder2, entityRayTraceResult.getEntity().getBoundingBox().inflate(0.001D), camera.x(), camera.y(), camera.z(), 1.0F, 0.0F, 1.0F, 0.4F);
     }
@@ -117,19 +150,19 @@ public class RenderEvents
             return;
         if (mc.options.renderDebug) return;
 
-        PlayerEntity player = mc.player;
-        ItemStack itemStack = player.inventory.getSelected();
+        final PlayerEntity player = mc.player;
+        final ItemStack itemStack = player.inventory.getSelected();
 
         // borrow toast render for testing some ideas.
         if (event.getType() == RenderGameOverlayEvent.ElementType.ALL && (mc.screen == null) && itemStack.getItem() instanceof IInstrument)
         {
-            ItemStack sheetMusic = SheetMusicHelper.getIMusicFromIInstrument(itemStack);
-            ITextComponent titleText = SheetMusicHelper.getFormattedMusicTitle(sheetMusic);
-            ITextComponent infoText = new StringTextComponent("").append(SheetMusicHelper.getFormattedMusicDuration(sheetMusic))
+            final ItemStack sheetMusic = SheetMusicHelper.getIMusicFromIInstrument(itemStack);
+            final ITextComponent titleText = SheetMusicHelper.getFormattedMusicTitle(sheetMusic);
+            final ITextComponent infoText = new StringTextComponent("").append(SheetMusicHelper.getFormattedMusicDuration(sheetMusic))
                     .append(String.format(" %s %s", mc.getSoundManager().getDebugString(), ClientAudio.getDebugString())).withStyle(TextFormatting.WHITE);
 
-            int offset = Math.max(Math.max(mc.font.width(titleText), mc.font.width(infoText)) + 40, width);
-            MatrixStack pPoseStack = event.getMatrixStack();
+            final int offset = Math.max(Math.max(mc.font.width(titleText), mc.font.width(infoText)) + 40, width);
+            final MatrixStack pPoseStack = event.getMatrixStack();
 
             mc.getTextureManager().bind(TEXTURE);
             RenderSystem.color3f(1.0F, 1.0F, 1.0F);
@@ -141,7 +174,7 @@ public class RenderEvents
             mc.font.draw(pPoseStack, infoText, 30.0F, 17.0F, -11534256);
             mc.getItemRenderer().renderAndDecorateItem(itemStack, 8, 8);
 
-            int[] posY = new int[1];
+            final int[] posY = new int[1];
             posY[0] = 25;
             ClientAudio.getAudioData().forEach(audioData -> {
                 mc.font.drawShadow(pPoseStack, audioData.getInfo(), 5, posY[0]+=10, -11534256);
@@ -150,15 +183,15 @@ public class RenderEvents
 
         if (event.getType() == RenderGameOverlayEvent.ElementType.ALL && (mc.screen == null) && itemStack.getItem() instanceof MusicVenueToolItem)
         {
-            MatrixStack pPoseStack = event.getMatrixStack();
-            ActiveRenderInfo activeRenderInfo = mc.gameRenderer.getMainCamera();
-            RayTraceResult raytraceresult = mc.hitResult;
+            final MatrixStack pPoseStack = event.getMatrixStack();
+            final ActiveRenderInfo activeRenderInfo = mc.gameRenderer.getMainCamera();
+            final RayTraceResult raytraceresult = mc.hitResult;
+            final EntityVenueState bvs;
+            final Vector3d vector3d;
+            final EntityVenueState evs = MusicVenueHelper.getEntityVenueState(player.level, player.getId());
+            final ITextComponent blockName;
             BlockPos blockpos = BlockPos.ZERO;
-            EntityVenueState bvs;
-            Vector3d vector3d;
-            EntityVenueState evs = MusicVenueHelper.getEntityVenueState(player.level, player.getId());
 
-            ITextComponent blockName;
             if (raytraceresult instanceof BlockRayTraceResult)
             {
                 blockpos = ((BlockRayTraceResult) raytraceresult).getBlockPos();

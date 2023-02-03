@@ -55,7 +55,7 @@ public class MusicVenueInfoItem extends Item
         }
     }
 
-    protected boolean mayPlace(PlayerEntity pPlayer, Direction pDirection, ItemStack pHangingEntityStack, BlockPos pPos) {
+    public static boolean mayPlace(PlayerEntity pPlayer, Direction pDirection, ItemStack pHangingEntityStack, BlockPos pPos) {
         return !pDirection.getAxis().isVertical() && pPlayer.mayUseItemAt(pPos, pDirection, pHangingEntityStack);
     }
 }
