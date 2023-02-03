@@ -70,7 +70,7 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
                     iterator.remove();
                 }
             }
-            this.infoPanelType = list.get(this.random.nextInt(list.size()));
+            this.infoPanelType = list.get(Math.max(list.size() - 1, 0));
         }
         this.setDirection(facing);
         this.newPanel = true;
