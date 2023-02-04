@@ -77,6 +77,8 @@ public class MXTune
         }
     };
 
+    public static final boolean isDevEnv = !FMLEnvironment.production;
+
     public MXTune()
     {
         MXTuneConfig.register(ModLoadingContext.get());

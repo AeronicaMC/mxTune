@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.render;
 
+import aeronicamc.mods.mxtune.MXTune;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.caps.venues.EntityVenueState;
 import aeronicamc.mods.mxtune.caps.venues.MusicVenueHelper;
@@ -91,7 +92,6 @@ public class RenderEvents
             {
                 final IVertexBuilder ivertexBuilder = renderTypeBuffer.getBuffer(ModRenderType.THICK_LINES);
                 RenderHelper.renderHitOutline(level, matrixStack, ivertexBuilder, activeRenderInfo.getEntity(), camera.x(), camera.y(), camera.z(), blockPos, blockState);
-//                RenderHelper.renderFloatingText(blockState.getBlock().getName(), blockPos, matrixStack, renderTypeBuffer, activeRenderInfo, -1);
             }
         }
 
@@ -138,7 +138,7 @@ public class RenderEvents
         final MatrixStack matrixStack = event.getMatrix();
         final Vector3d camera = activeRenderInfo.getPosition();
 
-        // Draw the entity bounding box
+        // Draw the entity bounding box when using the MusicVenueToolItem and looking at en entity
         IVertexBuilder vertexBuilder2 = renderTypeBuffer.getBuffer(ModRenderType.LINES);
         RenderHelper.renderEdges(matrixStack, vertexBuilder2, entityRayTraceResult.getEntity().getBoundingBox().inflate(0.001D), camera.x(), camera.y(), camera.z(), 1.0F, 0.0F, 1.0F, 0.4F);
     }
@@ -153,15 +153,17 @@ public class RenderEvents
         final PlayerEntity player = mc.player;
         final ItemStack itemStack = player.inventory.getSelected();
 
-        // borrow toast render for testing some ideas.
+        // Display basic info about the instrument and tune. Optionally, displays some debug info depending on MXTune.isDevEnv flag.
+        // Based on the toast renderer for testing some ideas.
         if (event.getType() == RenderGameOverlayEvent.ElementType.ALL && (mc.screen == null) && itemStack.getItem() instanceof IInstrument)
         {
             final ItemStack sheetMusic = SheetMusicHelper.getIMusicFromIInstrument(itemStack);
             final ITextComponent titleText = SheetMusicHelper.getFormattedMusicTitle(sheetMusic);
+            final ITextComponent extraText = SheetMusicHelper.getFormattedExtraText(sheetMusic);
             final ITextComponent infoText = new StringTextComponent("").append(SheetMusicHelper.getFormattedMusicDuration(sheetMusic))
                     .append(String.format(" %s %s", mc.getSoundManager().getDebugString(), ClientAudio.getDebugString())).withStyle(TextFormatting.WHITE);
 
-            final int offset = Math.max(Math.max(mc.font.width(titleText), mc.font.width(infoText)) + 40, width);
+            final int offset = Math.max(Math.max(mc.font.width(titleText), mc.font.width(MXTune.isDevEnv ? infoText : extraText)) + 40, width);
             final MatrixStack pPoseStack = event.getMatrixStack();
 
             mc.getTextureManager().bind(TEXTURE);
@@ -171,14 +173,16 @@ public class RenderEvents
             RenderHelper.blit(pPoseStack, offset - width + 10, 0, 10, 0, width, height);
 
             mc.font.draw(pPoseStack, titleText, 30.0F, 7.0F, -11534256);
-            mc.font.draw(pPoseStack, infoText, 30.0F, 17.0F, -11534256);
+            mc.font.draw(pPoseStack, MXTune.isDevEnv ? infoText : extraText, 30.0F, 17.0F, -11534256);
             mc.getItemRenderer().renderAndDecorateItem(itemStack, 8, 8);
 
-            final int[] posY = new int[1];
-            posY[0] = 25;
-            ClientAudio.getAudioData().forEach(audioData -> {
-                mc.font.drawShadow(pPoseStack, audioData.getInfo(), 5, posY[0]+=10, -11534256);
-            });
+            if (MXTune.isDevEnv)
+            {
+                final int[] posY = new int[1];
+                posY[0] = 25;
+                ClientAudio.getAudioData()
+                        .forEach(audioData -> mc.font.drawShadow(pPoseStack, audioData.getInfo(), 5, posY[0] += 10, -11534256));
+            }
         }
 
         if (event.getType() == RenderGameOverlayEvent.ElementType.ALL && (mc.screen == null) && itemStack.getItem() instanceof MusicVenueToolItem)
@@ -234,6 +238,5 @@ public class RenderEvents
     public static void renderLast(MatrixStack pMatrixStack, IRenderTypeBuffer.Impl pBuffer, LightTexture pLightTexture, ActiveRenderInfo pActiveRenderInfo, float pPartialTicks, ClippingHelper pClippingHelper)
     {
         MusicVenueRenderer.render(pMatrixStack, pBuffer, pLightTexture, pActiveRenderInfo, pPartialTicks, pClippingHelper);
-        //MusicVenueToolRenderer.renderUUID(pMatrixStack, pBuffer, pLightTexture, pActiveRenderInfo, pPartialTicks, pClippingHelper);
     }
 }
