@@ -129,7 +129,7 @@ public class InfoRenderer implements AutoCloseable
             if (sourceVenueState.inVenue())
                 colorBars();
             else
-                randomLines();//noiseFill();
+                randomBoxes();//noiseFill();
         }
 
         private void noiseFill() {
@@ -184,7 +184,7 @@ public class InfoRenderer implements AutoCloseable
             }
         }
 
-        private void randomLines() {
+        private void randomBoxes() {
             if (pixelFu.isReady())
             {
                 pixelFu.fillRect(0, 0, texWidth, texHeight, getABGR(0, 0, 0));

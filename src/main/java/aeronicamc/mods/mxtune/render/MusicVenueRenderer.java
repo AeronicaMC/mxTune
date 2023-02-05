@@ -56,7 +56,6 @@ public class MusicVenueRenderer
                                                                         ModRenderType.FULL_BRIGHT_LIGHT_MAP);
 
                                         RenderHelper.renderFloatingText(new Vector3d(venue.getPerformerSpawn().getX() + 0.5, venue.getPerformerSpawn().getY() + 1.5, venue.getPerformerSpawn().getZ() + 0.5), pMatrixStack, pBuffer, pActiveRenderInfo, -1, new StringTextComponent("Performer Spawn"),
-
                                                                         ModRenderType.FULL_BRIGHT_LIGHT_MAP);
                                     }
                                     pBuffer.endBatch(ModRenderType.TRANSPARENT_QUADS_NO_TEXTURE);
