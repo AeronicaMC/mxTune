@@ -81,7 +81,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     private int playId = PlayIdSupplier.INVALID;
 
     // Child tabs
-    private static final int MAX_TABS = 16;
+    private static final int MAX_TABS = MAX_MML_PARTS;
     private static final int MIN_TABS = 1;
     private final GuiMXTPartTab[] childTabs = new GuiMXTPartTab[MAX_TABS];
     private int activeChildIndex;

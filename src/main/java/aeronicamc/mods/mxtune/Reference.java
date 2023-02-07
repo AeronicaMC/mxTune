@@ -32,6 +32,7 @@ public class Reference
     // TODO: number for a given line type: Mabinogi:    melody, harmony 1, harmony 2, song.
     // TODO: number for a given line type: MS2 melody:  chord 1 thru chord 9, or 10 lines total (Max chars for all line 10,000 chars).
     // TODO: number for a given line type: ArcheAge:    200 to 2000 characters depending on proficiency.
+    public static final int MAX_MML_PARTS = 16;
     public static final int MAX_MML_PART_LENGTH = 25000;
     public static final int MXT_SONG_TITLE_LENGTH = 80;
     public static final int MXT_SONG_AUTHOR_LENGTH = 80;
