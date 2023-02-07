@@ -36,7 +36,7 @@ public class Group
         return leader;
     }
 
-    void setLeader(Integer leader)
+    void setLeader(int leader)
     {
         this.leader = leader;
     }
@@ -44,6 +44,11 @@ public class Group
     Set<Integer> getMembers()
     {
         return members;
+    }
+
+    Integer[] getMembersAsIntegerArray()
+    {
+        return members.toArray(new Integer[0]);
     }
 
     void addMember(int member)
