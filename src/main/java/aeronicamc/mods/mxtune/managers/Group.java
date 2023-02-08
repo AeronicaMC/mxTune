@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.managers;
 
 import aeronicamc.mods.mxtune.Reference;
+import com.google.common.primitives.Ints;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -12,76 +13,84 @@ public class Group
     public static final Group EMPTY = new Group();
     private static final AtomicInteger nextGroup = new AtomicInteger(0);
     private final Set<Integer> members;
-    private int groupID;
-    private int playID;
+    private int group;
+    private int playId;
     private int maxDuration;
     private int leader;
 
-    private Group() {this.members = Collections.emptySet();}
+    private Group()
+    {
+        this.members = Collections.emptySet();
+    }
 
     public Group(int leader)
     {
         this.members = new HashSet<>(Reference.MAX_MML_PARTS);
         this.members.add(leader);
-        this.groupID = nextGroup.incrementAndGet();
+        this.group = nextGroup.incrementAndGet();
         this.leader = leader;
         this.maxDuration = 0;
-        playID = PlayIdSupplier.INVALID;
+        playId = PlayIdSupplier.INVALID;
     }
 
-    public int getGroup() {return groupID;}
+    public int getGroup() {return group;}
 
-    int getLeader()
+    public int getLeader()
     {
         return leader;
     }
 
-    void setLeader(int leader)
+    public void setLeader(int leader)
     {
         this.leader = leader;
     }
 
-    Set<Integer> getMembers()
+    public Set<Integer> getMembers()
     {
         return members;
     }
 
-    Integer[] getMembersAsIntegerArray()
+    public int[] getMembersAsIntArray()
     {
-        return members.toArray(new Integer[0]);
+        return Ints.toArray(members);
     }
 
-    void addMember(int member)
+    public void addMember(int member)
     {
         members.add(member);
     }
 
-    boolean isMember(int entityId)
+    public boolean isMember(int entityId)
     {
         return this.members.contains(entityId);
     }
 
-    public int getPlayID()
+    public int getPlayId()
     {
-        return playID;
+        return playId;
     }
 
-    public void setPlayID(int playID)
+    public void setPlayId(int playId)
     {
-        this.playID = playID;
+        this.playId = playId;
     }
 
-    void setPartDuration(int duration)
+    public void setPartDuration(int duration)
     {
         if (duration > maxDuration) maxDuration = duration;
     }
 
-    int getMaxDuration()
+    public int getMaxDuration()
     {
         return maxDuration;
     }
 
-    boolean isEmpty()
+    public void resetMaxDuration()
+    {
+        maxDuration = 0;
+    }
+
+    public boolean isEmpty()
     {
         return this == EMPTY;
     }
