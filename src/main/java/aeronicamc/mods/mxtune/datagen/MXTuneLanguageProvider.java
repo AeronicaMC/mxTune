@@ -30,6 +30,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         add(ModEntities.MUSIC_SOURCE.get(), "[MusicSource]");
 
         addBlocks();
+        addChats();
         addCommands();
         addConfigs();
         addEntities();
@@ -174,7 +175,15 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.right_rs_out.help03", "Outputs a single 10 tick pulse at the end of a song/cancel.");
         addGuiText("button.right_rs_out.disabled", "Output Disabled");
         addGuiText("button.right_rs_out.enabled", "Output Enabled");
+    }
 
+    private void addChats()
+    {
+        addChat("groupManager.you_joined_players_group", "You joined %s's group.");
+        addChat("groupManager.player_joined_the_group", "%s joined the group.");
+        addChat("groupManager.cannot_join_too_many", "Cannot join %s group. It is full.");
+        addChat("groupManager.player_cannot_join_too_many", "%s cannot join since group is full");
+        addChat("groupManager.invalid_leader", "Leader left, was demoted or group disbanded.");
     }
 
     private void addCommands()
@@ -235,6 +244,16 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addSubtitle("crumple_paper", "Crumple Paper");
         addSubtitle("rotate_block", "Rotate Block");
         addSubtitle("rotate_block_failed", "Rotate Block Failed");
+    }
+
+    /**
+     * prepends chat.[mod_id].
+     * @param identifier the unique help id
+     * @param helpText help text
+     */
+    private void addChat(String identifier, String helpText)
+    {
+        add(String.format("chat.%s.%s", Reference.MOD_ID, identifier), helpText);
     }
 
     /**

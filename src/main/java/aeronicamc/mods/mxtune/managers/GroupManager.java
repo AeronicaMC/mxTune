@@ -32,23 +32,30 @@ public class GroupManager
 
         PlayerEntity leader = (PlayerEntity) member.level.getEntity(group.getLeader());
 
-        if (leader != null && isNotMemberOfAnyGroup(member.getId()))
+        if (leader != null)
         {
-            if (group.notFull())
+            if (isNotMemberOfAnyGroup(member.getId()))
             {
-                group.addMember(member.getId());
-                member.sendMessage(new TranslationTextComponent("mxtune.chat.groupManager.you_joined_players_group", leader.getDisplayName()), member.getUUID());
-                leader.sendMessage(new TranslationTextComponent("mxtune.chat.groupManager.player_joined_the_group", member.getDisplayName()), leader.getUUID());
+                if (group.notFull())
+                {
+                    group.addMember(member.getId());
+                    member.sendMessage(new TranslationTextComponent("chat.mxtune.groupManager.you_joined_players_group", leader.getDisplayName()), member.getUUID());
+                    leader.sendMessage(new TranslationTextComponent("chat.mxtune.groupManager.player_joined_the_group", member.getDisplayName()), leader.getUUID());
+                }
+                else
+                {
+                    member.sendMessage(new TranslationTextComponent("chat.mxtune.groupManager.cannot_join_too_many", leader.getDisplayName()), member.getUUID());
+                    leader.sendMessage(new TranslationTextComponent("chat.mxtune.groupManager.player_cannot_join_too_many", member.getDisplayName()), leader.getUUID());
+                }
             }
             else
             {
-                member.sendMessage(new TranslationTextComponent("mxtune.chat.groupManager.cannot_join_too_many", leader.getDisplayName()), member.getUUID());
-                leader.sendMessage(new TranslationTextComponent("mxtune.chat.groupManager.player_cannot_join_too_many", member.getDisplayName()), leader.getUUID());
+                member.sendMessage(new TranslationTextComponent("chat.mxtune.groupManager.cannot_join_if_group_member"), member.getUUID());
             }
         }
         else
         {
-            member.sendMessage(new TranslationTextComponent("mxtune.chat.groupManager.cannot_join_if_group_member" ), member.getUUID());
+            member.sendMessage(new TranslationTextComponent("chat.mxtune.groupManager.invalid_leader"), member.getUUID());
         }
     }
 
