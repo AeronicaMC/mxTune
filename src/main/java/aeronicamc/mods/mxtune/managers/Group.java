@@ -13,7 +13,7 @@ public class Group
     public static final Group EMPTY = new Group();
     private static final AtomicInteger nextGroup = new AtomicInteger(0);
     private final Set<Integer> members;
-    private int group;
+    private int groupId;
     private int playId;
     private int maxDuration;
     private int leader;
@@ -27,13 +27,13 @@ public class Group
     {
         this.members = new HashSet<>(Reference.MAX_MML_PARTS);
         this.members.add(leader);
-        this.group = nextGroup.incrementAndGet();
+        this.groupId = nextGroup.incrementAndGet();
         this.leader = leader;
         this.maxDuration = 0;
         playId = PlayIdSupplier.INVALID;
     }
 
-    public int getGroup() {return group;}
+    public int getGroupId() {return groupId;}
 
     public int getLeader()
     {
@@ -43,6 +43,11 @@ public class Group
     public void setLeader(int leader)
     {
         this.leader = leader;
+    }
+
+    public boolean notFull()
+    {
+        return members.size() < Reference.MAX_MML_PARTS;
     }
 
     public Set<Integer> getMembers()
