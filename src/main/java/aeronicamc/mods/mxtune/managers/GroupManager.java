@@ -1,14 +1,27 @@
 package aeronicamc.mods.mxtune.managers;
 
+import aeronicamc.mods.mxtune.Reference;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class GroupManager
 {
+    private static final Logger LOGGER = LogManager.getLogger(GroupManager.class);
     private static final Map<Integer, Group> groups = new HashMap<>();
 
     /**
@@ -60,6 +73,99 @@ public class GroupManager
     }
 
     /**
+     * Removes a member from all groups potentially changing the leader of a
+     * group or removing the group entirely.
+     *
+     * @param memberId to be removed
+     */
+    public static void removeMember(int memberId)
+    {
+        //PlayManager.purgeMember(memberID);
+        if (isNotMemberOfAnyGroup(memberId))
+            return;
+
+        for (Group group : groups.values())
+            if (group.isMember(memberId))
+            {
+                if (tryRemoveMember(group, memberId) || tryRemoveGroupIfLast(group, memberId) ||
+                        tryRemoveLeaderPromoteNext(group, memberId))
+                    return;
+            }
+    }
+
+    private static boolean tryRemoveMember(Group group, int memberId)
+    {
+        boolean result = false;
+        /* This is not the leader so simply remove the member. */
+        if (group.getLeader() != memberId)
+        {
+            /* This is not the leader so simply remove the member. */
+            group.removeMember(memberId);
+            sync();
+            result = true;
+        }
+        return result;
+    }
+
+    private static boolean tryRemoveGroupIfLast(Group group, int memberID)
+    {
+        boolean result = false;
+        /* This is the leader of the group and if we are the last or only member then we will remove the group. */
+        if (group.getMembers().size() == 1)
+        {
+            group.getMembers().clear();
+            groups.remove(group.getGroupId());
+            sync();
+            result = true;
+        }
+        return result;
+    }
+
+    private static boolean tryRemoveLeaderPromoteNext(Group group, int memberId)
+    {
+        boolean result = false;
+        // Remove the leader
+        if (group.getGroupId() == memberId)
+        {
+            group.removeMember(memberId);
+
+            /* Promote the next member of the group to leader. */
+            Iterator<Integer> remainingMembers = group.getMembers().iterator();
+            if (remainingMembers.hasNext())
+            {
+                int member = remainingMembers.next();
+                group.setLeader(member);
+                sync();
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Searches all groups and returns the group or null.
+     *
+     * @param groupId member in question
+     * @return the Group or the Group.EMPTY.
+     */
+    private static Group getGroup(int groupId)
+    {
+        return groups.getOrDefault(groupId, Group.EMPTY);
+    }
+
+    /**
+     * @param memberId search all groups for thia member.
+     * @return the Group or the Group.EMPTY.
+     */
+    static Group getMembersGroup(Integer memberId)
+    {
+        for (Group group : groups.values())
+                if (group.getMembers().contains(memberId)) return group;
+
+        return Group.EMPTY;
+    }
+
+    /**
      * Search all groups for the memberID.
      *
      * @param memberId member to search for
@@ -75,5 +181,97 @@ public class GroupManager
                     break;
                 }
         return result;
+    }
+
+    static boolean isLeader(int entityID)
+    {
+        Group group = getMembersGroup(entityID);
+        return !group.isEmpty() && group.getLeader() == entityID;
+    }
+
+    /**
+     * Set a new Leader
+     * @param memberId the new leader
+     */
+    public static void setLeader(int memberId)
+    {
+        Group group = getMembersGroup(memberId);
+        if (!group.isEmpty())
+        {
+            group.setLeader(memberId);
+            sync();
+        }
+    }
+
+    /**
+     *
+     * @param membersId to search for
+     * @param duration to apply
+     */
+    static void setMemberPartDuration(Integer membersId, int duration)
+    {
+        Group group = getMembersGroup(membersId);
+        if (!group.isEmpty())
+            group.setPartDuration(duration);
+    }
+
+    /**
+     * Retrieve a group's duration for a given member
+     * @param memberId of a group
+     * @return a {@link Tuple<Integer,Boolean>} where if {@link Tuple<Integer,Boolean>#getB()} is true then {@link Tuple<Integer,Boolean>#getA()} contains a valid Integer
+     */
+    static Tuple<Integer, Boolean> getGroupDuration(Integer memberId)
+    {
+        Group group = getMembersGroup(memberId);
+        if (!group.isEmpty())
+            return new Tuple<>(group.getMaxDuration(), true);
+        else
+            return new Tuple<>(0, false);
+    }
+
+    public static void sync()
+    {
+        LOGGER.debug("sync all: group count {}", groups.size());
+    }
+
+    public static void syncTo(@Nullable ServerPlayerEntity listeningPlayer)
+    {
+        LOGGER.debug("sync to {}: group count {}", listeningPlayer != null ?listeningPlayer.getDisplayName().getString() : "-dead beef-", groups.size());
+    }
+
+    @Mod.EventBusSubscriber(modid = Reference.MOD_ID, value = Dist.DEDICATED_SERVER)
+    public static class EventHandler
+    {
+        @SubscribeEvent
+        public static void event(PlayerSleepInBedEvent event)
+        {
+            Group group = getMembersGroup(event.getPlayer().getId());
+            if (!group.isEmpty())
+            {
+                event.setResult(PlayerEntity.SleepResult.NOT_POSSIBLE_NOW);
+                event.getPlayer().sendMessage(new TranslationTextComponent("chat.mxtune.groupManager.cannot_sleep_when_grouped"), event.getPlayer().getUUID());
+            }
+        }
+
+        @SubscribeEvent
+        public static void event(LivingDeathEvent event)
+        {
+            if (event.getEntityLiving() instanceof PlayerEntity)
+                removeMember(event.getEntityLiving().getId());
+        }
+
+        @SubscribeEvent
+        public static void event(PlayerEvent.PlayerLoggedOutEvent event)
+        {
+            if(!event.getPlayer().level.isClientSide)
+                removeMember(event.getPlayer().getId());
+        }
+
+        @SubscribeEvent
+        public static void event(PlayerEvent.PlayerChangedDimensionEvent event)
+        {
+            if(!event.getPlayer().level.isClientSide)
+                removeMember(event.getPlayer().getId());
+        }
     }
 }

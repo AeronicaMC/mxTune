@@ -184,6 +184,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addChat("groupManager.cannot_join_too_many", "Cannot join %s group. It is full.");
         addChat("groupManager.player_cannot_join_too_many", "%s cannot join since group is full");
         addChat("groupManager.invalid_leader", "Leader left, was demoted or group disbanded.");
+        addChat("groupManager.cannot_sleep_when_grouped", "Can't sleep when in a group.");
     }
 
     private void addCommands()

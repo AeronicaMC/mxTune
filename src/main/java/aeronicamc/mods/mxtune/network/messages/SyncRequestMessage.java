@@ -4,6 +4,7 @@ import aeronicamc.mods.mxtune.caps.player.IPlayerNexus;
 import aeronicamc.mods.mxtune.caps.player.PlayerNexusProvider;
 import aeronicamc.mods.mxtune.caps.venues.IMusicVenues;
 import aeronicamc.mods.mxtune.caps.venues.MusicVenueProvider;
+import aeronicamc.mods.mxtune.managers.GroupManager;
 import aeronicamc.mods.mxtune.managers.PlayManager;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -35,6 +36,7 @@ public class SyncRequestMessage extends AbstractMessage<SyncRequestMessage>
                     PlayerNexusProvider.getNexus(sPlayer).ifPresent(IPlayerNexus::sync);
                     MusicVenueProvider.getMusicVenues(sPlayer.level).ifPresent(IMusicVenues::sync);
                     PlayManager.sendMusicTo(sPlayer, sPlayer);
+                    GroupManager.syncTo(sPlayer);
                 }
             });
         ctx.get().setPacketHandled(true);

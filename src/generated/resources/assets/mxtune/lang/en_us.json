@@ -3,6 +3,7 @@
   "block.mxtune.music_block": "Music Block",
   "block.mxtune.music_venue_tool_block": "Music Venue Marker",
   "chat.mxtune.groupManager.cannot_join_too_many": "Cannot join %s group. It is full.",
+  "chat.mxtune.groupManager.cannot_sleep_when_grouped": "Can't sleep when in a group.",
   "chat.mxtune.groupManager.invalid_leader": "Leader left, was demoted or group disbanded.",
   "chat.mxtune.groupManager.player_cannot_join_too_many": "%s cannot join since group is full",
   "chat.mxtune.groupManager.player_joined_the_group": "%s joined the group.",

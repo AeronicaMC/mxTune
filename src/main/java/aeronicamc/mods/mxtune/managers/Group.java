@@ -65,6 +65,11 @@ public class Group
         members.add(member);
     }
 
+    public void removeMember(int member)
+    {
+        members.remove(member);
+    }
+
     public boolean isMember(int entityId)
     {
         return this.members.contains(entityId);
