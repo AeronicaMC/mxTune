@@ -1,13 +1,17 @@
 package aeronicamc.mods.mxtune.items;
 
+import aeronicamc.mods.mxtune.managers.GroupManager;
 import aeronicamc.mods.mxtune.util.IMusic;
 import aeronicamc.mods.mxtune.util.MusicType;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -71,5 +75,25 @@ public class MusicScoreItem extends Item implements IMusic
     public MusicType getMusicType(ItemStack itemStackIn)
     {
         return MusicType.SCORE;
+    }
+
+    // TODO Remove and replace since this is just for testing
+    @Override
+    public ActionResult<ItemStack> use(World pLevel, PlayerEntity pPlayer, Hand pHand)
+    {
+        if (!pLevel.isClientSide)
+        {
+            if (!pPlayer.isShiftKeyDown())
+                GroupManager.addGroup(pPlayer);
+            else
+                GroupManager.removeMember(pPlayer.getId());
+        }
+        return ActionResult.pass(pPlayer.getItemInHand(pHand));
+    }
+
+    @Override
+    public int getUseDuration(ItemStack pStack) // getMaxItemUseDuration
+    {
+        return 72000;
     }
 }

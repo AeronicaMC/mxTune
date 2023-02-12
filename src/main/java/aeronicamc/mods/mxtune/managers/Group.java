@@ -23,6 +23,15 @@ public class Group
         this.members = Collections.emptySet();
     }
 
+    // For network messages
+    public Group(int groupId, int leader)
+    {
+        this.members = new HashSet<>(Reference.MAX_MML_PARTS);
+        this.members.add(leader);
+        this.groupId = groupId;
+        this.leader = leader;
+    }
+
     public Group(int leader)
     {
         this.members = new HashSet<>(Reference.MAX_MML_PARTS);

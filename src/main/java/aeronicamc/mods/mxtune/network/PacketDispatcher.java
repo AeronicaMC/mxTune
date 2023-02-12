@@ -17,7 +17,7 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 public class PacketDispatcher
 {
     private static final ResourceLocation CHANNEL_NAME = new ResourceLocation(Reference.MOD_ID, "network");
-    private static final String PROTOCOL_VERSION = "2.0.1";
+    private static final String PROTOCOL_VERSION = "2.0.2";
     private static int packetId = 0;
     private static SimpleChannel channel;
 
@@ -40,6 +40,7 @@ public class PacketDispatcher
         registerMessage(PlayMusicMessage.class, new PlayMusicMessage());
         registerMessage(StopPlayMessage.class, new StopPlayMessage());
         registerMessage(MusicVenueSyncMessage.class, new MusicVenueSyncMessage());
+        registerMessage(SyncGroupsMessage.class, new SyncGroupsMessage());
         // To Server
         registerMessage(CreateMusicScoreMessage.class, new CreateMusicScoreMessage());
         registerMessage(CreateSheetMusicMessage.class, new CreateSheetMusicMessage());

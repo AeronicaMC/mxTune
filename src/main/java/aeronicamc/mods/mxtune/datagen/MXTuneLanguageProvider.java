@@ -184,7 +184,6 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addChat("groupManager.cannot_join_too_many", "Cannot join %s group. It is full.");
         addChat("groupManager.player_cannot_join_too_many", "%s cannot join since group is full");
         addChat("groupManager.invalid_leader", "Leader left, was demoted or group disbanded.");
-        addChat("groupManager.cannot_sleep_when_grouped", "Can't sleep when in a group.");
     }
 
     private void addCommands()
@@ -236,6 +235,9 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addMessage("same_block_error", "Same block not allowed.");
         addMessage("venue_too_small", "Too small. Must be at least 2x2x2.");
         addMessage("not_owner_of_venue", "Only owner, admin or player in creative mode can remove a venue.");
+        addMessage("groupManager.cannot_sleep_when_grouped", "Can't sleep when in a group.");
+        addMessage("groupManager.created_group", "You created a group.");
+        addMessage("groupManager.cannot_create_group", "You're already in a group.");
     }
 
     private void addSubtitles()
