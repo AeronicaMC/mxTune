@@ -104,9 +104,11 @@ public class GroupManager
             for (Group group : groups.values())
                 if (group.isMember(memberId))
                 {
-                    if (tryRemoveMember(group, memberId) || tryRemoveGroupIfLast(group, memberId) ||
-                            tryRemoveLeaderPromoteNext(group, memberId))
+                    if (tryRemoveMember(group, memberId) || tryRemoveGroupIfLast(group, memberId) || tryRemoveLeaderPromoteNext(group, memberId))
+                    {
+                        sync();
                         return;
+                    }
                 }
         }
     }
@@ -119,7 +121,6 @@ public class GroupManager
         {
             /* This is not the leader so simply remove the member. */
             group.removeMember(memberId);
-            sync();
             result = true;
         }
         return result;
@@ -133,7 +134,6 @@ public class GroupManager
         {
             group.getMembers().clear();
             groups.remove(group.getGroupId());
-            sync();
             result = true;
         }
         return result;
@@ -153,7 +153,6 @@ public class GroupManager
             {
                 int member = remainingMembers.next();
                 group.setLeader(member);
-                sync();
                 result = true;
             }
         }
