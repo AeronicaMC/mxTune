@@ -18,6 +18,7 @@ public class GroupClient
             groupMap.clear();
             groupMap.putAll(pGroupMap);
         }
-        LOGGER.debug("setGroupMap {}", groupMap.size());
+        LOGGER.debug("setGroupMap count {}", groupMap.size());
+        groupMap.forEach((id, group) -> LOGGER.debug("  {}", group));
     }
 }

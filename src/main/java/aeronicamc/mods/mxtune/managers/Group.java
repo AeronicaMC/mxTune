@@ -2,6 +2,8 @@ package aeronicamc.mods.mxtune.managers;
 
 import aeronicamc.mods.mxtune.Reference;
 import com.google.common.primitives.Ints;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -112,5 +114,17 @@ public class Group
     public boolean isEmpty()
     {
         return this == EMPTY;
+    }
+
+    @Override
+    public String toString()
+    {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("groupId", groupId)
+                .append("playId", playId)
+                .append("maxDuration", maxDuration)
+                .append("leader", leader)
+                .append("members", members)
+                .toString();
     }
 }
