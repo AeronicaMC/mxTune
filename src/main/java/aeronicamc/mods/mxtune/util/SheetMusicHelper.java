@@ -45,9 +45,8 @@ import java.util.List;
 import static java.lang.Thread.sleep;
 import static net.minecraftforge.common.util.Constants.NBT;
 
-public enum SheetMusicHelper
+public class SheetMusicHelper
 {
-    ;
     private static final Logger LOGGER = LogManager.getLogger(SheetMusicHelper.class);
     public static final String KEY_SHEET_MUSIC = "SheetMusic";
     public static final String KEY_EXTRA_TEXT = "ExtraText";
