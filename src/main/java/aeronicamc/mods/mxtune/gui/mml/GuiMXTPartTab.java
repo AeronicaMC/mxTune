@@ -331,7 +331,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         List<MXTuneStaff> staves = new ArrayList<>();
         for (int i = 0; i < viewableLineCount; i++)
         {
-            staves.add(new MXTuneStaff(i, mmlTextLines[i].getValue()));
+            staves.add(new MXTuneStaff(i, MMLAllowedChars.filter(mmlTextLines[i].getValue(), false)));
         }
         mxTunePart.setStaves(staves);
     }
