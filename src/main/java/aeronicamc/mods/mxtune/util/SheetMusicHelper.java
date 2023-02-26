@@ -371,7 +371,7 @@ public class SheetMusicHelper
                 int[] index = new int[1];
                 if (partInstrumentIds.length > 0)
                     Arrays.stream(partInstrumentIds).sequential().forEach( string -> {
-                       contents.putString(String.format("%s%d", KEY_PART_ID, index[1]++), string);
+                       contents.putString(String.format("%s%d", KEY_PART_ID, index[0]++), string);
                     });
                 compound.put(KEY_SHEET_MUSIC, contents);
 
