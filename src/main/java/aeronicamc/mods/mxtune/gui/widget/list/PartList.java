@@ -79,7 +79,7 @@ public class PartList extends MXExtendedList<PartList.Entry>
                 fill(pMatrixStack, pLeft - 2, pTop - 2, pLeft - 5 + width, pTop + itemHeight - 1, 0xA0A0A0A0);
             }
 
-            ITextComponent translated = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(part.getInstrumentName()));
+            ITextComponent translated = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(part.getInstrumentId()));
             ITextProperties trimmed = minecraft.font.substrByWidth(translated, pWidth - 6);
             minecraft.font.drawShadow(pMatrixStack, trimmed.getString(), (float) (pLeft), (float) (pTop + 1), getSelected() == this ? TextColorFg.WHITE : TextColorFg.GRAY, true);
         }

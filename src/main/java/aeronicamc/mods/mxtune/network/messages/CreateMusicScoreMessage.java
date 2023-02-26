@@ -8,13 +8,16 @@ import aeronicamc.mods.mxtune.util.Misc;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 public class CreateMusicScoreMessage extends AbstractMessage<CreateMusicScoreMessage>
@@ -23,23 +26,23 @@ public class CreateMusicScoreMessage extends AbstractMessage<CreateMusicScoreMes
     private String musicTitle;
     private String musicText;
     private String extraText;
-    private int[] partInstrumentIndexes;
+    private String[] partInstrumentIds;
     private boolean error;
 
     public CreateMusicScoreMessage() { /* NOP */ }
 
-    public CreateMusicScoreMessage(final String musicTitle, final String extraText, final String musicText, final int[] partInstrumentIndexes)
+    public CreateMusicScoreMessage(final String musicTitle, final String extraText, final String musicText, final String[] partInstrumentIds)
     {
         this.musicTitle = musicTitle;
         this.extraText = extraText;
         this.musicText = musicText;
-        this.partInstrumentIndexes = partInstrumentIndexes;
+        this.partInstrumentIds = partInstrumentIds;
         this.error = false;
     }
 
-    public CreateMusicScoreMessage(final String musicTitle, final String extraText, final String musicText, final int[] partInstrumentIndexes, final boolean error)
+    public CreateMusicScoreMessage(final String musicTitle, final String extraText, final String musicText, final String[] partInstrumentIds, final boolean error)
     {
-        this(musicTitle, extraText, musicText, partInstrumentIndexes);
+        this(musicTitle, extraText, musicText, partInstrumentIds);
         this.error = error;
     }
 
@@ -58,9 +61,9 @@ public class CreateMusicScoreMessage extends AbstractMessage<CreateMusicScoreMes
             LOGGER.error("unable to decode string", e);
             error = true;
         }
-        final int[] partInstrumentIndexes = buffer.readVarIntArray(16);
-        LOGGER.debug(String.format("%s, buffer.readLongArray: %d", musicTitle, partInstrumentIndexes.length));
-        return new CreateMusicScoreMessage(musicTitle, extraText, musicText != null ? musicText : "", partInstrumentIndexes , error);
+        final String[] partInstrumentIds = NBT2StringArray(buffer.readNbt());
+        LOGGER.debug(String.format("%s, buffer.readLongArray: %d", musicTitle, partInstrumentIds.length));
+        return new CreateMusicScoreMessage(musicTitle, extraText, musicText != null ? musicText : "", partInstrumentIds , error);
     }
 
     @Override
@@ -78,7 +81,7 @@ public class CreateMusicScoreMessage extends AbstractMessage<CreateMusicScoreMes
             buffer.writeBoolean(true);
             return;
         }
-        buffer.writeVarIntArray(message.partInstrumentIndexes);
+        buffer.writeNbt(stringArrayToNBT(message.partInstrumentIds));
         buffer.writeBoolean(message.error);
     }
 
@@ -99,9 +102,9 @@ public class CreateMusicScoreMessage extends AbstractMessage<CreateMusicScoreMes
                 } else if (!sPlayer.getMainHandItem().isEmpty() && sPlayer.getMainHandItem().getItem() instanceof MusicPaperItem)
                     {
                         ItemStack musicScore = new ItemStack(ModItems.MUSIC_SCORE.get());
-                        if (SheetMusicHelper.writeIMusic(musicScore, message.musicTitle, (message.extraText), message.musicText, message.partInstrumentIndexes))
+                        if (SheetMusicHelper.writeIMusic(musicScore, message.musicTitle, (message.extraText), message.musicText, message.partInstrumentIds))
                         {
-                            sPlayer.inventory.removeItem(sPlayer.inventory.selected, message.partInstrumentIndexes.length);
+                            sPlayer.inventory.removeItem(sPlayer.inventory.selected, message.partInstrumentIds.length);
                             if (!sPlayer.inventory.add(musicScore.copy()))
                                 sPlayer.drop(musicScore, true, false);
                         }
@@ -113,5 +116,30 @@ public class CreateMusicScoreMessage extends AbstractMessage<CreateMusicScoreMes
                     }
                 });
         ctx.get().setPacketHandled(true);
+    }
+
+    private static CompoundNBT stringArrayToNBT(String[] strings)
+    {
+        CompoundNBT nbt = new CompoundNBT();
+        int[] index = new int[1];
+        nbt.putInt("length", strings.length);
+        Arrays.stream(strings).sequential().forEach( string -> {
+            nbt.putString(String.format("%d", index[0]++), string);
+        });
+        return nbt;
+    }
+
+    private static String[] NBT2StringArray(@Nullable CompoundNBT nbt)
+    {
+        if (nbt != null)
+        {
+            int length = nbt.getInt("length");
+            String[] strings = new String[length];
+            for (int i = 0; i < length; i++)
+                strings[i] = nbt.getString(String.format("%d", i));
+            return strings;
+        }
+        else
+            return new String[0];
     }
 }

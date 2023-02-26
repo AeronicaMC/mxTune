@@ -52,7 +52,8 @@ public class SheetMusicHelper
     public static final String KEY_EXTRA_TEXT = "ExtraText";
     public static final String KEY_DURATION = "Duration";
     public static final String KEY_MUSIC_TEXT_KEY = "MusicTextKey";
-    public static final String KEY_PARTS = "ScoreParts"; // list of soundfont proxy indexes. Order as-is.
+    public static final String KEY_PARTS_COUNT = "PartsCount"; // list of soundfont proxy indexes.
+    public static final String KEY_PART_ID = "Part:"; // individual instrument id as a string. Order as-is.
     private final static ITextComponent SHEET_MUSIC_EMPTY =
             new TranslationTextComponent("tooltip.mxtune.sheet_music.empty")
                     .withStyle(TextFormatting.ITALIC)
@@ -157,16 +158,15 @@ public class SheetMusicHelper
         if (contents != null && contents.contains(KEY_SHEET_MUSIC))
         {
             CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
-            if ((sm.contains(KEY_PARTS) && sm.getIntArray(KEY_PARTS).length > 0))
+            if ((sm.contains(KEY_PARTS_COUNT) && sm.getInt(KEY_PARTS_COUNT) > 0))
             {
-                int[] i = new int[1];
-                i[0] = 1;
-                Arrays.stream(sm.getIntArray(KEY_PARTS)).forEach(partInstrumentIndex->{
-                        part.add(new StringTextComponent(String.format("%02d: ", i[0]++))
-                                         .withStyle(TextFormatting.GRAY)
-                                         .append(new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(partInstrumentIndex))
-                                                         .withStyle(TextFormatting.YELLOW)));
-                                                                 });
+                for (int i = 0; i < sm.getInt(KEY_PARTS_COUNT); i++)
+                {
+                    part.add(new StringTextComponent(String.format("%02d: ", i + 1))
+                                     .withStyle(TextFormatting.GRAY)
+                                     .append(new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(sm.getString(String.format("%s%d", KEY_PART_ID, i))))
+                                                     .withStyle(TextFormatting.YELLOW)));
+                }
                 return part;
             }
             else
@@ -349,10 +349,10 @@ public class SheetMusicHelper
      * @param musicTitle becomes the Sheet Music display name
      * @param extraText additional information. For SheetMusic it would be the suggested instrument. For MusicScore it would indicate how many parts.
      * @param musicText MML to be saved to disk
-     * @param partInstrumentIndexes int array of part instrument indexes. Must be a 0 length for sheet music, or the number of parts for a music score.
+     * @param partInstrumentIds int array of part instrument indexes. Must be a 0 length for sheet music, or the number of parts for a music score.
      * @return true on success.
      */
-    public static boolean writeIMusic(ItemStack itemStack, String musicTitle, String extraText, String musicText, int[] partInstrumentIndexes)
+    public static boolean writeIMusic(ItemStack itemStack, String musicTitle, String extraText, String musicText, String[] partInstrumentIds)
     {
         musicTitle = musicTitle.substring(0, Math.min(musicTitle.length(), Reference.MXT_SONG_TITLE_LENGTH));
         itemStack.setHoverName(new StringTextComponent(musicTitle));
@@ -367,8 +367,12 @@ public class SheetMusicHelper
                 contents.putString(KEY_MUSIC_TEXT_KEY, musicTextKey);
                 contents.putString(KEY_EXTRA_TEXT, extraText);
                 contents.putInt(KEY_DURATION, validDuration.getDuration());
-                if (partInstrumentIndexes.length > 0)
-                    contents.putIntArray(KEY_PARTS, partInstrumentIndexes);
+                contents.putInt(KEY_PARTS_COUNT, partInstrumentIds.length);
+                int[] index = new int[1];
+                if (partInstrumentIds.length > 0)
+                    Arrays.stream(partInstrumentIds).sequential().forEach( string -> {
+                       contents.putString(String.format("%s%d", KEY_PART_ID, index[1]++), string);
+                    });
                 compound.put(KEY_SHEET_MUSIC, contents);
 
                 return true;
@@ -569,10 +573,12 @@ public class SheetMusicHelper
     }
 
     // TODO: When music mobs are created and can drop sheet music.
-    public static ItemStack createSheetMusic(String title, String mml, String extraText)
+    public static ItemStack createSheetMusic(String title, String extraText, String mml, String instrumentId)
     {
         ItemStack sheetMusic = new ItemStack(ModItems.SHEET_MUSIC.get());
-        if (SheetMusicHelper.writeIMusic(sheetMusic, title, extraText, mml, new int[0]))
+        String[] instrumentIds = new String[1];
+        instrumentIds[1] = instrumentId;
+        if (SheetMusicHelper.writeIMusic(sheetMusic, title, extraText, mml, instrumentIds))
         {
             return sheetMusic;
         }

@@ -25,7 +25,7 @@ public class MXTunePart implements Serializable
     private static final String TAG_STAFF_COUNT = "staffCount";
     private static final String TAG_TRANSPOSE = "transpose";
 
-    private String instrumentName;
+    private String instrumentId;
     private int packedPatch;
     private String meta;
     private int transpose;
@@ -34,15 +34,15 @@ public class MXTunePart implements Serializable
     public MXTunePart()
     {
         meta = "";
-        instrumentName = "";
+        instrumentId = "";
         staves = new ArrayList<>();
         transpose = 0;
     }
 
-    public MXTunePart(@Nullable String instrumentName, @Nullable String meta, int packedPatch, @Nullable List<MXTuneStaff> staves)
+    public MXTunePart(@Nullable String instrumentId, @Nullable String meta, int packedPatch, @Nullable List<MXTuneStaff> staves)
     {
         this.meta = meta != null ? meta : "";
-        this.instrumentName = instrumentName != null ? instrumentName : "";
+        this.instrumentId = instrumentId != null ? instrumentId : "";
         this.packedPatch = packedPatch;
         this.staves = staves != null ? staves : new ArrayList<>();
         transpose = 0;
@@ -50,7 +50,7 @@ public class MXTunePart implements Serializable
 
     public MXTunePart(CompoundNBT compound)
     {
-        instrumentName = compound.contains(TAG_INSTRUMENT, Constants.NBT.TAG_STRING) ? compound.getString(TAG_INSTRUMENT) : SoundFontProxyManager.INSTRUMENT_DEFAULT_ID;
+        instrumentId = compound.contains(TAG_INSTRUMENT, Constants.NBT.TAG_STRING) ? compound.getString(TAG_INSTRUMENT) : SoundFontProxyManager.INSTRUMENT_DEFAULT_ID;
         meta = compound.getString(TAG_META);
         packedPatch = compound.getInt(TAG_PACKED_PATCH);
         transpose = compound.getInt(TAG_TRANSPOSE);
@@ -66,7 +66,7 @@ public class MXTunePart implements Serializable
 
     public void writeToNBT(CompoundNBT compound)
     {
-        compound.putString(TAG_INSTRUMENT, instrumentName);
+        compound.putString(TAG_INSTRUMENT, instrumentId);
         compound.putString(TAG_META, meta);
         compound.putInt(TAG_PACKED_PATCH, packedPatch);
         compound.putInt(TAG_TRANSPOSE, transpose);
@@ -94,15 +94,15 @@ public class MXTunePart implements Serializable
         this.staves = staves;
     }
 
-    public String getInstrumentName()
+    public String getInstrumentId()
     {
-        return instrumentName != null ? instrumentName : "";
+        return instrumentId != null ? instrumentId : "";
     }
 
     @SuppressWarnings("unused")
-    public void setInstrumentName(String instrumentName)
+    public void setInstrumentId(String instrumentId)
     {
-        this.instrumentName = instrumentName;
+        this.instrumentId = instrumentId;
     }
 
     @SuppressWarnings("unused")
@@ -153,7 +153,7 @@ public class MXTunePart implements Serializable
         }
         MXTunePart mxTunePart = (MXTunePart) o;
         return new EqualsBuilder()
-                .append(instrumentName, mxTunePart.getInstrumentName())
+                .append(instrumentId, mxTunePart.getInstrumentId())
                 .append(packedPatch, mxTunePart.getPackedPatch())
                 .append(meta, mxTunePart.getMeta())
                 .append(transpose, mxTunePart.getMeta())
@@ -165,7 +165,7 @@ public class MXTunePart implements Serializable
     public int hashCode()
     {
         return new HashCodeBuilder(17, 37)
-                .append(instrumentName)
+                .append(instrumentId)
                 .append(packedPatch)
                 .append(meta)
                 .append(transpose)
@@ -177,7 +177,7 @@ public class MXTunePart implements Serializable
     public String toString()
     {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("instrumentName", instrumentName)
+                .append("instrumentName", instrumentId)
                 .append("packedPatch", packedPatch)
                 .append("meta", meta)
                 .append("transpose", transpose)

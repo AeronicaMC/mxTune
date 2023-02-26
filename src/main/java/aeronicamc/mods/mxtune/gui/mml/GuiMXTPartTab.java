@@ -301,7 +301,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         CompoundNBT compound = new CompoundNBT();
         mxTunePart.writeToNBT(compound);
         this.mxTunePart = new MXTunePart(compound);
-        this.listBoxInstruments.children().stream().filter(e -> e.getId().equals(mxTunePart.getInstrumentName())).findFirst().ifPresent(listBoxInstruments::setSelected);
+        this.listBoxInstruments.children().stream().filter(e -> e.getId().equals(mxTunePart.getInstrumentId())).findFirst().ifPresent(listBoxInstruments::setSelected);
         Iterator<MXTuneStaff> iterator = mxTunePart.getStaves().iterator();
         int i = 0;
         while (iterator.hasNext())
@@ -350,7 +350,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
     {
         SoundFontProxy soundFontProxy = SoundFontProxyManager.getSoundFontProxyDefault();
         mxTunePart.setPackedPatch(entry != null ? entry.getPackedPreset() : soundFontProxy.packed_preset);
-        mxTunePart.setInstrumentName(entry != null ? entry.getId() : soundFontProxy.id);
+        mxTunePart.setInstrumentId(entry != null ? entry.getId() : soundFontProxy.id);
         listBoxInstruments.centerScrollOn(entry != null ? entry : listBoxInstruments.children().get(soundFontProxy.index));
         updateState();
     }

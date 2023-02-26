@@ -484,8 +484,8 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     {
         String number = String.format("%d", index + 1);
         MXTunePart part = childTabs[index].getPart();
-        ITextComponent localizedInstrumentName = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(childTabs[index].getPart().getInstrumentName()));
-        return (!part.getInstrumentName().equals("")) ? new StringTextComponent(String.format("%s: ", number)).append(localizedInstrumentName) : new StringTextComponent(number);
+        ITextComponent localizedInstrumentName = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(childTabs[index].getPart().getInstrumentId()));
+        return (!part.getInstrumentId().equals("")) ? new StringTextComponent(String.format("%s: ", number)).append(localizedInstrumentName) : new StringTextComponent(number);
     }
 
     @Override
@@ -656,10 +656,10 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
             for (int i = 0; i < viewableTabCount; i++)
             {
                 childTabs[i].updatePart();
-                ITextComponent instrumentName = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(childTabs[i].getPart().getInstrumentName()));
+                ITextComponent instrumentName = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(childTabs[i].getPart().getInstrumentId()));
                 String instrument = formatInstrument(i, viewableTabCount, instrumentName.getString());
                 String mml = childTabs[i].getMMLClipBoardFormat();
-                PacketDispatcher.sendToServer(new CreateSheetMusicMessage(title, instrument, mml));
+                PacketDispatcher.sendToServer(new CreateSheetMusicMessage(title, instrument, mml, childTabs[i].getPart().getInstrumentId()));
             }
             return true;
         }
@@ -673,17 +673,15 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
             String title = this.textTitle.getValue();
             String scoreParts = String.format("(%d %s)", viewableTabCount, new TranslationTextComponent("gui.mxtune.label.n_part_score").getString());
             StringBuilder scoreMML = new StringBuilder();
-            int[] partInstrumentIndexes = new int[viewableTabCount];
+            String[] partInstrumentIds = new String[viewableTabCount];
             for (int i = 0; i < viewableTabCount; i++)
             {
                 childTabs[i].updatePart();
-                int partInstrumentIndex = SoundFontProxyManager.getIndexById(childTabs[i].getPart().getInstrumentName());
-                partInstrumentIndexes[i] = partInstrumentIndex;
+                partInstrumentIds[i] = childTabs[i].getPart().getInstrumentId();
                 String mml = childTabs[i].getMMLClipBoardFormat();
-                mml = mml.replace("MML@", "MML@i" + partInstrumentIndex);
                 scoreMML.append(mml);
             }
-            PacketDispatcher.sendToServer(new CreateMusicScoreMessage(title, scoreParts, scoreMML.toString(), partInstrumentIndexes));
+            PacketDispatcher.sendToServer(new CreateMusicScoreMessage(title, scoreParts, scoreMML.toString(), partInstrumentIds));
             return true;
         }
         return false;
@@ -729,7 +727,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         {
             childTabs[i].updatePart();
             MXTunePart part = childTabs[i].getPart();
-            builder.append("MML@I=").append(SoundFontProxyManager.getIndexById(part.getInstrumentName()));
+            builder.append("MML@I=").append(SoundFontProxyManager.getIndexById(part.getInstrumentId()));
             Iterator<MXTuneStaff> iterator = part.getStaves().iterator();
             while (iterator.hasNext())
             {

@@ -23,23 +23,26 @@ public class CreateSheetMusicMessage extends AbstractMessage<CreateSheetMusicMes
     private String musicTitle;
     private String extraText;
     private String musicText;
+    private String instrumentId;
     private boolean error;
 
     public CreateSheetMusicMessage() { /* NOP */ }
 
-    public CreateSheetMusicMessage(final String musicTitle, final String extraText, final String musicText)
+    public CreateSheetMusicMessage(final String musicTitle, final String extraText, final String musicText, String instrumentId)
     {
         this.musicTitle = musicTitle;
         this.extraText = extraText;
         this.musicText = musicText;
+        this.instrumentId = instrumentId;
         this.error = false;
     }
 
-    public CreateSheetMusicMessage(final String musicTitle, String extraText, final String musicText, final boolean error)
+    public CreateSheetMusicMessage(final String musicTitle, String extraText, final String musicText, String instrumentId, final boolean error)
     {
         this.musicTitle = musicTitle;
         this.extraText = extraText;
         this.musicText = musicText;
+        this.instrumentId = instrumentId;
         this.error = error;
     }
 
@@ -58,7 +61,8 @@ public class CreateSheetMusicMessage extends AbstractMessage<CreateSheetMusicMes
             LOGGER.error("unable to decode string", e);
             error = true;
         }
-        return new CreateSheetMusicMessage(musicTitle, extraText, musicText != null ? musicText : "", error);
+        final String instrumentId = buffer.readUtf();
+        return new CreateSheetMusicMessage(musicTitle, extraText, musicText != null ? musicText : "", instrumentId, error);
     }
 
     @Override
@@ -76,6 +80,7 @@ public class CreateSheetMusicMessage extends AbstractMessage<CreateSheetMusicMes
             buffer.writeBoolean(true);
             return;
         }
+        buffer.writeUtf(message.instrumentId);
         buffer.writeBoolean(message.error);
     }
 
@@ -96,7 +101,9 @@ public class CreateSheetMusicMessage extends AbstractMessage<CreateSheetMusicMes
                 } else if (!sPlayer.getMainHandItem().isEmpty() && sPlayer.getMainHandItem().getItem() instanceof MusicPaperItem)
                     {
                         ItemStack sheetMusic = new ItemStack(ModItems.SHEET_MUSIC.get());
-                        if (SheetMusicHelper.writeIMusic(sheetMusic, message.musicTitle, message.extraText, message.musicText, new int[0]))
+                        final String[] instrumentIds = new String[1];
+                        instrumentIds[0] = message.instrumentId;
+                        if (SheetMusicHelper.writeIMusic(sheetMusic, message.musicTitle, message.extraText, message.musicText, instrumentIds))
                         {
                             sPlayer.inventory.removeItem(sPlayer.inventory.selected, 1);
                             if (!sPlayer.inventory.add(sheetMusic.copy()))

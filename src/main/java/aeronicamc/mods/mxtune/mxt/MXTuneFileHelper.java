@@ -58,7 +58,7 @@ public class MXTuneFileHelper
             if (mxTuneFile.getMxtVersion().equalsIgnoreCase("1.0.0"))
                 builder.append("MML@I=").append(SoundFontProxyManager.getIndexForFirstMatchingPackedPreset(part.getPackedPatch()));
             else if (mxTuneFile.getMxtVersion().equalsIgnoreCase("2.0.0"))
-                builder.append("MML@I=").append(SoundFontProxyManager.getIndexById(part.getInstrumentName()));
+                builder.append("MML@I=").append(SoundFontProxyManager.getIndexById(part.getInstrumentId()));
             else
                 builder.append("MML@");
 
