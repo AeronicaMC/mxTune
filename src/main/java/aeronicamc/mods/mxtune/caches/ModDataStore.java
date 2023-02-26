@@ -300,7 +300,7 @@ public class ModDataStore
             {
                 musicText = indexToMusicText.get(localDateTime);
             }
-            catch (ClassCastException | NullPointerException e)
+            catch (ClassCastException | DateTimeParseException | NullPointerException e)
             {
                 LOGGER.error("getMusicText error or key : " + key, e);
             }
