@@ -4,7 +4,6 @@ import aeronicamc.libs.mml.util.TestData;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.util.MXTuneRuntimeException;
 import net.minecraftforge.fml.LogicalSide;
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.h2.mvstore.MVMap;
@@ -12,17 +11,16 @@ import org.h2.mvstore.MVStore;
 import org.h2.mvstore.MVStoreException;
 
 import javax.annotation.Nullable;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static aeronicamc.mods.mxtune.caches.FileHelper.*;
 
@@ -121,8 +119,7 @@ public class ModDataStore
             try
             {
                 String pathName = getCacheFile(SERVER_MUSIC_FOLDER_DUMP_FOLDER, SERVER_DATA_STORE_DUMP_FILENAME, LogicalSide.SERVER).toString();
-                FileWriter fileWriter = new FileWriter(new File(pathName));
-                PrintWriter printWriter = new PrintWriter(fileWriter);
+                PrintWriter printWriter = new PrintWriter(pathName, "UTF-8");
                 MVStore.TxCounter using = getMvStore().registerVersionUsage();
                 MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
                 size = indexToMusicText.size();
@@ -145,28 +142,25 @@ public class ModDataStore
         int size = -1;
         if (getMvStore() != null)
         {
-            try
+            if (fileExists(SERVER_MUSIC_FOLDER_DUMP_FOLDER, SERVER_DATA_STORE_DUMP_FILENAME, LogicalSide.SERVER))
             {
-                String pathName = getCacheFile(SERVER_MUSIC_FOLDER_DUMP_FOLDER, SERVER_DATA_STORE_DUMP_FILENAME, LogicalSide.SERVER).toString();
-                if (fileExists(SERVER_MUSIC_FOLDER_DUMP_FOLDER, SERVER_DATA_STORE_DUMP_FILENAME, LogicalSide.SERVER))
+                MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
+                try (Stream<String> stream = Files.lines(getCacheFile(SERVER_MUSIC_FOLDER_DUMP_FOLDER, SERVER_DATA_STORE_DUMP_FILENAME, LogicalSide.SERVER)))
                 {
-                    MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
-                    File file = new File(pathName);
-                    List<String> lines = FileUtils.readLines(file, "UTF-8");
-                    for (String line : lines)
-                    {
-                        String[] pair = line.split("=");
-                        LocalDateTime dateTime = (LocalDateTime.parse(pair[0]));
-                        indexToMusicText.putIfAbsent(dateTime, pair[1]);
-                    }
+                    stream.forEach(line ->
+                                   {
+                                       String[] pair = line.split("=");
+                                       LocalDateTime dateTime = (LocalDateTime.parse(pair[0]));
+                                       indexToMusicText.putIfAbsent(dateTime, pair[1]);
+                                   });
                     size = indexToMusicText.size();
                     getMvStore().commit();
+                } catch (IOException | SecurityException | DateTimeParseException e)
+                {
+                    LOGGER.error(e);
+                }
             }
-                else return size;
-            } catch (IOException e)
-            {
-                LOGGER.error(e);
-            }
+            else return size;
         }
         return size;
     }
