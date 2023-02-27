@@ -86,7 +86,6 @@
   "gui.mxtune.label.instruments": "Instruments",
   "gui.mxtune.label.melody": "melody %s",
   "gui.mxtune.label.metadata": "Chars: %s, Duration: %s, Meta: %s",
-  "gui.mxtune.label.n_part_score": "Part Score",
   "gui.mxtune.label.search": "Search",
   "gui.mxtune.label.source": "Source URL:",
   "gui.mxtune.label.status": "Status/Meta",
@@ -210,6 +209,7 @@
   "tooltip.mxtune.instrument_item.shift_help_02": "SHIFT+Right Click to OPEN",
   "tooltip.mxtune.instrument_item.shift_help_03": "Right Click to PLAY",
   "tooltip.mxtune.music_paper.help": "Right-Click to OPEN",
+  "tooltip.mxtune.music_score.n_part_score": "%s Part Score",
   "tooltip.mxtune.music_score.parts_error": "No parts found",
   "tooltip.mxtune.music_score.shift_parts_01": "Hold SHIFT to see parts",
   "tooltip.mxtune.music_venue_tool_block.help_01": "Used to manage mxTune Venues. mxTunes played within a Venue are only heard by players while inside. mxTunes played Outside the Venue are not heard by players within.",
@@ -221,5 +221,6 @@
   "tooltip.mxtune.sheet_music.days_left": "Days left: %s",
   "tooltip.mxtune.sheet_music.days_left_error": "Days left: nn",
   "tooltip.mxtune.sheet_music.duration_error": "h:mm:ss",
-  "tooltip.mxtune.sheet_music.empty": " - Empty - "
+  "tooltip.mxtune.sheet_music.empty": " - Empty - ",
+  "tooltip.mxtune.sheet_music.n_of_m_instrument_name": "%s of %s %s"
 }

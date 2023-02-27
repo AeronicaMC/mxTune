@@ -21,26 +21,26 @@ public class CreateSheetMusicMessage extends AbstractMessage<CreateSheetMusicMes
 {
     private static final Logger LOGGER = LogManager.getLogger(CreateSheetMusicMessage.class);
     private String musicTitle;
-    private String extraText;
+    private byte[] extraData;
     private String musicText;
     private String instrumentId;
     private boolean error;
 
     public CreateSheetMusicMessage() { /* NOP */ }
 
-    public CreateSheetMusicMessage(final String musicTitle, final String extraText, final String musicText, String instrumentId)
+    public CreateSheetMusicMessage(final String musicTitle, final byte[] extraData, final String musicText, String instrumentId)
     {
         this.musicTitle = musicTitle;
-        this.extraText = extraText;
+        this.extraData = extraData;
         this.musicText = musicText;
         this.instrumentId = instrumentId;
         this.error = false;
     }
 
-    public CreateSheetMusicMessage(final String musicTitle, String extraText, final String musicText, String instrumentId, final boolean error)
+    public CreateSheetMusicMessage(final String musicTitle, final byte[] extraData, final String musicText, String instrumentId, final boolean error)
     {
         this.musicTitle = musicTitle;
-        this.extraText = extraText;
+        this.extraData = extraData;
         this.musicText = musicText;
         this.instrumentId = instrumentId;
         this.error = error;
@@ -50,7 +50,7 @@ public class CreateSheetMusicMessage extends AbstractMessage<CreateSheetMusicMes
     public CreateSheetMusicMessage decode(final PacketBuffer buffer)
     {
         final String musicTitle = buffer.readUtf();
-        final String extraText = buffer.readUtf();
+        final byte[] extraData = buffer.readByteArray();
         String musicText = "";
         boolean error = false;
         try
@@ -62,14 +62,14 @@ public class CreateSheetMusicMessage extends AbstractMessage<CreateSheetMusicMes
             error = true;
         }
         final String instrumentId = buffer.readUtf();
-        return new CreateSheetMusicMessage(musicTitle, extraText, musicText != null ? musicText : "", instrumentId, error);
+        return new CreateSheetMusicMessage(musicTitle, extraData, musicText != null ? musicText : "", instrumentId, error);
     }
 
     @Override
     public void encode(final CreateSheetMusicMessage message, final PacketBuffer buffer)
     {
         buffer.writeUtf(message.musicTitle);
-        buffer.writeUtf(message.extraText);
+        buffer.writeByteArray(message.extraData);
         try
         {
             NetworkSerializedHelper.writeSerializedObject(buffer, message.musicText);
@@ -103,7 +103,7 @@ public class CreateSheetMusicMessage extends AbstractMessage<CreateSheetMusicMes
                         ItemStack sheetMusic = new ItemStack(ModItems.SHEET_MUSIC.get());
                         final String[] instrumentIds = new String[1];
                         instrumentIds[0] = message.instrumentId;
-                        if (SheetMusicHelper.writeIMusic(sheetMusic, message.musicTitle, message.extraText, message.musicText, instrumentIds))
+                        if (SheetMusicHelper.writeIMusic(sheetMusic, message.musicTitle, message.extraData, message.musicText, instrumentIds))
                         {
                             sPlayer.inventory.removeItem(sPlayer.inventory.selected, 1);
                             if (!sPlayer.inventory.add(sheetMusic.copy()))

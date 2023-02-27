@@ -68,11 +68,13 @@ public class MXTuneLanguageProvider extends LanguageProvider
         add(ModItems.MUSIC_VENUE_INFO.get(), "Music Venue Info Panel");
         addTooltip("music_paper.help", "Right-Click to OPEN");
         addTooltip("music_score.shift_parts_01", "Hold SHIFT to see parts");
+        addTooltip("music_score.n_part_score", "%s Part Score");
         addTooltip("music_score.parts_error", "No parts found");
         addTooltip("sheet_music.days_left", "Days left: %s");
         addTooltip("sheet_music.days_left_error", "Days left: nn");
         addTooltip("sheet_music.duration_error", "h:mm:ss");
         addTooltip("sheet_music.empty", " - Empty - ");
+        addTooltip("sheet_music.n_of_m_instrument_name", "%s of %s %s");
         addInstrumentNames(this);
         addTooltip("instrument_item.shift_help_01", "Hold SHIFT for HELP");
         addTooltip("instrument_item.shift_help_02", "SHIFT+Right Click to OPEN");
@@ -120,7 +122,6 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("label.status", "Status/Meta");
         addGuiText("label.title", "Title:");
         addGuiText("label.metadata", "Chars: %s, Duration: %s, Meta: %s");
-        addGuiText("label.n_part_score", "Part Score");
         addGuiText("label.duration_value_total", "Duration All: ");
 
         addGuiText("button.help.help01", "Help");

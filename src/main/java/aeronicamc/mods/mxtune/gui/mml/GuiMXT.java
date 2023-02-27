@@ -656,10 +656,11 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
             for (int i = 0; i < viewableTabCount; i++)
             {
                 childTabs[i].updatePart();
-                ITextComponent instrumentName = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(childTabs[i].getPart().getInstrumentId()));
-                String instrument = formatInstrument(i, viewableTabCount, instrumentName.getString());
+                byte[] extraData = new byte[2];
+                extraData[0] = (byte) (i + 1); // part (i) of viewableTabCount
+                extraData[1] = (byte) viewableTabCount; // part i of (viewableTabCount)
                 String mml = childTabs[i].getMMLClipBoardFormat();
-                PacketDispatcher.sendToServer(new CreateSheetMusicMessage(title, instrument, mml, childTabs[i].getPart().getInstrumentId()));
+                PacketDispatcher.sendToServer(new CreateSheetMusicMessage(title, extraData, mml, childTabs[i].getPart().getInstrumentId()));
             }
             return true;
         }
@@ -671,7 +672,8 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         if (!textTitle.getValue().trim().equals("") && buttonPlayStop.active)
         {
             String title = this.textTitle.getValue();
-            String scoreParts = String.format("(%d %s)", viewableTabCount, new TranslationTextComponent("gui.mxtune.label.n_part_score").getString());
+            byte[] scoreParts = new byte[1];
+            scoreParts[0] = (byte) viewableTabCount;
             StringBuilder scoreMML = new StringBuilder();
             String[] partInstrumentIds = new String[viewableTabCount];
             for (int i = 0; i < viewableTabCount; i++)
@@ -685,14 +687,6 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
             return true;
         }
         return false;
-    }
-
-    private String formatInstrument(int part, int parts, String instrumentName)
-    {
-        if (parts == 1)
-            return String.format("(%s)", instrumentName);
-        else
-            return String.format("(%d-%d : %s)", part + 1, parts, instrumentName);
     }
 
     private void addTab()

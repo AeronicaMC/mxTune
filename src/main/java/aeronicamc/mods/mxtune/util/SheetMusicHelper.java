@@ -49,7 +49,7 @@ public class SheetMusicHelper
 {
     private static final Logger LOGGER = LogManager.getLogger(SheetMusicHelper.class);
     public static final String KEY_SHEET_MUSIC = "SheetMusic";
-    public static final String KEY_EXTRA_TEXT = "ExtraText";
+    public static final String KEY_EXTRA_DATA = "ExtraData"; // array of int
     public static final String KEY_DURATION = "Duration";
     public static final String KEY_MUSIC_TEXT_KEY = "MusicTextKey";
     public static final String KEY_PARTS_COUNT = "PartsCount"; // list of soundfont proxy indexes.
@@ -105,9 +105,17 @@ public class SheetMusicHelper
         if (contents != null && contents.contains(KEY_SHEET_MUSIC))
         {
             CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
-            if (sm.contains(KEY_EXTRA_TEXT))
+            if (sm.contains(KEY_EXTRA_DATA))
             {
-                return new StringTextComponent(sm.getString(KEY_EXTRA_TEXT)).withStyle(TextFormatting.YELLOW);
+                byte[] extraData = sm.getByteArray(KEY_EXTRA_DATA);
+                switch (extraData.length) {
+                    case 1:
+                        return new TranslationTextComponent("tooltip.mxtune.music_score.n_part_score", extraData[0]);
+                    case 2:
+                        String instrumentName = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(sm.getString(String.format("%s%d",KEY_PART_ID, 0)))).getString();
+                        return new TranslationTextComponent("tooltip.mxtune.sheet_music.n_of_m_instrument_name", extraData[0], extraData[1], instrumentName);
+                    default:
+                }
             }
         }
         return StringTextComponent.EMPTY;
@@ -347,12 +355,12 @@ public class SheetMusicHelper
      * the data to an on-disk data store.
      * @param itemStack ItemStack reference to be updated.
      * @param musicTitle becomes the Sheet Music display name
-     * @param extraText additional information. For SheetMusic it would be the suggested instrument. For MusicScore it would indicate how many parts.
+     * @param extraData additional information. For SheetMusic it would be the suggested instrument. For MusicScore it would indicate how many parts.
      * @param musicText MML to be saved to disk
      * @param partInstrumentIds int array of part instrument indexes. Must be a 0 length for sheet music, or the number of parts for a music score.
      * @return true on success.
      */
-    public static boolean writeIMusic(ItemStack itemStack, String musicTitle, String extraText, String musicText, String[] partInstrumentIds)
+    public static boolean writeIMusic(ItemStack itemStack, String musicTitle, byte[] extraData, String musicText, String[] partInstrumentIds)
     {
         musicTitle = musicTitle.substring(0, Math.min(musicTitle.length(), Reference.MXT_SONG_TITLE_LENGTH));
         itemStack.setHoverName(new StringTextComponent(musicTitle));
@@ -365,7 +373,7 @@ public class SheetMusicHelper
             {
                 CompoundNBT contents = new CompoundNBT();
                 contents.putString(KEY_MUSIC_TEXT_KEY, musicTextKey);
-                contents.putString(KEY_EXTRA_TEXT, extraText);
+                contents.putByteArray(KEY_EXTRA_DATA, extraData);
                 contents.putInt(KEY_DURATION, validDuration.getDuration());
                 contents.putInt(KEY_PARTS_COUNT, partInstrumentIds.length);
                 int[] index = new int[1];
@@ -573,12 +581,12 @@ public class SheetMusicHelper
     }
 
     // TODO: When music mobs are created and can drop sheet music.
-    public static ItemStack createSheetMusic(String title, String extraText, String mml, String instrumentId)
+    public static ItemStack createSheetMusic(String title, byte[] extraData, String mml, String instrumentId)
     {
         ItemStack sheetMusic = new ItemStack(ModItems.SHEET_MUSIC.get());
         String[] instrumentIds = new String[1];
         instrumentIds[1] = instrumentId;
-        if (SheetMusicHelper.writeIMusic(sheetMusic, title, extraText, mml, instrumentIds))
+        if (SheetMusicHelper.writeIMusic(sheetMusic, title, extraData, mml, instrumentIds))
         {
             return sheetMusic;
         }
