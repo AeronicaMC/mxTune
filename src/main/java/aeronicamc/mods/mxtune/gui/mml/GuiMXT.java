@@ -15,14 +15,10 @@ import aeronicamc.mods.mxtune.mxt.MXTuneFileHelper;
 import aeronicamc.mods.mxtune.mxt.MXTunePart;
 import aeronicamc.mods.mxtune.mxt.MXTuneStaff;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
-import aeronicamc.mods.mxtune.network.messages.CreateMusicScoreMessage;
-import aeronicamc.mods.mxtune.network.messages.CreateSheetMusicMessage;
+import aeronicamc.mods.mxtune.network.messages.CreateIMusicMessage;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
 import aeronicamc.mods.mxtune.sound.IAudioStatusCallback;
-import aeronicamc.mods.mxtune.util.Misc;
-import aeronicamc.mods.mxtune.util.SheetMusicHelper;
-import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
-import aeronicamc.mods.mxtune.util.ValidDuration;
+import aeronicamc.mods.mxtune.util.*;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -660,7 +656,9 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
                 extraData[0] = (byte) (i + 1); // part (i) of viewableTabCount
                 extraData[1] = (byte) viewableTabCount; // part i of (viewableTabCount)
                 String mml = childTabs[i].getMMLClipBoardFormat();
-                PacketDispatcher.sendToServer(new CreateSheetMusicMessage(title, extraData, mml, childTabs[i].getPart().getInstrumentId()));
+                String[] partInstrumentIds = new String[1];
+                partInstrumentIds[0] = childTabs[i].getPart().getInstrumentId();
+                PacketDispatcher.sendToServer(new CreateIMusicMessage(title, extraData, mml, partInstrumentIds, MusicType.PART));
             }
             return true;
         }
@@ -683,7 +681,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
                 String mml = childTabs[i].getMMLClipBoardFormat();
                 scoreMML.append(mml);
             }
-            PacketDispatcher.sendToServer(new CreateMusicScoreMessage(title, scoreParts, scoreMML.toString(), partInstrumentIds));
+            PacketDispatcher.sendToServer(new CreateIMusicMessage(title, scoreParts, scoreMML.toString(), partInstrumentIds, MusicType.SCORE));
             return true;
         }
         return false;

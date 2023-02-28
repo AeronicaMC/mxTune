@@ -41,6 +41,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static java.lang.Thread.sleep;
 import static net.minecraftforge.common.util.Constants.NBT;
@@ -48,12 +49,15 @@ import static net.minecraftforge.common.util.Constants.NBT;
 public class SheetMusicHelper
 {
     private static final Logger LOGGER = LogManager.getLogger(SheetMusicHelper.class);
+    public static final UUID UUID_EMPTY = UUID.fromString("00000000-0000-0000-0000-000000000000");
     public static final String KEY_SHEET_MUSIC = "SheetMusic";
     public static final String KEY_EXTRA_DATA = "ExtraData"; // array of int
     public static final String KEY_DURATION = "Duration";
     public static final String KEY_MUSIC_TEXT_KEY = "MusicTextKey";
     public static final String KEY_PARTS_COUNT = "PartsCount"; // list of soundfont proxy indexes.
     public static final String KEY_PART_ID = "Part:"; // individual instrument id as a string. Order as-is.
+    public static final String KEY_OWNER_UUID = "OwnerUUID";
+    public static final String KEY_OWNER_NAME = "OwnerName";
     private final static ITextComponent SHEET_MUSIC_EMPTY =
             new TranslationTextComponent("tooltip.mxtune.sheet_music.empty")
                     .withStyle(TextFormatting.ITALIC)
@@ -358,9 +362,12 @@ public class SheetMusicHelper
      * @param extraData additional information. For SheetMusic it would be the suggested instrument. For MusicScore it would indicate how many parts.
      * @param musicText MML to be saved to disk
      * @param partInstrumentIds int array of part instrument indexes. Must be a 0 length for sheet music, or the number of parts for a music score.
+     * @param musicType of IMusic item. PART or SCORE.
+     * @param ownerUUID
+     * @param ownerName
      * @return true on success.
      */
-    public static boolean writeIMusic(ItemStack itemStack, String musicTitle, byte[] extraData, String musicText, String[] partInstrumentIds)
+    public static boolean writeIMusic(ItemStack itemStack, String musicTitle, byte[] extraData, String musicText, String[] partInstrumentIds, MusicType musicType, UUID ownerUUID, String ownerName)
     {
         musicTitle = musicTitle.substring(0, Math.min(musicTitle.length(), Reference.MXT_SONG_TITLE_LENGTH));
         itemStack.setHoverName(new StringTextComponent(musicTitle));
@@ -376,6 +383,8 @@ public class SheetMusicHelper
                 contents.putByteArray(KEY_EXTRA_DATA, extraData);
                 contents.putInt(KEY_DURATION, validDuration.getDuration());
                 contents.putInt(KEY_PARTS_COUNT, partInstrumentIds.length);
+                contents.putUUID(KEY_OWNER_UUID, ownerUUID);
+                contents.putString(KEY_OWNER_NAME, ownerName);
                 int[] index = new int[1];
                 if (partInstrumentIds.length > 0)
                     Arrays.stream(partInstrumentIds).sequential().forEach( string -> {
@@ -586,7 +595,7 @@ public class SheetMusicHelper
         ItemStack sheetMusic = new ItemStack(ModItems.SHEET_MUSIC.get());
         String[] instrumentIds = new String[1];
         instrumentIds[1] = instrumentId;
-        if (SheetMusicHelper.writeIMusic(sheetMusic, title, extraData, mml, instrumentIds))
+        if (SheetMusicHelper.writeIMusic(sheetMusic, title, extraData, mml, instrumentIds, MusicType.PART, UUID_EMPTY , "---"))
         {
             return sheetMusic;
         }

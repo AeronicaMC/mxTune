@@ -5,6 +5,7 @@ import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import aeronicamc.mods.mxtune.items.MusicPaperItem;
 import aeronicamc.mods.mxtune.network.NetworkSerializedHelper;
 import aeronicamc.mods.mxtune.util.Misc;
+import aeronicamc.mods.mxtune.util.MusicType;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -20,34 +21,36 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
-public class CreateMusicScoreMessage extends AbstractMessage<CreateMusicScoreMessage>
+public class CreateIMusicMessage extends AbstractMessage<CreateIMusicMessage>
 {
-    private static final Logger LOGGER = LogManager.getLogger(CreateMusicScoreMessage.class);
+    private static final Logger LOGGER = LogManager.getLogger(CreateIMusicMessage.class);
     private String musicTitle;
     private String musicText;
     private byte[] extraData;
     private String[] partInstrumentIds;
+    private MusicType musicType;
     private boolean error;
 
-    public CreateMusicScoreMessage() { /* NOP */ }
+    public CreateIMusicMessage() { /* NOP */ }
 
-    public CreateMusicScoreMessage(final String musicTitle, final byte[] extraData, final String musicText, final String[] partInstrumentIds)
+    public CreateIMusicMessage(final String musicTitle, final byte[] extraData, final String musicText, final String[] partInstrumentIds, MusicType musicType)
     {
         this.musicTitle = musicTitle;
         this.extraData = extraData;
         this.musicText = musicText;
         this.partInstrumentIds = partInstrumentIds;
+        this.musicType = musicType;
         this.error = false;
     }
 
-    public CreateMusicScoreMessage(final String musicTitle, final byte[] extraData, final String musicText, final String[] partInstrumentIds, final boolean error)
+    public CreateIMusicMessage(final String musicTitle, final byte[] extraData, final String musicText, final String[] partInstrumentIds, MusicType musicType, final boolean error)
     {
-        this(musicTitle, extraData, musicText, partInstrumentIds);
+        this(musicTitle, extraData, musicText, partInstrumentIds, musicType);
         this.error = error;
     }
 
     @Override
-    public CreateMusicScoreMessage decode(final PacketBuffer buffer)
+    public CreateIMusicMessage decode(final PacketBuffer buffer)
     {
         final String musicTitle = buffer.readUtf();
         final byte[] extraData = buffer.readByteArray();
@@ -62,12 +65,13 @@ public class CreateMusicScoreMessage extends AbstractMessage<CreateMusicScoreMes
             error = true;
         }
         final String[] partInstrumentIds = NBT2StringArray(buffer.readNbt());
+        final MusicType musicType = buffer.readEnum(MusicType.class);
         LOGGER.debug(String.format("%s, buffer.readLongArray: %d", musicTitle, partInstrumentIds.length));
-        return new CreateMusicScoreMessage(musicTitle, extraData, musicText != null ? musicText : "", partInstrumentIds , error);
+        return new CreateIMusicMessage(musicTitle, extraData, musicText != null ? musicText : "", partInstrumentIds, musicType, error);
     }
 
     @Override
-    public void encode(final CreateMusicScoreMessage message, final PacketBuffer buffer)
+    public void encode(final CreateIMusicMessage message, final PacketBuffer buffer)
     {
         buffer.writeUtf(message.musicTitle);
         buffer.writeByteArray(message.extraData);
@@ -82,11 +86,12 @@ public class CreateMusicScoreMessage extends AbstractMessage<CreateMusicScoreMes
             return;
         }
         buffer.writeNbt(stringArrayToNBT(message.partInstrumentIds));
+        buffer.writeEnum(message.musicType);
         buffer.writeBoolean(message.error);
     }
 
     @Override
-    public void handle(final CreateMusicScoreMessage message, final Supplier<NetworkEvent.Context> ctx)
+    public void handle(final CreateIMusicMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
         if (ctx.get().getDirection().getReceptionSide().isServer())
             ctx.get().enqueueWork(() ->{
@@ -101,12 +106,16 @@ public class CreateMusicScoreMessage extends AbstractMessage<CreateMusicScoreMes
 
                 } else if (!sPlayer.getMainHandItem().isEmpty() && sPlayer.getMainHandItem().getItem() instanceof MusicPaperItem)
                     {
-                        ItemStack musicScore = new ItemStack(ModItems.MUSIC_SCORE.get());
-                        if (SheetMusicHelper.writeIMusic(musicScore, message.musicTitle, (message.extraData), message.musicText, message.partInstrumentIds))
+                        final ItemStack musicItem;
+                        if (message.musicType.equals(MusicType.SCORE))
+                            musicItem = new ItemStack(ModItems.MUSIC_SCORE.get());
+                        else
+                            musicItem = new ItemStack(ModItems.SHEET_MUSIC.get());
+                        if (SheetMusicHelper.writeIMusic(musicItem, message.musicTitle, (message.extraData), message.musicText, message.partInstrumentIds, message.musicType, sPlayer.getUUID(), sPlayer.getDisplayName().getString()))
                         {
                             sPlayer.inventory.removeItem(sPlayer.inventory.selected, message.partInstrumentIds.length);
-                            if (!sPlayer.inventory.add(musicScore.copy()))
-                                sPlayer.drop(musicScore, true, false);
+                            if (!sPlayer.inventory.add(musicItem.copy()))
+                                sPlayer.drop(musicItem, true, false);
                         }
                         else
                         {
