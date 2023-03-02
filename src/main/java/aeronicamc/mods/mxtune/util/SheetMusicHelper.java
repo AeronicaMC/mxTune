@@ -358,13 +358,13 @@ public class SheetMusicHelper
      * <p></p>Updates a new Sheet Music or Music Score ItemStack. Adds the title, duration and keystore id to it and stores
      * the data to an on-disk data store.
      * @param itemStack ItemStack reference to be updated.
-     * @param musicTitle becomes the Sheet Music display name
-     * @param extraData additional information. For SheetMusic it would be the suggested instrument. For MusicScore it would indicate how many parts.
-     * @param musicText MML to be saved to disk
-     * @param partInstrumentIds int array of part instrument indexes. Must be a 0 length for sheet music, or the number of parts for a music score.
+     * @param musicTitle becomes the Sheet Music display name.
+     * @param extraData additional information. For SheetMusic multipart tunes: Part n of m; Solo: not used. For MusicScore it would indicate how many parts.
+     * @param musicText MML to be saved to storage.
+     * @param partInstrumentIds String array of part instrument ids. Must be a 1 for sheet music, or the number of parts for a music score.
      * @param musicType of IMusic item. PART or SCORE.
-     * @param ownerUUID
-     * @param ownerName
+     * @param ownerUUID of the person who made the item.
+     * @param ownerName of the person who made the item.
      * @return true on success.
      */
     public static boolean writeIMusic(ItemStack itemStack, String musicTitle, byte[] extraData, String musicText, String[] partInstrumentIds, MusicType musicType, UUID ownerUUID, String ownerName)
