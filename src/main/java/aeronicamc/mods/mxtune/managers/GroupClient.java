@@ -3,7 +3,9 @@ package aeronicamc.mods.mxtune.managers;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class GroupClient
@@ -15,10 +17,23 @@ public class GroupClient
     {
         synchronized (groupMap)
         {
-            groupMap.clear();
-            groupMap.putAll(pGroupMap);
+            LOGGER.debug("Apply GroupMap Server/Client: {}/{}", pGroupMap.size(), groupMap.size());
+            groupMap.forEach((id, group) -> LOGGER.debug("Before  {}", group));
+            Set<Integer> serverKeys = pGroupMap.keySet();
+            Set<Integer> removeKeys = new HashSet<>();
+            pGroupMap.forEach((kS, vS) -> {
+                if (groupMap.get(kS) != null && !groupMap.get(kS).equals(pGroupMap.get(kS)))
+                    groupMap.replace(kS, vS);
+                else
+                    groupMap.putIfAbsent(kS, vS);
+            });
+            groupMap.keySet().forEach(kC -> {
+                if (!serverKeys.contains(kC))
+                    removeKeys.add(kC);
+            });
+            removeKeys.forEach(groupMap::remove);
+            LOGGER.debug("Final GroupMap Server/Client: {}/{}", pGroupMap.size(), groupMap.size());
+            groupMap.forEach((id, group) -> LOGGER.debug("After  {}", group));
         }
-        LOGGER.debug("setGroupMap count {}", groupMap.size());
-        groupMap.forEach((id, group) -> LOGGER.debug("  {}", group));
     }
 }
