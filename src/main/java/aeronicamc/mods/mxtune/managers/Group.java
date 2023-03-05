@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.managers;
 
 import aeronicamc.mods.mxtune.Reference;
 import com.google.common.primitives.Ints;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -126,5 +127,24 @@ public class Group
                 .append("leader", leader)
                 .append("members", members)
                 .toString();
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Group group = (Group) o;
+        return new EqualsBuilder()
+                .append(members, group.members)
+                .append(groupId, group.groupId)
+                .append(playId, group.playId)
+                .append(maxDuration, group.maxDuration)
+                .append(leader, group.leader)
+                .isEquals();
     }
 }
