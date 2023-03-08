@@ -3,6 +3,7 @@ package aeronicamc.mods.mxtune.managers;
 import aeronicamc.mods.mxtune.Reference;
 import com.google.common.primitives.Ints;
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -127,6 +128,18 @@ public class Group
                 .append("leader", leader)
                 .append("members", members)
                 .toString();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return new HashCodeBuilder(17, 37)
+                .append(members)
+                .append(groupId)
+                .append(playId)
+                .append(maxDuration)
+                .append(leader)
+                .toHashCode();
     }
 
     @Override
