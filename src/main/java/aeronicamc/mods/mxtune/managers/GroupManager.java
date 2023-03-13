@@ -3,10 +3,12 @@ package aeronicamc.mods.mxtune.managers;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.SyncGroupsMessage;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
@@ -49,7 +51,7 @@ public class GroupManager
         }
     }
 
-    public static void addMember(int groupId, @Nullable PlayerEntity member)
+    public static void addMember(int groupId, @Nullable Entity member)
     {
         synchronized (groups)
         {
@@ -98,18 +100,27 @@ public class GroupManager
         //PlayManager.purgeMember(memberID);
         synchronized (groups)
         {
+
+            boolean[] result = new boolean[1];
             if (isNotMemberOfAnyGroup(memberId))
                 return;
 
-            for (Group group : groups.values())
-                if (group.isMember(memberId))
-                {
-                    if (tryRemoveMember(group, memberId) || tryRemoveGroupIfLast(group, memberId) || tryRemoveLeaderPromoteNext(group, memberId))
-                    {
-                        sync();
-                        return;
-                    }
-                }
+            groups.forEach((id, group) -> {
+                   if (tryRemoveMember(group, memberId))
+                   {
+                       result[0] = true;
+                   }
+                   else if (tryRemoveLeaderPromoteNext(group, memberId))
+                   {
+                       result[0] = true;
+                   }
+                   else if (tryRemoveGroupIfLast(group, memberId))
+                   {
+                       result[0] = true;
+                   }
+               });
+            if (result[0])
+                sync();
         }
     }
 
@@ -130,7 +141,7 @@ public class GroupManager
     {
         boolean result = false;
         /* This is the leader of the group and if we are the last or only member then we will remove the group. */
-        if (group.getMembers().size() == 1)
+        if (group.getMembers().size() <= 1)
         {
             group.getMembers().clear();
             groups.remove(group.getGroupId());
@@ -143,7 +154,7 @@ public class GroupManager
     {
         boolean result = false;
         // Remove the leader
-        if (group.getGroupId() == memberId)
+        if (group.getLeader() == memberId)
         {
             group.removeMember(memberId);
 
@@ -174,7 +185,7 @@ public class GroupManager
      * @param memberId search all groups for thia member.
      * @return the Group or the Group.EMPTY.
      */
-    private static Group getMembersGroup(Integer memberId)
+    public static Group getMembersGroup(Integer memberId)
     {
         for (Group group : groups.values())
             if (group.getMembers().contains(memberId)) return group;
@@ -278,8 +289,16 @@ public class GroupManager
         @SubscribeEvent
         public static void event(LivingDeathEvent event)
         {
-            if (!event.getEntityLiving().level.isClientSide() && event.getEntityLiving() instanceof PlayerEntity)
-                removeMember(event.getEntityLiving().getId());
+            if (!event.getEntity().level.isClientSide())
+                removeMember(event.getEntity().getId());
+        }
+
+        @SubscribeEvent
+        public static void event(LivingDamageEvent event)
+        {
+            if (!event.getEntity().level.isClientSide())
+                if (event.getEntity().isAlive() && event.getAmount() > 2F)
+                    removeMember(event.getEntity().getId());
         }
 
         @SubscribeEvent

@@ -7,6 +7,8 @@ import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -84,7 +86,18 @@ public class MusicScoreItem extends Item implements IMusic
         if (!pLevel.isClientSide)
         {
             if (!pPlayer.isShiftKeyDown())
-                GroupManager.addGroup(pPlayer);
+            {
+                if (GroupManager.getMembersGroup(pPlayer.getId()).isEmpty())
+                {
+                    GroupManager.addGroup(pPlayer);
+                    Entity entity = (new ChickenEntity(EntityType.CHICKEN, pLevel));
+                    entity.setPos(pPlayer.getX(), pPlayer.getY() + 2.0, pPlayer.getZ());
+                    entity.setSilent(true);
+                    entity.setCustomName(new StringTextComponent(String.format("%d", entity.getId())));
+                    pPlayer.level.addFreshEntity(entity);
+                    GroupManager.addMember(GroupManager.getMembersGroup(pPlayer.getId()).getGroupId(), entity);
+                }
+            }
             else
                 GroupManager.removeMember(pPlayer.getId());
         }
