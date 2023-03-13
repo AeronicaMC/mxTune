@@ -11,6 +11,7 @@ import aeronicamc.mods.mxtune.init.ModBlocks;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.items.MusicVenueInfoItem;
 import aeronicamc.mods.mxtune.items.MusicVenueToolItem;
+import aeronicamc.mods.mxtune.managers.GroupClient;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
@@ -23,6 +24,9 @@ import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.culling.ClippingHelper;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.HangingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -46,6 +50,8 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+
+import java.util.List;
 
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID, value = Dist.CLIENT)
 public class RenderEvents
@@ -234,9 +240,50 @@ public class RenderEvents
         }
     }
 
+
+    static void renderGroupStatus(MatrixStack pMatrixStack, IRenderTypeBuffer.Impl pBuffer, LightTexture pLightTexture, ActiveRenderInfo pActiveRenderInfo, float pPartialTicks, ClippingHelper pClippingHelper)
+    {
+        if (mc.player != null && mc.level != null)
+        {
+            ItemStack STACK = new ItemStack(ModItems.SHEET_MUSIC.get());
+            Vector3d cam = pActiveRenderInfo.getPosition();
+            List<Entity> nearLivingEntities = mc.level.getEntities(null, mc.player.getBoundingBox().inflate(48));
+            nearLivingEntities.stream().filter(p -> pClippingHelper.isVisible(p.getBoundingBoxForCulling())).forEach(livingEntity -> {
+                int packedLight = mc.getEntityRenderDispatcher().getPackedLightCoords(livingEntity, pPartialTicks);
+                Vector3d playerPos = livingEntity.getPosition(pPartialTicks);
+                if (GroupClient.isGrouped(livingEntity.getId()))
+                {
+                    Vector3d entityPos = livingEntity.getPosition(pPartialTicks);
+                    pMatrixStack.pushPose();
+
+                    //pMatrixStack.translate(viewEntity.x - player.getX(), viewEntity.y - player.getY(), viewEntity.z - player.getZ());
+                    pMatrixStack.translate(entityPos.x()- cam.x(), entityPos.y() - cam.y(), entityPos.z() - cam.z());
+                    //pMatrixStack.translate(viewEntity.x - cam.x, viewEntity.y - cam.y, viewEntity.z - cam.z);
+                    pMatrixStack.translate(0.0, livingEntity.getBbHeight() + 0.8, 0.0);
+                    //pMatrixStack.mulPose(Vector3f.XP.rotationDegrees(0F));
+                    pMatrixStack.mulPose(pActiveRenderInfo.rotation());
+
+                    pMatrixStack.scale(0.5F, 0.5F, 0.5F);
+                    //pMatrixStack.scale(-0.025F, -0.025F, 0.025F);
+                    //pMatrixStack.mulPose(Vector3f.YP.rotationDegrees((player.level.getGameTime() % 360) + pPartialTicks));
+
+                    Minecraft.getInstance().getItemRenderer().renderStatic(STACK, ItemCameraTransforms.TransformType.FIXED, packedLight, OverlayTexture.NO_OVERLAY, pMatrixStack, pBuffer);
+
+                    pMatrixStack.popPose();
+                }
+//                RenderHelper.renderFloatingText(
+//                        new Vector3d(playerPos.x(), playerPos.y()+ player.getBbHeight() + 0.8, playerPos.z()),
+//                        pMatrixStack, pBuffer, pActiveRenderInfo, -1,
+//                        new StringTextComponent(player.getUUID().toString()), packedLight);
+                pBuffer.endBatch();
+            });
+        }
+    }
+
     // It's absolutely Fabulous... or maybe not, but at least in Fabulous Graphics mode it's not bad.
     public static void renderLast(MatrixStack pMatrixStack, IRenderTypeBuffer.Impl pBuffer, LightTexture pLightTexture, ActiveRenderInfo pActiveRenderInfo, float pPartialTicks, ClippingHelper pClippingHelper)
     {
         MusicVenueRenderer.render(pMatrixStack, pBuffer, pLightTexture, pActiveRenderInfo, pPartialTicks, pClippingHelper);
+        renderGroupStatus(pMatrixStack, pBuffer, pLightTexture, pActiveRenderInfo, pPartialTicks, pClippingHelper);
     }
 }

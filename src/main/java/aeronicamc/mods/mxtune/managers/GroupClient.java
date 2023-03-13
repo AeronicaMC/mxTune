@@ -36,4 +36,14 @@ public class GroupClient
             groupMap.forEach((id, group) -> LOGGER.debug("After  {}", group));
         }
     }
+
+    public static boolean isGrouped(int memberId)
+    {
+        boolean[] isGrouped = new boolean[1];
+        groupMap.values().forEach(group -> {
+            if (group.isMember(memberId))
+                isGrouped[0] = true;
+        });
+        return isGrouped[0];
+    }
 }
