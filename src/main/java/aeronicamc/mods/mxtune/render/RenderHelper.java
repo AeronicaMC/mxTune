@@ -21,6 +21,7 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
+@SuppressWarnings("unused")
 public class RenderHelper
 {
     private RenderHelper() { /* NOP */ }
@@ -195,5 +196,38 @@ public class RenderHelper
 //        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.maxY - camY), (float)(box.maxZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
 //        pBuffer.vertex(matrix4f, (float)(box.maxX - camX), (float)(box.maxY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
 //        pBuffer.vertex(matrix4f, (float)(box.minX - camX), (float)(box.maxY - camY), (float)(box.minZ - camZ)).color(pRed, pGreen, pBlue, pAlpha).endVertex();
+    }
+
+    /**
+     * Based on Unity forum post: <a href="https://forum.unity.com/threads/quaternion-to-remove-pitch.822768/">Quaternion to remove pitch</a>
+     * @param quaternion of interest
+     * @return a quaternion with only the X axis rotation intact
+     */
+    static Quaternion GetXAxisRotation(Quaternion quaternion)
+    {
+        double a = Math.sqrt((quaternion.r() * quaternion.r()) + (quaternion.i() * quaternion.i()));
+        return new Quaternion(quaternion.i(), (float) 0, (float) 0, (float) (quaternion.r() / a));
+    }
+
+    /**
+     * Based on Unity forum post: <a href="https://forum.unity.com/threads/quaternion-to-remove-pitch.822768/">Quaternion to remove pitch</a>
+     * @param quaternion of interest
+     * @return a quaternion with only the Y axis rotation intact
+     */
+    static Quaternion GetYAxisRotation(Quaternion quaternion)
+    {
+        double a = Math.sqrt((quaternion.r() * quaternion.r()) + (quaternion.j() * quaternion.j()));
+        return new Quaternion(0F, quaternion.j(),0F, (float) (quaternion.r() / a));
+    }
+
+    /**
+     * Based on Unity forum post: <a href="https://forum.unity.com/threads/quaternion-to-remove-pitch.822768/">Quaternion to remove pitch</a>
+     * @param quaternion of interest
+     * @return a quaternion with only the Z axis rotation intact
+     */
+    static Quaternion GetZAxisRotation(Quaternion quaternion)
+    {
+        double a = Math.sqrt((quaternion.r() * quaternion.r()) + (quaternion.k() * quaternion.k()));
+        return new Quaternion(0F, 0F, quaternion.k(), (float) (quaternion.r() / a));
     }
 }

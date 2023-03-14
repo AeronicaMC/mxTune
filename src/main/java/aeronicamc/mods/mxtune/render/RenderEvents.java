@@ -240,8 +240,7 @@ public class RenderEvents
         }
     }
 
-
-    static void renderGroupStatus(MatrixStack pMatrixStack, IRenderTypeBuffer.Impl pBuffer, LightTexture pLightTexture, ActiveRenderInfo pActiveRenderInfo, float pPartialTicks, ClippingHelper pClippingHelper)
+    static void renderGroupStatusPlacard(MatrixStack pMatrixStack, IRenderTypeBuffer.Impl pBuffer, LightTexture pLightTexture, ActiveRenderInfo pActiveRenderInfo, float pPartialTicks, ClippingHelper pClippingHelper)
     {
         if (mc.player != null && mc.level != null)
         {
@@ -254,24 +253,16 @@ public class RenderEvents
                 if (GroupClient.isGrouped(livingEntity.getId()))
                 {
                     Vector3d entityPos = livingEntity.getPosition(pPartialTicks);
-                    pMatrixStack.pushPose();
 
+                    pMatrixStack.pushPose();
                     pMatrixStack.translate(entityPos.x()- cam.x(), entityPos.y() - cam.y(), entityPos.z() - cam.z());
                     pMatrixStack.translate(0.0D, livingEntity.getBbHeight() + 0.8D, 0.0D);
-                    pMatrixStack.mulPose(pActiveRenderInfo.rotation());
-                    //pMatrixStack.mulPose(Vector3f.ZP.rotationDegrees(180F));
-
+                    pMatrixStack.mulPose(RenderHelper.GetYAxisRotation(pActiveRenderInfo.rotation())); // imperfect
                     pMatrixStack.scale(0.5F, 0.5F, 0.5F);
-                    //pMatrixStack.mulPose(Vector3f.YP.rotationDegrees((player.level.getGameTime() % 360) + pPartialTicks));
 
                     Minecraft.getInstance().getItemRenderer().renderStatic(STACK, ItemCameraTransforms.TransformType.FIXED, packedLight, OverlayTexture.NO_OVERLAY, pMatrixStack, pBuffer);
-
                     pMatrixStack.popPose();
                 }
-//                RenderHelper.renderFloatingText(
-//                        new Vector3d(playerPos.x(), playerPos.y()+ player.getBbHeight() + 0.8, playerPos.z()),
-//                        pMatrixStack, pBuffer, pActiveRenderInfo, -1,
-//                        new StringTextComponent(player.getUUID().toString()), packedLight);
                 pBuffer.endBatch();
             });
         }
@@ -281,6 +272,6 @@ public class RenderEvents
     public static void renderLast(MatrixStack pMatrixStack, IRenderTypeBuffer.Impl pBuffer, LightTexture pLightTexture, ActiveRenderInfo pActiveRenderInfo, float pPartialTicks, ClippingHelper pClippingHelper)
     {
         MusicVenueRenderer.render(pMatrixStack, pBuffer, pLightTexture, pActiveRenderInfo, pPartialTicks, pClippingHelper);
-        renderGroupStatus(pMatrixStack, pBuffer, pLightTexture, pActiveRenderInfo, pPartialTicks, pClippingHelper);
+        renderGroupStatusPlacard(pMatrixStack, pBuffer, pLightTexture, pActiveRenderInfo, pPartialTicks, pClippingHelper);
     }
 }
