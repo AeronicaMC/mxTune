@@ -208,12 +208,9 @@ public class GroupManager
      * @param memberId search all groups for thia member.
      * @return the Group or the Group.EMPTY.
      */
-    public static Group getMembersGroup(Integer memberId)
+    public static Group getMembersGroup(int memberId)
     {
-        for (Group group : groups.values())
-            if (group.getMembers().contains(memberId)) return group;
-
-        return Group.EMPTY;
+        return groups.values().stream().filter(group -> group.isMember(memberId)).findFirst().orElse(Group.EMPTY);
     }
 
     /**

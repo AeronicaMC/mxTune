@@ -45,6 +45,15 @@ public class GroupClient
         }
     }
 
+    /**
+     * @param memberId search all groups for thia member.
+     * @return the Group or the Group.EMPTY.
+     */
+    public static Group getMembersGroup(int memberId)
+    {
+        return groupMap.values().stream().filter(group -> group.isMember(memberId)).findFirst().orElse(Group.EMPTY);
+    }
+
     public static boolean isGrouped(int memberId)
     {
         return groupMap.values().stream().anyMatch(group -> group.isMember(memberId));
