@@ -174,6 +174,7 @@ public class ActiveTune
         final int playId;
         final int durationSeconds;
         final int removalSeconds;
+        Set<Integer> listeners = new HashSet<>(16);
 
         private Entry(int entityId, int playId, String musicText, int durationSeconds)
         {
@@ -207,6 +208,16 @@ public class ActiveTune
         void tickDuration()
         {
             ++secondsElapsed;
+        }
+
+        boolean hasListener(int listenerId)
+        {
+            return listeners.contains(listenerId);
+        }
+
+        void addListener(int listenerId)
+        {
+            listeners.add(listenerId);
         }
 
         @Override

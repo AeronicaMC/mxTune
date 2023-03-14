@@ -115,10 +115,6 @@ public class ActiveAudio
             {
                 deleteAudioDataQueue.remove();
             }
-        synchronized (playIdToMidiSequence)
-        {
-            playIdToMidiSequence.clear();
-        }
         while (!deleteMidiSequenceQueue.isEmpty())
             synchronized (deleteMidiSequenceQueue)
             {
