@@ -27,6 +27,7 @@ import aeronicamc.mods.mxtune.gui.MultiInstScreen;
 import aeronicamc.mods.mxtune.gui.MusicBlockScreen;
 import aeronicamc.mods.mxtune.init.*;
 import aeronicamc.mods.mxtune.managers.ActiveTune;
+import aeronicamc.mods.mxtune.managers.GroupManager;
 import aeronicamc.mods.mxtune.managers.PlayManager;
 import aeronicamc.mods.mxtune.network.MultiPacketSerializedObjectManager;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
@@ -146,6 +147,7 @@ public class MXTune
     @SubscribeEvent
     public void event(FMLServerStoppingEvent event) {
         PlayManager.stopAll();
+        GroupManager.clear();
         ModDataStore.shutdown();
         MultiPacketSerializedObjectManager.shutdown();
     }

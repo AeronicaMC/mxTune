@@ -13,6 +13,14 @@ public class GroupClient
     private static final Logger LOGGER = LogManager.getLogger(GroupClient.class);
     private static final Map<Integer, Group> groupMap = new ConcurrentHashMap<>();
 
+    public static void clear()
+    {
+        synchronized (groupMap)
+        {
+            groupMap.clear();
+        }
+    }
+
     public static void setGroupMap(Map<Integer, Group> pGroupMap)
     {
         synchronized (groupMap)

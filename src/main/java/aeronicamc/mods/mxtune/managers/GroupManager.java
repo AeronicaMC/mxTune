@@ -27,6 +27,14 @@ public class GroupManager
     private static final Logger LOGGER = LogManager.getLogger(GroupManager.class);
     private static final Map<Integer, Group> groups = new ConcurrentHashMap<>();
 
+    public static void clear()
+    {
+        synchronized (groups)
+        {
+            groups.clear();
+        }
+    }
+
     /**
      * Any player can be a leader or in a group. A player who makes a group is
      * the leader of the group. A player in a group can't join another group.

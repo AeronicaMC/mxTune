@@ -1,6 +1,7 @@
 package aeronicamc.mods.mxtune.events;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.managers.GroupClient;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.SyncRequestMessage;
 import aeronicamc.mods.mxtune.render.entity.InfoRenderer;
@@ -20,6 +21,7 @@ public class ClientEvents
     @SubscribeEvent
     public static void event(ClientPlayerNetworkEvent.LoggedInEvent event)
     {
+        GroupClient.clear();
         PacketDispatcher.sendToServer(new SyncRequestMessage());
     }
 
@@ -33,6 +35,7 @@ public class ClientEvents
     public static void event(ClientPlayerNetworkEvent.RespawnEvent event)
     {
         LOGGER.debug("RespawnEvent: {}", event.getPlayer());
+        GroupClient.clear();
         ClientAudio.stopAll();
         PacketDispatcher.sendToServer(new SyncRequestMessage());
     }
