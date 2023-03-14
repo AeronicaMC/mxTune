@@ -65,6 +65,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         add(ModItems.SHEET_MUSIC.get(), "Sheet Music");
         add(ModItems.MUSIC_SCORE.get(), "Music Score");
         add(ModItems.MUSIC_PAPER.get(), "Music Paper");
+        add(ModItems.PLACARD_ITEM.get(), "Placard State");
         add(ModItems.MUSIC_VENUE_INFO.get(), "Music Venue Info Panel");
         addTooltip("music_paper.help", "Right-Click to OPEN");
         addTooltip("music_score.shift_parts_01", "Hold SHIFT to see parts");

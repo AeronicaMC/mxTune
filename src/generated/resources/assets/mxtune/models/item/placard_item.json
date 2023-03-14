@@ -1,0 +1,44 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "mxtune:item/placard_item_state6"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "mxtune:placard_state": 0.0
+      },
+      "model": "mxtune:item/placard_item_state0"
+    },
+    {
+      "predicate": {
+        "mxtune:placard_state": 1.0
+      },
+      "model": "mxtune:item/placard_item_state1"
+    },
+    {
+      "predicate": {
+        "mxtune:placard_state": 2.0
+      },
+      "model": "mxtune:item/placard_item_state2"
+    },
+    {
+      "predicate": {
+        "mxtune:placard_state": 4.0
+      },
+      "model": "mxtune:item/placard_item_state4"
+    },
+    {
+      "predicate": {
+        "mxtune:placard_state": 5.0
+      },
+      "model": "mxtune:item/placard_item_state5"
+    },
+    {
+      "predicate": {
+        "mxtune:placard_state": 6.0
+      },
+      "model": "mxtune:item/placard_item_state6"
+    }
+  ]
+}

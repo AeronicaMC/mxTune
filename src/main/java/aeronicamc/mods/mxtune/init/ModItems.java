@@ -46,6 +46,9 @@ public class ModItems
     public static final RegistryObject<Item> SCRAP_ITEM = ITEMS.register("scrap_item",
         () -> new Item(ingredientItemProperties().stacksTo(64)));
 
+    public static final RegistryObject<Item> PLACARD_ITEM = ITEMS.register("placard_item",
+        () -> new Item(ingredientItemProperties().stacksTo(1)));
+
     public static final RegistryObject<MusicVenueToolItem> MUSIC_VENUE_TOOL = ITEMS.register("music_venue_tool",
         () -> new MusicVenueToolItem(defaultItemProperties().stacksTo(1)));
 

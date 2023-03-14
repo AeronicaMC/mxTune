@@ -1,0 +1,6 @@
+{
+  "parent": "mxtune:item/placard_item",
+  "textures": {
+    "layer0": "mxtune:item/placard_item_state5"
+  }
+}

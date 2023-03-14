@@ -54,4 +54,9 @@ public class GroupClient
         });
         return isGrouped[0];
     }
+
+    public static byte getPlacardState(int memberId)
+    {
+        return 0;
+    }
 }

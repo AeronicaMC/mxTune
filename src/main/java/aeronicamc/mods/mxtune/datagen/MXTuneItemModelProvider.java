@@ -1,10 +1,7 @@
 package aeronicamc.mods.mxtune.datagen;
 
 import aeronicamc.mods.mxtune.Reference;
-import aeronicamc.mods.mxtune.items.MultiInstModelPropertyGetter;
-import aeronicamc.mods.mxtune.items.MusicScoreAgePropertyGetter;
-import aeronicamc.mods.mxtune.items.ScrapAnimationPropertyGetter;
-import aeronicamc.mods.mxtune.items.SheetMusicAgePropertyGetter;
+import aeronicamc.mods.mxtune.items.*;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
@@ -114,6 +111,29 @@ public class MXTuneItemModelProvider extends ItemModelProvider
                         .model(child.getValue())
                         .end()
             );
+        }
+
+        {
+            final int maxStage = 6;
+            final int[] stages = {0, 1, 2, 4, 5, maxStage};
+            ItemModelBuilder parentModel = withExistingParent(PLACARD_ITEM.getId().getPath(), mcLoc("generated"))
+                    .texture("layer0", "item/placard_item_state" + maxStage);
+
+            Arrays.stream(stages)
+                    .mapToObj(index ->
+                              {
+                                  final ItemModelBuilder subModel = withExistingParent(PLACARD_ITEM.getId().toString() + "_state" + index, mcLoc(PLACARD_ITEM.getId().toString()))
+                                          .texture("layer0", "item/" + PLACARD_ITEM.getId().getPath() + "_state" + index);
+
+                                  return Pair.of(index, subModel);
+                              })
+                    .forEachOrdered(child ->
+                                            parentModel
+                                                    .override()
+                                                    .predicate(PlacardPropertyGetter.NAME, child.getKey())
+                                                    .model(child.getValue())
+                                                    .end()
+                                   );
         }
 
         {
