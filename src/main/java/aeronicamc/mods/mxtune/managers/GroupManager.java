@@ -4,9 +4,11 @@ import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.SyncGroupsMessage;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.Tuple;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -103,32 +105,45 @@ public class GroupManager
      *
      * @param memberId to be removed
      */
-    public static void removeMember(int memberId)
+    public static boolean removeMember(int memberId)
     {
         //PlayManager.purgeMember(memberID);
         synchronized (groups)
         {
-
             boolean[] result = new boolean[1];
-            if (isNotMemberOfAnyGroup(memberId))
-                return;
-
-            groups.forEach((id, group) -> {
+            groups.values().stream().filter(group -> group.isMember(memberId)).forEach(group -> {
                    if (tryRemoveMember(group, memberId))
-                   {
                        result[0] = true;
-                   }
                    else if (tryRemoveLeaderPromoteNext(group, memberId))
-                   {
                        result[0] = true;
-                   }
                    else if (tryRemoveGroupIfLast(group, memberId))
-                   {
                        result[0] = true;
-                   }
                });
             if (result[0])
+            {
                 sync();
+                return true;
+            }
+            return false;
+        }
+    }
+
+    // TODO: Setup localization for the remove member chat messages
+    public static void removeMember(@Nullable LivingEntity livingEntity, int memberId)
+    {
+        Group group = getMembersGroup(livingEntity != null ? livingEntity.getId() : 0);
+        if (removeMember(memberId))
+        {
+            if (livingEntity != null && !group.isEmpty())
+            {
+                LivingEntity memberEntity = (LivingEntity) livingEntity.level.getEntity(memberId);
+                LivingEntity leader = (LivingEntity) livingEntity.level.getEntity(group.getLeader());
+                String member = memberEntity != null ? memberEntity.getDisplayName().getString() : Integer.toString(memberId);
+                if (leader != null)
+                    leader.sendMessage(new StringTextComponent(String.format("%s left the group", member)), leader.getUUID());
+                else
+                    livingEntity.sendMessage(new StringTextComponent(String.format("%s left the group", member)), livingEntity.getUUID());
+            }
         }
     }
 
@@ -209,20 +224,12 @@ public class GroupManager
      */
     private static boolean isNotMemberOfAnyGroup(int memberId)
     {
-        boolean result = true;
-        for (Group group : groups.values())
-            if (group.getMembers().contains(memberId))
-                {
-                    result = false;
-                    break;
-                }
-        return result;
+        return groups.values().stream().noneMatch(group -> group.isMember(memberId));
     }
 
     static boolean isLeader(int entityID)
     {
-        Group group = getMembersGroup(entityID);
-        return !group.isEmpty() && group.getLeader() == entityID;
+        return groups.values().stream().anyMatch(group -> group.getLeader() == entityID);
     }
 
     /**
@@ -305,22 +312,22 @@ public class GroupManager
         public static void event(LivingDamageEvent event)
         {
             if (!event.getEntity().level.isClientSide())
-                if (event.getEntity().isAlive() && event.getAmount() > 2F)
-                    removeMember(event.getEntity().getId());
+                if (event.getEntity().isAlive() && event.getAmount() > 1.5F)
+                    removeMember(event.getEntityLiving(), event.getEntity().getId());
         }
 
         @SubscribeEvent
         public static void event(PlayerEvent.PlayerLoggedOutEvent event)
         {
             if (!event.getPlayer().level.isClientSide())
-                removeMember(event.getPlayer().getId());
+                removeMember(event.getPlayer(), event.getPlayer().getId());
         }
 
         @SubscribeEvent
         public static void event(PlayerEvent.PlayerChangedDimensionEvent event)
         {
             if (!event.getPlayer().level.isClientSide())
-                removeMember(event.getPlayer().getId());
+                removeMember(event.getPlayer(), event.getPlayer().getId());
         }
     }
 }

@@ -47,16 +47,16 @@ public class GroupClient
 
     public static boolean isGrouped(int memberId)
     {
-        boolean[] isGrouped = new boolean[1];
-        groupMap.values().forEach(group -> {
-            if (group.isMember(memberId))
-                isGrouped[0] = true;
-        });
-        return isGrouped[0];
+        return groupMap.values().stream().anyMatch(group -> group.isMember(memberId));
+    }
+
+    public static boolean isLeader(int memberId)
+    {
+        return groupMap.values().stream().anyMatch(group -> group.getLeader() == memberId);
     }
 
     public static byte getPlacardState(int memberId)
     {
-        return 0;
+        return (byte) ((isLeader(memberId) ? 4 : 0));
     }
 }

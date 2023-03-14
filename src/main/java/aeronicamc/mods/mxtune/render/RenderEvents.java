@@ -244,7 +244,7 @@ public class RenderEvents
     {
         if (mc.player != null && mc.level != null)
         {
-            ItemStack STACK = new ItemStack(ModItems.PLACARD_ITEM.get());
+            ItemStack placardStack = new ItemStack(ModItems.PLACARD_ITEM.get());
             Vector3d cam = pActiveRenderInfo.getPosition();
             List<Entity> nearLivingEntities = mc.level.getEntities(null, mc.player.getBoundingBox().inflate(48));
             nearLivingEntities.stream().filter(p -> pClippingHelper.isVisible(p.getBoundingBoxForCulling())).forEach(livingEntity -> {
@@ -252,6 +252,7 @@ public class RenderEvents
 
                 if (GroupClient.isGrouped(livingEntity.getId()))
                 {
+                    placardStack.setDamageValue(livingEntity.getId());
                     Vector3d entityPos = livingEntity.getPosition(pPartialTicks);
 
                     pMatrixStack.pushPose();
@@ -260,7 +261,7 @@ public class RenderEvents
                     pMatrixStack.mulPose(RenderHelper.GetYAxisRotation(pActiveRenderInfo.rotation())); // imperfect
                     pMatrixStack.scale(0.5F, 0.5F, 0.5F);
 
-                    Minecraft.getInstance().getItemRenderer().renderStatic(STACK, ItemCameraTransforms.TransformType.FIXED, packedLight, OverlayTexture.NO_OVERLAY, pMatrixStack, pBuffer);
+                    Minecraft.getInstance().getItemRenderer().renderStatic(placardStack, ItemCameraTransforms.TransformType.FIXED, packedLight, OverlayTexture.NO_OVERLAY, pMatrixStack, pBuffer);
                     pMatrixStack.popPose();
                 }
                 pBuffer.endBatch();
