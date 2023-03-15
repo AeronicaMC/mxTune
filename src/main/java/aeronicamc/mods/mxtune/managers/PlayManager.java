@@ -40,7 +40,7 @@ public final class PlayManager
 
     private PlayManager() { /* NOP */ }
 
-    private static int getNextPlayID()
+    static int getNextPlayID()
     {
         return PlayType.PLAYERS.getAsInt();
     }
@@ -111,7 +111,11 @@ public final class PlayManager
                 LOGGER.debug("MML Title: {} Duration: {}", title, duration);
                 LOGGER.debug("MML Sub25: {}", musicText.substring(0, Math.min(25, musicText.length())));
 
-                return playSolo(playerIn, musicText, duration, playerID);
+                if (GroupManager.isGrouped(playerID))
+                    return queueJam(playerIn, musicText, duration, playerID);
+                else
+                    return playSolo(playerIn, musicText, duration, playerID);
+
             } else
             {
                 // TODO:
@@ -123,7 +127,53 @@ public final class PlayManager
         return INVALID;
     }
 
-    private static int playSolo(PlayerEntity playerIn, String musicText, int duration, Integer playerID)
+    private static int queueJam(PlayerEntity playerIn, String musicText, int duration, int playerId)
+    {
+        int playId = getGroupsPlayId(playerId);
+        GroupManager.queuePart(playId, playerId, musicText);
+        GroupManager.setMemberPartDuration(playerId, duration);
+
+        if (GroupManager.isLeader(playerId))
+        {
+            String groupMusicText = GroupManager.getGroupsMusicText(playerId);
+            int groupMusicDuration = GroupManager.getGroupDuration(playerId);
+            GroupManager.removeGroupsMusicText(playerId);
+            GroupManager.setGroupPlaying(playerId);
+            GroupManager.getMembersGroup(playerId).setPlayId(INVALID);
+            GroupManager.sync();
+
+            // TODO: Review and improve
+            addActivePlayId(playerId, null, playId, groupMusicText, groupMusicDuration);
+            PlayMusicMessage packetPlaySolo = new PlayMusicMessage(playId, LocalDateTime.now(ZoneId.of("GMT0")).toString(), groupMusicDuration, 0, playerId, groupMusicText);
+            PacketDispatcher.sendToTrackingEntityAndSelf(packetPlaySolo, playerIn);
+        }
+        return playId;
+    }
+
+    /**
+     * Generate a new PlayID if this is the first member to queue, or return the existing one.
+     * This assumes the member is already been validated as a member of the group
+     *
+     * @param membersId of some group
+     * @return a unique playID or null if something went wrong
+     */
+    private static int getGroupsPlayId(Integer membersId)
+    {
+        Group group = GroupManager.getMembersGroup(membersId);
+        int playId = INVALID;
+        if (!group.isEmpty())
+            if (group.getPlayId() == INVALID)
+            {
+                playId = getNextPlayID();
+                group.setPlayId(playId);
+                GroupManager.sync();
+            }
+            else
+                playId = group.getPlayId();
+        return playId;
+    }
+
+    private static int playSolo(PlayerEntity playerIn, String musicText, int duration, int playerID)
     {
         int playId = getNextPlayID();
         int entityId = playerIn.getId();
@@ -161,12 +211,12 @@ public final class PlayManager
         }
     }
 
-    public static void stopPlayId(int playId)
+    public static void stopPlayId(int playId, int entityId)
     {
         synchronized (THREAD_SYNC)
         {
-            if (INVALID == playId) return;
-            LOGGER.debug("stopPlayId {}", playId);
+            LOGGER.debug("stopPlayId: {}, entityId: {}", playId, entityId);
+            GroupManager.setGroupRest(entityId);
             PacketDispatcher.sendToAll(new StopPlayMessage(playId));
             removeActivePlayId(playId);
         }
@@ -186,7 +236,7 @@ public final class PlayManager
         {
             if (activeTuneEntityActive(entityId))
             {
-                stopPlayId(ActiveTune.getPlayIdForEntity(entityId));
+                stopPlayId(ActiveTune.getPlayIdForEntity(entityId), entityId);
             }
         }
     }

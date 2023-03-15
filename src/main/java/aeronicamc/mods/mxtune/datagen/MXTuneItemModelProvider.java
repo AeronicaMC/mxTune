@@ -114,10 +114,10 @@ public class MXTuneItemModelProvider extends ItemModelProvider
         }
 
         {
-            final int maxStage = 6;
-            final int[] stages = {0, 1, 2, 4, 5, maxStage};
+            final int maxState = 6;
+            final int[] stages = {0, 1, 2, 4, 5, maxState};
             ItemModelBuilder parentModel = withExistingParent(PLACARD_ITEM.getId().getPath(), mcLoc("generated"))
-                    .texture("layer0", "item/placard_item_state" + maxStage);
+                    .texture("layer0", "item/placard_item_state" + maxState);
 
             Arrays.stream(stages)
                     .mapToObj(index ->

@@ -185,7 +185,7 @@ public class MusicBlock extends Block implements IWrenchAble
             if (PlayManager.isActivePlayId(playId) || pState.getValue(PLAYING))
             {
                 LOGGER.warn("STOP canPlayOrStopMusic playId {}", playId);
-                PlayManager.stopPlayId(playId);
+                PlayManager.stopPlayId(playId, 0);
                 return false;
             }
             if (!noPlay)

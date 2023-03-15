@@ -1,7 +1,6 @@
 package aeronicamc.mods.mxtune.items;
 
 import aeronicamc.mods.mxtune.Reference;
-import aeronicamc.mods.mxtune.managers.GroupClient;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemModelsProperties;
@@ -42,7 +41,7 @@ public class PlacardPropertyGetter
     public static final ResourceLocation NAME = new ResourceLocation(Reference.MOD_ID, "placard_state");
 
     private static final IItemPropertyGetter GETTER = (pItemStack, pLevel, pEntity) ->
-            !pItemStack.isEmpty() ? MathHelper.clamp(GroupClient.getPlacardState(pItemStack.getDamageValue()), 0F, 6F) : 6F;
+            !pItemStack.isEmpty() ? MathHelper.clamp(pItemStack.getDamageValue(), 0F, 6F) : 6F;
 
     public static void registerToItem(Item pItem)
     {

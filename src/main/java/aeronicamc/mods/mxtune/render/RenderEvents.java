@@ -252,7 +252,7 @@ public class RenderEvents
 
                 if (GroupClient.isGrouped(livingEntity.getId()))
                 {
-                    placardStack.setDamageValue(livingEntity.getId());
+                    placardStack.setDamageValue(GroupClient.getPlacardState(livingEntity.getId()));
                     Vector3d entityPos = livingEntity.getPosition(pPartialTicks);
 
                     pMatrixStack.pushPose();

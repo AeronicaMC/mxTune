@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.managers;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
+import aeronicamc.mods.mxtune.network.messages.SyncGroupMemberState;
 import aeronicamc.mods.mxtune.network.messages.SyncGroupsMessage;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -20,14 +21,22 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class GroupManager
 {
     private static final Logger LOGGER = LogManager.getLogger(GroupManager.class);
     private static final Map<Integer, Group> groups = new ConcurrentHashMap<>();
+    private static final Map<Integer, Integer> memberState = new ConcurrentHashMap<>();
+    private static final Map<Integer, String> memberMusic = new ConcurrentHashMap<>();
+
+    public static final int REST = 0;
+    public static final int QUEUED = 1;
+    public static final int PLAYING = 2;
 
     public static void clear()
     {
@@ -49,7 +58,7 @@ public class GroupManager
     {
         synchronized (groups)
         {
-            if (isNotMemberOfAnyGroup(leader.getId()))
+            if (isNotGrouped(leader.getId()))
             {
                 Group group = new Group(leader.getId());
                 groups.put(group.getGroupId(), group);
@@ -72,7 +81,7 @@ public class GroupManager
 
             if (leader != null)
             {
-                if (isNotMemberOfAnyGroup(member.getId()))
+                if (isNotGrouped(member.getId()))
                 {
                     if (group.notFull())
                     {
@@ -144,6 +153,9 @@ public class GroupManager
                 else
                     livingEntity.sendMessage(new StringTextComponent(String.format("%s left the group", member)), livingEntity.getUUID());
             }
+            memberState.remove(memberId);
+            memberMusic.remove(memberId);
+            syncStatus();
         }
     }
 
@@ -217,9 +229,20 @@ public class GroupManager
      * Search all groups for the memberID.
      *
      * @param memberId member to search for
+     * @return true if the memberID is found.
+     */
+    static boolean isGrouped(int memberId)
+    {
+        return groups.values().stream().anyMatch(group -> group.isMember(memberId));
+    }
+
+    /**
+     * Search all groups for the memberID.
+     *
+     * @param memberId member to search for
      * @return true if the memberID is not found.
      */
-    private static boolean isNotMemberOfAnyGroup(int memberId)
+    private static boolean isNotGrouped(int memberId)
     {
         return groups.values().stream().noneMatch(group -> group.isMember(memberId));
     }
@@ -260,16 +283,16 @@ public class GroupManager
      * @param memberId of a group
      * @return a {@link Tuple<Integer,Boolean>} where if {@link Tuple<Integer,Boolean>#getB()} is true then {@link Tuple<Integer,Boolean>#getA()} contains a valid Integer
      */
-    static Tuple<Integer, Boolean> getGroupDuration(Integer memberId)
+    static int getGroupDuration(int memberId)
     {
         Group group = getMembersGroup(memberId);
         if (!group.isEmpty())
-            return new Tuple<>(group.getMaxDuration(), true);
+            return 0;
         else
-            return new Tuple<>(0, false);
+            return group.getMaxDuration();
     }
 
-    private static void sync()
+    static void sync()
     {
         LOGGER.debug("sync groups total {}", groups.size());
         PacketDispatcher.sendToAll(new SyncGroupsMessage(groups));
@@ -277,12 +300,82 @@ public class GroupManager
 
     public static void syncTo(@Nullable ServerPlayerEntity listeningPlayer)
     {
-        synchronized (groups)
+        if (listeningPlayer != null)
         {
-            LOGGER.debug("sync all to {}: group count {}", listeningPlayer != null ? listeningPlayer.getDisplayName().getString() : "-dead beef-", groups.size());
-            if (listeningPlayer != null)
+            synchronized (groups)
+            {
                 PacketDispatcher.sendTo(new SyncGroupsMessage(groups), listeningPlayer);
+                LOGGER.debug("sync all to {}: group count {}", listeningPlayer.getDisplayName().getString(), groups.size());
+            }
+            synchronized (memberState)
+            {
+                cleanStatus();
+                PacketDispatcher.sendTo(new SyncGroupMemberState(memberState), listeningPlayer);
+                LOGGER.debug("sync memberStates count {}", memberState.size());
+            }
         }
+    }
+
+    static void syncStatus()
+    {
+        cleanStatus();
+        PacketDispatcher.sendToAll(new SyncGroupMemberState(memberState));
+        LOGGER.debug("sync memberStates count {}", memberState.size());
+    }
+
+    static void cleanStatus()
+    {
+        Set<Integer> remove = new HashSet<>();
+        memberState.keySet().stream().filter(GroupManager::isNotGrouped).forEach(remove::add);
+        remove.forEach(memberState::remove);
+    }
+
+    static void queuePart(int playID, int memberId, String musicText)
+    {
+       memberMusic.put(memberId, musicText);
+       setState(memberId, QUEUED);
+       syncStatus();
+    }
+
+    static void setState(int memberId, int state)
+    {
+        synchronized (memberState)
+        {
+            memberState.put(memberId, state);
+        }
+    }
+
+    static void setGroupPlaying(int memberId)
+    {
+        synchronized (memberState)
+        {
+            getMembersGroup(memberId).getMembers().forEach(member -> {
+                if (memberState.getOrDefault(member, REST).equals(QUEUED))
+                    setState(member, PLAYING);
+            });
+        }
+        syncStatus();
+    }
+
+    static void setGroupRest(int memberId)
+    {
+        synchronized (memberState)
+        {
+            getMembersGroup(memberId).getMembers().forEach(memberState::remove);
+        }
+        syncStatus();
+    }
+
+    static String getGroupsMusicText(int memberId)
+    {
+        StringBuilder musicText = new StringBuilder();
+        synchronized (memberMusic) { getMembersGroup(memberId).getMembers().forEach(member -> musicText.append(memberMusic.getOrDefault(member, ""))); }
+        return musicText.toString();
+    }
+
+    static void removeGroupsMusicText(int memberId)
+    {
+        synchronized (memberMusic) { getMembersGroup(memberId).getMembers().forEach(memberMusic::remove); }
     }
 
     @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
@@ -291,7 +384,7 @@ public class GroupManager
         @SubscribeEvent
         public static void event(PlayerSleepInBedEvent event)
         {
-            if (!event.getPlayer().level.isClientSide() && !isNotMemberOfAnyGroup(event.getPlayer().getId()))
+            if (!event.getPlayer().level.isClientSide() && !isNotGrouped(event.getPlayer().getId()))
             {
                 event.getPlayer().displayClientMessage(new TranslationTextComponent("message.mxtune.groupManager.cannot_sleep_when_grouped"), true);
                 event.setResult(PlayerEntity.SleepResult.OTHER_PROBLEM);

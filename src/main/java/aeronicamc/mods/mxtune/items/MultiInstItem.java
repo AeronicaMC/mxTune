@@ -68,7 +68,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
                 }
             }
         }
-        return ActionResult.pass(pPlayer.getItemInHand(pHand));
+        return ActionResult.consume(pPlayer.getItemInHand(pHand));
     }
 
     /**
@@ -119,7 +119,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
         {
             if (!pIsSelected && PlayManager.isActivePlayId(playId))
             {
-                PlayManager.stopPlayId(playId);
+                PlayManager.stopPlayId(playId, pEntity.getId());
                 setPlayId(pStack, PlayIdSupplier.INVALID);
             }
             // Check for expired sheet music. Deposit scrap in the players inventory if space permits or in the world.
@@ -137,7 +137,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
             int playId = getPlayId(pStack);
             if (PlayManager.isActivePlayId(playId))
             {
-                PlayManager.stopPlayId(playId);
+                PlayManager.stopPlayId(playId, pPlayer.getId());
                 setPlayId(pStack, PlayIdSupplier.INVALID);
             }
         }
@@ -153,7 +153,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
             int playId = getPlayId(pStack);
             if (PlayManager.isActivePlayId(playId))
             {
-                PlayManager.stopPlayId(playId);
+                PlayManager.stopPlayId(playId, 0);
                 setPlayId(pStack, PlayIdSupplier.INVALID);
             }
         }

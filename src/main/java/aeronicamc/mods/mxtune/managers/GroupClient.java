@@ -12,12 +12,14 @@ public class GroupClient
 {
     private static final Logger LOGGER = LogManager.getLogger(GroupClient.class);
     private static final Map<Integer, Group> groupMap = new ConcurrentHashMap<>();
+    private static final Map<Integer, Integer> memberState = new ConcurrentHashMap<>();
 
     public static void clear()
     {
         synchronized (groupMap)
         {
             groupMap.clear();
+            memberState.clear();
         }
     }
 
@@ -25,8 +27,9 @@ public class GroupClient
     {
         synchronized (groupMap)
         {
+            LOGGER.debug("-----");
             LOGGER.debug("Apply GroupMap Server/Client: {}/{}", pGroupMap.size(), groupMap.size());
-            groupMap.forEach((id, group) -> LOGGER.debug("Before  {}", group));
+            groupMap.forEach((id, group) -> LOGGER.debug("  Before {}", group));
             Set<Integer> serverKeys = pGroupMap.keySet();
             Set<Integer> removeKeys = new HashSet<>();
             pGroupMap.forEach((kS, vS) -> {
@@ -41,7 +44,33 @@ public class GroupClient
             });
             removeKeys.forEach(groupMap::remove);
             LOGGER.debug("Final GroupMap Server/Client: {}/{}", pGroupMap.size(), groupMap.size());
-            groupMap.forEach((id, group) -> LOGGER.debug("After  {}", group));
+            groupMap.forEach((id, group) -> LOGGER.debug("  After  {}", group));
+        }
+    }
+
+    public static void setMemberState(Map<Integer, Integer> memberStateIn)
+    {
+        synchronized (memberState)
+        {
+            LOGGER.debug("-----");
+            LOGGER.debug("Apply memberState Server/Client: {}/{}", memberStateIn.size(), memberState.size());
+            memberState.forEach((id, state) -> LOGGER.debug("  Before  {}", state));
+            memberState.forEach((member, state) -> LOGGER.debug("    member: {} state: {}", member, state));
+            Set<Integer> serverKeys = memberStateIn.keySet();
+            Set<Integer> removeKeys = new HashSet<>();
+            memberStateIn.forEach((kS, vS) -> {
+                if (memberState.get(kS) != null && !memberState.get(kS).equals(memberStateIn.get(kS)))
+                    memberState.replace(kS, vS);
+                else
+                    memberState.putIfAbsent(kS, vS);
+            });
+            memberState.keySet().forEach(kC -> {
+                if (!serverKeys.contains(kC))
+                    removeKeys.add(kC);
+            });
+            removeKeys.forEach(memberState::remove);
+            memberState.forEach((id, state) -> LOGGER.debug("  After  {}", state));
+            memberState.forEach((member, state) -> LOGGER.debug("    member: {} state: {}", member, state));
         }
     }
 
@@ -64,8 +93,9 @@ public class GroupClient
         return groupMap.values().stream().anyMatch(group -> group.getLeader() == memberId);
     }
 
-    public static byte getPlacardState(int memberId)
+    public static int getPlacardState(int memberId)
     {
-        return (byte) ((isLeader(memberId) ? 4 : 0));
+        int state = memberState.getOrDefault(memberId, 0);
+        return ((isLeader(memberId) ? 4 : 0) + state);
     }
 }
