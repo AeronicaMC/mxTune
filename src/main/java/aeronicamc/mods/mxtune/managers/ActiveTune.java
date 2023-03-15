@@ -73,8 +73,7 @@ public class ActiveTune
                 }, 500, 1000, TimeUnit.MILLISECONDS);
         try
         {
-            //noinspection ResultOfMethodCallIgnored
-            lock.await(Integer.MAX_VALUE, TimeUnit.MILLISECONDS);
+            LOGGER.debug("Wait forever? {} ", lock.await(Integer.MAX_VALUE, TimeUnit.MILLISECONDS));
         }
         catch (InterruptedException e)
         {
