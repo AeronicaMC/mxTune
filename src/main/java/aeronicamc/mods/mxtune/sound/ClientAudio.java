@@ -255,7 +255,7 @@ public class ClientAudio
     private static void parseMML(AudioData audioData, String musicText)
     {
         // Optimization: Parse MML once and store the resulting MIDI Sequence.
-        if (!ActiveAudio.hasSequence(audioData.getPlayId()))
+        if (ActiveAudio.needsMidiSequence(audioData.getPlayId()))
         {
             LoggedTimer timer = new LoggedTimer();
             timer.start(String.format("%d: Parse MML", audioData.getPlayId()));

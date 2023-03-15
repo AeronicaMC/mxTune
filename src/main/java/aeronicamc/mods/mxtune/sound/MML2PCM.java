@@ -41,7 +41,7 @@ public class MML2PCM
             ClientAudio.Status status = ClientAudio.Status.PLAY;
             try
             {
-                if (!ActiveAudio.hasSequence(audioData.getPlayId()))
+                if (ActiveAudio.needsMidiSequence(audioData.getPlayId()))
                     throw new ModMidiException("SequenceProxy expired");
                 Midi2WavRenderer mw = new Midi2WavRenderer();
                 AudioInputStream pcmStream = mw.createPCMStream(ActiveAudio.getSequence(audioData.getPlayId()), audioData);

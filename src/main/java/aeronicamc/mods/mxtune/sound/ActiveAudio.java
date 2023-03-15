@@ -122,9 +122,9 @@ public class ActiveAudio
             }
     }
 
-    static boolean hasSequence(int playId)
+    static boolean needsMidiSequence(int playId)
     {
-        return playIdToMidiSequence.containsKey(playId);
+        return !playIdToMidiSequence.containsKey(playId);
     }
 
     static Sequence getSequence(int playId)
@@ -185,7 +185,6 @@ public class ActiveAudio
                 }, 500, 1000, TimeUnit.MILLISECONDS);
         try
         {
-            //noinspection ResultOfMethodCallIgnored
             LOGGER.debug("Wait forever {}", lock.await(Integer.MAX_VALUE, TimeUnit.MILLISECONDS));
         } catch (InterruptedException e)
         {
