@@ -185,7 +185,7 @@ public class ClientAudio
         }
         else
         {
-            LOGGER.warn("ClientAudio#play(Integer playID, BlockPos pos, String musicText): playID is null!");
+            LOGGER.warn("ClientAudio#play(Integer playID, BlockPos pos, String musicText): playId is INVALID!");
         }
     }
 
