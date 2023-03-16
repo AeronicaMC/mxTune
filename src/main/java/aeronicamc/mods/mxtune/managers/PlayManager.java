@@ -130,22 +130,26 @@ public final class PlayManager
     private static int queueJam(PlayerEntity playerIn, String musicText, int duration, int playerId)
     {
         int playId = getGroupsPlayId(playerId);
+        Group group = GroupManager.getMembersGroup(playerId);
         GroupManager.queuePart(playId, playerId, musicText);
         GroupManager.setMemberPartDuration(playerId, duration);
 
-        if (GroupManager.isLeader(playerId))
+        if (group.getLeader() == playerId)
         {
             String groupMusicText = GroupManager.getGroupsMusicText(playerId);
-            int groupMusicDuration = GroupManager.getGroupDuration(playerId);
+            int groupMusicDuration = group.getMaxDuration();
+
+            // prep for next tune
+            group.resetMaxDuration();
+            group.setPlayId(INVALID);
             GroupManager.removeGroupsMusicText(playerId);
+
             GroupManager.setGroupPlaying(playerId);
-            GroupManager.getMembersGroup(playerId).setPlayId(INVALID);
             GroupManager.sync();
 
-            // TODO: Review and improve
             addActivePlayId(playerId, null, playId, groupMusicText, groupMusicDuration);
-            PlayMusicMessage packetPlaySolo = new PlayMusicMessage(playId, LocalDateTime.now(ZoneId.of("GMT0")).toString(), groupMusicDuration, 0, playerId, groupMusicText);
-            PacketDispatcher.sendToTrackingEntityAndSelf(packetPlaySolo, playerIn);
+            PlayMusicMessage packetPlayJam = new PlayMusicMessage(playId, LocalDateTime.now(ZoneId.of("GMT0")).toString(), groupMusicDuration, 0, playerId, groupMusicText);
+            PacketDispatcher.sendToTrackingEntityAndSelf(packetPlayJam, playerIn);
         }
         return playId;
     }
