@@ -286,7 +286,7 @@ public class GroupManager
     static int getGroupDuration(int memberId)
     {
         Group group = getMembersGroup(memberId);
-        if (!group.isEmpty())
+        if (group.isEmpty())
             return 0;
         else
             return group.getMaxDuration();
