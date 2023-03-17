@@ -16,6 +16,8 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
+import java.util.Objects;
+
 public class MusicVenueRenderer
 {
     private static final Minecraft mc = Minecraft.getInstance();
@@ -35,10 +37,10 @@ public class MusicVenueRenderer
 
         MusicVenueProvider.getMusicVenues(level).filter(areas -> isToolInHotBar(player)).ifPresent(
                 areas -> {
-                    areas.getMusicVenues().stream()
+                    areas.getMusicVenues().stream().filter(Objects::nonNull)
                             // Sort areas so the transparency renders properly with regard to each other and the camera.
                             .sorted((o1, o2) -> Double.compare(o2.getVenueAABB().getCenter().distanceToSqr(camera), o1.getVenueAABB().getCenter().distanceToSqr(camera)))
-                            .filter(venue-> pClippingHelper.isVisible(venue.getVenueAABB())).forEach(
+                            .filter(venue -> pClippingHelper.isVisible(venue.getVenueAABB())).forEach(
                                 (venue) -> {
                                     IVertexBuilder vertexBuilder1 = pBuffer.getBuffer(ModRenderType.TRANSPARENT_QUADS_NO_TEXTURE);
                                     RenderHelper.renderFaces(pMatrixStack, vertexBuilder1, venue.getVenueAABB(), camX, camY, camZ, venue.getR(), venue.getG(), venue.getB(), 0.1F);
