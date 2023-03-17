@@ -5,7 +5,6 @@ import aeronicamc.mods.mxtune.network.NetworkLongUtfHelper;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.logging.log4j.LogManager;
@@ -14,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 public class PlayMusicMessage extends AbstractMessage<PlayMusicMessage>
@@ -67,19 +67,17 @@ public class PlayMusicMessage extends AbstractMessage<PlayMusicMessage>
     {
         if (ctx.get().getDirection().getReceptionSide().isClient())
         {
-            ctx.get().enqueueWork(() -> {
-                if (Minecraft.getInstance().player != null){
-                    final PlayerEntity player = Minecraft.getInstance().player;
-                    Entity sender = player.level.getEntity(message.entityId);
-                    String senderName = sender != null ? sender.getDisplayName().getString() : "--Server--";
-                    LocalDateTime dateTimeClient = LocalDateTime.now(ZoneId.of("GMT0"));
-                    LocalDateTime dateTimeServer = message.secondsElapsed > 0 ? LocalDateTime.parse(message.dateTimeServer) : dateTimeClient;
-                    long netTransitTime = Duration.between(dateTimeServer, dateTimeClient).toMillis();
-                    LOGGER.debug("In transit: {} ms, From: {} to: {}", netTransitTime, senderName, Minecraft.getInstance().player.getDisplayName().getString());
-                    LOGGER.debug("Duration: {}, Skip seconds: {}, playId: {}, entityId: {}", message.duration, message.secondsElapsed, message.playId, message.entityId);
-                    ClientAudio.play(message.duration, message.secondsElapsed, netTransitTime, message.playId, message.entityId, message.musicText);
-                }
-        });
+            ctx.get().enqueueWork(() ->
+                {
+                  Entity sender = Objects.requireNonNull(Minecraft.getInstance().player).level.getEntity(message.entityId);
+                  String senderName = sender != null ? sender.getDisplayName().getString() : "--Server--";
+                  LocalDateTime dateTimeClient = LocalDateTime.now(ZoneId.of("GMT0"));
+                  LocalDateTime dateTimeServer = message.secondsElapsed > 0 ? LocalDateTime.parse(message.dateTimeServer) : dateTimeClient;
+                  long netTransitTime = Duration.between(dateTimeServer, dateTimeClient).toMillis();
+                  LOGGER.debug("In transit: {} ms, From: {} to: {}", netTransitTime, senderName, Minecraft.getInstance().player.getDisplayName().getString());
+                  LOGGER.debug("Duration: {}, Skip seconds: {}, playId: {}, entityId: {}", message.duration, message.secondsElapsed, message.playId, message.entityId);
+                  ClientAudio.play(message.duration, message.secondsElapsed, netTransitTime, message.playId, message.entityId, message.musicText);
+                });
         }
         ctx.get().setPacketHandled(true);
     }
