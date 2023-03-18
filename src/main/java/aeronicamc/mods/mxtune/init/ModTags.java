@@ -16,10 +16,16 @@ public class ModTags
     public static class Items
     {
         public static final Tags.IOptionalNamedTag<Item> TOOLS_WRENCH = forgeTag("tools/wrench");
+        public static final Tags.IOptionalNamedTag<Item> INSTRUMENTS = mxtuneTag("instruments/multi_inst");
     }
 
     private static Tags.IOptionalNamedTag<Item> forgeTag(String name) {
 
         return ItemTags.createOptional(new ResourceLocation(Reference.MOD_ID_FORGE, name));
+    }
+
+    private static Tags.IOptionalNamedTag<Item> mxtuneTag(String name)
+    {
+        return ItemTags.createOptional(new ResourceLocation(Reference.MOD_ID, name));
     }
 }

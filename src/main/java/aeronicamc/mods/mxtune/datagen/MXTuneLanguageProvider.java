@@ -25,7 +25,6 @@ public class MXTuneLanguageProvider extends LanguageProvider
         add("container.mxtune.inv_test_block.more", "More...");
         add("gui.mxtune.gui_test.title", "Gui Test Screen");
         add("item.mxtune.music_item", "Music Item");
-        add("item.mxtune.gui_test_item", "Wrench Test Item");
 
         add(ModEntities.MUSIC_SOURCE.get(), "[MusicSource]");
 
@@ -67,6 +66,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         add(ModItems.MUSIC_PAPER.get(), "Music Paper");
         add(ModItems.PLACARD_ITEM.get(), "Placard State");
         add(ModItems.MUSIC_VENUE_INFO.get(), "Music Venue Info Panel");
+        add(ModItems.WRENCH.get(), "Wooden Wrench");
         addTooltip("music_paper.help", "Right-Click to OPEN");
         addTooltip("music_score.shift_parts_01", "Hold SHIFT to see parts");
         addTooltip("music_score.n_part_score", "%s Part Score");

@@ -52,8 +52,8 @@ public class ModItems
     public static final RegistryObject<MusicVenueToolItem> MUSIC_VENUE_TOOL = ITEMS.register("music_venue_tool",
         () -> new MusicVenueToolItem(defaultItemProperties().stacksTo(1)));
 
-    public static final RegistryObject<GuiTestItem> GUI_TEST_ITEM = ITEMS.register("gui_test_item",
-        () -> new GuiTestItem(defaultItemProperties().stacksTo(1)));
+    public static final RegistryObject<WrenchItem> WRENCH = ITEMS.register("wrench",
+        () -> new WrenchItem(defaultItemProperties().stacksTo(1)));
 
     public static final RegistryObject<MusicPaperItem> MUSIC_PAPER = ITEMS.register("music_paper",
         () -> new MusicPaperItem(defaultItemProperties().stacksTo(16)));

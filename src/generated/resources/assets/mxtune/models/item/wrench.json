@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "mxtune:item/gui_test_item"
+    "layer0": "mxtune:item/wrench"
   }
 }

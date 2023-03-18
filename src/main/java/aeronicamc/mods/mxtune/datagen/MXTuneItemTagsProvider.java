@@ -20,6 +20,7 @@ public class MXTuneItemTagsProvider extends ItemTagsProvider
     @Override
     protected void addTags()
     {
-        tag(ModTags.Items.TOOLS_WRENCH).add(ModItems.GUI_TEST_ITEM.get());
+        tag(ModTags.Items.TOOLS_WRENCH).add(ModItems.WRENCH.get());
+        tag(ModTags.Items.INSTRUMENTS).add(ModItems.MULTI_INST.get());
     }
 }

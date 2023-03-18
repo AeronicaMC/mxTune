@@ -22,10 +22,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class GuiTestItem extends Item
+public class WrenchItem extends Item
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    public GuiTestItem(Properties properties)
+    public WrenchItem(Properties properties)
     {
         super(properties);
     }
@@ -48,35 +48,6 @@ public class GuiTestItem extends Item
     public ActionResult<ItemStack> use(@Nonnull World worldIn, @Nonnull PlayerEntity playerIn, @Nonnull Hand handIn)
     {
         ItemStack itemstack = playerIn.getItemInHand(handIn);
-//        if (!worldIn.isClientSide)
-//        {
-//            if (!playerIn.isShiftKeyDown())
-//            {
-//                //PacketDispatcher.sendTo(new OpenScreenMessage(OpenScreenMessage.SM.TEST_ONE), (ServerPlayerEntity) playerIn);
-//                PlayerNexusProvider.getNexus(playerIn).ifPresent(p->{
-//                        p.setPlayId(worldIn.getRandom().nextInt(10) + 5);
-//                });
-//                MusicVenueProvider.getMusicVenues(playerIn.level).ifPresent(s->{
-//                    s.setInt((worldIn.getRandom().nextInt(50)) + 50);
-//                });
-//            }
-//            else
-//            {
-//                //PacketDispatcher.sendTo(new OpenScreenMessage(OpenScreenMessage.SM.TEST_TWO), (ServerPlayerEntity) playerIn);
-//            }
-//
-//        } else if (!playerIn.isShiftKeyDown())
-//        {
-//            // nop
-//        } else
-//        {
-//            PlayerNexusProvider.getNexus(playerIn).ifPresent(p->{
-//                LOGGER.debug("PlayerNexus: playId: {}", p.getPlayId());
-//            });
-//            MusicVenueProvider.getMusicVenues(playerIn.level).ifPresent(s->{
-//                LOGGER.debug("MusicVenus: someInt: {}, Venues {}", s.getInt(), s.getMusicVenues().size());
-//            });
-//        }
         return ActionResult.pass(itemstack);
     }
 
