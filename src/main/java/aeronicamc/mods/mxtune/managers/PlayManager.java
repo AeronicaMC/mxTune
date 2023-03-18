@@ -130,7 +130,7 @@ public final class PlayManager
     private static int queueJam(PlayerEntity playerIn, String musicText, int duration, int playerId)
     {
         int playId = getGroupsPlayId(playerId);
-        Group group = GroupManager.getMembersGroup(playerId);
+        Group group = GroupManager.getGroup(playerId);
         GroupManager.queuePart(playId, playerId, musicText);
         GroupManager.setMemberPartDuration(playerId, duration);
 
@@ -163,7 +163,7 @@ public final class PlayManager
      */
     private static int getGroupsPlayId(Integer membersId)
     {
-        Group group = GroupManager.getMembersGroup(membersId);
+        Group group = GroupManager.getGroup(membersId);
         int playId = INVALID;
         if (!group.isEmpty())
             if (group.getPlayId() == INVALID)

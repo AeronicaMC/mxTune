@@ -140,7 +140,7 @@ public class GroupManager
     // TODO: Setup localization for the remove member chat messages
     public static void removeMember(@Nullable LivingEntity livingEntity, int memberId)
     {
-        Group group = getMembersGroup(livingEntity != null ? livingEntity.getId() : 0);
+        Group group = getGroup(livingEntity != null ? livingEntity.getId() : 0);
         if (removeMember(memberId))
         {
             if (livingEntity != null && !group.isEmpty())
@@ -206,21 +206,10 @@ public class GroupManager
     }
 
     /**
-     * Searches all groups and returns the group or null.
-     *
-     * @param groupId member in question
-     * @return the Group or the Group.EMPTY.
-     */
-    private static Group getGroup(int groupId)
-    {
-        return groups.getOrDefault(groupId, Group.EMPTY);
-    }
-
-    /**
      * @param memberId search all groups for thia member.
      * @return the Group or the Group.EMPTY.
      */
-    public static Group getMembersGroup(int memberId)
+    public static Group getGroup(int memberId)
     {
         return groups.values().stream().filter(group -> group.isMember(memberId)).findFirst().orElse(Group.EMPTY);
     }
@@ -258,7 +247,7 @@ public class GroupManager
      */
     public static void setLeader(int memberId)
     {
-        Group group = getMembersGroup(memberId);
+        Group group = getGroup(memberId);
         if (!group.isEmpty())
         {
             group.setLeader(memberId);
@@ -273,7 +262,7 @@ public class GroupManager
      */
     static void setMemberPartDuration(Integer membersId, int duration)
     {
-        Group group = getMembersGroup(membersId);
+        Group group = getGroup(membersId);
         if (!group.isEmpty())
             group.setPartDuration(duration);
     }
@@ -285,7 +274,7 @@ public class GroupManager
      */
     static int getGroupDuration(int memberId)
     {
-        Group group = getMembersGroup(memberId);
+        Group group = getGroup(memberId);
         if (group.isEmpty())
             return 0;
         else
@@ -349,7 +338,7 @@ public class GroupManager
     {
         synchronized (memberState)
         {
-            getMembersGroup(memberId).getMembers().forEach(member -> {
+            getGroup(memberId).getMembers().forEach(member -> {
                 if (memberState.getOrDefault(member, REST).equals(QUEUED))
                     setState(member, PLAYING);
             });
@@ -361,7 +350,7 @@ public class GroupManager
     {
         synchronized (memberState)
         {
-            getMembersGroup(memberId).getMembers().forEach(memberState::remove);
+            getGroup(memberId).getMembers().forEach(memberState::remove);
         }
         syncStatus();
     }
@@ -369,13 +358,13 @@ public class GroupManager
     static String getGroupsMusicText(int memberId)
     {
         StringBuilder musicText = new StringBuilder();
-        synchronized (memberMusic) { getMembersGroup(memberId).getMembers().forEach(member -> musicText.append(memberMusic.getOrDefault(member, ""))); }
+        synchronized (memberMusic) { getGroup(memberId).getMembers().forEach(member -> musicText.append(memberMusic.getOrDefault(member, ""))); }
         return musicText.toString();
     }
 
     static void removeGroupsMusicText(int memberId)
     {
-        synchronized (memberMusic) { getMembersGroup(memberId).getMembers().forEach(memberMusic::remove); }
+        synchronized (memberMusic) { getGroup(memberId).getMembers().forEach(memberMusic::remove); }
     }
 
     @Mod.EventBusSubscriber(modid = Reference.MOD_ID)

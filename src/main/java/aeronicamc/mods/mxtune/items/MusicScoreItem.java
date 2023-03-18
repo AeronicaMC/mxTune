@@ -87,7 +87,7 @@ public class MusicScoreItem extends Item implements IMusic
         {
             if (!pPlayer.isShiftKeyDown())
             {
-                if (GroupManager.getMembersGroup(pPlayer.getId()).isEmpty())
+                if (GroupManager.getGroup(pPlayer.getId()).isEmpty())
                 {
                     GroupManager.addGroup(pPlayer);
                     Entity entity = (new ChickenEntity(EntityType.CHICKEN, pLevel));
@@ -95,7 +95,7 @@ public class MusicScoreItem extends Item implements IMusic
                     entity.setSilent(true);
                     entity.setCustomName(new StringTextComponent(String.format("%d", entity.getId())));
                     pPlayer.level.addFreshEntity(entity);
-                    GroupManager.addMember(GroupManager.getMembersGroup(pPlayer.getId()).getGroupId(), entity);
+                    GroupManager.addMember(GroupManager.getGroup(pPlayer.getId()).getGroupId(), entity);
                 }
             }
             else

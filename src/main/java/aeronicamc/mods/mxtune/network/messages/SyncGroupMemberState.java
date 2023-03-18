@@ -56,7 +56,7 @@ public class SyncGroupMemberState extends AbstractMessage<SyncGroupMemberState>
             ctx.get().enqueueWork(() ->
                                   {
                                       final Optional<World> optionalWorld = LogicalSidedProvider.CLIENTWORLD.get(ctx.get().getDirection().getReceptionSide());
-                                      optionalWorld.ifPresent(world -> GroupClient.setMemberState(message.memberState));
+                                      optionalWorld.ifPresent(world -> GroupClient.setMemberStates(message.memberState));
                                   });
         }
         ctx.get().setPacketHandled(true);

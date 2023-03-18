@@ -79,7 +79,7 @@ public class SyncGroupsMessage extends AbstractMessage<SyncGroupsMessage>
             ctx.get().enqueueWork(() ->
                                   {
                                       final Optional<World> optionalWorld = LogicalSidedProvider.CLIENTWORLD.get(ctx.get().getDirection().getReceptionSide());
-                                      optionalWorld.ifPresent(world -> GroupClient.setGroupMap(message.groupMap));
+                                      optionalWorld.ifPresent(world -> GroupClient.setGroups(message.groupMap));
                                   });
         }
         ctx.get().setPacketHandled(true);

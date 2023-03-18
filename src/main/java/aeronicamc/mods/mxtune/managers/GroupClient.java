@@ -16,14 +16,11 @@ public class GroupClient
 
     public static void clear()
     {
-        synchronized (groupMap)
-        {
-            groupMap.clear();
-            memberState.clear();
-        }
+        synchronized (groupMap) { groupMap.clear(); }
+        synchronized (memberState) { memberState.clear(); }
     }
 
-    public static void setGroupMap(Map<Integer, Group> pGroupMap)
+    public static void setGroups(Map<Integer, Group> pGroupMap)
     {
         synchronized (groupMap)
         {
@@ -48,18 +45,18 @@ public class GroupClient
         }
     }
 
-    public static void setMemberState(Map<Integer, Integer> memberStateIn)
+    public static void setMemberStates(Map<Integer, Integer> pMemberState)
     {
         synchronized (memberState)
         {
             LOGGER.debug("-----");
-            LOGGER.debug("Apply memberState Server/Client: {}/{}", memberStateIn.size(), memberState.size());
+            LOGGER.debug("Apply memberState Server/Client: {}/{}", pMemberState.size(), memberState.size());
             memberState.forEach((id, state) -> LOGGER.debug("  Before  {}", state));
             memberState.forEach((member, state) -> LOGGER.debug("    member: {} state: {}", member, state));
-            Set<Integer> serverKeys = memberStateIn.keySet();
+            Set<Integer> serverKeys = pMemberState.keySet();
             Set<Integer> removeKeys = new HashSet<>();
-            memberStateIn.forEach((kS, vS) -> {
-                if (memberState.get(kS) != null && !memberState.get(kS).equals(memberStateIn.get(kS)))
+            pMemberState.forEach((kS, vS) -> {
+                if (memberState.get(kS) != null && !memberState.get(kS).equals(pMemberState.get(kS)))
                     memberState.replace(kS, vS);
                 else
                     memberState.putIfAbsent(kS, vS);
@@ -75,10 +72,10 @@ public class GroupClient
     }
 
     /**
-     * @param memberId search all groups for thia member.
+     * @param memberId search all groups for this member.
      * @return the Group or the Group.EMPTY.
      */
-    public static Group getMembersGroup(int memberId)
+    public static Group getGroup(int memberId)
     {
         return groupMap.values().stream().filter(group -> group.isMember(memberId)).findFirst().orElse(Group.EMPTY);
     }
@@ -95,7 +92,6 @@ public class GroupClient
 
     public static int getPlacardState(int memberId)
     {
-        int state = memberState.getOrDefault(memberId, 0);
-        return ((isLeader(memberId) ? 4 : 0) + state);
+        return ((isLeader(memberId) ? 4 : 0) + memberState.getOrDefault(memberId, 0));
     }
 }
