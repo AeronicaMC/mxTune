@@ -195,10 +195,11 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
         return true;
     }
 
+    // Don't start playing when clicking on PlayerEntity
     @Override
     public ActionResultType interactLivingEntity(ItemStack pStack, PlayerEntity pPlayer, LivingEntity pTarget, Hand pHand)
     {
-        return ActionResultType.PASS;
+        return pTarget instanceof PlayerEntity ? ActionResultType.CONSUME : ActionResultType.SUCCESS;
     }
 
     // Prevent the item from activating [this.use(...)] when clicking a block with a TileEntity

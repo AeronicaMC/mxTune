@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " S ",
+    " SS",
+    "S  "
+  ],
+  "key": {
+    "S": {
+      "tag": "forge:rods"
+    }
+  },
+  "result": {
+    "item": "mxtune:wrench"
+  }
+}

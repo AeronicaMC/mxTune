@@ -2,13 +2,12 @@ package aeronicamc.mods.mxtune.datagen;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.datagen.crafting.recipe.EnhancedShapedRecipeBuilder;
+import aeronicamc.mods.mxtune.init.ModBlocks;
 import aeronicamc.mods.mxtune.init.ModItems;
+import aeronicamc.mods.mxtune.init.ModTags;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.data.RecipeProvider;
-import net.minecraft.data.ShapelessRecipeBuilder;
+import net.minecraft.data.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
@@ -54,10 +53,36 @@ public class MXTuneRecipeProvider extends RecipeProvider
 
         {
             ShapelessRecipeBuilder.shapeless(ModItems.MUSIC_VENUE_TOOL.get(), 1)
-                    .requires(MULTI_INST.get())
+                    .requires(ModTags.Items.INSTRUMENTS)
                     .requires(Tags.Items.RODS_WOODEN)
-                    .unlockedBy("has_instrument", has(MULTI_INST.get()))
+                    .unlockedBy("has_instrument", has(ModTags.Items.INSTRUMENTS))
                     .unlockedBy("has_rods_wooden", has(Tags.Items.RODS_WOODEN))
+                    .save(recipeConsumer);
+        }
+
+        {
+            ShapedRecipeBuilder.shaped(ModItems.WRENCH.get(), 1)
+                    .pattern(" S ")
+                    .pattern(" SS")
+                    .pattern("S  ")
+                    .define('S', Tags.Items.RODS)
+                    .unlockedBy("has_rods_wooden", has(Tags.Items.RODS_WOODEN))
+                    .unlockedBy("has_music_machines", has(ModTags.Items.MUSIC_MACHINES))
+                    .save(recipeConsumer);
+        }
+
+        {
+            ShapedRecipeBuilder.shaped(ModBlocks.MUSIC_BLOCK.get().asItem(), 1)
+                    .pattern("IPI")
+                    .pattern("ARA")
+                    .pattern("AAA")
+                    .define('R', Tags.Items.DUSTS_REDSTONE)
+                    .define('P', Items.GLASS_PANE)
+                    .define('A', Items.ACACIA_PLANKS)
+                    .define('I', Tags.Items.NUGGETS_GOLD)
+                    .unlockedBy("has_dusts_redstone", has(Tags.Items.DUSTS_REDSTONE))
+                    .unlockedBy("has_glass_panes", has(Items.GLASS_PANE))
+                    .unlockedBy("has_nuggets_iron", has(Tags.Items.NUGGETS_GOLD))
                     .save(recipeConsumer);
         }
     }

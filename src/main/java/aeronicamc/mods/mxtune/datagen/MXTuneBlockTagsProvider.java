@@ -1,6 +1,8 @@
 package aeronicamc.mods.mxtune.datagen;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.init.ModBlocks;
+import aeronicamc.mods.mxtune.init.ModTags;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -17,6 +19,6 @@ public class MXTuneBlockTagsProvider extends BlockTagsProvider
     @Override
     protected void addTags()
     {
-        /* NOP */
+        tag(ModTags.Blocks.MUSIC_MACHINES).add(ModBlocks.MUSIC_BLOCK.get());
     }
 }

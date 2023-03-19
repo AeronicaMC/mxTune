@@ -2,26 +2,36 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "mxtune:music_venue_tool"
+      "mxtune:music_block"
     ]
   },
   "criteria": {
-    "has_instrument": {
+    "has_dusts_redstone": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "tag": "mxtune:instruments/instrument"
+            "tag": "forge:dusts/redstone"
           }
         ]
       }
     },
-    "has_rods_wooden": {
+    "has_glass_panes": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "tag": "forge:rods/wooden"
+            "item": "minecraft:glass_pane"
+          }
+        ]
+      }
+    },
+    "has_nuggets_iron": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "forge:nuggets/gold"
           }
         ]
       }
@@ -29,14 +39,15 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "mxtune:music_venue_tool"
+        "recipe": "mxtune:music_block"
       }
     }
   },
   "requirements": [
     [
-      "has_instrument",
-      "has_rods_wooden",
+      "has_dusts_redstone",
+      "has_glass_panes",
+      "has_nuggets_iron",
       "has_the_recipe"
     ]
   ]

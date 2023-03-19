@@ -2,20 +2,10 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "mxtune:music_venue_tool"
+      "mxtune:wrench"
     ]
   },
   "criteria": {
-    "has_instrument": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "tag": "mxtune:instruments/instrument"
-          }
-        ]
-      }
-    },
     "has_rods_wooden": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
@@ -26,17 +16,27 @@
         ]
       }
     },
+    "has_music_machines": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "tag": "mxtune:music_machines/music_machine"
+          }
+        ]
+      }
+    },
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "mxtune:music_venue_tool"
+        "recipe": "mxtune:wrench"
       }
     }
   },
   "requirements": [
     [
-      "has_instrument",
       "has_rods_wooden",
+      "has_music_machines",
       "has_the_recipe"
     ]
   ]

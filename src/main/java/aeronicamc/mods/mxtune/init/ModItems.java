@@ -68,7 +68,7 @@ public class ModItems
         () -> new MusicVenueInfoItem(defaultItemProperties().stacksTo(4)));
 
     public static final RegistryObject<MultiInstItem> MULTI_INST = ITEMS.register("multi_inst",
-                                                                                  () -> new MultiInstItem(defaultItemProperties().stacksTo(1).setNoRepair()));
+        () -> new MultiInstItem(defaultItemProperties().stacksTo(1).setNoRepair()));
 
     /**
      * Gets an {@link Item.Properties} instance with the {@link ItemGroup} set to {@link MXTune#ITEM_GROUP}.

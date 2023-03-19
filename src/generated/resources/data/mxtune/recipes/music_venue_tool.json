@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
     {
-      "item": "mxtune:multi_inst"
+      "tag": "mxtune:instruments/instrument"
     },
     {
       "tag": "forge:rods/wooden"

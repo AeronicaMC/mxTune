@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IPI",
+    "ARA",
+    "AAA"
+  ],
+  "key": {
+    "R": {
+      "tag": "forge:dusts/redstone"
+    },
+    "P": {
+      "item": "minecraft:glass_pane"
+    },
+    "A": {
+      "item": "minecraft:acacia_planks"
+    },
+    "I": {
+      "tag": "forge:nuggets/gold"
+    }
+  },
+  "result": {
+    "item": "mxtune:music_block"
+  }
+}
