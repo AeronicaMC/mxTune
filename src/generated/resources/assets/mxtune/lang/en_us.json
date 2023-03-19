@@ -1,5 +1,4 @@
 {
-  "block.mxtune.inv_test_block": "Inventory Test Block",
   "block.mxtune.music_block": "Music Block",
   "block.mxtune.music_venue_tool_block": "Music Venue Marker",
   "chat.mxtune.groupManager.cannot_join_too_many": "Cannot join %s group. It is full.",
@@ -14,7 +13,6 @@
   "config.mxtune.server.listener_range": "Listener Range",
   "config.mxtune.server.sheet_music_life_in_days": "Sheet Music Life in Days",
   "container.mxtune.block_music.more": "%s More",
-  "container.mxtune.inv_test_block.more": "More...",
   "entity.mxtune.music_source": "[MusicSource]",
   "entity.mxtune.music_venue_info": "Music Venue Info Panel",
   "enum.mxtune.tool_state.type.done": "Done",

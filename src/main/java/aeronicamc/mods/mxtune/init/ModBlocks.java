@@ -2,7 +2,6 @@ package aeronicamc.mods.mxtune.init;
 
 import aeronicamc.mods.mxtune.MXTune;
 import aeronicamc.mods.mxtune.Reference;
-import aeronicamc.mods.mxtune.blocks.InvTestBlock;
 import aeronicamc.mods.mxtune.blocks.MusicBlock;
 import aeronicamc.mods.mxtune.blocks.MusicVenueToolBlock;
 import net.minecraft.block.Block;
@@ -56,9 +55,6 @@ public class ModBlocks
     private static boolean isInitialized;
 
     public static final RegistryObject<MusicBlock> MUSIC_BLOCK = registerBlock("music_block", MusicBlock::new);
-
-    public static final RegistryObject<InvTestBlock> INV_TEST_BLOCK = registerBlock("inv_test_block",
-        () -> new InvTestBlock(Block.Properties.of(Material.WOOD).strength(1.5F)));
 
     public static final RegistryObject<MusicVenueToolBlock> MUSIC_VENUE_TOOL_BLOCK =
             registerBlock("music_venue_tool_block",

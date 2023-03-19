@@ -17,7 +17,6 @@
 package aeronicamc.mods.mxtune;
 
 
-import aeronicamc.mods.mxtune.blocks.InvTestScreen;
 import aeronicamc.mods.mxtune.caches.FileHelper;
 import aeronicamc.mods.mxtune.caches.ModDataStore;
 import aeronicamc.mods.mxtune.caps.player.PlayerNexusProvider;
@@ -117,7 +116,6 @@ public class MXTune
 
     private void clientSetup(final FMLClientSetupEvent event)
     {
-        ScreenManager.register(ModContainers.INV_TEST_CONTAINER.get(), InvTestScreen::new);
         ScreenManager.register(ModContainers.MUSIC_BLOCK_CONTAINER.get(), MusicBlockScreen::new);
         ScreenManager.register(ModContainers.INSTRUMENT_CONTAINER.get(), MultiInstScreen::new);
         MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());

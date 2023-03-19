@@ -1,8 +1,0 @@
-{
-  "variants": {
-    "facing=north": { "model": "mxtune:block/inv_test_block" },
-    "facing=south": { "model": "mxtune:block/inv_test_block", "y": 180 },
-    "facing=west": { "model": "mxtune:block/inv_test_block", "y": 270 },
-    "facing=east": { "model": "mxtune:block/inv_test_block", "y": 90 }
-  }
-}

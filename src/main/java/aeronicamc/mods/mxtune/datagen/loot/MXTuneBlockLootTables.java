@@ -17,9 +17,7 @@ public class MXTuneBlockLootTables extends BlockLootTables
     {
         // TODO: populate as needed
         dropSelf(ModBlocks.MUSIC_VENUE_TOOL_BLOCK.get());
-
         add(ModBlocks.MUSIC_BLOCK.get(), MXTuneBlockLootTables::notDroppingRollsZERO);
-        add(ModBlocks.INV_TEST_BLOCK.get(), MXTuneBlockLootTables::notDroppingRollsZERO);
     }
 
     @Override

@@ -21,8 +21,6 @@ public class MXTuneLanguageProvider extends LanguageProvider
     protected void addTranslations()
     {
         // TODO: remove raw testing translations
-        add("block.mxtune.inv_test_block", "Inventory Test Block");
-        add("container.mxtune.inv_test_block.more", "More...");
         add("gui.mxtune.gui_test.title", "Gui Test Screen");
         add("item.mxtune.music_item", "Music Item");
 
