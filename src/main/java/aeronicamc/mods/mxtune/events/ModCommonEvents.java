@@ -6,15 +6,18 @@ import aeronicamc.mods.mxtune.blocks.IMusicPlayer;
 import aeronicamc.mods.mxtune.blocks.LockableHelper;
 import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
 import aeronicamc.mods.mxtune.entity.MusicVenueInfoEntity;
+import aeronicamc.mods.mxtune.init.ModTags;
 import aeronicamc.mods.mxtune.managers.PlayManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -53,10 +56,18 @@ public class ModCommonEvents
     }
 
     @SubscribeEvent
-    public static void event(PlayerContainerEvent.Close event)
+    public static void event(PlayerInteractEvent.EntityInteractSpecific event)
     {
         if(!event.getEntityLiving().getCommandSenderWorld().isClientSide())
-            LOGGER.debug("{}", event.getContainer());
+        {
+            LOGGER.debug("Source: {}, Target: {}", event.getPlayer().getDisplayName().getString(), event.getTarget().getDisplayName().getString());
+            LOGGER.debug("isInstrument? {}, Part: {}", hasInstrument(event.getItemStack()), event.getLocalPos());
+        }
+    }
+
+    private static boolean hasInstrument(ItemStack itemStack)
+    {
+        return itemStack.getItem().is(ModTags.Items.INSTRUMENTS);
     }
 
     // Test if a player can break this block with a BE of type ILockable.
