@@ -72,14 +72,14 @@ public class ModCommonEvents
             LOGGER.debug("Initiator: {} right-clicked Target: {} with a {}. Is it an Instrument? {}",
                          initiator.getDisplayName().getString(),
                          target.getDisplayName().getString(),
-                         itemName(event.getItemStack()), hasInstrument(event.getItemStack()) ? "Yes" : "No");
-            if (!tarGroup.isEmpty() && tarGroup.getLeader() == target.getId() && iniGroup.isEmpty())
+                         hooverName(event.getItemStack()), hasInstrument(event.getItemStack()) ? "Yes" : "No");
+            if (tarGroup.isValid() && tarGroup.getLeader() == target.getId() && iniGroup.isEmpty())
             {
                 initiator.sendMessage(new TranslationTextComponent("chat.mxtune.groupManager.requests_to_join", target.getName()), target.getUUID());
                 LOGGER.debug("{} Requests to join group", initiator.getDisplayName().getString());
                 GroupManager.addMember(tarGroup.getGroupId(), initiator); // TODO this is a test only. Adding self to targets group is a no-no :P
             }
-            else if (!tarGroup.isEmpty())
+            else if (tarGroup.isValid())
             {
                 if (tarGroup.getLeader() != target.getId() && iniGroup.isEmpty())
                     target.sendMessage(new TranslationTextComponent("chat.mxtune.groupManager.player_not_leader", target.getName()), target.getUUID());
@@ -104,7 +104,7 @@ public class ModCommonEvents
         return itemStack.getItem().is(ModTags.Items.INSTRUMENTS) || itemStack.getItem().is(ModTags.Items.MUSIC_MACHINES);
     }
 
-    private static String itemName(ItemStack itemStack)
+    private static String hooverName(ItemStack itemStack)
     {
         return itemStack.getHoverName().getString();
     }

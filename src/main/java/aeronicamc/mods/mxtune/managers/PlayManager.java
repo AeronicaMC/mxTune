@@ -165,7 +165,7 @@ public final class PlayManager
     {
         Group group = GroupManager.getGroup(membersId);
         int playId = INVALID;
-        if (!group.isEmpty())
+        if (group.isValid())
             if (group.getPlayId() == INVALID)
             {
                 playId = getNextPlayID();

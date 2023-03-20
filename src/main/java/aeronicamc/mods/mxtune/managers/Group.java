@@ -118,6 +118,11 @@ public class Group
         return this == EMPTY;
     }
 
+    public boolean isValid()
+    {
+        return this != EMPTY;
+    }
+
     @Override
     public String toString()
     {

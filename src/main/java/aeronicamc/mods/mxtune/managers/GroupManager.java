@@ -143,7 +143,7 @@ public class GroupManager
         Group group = getGroup(livingEntity != null ? livingEntity.getId() : 0);
         if (removeMember(memberId))
         {
-            if (livingEntity != null && !group.isEmpty())
+            if (livingEntity != null && group.isValid())
             {
                 LivingEntity memberEntity = (LivingEntity) livingEntity.level.getEntity(memberId);
                 LivingEntity leader = (LivingEntity) livingEntity.level.getEntity(group.getLeader());
@@ -248,7 +248,7 @@ public class GroupManager
     public static void setLeader(int memberId)
     {
         Group group = getGroup(memberId);
-        if (!group.isEmpty())
+        if (group.isValid())
         {
             group.setLeader(memberId);
             sync();
@@ -263,7 +263,7 @@ public class GroupManager
     static void setMemberPartDuration(Integer membersId, int duration)
     {
         Group group = getGroup(membersId);
-        if (!group.isEmpty())
+        if (group.isValid())
             group.setPartDuration(duration);
     }
 
