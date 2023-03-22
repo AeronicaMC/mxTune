@@ -54,6 +54,9 @@ import static net.minecraftforge.common.util.Constants.BlockFlags;
 import static net.minecraftforge.common.util.Constants.NBT;
 
 
+/**
+ * TODO: Review redstone states, week-power, etc. The current state is flaky at best.
+ */
 @SuppressWarnings("deprecation")
 public class MusicBlock extends Block implements IWrenchAble
 {
