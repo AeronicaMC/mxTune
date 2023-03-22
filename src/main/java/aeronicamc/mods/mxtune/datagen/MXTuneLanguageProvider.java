@@ -175,6 +175,8 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.right_rs_out.help03", "Outputs a single 10 tick pulse at the end of a song/cancel.");
         addGuiText("button.right_rs_out.disabled", "Output Disabled");
         addGuiText("button.right_rs_out.enabled", "Output Enabled");
+
+        addGuiText("MultiInstScreen.auto_select_instrument", "Auto Select");
     }
 
     private void addChats()

@@ -23,6 +23,7 @@
   "errors.mxtune.mml_server_side_validation_failure": "Server side music validation error",
   "errors.mxtune.sheet_music_too_old": "The Sheet Music is unreadable!",
   "errors.mxtune.sheet_music_write_failure": "Unable to write Sheet Music!",
+  "gui.mxtune.MultiInstScreen.auto_select_instrument": "Auto Select",
   "gui.mxtune.button.back_rs_in.disabled": "Input Disabled",
   "gui.mxtune.button.back_rs_in.enabled": "Input Enabled",
   "gui.mxtune.button.back_rs_in.help01": "Back Side Redstone Input Toggle",
