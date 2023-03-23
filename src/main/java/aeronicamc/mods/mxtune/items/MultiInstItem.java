@@ -98,16 +98,27 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
     /**
      * Get this stack's patch, or 0 if no patch is defined.
      */
-    @SuppressWarnings("all")
     @Override
     public int getPatch(ItemStack itemStack) {
-        return (itemStack.hasTag() && itemStack.getTag().contains(PATCH)) ? itemStack.getTag().getInt(PATCH) : SoundFontProxyManager.getSoundFontProxyDefault().index;
+        return (itemStack.hasTag() && itemStack.getTag() != null && itemStack.getTag().contains(PATCH)) ? itemStack.getTag().getInt(PATCH) : SoundFontProxyManager.getSoundFontProxyDefault().index;
     }
 
     @Override
     public void setPatch(ItemStack itemStack, int patch)
     {
         itemStack.getOrCreateTag().putInt(PATCH, Math.max(0, patch));
+    }
+
+    @Override
+    public boolean getAutoSelect(ItemStack itemStack)
+    {
+        return itemStack.hasTag() && itemStack.getTag() != null && itemStack.getTag().contains(KEY_AUTO_SELECT) && itemStack.getTag().getBoolean(KEY_AUTO_SELECT);
+    }
+
+    @Override
+    public void setAutoSelect(ItemStack itemStack, boolean auto)
+    {
+        itemStack.getOrCreateTag().putBoolean(KEY_AUTO_SELECT, auto);
     }
 
     // Stop playing if active and the item is no longer selected.
