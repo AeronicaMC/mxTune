@@ -1,8 +1,8 @@
 package aeronicamc.mods.mxtune.gui;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.gui.widget.GuiVSlideSwitch;
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
-import aeronicamc.mods.mxtune.gui.widget.list.MXCheckBoxButton;
 import aeronicamc.mods.mxtune.inventory.MultiInstContainer;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
@@ -21,9 +21,9 @@ import java.util.Objects;
 public class MultiInstScreen extends ContainerScreen<MultiInstContainer>
 {
     private static final ResourceLocation GUI = new ResourceLocation(Reference.MOD_ID, "textures/gui/container/multi_inst_item.png");
-    private static final ITextComponent CHECKBOX_AUTO = new TranslationTextComponent("gui.mxtune.MultiInstScreen.auto_select_instrument");
+    private static final ITextComponent LABEL_AUTO = new TranslationTextComponent("gui.mxtune.MultiInstScreen.auto_select_instrument");
     private final MXButton buttonChangeInstrument = new MXButton(this::openSelector);
-    private final MXCheckBoxButton checkBoxAutoSelect = new MXCheckBoxButton();
+    private final GuiVSlideSwitch autoSelectState = new GuiVSlideSwitch(p -> onChangeAuto());
 
     public MultiInstScreen(MultiInstContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
@@ -48,10 +48,10 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer>
         buttonChangeInstrument.setLayout(xPos, yPos, imageWidth - 24, 20);
         this.addButton(buttonChangeInstrument);
 
-        checkBoxAutoSelect.setMessage(CHECKBOX_AUTO);
-        checkBoxAutoSelect.setLayout(xPos + 18 + 32 + 10, yPos + 36, Objects.requireNonNull(minecraft).font.width(CHECKBOX_AUTO) + 30, 20);
-        checkBoxAutoSelect.setShowLabel(false);
-        this.addButton(checkBoxAutoSelect);
+        autoSelectState.setMessage(LABEL_AUTO);
+        autoSelectState.setLayout(xPos + 18 + 32 + 10, yPos + 36, /* Objects.requireNonNull(minecraft).font.width(CHECKBOX_AUTO) + 30*/ 20, 20);
+
+        this.addButton(autoSelectState);
 
         updateButton(((IInstrument)inventory.getSelected().getItem()).getPatch(inventory.getSelected()));
     }
@@ -61,9 +61,19 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer>
         return ((IInstrument)inventory.getSelected().getItem()).getPatch(inventory.getSelected());
     }
 
+    boolean isAutoSelectEnable()
+    {
+        return autoSelectState.getOnOff();
+    }
+
     void updateButton(int selected)
     {
         buttonChangeInstrument.setMessage(new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(selected)));
+    }
+
+    private void onChangeAuto()
+    {
+        autoSelectState.setOnOff(!autoSelectState.getOnOff()); // toggle
     }
 
     @Override

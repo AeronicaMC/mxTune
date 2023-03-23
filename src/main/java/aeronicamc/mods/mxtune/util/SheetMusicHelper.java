@@ -163,6 +163,25 @@ public class SheetMusicHelper
         return 0;
     }
 
+    public static String getSuggestedInstrumentId(ItemStack sheetMusicStack)
+    {
+        CompoundNBT contents = sheetMusicStack.getTag();
+        if (contents != null && contents.contains(KEY_SHEET_MUSIC))
+        {
+            CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
+            if ((sm.contains(KEY_MUSIC_TEXT_KEY) && sm.contains(KEY_PART_ID)))
+            {
+                return sm.getString(KEY_PART_ID);
+            }
+        }
+        return SoundFontProxyManager.INSTRUMENT_DEFAULT_ID;
+    }
+
+    public static int getSuggestedInstrumentIndex(ItemStack sheetMusicStack)
+    {
+        return SoundFontProxyManager.getIndexById(getSuggestedInstrumentId(sheetMusicStack));
+    }
+
     public static List<ITextComponent> getFormattedMusicScoreParts(ItemStack musicScoreStack)
     {
         List<ITextComponent> part = new ArrayList<>();
