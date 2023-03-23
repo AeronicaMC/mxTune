@@ -50,7 +50,6 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer>
 
         autoSelectState.setMessage(LABEL_AUTO);
         autoSelectState.setLayout(xPos + 18 + 32 + 10, yPos + 36, /* Objects.requireNonNull(minecraft).font.width(CHECKBOX_AUTO) + 30*/ 20, 20);
-
         this.addButton(autoSelectState);
 
         updateButton(((IInstrument)inventory.getSelected().getItem()).getPatch(inventory.getSelected()));
