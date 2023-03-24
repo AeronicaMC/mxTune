@@ -1,7 +1,7 @@
 package aeronicamc.mods.mxtune.network.messages;
 
+import aeronicamc.mods.mxtune.inventory.MultiInstContainer;
 import aeronicamc.mods.mxtune.util.IInstrument;
-import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -10,22 +10,22 @@ import java.util.function.Supplier;
 
 public class ChooseInstrumentMessage extends AbstractMessage<ChooseInstrumentMessage>
 {
-    int index;
+    int signals;
 
     public ChooseInstrumentMessage()
     {
-        this.index = 0;
+        this.signals = 0;
     }
 
     public ChooseInstrumentMessage(int index)
     {
-        this.index = index;
+        this.signals = index;
     }
 
     @Override
     public void encode(ChooseInstrumentMessage message, PacketBuffer buffer)
     {
-        buffer.writeInt(message.index);
+        buffer.writeInt(message.signals);
     }
 
     @Override
@@ -42,9 +42,13 @@ public class ChooseInstrumentMessage extends AbstractMessage<ChooseInstrumentMes
             ctx.get().enqueueWork(() ->{
 
                 ServerPlayerEntity sPlayer = ctx.get().getSender();
-                if (sPlayer != null && !sPlayer.getMainHandItem().isEmpty() && sPlayer.getMainHandItem().getItem() instanceof IInstrument)
+                if (sPlayer != null && !sPlayer.getMainHandItem().isEmpty() && sPlayer.containerMenu != null && sPlayer.getMainHandItem().getItem() instanceof IInstrument)
                 {
-                    ((IInstrument)sPlayer.getMainHandItem().getItem()).setPatch(sPlayer.getMainHandItem(), SoundFontProxyManager.getProxy(message.index).index);
+                    ((MultiInstContainer) sPlayer.containerMenu).setSignals(message.signals);
+//                    final IInstrument instItem = (IInstrument) sPlayer.getMainHandItem().getItem();
+//                    final ItemStack instStack = sPlayer.getMainHandItem();
+//                    instItem.setPatch(instStack, (message.signals & 0x0FFF));
+//                    instItem.setAutoSelect(instStack,(message.signals & 0x2000) > 0);
                 }
             });
         ctx.get().setPacketHandled(true);

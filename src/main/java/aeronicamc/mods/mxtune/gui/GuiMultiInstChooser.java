@@ -3,9 +3,7 @@ package aeronicamc.mods.mxtune.gui;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.gui.widget.list.SoundFontList;
 import aeronicamc.mods.mxtune.init.ModItems;
-import aeronicamc.mods.mxtune.network.PacketDispatcher;
-import aeronicamc.mods.mxtune.network.messages.ChooseInstrumentMessage;
-import aeronicamc.mods.mxtune.util.IInstrument;
+import aeronicamc.mods.mxtune.inventory.MultiInstContainer;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -28,12 +26,14 @@ public class GuiMultiInstChooser extends Screen
     private int guiLeft;
     private int guiTop;
     private final Screen parent;
+    private final MultiInstContainer menu;
     private final SoundFontList widget = new SoundFontList().init();
 
-    public GuiMultiInstChooser(Screen parent)
+    public GuiMultiInstChooser(Screen parent, MultiInstContainer menu)
     {
         super(new TranslationTextComponent("gui.mxtune.label.instruments"));
         this.parent = parent;
+        this.menu = menu;
         setSelected(((MultiInstScreen)parent).getInstrument());
     }
 
@@ -67,9 +67,7 @@ public class GuiMultiInstChooser extends Screen
     private void selectCallback(SoundFontList.Entry selected, Boolean doubleClicked)
     {
         getPlayer(Objects.requireNonNull(minecraft)).ifPresent(player->{
-            ((IInstrument)player.inventory.getSelected().getItem()).setPatch(player.inventory.getSelected(), selected.getIndex());
             ((MultiInstScreen)parent).updateButton(selected.getIndex());
-            PacketDispatcher.sendToServer(new ChooseInstrumentMessage(selected.getIndex()));
         });
         if (doubleClicked)
             onClose();

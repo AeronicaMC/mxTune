@@ -103,6 +103,27 @@ public class SheetMusicHelper
         return getFormattedMusicTitle(sheetMusicStack).plainCopy().getString();
     }
 
+    public static String getIInstrumentPartId(ItemStack sheetMusicStack)
+    {
+        CompoundNBT contents = sheetMusicStack.getTag();
+        if (contents != null && contents.contains(KEY_SHEET_MUSIC))
+        {
+            CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
+            if (sm.contains(KEY_EXTRA_DATA))
+            {
+                byte[] extraData = sm.getByteArray(KEY_EXTRA_DATA);
+                if (extraData.length == 2)
+                    return sm.getString(String.format("%s%d",KEY_PART_ID, 0));
+            }
+        }
+        return SoundFontProxyManager.INSTRUMENT_DEFAULT_ID;
+    }
+
+    public int getIInstrumentPartIndex(ItemStack sheetMusicStack)
+    {
+        return SoundFontProxyManager.getIndexById(getIInstrumentPartId(sheetMusicStack));
+    }
+
     public static ITextComponent getFormattedExtraText(ItemStack sheetMusicStack)
     {
         CompoundNBT contents = sheetMusicStack.getTag();
@@ -163,18 +184,10 @@ public class SheetMusicHelper
         return 0;
     }
 
-    public static String getSuggestedInstrumentId(ItemStack sheetMusicStack)
+    public static String getSuggestedInstrumentId(ItemStack InstrumentStack)
     {
-        CompoundNBT contents = sheetMusicStack.getTag();
-        if (contents != null && contents.contains(KEY_SHEET_MUSIC))
-        {
-            CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
-            if ((sm.contains(KEY_MUSIC_TEXT_KEY) && sm.contains(KEY_PART_ID)))
-            {
-                return sm.getString(KEY_PART_ID);
-            }
-        }
-        return SoundFontProxyManager.INSTRUMENT_DEFAULT_ID;
+        ItemStack sheetMusic = getIMusicFromIInstrument(InstrumentStack);
+        return sheetMusic.isEmpty() ? SoundFontProxyManager.INSTRUMENT_DEFAULT_ID : getIInstrumentPartId(sheetMusic);
     }
 
     public static int getSuggestedInstrumentIndex(ItemStack sheetMusicStack)
@@ -370,6 +383,11 @@ public class SheetMusicHelper
             }
         }
         return ItemStack.EMPTY;
+    }
+
+    public static boolean hasSheetMusic(ItemStack instrumentStack)
+    {
+        return !getIMusicFromIInstrument(instrumentStack).isEmpty();
     }
 
     /**

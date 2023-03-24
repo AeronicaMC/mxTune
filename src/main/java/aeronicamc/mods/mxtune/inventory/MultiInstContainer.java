@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.inventory;
 
 
 import aeronicamc.mods.mxtune.init.ModContainers;
+import aeronicamc.mods.mxtune.util.IChangedCallBack;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -11,6 +12,7 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Hand;
+import net.minecraft.util.IntReferenceHolder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -19,15 +21,21 @@ import net.minecraftforge.fml.network.IContainerFactory;
 
 import javax.annotation.Nullable;
 
-public class MultiInstContainer extends Container
+public class MultiInstContainer extends Container implements IChangedCallBack
 {
+    private final IInstrument instItem;
+    private final ItemStack instStack;
+    private final World level;
+    private IChangedCallBack chainedCallback;
 
     public MultiInstContainer(int windowId, World world, @Nullable BlockPos pos, PlayerInventory playerInventory , PlayerEntity playerEntity)
     {
         super(ModContainers.INSTRUMENT_CONTAINER.get(), windowId);
-        MultiInstInventory multiInstInventory = new MultiInstInventory(playerEntity.getItemInHand(Hand.MAIN_HAND));
-
-        this.addSlot(new SlotInstrument(multiInstInventory, 0, 12, 8 + 2 * 18));
+        instItem = (IInstrument) playerEntity.getMainHandItem().getItem();
+        instStack = playerEntity.getItemInHand(Hand.MAIN_HAND);
+        MultiInstInventory multiInstInventory = new MultiInstInventory(instStack);
+        this.level = world;
+        this.addSlot(new SlotInstrument(multiInstInventory, 0, 12, 8 + 2 * 18, this));
 
         // Player Inventory
         for (int i = 0; i < 3; i++) {
@@ -39,6 +47,59 @@ public class MultiInstContainer extends Container
         // Player HotBar
         for (int i = 0; i < 9; i++) {
             this.addSlot(new SlotHotBar(playerInventory, i, i * 18 + 12, 142));
+        }
+    }
+
+    @Override
+    public void onChangedCallback()
+    {
+        if (level.isClientSide)
+        {
+            if (chainedCallback != null)
+                chainedCallback.onChangedCallback();
+        }
+    }
+
+    public void setChainedCallback(IChangedCallBack callBack)
+    {
+        this.chainedCallback = callBack;
+    }
+
+    private void trackSignals()
+    {
+        addDataSlot(new IntReferenceHolder() {
+            @Override
+            public int get()
+            {
+                return getSignals();
+            }
+
+            @Override
+            public void set(int pValue)
+            {
+                setSignals(pValue);
+            }
+        });
+    }
+
+    public int getSignals()
+    {
+        int signals = 0;
+        if (instItem != null && !instStack.isEmpty())
+        {
+            signals += instItem.getPatch(instStack) & 0x0FFF;
+            signals += instItem.getAutoSelect(instStack) ? 0x2000 : 0;
+
+        }
+        return signals;
+    }
+
+    public void setSignals(int signals)
+    {
+        if (instItem != null && !instStack.isEmpty())
+        {
+            instItem.setPatch(instStack, (signals & 0x0FFF));
+            instItem.setAutoSelect(instStack,(signals & 0x2000) > 0);
         }
     }
 
