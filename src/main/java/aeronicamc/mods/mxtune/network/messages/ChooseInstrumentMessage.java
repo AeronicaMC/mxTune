@@ -45,10 +45,6 @@ public class ChooseInstrumentMessage extends AbstractMessage<ChooseInstrumentMes
                 if (sPlayer != null && !sPlayer.getMainHandItem().isEmpty() && sPlayer.containerMenu != null && sPlayer.getMainHandItem().getItem() instanceof IInstrument)
                 {
                     ((MultiInstContainer) sPlayer.containerMenu).setSignals(message.signals);
-//                    final IInstrument instItem = (IInstrument) sPlayer.getMainHandItem().getItem();
-//                    final ItemStack instStack = sPlayer.getMainHandItem();
-//                    instItem.setPatch(instStack, (message.signals & 0x0FFF));
-//                    instItem.setAutoSelect(instStack,(message.signals & 0x2000) > 0);
                 }
             });
         ctx.get().setPacketHandled(true);
