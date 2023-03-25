@@ -26,14 +26,12 @@ public class GuiMultiInstChooser extends Screen
     private int guiLeft;
     private int guiTop;
     private final Screen parent;
-    private final MultiInstContainer menu;
     private final SoundFontList widget = new SoundFontList().init();
 
     public GuiMultiInstChooser(Screen parent, MultiInstContainer menu)
     {
         super(new TranslationTextComponent("gui.mxtune.label.instruments"));
         this.parent = parent;
-        this.menu = menu;
         setSelected(((MultiInstScreen)parent).getInstrument());
     }
 
@@ -41,8 +39,7 @@ public class GuiMultiInstChooser extends Screen
     public void init(Minecraft pMinecraft, int pWidth, int pHeight)
     {
         super.init(pMinecraft, pWidth, pHeight);
-        assert minecraft != null;
-        this.minecraft.keyboardHandler.setSendRepeatsToGui(true);
+        Objects.requireNonNull(this.minecraft).keyboardHandler.setSendRepeatsToGui(true);
         this.width = pWidth;
         this.height = pHeight;
         this.guiLeft = (this.width - imageWidth) / 2;
@@ -100,7 +97,7 @@ public class GuiMultiInstChooser extends Screen
     public void onClose()
     {
         removed();
-        this.minecraft.setScreen(null);
+        Objects.requireNonNull(this.minecraft).setScreen(null);
     }
 
     @Override

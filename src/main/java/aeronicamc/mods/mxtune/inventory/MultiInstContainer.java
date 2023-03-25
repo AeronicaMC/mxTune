@@ -2,7 +2,6 @@ package aeronicamc.mods.mxtune.inventory;
 
 
 import aeronicamc.mods.mxtune.init.ModContainers;
-import aeronicamc.mods.mxtune.util.IChangedCallBack;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -21,12 +20,10 @@ import net.minecraftforge.fml.network.IContainerFactory;
 
 import javax.annotation.Nullable;
 
-public class MultiInstContainer extends Container implements IChangedCallBack
+public class MultiInstContainer extends Container
 {
     private final IInstrument instItem;
     private final ItemStack instStack;
-    private final World level;
-    private IChangedCallBack chainedCallback;
 
     public MultiInstContainer(int windowId, World world, @Nullable BlockPos pos, PlayerInventory playerInventory , PlayerEntity playerEntity)
     {
@@ -34,8 +31,7 @@ public class MultiInstContainer extends Container implements IChangedCallBack
         instItem = (IInstrument) playerEntity.getMainHandItem().getItem();
         instStack = playerEntity.getItemInHand(Hand.MAIN_HAND);
         MultiInstInventory multiInstInventory = new MultiInstInventory(instStack);
-        this.level = world;
-        this.addSlot(new SlotInstrument(multiInstInventory, 0, 12, 8 + 2 * 18, this));
+        this.addSlot(new SlotInstrument(multiInstInventory, 0, 12, 8 + 2 * 18));
 
         // Player Inventory
         for (int i = 0; i < 3; i++) {
@@ -48,21 +44,7 @@ public class MultiInstContainer extends Container implements IChangedCallBack
         for (int i = 0; i < 9; i++) {
             this.addSlot(new SlotHotBar(playerInventory, i, i * 18 + 12, 142));
         }
-    }
-
-    @Override
-    public void onChangedCallback()
-    {
-        if (level.isClientSide)
-        {
-            if (chainedCallback != null)
-                chainedCallback.onChangedCallback();
-        }
-    }
-
-    public void setChainedCallback(IChangedCallBack callBack)
-    {
-        this.chainedCallback = callBack;
+        trackSignals();
     }
 
     private void trackSignals()
@@ -87,9 +69,8 @@ public class MultiInstContainer extends Container implements IChangedCallBack
         int signals = 0;
         if (instItem != null && !instStack.isEmpty())
         {
-            signals += instItem.getPatch(instStack) & 0x0FFF;
+            signals += instItem.getPatch(instStack) & 0x00FF;
             signals += instItem.getAutoSelect(instStack) ? 0x2000 : 0;
-
         }
         return signals;
     }
@@ -98,7 +79,7 @@ public class MultiInstContainer extends Container implements IChangedCallBack
     {
         if (instItem != null && !instStack.isEmpty())
         {
-            instItem.setPatch(instStack, (signals & 0x0FFF));
+            instItem.setPatch(instStack, (signals & 0x00FF));
             instItem.setAutoSelect(instStack,(signals & 0x2000) > 0);
         }
     }
@@ -165,9 +146,7 @@ public class MultiInstContainer extends Container implements IChangedCallBack
             if (!(inv.getSelected().getItem() instanceof IInstrument)) {
                 throw new IllegalStateException("Invalid item at " + player.getDisplayName().getString());
             }
-
             return new MultiInstContainer(windowId, world, null, inv, player);
         }
     }
-
 }

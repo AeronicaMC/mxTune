@@ -6,7 +6,6 @@ import aeronicamc.mods.mxtune.gui.widget.MXButton;
 import aeronicamc.mods.mxtune.inventory.MultiInstContainer;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.ChooseInstrumentMessage;
-import aeronicamc.mods.mxtune.util.IChangedCallBack;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
@@ -18,24 +17,22 @@ import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Objects;
 
-public class MultiInstScreen extends ContainerScreen<MultiInstContainer> implements IChangedCallBack
+public class MultiInstScreen extends ContainerScreen<MultiInstContainer>
 {
     private static final ResourceLocation GUI = new ResourceLocation(Reference.MOD_ID, "textures/gui/container/multi_inst_item.png");
     private static final ITextComponent LABEL_AUTO = new TranslationTextComponent("gui.mxtune.MultiInstScreen.auto_select_instrument");
     private final MXButton buttonChangeInstrument = new MXButton(this::openSelector);
     private final GuiVSlideSwitch autoSelectState = new GuiVSlideSwitch(p -> onChangeAuto());
-    private int count;
+
     public MultiInstScreen(MultiInstContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
         this.imageWidth = 184;
         this.imageHeight = 166;
-        screenContainer.setChainedCallback(this);
     }
 
     private void openSelector(Button button)
@@ -59,17 +56,11 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
         this.addButton(autoSelectState);
 
         getSignals();
-        //updateButton(((IInstrument)inventory.getSelected().getItem()).getPatch(inventory.getSelected()));
     }
 
     int getInstrument()
     {
         return ((IInstrument)inventory.getSelected().getItem()).getPatch(inventory.getSelected());
-    }
-
-    boolean isAutoSelectEnable()
-    {
-        return autoSelectState.getOnOff();
     }
 
     void updateButton(int selected)
@@ -83,19 +74,18 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
     private void getSignals()
     {
         int signals = getMenu().getSignals();
-        int patch = (signals & 0x0FFF);
+        int patch = (signals & 0x00FF);
         boolean autoSelect = (signals & 0x2000) > 0;
         autoSelectState.setOnOff(autoSelect);
         updateButton(patch);
-        ((IInstrument)inventory.getSelected().getItem()).setPatch(inventory.getSelected(), (signals & 0x0FFF));
-        ((IInstrument)inventory.getSelected().getItem()).setAutoSelect(inventory.getSelected(),(signals & 0x2000) > 0);
     }
 
     private void updateSignals()
     {
         int signals = 0;
-        signals += ((IInstrument)inventory.getSelected().getItem()).getPatch(inventory.getSelected()) & 0x0FFF;
+        signals += ((IInstrument)inventory.getSelected().getItem()).getPatch(inventory.getSelected()) & 0x00FF;
         signals += autoSelectState.getOnOff() ? 0x2000 : 0;
+        getMenu().setSignals(signals);
         PacketDispatcher.sendToServer(new ChooseInstrumentMessage(signals));
     }
 
@@ -104,13 +94,8 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
         autoSelectState.setOnOff(!autoSelectState.getOnOff()); // toggle
         if (autoSelectState.getOnOff() && SheetMusicHelper.hasSheetMusic(inventory.getSelected()))
             updateButton(0);
-        else updateSignals();
-    }
-
-    @Override
-    public void onChangedCallback()
-    {
-        this.count++;
+        else
+            updateSignals();
     }
 
     @Override
@@ -135,8 +120,6 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
     @Override
     protected void renderLabels(MatrixStack matrixStack , int mouseX, int mouseY) {
         this.font.draw(matrixStack, new TranslationTextComponent("container.inventory"), 10, 72, TextColorFg.DARK_GRAY);
-        this.font.draw(matrixStack, new StringTextComponent(String.format("%d", count)), 70, 72, TextColorFg.DARK_GRAY);
-
     }
 
     @Override
