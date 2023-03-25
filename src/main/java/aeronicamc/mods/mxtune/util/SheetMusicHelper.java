@@ -135,10 +135,10 @@ public class SheetMusicHelper
                 byte[] extraData = sm.getByteArray(KEY_EXTRA_DATA);
                 switch (extraData.length) {
                     case 1:
-                        return new TranslationTextComponent("tooltip.mxtune.music_score.n_part_score", extraData[0]);
+                        return new TranslationTextComponent("tooltip.mxtune.music_score.n_part_score", extraData[0]).withStyle(TextFormatting.YELLOW);
                     case 2:
                         String instrumentName = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(sm.getString(String.format("%s%d",KEY_PART_ID, 0)))).getString();
-                        return new TranslationTextComponent("tooltip.mxtune.sheet_music.n_of_m_instrument_name", extraData[0], extraData[1], instrumentName);
+                        return new TranslationTextComponent("tooltip.mxtune.sheet_music.n_of_m_instrument_name", extraData[0], extraData[1], instrumentName).withStyle(TextFormatting.YELLOW);
                     default:
                 }
             }
