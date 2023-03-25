@@ -277,7 +277,7 @@ public final class PlayManager
                         // If the musicText (MML) has already been sent to the listeners' client don't send it again.
                         //   The client caches the generated MIDI sequence.
                         String musicText = activeTune.hasListener(listeningPlayer.getId()) ? "" : activeTune.musicText;
-                        PacketDispatcher.sendTo(new PlayMusicMessage(activeTune.playId, LocalDateTime.now(ZoneId.of("GMT0")).toString(), activeTune.durationSeconds, activeTune.getSecondsElapsed(), soundSourceEntity.getId(), activeTune.musicText), listeningPlayer);
+                        PacketDispatcher.sendTo(new PlayMusicMessage(activeTune.playId, LocalDateTime.now(ZoneId.of("GMT0")).toString(), activeTune.durationSeconds, activeTune.getSecondsElapsed(), soundSourceEntity.getId(), musicText), listeningPlayer);
 
                         // Track the listener and don't resend the musicText.
                         activeTune.addListener(listeningPlayer.getId());
