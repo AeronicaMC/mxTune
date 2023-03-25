@@ -3,6 +3,7 @@ package aeronicamc.mods.mxtune.inventory;
 
 import aeronicamc.mods.mxtune.init.ModContainers;
 import aeronicamc.mods.mxtune.util.IInstrument;
+import aeronicamc.mods.mxtune.util.ISlotChangedCallback;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -24,13 +25,14 @@ public class MultiInstContainer extends Container
 {
     private final IInstrument instItem;
     private final ItemStack instStack;
+    private final MultiInstInventory multiInstInventory;
 
     public MultiInstContainer(int windowId, World world, @Nullable BlockPos pos, PlayerInventory playerInventory , PlayerEntity playerEntity)
     {
         super(ModContainers.INSTRUMENT_CONTAINER.get(), windowId);
         instItem = (IInstrument) playerEntity.getMainHandItem().getItem();
         instStack = playerEntity.getItemInHand(Hand.MAIN_HAND);
-        MultiInstInventory multiInstInventory = new MultiInstInventory(instStack);
+        multiInstInventory = new MultiInstInventory(instStack);
         this.addSlot(new SlotInstrument(multiInstInventory, 0, 12, 8 + 2 * 18));
 
         // Player Inventory
@@ -45,6 +47,16 @@ public class MultiInstContainer extends Container
             this.addSlot(new SlotHotBar(playerInventory, i, i * 18 + 12, 142));
         }
         trackSignals();
+    }
+
+    public void setSlotChangedCallback(ISlotChangedCallback slotChangedCallback)
+    {
+        this.multiInstInventory.setSlotChangedCallback(slotChangedCallback);
+    }
+
+    @Override
+    public void setItem(int pSlotID, ItemStack pStack) {
+        super.getSlot(pSlotID).set(pStack);
     }
 
     private void trackSignals()

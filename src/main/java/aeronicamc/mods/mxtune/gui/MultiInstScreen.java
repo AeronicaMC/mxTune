@@ -7,6 +7,7 @@ import aeronicamc.mods.mxtune.inventory.MultiInstContainer;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.ChooseInstrumentMessage;
 import aeronicamc.mods.mxtune.util.IInstrument;
+import aeronicamc.mods.mxtune.util.ISlotChangedCallback;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
 import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -15,24 +16,31 @@ import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Objects;
 
-public class MultiInstScreen extends ContainerScreen<MultiInstContainer>
+import static aeronicamc.mods.mxtune.util.SheetMusicHelper.getSheetMusicSoundProxyIndex;
+
+public class MultiInstScreen extends ContainerScreen<MultiInstContainer> implements ISlotChangedCallback
 {
     private static final ResourceLocation GUI = new ResourceLocation(Reference.MOD_ID, "textures/gui/container/multi_inst_item.png");
     private static final ITextComponent LABEL_AUTO = new TranslationTextComponent("gui.mxtune.MultiInstScreen.auto_select_instrument");
     private final MXButton buttonChangeInstrument = new MXButton(this::openSelector);
     private final GuiVSlideSwitch autoSelectState = new GuiVSlideSwitch(p -> onChangeAuto());
+    private int count;
 
     public MultiInstScreen(MultiInstContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
         this.imageWidth = 184;
         this.imageHeight = 166;
+        getMenu().setSlotChangedCallback(this);
     }
 
     private void openSelector(Button button)
@@ -52,9 +60,8 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer>
         this.addButton(buttonChangeInstrument);
 
         autoSelectState.setMessage(LABEL_AUTO);
-        autoSelectState.setLayout(xPos + 18 + 32 + 10, yPos + 36, /* Objects.requireNonNull(minecraft).font.width(CHECKBOX_AUTO) + 30*/ 20, 20);
+        autoSelectState.setLayout(xPos + 18 + 32 + 10, yPos + 36, 20, 20);
         this.addButton(autoSelectState);
-
         getSignals();
     }
 
@@ -71,6 +78,11 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer>
         updateSignals();
     }
 
+    void updateAutoSelectLabel()
+    {
+        autoSelectState.setMessage(autoSelectState.getOnOff() ? new StringTextComponent("Auto Select").withStyle(TextFormatting.DARK_GRAY) : new StringTextComponent("Manual").withStyle(TextFormatting.DARK_GRAY));
+    }
+
     private void getSignals()
     {
         int signals = getMenu().getSignals();
@@ -78,6 +90,7 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer>
         boolean autoSelect = (signals & 0x2000) > 0;
         autoSelectState.setOnOff(autoSelect);
         updateButton(patch);
+        updateAutoSelectLabel();
     }
 
     private void updateSignals()
@@ -94,8 +107,27 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer>
         autoSelectState.setOnOff(!autoSelectState.getOnOff()); // toggle
         if (autoSelectState.getOnOff() && SheetMusicHelper.hasSheetMusic(inventory.getSelected()))
             updateButton(0);
-        else
-            updateSignals();
+        else updateSignals();
+        updateAutoSelectLabel();
+    }
+
+    @Override
+    public void onItemStackInserted(int slotIndex, ItemStack itemStack, Type operation)
+    {
+
+        if (autoSelectState.getOnOff() && operation.equals(Type.Inserted) && slotIndex == 0 && SheetMusicHelper.hasMusicText(itemStack))
+        {
+            updateButton(getSheetMusicSoundProxyIndex(itemStack));
+            System.out.printf("Has Music? %s \n", SheetMusicHelper.hasMusicText(itemStack));
+            count++;
+        }
+    }
+
+    @Override
+    public void tick()
+    {
+        super.tick();
+
     }
 
     @Override
@@ -120,6 +152,7 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer>
     @Override
     protected void renderLabels(MatrixStack matrixStack , int mouseX, int mouseY) {
         this.font.draw(matrixStack, new TranslationTextComponent("container.inventory"), 10, 72, TextColorFg.DARK_GRAY);
+        this.font.draw(matrixStack, new StringTextComponent(String.format("%d", count)), 70, 72, TextColorFg.DARK_GRAY);
     }
 
     @Override

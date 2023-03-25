@@ -1,6 +1,8 @@
 package aeronicamc.mods.mxtune.inventory;
 
 import aeronicamc.mods.mxtune.util.IInstrument;
+import aeronicamc.mods.mxtune.util.ISlotChangedCallback;
+import aeronicamc.mods.mxtune.util.ISlotChangedCallback.Type;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
@@ -12,6 +14,7 @@ public class MultiInstInventory implements IInventory
 {
     public final NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
     private final ItemStack stack;
+    private ISlotChangedCallback slotChangedCallback = null;
 
     public MultiInstInventory(ItemStack stack)
     {
@@ -21,6 +24,12 @@ public class MultiInstInventory implements IInventory
 
         assert this.stack.getTag() != null;
         ItemStackHelper.loadAllItems(stack.getTag(), items);
+    }
+
+    public MultiInstInventory(ItemStack stack, ISlotChangedCallback slotChangedCallback)
+    {
+        this(stack);
+        this.slotChangedCallback = slotChangedCallback;
     }
 
     @Override
@@ -75,6 +84,13 @@ public class MultiInstInventory implements IInventory
             pStack.setCount(this.getMaxStackSize());
         }
         this.setChanged();
+        if (slotChangedCallback != null)
+            slotChangedCallback.onItemStackInserted(slot, pStack, Type.Inserted);
+    }
+
+    public void setSlotChangedCallback(ISlotChangedCallback slotChangedCallback)
+    {
+        this.slotChangedCallback = slotChangedCallback;
     }
 
     @Override

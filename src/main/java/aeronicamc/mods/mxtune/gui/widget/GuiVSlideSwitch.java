@@ -26,7 +26,8 @@ public class GuiVSlideSwitch extends MXButton
     public void renderButton(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks) {
         if (this.visible)
         {
-            Minecraft.getInstance().getTextureManager().bind(MusicBlockScreen.GUI);
+            Minecraft mc = Minecraft.getInstance();
+            mc.getTextureManager().bind(MusicBlockScreen.GUI);
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             GuiVSlideSwitch.Icon guiLockButton$icon;
             if (!this.active)
@@ -43,6 +44,8 @@ public class GuiVSlideSwitch extends MXButton
             }
 
             this.blit(pMatrixStack, this.x, this.y, guiLockButton$icon.getX(), guiLockButton$icon.getY(), this.width, this.height);
+            //drawString(pMatrixStack, mc.font, getMessage(), this.getRight() + 5, this.y + (height - mc.font.lineHeight)/2, -1);
+            mc.font.draw(pMatrixStack, getMessage(), this.getRight() + 5, this.y + (height - mc.font.lineHeight)/2F, -1);
         }
     }
 

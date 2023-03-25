@@ -103,9 +103,14 @@ public class SheetMusicHelper
         return getFormattedMusicTitle(sheetMusicStack).plainCopy().getString();
     }
 
-    public static String getIInstrumentPartId(ItemStack sheetMusicStack)
+    /**
+     * Get the SoundfontProxy instrument id string
+     * @param sheetMusic ItemStack
+     * @return SoundProxy instrument id string
+     */
+    public static String getSheetMusicSoundProxyId(ItemStack sheetMusic)
     {
-        CompoundNBT contents = sheetMusicStack.getTag();
+        CompoundNBT contents = sheetMusic.getTag();
         if (contents != null && contents.contains(KEY_SHEET_MUSIC))
         {
             CompoundNBT sm = contents.getCompound(KEY_SHEET_MUSIC);
@@ -119,9 +124,25 @@ public class SheetMusicHelper
         return SoundFontProxyManager.INSTRUMENT_DEFAULT_ID;
     }
 
-    public int getIInstrumentPartIndex(ItemStack sheetMusicStack)
+    /**
+     * Get the SoundfontProxy instrument index
+     * @param sheetMusic ItemStack
+     * @return SoundProxy instrument index
+     */
+    public static int getSheetMusicSoundProxyIndex(ItemStack sheetMusic)
     {
-        return SoundFontProxyManager.getIndexById(getIInstrumentPartId(sheetMusicStack));
+        return SoundFontProxyManager.getIndexById(getSheetMusicSoundProxyId(sheetMusic));
+    }
+
+    public static String getSuggestedInstrumentId(ItemStack InstrumentStack)
+    {
+        ItemStack sheetMusic = getIMusicFromIInstrument(InstrumentStack);
+        return sheetMusic.isEmpty() ? SoundFontProxyManager.INSTRUMENT_DEFAULT_ID : getSheetMusicSoundProxyId(sheetMusic);
+    }
+
+    public static int getSuggestedInstrumentIndex(ItemStack InstrumentStack)
+    {
+        return SoundFontProxyManager.getIndexById(getSuggestedInstrumentId(InstrumentStack));
     }
 
     public static ITextComponent getFormattedExtraText(ItemStack sheetMusicStack)
@@ -182,17 +203,6 @@ public class SheetMusicHelper
         }
 
         return 0;
-    }
-
-    public static String getSuggestedInstrumentId(ItemStack InstrumentStack)
-    {
-        ItemStack sheetMusic = getIMusicFromIInstrument(InstrumentStack);
-        return sheetMusic.isEmpty() ? SoundFontProxyManager.INSTRUMENT_DEFAULT_ID : getIInstrumentPartId(sheetMusic);
-    }
-
-    public static int getSuggestedInstrumentIndex(ItemStack sheetMusicStack)
-    {
-        return SoundFontProxyManager.getIndexById(getSuggestedInstrumentId(sheetMusicStack));
     }
 
     public static List<ITextComponent> getFormattedMusicScoreParts(ItemStack musicScoreStack)
@@ -385,6 +395,11 @@ public class SheetMusicHelper
         return ItemStack.EMPTY;
     }
 
+    /**
+     * Tests if the instrument contains SheetMusic
+     * @param instrumentStack MultiInst ItemStack
+     * @return true if the instrument holds a valid SheetMusic ItemStack
+     */
     public static boolean hasSheetMusic(ItemStack instrumentStack)
     {
         return !getIMusicFromIInstrument(instrumentStack).isEmpty();
