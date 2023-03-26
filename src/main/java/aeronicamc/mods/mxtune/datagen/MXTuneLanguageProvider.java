@@ -176,7 +176,11 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.right_rs_out.disabled", "Output Disabled");
         addGuiText("button.right_rs_out.enabled", "Output Enabled");
 
-        addGuiText("MultiInstScreen.auto_select_instrument", "Auto Select");
+        addGuiText("switch.multi_inst_screen.auto_select_on", "Auto Select on");
+        addGuiText("switch.multi_inst_screen.auto_select_off", "Auto Select off");
+        addGuiText("switch.multi_inst_screen.auto_select.help01", "Auto Select Instrument");
+        addGuiText("switch.multi_inst_screen.auto_select.help02", "On: Changes to the instrument specified by the Sheet Music in the inventory slot.");
+        addGuiText("switch.multi_inst_screen.auto_select.help03", "Off: Uses the instrument shown on the selector button.");
     }
 
     private void addChats()

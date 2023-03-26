@@ -1,7 +1,9 @@
 package aeronicamc.mods.mxtune.gui;
 
 import aeronicamc.mods.mxtune.Reference;
+import aeronicamc.mods.mxtune.gui.widget.GuiHelpButton;
 import aeronicamc.mods.mxtune.gui.widget.GuiVSlideSwitch;
+import aeronicamc.mods.mxtune.gui.widget.IHooverText;
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
 import aeronicamc.mods.mxtune.inventory.MultiInstContainer;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
@@ -19,21 +21,25 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Objects;
 
+import static aeronicamc.mods.mxtune.gui.ModGuiHelper.*;
 import static aeronicamc.mods.mxtune.util.SheetMusicHelper.getSheetMusicSoundProxyIndex;
 
 public class MultiInstScreen extends ContainerScreen<MultiInstContainer> implements ISlotChangedCallback
 {
     private static final ResourceLocation GUI = new ResourceLocation(Reference.MOD_ID, "textures/gui/container/multi_inst_item.png");
-    private static final ITextComponent LABEL_AUTO = new TranslationTextComponent("gui.mxtune.MultiInstScreen.auto_select_instrument");
+    private static final ITextComponent AUTO_SELECT_ON = new TranslationTextComponent("gui.mxtune.switch.multi_inst_screen.auto_select_on").withStyle(TextFormatting.DARK_GRAY);
+    private static final ITextComponent AUTO_SELECT_OFF = new TranslationTextComponent("gui.mxtune.switch.multi_inst_screen.auto_select_off").withStyle(TextFormatting.DARK_GRAY);
+    private static final ITextComponent AUTO_SELECT_HELP01 = new TranslationTextComponent("gui.mxtune.switch.multi_inst_screen.auto_select.help01").withStyle(TextFormatting.RESET);
+    private static final ITextComponent AUTO_SELECT_HELP02 = new TranslationTextComponent("gui.mxtune.switch.multi_inst_screen.auto_select.help02").withStyle(TextFormatting.GREEN);
+    private static final ITextComponent AUTO_SELECT_HELP03 = new TranslationTextComponent("gui.mxtune.switch.multi_inst_screen.auto_select.help03").withStyle(TextFormatting.YELLOW);
     private final MXButton buttonChangeInstrument = new MXButton(this::openSelector);
     private final GuiVSlideSwitch autoSelectState = new GuiVSlideSwitch(p -> onChangeAuto());
-    private int count;
+    private final GuiHelpButton helpButton = new GuiHelpButton(p -> helpClicked());
 
     public MultiInstScreen(MultiInstContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
@@ -59,9 +65,12 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
         buttonChangeInstrument.setLayout(xPos, yPos, imageWidth - 24, 20);
         this.addButton(buttonChangeInstrument);
 
-        autoSelectState.setMessage(LABEL_AUTO);
+        autoSelectState.setMessage(AUTO_SELECT_ON);
         autoSelectState.setLayout(xPos + 18 + 32 + 10, yPos + 36, 20, 20);
         this.addButton(autoSelectState);
+
+        helpButton.setLayout(leftPos + imageWidth - 12 - 20, yPos + 53, 20, 20);
+        this.addButton(helpButton);
         getSignals();
     }
 
@@ -78,9 +87,23 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
         updateSignals();
     }
 
-    void updateAutoSelectLabel()
+    private void helpClicked()
     {
-        autoSelectState.setMessage(autoSelectState.getOnOff() ? new StringTextComponent("Auto Select").withStyle(TextFormatting.DARK_GRAY) : new StringTextComponent("Manual").withStyle(TextFormatting.DARK_GRAY));
+        helpButton.setHelpEnabled(!helpButton.isHelpEnabled());
+        buttons.stream().filter(b -> b instanceof IHooverText)
+                .forEach(b -> ((IHooverText) b).setHooverTextOverride(helpButton.isHelpEnabled()));
+        updateButtonStatuses();
+    }
+
+    void updateButtonStatuses()
+    {
+        autoSelectState.addHooverText(true, AUTO_SELECT_HELP01);
+        autoSelectState.addHooverText(false, AUTO_SELECT_HELP02);
+        autoSelectState.addHooverText(false, AUTO_SELECT_HELP03);
+        autoSelectState.addHooverText(false, autoSelectState.getOnOff() ? AUTO_SELECT_ON.plainCopy().withStyle(TextFormatting.AQUA) : AUTO_SELECT_OFF.plainCopy().withStyle(TextFormatting.AQUA));
+        autoSelectState.setMessage(autoSelectState.getOnOff() ? AUTO_SELECT_ON : AUTO_SELECT_OFF);
+        helpButton.addHooverText(true, HELP_HELP01);
+        helpButton.addHooverText(false, helpButton.isHelpEnabled() ? HELP_HELP02 : HELP_HELP03);
     }
 
     private void getSignals()
@@ -90,7 +113,7 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
         boolean autoSelect = (signals & 0x2000) > 0;
         autoSelectState.setOnOff(autoSelect);
         updateButton(patch);
-        updateAutoSelectLabel();
+        updateButtonStatuses();
     }
 
     private void updateSignals()
@@ -108,19 +131,14 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
         if (autoSelectState.getOnOff() && SheetMusicHelper.hasSheetMusic(inventory.getSelected()))
             updateButton(0);
         else updateSignals();
-        updateAutoSelectLabel();
+        updateButtonStatuses();
     }
 
     @Override
     public void onItemStackInserted(int slotIndex, ItemStack itemStack, Type operation)
     {
-
         if (autoSelectState.getOnOff() && operation.equals(Type.Inserted) && slotIndex == 0 && SheetMusicHelper.hasMusicText(itemStack))
-        {
             updateButton(getSheetMusicSoundProxyIndex(itemStack));
-            System.out.printf("Has Music? %s \n", SheetMusicHelper.hasMusicText(itemStack));
-            count++;
-        }
     }
 
     @Override
@@ -147,12 +165,12 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
         ModGuiHelper.RenderGuiItemScaled(this.itemRenderer, inventory.getSelected(),
                 getGuiLeft() + 51, getGuiTop() + 50, 2, true);
         this.renderTooltip(matrixStack, mouseX, mouseY);
+        ModGuiHelper.drawHooveringHelp(matrixStack, this, buttons, mouseX, mouseY);
     }
 
     @Override
     protected void renderLabels(MatrixStack matrixStack , int mouseX, int mouseY) {
         this.font.draw(matrixStack, new TranslationTextComponent("container.inventory"), 10, 72, TextColorFg.DARK_GRAY);
-        this.font.draw(matrixStack, new StringTextComponent(String.format("%d", count)), 70, 72, TextColorFg.DARK_GRAY);
     }
 
     @Override
