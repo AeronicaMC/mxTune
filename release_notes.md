@@ -1,3 +1,10 @@
+#### 2023-03-25 mxtune-1.16.5-2.0.0-alpha-2023-03-25.75248774
+* Auto Select option for MultiInstrument
+  On: Changes to the instrument specified by the Sheet Music in the inventory slot.
+  Off: Uses the instrument shown on the selector button.
+  Your old sheet music may not work. The instrument name must show on the second line of the Sheet Music tooltip.
+* -cough- right-clicking a Music Score will create and add yourself and a chicken a group. If another player clicks on you while holding an instrument in their main hand they will be joined to your group. Your group can now play JAMS just like in the 1.12.2 version. Members queue up the parts and the leader kicks it off.  Sorry, no group GUIs yet.
+
 #### 2022-10-02 mxtune-1.16.5-2.0.0-alpha-2022-10-02.26788435
 * Parse MML once and cache generated MIDI sequence. Minor fixes.
   * Manage network protocol version. Client and server side versions must match.
