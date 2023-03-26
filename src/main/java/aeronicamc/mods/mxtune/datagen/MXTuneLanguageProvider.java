@@ -123,10 +123,14 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("label.metadata", "Chars: %s, Duration: %s, Meta: %s");
         addGuiText("label.duration_value_total", "Duration All: ");
 
+        // ModGuiHelper, GuiHelpButton, generic texts
         addGuiText("button.help.help01", "Help");
         addGuiText("button.help.help02", "Hoover over buttons for tips.");
         addGuiText("button.help.help03", "SHIFT-Hoover over buttons for tips.");
+        addGuiText("button.enabled", "Enabled");
+        addGuiText("button.disabled", "Disabled");
 
+        // GuiMXT, GuiMXTPartTab, GuiFileImporter, GuiMusicLibrary
         addGuiText("button.import", "Import");
         addGuiText("button.minus", "-");
         addGuiText("button.new", "New");
@@ -149,6 +153,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.write_sheet_music", "Make Sheet Music");
         addGuiText("button.write_music_score", "Make Music Score");
 
+        // MusicBlockScreen, GuiLockButton
         addGuiText("button.lock.help01", "Lock");
         addGuiText("button.lock.help02", "[Unlocked]: Anyone can modify contents. View contents by RIGHT-CLICK-ing the block.");
         addGuiText("button.lock.help03", "[Locked]: Non-owners can view contents. View contents by SHIFT-RIGHT-CLICK-ing the block.");
@@ -176,6 +181,9 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.right_rs_out.disabled", "Output Disabled");
         addGuiText("button.right_rs_out.enabled", "Output Enabled");
 
+        addGuiText("button.multi_inst_screen.instrument_chooser.help01", "Instrument Chooser");
+        addGuiText("button.multi_inst_screen.instrument_chooser.help02", "Choose the instrument in to use for playing sheet music.");
+        addGuiText("button.multi_inst_screen.instrument_chooser.help03", "Disabled when Auto Select is on.");
         addGuiText("switch.multi_inst_screen.auto_select_on", "Auto Select on");
         addGuiText("switch.multi_inst_screen.auto_select_off", "Auto Select off");
         addGuiText("switch.multi_inst_screen.auto_select.help01", "Auto Select Instrument");

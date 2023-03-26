@@ -37,6 +37,9 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
     private static final ITextComponent AUTO_SELECT_HELP01 = new TranslationTextComponent("gui.mxtune.switch.multi_inst_screen.auto_select.help01").withStyle(TextFormatting.RESET);
     private static final ITextComponent AUTO_SELECT_HELP02 = new TranslationTextComponent("gui.mxtune.switch.multi_inst_screen.auto_select.help02").withStyle(TextFormatting.GREEN);
     private static final ITextComponent AUTO_SELECT_HELP03 = new TranslationTextComponent("gui.mxtune.switch.multi_inst_screen.auto_select.help03").withStyle(TextFormatting.YELLOW);
+    private static final ITextComponent INST_CHOOSER_HELP01 = new TranslationTextComponent("gui.mxtune.button.multi_inst_screen.instrument_chooser.help01").withStyle(TextFormatting.RESET);
+    private static final ITextComponent INST_CHOOSER_HELP02 = new TranslationTextComponent("gui.mxtune.button.multi_inst_screen.instrument_chooser.help02").withStyle(TextFormatting.GREEN);
+    private static final ITextComponent INST_CHOOSER_HELP03 = new TranslationTextComponent("gui.mxtune.button.multi_inst_screen.instrument_chooser.help03").withStyle(TextFormatting.YELLOW);
     private final MXButton buttonChangeInstrument = new MXButton(this::openSelector);
     private final GuiVSlideSwitch autoSelectState = new GuiVSlideSwitch(p -> onChangeAuto());
     private final GuiHelpButton helpButton = new GuiHelpButton(p -> helpClicked());
@@ -102,6 +105,11 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
         autoSelectState.addHooverText(false, AUTO_SELECT_HELP03);
         autoSelectState.addHooverText(false, autoSelectState.getOnOff() ? AUTO_SELECT_ON.plainCopy().withStyle(TextFormatting.AQUA) : AUTO_SELECT_OFF.plainCopy().withStyle(TextFormatting.AQUA));
         autoSelectState.setMessage(autoSelectState.getOnOff() ? AUTO_SELECT_ON : AUTO_SELECT_OFF);
+        buttonChangeInstrument.addHooverText(true, INST_CHOOSER_HELP01);
+        buttonChangeInstrument.addHooverText(false, INST_CHOOSER_HELP02);
+        buttonChangeInstrument.addHooverText(false, INST_CHOOSER_HELP03);
+        buttonChangeInstrument.addHooverText(false, autoSelectState.getOnOff() ? BUTTON_DISABLED : BUTTON_ENABLED);
+        buttonChangeInstrument.active = !autoSelectState.getOnOff();
         helpButton.addHooverText(true, HELP_HELP01);
         helpButton.addHooverText(false, helpButton.isHelpEnabled() ? HELP_HELP02 : HELP_HELP03);
     }

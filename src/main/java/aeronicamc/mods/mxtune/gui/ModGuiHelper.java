@@ -19,6 +19,8 @@ public class ModGuiHelper
     public static final ITextComponent HELP_HELP01 = new TranslationTextComponent("gui.mxtune.button.help.help01").withStyle(TextFormatting.RESET);
     public static final ITextComponent HELP_HELP02 = new TranslationTextComponent("gui.mxtune.button.help.help02").withStyle(TextFormatting.GREEN);
     public static final ITextComponent HELP_HELP03 = new TranslationTextComponent("gui.mxtune.button.help.help03").withStyle(TextFormatting.GREEN);
+    public static final ITextComponent BUTTON_DISABLED = new TranslationTextComponent("gui.mxtune.button.disabled").withStyle(TextFormatting.AQUA);
+    public static final ITextComponent BUTTON_ENABLED = new TranslationTextComponent("gui.mxtune.button.enabled").withStyle(TextFormatting.AQUA);
 
     public static void RenderGuiItemScaled(ItemRenderer itemRenderer, ItemStack pStack, int posX, int posY, int scale, boolean onCenter)
     {
