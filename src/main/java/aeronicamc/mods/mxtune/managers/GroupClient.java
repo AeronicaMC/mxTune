@@ -90,7 +90,6 @@ public class GroupClient
         return groupMap.values().stream().anyMatch(group -> group.getLeader() == memberId);
     }
 
-    // TODO: Remember to make better textures for the placard states! Full size w border, transparency, full-bright?, animated?
     public static int getPlacardState(int memberId)
     {
         return ((isLeader(memberId) ? 4 : 0) + memberState.getOrDefault(memberId, 0));

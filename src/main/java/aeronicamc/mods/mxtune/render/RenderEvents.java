@@ -53,6 +53,8 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.List;
 
+import static aeronicamc.mods.mxtune.render.ModRenderType.FULL_BRIGHT_LIGHT_MAP;
+
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID, value = Dist.CLIENT)
 public class RenderEvents
 {
@@ -248,7 +250,7 @@ public class RenderEvents
             Vector3d cam = pActiveRenderInfo.getPosition();
             List<Entity> nearLivingEntities = mc.level.getEntities(null, mc.player.getBoundingBox().inflate(48));
             nearLivingEntities.stream().filter(p -> pClippingHelper.isVisible(p.getBoundingBoxForCulling())).forEach(livingEntity -> {
-                int packedLight = mc.getEntityRenderDispatcher().getPackedLightCoords(livingEntity, pPartialTicks);
+                int packedLight = FULL_BRIGHT_LIGHT_MAP; //mc.getEntityRenderDispatcher().getPackedLightCoords(livingEntity, pPartialTicks);
 
                 if (GroupClient.isGrouped(livingEntity.getId()))
                 {
