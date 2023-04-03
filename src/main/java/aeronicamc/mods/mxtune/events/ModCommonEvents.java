@@ -6,10 +6,13 @@ import aeronicamc.mods.mxtune.blocks.IMusicPlayer;
 import aeronicamc.mods.mxtune.blocks.LockableHelper;
 import aeronicamc.mods.mxtune.entity.MusicSourceEntity;
 import aeronicamc.mods.mxtune.entity.MusicVenueInfoEntity;
+import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.init.ModTags;
 import aeronicamc.mods.mxtune.managers.Group;
 import aeronicamc.mods.mxtune.managers.GroupManager;
 import aeronicamc.mods.mxtune.managers.PlayManager;
+import aeronicamc.mods.mxtune.network.PacketDispatcher;
+import aeronicamc.mods.mxtune.network.messages.OpenPinEntryMessage;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -75,16 +78,19 @@ public class ModCommonEvents
                          hooverName(event.getItemStack()), hasInstrument(event.getItemStack()) ? "Yes" : "No");
             if (tarGroup.isValid() && tarGroup.getLeader() == target.getId() && iniGroup.isEmpty())
             {
-                initiator.sendMessage(new TranslationTextComponent("chat.mxtune.groupManager.requests_to_join", target.getName()), target.getUUID());
+                target.sendMessage(new TranslationTextComponent("chat.mxtune.groupManager.requests_to_join", initiator.getName()), target.getUUID());
                 LOGGER.debug("{} Requests to join group", initiator.getDisplayName().getString());
-                GroupManager.addMember(tarGroup.getGroupId(), initiator); // TODO this is a test only. Adding self to targets group is a no-no :P
+                PacketDispatcher.sendTo(new OpenPinEntryMessage(tarGroup.getGroupId()), (ServerPlayerEntity) initiator);
+                //GroupManager.addMember(tarGroup.getGroupId(), initiator); // TODO this is a test only. Adding self to targets group is a no-no :P
             }
             else if (tarGroup.isValid())
             {
                 if (tarGroup.getLeader() != target.getId() && iniGroup.isEmpty())
-                    target.sendMessage(new TranslationTextComponent("chat.mxtune.groupManager.player_not_leader", target.getName()), target.getUUID());
+                    initiator.sendMessage(new TranslationTextComponent("chat.mxtune.groupManager.player_not_leader", target.getName()), initiator.getUUID());
+                else if (tarGroup.getGroupId() == iniGroup.getGroupId())
+                    initiator.sendMessage(new TranslationTextComponent("chat.mxtune.groupManager.already_group_member", target.getName()), initiator.getUUID());
                 else
-                    target.sendMessage(new TranslationTextComponent("chat.mxtune.groupManager.cannot_join_if_group_member", target.getName()), target.getUUID());
+                    initiator.sendMessage(new TranslationTextComponent("chat.mxtune.groupManager.xxx-xxx_group_member", target.getName()), initiator.getUUID());
             }
         }
     }
@@ -144,5 +150,17 @@ public class ModCommonEvents
         Entity entity = event.getEntity();
         if ((entity instanceof MusicVenueInfoEntity) && !entity.isAddedToWorld())
             event.setNewEyeHeight(0.25F);
+    }
+
+    @SubscribeEvent
+    public static void event(PlayerInteractEvent.RightClickItem event)
+    {
+        if (!event.getEntity().level.isClientSide() && event.getEntity() instanceof PlayerEntity)
+        {
+            PlayerEntity player = event.getPlayer();
+            // testing PIN Gui
+            if (player.getMainHandItem().getItem().getRegistryName().equals(ModItems.PLACARD_ITEM.getId()))
+                PacketDispatcher.sendTo(new OpenPinEntryMessage(0), (ServerPlayerEntity) player);
+        }
     }
 }

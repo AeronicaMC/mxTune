@@ -42,6 +42,7 @@ public class PacketDispatcher
         registerMessage(MusicVenueSyncMessage.class, new MusicVenueSyncMessage());
         registerMessage(SyncGroupsMessage.class, new SyncGroupsMessage());
         registerMessage(SyncGroupMemberState.class, new SyncGroupMemberState());
+        registerMessage(OpenPinEntryMessage.class, new OpenPinEntryMessage());
         // To Server
         registerMessage(CreateIMusicMessage.class, new CreateIMusicMessage());
         registerMessage(ChooseInstrumentMessage.class, new ChooseInstrumentMessage());
