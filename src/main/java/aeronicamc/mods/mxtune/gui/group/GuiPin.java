@@ -1,14 +1,16 @@
 package aeronicamc.mods.mxtune.gui.group;
 
 import aeronicamc.mods.mxtune.gui.MXScreen;
+import aeronicamc.mods.mxtune.gui.TextColorFg;
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
+import aeronicamc.mods.mxtune.gui.widget.MXTextFieldWidget;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.StringTextComponent;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 public class GuiPin extends MXScreen
@@ -28,28 +30,26 @@ public class GuiPin extends MXScreen
                                                  {0,2}, {1,2}, {2,2},
                                                  {0,3}, {1,3}, {2,3}};
     private final MXButton[] numPad = new MXButton[12];
+    private final MXTextFieldWidget pinDisplay = new MXTextFieldWidget(4);
     private final int groupId;
+    private int charPos;
 
     public GuiPin(Screen parent, int groupId)
     {
         super(StringTextComponent.EMPTY);
         this.parent = parent;
         this.groupId = groupId;
-        int[] index = new int[1];
+        int index = 0;
+        charPos = 0;
+        pinDisplay.setCursorPosition(0);
+        pinDisplay.active = false;
+        pinDisplay.setEditable(false);
+        pinDisplay.setTextColorUneditable(TextColorFg.WHITE);
         for (int key : keys)
         {
-            numPad[index[0]] = new MXButton(press -> numPress(key));
-            index[0]++;
+            numPad[index] = new MXButton(press -> numPress(key));
+            index++;
         }
-
-    }
-
-    private void numPress(int codePoint)
-    {
-        int cp = codePoint;
-        if (cp == RETURN || cp == GLFW.GLFW_KEY_ENTER) cp = RETURN;
-        if (cp == DEL || cp == BS || cp == GLFW.GLFW_KEY_DELETE || cp == GLFW.GLFW_KEY_BACKSPACE) cp = DEL;
-        player().chat(String.format("char: %s, codePoint: %d, screen[%d x %d]", ((char)codePoint), cp, width, height));
     }
 
     @Override
@@ -58,24 +58,68 @@ public class GuiPin extends MXScreen
         super.init();
         int left = width / 3;
         int top = height / 3;
-        int minWidth = 4 + 20 + 2 + 20 + 2 + 20 + 4;
-        int minHeight = minWidth + 20 + 2;
-        int[] index = new int[1];
-        int[] xPos = new int[1];
-        int[] yPos = new int[1];
-        final int numPadLeft = left + ((left - minWidth) / 2);
-        final int numPadTop = top + ((top - minHeight) / 2);
-        xPos[0] = numPadLeft;
-        yPos[0] = numPadTop;
-        Arrays.stream(numPadLayout).forEach(pair->{
-            numPad[index[0]].setLayout(xPos[0] + numPadLayout[index[0]][0] + 4,
-                                       yPos[0] + numPadLayout[index[0]][1] + 4, 20, 20);
-            numPad[index[0]].setMessage(new StringTextComponent(String.valueOf((char)keys[index[0]])));
-            addButton(numPad[index[0]]);
-            if (numPadLayout[index[0]][0] == 2) { xPos[0] = numPadLeft; } else { xPos[0] += 20 + 2; }
-            if (numPadLayout[index[0]][0] == 2) { yPos[0] += 20 + 2; }
-            index[0]++;
-        });
+        int minWidth  = 4 + 30 + 2 + 30 + 2 + 30 + 4;
+        int minHeight = 4 + 20 + 2 + 20 + 2 + 20 + + 4 + 20 + 2;
+        int xPos;
+        int yPos;
+        int numPadLeft = left + ((left - minWidth) / 2);
+        int numPadTop = top + ((top - minHeight) / 2);
+        xPos = numPadLeft;
+        yPos = numPadTop;
+        pinDisplay.setLayout(numPadLeft + 4, numPadTop - 22, minWidth - 8, 20);
+        for (int index = 0; index < numPadLayout.length; index++)
+        {
+            numPad[index].setLayout(xPos + numPadLayout[index][0] + 4,
+                                       yPos + numPadLayout[index][1] + 4, 30, 20);
+            numPad[index].setMessage(new StringTextComponent(String.valueOf((char) keys[index])));
+            addButton(numPad[index]);
+            if (numPadLayout[index][0] == 2) {xPos = numPadLeft;}
+            else {xPos += 30 + 2;}
+            if (numPadLayout[index][0] == 2) {yPos += 20 + 2;}
+        }
+    }
+
+    private int numPress(int codePoint)
+    {
+        int cp = codePoint;
+        if (cp == RETURN || cp == GLFW.GLFW_KEY_ENTER) cp = RETURN;
+        if (cp == DEL || cp == BS || cp == GLFW.GLFW_KEY_DELETE || cp == GLFW.GLFW_KEY_BACKSPACE) cp = DEL;
+        if (cp >= GLFW.GLFW_KEY_0 && cp <= GLFW.GLFW_KEY_9)
+        {
+            pinDisplay.setCursorPosition(charPos);
+            pinDisplay.insertText(String.valueOf(((char) codePoint)));
+            System.out.printf("char: %s, codePoint: %#4x, pos: %d, screen[%d x %d]%n", ((char)codePoint), cp, charPos, width, height);
+            charPos = charPos++ == 3 ? 0 : charPos;
+        } else if (cp == DEL)
+        {
+            pinDisplay.setValue("");
+            charPos = 0;
+            System.out.printf("Clear");
+        } else if (cp == RETURN)
+        {
+            System.out.printf("Submit %s%n", pinDisplay.getValue());
+        }
+        return cp;
+    }
+
+    @Override
+    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers)
+    {
+        return super.keyPressed(numPress(pKeyCode), pScanCode, pModifiers);
+    }
+
+    @Override
+    public void render(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks)
+    {
+        this.fillGradient(pMatrixStack, 0, 0, this.width, this.height, -1072689136, -804253680);
+        pinDisplay.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
+        super.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
+    }
+
+    @Override
+    public boolean isPauseScreen()
+    {
+        return false;
     }
 
     private ClientPlayerEntity player()
