@@ -80,6 +80,11 @@ public class GroupClient
         return groupMap.values().stream().filter(group -> group.isMember(memberId)).findFirst().orElse(Group.EMPTY);
     }
 
+    public synchronized static Group getGroupById(int groupId)
+    {
+        return groupMap.values().stream().filter(group -> group.getGroupId() == groupId).findFirst().orElse(Group.EMPTY);
+    }
+
     public static boolean isGrouped(int memberId)
     {
         return groupMap.values().stream().anyMatch(group -> group.isMember(memberId));

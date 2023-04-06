@@ -4,11 +4,17 @@ import aeronicamc.mods.mxtune.gui.MXScreen;
 import aeronicamc.mods.mxtune.gui.TextColorFg;
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
 import aeronicamc.mods.mxtune.gui.widget.MXTextFieldWidget;
+import aeronicamc.mods.mxtune.managers.Group;
+import aeronicamc.mods.mxtune.managers.GroupClient;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Objects;
@@ -31,8 +37,11 @@ public class GuiPin extends MXScreen
                                                  {0,3}, {1,3}, {2,3}};
     private final MXButton[] numPad = new MXButton[12];
     private final MXTextFieldWidget pinDisplay = new MXTextFieldWidget(4);
+    private final MXTextFieldWidget groupDisplay = new MXTextFieldWidget(1024);
     private final int groupId;
     private int charPos;
+    private int counter;
+    private int lastHash;
 
     public GuiPin(Screen parent, int groupId)
     {
@@ -50,6 +59,12 @@ public class GuiPin extends MXScreen
             numPad[index] = new MXButton(press -> numPress(key));
             index++;
         }
+        groupDisplay.active = true;
+        groupDisplay.setEditable(false);
+        ITextComponent msg = getGroupLeaderInfo(groupId);
+        groupDisplay.setValue(msg.getString());
+        lastHash = msg.hashCode();
+        disableSubmitButton();
     }
 
     @Override
@@ -77,6 +92,11 @@ public class GuiPin extends MXScreen
             else {xPos += 30 + 2;}
             if (numPadLayout[index][0] == 2) {yPos += 20 + 2;}
         }
+        groupDisplay.setValue(getGroupLeaderInfo(groupId).getString());
+        int groupDisplayWidth = mc().font.width(groupDisplay.getValue()) + 8;
+//        int groupLeft = (width / 2) + (((width / 2) - groupDisplayWidth) / 2);
+        int groupLeft = ((width) - ((groupDisplayWidth))) / 2;
+        groupDisplay.setLayout(groupLeft, pinDisplay.y - 24, groupDisplayWidth, 20);
     }
 
     private int numPress(int codePoint)
@@ -90,14 +110,19 @@ public class GuiPin extends MXScreen
             pinDisplay.insertText(String.valueOf(((char) codePoint)));
             System.out.printf("char: %s, codePoint: %#4x, pos: %d, screen[%d x %d]%n", ((char)codePoint), cp, charPos, width, height);
             charPos = charPos++ == 3 ? 0 : charPos;
+            updateSubmitButtonState();
         } else if (cp == DEL)
         {
             pinDisplay.setValue("");
             charPos = 0;
+            disableSubmitButton();
             System.out.printf("Clear");
-        } else if (cp == RETURN)
+        } else if (cp == RETURN && canSubmit())
         {
             System.out.printf("Submit %s%n", pinDisplay.getValue());
+            pinDisplay.setValue("");
+            updateSubmitButtonState();
+            this.onClose();
         }
         return cp;
     }
@@ -108,12 +133,66 @@ public class GuiPin extends MXScreen
         return super.keyPressed(numPress(pKeyCode), pScanCode, pModifiers);
     }
 
+    private boolean canSubmit()
+    {
+        return pinDisplay.getValue().length() == 4;
+    }
+
+    private void updateSubmitButtonState()
+    {
+        numPad[11].active = pinDisplay.getValue().length() == 4;
+    }
+
+    private void disableSubmitButton()
+    {
+        numPad[11].active = false;
+    }
+
+    private ITextComponent getGroupLeaderInfo(int groupId)
+    {
+        Group group = GroupClient.getGroupById(groupId);
+        if (group.isEmpty())
+        {
+            groupDisplay.setTextColorUneditable(TextColorFg.YELLOW);
+            return new TranslationTextComponent("-- invalid group --").withStyle(TextFormatting.YELLOW);
+        } else
+        {
+            Entity entity;
+            if ((entity = player().level.getEntity(group.getLeader())) != null)
+            {
+                ITextComponent name = entity.getDisplayName();
+                groupDisplay.setTextColorUneditable(TextColorFg.WHITE);
+                return new TranslationTextComponent(name.getString()).withStyle(TextFormatting.WHITE);
+            } else
+            {
+                groupDisplay.setTextColorUneditable(TextColorFg.RED);
+                return new TranslationTextComponent("--invalid leader--");
+            }
+        }
+    }
+
     @Override
     public void render(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks)
     {
         this.fillGradient(pMatrixStack, 0, 0, this.width, this.height, -1072689136, -804253680);
+        groupDisplay.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
         pinDisplay.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
         super.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
+    }
+
+    @Override
+    public void tick()
+    {
+        if (counter++ % 20 == 0)
+        {
+            ITextComponent msg = getGroupLeaderInfo(groupId);
+            groupDisplay.setValue(msg.getString());
+            if (lastHash != msg.hashCode())
+            {
+                this.init();
+            }
+        }
+        super.tick();
     }
 
     @Override
