@@ -1,10 +1,7 @@
 package aeronicamc.mods.mxtune.gui;
 
 import aeronicamc.mods.mxtune.Reference;
-import aeronicamc.mods.mxtune.gui.widget.GuiHelpButton;
-import aeronicamc.mods.mxtune.gui.widget.GuiVSlideSwitch;
-import aeronicamc.mods.mxtune.gui.widget.IHooverText;
-import aeronicamc.mods.mxtune.gui.widget.MXButton;
+import aeronicamc.mods.mxtune.gui.widget.*;
 import aeronicamc.mods.mxtune.inventory.MultiInstContainer;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.ChooseInstrumentMessage;
@@ -43,6 +40,7 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
     private final MXButton buttonChangeInstrument = new MXButton(this::openSelector);
     private final GuiVSlideSwitch autoSelectState = new GuiVSlideSwitch(p -> onChangeAuto());
     private final GuiHelpButton helpButton = new GuiHelpButton(p -> helpClicked());
+    private final GuiJAMButton jamButton = new GuiJAMButton(p -> onJamClicked());
 
     public MultiInstScreen(MultiInstContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
@@ -74,6 +72,10 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
 
         helpButton.setLayout(leftPos + imageWidth - 12 - 20, yPos + 53, 20, 20);
         this.addButton(helpButton);
+
+        jamButton.setLayout(leftPos + imageWidth - 12 - 42, yPos + 53, 20, 20);
+        jamButton.setJamEnabled(true);
+        this.addButton(jamButton);
         getSignals();
     }
 
@@ -140,6 +142,11 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
             updateButton(0);
         else updateSignals();
         updateButtonStatuses();
+    }
+
+    private void onJamClicked()
+    {
+
     }
 
     @Override
