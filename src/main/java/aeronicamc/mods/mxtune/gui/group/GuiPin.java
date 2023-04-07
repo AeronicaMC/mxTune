@@ -9,7 +9,6 @@ import aeronicamc.mods.mxtune.managers.GroupClient;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -21,7 +20,6 @@ import java.util.Objects;
 
 public class GuiPin extends MXScreen
 {
-    private final Screen parent;
     private final static int RETURN = 0x23CE; // Return Symbol
     private final static int DEL = 0x2421; // DEL Symbol For Delete
     private final static int BS = 0x2408; // BS Symbol For Backspace
@@ -43,10 +41,9 @@ public class GuiPin extends MXScreen
     private int counter;
     private int lastHash;
 
-    public GuiPin(Screen parent, int groupId)
+    public GuiPin(int groupId)
     {
         super(StringTextComponent.EMPTY);
-        this.parent = parent;
         this.groupId = groupId;
         int index = 0;
         charPos = 0;
@@ -71,17 +68,17 @@ public class GuiPin extends MXScreen
     protected void init()
     {
         super.init();
-        int left = width / 3;
-        int top = height / 3;
+        int left = width;
+        int top = height;
         int minWidth  = 4 + 30 + 2 + 30 + 2 + 30 + 4;
         int minHeight = 4 + 20 + 2 + 20 + 2 + 20 + + 4 + 20 + 2;
         int xPos;
         int yPos;
-        int numPadLeft = left + ((left - minWidth) / 2);
-        int numPadTop = top + ((top - minHeight) / 2);
+        int numPadLeft = (left - minWidth) / 2;
+        int numPadTop = (top - minHeight) / 2;
         xPos = numPadLeft;
         yPos = numPadTop;
-        pinDisplay.setLayout(numPadLeft + 4, numPadTop - 22, minWidth - 8, 20);
+        pinDisplay.setLayout(numPadLeft + 4, numPadTop - 21, minWidth - 8, 20);
         for (int index = 0; index < numPadLayout.length; index++)
         {
             numPad[index].setLayout(xPos + numPadLayout[index][0] + 4,
@@ -93,10 +90,9 @@ public class GuiPin extends MXScreen
             if (numPadLayout[index][0] == 2) {yPos += 20 + 2;}
         }
         groupDisplay.setValue(getGroupLeaderInfo(groupId).getString());
-        int groupDisplayWidth = mc().font.width(groupDisplay.getValue()) + 8;
-//        int groupLeft = (width / 2) + (((width / 2) - groupDisplayWidth) / 2);
-        int groupLeft = ((width) - ((groupDisplayWidth))) / 2;
-        groupDisplay.setLayout(groupLeft, pinDisplay.y - 24, groupDisplayWidth, 20);
+        int groupDisplayWidth = Math.max(mc().font.width(groupDisplay.getValue()) + 8, minWidth - 8);
+        int groupLeft = (width - groupDisplayWidth) / 2;
+        groupDisplay.setLayout(groupLeft, pinDisplay.y - 26, groupDisplayWidth, 20);
     }
 
     private int numPress(int codePoint)
@@ -154,19 +150,19 @@ public class GuiPin extends MXScreen
         if (group.isEmpty())
         {
             groupDisplay.setTextColorUneditable(TextColorFg.YELLOW);
-            return new TranslationTextComponent("-- invalid group --").withStyle(TextFormatting.YELLOW);
+            return new TranslationTextComponent("gui.mxtune.gui_pin.group_disbanded").withStyle(TextFormatting.YELLOW);
         } else
         {
             Entity entity;
             if ((entity = player().level.getEntity(group.getLeader())) != null)
             {
                 ITextComponent name = entity.getDisplayName();
-                groupDisplay.setTextColorUneditable(TextColorFg.WHITE);
-                return new TranslationTextComponent(name.getString()).withStyle(TextFormatting.WHITE);
+                groupDisplay.setTextColorUneditable(TextColorFg.GREEN);
+                return new TranslationTextComponent("gui.mxtune.gui_pin.leaders_group", name.getString()).withStyle(TextFormatting.GREEN);
             } else
             {
                 groupDisplay.setTextColorUneditable(TextColorFg.RED);
-                return new TranslationTextComponent("--invalid leader--");
+                return new TranslationTextComponent("gui.mxtune.gui_pin.unexpected_error").withStyle(TextFormatting.RED);
             }
         }
     }
@@ -189,6 +185,7 @@ public class GuiPin extends MXScreen
             groupDisplay.setValue(msg.getString());
             if (lastHash != msg.hashCode())
             {
+                lastHash = msg.hashCode();
                 this.init();
             }
         }

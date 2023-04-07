@@ -16,7 +16,7 @@ public class Handler
 
     public static void OpenGuiPinScreen(int groupId)
     {
-        mc.tell(()->mc.setScreen(new GuiPin(mc.screen, groupId)));
+        mc.tell(()->mc.setScreen(new GuiPin(groupId)));
     }
     public static void OpenSheetMusicScreen()
     {

@@ -9,7 +9,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.Tuple;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -137,7 +136,6 @@ public class GroupManager
         }
     }
 
-    // TODO: Setup localization for the remove member chat messages
     public static void removeMember(@Nullable LivingEntity livingEntity, int memberId)
     {
         Group group = getGroup(livingEntity != null ? livingEntity.getId() : 0);
@@ -149,9 +147,9 @@ public class GroupManager
                 LivingEntity leader = (LivingEntity) livingEntity.level.getEntity(group.getLeader());
                 String member = memberEntity != null ? memberEntity.getDisplayName().getString() : Integer.toString(memberId);
                 if (leader != null)
-                    leader.sendMessage(new StringTextComponent(String.format("%s left the group", member)), leader.getUUID());
+                    leader.sendMessage(new TranslationTextComponent("chat.mxtune.groupManager.member_left_group", member), leader.getUUID());
                 else
-                    livingEntity.sendMessage(new StringTextComponent(String.format("%s left the group", member)), livingEntity.getUUID());
+                    livingEntity.sendMessage(new TranslationTextComponent("chat.mxtune.groupManager.member_left_group", member), livingEntity.getUUID());
             }
             memberState.remove(memberId);
             memberMusic.remove(memberId);

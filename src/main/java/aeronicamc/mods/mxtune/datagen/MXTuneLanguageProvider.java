@@ -189,6 +189,11 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("switch.multi_inst_screen.auto_select.help01", "Auto Select Instrument");
         addGuiText("switch.multi_inst_screen.auto_select.help02", "On: Changes to the instrument specified by the Sheet Music in the inventory slot.");
         addGuiText("switch.multi_inst_screen.auto_select.help03", "Off: Uses the instrument shown on the selector button.");
+
+        // GUIPin
+        addGuiText("gui_pin.group_disbanded","Group Disbanded");
+        addGuiText("gui_pin.leaders_group", "%s's Group");
+        addGuiText("gui_pin.unexpected_error", "*** Unexpected Error ***");
     }
 
     private void addChats()
@@ -198,6 +203,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addChat("groupManager.cannot_join_too_many", "Cannot join %s group. It is full.");
         addChat("groupManager.player_cannot_join_too_many", "%s cannot join since group is full");
         addChat("groupManager.invalid_leader", "Leader left, was demoted or group disbanded.");
+        addChat("groupManager.member_left_group", "% has left the group.");
     }
 
     private void addCommands()
