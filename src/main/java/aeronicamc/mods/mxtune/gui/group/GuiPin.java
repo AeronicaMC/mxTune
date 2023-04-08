@@ -71,7 +71,7 @@ public class GuiPin extends MXScreen
         int left = width;
         int top = height;
         int minWidth  = 4 + 30 + 2 + 30 + 2 + 30 + 4;
-        int minHeight = 4 + 20 + 2 + 20 + 2 + 20 + + 4 + 20 + 2;
+        int minHeight = 4 + 20 + 2 + 20 + 2 + 20 + 4 + 20 + 2;
         int xPos;
         int yPos;
         int numPadLeft = (left - minWidth) / 2;
@@ -112,7 +112,7 @@ public class GuiPin extends MXScreen
             pinDisplay.setValue("");
             charPos = 0;
             disableSubmitButton();
-            System.out.printf("Clear");
+            System.out.print("Clear");
         } else if (cp == RETURN && canSubmit())
         {
             System.out.printf("Submit %s%n", pinDisplay.getValue());
