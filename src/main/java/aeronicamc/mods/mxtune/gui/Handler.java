@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.gui;
 
+import aeronicamc.mods.mxtune.gui.group.GuiGroup;
 import aeronicamc.mods.mxtune.gui.group.GuiPin;
 import aeronicamc.mods.mxtune.gui.mml.GuiMXT;
 import aeronicamc.mods.mxtune.util.Misc;
@@ -17,6 +18,10 @@ public class Handler
     public static void OpenGuiPinScreen(int groupId)
     {
         mc.tell(()->mc.setScreen(new GuiPin(groupId)));
+    }
+    public static void OpenGuiGroupScreen()
+    {
+        mc.tell(()->mc.setScreen(new GuiGroup()));
     }
     public static void OpenSheetMusicScreen()
     {

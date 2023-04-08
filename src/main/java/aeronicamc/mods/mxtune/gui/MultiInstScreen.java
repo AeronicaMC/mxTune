@@ -67,13 +67,13 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
         this.addButton(buttonChangeInstrument);
 
         autoSelectState.setMessage(AUTO_SELECT_ON);
-        autoSelectState.setLayout(xPos + 18 + 32 + 10, yPos + 36, 20, 20);
+        autoSelectState.setPosition(xPos + 18 + 32 + 10, yPos + 36);
         this.addButton(autoSelectState);
 
-        helpButton.setLayout(leftPos + imageWidth - 12 - 20, yPos + 53, 20, 20);
+        helpButton.setPosition(leftPos + imageWidth - 12 - 20, yPos + 53);
         this.addButton(helpButton);
 
-        jamButton.setLayout(leftPos + imageWidth - 12 - 42, yPos + 53, 20, 20);
+        jamButton.setPosition(leftPos + imageWidth - 12 - 42, yPos + 53);
         jamButton.setJamEnabled(true);
         this.addButton(jamButton);
         getSignals();
@@ -146,7 +146,7 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
 
     private void onJamClicked()
     {
-
+        Handler.OpenGuiGroupScreen();
     }
 
     @Override
