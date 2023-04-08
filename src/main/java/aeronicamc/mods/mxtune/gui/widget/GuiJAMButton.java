@@ -38,28 +38,28 @@ public class GuiJAMButton extends MXButton
             {
                 if (!this.active)
                 {
-                    guiRedstoneButtonIcon = GuiJAMButton.Icon.HELP_ENABLED_DISABLED;
+                    guiRedstoneButtonIcon = GuiJAMButton.Icon.JAM_ENABLED_DISABLED;
                 }
                 else if (isHovered)
                 {
-                    guiRedstoneButtonIcon = GuiJAMButton.Icon.HELP_ENABLED_HOVER;
+                    guiRedstoneButtonIcon = GuiJAMButton.Icon.JAM_ENABLED_HOVER;
                 }
                 else
                 {
-                    guiRedstoneButtonIcon = GuiJAMButton.Icon.HELP_ENABLED;
+                    guiRedstoneButtonIcon = GuiJAMButton.Icon.JAM_ENABLED;
                 }
             }
             else if (!this.active)
             {
-                guiRedstoneButtonIcon = GuiJAMButton.Icon.HELP_DISABLED_DISABLED;
+                guiRedstoneButtonIcon = GuiJAMButton.Icon.JAM_DISABLED_DISABLED;
             }
             else if (isHovered)
             {
-                guiRedstoneButtonIcon = GuiJAMButton.Icon.HELP_DISABLED_HOVER;
+                guiRedstoneButtonIcon = GuiJAMButton.Icon.JAM_DISABLED_HOVER;
             }
             else
             {
-                guiRedstoneButtonIcon = GuiJAMButton.Icon.HELP_DISABLED_UNLOCKED;
+                guiRedstoneButtonIcon = GuiJAMButton.Icon.JAM_DISABLED_UNLOCKED;
             }
 
             this.blit(pMatrixStack, this.x, this.y, guiRedstoneButtonIcon.getX(), guiRedstoneButtonIcon.getY(), this.width, this.height);
@@ -68,12 +68,12 @@ public class GuiJAMButton extends MXButton
 
     public enum Icon
     {
-        HELP_ENABLED(216, 120),
-        HELP_ENABLED_HOVER(216, 140),
-        HELP_ENABLED_DISABLED(216, 160),
-        HELP_DISABLED_UNLOCKED(236, 120),
-        HELP_DISABLED_HOVER(236, 140),
-        HELP_DISABLED_DISABLED(236, 160);
+        JAM_ENABLED(216, 120),
+        JAM_ENABLED_HOVER(216, 140),
+        JAM_ENABLED_DISABLED(216, 160),
+        JAM_DISABLED_UNLOCKED(236, 120),
+        JAM_DISABLED_HOVER(236, 140),
+        JAM_DISABLED_DISABLED(236, 160);
 
         private final int x;
         private final int y;
