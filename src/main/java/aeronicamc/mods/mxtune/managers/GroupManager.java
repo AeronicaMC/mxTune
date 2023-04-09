@@ -20,10 +20,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class GroupManager
@@ -36,6 +33,8 @@ public class GroupManager
     public static final int REST = 0;
     public static final int QUEUED = 1;
     public static final int PLAYING = 2;
+
+    private static final Map<Integer, Group> requesterGroup = new HashMap<>();
 
     public static void clear()
     {
