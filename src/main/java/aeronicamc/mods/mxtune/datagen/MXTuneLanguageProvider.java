@@ -231,6 +231,19 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addEnum("tool_state.type.end", "End");
         addEnum("tool_state.type.done", "Done");
         addEnum("tool_state.type.remove", "Remove");
+
+        addEnum("group.mode.invite", "Invite");
+        addEnum("group.mode.invite.help01", "Invite help 01");
+        addEnum("group.mode.invite.help02", "Invite help 02");
+        addEnum("group.mode.invite.help03", "Invite help 03");
+        addEnum("group.mode.pin", "Pin");
+        addEnum("group.mode.pin.help01", "Pin help 01");
+        addEnum("group.mode.pin.help02", "Pin help 02");
+        addEnum("group.mode.pin.help03", "Pin help 03");
+        addEnum("group.mode.open", "Open");
+        addEnum("group.mode.open.help01", "Open help 01");
+        addEnum("group.mode.open.help02", "Open help 02");
+        addEnum("group.mode.open.help03", "Open help 03");
     }
 
     private void addErrors()
@@ -254,7 +267,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addMessage("intersects_venue", "Intersects existing venue.");
         addMessage("same_block_error", "Same block not allowed.");
         addMessage("venue_too_small", "Too small. Must be at least 2x2x2.");
-        addMessage("not_owner_of_venue", "Only owner, admin or player in creative mode can remove a venue.");
+        addMessage("not_owner_of_venue", "Only owner, admin or player in creative Mode can remove a venue.");
         addMessage("groupManager.cannot_sleep_when_grouped", "Can't sleep when in a group.");
         addMessage("groupManager.created_group", "You created a group.");
         addMessage("groupManager.cannot_create_group", "You're already in a group.");

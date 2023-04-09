@@ -21,6 +21,10 @@ public class Group
     private int playId;
     private int maxDuration;
     private int leader;
+    private Mode mode;
+
+    // Not shared with client.
+    private String pin;
 
     private Group()
     {
@@ -123,6 +127,66 @@ public class Group
         return this != EMPTY;
     }
 
+    public Mode getMode()
+    {
+        return mode;
+    }
+
+    public void setMode(Mode mode)
+    {
+        this.mode = mode;
+    }
+
+    public String getPin()
+    {
+        return pin;
+    }
+
+    public void setPin(String pin)
+    {
+        this.pin = pin;
+    }
+
+    public enum Mode
+    {
+        Invite ("enum.mxtune.group.mode.invite", "enum.mxtune.group.mode.invite.help01", "enum.mxtune.group.mode.invite.help02", "enum.mxtune.group.mode.invite.help03"),
+        Pin ("enum.mxtune.group.mode.pin", "enum.mxtune.group.mode.pin.help01", "enum.mxtune.group.mode.pin.help02", "enum.mxtune.group.mode.pin.help03"),
+        Open("enum.mxtune.group.mode.open", "enum.mxtune.group.mode.open.help01", "enum.mxtune.group.mode.open.help02", "enum.mxtune.group.mode.open.help03");
+
+        private final String modeKey;
+        private final String help01Key;
+        private final String help02Key;
+        private final String help03Key;
+
+        Mode(String modeKey, String help01Key, String help02Key, String help03Key)
+        {
+            this.modeKey = modeKey;
+            this.help01Key = help01Key;
+            this.help02Key = help02Key;
+            this.help03Key = help03Key;
+        }
+
+        public String getModeKey()
+        {
+            return modeKey;
+        }
+
+        public String getHelp01Key()
+        {
+            return help01Key;
+        }
+
+        public String getHelp02Key()
+        {
+            return help02Key;
+        }
+
+        public String getHelp03Key()
+        {
+            return help03Key;
+        }
+    }
+
     @Override
     public String toString()
     {
@@ -132,6 +196,8 @@ public class Group
                 .append("maxDuration", maxDuration)
                 .append("leader", leader)
                 .append("members", members)
+                .append("Mode", mode)
+                .append("Pin", pin)
                 .toString();
     }
 
@@ -144,6 +210,8 @@ public class Group
                 .append(playId)
                 .append(maxDuration)
                 .append(leader)
+                .append(mode)
+                .append(pin)
                 .toHashCode();
     }
 
@@ -163,6 +231,8 @@ public class Group
                 .append(playId, group.playId)
                 .append(maxDuration, group.maxDuration)
                 .append(leader, group.leader)
+                .append(mode, group.mode)
+                .append(pin, group.pin)
                 .isEquals();
     }
 }

@@ -39,6 +39,8 @@ public class SyncGroupsMessage extends AbstractMessage<SyncGroupsMessage>
                 buffer.writeInt(playId);
                 final int duration = group.getMaxDuration();
                 buffer.writeInt(duration);
+                final Group.Mode mode = group.getMode();
+                buffer.writeEnum(mode);
                 final Set<Integer> members = group.getMembers();
                 final int memberCount = members.size();
                 buffer.writeVarInt(memberCount);
@@ -57,9 +59,11 @@ public class SyncGroupsMessage extends AbstractMessage<SyncGroupsMessage>
             final int leader = buffer.readInt();
             final int playId = buffer.readInt();
             final int duration = buffer.readInt();
+            final Group.Mode mode = buffer.readEnum(Group.Mode.class);
             Group group = new Group(groupId, leader);
             group.setPlayId(playId);
             group.setPartDuration(duration);
+            group.setMode(mode);
             final int memberCount = buffer.readVarInt();
             for (int m = 0; m < memberCount; m++)
             {
