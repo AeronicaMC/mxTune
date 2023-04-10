@@ -21,10 +21,10 @@ public class Group
     private int playId;
     private int maxDuration;
     private int leader;
-    private Mode mode;
+    private Mode mode = Mode.Invite;
 
     // Not shared with client.
-    private String pin;
+    private String pin = "";
 
     private Group()
     {
