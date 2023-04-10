@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.items;
 
+import aeronicamc.mods.mxtune.managers.Group;
 import aeronicamc.mods.mxtune.managers.GroupManager;
 import aeronicamc.mods.mxtune.util.IMusic;
 import aeronicamc.mods.mxtune.util.MusicType;
@@ -90,6 +91,9 @@ public class MusicScoreItem extends Item implements IMusic
                 if (GroupManager.getGroup(pPlayer.getId()).isEmpty())
                 {
                     GroupManager.addGroup(pPlayer);
+                    Group group = GroupManager.getGroup(pPlayer.getId());
+                    group.setPin("1234");
+                    group.setMode(Group.Mode.Pin);
                     Entity entity = (new ChickenEntity(EntityType.CHICKEN, pLevel));
                     entity.setPos(pPlayer.getX(), pPlayer.getY() + 2.0, pPlayer.getZ());
                     entity.setSilent(true);

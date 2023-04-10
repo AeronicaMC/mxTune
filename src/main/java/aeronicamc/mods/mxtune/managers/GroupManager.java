@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.managers;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
+import aeronicamc.mods.mxtune.network.messages.OpenPinEntryMessage;
 import aeronicamc.mods.mxtune.network.messages.SyncGroupMemberState;
 import aeronicamc.mods.mxtune.network.messages.SyncGroupsMessage;
 import net.minecraft.entity.Entity;
@@ -34,7 +35,8 @@ public class GroupManager
     public static final int QUEUED = 1;
     public static final int PLAYING = 2;
 
-    private static final Map<Integer, Group> requesterGroup = new HashMap<>();
+    //Pin and Invite Management
+    private static final Map<Integer, Integer> requesterGroupId = new HashMap<>();
 
     public static void clear()
     {
@@ -252,6 +254,52 @@ public class GroupManager
         }
     }
 
+    // Click on leader Methods
+    public static void addMemberOnRightClick(int groupId, PlayerEntity initiator)
+    {
+        Group group = groups.getOrDefault(groupId, Group.EMPTY);
+        if (!group.isEmpty())
+        {
+            switch (group.getMode())
+            {
+                case Invite:
+                    if (requesterGroupId.containsKey(initiator.getId()))
+                    {
+                        Group requestedGroup = groups.getOrDefault(requesterGroupId.get(initiator.getId()), Group.EMPTY);
+                        if (!requestedGroup.isEmpty() && requestedGroup.equals(group))
+                        {
+                            addMember(groupId, initiator);
+                            requesterGroupId.remove(initiator.getId());
+                        }
+                    }
+                    break;
+                case Pin:
+                    requesterGroupId.put(initiator.getId(), groupId);
+                    PacketDispatcher.sendTo(new OpenPinEntryMessage(groupId), (ServerPlayerEntity) initiator);
+                    break;
+                case Open:
+                    addMember(groupId, initiator);
+                    requesterGroupId.remove(initiator.getId());
+                    break;
+                default:
+            }
+        }
+    }
+
+    public static void handlePin(ServerPlayerEntity serverPlayer, String pin)
+    {
+        if (requesterGroupId.containsKey(serverPlayer.getId()))
+        {
+            Group group = groups.getOrDefault(requesterGroupId.get(serverPlayer.getId()), Group.EMPTY);
+            if (!group.isEmpty() && group.getPin().equals(pin))
+            {
+                addMember(group.getGroupId(), serverPlayer);
+                requesterGroupId.remove(serverPlayer.getId());
+            }
+        }
+    }
+
+    // Member Music Methods
     /**
      *
      * @param membersId to search for

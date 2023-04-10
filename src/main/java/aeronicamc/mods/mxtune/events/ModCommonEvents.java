@@ -80,8 +80,7 @@ public class ModCommonEvents
             {
                 target.sendMessage(new TranslationTextComponent("chat.mxtune.groupManager.requests_to_join", initiator.getName()), target.getUUID());
                 LOGGER.debug("{} Requests to join group", initiator.getDisplayName().getString());
-                PacketDispatcher.sendTo(new OpenPinEntryMessage(tarGroup.getGroupId()), (ServerPlayerEntity) initiator);
-                //GroupManager.addMember(tarGroup.getGroupId(), initiator); // TODO this is a test only. Adding self to targets group is a no-no :P
+                GroupManager.addMemberOnRightClick(tarGroup.getGroupId(), initiator);
             }
             else if (tarGroup.isValid())
             {

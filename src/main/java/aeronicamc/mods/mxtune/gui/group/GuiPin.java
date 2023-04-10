@@ -6,6 +6,8 @@ import aeronicamc.mods.mxtune.gui.widget.MXButton;
 import aeronicamc.mods.mxtune.gui.widget.MXTextFieldWidget;
 import aeronicamc.mods.mxtune.managers.Group;
 import aeronicamc.mods.mxtune.managers.GroupClient;
+import aeronicamc.mods.mxtune.network.PacketDispatcher;
+import aeronicamc.mods.mxtune.network.messages.SendPinEntryMessage;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
@@ -116,6 +118,7 @@ public class GuiPin extends MXScreen
         } else if (cp == RETURN && canSubmit())
         {
             System.out.printf("Submit %s%n", pinDisplay.getValue());
+            PacketDispatcher.sendToServer(new SendPinEntryMessage(pinDisplay.getValue()));
             pinDisplay.setValue("");
             updateSubmitButtonState();
             this.onClose();
@@ -205,6 +208,6 @@ public class GuiPin extends MXScreen
 
     private Minecraft mc()
     {
-        return Objects.requireNonNull(minecraft);
+        return Objects.requireNonNull(Minecraft.getInstance());
     }
 }
