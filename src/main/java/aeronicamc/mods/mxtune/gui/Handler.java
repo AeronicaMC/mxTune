@@ -8,21 +8,19 @@ import net.minecraft.client.Minecraft;
 
 public class Handler
 {
-    private static final Minecraft mc = Minecraft.getInstance();
-
-    private Handler()
-    {
-        // NOP
-    }
+    static final Minecraft mc = Minecraft.getInstance();
+    private Handler() { /* NOP */ }
 
     public static void OpenGuiPinScreen(int groupId)
     {
         mc.tell(()->mc.setScreen(new GuiPin(groupId)));
     }
+
     public static void OpenGuiGroupScreen()
     {
         mc.tell(()->mc.setScreen(new GuiGroup()));
     }
+
     public static void OpenSheetMusicScreen()
     {
         mc.tell(()->mc.setScreen(new GuiMXT(Misc.nonNullInjected())));

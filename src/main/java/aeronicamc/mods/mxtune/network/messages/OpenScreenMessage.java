@@ -1,6 +1,8 @@
 package aeronicamc.mods.mxtune.network.messages;
 
 import aeronicamc.mods.mxtune.gui.Handler;
+import aeronicamc.mods.mxtune.managers.GroupManager;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -38,18 +40,38 @@ public class OpenScreenMessage extends AbstractMessage<OpenScreenMessage>
                 {
                     switch (message.screen)
                     {
+                        case GROUP_OPEN:
+                            Handler.OpenGuiGroupScreen();
+                            break;
                         case TEST_ONE:
                             Handler.openTestScreen();
                             break;
                         case TEST_TWO:
                             break;
+                        default:
                     }
                 });
+        else if (ctx.get().getDirection().getReceptionSide().isServer())
+        {
+            ServerPlayerEntity serverPlayer = ctx.get().getSender();
+            if (serverPlayer != null)
+                ctx.get().enqueueWork(() -> {
+                    switch (message.screen)
+                    {
+                        case GROUP_CHECK:
+                            GroupManager.handleGroupCheck(serverPlayer, message.screen);
+                            break;
+                        case TEST_ONE:
+                        case TEST_TWO:
+                        default:
+                    }
+                });
+        }
         ctx.get().setPacketHandled(true);
     }
 
     public enum SM
     {
-        TEST_ONE, TEST_TWO;
+        GROUP_CHECK, GROUP_OPEN, TEST_ONE, TEST_TWO;
     }
 }

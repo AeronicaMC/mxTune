@@ -3,6 +3,7 @@ package aeronicamc.mods.mxtune.managers;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.OpenPinEntryMessage;
+import aeronicamc.mods.mxtune.network.messages.OpenScreenMessage;
 import aeronicamc.mods.mxtune.network.messages.SyncGroupMemberState;
 import aeronicamc.mods.mxtune.network.messages.SyncGroupsMessage;
 import net.minecraft.entity.Entity;
@@ -297,6 +298,14 @@ public class GroupManager
                 requesterGroupId.remove(serverPlayer.getId());
             }
         }
+    }
+
+    public static void handleGroupCheck(ServerPlayerEntity serverPlayer, OpenScreenMessage.SM sm)
+    {
+        int playerId = serverPlayer.getId();
+        if (!isGrouped(playerId))
+            addGroup(serverPlayer);
+        PacketDispatcher.sendTo(new OpenScreenMessage(OpenScreenMessage.SM.GROUP_OPEN), serverPlayer);
     }
 
     // Member Music Methods

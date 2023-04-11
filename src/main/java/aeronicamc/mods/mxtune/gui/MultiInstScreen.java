@@ -5,6 +5,7 @@ import aeronicamc.mods.mxtune.gui.widget.*;
 import aeronicamc.mods.mxtune.inventory.MultiInstContainer;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.ChooseInstrumentMessage;
+import aeronicamc.mods.mxtune.network.messages.OpenScreenMessage;
 import aeronicamc.mods.mxtune.util.IInstrument;
 import aeronicamc.mods.mxtune.util.ISlotChangedCallback;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
@@ -146,7 +147,7 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
 
     private void onJamClicked()
     {
-        Handler.OpenGuiGroupScreen();
+        PacketDispatcher.sendToServer(new OpenScreenMessage(OpenScreenMessage.SM.GROUP_CHECK));
     }
 
     @Override

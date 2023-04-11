@@ -60,7 +60,7 @@ public class GuiPin extends MXScreen
         }
         groupDisplay.active = true;
         groupDisplay.setEditable(false);
-        ITextComponent msg = getGroupLeaderInfo(groupId);
+        ITextComponent msg = getGroupLeaderInfo(groupDisplay, player(), groupId);
         groupDisplay.setValue(msg.getString());
         lastHash = msg.hashCode();
         disableSubmitButton();
@@ -91,7 +91,7 @@ public class GuiPin extends MXScreen
             else {xPos += 30 + 2;}
             if (numPadLayout[index][0] == 2) {yPos += 20 + 2;}
         }
-        groupDisplay.setValue(getGroupLeaderInfo(groupId).getString());
+        groupDisplay.setValue(getGroupLeaderInfo(groupDisplay, player(), groupId).getString());
         int groupDisplayWidth = Math.max(mc().font.width(groupDisplay.getValue()) + 8, minWidth - 8);
         int groupLeft = (width - groupDisplayWidth) / 2;
         groupDisplay.setLayout(groupLeft, pinDisplay.y - 26, groupDisplayWidth, 20);
@@ -147,24 +147,24 @@ public class GuiPin extends MXScreen
         numPad[11].active = false;
     }
 
-    private ITextComponent getGroupLeaderInfo(int groupId)
+    static ITextComponent getGroupLeaderInfo(MXTextFieldWidget widget, ClientPlayerEntity player, int groupId)
     {
         Group group = GroupClient.getGroupById(groupId);
         if (group.isEmpty())
         {
-            groupDisplay.setTextColorUneditable(TextColorFg.YELLOW);
+            widget.setTextColorUneditable(TextColorFg.YELLOW);
             return new TranslationTextComponent("gui.mxtune.gui_pin.group_disbanded").withStyle(TextFormatting.YELLOW);
         } else
         {
             Entity entity;
-            if ((entity = player().level.getEntity(group.getLeader())) != null)
+            if ((entity = player.level.getEntity(group.getLeader())) != null)
             {
                 ITextComponent name = entity.getDisplayName();
-                groupDisplay.setTextColorUneditable(TextColorFg.GREEN);
+                widget.setTextColorUneditable(TextColorFg.GREEN);
                 return new TranslationTextComponent("gui.mxtune.gui_pin.leaders_group", name.getString()).withStyle(TextFormatting.GREEN);
             } else
             {
-                groupDisplay.setTextColorUneditable(TextColorFg.RED);
+                widget.setTextColorUneditable(TextColorFg.RED);
                 return new TranslationTextComponent("gui.mxtune.gui_pin.unexpected_error").withStyle(TextFormatting.RED);
             }
         }
@@ -184,7 +184,7 @@ public class GuiPin extends MXScreen
     {
         if (counter++ % 20 == 0)
         {
-            ITextComponent msg = getGroupLeaderInfo(groupId);
+            ITextComponent msg = getGroupLeaderInfo(groupDisplay, player(), groupId);
             groupDisplay.setValue(msg.getString());
             if (lastHash != msg.hashCode())
             {
