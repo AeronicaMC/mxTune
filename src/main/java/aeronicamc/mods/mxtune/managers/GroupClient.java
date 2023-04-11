@@ -1,5 +1,7 @@
 package aeronicamc.mods.mxtune.managers;
 
+import aeronicamc.mods.mxtune.util.IGroupClientChangedCallback;
+import aeronicamc.mods.mxtune.util.IGroupClientChangedCallback.Type;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,6 +15,7 @@ public class GroupClient
     private static final Logger LOGGER = LogManager.getLogger(GroupClient.class);
     private static final Map<Integer, Group> groupMap = new ConcurrentHashMap<>();
     private static final Map<Integer, Integer> memberState = new ConcurrentHashMap<>();
+    private static IGroupClientChangedCallback callback;
 
     public static void clear()
     {
@@ -43,6 +46,8 @@ public class GroupClient
             LOGGER.debug("Final GroupMap Server/Client: {}/{}", pGroupMap.size(), groupMap.size());
             groupMap.forEach((id, group) -> LOGGER.debug("  After  {}", group));
         }
+        if (callback != null)
+            callback.onGroupClientChanged(Type.Group);
     }
 
     public static void setMemberStates(Map<Integer, Integer> pMemberState)
@@ -69,6 +74,18 @@ public class GroupClient
             memberState.forEach((id, state) -> LOGGER.debug("  After  {}", state));
             memberState.forEach((member, state) -> LOGGER.debug("    member: {} state: {}", member, state));
         }
+        if (callback != null)
+            callback.onGroupClientChanged(Type.Member);
+    }
+
+    public static void setCallback(IGroupClientChangedCallback pCallback)
+    {
+        callback = pCallback;
+    }
+
+    public static void removeCallback()
+    {
+        callback = null;
     }
 
     /**
