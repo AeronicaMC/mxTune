@@ -17,6 +17,7 @@ import java.util.function.BiConsumer;
 public class GroupMemberList extends MXExtendedList<GroupMemberList.Entry>
 {
     private int suggestedWidth;
+    private boolean oneTimeOnly;
 
     public GroupMemberList()
     {
@@ -30,24 +31,29 @@ public class GroupMemberList extends MXExtendedList<GroupMemberList.Entry>
 
     public GroupMemberList init(int groupId)
     {
-        for (int member : GroupClient.getGroupById(groupId).getMembers())
+        if (!oneTimeOnly)
         {
-            LivingEntity entity = (LivingEntity) Objects.requireNonNull(minecraft.player).level.getEntity(member);
-            if (entity != null)
+            for (int member : GroupClient.getGroupById(groupId).getMembers())
             {
-                suggestedWidth = calculateWidth(suggestedWidth, entity.getDisplayName().getString());
-                GroupMemberList.Entry entry = new GroupMemberList.Entry(entity);
-                super.addEntry(entry);
-                if (GroupClient.isLeader(entry.getId()))
-                    super.setSelected(entry);
+                LivingEntity entity = (LivingEntity) Objects.requireNonNull(minecraft.player).level.getEntity(member);
+                if (entity != null)
+                {
+                    suggestedWidth = calculateWidth(suggestedWidth, entity.getDisplayName().getString());
+                    GroupMemberList.Entry entry = new GroupMemberList.Entry(new Member(entity.getId(), entity.getDisplayName()));
+                    if (!super.children().contains(entry))
+                        super.addEntry(entry);
+                    if (GroupClient.isLeader(entry.getId()))
+                        super.setSelected(entry);
+                }
             }
+            if (super.getSelected() == null)
+            {
+                super.setSelected(children().get(0));
+            }
+            super.centerScrollOn(super.getSelected());
+            suggestedWidth += 10; // Roughly Account for scrollbar
+            oneTimeOnly = true;
         }
-        if (super.getSelected() == null)
-        {
-            super.setSelected(children().get(0));
-        }
-        super.centerScrollOn(super.getSelected());
-        suggestedWidth += 10; // Roughly Account for scrollbar
         return this;
     }
 
@@ -70,21 +76,21 @@ public class GroupMemberList extends MXExtendedList<GroupMemberList.Entry>
 
     public class Entry extends MXExtendedList.AbstractListEntry<GroupMemberList.Entry>
     {
-        protected LivingEntity entity;
+        protected Member member;
 
-        public Entry(LivingEntity entity)
+        public Entry(Member member)
         {
-            this.entity = entity;
+            this.member = member;
         }
 
-        public LivingEntity getMember()
+        public Member getMember()
         {
-            return entity;
+            return member;
         }
 
         public int getId()
         {
-            return entity.getId();
+            return member.getMemberId();
         }
 
         @Override
@@ -95,7 +101,7 @@ public class GroupMemberList extends MXExtendedList<GroupMemberList.Entry>
                 fill(pMatrixStack, pLeft - 2, pTop - 2, pLeft - 5 + width, pTop + itemHeight - 1, 0xA0A0A0A0);
             }
 
-            ITextComponent translated = entity.getDisplayName();
+            ITextComponent translated = member.getName();
             ITextProperties trimmed = minecraft.font.substrByWidth(translated, pWidth - 6);
             minecraft.font.drawShadow(pMatrixStack, trimmed.getString(), (float) (pLeft), (float) (pTop + 1), 16777215, true);
         }
@@ -112,6 +118,29 @@ public class GroupMemberList extends MXExtendedList<GroupMemberList.Entry>
                 return true;
             }
             return false;
+        }
+    }
+
+    public static class Member
+    {
+        protected int memberId;
+        protected ITextComponent name;
+        private Member() { /* NOP */ }
+
+        public Member(int memberId, ITextComponent name)
+        {
+            this.memberId = memberId;
+            this.name = name;
+        }
+
+        public int getMemberId()
+        {
+            return memberId;
+        }
+
+        public ITextComponent getName()
+        {
+            return name;
         }
     }
 }
