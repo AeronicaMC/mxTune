@@ -21,7 +21,7 @@ public class Group
     private int playId;
     private int maxDuration;
     private int leader;
-    private Mode mode = Mode.Invite;
+    private Mode mode = Mode.Pin;
 
     // Not shared with client.
     private String pin = "";
@@ -149,7 +149,6 @@ public class Group
 
     public enum Mode
     {
-        Invite ("enum.mxtune.group.mode.invite", "enum.mxtune.group.mode.invite.help01", "enum.mxtune.group.mode.invite.help02", "enum.mxtune.group.mode.invite.help03"),
         Pin ("enum.mxtune.group.mode.pin", "enum.mxtune.group.mode.pin.help01", "enum.mxtune.group.mode.pin.help02", "enum.mxtune.group.mode.pin.help03"),
         Open("enum.mxtune.group.mode.open", "enum.mxtune.group.mode.open.help01", "enum.mxtune.group.mode.open.help02", "enum.mxtune.group.mode.open.help03");
 

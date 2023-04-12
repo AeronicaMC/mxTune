@@ -232,10 +232,6 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addEnum("tool_state.type.done", "Done");
         addEnum("tool_state.type.remove", "Remove");
 
-        addEnum("group.mode.invite", "Invite");
-        addEnum("group.mode.invite.help01", "Invite help 01");
-        addEnum("group.mode.invite.help02", "Invite help 02");
-        addEnum("group.mode.invite.help03", "Invite help 03");
         addEnum("group.mode.pin", "Pin");
         addEnum("group.mode.pin.help01", "Pin help 01");
         addEnum("group.mode.pin.help02", "Pin help 02");
