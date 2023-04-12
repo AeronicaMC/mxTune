@@ -5,6 +5,8 @@ import aeronicamc.mods.mxtune.gui.widget.MXButton;
 import aeronicamc.mods.mxtune.gui.widget.MXTextFieldWidget;
 import aeronicamc.mods.mxtune.gui.widget.list.GroupMemberList;
 import aeronicamc.mods.mxtune.managers.GroupClient;
+import aeronicamc.mods.mxtune.network.PacketDispatcher;
+import aeronicamc.mods.mxtune.network.messages.GetGroupPinMessage;
 import aeronicamc.mods.mxtune.util.IGroupClientChangedCallback;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
@@ -20,6 +22,7 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
     private final MXButton buttonDone = new MXButton(p -> done());
     private final MXButton buttonCancel = new MXButton(p -> cancel());
     private final MXTextFieldWidget groupDisplay = new MXTextFieldWidget(1024);
+    private final MXTextFieldWidget pinDisplay = new MXTextFieldWidget(4);
     private final GroupMemberList memberList = new GroupMemberList();
     private int counter;
     private int groupId;
@@ -27,6 +30,7 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
     public GuiGroup()
     {
         super(StringTextComponent.EMPTY);
+        PacketDispatcher.sendToServer(new GetGroupPinMessage());
     }
 
     @Override
@@ -35,18 +39,23 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         super.init();
         GroupClient.setCallback(this);
         groupId = GroupClient.getGroup(player().getId()).getGroupId();
-        memberList.init(groupId);
-        memberList.setCallBack(this::memberSelect);
         int groupDisplayWidth = mc().font.width(GuiPin.getGroupLeaderInfo(groupDisplay, player(), groupId));
-        groupDisplay.setLayout(width/2 -groupDisplayWidth /2, 10, groupDisplayWidth + 8, 20);
+        int pinDisplayWidth = mc().font.width("0000");
+        groupDisplay.setLayout(width/2 - groupDisplayWidth /2, 10, groupDisplayWidth + 8, 20);
         ITextComponent msg = GuiPin.getGroupLeaderInfo(groupDisplay, player(), groupId);
         lastHash = msg.hashCode();
         groupDisplay.setValue(msg.getString());
-        buttonDone.setLayout(10,50,100,20);
+
+        pinDisplay.setLayout(width / 2 - pinDisplayWidth /2, groupDisplay.getBottom() + 4, pinDisplayWidth + 8, 20);
+        pinDisplay.setValue("----");
+
+        buttonDone.setLayout(width - 100 - 10,10 ,100,20);
         buttonDone.setMessage(new TranslationTextComponent("gui.done"));
-        buttonCancel.setLayout(10,72,100,20);
+        buttonCancel.setLayout(buttonDone.x,buttonDone.y + 22,100,20);
         buttonCancel.setMessage(new TranslationTextComponent("gui.cancel"));
-        memberList.setLayout(buttonCancel.x, buttonCancel.y + 25, 100, (font.lineHeight + 4) * 16);
+        memberList.init(groupId);
+        memberList.setCallBack(this::memberSelect);
+        memberList.setLayout(10, 10, 100, (font.lineHeight + 4) * 16);
         addWidget(memberList);
         addButton(buttonDone);
         addButton(buttonCancel);
@@ -59,9 +68,13 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         {
             case Group:
             case Member:
-                System.out.printf("callback: %s\n", type);
+                memberList.init(groupId);
+                break;
+            case Pin:
+                pinDisplay.setValue(GroupClient.getPrivatePin());
                 break;
         }
+        System.out.printf("callback: %s\n", type);
     }
 
     private void memberSelect(GroupMemberList.Entry entry, boolean doubleClick)
@@ -91,6 +104,7 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         this.fillGradient(pMatrixStack, 0, 0, this.width, this.height, -1072689136, -804253680);
         groupDisplay.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
         memberList.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
+        pinDisplay.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
         super.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
     }
 

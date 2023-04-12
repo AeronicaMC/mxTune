@@ -18,6 +18,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,14 +37,35 @@ public class GroupManager
     public static final int QUEUED = 1;
     public static final int PLAYING = 2;
 
-    //Pin and Invite Management
+    //Pin Management
     private static final Map<Integer, Integer> requesterGroupId = new HashMap<>();
+
+    /**
+     * Generate a 4 digit leading zero pin string in the range of 0001 to 9999 that is not already in use.
+     * @return a unique 4 digit pin.
+     */
+    public static String generatePin()
+    {
+        Integer[] pin = new Integer[1];
+        Set<Integer> pins = new HashSet<>(16);
+        groups.forEach((key, value) -> {
+            pin[0] = !value.getPin().isEmpty() ? Integer.parseInt(value.getPin()) : 0;
+            pins.add(pin[0]);
+        });
+        do {
+            pin[0] = RandomUtils.nextInt(1, 10000);
+        } while (pins.contains(pin[0]));
+        return String.format("%04d", pin[0]);
+    }
 
     public static void clear()
     {
         synchronized (groups)
         {
             groups.clear();
+            memberState.clear();
+            memberMusic.clear();
+            requesterGroupId.clear();
         }
     }
 
@@ -62,7 +84,9 @@ public class GroupManager
             if (isNotGrouped(leader.getId()))
             {
                 Group group = new Group(leader.getId());
+                group.setPin(generatePin());
                 groups.put(group.getGroupId(), group);
+                LOGGER.debug("groupId: {}, Pin: {}", group.getGroupId(), group.getPin());
                 sync();
                 leader.displayClientMessage(new TranslationTextComponent("message.mxtune.groupManager.created_group"), true);
             }
@@ -263,17 +287,6 @@ public class GroupManager
         {
             switch (group.getMode())
             {
-                case Invite:
-                    if (requesterGroupId.containsKey(initiator.getId()))
-                    {
-                        Group requestedGroup = groups.getOrDefault(requesterGroupId.get(initiator.getId()), Group.EMPTY);
-                        if (!requestedGroup.isEmpty() && requestedGroup.equals(group))
-                        {
-                            addMember(groupId, initiator);
-                            requesterGroupId.remove(initiator.getId());
-                        }
-                    }
-                    break;
                 case Pin:
                     requesterGroupId.put(initiator.getId(), groupId);
                     PacketDispatcher.sendTo(new OpenPinEntryMessage(groupId), (ServerPlayerEntity) initiator);
