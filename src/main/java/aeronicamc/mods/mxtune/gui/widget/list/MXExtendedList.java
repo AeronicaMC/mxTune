@@ -102,10 +102,7 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
     protected boolean doubleClicked()
     {
         final long clicked = System.currentTimeMillis();
-        boolean result = false;
-        if ((clicked - lastClick) < MXTuneConfig.getDoubleClickTimeMS())
-            result = true;
-
+        boolean result = (clicked - lastClick) < MXTuneConfig.getDoubleClickTimeMS();
         lastClick = clicked;
         return result;
     }
