@@ -40,6 +40,7 @@
   "gui.mxtune.button.clipboard_Copy_to": "Copy",
   "gui.mxtune.button.clipboard_paste_from": "Paste",
   "gui.mxtune.button.disabled": "Disabled",
+  "gui.mxtune.button.disband": "Disband",
   "gui.mxtune.button.enabled": "Enabled",
   "gui.mxtune.button.help.help01": "Help",
   "gui.mxtune.button.help.help02": "Hoover over buttons for tips.",

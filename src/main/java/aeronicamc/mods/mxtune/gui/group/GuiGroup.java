@@ -11,6 +11,7 @@ import aeronicamc.mods.mxtune.util.IGroupClientChangedCallback;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.gui.DialogTexts;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -19,8 +20,9 @@ import java.util.Objects;
 
 public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
 {
+    private static final ITextComponent DISBAND = new TranslationTextComponent("gui.mxtune.button.disband");
     private final MXButton buttonDone = new MXButton(p -> done());
-    private final MXButton buttonCancel = new MXButton(p -> cancel());
+    private final MXButton buttonDisband = new MXButton(p -> disband());
     private final MXTextFieldWidget groupDisplay = new MXTextFieldWidget(1024);
     private final MXTextFieldWidget pinDisplay = new MXTextFieldWidget(4);
     private final GroupMemberList memberList = new GroupMemberList();
@@ -30,7 +32,6 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
     public GuiGroup()
     {
         super(StringTextComponent.EMPTY);
-        PacketDispatcher.sendToServer(new GetGroupPinMessage());
     }
 
     @Override
@@ -38,6 +39,7 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
     {
         super.init();
         GroupClient.setCallback(this);
+        PacketDispatcher.sendToServer(new GetGroupPinMessage());
         groupId = GroupClient.getGroup(player().getId()).getGroupId();
         int groupDisplayWidth = mc().font.width(GuiPin.getGroupLeaderInfo(groupDisplay, player(), groupId));
         int pinDisplayWidth = mc().font.width("0000");
@@ -50,15 +52,16 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         pinDisplay.setValue("----");
 
         buttonDone.setLayout(width - 100 - 10,10 ,100,20);
-        buttonDone.setMessage(new TranslationTextComponent("gui.done"));
-        buttonCancel.setLayout(buttonDone.x,buttonDone.y + 22,100,20);
-        buttonCancel.setMessage(new TranslationTextComponent("gui.cancel"));
+        buttonDone.setMessage(DialogTexts.GUI_DONE);
+        buttonDisband.setLayout(buttonDone.x, buttonDone.y + 22, 100, 20);
+        buttonDisband.setMessage(DISBAND);
+
         memberList.init(groupId);
         memberList.setCallBack(this::memberSelect);
         memberList.setLayout(10, 10, 100, (font.lineHeight + 4) * 16);
         addWidget(memberList);
         addButton(buttonDone);
-        addButton(buttonCancel);
+        addButton(buttonDisband);
     }
 
     @Override
@@ -82,7 +85,7 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
 
     }
 
-    private void cancel()
+    private void disband()
     {
         this.onClose();
     }
@@ -127,8 +130,8 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
     @Override
     public void onClose()
     {
-        super.onClose();
         GroupClient.removeCallback();
+        super.onClose();
     }
 
     @Override
@@ -140,7 +143,7 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
     @Override
     public boolean shouldCloseOnEsc()
     {
-        return false;
+        return true;
     }
 
     private ClientPlayerEntity player()

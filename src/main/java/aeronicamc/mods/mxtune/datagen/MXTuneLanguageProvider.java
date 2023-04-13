@@ -194,6 +194,8 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("gui_pin.group_disbanded","Group Disbanded");
         addGuiText("gui_pin.leaders_group", "%s's Group");
         addGuiText("gui_pin.unexpected_error", "*** Unexpected Error ***");
+
+        addGuiText("button.disband", "Disband");
     }
 
     private void addChats()
