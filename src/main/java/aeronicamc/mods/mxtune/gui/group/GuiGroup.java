@@ -277,7 +277,7 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
             this.nameWidth = parent.nameWidth;
             this.lineHeight = parent.lineHeight;
             this.memberId = memberId;
-            this.name = player().level.getEntity(memberId) != null ? player().level.getEntity(memberId).getDisplayName() : new StringTextComponent(Integer.toString(memberId));
+            this.name = player().level.getEntity(memberId) != null ? player().level.getEntity(memberId).getDisplayName() : new StringTextComponent(String.format("< %d >", memberId));
             promote = new MXButton(pPromote);
             promote.setMessage(MemberInfo.PROMOTE);
             promote.setLayout(xPos + nameWidth, yPos, 20, this.lineHeight);
@@ -303,7 +303,7 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
 
         void memberDraw(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks)
         {
-            mc().font.draw(pMatrixStack, name, xPos + 2, yPos + 2, GroupClient.isLeader(memberId) ? TextColorFg.YELLOW: TextColorFg.WHITE);
+            mc().font.draw(pMatrixStack, name, (float)xPos + 2, (float)yPos + 2, GroupClient.isLeader(memberId) ? TextColorFg.YELLOW: TextColorFg.WHITE);
         }
     }
 }
