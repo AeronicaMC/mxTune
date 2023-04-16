@@ -190,12 +190,15 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("switch.multi_inst_screen.auto_select.help02", "On: Changes to the instrument specified by the Sheet Music in the inventory slot.");
         addGuiText("switch.multi_inst_screen.auto_select.help03", "Off: Uses the instrument shown on the selector button.");
 
-        // GUIPin
+        // GuiPin
         addGuiText("gui_pin.group_disbanded","Group Disbanded");
         addGuiText("gui_pin.leaders_group", "%s's Group");
         addGuiText("gui_pin.unexpected_error", "*** Unexpected Error ***");
 
+        // GuiGroup
         addGuiText("button.disband", "Disband");
+        addGuiText("label.pin", "Pin:");
+        addGuiText("label.mode", "Mode:");
     }
 
     private void addChats()
