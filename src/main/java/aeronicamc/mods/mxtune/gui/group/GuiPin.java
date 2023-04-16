@@ -3,6 +3,7 @@ package aeronicamc.mods.mxtune.gui.group;
 import aeronicamc.mods.mxtune.gui.MXScreen;
 import aeronicamc.mods.mxtune.gui.TextColorFg;
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
+import aeronicamc.mods.mxtune.gui.widget.MXLabel;
 import aeronicamc.mods.mxtune.gui.widget.MXTextFieldWidget;
 import aeronicamc.mods.mxtune.managers.Group;
 import aeronicamc.mods.mxtune.managers.GroupClient;
@@ -37,7 +38,7 @@ public class GuiPin extends MXScreen
                                                  {0,3}, {1,3}, {2,3}};
     private final MXButton[] numPad = new MXButton[12];
     private final MXTextFieldWidget pinDisplay = new MXTextFieldWidget(4);
-    private final MXTextFieldWidget groupDisplay = new MXTextFieldWidget(1024);
+    private final MXLabel groupDisplay = new MXLabel();
     private final int groupId;
     private int charPos;
     private int counter;
@@ -58,10 +59,8 @@ public class GuiPin extends MXScreen
             numPad[index] = new MXButton(press -> numPress(key));
             index++;
         }
-        groupDisplay.active = true;
-        groupDisplay.setEditable(false);
         ITextComponent msg = getGroupLeaderInfo(groupDisplay, player(), groupId);
-        groupDisplay.setValue(msg.getString());
+        groupDisplay.setLabelText(msg);
         lastHash = msg.hashCode();
         disableSubmitButton();
     }
@@ -91,9 +90,10 @@ public class GuiPin extends MXScreen
             else {xPos += 30 + 2;}
             if (numPadLayout[index][0] == 2) {yPos += 20 + 2;}
         }
-        groupDisplay.setValue(getGroupLeaderInfo(groupDisplay, player(), groupId).getString());
-        int groupDisplayWidth = Math.max(mc().font.width(groupDisplay.getValue()) + 8, minWidth - 8);
+        groupDisplay.setLabelText(getGroupLeaderInfo(groupDisplay, player(), groupId));
+        int groupDisplayWidth = Math.max(mc().font.width(groupDisplay.getLabelText()) + 8, minWidth - 8);
         int groupLeft = (width - groupDisplayWidth) / 2;
+        groupDisplay.setCentered(true);
         groupDisplay.setLayout(groupLeft, pinDisplay.y - 26, groupDisplayWidth, 20);
     }
 
@@ -147,12 +147,12 @@ public class GuiPin extends MXScreen
         numPad[11].active = false;
     }
 
-    static ITextComponent getGroupLeaderInfo(MXTextFieldWidget widget, ClientPlayerEntity player, int groupId)
+    static ITextComponent getGroupLeaderInfo(MXLabel widget, ClientPlayerEntity player, int groupId)
     {
         Group group = GroupClient.getGroupById(groupId);
         if (group.isEmpty())
         {
-            widget.setTextColorUneditable(TextColorFg.YELLOW);
+            widget.setTextColor(TextColorFg.YELLOW);
             return new TranslationTextComponent("gui.mxtune.gui_pin.group_disbanded").withStyle(TextFormatting.YELLOW);
         } else
         {
@@ -160,11 +160,11 @@ public class GuiPin extends MXScreen
             if ((entity = player.level.getEntity(group.getLeader())) != null)
             {
                 ITextComponent name = entity.getDisplayName();
-                widget.setTextColorUneditable(TextColorFg.GREEN);
+                widget.setTextColor(TextColorFg.GREEN);
                 return new TranslationTextComponent("gui.mxtune.gui_pin.leaders_group", name.getString()).withStyle(TextFormatting.GREEN);
             } else
             {
-                widget.setTextColorUneditable(TextColorFg.RED);
+                widget.setTextColor(TextColorFg.RED);
                 return new TranslationTextComponent("gui.mxtune.gui_pin.unexpected_error").withStyle(TextFormatting.RED);
             }
         }
@@ -185,7 +185,7 @@ public class GuiPin extends MXScreen
         if (counter++ % 20 == 0)
         {
             ITextComponent msg = getGroupLeaderInfo(groupDisplay, player(), groupId);
-            groupDisplay.setValue(msg.getString());
+            groupDisplay.setLabelText(msg);
             if (lastHash != msg.hashCode())
             {
                 lastHash = msg.hashCode();
