@@ -118,7 +118,7 @@ public final class PlayManager
 
             } else
             {
-                // TODO:
+                // TODO: improve perhaps using an advancement so an informative toast is presented. Trials and Tribulations :P
                 Misc.audiblePingPlayer(playerIn, ModSoundEvents.FAILURE.get());
                 playerIn.displayClientMessage(new TranslationTextComponent("errors.mxtune.sheet_music_too_old", musicTextKey), false);
                 LOGGER.debug("Music key not found: {}", musicTextKey);
@@ -247,7 +247,7 @@ public final class PlayManager
 
     static void stopGroupMusic(int entityId)
     {
-
+        // TODO complete group Music Management
     }
 
     public static int getEntitiesPlayId(int entityId)
@@ -355,6 +355,19 @@ public final class PlayManager
         synchronized (THREAD_SYNC)
         {
             return ActiveTune.isActivePlayId(playId);
+        }
+    }
+
+    /**
+     * Retrieves the playId for a given sourceEntityId. This could be a player or music source entity.
+     * @param playId of interest
+     * @return sourceEntityId or 0 if it does not exist.
+     */
+    static int getSourceEntityForPlayId(int playId)
+    {
+        synchronized (THREAD_SYNC)
+        {
+            return ActiveTune.getSourceEntityForPlayId(playId);
         }
     }
 }

@@ -20,6 +20,7 @@ public class ActiveTune
     private static final Logger LOGGER = LogManager.getLogger(ActiveTune.class);
     private static final Map<Integer, ActiveTune.Entry> playIdToActiveTuneEntry = new ConcurrentHashMap<>(16);
     private static final Map<Integer, ActiveTune.Entry> entityIdToActiveTuneEntry = new ConcurrentHashMap<>(16);
+    private static final Map<Integer, Integer> activePlayIdToSourceEntityId = new ConcurrentHashMap<>(16);
 
 
     private static final Queue<ActiveTune.Entry> deleteEntryQueue = new ConcurrentLinkedQueue<>();
@@ -88,8 +89,9 @@ public class ActiveTune
         if (!deleteEntryQueue.isEmpty())
         {
             Entry entry = deleteEntryQueue.remove();
-            entityIdToActiveTuneEntry.remove(entry.entityId);
+            entityIdToActiveTuneEntry.remove(entry.sourceEntityId);
             playIdToActiveTuneEntry.remove(entry.playId);
+            activePlayIdToSourceEntityId.remove(entry.playId);
         }
     }
 
@@ -100,6 +102,7 @@ public class ActiveTune
             Entry entry = Entry.newEntry(entityId, playId, mml, durationSeconds);
             playIdToActiveTuneEntry.putIfAbsent(playId, Entry.newEntry(entityId, playId, mml, durationSeconds));
             entityIdToActiveTuneEntry.putIfAbsent(entityId, entry);
+            activePlayIdToSourceEntityId.putIfAbsent(playId, entityId);
         }
     }
 
@@ -123,6 +126,21 @@ public class ActiveTune
         return entityExists(entityId) && entityIdToActiveTuneEntry.get(entityId).isActive();
     }
 
+    /**
+     * Retrieves the playId for a given sourceEntityId. This could be a player or music source entity.
+     * @param playId of interest
+     * @return sourceEntityId or 0 if it does not exist.
+     */
+    synchronized static int getSourceEntityForPlayId(int playId)
+    {
+        return activePlayIdToSourceEntityId.getOrDefault(playId, 0);
+    }
+
+    public static ScheduledExecutorService getScheduledThreadPool()
+    {
+        return scheduledThreadPool;
+    }
+
     synchronized static int getPlayIdForEntity(int entityId)
     {
         return entityExists(entityId) ? entityIdToActiveTuneEntry.get(entityId).playId : INVALID;
@@ -135,7 +153,7 @@ public class ActiveTune
 
     synchronized static Optional<Entry> getActiveTuneByEntityId(@Nullable Entity entity)
     {
-        return getActiveTuneEntries().stream().filter(entry -> ((entity != null) && (entry.entityId == entity.getId()))).findFirst();
+        return getActiveTuneEntries().stream().filter(entry -> ((entity != null) && (entry.sourceEntityId == entity.getId()))).findFirst();
     }
 
     static void remove(int playId)
@@ -169,15 +187,15 @@ public class ActiveTune
         private int secondsElapsed;
 
         final String musicText;
-        final int entityId;
+        final int sourceEntityId;
         final int playId;
         final int durationSeconds;
         final int removalSeconds;
         Set<Integer> listeners = new HashSet<>(16);
 
-        private Entry(int entityId, int playId, String musicText, int durationSeconds)
+        private Entry(int sourceEntityId, int playId, String musicText, int durationSeconds)
         {
-            this.entityId = entityId;
+            this.sourceEntityId = sourceEntityId;
             this.playId = playId;
             this.musicText = musicText;
             this.durationSeconds = durationSeconds;
@@ -223,7 +241,7 @@ public class ActiveTune
         public String toString()
         {
             return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                    .append("entityId", entityId)
+                    .append("entityId", sourceEntityId)
                     .append("playId", playId)
                     .append("secondsElapsed", secondsElapsed)
                     .append("durationSeconds", durationSeconds)

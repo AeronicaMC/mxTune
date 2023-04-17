@@ -463,6 +463,14 @@ public class GroupManager
             return false;
     }
 
+    static boolean isActivePlayIdForGroup(int playId)
+    {
+        // TODO complete group Music Management
+        int entityId = PlayManager.getSourceEntityForPlayId(playId);
+        Group group = getGroup(entityId);
+        return PlayManager.isActivePlayId(playId) && group.isValid() && group.getPlayId() == playId;
+    }
+
     static void deQueueMember(int memberId)
     {
         Group group = getGroup(memberId);
