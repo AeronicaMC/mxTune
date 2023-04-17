@@ -7,7 +7,7 @@ import aeronicamc.mods.mxtune.gui.widget.MXLabel;
 import aeronicamc.mods.mxtune.managers.Group;
 import aeronicamc.mods.mxtune.managers.GroupClient;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
-import aeronicamc.mods.mxtune.network.messages.GetGroupPinMessage;
+import aeronicamc.mods.mxtune.network.messages.GroupCmdMessage;
 import aeronicamc.mods.mxtune.util.IGroupClientChangedCallback;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
@@ -22,6 +22,8 @@ import net.minecraft.util.text.TranslationTextComponent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static aeronicamc.mods.mxtune.network.messages.GroupCmdMessage.Cmd;
 
 public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
 {
@@ -73,7 +75,7 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
     protected void init()
     {
         super.init();
-        PacketDispatcher.sendToServer(new GetGroupPinMessage());
+        PacketDispatcher.sendToServer(new GroupCmdMessage("", Cmd.Pin, player().getId()));
         setMode(GroupClient.getGroupById(groupId).getMode());
 
         groupDisplay.setCentered(true);
@@ -114,16 +116,25 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         {
             case Group:
                 this.reInit();
+                System.out.printf("callback: %s\n", type);
                 break;
             case Member:
                 // this.updateStatus()
+                System.out.printf("callback: %s\n", type);
                 break;
             case Pin:
                 buttonNewPin.setMessage(
-                        LABEL_PIN.plainCopy().append(" ").withStyle(TextFormatting.WHITE).append(new StringTextComponent(GroupClient.getPrivatePin()).withStyle(TextFormatting.GREEN)));
+                        LABEL_PIN.plainCopy().append(" ").withStyle(TextFormatting.WHITE)
+                                .append(new StringTextComponent(GroupClient.getPrivatePin())
+                                                .withStyle(TextFormatting.GREEN)));
+                System.out.printf("callback  Pin: %s\n", GroupClient.getPrivatePin());
+                break;
+            case Close:
+                this.onClose();
+                System.out.printf("callback: %s\n", type);
                 break;
         }
-        System.out.printf("callback: %s, Pin: %s\n", type, GroupClient.getPrivatePin());
+
     }
 
     private void reInit()
@@ -137,25 +148,30 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
     private void promote(Button button)
     {
         MXButton mxButton = (MXButton) button;
+        PacketDispatcher.sendToServer(new GroupCmdMessage(null, Cmd.Promote, mxButton.getIndex()));
     }
 
     private void remove(Button button)
     {
         MXButton mxButton = (MXButton) button;
+        PacketDispatcher.sendToServer(new GroupCmdMessage(null, Cmd.Remove, mxButton.getIndex()));
     }
 
     private void modeToggle()
     {
+        Cmd cmd = Cmd.Nil;
         switch (groupMode)
         {
             case Pin:
                 setMode(Group.Mode.Open);
+                cmd = Cmd.ModeOpen;
                 break;
             case Open:
                 setMode(Group.Mode.Pin);
+                cmd = Cmd.ModePin;
                 break;
         }
-        // TODO: send packet to server
+        PacketDispatcher.sendToServer(new GroupCmdMessage(null, cmd, player().getId()));
     }
 
     private void setMode(Group.Mode mode)
@@ -174,12 +190,13 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
 
     private void newPin()
     {
-        PacketDispatcher.sendToServer(new GetGroupPinMessage());
+        PacketDispatcher.sendToServer(new GroupCmdMessage(null, Cmd.NewPin, player().getId()));
     }
 
     private void disband()
     {
-        this.onClose();
+        PacketDispatcher.sendToServer(new GroupCmdMessage(null, Cmd.Disband, player().getId()));
+        //this.onClose();
     }
 
     private void done()

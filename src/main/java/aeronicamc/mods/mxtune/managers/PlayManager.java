@@ -245,6 +245,11 @@ public final class PlayManager
         }
     }
 
+    static void stopGroupMusic(int entityId)
+    {
+
+    }
+
     public static int getEntitiesPlayId(int entityId)
     {
         synchronized (THREAD_SYNC)

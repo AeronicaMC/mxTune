@@ -2,10 +2,7 @@ package aeronicamc.mods.mxtune.managers;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
-import aeronicamc.mods.mxtune.network.messages.OpenPinEntryMessage;
-import aeronicamc.mods.mxtune.network.messages.OpenScreenMessage;
-import aeronicamc.mods.mxtune.network.messages.SyncGroupMemberState;
-import aeronicamc.mods.mxtune.network.messages.SyncGroupsMessage;
+import aeronicamc.mods.mxtune.network.messages.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -300,6 +297,16 @@ public class GroupManager
         }
     }
 
+    private static void removeGroup(Group group)
+    {
+        PlayManager.stopGroupMusic(group.getLeader());
+        removeGroupsMusicText(group.getLeader());
+        removeGroupsPlayState(group.getLeader());
+        groups.remove(group.getGroupId());
+        sync();
+        syncStatus();
+    }
+
     public static void handlePin(ServerPlayerEntity serverPlayer, String pin)
     {
         if (requesterGroupId.containsKey(serverPlayer.getId()))
@@ -319,6 +326,60 @@ public class GroupManager
         if (!isGrouped(playerId))
             addGroup(serverPlayer);
         PacketDispatcher.sendTo(new OpenScreenMessage(OpenScreenMessage.SM.GROUP_OPEN), serverPlayer);
+    }
+
+    public static void handleGroupCmd(ServerPlayerEntity serverPlayer, GroupCmdMessage.Cmd cmd, int taggedMemberId)
+    {
+        int sourceMemberId = serverPlayer.getId();
+        Group group = getGroup(sourceMemberId);
+        if (!group.isEmpty())
+            switch (cmd)
+            {
+                case Disband:
+                    if (isLeader(sourceMemberId))
+                        removeGroup(group);
+                    break;
+                case ModePin:
+                    if (isLeader(sourceMemberId)) {
+                        group.setMode(Group.Mode.Pin);
+                        sync();
+                    }
+                    break;
+                case ModeOpen:
+                    if (isLeader(sourceMemberId)) {
+                        group.setMode(Group.Mode.Open);
+                        sync();
+                    }
+                    break;
+                case NewPin:
+                    if (isLeader(sourceMemberId))
+                    {
+                        group.setPin(generatePin());
+                        PacketDispatcher.sendTo(new GroupCmdMessage(group.getPin(), GroupCmdMessage.Cmd.Pin, taggedMemberId), serverPlayer);
+                    }
+                    break;
+                case Pin:
+                    if (group.isMember(sourceMemberId) || group.isMember(taggedMemberId))
+                        PacketDispatcher.sendTo(new GroupCmdMessage(GroupManager.getGroup(serverPlayer.getId()).getPin(), GroupCmdMessage.Cmd.Pin, taggedMemberId), serverPlayer);
+                    break;
+                case Promote:
+                    if (isLeader(sourceMemberId)) {
+                        group.setLeader(taggedMemberId);
+                        sync();
+                    }
+                    break;
+                case Remove:
+                    LOGGER.info("{}, {}", serverPlayer.getId() ,taggedMemberId);
+                    if (isLeader(sourceMemberId) && group.isMember(taggedMemberId) || sourceMemberId == taggedMemberId) {
+                        ServerPlayerEntity taggedEntity = (serverPlayer.level.getEntity(taggedMemberId) != null) ? (ServerPlayerEntity) serverPlayer.level.getEntity(taggedMemberId) : null;
+                        if (taggedEntity != null)
+                            PacketDispatcher.sendTo(new GroupCmdMessage(null, GroupCmdMessage.Cmd.CloseGui, taggedMemberId), taggedEntity);
+                        removeMember(serverPlayer, taggedMemberId);
+                    }
+                    break;
+                case Nil:
+                default:
+            }
     }
 
     // Member Music Methods
@@ -432,6 +493,11 @@ public class GroupManager
     static void removeGroupsMusicText(int memberId)
     {
         synchronized (memberMusic) { getGroup(memberId).getMembers().forEach(memberMusic::remove); }
+    }
+
+    static void removeGroupsPlayState(int memberId)
+    {
+        synchronized (memberMusic) { getGroup(memberId).getMembers().forEach(memberState::remove); }
     }
 
     @Mod.EventBusSubscriber(modid = Reference.MOD_ID)

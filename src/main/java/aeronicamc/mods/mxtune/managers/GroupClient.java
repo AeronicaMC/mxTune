@@ -2,7 +2,6 @@ package aeronicamc.mods.mxtune.managers;
 
 import aeronicamc.mods.mxtune.util.IGroupClientChangedCallback;
 import aeronicamc.mods.mxtune.util.IGroupClientChangedCallback.Type;
-import net.minecraft.client.Minecraft;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -10,6 +9,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static aeronicamc.mods.mxtune.network.messages.GroupCmdMessage.Cmd;
 
 public class GroupClient
 {
@@ -49,7 +50,7 @@ public class GroupClient
             groupMap.forEach((id, group) -> LOGGER.debug("  After  {}", group));
         }
         if (callback != null)
-            Minecraft.getInstance().tell(() -> callback.onGroupClientChanged(Type.Group));
+            callback.onGroupClientChanged(Type.Group);
     }
 
     public static void setMemberStates(Map<Integer, Integer> pMemberState)
@@ -77,7 +78,7 @@ public class GroupClient
             memberState.forEach((member, state) -> LOGGER.debug("    member: {} state: {}", member, state));
         }
         if (callback != null)
-            Minecraft.getInstance().tell(() -> callback.onGroupClientChanged(Type.Member));
+            callback.onGroupClientChanged(Type.Member);
     }
 
     public static void setCallback(IGroupClientChangedCallback pCallback)
@@ -90,10 +91,13 @@ public class GroupClient
         callback = null;
     }
 
-    public static void setPrivatePin(String pin)
+    public static void setPrivatePin(String pin, Cmd cmd)
     {
-        privatePin = pin;
-        callback.onGroupClientChanged(Type.Pin);
+        if (Cmd.Pin.equals(cmd)) {
+            privatePin = pin;
+            callback.onGroupClientChanged(Type.Pin);
+        } else if (Cmd.CloseGui.equals(cmd))
+            callback.onGroupClientChanged(Type.Close);
     }
 
     public static String getPrivatePin()

@@ -35,7 +35,7 @@ public class PacketDispatcher
         // Bidirectional
         registerMessage(SendKeyMessage.class, new SendKeyMessage());
         registerMessage(OpenScreenMessage.class, new OpenScreenMessage());
-        registerMessage(GetGroupPinMessage.class, new GetGroupPinMessage());
+        registerMessage(GroupCmdMessage.class, new GroupCmdMessage());
         // To Client(s)
         registerMessage(PlayerNexusSync.class, new PlayerNexusSync());
         registerMessage(PlayMusicMessage.class, new PlayMusicMessage());
