@@ -456,12 +456,11 @@ public class GroupManager
 
     static boolean isQueued(int playId, int memberId)
     {
-        boolean result = false;
         Group group = getGroup(memberId);
-        if (group.isValid() && !PlayManager.isActivePlayId(playId)) {
-            result = memberState.get(memberId) == QUEUED;
-        }
-        return result;
+        if (group.isValid() && !PlayManager.isActivePlayId(playId))
+            return memberState.get(memberId) != null && memberState.get(memberId) == QUEUED;
+        else
+            return false;
     }
 
     static void deQueueMember(int memberId)
