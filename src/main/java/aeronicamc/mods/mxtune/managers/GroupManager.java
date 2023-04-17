@@ -454,6 +454,26 @@ public class GroupManager
        syncStatus();
     }
 
+    static boolean isQueued(int playId, int memberId)
+    {
+        boolean result = false;
+        Group group = getGroup(memberId);
+        if (group.isValid() && !PlayManager.isActivePlayId(playId)) {
+            result = memberState.get(memberId) == QUEUED;
+        }
+        return result;
+    }
+
+    static void deQueueMember(int memberId)
+    {
+        Group group = getGroup(memberId);
+        if (group.isValid()) {
+            memberState.remove(memberId);
+            memberMusic.remove(memberId);
+            syncStatus();
+        }
+    }
+
     static void setState(int memberId, int state)
     {
         synchronized (memberState)
