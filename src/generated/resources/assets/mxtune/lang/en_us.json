@@ -102,7 +102,7 @@
   "gui.mxtune.label.instruments": "Instruments",
   "gui.mxtune.label.melody": "melody %s",
   "gui.mxtune.label.metadata": "Chars: %s, Duration: %s, Meta: %s",
-  "gui.mxtune.label.mode": "Mode:",
+  "gui.mxtune.label.mode": "Access:",
   "gui.mxtune.label.pin": "Pin:",
   "gui.mxtune.label.search": "Search",
   "gui.mxtune.label.source": "Source URL:",

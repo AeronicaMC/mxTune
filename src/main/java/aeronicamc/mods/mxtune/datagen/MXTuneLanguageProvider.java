@@ -198,7 +198,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         // GuiGroup
         addGuiText("button.disband", "Disband");
         addGuiText("label.pin", "Pin:");
-        addGuiText("label.mode", "Mode:");
+        addGuiText("label.mode", "Access:");
     }
 
     private void addChats()
