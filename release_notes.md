@@ -1,3 +1,12 @@
+#### 2023-04-19 mxtune-1.16.5-2.0.0-alpha-2023-04-19.40843381
+* Classic JAMS implemented.
+  * To Join Group:
+    * Player click leader of a group/(yellow-diamond on placard) with an instrument.
+  * Two access modes added Pin and Open.
+  * Create/Manage from the instrument inventory.
+  * TODO: Add helps to Pin and Group GUI's.
+* 2nd pass placard textures. Still meh :P
+
 #### 2023-03-25 mxtune-1.16.5-2.0.0-alpha-2023-03-25.75248774
 * Auto Select option for MultiInstrument
   On: Changes to the instrument specified by the Sheet Music in the inventory slot.
