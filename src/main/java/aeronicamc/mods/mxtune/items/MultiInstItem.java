@@ -3,6 +3,7 @@ package aeronicamc.mods.mxtune.items;
 import aeronicamc.mods.mxtune.MXTune;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.inventory.MultiInstContainer;
+import aeronicamc.mods.mxtune.managers.GroupManager;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.managers.PlayManager;
 import aeronicamc.mods.mxtune.util.IInstrument;
@@ -62,7 +63,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
             }
             else if (!pPlayer.isCrouching() && pHand.equals(Hand.MAIN_HAND))
             {
-                if ((playId <= 0) || !PlayManager.isActivePlayId(playId))
+                if ((playId <= 0) || !GroupManager.isActiveOrQueuedPlayId(playId))
                 {
                     setPlayId(itemStackIn, PlayManager.playMusic(pPlayer));
                 }
@@ -128,7 +129,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
         int playId = getPlayId(pStack);
         if (!pLevel.isClientSide())
         {
-            if (!pIsSelected && PlayManager.isActivePlayId(playId))
+            if (!pIsSelected && GroupManager.isActiveOrQueuedPlayId(playId))
             {
                 PlayManager.stopPlayId(playId, pEntity.getId());
                 setPlayId(pStack, PlayIdSupplier.INVALID);
@@ -146,7 +147,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
         if (!pPlayer.level.isClientSide())
         {
             int playId = getPlayId(pStack);
-            if (PlayManager.isActivePlayId(playId))
+            if (GroupManager.isActiveOrQueuedPlayId(playId))
             {
                 PlayManager.stopPlayId(playId, pPlayer.getId());
                 setPlayId(pStack, PlayIdSupplier.INVALID);
@@ -162,7 +163,7 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
         if (!pLevel.isClientSide())
         {
             int playId = getPlayId(pStack);
-            if (PlayManager.isActivePlayId(playId))
+            if (GroupManager.isActiveOrQueuedPlayId(playId))
             {
                 PlayManager.stopPlayId(playId, 0);
                 setPlayId(pStack, PlayIdSupplier.INVALID);

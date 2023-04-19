@@ -21,7 +21,9 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public class GroupManager
 {
@@ -29,6 +31,7 @@ public class GroupManager
     private static final Map<Integer, Group> groups = new ConcurrentHashMap<>();
     private static final Map<Integer, Integer> memberState = new ConcurrentHashMap<>();
     private static final Map<Integer, String> memberMusic = new ConcurrentHashMap<>();
+    private static final BlockingDeque<Integer> lastPins = new LinkedBlockingDeque<>(100);
 
     public static final int REST = 0;
     public static final int QUEUED = 1;
@@ -44,14 +47,18 @@ public class GroupManager
     public static String generatePin()
     {
         Integer[] pin = new Integer[1];
-        Set<Integer> pins = new HashSet<>(16);
+        Set<Integer> inUsePins = new HashSet<>(16);
         groups.forEach((key, value) -> {
             pin[0] = !value.getPin().isEmpty() ? Integer.parseInt(value.getPin()) : 0;
-            pins.add(pin[0]);
+            inUsePins.add(pin[0]);
         });
         do {
             pin[0] = RandomUtils.nextInt(1, 10000);
-        } while (pins.contains(pin[0]));
+        } while (lastPins.contains(pin[0]) || inUsePins.contains(pin[0]));
+        if (!lastPins.offerFirst(pin[0])) {
+            lastPins.removeLast();
+            lastPins.addFirst(pin[0]);
+        }
         return String.format("%04d", pin[0]);
     }
 
@@ -233,6 +240,11 @@ public class GroupManager
     public static Group getGroup(int memberId)
     {
         return groups.values().stream().filter(group -> group.isMember(memberId)).findFirst().orElse(Group.EMPTY);
+    }
+
+    public static Group getGroupByPlayId(int playId)
+    {
+        return groups.values().stream().filter(group -> group.getPlayId() == playId).findFirst().orElse(Group.EMPTY);
     }
 
     /**
@@ -454,22 +466,21 @@ public class GroupManager
        syncStatus();
     }
 
-    static boolean isQueued(int playId, int memberId)
+    public static boolean isActiveOrQueuedPlayId(int playId)
     {
-        Group group = getGroup(memberId);
-        if (group.isValid() && !PlayManager.isActivePlayId(playId))
-            return memberState.get(memberId) != null && memberState.get(memberId) == QUEUED;
-        else
-            return false;
+        Group group = getGroupByPlayId(playId);
+        return PlayManager.isActivePlayId(playId) || isQueued(group);
     }
 
-    static boolean isActivePlayIdForGroup(int playId)
+    static boolean isQueued(Group group)
     {
-        // TODO complete group Music Management
-        int entityId = PlayManager.getSourceEntityForPlayId(playId);
-        Group group = getGroup(entityId);
-        return PlayManager.isActivePlayId(playId) && group.isValid() && group.getPlayId() == playId;
+        for(Integer member : group.getMembers()) {
+            if (memberState.containsKey(member) && memberState.get(member) == QUEUED)
+                return true;
+        }
+        return false;
     }
+
 
     static void deQueueMember(int memberId)
     {
