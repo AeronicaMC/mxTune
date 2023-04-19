@@ -45,7 +45,7 @@ public class MXTuneFileHelper
                 mxTuneFile = MXTuneFile.build(compound);
             }
         }
-        LOGGER.debug("getMXTuneFile version: {}", mxTuneFile == null ? "** file read failure **" : mxTuneFile.getMxtVersion());
+        LOGGER.warn("getMXTuneFile version: {}", mxTuneFile == null ? "** file read failure **" : mxTuneFile.getMxtVersion());
         return mxTuneFile;
     }
 

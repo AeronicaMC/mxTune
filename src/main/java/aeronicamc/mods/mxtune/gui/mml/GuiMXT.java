@@ -768,7 +768,6 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     {
         if ((this.playId == playId) && ClientAudio.isDoneOrYieldStatus(status))
         {
-            LOGGER.debug("AudioStatus event received: {}, playId: {}", status, playId);
             stop();
         }
     }

@@ -74,8 +74,6 @@ public class PlayMusicMessage extends AbstractMessage<PlayMusicMessage>
                   LocalDateTime dateTimeClient = LocalDateTime.now(ZoneId.of("GMT0"));
                   LocalDateTime dateTimeServer = message.secondsElapsed > 0 ? LocalDateTime.parse(message.dateTimeServer) : dateTimeClient;
                   long netTransitTime = Duration.between(dateTimeServer, dateTimeClient).toMillis();
-                  LOGGER.debug("In transit: {} ms, From: {} to: {}", netTransitTime, senderName, Minecraft.getInstance().player.getDisplayName().getString());
-                  LOGGER.debug("Duration: {}, Skip seconds: {}, playId: {}, entityId: {}", message.duration, message.secondsElapsed, message.playId, message.entityId);
                   ClientAudio.play(message.duration, message.secondsElapsed, netTransitTime, message.playId, message.entityId, message.musicText);
                 });
         }

@@ -34,7 +34,6 @@ public class ClientEvents
     @SubscribeEvent
     public static void event(ClientPlayerNetworkEvent.RespawnEvent event)
     {
-        LOGGER.debug("RespawnEvent: {}", event.getPlayer());
         GroupClient.clear();
         ClientAudio.stopAll();
         PacketDispatcher.sendToServer(new SyncRequestMessage());

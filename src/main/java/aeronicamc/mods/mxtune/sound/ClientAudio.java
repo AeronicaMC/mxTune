@@ -2,14 +2,12 @@ package aeronicamc.mods.mxtune.sound;
 
 import aeronicamc.libs.mml.parser.MMLParser;
 import aeronicamc.libs.mml.parser.MMLParserFactory;
-import aeronicamc.libs.mml.parser.MMLUtil;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.caps.venues.EntityVenueState;
 import aeronicamc.mods.mxtune.caps.venues.MusicVenueHelper;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.util.LoggedTimer;
-import aeronicamc.mods.mxtune.util.SoundFontProxyManager;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.minecraft.client.Minecraft;
@@ -19,7 +17,6 @@ import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.event.sound.SoundLoadEvent;
@@ -29,7 +26,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
-import javax.sound.midi.Patch;
 import javax.sound.sampled.AudioFormat;
 import java.util.List;
 import java.util.Objects;
@@ -181,7 +177,6 @@ public class ClientAudio
             parseMML(audioData, musicText);
             ActiveAudio.addEntry(audioData);
             Minecraft.getInstance().submitAsync(ClientAudio::prioritizeAndLimitSources);
-            LOGGER.debug("playId: {}, mc.player: {}, entityId: {}, isClient: {}, isReallyClient: {}", playID, mc.player.getId(), entityId, isClient, isReallyClient);
         }
         else
         {
@@ -264,16 +259,6 @@ public class ClientAudio
             toMIDI.processMObjects(mmlParser.getMmlObjects());
             ActiveAudio.addSequence(audioData.getPlayId(), audioData.getDurationSeconds(), toMIDI.getSequence());
             timer.stop();
-            //audioData.addProcessTimeMS(timer.getTimeElapsed());
-
-            // Log bank and program per instrument
-            for (int preset : toMIDI.getPresets())
-            {
-                Patch patchPreset = MMLUtil.packedPreset2Patch(SoundFontProxyManager.getPackedPreset(preset));
-                String name = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(preset)).getString();
-                LOGGER.debug("MML2PCM preset: {}, bank: {}, program: {}, name: {}", preset, patchPreset.getBank(),
-                             patchPreset.getProgram(), name);
-            }
         }
     }
 

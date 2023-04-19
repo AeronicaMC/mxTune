@@ -25,7 +25,6 @@ public class PCMAudioStream implements IAudioStream
     {
         this.audioData = audioData;
         nextZeroBuffer();
-        LOGGER.debug("PCMAudioStream invoked! PlayID {}", audioData.getPlayId());
     }
 
     private void nextZeroBuffer()

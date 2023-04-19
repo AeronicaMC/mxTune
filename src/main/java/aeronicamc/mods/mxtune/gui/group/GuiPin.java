@@ -106,7 +106,6 @@ public class GuiPin extends MXScreen
         {
             pinDisplay.setCursorPosition(charPos);
             pinDisplay.insertText(String.valueOf(((char) codePoint)));
-            System.out.printf("char: %s, codePoint: %#4x, pos: %d, screen[%d x %d]%n", ((char)codePoint), cp, charPos, width, height);
             charPos = charPos++ == 3 ? 0 : charPos;
             updateSubmitButtonState();
         } else if (cp == DEL)
@@ -114,10 +113,8 @@ public class GuiPin extends MXScreen
             pinDisplay.setValue("");
             charPos = 0;
             disableSubmitButton();
-            System.out.print("Clear");
         } else if (cp == RETURN && canSubmit())
         {
-            System.out.printf("Submit %s%n", pinDisplay.getValue());
             PacketDispatcher.sendToServer(new SendPinEntryMessage(pinDisplay.getValue()));
             pinDisplay.setValue("");
             updateSubmitButtonState();

@@ -43,7 +43,6 @@ public class InfoRenderer implements AutoCloseable
         if (rendererInstance == null)
         {
             createInfoRendererInstance(infoEntity);
-            System.out.printf("***** CREATED INFO-RENDERER-INSTANCE %s\n", this.infoRendererInstances.size());
             return null;
         }
 
@@ -88,13 +87,11 @@ public class InfoRenderer implements AutoCloseable
     public void close(MusicVenueInfoEntity infoEntity)
     {
         infoRendererInstances.remove(infoEntity.getId());
-        System.out.printf("***** REMOVED INFO-RENDERER-INSTANCE %s\n", this.infoRendererInstances.size());
     }
 
     @Override
     public void close() throws Exception
     {
-        System.out.printf("***** INFO-RENDERER-INSTANCES: REMOVING %s\n", this.infoRendererInstances.size());
         this.clearInfoRendererInstances();
     }
 
@@ -252,7 +249,6 @@ public class InfoRenderer implements AutoCloseable
         {
             this.infoTexture.close();
             InfoRenderer.getInstance().textureManager.release(dynamicTextureLocation);
-            System.out.printf("***** REMOVED INFO-RENDERER-INSTANCE %s\n", this);
         }
     }
 }

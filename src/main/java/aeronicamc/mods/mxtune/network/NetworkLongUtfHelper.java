@@ -52,7 +52,6 @@ public class NetworkLongUtfHelper
             buffer.writeUtf(stringIn.substring(start, end));
             index++;
         } while (end < totalLength);
-        LOGGER.debug("writeLongUtf: Buffer Count: {}, Total Length: {}, hashcode: {}", index, totalLength, stringIn.hashCode());
     }
 
     public String readLongUtf(PacketBuffer buffer)
@@ -71,8 +70,6 @@ public class NetworkLongUtfHelper
 
         if ((expectedHashCode == receivedString.hashCode()) && (expectedLength == receivedString.length()))
         {
-            LOGGER.debug("readLongUtf:  Buffer Count: {}, Total Length: {}, Hashcode: {}, Received Hashcode: {}",
-                         count, expectedLength, expectedHashCode, receivedString.hashCode());
             return receivedString;
         }
         else

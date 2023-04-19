@@ -79,13 +79,13 @@ public class NetworkSerializedHelper
         catch (ClassNotFoundException e)
         {
             LOGGER.error(e);
-            LOGGER.debug("ClassNotFoundException: obj is null");
+            LOGGER.error("ClassNotFoundException: obj is null");
             return null;
         }
         if ((obj != null) && (expectedHashCode == obj.hashCode()))
         {
-            LOGGER.debug("readSerializedObject Expected Length: {}, Expected Packets: {}", expectedLength, expectedPackets);
-            LOGGER.debug("readSerializedObject Received Length: {}, Received Packets: {}", byteBuffer.length, sortedPackets.size());
+            LOGGER.warn("readSerializedObject Expected Length: {}, Expected Packets: {}", expectedLength, expectedPackets);
+            LOGGER.warn("readSerializedObject Received Length: {}, Received Packets: {}", byteBuffer.length, sortedPackets.size());
             return obj;
         }
         else
@@ -135,6 +135,5 @@ public class NetworkSerializedHelper
             PacketDispatcher.sendToServer(new ByteArrayPartMessage(uuid, index, writeBuffer));
             index++;
         } while (end < totalLength);
-        LOGGER.debug("writeSerializedObject length: {}, number packets: {}", totalLength, numPackets);
     }
 }

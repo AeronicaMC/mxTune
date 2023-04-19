@@ -66,7 +66,6 @@ public class CreateIMusicMessage extends AbstractMessage<CreateIMusicMessage>
         }
         final String[] partInstrumentIds = NBT2StringArray(buffer.readNbt());
         final MusicType musicType = buffer.readEnum(MusicType.class);
-        LOGGER.debug(String.format("%s, buffer.readLongArray: %d", musicTitle, partInstrumentIds.length));
         return new CreateIMusicMessage(musicTitle, extraData, musicText != null ? musicText : "", partInstrumentIds, musicType, error);
     }
 

@@ -376,7 +376,6 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
             }
             partListWidget.clear();
             partListWidget.addAll(tuneParts);
-            LOGGER.debug("Selected file: {}", name);
         } else if (fileDataListWidget.getEntries().isEmpty())
         {
             fileDataListWidget.setSelected(null);
@@ -416,7 +415,6 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
     {
         Objects.requireNonNull(minecraft).submitAsync(
                 ()-> {
-                    LOGGER.debug("stopMusic: playId = {}", playId);
                     ClientAudio.fadeOut(playId, 1);
                 });
         setPlaying(false);
@@ -428,7 +426,6 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         Objects.requireNonNull(minecraft).submitAsync(() -> {
             if ((this.playId == playId) && ClientAudio.isDoneOrYieldStatus(status))
             {
-                LOGGER.debug("AudioStatus event received: {}, playId: {}", status, playId);
                 ClientAudio.fadeOut(playId, 1);
                 setPlaying(false);
                 updateState();

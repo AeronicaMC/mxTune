@@ -108,8 +108,6 @@ public final class PlayManager
                 int duration = SheetMusicHelper.getMusicDuration(sheetMusic);
 
                 musicText = musicText.replace("MML@", "MML@I" + getPresetIndex(pos, playerIn, isPlaced));
-                LOGGER.debug("MML Title: {} Duration: {}", title, duration);
-                LOGGER.debug("MML Sub25: {}", musicText.substring(0, Math.min(25, musicText.length())));
 
                 if (GroupManager.isGrouped(playerID))
                     return queueJam(playerIn, musicText, duration, playerID);
@@ -121,7 +119,7 @@ public final class PlayManager
                 // TODO: improve perhaps using an advancement so an informative toast is presented. Trials and Tribulations :P
                 Misc.audiblePingPlayer(playerIn, ModSoundEvents.FAILURE.get());
                 playerIn.displayClientMessage(new TranslationTextComponent("errors.mxtune.sheet_music_too_old", musicTextKey), false);
-                LOGGER.debug("Music key not found: {}", musicTextKey);
+                LOGGER.warn("Music key not found: {}", musicTextKey);
             }
         }
         return INVALID;
@@ -286,7 +284,7 @@ public final class PlayManager
 
                         // Track the listener and don't resend the musicText.
                         activeTune.addListener(listeningPlayer.getId());
-                        LOGGER.debug("sendMusicTo {} starting at {}", listeningPlayer.getDisplayName().getString(), SheetMusicHelper.formatDuration(activeTune.getSecondsElapsed()));
+                        //LOGGER.debug("sendMusicTo {} starting at {}", listeningPlayer.getDisplayName().getString(), SheetMusicHelper.formatDuration(activeTune.getSecondsElapsed()));
                     }
                     else
                     {

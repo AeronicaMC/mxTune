@@ -30,9 +30,6 @@ public class GroupClient
     {
         synchronized (groupMap)
         {
-            LOGGER.debug("-----");
-            LOGGER.debug("Apply GroupMap Server/Client: {}/{}", pGroupMap.size(), groupMap.size());
-            groupMap.forEach((id, group) -> LOGGER.debug("  Before {}", group));
             Set<Integer> serverKeys = pGroupMap.keySet();
             Set<Integer> removeKeys = new HashSet<>();
             pGroupMap.forEach((kS, vS) -> {
@@ -46,8 +43,6 @@ public class GroupClient
                     removeKeys.add(kC);
             });
             removeKeys.forEach(groupMap::remove);
-            LOGGER.debug("Final GroupMap Server/Client: {}/{}", pGroupMap.size(), groupMap.size());
-            groupMap.forEach((id, group) -> LOGGER.debug("  After  {}", group));
         }
         if (callback != null)
             callback.onGroupClientChanged(Type.Group);
@@ -57,10 +52,6 @@ public class GroupClient
     {
         synchronized (memberState)
         {
-            LOGGER.debug("-----");
-            LOGGER.debug("Apply memberState Server/Client: {}/{}", pMemberState.size(), memberState.size());
-            memberState.forEach((id, state) -> LOGGER.debug("  Before  {}", state));
-            memberState.forEach((member, state) -> LOGGER.debug("    member: {} state: {}", member, state));
             Set<Integer> serverKeys = pMemberState.keySet();
             Set<Integer> removeKeys = new HashSet<>();
             pMemberState.forEach((kS, vS) -> {
@@ -74,8 +65,6 @@ public class GroupClient
                     removeKeys.add(kC);
             });
             removeKeys.forEach(memberState::remove);
-            memberState.forEach((id, state) -> LOGGER.debug("  After  {}", state));
-            memberState.forEach((member, state) -> LOGGER.debug("    member: {} state: {}", member, state));
         }
         if (callback != null)
             callback.onGroupClientChanged(Type.Member);

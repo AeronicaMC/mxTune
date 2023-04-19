@@ -115,22 +115,18 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         {
             case Group:
                 this.reInit();
-                System.out.printf("callback: %s\n", type);
                 break;
             case Member:
                 // this.updateStatus()
-                System.out.printf("callback: %s\n", type);
                 break;
             case Pin:
                 buttonNewPin.setMessage(
                         LABEL_PIN.plainCopy().append(" ").withStyle(TextFormatting.WHITE)
                                 .append(new StringTextComponent(GroupClient.getPrivatePin())
                                                 .withStyle(TextFormatting.GREEN)));
-                System.out.printf("callback  Pin: %s\n", GroupClient.getPrivatePin());
                 break;
             case Close:
                 this.onClose();
-                System.out.printf("callback: %s\n", type);
                 break;
         }
 
@@ -297,7 +293,6 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
             int y = this.yPos;
             memberButtons.clear();
             Group group = GroupClient.getGroupById(parent.getGroupId());
-            System.out.printf("Group Id %d, Leader Id: %d\n", parent.getGroupId(), group.getLeader());
 
             y = leaderFirst(posX + padding, y + padding, group.getLeader());
             for (Integer memberId : GroupClient.getGroupById(parent.getGroupId()).getMembers())

@@ -71,7 +71,6 @@ public final class PlayerNexusProvider
             if ((event.getObject() instanceof PlayerEntity))
             {
                 event.addCapability(ID, new SerializableCapabilityProvider<>(NEXUS_CAPABILITY, null, new PlayerNexus((PlayerEntity) event.getObject())));
-                LOGGER.debug("AttachCapabilitiesEvent<Entity>: {}", event.getObject());
             }
         }
 
@@ -92,7 +91,6 @@ public final class PlayerNexusProvider
                     {
                         newLivingEntityCap.setPlayId(oldLivingEntityCap.getPlayId());
                         newLivingEntityCap.sync();
-                        LOGGER.debug("Clone: oldPId:{}, newPId:{}, {}", oldLivingEntityCap.getPlayId(), newLivingEntityCap.getPlayId(), event.getPlayer());
                     });
                 });
             }

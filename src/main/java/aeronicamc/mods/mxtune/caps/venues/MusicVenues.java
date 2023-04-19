@@ -74,7 +74,6 @@ public class MusicVenues implements IMusicVenues
             if (!level.isClientSide())
             {
                 PacketDispatcher.sendToDimension(new MusicVenueSyncMessage(serializeNBT()), level.dimension());
-                LOGGER.debug("sync: someInt {}, musicVenues {}", this.someInt, this.musicVenues.size());
             }
         });
     }

@@ -42,7 +42,6 @@ public class MultiPacketSerializedObjectManager
         {
             parts.put(serializedObjectPart.serialObjectId, serializedObjectPart);
             scheduleTimeout(serializedObjectPart.serialObjectId, 30);
-            LOGGER.debug("addPacket {}", serializedObjectPart.serialObjectId.toString());
         }
     }
 
@@ -90,7 +89,6 @@ public class MultiPacketSerializedObjectManager
         {
             List<SerializedObjectPacket> packets = Collections.unmodifiableList(new ArrayList<>(parts.get(uuid)));
             cancel(uuid);
-            LOGGER.debug("getPackets: {}", uuid.toString());
             return packets;
         }
     }

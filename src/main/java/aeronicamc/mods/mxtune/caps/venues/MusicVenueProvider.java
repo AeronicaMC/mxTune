@@ -67,7 +67,6 @@ public class MusicVenueProvider
         public static void event(final AttachCapabilitiesEvent<World> event)
         {
             event.addCapability(ID, new SerializableCapabilityProvider<>(musicVenuesCapability, null, new MusicVenues(event.getObject())));
-            LOGGER.debug("AttachCapabilitiesEvent<World> {} {}", event.getObject(), event.getObject().dimension());
         }
 
         @SubscribeEvent
@@ -101,7 +100,6 @@ public class MusicVenueProvider
                                                 });
 
                                         nexus.setEntityVenueState(pvs);
-                                        //LOGGER.debug("{} inVenue {}: {}", player.getName().getString(), pvs.inVenue(), pvs.getVenue());
                                     }
                                 });
                     });

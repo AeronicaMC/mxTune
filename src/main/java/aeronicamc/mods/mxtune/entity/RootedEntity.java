@@ -74,9 +74,6 @@ public class RootedEntity extends Entity
             {
                 if (PlayManager.activeTuneEntityActive(this))
                     PlayManager.stopPlayingEntity(this);
-                LOGGER.debug("has playId: {}", hasActiveTuneEntry);
-                LOGGER.debug("{} removed from world.", this.getId());
-                LOGGER.debug("{} @Block is Air: {}.", this.getId(), this.level.isEmptyBlock(this.source));
                 this.remove();
                 this.level.updateNeighbourForOutputSignal(blockPosition(), this.level.getBlockState(blockPosition()).getBlock());
             }
@@ -136,7 +133,6 @@ public class RootedEntity extends Entity
             String className = blockStateBelowFoot.getBlock().getClass().getSimpleName();
             VoxelShape voxelShape = world.getBlockState(blockPosFeet).getShape(world, blockPosFeet);
             double blockHeight = !voxelShape.isEmpty() ? voxelShape.bounds().maxY : 0;
-            LOGGER.debug("bpuf: {}, bstate: {}, bclass: {}, blockHeight: {}", blockPosFeet, blockStateBelowFoot, className, blockHeight);
 
             List<RootedEntity> rootedEntities = world.getEntitiesOfClass(RootedEntity.class, new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.0, pos.getZ() + 1.0));
             if (rootedEntities.isEmpty() && !((blockStateBelowFoot.getBlock() instanceof AirBlock | !(blockStateBelowFoot.getFluidState().isEmpty()))))

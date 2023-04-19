@@ -50,7 +50,6 @@ public class ActiveTune
             isInitialized = true;
             ActiveTune activeTune = new ActiveTune();
             executor.execute(activeTune::counter);
-            LOGGER.debug("ActiveTune initialized.");
         }
     }
 

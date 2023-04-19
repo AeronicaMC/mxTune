@@ -83,7 +83,6 @@ public class PlayerNexus implements IPlayerNexus
             if (!pPlayer.level.isClientSide())
             {
                 PacketDispatcher.sendToDimension(new PlayerNexusSync(playId, pPlayer.getId()), pPlayer.level.dimension());
-                LOGGER.debug("sync: playId {}, entityId {}", playId, pPlayer.getId());
             }
         });
     }

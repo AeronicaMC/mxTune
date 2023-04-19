@@ -373,7 +373,6 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         int i = 0;
 
         String clip = MMLAllowedChars.filter(Objects.requireNonNull(minecraft).keyboardHandler.getClipboard(), true);
-        LOGGER.debug("{}", clip);
         if (clip.isEmpty())
             return;
         List<String> lines = new ArrayList<>(Arrays.asList(clip.replaceAll("MML@|;", "").split(",")));
@@ -527,8 +526,6 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
             return false;
 
         mml = mml.replace("MML@", "MML@i" + soundFontProxyIndex);
-        LOGGER.debug("GuiMusicPaperParse.mmlPlay() name: {}, packed {}", entry.getId(), String.format("%08d",entry.getPackedPreset()));
-        LOGGER.debug("GuiMusicPaperParse.mmlPlay(): {}", mml.substring(0, Math.min(mml.length(), 25)));
 
         playId = PlayIdSupplier.PlayType.PERSONAL.getAsInt();
         ClientAudio.playLocal(getDuration(), playId, mml, this);
@@ -591,7 +588,6 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
     {
         if ((this.playId == playId) && ClientAudio.isDoneOrYieldStatus(status))
         {
-            LOGGER.debug("AudioStatus event received: {}, playId: {}", status, playId);
             stop();
         }
     }

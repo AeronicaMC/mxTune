@@ -72,9 +72,6 @@ public class MusicSourceEntity extends Entity
             boolean hasActiveTuneEntry = PlayManager.activeTuneEntityExists(this);
             if (!this.isAlive() || level.isEmptyBlock(source) || !(level.getBlockState(source).hasTileEntity() && level.getBlockEntity(source) instanceof IMusicPlayer) || !hasActiveTuneEntry)
             {
-                LOGGER.debug("has playId: {}", hasActiveTuneEntry);
-                LOGGER.debug("{} removed from world.", this.getId());
-                LOGGER.debug("{} @Block is Air: {}.", this.getId(), level.isEmptyBlock(source));
                 this.remove();
                 ForgeChunkManager.forceChunk((ServerWorld) level, Reference.MOD_ID, this, level.getChunk(source).getPos().x, level.getChunk(source).getPos().z, false, true);
                 PlayManager.stopPlayingEntity(this);
@@ -137,7 +134,6 @@ public class MusicSourceEntity extends Entity
             String className = blockStateBelowFoot.getBlock().getClass().getSimpleName();
             VoxelShape voxelShape = world.getBlockState(blockPosFeet).getShape(world, blockPosFeet);
             double blockHeight = !voxelShape.isEmpty() ? voxelShape.bounds().maxY : 0;
-            LOGGER.debug("bpuf: {}, bstate: {}, bclass: {}, blockHeight: {}", blockPosFeet, blockStateBelowFoot, className, blockHeight);
 
             List<MusicSourceEntity> sittableEntities = world.getEntitiesOfClass(MusicSourceEntity.class, new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.0, pos.getZ() + 1.0));
             if (sittableEntities.isEmpty() && !((blockStateBelowFoot.getBlock() instanceof AirBlock | !(blockStateBelowFoot.getFluidState().isEmpty()))))

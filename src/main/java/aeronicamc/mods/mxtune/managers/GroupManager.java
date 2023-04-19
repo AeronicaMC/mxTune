@@ -90,7 +90,6 @@ public class GroupManager
                 Group group = new Group(leader.getId());
                 group.setPin(generatePin());
                 groups.put(group.getGroupId(), group);
-                LOGGER.debug("groupId: {}, Pin: {}", group.getGroupId(), group.getPin());
                 sync();
                 leader.displayClientMessage(new TranslationTextComponent("message.mxtune.groupManager.created_group"), true);
             }
@@ -423,7 +422,6 @@ public class GroupManager
 
     static void sync()
     {
-        LOGGER.debug("sync groups total {}", groups.size());
         PacketDispatcher.sendToAll(new SyncGroupsMessage(groups));
     }
 
@@ -434,13 +432,11 @@ public class GroupManager
             synchronized (groups)
             {
                 PacketDispatcher.sendTo(new SyncGroupsMessage(groups), listeningPlayer);
-                LOGGER.debug("sync all to {}: group count {}", listeningPlayer.getDisplayName().getString(), groups.size());
             }
             synchronized (memberState)
             {
                 cleanStatus();
                 PacketDispatcher.sendTo(new SyncGroupMemberState(memberState), listeningPlayer);
-                LOGGER.debug("sync memberStates count {}", memberState.size());
             }
         }
     }
@@ -449,7 +445,6 @@ public class GroupManager
     {
         cleanStatus();
         PacketDispatcher.sendToAll(new SyncGroupMemberState(memberState));
-        LOGGER.debug("sync memberStates count {}", memberState.size());
     }
 
     static void cleanStatus()

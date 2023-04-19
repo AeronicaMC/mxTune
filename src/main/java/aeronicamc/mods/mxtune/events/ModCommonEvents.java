@@ -72,14 +72,9 @@ public class ModCommonEvents
             PlayerEntity target = (PlayerEntity) event.getTarget();
             Group iniGroup = GroupManager.getGroup(initiator.getId());
             Group tarGroup = GroupManager.getGroup(target.getId());
-            LOGGER.debug("Initiator: {} right-clicked Target: {} with a {}. Is it an Instrument? {}",
-                         initiator.getDisplayName().getString(),
-                         target.getDisplayName().getString(),
-                         hooverName(event.getItemStack()), hasInstrument(event.getItemStack()) ? "Yes" : "No");
             if (tarGroup.isValid() && tarGroup.getLeader() == target.getId() && iniGroup.isEmpty())
             {
                 target.sendMessage(new TranslationTextComponent("chat.mxtune.groupManager.requests_to_join", initiator.getName()), target.getUUID());
-                LOGGER.debug("{} Requests to join group", initiator.getDisplayName().getString());
                 GroupManager.addMemberOnRightClick(tarGroup.getGroupId(), initiator);
             }
             else if (tarGroup.isValid())
