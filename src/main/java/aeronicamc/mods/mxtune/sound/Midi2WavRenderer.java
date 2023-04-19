@@ -82,13 +82,11 @@ public class Midi2WavRenderer implements Receiver
         Receiver receiver = audioSynthesizer.getReceiver();
         int skipTime = audioData.getSecondsElapsed();
         double total = send(sequence, receiver, skipTime); // add 1 to account for render time
-        LOGGER.info("");
         // Calculate how long the WAVE file needs to be and add 4 seconds to account for sustained notes
         long len = (long) (outputStream.getFormat().getFrameRate() * (total + 4));
         outputStream = new AudioInputStream(outputStream, outputStream.getFormat(), len);
 
         receiver.close();
-        LOGGER.info("Skipping {} Seconds", skipTime);
         timer.stop();
         audioData.setProcessTimeMS(timer.getTimeElapsed());
         return outputStream;

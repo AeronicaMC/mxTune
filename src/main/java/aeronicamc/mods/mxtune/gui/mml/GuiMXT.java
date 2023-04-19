@@ -569,7 +569,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         else
         {
             // TODO: Post file not saved
-            LOGGER.info("File not saved: {}", fileName + FileHelper.EXTENSION_MXT);
+            LOGGER.warn("File not saved: {}", fileName + FileHelper.EXTENSION_MXT);
         }
         updateState();
     }

@@ -23,7 +23,7 @@ public class MXRegistry
                                           .setDefaultKey(new ResourceLocation(Reference.MOD_ID, "b1x1"))
                                           .setMaxID(Integer.MAX_VALUE - 1)
                                           .onAdd(((owner, stage, id, obj, oldObj) ->
-                                                         LOGGER.info("InfoPanelType: {} Sync: {}" ,getName(obj), stage.getName())))
+                                                         LOGGER.debug("InfoPanelType: {} Sync: {}" ,getName(obj), stage.getName())))
                          );
 
     public static InfoPanelType getInfoPanelType(String name) {

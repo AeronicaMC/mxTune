@@ -313,7 +313,6 @@ public class ClientAudio
     {
         if (PlayIdSupplier.INVALID == playID) return;
         getAudioData(playID).ifPresent(audioData -> {
-            LOGGER.info("fadeOut: {} in {} sec.", playID, seconds);
             audioData.startFadeInOut(Math.max(seconds, 0), false, true);
         });
     }

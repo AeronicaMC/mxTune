@@ -380,7 +380,6 @@ public class GroupManager
                     }
                     break;
                 case Remove:
-                    LOGGER.info("{}, {}", serverPlayer.getId() ,taggedMemberId);
                     if (isLeader(sourceMemberId) && group.isMember(taggedMemberId) || sourceMemberId == taggedMemberId) {
                         ServerPlayerEntity taggedEntity = (serverPlayer.level.getEntity(taggedMemberId) != null) ? (ServerPlayerEntity) serverPlayer.level.getEntity(taggedMemberId) : null;
                         if (taggedEntity != null)
