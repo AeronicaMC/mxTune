@@ -24,7 +24,7 @@ public class Group
     private Mode mode = Mode.Pin;
 
     // Not shared with client.
-    private String pin = "";
+    private String pin = "-1";
 
     private Group()
     {
