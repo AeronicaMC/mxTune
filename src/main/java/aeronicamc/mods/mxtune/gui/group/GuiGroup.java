@@ -81,7 +81,6 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         groupDisplay.setCentered(true);
 
         int groupDisplayWidth = getWidth(GuiPin.getGroupLeaderInfo(groupDisplay, player(), groupId));
-        int pinDisplayWidth = getWidth("000000");
         int leftSideWidth = memberDisplay.getWidth();
         int rightSideWidth = groupDisplayWidth + 50;
         int left = ((width / 2) - ((rightSideWidth + leftSideWidth) / 3));
