@@ -70,6 +70,6 @@ public class GroupCmdMessage extends AbstractMessage<GroupCmdMessage>
 
     public enum Cmd
     {
-        Nil, CloseGui, Disband, Pin, ModePin, ModeOpen, NewPin, Promote, Remove
+        Nil, CreateGroup, CloseGui, Disband, Pin, ModePin, ModeOpen, NewPin, Promote, Remove
     }
 }

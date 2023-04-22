@@ -55,7 +55,7 @@ public class KeyHandler
         boolean isDown = event.getAction() == (GLFW.GLFW_PRESS & GLFW.GLFW_REPEAT);
         if (keyOpenPartyGUI.consumeClick())
         {
-            PacketDispatcher.sendToServer(new OpenScreenMessage(OpenScreenMessage.SM.GROUP_CHECK));
+            PacketDispatcher.sendToServer(new OpenScreenMessage(OpenScreenMessage.SM.GROUP_OPEN));
         }
         if (keyOpenMusicOptionsGUI.consumeClick())
         {

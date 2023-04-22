@@ -58,8 +58,8 @@ public class OpenScreenMessage extends AbstractMessage<OpenScreenMessage>
                 ctx.get().enqueueWork(() -> {
                     switch (message.screen)
                     {
-                        case GROUP_CHECK:
-                            GroupManager.handleGroupCheck(serverPlayer, message.screen);
+                        case GROUP_OPEN:
+                            GroupManager.handleGroupOpen(serverPlayer, message.screen);
                             break;
                         case TEST_ONE:
                         case TEST_TWO:
@@ -72,6 +72,6 @@ public class OpenScreenMessage extends AbstractMessage<OpenScreenMessage>
 
     public enum SM
     {
-        GROUP_CHECK, GROUP_OPEN, TEST_ONE, TEST_TWO;
+        GROUP_OPEN, TEST_ONE, TEST_TWO;
     }
 }

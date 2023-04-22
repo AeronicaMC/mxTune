@@ -147,7 +147,7 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
 
     private void onJamClicked()
     {
-        PacketDispatcher.sendToServer(new OpenScreenMessage(OpenScreenMessage.SM.GROUP_CHECK));
+        PacketDispatcher.sendToServer(new OpenScreenMessage(OpenScreenMessage.SM.GROUP_OPEN));
     }
 
     @Override

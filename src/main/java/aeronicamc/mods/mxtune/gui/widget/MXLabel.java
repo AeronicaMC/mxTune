@@ -22,7 +22,7 @@ public class MXLabel extends AbstractGui implements IRenderable, ILayout
     private ITextComponent labelText = new StringTextComponent("");
     private boolean centered;
     private boolean visible = true;
-    private boolean background;
+    private boolean background = false;
     private int textColor;
     private int backColor = -1;
     private int ulColor = -1;

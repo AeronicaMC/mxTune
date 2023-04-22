@@ -331,11 +331,15 @@ public class GroupManager
         }
     }
 
-    public static void handleGroupCheck(ServerPlayerEntity serverPlayer, OpenScreenMessage.SM sm)
+    public static void handleMakeGroup(ServerPlayerEntity serverPlayer, OpenScreenMessage.SM sm)
     {
         int playerId = serverPlayer.getId();
         if (!isGrouped(playerId))
             addGroup(serverPlayer);
+    }
+
+    public static void handleGroupOpen(ServerPlayerEntity serverPlayer, OpenScreenMessage.SM sm)
+    {
         PacketDispatcher.sendTo(new OpenScreenMessage(OpenScreenMessage.SM.GROUP_OPEN), serverPlayer);
     }
 
@@ -381,15 +385,22 @@ public class GroupManager
                     break;
                 case Remove:
                     if (isLeader(sourceMemberId) && group.isMember(taggedMemberId) || sourceMemberId == taggedMemberId) {
-                        ServerPlayerEntity taggedEntity = (serverPlayer.level.getEntity(taggedMemberId) != null) ? (ServerPlayerEntity) serverPlayer.level.getEntity(taggedMemberId) : null;
-                        if (taggedEntity != null)
-                            PacketDispatcher.sendTo(new GroupCmdMessage(null, GroupCmdMessage.Cmd.CloseGui, taggedMemberId), taggedEntity);
+                        LivingEntity taggedEntity = (serverPlayer.level.getEntity(taggedMemberId) != null) ? (LivingEntity) serverPlayer.level.getEntity(taggedMemberId) : null;
+                        if (taggedEntity instanceof ServerPlayerEntity)
+                            PacketDispatcher.sendTo(new GroupCmdMessage(null, GroupCmdMessage.Cmd.CloseGui, taggedMemberId), (ServerPlayerEntity) taggedEntity);
                         removeMember(serverPlayer, taggedMemberId);
                     }
                     break;
                 case Nil:
                 default:
+            } else
+        {
+            if (cmd == GroupCmdMessage.Cmd.CreateGroup)
+            {
+                if (!isGrouped(sourceMemberId))
+                    addGroup(serverPlayer);
             }
+        }
     }
 
     // Member Music Methods

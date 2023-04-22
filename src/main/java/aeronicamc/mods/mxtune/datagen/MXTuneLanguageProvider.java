@@ -196,6 +196,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("gui_pin.unexpected_error", "*** Unexpected Error ***");
 
         // GuiGroup
+        addGuiText("button.make_group", "Make Group");
         addGuiText("button.disband", "Disband");
         addGuiText("label.pin", "Pin:");
         addGuiText("label.mode", "Access:");
@@ -208,7 +209,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addChat("groupManager.cannot_join_too_many", "Cannot join %s group. It is full.");
         addChat("groupManager.player_cannot_join_too_many", "%s cannot join since group is full");
         addChat("groupManager.invalid_leader", "Leader left, was demoted or group disbanded.");
-        addChat("groupManager.member_left_group", "% has left the group.");
+        addChat("groupManager.member_left_group", "%s has left the group.");
     }
 
     private void addCommands()
