@@ -42,7 +42,8 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
     private final MXButton buttonDisband = new MXButton(p -> disband());
     private final MXButton buttonMakeGroup = new MXButton(p -> makeGroup());
     private final MXLabel groupDisplay = new MXLabel();
-    private final MemberDisplay memberDisplay;
+    private final MemberDisplay memberDisplayLeft;
+    private final MemberDisplay memberDisplayRight;
     private int counter;
     private Group group;
     private int groupId;
@@ -55,7 +56,8 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         super(StringTextComponent.EMPTY);
         lineHeight = mc().font.lineHeight + 6;
         nameWidth = mc().font.width("MMMMMMMMMMMM") + 4;
-        memberDisplay = new MemberDisplay(this);
+        memberDisplayLeft = new MemberDisplay(this, MemberDisplay.Split.M01_M08);
+        memberDisplayRight = new MemberDisplay(this, MemberDisplay.Split.M09_M16);
         GroupClient.setCallback(this);
     }
 
@@ -82,36 +84,39 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         groupId = group.getGroupId();
         PacketDispatcher.sendToServer(new GroupCmdMessage("", Cmd.Pin, player().getId()));
         setMode(GroupClient.getGroupById(groupId).getMode());
-
         groupDisplay.setCentered(true);
 
         int groupDisplayWidth = getWidth(GuiPin.getGroupLeaderInfo(groupDisplay, player(), groupId));
-        int leftSideWidth = memberDisplay.getWidth();
-        int rightSideWidth = groupDisplayWidth + 50;
-        int left = ((width / 2) - ((rightSideWidth + leftSideWidth) / 3));
-        int top = (height / 2) - (memberDisplay.getHeight() / 2);
+        int leftSideWidth = memberDisplayLeft.getWidth();
+        int middleWidth = groupDisplayWidth + 50;
+        int rightSideWidth = memberDisplayRight.getWidth();
+        int left = ((width - (middleWidth + leftSideWidth + rightSideWidth))) / 2;
+        int top = (height - memberDisplayLeft.getHeight()) / 2;
 
-        memberDisplay.initMemberDisplay(left, top);
-        int leftRight = memberDisplay.getRight() + PADDING;
+        memberDisplayLeft.initMemberDisplay(left, top);
+        int leftRight = memberDisplayLeft.getRight() + PADDING;
 
-        groupDisplay.setLayout(leftRight, top, rightSideWidth, 20);
+        groupDisplay.setLayout(leftRight, top, middleWidth, 20);
         ITextComponent msg = GuiPin.getGroupLeaderInfo(groupDisplay, player(), groupId);
         lastHash = msg.hashCode();
         groupDisplay.setLabelText(msg);
 
-        buttonMakeGroup.setLayout(leftRight, top, rightSideWidth, 20);
+        memberDisplayRight.initMemberDisplay(groupDisplay.getRight() + PADDING, top);
+
+        buttonMakeGroup.setLayout(leftRight, top, middleWidth, 20);
         buttonMakeGroup.setMessage(MAKE_GROUP);
 
-        buttonNewPin.setLayout(leftRight, groupDisplay.getBottom(), rightSideWidth, 20);
+        buttonNewPin.setLayout(leftRight, groupDisplay.getBottom(), middleWidth, 20);
         buttonNewPin.setMessage(
                 LABEL_PIN.plainCopy().append(" ").withStyle(TextFormatting.WHITE)
                         .append(new StringTextComponent("----")
                                         .withStyle(TextFormatting.GREEN)));
-        buttonGroupMode.setLayout(leftRight, buttonNewPin.getBottom(), rightSideWidth, 20);
 
-        buttonDone.setLayout(leftRight,memberDisplay.getBottom() - 19 ,rightSideWidth,20);
+        buttonGroupMode.setLayout(leftRight, buttonNewPin.getBottom(), middleWidth, 20);
+
+        buttonDone.setLayout(leftRight, memberDisplayLeft.getBottom() - 19 , middleWidth, 20);
         buttonDone.setMessage(DialogTexts.GUI_DONE);
-        buttonDisband.setLayout(buttonDone.getLeft(), buttonDone.getTop() - 20, rightSideWidth, 20);
+        buttonDisband.setLayout(buttonDone.getLeft(), buttonDone.getTop() - 20, middleWidth, 20);
         buttonDisband.setMessage(DISBAND);
 
         addButton(buttonMakeGroup);
@@ -243,8 +248,9 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
     public void render(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks)
     {
         this.fillGradient(pMatrixStack, 0, 0, this.width, this.height, -1072689136, -804253680);
+        memberDisplayLeft.renderMemberDisplay(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
         groupDisplay.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
-        memberDisplay.renderMemberDisplay(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
+        memberDisplayRight.renderMemberDisplay(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
         super.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
     }
 
@@ -312,11 +318,14 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         int padding = 0;
         final int maxWidth;
         final int maxHeight;
+        final Split split;
+        int indexSplit;
 
-        MemberDisplay(GuiGroup parent)
+        MemberDisplay(GuiGroup parent, Split split)
         {
             this.parent = parent;
-            maxHeight = (this.parent.getLineHeight() * 17) + 4;
+            this.split = split;
+            maxHeight = (this.parent.getLineHeight() * 8);
             maxWidth = this.parent.getNameWidth() + 40;
         }
 
@@ -325,13 +334,16 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
             this.xPos = posX;
             this.yPos = posY + 2;
             int y = this.yPos;
+            indexSplit = 0;
+
             memberButtons.clear();
             Group group = GroupClient.getGroupById(parent.getGroupId());
 
-            y = leaderFirst(posX + padding, y + padding, group.getLeader());
+            if (Split.M01_M08.equals(split))
+                y = leaderFirst(posX + padding, y + padding, group.getLeader());
             for (Integer memberId : GroupClient.getGroupById(parent.getGroupId()).getMembers())
             {
-                if (!GroupClient.isLeader(memberId))
+                if (!GroupClient.isLeader(memberId) && split.inSplit(indexSplit))
                 {
                     MemberInfo memberInfo = new MemberInfo(posX + padding, y + padding, parent, memberId, parent::promote, parent::remove);
                     parent.addButton(memberInfo.promote);
@@ -339,6 +351,8 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
                     memberButtons.add(memberInfo);
                     y += parent.getLineHeight();
                 }
+                if (!GroupClient.isLeader(memberId))
+                    indexSplit++;
             }
         }
 
@@ -374,7 +388,7 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
 
         public int getWidth()
         {
-            return maxHeight + padding;
+            return maxWidth + padding;
         }
 
         public void setPadding(int padding)
@@ -392,6 +406,7 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
             parent.addButton(memberInfo.promote);
             parent.addButton(memberInfo.remove);
             memberButtons.add(memberInfo);
+            indexSplit++;
             return y + parent.getLineHeight();
         }
 
@@ -400,6 +415,23 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
             fill(pMatrixStack, xPos + padding - 1, yPos + padding - 1, xPos + padding + maxWidth + 1, yPos + padding + maxHeight + 1, -6250336);
             fill(pMatrixStack, xPos + padding, yPos + padding, xPos + padding + maxWidth, yPos + padding + maxHeight, -16777216);
             memberButtons.forEach(p -> p.memberDraw(pMatrixStack, pMouseX, pMouseY, pPartialTicks));
+        }
+
+        enum Split
+        {
+            M01_M08(0, 7), M09_M16(7, 15);
+            final int start;
+            final int end;
+
+            Split(int start, int end)
+            {
+                this.start = start;
+                this.end = end;
+            }
+            boolean inSplit(int index)
+            {
+                return index >= start && index <= end;
+            }
         }
     }
 
