@@ -94,12 +94,16 @@ public class MusicScoreItem extends Item implements IMusic
                     Group group = GroupManager.getGroup(pPlayer.getId());
                     group.setPin("1234");
                     group.setMode(Group.Mode.Pin);
-                    Entity entity = (new ChickenEntity(EntityType.CHICKEN, pLevel));
-                    entity.setPos(pPlayer.getX(), pPlayer.getY() + 2.0, pPlayer.getZ());
-                    entity.setSilent(true);
-                    entity.setCustomName(new StringTextComponent(String.format("%d", entity.getId())));
-                    pPlayer.level.addFreshEntity(entity);
-                    GroupManager.addMember(GroupManager.getGroup(pPlayer.getId()).getGroupId(), entity);
+                    Entity entity;
+                    for (int i = 0; i < 15; i++)
+                    {
+                        entity = (new ChickenEntity(EntityType.CHICKEN, pLevel));
+                        entity.setPos(pPlayer.getX(), pPlayer.getY() + 2.0, pPlayer.getZ());
+                        entity.setSilent(true);
+                        entity.setCustomName(new StringTextComponent(String.format("Chicken %02d", i + 1)));
+                        pPlayer.level.addFreshEntity(entity);
+                        GroupManager.addMember(GroupManager.getGroup(pPlayer.getId()).getGroupId(), entity);
+                    }
                 }
             }
             else
