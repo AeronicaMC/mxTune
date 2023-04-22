@@ -18,6 +18,7 @@ package aeronicamc.mods.mxtune.util;
 
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
+import aeronicamc.mods.mxtune.network.messages.OpenScreenMessage;
 import aeronicamc.mods.mxtune.network.messages.SendKeyMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
@@ -54,7 +55,7 @@ public class KeyHandler
         boolean isDown = event.getAction() == (GLFW.GLFW_PRESS & GLFW.GLFW_REPEAT);
         if (keyOpenPartyGUI.consumeClick())
         {
-            PacketDispatcher.sendToServer(new SendKeyMessage(keyOpenPartyGUI.getName()));
+            PacketDispatcher.sendToServer(new OpenScreenMessage(OpenScreenMessage.SM.GROUP_CHECK));
         }
         if (keyOpenMusicOptionsGUI.consumeClick())
         {
