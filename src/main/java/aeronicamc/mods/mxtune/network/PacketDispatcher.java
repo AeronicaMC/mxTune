@@ -17,7 +17,7 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 public class PacketDispatcher
 {
     private static final ResourceLocation CHANNEL_NAME = new ResourceLocation(Reference.MOD_ID, "network");
-    private static final String PROTOCOL_VERSION = "2.0.3";
+    private static final String PROTOCOL_VERSION = "2.0.4";
     private static int packetId = 0;
     private static SimpleChannel channel;
 
