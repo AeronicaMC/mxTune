@@ -200,6 +200,22 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.disband", "Disband");
         addGuiText("label.pin", "Pin:");
         addGuiText("label.mode", "Access:");
+        addGuiText("button.make_group.help01", "Make Group");
+        addGuiText("button.make_group.help02", "Creates a new group with you as the leader.");
+        addGuiText("button.make_group.help03", "Button disappears when clicked.");
+        addGuiText("button.new_pin.help01", "Generate Pin");
+        addGuiText("button.new_pin.help02", "Enabled: Click to generate a new pin. The server ensures no active groups will have the same pin.");
+        addGuiText("button.new_pin.help03", "Disabled: When the Access mode is Open.");
+        addGuiText("button.disband.help01",  "Disband");
+        addGuiText("button.disband.help02",  "Click to remove all members and close the group.");
+        addGuiText("button.disband.help03",  "Disabled: If your group does not exist or if you are not the leader.");
+
+        addGuiText("button.member_promote.help01", "Promote: ");
+        addGuiText("button.member_promote.help02", "Promotes the member to leader of the group.");
+        addGuiText("button.member_promote.help03", "Only the leader may promote another member.");
+        addGuiText("button.member_remove.help01", "Remove: ");
+        addGuiText("button.member_remove.help02", "Remove the member from the group.");
+        addGuiText("button.member_remove.help03", "Only the member themselves or the leader may remove. If the leader is the only member, then if the leader removes themself the group is removed too.");
     }
 
     private void addChats()
@@ -239,13 +255,13 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addEnum("tool_state.type.remove", "Remove");
 
         addEnum("group.mode.pin", "Pin");
-        addEnum("group.mode.pin.help01", "Pin help 01");
-        addEnum("group.mode.pin.help02", "Pin help 02");
-        addEnum("group.mode.pin.help03", "Pin help 03");
+        addEnum("group.mode.pin.help01", "Access: Pin");
+        addEnum("group.mode.pin.help02", "Players must know the pin to join your group.");
+        addEnum("group.mode.pin.help03", "Click to toggle access mode.");
         addEnum("group.mode.open", "Open");
-        addEnum("group.mode.open.help01", "Open help 01");
-        addEnum("group.mode.open.help02", "Open help 02");
-        addEnum("group.mode.open.help03", "Open help 03");
+        addEnum("group.mode.open.help01", "Access: Open");
+        addEnum("group.mode.open.help02", "Anyone can join your group.");
+        addEnum("group.mode.open.help03", "Click to toggle access mode.");
     }
 
     private void addErrors()

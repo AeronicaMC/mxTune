@@ -1,7 +1,10 @@
 package aeronicamc.mods.mxtune.gui.group;
 
 import aeronicamc.mods.mxtune.gui.MXScreen;
+import aeronicamc.mods.mxtune.gui.ModGuiHelper;
 import aeronicamc.mods.mxtune.gui.TextColorFg;
+import aeronicamc.mods.mxtune.gui.widget.GuiHelpButton;
+import aeronicamc.mods.mxtune.gui.widget.IHooverText;
 import aeronicamc.mods.mxtune.gui.widget.MXButton;
 import aeronicamc.mods.mxtune.gui.widget.MXLabel;
 import aeronicamc.mods.mxtune.managers.Group;
@@ -23,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static aeronicamc.mods.mxtune.gui.ModGuiHelper.*;
 import static aeronicamc.mods.mxtune.network.messages.GroupCmdMessage.Cmd;
 
 public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
@@ -33,6 +37,15 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
     private static final ITextComponent LABEL_MODE = new TranslationTextComponent("gui.mxtune.label.mode");
     private static final ITextComponent PIN = new TranslationTextComponent(Group.Mode.Pin.getModeKey()).withStyle(TextFormatting.YELLOW);
     private static final ITextComponent OPEN = new TranslationTextComponent(Group.Mode.Open.getModeKey()).withStyle(TextFormatting.GREEN);
+    private static final ITextComponent PIN_HELP01 = new TranslationTextComponent("gui.mxtune.button.new_pin.help01").withStyle(TextFormatting.RESET);
+    private static final ITextComponent PIN_HELP02 = new TranslationTextComponent("gui.mxtune.button.new_pin.help02").withStyle(TextFormatting.GREEN);
+    private static final ITextComponent PIN_HELP03 = new TranslationTextComponent("gui.mxtune.button.new_pin.help03").withStyle(TextFormatting.YELLOW);
+    private static final ITextComponent MAKE_GROUP_HELP01 = new TranslationTextComponent("gui.mxtune.button.make_group.help01").withStyle(TextFormatting.RESET);
+    private static final ITextComponent MAKE_GROUP_HELP02 = new TranslationTextComponent("gui.mxtune.button.make_group.help02").withStyle(TextFormatting.GREEN);
+    private static final ITextComponent MAKE_GROUP_HELP03 = new TranslationTextComponent("gui.mxtune.button.make_group.help03").withStyle(TextFormatting.YELLOW);
+    private static final ITextComponent DISBAND_HELP01 = new TranslationTextComponent("gui.mxtune.button.disband.help01").withStyle(TextFormatting.RESET);
+    private static final ITextComponent DISBAND_HELP02 = new TranslationTextComponent("gui.mxtune.button.disband.help02").withStyle(TextFormatting.GREEN);
+    private static final ITextComponent DISBAND_HELP03 = new TranslationTextComponent("gui.mxtune.button.disband.help03").withStyle(TextFormatting.YELLOW);
 
     private static final int PADDING = 4;
     private Group.Mode groupMode = Group.Mode.Pin;
@@ -41,11 +54,12 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
     private final MXButton buttonDone = new MXButton(p -> done());
     private final MXButton buttonDisband = new MXButton(p -> disband());
     private final MXButton buttonMakeGroup = new MXButton(p -> makeGroup());
+    private final GuiHelpButton helpButton = new GuiHelpButton(p -> helpClicked());
     private final MXLabel groupDisplay = new MXLabel();
     private final MemberDisplay memberDisplayLeft;
     private final MemberDisplay memberDisplayRight;
     private int counter;
-    private Group group;
+    private Group group = Group.EMPTY;
     private int groupId;
     private int lastHash;
     private final int lineHeight;
@@ -107,23 +121,22 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         buttonMakeGroup.setMessage(MAKE_GROUP);
 
         buttonNewPin.setLayout(leftRight, groupDisplay.getBottom(), middleWidth, 20);
-        buttonNewPin.setMessage(
-                LABEL_PIN.plainCopy().append(" ").withStyle(TextFormatting.WHITE)
-                        .append(new StringTextComponent("----")
-                                        .withStyle(TextFormatting.GREEN)));
+        buttonNewPin.setMessage(getPinText("----"));
 
         buttonGroupMode.setLayout(leftRight, buttonNewPin.getBottom(), middleWidth, 20);
 
         buttonDone.setLayout(leftRight, memberDisplayLeft.getBottom() - 19 , middleWidth, 20);
         buttonDone.setMessage(DialogTexts.GUI_DONE);
-        buttonDisband.setLayout(buttonDone.getLeft(), buttonDone.getTop() - 20, middleWidth, 20);
+        buttonDisband.setLayout(buttonDone.getLeft(), buttonDone.getTop() - 20, middleWidth - 20, 20);
         buttonDisband.setMessage(DISBAND);
+        helpButton.setPosition(buttonDisband.getRight(), buttonDisband.getTop());
 
         addButton(buttonMakeGroup);
         addButton(buttonNewPin);
         addButton(buttonGroupMode);
         addButton(buttonDisband);
         addButton(buttonDone);
+        addButton(helpButton);
         updateButtonState();
     }
 
@@ -139,16 +152,13 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
                 // this.updateStatus()
                 break;
             case Pin:
-                buttonNewPin.setMessage(
-                        LABEL_PIN.plainCopy().append(" ").withStyle(TextFormatting.WHITE)
-                                .append(new StringTextComponent(GroupClient.getPrivatePin())
-                                                .withStyle(TextFormatting.GREEN)));
+                buttonNewPin.setMessage(getPinText(GroupClient.getPrivatePin()));
                 break;
             case Close:
                 this.onClose();
                 break;
         }
-
+        updateButtonState();
     }
 
     private void reInit()
@@ -172,6 +182,22 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
             buttonMakeGroup.visible = true;
             groupDisplay.setVisible(false);
         }
+        buttonMakeGroup.addHooverText(true, MAKE_GROUP_HELP01);
+        buttonMakeGroup.addHooverText(false, MAKE_GROUP_HELP02);
+        buttonMakeGroup.addHooverText(false, MAKE_GROUP_HELP03);
+        buttonNewPin.addHooverText(true, getPinText(group.isValid() ? GroupClient.getPrivatePin() : "----"));
+        buttonNewPin.addHooverText(false, PIN_HELP02);
+        buttonNewPin.addHooverText(false, PIN_HELP03);
+        buttonGroupMode.addHooverText(true, getGroupModeName(groupMode));
+        buttonGroupMode.addHooverText(false, new TranslationTextComponent(groupMode.getHelp02Key()).withStyle(TextFormatting.GREEN));
+        buttonGroupMode.addHooverText(false, new TranslationTextComponent(groupMode.getHelp03Key()).withStyle(TextFormatting.YELLOW));
+        buttonDisband.addHooverText(true, DISBAND_HELP01);
+        buttonDisband.addHooverText(false, DISBAND_HELP02);
+        buttonDisband.addHooverText(false, DISBAND_HELP03);
+        helpButton.addHooverText(true, HELP_HELP01);
+        helpButton.addHooverText(false, helpButton.isHelpEnabled() ? HELP_HELP02 : HELP_HELP03);
+        buttons.stream().filter(b -> b instanceof IHooverText)
+                .forEach(b -> ((IHooverText) b).setHooverTextOverride(helpButton.isHelpEnabled()));
     }
 
     private void promote(Button button)
@@ -201,20 +227,32 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
                 break;
         }
         PacketDispatcher.sendToServer(new GroupCmdMessage(null, cmd, player().getId()));
+        updateButtonState();
     }
 
     private void setMode(Group.Mode mode)
     {
         Group group = GroupClient.getGroupById(groupId);
         groupMode = mode;
-        buttonGroupMode.setMessage(
-                LABEL_MODE.plainCopy()
-                        .append(" ").withStyle(TextFormatting.WHITE)
-                        .append(mode.equals(Group.Mode.Pin) ? PIN : OPEN));
+        buttonGroupMode.setMessage(getGroupModeName(groupMode));
 
         buttonNewPin.active = mode.equals(Group.Mode.Pin) && player().getId() == group.getLeader();
         buttonGroupMode.active = player().getId() == group.getLeader();
         buttonDisband.active = player().getId() == group.getLeader();
+    }
+
+    private ITextComponent getGroupModeName(Group.Mode mode)
+    {
+        return LABEL_MODE.plainCopy()
+                .append(" ").withStyle(TextFormatting.RESET)
+                .append(mode.equals(Group.Mode.Pin) ? PIN : OPEN);
+    }
+
+    private ITextComponent getPinText(String text)
+    {
+        return LABEL_PIN.plainCopy().append(" ").withStyle(TextFormatting.RESET)
+                .append(new StringTextComponent(text)
+                                .withStyle(TextFormatting.GREEN));
     }
 
     private void makeGroup()
@@ -238,6 +276,12 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         this.onClose();
     }
 
+    private void helpClicked()
+    {
+        helpButton.setHelpEnabled(!helpButton.isHelpEnabled());
+        updateButtonState();
+    }
+
     @Override
     public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers)
     {
@@ -252,6 +296,7 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         groupDisplay.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
         memberDisplayRight.renderMemberDisplay(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
         super.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
+        ModGuiHelper.drawHooveringHelp(pMatrixStack, this, buttons, pMouseX, pMouseY);
     }
 
     @Override
@@ -439,6 +484,13 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
     {
         static final ITextComponent PROMOTE = new StringTextComponent("▲").withStyle(TextFormatting.GREEN, TextFormatting.BOLD); // '▲' dec: 9650 hex: 25B2 BLACK UP-POINTING TRIANGLE
         static final ITextComponent REMOVE = new StringTextComponent("x").withStyle(TextFormatting.RED, TextFormatting.BOLD); // 'x'
+        static final ITextComponent PROMOTE_HELP01 = new TranslationTextComponent("gui.mxtune.button.member_promote.help01").withStyle(TextFormatting.RESET).append(PROMOTE);
+        static final ITextComponent PROMOTE_HELP02 = new TranslationTextComponent("gui.mxtune.button.member_promote.help02").withStyle(TextFormatting.GREEN);
+        static final ITextComponent PROMOTE_HELP03 = new TranslationTextComponent("gui.mxtune.button.member_promote.help03").withStyle(TextFormatting.YELLOW);
+        static final ITextComponent REMOVE_HELP01 = new TranslationTextComponent("gui.mxtune.button.member_remove.help01").withStyle(TextFormatting.RESET).append(REMOVE);
+        static final ITextComponent REMOVE_HELP02 = new TranslationTextComponent("gui.mxtune.button.member_remove.help02").withStyle(TextFormatting.GREEN);
+        static final ITextComponent REMOVE_HELP03 = new TranslationTextComponent("gui.mxtune.button.member_remove.help03").withStyle(TextFormatting.YELLOW);
+
         final int xPos;
         final int yPos;
         final MXButton promote;
@@ -458,13 +510,21 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
             promote.setMessage(MemberInfo.PROMOTE);
             promote.setLayout(xPos + nameWidth, yPos, 20, lineHeight);
             promote.setIndex(memberId);
+            promote.addHooverText(true, PROMOTE_HELP01);
+            promote.addHooverText(false, PROMOTE_HELP02);
+            promote.addHooverText(false, PROMOTE_HELP03);
             promote.active = GroupClient.isLeader(player().getId());
+            promote.visible = GroupClient.isLeader(player().getId());
 
             remove = new MXButton(pRemove);
             remove.setMessage(MemberInfo.REMOVE);
             remove.setLayout(promote.x + 20, yPos, 20, lineHeight);
             remove.setIndex(memberId);
+            remove.addHooverText(true, REMOVE_HELP01);
+            remove.addHooverText(false, REMOVE_HELP02);
+            remove.addHooverText(false, REMOVE_HELP03);
             remove.active = GroupClient.isLeader(player().getId()) || memberId == player().getId();
+            remove.visible = GroupClient.isLeader(player().getId()) || memberId == player().getId();
         }
 
         void memberDraw(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks)

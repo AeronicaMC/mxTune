@@ -18,7 +18,7 @@ public class GroupClient
     private static final Map<Integer, Group> groupMap = new ConcurrentHashMap<>();
     private static final Map<Integer, Integer> memberState = new ConcurrentHashMap<>();
     private static IGroupClientChangedCallback callback;
-    private static String privatePin;
+    private static String privatePin = "----";
 
     public static void clear()
     {
