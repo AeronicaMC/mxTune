@@ -17,7 +17,7 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 public class PacketDispatcher
 {
     private static final ResourceLocation CHANNEL_NAME = new ResourceLocation(Reference.MOD_ID, "network");
-    private static final String PROTOCOL_VERSION = "2.0.4";
+    private static final String PROTOCOL_VERSION = "2.0.5";
     private static int packetId = 0;
     private static SimpleChannel channel;
 
@@ -48,7 +48,7 @@ public class PacketDispatcher
         registerMessage(CreateIMusicMessage.class, new CreateIMusicMessage());
         registerMessage(ChooseInstrumentMessage.class, new ChooseInstrumentMessage());
         registerMessage(AudiblePingPlayerMessage.class, new AudiblePingPlayerMessage());
-        registerMessage(ByteArrayPartMessage.class, new ByteArrayPartMessage());
+        registerMessage(StringPartMessage.class, new StringPartMessage());
         registerMessage(ToolManagerSyncMessage.class, new ToolManagerSyncMessage());
         registerMessage(SyncRequestMessage.class, new SyncRequestMessage());
         registerMessage(MusicBlockMessage.class, new MusicBlockMessage());

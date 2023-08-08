@@ -3,7 +3,7 @@ package aeronicamc.mods.mxtune.network.messages;
 import aeronicamc.mods.mxtune.init.ModItems;
 import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import aeronicamc.mods.mxtune.items.MusicPaperItem;
-import aeronicamc.mods.mxtune.network.NetworkSerializedHelper;
+import aeronicamc.mods.mxtune.network.MultiPacketStringHelper;
 import aeronicamc.mods.mxtune.util.Misc;
 import aeronicamc.mods.mxtune.util.MusicType;
 import aeronicamc.mods.mxtune.util.SheetMusicHelper;
@@ -58,7 +58,7 @@ public class CreateIMusicMessage extends AbstractMessage<CreateIMusicMessage>
         boolean error = false;
         try
         {
-            musicText = (String) NetworkSerializedHelper.readSerializedObject(buffer);
+            musicText = MultiPacketStringHelper.readLongString(buffer);
         } catch (IOException e)
         {
             LOGGER.error("unable to decode string", e);
@@ -76,7 +76,7 @@ public class CreateIMusicMessage extends AbstractMessage<CreateIMusicMessage>
         buffer.writeByteArray(message.extraData);
         try
         {
-            NetworkSerializedHelper.writeSerializedObject(buffer, message.musicText);
+            MultiPacketStringHelper.writeLongString(buffer, message.musicText);
         } catch (IOException e)
         {
             LOGGER.warn("unable to encode string", e);

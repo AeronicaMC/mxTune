@@ -1,6 +1,9 @@
+#### 2023-08-07 mxtune-1.16.5-2.0.0-beta-2023-08-07.77843603
+* Fix Unsafe Deserialization Vulnerability 
+
 #### 2023-04-23 mxtune-1.16.5-2.0.0-alpha-2023-04-23.44277572
 * Enable key bind "J" to open Group GUI a.k.a 'JAMS'
-* The Group GUI for 16 players was too tall so I split it up into 2 halves.
+* The Group GUI for 16 players was too tall, so I split it up into 2 halves.
 * Add hoover help tips and help button to the Group GUI.
 
 #### 2023-04-19 mxtune-1.16.5-2.0.0-alpha-2023-04-19.40843381

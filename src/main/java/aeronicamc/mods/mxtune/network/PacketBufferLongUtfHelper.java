@@ -21,13 +21,16 @@ import net.minecraft.network.PacketBuffer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class NetworkLongUtfHelper
+/**
+ * This is used for sending from the server to the client only.
+ */
+public class PacketBufferLongUtfHelper
 {
-    private static final Logger LOGGER = LogManager.getLogger(NetworkLongUtfHelper.class);
+    private static final Logger LOGGER = LogManager.getLogger(PacketBufferLongUtfHelper.class);
     private static final int MAX_STRING_BUFFER = 16384;
     private static final String EMPTY_STRING = "";
 
-    public NetworkLongUtfHelper() { /* NOP */ }
+    public PacketBufferLongUtfHelper() { /* NOP */ }
 
     /**
      * The {@link PacketBuffer} utf strings are limited to 32767 bytes. Therefore they

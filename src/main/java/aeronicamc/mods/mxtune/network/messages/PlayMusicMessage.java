@@ -1,7 +1,7 @@
 package aeronicamc.mods.mxtune.network.messages;
 
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
-import aeronicamc.mods.mxtune.network.NetworkLongUtfHelper;
+import aeronicamc.mods.mxtune.network.PacketBufferLongUtfHelper;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 public class PlayMusicMessage extends AbstractMessage<PlayMusicMessage>
 {
     private static final Logger LOGGER = LogManager.getLogger(PlayMusicMessage.class);
-    private final NetworkLongUtfHelper stringHelper = new NetworkLongUtfHelper();
+    private final PacketBufferLongUtfHelper stringHelper = new PacketBufferLongUtfHelper();
     private int playId = PlayIdSupplier.INVALID;
     private int secondsElapsed;
     private int duration;

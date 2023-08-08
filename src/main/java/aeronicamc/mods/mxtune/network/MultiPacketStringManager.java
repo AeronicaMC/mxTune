@@ -9,14 +9,14 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
-public class MultiPacketSerializedObjectManager
+public class MultiPacketStringManager
 {
-    private static final Logger LOGGER = LogManager.getLogger(MultiPacketSerializedObjectManager.class);
+    private static final Logger LOGGER = LogManager.getLogger(MultiPacketStringManager.class);
     private static Timer timer;
     private static final Multimap<UUID, TimerTask> tasks = Multimaps.synchronizedMultimap(HashMultimap.create());
-    private static final Multimap<UUID, SerializedObjectPacket> parts = Multimaps.synchronizedMultimap(HashMultimap.create());
+    private static final Multimap<UUID, StringPartPacket> parts = Multimaps.synchronizedMultimap(HashMultimap.create());
 
-    private MultiPacketSerializedObjectManager() { /* NOP */ }
+    private MultiPacketStringManager() { /* NOP */ }
 
     public static void start()
     {
@@ -36,16 +36,16 @@ public class MultiPacketSerializedObjectManager
         tasks.clear();
     }
 
-    public static void addPacket(SerializedObjectPacket serializedObjectPart)
+    public static void addPacket(StringPartPacket partPacket)
     {
         if (timer != null)
         {
-            parts.put(serializedObjectPart.serialObjectId, serializedObjectPart);
-            scheduleTimeout(serializedObjectPart.serialObjectId, 30);
+            parts.put(partPacket.stringPartId, partPacket);
+            scheduleTimeout(partPacket.stringPartId);
         }
     }
 
-    private static void scheduleTimeout(UUID uuid, int timeout)
+    private static void scheduleTimeout(UUID uuid)
     {
         if (timer != null)
         {
@@ -60,7 +60,7 @@ public class MultiPacketSerializedObjectManager
                 }
             };
             tasks.put(uuid, task);
-            long delay = timeout * 1000L;
+            long delay = 30 * 1000L;
             timer.schedule(task, delay);
         }
     }
@@ -83,11 +83,11 @@ public class MultiPacketSerializedObjectManager
         }
     }
 
-    static List<SerializedObjectPacket> getPackets(UUID uuid)
+    static List<StringPartPacket> getPackets(UUID uuid)
     {
         synchronized (parts)
         {
-            List<SerializedObjectPacket> packets = Collections.unmodifiableList(new ArrayList<>(parts.get(uuid)));
+            List<StringPartPacket> packets = Collections.unmodifiableList(new ArrayList<>(parts.get(uuid)));
             cancel(uuid);
             return packets;
         }
@@ -109,17 +109,17 @@ public class MultiPacketSerializedObjectManager
 
     // Data classes
 
-    public static class SerializedObjectPacket
+    public static class StringPartPacket
     {
-        final UUID serialObjectId;
-        final int packetId;
-        final byte[] bytes;
+        final UUID stringPartId;
+        final int packetIndex;
+        final String part;
 
-        public SerializedObjectPacket(UUID serialObjectId, int packetId, byte[] bytes)
+        public StringPartPacket(UUID stringPartId, int packetIndex, String part)
         {
-            this.serialObjectId = serialObjectId;
-            this.packetId = packetId;
-            this.bytes = bytes;
+            this.stringPartId = stringPartId;
+            this.packetIndex = packetIndex;
+            this.part = part;
         }
     }
 }

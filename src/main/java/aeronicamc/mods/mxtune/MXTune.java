@@ -28,7 +28,7 @@ import aeronicamc.mods.mxtune.init.*;
 import aeronicamc.mods.mxtune.managers.ActiveTune;
 import aeronicamc.mods.mxtune.managers.GroupManager;
 import aeronicamc.mods.mxtune.managers.PlayManager;
-import aeronicamc.mods.mxtune.network.MultiPacketSerializedObjectManager;
+import aeronicamc.mods.mxtune.network.MultiPacketStringManager;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.render.blockentity.MusicBlockEntityRenderer;
 import aeronicamc.mods.mxtune.render.entity.InfoRenderer;
@@ -139,7 +139,7 @@ public class MXTune
         FileHelper.initialize(event.getServer());
         ActiveTune.initialize();
         ModDataStore.start();
-        MultiPacketSerializedObjectManager.start();
+        MultiPacketStringManager.start();
     }
 
     @SubscribeEvent
@@ -147,7 +147,7 @@ public class MXTune
         PlayManager.stopAll();
         GroupManager.clear();
         ModDataStore.shutdown();
-        MultiPacketSerializedObjectManager.shutdown();
+        MultiPacketStringManager.shutdown();
     }
 
     @SubscribeEvent
