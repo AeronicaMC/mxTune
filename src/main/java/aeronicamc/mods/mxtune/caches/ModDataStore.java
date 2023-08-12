@@ -318,4 +318,45 @@ public class ModDataStore
         return getMusicText(key) != null;
     }
 
+    public static String toSafeFileNameKey(String key)
+    {
+        // 2022-02-27T21:21:25.787 to 20220227T212125787
+        return key.replaceAll("(\\.|:|-)", "");
+    }
+
+    /**
+     * Accepts SafeFileNameKey string and returns a LocalDateTime object
+     * @param safeFileNameKey
+     * @return a valid key or non-existent key from before this code was written.
+     */
+    public static LocalDateTime keyFromSafeFileNameKey(String safeFileNameKey)
+    {
+        // 20220227T212125787 to 2022-02-27T21:21:25.787
+        LocalDateTime localDateTime;
+        try
+        {
+            String temp = safeFileNameKey.subSequence(0, 4) +
+                    "-" + safeFileNameKey.subSequence(4, 6) +
+                    "-" + safeFileNameKey.subSequence(6, 11) +
+                    ":" + safeFileNameKey.subSequence(11, 13) +
+                    ":" + safeFileNameKey.subSequence(13, 15) +
+                    "." + safeFileNameKey.subSequence(15, safeFileNameKey.length());
+            localDateTime = LocalDateTime.parse(temp);
+        } catch (DateTimeParseException | IndexOutOfBoundsException e)
+        {
+            LOGGER.warn(e);
+            localDateTime = LocalDateTime.parse("1999-01-01T01:01:01.001");
+        }
+        return localDateTime;
+    }
+
+    public static void main(String[] args)
+    {
+        String safeFileName = "20220227T212125787";
+        String stringDateTime = "2022-02-27T21:21:25.787";
+        System.out.println(safeFileName);
+        System.out.println(keyFromSafeFileNameKey(safeFileName));
+        System.out.println(stringDateTime);
+        System.out.println(toSafeFileNameKey(stringDateTime));
+    }
 }
