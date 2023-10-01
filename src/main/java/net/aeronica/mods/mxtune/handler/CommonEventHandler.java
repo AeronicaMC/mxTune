@@ -27,8 +27,12 @@ import net.aeronica.mods.mxtune.util.SheetMusicSongs;
 import net.aeronica.mods.mxtune.util.SheetMusicUtil;
 import net.aeronica.mods.mxtune.world.IModLockableContainer;
 import net.aeronica.mods.mxtune.world.LockableHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -100,14 +104,28 @@ public class CommonEventHandler
         }
     }
 
-//    @SubscribeEvent
-//    public static void onEvent(LivingSpawnEvent event)
-//    {
-//        if (event.getWorld().isRemote) return;
-//        EntityLivingBase livingBase = event.getEntityLiving();
-//        if ((livingBase instanceof EntityTimpani) || (livingBase instanceof EntityGoldenSkeleton))
-//        {
-//            ModLogger.info("\t %s, %s, %s", livingBase.world.getBiome(livingBase.getPosition()).getBiomeName(), livingBase, ((EntityLiving) livingBase).getCanSpawnHere());
-//        }
-//    }
+    @SubscribeEvent
+    public static void onEvent(LivingSpawnEvent.SpecialSpawn event)
+    {
+        //processMxMobs(event);
+    }
+
+    @SubscribeEvent
+    public static void onEvent(EntityJoinWorldEvent event)
+    {
+        if (event.getWorld().isRemote) return;
+        Entity entity = event.getEntity();
+        if (event.isCancelable() && (entity instanceof EntityGoldenSkeleton))
+        {
+            EntityLivingBase livingBase = (EntityLivingBase) entity;
+            event.setCanceled(!ModConfig.isGoldenSkeletonEnabled());
+            //ModLogger.info("\tJoin:%s, %s, %s, %s", event.isCanceled()?"Deny":"Allow", livingBase.world.getBiome(livingBase.getPosition()).getBiomeName(), livingBase, ((EntityLiving) livingBase).getCanSpawnHere());
+        }
+        else if (event.isCancelable() && (entity instanceof EntityTimpani))
+        {
+            EntityLivingBase livingBase = (EntityLivingBase) entity;
+            event.setCanceled(!ModConfig.isTimpaniOfDoomEnabled());
+            //ModLogger.info("\tJoin:%s, %s, %s, %s", event.isCanceled()?"Deny":"Allow", livingBase.world.getBiome(livingBase.getPosition()).getBiomeName(), livingBase, ((EntityLiving) livingBase).getCanSpawnHere());
+        }
+    }
 }

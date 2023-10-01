@@ -123,7 +123,11 @@ public class ModConfig
         @Comment("Instrument Options")
         @LangKey("config.mxtune.generalConfig.instrumentOptions")
         public static final InstrumentOptions instrumentOptions = new InstrumentOptions();
-        
+
+        @Comment("Mob Spawn Options")
+        @LangKey("config.mxtune.generalConfig.spawnOptions")
+        public static final MobSpawnOptions mobSpawnOptions = new MobSpawnOptions();
+
         public static class General
         {
             @Name("Show Welcome Status Message")
@@ -155,6 +159,19 @@ public class ModConfig
             @LangKey("config.mxtune.enableBandAmpFullBrightEffect")
             public boolean enableBandAmpFullBrightEffect = true;
         }
+
+        public static class MobSpawnOptions
+        {
+            @Name("Enable Golden Skeleton")
+            @LangKey("config.mxtune.enableGoldenSkeleton")
+            @RequiresMcRestart()
+            public boolean enableGoldenSkeleton = true;
+
+            @Name("Enable Timpani of Doom")
+            @LangKey("config.mxtune.enableTimpaniOfDoom")
+            @RequiresMcRestart()
+            public boolean enableTimpaniOfDoom = true;
+        }
     }
     
     @Config(modid = Reference.MOD_ID, name = Reference.MOD_ID + "/" + Reference.MOD_ID + "_recipes", type = Type.INSTANCE, category="recipe")
@@ -166,7 +183,7 @@ public class ModConfig
         @LangKey("config.mxtune.enabledRecipes")
         @Name("Toggles")
         @Comment({"mxTune Recipes", "Requires a Server Restart if Changed!", "B:<name>=(true|false)"})
-        @RequiresMcRestart
+        @RequiresMcRestart()
         public static Map<String, Boolean> recipeToggles;
 
         private static final String[] modItemRecipeNames = {
@@ -209,6 +226,10 @@ public class ModConfig
 
     public static boolean isNetherMusicDisabled() {return ConfigClient.vanillaMusic.disableNetherMusic;}
 
+    public static boolean isGoldenSkeletonEnabled() {return ConfigGeneral.mobSpawnOptions.enableGoldenSkeleton;}
+
+    public static boolean isTimpaniOfDoomEnabled() {return ConfigGeneral.mobSpawnOptions.enableTimpaniOfDoom;}
+
     public static String getMmlLink() {return ConfigClient.links.site;}
 
     public static boolean isBandAmpFullBrightEffectEnabled() {return ConfigGeneral.instrumentOptions.enableBandAmpFullBrightEffect;}
@@ -233,7 +254,7 @@ public class ModConfig
         return !isRecipeEnabled(stackIn);
     }
     
-    @Mod.EventBusSubscriber
+    @Mod.EventBusSubscriber()
     public static class RegistrationHandler
     {
         private RegistrationHandler() {/* NOP */}
