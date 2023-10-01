@@ -164,12 +164,12 @@ public class ModConfig
         {
             @Name("Enable Golden Skeleton")
             @LangKey("config.mxtune.enableGoldenSkeleton")
-            @RequiresMcRestart()
+            @Comment("Dedicated server requires a restart to apply changes.")
             public boolean enableGoldenSkeleton = true;
 
             @Name("Enable Timpani of Doom")
             @LangKey("config.mxtune.enableTimpaniOfDoom")
-            @RequiresMcRestart()
+            @Comment("Dedicated server requires a restart to apply changes.")
             public boolean enableTimpaniOfDoom = true;
         }
     }
