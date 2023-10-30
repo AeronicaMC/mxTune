@@ -17,10 +17,9 @@
 
 package net.aeronica.mods.mxtune.world.caps.world;
 
-import net.aeronica.mods.mxtune.util.GUID;
 
 public interface IModWorldPlaylist
 {
-    GUID getPlaylistGuid();
-    void setPlaylistGuid(GUID guid);
+    int getPlaylistGuid();
+    void setPlaylistGuid(int guid);
 }

@@ -25,18 +25,18 @@ import net.aeronica.mods.mxtune.util.ModLogger;
 
 import java.util.*;
 
-public class MultiPacketSerializedObjectManager
+public class MultiPacketStringManager
 {
     private static Timer timer;
     private static final Multimap<UUID, TimerTask> tasks = Multimaps.synchronizedMultimap(HashMultimap.create());
-    private static final Multimap<UUID, SerializedObjectPacket> parts = Multimaps.synchronizedMultimap(HashMultimap.create());
+    private static final Multimap<UUID, StringPartPacket> parts = Multimaps.synchronizedMultimap(HashMultimap.create());
 
-    private MultiPacketSerializedObjectManager() { /* NOP */ }
+    private MultiPacketStringManager() { /* NOP */ }
 
     public static void start()
     {
         if (timer == null)
-            timer = new Timer(Reference.MOD_NAME + " MultiPacketSerializedObjectManager Timer");
+            timer = new Timer(Reference.MOD_NAME + " MultiPacket Timer");
     }
 
     public static void shutdown()
@@ -51,13 +51,13 @@ public class MultiPacketSerializedObjectManager
         tasks.clear();
     }
 
-    public static void addPacket(SerializedObjectPacket serializedObjectPart)
+    public static void addPacket(StringPartPacket serializedObjectPart)
     {
         if (timer != null)
         {
-            parts.put(serializedObjectPart.serialObjectId, serializedObjectPart);
-            scheduleTimeout(serializedObjectPart.serialObjectId, 30);
-            ModLogger.debug("MultiPacketSerializedObjectManager addPacket %s", serializedObjectPart.serialObjectId.toString());
+            parts.put(serializedObjectPart.stringPartId, serializedObjectPart);
+            scheduleTimeout(serializedObjectPart.stringPartId, 30);
+            ModLogger.debug("MultiPacketStringManager addPacket %s", serializedObjectPart.stringPartId.toString());
         }
     }
 
@@ -72,7 +72,7 @@ public class MultiPacketSerializedObjectManager
                 public void run()
                 {
                     timedOut(uuid);
-                    ModLogger.warn("MultiPacketSerializedObjectManager Timeout for: %s", uuid);
+                    ModLogger.warn("MultiPacketStringManager Timeout for: %s", uuid);
                 }
             };
             tasks.put(uuid, task);
@@ -99,13 +99,13 @@ public class MultiPacketSerializedObjectManager
         }
     }
 
-    static List<SerializedObjectPacket> getPackets(UUID uuid)
+    static List<StringPartPacket> getPackets(UUID uuid)
     {
         synchronized (parts)
         {
-            List<SerializedObjectPacket> packets = Collections.unmodifiableList(new ArrayList<>(parts.get(uuid)));
+            List<StringPartPacket> packets = Collections.unmodifiableList(new ArrayList<>(parts.get(uuid)));
             cancel(uuid);
-            ModLogger.debug("MultiPacketSerializedObjectManager getPackets: %s", uuid.toString());
+            ModLogger.debug("MultiPacketStringManager getPackets: %s", uuid.toString());
             return packets;
         }
     }
@@ -126,17 +126,17 @@ public class MultiPacketSerializedObjectManager
 
     // Data classes
 
-    public static class SerializedObjectPacket
+    public static class StringPartPacket
     {
-        final UUID serialObjectId;
-        final int packetId;
-        final byte[] bytes;
+        final UUID stringPartId;
+        final int packetIndex;
+        final String part;
 
-        public SerializedObjectPacket(UUID serialObjectId, int packetId, byte[] bytes)
+        public StringPartPacket(UUID stringPartId, int packetIndex, String part)
         {
-            this.serialObjectId = serialObjectId;
-            this.packetId = packetId;
-            this.bytes = bytes;
+            this.stringPartId = stringPartId;
+            this.packetIndex = packetIndex;
+            this.part = part;
         }
     }
 }

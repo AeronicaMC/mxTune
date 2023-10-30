@@ -21,16 +21,12 @@ import net.aeronica.mods.mxtune.entity.EntityTimpaniFx;
 import net.aeronica.mods.mxtune.entity.living.EntityGoldenSkeleton;
 import net.aeronica.mods.mxtune.entity.living.EntityTimpani;
 import net.aeronica.mods.mxtune.gui.hud.GuiJamOverlay;
-import net.aeronica.mods.mxtune.gui.mml.GuiStaffOverlay;
 import net.aeronica.mods.mxtune.handler.KeyHandler;
-import net.aeronica.mods.mxtune.managers.ClientFileManager;
-import net.aeronica.mods.mxtune.managers.ClientPlayManager;
 import net.aeronica.mods.mxtune.model.ModelLoader;
-import net.aeronica.mods.mxtune.network.MultiPacketSerializedObjectManager;
+import net.aeronica.mods.mxtune.network.MultiPacketStringManager;
 import net.aeronica.mods.mxtune.render.RenderGoldenSkeleton;
 import net.aeronica.mods.mxtune.render.RenderTimpani;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
-import net.aeronica.mods.mxtune.util.CallBackManager;
 import net.aeronica.mods.mxtune.util.MIDISystemUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -126,7 +122,6 @@ public class ClientProxy extends ServerProxy
     public void registerHUD()
     {
         MinecraftForge.EVENT_BUS.register(GuiJamOverlay.getInstance());
-        MinecraftForge.EVENT_BUS.register(GuiStaffOverlay.getInstance());
     }
 
     @Override
@@ -161,16 +156,13 @@ public class ClientProxy extends ServerProxy
     @Override
     public void clientConnect(ClientConnectedToServerEvent event)
     {
-        CallBackManager.start();
-        ClientPlayManager.reset();
+        // NOP
     }
 
     @Override
     public void clientDisconnect(ClientDisconnectionFromServerEvent event)
     {
-        CallBackManager.shutdown();
-        ClientFileManager.clearCache();
-        MultiPacketSerializedObjectManager.shutdown();
+        MultiPacketStringManager.shutdown();
     }
 
     @Override

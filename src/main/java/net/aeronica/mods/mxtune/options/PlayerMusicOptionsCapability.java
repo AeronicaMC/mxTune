@@ -18,7 +18,6 @@ package net.aeronica.mods.mxtune.options;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.util.Miscellus;
-import net.aeronica.mods.mxtune.util.NBTHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -112,7 +111,6 @@ public class PlayerMusicOptionsCapability
                     live.setWhiteList(dead.getWhiteList());
                     live.setSoundRangeInfinityAllowed(dead.isSoundRangeInfinityRangeAllowed());
                     live.setMxTuneServerUpdateAllowed(dead.isSoundRangeInfinityRangeAllowed());
-                    live.setSelectedPlayListGuid(dead.getSelectedPlayListGuid());
                 }
             }
         }
@@ -162,8 +160,6 @@ public class PlayerMusicOptionsCapability
         static final String KEY_PLAYER_NAME = "playerName";
         static final String KEY_SOUND_RANGE_INFINITY_ALLOWED = "soundRangeInfinityAllowed";
         static final String KEY_MXTUNE_SERVER_UPDATE_ALLOWED = "mxTuneServerUpdateAllowed";
-        static final String KEY_SELECTED_PLAY_LIST_GUID = "selectedPlayListGuid";
-
 
         @Override
         public NBTBase writeNBT(Capability<IPlayerMusicOptions> capability, IPlayerMusicOptions instance, EnumFacing side)
@@ -178,7 +174,6 @@ public class PlayerMusicOptionsCapability
             properties.setString(KEY_S_PARAM_3, instance.getSParam3());
             properties.setBoolean(KEY_SOUND_RANGE_INFINITY_ALLOWED, instance.isSoundRangeInfinityRangeAllowed());
             properties.setBoolean(KEY_MXTUNE_SERVER_UPDATE_ALLOWED, instance.isMxTuneServerUpdateAllowed());
-            NBTHelper.setGuidToTag(instance.getSelectedPlayListGuid(), properties, KEY_SELECTED_PLAY_LIST_GUID);
             NBTTagList listBlack = new NBTTagList();
             properties.setTag(KEY_LIST_BLACK, listBlack);
             for (int i=0; i<instance.getBlackList().size(); i++)
@@ -211,7 +206,6 @@ public class PlayerMusicOptionsCapability
             instance.setSParams(properties.getString(KEY_S_PARAM_1), properties.getString(KEY_S_PARAM_2), properties.getString(KEY_S_PARAM_3));
             instance.setSoundRangeInfinityAllowed(properties.getBoolean(KEY_SOUND_RANGE_INFINITY_ALLOWED));
             instance.setMxTuneServerUpdateAllowed(properties.getBoolean(KEY_MXTUNE_SERVER_UPDATE_ALLOWED));
-            instance.setSelectedPlayListGuid(NBTHelper.getGuidFromTag(properties, KEY_SELECTED_PLAY_LIST_GUID));
             if (properties.hasKey(KEY_LIST_BLACK, Constants.NBT.TAG_LIST))
             {
                 NBTTagList listBlack = properties.getTagList(KEY_LIST_BLACK, Constants.NBT.TAG_COMPOUND);

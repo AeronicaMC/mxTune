@@ -17,27 +17,24 @@
 
 package net.aeronica.mods.mxtune.world.caps.world;
 
-import net.aeronica.mods.mxtune.Reference;
-import net.aeronica.mods.mxtune.util.GUID;
-
 public class ModWorldPlaylistImpl implements IModWorldPlaylist
 {
-    private GUID guid;
+    private int fakeGuid;
 
     public ModWorldPlaylistImpl()
     {
-        guid = Reference.EMPTY_GUID;
+        fakeGuid = -1;
     }
 
     @Override
-    public GUID getPlaylistGuid()
+    public int getPlaylistGuid()
     {
-        return guid;
+        return fakeGuid;
     }
 
     @Override
-    public void setPlaylistGuid(GUID guid)
+    public void setPlaylistGuid(int fakeGuid)
     {
-        this.guid = guid;
+        this.fakeGuid = fakeGuid;
     }
 }

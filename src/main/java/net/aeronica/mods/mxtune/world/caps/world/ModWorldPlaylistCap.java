@@ -19,7 +19,6 @@ package net.aeronica.mods.mxtune.world.caps.world;
 
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.util.Miscellus;
-import net.aeronica.mods.mxtune.util.NBTHelper;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -103,7 +102,7 @@ public class ModWorldPlaylistCap
         public NBTBase writeNBT(Capability<IModWorldPlaylist> capability, IModWorldPlaylist instance, EnumFacing side)
         {
             NBTTagCompound properties =  new NBTTagCompound();
-            NBTHelper.setGuidToCompound(properties, instance.getPlaylistGuid());
+            properties.setInteger("fakeGuid", instance.getPlaylistGuid());
             return properties;
         }
 
@@ -111,7 +110,7 @@ public class ModWorldPlaylistCap
         public void readNBT(Capability<IModWorldPlaylist> capability, IModWorldPlaylist instance, EnumFacing side, NBTBase nbt)
         {
             NBTTagCompound properties = (NBTTagCompound) nbt;
-            instance.setPlaylistGuid(NBTHelper.getGuidFromCompound(properties));
+            instance.setPlaylistGuid(properties.getInteger("fakeGuid"));
         }
     }
 }

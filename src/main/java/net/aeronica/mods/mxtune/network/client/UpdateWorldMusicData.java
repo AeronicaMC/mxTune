@@ -19,7 +19,6 @@ package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.MXTune;
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
-import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.world.caps.world.ModWorldPlaylistHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
@@ -28,41 +27,26 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class UpdateWorldMusicData extends AbstractClientMessage<UpdateWorldMusicData>
 {
-    private GUID guid;
-    private long ddddSigBits;
-    private long ccccSigBits;
-    private long bbbbSigBits;
-    private long aaaaSigBits;
+    private int fakeGuid;
 
     @SuppressWarnings("unused")
     public UpdateWorldMusicData() {/* Required by the PacketDispatcher */}
 
-    public UpdateWorldMusicData(GUID guid)
+    public UpdateWorldMusicData(int fakeGuid)
     {
-        this.guid = guid;
-        ddddSigBits = guid.getDdddSignificantBits();
-        ccccSigBits = guid.getCcccSignificantBits();
-        bbbbSigBits = guid.getBbbbSignificantBits();
-        aaaaSigBits = guid.getAaaaSignificantBits();
+        this.fakeGuid = fakeGuid;
     }
 
     @Override
     protected void read(PacketBuffer buffer)
     {
-        ddddSigBits = buffer.readLong();
-        ccccSigBits = buffer.readLong();
-        bbbbSigBits = buffer.readLong();
-        aaaaSigBits = buffer.readLong();
-        guid = new GUID(ddddSigBits, ccccSigBits, bbbbSigBits, aaaaSigBits);
+        fakeGuid = buffer.readInt();
     }
 
     @Override
     protected void write(PacketBuffer buffer)
     {
-        buffer.writeLong(ddddSigBits);
-        buffer.writeLong(ccccSigBits);
-        buffer.writeLong(bbbbSigBits);
-        buffer.writeLong(aaaaSigBits);
+        buffer.writeLong(fakeGuid);
     }
 
     @Override
@@ -70,6 +54,6 @@ public class UpdateWorldMusicData extends AbstractClientMessage<UpdateWorldMusic
     {
         World world = MXTune.proxy.getClientWorld();
         if (world != null && world.hasCapability(ModWorldPlaylistHelper.MOD_WORLD_DATA, null))
-            ModWorldPlaylistHelper.setPlaylistGuid(world, guid);
+            ModWorldPlaylistHelper.setPlaylistGuid(world, fakeGuid);
     }
 }

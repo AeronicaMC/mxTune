@@ -23,15 +23,12 @@ import net.aeronica.mods.mxtune.cmds.CommandSoundRange;
 import net.aeronica.mods.mxtune.handler.GUIHandler;
 import net.aeronica.mods.mxtune.init.ModItems;
 import net.aeronica.mods.mxtune.managers.DurationTimer;
-import net.aeronica.mods.mxtune.managers.ServerFileManager;
-import net.aeronica.mods.mxtune.network.MultiPacketSerializedObjectManager;
+import net.aeronica.mods.mxtune.network.MultiPacketStringManager;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.options.PlayerMusicOptionsCapability;
 import net.aeronica.mods.mxtune.proxy.ServerProxy;
-import net.aeronica.mods.mxtune.util.CallBackManager;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.MusicTab;
-import net.aeronica.mods.mxtune.world.caps.chunk.ModChunkPlaylistCap;
 import net.aeronica.mods.mxtune.world.caps.world.ModWorldPlaylistCap;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
@@ -70,7 +67,6 @@ public class MXTune
         ModLogger.setLogger(event.getModLog());
         ModCriteriaTriggers.init();
         ModWorldPlaylistCap.register();
-        ModChunkPlaylistCap.register();
         PlayerMusicOptionsCapability.register();
         PacketDispatcher.registerPackets();
         proxy.preInit();
@@ -107,20 +103,16 @@ public class MXTune
     {
         event.registerServerCommand(new CommandSoundRange());
         event.registerServerCommand(new CommandMxTuneServerUpdate());
-        CallBackManager.start();
-        MultiPacketSerializedObjectManager.start();
+        MultiPacketStringManager.start();
         DurationTimer.start();
         FileHelper.initialize();
-        ServerFileManager.start();
     }
 
     @Mod.EventHandler
     public void onEvent(FMLServerStoppingEvent event)
     {
         DurationTimer.shutdown();
-        ServerFileManager.shutdown();
-        CallBackManager.shutdown();
-        MultiPacketSerializedObjectManager.shutdown();
+        MultiPacketStringManager.shutdown();
     }
 
     @SubscribeEvent

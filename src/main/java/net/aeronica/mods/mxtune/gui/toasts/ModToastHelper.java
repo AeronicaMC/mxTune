@@ -17,15 +17,7 @@
 
 package net.aeronica.mods.mxtune.gui.toasts;
 
-import net.aeronica.mods.mxtune.MXTune;
-
 public class ModToastHelper
 {
-
     private ModToastHelper() { /* NOP */ }
-
-    public static void postPlayListManagerToast()
-    {
-        MXTune.proxy.getMinecraft().getToastGui().add(new PlayListMangerToast());
-    }
 }

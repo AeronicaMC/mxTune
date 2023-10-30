@@ -26,9 +26,7 @@ public class GuiGuid
     public static final int GUI_MUSIC_OPTIONS = 4;
     public static final int GUI_BAND_AMP = 5;
     public static final int GUI_MUSIC_LIBRARY = 6;
-    public static final int GUI_PLAY_LIST_MANAGER = 7;
-    public static final int GUI_MXT_TEST = 8;
-    public static final int GUI_CHUNK_TOOL = 9;
-    public static final int GUI_MULTI_INST_INVENTORY = 10;
-    public static final int GUI_MULTI_INST_CHOOSER = 11;
+    public static final int GUI_MXT_TEST = 7;
+    public static final int GUI_MULTI_INST_INVENTORY = 8;
+    public static final int GUI_MULTI_INST_CHOOSER = 9;
 }

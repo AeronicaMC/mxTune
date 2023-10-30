@@ -18,8 +18,6 @@
 package net.aeronica.mods.mxtune.mxt;
 
 import net.aeronica.mods.mxtune.caches.FileHelper;
-import net.aeronica.mods.mxtune.managers.records.Song;
-import net.aeronica.mods.mxtune.managers.records.SongProxy;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.aeronica.mods.mxtune.util.SoundFontProxyManager;
 import net.minecraft.nbt.NBTTagCompound;
@@ -57,7 +55,7 @@ public class MXTuneFileHelper
             if (mxTuneFile.getMxtVersion().equalsIgnoreCase("1.0.0"))
                 builder.append("MML@I=").append(SoundFontProxyManager.getIndexForFirstMatchingPackedPreset(part.getPackedPatch()));
             else if (mxTuneFile.getMxtVersion().equalsIgnoreCase("2.0.0"))
-                builder.append("MML@I=").append(SoundFontProxyManager.getIndexById(part.getInstrumentName()));
+                builder.append("MML@I=").append(SoundFontProxyManager.getIndexById(part.getInstrumentId()));
             else
                 builder.append("MML@");
 
@@ -71,22 +69,5 @@ public class MXTuneFileHelper
             builder.append(";");
         }
         return builder.toString();
-    }
-
-    public static Song getSong(MXTuneFile tune)
-    {
-        return new Song(tune.getTitle(), getMML(tune));
-    }
-
-    public static SongProxy getSongProxy(MXTuneFile tune)
-    {
-        return getSongProxy(getSong(tune));
-    }
-
-    public static SongProxy getSongProxy(Song song)
-    {
-        NBTTagCompound compound = new NBTTagCompound();
-        song.writeToNBT(compound);
-        return new SongProxy(compound);
     }
 }

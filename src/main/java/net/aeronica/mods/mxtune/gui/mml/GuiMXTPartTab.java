@@ -177,7 +177,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         NBTTagCompound compound = new NBTTagCompound();
         mxTunePart.writeToNBT(compound);
         this.mxTunePart = new MXTunePart(compound);
-        this.listBoxInstruments.setSelectedIndex(SoundFontProxyManager.getIndexById(mxTunePart.getInstrumentName()));
+        this.listBoxInstruments.setSelectedIndex(SoundFontProxyManager.getIndexById(mxTunePart.getInstrumentId()));
         listBoxInstruments.resetScroll();
         Iterator<MXTuneStaff> iterator = mxTunePart.getStaves().iterator();
         int i = 0;
@@ -572,7 +572,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
     {
         int index = Math.max(listBoxInstruments.getSelectedIndex(), 0);
         mxTunePart.setPackedPatch(listBoxInstruments.get(index).packed_preset);
-        mxTunePart.setInstrumentName(listBoxInstruments.get(index).id);
+        mxTunePart.setInstrumentId(listBoxInstruments.get(index).id);
     }
 
     /** Table Flip!

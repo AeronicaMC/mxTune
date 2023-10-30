@@ -18,6 +18,10 @@
 package net.aeronica.mods.mxtune.mxt;
 
 import net.minecraft.nbt.NBTTagCompound;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 
@@ -68,5 +72,43 @@ public class MXTuneStaff implements Serializable
     public void setMeta(String meta)
     {
         this.meta = meta;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        MXTuneStaff mxTuneStaff = (MXTuneStaff) o;
+        return new EqualsBuilder()
+                .append(staff, mxTuneStaff.getStaff())
+                .append(mml, mxTuneStaff.getMml())
+                .append(meta, mxTuneStaff.getMeta())
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return new HashCodeBuilder(17, 37)
+                .append(staff)
+                .append(mml)
+                .append(meta)
+                .toHashCode();
+    }
+
+    @Override
+    public String toString()
+    {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("staff", staff)
+                .append("mml", mml)
+                .append("meta", meta)
+                .toString();
     }
 }

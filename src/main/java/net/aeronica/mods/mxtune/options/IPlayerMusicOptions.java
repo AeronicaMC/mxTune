@@ -16,10 +16,6 @@
  */
 package net.aeronica.mods.mxtune.options;
 
-import net.aeronica.mods.mxtune.network.server.ChunkToolMessage;
-import net.aeronica.mods.mxtune.util.GUID;
-import net.minecraft.world.chunk.Chunk;
-
 import java.util.List;
 
 public interface IPlayerMusicOptions
@@ -68,23 +64,7 @@ public interface IPlayerMusicOptions
 
     boolean isMxTuneServerUpdateAllowed();
 
-    void setSelectedPlayListGuid(GUID guidPlayList);
-
-    GUID getSelectedPlayListGuid();
-
     void setCtrlKey(boolean isDown);
 
     boolean isCtrlKeyDown();
-
-    void setChunkToolOperation(ChunkToolMessage.Operation operation);
-
-    ChunkToolMessage.Operation getChunkToolOperation();
-
-    void setChunkStart(Chunk chunkStart);
-
-    Chunk getChunkStart();
-
-    void setChunkEnd(Chunk chunkEnd);
-
-    Chunk getChunkEnd();
 }

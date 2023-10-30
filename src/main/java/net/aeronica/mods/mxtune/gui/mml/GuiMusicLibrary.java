@@ -149,7 +149,7 @@ public class GuiMusicLibrary extends GuiScreen implements IAudioStatusCallback
                 if (!isEmpty() && slotIdx >= 0 && slotIdx < size() && get(slotIdx) != null)
                 {
                     MXTunePart tunePart = get(slotIdx);
-                    String translatedName = I18n.format(SoundFontProxyManager.getLangKeyName(tunePart.getInstrumentName()));
+                    String translatedName = I18n.format(SoundFontProxyManager.getLangKeyName(tunePart.getInstrumentId()));
                     String trimmedName = fontRenderer.trimStringToWidth(translatedName, listWidth - 10);
                     fontRenderer.drawStringWithShadow(trimmedName, (float) left + 3, slotTop, 0xADD8E6);
                 }

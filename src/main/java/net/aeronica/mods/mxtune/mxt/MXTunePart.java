@@ -18,6 +18,10 @@
 package net.aeronica.mods.mxtune.mxt;
 
 import net.minecraft.nbt.NBTTagCompound;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,7 +38,7 @@ public class MXTunePart implements Serializable
     private static final String TAG_STAFF_COUNT = "staffCount";
     private static final String TAG_TRANSPOSE = "transpose";
 
-    private String instrumentName;
+    private String instrumentId;
     private int packedPatch;
     private String meta;
     private int transpose;
@@ -43,15 +47,15 @@ public class MXTunePart implements Serializable
     public MXTunePart()
     {
         meta = "";
-        instrumentName = "";
+        instrumentId = "";
         staves = new ArrayList<>();
         transpose = 0;
     }
 
-    public MXTunePart(String instrumentName, String meta, int packedPatch, List<MXTuneStaff> staves)
+    public MXTunePart(String instrumentId, String meta, int packedPatch, List<MXTuneStaff> staves)
     {
         this.meta = meta != null ? meta : "";
-        this.instrumentName = instrumentName != null ? instrumentName : "";
+        this.instrumentId = instrumentId != null ? instrumentId : "";
         this.packedPatch = packedPatch;
         this.staves = staves != null ? staves : new ArrayList<>();
         transpose = 0;
@@ -59,7 +63,7 @@ public class MXTunePart implements Serializable
 
     public MXTunePart(NBTTagCompound compound)
     {
-        instrumentName = compound.getString(TAG_INSTRUMENT);
+        instrumentId = compound.getString(TAG_INSTRUMENT);
         meta = compound.getString(TAG_META);
         packedPatch = compound.getInteger(TAG_PACKED_PATCH);
         transpose = compound.getInteger(TAG_TRANSPOSE);
@@ -75,7 +79,7 @@ public class MXTunePart implements Serializable
 
     public void writeToNBT(NBTTagCompound compound)
     {
-        compound.setString(TAG_INSTRUMENT, instrumentName);
+        compound.setString(TAG_INSTRUMENT, instrumentId);
         compound.setString(TAG_META, meta);
         compound.setInteger(TAG_PACKED_PATCH, packedPatch);
         compound.setInteger(TAG_TRANSPOSE, transpose);
@@ -103,15 +107,15 @@ public class MXTunePart implements Serializable
         this.staves = staves;
     }
 
-    public String getInstrumentName()
+    public String getInstrumentId()
     {
-        return instrumentName != null ? instrumentName : "";
+        return instrumentId != null ? instrumentId : "";
     }
 
     @SuppressWarnings("unused")
-    public void setInstrumentName(String instrumentName)
+    public void setInstrumentId(String instrumentId)
     {
-        this.instrumentName = instrumentName;
+        this.instrumentId = instrumentId;
     }
 
     @SuppressWarnings("unused")
@@ -148,5 +152,49 @@ public class MXTunePart implements Serializable
     public void setTranspose(int transpose)
     {
         this.transpose = transpose;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        MXTunePart mxTunePart = (MXTunePart) o;
+        return new EqualsBuilder()
+                .append(instrumentId, mxTunePart.getInstrumentId())
+                .append(packedPatch, mxTunePart.getPackedPatch())
+                .append(meta, mxTunePart.getMeta())
+                .append(transpose, mxTunePart.getTranspose())
+                .append(staves, mxTunePart.getStaves())
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return new HashCodeBuilder(17, 37)
+                .append(instrumentId)
+                .append(packedPatch)
+                .append(meta)
+                .append(transpose)
+                .append(staves)
+                .toHashCode();
+    }
+
+    @Override
+    public String toString()
+    {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("instrumentName", instrumentId)
+                .append("packedPatch", packedPatch)
+                .append("meta", meta)
+                .append("transpose", transpose)
+                .append("staves", staves)
+                .toString();
     }
 }

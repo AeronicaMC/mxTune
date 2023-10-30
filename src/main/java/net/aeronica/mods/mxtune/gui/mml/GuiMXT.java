@@ -24,13 +24,11 @@ import net.aeronica.mods.mxtune.gui.util.GuiLink;
 import net.aeronica.mods.mxtune.gui.util.IHooverText;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
 import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
-import net.aeronica.mods.mxtune.managers.records.RecordType;
 import net.aeronica.mods.mxtune.mxt.MXTuneFile;
 import net.aeronica.mods.mxtune.mxt.MXTuneFileHelper;
 import net.aeronica.mods.mxtune.mxt.MXTunePart;
 import net.aeronica.mods.mxtune.mxt.MXTuneStaff;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
-import net.aeronica.mods.mxtune.network.bidirectional.SetServerSerializedDataMessage;
 import net.aeronica.mods.mxtune.network.server.MusicTextMessage;
 import net.aeronica.mods.mxtune.sound.ClientAudio;
 import net.aeronica.mods.mxtune.sound.IAudioStatusCallback;
@@ -302,8 +300,8 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     {
         String number = String.format("%d", index + 1);
         MXTunePart part = childTabs[index].getPart();
-        String localizedInstrumentName = ModGuiUtils.getLocalizedInstrumentName(childTabs[index].getPart().getInstrumentName());
-        return (part != null) && (!part.getInstrumentName().equals("")) ? number + ": " + localizedInstrumentName : number;
+        String localizedInstrumentName = ModGuiUtils.getLocalizedInstrumentName(childTabs[index].getPart().getInstrumentId());
+        return (part != null) && (!part.getInstrumentId().equals("")) ? number + ": " + localizedInstrumentName : number;
     }
 
     private void drawMarkers()
@@ -490,11 +488,11 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         if (!textTitle.getText().trim().equals("") && buttonPlayStop.enabled)
         {
             createMxt();
-            PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(mxTuneFile.getGUID(), RecordType.MXT, mxTuneFile));
+//            PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(mxTuneFile.getGUID(), RecordType.MXT, mxTuneFile));
             return true;
         }
         else
-            Miscellus.audiblePingPlayer(mc.player, SoundEvents.BLOCK_ANVIL_PLACE);
+//            Miscellus.audiblePingPlayer(mc.player, SoundEvents.BLOCK_ANVIL_PLACE);
         return false;
     }
 
@@ -526,7 +524,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
             for (int i = 0; i < viewableTabCount; i++)
             {
                 childTabs[i].updatePart();
-                String instrumentName = I18n.format("item.mxtune:multi_inst." + childTabs[i].getPart().getInstrumentName() + ".name");
+                String instrumentName = I18n.format("item.mxtune:multi_inst." + childTabs[i].getPart().getInstrumentId() + ".name");
                 String titleAndInstrument = formatTitle(title, i, viewableTabCount, instrumentName);
                 String mml = childTabs[i].getMMLClipBoardFormat();
                 PacketDispatcher.sendToServer(new MusicTextMessage(titleAndInstrument, mml));
@@ -766,7 +764,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
         {
             childTabs[i].updatePart();
             MXTunePart part = childTabs[i].getPart();
-            builder.append("MML@I=").append(SoundFontProxyManager.getIndexById(part.getInstrumentName()));
+            builder.append("MML@I=").append(SoundFontProxyManager.getIndexById(part.getInstrumentId()));
             Iterator<MXTuneStaff> iterator = part.getStaves().iterator();
             while (iterator.hasNext())
             {

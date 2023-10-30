@@ -17,17 +17,20 @@
 
 package net.aeronica.mods.mxtune.mxt;
 
-import net.aeronica.mods.mxtune.caches.FileHelper;
-import net.aeronica.mods.mxtune.managers.records.BaseData;
-import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.nbt.NBTTagCompound;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MXTuneFile extends BaseData
+public class MXTuneFile implements Serializable
 {
+    private static final long serialVersionUID = -76044260522231311L;
     private static final String MXT_VERSION = "2.0.0";
     private static final String TAG_TITLE = "title";
     private static final String TAG_AUTHOR = "author";
@@ -38,17 +41,20 @@ public class MXTuneFile extends BaseData
     private static final String TAG_MXT_VERSION = "mxtVersion";
     private static final String ERROR_MSG_MXT_VERSION = "Unsupported mxTune file version! expected %s, found %s, Title: %s";
 
-    private String mxtVersion = "";
-    private String title = "";
-    private String author = "";
-    private String source = "";
+    private String mxtVersion;
+    private String title;
+    private String author;
+    private String source;
     private int duration;
-    private List<MXTunePart> parts;
+    private List<MXTunePart> parts = new ArrayList<>();
 
     public MXTuneFile()
     {
-        super();
-        parts = new ArrayList<>();
+        mxtVersion = "";
+        title = "";
+        author = "";
+        source = "";
+
     }
 
     public static MXTuneFile build(NBTTagCompound compound)
@@ -58,10 +64,8 @@ public class MXTuneFile extends BaseData
         return mxTuneFile;
     }
 
-    @Override
     public void readFromNBT(NBTTagCompound compound)
     {
-        super.readFromNBT(compound);
         mxtVersion = compound.getString(TAG_MXT_VERSION);
         title = compound.getString(TAG_TITLE);
         author = compound.getString(TAG_AUTHOR);
@@ -80,10 +84,8 @@ public class MXTuneFile extends BaseData
             ModLogger.warn(ERROR_MSG_MXT_VERSION, MXT_VERSION, mxtVersion.equals("") ? "No Version" : mxtVersion, title);
     }
 
-    @Override
     public void writeToNBT(NBTTagCompound compound)
     {
-        super.writeToNBT(compound);
         compound.setString(TAG_MXT_VERSION, MXT_VERSION);
         compound.setString(TAG_TITLE, title);
         compound.setString(TAG_AUTHOR, author);
@@ -115,7 +117,6 @@ public class MXTuneFile extends BaseData
     public void setTitle(String title)
     {
         this.title = title.trim();
-        guid = GUID.stringToSHA2Hash(this.title);
     }
 
     public String getAuthor()
@@ -156,27 +157,49 @@ public class MXTuneFile extends BaseData
     public void setParts(List<MXTunePart> parts) { this.parts = parts != null ? parts : new ArrayList<>(); }
 
     @Override
-    public String getFileName()
-    {
-        return guid.toString() + FileHelper.EXTENSION_MXT;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T extends BaseData> T factory()
-    {
-        return (T) new MXTuneFile();
-    }
-
-    @Override
     public int hashCode()
     {
-        return super.hashCode();
+        return new HashCodeBuilder(17, 37)
+                .append(mxtVersion)
+                .append(title)
+                .append(author)
+                .append(source)
+                .append(duration)
+                .append(parts)
+                .toHashCode();
     }
 
     @Override
     public boolean equals(Object o)
     {
-        return super.equals(o);
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        MXTuneFile mxTuneFile = (MXTuneFile) o;
+        return new EqualsBuilder()
+                .append(mxtVersion, mxTuneFile.getMxtVersion())
+                .append(title, mxTuneFile.getTitle())
+                .append(author, mxTuneFile.getAuthor())
+                .append(source, mxTuneFile.getSource())
+                .append(duration, mxTuneFile.getDuration())
+                .append(parts, mxTuneFile.getParts())
+                .isEquals();
+    }
+
+    @Override
+    public String toString()
+    {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("mxtVersion", mxtVersion)
+                .append("title", title)
+                .append("author", author)
+                .append("source", source)
+                .append("duration", duration)
+                .append("parts", parts)
+                .toString();
     }
 }

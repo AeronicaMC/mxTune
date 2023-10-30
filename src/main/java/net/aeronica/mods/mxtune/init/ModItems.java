@@ -59,9 +59,7 @@ public class ModItems
     public static final ItemPiano ITEM_SPINET_PIANO = registerItem(new ItemPiano(), "spinet_piano");
     public static final ItemBlock ITEM_BAND_AMP = (ItemBlock) registerItem((new ItemBlock(ModBlocks.BAND_AMP).setCreativeTab(MXTune.TAB_MUSIC)), "band_amp");
     public static final Item ITEM_PLACE_HOLDER = registerItem(new Item(), "place_holder");
-    public static final ItemStaffOfMusic ITEM_STAFF_OF_MUSIC = registerItem(new ItemStaffOfMusic(), "staff_of_music");
     public static final ItemGuiTest ITEM_GUI_TEST = registerItem(new ItemGuiTest(), "gui_test");
-    public static final ItemChunkTool ITEM_CHUNK_TOOL = registerItem(new ItemChunkTool(), "chunk_tool");
     public static final ItemMultiInst ITEM_MULTI_INST = registerItem(new ItemMultiInst(), "multi_inst");
     public static final ItemIngredients ITEM_INGREDIENTS = registerItem(new ItemIngredients(), "ingredient");
 
@@ -87,9 +85,7 @@ public class ModItems
                     ITEM_SPINET_PIANO,
                     ITEM_BAND_AMP,
                     ITEM_PLACE_HOLDER,
-                    ITEM_STAFF_OF_MUSIC,
                     ITEM_GUI_TEST,
-                    ITEM_CHUNK_TOOL,
                     ITEM_MULTI_INST,
                     ITEM_INGREDIENTS,
             };

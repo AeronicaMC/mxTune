@@ -16,9 +16,6 @@
  */
 package net.aeronica.mods.mxtune;
 
-import net.aeronica.mods.mxtune.managers.records.PlayList;
-import net.aeronica.mods.mxtune.util.GUID;
-
 import java.util.UUID;
 
 public class Reference
@@ -26,8 +23,6 @@ public class Reference
     private Reference() {/* NOP */}
 
     public static final UUID EMPTY_UUID = new UUID(0L, 0L);
-    public static final GUID EMPTY_GUID = new GUID(0L,0L,0L,0L);
-    public static final GUID NO_MUSIC_GUID = PlayList.emptyPlaylist().getGUID();
     public static final String MOD_ID = "mxtune";
     public static final String MOD_NAME = "mxTune";
     static final String ACCEPTED_MINECRAFT_VERSIONS = "[1.12.2,1.13)";

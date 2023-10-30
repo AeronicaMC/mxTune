@@ -17,11 +17,9 @@
 package net.aeronica.mods.mxtune.network.client;
 
 import net.aeronica.mods.mxtune.network.AbstractMessage.AbstractClientMessage;
-import net.aeronica.mods.mxtune.network.server.ChunkToolMessage;
 import net.aeronica.mods.mxtune.options.ClassifiedPlayer;
 import net.aeronica.mods.mxtune.options.IPlayerMusicOptions;
 import net.aeronica.mods.mxtune.options.MusicOptionsUtil;
-import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.ModLogger;
 import net.minecraft.entity.player.EntityPlayer;
@@ -53,9 +51,7 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
     private List<ClassifiedPlayer> blackList;
     private List<ClassifiedPlayer> whiteList;
     private boolean allowMusicOp;
-    private GUID selectedAreaGuid;
     private boolean ctrlKeyDown;
-    private ChunkToolMessage.Operation operation;
 
     private byte[] byteBuffer = null;
 
@@ -100,16 +96,8 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                 this.allowMusicOp = inst.isMxTuneServerUpdateAllowed();
                 break;
 
-            case MusicOptionsUtil.SYNC_SELECTED_PLAY_LIST_GUID:
-                this.selectedAreaGuid = inst.getSelectedPlayListGuid();
-                break;
-
             case MusicOptionsUtil.SYNC_CTRL_KEY_DOWN:
                 this.ctrlKeyDown = inst.isCtrlKeyDown();
-                break;
-
-            case MusicOptionsUtil.SYNC_CHUNK_OPERATION:
-                this.operation = inst.getChunkToolOperation();
                 break;
             default:
         }
@@ -146,18 +134,8 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             case MusicOptionsUtil.SYNC_MUSIC_OP:
                 this.allowMusicOp = buffer.readBoolean();
                 break;
-            case MusicOptionsUtil.SYNC_SELECTED_PLAY_LIST_GUID:
-                long ddddSigBits = buffer.readLong();
-                long ccccSigBits = buffer.readLong();
-                long bbbbSigBits = buffer.readLong();
-                long aaaaSigBits = buffer.readLong();
-                selectedAreaGuid = new GUID(ddddSigBits, ccccSigBits, bbbbSigBits, aaaaSigBits);
-                break;
             case MusicOptionsUtil.SYNC_CTRL_KEY_DOWN:
                 this.ctrlKeyDown = buffer.readBoolean();
-                break;
-            case MusicOptionsUtil.SYNC_CHUNK_OPERATION:
-                this.operation = buffer.readEnumValue(ChunkToolMessage.Operation.class);
                 break;
             default:
         }
@@ -194,17 +172,8 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
             case MusicOptionsUtil.SYNC_MUSIC_OP:
                 buffer.writeBoolean(allowMusicOp);
                 break;
-            case MusicOptionsUtil.SYNC_SELECTED_PLAY_LIST_GUID:
-                buffer.writeLong(selectedAreaGuid.getDdddSignificantBits());
-                buffer.writeLong(selectedAreaGuid.getCcccSignificantBits());
-                buffer.writeLong(selectedAreaGuid.getBbbbSignificantBits());
-                buffer.writeLong(selectedAreaGuid.getAaaaSignificantBits());
-                break;
             case MusicOptionsUtil.SYNC_CTRL_KEY_DOWN:
                 buffer.writeBoolean(ctrlKeyDown);
-                break;
-            case MusicOptionsUtil.SYNC_CHUNK_OPERATION:
-                buffer.writeEnumValue(operation);
                 break;
             default:
         }
@@ -240,14 +209,8 @@ public class SyncPlayerMusicOptionsMessage extends AbstractClientMessage<SyncPla
                     case MusicOptionsUtil.SYNC_MUSIC_OP:
                         instance.setMxTuneServerUpdateAllowed(allowMusicOp);
                         break;
-                    case MusicOptionsUtil.SYNC_SELECTED_PLAY_LIST_GUID:
-                        instance.setSelectedPlayListGuid(selectedAreaGuid);
-                        break;
                     case MusicOptionsUtil.SYNC_CTRL_KEY_DOWN:
                         instance.setCtrlKey(ctrlKeyDown);
-                        break;
-                    case MusicOptionsUtil.SYNC_CHUNK_OPERATION:
-                        instance.setChunkToolOperation(operation);
                         break;
                     default:
                 }

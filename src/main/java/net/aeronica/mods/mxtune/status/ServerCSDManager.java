@@ -16,7 +16,6 @@
  */
 package net.aeronica.mods.mxtune.status;
 
-import net.aeronica.mods.mxtune.managers.ServerFileManager;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.bidirectional.ClientStateDataMessage;
 import net.aeronica.mods.mxtune.network.client.SendCSDChatMessage;
@@ -37,19 +36,18 @@ import java.util.Map;
  */
 public class ServerCSDManager
 {
-    private static Map<Integer, ClientStateData> clientState = new HashMap<>();
+    private static final Map<Integer, ClientStateData> clientState = new HashMap<>();
 
     private ServerCSDManager() { /* NOP */ }
     
     /**
      * <p>Asks the client for a copy of the current ClientStateData.
-     * Typically done when the client logs into the server.
-     * Also sends the unique serverID to the client</p>
+     * Typically done when the client logs into the server.</p>
      * @param playerIn to be queried
      */
     public static void queryClient(EntityPlayer playerIn)
     {
-        ClientStateDataMessage message = new ClientStateDataMessage(ServerFileManager.getServerID());
+        ClientStateDataMessage message = new ClientStateDataMessage();
         PacketDispatcher.sendTo(message, (EntityPlayerMP) playerIn);
     }
     

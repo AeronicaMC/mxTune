@@ -17,8 +17,6 @@
 
 package net.aeronica.mods.mxtune.gui.util;
 
-import net.aeronica.mods.mxtune.Reference;
-import net.aeronica.mods.mxtune.managers.records.PlayList;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
@@ -29,7 +27,6 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class ModGuiUtils
@@ -83,22 +80,6 @@ public class ModGuiUtils
         {
             guiTextField.setText("");
         }
-    }
-
-    public static String getPlaylistName(@Nullable PlayList playlist)
-    {
-        if (playlist != null)
-        {
-            String temp = playlist.getName().trim();
-            if (Reference.EMPTY_GUID.equals(playlist.getGUID()))
-                return I18n.format("mxtune.info.playlist.null_playlist");
-            else if (Reference.NO_MUSIC_GUID.equals(playlist.getGUID()))
-                return I18n.format("mxtune.info.playlist.empty_playlist");
-            else
-                return temp;
-        }
-        else
-            return I18n.format("mxtune.info.playlist.null_playlist");
     }
 
     public static String getLocalizedInstrumentName(String id)

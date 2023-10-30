@@ -33,42 +33,6 @@ public class NBTHelper
 
     private NBTHelper() { /* NOP */ }
 
-    // GUID NBT Helpers
-
-    @Deprecated
-    public static GUID getGuidFromCompound(NBTTagCompound compound)
-    {
-        long dsb = compound.getLong(TAG_GUID_DSB);
-        long csb = compound.getLong(TAG_GUID_CSB);
-        long bsb = compound.getLong(TAG_GUID_BSB);
-        long asb = compound.getLong(TAG_GUID_ASB);
-        return new GUID(dsb, csb, bsb, asb);
-    }
-
-    @Deprecated
-    public static void setGuidToCompound(NBTTagCompound compound, GUID guid)
-    {
-        compound.setLong(TAG_GUID_DSB, guid.getDdddSignificantBits());
-        compound.setLong(TAG_GUID_CSB, guid.getCcccSignificantBits());
-        compound.setLong(TAG_GUID_BSB, guid.getBbbbSignificantBits());
-        compound.setLong(TAG_GUID_ASB, guid.getAaaaSignificantBits());
-    }
-
-    @Deprecated
-    public static GUID getGuidFromTag(NBTTagCompound compound, String tagKey)
-    {
-        NBTTagCompound compoundTag = compound.getCompoundTag(tagKey);
-        return getGuidFromCompound(compoundTag);
-    }
-
-    @Deprecated
-    public static void setGuidToTag(GUID guid, NBTTagCompound compound, String tagKey)
-    {
-        NBTTagCompound tagCompound = new NBTTagCompound();
-        setGuidToCompound(tagCompound, guid);
-        compound.setTag(tagKey, tagCompound);
-    }
-
     // UUID NBT Helpers
 
     public static UUID getUuidFromCompound(NBTTagCompound compound)

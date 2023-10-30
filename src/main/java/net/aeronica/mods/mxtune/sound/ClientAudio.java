@@ -43,7 +43,6 @@ package net.aeronica.mods.mxtune.sound;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.config.ModConfig;
-import net.aeronica.mods.mxtune.managers.ClientPlayManager;
 import net.aeronica.mods.mxtune.managers.GroupHelper;
 import net.aeronica.mods.mxtune.managers.PlayIdSupplier;
 import net.aeronica.mods.mxtune.status.ClientCSDMonitor;
@@ -231,7 +230,6 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         startThreadFactory();
         if(ClientCSDMonitor.canMXTunesPlay() && playID != PlayIdSupplier.PlayType.INVALID)
         {
-            ClientPlayManager.removeLowerPriorityPlayIds(playID);
             addPlayIDQueue(playID);
             AudioData audioData = new AudioData(playID, pos, isClient, soundRange, callback);
             setAudioFormat(audioData);
@@ -428,7 +426,6 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
             musicTicker = Minecraft.getMinecraft().getMusicTicker();
             setVanillaMusicPaused(false);
             playIDAudioData.clear();
-            ClientPlayManager.reset();
         }
     }
     
@@ -457,7 +454,6 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
         if (event.getEntity() instanceof EntityPlayerSP)
         {
             cleanup();
-            ClientPlayManager.reset();
             ModLogger.debug("ClientAudio EntityJoinWorldEvent: %s", event.getEntity().getName());
         }
     }
@@ -466,7 +462,6 @@ public enum ClientAudio implements ISelectiveResourceReloadListener
     public static void event(PlayerRespawnEvent event)
     {
         cleanup();
-        ClientPlayManager.reset();
         ModLogger.debug("ClientAudio PlayerRespawnEvent: %s", event.player.getName());
     }
 

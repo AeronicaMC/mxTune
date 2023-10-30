@@ -17,10 +17,8 @@
 
 package net.aeronica.mods.mxtune.world.caps.world;
 
-import net.aeronica.mods.mxtune.Reference;
 import net.aeronica.mods.mxtune.network.PacketDispatcher;
 import net.aeronica.mods.mxtune.network.client.UpdateWorldMusicData;
-import net.aeronica.mods.mxtune.util.GUID;
 import net.aeronica.mods.mxtune.util.MXTuneException;
 import net.aeronica.mods.mxtune.util.Miscellus;
 import net.aeronica.mods.mxtune.util.ModLogger;
@@ -36,11 +34,11 @@ public class ModWorldPlaylistHelper
 
     private ModWorldPlaylistHelper() { /* NOP */ }
 
-    public static void setPlaylistGuid(World world, GUID guid)
+    public static void setPlaylistGuid(World world, int fakeGuid)
     {
         try
         {
-            getImpl(world).setPlaylistGuid(guid);
+            getImpl(world).setPlaylistGuid(fakeGuid);
         }
         catch (MXTuneException e)
         {
@@ -49,7 +47,7 @@ public class ModWorldPlaylistHelper
         // mark dirty?
     }
 
-    public static GUID getPlaylistGuid(World world)
+    public static int getPlaylistGuid(World world)
     {
         try
         {
@@ -59,7 +57,7 @@ public class ModWorldPlaylistHelper
         {
             ModLogger.error(e);
         }
-        return Reference.EMPTY_GUID;
+        return -1;
     }
 
     private static IModWorldPlaylist getImpl(World world) throws MXTuneException

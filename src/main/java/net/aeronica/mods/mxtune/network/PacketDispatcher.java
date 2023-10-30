@@ -5,7 +5,8 @@
 package net.aeronica.mods.mxtune.network;
 
 import net.aeronica.mods.mxtune.Reference;
-import net.aeronica.mods.mxtune.network.bidirectional.*;
+import net.aeronica.mods.mxtune.network.bidirectional.ClientStateDataMessage;
+import net.aeronica.mods.mxtune.network.bidirectional.SendKeyMessage;
 import net.aeronica.mods.mxtune.network.client.*;
 import net.aeronica.mods.mxtune.network.server.*;
 import net.minecraft.entity.player.EntityPlayer;
@@ -69,10 +70,8 @@ public class PacketDispatcher
         registerMessage(SendCSDChatMessage.class);
         registerMessage(PlayBlockMusicMessage.class);
         registerMessage(AudiblePingPlayerMessage.class);
-        registerMessage(UpdateChunkMusicData.class);
         registerMessage(UpdateWorldMusicData.class);
         registerMessage(StopPlayIDMessage.class);
-        registerMessage(ResetClientPlayEngine.class);
 
         // Packets handled on SERVER
         registerMessage(ManageGroupMessage.class);
@@ -80,9 +79,7 @@ public class PacketDispatcher
         registerMessage(MusicTextMessage.class);
         registerMessage(HudOptionsMessage.class);
         registerMessage(BandAmpMessage.class);
-        registerMessage(ByteArrayPartMessage.class);
-        registerMessage(PlayerSelectedPlayListMessage.class);
-        registerMessage(ChunkToolMessage.class);
+        registerMessage(StringPartMessage.class);
         registerMessage(SetMultiInstMessage.class);
 
         /*
@@ -97,10 +94,7 @@ public class PacketDispatcher
         // Bidirectional packets:
         registerMessage(SendKeyMessage.class);
         registerMessage(ClientStateDataMessage.class);
-        registerMessage(GetServerDataMessage.class);
         registerMessage(SendResultMessage.class);
-        registerMessage(GetBaseDataListsMessage.class);
-        registerMessage(SetServerSerializedDataMessage.class);
     }
 
     /**
