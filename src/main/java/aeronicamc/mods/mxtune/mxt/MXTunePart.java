@@ -156,7 +156,7 @@ public class MXTunePart implements Serializable
                 .append(instrumentId, mxTunePart.getInstrumentId())
                 .append(packedPatch, mxTunePart.getPackedPatch())
                 .append(meta, mxTunePart.getMeta())
-                .append(transpose, mxTunePart.getMeta())
+                .append(transpose, mxTunePart.getTranspose())
                 .append(staves, mxTunePart.getStaves())
                 .isEquals();
     }
