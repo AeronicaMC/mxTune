@@ -27,7 +27,7 @@ public class Reference
     public static final String MOD_NAME = "mxTune";
     static final String ACCEPTED_MINECRAFT_VERSIONS = "[1.12.2,1.13)";
     static final String CERTIFICATE_FINGERPRINT = "999640c365a8443393a1a21df2c0ede9488400e9";
-    public static final int MAX_MML_PARTS = 16;
+    public static final int MAX_MML_PARTS = 10;
     public static final int MAX_MML_PART_LENGTH = 12000;
     public static final int MXT_SONG_TITLE_LENGTH = 80;
     public static final int MXT_SONG_AUTHOR_LENGTH = 80;
