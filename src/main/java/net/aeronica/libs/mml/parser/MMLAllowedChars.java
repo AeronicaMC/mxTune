@@ -23,8 +23,7 @@
  */
 package net.aeronica.libs.mml.parser;
 
-@Deprecated
-public class MMLAllowedCharacters
+public class MMLAllowedChars
 {
     // Lexer rules - US_ASCII
     // CMD : [iopstvIOPSTV] ; // MML commands Instrument, Octave, Perform, Sustain, Tempo, Volume
@@ -43,33 +42,34 @@ public class MMLAllowedCharacters
     // WS : [ \t\r\n]+ -> skip ; // toss out whitespace
     // JUNK : [\u0000-~] -> skip ; // anything leftover
 
-    private static final String MML_CHARACTERS = "abcdefgABCDEFGrR<>+#-.,&0123456789nNopstvOPSTVlLM@;";
-    private MMLAllowedCharacters() {/* NOP */}
+    private static final char[] MML_CHARACTERS_PASTE = "abcdefgABCDEFGrR<>+#-.,&0123456789nNopstvOPSTVlLM@;".toCharArray();
+    private static final char[] MML_CHARACTERS_ONLY = "abcdefgABCDEFGrR<>+#-.&0123456789nNopstvOPSTVlL".toCharArray();
+    private MMLAllowedChars() {/* NOP */}
 
     @Deprecated
-    public static boolean isAllowedCharacter(char character)
+    public static boolean isAllowedChar(char character, boolean paste)
     {
-        char[] ca = MML_CHARACTERS.toCharArray();
-        for (int i = 0; i < ca.length; i++)
-        {
-            if (character == ca[i]) return true;
-        }
+        char[] ca = paste ? MML_CHARACTERS_PASTE : MML_CHARACTERS_ONLY;
+        for (char c : ca)
+            if (character == c) return true;
+
         return false;
     }
 
-    /** Filter string by only keeping those characters for which isAllowedCharacter() returns true. */
-    @Deprecated
-    public static String filterAllowedCharacters(String input)
+    /**
+     * Filter string by only keeping those characters for which isAllowedCharacter() returns true.
+     * @param input dirty string
+     * @param paste if true allow paste characters ',' ';' 'M' '@' as in 'MML@ ... ,  ... ;'
+     * @return a result containing allowed characters or an empty string.
+     */
+    public static String filter(String input, boolean paste)
     {
         StringBuilder stringbuilder = new StringBuilder();
 
         for (char c0 : input.toCharArray())
-        {
-            if (isAllowedCharacter(c0))
-            {
+            if (isAllowedChar(c0, paste))
                 stringbuilder.append(c0);
-            }
-        }
+
         return stringbuilder.toString();
     }
 }
