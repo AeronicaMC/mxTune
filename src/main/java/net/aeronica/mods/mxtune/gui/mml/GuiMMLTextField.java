@@ -2,7 +2,7 @@
  * Copied class from package net.minecraft.client.gui.GuiTextField
  *
  * Changed ChatAllowedCharacters.filterAllowedCharacters to
- * MMLAllowedCharacters.filterAllowedCharacters
+ * MMLAllowedChars.filterAllowedCharacters
  */
 
 package net.aeronica.mods.mxtune.gui.mml;

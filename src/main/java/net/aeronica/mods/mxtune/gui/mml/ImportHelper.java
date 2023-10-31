@@ -18,6 +18,7 @@
 package net.aeronica.mods.mxtune.gui.mml;
 
 import com.google.common.io.Files;
+import net.aeronica.libs.mml.parser.MMLAllowedChars;
 import net.aeronica.libs.mml.readers.mml3mle.MMLFile;
 import net.aeronica.libs.mml.readers.ms2mml.MapMS2Instruments;
 import net.aeronica.libs.mml.readers.ms2mml.Ms2MmlReader;
@@ -39,11 +40,11 @@ import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import static net.aeronica.mods.mxtune.Reference.MAX_MML_PARTS;
 import static net.aeronica.mods.mxtune.util.SoundFontProxyManager.INSTRUMENT_DEFAULT_ID;
 
 public class ImportHelper
 {
-    private static final int MAX_STAVES = 10;
     private ImportHelper() { /* NOP */ }
 
     @Nullable
@@ -142,8 +143,8 @@ public class ImportHelper
         int i = 0;
         for (String mml : data.replaceAll("MML@|MML|;", "").split(","))
         {
-            if (i < MAX_STAVES)
-                staves.add(new MXTuneStaff(i++, mml));
+            if (i < MAX_MML_PARTS)
+                staves.add(new MXTuneStaff(i++, MMLAllowedChars.filter(mml, false)));
             else
                 break;
         }

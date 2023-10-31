@@ -17,6 +17,7 @@
 
 package net.aeronica.mods.mxtune.gui.mml;
 
+import net.aeronica.libs.mml.parser.MMLAllowedChars;
 import net.aeronica.mods.mxtune.gui.util.GuiLabelMX;
 import net.aeronica.mods.mxtune.gui.util.GuiScrollingListOf;
 import net.aeronica.mods.mxtune.gui.util.ModGuiUtils;
@@ -207,7 +208,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         List<MXTuneStaff> staves = new ArrayList<>();
         for (int i = 0; i < viewableLineCount; i++)
         {
-            staves.add(new MXTuneStaff(i, mmlTextLines[i].getText()));
+            staves.add(new MXTuneStaff(i, MMLAllowedChars.filter(mmlTextLines[i].getText(), false)));
         }
         mxTunePart.setStaves(staves);
         selectInstrument();
@@ -476,7 +477,7 @@ public class GuiMXTPartTab extends GuiScreen implements IAudioStatusCallback
         clearPart();
         int i = 0;
         ModLogger.debug("%s", GuiScreen.getClipboardString());
-        String clip = GuiScreen.getClipboardString();
+        String clip = MMLAllowedChars.filter(GuiScreen.getClipboardString(), true);
         if (clip.isEmpty())
             return;
         List<String> lines = new ArrayList<>(Arrays.asList(clip.replaceAll("MML@|;", "").split(",")));
