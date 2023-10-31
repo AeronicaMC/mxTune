@@ -66,7 +66,8 @@ public class GUIHandler implements IGuiHandler
         switch (guiID)
         {
             case GUI_MUSIC_PAPER_PARSE:
-                return new GuiMXT(null, GuiMXT.Mode.SHEET_MUSIC);
+            case GUI_MXT_TEST:
+                return new GuiMXT(null);
 
             case GUI_MULTI_INST_INVENTORY:
                 return new GuiMultiInstInventory(new ContainerInstrument(playerIn));
@@ -89,9 +90,6 @@ public class GUIHandler implements IGuiHandler
 
             case GUI_MUSIC_LIBRARY:
                 return new GuiMusicLibrary(null);
-
-            case GUI_MXT_TEST:
-                return new GuiMXT(null, GuiMXT.Mode.CLIENT);
 
         default:
             return null;
