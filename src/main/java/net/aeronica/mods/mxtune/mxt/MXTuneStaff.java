@@ -17,6 +17,7 @@
 
 package net.aeronica.mods.mxtune.mxt;
 
+import net.aeronica.libs.mml.parser.MMLAllowedChars;
 import net.minecraft.nbt.NBTTagCompound;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -38,13 +39,13 @@ public class MXTuneStaff implements Serializable
     public MXTuneStaff(int staff, String mml)
     {
         this.staff = staff;
-        this.mml = mml != null ? mml : "";
+        this.mml = MMLAllowedChars.filter(mml != null ? mml : "", false);
     }
 
     public MXTuneStaff(int i, NBTTagCompound compound)
     {
         staff = i;
-        mml = compound.getString(TAG_MML);
+        mml = MMLAllowedChars.filter(compound.getString(TAG_MML), false);
         meta = compound.getString(TAG_META);
     }
 
