@@ -1,3 +1,8 @@
+2023-10-31 mxtune-1.12.2-1.1.0
+ * Fix the Unsafe Network Deserialization Vulnerability.
+ * Remove chunk/world music system. Chunk Tool and Staff of Music items removed. Forge will prompt you to back up the save files
+ * Minor enhancement: Sheet Music GUI *Make Sheet Music* button now disabled when not enough sheets in the stack.
+
 2022-04-12 mxtune-1.12.2-1.0.3
 Fix
  * Crash on startup because mxtune access modifier file was not properly specified in the jar manifest.
