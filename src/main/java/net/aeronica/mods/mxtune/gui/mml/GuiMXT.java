@@ -97,7 +97,7 @@ public class GuiMXT extends GuiScreen implements IAudioStatusCallback
     private int playId = PlayIdSupplier.PlayType.INVALID;
 
     // Child tabs
-    private static final int MAX_TABS = 10;
+    private static final int MAX_TABS = MAX_MML_PARTS;
     private static final int MIN_TABS = 1;
     private static final int TAB_BTN_IDX = 200;
     private final GuiMXTPartTab[] childTabs = new GuiMXTPartTab[MAX_TABS];
