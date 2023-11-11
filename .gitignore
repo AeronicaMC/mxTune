@@ -31,6 +31,7 @@ $RECYCLE.BIN/
 .settings
 .gradle
 .launch
+.idea
 bin
 build
 out
@@ -47,6 +48,7 @@ logs
 !gradle
 !gradlew
 !gradlew.bat
+mxTune-1.12.iml
 
 # OSX
 # =========================
