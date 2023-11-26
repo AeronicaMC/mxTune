@@ -190,7 +190,6 @@ dependencies {
     runtimeOnly fg.deobf("mezz.jei:jei-${version_mc}:${jei_version_repo}")
     //implementation fg.deobf("curse.maven:${project.jei_version}")
     implementation fg.deobf("curse.maven:${project.configured}")
-//    implementation fg.deobf("curse.maven:${project.better_mods_button}")
 
     implementation "com.h2database:h2-mvstore:${project.h2_version}"
     shade "com.h2database:h2-mvstore:${project.h2_version}"
