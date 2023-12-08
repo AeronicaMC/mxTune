@@ -32,7 +32,7 @@ repositories {
         url = 'https://files.minecraftforge.net/maven'
     }
     maven {
-        url 'https://oss.sonatype.org/content/repositories/snapshots'
+        url = 'https://oss.sonatype.org/content/repositories/snapshots'
     }
     maven {
         // location of the maven that hosts JEI files
@@ -49,7 +49,11 @@ repositories {
         url = "https://modmaven.dev/"
     }
     maven {
-        url 'https://www.cursemaven.com'
+        url = 'https://www.cursemaven.com'
+    }
+    maven {
+        name = "DevAuth"
+        url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1"
     }
 }
 
@@ -106,6 +110,8 @@ minecraft {
 
             // program arguments
             args '--username', 'Player01'
+            property 'devauth.enabled', 'false'
+            property 'devauth.account', 'main'
         }
 
         client02 {
@@ -114,6 +120,8 @@ minecraft {
 
             // program arguments
             args '--username', 'Player02'
+            property 'devauth.enabled', 'false'
+            property 'devauth.account', 'alt'
         }
 
         server {
@@ -189,6 +197,9 @@ dependencies {
     // at runtime, use the full JEI jar
     runtimeOnly fg.deobf("mezz.jei:jei-${version_mc}:${jei_version_repo}")
     //implementation fg.deobf("curse.maven:${project.jei_version}")
+
+    runtimeOnly fg.deobf("me.djtheredstoner:DevAuth-${devauth_module}:${devauth_version}")
+
     implementation fg.deobf("curse.maven:${project.configured}")
 
     implementation "com.h2database:h2-mvstore:${project.h2_version}"
