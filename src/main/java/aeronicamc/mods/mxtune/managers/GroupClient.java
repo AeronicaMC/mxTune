@@ -25,7 +25,10 @@ public class GroupClient
         synchronized (groupMap) { groupMap.clear(); }
         synchronized (memberState) { memberState.clear(); }
     }
-
+    public static boolean hasGroups()
+    {
+        return !groupMap.isEmpty();
+    }
     public static void setGroups(Map<Integer, Group> pGroupMap)
     {
         synchronized (groupMap)

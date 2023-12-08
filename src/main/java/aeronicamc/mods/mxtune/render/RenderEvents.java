@@ -244,30 +244,31 @@ public class RenderEvents
 
     static void renderGroupStatusPlacard(MatrixStack pMatrixStack, IRenderTypeBuffer.Impl pBuffer, LightTexture pLightTexture, ActiveRenderInfo pActiveRenderInfo, float pPartialTicks, ClippingHelper pClippingHelper)
     {
-        if (mc.player != null && mc.level != null)
+        if (mc.player != null && mc.level != null && GroupClient.hasGroups())
         {
             ItemStack placardStack = new ItemStack(ModItems.PLACARD_ITEM.get());
             Vector3d cam = pActiveRenderInfo.getPosition();
             List<Entity> nearLivingEntities = mc.level.getEntities(null, mc.player.getBoundingBox().inflate(48));
-            nearLivingEntities.stream().filter(p -> pClippingHelper.isVisible(p.getBoundingBoxForCulling())).forEach(livingEntity -> {
-                int packedLight = FULL_BRIGHT_LIGHT_MAP; //mc.getEntityRenderDispatcher().getPackedLightCoords(livingEntity, pPartialTicks);
+            if (!nearLivingEntities.isEmpty()) {
+                nearLivingEntities.stream().filter(p -> pClippingHelper.isVisible(p.getBoundingBoxForCulling())).forEach(livingEntity -> {
+                    int packedLight = FULL_BRIGHT_LIGHT_MAP; //mc.getEntityRenderDispatcher().getPackedLightCoords(livingEntity, pPartialTicks);
 
-                if (GroupClient.isGrouped(livingEntity.getId()))
-                {
-                    placardStack.setDamageValue(GroupClient.getPlacardState(livingEntity.getId()));
-                    Vector3d entityPos = livingEntity.getPosition(pPartialTicks);
+                    if (GroupClient.isGrouped(livingEntity.getId())) {
+                        placardStack.setDamageValue(GroupClient.getPlacardState(livingEntity.getId()));
+                        Vector3d entityPos = livingEntity.getPosition(pPartialTicks);
 
-                    pMatrixStack.pushPose();
-                    pMatrixStack.translate(entityPos.x()- cam.x(), entityPos.y() - cam.y(), entityPos.z() - cam.z());
-                    pMatrixStack.translate(0.0D, livingEntity.getBbHeight() + 0.8D, 0.0D);
-                    pMatrixStack.mulPose(RenderHelper.GetYAxisRotation(pActiveRenderInfo.rotation())); // imperfect
-                    pMatrixStack.scale(0.5F, 0.5F, 0.5F);
+                        pMatrixStack.pushPose();
+                        pMatrixStack.translate(entityPos.x() - cam.x(), entityPos.y() - cam.y(), entityPos.z() - cam.z());
+                        pMatrixStack.translate(0.0D, livingEntity.getBbHeight() + 0.8D, 0.0D);
+                        pMatrixStack.mulPose(RenderHelper.GetYAxisRotation(pActiveRenderInfo.rotation())); // imperfect
+                        pMatrixStack.scale(0.5F, 0.5F, 0.5F);
 
-                    Minecraft.getInstance().getItemRenderer().renderStatic(placardStack, ItemCameraTransforms.TransformType.FIXED, packedLight, OverlayTexture.NO_OVERLAY, pMatrixStack, pBuffer);
-                    pMatrixStack.popPose();
-                }
-                pBuffer.endBatch();
-            });
+                        Minecraft.getInstance().getItemRenderer().renderStatic(placardStack, ItemCameraTransforms.TransformType.FIXED, packedLight, OverlayTexture.NO_OVERLAY, pMatrixStack, pBuffer);
+                        pMatrixStack.popPose();
+                    }
+                    pBuffer.endBatch();
+                });
+            }
         }
     }
 
