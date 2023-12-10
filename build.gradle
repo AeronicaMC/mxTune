@@ -109,8 +109,8 @@ minecraft {
             workingDirectory project.file('run01')
 
             // program arguments
-            args '--username', 'Player01'
-            property 'devauth.enabled', 'false'
+            //args '--username', 'Player01'
+            property 'devauth.enabled', "${project.devauth_enabled}"
             property 'devauth.account', 'main'
         }
 
@@ -119,8 +119,8 @@ minecraft {
             workingDirectory project.file('run02')
 
             // program arguments
-            args '--username', 'Player02'
-            property 'devauth.enabled', 'false'
+            //args '--username', 'Player02'
+            property 'devauth.enabled', "${project.devauth_enabled}"
             property 'devauth.account', 'alt'
         }
 
