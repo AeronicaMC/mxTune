@@ -1,3 +1,6 @@
+#### 2023-12-10 mxtune-1.16.5-2.0.0-beta-2023-12-08.76721460
+* crash single player #7 - Skip attempting to render placard when no groups exist. 
+
 #### 2023-08-07 mxtune-1.16.5-2.0.0-beta-2023-08-07.83313812
 * Fix Unsafe Deserialization Vulnerability 
 
