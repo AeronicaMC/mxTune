@@ -67,8 +67,8 @@ public class ModDataStore
             if (getMvStore() != null)
                 LOGGER.debug("MVStore Started. Commit Version: {}, file: {}", getMvStore().getCurrentVersion(), getMvStore().getFileStore());
         }
-        testGet();
-        long count = reapSheetMusic(false); // TODO: Remember to set whatIf to false for production!
+//        testGet();
+//        long count = reapSheetMusic(false); // TODO: Remember to set whatIf to false for production!
     }
 
     public static void shutdown()
@@ -237,7 +237,7 @@ public class ModDataStore
                 }
                 catch (ClassCastException | UnsupportedOperationException | NullPointerException e)
                 {
-                    LOGGER.error("removeSheetMusic: " + localDateTime.toString(), e);
+                    LOGGER.error("removeSheetMusic: " + localDateTime, e);
                 }
                 getMvStore().deregisterVersionUsage(using);
             }
