@@ -12,7 +12,8 @@ public class CommandMusic
     {
         return Commands.literal("music")
                 .then(CommandMusicDump.register())
-                .then(CommandMusicLoad.register());
+                .then(CommandMusicLoad.register())
+                .then(CommandConvert.register());
     }
 
     private static class CommandMusicDump
@@ -46,6 +47,23 @@ public class CommandMusic
                         return 0;
                     }
                 );
+        }
+    }
+
+    private static class  CommandConvert
+    {
+        static ArgumentBuilder<CommandSource, ?> register()
+        {
+            return Commands.literal("convert")
+                    .requires(cs->cs.hasPermission(4)) //permission
+                    .executes(ctx ->
+                            {
+                                ctx.getSource().sendSuccess(
+                                        new TranslationTextComponent("commands.mxtune.music.convert",
+                                                String.format("%d", ModDataStore.convertDumpToFiles())), true);
+                                return 0;
+                            }
+                    );
         }
     }
 }

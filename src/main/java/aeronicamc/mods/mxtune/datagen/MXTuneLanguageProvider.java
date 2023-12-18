@@ -232,6 +232,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
     {
         addCommand("music.dump", "Wrote %s records");
         addCommand("music.load", "Read %s records");
+        addCommand("music.convert", "Dump converted to %s files");
     }
 
     private void addConfigs()

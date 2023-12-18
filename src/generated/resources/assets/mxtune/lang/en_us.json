@@ -7,6 +7,7 @@
   "chat.mxtune.groupManager.player_cannot_join_too_many": "%s cannot join since group is full",
   "chat.mxtune.groupManager.player_joined_the_group": "%s joined the group.",
   "chat.mxtune.groupManager.you_joined_players_group": "You joined %s's group.",
+  "commands.mxtune.music.convert": "Dump converted to %s files",
   "commands.mxtune.music.dump": "Wrote %s records",
   "commands.mxtune.music.load": "Read %s records",
   "config.mxtune.client.double_click_time_ms": "Double-click time in milliseconds for GUI widgets",

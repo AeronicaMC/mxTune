@@ -14,12 +14,14 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static aeronicamc.mods.mxtune.caches.FileHelper.*;
@@ -165,6 +167,43 @@ public class ModDataStore
         return size;
     }
 
+    public static int convertDumpToFiles()
+    {
+        AtomicInteger size = new AtomicInteger(0);
+        if (fileExists(SERVER_MUSIC_FOLDER_DUMP_FOLDER, SERVER_DATA_STORE_DUMP_FILENAME, LogicalSide.SERVER))
+        {
+            try (Stream<String> stream = Files.lines(getCacheFile(SERVER_MUSIC_FOLDER_DUMP_FOLDER, SERVER_DATA_STORE_DUMP_FILENAME, LogicalSide.SERVER)))
+            {
+                LOGGER.info("Convert to Dump using: {}", SERVER_FOLDER );
+                stream.forEach(line ->
+                {
+                    String[] pair = line.split("=");
+                    LocalDateTime dateTime = (LocalDateTime.parse(pair[0]));
+                    String filename = "--error--";
+                    try
+                    {
+                        filename = toSafeFileNameKey(dateTime.toString())+".txt";
+                        Path path = FileHelper.getCacheFile(SERVER_FOLDER, filename, LogicalSide.SERVER);
+                        PrintWriter printWriter = new PrintWriter(path.toString(), "UTF-8");
+                        printWriter.println(pair[1]);
+                        printWriter.close();
+                        LOGGER.info("  Created: {}", path.toString());
+                        size.getAndIncrement();
+                    } catch (IOException e)
+                    {
+                        LOGGER.error("  failed to create file: {}", filename, e);
+                    }
+
+                });
+            } catch (IOException | SecurityException | DateTimeParseException e)
+            {
+                LOGGER.error(e);
+            }
+
+        } else return size.get();
+        return size.get();
+    }
+
     private static LocalDateTime nextKey()
     {
         LocalDateTime now;
@@ -257,7 +296,7 @@ public class ModDataStore
     }
 
     /**
-     * Add add a MML format sting to the store. Returns a unique date-time string as the key to the MML.
+     * Add a MML format sting to the store. Returns a unique date-time string as the key to the MML.
      * (At least providing there are no unexpected time shifts due to incorrect time on the server/pc etc.)
      * @param musicText - the MML music text string to be stored.
      * @return a unique date-time string (GMT0) as the key to the entry, or null if the add failed.
