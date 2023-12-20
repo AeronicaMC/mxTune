@@ -4,6 +4,7 @@ import aeronicamc.libs.mml.util.TestData;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.util.MXTuneRuntimeException;
 import net.minecraftforge.fml.LogicalSide;
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.h2.mvstore.MVMap;
@@ -12,7 +13,10 @@ import org.h2.mvstore.MVStoreException;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -23,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import static aeronicamc.mods.mxtune.caches.FileHelper.*;
 
@@ -36,6 +42,7 @@ public class ModDataStore
 {
     private static final Logger LOGGER = LogManager.getLogger(ModDataStore.class);
 
+    private static final boolean USE_MV = false;
     private static final String SERVER_DATA_STORE_FILENAME = "music.mv";
     private static final String SERVER_DATA_STORE_DUMP_FILENAME = "dump.txt";
     private static final ZoneId ROOT_ZONE = ZoneId.of("GMT0");
@@ -182,11 +189,13 @@ public class ModDataStore
                     String filename = "--error--";
                     try
                     {
-                        filename = toSafeFileNameKey(dateTime.toString())+".txt";
+                        filename = toSafeFileNameKey(dateTime.toString())+".zip";
                         Path path = FileHelper.getCacheFile(SERVER_FOLDER, filename, LogicalSide.SERVER);
-                        PrintWriter printWriter = new PrintWriter(path.toString(), "UTF-8");
-                        printWriter.println(pair[1]);
-                        printWriter.close();
+                        OutputStream outputStream = Files.newOutputStream(path);
+                        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(outputStream);
+                        gzipOutputStream.write(pair[1].getBytes(StandardCharsets.UTF_8));
+                        gzipOutputStream.close();
+                        outputStream.close();
                         LOGGER.info("  Created: {}", path.toString());
                         size.getAndIncrement();
                     } catch (IOException e)
@@ -305,18 +314,35 @@ public class ModDataStore
     public static String addMusicText(String musicText)
     {
         LocalDateTime key = null;
-        if (getMvStore() != null)
+        if (USE_MV) {
+            if (getMvStore() != null) {
+                key = nextKey();
+                MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
+                try {
+                    indexToMusicText.put(key, musicText);
+                    getMvStore().commit();
+                } catch (UnsupportedOperationException | ClassCastException | NullPointerException |
+                         IllegalArgumentException e) {
+                    LOGGER.error("addMusicText: key: " + key.toString() + ", musicText: " + "", e);
+                }
+            }
+        } else
         {
+            // Write zipped music text
             key = nextKey();
-            MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
+            String filename = "--error--";
             try
             {
-                indexToMusicText.put(key, musicText);
-                getMvStore().commit();
-            }
-            catch (UnsupportedOperationException | ClassCastException | NullPointerException | IllegalArgumentException e)
+                filename = toSafeFileNameKey(key.toString())+".zip";
+                Path path = FileHelper.getCacheFile(SERVER_FOLDER, filename, LogicalSide.SERVER);
+                OutputStream outputStream = Files.newOutputStream(path);
+                GZIPOutputStream gzipOutputStream = new GZIPOutputStream(outputStream);
+                gzipOutputStream.write(musicText.getBytes(StandardCharsets.UTF_8));
+                gzipOutputStream.close();
+                outputStream.close();
+            } catch (IOException e)
             {
-                LOGGER.error("addMusicText: key: " + key.toString() + ", musicText: " + "", e);
+                LOGGER.error("  Failed write: {}", filename, e);
             }
         }
         return key != null ? key.toString() : null;
@@ -331,17 +357,30 @@ public class ModDataStore
     public static String getMusicText(@Nullable String key)
     {
         String musicText = null;
-        if (getMvStore() != null && key != null)
-        {
-            MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
-            LocalDateTime localDateTime = LocalDateTime.parse(key);
-            try
-            {
-                musicText = indexToMusicText.get(localDateTime);
+        if (USE_MV) {
+            if (getMvStore() != null && key != null) {
+                MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
+                LocalDateTime localDateTime = LocalDateTime.parse(key);
+                try {
+                    musicText = indexToMusicText.get(localDateTime);
+                } catch (ClassCastException | DateTimeParseException | NullPointerException e) {
+                    LOGGER.error("getMusicText error or key : " + key, e);
+                }
             }
-            catch (ClassCastException | DateTimeParseException | NullPointerException e)
-            {
+        } else if (key != null)
+        {
+            // Read zipped music text
+            try {
+                String filename = toSafeFileNameKey(key)+".zip";
+                Path path = FileHelper.getCacheFile(SERVER_FOLDER, filename, LogicalSide.SERVER);
+                InputStream inputStream = Files.newInputStream(path);
+                GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
+                musicText = IOUtils.toString(gzipInputStream, StandardCharsets.UTF_8);
+                gzipInputStream.close();
+                inputStream.close();
+            } catch (IOException e) {
                 LOGGER.error("getMusicText error or key : " + key, e);
+                musicText = null;
             }
         }
         return musicText;
