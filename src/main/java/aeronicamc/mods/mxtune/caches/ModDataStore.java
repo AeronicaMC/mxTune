@@ -13,7 +13,6 @@ import org.h2.mvstore.MVStoreException;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -189,7 +188,7 @@ public class ModDataStore
                     String filename = "--error--";
                     try
                     {
-                        filename = toSafeFileNameKey(dateTime.toString())+".zip";
+                        filename = toSafeFileNameKey(dateTime.toString());
                         Path path = FileHelper.getCacheFile(SERVER_FOLDER, filename, LogicalSide.SERVER);
                         OutputStream outputStream = Files.newOutputStream(path);
                         GZIPOutputStream gzipOutputStream = new GZIPOutputStream(outputStream);
@@ -305,10 +304,10 @@ public class ModDataStore
     }
 
     /**
-     * Add a MML format sting to the store. Returns a unique date-time string as the key to the MML.
+     * Add an MML format sting to the store. Returns a unique date-time string as the key to the MML.
      * (At least providing there are no unexpected time shifts due to incorrect time on the server/pc etc.)
      * @param musicText - the MML music text string to be stored.
-     * @return a unique date-time string (GMT0) as the key to the entry, or null if the add failed.
+     * @return a unique date-time string (GMT0) as the key to the entry, or null if the add failed. e.g. "2022-02-27T21:21:25.787" or null
      */
     @Nullable
     public static String addMusicText(String musicText)
@@ -333,13 +332,11 @@ public class ModDataStore
             String filename = "--error--";
             try
             {
-                filename = toSafeFileNameKey(key.toString())+".zip";
+                filename = toSafeFileNameKey(key.toString());
                 Path path = FileHelper.getCacheFile(SERVER_FOLDER, filename, LogicalSide.SERVER);
-                OutputStream outputStream = Files.newOutputStream(path);
-                GZIPOutputStream gzipOutputStream = new GZIPOutputStream(outputStream);
+                GZIPOutputStream gzipOutputStream = new GZIPOutputStream(Files.newOutputStream(path));
                 gzipOutputStream.write(musicText.getBytes(StandardCharsets.UTF_8));
                 gzipOutputStream.close();
-                outputStream.close();
             } catch (IOException e)
             {
                 LOGGER.error("  Failed write: {}", filename, e);
@@ -371,13 +368,11 @@ public class ModDataStore
         {
             // Read zipped music text
             try {
-                String filename = toSafeFileNameKey(key)+".zip";
+                String filename = toSafeFileNameKey(key);
                 Path path = FileHelper.getCacheFile(SERVER_FOLDER, filename, LogicalSide.SERVER);
-                InputStream inputStream = Files.newInputStream(path);
-                GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
+                GZIPInputStream gzipInputStream = new GZIPInputStream(Files.newInputStream(path));
                 musicText = IOUtils.toString(gzipInputStream, StandardCharsets.UTF_8);
                 gzipInputStream.close();
-                inputStream.close();
             } catch (IOException e) {
                 LOGGER.error("getMusicText error or key : " + key, e);
                 musicText = null;
@@ -396,10 +391,15 @@ public class ModDataStore
         return getMusicText(key) != null;
     }
 
+    /**
+     * Example: "2022-02-27T21:21:25.787" to "20220227T212125787.gz"
+     * @param key a formatted date-time string with punctuation.
+     * @return a formatted date-time string without punctuation appended with the .gz extension.
+     */
     public static String toSafeFileNameKey(String key)
     {
-        // 2022-02-27T21:21:25.787 to 20220227T212125787
-        return key.replaceAll("(\\.|:|-)", "");
+        // 2022-02-27T21:21:25.787 to 20220227T212125787.gz
+        return String.format("%s.gz", key.replaceAll("(\\.|:|-)", ""));
     }
 
     /**
