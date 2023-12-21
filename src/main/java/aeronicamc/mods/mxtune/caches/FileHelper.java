@@ -93,9 +93,9 @@ public class FileHelper
         return path.getFileSystem().getPathMatcher("glob:**.{mml,ms2mml,zip}");
     }
 
-    public static PathMatcher getDatMatcher(Path path)
+    public static PathMatcher getGZMatcher(Path path)
     {
-        return path.getFileSystem().getPathMatcher("glob:**.{dat}");
+        return path.getFileSystem().getPathMatcher("glob:**.{gz}");
     }
 
     /**
