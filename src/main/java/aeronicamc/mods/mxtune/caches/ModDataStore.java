@@ -18,18 +18,24 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import static aeronicamc.mods.mxtune.caches.FileHelper.*;
+import static java.lang.Math.min;
+import static net.minecraftforge.fml.LogicalSide.SERVER;
 
 /**
  * A key-value data store for music in MML format. Used to offload the long string
@@ -73,8 +79,9 @@ public class ModDataStore
             if (getMvStore() != null)
                 LOGGER.debug("MVStore Started. Commit Version: {}, file: {}", getMvStore().getCurrentVersion(), getMvStore().getFileStore());
         }
-//        testGet();
-//        long count = reapSheetMusic(false); // TODO: Remember to set whatIf to false for production!
+        testGet();
+        long count = reapSheetMusic(true); // TODO: Remember to set whatIf to false for production!
+        LOGGER.info("Reaped {} music file(s).", count);
     }
 
     public static void shutdown()
@@ -97,26 +104,45 @@ public class ModDataStore
         {
            String index;
            if ((index = addMusicText(c.getMML())) == null)
-               LOGGER.warn("Duplicate record: {}, musicText: {}", String.format("%s", index), c.getMML().substring(0, Math.min(24, c.getMML().length())));
+               LOGGER.warn("Duplicate record: {}, musicText: {}", String.format("%s", index), c.getMML().substring(0, min(24, c.getMML().length())));
         }
     }
 
     private static void testGet()
     {
-        if (getMvStore() != null)
-        {
-            int i = 0;
-            MVStore.TxCounter using = getMvStore().registerVersionUsage();
-            MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
-            for (Map.Entry<LocalDateTime, String> c : indexToMusicText.entrySet())
-            {
-                if (i++ >= 10) break;
-                LOGGER.debug("id: {}, musicText: {}", String.format("%s", c.getKey()), c.getValue().substring(0, Math.min(24, c.getValue().length())));
-            }
+        int i = 0;
+        if (USE_MV) {
+            if (getMvStore() != null) {
+                MVStore.TxCounter using = getMvStore().registerVersionUsage();
+                MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
+                for (Map.Entry<LocalDateTime, String> c : indexToMusicText.entrySet()) {
+                    if (i++ >= 10) break;
+                    LOGGER.debug("id: {}, musicText: {}", String.format("%s", c.getKey()), c.getValue().substring(0, min(24, c.getValue().length())));
+                }
 
-            LOGGER.debug("Last key: {}, Total records: {}", indexToMusicText.lastKey(), indexToMusicText.size());
-            getMvStore().deregisterVersionUsage(using);
+                LOGGER.debug("Last key: {}, Total records: {}", indexToMusicText.lastKey(), indexToMusicText.size());
+                getMvStore().deregisterVersionUsage(using);
+            }
+        } else
+        {
+            List<Path> gzPaths = getSafeMusicPaths();
+            gzPaths.subList(0, Math.min(gzPaths.size(), 10)).forEach(p -> LOGGER.debug("  musicText: {}", p));
+            LOGGER.debug("  Showing {} of {} Music files.", Math.min(gzPaths.size(), 10), gzPaths.size());
         }
+    }
+
+    private static List<Path> getSafeMusicPaths() {
+        List<Path> gzPaths = new ArrayList<>();
+        Path path = FileHelper.getDirectory(SERVER_FOLDER, SERVER);
+        PathMatcher filter = FileHelper.getGZMatcher(path);
+        try (Stream<Path> paths = Files.list(path)) {
+            gzPaths = paths
+                    .filter(filter::matches)
+                    .collect(Collectors.toList());
+        } catch (NullPointerException | IOException e) {
+            LOGGER.error(e);
+        }
+        return gzPaths;
     }
 
     public static int dumpToFile()
@@ -235,19 +261,34 @@ public class ModDataStore
         }
         finally
         {
-            if (getMvStore() != null && localDateTime != null)
+            if (USE_MV) {
+                if (getMvStore() != null && localDateTime != null) {
+                    MVStore.TxCounter using = getMvStore().registerVersionUsage();
+                    MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
+                    try {
+                        indexToMusicText.remove(localDateTime);
+                    } catch (ClassCastException | UnsupportedOperationException | NullPointerException e) {
+                        LOGGER.error("removeSheetMusic: " + localDateTime, e);
+                    }
+                    getMvStore().deregisterVersionUsage(using);
+                }
+            } else if (localDateTime != null)
             {
-                MVStore.TxCounter using = getMvStore().registerVersionUsage();
-                MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
+                String filename = "";
+                Path path = null;
                 try
                 {
-                    indexToMusicText.remove(localDateTime);
+                    filename = toSafeFileNameKey(localDateTime.toString());
+                    path = FileHelper.getCacheFile(SERVER_FOLDER, filename, LogicalSide.SERVER);
+                    if (Files.exists(path) && !path.toString().matches("\\.\\.|\\*"))
+                        Files.delete(path);
+                    else
+                        LOGGER.warn("removeSheetMusic: WTH? use of .. or * not allowed! {}", path);
                 }
-                catch (ClassCastException | UnsupportedOperationException | NullPointerException e)
+                catch (IOException e)
                 {
-                    LOGGER.error("removeSheetMusic: " + localDateTime, e);
+                    LOGGER.error("removeSheetMusic: unable to delete: {}", path == null ? "--not found--" : path, e);
                 }
-                getMvStore().deregisterVersionUsage(using);
             }
         }
     }
@@ -267,40 +308,63 @@ public class ModDataStore
     private static long reapSheetMusic(boolean whatIf)
     {
         getReapDateTimeKeyList().clear();
-        long reapCount = 0;
-        if (getMvStore() != null)
-        {
-            MVStore.TxCounter using = getMvStore().registerVersionUsage();
-            MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
-            for (Map.Entry<LocalDateTime, String> entry : indexToMusicText.entrySet())
-            {
-                if (canReapSheetMusic(entry.getKey()))
-                    getReapDateTimeKeyList().add(entry.getKey());
+        AtomicLong reapCount = new AtomicLong();
+        if (USE_MV) {
+            if (getMvStore() != null) {
+                MVStore.TxCounter using = getMvStore().registerVersionUsage();
+                MVMap<LocalDateTime, String> indexToMusicText = getMvStore().openMap("MusicTexts");
+                for (Map.Entry<LocalDateTime, String> entry : indexToMusicText.entrySet()) {
+                    if (canReapSheetMusic(entry.getKey()))
+                        getReapDateTimeKeyList().add(entry.getKey());
+                }
+                getMvStore().deregisterVersionUsage(using);
+                reapCount.set(getReapDateTimeKeyList().size());
+                if (!getReapDateTimeKeyList().isEmpty() && !whatIf) {
+                    // List and Reap
+                    for (LocalDateTime entry : getReapDateTimeKeyList()) {
+                        LOGGER.info("Reap SheetMusic key: {}", entry);
+                        indexToMusicText.remove(entry);
+                    }
+                    LOGGER.info("Reaped {} entries", getReapDateTimeKeyList().size());
+                } else {
+                    // whatIf is true: List only
+                    for (LocalDateTime entry : getReapDateTimeKeyList()) {
+                        LOGGER.info("Can Reap SheetMusic key: {}", entry);
+                    }
+                    LOGGER.info("{} entries could be reaped", getReapDateTimeKeyList().size());
+                }
+                getReapDateTimeKeyList().clear();
             }
-            getMvStore().deregisterVersionUsage(using);
-            reapCount = getReapDateTimeKeyList().size();
+        } else
+        {
+            // Gather files to reap
+            getSafeMusicPaths().forEach(p -> {
+                LocalDateTime key = (keyFromSafeFileNameKey(p.getFileName().toString().replaceAll("\\.gz", "")));
+                if (canReapSheetMusic(key))
+                {
+                    getReapDateTimeKeyList().add(key);
+                }
+            });
+            reapCount.set(getReapDateTimeKeyList().size());
+
             if (!getReapDateTimeKeyList().isEmpty() && !whatIf)
             {
                 // List and Reap
-                for(LocalDateTime entry : getReapDateTimeKeyList())
-                {
-                    LOGGER.info("Reap SheetMusic key: {}", entry);
-                    indexToMusicText.remove(entry);
+                for (LocalDateTime entry : getReapDateTimeKeyList()) {
+                    String filename = toSafeFileNameKey(entry.toString());
+                    LOGGER.info("Reaped SheetMusic file: {}", filename);
+                    removeSheetMusic(entry.toString());
                 }
-                LOGGER.info("Reaped {} entries", getReapDateTimeKeyList().size());
-            }
-            else
+            } else
             {
-                // whatIf is true: List only
-                for(LocalDateTime entry : getReapDateTimeKeyList())
-                {
-                    LOGGER.info("Can Reap SheetMusic key: {}", entry);
+                // List only
+                for (LocalDateTime entry : getReapDateTimeKeyList()) {
+                    String filename = toSafeFileNameKey(entry.toString());
+                    LOGGER.info("Could reap SheetMusic file: {}", filename);
                 }
-                LOGGER.info("{} entries could be reaped", getReapDateTimeKeyList().size());
             }
-            getReapDateTimeKeyList().clear();
         }
-        return reapCount;
+        return reapCount.get();
     }
 
     /**
