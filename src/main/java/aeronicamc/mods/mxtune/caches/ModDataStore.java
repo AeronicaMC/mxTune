@@ -13,7 +13,6 @@ import org.h2.mvstore.MVStoreException;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -84,6 +83,7 @@ public class ModDataStore
         LOGGER.info("Reaped {} music file(s).", count);
     }
 
+    @Deprecated
     public static void shutdown()
     {
         if (getMvStore() != null)
@@ -93,6 +93,7 @@ public class ModDataStore
     }
 
     @Nullable
+    @Deprecated
     private static MVStore getMvStore()
     {
         return mvStore;
@@ -145,6 +146,17 @@ public class ModDataStore
         return gzPaths;
     }
 
+    /**
+     * Test if the musicText exists in file storage.
+     * @param localDateTime The key as a LocalDateTime object.
+     * @return true if the musicText exists in file storage.
+     */
+    private static boolean musicTextExists(LocalDateTime localDateTime)
+    {
+        return FileHelper.fileExists(SERVER_FOLDER, toSafeFileNameKey(localDateTime.toString()), LogicalSide.SERVER);
+    }
+
+    @Deprecated
     public static int dumpToFile()
     {
         int size = 0;
@@ -171,6 +183,7 @@ public class ModDataStore
         return size;
     }
 
+    @Deprecated
     public static int loadDumpFile()
     {
         int size = -1;
@@ -210,17 +223,17 @@ public class ModDataStore
                 stream.forEach(line ->
                 {
                     String[] pair = line.split("=");
+                    // Tests if the localDateTime string is valid. Will throw an error is the parse fails.
                     LocalDateTime dateTime = (LocalDateTime.parse(pair[0]));
-                    String filename = "--error--";
+                    String filename = pair[0];
+                    Path path;
                     try
                     {
                         filename = toSafeFileNameKey(dateTime.toString());
-                        Path path = FileHelper.getCacheFile(SERVER_FOLDER, filename, LogicalSide.SERVER);
-                        OutputStream outputStream = Files.newOutputStream(path);
-                        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(outputStream);
+                        path = FileHelper.getCacheFile(SERVER_FOLDER, filename, LogicalSide.SERVER);
+                        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(Files.newOutputStream(path));
                         gzipOutputStream.write(pair[1].getBytes(StandardCharsets.UTF_8));
                         gzipOutputStream.close();
-                        outputStream.close();
                         LOGGER.info("  Created: {}", path.toString());
                         size.getAndIncrement();
                     } catch (IOException e)
@@ -231,19 +244,33 @@ public class ModDataStore
                 });
             } catch (IOException | SecurityException | DateTimeParseException e)
             {
-                LOGGER.error(e);
+                LOGGER.error("convertDumpToFiles failed. Review <Save Folder>\\mxtune\\dump\\dump.txt for errors.\r\n"+
+                        "Each line format is <DateTimeString>=<MML><EOL> with no breaks.\r\n"+
+                        "Example: 2022-02-27T21:21:25.787=MML@t120v12l1rrrrrrrro4l4def+g;\r\n"+
+                        "Each line can be very long as it represents either music for a single instrument or an entire song.\r\n"+
+                        "Notepad++ is useful for reviewing and possibly fixing any issues such are removing unexpected line breaks, tabs, or spaces in a line.\r\n", e);
             }
 
         } else return size.get();
         return size.get();
     }
 
+    /**
+     * Returns the next available key ensuring it is not the same as previous keys whether recent in RAM or file storage.
+     * @return next unused key
+     */
     private static LocalDateTime nextKey()
     {
         LocalDateTime now;
         do {
             now = LocalDateTime.now(ROOT_ZONE);
-        } while (now.equals(lastDateTime));
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                LOGGER.warn(e);
+                Thread.currentThread().interrupt();
+            }
+        } while (now.equals(lastDateTime) || musicTextExists(now));
         lastDateTime = now;
         return now;
     }
@@ -369,7 +396,6 @@ public class ModDataStore
 
     /**
      * Add an MML format sting to the store. Returns a unique date-time string as the key to the MML.
-     * (At least providing there are no unexpected time shifts due to incorrect time on the server/pc etc.)
      * @param musicText - the MML music text string to be stored.
      * @return a unique date-time string (GMT0) as the key to the entry, or null if the add failed. e.g. "2022-02-27T21:21:25.787" or null
      */
@@ -450,6 +476,7 @@ public class ModDataStore
      * @param key in LocalDateTime (GMT0) string format
      * @return true if the musicText key resolves.
      */
+    @Deprecated
     public static boolean hasMusicText(@Nullable String key)
     {
         return getMusicText(key) != null;
@@ -490,15 +517,5 @@ public class ModDataStore
             localDateTime = LocalDateTime.parse("1999-01-01T01:01:01.001");
         }
         return localDateTime;
-    }
-
-    public static void main(String[] args)
-    {
-        String safeFileName = "20220227T212125787";
-        String stringDateTime = "2022-02-27T21:21:25.787";
-        System.out.println(safeFileName);
-        System.out.println(keyFromSafeFileNameKey(safeFileName));
-        System.out.println(stringDateTime);
-        System.out.println(toSafeFileNameKey(stringDateTime));
     }
 }
