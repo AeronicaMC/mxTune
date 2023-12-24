@@ -13,7 +13,7 @@
   "config.mxtune.client.double_click_time_ms": "Double-click time in milliseconds for GUI widgets",
   "config.mxtune.client.mml_Link": "MML Site Link",
   "config.mxtune.server.listener_range": "Listener Range",
-  "config.mxtune.server.sheet_music_life_in_days": "Sheet Music Life in Days",
+  "config.mxtune.server.sheet_music_life_in_days": "Sheet Music Life in Days.",
   "container.mxtune.block_music.more": "%s More",
   "entity.mxtune.music_source": "[MusicSource]",
   "entity.mxtune.music_venue_info": "Music Venue Info Panel",
@@ -260,7 +260,6 @@
   "tooltip.mxtune.music_venue_tool_item.shift_help_05": "Survival: Owners may remove their own Venues. OP/Creative players can remove any Venue.",
   "tooltip.mxtune.music_venue_tool_item.shift_help_06": "Venues are only visible when this tool is on the HotBar.",
   "tooltip.mxtune.sheet_music.days_left": "Days left: %s",
-  "tooltip.mxtune.sheet_music.days_left_error": "Days left: nn",
   "tooltip.mxtune.sheet_music.duration_error": "h:mm:ss",
   "tooltip.mxtune.sheet_music.empty": " - Empty - ",
   "tooltip.mxtune.sheet_music.n_of_m_instrument_name": "%s of %s %s"

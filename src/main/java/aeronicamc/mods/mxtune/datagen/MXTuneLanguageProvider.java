@@ -70,7 +70,6 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addTooltip("music_score.n_part_score", "%s Part Score");
         addTooltip("music_score.parts_error", "No parts found");
         addTooltip("sheet_music.days_left", "Days left: %s");
-        addTooltip("sheet_music.days_left_error", "Days left: nn");
         addTooltip("sheet_music.duration_error", "h:mm:ss");
         addTooltip("sheet_music.empty", " - Empty - ");
         addTooltip("sheet_music.n_of_m_instrument_name", "%s of %s %s");
@@ -240,7 +239,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addConfig("client.double_click_time_ms", "Double-click time in milliseconds for GUI widgets");
         addConfig("client.mml_Link", "MML Site Link");
         addConfig("server.listener_range", "Listener Range");
-        addConfig("server.sheet_music_life_in_days", "Sheet Music Life in Days");
+        addConfig("server.sheet_music_life_in_days", "Sheet Music Life in Days.");
     }
 
     private void addEntities()

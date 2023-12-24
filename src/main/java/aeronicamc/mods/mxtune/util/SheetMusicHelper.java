@@ -43,6 +43,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static aeronicamc.mods.mxtune.config.MXTuneConfig.SHEET_MUSIC_NO_EXPIRATION;
 import static java.lang.Thread.sleep;
 import static net.minecraftforge.common.util.Constants.NBT;
 
@@ -67,9 +68,6 @@ public class SheetMusicHelper
                     .withStyle(TextFormatting.RED);
     private final static String SHEET_MUSIC_DAYS_LEFT = "tooltip.mxtune.sheet_music.days_left";
 
-    private final static ITextComponent SHEET_MUSIC_DAYS_LEFT_ERROR =
-            new TranslationTextComponent("tooltip.mxtune.sheet_music.days_left_error")
-                    .withStyle(TextFormatting.RED);
     private final static ITextComponent MUSIC_SCORE_PART_ERROR =
             new TranslationTextComponent("tooltip.mxtune.music_score.parts_error")
                     .withStyle(TextFormatting.RED);
@@ -240,21 +238,21 @@ public class SheetMusicHelper
     public static ITextComponent getFormattedSheetMusicDaysLeft(ItemStack sheetMusicStack)
     {
         long daysLeft = getSheetMusicDaysLeft(sheetMusicStack);
-        if (daysLeft != 99999)
+        if (daysLeft != SHEET_MUSIC_NO_EXPIRATION)
             return new TranslationTextComponent(SHEET_MUSIC_DAYS_LEFT, getSheetMusicDaysLeft(sheetMusicStack))
                 .withStyle(TextFormatting.GRAY)
                 .withStyle(TextFormatting.ITALIC);
         else
-            return SHEET_MUSIC_DAYS_LEFT_ERROR;
+            return StringTextComponent.EMPTY;
     }
 
     /**
      * Client or Server Side
      * <p></p>Get the sheet music days left as a {@link long}.
      * @param sheetMusicStack The sheet music stack.
-     * @return days left or 99999 if there was a parse or item stack error.
+     * @return days left or SHEET_MUSIC_NO_EXPIRATION(99999) if there was a parse or item stack error.
      */
-    public static long getSheetMusicDaysLeft(ItemStack sheetMusicStack)
+    public static int getSheetMusicDaysLeft(ItemStack sheetMusicStack)
     {
         String keyDateTimeString = getMusicTextKey(sheetMusicStack);
         if (keyDateTimeString != null)
@@ -265,13 +263,14 @@ public class SheetMusicHelper
                 keyDateTime = LocalDateTime.parse(keyDateTimeString);
             } catch (DateTimeException e)
             {
-                return 99999;
+                LOGGER.warn("Failure to parse SheetMusic key: {}", keyDateTimeString);
+                return SHEET_MUSIC_NO_EXPIRATION;
             }
             LocalDateTime keyPlusDaysLeft = keyDateTime.plusDays(MXTuneConfig.getSheetMusicLifeInDays());
             LocalDateTime now = LocalDateTime.now(ZoneId.of("GMT0"));
-            return Math.max(Duration.between(now, keyPlusDaysLeft).getSeconds() / 86400L, 0L);
+            return (int) Math.max(Duration.between(now, keyPlusDaysLeft).getSeconds() / 86400L, 0L);
         }
-        return 99999;
+        return SHEET_MUSIC_NO_EXPIRATION;
     }
 
     /**
@@ -461,7 +460,7 @@ public class SheetMusicHelper
      */
     public static void scrapSheetMusicIfExpired(ItemStack pStack, World pLevel, Entity pEntity, int pItemSlot, boolean pIsSelected)
     {
-        if (!pLevel.isClientSide() && !pStack.isEmpty() && (pEntity instanceof PlayerEntity) && !pIsSelected)
+        if (!pLevel.isClientSide() && !pStack.isEmpty() && (pEntity instanceof PlayerEntity) && !pIsSelected && !MXTuneConfig.doesSheetMusicExpire())
         {
             String key = getMusicTextKey(((PlayerEntity) pEntity).inventory.getItem(pItemSlot));
             boolean canReap = getSheetMusicDaysLeft(pStack) == 0L;
@@ -516,7 +515,7 @@ public class SheetMusicHelper
      */
     public static void scrapSheetMusicInInstrumentIfExpired(@Nullable Slot slot, ItemStack pInstrumentStack, World pLevel, Entity pEntity, @Nullable BlockPos blockPos)
     {
-        if (!pLevel.isClientSide() && !pInstrumentStack.isEmpty() && (pEntity instanceof PlayerEntity) && !pEntity.isSpectator())
+        if (!pLevel.isClientSide() && !pInstrumentStack.isEmpty() && (pEntity instanceof PlayerEntity) && !pEntity.isSpectator() && !MXTuneConfig.doesSheetMusicExpire())
         {
             int multiplier = 0;
             ItemStack sheetMusic = removeSheetMusicFromIInstrument(pInstrumentStack);

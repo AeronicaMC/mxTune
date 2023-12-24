@@ -267,7 +267,9 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
             if(!getFormattedExtraText(iMusic).equals(StringTextComponent.EMPTY))
                 pTooltip.add(getFormattedExtraText(iMusic));
             pTooltip.add(SheetMusicHelper.getFormattedMusicDuration(iMusic));
-            pTooltip.add(SheetMusicHelper.getFormattedSheetMusicDaysLeft(iMusic));
+            ITextComponent daysLeft = SheetMusicHelper.getFormattedSheetMusicDaysLeft(iMusic);
+            if (!StringTextComponent.EMPTY.equals(daysLeft))
+                pTooltip.add(daysLeft);
         }
         if (Screen.hasShiftDown())
         {

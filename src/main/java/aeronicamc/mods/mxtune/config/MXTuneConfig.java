@@ -26,6 +26,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class MXTuneConfig
 {
+    public static int SHEET_MUSIC_NO_EXPIRATION = 99999;
     private MXTuneConfig() { /* NOP */ }
 
     /** Client Configuration Settings */
@@ -70,9 +71,9 @@ public class MXTuneConfig
                     .defineInRange("listenerRange",24,10, 64);
 
             sheetMusicLifeInDays = builder
-                    .comment("Sheet Music Life in Days before it breaks")
+                    .comment("Sheet Music Life in Days before it breaks. 99999 = no expiration.")
                     .translation("config.mxtune.server.sheet_music_life_in_days")
-                    .defineInRange("sheetMusicLifeInDays", 30, 2, Integer.MAX_VALUE);
+                    .defineInRange("sheetMusicLifeInDays", SHEET_MUSIC_NO_EXPIRATION, 2, SHEET_MUSIC_NO_EXPIRATION);
 
             builder.pop();
         }
@@ -81,6 +82,8 @@ public class MXTuneConfig
     public static float getListenerRange() { return (float) SERVER.listenerRange.get(); }
 
     public static int getSheetMusicLifeInDays() { return SERVER.sheetMusicLifeInDays.get(); }
+
+    public static boolean doesSheetMusicExpire() { return SERVER.sheetMusicLifeInDays.get() == SHEET_MUSIC_NO_EXPIRATION;}
 
     public static int getDoubleClickTimeMS() { return CLIENT.doubleClickTime.get(); }
 

@@ -38,7 +38,9 @@ public class SheetMusicItem extends Item implements IMusic
                 pTooltip.add(getFormattedExtraText(pStack));
         }
         pTooltip.add(getFormattedMusicDuration(pStack));
-        pTooltip.add(getFormattedSheetMusicDaysLeft(pStack));
+        ITextComponent daysLeft = SheetMusicHelper.getFormattedSheetMusicDaysLeft(pStack);
+        if (!StringTextComponent.EMPTY.equals(daysLeft))
+            pTooltip.add(daysLeft);
     }
 
     @Override
