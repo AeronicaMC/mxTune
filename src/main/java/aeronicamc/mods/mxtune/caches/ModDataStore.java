@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.caches;
 
 import aeronicamc.libs.mml.util.TestData;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
+import aeronicamc.mods.mxtune.util.MXTuneException;
 import net.minecraftforge.fml.LogicalSide;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -270,12 +271,12 @@ public class ModDataStore
                 LocalDateTime localDateTime = LocalDateTime.parse(key);
                 String yearMonthFolders = String.format("%s/%d/%02d", SERVER_FOLDER, localDateTime.getYear(), localDateTime.getMonthValue());
                 String filename = toSafeFileNameKey(key);
-                Path path = FileHelper.getCacheFile(yearMonthFolders, filename, LogicalSide.SERVER, true);
-
+                Path path = FileHelper.getCacheFile(yearMonthFolders, filename, LogicalSide.SERVER, false);
+                if (!Files.exists(path)) throw new MXTuneException("File does not exist: " + path);
                 GZIPInputStream gzipInputStream = new GZIPInputStream(Files.newInputStream(path));
                 musicText = IOUtils.toString(gzipInputStream, StandardCharsets.UTF_8);
                 gzipInputStream.close();
-            } catch (IOException|DateTimeParseException e) {
+            } catch (IOException|DateTimeParseException|MXTuneException e) {
                 LOGGER.error("getMusicText error on file or key parse: " + key, e);
                 musicText = null;
             }
