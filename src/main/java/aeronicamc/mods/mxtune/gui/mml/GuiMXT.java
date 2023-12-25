@@ -558,7 +558,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
             mxTuneFile.writeToNBT(compound);
             try
             {
-                FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.CLIENT_LIB_FOLDER, fileName + FileHelper.EXTENSION_MXT, LogicalSide.CLIENT), compound);
+                FileHelper.sendCompoundToFile(FileHelper.getCacheFile(FileHelper.CLIENT_LIB_FOLDER, fileName + FileHelper.EXTENSION_MXT, LogicalSide.CLIENT, true), compound);
             }
             catch (IOException e)
             {

@@ -146,7 +146,6 @@ public class MXTune
     public void event(FMLServerStoppingEvent event) {
         PlayManager.stopAll();
         GroupManager.clear();
-        ModDataStore.shutdown();
         MultiPacketStringManager.shutdown();
     }
 
