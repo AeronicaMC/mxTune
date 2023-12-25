@@ -83,7 +83,7 @@ public class MXTuneConfig
 
     public static int getSheetMusicLifeInDays() { return SERVER.sheetMusicLifeInDays.get(); }
 
-    public static boolean doesSheetMusicExpire() { return SERVER.sheetMusicLifeInDays.get() == SHEET_MUSIC_NO_EXPIRATION;}
+    public static boolean sheetMusicExpires() { return SERVER.sheetMusicLifeInDays.get() != SHEET_MUSIC_NO_EXPIRATION;}
 
     public static int getDoubleClickTimeMS() { return CLIENT.doubleClickTime.get(); }
 

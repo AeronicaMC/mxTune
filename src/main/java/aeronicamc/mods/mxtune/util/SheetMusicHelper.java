@@ -237,9 +237,9 @@ public class SheetMusicHelper
      */
     public static ITextComponent getFormattedSheetMusicDaysLeft(ItemStack sheetMusicStack)
     {
-        long daysLeft = getSheetMusicDaysLeft(sheetMusicStack);
-        if (daysLeft != SHEET_MUSIC_NO_EXPIRATION)
-            return new TranslationTextComponent(SHEET_MUSIC_DAYS_LEFT, getSheetMusicDaysLeft(sheetMusicStack))
+        int daysLeft = getSheetMusicDaysLeft(sheetMusicStack);
+        if (daysLeft != SHEET_MUSIC_NO_EXPIRATION && MXTuneConfig.sheetMusicExpires())
+            return new TranslationTextComponent(SHEET_MUSIC_DAYS_LEFT, daysLeft)
                 .withStyle(TextFormatting.GRAY)
                 .withStyle(TextFormatting.ITALIC);
         else
@@ -248,7 +248,7 @@ public class SheetMusicHelper
 
     /**
      * Client or Server Side
-     * <p></p>Get the sheet music days left as a {@link long}.
+     * <p></p>Get the sheet music days left as a {@link int}.
      * @param sheetMusicStack The sheet music stack.
      * @return days left or SHEET_MUSIC_NO_EXPIRATION(99999) if there was a parse or item stack error.
      */
@@ -460,10 +460,10 @@ public class SheetMusicHelper
      */
     public static void scrapSheetMusicIfExpired(ItemStack pStack, World pLevel, Entity pEntity, int pItemSlot, boolean pIsSelected)
     {
-        if (!pLevel.isClientSide() && !pStack.isEmpty() && (pEntity instanceof PlayerEntity) && !pIsSelected && !MXTuneConfig.doesSheetMusicExpire())
+        if (!pLevel.isClientSide() && !pStack.isEmpty() && (pEntity instanceof PlayerEntity) && !pIsSelected)
         {
             String key = getMusicTextKey(((PlayerEntity) pEntity).inventory.getItem(pItemSlot));
-            boolean canReap = getSheetMusicDaysLeft(pStack) == 0L;
+            boolean canReap = getSheetMusicDaysLeft(pStack) == 0;
             if (key != null && canReap)
             {
                 ModDataStore.removeSheetMusic(key);
@@ -515,12 +515,12 @@ public class SheetMusicHelper
      */
     public static void scrapSheetMusicInInstrumentIfExpired(@Nullable Slot slot, ItemStack pInstrumentStack, World pLevel, Entity pEntity, @Nullable BlockPos blockPos)
     {
-        if (!pLevel.isClientSide() && !pInstrumentStack.isEmpty() && (pEntity instanceof PlayerEntity) && !pEntity.isSpectator() && !MXTuneConfig.doesSheetMusicExpire())
+        if (!pLevel.isClientSide() && !pInstrumentStack.isEmpty() && (pEntity instanceof PlayerEntity) && !pEntity.isSpectator())
         {
             int multiplier = 0;
             ItemStack sheetMusic = removeSheetMusicFromIInstrument(pInstrumentStack);
             String key = getMusicTextKey(sheetMusic);
-            boolean canReap = getSheetMusicDaysLeft(sheetMusic) == 0L;
+            boolean canReap = getSheetMusicDaysLeft(sheetMusic) == 0;
 
             if (key != null && canReap) {
                 if (slot != null) {
