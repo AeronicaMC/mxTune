@@ -99,7 +99,7 @@ public final class PlayManager
         ItemStack sheetMusic = SheetMusicHelper.getIMusicFromIInstrument(playerIn.getMainHandItem().getStack());
         if (!sheetMusic.isEmpty())
         {
-            Integer playerID = playerIn.getId();
+            int playerID = playerIn.getId();
             String title = SheetMusicHelper.getMusicTitleAsString(sheetMusic);
             String musicTextKey = SheetMusicHelper.getMusicTextKey(sheetMusic);
             String musicText = ModDataStore.getMusicText(musicTextKey);
