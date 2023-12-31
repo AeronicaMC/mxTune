@@ -17,6 +17,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -81,6 +82,10 @@ public final class PlayManager
                         addActivePlayId(musicSource.getId(), blockPos, playId, musicProperties.getMusicText(), musicProperties.getDuration());
                         world.addFreshEntity(musicSource);
                     }
+                } else {
+                    world.playSound(null, blockPos, ModSoundEvents.FAILURE.get(), SoundCategory.BLOCKS, 1F, 1F);
+                    LOGGER.warn("MusicBlock contains bad SheetMusic. File read error: {}", musicPlayer);
+                    LOGGER.warn("Music key(s) not found. level: {}, pos: {}", world.dimension(), blockPos);
                 }
             }
         }

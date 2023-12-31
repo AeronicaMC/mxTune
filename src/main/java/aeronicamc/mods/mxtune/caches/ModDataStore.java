@@ -267,17 +267,25 @@ public class ModDataStore
         String musicText = null;
         if (key != null)
         {
+            Path path = null;
+            String filename = "";
             try {
                 LocalDateTime localDateTime = LocalDateTime.parse(key);
                 String yearMonthFolders = String.format("%s/%d/%02d", SERVER_FOLDER, localDateTime.getYear(), localDateTime.getMonthValue());
-                String filename = toSafeFileNameKey(key);
-                Path path = FileHelper.getCacheFile(yearMonthFolders, filename, LogicalSide.SERVER, false);
-                if (!Files.exists(path)) throw new MXTuneException("File does not exist: " + path);
-                GZIPInputStream gzipInputStream = new GZIPInputStream(Files.newInputStream(path));
-                musicText = IOUtils.toString(gzipInputStream, StandardCharsets.UTF_8);
-                gzipInputStream.close();
-            } catch (IOException|DateTimeParseException|MXTuneException e) {
+                filename = toSafeFileNameKey(key);
+                path = FileHelper.getCacheFile(yearMonthFolders, filename, LogicalSide.SERVER, false);
+            } catch (IOException|DateTimeParseException e) {
                 LOGGER.error("getMusicText error on file or key parse: " + key, e);
+            }
+            try {
+                if (path != null && !Files.exists(path)) throw new MXTuneException("File does not exist: " + path);
+            } catch (MXTuneException e) {
+                LOGGER.error("getMusicText file error: {}", filename, e);
+            }
+            try (GZIPInputStream gzipInputStream = new GZIPInputStream(Files.newInputStream(path))) {
+                musicText = IOUtils.toString(gzipInputStream, StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                LOGGER.error("getMusicText unexpected file error: {}", key, e);
                 musicText = null;
             }
         }
