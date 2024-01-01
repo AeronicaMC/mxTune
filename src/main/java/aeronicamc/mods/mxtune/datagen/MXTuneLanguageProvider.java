@@ -239,6 +239,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addConfig("client.double_click_time_ms", "Double-click time in milliseconds for GUI widgets");
         addConfig("client.mml_Link", "MML Site Link");
         addConfig("server.listener_range", "Listener Range");
+        addConfig("server.sheet_music_expires", "Sheet Music Expires");
         addConfig("server.sheet_music_life_in_days", "Sheet Music Life in Days.");
     }
 

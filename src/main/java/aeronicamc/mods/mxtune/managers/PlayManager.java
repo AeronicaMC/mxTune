@@ -84,7 +84,7 @@ public final class PlayManager
                     }
                 } else {
                     world.playSound(null, blockPos, ModSoundEvents.FAILURE.get(), SoundCategory.BLOCKS, 1F, 1F);
-                    LOGGER.warn("MusicBlock contains bad SheetMusic. File read error: {}", musicPlayer);
+                    LOGGER.warn("MusicBlock contains unreadable SheetMusic. File read error: {}", musicPlayer);
                     LOGGER.warn("Music key(s) not found. level: {}, pos: {}", world.dimension(), blockPos);
                 }
             }

@@ -13,6 +13,7 @@
   "config.mxtune.client.double_click_time_ms": "Double-click time in milliseconds for GUI widgets",
   "config.mxtune.client.mml_Link": "MML Site Link",
   "config.mxtune.server.listener_range": "Listener Range",
+  "config.mxtune.server.sheet_music_expires": "Sheet Music Expires",
   "config.mxtune.server.sheet_music_life_in_days": "Sheet Music Life in Days.",
   "container.mxtune.block_music.more": "%s More",
   "entity.mxtune.music_source": "[MusicSource]",

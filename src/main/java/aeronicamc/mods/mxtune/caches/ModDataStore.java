@@ -238,7 +238,7 @@ public class ModDataStore
     @Nullable
     public static String addMusicText(String musicText)
     {
-        LocalDateTime key = null;
+        LocalDateTime key;
         key = nextKey();
         String filename = "--error--";
         try
@@ -253,7 +253,7 @@ public class ModDataStore
             LOGGER.error("  Failed write: {}", filename, e);
             key = null;
         }
-        return key != null ? key.toString() : null;
+        return (key != null) ? key.toString() : null;
     }
 
     /**
@@ -274,8 +274,10 @@ public class ModDataStore
                 String yearMonthFolders = String.format("%s/%d/%02d", SERVER_FOLDER, localDateTime.getYear(), localDateTime.getMonthValue());
                 filename = toSafeFileNameKey(key);
                 path = FileHelper.getCacheFile(yearMonthFolders, filename, LogicalSide.SERVER, false);
-            } catch (IOException|DateTimeParseException e) {
-                LOGGER.error("getMusicText error on file or key parse: " + key, e);
+            } catch (DateTimeParseException e) {
+                LOGGER.error("getMusicText error on key parse: {}", key, e);
+            } catch (IOException e){
+                LOGGER.error("getMusicText error on file: {}", filename, e);
             }
             try {
                 if (path != null && !Files.exists(path)) throw new MXTuneException("File does not exist: " + path);
@@ -285,7 +287,7 @@ public class ModDataStore
             try (GZIPInputStream gzipInputStream = new GZIPInputStream(Files.newInputStream(path))) {
                 musicText = IOUtils.toString(gzipInputStream, StandardCharsets.UTF_8);
             } catch (IOException e) {
-                LOGGER.error("getMusicText unexpected file error: {}", key, e);
+                LOGGER.error("getMusicText file error: {}", filename, e);
                 musicText = null;
             }
         }
