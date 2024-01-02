@@ -263,7 +263,7 @@ public class MusicBlock extends Block implements IWrenchAble
                 musicBlockEntity ->
                 {
                     // get redStone input from the rear side
-                    boolean isSidePowered = pLevel.hasSignal(pPos.relative(pState.getValue(HORIZONTAL_FACING).getOpposite()), pState.getValue(HORIZONTAL_FACING));
+                    boolean isSidePowered = pLevel.hasSignal(pPos.relative(pState.getValue(HORIZONTAL_FACING).getOpposite()), pState.getValue(HORIZONTAL_FACING).getOpposite());
                     // Lever spam prevention. see use method above for more details.
                     if (musicBlockEntity.notHeld())
                     {
