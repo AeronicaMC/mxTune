@@ -252,10 +252,10 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
     private void updateButtonSignals()
     {
         buttonSignals = 0;
-        buttonSignals |= isRearRedstoneInputEnabled() ? 0x1 : 0x0;
-        buttonSignals |= isLeftRedstoneOutputEnabled() ? 0x2 : 0x0;
-        buttonSignals |= isRightRedstoneOutputEnabled() ? 0x4 : 0x0;
-        buttonSignals |= isLocked() ? 0x8 : 0x0;
+        buttonSignals |= (byte) (isRearRedstoneInputEnabled() ? 0x1 : 0x0);
+        buttonSignals |= (byte) (isLeftRedstoneOutputEnabled() ? 0x2 : 0x0);
+        buttonSignals |= (byte) (isRightRedstoneOutputEnabled() ? 0x4 : 0x0);
+        buttonSignals |= (byte) (isLocked() ? 0x8 : 0x0);
     }
 
     private void syncClient()
