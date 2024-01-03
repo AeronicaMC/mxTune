@@ -17,7 +17,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -58,11 +57,13 @@ public final class PlayManager
 
     /**
      * For playing music from a block, e.g. Band Amp.
-     * @param world the world of course
-     * @param blockPos position of block instrument
+     *
+     * @param world        the world of course
+     * @param blockPos     position of block instrument
+     * @param playerEntity
      * @return a unique play id or {@link aeronicamc.mods.mxtune.managers.PlayIdSupplier#INVALID} if unable to play
      */
-    public static int playMusic(World world, BlockPos blockPos)
+    public static int playMusic(World world, BlockPos blockPos, @Nullable PlayerEntity playerEntity)
     {
         int playId = INVALID;
         IMusicPlayer musicPlayer;
@@ -83,9 +84,12 @@ public final class PlayManager
                         world.addFreshEntity(musicSource);
                     }
                 } else {
-                    world.playSound(null, blockPos, ModSoundEvents.FAILURE.get(), SoundCategory.BLOCKS, 1F, 1F);
-                    LOGGER.warn("MusicBlock contains unreadable SheetMusic. File read error: {}", musicPlayer);
-                    LOGGER.warn("Music key(s) not found. level: {}, pos: {}", world.dimension(), blockPos);
+                    if (playerEntity != null) {
+                        Misc.audiblePingPlayer(playerEntity, ModSoundEvents.FAILURE.get());
+                        playerEntity.displayClientMessage(new TranslationTextComponent("errors.mxtune.sheet_music_not_present"), false);
+                    }
+                    LOGGER.warn("MusicBlock contains unreadable SheetMusic or File read error: {}", musicPlayer);
+                    LOGGER.warn("Music key(s) not found? level: {}, pos: {}", world.dimension(), blockPos);
                 }
             }
         }

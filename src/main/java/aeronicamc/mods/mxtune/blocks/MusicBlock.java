@@ -157,7 +157,7 @@ public class MusicBlock extends Block implements IWrenchAble
                             // but I have not found another solution yet.
                             if (musicBlockEntity.notHeld())
                             {
-                                boolean isPlaying = canPlayOrStopMusic(worldIn, state, pos, musicBlockEntity, false);
+                                boolean isPlaying = canPlayOrStopMusic(worldIn, state, pos, musicBlockEntity, player, false);
                                 if (isPlaying)
                                     musicBlockEntity.setLastPlay(true);
                                 setPlayingState(worldIn, pos, state, isPlaying);
@@ -182,7 +182,7 @@ public class MusicBlock extends Block implements IWrenchAble
         return LockableHelper.isLocked(FakePlayerFactory.getMinecraft((ServerWorld) level), level, blockPos) != player.isShiftKeyDown();
     }
 
-    private boolean canPlayOrStopMusic(World pLevel, BlockState pState, BlockPos pPos, MusicBlockEntity musicBlockEntity, Boolean noPlay)
+    private boolean canPlayOrStopMusic(World pLevel, BlockState pState, BlockPos pPos, MusicBlockEntity musicBlockEntity, @Nullable PlayerEntity playerEntity, Boolean noPlay)
     {
         int playId = PlayManager.getEntitiesPlayId(musicBlockEntity.getMusicSourceEntityId());
             if (PlayManager.isActivePlayId(playId) || pState.getValue(PLAYING))
@@ -192,7 +192,7 @@ public class MusicBlock extends Block implements IWrenchAble
             }
             if (!noPlay)
             {
-                playId = PlayManager.playMusic(pLevel, pPos);
+                playId = PlayManager.playMusic(pLevel, pPos, playerEntity);
                 return playId != PlayIdSupplier.INVALID && !pState.getValue(PLAYING);
             }
         return false;
@@ -271,7 +271,7 @@ public class MusicBlock extends Block implements IWrenchAble
                         {
                             if (isSidePowered)
                             {
-                                boolean isPlaying = canPlayOrStopMusic(pLevel, pState, pPos, musicBlockEntity, false);
+                                boolean isPlaying = canPlayOrStopMusic(pLevel, pState, pPos, musicBlockEntity, null, false);
                                 if (isPlaying)
                                     musicBlockEntity.setLastPlay(true);
                                 setPlayingState(pLevel, pPos, pState, isPlaying);
