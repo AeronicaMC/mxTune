@@ -64,7 +64,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         add(ModItems.MUSIC_PAPER.get(), "Music Paper");
         add(ModItems.PLACARD_ITEM.get(), "Placard State");
         add(ModItems.MUSIC_VENUE_INFO.get(), "Music Venue Info Panel");
-        add(ModItems.WRENCH.get(), "Wooden Wrench");
+        add(ModItems.WRENCH.get(), "Wooden Wrench (mxTune)");
         addTooltip("music_paper.help", "Right-Click to OPEN");
         addTooltip("music_score.shift_parts_01", "Hold SHIFT to see parts");
         addTooltip("music_score.n_part_score", "%s Part Score");
@@ -83,6 +83,9 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addTooltip("music_venue_tool_item.shift_help_04", "To REMOVE a venue, stand *inside* it and Right Click any block. *(Head and Body)*");
         addTooltip("music_venue_tool_item.shift_help_05", "Survival: Owners may remove their own Venues. OP/Creative players can remove any Venue.");
         addTooltip("music_venue_tool_item.shift_help_06", "Venues are only visible when this tool is on the HotBar.");
+        addTooltip("wrench_item.shift_help_01","Music Block:");
+        addTooltip("wrench_item.shift_help_02","  Right-Click rotates front to the clicked face.");
+        addTooltip("wrench_item.shift_help_03","  SHIFT-Right-Click picks up into inventory.");
 
 
         addTooltip("music_venue_tool_block.help_01", "Used to manage mxTune Venues. mxTunes played within a Venue are only heard by players while inside. mxTunes played Outside the Venue are not heard by players within.");

@@ -11,12 +11,10 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -24,11 +22,13 @@ import java.util.List;
 
 public class WrenchItem extends Item
 {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private final static ITextComponent SHIFT_HELP_01 = new TranslationTextComponent("tooltip.mxtune.wrench_item.shift_help_01").withStyle(TextFormatting.YELLOW);
     public WrenchItem(Properties properties)
     {
         super(properties);
     }
+    private final static ITextComponent SHIFT_HELP_02 = new TranslationTextComponent("tooltip.mxtune.wrench_item.shift_help_02").withStyle(TextFormatting.GREEN);
+    private final static ITextComponent SHIFT_HELP_03 = new TranslationTextComponent("tooltip.mxtune.wrench_item.shift_help_03").withStyle(TextFormatting.AQUA);
 
     /**
      * This is called when the item is used, before the block is activated.
@@ -54,10 +54,9 @@ public class WrenchItem extends Item
     @Override
     public void appendHoverText(ItemStack pStack, @Nullable World pLevel, List<ITextComponent> pTooltip, ITooltipFlag pFlag)
     {
-        pTooltip.add(new StringTextComponent("Does anyone read these? Should mxTune include a wrench?").withStyle(TextFormatting.GOLD));
-        pTooltip.add(new StringTextComponent("Music Block: Right-Click rotates front to the clicked face. SHIFT-Right-Click pick up into inventory").withStyle(TextFormatting.GOLD));
-        pTooltip.add(new StringTextComponent("is ItemTag forge:tools/wrench").withStyle(TextFormatting.DARK_GREEN));
-        pTooltip.add(new StringTextComponent("Ref: Other popular mods with wrenches RF... Ther...").withStyle(TextFormatting.DARK_GREEN));
+        pTooltip.add(SHIFT_HELP_01);
+        pTooltip.add(SHIFT_HELP_02);
+        pTooltip.add(SHIFT_HELP_03);
     }
 
     @Override

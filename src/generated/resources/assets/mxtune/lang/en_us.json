@@ -228,7 +228,7 @@
   "item.mxtune.whistle_mabinogi": "Whistle (Mabi)",
   "item.mxtune.whistle_tin": "Whistle Tin",
   "item.mxtune.whistle_tuned_mabinogi": "Whistle Tuned (Mabi)",
-  "item.mxtune.wrench": "Wooden Wrench",
+  "item.mxtune.wrench": "Wooden Wrench (mxTune)",
   "item.mxtune.xylophone": "Xylophone",
   "itemGroup.mxtune": "mxTune",
   "key.mxtune.open_music_options": "Music Options",
@@ -264,5 +264,8 @@
   "tooltip.mxtune.sheet_music.days_left": "Days left: %s",
   "tooltip.mxtune.sheet_music.duration_error": "h:mm:ss",
   "tooltip.mxtune.sheet_music.empty": " - Empty - ",
-  "tooltip.mxtune.sheet_music.n_of_m_instrument_name": "%s of %s %s"
+  "tooltip.mxtune.sheet_music.n_of_m_instrument_name": "%s of %s %s",
+  "tooltip.mxtune.wrench_item.shift_help_01": "Music Block:",
+  "tooltip.mxtune.wrench_item.shift_help_02": "  Right-Click rotates front to the clicked face.",
+  "tooltip.mxtune.wrench_item.shift_help_03": "  SHIFT-Right-Click picks up into inventory."
 }
