@@ -1,3 +1,16 @@
+#### 2024-01-05 mxtune-1.16.5-3.0.0-rc.1
+  - **Breaking changes** see link below for instructions to update existing worlds.
+  - **Important** [How to Update mxTune-1.16.5-beta worlds to rc.1](https://aeronicamc.github.io/mxtune/howto-update-mxtune-1.16.5-beta-to-rc.1/#how-to-update-a-saveworld-from-mxtune-1165-200-beta-2023-12-0876721460-to-mxtune-1165-300-rc-1)  
+  - Changed how music/MML is stored server side.
+    - Removed dependency on h2-mvstore library for music/MML persistence.
+    - This lib was shaded and always triggered CurseForge to delay approvals.
+    - Blame this change for the major version change and breaking worlds.
+  - Add an explicit server side config option to expire sheet music.
+  - Fix Music Block's rear redstone signal input.
+  - Update helps for Wooden Wrench (mxTune)
+  - This is a release candidate.
+  - Add [DevAuth](https://github.com/DJtheRedstoner/DevAuth) mod to build script to make authenticating with Microsoft easier.
+
 #### 2023-12-10 mxtune-1.16.5-2.0.0-beta-2023-12-08.76721460
 * crash single player #7 - Skip attempting to render placard when no groups exist. 
 
