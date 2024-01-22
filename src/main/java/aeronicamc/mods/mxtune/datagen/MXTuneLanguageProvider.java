@@ -160,7 +160,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.lock.help02", "[Unlocked]: Anyone can modify contents. View contents by RIGHT-CLICK-ing the block.");
         addGuiText("button.lock.help03", "[Locked]: Non-owners can view contents. View contents by SHIFT-RIGHT-CLICK-ing the block.");
         addGuiText("button.lock.help04", "Play Activation: [Unlocked] SHIFT-RIGHT-CLICK / [Locked] RIGHT-CLICK.");
-        addGuiText("button.lock.help05", "Owners may break the block or. Settings and instruments are saved! The block item may be passed to another person. They become owner upon placing in the world.");
+        addGuiText("button.lock.help05", "Owners may break the block. Settings and instruments are saved! The block item may be passed to another person. They become owner upon placing in the world.");
         addGuiText("button.lock.help06", "Owners may lock or unlock the contents. Owners can use a standard mod wrench to rotate or pick up the block.");
         addGuiText("button.lock.locked", "Locked");
         addGuiText("button.lock.unlocked", "Unlocked");
