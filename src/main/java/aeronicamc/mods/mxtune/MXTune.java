@@ -74,7 +74,7 @@ public class MXTune
         }
     };
 
-    public static boolean isDevEnv() { return !FMLEnvironment.production; };
+    public static boolean isDevEnv() { return !FMLEnvironment.production; }
 
     public MXTune()
     {

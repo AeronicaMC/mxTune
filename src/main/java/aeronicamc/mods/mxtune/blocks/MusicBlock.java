@@ -150,7 +150,7 @@ public class MusicBlock extends Block implements IWrenchAble
                             // but I have not found another solution yet.
                             if (musicBlockEntity.notHeld())
                             {
-                                boolean isPlaying = canPlayOrStopMusic(worldIn, state, pos, musicBlockEntity, player, false);
+                                boolean isPlaying = canPlayOrStopMusic(worldIn, state, pos, musicBlockEntity, player);
                                 if (isPlaying)
                                     musicBlockEntity.setLastPlay(true);
                                 setPlayingState(worldIn, pos, state, isPlaying);
@@ -175,7 +175,7 @@ public class MusicBlock extends Block implements IWrenchAble
         return LockableHelper.isLocked(level, blockPos) != player.isShiftKeyDown();
     }
 
-    private boolean canPlayOrStopMusic(World pLevel, BlockState pState, BlockPos pPos, MusicBlockEntity musicBlockEntity, @Nullable PlayerEntity playerEntity, Boolean noPlay)
+    private boolean canPlayOrStopMusic(World pLevel, BlockState pState, BlockPos pPos, MusicBlockEntity musicBlockEntity, @Nullable PlayerEntity playerEntity)
     {
         int playId = PlayManager.getEntitiesPlayId(musicBlockEntity.getMusicSourceEntityId());
             if (PlayManager.isActivePlayId(playId) || pState.getValue(PLAYING))
@@ -183,12 +183,8 @@ public class MusicBlock extends Block implements IWrenchAble
                 PlayManager.stopPlayId(playId, 0);
                 return false;
             }
-            if (!noPlay)
-            {
-                playId = PlayManager.playMusic(pLevel, pPos, playerEntity);
-                return playId != PlayIdSupplier.INVALID && !pState.getValue(PLAYING);
-            }
-        return false;
+        playId = PlayManager.playMusic(pLevel, pPos, playerEntity);
+        return playId != PlayIdSupplier.INVALID && !pState.getValue(PLAYING);
     }
 
     private boolean handleWrenchAble(BlockState state, World level, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
@@ -216,7 +212,6 @@ public class MusicBlock extends Block implements IWrenchAble
                 if (!hit.getDirection().equals(Direction.UP ) && !hit.getDirection().equals(Direction.DOWN))
                 {
                     newState = state.setValue(HORIZONTAL_FACING, hit.getDirection());
-                    //newState = state.rotate(level, pos, Rotation.CLOCKWISE_90);
                     level.setBlockAndUpdate(pos, newState);
                     level.playSound(null, pos, ModSoundEvents.ROTATE_BLOCK.get(), SoundCategory.BLOCKS, 0.6F, 1.0F);
                 } else
@@ -264,7 +259,7 @@ public class MusicBlock extends Block implements IWrenchAble
                         {
                             if (isSidePowered)
                             {
-                                boolean isPlaying = canPlayOrStopMusic(pLevel, pState, pPos, musicBlockEntity, null, false);
+                                boolean isPlaying = canPlayOrStopMusic(pLevel, pState, pPos, musicBlockEntity, null);
                                 if (isPlaying)
                                     musicBlockEntity.setLastPlay(true);
                                 setPlayingState(pLevel, pPos, pState, isPlaying);

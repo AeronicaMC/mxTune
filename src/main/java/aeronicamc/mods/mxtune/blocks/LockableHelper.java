@@ -22,7 +22,7 @@ public class LockableHelper
         TileEntity blockEntity = level.getBlockEntity(blockPos);
         boolean lock = false;
         if (blockEntity instanceof ILockable)
-            lock = ((ILockable) blockEntity).isLocked() ; //canManage(player, (ILockable) blockEntity);
+            lock = ((ILockable) blockEntity).isLocked() ;
 
         return lock;
     }

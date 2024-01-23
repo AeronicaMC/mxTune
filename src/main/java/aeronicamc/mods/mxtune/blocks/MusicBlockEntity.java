@@ -26,8 +26,6 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -36,7 +34,6 @@ import java.util.UUID;
 public class MusicBlockEntity extends TileEntity implements INamedContainerProvider, ILockable, IMusicPlayer, INameable, ITickableTileEntity
 {
     public static final UUID EMPTY_OWNER = new UUID(0,0);
-    private static final Logger LOGGER = LogManager.getLogger(MusicBlockEntity.class);
     private final LazyOptional<IItemHandler> handler = LazyOptional.of(this::createHandler);
     public static final String KEY_CUSTOM_NAME = "CustomName";
     public static final String KEY_INVENTORY = "Inventory";
