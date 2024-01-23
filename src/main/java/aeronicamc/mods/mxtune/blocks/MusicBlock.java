@@ -40,8 +40,6 @@ import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.network.NetworkHooks;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -53,9 +51,6 @@ import static net.minecraftforge.common.util.Constants.BlockFlags;
 import static net.minecraftforge.common.util.Constants.NBT;
 
 
-/**
- * TODO: Review redstone states, week-power, etc. The current state is flaky at best.
- */
 @SuppressWarnings("deprecation")
 public class MusicBlock extends Block implements IWrenchAble
 {
@@ -63,7 +58,6 @@ public class MusicBlock extends Block implements IWrenchAble
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
     private static final VoxelShape BOTTOM_AABB = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 8.0D, 16.0D);
-    private static final Logger LOGGER = LogManager.getLogger(MusicBlock.class);
 
     public MusicBlock()
     {
