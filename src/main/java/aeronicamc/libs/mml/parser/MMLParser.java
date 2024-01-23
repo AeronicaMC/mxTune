@@ -494,7 +494,7 @@ public class MMLParser
     private long durationTicks(int mmlNoteLength, boolean dottedLEN)
     {
         double dot = dottedLEN ? 15.0d : 10.0d;
-        return (long) (((4.0d / (double) mmlNoteLength) * dot / 10.0d) * PPQ);
+        return (long) (((4.0d / mmlNoteLength) * dot / 10.0d) * PPQ);
     }
 
     // Tick Collection
