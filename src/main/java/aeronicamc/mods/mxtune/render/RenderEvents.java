@@ -171,7 +171,7 @@ public class RenderEvents
             final ITextComponent infoText = new StringTextComponent("").append(SheetMusicHelper.getFormattedMusicDuration(sheetMusic))
                     .append(String.format(" %s %s", mc.getSoundManager().getDebugString(), ClientAudio.getDebugString())).withStyle(TextFormatting.WHITE);
 
-            final int offset = Math.max(Math.max(mc.font.width(titleText), mc.font.width(MXTune.isDevEnv ? infoText : extraText)) + 40, width);
+            final int offset = Math.max(Math.max(mc.font.width(titleText), mc.font.width(MXTune.isDevEnv() ? infoText : extraText)) + 40, width);
             final MatrixStack pPoseStack = event.getMatrixStack();
 
             mc.getTextureManager().bind(TEXTURE);
@@ -181,10 +181,10 @@ public class RenderEvents
             RenderHelper.blit(pPoseStack, offset - width + 10, 0, 10, 0, width, height);
 
             mc.font.draw(pPoseStack, titleText, 30.0F, 7.0F, -11534256);
-            mc.font.draw(pPoseStack, MXTune.isDevEnv ? infoText : extraText, 30.0F, 17.0F, -11534256);
+            mc.font.draw(pPoseStack, MXTune.isDevEnv() ? infoText : extraText, 30.0F, 17.0F, -11534256);
             mc.getItemRenderer().renderAndDecorateItem(itemStack, 8, 8);
 
-            if (MXTune.isDevEnv)
+            if (MXTune.isDevEnv())
             {
                 final int[] posY = new int[1];
                 posY[0] = 25;
