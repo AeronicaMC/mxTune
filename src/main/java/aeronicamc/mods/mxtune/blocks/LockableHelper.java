@@ -11,13 +11,13 @@ public class LockableHelper
     private LockableHelper() { /* NOP */ }
 
     /**
-     * Test if a block entity is locked for the {@link PlayerEntity}
-     * @param player that is tested for ownership
-     * @param level the current world
+     * Test if a block entity is locked
+     *
+     * @param level    the current world
      * @param blockPos of the {@link TileEntity}
      * @return
      */
-    public static boolean isLocked(PlayerEntity player, World level, BlockPos blockPos)
+    public static boolean isLocked(World level, BlockPos blockPos)
     {
         TileEntity blockEntity = level.getBlockEntity(blockPos);
         boolean lock = false;

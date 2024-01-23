@@ -39,7 +39,6 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -179,7 +178,7 @@ public class MusicBlock extends Block implements IWrenchAble
 
     private boolean invertShiftIfLocked(PlayerEntity player, World level, BlockPos blockPos)
     {
-        return LockableHelper.isLocked(FakePlayerFactory.getMinecraft((ServerWorld) level), level, blockPos) != player.isShiftKeyDown();
+        return LockableHelper.isLocked(level, blockPos) != player.isShiftKeyDown();
     }
 
     private boolean canPlayOrStopMusic(World pLevel, BlockState pState, BlockPos pPos, MusicBlockEntity musicBlockEntity, @Nullable PlayerEntity playerEntity, Boolean noPlay)
