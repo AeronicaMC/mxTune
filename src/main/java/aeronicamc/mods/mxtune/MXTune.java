@@ -62,14 +62,11 @@ import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.network.NetworkEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 
 @Mod(Reference.MOD_ID)
 public class MXTune
 {
-    private static final Logger LOGGER = LogManager.getLogger(Reference.MOD_ID);
     public static final ItemGroup ITEM_GROUP = new ItemGroup(Reference.MOD_ID) {
         @Override
         public ItemStack makeIcon() {
@@ -77,7 +74,7 @@ public class MXTune
         }
     };
 
-    public static final boolean isDevEnv = !FMLEnvironment.production;
+    public static boolean isDevEnv = !FMLEnvironment.production;
 
     public MXTune()
     {
