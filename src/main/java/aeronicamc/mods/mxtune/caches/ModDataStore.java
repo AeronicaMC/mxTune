@@ -1,6 +1,5 @@
 package aeronicamc.mods.mxtune.caches;
 
-import aeronicamc.libs.mml.util.TestData;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.util.MXTuneException;
 import net.minecraftforge.fml.LogicalSide;
@@ -26,7 +25,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import static aeronicamc.mods.mxtune.caches.FileHelper.*;
-import static java.lang.Math.min;
 import static net.minecraftforge.fml.LogicalSide.SERVER;
 
 
@@ -40,26 +38,7 @@ public class ModDataStore
 
     public static void start()
     {
-        testGet();
-        long count = reapSheetMusic(false); // TODO: Remember to set whatIf to false for production!
-        if (count > 0) LOGGER.info("Reaped {} music file(s).", count);
-    }
-
-    private static void testPut()
-    {
-        for (TestData c : TestData.values())
-        {
-           String index;
-           if ((index = addMusicText(c.getMML())) == null)
-               LOGGER.warn("Duplicate record: {}, musicText: {}", String.format("%s", index), c.getMML().substring(0, min(24, c.getMML().length())));
-        }
-    }
-
-    private static void testGet()
-    {
-        List<Path> gzPaths = getSafeMusicPaths();
-        gzPaths.subList(0, Math.min(gzPaths.size(), 10)).forEach(p -> LOGGER.debug("  musicText: {}", p));
-        LOGGER.debug("  Showing {} of {} Music files.", Math.min(gzPaths.size(), 10), gzPaths.size());
+        reapSheetMusic();
     }
 
     private static List<Path> getSafeMusicPaths() {
@@ -111,7 +90,7 @@ public class ModDataStore
                         GZIPOutputStream gzipOutputStream = new GZIPOutputStream(Files.newOutputStream(path));
                         gzipOutputStream.write(pair[1].getBytes(StandardCharsets.UTF_8));
                         gzipOutputStream.close();
-                        LOGGER.info("  Created: {}", path.toString());
+                        LOGGER.info("  Created: {}", path);
                         size.getAndIncrement();
                     } catch (IOException e)
                     {
@@ -199,7 +178,7 @@ public class ModDataStore
         return Math.max((Duration.between(now, keyPlusDaysLeft).getSeconds() / 86400), 0) <= 0;
     }
 
-    private static long reapSheetMusic(boolean whatIf)
+    private static void reapSheetMusic()
     {
         getReapDateTimeKeyList().clear();
         AtomicLong reapCount = new AtomicLong();
@@ -211,23 +190,25 @@ public class ModDataStore
         });
         reapCount.set(getReapDateTimeKeyList().size());
 
-        if (!getReapDateTimeKeyList().isEmpty() && !whatIf)
+        if (!getReapDateTimeKeyList().isEmpty() && MXTuneConfig.sheetMusicExpires())
         {
             // List and Reap
+            LOGGER.info("Reaping {} music files if.", reapCount.get());
             for (LocalDateTime entry : getReapDateTimeKeyList()) {
                 String filename = toSafeFileNameKey(entry.toString());
-                LOGGER.info("Reaped SheetMusic file: {}", filename);
+                LOGGER.info("    {}", filename);
                 removeSheetMusic(entry.toString());
             }
-        } else
+        } else if (!getReapDateTimeKeyList().isEmpty())
         {
             // List only
+            LOGGER.info("Could Reap {} music files if allowed to expire.", reapCount.get());
             for (LocalDateTime entry : getReapDateTimeKeyList()) {
                 String filename = toSafeFileNameKey(entry.toString());
-                LOGGER.info("Could reap SheetMusic file: {}", filename);
+                LOGGER.info("    {}", filename);
             }
-        }
-        return reapCount.get();
+        } else
+            LOGGER.info("No expired music files found.");
     }
 
     /**
