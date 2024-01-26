@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.gui.mml;
 
+import aeronicamc.mods.mxtune.MXTune;
 import aeronicamc.mods.mxtune.caches.FileHelper;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.gui.MXScreen;
@@ -452,7 +453,9 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         boolean isOK = countOK == viewableTabCount;
         boolean hasEnoughMusicPaper = player.inventory.getSelected().getCount() >= viewableTabCount;
         buttonPlayStop.active = isPlaying || isOK;
-        buttonSheetMusic.active = buttonMusicScore.active = !textTitle.getValue().isEmpty() && isOK && hasEnoughMusicPaper;
+        // TODO: Remove MXTune.isDevEnv() when Music Score feature is complete
+        buttonSheetMusic.active = !textTitle.getValue().isEmpty() && isOK && hasEnoughMusicPaper;
+        buttonMusicScore.active = MXTune.isDevEnv() && buttonSheetMusic.active;
         buttonPlayStop.setMessage(isPlaying ? new TranslationTextComponent("gui.mxtune.button.stop") : new TranslationTextComponent("gui.mxtune.button.play_all"));
         sourcesLink.visible = sourcesLink.getUrl().matches("^(http(s)?:\\/\\/[a-zA-Z0-9\\-_]+\\.[a-zA-Z]+(.)+)+");
 
