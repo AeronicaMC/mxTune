@@ -136,6 +136,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.import", "Import");
         addGuiText("button.minus", "-");
         addGuiText("button.new", "New");
+        addGuiText("button.new.help01", "Clears all text and MML. Will ask to save.");
         addGuiText("button.open_folder", "Open Folder");
         addGuiText("button.open_folder.help01","Place MML files into this folder to be imported. Recognized types are: ");
         addGuiText("button.open_folder.help02"," .mml, .ms2mml, .zip (contains multiple .ms2mml files)");
