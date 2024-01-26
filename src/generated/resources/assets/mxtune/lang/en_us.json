@@ -52,6 +52,7 @@
   "gui.mxtune.button.help.help02": "Hoover over buttons for tips.",
   "gui.mxtune.button.help.help03": "SHIFT-Hoover over buttons for tips.",
   "gui.mxtune.button.import": "Import",
+  "gui.mxtune.button.import.help01": "Supports 3MLE .mml, Maple Story 2 .ms2mml, and zipped .ms2mml multipart files.",
   "gui.mxtune.button.left_rs_out.disabled": "Output Disabled",
   "gui.mxtune.button.left_rs_out.enabled": "Output Enabled",
   "gui.mxtune.button.left_rs_out.help01": "Left Side Redstone Output Toggle",

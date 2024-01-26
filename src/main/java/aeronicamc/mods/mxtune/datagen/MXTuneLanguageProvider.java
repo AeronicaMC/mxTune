@@ -134,6 +134,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
 
         // GuiMXT, GuiMXTPartTab, GuiFileImporter, GuiMusicLibrary
         addGuiText("button.import", "Import");
+        addGuiText("button.import.help01", "Supports 3MLE .mml, Maple Story 2 .ms2mml, and zipped .ms2mml multipart files.");
         addGuiText("button.minus", "-");
         addGuiText("button.new", "New");
         addGuiText("button.new.help01", "Clears all text and MML. Will ask to save.");

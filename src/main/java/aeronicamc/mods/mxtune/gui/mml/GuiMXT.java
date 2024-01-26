@@ -121,6 +121,8 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         buttonNew.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.new").withStyle(TextFormatting.YELLOW));
         buttonNew.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.new.help01").withStyle(TextFormatting.WHITE));
         MXButton buttonImport = new MXButton(buttonNew.getLeft() + buttonNew.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.import"), pImport->importAction());
+        buttonImport.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.import").withStyle(TextFormatting.YELLOW));
+        buttonImport.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.import.help01").withStyle(TextFormatting.WHITE));
         MXButton buttonOpen = new MXButton(buttonImport.getLeft() + buttonImport.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.library"), pOpen->openAction());
         buttonSave = new MXButton(buttonOpen.getLeft() + buttonOpen.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.save"), pSave->saveAction());
         buttonSheetMusic = new MXButton(buttonSave.getLeft() + buttonSave.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.write_sheet_music"), pDone->writeSheetMusic());
