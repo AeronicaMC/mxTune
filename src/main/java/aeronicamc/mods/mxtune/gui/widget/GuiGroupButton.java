@@ -7,12 +7,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
-public class GuiJAMButton extends MXButton
+public class GuiGroupButton extends MXButton
 {
     static final ITextComponent EMPTY = new StringTextComponent("");
     private boolean jamEnabled;
 
-    public GuiJAMButton(IPressable pOnPress)
+    public GuiGroupButton(IPressable pOnPress)
     {
         super(0, 0, 20, 20, EMPTY, pOnPress);
     }
@@ -33,33 +33,33 @@ public class GuiJAMButton extends MXButton
         {
             Minecraft.getInstance().getTextureManager().bind(MusicBlockScreen.GUI);
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-            GuiJAMButton.Icon guiRedstoneButtonIcon;
+            GuiGroupButton.Icon guiRedstoneButtonIcon;
             if (this.jamEnabled)
             {
                 if (!this.active)
                 {
-                    guiRedstoneButtonIcon = GuiJAMButton.Icon.JAM_ENABLED_DISABLED;
+                    guiRedstoneButtonIcon = GuiGroupButton.Icon.JAM_ENABLED_DISABLED;
                 }
                 else if (isHovered)
                 {
-                    guiRedstoneButtonIcon = GuiJAMButton.Icon.JAM_ENABLED_HOVER;
+                    guiRedstoneButtonIcon = GuiGroupButton.Icon.JAM_ENABLED_HOVER;
                 }
                 else
                 {
-                    guiRedstoneButtonIcon = GuiJAMButton.Icon.JAM_ENABLED;
+                    guiRedstoneButtonIcon = GuiGroupButton.Icon.JAM_ENABLED;
                 }
             }
             else if (!this.active)
             {
-                guiRedstoneButtonIcon = GuiJAMButton.Icon.JAM_DISABLED_DISABLED;
+                guiRedstoneButtonIcon = GuiGroupButton.Icon.JAM_DISABLED_DISABLED;
             }
             else if (isHovered)
             {
-                guiRedstoneButtonIcon = GuiJAMButton.Icon.JAM_DISABLED_HOVER;
+                guiRedstoneButtonIcon = GuiGroupButton.Icon.JAM_DISABLED_HOVER;
             }
             else
             {
-                guiRedstoneButtonIcon = GuiJAMButton.Icon.JAM_DISABLED_UNLOCKED;
+                guiRedstoneButtonIcon = GuiGroupButton.Icon.JAM_DISABLED_UNLOCKED;
             }
 
             this.blit(pMatrixStack, this.x, this.y, guiRedstoneButtonIcon.getX(), guiRedstoneButtonIcon.getY(), this.width, this.height);
