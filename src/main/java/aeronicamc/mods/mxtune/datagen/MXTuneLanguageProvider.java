@@ -188,6 +188,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.multi_inst_screen.instrument_chooser.help01", "Instrument Chooser");
         addGuiText("button.multi_inst_screen.instrument_chooser.help02", "Choose the instrument in to use for playing sheet music.");
         addGuiText("button.multi_inst_screen.instrument_chooser.help03", "Disabled when Auto Select is on.");
+        addGuiText("button.multi_inst_screen.instrument_chooser.open_group", "Open Group");
         addGuiText("switch.multi_inst_screen.auto_select_on", "Auto Select on");
         addGuiText("switch.multi_inst_screen.auto_select_off", "Auto Select off");
         addGuiText("switch.multi_inst_screen.auto_select.help01", "Auto Select Instrument");
@@ -281,7 +282,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
 
     private void addKeys()
     {
-        addKey("open_party", "Open Party");
+        addKey("open_group", "Open Group");
         addKey("open_music_options", "Music Options");
     }
 

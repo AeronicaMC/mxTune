@@ -16,6 +16,7 @@
  */
 package aeronicamc.mods.mxtune.util;
 
+import aeronicamc.mods.mxtune.MXTune;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.OpenScreenMessage;
@@ -34,14 +35,15 @@ public class KeyHandler
     private static class KeyHandlerHolder {private static final KeyHandler INSTANCE = new KeyHandler();}
     public static KeyHandler getInstance() {return KeyHandlerHolder.INSTANCE;}
 
-    private KeyBinding keyOpenPartyGUI = new KeyBinding("key.mxtune.open_party", GLFW.GLFW_KEY_J, Reference.MOD_ID);
+    private KeyBinding keyOpenGroupGUI = new KeyBinding("key.mxtune.open_group", GLFW.GLFW_KEY_J, Reference.MOD_ID);
     private KeyBinding keyOpenMusicOptionsGUI = new KeyBinding("key.mxtune.open_music_options", GLFW.GLFW_KEY_P, Reference.MOD_ID);
     private boolean ctrlKeyDown = false;
 
     private KeyHandler()
     {
-        ClientRegistry.registerKeyBinding(keyOpenPartyGUI);
-        ClientRegistry.registerKeyBinding(keyOpenMusicOptionsGUI);
+        ClientRegistry.registerKeyBinding(keyOpenGroupGUI);
+        if (MXTune.isDevEnv()) // FUTURE: Music Options
+            ClientRegistry.registerKeyBinding(keyOpenMusicOptionsGUI);
         mc.options.load();
     }
 
@@ -53,7 +55,7 @@ public class KeyHandler
 
         int key = event.getKey();
         boolean isDown = event.getAction() == (GLFW.GLFW_PRESS & GLFW.GLFW_REPEAT);
-        if (keyOpenPartyGUI.consumeClick())
+        if (keyOpenGroupGUI.consumeClick())
         {
             PacketDispatcher.sendToServer(new OpenScreenMessage(OpenScreenMessage.SM.GROUP_OPEN));
         }

@@ -38,10 +38,12 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
     private static final ITextComponent INST_CHOOSER_HELP01 = new TranslationTextComponent("gui.mxtune.button.multi_inst_screen.instrument_chooser.help01").withStyle(TextFormatting.RESET);
     private static final ITextComponent INST_CHOOSER_HELP02 = new TranslationTextComponent("gui.mxtune.button.multi_inst_screen.instrument_chooser.help02").withStyle(TextFormatting.GREEN);
     private static final ITextComponent INST_CHOOSER_HELP03 = new TranslationTextComponent("gui.mxtune.button.multi_inst_screen.instrument_chooser.help03").withStyle(TextFormatting.YELLOW);
+    private static final ITextComponent OPEN_GROUP = new TranslationTextComponent("gui.mxtune.button.multi_inst_screen.instrument_chooser.open_group").withStyle(TextFormatting.RESET);
+
     private final MXButton buttonChangeInstrument = new MXButton(this::openSelector);
     private final GuiVSlideSwitch autoSelectState = new GuiVSlideSwitch(p -> onChangeAuto());
     private final GuiHelpButton helpButton = new GuiHelpButton(p -> helpClicked());
-    private final GuiJAMButton jamButton = new GuiJAMButton(p -> onJamClicked());
+    private final GuiGroupButton groupButton = new GuiGroupButton(p -> onJamClicked());
 
     public MultiInstScreen(MultiInstContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
@@ -74,9 +76,9 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
         helpButton.setPosition(leftPos + imageWidth - 12 - 20, yPos + 53);
         this.addButton(helpButton);
 
-        jamButton.setPosition(leftPos + imageWidth - 12 - 42, yPos + 53);
-        jamButton.setJamEnabled(true);
-        this.addButton(jamButton);
+        groupButton.setPosition(leftPos + imageWidth - 12 - 42, yPos + 53);
+        groupButton.setJamEnabled(true);
+        this.addButton(groupButton);
         getSignals();
     }
 
@@ -113,6 +115,7 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
         buttonChangeInstrument.addHooverText(false, INST_CHOOSER_HELP03);
         buttonChangeInstrument.addHooverText(false, autoSelectState.getOnOff() ? BUTTON_DISABLED : BUTTON_ENABLED);
         buttonChangeInstrument.active = !autoSelectState.getOnOff();
+        groupButton.addHooverText(true, OPEN_GROUP);
         helpButton.addHooverText(true, HELP_HELP01);
         helpButton.addHooverText(false, helpButton.isHelpEnabled() ? HELP_HELP02 : HELP_HELP03);
     }

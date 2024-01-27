@@ -45,7 +45,7 @@ public class GuiVSlideSwitch extends MXButton
 
             this.blit(pMatrixStack, this.x, this.y, guiLockButton$icon.getX(), guiLockButton$icon.getY(), this.width, this.height);
             //drawString(pMatrixStack, mc.font, getMessage(), this.getRight() + 5, this.y + (height - mc.font.lineHeight)/2, -1);
-            mc.font.draw(pMatrixStack, getMessage(), this.getRight() + 5F, (float)this.y + (height - mc.font.lineHeight)/2F, -1);
+            mc.font.draw(pMatrixStack, getMessage(), this.getRight() + 5F, this.y + (height - mc.font.lineHeight)/2F, -1);
         }
     }
 

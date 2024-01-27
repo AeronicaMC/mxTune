@@ -16,6 +16,7 @@
  */
 package aeronicamc.mods.mxtune.network.messages;
 
+import aeronicamc.mods.mxtune.MXTune;
 import aeronicamc.mods.mxtune.gui.Handler;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -65,12 +66,9 @@ public class SendKeyMessage extends AbstractMessage<SendKeyMessage>
     private static void handleClientSide(final SendKeyMessage message, final Supplier<NetworkEvent.Context> ctx)
     {
         ctx.get().enqueueWork(()->{
-            if ("key.mxtune.open_party".equalsIgnoreCase(message.keyBindingDesc))
+            if ("key.mxtune.open_music_options".equalsIgnoreCase(message.keyBindingDesc) && MXTune.isDevEnv())
             {
-                Handler.openTestScreen();
-            }
-            if ("key.mxtune.open_music_options".equalsIgnoreCase(message.keyBindingDesc))
-            {
+                // FUTURE: Music Options
                 Handler.openTestScreen();
             }
         });
