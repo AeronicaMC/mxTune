@@ -137,7 +137,7 @@ public class EnhancedShapedRecipeBuilder<
      *
      * @param id The recipe ID
      */
-    protected void ensureValid(final ResourceLocation id) {
+    protected void checkValid(final ResourceLocation id) {
         if (itemGroup == null && result.getItem().getItemCategory() == null) {
             throw new IllegalStateException("Enhanced Shaped Recipe " + id + " has result " + result + " with no item group - use EnhancedShapedRecipeBuilder.itemGroup to specify one");
         }
@@ -153,7 +153,7 @@ public class EnhancedShapedRecipeBuilder<
             ENSURE_VALID.invoke(this, id);
 
             // Perform our validation
-            ensureValid(id);
+            checkValid(id);
 
             // We can't call the super method directly because it throws an exception when the result is an item that
             // doesn't belong to an item group (e.g. Mob Spawners).
@@ -205,8 +205,8 @@ public class EnhancedShapedRecipeBuilder<
         }
 
         @Override
-        protected void ensureValid(final ResourceLocation id) {
-            super.ensureValid(id);
+        protected void checkValid(final ResourceLocation id) {
+            super.checkValid(id);
 
             if (!result.hasTag() && itemGroup == null) {
                 throw new IllegalStateException("Vanilla Shaped Recipe " + id + " has no NBT and no custom item group - use ShapedRecipeBuilder instead");
