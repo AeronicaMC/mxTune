@@ -79,7 +79,10 @@ public class ClientAudio
 
     public static float getProgress(int entityId)
     {
-        return ActiveAudio.getActiveTuneByEntityId(entityId).isPresent() ? ActiveAudio.getActiveTuneByEntityId(entityId).get().getProgress() : 0F;
+        if (ActiveAudio.getActiveTuneByEntityId(entityId).isPresent())
+            return ActiveAudio.getActiveTuneByEntityId(entityId).get().getProgress();
+        else
+            return 0F;
     }
 
     private static void init(SoundEngine se)
