@@ -135,7 +135,7 @@ public class GuiMultiInstChooser extends Screen
 
         // Render labels
         int titleWidth = font.width(this.title);
-        font.draw(pMatrixStack, this.title, (guiLeft+imageWidth) - titleWidth - 10, guiTop + 4, TextColorFg.DARK_GRAY);
+        font.draw(pMatrixStack, this.title, (guiLeft+imageWidth) - titleWidth - 10F, guiTop + 4F, TextColorFg.DARK_GRAY);
 
         super.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
 
