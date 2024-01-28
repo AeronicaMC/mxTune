@@ -81,7 +81,7 @@ public class PathList extends MXExtendedList<PathList.Entry>
 
             ITextComponent translated = new StringTextComponent(this.path.getFileName().toString());
             ITextProperties trimmed = minecraft.font.substrByWidth(translated, pWidth - 6);
-            minecraft.font.drawShadow(pMatrixStack, trimmed.getString(), pLeft, pTop + 1, getSelected() == this ? TextColorFg.WHITE : TextColorFg.GRAY, true);
+            minecraft.font.drawShadow(pMatrixStack, trimmed.getString(), pLeft, pTop + 1F, getSelected() == this ? TextColorFg.WHITE : TextColorFg.GRAY, true);
         }
 
         @Override
