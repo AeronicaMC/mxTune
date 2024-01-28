@@ -121,6 +121,7 @@ public class ModDataStore
         do {
             now = LocalDateTime.now(ROOT_ZONE);
             try {
+                //noinspection BusyWait
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 LOGGER.warn(e);
