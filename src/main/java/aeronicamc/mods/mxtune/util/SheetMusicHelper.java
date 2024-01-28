@@ -411,7 +411,7 @@ public class SheetMusicHelper
      * @param musicTitle becomes the Sheet Music display name.
      * @param extraData additional information. For SheetMusic multipart tunes: Part n of m; Solo: not used. For MusicScore it would indicate how many parts.
      * @param musicText MML to be saved to storage.
-     * @param partInstrumentIds String array of part instrument ids. Must be a 1 for sheet music, or the number of parts for a music score.
+     * @param partInstrumentIds String array of part instrument ids. Must contain 1 id for sheet music, or an id for each part for a music score.
      * @param musicType of IMusic item. PART or SCORE.
      * @param ownerUUID of the person who made the item.
      * @param ownerName of the person who made the item.
@@ -436,13 +436,14 @@ public class SheetMusicHelper
                 contents.putUUID(KEY_OWNER_UUID, ownerUUID);
                 contents.putString(KEY_OWNER_NAME, ownerName);
                 int[] index = new int[1];
-                if (partInstrumentIds.length > 0)
-                    Arrays.stream(partInstrumentIds).sequential().forEach( string -> {
-                       contents.putString(String.format("%s%d", KEY_PART_ID, index[0]++), string);
+                if (partInstrumentIds.length > 0 && partInstrumentIds.length <= Reference.MAX_MML_PARTS) {
+                    Arrays.stream(partInstrumentIds).sequential().forEach(string -> {
+                        contents.putString(String.format("%s%d", KEY_PART_ID, index[0]++), string);
                     });
-                compound.put(KEY_SHEET_MUSIC, contents);
-
-                return true;
+                    compound.put(KEY_SHEET_MUSIC, contents);
+                    return true;
+                } else
+                    LOGGER.warn("Number of parts out of range 1-{}. Found {}", Reference.MAX_MML_PARTS, partInstrumentIds.length);
             }
         }
         return false;
@@ -641,8 +642,8 @@ public class SheetMusicHelper
     public static ItemStack createSheetMusic(String title, byte[] extraData, String mml, String instrumentId)
     {
         ItemStack sheetMusic = new ItemStack(ModItems.SHEET_MUSIC.get());
-        String[] instrumentIds = new String[1];
-        instrumentIds[1] = instrumentId;
+        String[] instrumentIds = {""};
+        instrumentIds[0] = instrumentId;
         if (SheetMusicHelper.writeIMusic(sheetMusic, title, extraData, mml, instrumentIds, MusicType.PART, UUID_EMPTY , "---"))
         {
             return sheetMusic;
