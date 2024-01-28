@@ -1,6 +1,5 @@
 {
   "block.mxtune.music_block": "Music Block",
-  "block.mxtune.music_venue_tool_block": "Music Venue Marker",
   "chat.mxtune.groupManager.cannot_join_too_many": "Cannot join %s group. It is full.",
   "chat.mxtune.groupManager.invalid_leader": "Leader left, was demoted or group disbanded.",
   "chat.mxtune.groupManager.member_left_group": "%s has left the group.",
