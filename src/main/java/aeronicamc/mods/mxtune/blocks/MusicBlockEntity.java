@@ -54,7 +54,7 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
 
     // not stored in nbt
     private boolean previousInputPowerState;
-    private boolean LastPlay;
+    private boolean lastPlay;
     private int counter;
     private int useHeldCounter;
     private int musicSourceEntityId;
@@ -155,12 +155,12 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
 
     public boolean isLastPlay()
     {
-        return LastPlay;
+        return lastPlay;
     }
 
     public void setLastPlay(boolean lastPlay)
     {
-        LastPlay = lastPlay;
+        this.lastPlay = lastPlay;
     }
 
     public int getDuration()
