@@ -62,7 +62,5 @@ public class MXTuneBlockStateProvider extends BlockStateProvider
                 }, MusicBlock.POWERED);
 
         simpleBlockItem(ModBlocks.MUSIC_BLOCK.get(), musicBlockModel);
-        simpleBlock(ModBlocks.MUSIC_VENUE_TOOL_BLOCK.get());
-        simpleBlockItem(ModBlocks.MUSIC_VENUE_TOOL_BLOCK.get());
     }
 }

@@ -120,7 +120,6 @@ public class MXTune
         RenderingRegistry.registerEntityRenderingHandler(ModEntities.MUSIC_SOURCE.get(), MusicSourceRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntities.ROOTED_SOURCE.get(), RootedRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntities.MUSIC_VENUE_INFO.get(), MusicVenueInfoRenderer::new);
-        RenderTypeLookup.setRenderLayer(ModBlocks.MUSIC_VENUE_TOOL_BLOCK.get(), RenderType.cutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.MUSIC_BLOCK.get(), RenderType.cutoutMipped());
         ClientRegistry.bindTileEntityRenderer(ModBlockEntities.INV_MUSIC_BLOCK.get(), MusicBlockEntityRenderer::new);
         new InfoRenderer(Minecraft.getInstance().getTextureManager());

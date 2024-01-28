@@ -3,11 +3,8 @@ package aeronicamc.mods.mxtune.init;
 import aeronicamc.mods.mxtune.MXTune;
 import aeronicamc.mods.mxtune.Reference;
 import aeronicamc.mods.mxtune.blocks.MusicBlock;
-import aeronicamc.mods.mxtune.blocks.MusicVenueToolBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -55,10 +52,6 @@ public class ModBlocks
     private static boolean isInitialized;
 
     public static final RegistryObject<MusicBlock> MUSIC_BLOCK = registerBlock("music_block", MusicBlock::new);
-
-    public static final RegistryObject<MusicVenueToolBlock> MUSIC_VENUE_TOOL_BLOCK =
-            registerBlock("music_venue_tool_block",
-                          () -> new MusicVenueToolBlock(Block.Properties.of(Material.GLASS).strength(0.35F).sound(SoundType.GLASS).noOcclusion().isViewBlocking(ModBlocks::never)));
 
     private static <BLOCK extends Block> RegistryObject<BLOCK> registerBlock(final String name, final Supplier<BLOCK> blockFactory) {
         return registerBlock(name, blockFactory, block -> new BlockItem(block, defaultItemProperties()));
