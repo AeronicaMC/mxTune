@@ -205,9 +205,9 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
         int durationWidth = this.font.width(text);
         ITextComponent ownerName = new StringTextComponent(NetPlayerInfo != null ? NetPlayerInfo.getProfile().getName() : "-offline-").withStyle(TextFormatting.ITALIC);
         int nameWidth = this.font.width(ownerName);
-        this.font.draw(matrixStack, SheetMusicHelper.formatDuration(menu.getDuration()), imageWidth - durationWidth - 12, 6, 4210752);
+        this.font.draw(matrixStack, SheetMusicHelper.formatDuration(menu.getDuration()), imageWidth - durationWidth - 12F, 6, 4210752);
         this.font.draw(matrixStack, menu.getName(), 12, 6, 4210752);
         this.font.draw(matrixStack, this.inventory.getDisplayName(), 12, 91, 4210752);
-        this.font.draw(matrixStack, ownerName, imageWidth - nameWidth - 12, 91, 4210752);
+        this.font.draw(matrixStack, ownerName, imageWidth - nameWidth - 12F, 91, 4210752);
     }
 }
