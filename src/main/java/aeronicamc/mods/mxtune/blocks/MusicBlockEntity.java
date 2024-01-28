@@ -332,8 +332,10 @@ public class MusicBlockEntity extends TileEntity implements INamedContainerProvi
 
     public void useHeldCounterUpdate(boolean countUp)
     {
-        if (countUp)
-            useHeldCounter = (useHeldCounter += 7) > 1 ? 7 : useHeldCounter;
+        if (countUp) {
+            useHeldCounter += 7;
+            useHeldCounter = useHeldCounter > 1 ? 7 : useHeldCounter;
+        }
         else
             useHeldCounter = (--useHeldCounter < -1) ? -1 : useHeldCounter;
     }
