@@ -38,7 +38,7 @@ public class RenderHelper
      * @param pVHeight      V height
      */
     static void blit(MatrixStack pMatrixStack, int pX, int pY, int pUOffset, int pVOffset, int pUWidth, int pVHeight) {
-        AbstractGui.blit(pMatrixStack, pX, pY, RenderEvents.blitOffset, (float)pUOffset, (float)pVOffset, pUWidth, pVHeight, 256, 256);
+        AbstractGui.blit(pMatrixStack, pX, pY, RenderEvents.blitOffset, pUOffset, pVOffset, pUWidth, pVHeight, 256, 256);
     }
 
     /**
@@ -54,7 +54,7 @@ public class RenderHelper
      * @param pBlockState   BlockState at the BlockPos
      */
     static void renderHitOutline(World level, MatrixStack pMatrixStack, IVertexBuilder pBuffer, Entity pEntity, double pX, double pY, double pZ, BlockPos pBlockPos, BlockState pBlockState) {
-        renderShape(pMatrixStack, pBuffer, pBlockState.getShape(level, pBlockPos, ISelectionContext.of(pEntity)), (double)pBlockPos.getX() - pX, (double)pBlockPos.getY() - pY, (double)pBlockPos.getZ() - pZ, 1.0F, 0.0F, 1.0F, 0.4F);
+        renderShape(pMatrixStack, pBuffer, pBlockState.getShape(level, pBlockPos, ISelectionContext.of(pEntity)), pBlockPos.getX() - pX, pBlockPos.getY() - pY, pBlockPos.getZ() - pZ, 1.0F, 0.0F, 1.0F, 0.4F);
     }
 
     /**
@@ -113,7 +113,7 @@ public class RenderHelper
         int j = (int)(f1 * 255.0F) << 24;
         FontRenderer fontrenderer = Minecraft.getInstance().font;
         float f2 = (float)((double) -fontrenderer.width(pDisplayName) / 2);
-        fontrenderer.drawInBatch(pDisplayName, f2, (float)0, pColor, false, matrix4f, pBuffer, false, j, packedLight);
+        fontrenderer.drawInBatch(pDisplayName, f2, 0F, pColor, false, matrix4f, pBuffer, false, j, packedLight);
         pMatrixStack.popPose();
     }
 
@@ -206,7 +206,7 @@ public class RenderHelper
     static Quaternion GetXAxisRotation(Quaternion quaternion)
     {
         double a = Math.sqrt((quaternion.r() * quaternion.r()) + (quaternion.i() * quaternion.i()));
-        return new Quaternion(quaternion.i(), (float) 0, (float) 0, (float) (quaternion.r() / a));
+        return new Quaternion(quaternion.i(), 0F, 0F, (float) (quaternion.r() / a));
     }
 
     /**

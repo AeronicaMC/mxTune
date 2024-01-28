@@ -101,7 +101,7 @@ public class SoundFontList extends MXExtendedList<SoundFontList.Entry>
 
             ITextComponent translated = new TranslationTextComponent(String.format("item.mxtune.%s", soundFontProxy.id));
             ITextProperties trimmed = minecraft.font.substrByWidth(translated, pWidth - 6);
-            minecraft.font.drawShadow(pMatrixStack, trimmed.getString(), (float) (pLeft), (float) (pTop + 1), 16777215, true);
+            minecraft.font.drawShadow(pMatrixStack, trimmed.getString(), pLeft, pTop + 1, 16777215, true);
         }
 
         @Override

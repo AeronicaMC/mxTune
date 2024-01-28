@@ -92,7 +92,7 @@ public class FileDataList extends MXExtendedList<FileDataList.Entry>
 
             ITextComponent translated = new StringTextComponent(this.fileData.getName());
             ITextProperties trimmed = minecraft.font.substrByWidth(translated, pWidth - 6);
-            minecraft.font.drawShadow(pMatrixStack, trimmed.getString(), (float) (pLeft), (float) (pTop + 1), getSelected() == this ? TextColorFg.WHITE : TextColorFg.GRAY, true);
+            minecraft.font.drawShadow(pMatrixStack, trimmed.getString(), pLeft, (pTop + 1), getSelected() == this ? TextColorFg.WHITE : TextColorFg.GRAY, true);
         }
 
         @Override

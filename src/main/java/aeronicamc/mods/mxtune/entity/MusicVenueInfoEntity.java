@@ -97,8 +97,7 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
 
     /**
      * Called when this entity is broken. Entity parameter may be null.
-     *
-     * @param pBrokenEntity
+     * @param pBrokenEntity the broken entity.
      */
     @Override
     public void dropItem(@Nullable Entity pBrokenEntity)
@@ -159,7 +158,7 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
     }
 
     /**
-     * Called by the client when it receives a Entity spawn packet.
+     * Called by the client when it receives an Entity spawn packet.
      * Data should be read out of the stream in the same way as it was written.
      *
      * @param buffer The packet data stream
@@ -217,7 +216,7 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
     @Override
     public void lerpTo(double pX, double pY, double pZ, float pYRot, float pXRot, int pLerpSteps, boolean pTeleport) {
         BlockPos blockpos = this.pos.offset(pX - this.getX(), pY - this.getY(), pZ - this.getZ());
-        this.setPos((double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ());
+        this.setPos(blockpos.getX(), blockpos.getY(), blockpos.getZ());
     }
 
     /**

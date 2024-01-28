@@ -19,9 +19,9 @@ public class SpeakerParticle extends SpriteTexturedParticle
     public SpeakerParticle(ClientWorld pLevel, double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed)
     {
         super(pLevel, pX, pY, pZ, pXSpeed, pYSpeed, pZSpeed);
-        this.xd *= (double)0.1F;
-        this.yd *= (double)0.1F;
-        this.zd *= (double)0.1F;
+        this.xd *= 0.1F;
+        this.yd *= 0.1F;
+        this.zd *= 0.1F;
         this.xd += pXSpeed;
         this.yd += pYSpeed;
         this.zd += pZSpeed;
@@ -33,19 +33,19 @@ public class SpeakerParticle extends SpriteTexturedParticle
     }
 
     protected float getU0() {
-        return this.sprite.getU((double)((this.uo + 1.0F) / 4.0F * 16.0F));
+        return this.sprite.getU((this.uo + 1.0F) / 4.0F * 16.0F);
     }
 
     protected float getU1() {
-        return this.sprite.getU((double)(this.uo / 4.0F * 16.0F));
+        return this.sprite.getU(this.uo / 4.0F * 16.0F);
     }
 
     protected float getV0() {
-        return this.sprite.getV((double)(this.vo / 4.0F * 16.0F));
+        return this.sprite.getV(this.vo / 4.0F * 16.0F);
     }
 
     protected float getV1() {
-        return this.sprite.getV((double)((this.vo + 1.0F) / 4.0F * 16.0F));
+        return this.sprite.getV((this.vo + 1.0F) / 4.0F * 16.0F);
     }
 
     @Override

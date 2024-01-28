@@ -107,7 +107,7 @@ public class GroupMemberList extends MXExtendedList<GroupMemberList.Entry>
             ITextComponent name = member.getName();
             ITextProperties trimmed = minecraft.font.substrByWidth(name, pWidth - 6);
             int color = GroupClient.isLeader(member.getMemberId()) ? TextColorFg.YELLOW : TextColorFg.WHITE;
-            minecraft.font.drawShadow(pMatrixStack, trimmed.getString(), (float) (pLeft), (float) (pTop + 1), color, true);
+            minecraft.font.drawShadow(pMatrixStack, trimmed.getString(), pLeft, (pTop + 1), color, true);
         }
 
         @Override

@@ -85,7 +85,7 @@ public class MXTuneConfig
         }
     }
 
-    public static float getListenerRange() { return (float) SERVER.listenerRange.get(); }
+    public static float getListenerRange() { return SERVER.listenerRange.get(); }
 
     public static int getSheetMusicLifeInDays() { return SERVER.sheetMusicLifeInDays.get(); }
 

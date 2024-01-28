@@ -63,8 +63,8 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
         MatrixStack.Entry matrixStack$entry = matrixStack.last();
         Matrix4f matrix4f = matrixStack$entry.pose();
         Matrix3f matrix3f = matrixStack$entry.normal();
-        float f = (float)(-width) / 2.0F;
-        float f1 = (float)(-height) / 2.0F;
+        float f = (-width) / 2.0F;
+        float f1 = (-height) / 2.0F;
         float f2 = 0.5F;
         float f3 = backSprite.getU0();
         float f4 = backSprite.getU1();
@@ -80,33 +80,33 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
         float f14 = backSprite.getV1();
         int hPanelCnt = width / 16;
         int vPanelCnt = height / 16;
-        double d0 = 16.0D / (double)hPanelCnt;
-        double d1 = 16.0D / (double)vPanelCnt;
+        double d0 = 16.0D / hPanelCnt;
+        double d1 = 16.0D / vPanelCnt;
 
         for(int hPanelPos = 0; hPanelPos < hPanelCnt; ++hPanelPos) {
             for(int vPanelPos = 0; vPanelPos < vPanelCnt; ++vPanelPos) {
-                float f15 = f + (float)((hPanelPos + 1) * 16);
-                float f16 = f + (float)(hPanelPos * 16);
-                float f17 = f1 + (float)((vPanelPos + 1) * 16);
-                float f18 = f1 + (float)(vPanelPos * 16);
+                float f15 = f + ((hPanelPos + 1F) * 16);
+                float f16 = f + (hPanelPos * 16F);
+                float f17 = f1 + ((vPanelPos + 1F) * 16);
+                float f18 = f1 + (vPanelPos * 16F);
                 int i1 = MathHelper.floor(venueInfoEntity.getX());
-                int j1 = MathHelper.floor(venueInfoEntity.getY() + (double)((f17 + f18) / 2.0F / 16.0F));
+                int j1 = MathHelper.floor(venueInfoEntity.getY() + ((f17 + f18) / 2.0F / 16.0F));
                 int k1 = MathHelper.floor(venueInfoEntity.getZ());
                 Direction direction = venueInfoEntity.getDirection();
                 if (direction == Direction.NORTH) {
-                    i1 = MathHelper.floor(venueInfoEntity.getX() + (double)((f15 + f16) / 2.0F / 16.0F));
+                    i1 = MathHelper.floor(venueInfoEntity.getX() + ((f15 + f16) / 2.0F / 16.0F));
                 }
 
                 if (direction == Direction.WEST) {
-                    k1 = MathHelper.floor(venueInfoEntity.getZ() - (double)((f15 + f16) / 2.0F / 16.0F));
+                    k1 = MathHelper.floor(venueInfoEntity.getZ() - ((f15 + f16) / 2.0F / 16.0F));
                 }
 
                 if (direction == Direction.SOUTH) {
-                    i1 = MathHelper.floor(venueInfoEntity.getX() - (double)((f15 + f16) / 2.0F / 16.0F));
+                    i1 = MathHelper.floor(venueInfoEntity.getX() - ((f15 + f16) / 2.0F / 16.0F));
                 }
 
                 if (direction == Direction.EAST) {
-                    k1 = MathHelper.floor(venueInfoEntity.getZ() + (double)((f15 + f16) / 2.0F / 16.0F));
+                    k1 = MathHelper.floor(venueInfoEntity.getZ() + ((f15 + f16) / 2.0F / 16.0F));
                 }
 
                 int lightColor = WorldRenderer.getLightColor(venueInfoEntity.level, new BlockPos(i1, j1, k1));
@@ -116,10 +116,10 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
                 int lightColorInfo = ModRenderType.FULL_BRIGHT_LIGHT_MAP;
                 if (infoVertexBuilder != null)
                 {
-                    float u0 = (float) (d0 * (double)(hPanelCnt - hPanelPos))/16;
-                    float u1 = (float) (d0 * (double)(hPanelCnt - (hPanelPos + 1)))/16;
-                    float v0 = (float) (d1 * (double)(vPanelCnt - vPanelPos))/16;
-                    float v1 = (float) (d1 * (double)(vPanelCnt - (vPanelPos + 1)))/16;
+                    float u0 = (float) (d0 * (hPanelCnt - hPanelPos))/16;
+                    float u1 = (float) (d0 * (hPanelCnt - (hPanelPos + 1)))/16;
+                    float v0 = (float) (d1 * (vPanelCnt - vPanelPos))/16;
+                    float v1 = (float) (d1 * (vPanelCnt - (vPanelPos + 1)))/16;
                     this.vertexInfo(matrix4f, matrix3f, infoVertexBuilder, f15, f18, u1, v0, -0.5F, 0, 0, -1, lightColorInfo);
                     this.vertexInfo(matrix4f, matrix3f, infoVertexBuilder, f16, f18, u0, v0, -0.5F, 0, 0, -1, lightColorInfo);
                     this.vertexInfo(matrix4f, matrix3f, infoVertexBuilder, f16, f17, u0, v1, -0.5F, 0, 0, -1, lightColorInfo);
@@ -172,11 +172,11 @@ public class MusicVenueInfoRenderer extends EntityRenderer<MusicVenueInfoEntity>
     }
 
     private void vertex(Matrix4f matrix4f$pose, Matrix3f matrix3f$normal, IVertexBuilder vertexBuilder, float pPoseX, float pPoseY, float pU, float pV, float pPoseZ, int pNormalX, int pNormalY, int pNormalZ, int pLightMap) {
-        vertexBuilder.vertex(matrix4f$pose, pPoseX, pPoseY, pPoseZ).color(255, 255, 255, 255).uv(pU, pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightMap).normal(matrix3f$normal, (float)pNormalX, (float)pNormalY, (float)pNormalZ).endVertex();
+        vertexBuilder.vertex(matrix4f$pose, pPoseX, pPoseY, pPoseZ).color(255, 255, 255, 255).uv(pU, pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightMap).normal(matrix3f$normal, pNormalX, pNormalY, pNormalZ).endVertex();
     }
 
     private void vertexInfo(Matrix4f matrix4f$pose, Matrix3f matrix3f$normal, IVertexBuilder vertexBuilder, float pPoseX, float pPoseY, float pU, float pV, float pPoseZ, int pNormalX, int pNormalY, int pNormalZ, int pLightMap) {
-        vertexBuilder.vertex(matrix4f$pose, pPoseX, pPoseY, pPoseZ).color(255, 255, 255, 255).uv(pU, pV).uv2(pLightMap).normal(matrix3f$normal, (float)pNormalX, (float)pNormalY, (float)pNormalZ).endVertex();
+        vertexBuilder.vertex(matrix4f$pose, pPoseX, pPoseY, pPoseZ).color(255, 255, 255, 255).uv(pU, pV).uv2(pLightMap).normal(matrix3f$normal, pNormalX, pNormalY, pNormalZ).endVertex();
     }
 
     private void dummyPress() {}

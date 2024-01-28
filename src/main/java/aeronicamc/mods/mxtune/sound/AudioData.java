@@ -416,7 +416,7 @@ public class AudioData implements Cloneable
     protected Object clone()
     {
         try {
-            return (AudioData) super.clone();
+            return super.clone();
         } catch (CloneNotSupportedException e)
         {
             return new AudioData(this.durationSeconds, this.secondsElapsed, this.processTimeMS, this.getPlayId(), this.getEntityId(), this.isClientPlayer, this.callback);

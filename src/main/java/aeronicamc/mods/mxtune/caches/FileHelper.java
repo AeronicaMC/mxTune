@@ -88,11 +88,6 @@ public class FileHelper
         return path.getFileSystem().getPathMatcher("glob:**.{mml,ms2mml,zip}");
     }
 
-    public static PathMatcher getGZMatcher(Path path)
-    {
-        return path.getFileSystem().getPathMatcher("glob:**.{gz}");
-    }
-
     /**
      * Match the .mxt file extension
      * @param path to match files
@@ -123,7 +118,7 @@ public class FileHelper
             } catch (IOException e)
             {
                 LOGGER.error(e);
-                LOGGER.warn("Unable to recreate folder, it exists but is not a directory: {}", (Object) dir);
+                LOGGER.warn("Unable to recreate folder, it exists but is not a directory: {}", dir);
             }
         else
             try

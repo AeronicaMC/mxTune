@@ -81,7 +81,7 @@ public class PartList extends MXExtendedList<PartList.Entry>
 
             ITextComponent translated = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(part.getInstrumentId()));
             ITextProperties trimmed = minecraft.font.substrByWidth(translated, pWidth - 6);
-            minecraft.font.drawShadow(pMatrixStack, trimmed.getString(), (float) (pLeft), (float) (pTop + 1), getSelected() == this ? TextColorFg.WHITE : TextColorFg.GRAY, true);
+            minecraft.font.drawShadow(pMatrixStack, trimmed.getString(), pLeft, pTop + 1, getSelected() == this ? TextColorFg.WHITE : TextColorFg.GRAY, true);
         }
 
         @Override
