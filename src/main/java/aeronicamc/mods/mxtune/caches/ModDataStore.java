@@ -222,17 +222,24 @@ public class ModDataStore
         LocalDateTime key;
         key = nextKey();
         String filename = "--error--";
-        try
-        {
+        Path path = null;
+        try {
             filename = toSafeFileNameKey(key);
             String yearMonthFolders = String.format("%s/%d/%02d", SERVER_FOLDER, key.getYear(), key.getMonthValue());
-            Path path = FileHelper.getCacheFile(yearMonthFolders, filename, LogicalSide.SERVER, true);
-            GZIPOutputStream gzipOutputStream = new GZIPOutputStream(Files.newOutputStream(path));
-            gzipOutputStream.write(musicText.getBytes(StandardCharsets.UTF_8));
-            gzipOutputStream.close();
-        } catch (IOException e) {
-            LOGGER.error("  Failed write: {}", filename, e);
+            path = FileHelper.getCacheFile(yearMonthFolders, filename, LogicalSide.SERVER, true);
+        } catch (IOException e)
+        {
+            LOGGER.error("  Path error: {}", filename, e);
             key = null;
+        } finally {
+            if (path != null)
+                try (GZIPOutputStream gzipOutputStream = new GZIPOutputStream(Files.newOutputStream(path));)
+                {
+                    gzipOutputStream.write(musicText.getBytes(StandardCharsets.UTF_8));
+                } catch (IOException e) {
+                    LOGGER.error("  Failed write: {}", filename, e);
+                    key = null;
+                }
         }
         return (key != null) ? key.toString() : null;
     }
@@ -265,12 +272,13 @@ public class ModDataStore
             } catch (MXTuneException e) {
                 LOGGER.error("getMusicText file error: {}", filename, e);
             }
-            try (GZIPInputStream gzipInputStream = new GZIPInputStream(Files.newInputStream(path))) {
-                musicText = IOUtils.toString(gzipInputStream, StandardCharsets.UTF_8);
-            } catch (IOException e) {
-                LOGGER.error("getMusicText file error: {}", filename, e);
-                musicText = null;
-            }
+            if (path != null)
+                try (GZIPInputStream gzipInputStream = new GZIPInputStream(Files.newInputStream(path))) {
+                    musicText = IOUtils.toString(gzipInputStream, StandardCharsets.UTF_8);
+                } catch (IOException e) {
+                    LOGGER.error("getMusicText file error: {}", filename, e);
+                    musicText = null;
+                }
         }
         return musicText;
     }
