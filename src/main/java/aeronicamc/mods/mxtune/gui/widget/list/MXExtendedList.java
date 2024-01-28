@@ -232,12 +232,12 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
             int l = -100;
             bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
             bufferbuilder.vertex(this.x0, this.y0, -100.0D).uv(0.0F, this.y0 / 32.0F).color(64, 64, 64, 255).endVertex();
-            bufferbuilder.vertex(this.x0 + this.width, this.y0, -100.0D).uv(this.width / 32.0F, this.y0 / 32.0F).color(64, 64, 64, 255).endVertex();
-            bufferbuilder.vertex(this.x0 + this.width, 0.0D, -100.0D).uv(this.width / 32.0F, 0.0F).color(64, 64, 64, 255).endVertex();
+            bufferbuilder.vertex((double)this.x0 + this.width, this.y0, -100.0D).uv(this.width / 32.0F, this.y0 / 32.0F).color(64, 64, 64, 255).endVertex();
+            bufferbuilder.vertex((double)this.x0 + this.width, 0.0D, -100.0D).uv(this.width / 32.0F, 0.0F).color(64, 64, 64, 255).endVertex();
             bufferbuilder.vertex(this.x0, 0.0D, -100.0D).uv(0.0F, 0.0F).color(64, 64, 64, 255).endVertex();
             bufferbuilder.vertex(this.x0, this.height, -100.0D).uv(0.0F, this.height / 32.0F).color(64, 64, 64, 255).endVertex();
-            bufferbuilder.vertex(this.x0 + this.width, this.height, -100.0D).uv(this.width / 32.0F, this.height / 32.0F).color(64, 64, 64, 255).endVertex();
-            bufferbuilder.vertex(this.x0 + this.width, this.y1, -100.0D).uv(this.width / 32.0F, this.y1 / 32.0F).color(64, 64, 64, 255).endVertex();
+            bufferbuilder.vertex((double)this.x0 + this.width, this.height, -100.0D).uv(this.width / 32.0F, this.height / 32.0F).color(64, 64, 64, 255).endVertex();
+            bufferbuilder.vertex((double)this.x0 + this.width, this.y1, -100.0D).uv(this.width / 32.0F, this.y1 / 32.0F).color(64, 64, 64, 255).endVertex();
             bufferbuilder.vertex(this.x0, this.y1, -100.0D).uv(0.0F, this.y1 / 32.0F).color(64, 64, 64, 255).endVertex();
             tessellator.end();
             RenderSystem.depthFunc(515);
@@ -249,14 +249,14 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
             RenderSystem.disableTexture();
             int i1 = 4;
             bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-            bufferbuilder.vertex(this.x0, this.y0 + 4, 0.0D).uv(0.0F, 1.0F).color(0, 0, 0, 0).endVertex();
-            bufferbuilder.vertex(this.x1, this.y0 + 4, 0.0D).uv(1.0F, 1.0F).color(0, 0, 0, 0).endVertex();
+            bufferbuilder.vertex(this.x0, this.y0 + 4D, 0.0D).uv(0.0F, 1.0F).color(0, 0, 0, 0).endVertex();
+            bufferbuilder.vertex(this.x1, this.y0 + 4D, 0.0D).uv(1.0F, 1.0F).color(0, 0, 0, 0).endVertex();
             bufferbuilder.vertex(this.x1, this.y0, 0.0D).uv(1.0F, 0.0F).color(0, 0, 0, 255).endVertex();
             bufferbuilder.vertex(this.x0, this.y0, 0.0D).uv(0.0F, 0.0F).color(0, 0, 0, 255).endVertex();
             bufferbuilder.vertex(this.x0, this.y1, 0.0D).uv(0.0F, 1.0F).color(0, 0, 0, 255).endVertex();
             bufferbuilder.vertex(this.x1, this.y1, 0.0D).uv(1.0F, 1.0F).color(0, 0, 0, 255).endVertex();
-            bufferbuilder.vertex(this.x1, this.y1 - 4, 0.0D).uv(1.0F, 0.0F).color(0, 0, 0, 0).endVertex();
-            bufferbuilder.vertex(this.x0, this.y1 - 4, 0.0D).uv(0.0F, 0.0F).color(0, 0, 0, 0).endVertex();
+            bufferbuilder.vertex(this.x1, this.y1 - 4D, 0.0D).uv(1.0F, 0.0F).color(0, 0, 0, 0).endVertex();
+            bufferbuilder.vertex(this.x0, this.y1 - 4D, 0.0D).uv(0.0F, 0.0F).color(0, 0, 0, 0).endVertex();
             tessellator.end();
         }
 
@@ -275,13 +275,13 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
             bufferbuilder.vertex(j, this.y1, 0.0D).uv(1.0F, 1.0F).color(0, 0, 0, 255).endVertex();
             bufferbuilder.vertex(j, this.y0, 0.0D).uv(1.0F, 0.0F).color(0, 0, 0, 255).endVertex();
             bufferbuilder.vertex(i, this.y0, 0.0D).uv(0.0F, 0.0F).color(0, 0, 0, 255).endVertex();
-            bufferbuilder.vertex(i, i2 + l1, 0.0D).uv(0.0F, 1.0F).color(128, 128, 128, 255).endVertex();
-            bufferbuilder.vertex(j, i2 + l1, 0.0D).uv(1.0F, 1.0F).color(128, 128, 128, 255).endVertex();
+            bufferbuilder.vertex(i, (double)i2 + l1, 0.0D).uv(0.0F, 1.0F).color(128, 128, 128, 255).endVertex();
+            bufferbuilder.vertex(j, (double)i2 + l1, 0.0D).uv(1.0F, 1.0F).color(128, 128, 128, 255).endVertex();
             bufferbuilder.vertex(j, i2, 0.0D).uv(1.0F, 0.0F).color(128, 128, 128, 255).endVertex();
             bufferbuilder.vertex(i, i2, 0.0D).uv(0.0F, 0.0F).color(128, 128, 128, 255).endVertex();
-            bufferbuilder.vertex(i, i2 + l1 - 1, 0.0D).uv(0.0F, 1.0F).color(192, 192, 192, 255).endVertex();
-            bufferbuilder.vertex(j - 1, i2 + l1 - 1, 0.0D).uv(1.0F, 1.0F).color(192, 192, 192, 255).endVertex();
-            bufferbuilder.vertex(j - 1, i2, 0.0D).uv(1.0F, 0.0F).color(192, 192, 192, 255).endVertex();
+            bufferbuilder.vertex(i, i2 + l1 - 1D, 0.0D).uv(0.0F, 1.0F).color(192, 192, 192, 255).endVertex();
+            bufferbuilder.vertex(j - 1D, i2 + l1 - 1D, 0.0D).uv(1.0F, 1.0F).color(192, 192, 192, 255).endVertex();
+            bufferbuilder.vertex(j - 1D, i2, 0.0D).uv(1.0F, 0.0F).color(192, 192, 192, 255).endVertex();
             bufferbuilder.vertex(i, i2, 0.0D).uv(0.0F, 0.0F).color(192, 192, 192, 255).endVertex();
             tessellator.end();
         }
