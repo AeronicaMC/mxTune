@@ -73,8 +73,8 @@ public class MultiPacketStringHelper
 
         if (expectedHashCode == stringBuilder.toString().hashCode())
         {
-            LOGGER.warn("readLongString Expected Length: {}, Expected Packets: {}, Expected Hashcode {}", expectedLength, expectedPackets, expectedHashCode);
-            LOGGER.warn("readLongString Received Length: {}, Received Packets: {}, Received Hashcode {}", stringBuilder.toString().length(), sortedPackets.size(), stringBuilder.toString().hashCode());
+            LOGGER.debug("readLongString Expected Length:   {}, Expected Packets: {}, Expected Hashcode {}", expectedLength, expectedPackets, expectedHashCode);
+            LOGGER.debug("  readLongString Received Length: {}, Received Packets: {}, Received Hashcode {}", stringBuilder.toString().length(), sortedPackets.size(), stringBuilder.toString().hashCode());
             return stringBuilder.toString();
         }
         else
