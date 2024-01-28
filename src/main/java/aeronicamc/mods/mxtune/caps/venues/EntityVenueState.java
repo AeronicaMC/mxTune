@@ -2,6 +2,7 @@ package aeronicamc.mods.mxtune.caps.venues;
 
 import net.minecraft.util.Tuple;
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class EntityVenueState extends Tuple
 {
@@ -35,5 +36,13 @@ public class EntityVenueState extends Tuple
         return new EqualsBuilder()
                 .append(((MusicVenue) super.getB()).getId(), ((MusicVenue) state.getB()).getId())
                 .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(super.getA())
+                .append(super.getB())
+                .toHashCode();
     }
 }
