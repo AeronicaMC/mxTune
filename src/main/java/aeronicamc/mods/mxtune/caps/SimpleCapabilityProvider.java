@@ -12,12 +12,12 @@ import javax.annotation.Nullable;
  *
  * @author Choonster
  */
-public class SimpleCapabilityProvider<HANDLER> implements ICapabilityProvider
+public class SimpleCapabilityProvider<H> implements ICapabilityProvider
 {
     /**
      * The {@link Capability} instance to provide the handler for.
      */
-    protected final Capability<HANDLER> capability;
+    protected final Capability<H> capability;
 
     /**
      * The {@link Direction} to provide the handler for.
@@ -27,14 +27,14 @@ public class SimpleCapabilityProvider<HANDLER> implements ICapabilityProvider
     /**
      * The handler instance to provide.
      */
-    protected final HANDLER instance;
+    protected final H instance;
 
     /**
      * A lazy optional containing handler instance to provide.
      */
-    protected final LazyOptional<HANDLER> lazyOptional;
+    protected final LazyOptional<H> lazyOptional;
 
-    public SimpleCapabilityProvider(final Capability<HANDLER> capability, @Nullable final Direction facing, @Nullable final HANDLER instance) {
+    public SimpleCapabilityProvider(final Capability<H> capability, @Nullable final Direction facing, @Nullable final H instance) {
         this.capability = capability;
         this.facing = facing;
 
@@ -67,7 +67,7 @@ public class SimpleCapabilityProvider<HANDLER> implements ICapabilityProvider
      *
      * @return The Capability instance
      */
-    public final Capability<HANDLER> getCapability() {
+    public final Capability<H> getCapability() {
         return capability;
     }
 
@@ -87,7 +87,7 @@ public class SimpleCapabilityProvider<HANDLER> implements ICapabilityProvider
      * @return A lazy optional containing the handler instance
      */
     @Nullable
-    public final HANDLER getInstance() {
+    public final H getInstance() {
         return instance;
     }
 

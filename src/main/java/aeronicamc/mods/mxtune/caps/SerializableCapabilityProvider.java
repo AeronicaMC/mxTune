@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
  *
  * @author Choonster
  */
-public class SerializableCapabilityProvider<HANDLER> extends SimpleCapabilityProvider<HANDLER> implements INBTSerializable<INBT>
+public class SerializableCapabilityProvider<H> extends SimpleCapabilityProvider<H> implements INBTSerializable<INBT>
 {
     /**
      * Create a provider for the default handler instance.
@@ -24,7 +24,7 @@ public class SerializableCapabilityProvider<HANDLER> extends SimpleCapabilityPro
      * @param capability The Capability instance to provide the handler for
      * @param facing     The Direction to provide the handler for
      */
-    public SerializableCapabilityProvider(final Capability<HANDLER> capability, @Nullable final Direction facing) {
+    public SerializableCapabilityProvider(final Capability<H> capability, @Nullable final Direction facing) {
         this(capability, facing, capability.getDefaultInstance());
     }
 
@@ -35,14 +35,14 @@ public class SerializableCapabilityProvider<HANDLER> extends SimpleCapabilityPro
      * @param facing     The Direction to provide the handler for
      * @param instance   The handler instance to provide
      */
-    public SerializableCapabilityProvider(final Capability<HANDLER> capability, @Nullable final Direction facing, @Nullable final HANDLER instance) {
+    public SerializableCapabilityProvider(final Capability<H> capability, @Nullable final Direction facing, @Nullable final H instance) {
         super(capability, facing, instance);
     }
 
     @Nullable
     @Override
     public INBT serializeNBT() {
-        final HANDLER instance = getInstance();
+        final H instance = getInstance();
 
         if (instance == null) {
             return null;
@@ -53,7 +53,7 @@ public class SerializableCapabilityProvider<HANDLER> extends SimpleCapabilityPro
 
     @Override
     public void deserializeNBT(final INBT nbt) {
-        final HANDLER instance = getInstance();
+        final H instance = getInstance();
 
         if (instance == null) {
             return;
