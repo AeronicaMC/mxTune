@@ -211,7 +211,14 @@ public class ClientAudio
 
     private static void stopVanillaMusic()
     {
-        soundHandler.stop(null, SoundCategory.MUSIC);
+        synchronized (soundHandler)
+        {
+            soundHandler.stop(null, SoundCategory.MUSIC);
+        }
+        synchronized (soundHandler)
+        {
+            soundHandler.stop(null, SoundCategory.MUSIC);
+        }
     }
 
     static boolean recordsVolumeOn()
