@@ -36,6 +36,9 @@ public class ModDataStore
     private static final ArrayList<LocalDateTime> reapDateTimeKeyList = new ArrayList<>();
     private static LocalDateTime lastDateTime = LocalDateTime.now(ROOT_ZONE);
 
+    private static final String YEAR_MONTH_FOLDER_FORMAT = "%s/%d/%02d";
+    private ModDataStore() { /* NOOP */}
+
     public static void start()
     {
         reapSheetMusic();
@@ -84,7 +87,7 @@ public class ModDataStore
                     try
                     {
                         filename = toSafeFileNameKey(dateTime);
-                        String yearMonthFolders = String.format("%s/%4d/%02d", SERVER_FOLDER, dateTime.getYear(), dateTime.getMonthValue());
+                        String yearMonthFolders = String.format(YEAR_MONTH_FOLDER_FORMAT, SERVER_FOLDER, dateTime.getYear(), dateTime.getMonthValue());
                         path = FileHelper.getCacheFile(yearMonthFolders, filename, LogicalSide.SERVER, true);
 
                         GZIPOutputStream gzipOutputStream = new GZIPOutputStream(Files.newOutputStream(path));
@@ -152,7 +155,7 @@ public class ModDataStore
                 try
                 {
                     filename = toSafeFileNameKey(localDateTime.toString());
-                    String yearMonthFolders = String.format("%s/%d/%02d", SERVER_FOLDER, localDateTime.getYear(), localDateTime.getMonthValue());
+                    String yearMonthFolders = String.format(YEAR_MONTH_FOLDER_FORMAT, SERVER_FOLDER, localDateTime.getYear(), localDateTime.getMonthValue());
                     path = FileHelper.getCacheFile(yearMonthFolders, filename, LogicalSide.SERVER, true);
                     if (Files.exists(path) && !path.toString().matches("\\.\\.|\\*"))
                         Files.delete(path);
@@ -184,8 +187,8 @@ public class ModDataStore
         getReapDateTimeKeyList().clear();
         AtomicLong reapCount = new AtomicLong();
 
-        getSafeMusicPaths().forEach(p -> {
-            LocalDateTime key = (keyFromSafeFileNameKey(p.getFileName().toString().replaceAll("\\.gz", "")));
+        getSafeMusicPaths().forEach(path -> {
+            LocalDateTime key = keyFromSafeFileNamePath(path);
             if (canReapSheetMusic(key))
                 getReapDateTimeKeyList().add(key);
         });
@@ -226,7 +229,7 @@ public class ModDataStore
         Path path = null;
         try {
             filename = toSafeFileNameKey(key);
-            String yearMonthFolders = String.format("%s/%d/%02d", SERVER_FOLDER, key.getYear(), key.getMonthValue());
+            String yearMonthFolders = String.format(YEAR_MONTH_FOLDER_FORMAT, SERVER_FOLDER, key.getYear(), key.getMonthValue());
             path = FileHelper.getCacheFile(yearMonthFolders, filename, LogicalSide.SERVER, true);
         } catch (IOException e)
         {
@@ -260,7 +263,7 @@ public class ModDataStore
             String filename = "";
             try {
                 LocalDateTime localDateTime = LocalDateTime.parse(key);
-                String yearMonthFolders = String.format("%s/%d/%02d", SERVER_FOLDER, localDateTime.getYear(), localDateTime.getMonthValue());
+                String yearMonthFolders = String.format(YEAR_MONTH_FOLDER_FORMAT, SERVER_FOLDER, localDateTime.getYear(), localDateTime.getMonthValue());
                 filename = toSafeFileNameKey(key);
                 path = FileHelper.getCacheFile(yearMonthFolders, filename, LogicalSide.SERVER, false);
             } catch (DateTimeParseException e) {
@@ -285,17 +288,6 @@ public class ModDataStore
     }
 
     /**
-     * Tests if the musicText exists
-     * @param key in LocalDateTime (GMT0) string format
-     * @return true if the musicText key resolves.
-     */
-    @Deprecated
-    public static boolean hasMusicText(@Nullable String key)
-    {
-        return getMusicText(key) != null;
-    }
-
-    /**
      * Example: "2022-02-27T21:21:25.787" to "20220227T212125787.gz"
      * @param key a formatted date-time string with punctuation.
      * @return a formatted date-time string without punctuation appended with the .gz extension.
@@ -303,7 +295,7 @@ public class ModDataStore
     public static String toSafeFileNameKey(String key)
     {
         // 2022-02-27T21:21:25.787 to 20220227T212125787.gz
-        return String.format("%s.gz", key.replaceAll("(\\.|:|-)", ""));
+        return String.format("%s.gz", key.replaceAll("([\\.:-])", ""));
     }
 
     public static String toSafeFileNameKey(LocalDateTime localDateTime)
@@ -312,23 +304,25 @@ public class ModDataStore
     }
 
     /**
-     * Accepts SafeFileNameKey string and returns a LocalDateTime object
-     * @param safeFileNameKey
+     * Accepts filename string with a .gz extension and returns a LocalDateTime object
+     *
+     * @param path of the file.
      * @return a valid key or non-existent key from before this code was written.
      */
-    public static LocalDateTime keyFromSafeFileNameKey(String safeFileNameKey)
+    public static LocalDateTime keyFromSafeFileNamePath(Path path)
     {
-        // 20220227T212125787 to 2022-02-27T21:21:25.787
+        // 20220227T212125787.gz to 2022-02-27T21:21:25.787
+        String fileNameSansExt = path.getFileName().toString().replace(".gz", "");
         LocalDateTime localDateTime;
         try
         {
-            String temp = safeFileNameKey.subSequence(0, 4) +
-                    "-" + safeFileNameKey.subSequence(4, 6) +
-                    "-" + safeFileNameKey.subSequence(6, 11) +
-                    ":" + safeFileNameKey.subSequence(11, 13) +
-                    ":" + safeFileNameKey.subSequence(13, 15) +
-                    "." + safeFileNameKey.subSequence(15, safeFileNameKey.length());
-            localDateTime = LocalDateTime.parse(temp);
+            String dateTimeString = fileNameSansExt.subSequence(0, 4) +
+                    "-" + fileNameSansExt.subSequence(4, 6) +
+                    "-" + fileNameSansExt.subSequence(6, 11) +
+                    ":" + fileNameSansExt.subSequence(11, 13) +
+                    ":" + fileNameSansExt.subSequence(13, 15) +
+                    "." + fileNameSansExt.subSequence(15, fileNameSansExt.length());
+            localDateTime = LocalDateTime.parse(dateTimeString);
         } catch (DateTimeParseException | IndexOutOfBoundsException e)
         {
             LOGGER.warn(e);
