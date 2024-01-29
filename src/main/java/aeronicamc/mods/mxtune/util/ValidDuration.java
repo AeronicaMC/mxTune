@@ -2,8 +2,7 @@ package aeronicamc.mods.mxtune.util;
 
 import net.minecraft.util.Tuple;
 
-@SuppressWarnings("unchecked")
-public class ValidDuration extends Tuple
+public class ValidDuration extends Tuple<Boolean, Integer>
 {
     public static final ValidDuration INVALID = new ValidDuration(false, 0);
 
@@ -14,11 +13,11 @@ public class ValidDuration extends Tuple
 
     public Boolean isValidMML()
     {
-        return (Boolean) super.getA();
+        return super.getA();
     }
 
     public Integer getDuration()
     {
-        return (Integer) super.getB();
+        return super.getB();
     }
 }

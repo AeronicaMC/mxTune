@@ -4,9 +4,9 @@ import net.minecraft.util.Tuple;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class EntityVenueState extends Tuple
+public class EntityVenueState extends Tuple<Boolean, MusicVenue>
 {
-    public static EntityVenueState INVALID = new EntityVenueState(false, MusicVenue.EMPTY);
+    public static final EntityVenueState INVALID = new EntityVenueState(false, MusicVenue.EMPTY);
     public EntityVenueState(Boolean inVenue, MusicVenue musicVenue)
     {
         super(inVenue, musicVenue);
@@ -14,12 +14,12 @@ public class EntityVenueState extends Tuple
 
     public boolean inVenue()
     {
-       return (boolean) super.getA();
+       return super.getA();
     }
 
     public MusicVenue getVenue()
     {
-        return (MusicVenue) super.getB();
+        return super.getB();
     }
 
     @Override
@@ -34,7 +34,7 @@ public class EntityVenueState extends Tuple
         }
         EntityVenueState state = (EntityVenueState) o;
         return new EqualsBuilder()
-                .append(((MusicVenue) super.getB()).getId(), ((MusicVenue) state.getB()).getId())
+                .append(super.getB().getId(), state.getB().getId())
                 .isEquals();
     }
 

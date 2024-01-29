@@ -2,8 +2,7 @@ package aeronicamc.mods.mxtune.util;
 
 import net.minecraft.util.Tuple;
 
-@SuppressWarnings("unchecked")
-public class MusicProperties extends Tuple
+public class MusicProperties extends Tuple<String, Integer>
 {
     public static final MusicProperties INVALID = new MusicProperties("", 0);
 
@@ -14,11 +13,11 @@ public class MusicProperties extends Tuple
 
     public String getMusicText()
     {
-        return (String) super.getA();
+        return super.getA();
     }
 
     public Integer getDuration()
     {
-        return (Integer) super.getB();
+        return super.getB();
     }
 }
