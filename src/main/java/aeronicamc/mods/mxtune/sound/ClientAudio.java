@@ -76,13 +76,10 @@ public class ClientAudio
         return ActiveAudio.getDistanceSortedSources();
     }
 
-
-    public static float getProgress(int entityId)
-    {
-        if (ActiveAudio.getActiveTuneByEntityId(entityId).isPresent())
-            return ActiveAudio.getActiveTuneByEntityId(entityId).get().getProgress();
-        else
-            return 0F;
+    public static float getProgress(int entityId) {
+        float[] progress = { 0F };
+        ActiveAudio.getActiveTuneByEntityId(entityId).ifPresent(audioData -> progress[0] = audioData.getProgress());
+        return progress[0];
     }
 
     private static void init(SoundEngine se)
