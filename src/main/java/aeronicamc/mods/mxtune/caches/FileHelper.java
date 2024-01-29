@@ -69,11 +69,9 @@ public class FileHelper
     public static void initialize(MinecraftServer server)
     {
         // The top level "world" save folder a.k.a. the "Over World"
-        //.getActiveAnvilConverter().getFile(server.getFolderName(), "serverconfig").toPath();
-        // File chunkDir = server.getActiveAnvilConverter().getFile(server.getFolderName(), "");
         File chunkDir = server.getWorldPath(new FolderName("")).toFile();
         serverWorldFolder = Paths.get(chunkDir.getPath());
-        LOGGER.debug("FileHelper: serverWorldFolder {}", serverWorldFolder.toString());
+        LOGGER.debug("FileHelper: serverWorldFolder {}", serverWorldFolder);
     }
 
     private FileHelper() { /* NOP */ }
@@ -128,7 +126,7 @@ public class FileHelper
             } catch (IOException e)
             {
                 LOGGER.error(e);
-                LOGGER.warn("Unable to create folder: {}", (Object) dir);
+                LOGGER.warn("Unable to create folder: {}", dir);
             }
     }
 
