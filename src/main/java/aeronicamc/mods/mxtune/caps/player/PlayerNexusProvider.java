@@ -18,16 +18,12 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
 
 public final class PlayerNexusProvider
 {
-    private static final Logger LOGGER = LogManager.getLogger(PlayerNexusProvider.class);
-
     @CapabilityInject(IPlayerNexus.class)
     public static final Capability<IPlayerNexus> NEXUS_CAPABILITY = Misc.nonNullInjected();
 
@@ -65,6 +61,8 @@ public final class PlayerNexusProvider
     @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
     public static class EventHandler
     {
+        private EventHandler() { /* NOOP */ }
+
         @SubscribeEvent
         public static void event(final AttachCapabilitiesEvent<Entity> event)
         {
@@ -86,13 +84,11 @@ public final class PlayerNexusProvider
             {
                 event.getOriginal().revive(); // gighertz workaround for MCForge #5956 PlayerEvent.Clone Capability Provider is invalid
                 getNexus(event.getOriginal()).ifPresent(oldLivingEntityCap ->
-                {
-                 getNexus(event.getPlayer()).ifPresent(newLivingEntityCap ->
-                    {
-                        newLivingEntityCap.setPlayId(oldLivingEntityCap.getPlayId());
-                        newLivingEntityCap.sync();
-                    });
-                });
+                        getNexus(event.getPlayer()).ifPresent(newLivingEntityCap ->
+                           {
+                               newLivingEntityCap.setPlayId(oldLivingEntityCap.getPlayId());
+                               newLivingEntityCap.sync();
+                           }));
             }
         }
     }
