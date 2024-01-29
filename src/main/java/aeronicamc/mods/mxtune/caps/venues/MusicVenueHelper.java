@@ -17,11 +17,10 @@ public class MusicVenueHelper
 
         MusicVenueProvider.getMusicVenues(level).ifPresent(
                 areas ->
-                {
-                    areas.getMusicVenues().stream().filter(v->v.getVenueAABB().contains(entity.getEyePosition(1F))).findFirst().ifPresent(area->{
-                        activeVenue[0] = area;
-                    });
-                });
+                        areas.getMusicVenues().stream()
+                                .filter(v->v.getVenueAABB()
+                                        .contains(entity.getEyePosition(1F)))
+                                        .findFirst().ifPresent(area-> activeVenue[0] = area));
         return !activeVenue[0].equals(MusicVenue.EMPTY);
     }
 
@@ -33,27 +32,23 @@ public class MusicVenueHelper
 
         MusicVenueProvider.getMusicVenues(level).ifPresent(
                 areas ->
-                {
-                    areas.getMusicVenues().stream().filter(v->v.getVenueAABB().contains(entity.getEyePosition(1F))).findFirst().ifPresent(area->{
-                        activeVenue[0] = area;
-                    });
-                });
+                        areas.getMusicVenues().stream()
+                                .filter(v->v.getVenueAABB().contains(entity.getEyePosition(1F)))
+                                .findFirst().ifPresent(area-> activeVenue[0] = area));
         return new EntityVenueState(!activeVenue[0].equals(MusicVenue.EMPTY), activeVenue[0]);
     }
 
     public static EntityVenueState getBlockVenueState(World level, BlockPos blockPos)
     {
         MusicVenue[] activeVenue = { MusicVenue.EMPTY };
-        Vector3d EntityPos = new Vector3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        Vector3d entityPos = new Vector3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         if (!level.isLoaded(blockPos)) return EntityVenueState.INVALID;
 
         MusicVenueProvider.getMusicVenues(level).ifPresent(
                 areas ->
-                {
-                    areas.getMusicVenues().stream().filter(v->v.getVenueAABB().contains(EntityPos)).findFirst().ifPresent(area->{
-                        activeVenue[0] = area;
-                    });
-                });
+                        areas.getMusicVenues().stream()
+                                .filter(v->v.getVenueAABB().contains(entityPos)).
+                                findFirst().ifPresent(area-> activeVenue[0] = area));
         return new EntityVenueState(!activeVenue[0].equals(MusicVenue.EMPTY), activeVenue[0]);
     }
 }

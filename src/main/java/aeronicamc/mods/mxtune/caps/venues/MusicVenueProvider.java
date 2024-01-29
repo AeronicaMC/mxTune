@@ -16,17 +16,13 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
 public class MusicVenueProvider
 {
-    private static final Logger LOGGER = LogManager.getLogger(MusicVenueProvider.class);
-
     @CapabilityInject(IMusicVenues.class)
-    public static Capability<IMusicVenues> musicVenuesCapability = Misc.nonNullInjected();
+    public static final Capability<IMusicVenues> MUSIC_VENUES_CAPABILITY = Misc.nonNullInjected();
 
     private MusicVenueProvider() { /* NOP */ }
 
@@ -55,7 +51,7 @@ public class MusicVenueProvider
 
     public static LazyOptional<IMusicVenues> getMusicVenues(final World world)
     {
-        return world.getCapability(musicVenuesCapability, null);
+        return world.getCapability(MUSIC_VENUES_CAPABILITY, null);
     }
 
     @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
@@ -63,10 +59,12 @@ public class MusicVenueProvider
     {
         private static int counter;
 
+        private EventHandler() { /* NOOP */}
+
         @SubscribeEvent
         public static void event(final AttachCapabilitiesEvent<World> event)
         {
-            event.addCapability(ID, new SerializableCapabilityProvider<>(musicVenuesCapability, null, new MusicVenues(event.getObject())));
+            event.addCapability(ID, new SerializableCapabilityProvider<>(MUSIC_VENUES_CAPABILITY, null, new MusicVenues(event.getObject())));
         }
 
         @SubscribeEvent
@@ -80,29 +78,27 @@ public class MusicVenueProvider
         {
             event.world.players().forEach(
                     player ->
-                    {
-                        PlayerNexusProvider.getNexus(player).ifPresent(
-                                nexus ->
-                                {
-                                    EntityVenueState pvs = MusicVenueHelper.getEntityVenueState(player.level, player.getId());
-                                    if (!nexus.getEntityVenueState().equals(pvs))
+                            PlayerNexusProvider.getNexus(player).ifPresent(
+                                    nexus ->
                                     {
-                                        nexus.setEntityVenueState(pvs);
-                                        ToolManager.getPlayerTool(player).ifPresent(
-                                                tool ->
-                                                {
-                                                    if (pvs.inVenue() && (pvs.getVenue().getOwnerUUID().equals(player.getUUID()) || player.isCreative() || ToolManager.isOp(player)))
-                                                        tool.setToolState(ToolState.Type.REMOVE);
-                                                    else if (!pvs.inVenue() && tool.getToolState().equals(ToolState.Type.REMOVE))
-                                                        tool.setToolState(ToolState.Type.START);
+                                        EntityVenueState pvs = MusicVenueHelper.getEntityVenueState(player.level, player.getId());
+                                        if (!nexus.getEntityVenueState().equals(pvs))
+                                        {
+                                            nexus.setEntityVenueState(pvs);
+                                            ToolManager.getPlayerTool(player).ifPresent(
+                                                    tool ->
+                                                    {
+                                                        if (pvs.inVenue() && (pvs.getVenue().getOwnerUUID().equals(player.getUUID()) || player.isCreative() || ToolManager.isOp(player)))
+                                                            tool.setToolState(ToolState.Type.REMOVE);
+                                                        else if (!pvs.inVenue() && tool.getToolState().equals(ToolState.Type.REMOVE))
+                                                            tool.setToolState(ToolState.Type.START);
 
-                                                    ToolManager.sync(player);
-                                                });
+                                                        ToolManager.sync(player);
+                                                    });
 
-                                        nexus.setEntityVenueState(pvs);
-                                    }
-                                });
-                    });
+                                            nexus.setEntityVenueState(pvs);
+                                        }
+                                    }));
         }
     }
 }

@@ -15,7 +15,7 @@ public class MusicVenue implements Comparable<MusicVenue>
     public static final BlockPos OUT_OF_BOUNDS = new BlockPos(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
     public static final MusicVenue EMPTY = MusicVenue.factory(UUID.fromString("00000000-0000-0000-0000-000000000000"),"-999999999-01-01T00:00:00");
 
-    final static Codec<MusicVenue> CODEC = RecordCodecBuilder.create(
+    static final Codec<MusicVenue> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
                 BlockPos.CODEC.fieldOf("startPos").forGetter(MusicVenue::getStartPos),
                 BlockPos.CODEC.fieldOf("endPos").forGetter(MusicVenue::getEndPos),
