@@ -34,7 +34,7 @@ public class ModGuiHelper
 
     public static  <T extends Screen, S extends Object>  void drawHooveringHelp(MatrixStack poseStack, T guiScreen, IHooverText widget, double mouseX, double mouseY)
     {
-        if (widget.isMouseOverWidget(mouseX, mouseY) && Screen.hasShiftDown())
+        if (widget.isMouseOverWidget(mouseX, mouseY) && (Screen.hasShiftDown() || widget.isHooverTextOverride()))
             guiScreen.renderWrappedToolTip(poseStack, widget.getHooverTexts(), (int) mouseX, (int) mouseY, Minecraft.getInstance().font);
     }
 
