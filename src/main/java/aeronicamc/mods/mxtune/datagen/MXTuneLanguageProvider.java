@@ -141,11 +141,13 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.open_folder.help01","Place MML files into this folder to be imported. Recognized types are: ");
         addGuiText("button.open_folder.help02"," .mml, .ms2mml, .zip (contains multiple .ms2mml files)");
         addGuiText("button.library", "Library");
+        addGuiText("button.library.help01", "Select and load a saved .mxt file");
         addGuiText("button.plus", "+");
         addGuiText("button.refresh", "Refresh");
         addGuiText("button.refresh.help01", "Only needed it the file list fails to refresh automatically after placing files into the folder.");
         addGuiText("button.clipboard_Copy_to", "Copy");
         addGuiText("button.clipboard_paste_from", "Paste");
+        addGuiText("button.clipboard_paste_from.help01", "Paste MML in Mabinogi Clipboard Format.");
         addGuiText("button.play", "Play");
         addGuiText("button.play_all", "Play All");
         addGuiText("button.play_part", "Play Part");
