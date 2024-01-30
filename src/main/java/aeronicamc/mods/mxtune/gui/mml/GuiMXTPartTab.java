@@ -20,6 +20,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -128,6 +129,8 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
 
         // Create Clipboard Paste and Copy buttons
         MXButton buttonPasteFromClipBoard = new MXButton(posX, buttonMinusLine.y + buttonMinusLine.getHeight() + PADDING, 60, 20, new TranslationTextComponent("gui.mxtune.button.clipboard_paste_from"), p -> pasteFromClipboard());
+        buttonPasteFromClipBoard.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.clipboard_paste_from").withStyle(TextFormatting.RESET));
+        buttonPasteFromClipBoard.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.clipboard_paste_from.help01").withStyle(TextFormatting.YELLOW));
         addButton(buttonPasteFromClipBoard);
         buttonCopyToClipBoard =  new MXButton(posX, buttonPasteFromClipBoard.y + buttonPasteFromClipBoard.getHeight(), 60, 20, new TranslationTextComponent("gui.mxtune.button.clipboard_Copy_to"), p -> copyToClipboard());
         addButton(buttonCopyToClipBoard);
