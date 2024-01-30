@@ -5,10 +5,7 @@ import aeronicamc.mods.mxtune.caches.FileHelper;
 import aeronicamc.mods.mxtune.config.MXTuneConfig;
 import aeronicamc.mods.mxtune.gui.MXScreen;
 import aeronicamc.mods.mxtune.gui.TextColorFg;
-import aeronicamc.mods.mxtune.gui.widget.MXButton;
-import aeronicamc.mods.mxtune.gui.widget.MXLabel;
-import aeronicamc.mods.mxtune.gui.widget.MXLink;
-import aeronicamc.mods.mxtune.gui.widget.MXTextFieldWidget;
+import aeronicamc.mods.mxtune.gui.widget.*;
 import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.mxt.MXTuneFile;
@@ -42,6 +39,7 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 import static aeronicamc.mods.mxtune.Reference.*;
+import static aeronicamc.mods.mxtune.gui.ModGuiHelper.*;
 
 public class GuiMXT extends MXScreen implements IAudioStatusCallback
 {
@@ -61,6 +59,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     private MXButton buttonPlayStop;
     private MXButton buttonSheetMusic;
     private MXButton buttonMusicScore;
+    private GuiHelpButton buttonGuiHelp = new GuiHelpButton(p -> helpToggled());
     private int durationTotal;
     private int ticks;
 
@@ -118,23 +117,27 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         int buttonY = labelMXTFileName.getY() + labelMXTFileName.getHeight();
 
         MXButton buttonNew = new MXButton(PADDING, buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.new"), pNew->newAction());
-        buttonNew.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.new").withStyle(TextFormatting.YELLOW));
-        buttonNew.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.new.help01").withStyle(TextFormatting.WHITE));
+        buttonNew.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.new").withStyle(TextFormatting.RESET));
+        buttonNew.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.new.help01").withStyle(TextFormatting.YELLOW));
         MXButton buttonImport = new MXButton(buttonNew.getLeft() + buttonNew.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.import"), pImport->importAction());
-        buttonImport.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.import").withStyle(TextFormatting.YELLOW));
-        buttonImport.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.import.help01").withStyle(TextFormatting.WHITE));
-        MXButton buttonOpen = new MXButton(buttonImport.getLeft() + buttonImport.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.library"), pOpen->openAction());
-        buttonSave = new MXButton(buttonOpen.getLeft() + buttonOpen.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.save"), pSave->saveAction());
+        buttonImport.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.import").withStyle(TextFormatting.RESET));
+        buttonImport.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.import.help01").withStyle(TextFormatting.YELLOW));
+        MXButton buttonLib = new MXButton(buttonImport.getLeft() + buttonImport.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.library"), pOpen->openAction());
+        buttonLib.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.library").withStyle(TextFormatting.RESET));
+        buttonLib.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.library.help01").withStyle(TextFormatting.YELLOW));
+        buttonSave = new MXButton(buttonLib.getLeft() + buttonLib.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.save"), pSave->saveAction());
         buttonSheetMusic = new MXButton(buttonSave.getLeft() + buttonSave.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.write_sheet_music"), pDone->writeSheetMusic());
         buttonMusicScore = new MXButton(buttonSheetMusic.getLeft() + buttonSheetMusic.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.write_music_score"), pDone->writeMusicScore());
         MXButton buttonCancel = new MXButton(buttonMusicScore.getLeft() + buttonMusicScore.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.cancel"), pCancel->cancelAction(true));
+        buttonGuiHelp.setPosition(buttonCancel.getRight(), buttonY);
         addButton(buttonNew);
         addButton(buttonImport);
-        addButton(buttonOpen);
+        addButton(buttonLib);
         addButton(buttonSave);
         addButton(buttonSheetMusic);
         addButton(buttonMusicScore);
         addButton(buttonCancel);
+        addButton(buttonGuiHelp);
 
         // Links
         int textY = buttonMusicScore.y + buttonMusicScore.getHeight() + PADDING;
@@ -464,6 +467,8 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         sourcesLink.visible = sourcesLink.getUrl().matches("^(http(s)?:\\/\\/[a-zA-Z0-9\\-_]+\\.[a-zA-Z]+(.)+)+");
 
         buttonSave.active = !textTitle.getValue().isEmpty() && isOK;
+        buttonGuiHelp.addHooverText(true, HELP_HELP01);
+        buttonGuiHelp.addHooverText(false, buttonGuiHelp.isHelpEnabled() ? HELP_HELP02 : HELP_HELP03);
     }
 
     private void updateTabbedButtonNames()
@@ -489,6 +494,16 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         MXTunePart part = childTabs[index].getPart();
         ITextComponent localizedInstrumentName = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(childTabs[index].getPart().getInstrumentId()));
         return (!part.getInstrumentId().equals("")) ? new StringTextComponent(String.format("%s: ", number)).append(localizedInstrumentName) : new StringTextComponent(number);
+    }
+
+    private void helpToggled()
+    {
+        buttonGuiHelp.setHelpEnabled(!buttonGuiHelp.isHelpEnabled());
+        children.stream().filter(b -> b instanceof IHooverText)
+                .forEach(b -> ((IHooverText) b).setHooverTextOverride(buttonGuiHelp.isHelpEnabled()));
+        childTabs[activeChildIndex].children().stream().filter(b -> b instanceof IHooverText)
+                .forEach(b -> ((IHooverText) b).setHooverTextOverride(buttonGuiHelp.isHelpEnabled()));
+        updateButtons();
     }
 
     @Override
