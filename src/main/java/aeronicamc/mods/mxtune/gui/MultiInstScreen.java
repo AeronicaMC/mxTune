@@ -184,7 +184,7 @@ public class MultiInstScreen extends ContainerScreen<MultiInstContainer> impleme
         ModGuiHelper.RenderGuiItemScaled(this.itemRenderer, inventory.getSelected(),
                 getGuiLeft() + 51, getGuiTop() + 50, 2, true);
         this.renderTooltip(matrixStack, mouseX, mouseY);
-        ModGuiHelper.drawHooveringHelp(matrixStack, this, buttons, mouseX, mouseY);
+        ModGuiHelper.drawHooveringHelp(matrixStack, this, children, mouseX, mouseY);
     }
 
     @Override

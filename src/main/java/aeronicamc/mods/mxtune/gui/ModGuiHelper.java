@@ -4,6 +4,7 @@ import aeronicamc.mods.mxtune.gui.widget.IHooverText;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.renderer.ItemRenderer;
@@ -32,18 +33,14 @@ public class ModGuiHelper
         RenderSystem.popMatrix();
     }
 
-    public static  <T extends Screen, S extends Object>  void drawHooveringHelp(MatrixStack poseStack, T guiScreen, IHooverText widget, double mouseX, double mouseY)
+    public static  <T extends Screen>  void drawHooveringHelp(MatrixStack poseStack, T guiScreen, List<IGuiEventListener> widgets, double mouseX, double mouseY)
     {
-        if (widget.isMouseOverWidget(mouseX, mouseY) && (Screen.hasShiftDown() || widget.isHooverTextOverride()))
-            guiScreen.renderWrappedToolTip(poseStack, widget.getHooverTexts(), (int) mouseX, (int) mouseY, Minecraft.getInstance().font);
-    }
-
-    public static  <T extends Screen, S extends Object>  void drawHooveringHelp(MatrixStack poseStack, T guiScreen, List<S> buttons, double mouseX, double mouseY)
-    {
-        for (Object widget : buttons)
-            if ((widget instanceof IHooverText && ((IHooverText) widget).isMouseOverWidget(mouseX, mouseY) &&
-                             (Screen.hasShiftDown() || ((IHooverText) widget).isHooverTextOverride())))
-                guiScreen.renderWrappedToolTip(poseStack, ((IHooverText) widget).getHooverTexts(), (int) mouseX, (int) mouseY, Minecraft.getInstance().font);
+        widgets.stream()
+                .filter(widget -> widget instanceof IHooverText && ((IHooverText) widget).isMouseOverWidget(mouseX, mouseY)
+                        && (Screen.hasShiftDown() || ((IHooverText) widget).isHooverTextOverride()))
+                .forEach(widget -> guiScreen.renderWrappedToolTip(poseStack,
+                        ((IHooverText) widget).getHooverTexts(),
+                        (int) mouseX, (int) mouseY, Minecraft.getInstance().font));
     }
 
     public static <T extends TextFieldWidget> void clearOnMouseLeftClicked(T textFieldWidget, double mouseX, double mouseY, double mouseButton)

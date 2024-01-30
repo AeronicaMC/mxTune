@@ -296,7 +296,7 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         groupDisplay.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
         memberDisplayRight.renderMemberDisplay(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
         super.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
-        ModGuiHelper.drawHooveringHelp(pMatrixStack, this, buttons, pMouseX, pMouseY);
+        ModGuiHelper.drawHooveringHelp(pMatrixStack, this, children, pMouseX, pMouseY);
     }
 
     @Override

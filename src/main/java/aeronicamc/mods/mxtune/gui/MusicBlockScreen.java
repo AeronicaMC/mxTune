@@ -196,7 +196,7 @@ public class MusicBlockScreen extends ContainerScreen<MusicBlockContainer>
         this.renderBackground(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
         this.renderTooltip(matrixStack, mouseX, mouseY);
-        ModGuiHelper.drawHooveringHelp(matrixStack, this, buttons, mouseX, mouseY);
+        ModGuiHelper.drawHooveringHelp(matrixStack, this, children, mouseX, mouseY);
     }
 
     @Override
