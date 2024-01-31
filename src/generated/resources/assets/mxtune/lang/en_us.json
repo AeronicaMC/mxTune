@@ -111,6 +111,8 @@
   "gui.mxtune.button.upload": "Upload",
   "gui.mxtune.button.write_music_score": "Make Music Score",
   "gui.mxtune.button.write_sheet_music": "Make Sheet Music",
+  "gui.mxtune.button.write_sheet_music.help01": "Consumes 1 sheet of Music Paper per instrument tab. A stack of 16 Music Paper is needed to make 16 parts.",
+  "gui.mxtune.button.write_sheet_music.help02": "The title, numerical part of parts, instrument name, and part duration is written on the Sheet Music.",
   "gui.mxtune.confirm.cancel.text01": "Any unsaved changes will be lost.",
   "gui.mxtune.confirm.cancel.text02": "No to go back and Save. Yes to return to game.",
   "gui.mxtune.confirm.new.text01": "This will clear the current music.",

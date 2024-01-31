@@ -159,6 +159,8 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.select", "Select");
         addGuiText("button.upload", "Upload");
         addGuiText("button.write_sheet_music", "Make Sheet Music");
+        addGuiText("button.write_sheet_music.help01", "Consumes 1 sheet of Music Paper per instrument tab. A stack of 16 Music Paper is needed to make 16 parts.");
+        addGuiText("button.write_sheet_music.help02", "The title, numerical part of parts, instrument name, and part duration is written on the Sheet Music.");
         addGuiText("button.write_music_score", "Make Music Score");
 
         // MusicBlockScreen, GuiLockButton
