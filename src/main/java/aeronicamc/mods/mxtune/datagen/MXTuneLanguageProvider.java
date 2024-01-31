@@ -152,6 +152,9 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.play_all", "Play All");
         addGuiText("button.play_part", "Play Part");
         addGuiText("button.save", "Save");
+        addGuiText("button.save.help01", "Save a new file or overwrite existing.");
+        addGuiText("button.save.help02", "The actual filename is derived from the Title field with the .mxt extension appended.");
+        addGuiText("button.save.help03", "A Title and at least one instrument tab must have a melody line. Empty instrument tabs are not allowed.");
         addGuiText("button.stop", "Stop");
         addGuiText("button.select", "Select");
         addGuiText("button.upload", "Upload");

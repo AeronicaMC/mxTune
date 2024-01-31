@@ -126,6 +126,10 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         buttonLib.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.library").withStyle(TextFormatting.RESET));
         buttonLib.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.library.help01").withStyle(TextFormatting.YELLOW));
         buttonSave = new MXButton(buttonLib.getLeft() + buttonLib.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.save"), pSave->saveAction());
+        buttonSave.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.save").withStyle(TextFormatting.RESET));
+        buttonSave.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.save.help01").withStyle(TextFormatting.YELLOW));
+        buttonSave.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.save.help02").withStyle(TextFormatting.GREEN));
+        buttonSave.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.save.help03").withStyle(TextFormatting.YELLOW));
         buttonSheetMusic = new MXButton(buttonSave.getLeft() + buttonSave.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.write_sheet_music"), pDone->writeSheetMusic());
         buttonMusicScore = new MXButton(buttonSheetMusic.getLeft() + buttonSheetMusic.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.write_music_score"), pDone->writeMusicScore());
         MXButton buttonCancel = new MXButton(buttonMusicScore.getLeft() + buttonMusicScore.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.cancel"), pCancel->cancelAction(true));
