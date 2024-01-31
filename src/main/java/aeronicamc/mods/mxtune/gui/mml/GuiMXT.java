@@ -184,7 +184,11 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         int tabButtonTop = textSource.getTop() +  textSource.getHeight() + PADDING * 2;
         // TODO: NOTE SPECIAL BUTTON IDS 250, 251
         buttonAddTab = new MXButton(PADDING, tabButtonTop, 20, 20, new TranslationTextComponent("gui.mxtune.button.plus"), p->addTab());
+        buttonAddTab.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.plus").withStyle(TextFormatting.RESET));
+        buttonAddTab.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.plus.help01").withStyle(TextFormatting.YELLOW));
         buttonMinusTab = new MXButton(buttonAddTab.x + buttonAddTab.getWidth(), tabButtonTop, 20, 20, new TranslationTextComponent("gui.mxtune.button.minus"), p->minusTab());
+        buttonMinusTab.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.minus").withStyle(TextFormatting.RESET));
+        buttonMinusTab.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.minus.help01").withStyle(TextFormatting.YELLOW));
         addButton(buttonAddTab);
         addButton(buttonMinusTab);
 
@@ -225,7 +229,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     private void buttonAccept(Widget widget)
     {
         this.activeChildIndex = ((MXButton)widget).getIndex();
-        ((MXButton)widget).active = true;
+        widget.active = true;
         this.childTabs[activeChildIndex].init(getMC(), width, height);
         updateState();
     }
