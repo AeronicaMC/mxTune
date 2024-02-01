@@ -135,7 +135,8 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.import", "Import");
         addGuiText("button.import.help01", "Supports 3MLE .mml, Maple Story 2 .ms2mml, and zipped .ms2mml multipart files.");
         addGuiText("button.minus", "-");
-        addGuiText("button.minus.help01", "Removes the last right most Instrument Part Tab.");
+        addGuiText("button.minus.help01", "Hides the last right most Instrument Part Tab.");
+        addGuiText("button.minus.help02", "Hidden tabs do not lose their contents. Hidden tabs are not saved or played.");
         addGuiText("button.new", "New");
         addGuiText("button.new.help01", "Clears all text and MML. Will ask to save.");
         addGuiText("button.open_folder", "Open Folder");
@@ -144,9 +145,9 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.library", "Library");
         addGuiText("button.library.help01", "Select and load a saved .mxt file");
         addGuiText("button.plus", "+");
-        addGuiText("button.plus.help01", "Adds an Instrument Part Tab at the end (right most).");
+        addGuiText("button.plus.help01", "Add an Instrument Part Tab at the end (right most).");
         addGuiText("button.refresh", "Refresh");
-        addGuiText("button.refresh.help01", "Only needed it the file list fails to refresh automatically after placing files into the folder.");
+        addGuiText("button.refresh.help01", "Only needed if the list does now refresh automatically after placing files into the folder.");
         addGuiText("button.clipboard_Copy_to", "Copy");
         addGuiText("button.clipboard_paste_from", "Paste");
         addGuiText("button.clipboard_paste_from.help01", "Paste MML in Mabinogi Clipboard Format.");

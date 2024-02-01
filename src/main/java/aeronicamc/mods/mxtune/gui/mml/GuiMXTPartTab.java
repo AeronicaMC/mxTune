@@ -22,8 +22,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import javax.sound.midi.Instrument;
@@ -33,32 +31,29 @@ import java.util.stream.IntStream;
 
 public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
 {
-    private static final Logger LOGGER = LogManager.getLogger(GuiMXTPartTab.class);
     private final GuiMXT guiMXT;
 
     // Layout
     private int top;
     private int bottom;
-    private int entryHeight;
+    private final int entryHeight;
     private static final int PADDING = 4;
 
     // Content
     private MXTunePart mxTunePart = new MXTunePart();
-    private MXTextFieldWidget labelStatus = new MXTextFieldWidget(150);
+    private final MXTextFieldWidget labelStatus = new MXTextFieldWidget(150);
     private MXButton buttonPlay;
     private final SoundFontList listBoxInstruments = new SoundFontList().init();
 
     /* MML Staves: Melody, chord 01, chord 02 ... */
     private static final int MAX_MML_LINES = 10;
     private static final int MIN_MML_LINES = 1;
-    private static final int MML_LINE_IDX = 200;
     private final MXTextFieldWidget[] mmlTextLines = new MXTextFieldWidget[MAX_MML_LINES];
     private final MXLabel[] mmlLabelLines = new MXLabel[MAX_MML_LINES];
     private final String[] cachedTextLines = new String[MAX_MML_LINES];
     private final int[] cachedCursorPos = new int[MAX_MML_LINES];
     private MXButton buttonAddLine;
     private MXButton buttonMinusLine;
-    private MXButton buttonCopyToClipBoard;
     private static final String[] lineNames = new String[MAX_MML_LINES];
 
     /* MML Line limits - allow limiting the viewable lines */
@@ -108,14 +103,13 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         addButton(buttonPlay);
 
         int posY = top + 15;
-        int statusHeight = entryHeight;
         listBoxInstruments.setLayout(PADDING, posY, instListWidth, Math.max(buttonPlay.y - PADDING - posY, entryHeight));
         listBoxInstruments.setCallBack(this::selectInstrument);
         int posX = listBoxInstruments.getRight() + PADDING;
 
         /* create Status line */
         int rightSideWidth = Math.max(width - posX - PADDING, 100);
-        labelStatus.setLayout(posX, posY , rightSideWidth, statusHeight);
+        labelStatus.setLayout(posX, posY , rightSideWidth, entryHeight);
         labelStatus.active = false;
         labelStatus.setFocus(false);
         labelStatus.setCanLoseFocus(true);
@@ -132,7 +126,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         buttonPasteFromClipBoard.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.clipboard_paste_from").withStyle(TextFormatting.RESET));
         buttonPasteFromClipBoard.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.clipboard_paste_from.help01").withStyle(TextFormatting.YELLOW));
         addButton(buttonPasteFromClipBoard);
-        buttonCopyToClipBoard =  new MXButton(posX, buttonPasteFromClipBoard.y + buttonPasteFromClipBoard.getHeight(), 60, 20, new TranslationTextComponent("gui.mxtune.button.clipboard_Copy_to"), p -> copyToClipboard());
+        MXButton buttonCopyToClipBoard = new MXButton(posX, buttonPasteFromClipBoard.y + buttonPasteFromClipBoard.getHeight(), 60, 20, new TranslationTextComponent("gui.mxtune.button.clipboard_Copy_to"), p -> copyToClipboard());
         addButton(buttonCopyToClipBoard);
 
         int labelWidth = Math.max(font.width(lineNames[0]), font.width(lineNames[1])) + PADDING;
@@ -153,7 +147,6 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
             posY += entryHeight + PADDING;
         }
 
-        setLinesLayout(cachedViewableLineCount);
         reloadState();
         parseTest(!firstParse);
     }
@@ -423,17 +416,6 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         cachedSelectedInst = listBoxInstruments.getSelected();
         cachedIsPlaying = isPlaying;
         updateStatusText();
-
-//        cachedVolume = sliderVolume.getValue();
-//        cachedPan = sliderPan.getValue();
-//        cachedReverb = sliderReverb.getValue();
-//        cachedChorus = sliderChorus.getValue();
-//
-//        cachedEnableVolume = enableVolume.isChecked();
-//        cachedEnabledPan = enablePan.isChecked();
-//        cachedEnabledReverb = enableReverb.isChecked();
-//        cachedEnabledChorus = enableChorus.isChecked();
-
         updateButtonState();
         isStateCached = true;
     }
@@ -452,20 +434,11 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         buttonAddLine.visible = viewableLineCount < MAX_MML_LINES;
         buttonMinusLine.visible = viewableLineCount > MIN_MML_LINES;
         parseTest(false);
-        setLinesLayout(viewableLineCount);
     }
 
     boolean canPlay()
     {
         return buttonPlay.active;
-    }
-
-
-    private void setLinesLayout(int viewableLines)
-    {
-        int posX = buttonCopyToClipBoard.x + buttonCopyToClipBoard.getWidth() + PADDING;
-        int rightSideWidth = Math.max(width - posX - PADDING, 100);
-        MXTextFieldWidget mmlTextField = mmlTextLines[viewableLines - 1];
     }
 
     private void reloadState()
@@ -482,7 +455,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
     }
 
     /* MML Parsing */
-    private void parseMML(int index, String mml)
+    private void parseMML(String mml)
     {
         ValidDuration validDuration = SheetMusicHelper.validateMML(getTextToParse(mml));
         if (validDuration.getDuration() > duration)
@@ -499,7 +472,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         {
             duration = 0;
             totalCharacters = count;
-            IntStream.range(0, viewableLineCount).forEach(i -> parseMML(i, mmlTextLines[i].getValue()));
+            IntStream.range(0, viewableLineCount).forEach(i -> parseMML(mmlTextLines[i].getValue()));
         }
     }
 
@@ -549,7 +522,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
             StringBuilder lines = new StringBuilder();
             for (int i = 0; i < viewableLineCount; i++)
             {
-                // commas (chord part breaks) should not exist so we will remove them.
+                // commas (chord part breaks) should not exist, so we will remove them.
                 lines.append(mmlTextLines[i].getValue().replaceAll(",", ""));
                 // append a comma to separate the melody and chord note parts (tracks).
                 if (i < (viewableLineCount - 1)) lines.append(",");
@@ -568,12 +541,12 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
         String copy = text;
 
         // remove any remaining "MML@" and ";" tokens
-        copy = copy.replaceAll("(MML\\@)|;", "");
+        copy = copy.replaceAll("(MML@)|;", "");
         StringBuilder sb = new StringBuilder(copy);
         // Add the required MML BEGIN and END tokens
-        if (!copy.regionMatches(true, 0, "MML@", 0, 4) && copy.length() > 0)
+        if (!copy.regionMatches(true, 0, "MML@", 0, 4) && !copy.isEmpty())
             sb.insert(0, "MML@");
-        if (!copy.endsWith(";") && copy.length() > 0)
+        if (!copy.endsWith(";") && !copy.isEmpty())
             sb.append(";");
         return sb.toString();
     }

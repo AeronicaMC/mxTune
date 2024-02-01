@@ -59,7 +59,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     private MXButton buttonPlayStop;
     private MXButton buttonSheetMusic;
     private MXButton buttonMusicScore;
-    private GuiHelpButton buttonGuiHelp = new GuiHelpButton(p -> helpToggled());
+    private final GuiHelpButton buttonGuiHelp = new GuiHelpButton(p -> helpToggled());
     private int durationTotal;
     private int ticks;
 
@@ -135,7 +135,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         buttonSheetMusic.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.write_sheet_music.help01").withStyle(TextFormatting.YELLOW));
         buttonSheetMusic.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.write_sheet_music.help02").withStyle(TextFormatting.GREEN));
         buttonMusicScore = new MXButton(buttonSheetMusic.getLeft() + buttonSheetMusic.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.mxtune.button.write_music_score"), pDone->writeMusicScore());
-        MXButton buttonCancel = new MXButton(buttonMusicScore.getLeft() + buttonMusicScore.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.cancel"), pCancel->cancelAction(true));
+        MXButton buttonCancel = new MXButton(buttonMusicScore.getLeft() + buttonMusicScore.getWidth(), buttonY, buttonWidth, 20, new TranslationTextComponent("gui.cancel"), pCancel->cancelAction());
         buttonGuiHelp.setPosition(buttonCancel.getRight(), buttonY);
         addButton(buttonNew);
         addButton(buttonImport);
@@ -189,6 +189,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         buttonMinusTab = new MXButton(buttonAddTab.x + buttonAddTab.getWidth(), tabButtonTop, 20, 20, new TranslationTextComponent("gui.mxtune.button.minus"), p->minusTab());
         buttonMinusTab.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.minus").withStyle(TextFormatting.RESET));
         buttonMinusTab.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.minus.help01").withStyle(TextFormatting.YELLOW));
+        buttonMinusTab.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.minus.help02").withStyle(TextFormatting.GREEN));
         addButton(buttonAddTab);
         addButton(buttonMinusTab);
 
@@ -275,7 +276,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
 
     private void drawLine(MatrixStack pMatrixStack, MXButton gb)
     {
-        AbstractGui.fill(pMatrixStack, gb.x + 1, gb.y + gb.getHeight() + 1, gb.x +1 + gb.getWidth() - 2, gb.y + gb.getHeight() + 3, TextColorFg.RED | MathHelper.ceil(1F * 255.0F) << 24);
+        AbstractGui.fill(pMatrixStack, gb.x + 1, gb.y + gb.getHeight() + 1, gb.x +1 + gb.getWidth() - 2, gb.y + gb.getHeight() + 3, TextColorFg.RED | MathHelper.ceil(255.0F) << 24);
     }
 
     @Override
@@ -475,7 +476,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         buttonSheetMusic.active = !textTitle.getValue().isEmpty() && isOK && hasEnoughMusicPaper;
         buttonMusicScore.active = MXTune.isDevEnv() && buttonSheetMusic.active;
         buttonPlayStop.setMessage(isPlaying ? new TranslationTextComponent("gui.mxtune.button.stop") : new TranslationTextComponent("gui.mxtune.button.play_all"));
-        sourcesLink.visible = sourcesLink.getUrl().matches("^(http(s)?:\\/\\/[a-zA-Z0-9\\-_]+\\.[a-zA-Z]+(.)+)+");
+        sourcesLink.visible = sourcesLink.getUrl().matches("^(http(s)?://[a-zA-Z0-9\\-_]+\\.[a-zA-Z]+(.)+)+");
 
         buttonSave.active = !textTitle.getValue().isEmpty() && isOK;
         buttonGuiHelp.addHooverText(true, HELP_HELP01);
@@ -504,7 +505,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         String number = String.format("%d", index + 1);
         MXTunePart part = childTabs[index].getPart();
         ITextComponent localizedInstrumentName = new TranslationTextComponent(SoundFontProxyManager.getLangKeyName(childTabs[index].getPart().getInstrumentId()));
-        return (!part.getInstrumentId().equals("")) ? new StringTextComponent(String.format("%s: ", number)).append(localizedInstrumentName) : new StringTextComponent(number);
+        return (!part.getInstrumentId().isEmpty()) ? new StringTextComponent(String.format("%s: ", number)).append(localizedInstrumentName) : new StringTextComponent(number);
     }
 
     private void helpToggled()
@@ -607,19 +608,6 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         updateState();
     }
 
-    private boolean uploadMxt()
-    {
-        if (!textTitle.getValue().trim().equals("") && buttonPlayStop.active)
-        {
-            createMxt();
-//            PacketDispatcher.sendToServer(new SetServerSerializedDataMessage(mxTuneFile.getGUID(), RecordType.MXT, mxTuneFile));
-            return true;
-        }
-        else
-//            Miscellus.audiblePingPlayer(getPlayer(), SoundEvents.BLOCK_ANVIL_PLACE);
-        return false;
-    }
-
     private void createMxt()
     {
         if (mxTuneFile == null)
@@ -658,13 +646,10 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
             getMC().setScreen(parent);
     }
 
-    private void cancelAction(boolean result)
+    private void cancelAction()
     {
-        if (result)
-        {
-            stop();
-            getMC().setScreen(parent);
-        }
+        stop();
+        getMC().setScreen(parent);
     }
 
     private void openMmlUrl()
@@ -679,7 +664,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
 
     private boolean makeSheetMusic()
     {
-        if (!textTitle.getValue().trim().equals("") && buttonPlayStop.active)
+        if (!textTitle.getValue().trim().isEmpty() && buttonPlayStop.active)
         {
             String title = this.textTitle.getValue();
             for (int i = 0; i < viewableTabCount; i++)
@@ -700,7 +685,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
 
     private boolean makeMusicScore()
     {
-        if (!textTitle.getValue().trim().equals("") && buttonPlayStop.active)
+        if (!textTitle.getValue().trim().isEmpty() && buttonPlayStop.active)
         {
             String title = this.textTitle.getValue();
             byte[] scoreParts = new byte[1];
