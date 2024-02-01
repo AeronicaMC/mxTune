@@ -44,7 +44,7 @@ public class ImportHelper
                     return importMs2mml(path);
                 case "mml":
                     return MMLFile.parse(path);
-                case "zip": // Only multipart ms2mml supported at this time
+                case "zip": // Only multipart .ms2mml supported at this time
                     return importZippedMs2mml(path);
                 default:
             }

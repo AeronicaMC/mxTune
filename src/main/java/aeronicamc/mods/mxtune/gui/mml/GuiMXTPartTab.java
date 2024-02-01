@@ -528,7 +528,7 @@ public class GuiMXTPartTab extends MXScreen implements IAudioStatusCallback
                 if (i < (viewableLineCount - 1)) lines.append(",");
             }
 
-            // bind it all up into Mabinogi Past format
+            // bind it all up into Mabinogi Paste format
             String mml = getTextToParse(lines.toString());
             isPlaying = mmlPlay(mml);
         }

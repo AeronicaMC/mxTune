@@ -13,10 +13,10 @@ import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.GroupCmdMessage;
 import aeronicamc.mods.mxtune.util.IGroupClientChangedCallback;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.DialogTexts;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -37,9 +37,8 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
     private static final ITextComponent LABEL_MODE = new TranslationTextComponent("gui.mxtune.label.mode");
     private static final ITextComponent PIN = new TranslationTextComponent(Group.Mode.Pin.getModeKey()).withStyle(TextFormatting.YELLOW);
     private static final ITextComponent OPEN = new TranslationTextComponent(Group.Mode.Open.getModeKey()).withStyle(TextFormatting.GREEN);
-    private static final ITextComponent PIN_HELP01 = new TranslationTextComponent("gui.mxtune.button.new_pin.help01").withStyle(TextFormatting.RESET);
-    private static final ITextComponent PIN_HELP02 = new TranslationTextComponent("gui.mxtune.button.new_pin.help02").withStyle(TextFormatting.GREEN);
-    private static final ITextComponent PIN_HELP03 = new TranslationTextComponent("gui.mxtune.button.new_pin.help03").withStyle(TextFormatting.YELLOW);
+    private static final ITextComponent PIN_HELP01 = new TranslationTextComponent("gui.mxtune.button.new_pin.help01").withStyle(TextFormatting.GREEN);
+    private static final ITextComponent PIN_HELP02 = new TranslationTextComponent("gui.mxtune.button.new_pin.help02").withStyle(TextFormatting.YELLOW);
     private static final ITextComponent MAKE_GROUP_HELP01 = new TranslationTextComponent("gui.mxtune.button.make_group.help01").withStyle(TextFormatting.RESET);
     private static final ITextComponent MAKE_GROUP_HELP02 = new TranslationTextComponent("gui.mxtune.button.make_group.help02").withStyle(TextFormatting.GREEN);
     private static final ITextComponent MAKE_GROUP_HELP03 = new TranslationTextComponent("gui.mxtune.button.make_group.help03").withStyle(TextFormatting.YELLOW);
@@ -68,8 +67,8 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
     public GuiGroup()
     {
         super(StringTextComponent.EMPTY);
-        lineHeight = mc().font.lineHeight + 6;
-        nameWidth = mc().font.width("MMMMMMMMMMMM") + 4;
+        lineHeight = getFont().lineHeight + 6;
+        nameWidth = getFont().width("MMMMMMMMMMMM") + 4;
         memberDisplayLeft = new MemberDisplay(this, MemberDisplay.Split.M01_M08);
         memberDisplayRight = new MemberDisplay(this, MemberDisplay.Split.M09_M16);
         GroupClient.setCallback(this);
@@ -186,8 +185,8 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         buttonMakeGroup.addHooverText(false, MAKE_GROUP_HELP02);
         buttonMakeGroup.addHooverText(false, MAKE_GROUP_HELP03);
         buttonNewPin.addHooverText(true, getPinText(group.isValid() ? GroupClient.getPrivatePin() : "----"));
+        buttonNewPin.addHooverText(false, PIN_HELP01);
         buttonNewPin.addHooverText(false, PIN_HELP02);
-        buttonNewPin.addHooverText(false, PIN_HELP03);
         buttonGroupMode.addHooverText(true, getGroupModeName(groupMode));
         buttonGroupMode.addHooverText(false, new TranslationTextComponent(groupMode.getHelp02Key()).withStyle(TextFormatting.GREEN));
         buttonGroupMode.addHooverText(false, new TranslationTextComponent(groupMode.getHelp03Key()).withStyle(TextFormatting.YELLOW));
@@ -328,32 +327,17 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         return false;
     }
 
-    @Override
-    public boolean shouldCloseOnEsc()
-    {
-        return true;
-    }
-
     private static ClientPlayerEntity player()
     {
-        return Objects.requireNonNull(mc().player);
-    }
-
-    private static Minecraft mc()
-    {
-        return Minecraft.getInstance();
-    }
-
-    private static int getWidth(String pText)
-    {
-        return mc().font.width(pText);
+        return Objects.requireNonNull(getMC().player);
     }
 
     private static int getWidth(ITextComponent pText)
     {
-        return mc().font.width(pText);
+        return getFont().width(pText);
     }
 
+    @SuppressWarnings("unused")
     private static class MemberDisplay
     {
         private final GuiGroup parent;
@@ -491,24 +475,25 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         static final ITextComponent REMOVE_HELP02 = new TranslationTextComponent("gui.mxtune.button.member_remove.help02").withStyle(TextFormatting.GREEN);
         static final ITextComponent REMOVE_HELP03 = new TranslationTextComponent("gui.mxtune.button.member_remove.help03").withStyle(TextFormatting.YELLOW);
 
-        final int xPos;
-        final int yPos;
+        final int xPosMember;
+        final int yPosMember;
         final MXButton promote;
         final MXButton remove;
         final int memberId;
         final ITextComponent name;
 
-        MemberInfo(int xPos, int yPos, GuiGroup parent, int memberId, Button.IPressable pPromote, Button.IPressable pRemove)
+        MemberInfo(int xPosMember, int yPosMember, GuiGroup parent, int memberId, Button.IPressable pPromote, Button.IPressable pRemove)
         {
-            this.xPos = xPos;
-            this.yPos = yPos;
+            this.xPosMember = xPosMember;
+            this.yPosMember = yPosMember;
             int nameWidth = parent.nameWidth;
             int lineHeight = parent.lineHeight;
             this.memberId = memberId;
-            this.name = player().level.getEntity(memberId) != null ? player().level.getEntity(memberId).getDisplayName() : StringTextComponent.EMPTY;
+            Entity entity = player().level.getEntity(memberId);
+            this.name = entity != null ? entity.getDisplayName() : StringTextComponent.EMPTY;
             promote = new MXButton(pPromote);
             promote.setMessage(MemberInfo.PROMOTE);
-            promote.setLayout(xPos + nameWidth, yPos, 20, lineHeight);
+            promote.setLayout(xPosMember + nameWidth, yPosMember, 20, lineHeight);
             promote.setIndex(memberId);
             promote.addHooverText(true, PROMOTE_HELP01);
             promote.addHooverText(false, PROMOTE_HELP02);
@@ -518,7 +503,7 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
 
             remove = new MXButton(pRemove);
             remove.setMessage(MemberInfo.REMOVE);
-            remove.setLayout(promote.x + 20, yPos, 20, lineHeight);
+            remove.setLayout(promote.x + 20, yPosMember, 20, lineHeight);
             remove.setIndex(memberId);
             remove.addHooverText(true, REMOVE_HELP01);
             remove.addHooverText(false, REMOVE_HELP02);
@@ -527,9 +512,10 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
             remove.visible = GroupClient.isLeader(player().getId()) || memberId == player().getId();
         }
 
+        @SuppressWarnings("unused")
         void memberDraw(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks)
         {
-            mc().font.draw(pMatrixStack, name, (float)xPos + 2, (float)yPos + 2, GroupClient.isLeader(memberId) ? TextColorFg.YELLOW: TextColorFg.WHITE);
+            getFont().draw(pMatrixStack, name, (float) xPosMember + 2, (float) yPosMember + 2, GroupClient.isLeader(memberId) ? TextColorFg.YELLOW: TextColorFg.WHITE);
         }
     }
 }

@@ -75,7 +75,7 @@ public class GuiFileImporter extends MXScreen
         super(new TranslationTextComponent("gui.mxtune.gui_file_importer.title"));
         this.parent = parent;
 
-        // refresh the file list automatically - might be better to not bother the extension filtering but we'll see
+        // refresh the file list automatically - might be better to not bother with extension filtering, but we'll see
         DirectoryStream.Filter<Path> filter = entry ->
                 (entry.toString().endsWith(".zip")
                          || entry.toString().endsWith(".mml")
@@ -142,9 +142,7 @@ public class GuiFileImporter extends MXScreen
 
         titleLabel = new MXLabel(font, (width - font.width(title)) / 2, 5, font.width(title), entryHeight, title, TextColorFg.WHITE);
         pathListWidget.setLayout(left, listTop, listWidth, listHeight);
-        this.pathListWidget.setCallBack((entry, doubleClicked) -> {
-            selectedEntry = entry;
-        });
+        this.pathListWidget.setCallBack((entry, doubleClicked) -> selectedEntry = entry);
 
         ITextComponent searchLabelText = new TranslationTextComponent("gui.mxtune.label.search");
         int searchLabelWidth = font.width(searchLabelText) + 4;

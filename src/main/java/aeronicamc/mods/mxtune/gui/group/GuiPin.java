@@ -10,7 +10,6 @@ import aeronicamc.mods.mxtune.managers.GroupClient;
 import aeronicamc.mods.mxtune.network.PacketDispatcher;
 import aeronicamc.mods.mxtune.network.messages.SendPinEntryMessage;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.text.ITextComponent;
@@ -91,7 +90,7 @@ public class GuiPin extends MXScreen
             if (numPadLayout[index][0] == 2) {yPos += 20 + 2;}
         }
         groupDisplay.setLabelText(getGroupLeaderInfo(groupDisplay, player(), groupId));
-        int groupDisplayWidth = Math.max(mc().font.width(groupDisplay.getLabelText()) + 8, minWidth - 8);
+        int groupDisplayWidth = Math.max(getFont().width(groupDisplay.getLabelText()) + 8, minWidth - 8);
         int groupLeft = (width - groupDisplayWidth) / 2;
         groupDisplay.setCentered(true);
         groupDisplay.setLayout(groupLeft, pinDisplay.y - 26, groupDisplayWidth, 20);
@@ -200,11 +199,6 @@ public class GuiPin extends MXScreen
 
     private ClientPlayerEntity player()
     {
-        return Objects.requireNonNull(mc().player);
-    }
-
-    private Minecraft mc()
-    {
-        return Objects.requireNonNull(Minecraft.getInstance());
+        return Objects.requireNonNull(getMC().player);
     }
 }

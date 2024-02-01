@@ -99,6 +99,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
 
     private String convertSnakeCaseToTitleCase(String input)
     {
+        //noinspection deprecation
         String temp = WordUtils.capitalizeFully(StringUtils.replace(input, "_", " "));
         return StringUtils.replace(temp,"Mabinogi", "(Mabi)");
     }
@@ -217,9 +218,8 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addGuiText("button.make_group.help01", "Make Group");
         addGuiText("button.make_group.help02", "Creates a new group with you as the leader.");
         addGuiText("button.make_group.help03", "Button disappears when clicked.");
-        addGuiText("button.new_pin.help01", "Generate Pin");
-        addGuiText("button.new_pin.help02", "Enabled: Click to generate a new pin. The server ensures no active groups will have the same pin.");
-        addGuiText("button.new_pin.help03", "Disabled: When the Access mode is Open.");
+        addGuiText("button.new_pin.help01", "Enabled: Click to generate a new pin. The server ensures no active groups will have the same pin.");
+        addGuiText("button.new_pin.help02", "Disabled: When the Access mode is Open.");
         addGuiText("button.disband.help01",  "Disband");
         addGuiText("button.disband.help02",  "Click to remove all members and close the group.");
         addGuiText("button.disband.help03",  "Disabled: If your group does not exist or if you are not the leader.");

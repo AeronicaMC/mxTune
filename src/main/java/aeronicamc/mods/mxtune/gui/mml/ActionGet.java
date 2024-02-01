@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+@SuppressWarnings("unused")
 public class ActionGet implements ISelectorAction
 {
     public static final ActionGet INSTANCE = new ActionGet();
@@ -21,7 +22,7 @@ public class ActionGet implements ISelectorAction
     }
 
     @Override
-    public void select(MXTuneFile mxTuneFile)
+    public void select(@Nullable MXTuneFile mxTuneFile)
     {
         this.mxTuneFile = mxTuneFile;
     }

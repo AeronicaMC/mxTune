@@ -1,6 +1,8 @@
 package aeronicamc.mods.mxtune.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.ITextComponent;
 
@@ -16,6 +18,16 @@ public class MXScreen extends Screen
     {
         super.render(pMatrixStack, pMouseX, pMouseY, pPartialTicks);
         ModGuiHelper.drawHooveringHelp(pMatrixStack, this, children, pMouseX, pMouseY);
+    }
+
+    public static Minecraft getMC()
+    {
+        return Minecraft.getInstance();
+    }
+
+    public static FontRenderer getFont()
+    {
+        return getMC().font;
     }
 }
 

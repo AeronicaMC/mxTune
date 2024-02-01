@@ -18,7 +18,6 @@ import aeronicamc.mods.mxtune.sound.ClientAudio;
 import aeronicamc.mods.mxtune.sound.IAudioStatusCallback;
 import aeronicamc.mods.mxtune.util.*;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -107,8 +106,8 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         super.init();
         children.clear();
         buttons.clear();
-        Objects.requireNonNull(this.minecraft).keyboardHandler.setSendRepeatsToGui(true);
-        int singleLineHeight = font.lineHeight + 2;
+        getMC().keyboardHandler.setSendRepeatsToGui(true);
+        int singleLineHeight = getFont().lineHeight + 2;
         int titleWidth = width - PADDING * 2;
 
         labelMXTFileName.setLayout(PADDING, PADDING, titleWidth, singleLineHeight);
@@ -161,20 +160,20 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         // Text fields
         textY = sourcesLink.y + sourcesLink.getHeight() + PADDING;
         ITextComponent labelTitleText = new TranslationTextComponent("gui.mxtune.label.title");
-        int labelTitleWidth = font.width(labelTitleText);
+        int labelTitleWidth = getFont().width(labelTitleText);
         ITextComponent labelAuthorText = new TranslationTextComponent("gui.mxtune.label.author");
-        int labelAuthorWidth = font.width(labelAuthorText);
-        labelTitle = new MXLabel(font, PADDING, textY, labelTitleWidth, font.lineHeight + 2, labelTitleText, -1);
-        textTitle.setLayout(labelTitle.getX() + labelTitleWidth + PADDING, textY, width / 2 - labelTitle.getWidth() - PADDING, font.lineHeight + 2);
+        int labelAuthorWidth = getFont().width(labelAuthorText);
+        labelTitle = new MXLabel(getFont(), PADDING, textY, labelTitleWidth, getFont().lineHeight + 2, labelTitleText, -1);
+        textTitle.setLayout(labelTitle.getX() + labelTitleWidth + PADDING, textY, width / 2 - labelTitle.getWidth() - PADDING, getFont().lineHeight + 2);
         textTitle.setCanLoseFocus(true);
-        labelAuthor = new MXLabel(font, textTitle.x + textTitle.getWidth() + PADDING, textY, labelAuthorWidth, font.lineHeight + 2, labelAuthorText, -1);
-        textAuthor.setLayout(labelAuthor.getX() + labelAuthorWidth + PADDING, textY, width - labelAuthor.getX() - labelAuthor.getWidth() - PADDING * 2, font.lineHeight + 2);
+        labelAuthor = new MXLabel(getFont(), textTitle.x + textTitle.getWidth() + PADDING, textY, labelAuthorWidth, getFont().lineHeight + 2, labelAuthorText, -1);
+        textAuthor.setLayout(labelAuthor.getX() + labelAuthorWidth + PADDING, textY, width - labelAuthor.getX() - labelAuthor.getWidth() - PADDING * 2, getFont().lineHeight + 2);
         textAuthor.setCanLoseFocus(true);
         textY = textTitle.y + textTitle.getHeight() + PADDING;
         ITextComponent labelSourceText = new TranslationTextComponent("gui.mxtune.label.source");
-        int labelSourceWidth = font.width(labelSourceText);
-        labelSource = new MXLabel(font, PADDING, textY, labelSourceWidth, font.lineHeight + 2, labelSourceText,-1);
-        textSource.setLayout( labelSource.getX() + labelSource.getWidth() + PADDING, textY, width - labelSource.getX() - labelSource.getWidth() - PADDING * 2, font.lineHeight + 2);
+        int labelSourceWidth = getFont().width(labelSourceText);
+        labelSource = new MXLabel(getFont(), PADDING, textY, labelSourceWidth, getFont().lineHeight + 2, labelSourceText,-1);
+        textSource.setLayout( labelSource.getX() + labelSource.getWidth() + PADDING, textY, width - labelSource.getX() - labelSource.getWidth() - PADDING * 2, getFont().lineHeight + 2);
         textSource.setCanLoseFocus(true);
         addWidget(textTitle);
         addWidget(textAuthor);
@@ -182,7 +181,6 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
 
         // Button tabs
         int tabButtonTop = textSource.getTop() +  textSource.getHeight() + PADDING * 2;
-        // TODO: NOTE SPECIAL BUTTON IDS 250, 251
         buttonAddTab = new MXButton(PADDING, tabButtonTop, 20, 20, new TranslationTextComponent("gui.mxtune.button.plus"), p->addTab());
         buttonAddTab.addHooverText(true, new TranslationTextComponent("gui.mxtune.button.plus").withStyle(TextFormatting.RESET));
         buttonAddTab.addHooverText(false, new TranslationTextComponent("gui.mxtune.button.plus.help01").withStyle(TextFormatting.YELLOW));
@@ -195,9 +193,9 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
 
         // Total Duration
         ITextComponent durationLabelName = new TranslationTextComponent("gui.mxtune.label.duration_value_total");
-        int durationWidth = font.width(durationLabelName);
-        durationWidth += font.width(SheetMusicHelper.formatDuration(0));
-        durationWidth += font.width(" ");
+        int durationWidth = getFont().width(durationLabelName);
+        durationWidth += getFont().width(SheetMusicHelper.formatDuration(0));
+        durationWidth += getFont().width(" ");
         labelDuration.setLayout(width - durationWidth - PADDING, tabButtonTop + 20 + PADDING + 2, durationWidth, singleLineHeight);
         labelDuration.setLabelName(durationLabelName);
         labelDuration.setLabelText(new StringTextComponent(SheetMusicHelper.formatDuration(durationTotal)));
@@ -491,7 +489,7 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         {
             MXButton gb = buttonNames[i];
             ITextComponent name = getButtonName(i);
-            int nameWidth = font.width(name) + PADDING * 4;
+            int nameWidth = getFont().width(name) + PADDING * 4;
             gb.x = prevWidth + PADDING;
             gb.setMessage(name);
             int limitedWidth = Math.min((width - staticButtonWidth) / viewableTabCount, Math.max(20, nameWidth));
@@ -521,8 +519,8 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
     @Override
     public void onClose()
     {
-        Objects.requireNonNull(this.minecraft).keyboardHandler.setSendRepeatsToGui(false);
-        minecraft.setScreen(parent);
+        getMC().keyboardHandler.setSendRepeatsToGui(false);
+        getMC().setScreen(parent);
     }
 
     @Override
@@ -795,8 +793,5 @@ public class GuiMXT extends MXScreen implements IAudioStatusCallback
         return Objects.requireNonNull(player);
     }
 
-    private Minecraft getMC()
-    {
-        return Minecraft.getInstance();
-    }
+
 }

@@ -45,7 +45,6 @@ public class FileData implements Comparable<FileData>
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        FileData fileData = (FileData) o;
         return new EqualsBuilder()
                 .append(path, ((FileData) o).path)
                 .append(name, ((FileData) o).path)

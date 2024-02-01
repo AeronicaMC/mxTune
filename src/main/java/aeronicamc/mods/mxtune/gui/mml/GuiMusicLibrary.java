@@ -94,7 +94,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         super(new TranslationTextComponent("gui.mxtune.gui_music_library.title"));
         this.parent = parent;
 
-        // refresh the file list automatically - might be better to not bother the extension filtering but we'll see
+        // refresh the file list automatically - might be better to not bother with extension filtering, but we'll see
         DirectoryStream.Filter<Path> filter = entry ->
                 (entry.toString().endsWith(".mxt"));
         watcher = new DirectoryWatcher.Builder()
@@ -329,7 +329,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
 
     private void cancelDone()
     {
-        // TODO: Action
+        // TODO: Action related to dialogs: yes, no, cancel, etc.
         onClose();
     }
 
@@ -366,7 +366,6 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
         if (fileDataListWidget.getSelected() != null && !fileDataListWidget.getEntries().isEmpty())
         {
             Path path = fileDataListWidget.getSelected().getPath();
-            String name = fileDataListWidget.getSelected().getName();
             CompoundNBT compound = FileHelper.getCompoundFromFile(path);
             tuneParts.clear();
             if (compound != null)
@@ -414,9 +413,7 @@ public class GuiMusicLibrary extends MXScreen implements IAudioStatusCallback
     private void stopMusic()
     {
         Objects.requireNonNull(minecraft).submitAsync(
-                ()-> {
-                    ClientAudio.fadeOut(playId, 1);
-                });
+                ()-> ClientAudio.fadeOut(playId, 1));
         setPlaying(false);
     }
 
