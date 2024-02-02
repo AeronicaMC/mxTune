@@ -10,16 +10,16 @@ import net.minecraft.util.math.MathHelper;
 /**
  *
  *  The MIT License (MIT)
- *
+
  * Test Mod 3 - Copyright (c) 2015-2021 Choonster
- *
+
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
 
@@ -33,7 +33,7 @@ import net.minecraft.util.math.MathHelper;
  *
  * @author Choonster
  *
- * @implNote 2021-Dec-01, Aeronica a.k.a Paul Boese modified to suit the needs of mxTune.
+ * @implNote 2021-Dec-01, Aeronica a.k.a. Paul Boese modified to suit the needs of mxTune.
  * Used to age the sheet music over time and select progressively more yellowed and torn textures.
  */
 public class ScrapAnimationPropertyGetter

@@ -11,17 +11,20 @@ import javax.annotation.Nullable;
 public class MXTextFieldWidget extends TextFieldWidget implements ILayout
 {
     protected int padding = 0;
+
     public MXTextFieldWidget(int pMaxLength)
     {
         super(Minecraft.getInstance().font, 0, 0, 0, 0, new StringTextComponent(""));
         this.setMaxLength(pMaxLength);
     }
 
+    @SuppressWarnings("unused")
     public MXTextFieldWidget(FontRenderer pFont, int pX, int pY, int pWidth, int pHeight, ITextComponent pMessage)
     {
         super(pFont, pX, pY, pWidth, pHeight, pMessage);
     }
 
+    @SuppressWarnings("unused")
     public MXTextFieldWidget(FontRenderer pFont, int pX, int pY, int pWidth, int pHeight, @Nullable TextFieldWidget p_i232259_6_, ITextComponent pMessage)
     {
         super(pFont, pX, pY, pWidth, pHeight, p_i232259_6_, pMessage);

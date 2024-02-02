@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
+@SuppressWarnings("unused")
 public class GuiGroupButton extends MXButton
 {
     static final ITextComponent EMPTY = new StringTextComponent("");
@@ -27,6 +28,7 @@ public class GuiGroupButton extends MXButton
         this.jamEnabled = jamEnabled;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void renderButton(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks) {
         if (this.visible)

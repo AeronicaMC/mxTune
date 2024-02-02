@@ -14,12 +14,9 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Random;
 
 public class MusicPaperItem extends Item
 {
-    private static final Random rand = new Random();
-
     public MusicPaperItem(Properties pProperties)
     {
         super(pProperties);

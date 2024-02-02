@@ -250,7 +250,6 @@ public class MultiInstItem extends Item implements IInstrument, INamedContainerP
      * Container Title
      * @return the translated container title.
      */
-    @SuppressWarnings("deprecation")
     @Override
     public ITextComponent getDisplayName()
     {

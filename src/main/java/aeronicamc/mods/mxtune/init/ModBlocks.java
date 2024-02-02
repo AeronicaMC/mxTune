@@ -65,6 +65,7 @@ public class ModBlocks
         return block;
     }
 
+    @SuppressWarnings("unused")
     private static boolean never(BlockState p_235436_0_, IBlockReader p_235436_1_, BlockPos p_235436_2_) {
         return false;
     }

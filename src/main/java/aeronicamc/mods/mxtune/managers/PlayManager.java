@@ -80,7 +80,7 @@ public final class PlayManager
                         playId = getNextPlayID();
                         MusicSourceEntity musicSource = new MusicSourceEntity(world, blockPos, false);
                         musicPlayer.setMusicSourceEntityId(musicSource.getId());
-                        addActivePlayId(musicSource.getId(), blockPos, playId, musicProperties.getMusicText(), musicProperties.getDuration());
+                        addActivePlayId(musicSource.getId(), playId, musicProperties.getMusicText(), musicProperties.getDuration());
                         world.addFreshEntity(musicSource);
                     }
                 } else {
@@ -154,7 +154,7 @@ public final class PlayManager
             GroupManager.setGroupPlaying(playerId);
             GroupManager.sync();
 
-            addActivePlayId(playerId, null, playId, groupMusicText, groupMusicDuration);
+            addActivePlayId(playerId, playId, groupMusicText, groupMusicDuration);
             PlayMusicMessage packetPlayJam = new PlayMusicMessage(playId, LocalDateTime.now(ZoneId.of("GMT0")).toString(), groupMusicDuration, 0, playerId, groupMusicText);
             PacketDispatcher.sendToTrackingEntityAndSelf(packetPlayJam, playerIn);
         }
@@ -189,7 +189,7 @@ public final class PlayManager
         int playId = getNextPlayID();
         int entityId = playerIn.getId();
         // TODO: See if we can attach the music source to a player, or maybe make the instrument the source!?
-        addActivePlayId(entityId, null, playId, musicText, duration);
+        addActivePlayId(entityId, playId, musicText, duration);
         PlayMusicMessage packetPlaySolo = new PlayMusicMessage(playId, LocalDateTime.now(ZoneId.of("GMT0")).toString(), duration, 0, entityId, musicText);
         PacketDispatcher.sendToTrackingEntityAndSelf(packetPlaySolo, playerIn);
         return playId;
@@ -265,10 +265,10 @@ public final class PlayManager
         }
     }
 
-    private static void addActivePlayId(int entityId, @Nullable BlockPos blockPos, int playId, String musicText, int durationSeconds)
+    private static void addActivePlayId(int entityId, int playId, String musicText, int durationSeconds)
     {
         if ((playId != INVALID))
-            ActiveTune.addEntry(entityId, blockPos, playId, musicText, durationSeconds);
+            ActiveTune.addEntry(entityId, playId, musicText, durationSeconds);
     }
 
     private static void removeActivePlayId(int playId)

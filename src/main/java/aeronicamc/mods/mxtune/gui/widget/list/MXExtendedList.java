@@ -17,6 +17,7 @@ import net.minecraft.util.math.MathHelper;
 
 import java.util.function.BiConsumer;
 
+@SuppressWarnings("unused, deprecation")
 public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>> extends AbstractList<E> implements ILayout
 {
     protected int padding;
@@ -191,7 +192,7 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
         bufferbuilder.vertex(this.x0, this.y1, 0.0D).uv(this.x0 / 32.0F, (this.y1 + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
         bufferbuilder.vertex(this.x1, this.y1, 0.0D).uv(this.x1 / 32.0F, (float)(this.y1 + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
         bufferbuilder.vertex(this.x1, this.y0, 0.0D).uv((float)this.x1 / 32.0F, (float)(this.y0 + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
-        bufferbuilder.vertex((double)this.x0, (double)this.y0, 0.0D).uv(this.x0 / 32.0F, (this.y0 + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
+        bufferbuilder.vertex(this.x0, this.y0, 0.0D).uv(this.x0 / 32.0F, (this.y0 + (int)this.getScrollAmount()) / 32.0F).color(32, 32, 32, 255).endVertex();
         tessellator.end();
     }
 
@@ -293,9 +294,5 @@ public abstract class MXExtendedList<E extends AbstractList.AbstractListEntry<E>
         RenderSystem.disableBlend();
     }
 
-    public abstract static class AbstractListEntry<E extends MXExtendedList.AbstractListEntry<E>> extends AbstractList.AbstractListEntry<E> {
-        public boolean changeFocus(boolean pFocus) {
-            return false;
-        }
-    }
+    public abstract static class AbstractListEntry<E extends MXExtendedList.AbstractListEntry<E>> extends AbstractList.AbstractListEntry<E> { /* NOOP */ }
 }

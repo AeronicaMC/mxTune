@@ -17,11 +17,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
+@SuppressWarnings("unused")
 public class GroupMemberList extends MXExtendedList<GroupMemberList.Entry>
 {
     private int suggestedWidth;
-    private Set<Integer> toRemove = new HashSet<>(16);
-    private Set<Integer> toAdd = new HashSet<>(16);
+    private final Set<Integer> toRemove = new HashSet<>(16);
+    private final Set<Integer> toAdd = new HashSet<>(16);
 
     public GroupMemberList()
     {
@@ -44,18 +45,8 @@ public class GroupMemberList extends MXExtendedList<GroupMemberList.Entry>
                 suggestedWidth = calculateWidth(suggestedWidth, entity.getDisplayName().getString());
                 GroupMemberList.Entry entry = new GroupMemberList.Entry(new Member(entity.getId(), entity.getDisplayName()));
                 super.addEntry(entry);
-                if (GroupClient.isLeader(entry.getId()))
-                {
-//                    super.setSelected(entry);
-//                    super.ensureVisible(entry);
-                }
             }
         }
-        if (super.getSelected() == null)
-        {
-            //super.setSelected(children().get(0));
-        }
-        //super.centerScrollOn(super.getSelected());
         suggestedWidth += 10; // Roughly Account for scrollbar
         return this;
     }

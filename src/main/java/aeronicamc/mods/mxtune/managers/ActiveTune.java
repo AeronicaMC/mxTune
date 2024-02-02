@@ -3,7 +3,6 @@ package aeronicamc.mods.mxtune.managers;
 import aeronicamc.mods.mxtune.Reference;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.logging.log4j.LogManager;
@@ -94,7 +93,7 @@ public class ActiveTune
         }
     }
 
-    static void addEntry(int entityId, @Nullable BlockPos blockPos, int playId, String mml, int durationSeconds)
+    static void addEntry(int entityId, int playId, String mml, int durationSeconds)
     {
         synchronized (playIdToActiveTuneEntry)
         {
@@ -108,11 +107,6 @@ public class ActiveTune
     synchronized static List<Entry> getActiveTuneEntries()
     {
         return new ArrayList<>(playIdToActiveTuneEntry.values());
-    }
-
-    synchronized static Set<Integer> getActivePlayIds()
-    {
-        return playIdToActiveTuneEntry.keySet();
     }
 
     synchronized static boolean entityExists(int entityId)
@@ -133,11 +127,6 @@ public class ActiveTune
     synchronized static int getSourceEntityForPlayId(int playId)
     {
         return activePlayIdToSourceEntityId.getOrDefault(playId, 0);
-    }
-
-    public static ScheduledExecutorService getScheduledThreadPool()
-    {
-        return scheduledThreadPool;
     }
 
     synchronized static int getPlayIdForEntity(int entityId)

@@ -188,8 +188,8 @@ public class GuiGroup extends MXScreen implements IGroupClientChangedCallback
         buttonNewPin.addHooverText(false, PIN_HELP01);
         buttonNewPin.addHooverText(false, PIN_HELP02);
         buttonGroupMode.addHooverText(true, getGroupModeName(groupMode));
-        buttonGroupMode.addHooverText(false, new TranslationTextComponent(groupMode.getHelp02Key()).withStyle(TextFormatting.GREEN));
-        buttonGroupMode.addHooverText(false, new TranslationTextComponent(groupMode.getHelp03Key()).withStyle(TextFormatting.YELLOW));
+        buttonGroupMode.addHooverText(false, new TranslationTextComponent(groupMode.getHelp01Key()).withStyle(TextFormatting.GREEN));
+        buttonGroupMode.addHooverText(false, new TranslationTextComponent(groupMode.getHelp02Key()).withStyle(TextFormatting.YELLOW));
         buttonDisband.addHooverText(true, DISBAND_HELP01);
         buttonDisband.addHooverText(false, DISBAND_HELP02);
         buttonDisband.addHooverText(false, DISBAND_HELP03);

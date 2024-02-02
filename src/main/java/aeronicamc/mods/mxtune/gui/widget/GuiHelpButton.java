@@ -27,6 +27,7 @@ public class GuiHelpButton extends MXButton
         this.helpEnabled = helpEnabled;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void renderButton(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks) {
         if (this.visible)

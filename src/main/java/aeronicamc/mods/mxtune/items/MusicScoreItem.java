@@ -19,8 +19,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -29,7 +27,6 @@ import static aeronicamc.mods.mxtune.util.SheetMusicHelper.*;
 
 public class MusicScoreItem extends Item implements IMusic
 {
-    private static final Logger LOGGER = LogManager.getLogger(MusicScoreItem.class);
     private final static ITextComponent SHIFT_PARTS_01 = new TranslationTextComponent("tooltip.mxtune.music_score.shift_parts_01");
 
     public MusicScoreItem(Properties pProperties)

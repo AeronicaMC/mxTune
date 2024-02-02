@@ -28,6 +28,7 @@ public class GuiMultiInstChooser extends Screen
     private final Screen parent;
     private final SoundFontList widget = new SoundFontList().init();
 
+    @SuppressWarnings("unused")
     public GuiMultiInstChooser(Screen parent, MultiInstContainer menu)
     {
         super(new TranslationTextComponent("gui.mxtune.label.instruments"));
@@ -63,9 +64,8 @@ public class GuiMultiInstChooser extends Screen
 
     private void selectCallback(SoundFontList.Entry selected, Boolean doubleClicked)
     {
-        getPlayer(Objects.requireNonNull(minecraft)).ifPresent(player->{
-            ((MultiInstScreen)parent).updateButton(selected.getIndex());
-        });
+        getPlayer(Objects.requireNonNull(minecraft))
+                .ifPresent(player-> ((MultiInstScreen)parent).updateButton(selected.getIndex()));
         if (doubleClicked)
             onClose();
     }
@@ -85,12 +85,6 @@ public class GuiMultiInstChooser extends Screen
     @Override
     public String getNarrationMessage() {
         return super.getNarrationMessage() + ". " + this.title.getString();
-    }
-
-    @Override
-    public boolean shouldCloseOnEsc()
-    {
-        return true;
     }
 
     @Override

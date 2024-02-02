@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+@SuppressWarnings("unused")
 public class FileDataList extends MXExtendedList<FileDataList.Entry>
 {
 
@@ -36,9 +37,7 @@ public class FileDataList extends MXExtendedList<FileDataList.Entry>
     public void addAll(@Nullable List<FileData> fileData)
     {
         if (fileData != null)
-            fileData.forEach(path -> {
-                addEntry(new Entry(path));
-            });
+            fileData.forEach(path -> addEntry(new Entry(path)));
         super.setScrollAmount(1);
     }
 

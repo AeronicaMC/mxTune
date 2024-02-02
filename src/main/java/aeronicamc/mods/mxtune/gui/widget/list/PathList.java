@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+@SuppressWarnings("unused")
 public class PathList extends MXExtendedList<PathList.Entry>
 {
 
@@ -35,9 +36,7 @@ public class PathList extends MXExtendedList<PathList.Entry>
     public void addAll(@Nullable List<Path> paths)
     {
         if (paths != null)
-            paths.forEach(path -> {
-                addEntry(new Entry(path));
-            });
+            paths.forEach(path -> addEntry(new Entry(path)));
         super.setScrollAmount(1);
     }
 

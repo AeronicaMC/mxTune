@@ -22,6 +22,7 @@ public class GuiVSlideSwitch extends MXButton
         this.onOff = onOff;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void renderButton(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks) {
         if (this.visible)
@@ -29,24 +30,27 @@ public class GuiVSlideSwitch extends MXButton
             Minecraft mc = Minecraft.getInstance();
             mc.getTextureManager().bind(MusicBlockScreen.GUI);
             RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-            GuiVSlideSwitch.Icon guiLockButton$icon;
-            if (!this.active)
-            {
-                guiLockButton$icon = this.onOff ? GuiVSlideSwitch.Icon.ON_DISABLED : GuiVSlideSwitch.Icon.OFF_DISABLED;
-            }
-            else if (this.isHovered())
-            {
-                guiLockButton$icon = this.onOff ? GuiVSlideSwitch.Icon.ON_HOVER : GuiVSlideSwitch.Icon.OFF_HOVER;
-            }
-            else
-            {
-                guiLockButton$icon = this.onOff ? GuiVSlideSwitch.Icon.ON : GuiVSlideSwitch.Icon.OFF;
-            }
-
-            this.blit(pMatrixStack, this.x, this.y, guiLockButton$icon.getX(), guiLockButton$icon.getY(), this.width, this.height);
-            //drawString(pMatrixStack, mc.font, getMessage(), this.getRight() + 5, this.y + (height - mc.font.lineHeight)/2, -1);
+            Icon guiVSlideSwitch$icon = getIcon();
+            this.blit(pMatrixStack, this.x, this.y, guiVSlideSwitch$icon.getX(), guiVSlideSwitch$icon.getY(), this.width, this.height);
             mc.font.draw(pMatrixStack, getMessage(), this.getRight() + 5F, this.y + (height - mc.font.lineHeight)/2F, -1);
         }
+    }
+
+    private Icon getIcon() {
+        Icon guiVSlideSwitch$icon;
+        if (!this.active)
+        {
+            guiVSlideSwitch$icon = this.onOff ? Icon.ON_DISABLED : Icon.OFF_DISABLED;
+        }
+        else if (this.isHovered())
+        {
+            guiVSlideSwitch$icon = this.onOff ? Icon.ON_HOVER : Icon.OFF_HOVER;
+        }
+        else
+        {
+            guiVSlideSwitch$icon = this.onOff ? Icon.ON : Icon.OFF;
+        }
+        return guiVSlideSwitch$icon;
     }
 
     enum Icon {

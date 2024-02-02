@@ -8,6 +8,7 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import net.minecraft.util.ResourceLocation;
 
+@SuppressWarnings("unused")
 @JeiPlugin
 public class MxtuneJEIPlugin implements IModPlugin
 {

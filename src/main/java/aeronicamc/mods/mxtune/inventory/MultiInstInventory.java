@@ -26,6 +26,7 @@ public class MultiInstInventory implements IInventory
         ItemStackHelper.loadAllItems(stack.getTag(), items);
     }
 
+    @SuppressWarnings("unused")
     public MultiInstInventory(ItemStack stack, ISlotChangedCallback slotChangedCallback)
     {
         this(stack);

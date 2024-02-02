@@ -18,6 +18,7 @@ public class MXToast implements IToast
 
     public MXToast() { /* NOP */ }
 
+    @SuppressWarnings("deprecation")
     @Override
     public Visibility render(MatrixStack pPoseStack, ToastGui pToastComponent, long delta)
     {

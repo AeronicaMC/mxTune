@@ -22,20 +22,20 @@ public class MusicVenueInfoItem extends Item
     }
 
     /**
-     * Called when this item is used when targetting a Block
+     * Called when this item is used when targeting a Block
      */
     public ActionResultType useOn(ItemUseContext pContext) {
         BlockPos blockpos = pContext.getClickedPos();
         Direction direction = pContext.getClickedFace();
-        BlockPos blockpos1 = blockpos.relative(direction);
+        BlockPos relative = blockpos.relative(direction);
         PlayerEntity playerentity = pContext.getPlayer();
         ItemStack itemstack = pContext.getItemInHand();
-        if (playerentity != null && !this.mayPlace(playerentity, direction, itemstack, blockpos1)) {
+        if (playerentity != null && !mayPlace(playerentity, direction, itemstack, relative)) {
             return ActionResultType.FAIL;
         } else {
             World world = pContext.getLevel();
             HangingEntity hangingentity;
-            hangingentity = new MusicVenueInfoEntity(world, blockpos1, direction);
+            hangingentity = new MusicVenueInfoEntity(world, relative, direction);
             CompoundNBT compoundnbt = itemstack.getTag();
             if (compoundnbt != null) {
                 EntityType.updateCustomEntityTag(world, playerentity, hangingentity, compoundnbt);

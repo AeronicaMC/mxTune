@@ -4,10 +4,8 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
 import net.minecraft.tags.ITag;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -30,19 +28,6 @@ public class WrenchItem extends Item
     private final static ITextComponent SHIFT_HELP_02 = new TranslationTextComponent("tooltip.mxtune.wrench_item.shift_help_02").withStyle(TextFormatting.GREEN);
     private final static ITextComponent SHIFT_HELP_03 = new TranslationTextComponent("tooltip.mxtune.wrench_item.shift_help_03").withStyle(TextFormatting.AQUA);
 
-    /**
-     * This is called when the item is used, before the block is activated.
-     *
-     * @param stack
-     * @param context
-     * @return Return PASS to allow vanilla handling, any other to skip normal code.
-     */
-    @Override
-    public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext context)
-    {
-        return ActionResultType.PASS;
-    }
-
     @Nonnull
     @Override
     public ActionResult<ItemStack> use(@Nonnull World worldIn, @Nonnull PlayerEntity playerIn, @Nonnull Hand handIn)
@@ -63,12 +48,6 @@ public class WrenchItem extends Item
     public boolean is(ITag<Item> p_206844_1_)
     {
         return super.is(p_206844_1_);
-    }
-
-    @Override
-    public ActionResultType useOn(ItemUseContext context)
-    {
-        return ActionResultType.PASS;
     }
 
     // For a wrench where we want to use SHIFT-Right-Click to pick up a block this needs to return true.

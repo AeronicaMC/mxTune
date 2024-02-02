@@ -46,15 +46,13 @@ public class MusicVenueToolItem extends Item
         if (!context.getHand().equals(Hand.MAIN_HAND))
             return super.onItemUseFirst(stack, context);
 
-        getPlayer(context).filter(p -> !p.level.isClientSide()).ifPresent(player -> {
-            MusicVenueProvider.getMusicVenues(context.getLevel()).ifPresent(mvp -> {
+        getPlayer(context).filter(p -> !p.level.isClientSide())
+                .ifPresent(player -> MusicVenueProvider.getMusicVenues(context.getLevel()).ifPresent(mvp -> {
             if (!player.isShiftKeyDown())
                 ToolManager.apply(context);
             else
                 ToolManager.reset(player);
-            });
-        });
-
+        }));
         return ActionResultType.SUCCESS;
     }
 

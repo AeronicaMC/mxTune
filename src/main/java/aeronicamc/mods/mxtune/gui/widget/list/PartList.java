@@ -15,6 +15,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+@SuppressWarnings("unused")
 public class PartList extends MXExtendedList<PartList.Entry>
 {
     public PartList()
@@ -35,9 +36,7 @@ public class PartList extends MXExtendedList<PartList.Entry>
     public void addAll(@Nullable List<MXTunePart> parts)
     {
         if (parts != null)
-            parts.forEach(part -> {
-                addEntry(new Entry(part));
-            });
+            parts.forEach(part -> addEntry(new Entry(part)));
         super.setScrollAmount(1);
     }
 

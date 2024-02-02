@@ -23,6 +23,7 @@ public class ModGuiHelper
     public static final ITextComponent BUTTON_DISABLED = new TranslationTextComponent("gui.mxtune.button.disabled").withStyle(TextFormatting.AQUA);
     public static final ITextComponent BUTTON_ENABLED = new TranslationTextComponent("gui.mxtune.button.enabled").withStyle(TextFormatting.AQUA);
 
+    @SuppressWarnings("deprecation")
     public static void RenderGuiItemScaled(ItemRenderer itemRenderer, ItemStack pStack, int posX, int posY, int scale, boolean onCenter)
     {
         RenderSystem.pushMatrix();

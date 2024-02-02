@@ -14,6 +14,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
+@SuppressWarnings("unused")
 public class SoundFontList extends MXExtendedList<SoundFontList.Entry>
 {
     private int suggestedWidth;

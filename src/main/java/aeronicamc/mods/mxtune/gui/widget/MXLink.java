@@ -27,6 +27,7 @@ public class MXLink extends MXButton
         this.url = "";
     }
 
+    @SuppressWarnings("unused")
     public AlignText getAlignText()
     {
         return alignText;

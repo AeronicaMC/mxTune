@@ -27,6 +27,7 @@ public class MultiInstContainer extends Container
     private final ItemStack instStack;
     private final MultiInstInventory multiInstInventory;
 
+    @SuppressWarnings("unused")
     public MultiInstContainer(int windowId, World world, @Nullable BlockPos pos, PlayerInventory playerInventory , PlayerEntity playerEntity)
     {
         super(ModContainers.INSTRUMENT_CONTAINER.get(), windowId);
@@ -52,11 +53,6 @@ public class MultiInstContainer extends Container
     public void setSlotChangedCallback(ISlotChangedCallback slotChangedCallback)
     {
         this.multiInstInventory.setSlotChangedCallback(slotChangedCallback);
-    }
-
-    @Override
-    public void setItem(int pSlotID, ItemStack pStack) {
-        super.getSlot(pSlotID).set(pStack);
     }
 
     private void trackSignals()
@@ -139,7 +135,7 @@ public class MultiInstContainer extends Container
     /**
      * Remove the given Listener. Method name is for legacy.
      *
-     * @param pListener
+     * @param pListener to be removed.
      */
     @Override
     public void removeSlotListener(IContainerListener pListener)

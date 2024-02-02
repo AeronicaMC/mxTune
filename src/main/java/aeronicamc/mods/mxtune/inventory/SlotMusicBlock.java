@@ -8,7 +8,7 @@ import net.minecraftforge.items.SlotItemHandler;
 
 public class SlotMusicBlock extends SlotItemHandler
 {
-    private MusicBlockEntity musicBlockEntity;
+    private final MusicBlockEntity musicBlockEntity;
 
     public SlotMusicBlock(IItemHandler itemHandler, MusicBlockEntity musicBlockEntity, int index, int xPosition, int yPosition)
     {

@@ -1,7 +1,6 @@
 package aeronicamc.mods.mxtune.managers;
 
 import aeronicamc.mods.mxtune.Reference;
-import com.google.common.primitives.Ints;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -70,11 +69,6 @@ public class Group
     public Set<Integer> getMembers()
     {
         return members;
-    }
-
-    public int[] getMembersAsIntArray()
-    {
-        return Ints.toArray(members);
     }
 
     public void addMember(int member)
@@ -149,20 +143,18 @@ public class Group
 
     public enum Mode
     {
-        Pin ("enum.mxtune.group.mode.pin", "enum.mxtune.group.mode.pin.help01", "enum.mxtune.group.mode.pin.help02", "enum.mxtune.group.mode.pin.help03"),
-        Open("enum.mxtune.group.mode.open", "enum.mxtune.group.mode.open.help01", "enum.mxtune.group.mode.open.help02", "enum.mxtune.group.mode.open.help03");
+        Pin ("enum.mxtune.group.mode.pin", "enum.mxtune.group.mode.pin.help01", "enum.mxtune.group.mode.pin.help02"),
+        Open("enum.mxtune.group.mode.open", "enum.mxtune.group.mode.open.help01", "enum.mxtune.group.mode.open.help02");
 
         private final String modeKey;
         private final String help01Key;
         private final String help02Key;
-        private final String help03Key;
 
-        Mode(String modeKey, String help01Key, String help02Key, String help03Key)
+        Mode(String modeKey, String help01Key, String help02Key)
         {
             this.modeKey = modeKey;
             this.help01Key = help01Key;
             this.help02Key = help02Key;
-            this.help03Key = help03Key;
         }
 
         public String getModeKey()
@@ -178,11 +170,6 @@ public class Group
         public String getHelp02Key()
         {
             return help02Key;
-        }
-
-        public String getHelp03Key()
-        {
-            return help03Key;
         }
     }
 

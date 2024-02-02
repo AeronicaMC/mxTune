@@ -11,7 +11,7 @@ public class GuiRedstoneButton extends MXButton
 {
     static final ITextComponent EMPTY = new StringTextComponent("");
     private boolean signalEnabled;
-    private ArrowFaces direction;
+    private final ArrowFaces direction;
 
     public GuiRedstoneButton(ArrowFaces direction, IPressable pOnPress)
     {

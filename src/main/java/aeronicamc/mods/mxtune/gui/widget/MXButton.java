@@ -18,8 +18,7 @@ public class MXButton extends Button implements ILayout, IHooverText
 {
     protected int padding = 0;
     private int index = Integer.MAX_VALUE;
-    @SuppressWarnings("FieldMayBeFinal")
-    private List<ITextComponent> hooverTexts = new ArrayList<>();
+    private final List<ITextComponent> hooverTexts = new ArrayList<>();
     private boolean hooverTextsOverride;
 
     public MXButton(IPressable pOnPress)
@@ -170,7 +169,7 @@ public class MXButton extends Button implements ILayout, IHooverText
             int ellipsisWidth = mc.font.width("...");
 
             if (strWidth > width - 6 && strWidth > ellipsisWidth)
-                //TODO, srg names make it hard to figure out how to append to an ITextProperties from this trim operation, wraping this in StringTextComponent is kinda dirty.
+                //TODO, srg names make it hard to figure out how to append to an ITextProperties from this trim operation, to wrap this in StringTextComponent is kinda dirty.
                 buttonText = new StringTextComponent(mc.font.substrByWidth(buttonText, width - 6 - ellipsisWidth).getString() + "...");
 
             drawCenteredString(mStack, mc.font, buttonText, this.x + this.width / 2, this.y + (this.height - 8) / 2, getFGColor());

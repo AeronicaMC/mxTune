@@ -11,6 +11,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
+@SuppressWarnings("unused")
 public class MXLabel extends AbstractGui implements IRenderable, ILayout
 {
     protected int padding = 0;
@@ -18,7 +19,7 @@ public class MXLabel extends AbstractGui implements IRenderable, ILayout
     private int height;
     private int x;
     private int y;
-    private ITextComponent labelName = new StringTextComponent("");
+    private ITextComponent labelName;
     private ITextComponent labelText = new StringTextComponent("");
     private boolean centered;
     private boolean visible = true;
@@ -32,7 +33,7 @@ public class MXLabel extends AbstractGui implements IRenderable, ILayout
 
     public MXLabel()
     {
-        this(Minecraft.getInstance().font, 0, 0, 0, 0, new StringTextComponent(""), TextColorFg.WHITE | MathHelper.ceil(1F * 255.0F) << 24);
+        this(Minecraft.getInstance().font, 0, 0, 0, 0, new StringTextComponent(""), TextColorFg.WHITE | MathHelper.ceil(255.0F) << 24);
     }
 
     public MXLabel (FontRenderer pFontRenderer, int pX, int pY, int pWidth, int pHeight, ITextComponent pLabelText, int pTextColor)
@@ -229,9 +230,9 @@ public class MXLabel extends AbstractGui implements IRenderable, ILayout
         ITextComponent combinedText = labelName.copy().append(labelText);
 
         if (centered)
-            drawCenteredString(pMatrixStack, fontRenderer, combinedText, x + this.width / 2, y + height / 4, textColor | MathHelper.ceil(1F * 255.0F) << 24);
+            drawCenteredString(pMatrixStack, fontRenderer, combinedText, x + this.width / 2, y + height / 4, textColor | MathHelper.ceil(255.0F) << 24);
         else
-            drawString(pMatrixStack, fontRenderer, combinedText, x, y + height / 4, textColor | MathHelper.ceil(1F * 255.0F) << 24);
+            drawString(pMatrixStack, fontRenderer, combinedText, x, y + height / 4, textColor | MathHelper.ceil(255.0F) << 24);
     }
 
     protected void renderBackGround(MatrixStack pMatrixStack)
@@ -242,11 +243,11 @@ public class MXLabel extends AbstractGui implements IRenderable, ILayout
             int hb = height + border * 2;
             int xb = x - this.border;
             int yb = y - this.border;
-            fill(pMatrixStack, xb, yb, xb + wb, yb + hb, backColor | MathHelper.ceil(1F * 255.0F) << 24);
-            vLine(pMatrixStack,xb + wb, yb, yb + hb, brColor | MathHelper.ceil(1F * 255.0F) << 24);
-            hLine(pMatrixStack, xb, xb + wb, yb, ulColor | MathHelper.ceil(1F * 255.0F) << 24);
-            hLine(pMatrixStack, xb, xb + wb, yb + hb, brColor | MathHelper.ceil(1F * 255.0F) << 24);
-            vLine(pMatrixStack, xb, yb, yb + hb + 1, ulColor | MathHelper.ceil(1F * 255.0F) << 24);
+            fill(pMatrixStack, xb, yb, xb + wb, yb + hb, backColor | MathHelper.ceil(255.0F) << 24);
+            vLine(pMatrixStack,xb + wb, yb, yb + hb, brColor | MathHelper.ceil(255.0F) << 24);
+            hLine(pMatrixStack, xb, xb + wb, yb, ulColor | MathHelper.ceil(255.0F) << 24);
+            hLine(pMatrixStack, xb, xb + wb, yb + hb, brColor | MathHelper.ceil(255.0F) << 24);
+            vLine(pMatrixStack, xb, yb, yb + hb + 1, ulColor | MathHelper.ceil(255.0F) << 24);
         }
     }
 }

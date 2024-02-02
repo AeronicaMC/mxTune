@@ -22,6 +22,7 @@ public class GuiLockButton extends MXButton
         this.locked = pLocked;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void renderButton(MatrixStack pMatrixStack, int pMouseX, int pMouseY, float pPartialTicks) {
         if (this.visible)

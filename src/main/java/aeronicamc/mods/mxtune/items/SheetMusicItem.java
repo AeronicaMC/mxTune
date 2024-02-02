@@ -10,8 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -20,7 +18,6 @@ import static aeronicamc.mods.mxtune.util.SheetMusicHelper.*;
 
 public class SheetMusicItem extends Item implements IMusic
 {
-    private static final Logger LOGGER = LogManager.getLogger(SheetMusicItem.class);
 
     public SheetMusicItem(Properties pProperties)
     {

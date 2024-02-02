@@ -271,13 +271,11 @@ public class MXTuneLanguageProvider extends LanguageProvider
         addEnum("tool_state.type.remove", "Remove");
 
         addEnum("group.mode.pin", "Pin");
-        addEnum("group.mode.pin.help01", "Access: Pin");
-        addEnum("group.mode.pin.help02", "Players must know the pin to join your group.");
-        addEnum("group.mode.pin.help03", "Click to toggle access mode.");
+        addEnum("group.mode.pin.help01", "Players must know the pin to join your group.");
+        addEnum("group.mode.pin.help02", "Click to toggle access mode.");
         addEnum("group.mode.open", "Open");
-        addEnum("group.mode.open.help01", "Access: Open");
-        addEnum("group.mode.open.help02", "Anyone can join your group.");
-        addEnum("group.mode.open.help03", "Click to toggle access mode.");
+        addEnum("group.mode.open.help01", "Anyone can join your group.");
+        addEnum("group.mode.open.help02", "Click to toggle access mode.");
     }
 
     private void addErrors()
