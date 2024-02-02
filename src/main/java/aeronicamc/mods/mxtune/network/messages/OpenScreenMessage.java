@@ -59,7 +59,7 @@ public class OpenScreenMessage extends AbstractMessage<OpenScreenMessage>
                     switch (message.screen)
                     {
                         case GROUP_OPEN:
-                            GroupManager.handleGroupOpen(serverPlayer, message.screen);
+                            GroupManager.handleGroupOpen(serverPlayer);
                             break;
                         case TEST_ONE:
                         case TEST_TWO:
@@ -72,6 +72,6 @@ public class OpenScreenMessage extends AbstractMessage<OpenScreenMessage>
 
     public enum SM
     {
-        GROUP_OPEN, TEST_ONE, TEST_TWO;
+        GROUP_OPEN, TEST_ONE, TEST_TWO
     }
 }

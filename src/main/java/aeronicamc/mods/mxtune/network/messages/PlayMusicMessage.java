@@ -3,22 +3,16 @@ package aeronicamc.mods.mxtune.network.messages;
 import aeronicamc.mods.mxtune.managers.PlayIdSupplier;
 import aeronicamc.mods.mxtune.network.PacketBufferLongUtfHelper;
 import aeronicamc.mods.mxtune.sound.ClientAudio;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 public class PlayMusicMessage extends AbstractMessage<PlayMusicMessage>
 {
-    private static final Logger LOGGER = LogManager.getLogger(PlayMusicMessage.class);
     private final PacketBufferLongUtfHelper stringHelper = new PacketBufferLongUtfHelper();
     private int playId = PlayIdSupplier.INVALID;
     private int secondsElapsed;
@@ -69,8 +63,6 @@ public class PlayMusicMessage extends AbstractMessage<PlayMusicMessage>
         {
             ctx.get().enqueueWork(() ->
                 {
-                  Entity sender = Objects.requireNonNull(Minecraft.getInstance().player).level.getEntity(message.entityId);
-                  String senderName = sender != null ? sender.getDisplayName().getString() : "--Server--";
                   LocalDateTime dateTimeClient = LocalDateTime.now(ZoneId.of("GMT0"));
                   LocalDateTime dateTimeServer = message.secondsElapsed > 0 ? LocalDateTime.parse(message.dateTimeServer) : dateTimeClient;
                   long netTransitTime = Duration.between(dateTimeServer, dateTimeClient).toMillis();

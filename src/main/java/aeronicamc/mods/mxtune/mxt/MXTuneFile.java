@@ -15,7 +15,7 @@ import java.util.List;
 
 public class MXTuneFile implements Serializable
 {
-    public static final long serialVersionUID = -76044260522231311L;
+    private static final long serialVersionUID = -76044260522231311L;
     private static final Logger LOGGER = LogManager.getLogger();
     private static final String MXT_VERSION = "2.0.0";
     private static final String TAG_TITLE = "title";
@@ -68,8 +68,8 @@ public class MXTuneFile implements Serializable
                 break;
         }
 
-        if (MXT_VERSION.compareTo(mxtVersion) < 0 || mxtVersion.equals(""))
-            LOGGER.warn(ERROR_MSG_MXT_VERSION, MXT_VERSION, mxtVersion.equals("") ? "No Version" : mxtVersion, title);
+        if (MXT_VERSION.compareTo(mxtVersion) < 0 || mxtVersion.isEmpty())
+            LOGGER.warn(ERROR_MSG_MXT_VERSION, MXT_VERSION, mxtVersion.isEmpty() ? "No Version" : mxtVersion, title);
     }
 
     public void writeToNBT(CompoundNBT compound)

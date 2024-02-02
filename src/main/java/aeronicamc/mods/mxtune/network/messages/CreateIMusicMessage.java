@@ -131,9 +131,7 @@ public class CreateIMusicMessage extends AbstractMessage<CreateIMusicMessage>
         CompoundNBT nbt = new CompoundNBT();
         int[] index = new int[1];
         nbt.putInt("length", strings.length);
-        Arrays.stream(strings).sequential().forEach( string -> {
-            nbt.putString(String.format("%d", index[0]++), string);
-        });
+        Arrays.stream(strings).sequential().forEach( string -> nbt.putString(String.format("%d", index[0]++), string));
         return nbt;
     }
 

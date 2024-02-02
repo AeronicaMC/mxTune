@@ -41,19 +41,14 @@ public class MusicVenueSyncMessage extends AbstractMessage<MusicVenueSyncMessage
     {
         if (ctx.get().getDirection().getReceptionSide() == LogicalSide.CLIENT)
         {
-            ctx.get().enqueueWork(() ->
-                                  {
-                                      final Optional<World> optionalWorld = LogicalSidedProvider.CLIENTWORLD.get(ctx.get().getDirection().getReceptionSide());
-                                      optionalWorld.ifPresent(
-                                              world ->
-                                              {
-                                                  MusicVenueProvider.getMusicVenues(world).ifPresent(
-                                                          stageAreas ->
-                                                          {
-                                                              stageAreas.deserializeNBT(message.stageAreaNbt);
-                                                          });
-                                              });
-                                  });
+            ctx.get().enqueueWork(
+                    () -> {
+                        final Optional<World> optionalWorld = LogicalSidedProvider.CLIENTWORLD.get(ctx.get().getDirection().getReceptionSide());
+                        optionalWorld.ifPresent(
+                                world -> MusicVenueProvider.getMusicVenues(world)
+                                        .ifPresent(
+                                                stageAreas -> stageAreas.deserializeNBT(message.stageAreaNbt)));
+                    });
         }
         ctx.get().setPacketHandled(true);
     }

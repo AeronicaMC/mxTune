@@ -2,8 +2,6 @@ package aeronicamc.mods.mxtune.managers;
 
 import aeronicamc.mods.mxtune.util.IGroupClientChangedCallback;
 import aeronicamc.mods.mxtune.util.IGroupClientChangedCallback.Type;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -14,7 +12,6 @@ import static aeronicamc.mods.mxtune.network.messages.GroupCmdMessage.Cmd;
 
 public class GroupClient
 {
-    private static final Logger LOGGER = LogManager.getLogger(GroupClient.class);
     private static final Map<Integer, Group> groupMap = new ConcurrentHashMap<>();
     private static final Map<Integer, Integer> memberState = new ConcurrentHashMap<>();
     private static IGroupClientChangedCallback callback;

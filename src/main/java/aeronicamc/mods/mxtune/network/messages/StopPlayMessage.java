@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 public class StopPlayMessage extends AbstractMessage<StopPlayMessage>
 {
     private int playId = PlayIdSupplier.INVALID;
-    private boolean stopAll;
+    private final boolean stopAll;
 
     public StopPlayMessage()
     {

@@ -33,8 +33,9 @@ public class PacketBufferLongUtfHelper
     public PacketBufferLongUtfHelper() { /* NOP */ }
 
     /**
-     * The {@link PacketBuffer} utf strings are limited to 32767 bytes. Therefore they
-     * are broken up into separate strings if larger than {@value MAX_STRING_BUFFER} characters
+     * The {@link PacketBuffer} utf strings are limited to 32767 bytes, therefore they
+     * are broken up into separate strings if larger than {@value MAX_STRING_BUFFER} characters.
+     * About half of the limit.
      *
      * @param buffer The vanilla netty packet wrapper.
      * @param stringIn The string to be transferred.
@@ -73,6 +74,7 @@ public class PacketBufferLongUtfHelper
 
         if ((expectedHashCode == receivedString.hashCode()) && (expectedLength == receivedString.length()))
         {
+            LOGGER.debug("Received {} packets with a total length of {}", count, receivedString.length());
             return receivedString;
         }
         else

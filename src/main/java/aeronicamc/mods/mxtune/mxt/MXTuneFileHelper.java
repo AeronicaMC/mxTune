@@ -73,20 +73,4 @@ public class MXTuneFileHelper
         }
         return new MusicProperties(builder.toString(), mxTuneFile.getDuration());
     }
-//    public static Song getSong(MXTuneFile tune)
-//    {
-//        return new Song(tune.getTitle(), getMML(tune));
-//    }
-//
-//    public static SongProxy getSongProxy(MXTuneFile tune)
-//    {
-//        return getSongProxy(getSong(tune));
-//    }
-//
-//    public static SongProxy getSongProxy(Song song)
-//    {
-//        CompoundNBT compound = new CompoundNBT();
-//        song.writeToNBT(compound);
-//        return new SongProxy(compound);
-//    }
 }

@@ -60,7 +60,8 @@ public class MXTunePart implements Serializable
         for (int i = 0; i < staffCount; i++)
         {
             CompoundNBT compoundStaff = (CompoundNBT) compound.get(TAG_STAFF_PREFIX + i);
-            staves.add(new MXTuneStaff(i, compoundStaff));
+            if (compoundStaff != null)
+                staves.add(new MXTuneStaff(i, compoundStaff));
         }
     }
 

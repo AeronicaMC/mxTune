@@ -54,11 +54,6 @@ public class MXTuneStaff implements Serializable
         return meta;
     }
 
-    public void setMeta(String meta)
-    {
-        this.meta = meta;
-    }
-
     @Override
     public boolean equals(Object o)
     {

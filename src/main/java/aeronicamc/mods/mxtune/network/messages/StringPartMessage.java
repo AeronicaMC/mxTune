@@ -45,9 +45,10 @@ public class StringPartMessage extends AbstractMessage<StringPartMessage>
     public void handle(StringPartMessage message, Supplier<NetworkEvent.Context> ctx)
     {
         if (ctx.get().getDirection().getReceptionSide().isServer())
-            ctx.get().enqueueWork(() ->{
-                MultiPacketStringManager.addPacket(new MultiPacketStringManager.StringPartPacket(message.partStringId, message.packetIndex, message.partString));
-            });
+            ctx.get().enqueueWork(() ->
+                    MultiPacketStringManager
+                            .addPacket(new MultiPacketStringManager
+                                    .StringPartPacket(message.partStringId, message.packetIndex, message.partString)));
         ctx.get().setPacketHandled(true);
     }
 }

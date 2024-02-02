@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.function.IntSupplier;
 
+@SuppressWarnings("unused")
 public class PlayIdSupplier
 {
     public enum PlayType implements IntSupplier, Comparator<PlayType>
@@ -39,7 +40,7 @@ public class PlayIdSupplier
             return PlayType.INVALID;
         }
 
-        protected abstract PlayIdSource next(PlayIdSource playIdSource);
+        abstract PlayIdSource next(PlayIdSource playIdSource);
 
         @Override
         public int getAsInt()

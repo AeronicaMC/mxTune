@@ -99,8 +99,6 @@ public class PacketDispatcher
 
     /**
      * Sends a message to everyone within a certain range of the player
-     * provided. Shortcut to
-     * {@link PacketDispatcher#sendToAllAround(MSG, PlayerEntity, double)}
      */
     public static <MSG extends AbstractMessage<MSG>> void sendToAllAround(MSG message, PlayerEntity player, double range)
     {
@@ -144,7 +142,7 @@ public class PacketDispatcher
      * {@link SimpleChannel#send(PacketDistributor.PacketTarget, Object)}
      * @param message custom message
      * @param entity the tracking entity
-     * https://forums.minecraftforge.net/topic/103538-solved116-how-to-sync-other-players-capability-and-update-it-in-own-client/?tab=comments#comment-464260
+     * <a href="https://forums.minecraftforge.net/topic/103538-solved116-how-to-sync-other-players-capability-and-update-it-in-own-client/?tab=comments#comment-464260">...</a>
      */
     public static <MSG extends AbstractMessage<MSG>> void sendToTrackingEntityAndSelf(MSG message, Entity entity)
     {

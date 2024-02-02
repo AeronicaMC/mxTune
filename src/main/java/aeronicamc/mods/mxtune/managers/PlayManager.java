@@ -60,7 +60,7 @@ public final class PlayManager
      *
      * @param world        the world of course
      * @param blockPos     position of block instrument
-     * @param playerEntity
+     * @param playerEntity who triggered the block
      * @return a unique play id or {@link aeronicamc.mods.mxtune.managers.PlayIdSupplier#INVALID} if unable to play
      */
     public static int playMusic(World world, BlockPos blockPos, @Nullable PlayerEntity playerEntity)
@@ -138,7 +138,7 @@ public final class PlayManager
     {
         int playId = getGroupsPlayId(playerId);
         Group group = GroupManager.getGroup(playerId);
-        GroupManager.queuePart(playId, playerId, musicText);
+        GroupManager.queuePart(playerId, musicText);
         GroupManager.setMemberPartDuration(playerId, duration);
 
         if (group.getLeader() == playerId)

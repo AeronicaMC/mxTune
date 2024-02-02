@@ -7,7 +7,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.Tuple;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -16,8 +15,6 @@ import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -27,7 +24,6 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 public class GroupManager
 {
-    private static final Logger LOGGER = LogManager.getLogger(GroupManager.class);
     private static final Map<Integer, Group> groups = new ConcurrentHashMap<>();
     private static final Map<Integer, Integer> memberState = new ConcurrentHashMap<>();
     private static final Map<Integer, String> memberMusic = new ConcurrentHashMap<>();
@@ -153,7 +149,7 @@ public class GroupManager
                        result[0] = true;
                    else if (tryRemoveLeaderPromoteNext(group, memberId))
                        result[0] = true;
-                   else if (tryRemoveGroupIfLast(group, memberId))
+                   else if (tryRemoveGroupIfLast(group))
                        result[0] = true;
                });
             if (result[0])
@@ -199,7 +195,7 @@ public class GroupManager
         return result;
     }
 
-    private static boolean tryRemoveGroupIfLast(Group group, int memberID)
+    private static boolean tryRemoveGroupIfLast(Group group)
     {
         boolean result = false;
         /* This is the leader of the group and if we are the last or only member then we will remove the group. */
@@ -273,20 +269,6 @@ public class GroupManager
         return groups.values().stream().anyMatch(group -> group.getLeader() == entityID);
     }
 
-    /**
-     * Set a new Leader
-     * @param memberId the new leader
-     */
-    public static void setLeader(int memberId)
-    {
-        Group group = getGroup(memberId);
-        if (group.isValid())
-        {
-            group.setLeader(memberId);
-            sync();
-        }
-    }
-
     // Click on leader Methods
     public static void addMemberOnRightClick(int groupId, PlayerEntity initiator)
     {
@@ -331,14 +313,7 @@ public class GroupManager
         }
     }
 
-    public static void handleMakeGroup(ServerPlayerEntity serverPlayer, OpenScreenMessage.SM sm)
-    {
-        int playerId = serverPlayer.getId();
-        if (!isGrouped(playerId))
-            addGroup(serverPlayer);
-    }
-
-    public static void handleGroupOpen(ServerPlayerEntity serverPlayer, OpenScreenMessage.SM sm)
+    public static void handleGroupOpen(ServerPlayerEntity serverPlayer)
     {
         PacketDispatcher.sendTo(new OpenScreenMessage(OpenScreenMessage.SM.GROUP_OPEN), serverPlayer);
     }
@@ -416,20 +391,6 @@ public class GroupManager
             group.setPartDuration(duration);
     }
 
-    /**
-     * Retrieve a group's duration for a given member
-     * @param memberId of a group
-     * @return a {@link Tuple<Integer,Boolean>} where if {@link Tuple<Integer,Boolean>#getB()} is true then {@link Tuple<Integer,Boolean>#getA()} contains a valid Integer
-     */
-    static int getGroupDuration(int memberId)
-    {
-        Group group = getGroup(memberId);
-        if (group.isEmpty())
-            return 0;
-        else
-            return group.getMaxDuration();
-    }
-
     static void sync()
     {
         PacketDispatcher.sendToAll(new SyncGroupsMessage(groups));
@@ -464,7 +425,7 @@ public class GroupManager
         remove.forEach(memberState::remove);
     }
 
-    static void queuePart(int playID, int memberId, String musicText)
+    static void queuePart(int memberId, String musicText)
     {
        memberMusic.put(memberId, musicText);
        setState(memberId, QUEUED);
@@ -484,17 +445,6 @@ public class GroupManager
                 return true;
         }
         return false;
-    }
-
-
-    static void deQueueMember(int memberId)
-    {
-        Group group = getGroup(memberId);
-        if (group.isValid()) {
-            memberState.remove(memberId);
-            memberMusic.remove(memberId);
-            syncStatus();
-        }
     }
 
     static void setState(int memberId, int state)

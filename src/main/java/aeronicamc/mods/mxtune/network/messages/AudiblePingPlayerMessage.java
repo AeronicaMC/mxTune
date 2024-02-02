@@ -1,5 +1,6 @@
 package aeronicamc.mods.mxtune.network.messages;
 
+import aeronicamc.mods.mxtune.init.ModSoundEvents;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
@@ -31,7 +32,8 @@ public class AudiblePingPlayerMessage extends AbstractMessage<AudiblePingPlayerM
     public AudiblePingPlayerMessage decode(PacketBuffer buffer)
     {
         final ResourceLocation soundEventResource = buffer.readResourceLocation();
-        return new AudiblePingPlayerMessage(ForgeRegistries.SOUND_EVENTS.getValue(soundEventResource));
+        final SoundEvent soundEvent = ForgeRegistries.SOUND_EVENTS.getValue(soundEventResource);
+        return soundEvent !=null ? new AudiblePingPlayerMessage(soundEvent) : new AudiblePingPlayerMessage(ModSoundEvents.FAILURE.get());
     }
 
     @Override
