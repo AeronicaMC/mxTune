@@ -12,12 +12,12 @@ public class MusicVenueTool
     private static final ZoneId ROOT_ZONE = ZoneId.of("GMT0");
     private static LocalDateTime lastDateTime = LocalDateTime.now(ROOT_ZONE);
 
-    final static Codec<MusicVenueTool> CODEC = RecordCodecBuilder.create(
+    static final Codec<MusicVenueTool> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
                     MusicVenue.CODEC.fieldOf("musicVenue").forGetter(MusicVenueTool::getMusicVenue),
                     ToolState.Type.CODEC.fieldOf("toolState").forGetter(MusicVenueTool::getToolState)
                                       ).apply(instance, MusicVenueTool::new));
-    private MusicVenue musicVenue;
+    private final MusicVenue musicVenue;
     private ToolState.Type toolState;
     private int slot;
 
@@ -30,11 +30,6 @@ public class MusicVenueTool
     public MusicVenue getMusicVenue()
     {
         return musicVenue;
-    }
-
-    public void setMusicVenue(MusicVenue musicVenue)
-    {
-        this.musicVenue = musicVenue;
     }
 
     public ToolState.Type getToolState()

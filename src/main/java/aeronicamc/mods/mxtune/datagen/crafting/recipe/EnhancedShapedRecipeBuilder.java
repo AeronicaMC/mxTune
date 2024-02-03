@@ -60,6 +60,7 @@ public class EnhancedShapedRecipeBuilder<
      * @param group The group name
      * @return This builder
      */
+    @SuppressWarnings("unchecked,unused")
     public BUILDER itemGroup(final String group) {
         itemGroup = group;
         return (BUILDER) this;
@@ -68,6 +69,7 @@ public class EnhancedShapedRecipeBuilder<
     /**
      * Adds a key to the recipe pattern.
      */
+    @SuppressWarnings("unchecked")
     @Override
     public BUILDER define(final Character symbol, final ITag<Item> tagIn) {
         return (BUILDER) super.define(symbol, tagIn);
@@ -76,6 +78,7 @@ public class EnhancedShapedRecipeBuilder<
     /**
      * Adds a key to the recipe pattern.
      */
+    @SuppressWarnings("unchecked")
     @Override
     public BUILDER define(final Character symbol, final IItemProvider itemIn) {
         return (BUILDER) super.define(symbol, itemIn);
@@ -84,6 +87,7 @@ public class EnhancedShapedRecipeBuilder<
     /**
      * Adds a key to the recipe pattern.
      */
+    @SuppressWarnings("unchecked")
     @Override
     public BUILDER define(final Character symbol, final Ingredient ingredientIn) {
         return (BUILDER) super.define(symbol, ingredientIn);
@@ -92,6 +96,7 @@ public class EnhancedShapedRecipeBuilder<
     /**
      * Adds a new entry to the patterns for this recipe.
      */
+    @SuppressWarnings("unchecked")
     @Override
     public BUILDER pattern(final String pattern) {
         return (BUILDER) super.pattern(pattern);
@@ -100,11 +105,13 @@ public class EnhancedShapedRecipeBuilder<
     /**
      * Adds a criterion needed to unlock the recipe.
      */
+    @SuppressWarnings("unchecked")
     @Override
     public BUILDER unlockedBy(final String name, final ICriterionInstance criterion) {
         return (BUILDER) super.unlockedBy(name, criterion);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public BUILDER group(final String group) {
         return (BUILDER) super.group(group);
@@ -146,6 +153,7 @@ public class EnhancedShapedRecipeBuilder<
     /**
      * Builds this recipe into an {@link IFinishedRecipe}.
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void save(final Consumer<IFinishedRecipe> consumer, final ResourceLocation id) {
         try {

@@ -17,14 +17,15 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.world.ForgeChunkManager;
 import net.minecraftforge.fml.network.NetworkHooks;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.List;
 
 public class MusicSourceEntity extends Entity
 {
-    private static final Logger LOGGER = LogManager.getLogger(MusicSourceEntity.class);
     private BlockPos source;
 
     public MusicSourceEntity(World level)
@@ -34,7 +35,7 @@ public class MusicSourceEntity extends Entity
         this.noPhysics = true;
     }
 
-    public MusicSourceEntity(World level, BlockPos source, boolean shouldSit)
+    public MusicSourceEntity(World level, BlockPos source)
     {
         this(level);
         this.source = source;
@@ -46,7 +47,7 @@ public class MusicSourceEntity extends Entity
     @Override
     protected void defineSynchedData()
     {
-
+        /* Nothing to sync */
     }
 
     public BlockPos getSource()
@@ -109,13 +110,13 @@ public class MusicSourceEntity extends Entity
     @Override
     protected void readAdditionalSaveData(CompoundNBT pCompound)
     {
-
+        /* No additional save data */
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundNBT pCompound)
     {
-
+        /* No additional save data */
     }
 
     @Override
@@ -125,6 +126,7 @@ public class MusicSourceEntity extends Entity
     }
 
     // Not needed in this class.  Save for use elsewhere.
+    @SuppressWarnings("unused")
     public static void standOnBlock(World world, BlockPos pos, PlayerEntity playerIn, double yOffSet, boolean shouldSit)
     {
         if (!world.isClientSide())
@@ -139,7 +141,7 @@ public class MusicSourceEntity extends Entity
             if (sittableEntities.isEmpty() && !((blockStateBelowFoot.getBlock() instanceof AirBlock | !(blockStateBelowFoot.getFluidState().isEmpty()))))
             {
                 double ridingOffset = shouldSit ? -1 * 0.0625D : playerIn.getMyRidingOffset();
-                MusicSourceEntity stand = new MusicSourceEntity(world, blockUnderFoot(playerIn), shouldSit);
+                MusicSourceEntity stand = new MusicSourceEntity(world, blockUnderFoot(playerIn));
                 world.addFreshEntity(stand);
                 playerIn.startRiding(stand, true);
             }
@@ -152,5 +154,37 @@ public class MusicSourceEntity extends Entity
         int y = (int) Math.floor(playerIn.getY() - 0.4);
         int z = (int) Math.floor(playerIn.getZ());
         return new BlockPos(x,y,z);
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("source", source)
+                .append("level", level)
+                .toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        MusicSourceEntity musicSource = (MusicSourceEntity) o;
+        return new EqualsBuilder()
+                .append(source, musicSource)
+                .append(level, musicSource.level)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(source)
+                .append(level)
+                .toHashCode();
     }
 }

@@ -45,7 +45,7 @@ public class MXTuneItemModelProvider extends ItemModelProvider
 
         {
             // AGE here in this context represents the percentage of a maximum number of days sheet music is viable.
-            // At 0% the sheet music is considered unusable. 1-20% is well worn. 21-50% is used. 51%+ like new.
+            // At 0% the sheet music is considered unusable. 1-20% is well-worn. 21-50% is used. 51%+ like new.
             final int maxAge = 50;
             final int[] ages = {0, 1, 20, maxAge};
             ItemModelBuilder parentModel = withExistingParent(SHEET_MUSIC.getId().getPath(), mcLoc("generated"))
@@ -70,7 +70,7 @@ public class MXTuneItemModelProvider extends ItemModelProvider
 
         {
             // AGE here in this context represents the percentage of a maximum number of days music score is viable.
-            // At 0% the music score is considered unusable. 1-20% is well worn. 21-50% is used. 51%+ like new.
+            // At 0% the music score is considered unusable. 1-20% is well-worn. 21-50% is used. 51%+ like new.
             final int maxAge = 50;
             final int[] ages = {0, 1, 20, maxAge};
             ItemModelBuilder parentModel = withExistingParent(MUSIC_SCORE.getId().getPath(), mcLoc("generated"))

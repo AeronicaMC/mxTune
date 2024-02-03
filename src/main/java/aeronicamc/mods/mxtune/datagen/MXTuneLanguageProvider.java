@@ -20,9 +20,7 @@ public class MXTuneLanguageProvider extends LanguageProvider
     @Override
     protected void addTranslations()
     {
-        // TODO: remove raw testing translations
         add("gui.mxtune.gui_test.title", "Gui Test Screen");
-        add("item.mxtune.music_item", "Music Item");
 
         add(ModEntities.MUSIC_SOURCE.get(), "[MusicSource]");
 
@@ -48,7 +46,6 @@ public class MXTuneLanguageProvider extends LanguageProvider
 
     private void addBlocks()
     {
-        // TODO
         add(ModBlocks.MUSIC_BLOCK.get(), "Music Block");
         add("container.mxtune.block_music.more", "%s More");
         addTooltip("block_music.help", "When placed in the world: SHIFT+Right-Click to OPEN. Right-Click to play. Add up to 16 instruments loaded with sheet music.");
@@ -56,7 +53,6 @@ public class MXTuneLanguageProvider extends LanguageProvider
 
     private void addItems()
     {
-        // TODO
         add(ModItems.SCRAP_ITEM.get(), "Paper Scraps");
         add(ModItems.SHEET_MUSIC.get(), "Sheet Music");
         add(ModItems.MUSIC_SCORE.get(), "Music Score");

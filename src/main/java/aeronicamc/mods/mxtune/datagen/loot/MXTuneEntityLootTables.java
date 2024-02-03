@@ -15,7 +15,7 @@ public class MXTuneEntityLootTables extends EntityLootTables
     @Override
     protected void addTables()
     {
-        // TODO: populate as needed
+        // populate as needed
     }
 
     @Override

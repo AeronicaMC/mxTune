@@ -15,7 +15,6 @@ public class MXTuneBlockLootTables extends BlockLootTables
     @Override
     protected void addTables()
     {
-        // TODO: populate as needed
         add(ModBlocks.MUSIC_BLOCK.get(), MXTuneBlockLootTables::notDroppingRollsZERO);
     }
 

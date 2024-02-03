@@ -16,14 +16,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.List;
 
 public class RootedEntity extends Entity
 {
-    private static final Logger LOGGER = LogManager.getLogger(RootedEntity.class);
     private static final DataParameter<Boolean> SHOULD_SIT = EntityDataManager.defineId(RootedEntity.class, DataSerializers.BOOLEAN);
     private BlockPos source;
 
@@ -62,7 +63,7 @@ public class RootedEntity extends Entity
     {
         super.tick();
 
-        if (source == null) // fix for saved entity music source so they don't NPE on a tick.
+        if (source == null) // fix for saved entity music source, so they don't NPE on a tick.
         {
             source = this.blockPosition();
         }
@@ -109,13 +110,13 @@ public class RootedEntity extends Entity
     @Override
     protected void readAdditionalSaveData(CompoundNBT pCompound)
     {
-
+        /* No additional saved data */
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundNBT pCompound)
     {
-
+        /* No additional saved data */
     }
 
     @Override
@@ -124,6 +125,7 @@ public class RootedEntity extends Entity
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
+    @SuppressWarnings("unused")
     public static void standOnBlock(World world, BlockPos pos, PlayerEntity playerIn, double yOffSet, boolean shouldSit)
     {
         if (!world.isClientSide())
@@ -151,5 +153,40 @@ public class RootedEntity extends Entity
         int y = (int) Math.floor(playerIn.getY() - 0.4);
         int z = (int) Math.floor(playerIn.getZ());
         return new BlockPos(x,y,z);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return new HashCodeBuilder(17, 37)
+                .append(source)
+                .append(level)
+                .toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {
+            return true;
+        }
+
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        RootedEntity rooted = (RootedEntity) o;
+        return new EqualsBuilder()
+                .append(source, rooted.source)
+                .append(level, rooted.level)
+                .isEquals();
+    }
+
+    @Override
+    public String toString()
+    {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("source", source)
+                .append("level", level)
+                .toString();
     }
 }

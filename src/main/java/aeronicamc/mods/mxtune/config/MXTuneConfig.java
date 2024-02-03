@@ -26,7 +26,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class MXTuneConfig
 {
-    public static int SHEET_MUSIC_MAX_DAYS = 999999;
+    public static final int SHEET_MUSIC_MAX_DAYS = 999999;
     private MXTuneConfig() { /* NOP */ }
 
     /** Client Configuration Settings */

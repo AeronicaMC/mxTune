@@ -22,6 +22,10 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.minecraftforge.fml.network.NetworkHooks;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.annotation.Nullable;
 import java.util.Iterator;
@@ -31,7 +35,7 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
 {
     public static final String TAG_PANEL = "Panel";
     public static final String TAG_FACING = "Facing";
-    public InfoPanelType infoPanelType;
+    private InfoPanelType infoPanelType;
     private boolean newPanel = false;
 
     public MusicVenueInfoEntity(World level)
@@ -228,5 +232,43 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
         double d0 = 16.0D;
         d0 = d0 * 64.0D * getViewScale();
         return distance < d0 * d0;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+        MusicVenueInfoEntity infoEntity = (MusicVenueInfoEntity) o;
+        return new EqualsBuilder()
+                .append(infoPanelType, infoEntity.infoPanelType)
+                .append(level, infoEntity.level)
+                .append(pos, infoEntity.pos)
+                .append(direction, infoEntity.direction)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(infoPanelType)
+                .append(level)
+                .append(pos)
+                .append(direction)
+                .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("infoPanelType", infoPanelType)
+                .append("level", level)
+                .append("pos", pos)
+                .append("direction", direction)
+                .toString();
     }
 }

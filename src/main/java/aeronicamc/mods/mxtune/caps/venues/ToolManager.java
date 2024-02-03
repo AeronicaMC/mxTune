@@ -106,7 +106,6 @@ public class ToolManager
 
     private static Optional<Boolean> validate(PlayerEntity player, ItemUseContext context, MusicVenueTool tool)
     {
-        EntityVenueState bvs = MusicVenueHelper.getBlockVenueState(context.getLevel(), context.getClickedPos());
         EntityVenueState pvs = MusicVenueHelper.getEntityVenueState(context.getLevel(), player.getId());
         switch (tool.getToolState())
         {
@@ -158,12 +157,10 @@ public class ToolManager
     private static boolean notIntersects(ItemUseContext context, BlockPos pos1, BlockPos pos2)
     {
         AxisAlignedBB aabb = new AxisAlignedBB(pos1, pos2).inflate(0.5).move(0.5, 0.5, 0.5);
-        boolean[] result = new boolean[1];
+        boolean[] result = { false };
         MusicVenueProvider.getMusicVenues(context.getLevel()).ifPresent(
-                areas ->
-                {
-                    result[0] = areas.getMusicVenues().stream().anyMatch(area -> area.getVenueAABB().intersects(aabb));
-                });
+                areas -> result[0] = areas.getMusicVenues()
+                        .stream().anyMatch(area -> area.getVenueAABB().intersects(aabb)));
         return result[0];
     }
 

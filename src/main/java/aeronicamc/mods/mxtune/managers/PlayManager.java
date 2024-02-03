@@ -78,7 +78,7 @@ public final class PlayManager
                     if (musicProperties.getDuration() >= 4)
                     {
                         playId = getNextPlayID();
-                        MusicSourceEntity musicSource = new MusicSourceEntity(world, blockPos, false);
+                        MusicSourceEntity musicSource = new MusicSourceEntity(world, blockPos);
                         musicPlayer.setMusicSourceEntityId(musicSource.getId());
                         addActivePlayId(musicSource.getId(), playId, musicProperties.getMusicText(), musicProperties.getDuration());
                         world.addFreshEntity(musicSource);

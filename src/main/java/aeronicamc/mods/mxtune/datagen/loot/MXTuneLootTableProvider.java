@@ -49,13 +49,10 @@ public class MXTuneLootTableProvider extends LootTableProvider
                 .filter(lootTable -> lootTable.getNamespace().equals(Reference.MOD_ID))
                 .collect(Collectors.toSet());
 
-        for (final ResourceLocation id : Sets.difference(modLootTableIds, map.keySet())) {
+        for (final ResourceLocation id : Sets.difference(modLootTableIds, map.keySet()))
             validationtracker.reportProblem("Missing mod loot table: " + id);
-        }
 
-        map.forEach((id, lootTable) -> {
-            LootTableManager.validate(validationtracker, id, lootTable);
-        });
+        map.forEach((id, lootTable) -> LootTableManager.validate(validationtracker, id, lootTable));
     }
 
     /**

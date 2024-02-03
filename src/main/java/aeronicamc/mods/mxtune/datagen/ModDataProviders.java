@@ -33,14 +33,12 @@ public class ModDataProviders
             final MXTuneItemModelProvider itemModelProvider = new MXTuneItemModelProvider(dataGenerator, existingFileHelper);
             dataGenerator.addProvider(itemModelProvider);
 
-
             // Let BlockState provider see generated item models by passing its existing file helper
             dataGenerator.addProvider(new MXTuneBlockStateProvider(dataGenerator, itemModelProvider.existingFileHelper));
         }
 
         if (event.includeServer())
         {
-            // TODO
             dataGenerator.addProvider(new MXTuneRecipeProvider(dataGenerator));
             dataGenerator.addProvider(new MXTuneLootTableProvider(dataGenerator));
 
