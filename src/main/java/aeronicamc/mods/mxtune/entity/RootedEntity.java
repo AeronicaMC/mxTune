@@ -21,23 +21,21 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
-public class RootedEntity extends Entity
-{
+public class RootedEntity extends Entity {
     private static final DataParameter<Boolean> SHOULD_SIT = EntityDataManager.defineId(RootedEntity.class, DataSerializers.BOOLEAN);
     private BlockPos source;
 
-    public RootedEntity(World level)
-    {
+    public RootedEntity(World level) {
         super(ModEntities.ROOTED_SOURCE.get(), level);
         this.noCulling = true;
         this.noPhysics = true;
         this.entityData.set(SHOULD_SIT, Boolean.TRUE);
     }
 
-    public RootedEntity(World level, BlockPos source, boolean shouldSit)
-    {
+    public RootedEntity(World level, BlockPos source, boolean shouldSit) {
         this(level);
         this.source = source;
         this.setPos(source.getX() + 0.5, source.getY() + 0.5, source.getZ() + 0.5);
@@ -45,13 +43,11 @@ public class RootedEntity extends Entity
     }
 
     @Override
-    protected void defineSynchedData()
-    {
+    protected void defineSynchedData() {
         this.entityData.define(SHOULD_SIT, Boolean.TRUE);
     }
 
-    public BlockPos getSource()
-    {
+    public BlockPos getSource() {
         return source;
     }
 
@@ -59,20 +55,17 @@ public class RootedEntity extends Entity
      * Called to update the entity's position/logic.
      */
     @Override
-    public void tick()
-    {
+    public void tick() {
         super.tick();
 
-        if (source == null) // fix for saved entity music source, so they don't NPE on a tick.
-        {
+        // fix for saved entity music source, so they don't NPE on a tick.
+        if (source == null) {
             source = this.blockPosition();
         }
 
-        if(!this.level.isClientSide())
-        {
+        if(!this.level.isClientSide()) {
             boolean hasActiveTuneEntry = PlayManager.activeTuneEntityExists(this);
-            if (!this.isAlive() || this.level.isEmptyBlock(this.source) || !(this.hasOnePlayerPassenger()) || !hasActiveTuneEntry)
-            {
+            if (!this.isAlive() || this.level.isEmptyBlock(this.source) || !(this.hasOnePlayerPassenger()) || !hasActiveTuneEntry) {
                 if (PlayManager.activeTuneEntityActive(this))
                     PlayManager.stopPlayingEntity(this);
                 this.remove();
@@ -85,14 +78,12 @@ public class RootedEntity extends Entity
      * Returns the Y Offset of this entity.
      */
     @Override
-    public double getMyRidingOffset()
-    {
+    public double getMyRidingOffset() {
         return 0D;
     }
 
     @Override
-    protected boolean canRide(Entity pEntity)
-    {
+    protected boolean canRide(Entity pEntity) {
         return true;
     }
 
@@ -102,34 +93,28 @@ public class RootedEntity extends Entity
      * @return false to prevent an entity that is mounted to this entity from displaying the 'sitting' animation.
      */
     @Override
-    public boolean shouldRiderSit()
-    {
+    public boolean shouldRiderSit() {
         return entityData.get(SHOULD_SIT);
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundNBT pCompound)
-    {
+    protected void readAdditionalSaveData(CompoundNBT pCompound) {
         /* No additional saved data */
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT pCompound)
-    {
+    protected void addAdditionalSaveData(CompoundNBT pCompound) {
         /* No additional saved data */
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket()
-    {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @SuppressWarnings("unused")
-    public static void standOnBlock(World world, BlockPos pos, PlayerEntity playerIn, double yOffSet, boolean shouldSit)
-    {
-        if (!world.isClientSide())
-        {
+    public static void standOnBlock(World world, BlockPos pos, PlayerEntity playerIn, double yOffSet, boolean shouldSit) {
+        if (!world.isClientSide()) {
             BlockPos blockPosFeet = blockUnderFoot(playerIn);
             BlockState blockStateBelowFoot =  world.getBlockState(blockPosFeet);
             String className = blockStateBelowFoot.getBlock().getClass().getSimpleName();
@@ -137,8 +122,7 @@ public class RootedEntity extends Entity
             double blockHeight = !voxelShape.isEmpty() ? voxelShape.bounds().maxY : 0;
 
             List<RootedEntity> rootedEntities = world.getEntitiesOfClass(RootedEntity.class, new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.0, pos.getZ() + 1.0));
-            if (rootedEntities.isEmpty() && !((blockStateBelowFoot.getBlock() instanceof AirBlock | !(blockStateBelowFoot.getFluidState().isEmpty()))))
-            {
+            if (rootedEntities.isEmpty() && !((blockStateBelowFoot.getBlock() instanceof AirBlock | !(blockStateBelowFoot.getFluidState().isEmpty())))) {
                 double ridingOffset = shouldSit ? -1 * 0.0625D : playerIn.getMyRidingOffset();
                 RootedEntity stand = new RootedEntity(world, blockUnderFoot(playerIn), shouldSit);
                 world.addFreshEntity(stand);
@@ -147,8 +131,7 @@ public class RootedEntity extends Entity
         }
     }
 
-    private static BlockPos blockUnderFoot(PlayerEntity playerIn)
-    {
+    private static BlockPos blockUnderFoot(PlayerEntity playerIn) {
         int x = (int) Math.floor(playerIn.getX());
         int y = (int) Math.floor(playerIn.getY() - 0.4);
         int z = (int) Math.floor(playerIn.getZ());
@@ -156,8 +139,7 @@ public class RootedEntity extends Entity
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return new HashCodeBuilder(17, 37)
                 .append(source)
                 .append(level)
@@ -165,13 +147,12 @@ public class RootedEntity extends Entity
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(@Nullable Object o) {
         if (this == o) {
             return true;
         }
 
-        if (getClass() != o.getClass()) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
         RootedEntity rooted = (RootedEntity) o;
@@ -182,8 +163,7 @@ public class RootedEntity extends Entity
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("source", source)
                 .append("level", level)

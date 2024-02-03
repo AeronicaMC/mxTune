@@ -22,21 +22,19 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
-public class MusicSourceEntity extends Entity
-{
+public class MusicSourceEntity extends Entity {
     private BlockPos source;
 
-    public MusicSourceEntity(World level)
-    {
+    public MusicSourceEntity(World level) {
         super(ModEntities.MUSIC_SOURCE.get(), level);
         this.noCulling = true;
         this.noPhysics = true;
     }
 
-    public MusicSourceEntity(World level, BlockPos source)
-    {
+    public MusicSourceEntity(World level, BlockPos source) {
         this(level);
         this.source = source;
         this.setPos(source.getX() + 0.5, source.getY() + 0.5, source.getZ() + 0.5);
@@ -45,8 +43,7 @@ public class MusicSourceEntity extends Entity
     }
 
     @Override
-    protected void defineSynchedData()
-    {
+    protected void defineSynchedData() {
         /* Nothing to sync */
     }
 
@@ -59,17 +56,15 @@ public class MusicSourceEntity extends Entity
      * Called to update the entity's position/logic.
      */
     @Override
-    public void tick()
-    {
+    public void tick() {
         super.tick();
 
-        if (source == null) // fix for saved entity music source so they don't NPE on a tick.
-        {
+        // fix for saved entity music source so they don't NPE on a tick.
+        if (source == null) {
             source = this.blockPosition();
         }
 
-        if(!level.isClientSide())
-        {
+        if(!level.isClientSide()) {
             boolean hasActiveTuneEntry = PlayManager.activeTuneEntityExists(this);
             if (!this.isAlive() || level.isEmptyBlock(source) || !(level.getBlockState(source).hasTileEntity() && level.getBlockEntity(source) instanceof IMusicPlayer) || !hasActiveTuneEntry)
             {
@@ -85,14 +80,12 @@ public class MusicSourceEntity extends Entity
      * Returns the Y Offset of this entity.
      */
     @Override
-    public double getMyRidingOffset()
-    {
+    public double getMyRidingOffset() {
         return 0D;
     }
 
     @Override
-    protected boolean canRide(Entity pEntity)
-    {
+    protected boolean canRide(Entity pEntity) {
         return false;
     }
 
@@ -102,35 +95,29 @@ public class MusicSourceEntity extends Entity
      * @return false to prevent an entity that is mounted to this entity from displaying the 'sitting' animation.
      */
     @Override
-    public boolean shouldRiderSit()
-    {
+    public boolean shouldRiderSit() {
         return false;
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundNBT pCompound)
-    {
+    protected void readAdditionalSaveData(CompoundNBT pCompound) {
         /* No additional save data */
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT pCompound)
-    {
+    protected void addAdditionalSaveData(CompoundNBT pCompound) {
         /* No additional save data */
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket()
-    {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     // Not needed in this class.  Save for use elsewhere.
     @SuppressWarnings("unused")
-    public static void standOnBlock(World world, BlockPos pos, PlayerEntity playerIn, double yOffSet, boolean shouldSit)
-    {
-        if (!world.isClientSide())
-        {
+    public static void standOnBlock(World world, BlockPos pos, PlayerEntity playerIn, double yOffSet, boolean shouldSit) {
+        if (!world.isClientSide()) {
             BlockPos blockPosFeet = blockUnderFoot(playerIn);
             BlockState blockStateBelowFoot =  world.getBlockState(blockPosFeet);
             String className = blockStateBelowFoot.getBlock().getClass().getSimpleName();
@@ -138,8 +125,7 @@ public class MusicSourceEntity extends Entity
             double blockHeight = !voxelShape.isEmpty() ? voxelShape.bounds().maxY : 0;
 
             List<MusicSourceEntity> sittableEntities = world.getEntitiesOfClass(MusicSourceEntity.class, new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.0, pos.getZ() + 1.0));
-            if (sittableEntities.isEmpty() && !((blockStateBelowFoot.getBlock() instanceof AirBlock | !(blockStateBelowFoot.getFluidState().isEmpty()))))
-            {
+            if (sittableEntities.isEmpty() && !((blockStateBelowFoot.getBlock() instanceof AirBlock | !(blockStateBelowFoot.getFluidState().isEmpty())))) {
                 double ridingOffset = shouldSit ? -1 * 0.0625D : playerIn.getMyRidingOffset();
                 MusicSourceEntity stand = new MusicSourceEntity(world, blockUnderFoot(playerIn));
                 world.addFreshEntity(stand);
@@ -148,8 +134,7 @@ public class MusicSourceEntity extends Entity
         }
     }
 
-    private static BlockPos blockUnderFoot(PlayerEntity playerIn)
-    {
+    private static BlockPos blockUnderFoot(PlayerEntity playerIn) {
         int x = (int) Math.floor(playerIn.getX());
         int y = (int) Math.floor(playerIn.getY() - 0.4);
         int z = (int) Math.floor(playerIn.getZ());
@@ -165,14 +150,15 @@ public class MusicSourceEntity extends Entity
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o) {
             return true;
         }
 
-        if (getClass() != o.getClass()) {
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
+
         MusicSourceEntity musicSource = (MusicSourceEntity) o;
         return new EqualsBuilder()
                 .append(source, musicSource)

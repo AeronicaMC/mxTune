@@ -31,15 +31,13 @@ import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
 
-public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditionalSpawnData
-{
+public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditionalSpawnData {
     public static final String TAG_PANEL = "Panel";
     public static final String TAG_FACING = "Facing";
     private InfoPanelType infoPanelType;
     private boolean newPanel = false;
 
-    public MusicVenueInfoEntity(World level)
-    {
+    public MusicVenueInfoEntity(World level) {
         super(ModEntities.MUSIC_VENUE_INFO.get(), level);
     }
 
@@ -50,12 +48,10 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
         int i = 0;
         this.canUpdate(true);
 
-        for(InfoPanelType infoPanel : MXRegistry.INFO_PANEL_REGISTRY.get().getValues())
-        {
+        for(InfoPanelType infoPanel : MXRegistry.INFO_PANEL_REGISTRY.get().getValues()) {
             this.infoPanelType = infoPanel;
             this.setDirection(facing);
-            if (this.survives())
-            {
+            if (this.survives()) {
                 list.add(infoPanel);
                 int j = infoPanel.getWidth() * infoPanel.getHeight();
                 if (j > i)
@@ -81,21 +77,18 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
     }
 
     @OnlyIn(Dist.CLIENT)
-    public MusicVenueInfoEntity(World pLevel, PacketBuffer buffer)
-    {
+    public MusicVenueInfoEntity(World pLevel, PacketBuffer buffer) {
         this(pLevel);
         this.writeSpawnData(buffer);
     }
 
     @Override
-    public int getWidth()
-    {
+    public int getWidth() {
         return this.infoPanelType == null ? 1 : this.infoPanelType.getWidth();
     }
 
     @Override
-    public int getHeight()
-    {
+    public int getHeight() {
         return this.infoPanelType == null ? 1 : this.infoPanelType.getHeight();
     }
 
@@ -104,8 +97,7 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
      * @param pBrokenEntity the broken entity.
      */
     @Override
-    public void dropItem(@Nullable Entity pBrokenEntity)
-    {
+    public void dropItem(@Nullable Entity pBrokenEntity) {
         if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
             this.playSound(SoundEvents.PAINTING_BREAK, 1.0F, 1.0F);
             if (pBrokenEntity instanceof PlayerEntity) {
@@ -125,8 +117,7 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket()
-    {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -153,8 +144,7 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
      * @param buffer The packet data stream
      */
     @Override
-    public void writeSpawnData(PacketBuffer buffer)
-    {
+    public void writeSpawnData(PacketBuffer buffer) {
         buffer.writeBlockPos(this.pos);
         buffer.writeByte((byte)this.direction.get2DDataValue());
         buffer.writeUtf(String.valueOf(MXRegistry.INFO_PANEL_REGISTRY.get().getKey(infoPanelType)));
@@ -168,8 +158,7 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
      * @param buffer The packet data stream
      */
     @Override
-    public void readSpawnData(PacketBuffer buffer)
-    {
+    public void readSpawnData(PacketBuffer buffer) {
         this.pos = buffer.readBlockPos();
         this.direction = Direction.from2DDataValue(buffer.readByte());
         this.infoPanelType = MXRegistry.INFO_PANEL_REGISTRY.get().getValue(ResourceLocation.tryParse(buffer.readUtf()));
@@ -183,10 +172,8 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
     }
 
     @Override
-    public void onRemovedFromWorld()
-    {
-        if (this.level.isClientSide)
-        {
+    public void onRemovedFromWorld() {
+        if (this.level.isClientSide) {
             InfoRenderer.getInstance().close(this);
         }
         super.onRemovedFromWorld();
@@ -196,10 +183,8 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
      * Called to update the entity's position/logic.
      */
     @Override
-    public void tick()
-    {
-        if(this.level.isClientSide)
-        {
+    public void tick() {
+        if(this.level.isClientSide) {
             InfoRenderer.getInstance().updateInfoTexture(this);
         }
         super.tick();
@@ -235,12 +220,12 @@ public class MusicVenueInfoEntity extends HangingEntity implements IEntityAdditi
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o) {
             return true;
         }
 
-        if (getClass() != o.getClass()) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
         MusicVenueInfoEntity infoEntity = (MusicVenueInfoEntity) o;

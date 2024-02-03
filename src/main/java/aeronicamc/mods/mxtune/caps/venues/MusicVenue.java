@@ -8,10 +8,10 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import org.apache.commons.lang3.builder.*;
 
+import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class MusicVenue implements Comparable<MusicVenue>
-{
+public class MusicVenue implements Comparable<MusicVenue> {
     public static final BlockPos OUT_OF_BOUNDS = new BlockPos(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
     public static final MusicVenue EMPTY = MusicVenue.factory(UUID.fromString("00000000-0000-0000-0000-000000000000"),"-999999999-01-01T00:00:00");
 
@@ -33,17 +33,16 @@ public class MusicVenue implements Comparable<MusicVenue>
     private BlockPos endPos;
     private BlockPos performerSpawn;
     private BlockPos audienceSpawn;
-    private String id;
+    private final String id;
     private String name;
     private UUID ownerUUID;
-    private float r;
-    private float g;
-    private float b;
+    private final float r;
+    private final float g;
+    private final float b;
 
     private AxisAlignedBB venueAABB;
 
-    public MusicVenue(BlockPos startPos, BlockPos endPos, BlockPos performerSpawn, BlockPos audienceSpawn, String name, UUID ownerUUID, String id, float r, float g, float b)
-    {
+    public MusicVenue(BlockPos startPos, BlockPos endPos, BlockPos performerSpawn, BlockPos audienceSpawn, String name, UUID ownerUUID, String id, float r, float g, float b) {
         this.startPos = startPos;
         this.endPos = endPos;
         this.performerSpawn = performerSpawn;
@@ -57,107 +56,87 @@ public class MusicVenue implements Comparable<MusicVenue>
         makeAABB();
     }
 
-    private void makeAABB()
-    {
+    private void makeAABB() {
         this.venueAABB = new AxisAlignedBB(this.startPos, this.endPos).inflate(0.5).move(0.5, 0.5, 0.5);
     }
 
-    public BlockPos getStartPos()
-    {
+    public BlockPos getStartPos() {
         return startPos;
     }
 
-    public void setStartPos(BlockPos startPos)
-    {
+    public void setStartPos(BlockPos startPos) {
         this.startPos = startPos;
         makeAABB();
     }
 
-    public BlockPos getEndPos()
-    {
+    public BlockPos getEndPos() {
         return endPos;
     }
 
-    public void setEndPos(BlockPos endPos)
-    {
+    public void setEndPos(BlockPos endPos) {
         this.endPos = endPos;
         makeAABB();
     }
 
-    public BlockPos getPerformerSpawn()
-    {
+    public BlockPos getPerformerSpawn() {
         return performerSpawn;
     }
 
-    public void setPerformerSpawn(BlockPos performerSpawn)
-    {
+    public void setPerformerSpawn(BlockPos performerSpawn) {
         this.performerSpawn = performerSpawn;
     }
 
-    public BlockPos getAudienceSpawn()
-    {
+    public BlockPos getAudienceSpawn() {
         return audienceSpawn;
     }
 
-    public void setAudienceSpawn(BlockPos audienceSpawn)
-    {
+    public void setAudienceSpawn(BlockPos audienceSpawn) {
         this.audienceSpawn = audienceSpawn;
     }
 
-    public AxisAlignedBB getVenueAABB()
-    {
+    public AxisAlignedBB getVenueAABB() {
         return venueAABB;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public void setName(String name)
-    {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public UUID getOwnerUUID()
-    {
+    public UUID getOwnerUUID() {
         return ownerUUID;
     }
 
-    public void setOwnerUUID(UUID ownerUUID)
-    {
+    public void setOwnerUUID(UUID ownerUUID) {
         this.ownerUUID = ownerUUID;
     }
 
-    public String getId()
-    {
+    public String getId() {
         return id;
     }
 
-    public float getR()
-    {
+    public float getR() {
         return r;
     }
 
-    public float getG()
-    {
+    public float getG() {
         return g;
     }
 
-    public float getB()
-    {
+    public float getB() {
         return b;
     }
 
-    public static MusicVenue factory(UUID uuid, String id)
-    {
+    public static MusicVenue factory(UUID uuid, String id) {
         Color3f rainbow = Color3f.rainbowFactory();
         return new MusicVenue(OUT_OF_BOUNDS, OUT_OF_BOUNDS, OUT_OF_BOUNDS, OUT_OF_BOUNDS, "", uuid, id, rainbow.getR(), rainbow.getG(), rainbow.getB());
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return new HashCodeBuilder(17, 37)
                 .append(startPos)
                 .append(endPos)
@@ -173,8 +152,7 @@ public class MusicVenue implements Comparable<MusicVenue>
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(@Nullable Object o) {
         if (this == o) {
             return true;
         }
@@ -198,8 +176,7 @@ public class MusicVenue implements Comparable<MusicVenue>
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("startPos", startPos)
                 .append("endPos", endPos)
@@ -207,7 +184,7 @@ public class MusicVenue implements Comparable<MusicVenue>
                 .append("audienceSpawn", audienceSpawn)
                 .append("name", name)
                 .append("ownerUUID", ownerUUID)
-                .append(id)
+                .append("id",id)
                 .append("r", r)
                 .append("g", g)
                 .append("b", b)
@@ -229,8 +206,7 @@ public class MusicVenue implements Comparable<MusicVenue>
      *                              from being compared to this object.
      */
     @Override
-    public int compareTo(MusicVenue o)
-    {
+    public int compareTo(MusicVenue o) {
         return new CompareToBuilder()
                 .append(name, o.getName())
                 .append(ownerUUID, o.getOwnerUUID())
